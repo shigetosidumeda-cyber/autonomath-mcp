@@ -9,13 +9,13 @@
 [![CodeQL](https://github.com/AutonoMath/autonomath-mcp/workflows/CodeQL/badge.svg)](https://github.com/AutonoMath/autonomath-mcp/actions/workflows/codeql.yml)
 [![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://autonomath.ai)
 
-日本の公的制度 (補助金・融資・税制・認定) **13,578 件** + 採択事例 **2,286** + 融資 **108** (担保・個人保証人・第三者保証人 三軸分解) + 行政処分 **1,185** + 法令 **9,484** + 判例 **2,065** + 入札 **362** + 適格事業者 **13,801** を横断検索する REST + MCP API。AI エージェント・Claude Desktop・企業内 RAG 向け。
+日本の公的制度 (補助金・融資・税制・認定) **10,790 件 検索可能** (tier S/A/B/C; tier X 隔離 1,923 件含む全表 13,578 件) + 採択事例 **2,286** + 融資 **108** (担保・個人保証人・第三者保証人 三軸分解) + 行政処分 **1,185** + 法令 **9,484** + 判例 **2,065** + 入札 **362** + 適格事業者 **13,801** を横断検索する REST + MCP API。AI エージェント・Claude Desktop・企業内 RAG 向け。
 
-*English: Search 13,578 Japanese government subsidies, loans, and tax programs from Claude Desktop, Cursor, ChatGPT, or any REST client.*
+*English: Search 10,790 Japanese government subsidies, loans, and tax programs from Claude Desktop, Cursor, ChatGPT, or any REST client.*
 
 ## Why AutonoMath
 
-- **13,578 programs** across 47 prefectures + national (補助金・融資・税制・認定)
+- **10,790 searchable programs** (tier S=114 / A=1,340 / B=3,292 / C=6,044) across 47 prefectures + national (補助金・融資・税制・認定; full table 13,578 incl. tier X quarantine 1,923)
 - **2,286 採択事例 + 108 融資 + 1,185 行政処分 + 2,065 court decisions + 362 bids** — 単なる制度 DB ではなく「発見 + 併用可否判定 + 実績確認 + vendor vetting + 判例 + 入札」を 1 API
 - **181 exclusion / prerequisite rules** for automatic 併給不可 + 前提条件 detection (125 exclude + 17 prerequisite + 15 absolute + 24 other kinds, 農業系 + 非農業系)
 - **MCP native** — 72 tools at default gates (39 コア: 制度検索・採択事例・融資・行政処分 + get_usage_status (quota probe) + prescreen + upcoming_deadlines + 7 one-shot discovery (smb_starter_pack / subsidy_combo_finder / deadline_calendar / dd_profile_am / similar_cases / regulatory_prep_pack / subsidy_roadmap_3yr) + 拡張 [法令 e-Gov CC-BY 9,484 件・継続ロード中 / 税務ruleset インボイス+電帳法 35 件 live / 適格事業者 13,801 件 delta / 判例 2,065 件 / 入札 362 件 + cross-dataset glue] / 33 autonomath: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases の entity-fact DB + list_tax_sunset_alerts + V4 universal annotation/validation/provenance + Phase A static/example/health + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine。36協定 2 tools は AUTONOMATH_36_KYOTEI_ENABLED gate で off)、protocol 2025-06-18、stdio で Claude Desktop / Cursor / ChatGPT / Gemini から直呼び
@@ -113,16 +113,17 @@ Get an API key at <https://autonomath.ai/>.
 | Group | Coverage |
 |-------|----------|
 | **Core (39)** | Programs, Case Studies, Loans, Enforcement, Exclusions, Laws, Court Decisions, Bids, Tax Rulesets, Quota probe (get_usage_status) |
-| **AutonoMath universal (24)** | Entity/Fact DB + Annotations + Validation + Provenance + Examples |
-| **Phase A (5)** | Static taxonomies, Example profiles, Deep health (36協定 template gated off) |
+| **AutonoMath universal (16)** | Entity/Fact DB (search_tax_incentives, search_certifications, list_open_programs, enum_values_am, search_by_law, active_programs_at, related_programs, search_acceptance_stats_am, intent_of, reason_answer, get_am_tax_rule, search_gx_programs_am, search_loans_am, check_enforcement_am, search_mutual_plans_am, get_law_article_am) |
+| **V4 universal (4)** | get_annotations, validate, get_provenance, get_provenance_for_fact |
+| **Phase A (5)** | list_static_resources_am, get_static_resource_am, list_example_profiles_am, get_example_profile_am, deep_health_am (36協定 template gated off) |
 | **Lifecycle / graph (4)** | unified_lifecycle_calendar, program_lifecycle, program_abstract_structured, graph_traverse |
-| **Other (3)** | prerequisite_chain, rule_engine_check, query_at_snapshot |
+| **Other (4)** | prerequisite_chain, rule_engine_check, query_at_snapshot, list_tax_sunset_alerts |
 
 Full list: [docs/mcp-tools.md](https://autonomath.ai/docs/mcp-tools/)
 
 ## REST API & SDKs
 
-> WARNING: SDKs are pre-release — published PyPI/npm packages coming after v0.1.0 tag.
+> WARNING: Python SDK is pre-release — direct git install only. TypeScript SDK is on npm.
 
 **OpenAPI spec**
 
@@ -204,7 +205,9 @@ gated behind feature flags and primary-source ingest is rolling.
   + 8 静的タクソノミ + 5 example profiles + 4 utility modules
   (`wareki` / `jp_money` / `jp_constants` / `templates/saburoku_kyotei`)
   + `models/premium_response.py` + `/v1/am/health/deep` mounted on
-  `health_router` (no AnonIpLimitDep). Tool count 59 → **66**.
+  `health_router` (no AnonIpLimitDep). Default-gate runtime tool count: **72**
+  (36協定 2 tools held behind `AUTONOMATH_36_KYOTEI_ENABLED`; healthcare +
+  real_estate cohorts also gated off pending plan execution).
 - **Healthcare V3** (T+90d, 2026-08-04) — `medical_institutions` +
   `care_subsidies` (migration 039); +6 MCP tools when
   `HEALTHCARE_ENABLED=true`. Plan: [`docs/healthcare_v3_plan.md`](./docs/healthcare_v3_plan.md).

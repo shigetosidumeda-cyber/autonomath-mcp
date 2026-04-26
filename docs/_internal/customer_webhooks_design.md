@@ -294,7 +294,7 @@ beta 判定基準: delivery success rate ≥ 97% / p95 配信遅延 ≤ 3s / dea
 | Tier | 許容 events | 備考 |
 |---|---|---|
 | Free | ー | webhook 機能自体 off (SSRF リスクに対して revenue なし) |
-| Paid | E1-E6 全種 | 使った分 (配信試行数 × ¥0.5 が pull req と同じく metered 課金対象となる将来拡張は別 issue) |
+| Paid | E1-E6 全種 | 使った分 (配信試行数 × ¥3 が pull req と同じく metered 課金対象となる将来拡張は別 issue) |
 
 **顧客保護:**
 

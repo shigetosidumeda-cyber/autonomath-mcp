@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Data Sources, Attribution &amp; Licenses — AutonoMath</title>
+<meta name="description" content="AutonoMath ingests Japanese public-program data from 14 primary sources (e-Gov / NTA / METI / MAFF / MLIT / MHLW / Ministry of Environment / 47 prefectures / JFC / JPO / JST). License terms (CC BY 4.0 / PDL v1.0 / Government Standard Terms of Use v1.0 / public domain / proprietary) and required attribution strings disclosed.">
+
+<meta property="og:title" content="Data Sources, Attribution &amp; Licenses — AutonoMath">
+<meta property="og:description" content="Single page disclosing the 14 government / quasi-government data sources backing AutonoMath, with license terms and required attribution. For tax accountants, gyoseishoshi, SaaS developers, and downstream LLM agents.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://autonomath.ai/en/sources.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Data Sources, Attribution &amp; Licenses — AutonoMath">
+<meta name="twitter:description" content="Primary sources only. Aggregator URLs (noukaweb / hojyokin-portal / biz.stayway) are banned from source_url.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/sources.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/sources.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/sources.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/sources.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DataCatalog",
+  "name": "AutonoMath data sources, attribution & licenses",
+  "description": "Disclosure of the 14 primary data sources behind AutonoMath's Japanese public-program API: source agency, record count, license terms, and required attribution.",
+  "url": "https://autonomath.ai/en/sources.html",
+  "inLanguage": "en",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/en/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/en/",
+    "email": "info@bookyou.net",
+    "vatID": "T8010001213708",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "JP",
+      "addressRegion": "Tokyo",
+      "addressLocality": "Bunkyo-ku",
+      "streetAddress": "2-22-1 Kohinata"
+    }
+  },
+  "dataset": [
+    {"@type": "Dataset", "name": "e-Gov laws (national legislation)", "license": "https://creativecommons.org/licenses/by/4.0/", "creator": {"@type": "Organization", "name": "Digital Agency, Government of Japan (e-Gov)"}},
+    {"@type": "Dataset", "name": "NTA Qualified Invoice Issuer registry", "license": "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0", "creator": {"@type": "Organization", "name": "National Tax Agency of Japan"}},
+    {"@type": "Dataset", "name": "METI subsidies and enforcement actions", "creator": {"@type": "Organization", "name": "Ministry of Economy, Trade and Industry (METI)"}},
+    {"@type": "Dataset", "name": "MAFF subsidies and adoption case studies", "creator": {"@type": "Organization", "name": "Ministry of Agriculture, Forestry and Fisheries (MAFF)"}},
+    {"@type": "Dataset", "name": "MLIT enforcement actions", "creator": {"@type": "Organization", "name": "Ministry of Land, Infrastructure, Transport and Tourism (MLIT)"}},
+    {"@type": "Dataset", "name": "MHLW enforcement actions (pharmaceuticals & medical)", "creator": {"@type": "Organization", "name": "Ministry of Health, Labour and Welfare (MHLW)"}},
+    {"@type": "Dataset", "name": "Ministry of Environment industrial-waste enforcement", "creator": {"@type": "Organization", "name": "Ministry of the Environment of Japan"}},
+    {"@type": "Dataset", "name": "47 prefectural subsidies and enforcement actions", "creator": {"@type": "Organization", "name": "Each prefectural government"}},
+    {"@type": "Dataset", "name": "Japan Finance Corporation (JFC) loan programs", "creator": {"@type": "Organization", "name": "Japan Finance Corporation"}},
+    {"@type": "Dataset", "name": "JPO patent decisions / IP High Court rulings", "creator": {"@type": "Organization", "name": "Japan Patent Office and IP High Court"}},
+    {"@type": "Dataset", "name": "Public bids (NEXCO / JR / UR / others)", "creator": {"@type": "Organization", "name": "Each contracting agency"}},
+    {"@type": "Dataset", "name": "JST adoption case studies", "creator": {"@type": "Organization", "name": "Japan Science and Technology Agency"}},
+    {"@type": "Dataset", "name": "Public-interest foundation / industry-association subsidies", "creator": {"@type": "Organization", "name": "Each foundation / association"}},
+    {"@type": "Dataset", "name": "NTA tax notices (tax_rulesets)", "creator": {"@type": "Organization", "name": "National Tax Agency of Japan"}}
+  ]
+}
+</script>
+
+<style>
+  .sources-page { padding: 48px 0 64px; }
+  .sources-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .sources-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 24px; max-width: 760px; }
+  .sources-page h2 { font-size: 20px; margin: 36px 0 10px; font-weight: 700; }
+  .sources-page p { max-width: 760px; line-height: 1.75; }
+  .sources-page ul { max-width: 760px; line-height: 1.8; }
+  .sources-page table { width: 100%; max-width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .sources-page table th, .sources-page table td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+  .sources-page table th { background: var(--bg-alt); font-weight: 600; }
+  .sources-page table td.count { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .sources-page table code { font-size: 13px; }
+  .sources-page .table-wrap { overflow-x: auto; }
+  .sources-page .callout { background: var(--bg-alt); border-left: 3px solid var(--text); padding: 12px 16px; margin: 16px 0; max-width: 760px; }
+</style>
+
+<script defer src="../analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../sources.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="sources.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="sources-page">
+  <div class="container">
+
+    <h1>Data sources, attribution &amp; licenses</h1>
+    <p class="lead">AutonoMath ingests Japanese public-program data from 14 primary sources. This page discloses the source agency, record count, license terms, and the exact attribution string each source requires &mdash; so tax accountants (税理士), administrative scriveners (行政書士), labor &amp; social security attorneys (社労士), SaaS developers, and downstream LLM agents can perform due diligence and design correct attribution for any further redistribution.</p>
+
+    <p>Counts in the table below are a snapshot as of <strong>2026-04-26</strong>. Live counts continuously refreshed; see the <a href="facts.html">fact sheet</a> and <a href="changelog.html">changelog</a> for the latest values.</p>
+
+    <h2>14 primary data sources</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Data source</th>
+          <th>Records</th>
+          <th>License</th>
+          <th>Required attribution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>e-Gov laws</strong> (Digital Agency)</td>
+          <td class="count">9,484 laws</td>
+          <td>CC BY 4.0</td>
+          <td>"Legal text from the e-Gov laws data service (CC BY 4.0)". State any modifications.</td>
+        </tr>
+        <tr>
+          <td><strong>NTA Qualified Invoice Issuer registry</strong></td>
+          <td class="count">13,801 invoice_registrants (delta)</td>
+          <td>PDL v1.0 (Public Data License for government data)</td>
+          <td>"Republished from the National Tax Agency's Qualified Invoice Issuer public registry" + editorial note (fetch timestamp + whether records were edited).</td>
+        </tr>
+        <tr>
+          <td><strong>Ministry of Economy, Trade and Industry (METI)</strong> &mdash; subsidies, enforcement</td>
+          <td class="count">part of 10,790 programs / 1,185 enforcements</td>
+          <td>Government Standard Terms of Use v1.0</td>
+          <td>"Source: Ministry of Economy, Trade and Industry"</td>
+        </tr>
+        <tr>
+          <td><strong>Ministry of Agriculture, Forestry and Fisheries (MAFF)</strong> &mdash; subsidies, adoption case studies</td>
+          <td class="count">part of 10,790 programs / 2,286 case_studies</td>
+          <td>Government Standard Terms of Use v1.0</td>
+          <td>"Source: Ministry of Agriculture, Forestry and Fisheries"</td>
+        </tr>
+        <tr>
+          <td><strong>Ministry of Land, Infrastructure, Transport and Tourism (MLIT)</strong> &mdash; enforcement</td>
+          <td class="count">part of 1,185 enforcements</td>
+          <td>Government Standard Terms of Use v1.0</td>
+          <td>"Source: Ministry of Land, Infrastructure, Transport and Tourism"</td>
+        </tr>
+        <tr>
+          <td><strong>Ministry of Health, Labour and Welfare (MHLW)</strong> &mdash; pharmaceutical &amp; medical enforcement</td>
+          <td class="count">part of 1,185 enforcements</td>
+          <td>Government Standard Terms of Use v1.0</td>
+          <td>"Source: Ministry of Health, Labour and Welfare"</td>
+        </tr>
+        <tr>
+          <td><strong>Ministry of the Environment</strong> &mdash; industrial-waste enforcement</td>
+          <td class="count">part of 1,185 enforcements</td>
+          <td>Government Standard Terms of Use v1.0</td>
+          <td>"Source: Ministry of the Environment"</td>
+        </tr>
+        <tr>
+          <td><strong>47 prefectural governments</strong> &mdash; subsidies, enforcement</td>
+          <td class="count">part of programs / enforcements</td>
+          <td>Each prefecture's terms of use (most align with Government Standard Terms of Use v1.0)</td>
+          <td>Name each prefecture (e.g. "Source: Tokyo Metropolitan Government", "Source: Osaka Prefecture")</td>
+        </tr>
+        <tr>
+          <td><strong>Japan Finance Corporation (JFC)</strong> &mdash; loan programs</td>
+          <td class="count">108 loan_programs</td>
+          <td>proprietary (publicly-disclosed information only)</td>
+          <td>"Source: Japan Finance Corporation" (with linked URL)</td>
+        </tr>
+        <tr>
+          <td><strong>Japan Patent Office (JPO) and IP High Court</strong> &mdash; patent decisions</td>
+          <td class="count">part of 2,065 court_decisions</td>
+          <td>Public judgments (public domain)</td>
+          <td>"Source: Japan Patent Office / IP High Court"</td>
+        </tr>
+        <tr>
+          <td><strong>Public bids</strong> (NEXCO / JR / UR / others)</td>
+          <td class="count">362 bids</td>
+          <td>proprietary (publicly-disclosed information only)</td>
+          <td>"Source: each contracting agency" (NEXCO Central Japan / JR East / UR Urban Renaissance Agency, etc., named individually)</td>
+        </tr>
+        <tr>
+          <td><strong>Japan Science and Technology Agency (JST)</strong> &mdash; adoption case studies</td>
+          <td class="count">part of case_studies</td>
+          <td>proprietary (TOS-restricted; collected during data-collection phase)</td>
+          <td>"Source: Japan Science and Technology Agency"</td>
+        </tr>
+        <tr>
+          <td><strong>Public-interest foundations / industry associations</strong> &mdash; subsidies</td>
+          <td class="count">part of programs</td>
+          <td>varies (per-source)</td>
+          <td>Name each entity (e.g. "Source: XX Foundation, public-interest incorporated foundation")</td>
+        </tr>
+        <tr>
+          <td><strong>National Tax Agency notices</strong> (tax_rulesets)</td>
+          <td class="count">35 tax_rulesets</td>
+          <td>NTA notices (publicly disclosed; public domain)</td>
+          <td>"Source: National Tax Agency" + notice number</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Aggregator policy</h2>
+    <div class="callout">
+      <p>AutonoMath does <strong>not</strong> use second-tier aggregators such as <strong>noukaweb</strong>, <strong>hojyokin-portal</strong>, or <strong>biz.stayway</strong> in <code>source_url</code>.</p>
+    </div>
+    <p>Past incidents proved that citing aggregator pages let stale amounts, expired programs, and fabricated eligibility requirements flow straight into AI agent responses. From the user's perspective, it looks like AutonoMath lied; in the worst case, it leads to incorrect benefit projections or improper applications &mdash; which is fraud risk by another name.</p>
+    <p>So AutonoMath enforces an aggregator ban on <code>source_url</code> in both code (banlist) and operations (manual review). <code>source_url</code> values are restricted to <strong>primary sources</strong> &mdash; ministries, prefectures, Japan Finance Corporation, NTA, e-Gov, etc. Over 99% of rows carry both <code>source_url</code> and <code>fetched_at</code>; the remaining ~12 rows belong to small municipalities that do not run a public CMS.</p>
+
+    <h2>License legend</h2>
+    <ul>
+      <li><strong>CC BY 4.0</strong> (Creative Commons Attribution 4.0 International) &mdash; redistribution, modification, and commercial use permitted with attribution. e-Gov laws are licensed under CC BY 4.0.</li>
+      <li><strong>PDL v1.0</strong> (Public Data License v1.0 for Japanese government data) &mdash; downstream API redistribution permitted with attribution. The NTA Qualified Invoice Issuer registry is under PDL v1.0; on 2026-04-24 we directly verified the terms of use and confirmed downstream redistribution as a paid (¥3/req) API is permitted.</li>
+      <li><strong>Government Standard Terms of Use v1.0</strong> &mdash; the standard public-data terms used by Japanese ministries and local governments. Reproduction, public transmission, translation, transformation, adaptation, and commercial use are all permitted with attribution and disclosure of any modifications.</li>
+      <li><strong>public domain</strong> &mdash; not subject to copyright (e.g. published court judgments, NTA notices); free to use with attribution.</li>
+      <li><strong>proprietary (publicly-disclosed information only)</strong> &mdash; the source agency retains copyright, but AutonoMath only ingests information already publicly published, with <code>source_url</code> attribution. Commercial-redistribution licensing will be re-evaluated immediately before launch.</li>
+    </ul>
+
+    <h2>Machine-readable attribution</h2>
+    <p>Every row in <code>programs</code>, <code>case_studies</code>, <code>loan_programs</code>, <code>enforcement_cases</code>, <code>laws</code>, etc. carries <code>source_url</code> (primary-source URL) and <code>fetched_at</code> (fetch timestamp). Both are returned by every API and MCP tool response. See the <a href="/docs/api-reference/">API reference</a> and the <a href="/docs/mcp-tools">MCP tools reference</a>.</p>
+    <p>If you find a stale source URL, a broken link, or a discrepancy between the data and the primary source, please email <a href="mailto:info@bookyou.net">info@bookyou.net</a>. The dispute will be re-checked against the primary source and resolved within 48 hours (business days).</p>
+
+    <h2>Right to be forgotten</h2>
+    <p>For removal requests against the Qualified Invoice Issuer registry data ("the registration was withdrawn but is still indexed", "I am a sole proprietor and revoked the public listing of my trade name", etc.), email <a href="mailto:info@bookyou.net">info@bookyou.net</a> with your corporate number / registration number / trade name. Records are removed or hidden within 48 hours (business days). See the <a href="../privacy.html">privacy policy (JP)</a>.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about this page, requests to add a new data source, or license clarifications: <a href="mailto:info@bookyou.net">info@bookyou.net</a> &mdash; goes directly to the operator, who replies within 48 hours (business days).</p>
+    <p>Operated by <strong>Bookyou Inc.</strong> (Bookyou株式会社, corporate number <code>T8010001213708</code>, 2-22-1 Kohinata, Bunkyo-ku, Tokyo), CEO <strong>Shigetoshi Umeda</strong> (梅田茂利). <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Verify the company on the NTA public registry</a>.</p>
+    <p>Related: <a href="about.html">About AutonoMath</a> &middot; <a href="facts.html">Fact sheet</a> &middot; <a href="confidence.html">Quality disclosure</a> &middot; <a href="../tokushoho.html">Japanese legal disclosure (特定商取引法)</a> &middot; <a href="tos.html">Terms of service</a> &middot; <a href="../privacy.html">Privacy policy (JP)</a> &middot; <a href="../sources.html" hreflang="ja">日本語版</a></p>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
+    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
+    <a href="/en/tos.html">Terms</a> |
+    <a href="/en/privacy.html">Privacy</a> |
+    <a href="/docs/api-reference/">OpenAPI</a> |
+    Data last refreshed: <time data-trust-fresh datetime="2026-04-26">Apr 26, 2026</time>
+  </p>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="sources.html" aria-current="page">Data sources</a>
+      <a href="tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) &middot; CEO Shigetoshi Umeda &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>

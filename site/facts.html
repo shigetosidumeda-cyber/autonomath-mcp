@@ -391,6 +391,22 @@
       数値の不一致を発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。本ファクトシートが正本であり、サイト他ページに残る古い数字はキャッシュ・移行漏れとして扱います。
     </p>
 
+    <section aria-labelledby="faq" style="margin-top:48px;">
+      <h2 id="faq" style="font-size:22px;margin:0 0 16px;">よくある質問</h2>
+      <details style="margin:0 0 12px;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">
+        <summary style="font-weight:600;cursor:pointer;">サイトに表示されている数字 (例: 10,790 制度) の出典は?</summary>
+        <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);">本ファクトシート (<a href="https://autonomath.ai/facts.html">https://autonomath.ai/facts.html</a>) が正本です。各値は <a href="https://api.autonomath.ai/v1/meta"><code>/v1/meta</code> API</a> を一次出典とし、JST 取得日を併記しています。サイト内の各数字は <code>&lt;span data-fact="..."&gt;</code> でマークアップされており、ファクトシート上の <code>&lt;dt id="fact-..."&gt;</code> と 1:1 対応します。</p>
+      </details>
+      <details style="margin:0 0 12px;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">
+        <summary style="font-weight:600;cursor:pointer;">数字はどの頻度で更新されますか?</summary>
+        <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);"><code>/v1/meta</code> は 60 秒キャッシュ付きでライブ集計されます。本ファクトシートは ingest cadence (週次〜月次) と料金改訂のタイミングで再生成し、Last verified 列に最新の手動クロスチェック日を記載します。</p>
+      </details>
+      <details style="margin:0;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">
+        <summary style="font-weight:600;cursor:pointer;">Tier S/A/B/C の意味は?</summary>
+        <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);">実データ充足度に基づく品質ラベルです。Tier S/A/B/C は検索対象、Tier X は quarantine (検索除外)。詳細は <a href="/docs/exclusions/">/docs/exclusions/</a> を参照。</p>
+      </details>
+    </section>
+
   </div>
 </main>
 

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>AutonoMath と他の補助金検索サービスの比較 — Bookyou株式会社</title>
+<meta name="description" content="AutonoMath と noukaweb / hojyokin-portal / biz.stayway / J-Net21 / ミラサポplus の機能比較。データ件数、一次資料リンク、API/MCP、価格、無料枠、全文検索などを 2026-04-26 時点の公開情報で並べた中立比較表。">
+
+<meta property="og:title" content="AutonoMath と他の補助金検索サービスの比較">
+<meta property="og:description" content="API/MCP、一次資料、価格モデル、無料枠などを 2026-04-26 時点の公開情報で並べた中立比較表。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://autonomath.ai/compare.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath と他の補助金検索サービスの比較">
+<meta name="twitter:description" content="6 サービスを 13 軸で並べた中立比較表 (2026-04-26)。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/compare.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/compare.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/compare.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/compare.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "AutonoMath と他の補助金検索サービスの比較",
+  "description": "AutonoMath、noukaweb、hojyokin-portal.jp、biz.stayway.jp、J-Net21、ミラサポplus の 6 サービスを、データ件数・一次資料リンク・API/MCP・価格・無料枠・全文検索など 13 軸で並べた中立な機能比較。2026-04-26 時点の各社公開情報に基づく。",
+  "url": "https://autonomath.ai/compare.html",
+  "datePublished": "2026-04-26",
+  "dateModified": "2026-04-26",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "url": "https://autonomath.ai/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "url": "https://autonomath.ai/"
+  },
+  "mainEntityOfPage": "https://autonomath.ai/compare.html"
+}
+</script>
+
+<style>
+  .compare-page { padding: 48px 0 64px; }
+  .compare-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .compare-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 28px; max-width: 760px; }
+  .compare-page h2 { font-size: 22px; margin: 40px 0 12px; font-weight: 700; }
+  .compare-page h3 { font-size: 17px; margin: 22px 0 8px; font-weight: 700; }
+  .compare-page p, .compare-page ul { max-width: 760px; line-height: 1.75; }
+  .compare-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 16px 0 8px; }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 920px; background: var(--bg); }
+  .compare-table th, .compare-table td { border-bottom: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+  .compare-table thead th { background: var(--bg-alt); font-size: 12px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; position: sticky; top: 0; }
+  .compare-table tbody th { font-weight: 600; color: var(--text); white-space: nowrap; background: var(--bg-alt); width: 22%; }
+  .compare-table tbody tr:hover td, .compare-table tbody tr:hover th { background: rgba(30,58,138,0.04); }
+  .compare-table .col-us { background: rgba(30,58,138,0.03); }
+  .compare-table tbody tr:last-child th, .compare-table tbody tr:last-child td { border-bottom: 0; }
+  .compare-table .yes { color: #0f766e; font-weight: 600; }
+  .compare-table .no { color: var(--text-muted); }
+  .compare-table .partial { color: #b45309; font-weight: 600; }
+  .compare-table .unknown { color: var(--text-muted); font-style: italic; }
+  .compare-note { font-size: 13px; color: var(--text-muted); margin: 0 0 24px; max-width: 920px; }
+  .pick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 0; }
+  .pick-card { border: 1px solid var(--border); border-radius: 10px; padding: 20px; background: var(--bg); }
+  .pick-card h3 { margin: 0 0 6px; font-size: 16px; font-weight: 700; }
+  .pick-card .pick-tag { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 10px; }
+  .pick-card p { font-size: 14px; color: var(--text-muted); margin: 0 0 8px; line-height: 1.65; }
+  .pick-card .pick-rec { font-size: 13.5px; color: var(--text); margin: 8px 0 0; }
+  .pick-card .pick-rec strong { color: var(--accent); }
+  @media (max-width: 768px) {
+    .pick-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script defer src="analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="prompts.html">Prompts</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="compare.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="en/compare.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="compare-page">
+  <div class="container">
+
+    <h1>AutonoMath と他の補助金検索サービスの比較</h1>
+    <p class="lead">「補助金検索 API」「noukaweb 比較」「ミラサポ plus API」などで辿り着いた方向けに、AutonoMath と既存の主な補助金・助成金検索サービスを 13 軸で並べた中立比較表です。各社の公開情報のみで構成し、未公開項目は「公開情報非公表」と素直に表記しています。月次で見直します。</p>
+
+    <p class="compare-note">比較対象 6 サービス: <strong>AutonoMath</strong> (本サイト) / <a href="https://noukaweb.com" rel="noopener nofollow" target="_blank">noukaweb</a> (農家 web 補助金データベース) / <a href="https://hojyokin-portal.jp" rel="noopener nofollow" target="_blank">hojyokin-portal.jp</a> (補助金ポータル) / <a href="https://biz.stayway.jp" rel="noopener nofollow" target="_blank">biz.stayway.jp</a> (Stayway Biz) / <a href="https://j-net21.smrj.go.jp" rel="noopener" target="_blank">J-Net21</a> (中小機構) / <a href="https://mirasapo-plus.go.jp" rel="noopener" target="_blank">ミラサポ plus</a> (中小企業庁)。</p>
+
+    <h2>機能比較表</h2>
+
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th scope="col">比較軸</th>
+            <th scope="col" class="col-us">AutonoMath</th>
+            <th scope="col">noukaweb</th>
+            <th scope="col">hojyokin-portal</th>
+            <th scope="col">biz.stayway</th>
+            <th scope="col">J-Net21</th>
+            <th scope="col">ミラサポ plus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1. データ件数 (公的制度)</th>
+            <td class="col-us">10,790 検索可能 (tier S/A/B/C) + 13,578 全件 (tier X 含む)</td>
+            <td class="unknown">公開情報非公表 (農業領域に特化)</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="unknown">公開情報非公表 (記事中心)</td>
+            <td class="unknown">公開情報非公表 (掲載中の制度を都度更新)</td>
+            <td class="unknown">公開情報非公表 (主要補助金 + 関連)</td>
+          </tr>
+          <tr>
+            <th scope="row">2. 一次資料 source_url の有無 (政府機関への直リンク)</th>
+            <td class="col-us"><span class="yes">あり</span> 99%+ の行に <code>source_url</code> + <code>fetched_at</code> 付与 (例外は CMS が無い 12 件の小規模自治体)</td>
+            <td class="unknown">公開情報非公表 (要確認)</td>
+            <td class="unknown">公開情報非公表 (要確認)</td>
+            <td class="unknown">公開情報非公表 (要確認)</td>
+            <td class="yes">あり (省庁・自治体ページへ遷移)</td>
+            <td class="yes">あり (.go.jp 公式運営)</td>
+          </tr>
+          <tr>
+            <th scope="row">3. API</th>
+            <td class="col-us"><span class="yes">あり</span> REST <code>/v1/*</code> + OpenAPI 3.1 公開</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+          </tr>
+          <tr>
+            <th scope="row">4. MCP (Model Context Protocol)</th>
+            <td class="col-us"><span class="yes">あり</span> 72 tools, protocol 2025-06-18, stdio + Smithery / DXT 配布</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+            <td class="no">公開情報なし</td>
+          </tr>
+          <tr>
+            <th scope="row">5. LLM Agent からの利用可能性</th>
+            <td class="col-us"><span class="yes">前提</span> Claude / ChatGPT / Cursor 等から MCP で直接呼び出し、応答も AI 用に正規化済み</td>
+            <td class="no">人間の Web 閲覧前提</td>
+            <td class="no">人間の Web 閲覧前提</td>
+            <td class="no">人間の Web 閲覧前提</td>
+            <td class="no">人間の Web 閲覧前提</td>
+            <td class="no">人間の Web 閲覧前提</td>
+          </tr>
+          <tr>
+            <th scope="row">6. 価格モデル</th>
+            <td class="col-us">完全従量 ¥3/req 税別 (税込 ¥3.30)。tier / seat / 最低金額なし</td>
+            <td class="yes">無料</td>
+            <td class="unknown">公開情報非公表 (登録要)</td>
+            <td class="unknown">公開情報非公表 (記事閲覧は無料)</td>
+            <td class="yes">無料 (公的サービス)</td>
+            <td class="yes">無料 (公的サービス)</td>
+          </tr>
+          <tr>
+            <th scope="row">7. 無料枠</th>
+            <td class="col-us">登録不要・匿名 50 req/月/IP (JST 月初 00:00 リセット)</td>
+            <td class="yes">全機能無料</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="yes">全機能無料</td>
+            <td class="yes">全機能無料</td>
+          </tr>
+          <tr>
+            <th scope="row">8. 全文検索 (FTS5 / 日本語形態素)</th>
+            <td class="col-us"><span class="yes">あり</span> SQLite FTS5 trigram + sqlite-vec ベクトル検索</td>
+            <td class="partial">サイト内検索 (実装詳細は非公表)</td>
+            <td class="partial">サイト内検索 (実装詳細は非公表)</td>
+            <td class="partial">サイト内検索 (実装詳細は非公表)</td>
+            <td class="partial">サイト内検索 (実装詳細は非公表)</td>
+            <td class="partial">サイト内検索 (実装詳細は非公表)</td>
+          </tr>
+          <tr>
+            <th scope="row">9. 出典ライセンス明示</th>
+            <td class="col-us"><span class="yes">あり</span> e-Gov=CC-BY-4.0 / NTA invoice=PDL v1.0 / proprietary など 各行 license フィールド付き</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="partial">利用規約に準ずる (個別license注記なし)</td>
+            <td class="partial">利用規約に準ずる (個別license注記なし)</td>
+          </tr>
+          <tr>
+            <th scope="row">10. 法令本文ナビゲーション (e-Gov リンク)</th>
+            <td class="col-us"><span class="yes">あり</span> 9,484 法令ロード済 (継続中)、条文単位で program_law_refs 連結</td>
+            <td class="no">対象外 (補助金検索のみ)</td>
+            <td class="no">対象外 (補助金検索のみ)</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外 (補助金紹介中心)</td>
+            <td class="no">対象外 (補助金紹介中心)</td>
+          </tr>
+          <tr>
+            <th scope="row">11. 採択事例データ</th>
+            <td class="col-us"><span class="yes">あり</span> case_studies 2,286 件 (industry / amount / 公募回 で絞込可)</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="unknown">公開情報非公表</td>
+            <td class="partial">記事として一部紹介</td>
+            <td class="partial">事例コーナーあり (検索 API なし)</td>
+            <td class="yes">事例ナビあり (Web UI のみ)</td>
+          </tr>
+          <tr>
+            <th scope="row">12. 行政処分データ</th>
+            <td class="col-us"><span class="yes">あり</span> enforcement_cases 1,185 件 (省庁・業法・処分種別で横断検索)</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外</td>
+          </tr>
+          <tr>
+            <th scope="row">13. 法人検索 (法人番号 / gBiz)</th>
+            <td class="col-us"><span class="yes">あり</span> corporate_entity 166,969 件 (gBiz INFO 取込) + 適格請求書発行事業者 13,801 件 (PDL v1.0 delta、月次フル取込予定)</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外</td>
+            <td class="no">対象外 (国税庁 / gBiz は別サービス)</td>
+            <td class="no">対象外 (国税庁 / gBiz は別サービス)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="compare-note">凡例 — <span class="yes">緑</span>: 公開情報で確認済 / <span class="partial">茶</span>: 部分的にあり / <span class="no">灰 (公開情報なし)</span>: 公式サイトに記載なし / <span class="unknown">灰斜体 (公開情報非公表)</span>: 確認できず。「公開情報なし」「公開情報非公表」は「機能が無い」と断定するものではありません。各社 TOS 改訂や新規機能追加によって変わります。誤りがあれば <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> までご連絡ください、48 時間以内に修正します。</p>
+
+    <h2>選び方</h2>
+    <p>用途別の素直な推奨です。AutonoMath が常に最適ではありません。</p>
+
+    <div class="pick-grid">
+      <div class="pick-card">
+        <p class="pick-tag">SMB / 経営者</p>
+        <h3>まず無料の公的サイトを試す</h3>
+        <p>自社で 1〜数件の補助金を探すだけなら、まずは <strong>ミラサポ plus</strong> と <strong>J-Net21</strong> (どちらも中小機構運営・無料・公的) が出発点として十分です。</p>
+        <p class="pick-rec">公募要項 PDF を AI に読ませて要件適合判定したい / 採択事例を industry でフィルタしたい / 顧問税理士・士業に渡す前のスクリーニングをしたい場合は <strong>AutonoMath</strong> の API ¥3/req (匿名 50 req/月 無料) もご検討ください。</p>
+      </div>
+
+      <div class="pick-card">
+        <p class="pick-tag">税理士 / 行政書士 / 中小企業診断士</p>
+        <h3>顧客横断で扱うなら一次資料連結が必須</h3>
+        <p>顧問先 10 社以上を扱う士業の方は、二次情報サイトの古い金額や終了済み制度をそのまま使うと事故になります (景表法・善管注意義務リスク)。一次資料 URL と取得日時が全行に紐づく仕組みが必要です。</p>
+        <p class="pick-rec"><strong>AutonoMath</strong> なら全行に <code>source_url</code> + <code>fetched_at</code>、e-Gov 法令本文への直リンク、行政処分 1,185 件 (取引相手の業者調査) が一気通貫。MCP 経由で Claude / ChatGPT に直接渡せます。</p>
+      </div>
+
+      <div class="pick-card">
+        <p class="pick-tag">開発者 / LLM Agent 構築</p>
+        <h3>API/MCP が必須なら選択肢は実質一つ</h3>
+        <p>noukaweb、hojyokin-portal、biz.stayway、J-Net21、ミラサポ plus はいずれも公開 API・MCP サーバーを提供していません (2026-04-26 時点)。AI agent から呼ぶには HTML スクレイピング + 個別 TOS 確認が必要です。</p>
+        <p class="pick-rec"><strong>AutonoMath</strong> は REST + MCP (protocol 2025-06-18) + OpenAPI 3.1 + 72 tools が launch 時点で揃います。匿名 50 req/月で評価でき、本番は ¥3/req 完全従量、SDK 不要。</p>
+      </div>
+    </div>
+
+    <h2>更新ポリシー</h2>
+    <ul>
+      <li><strong>更新頻度</strong>: 月次レビュー。各社の公開ページを再取得し、変更があれば即反映します。</li>
+      <li><strong>追記方針</strong>: 比較対象外のサービスでも「ユーザーが Google から辿り着くもの」は段階的に追加します (例: jGrants, J-LIS, J-Startup 等)。</li>
+      <li><strong>誤り報告</strong>: 各社担当者・利用者からの修正提案を歓迎します。<a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> 直行 (代表)。出典 URL を添えていただければ 48 時間以内に判断します。</li>
+      <li><strong>誇張禁止</strong>: 当社についても「業界最大」「No.1」等の主張はしません。AutonoMath の数字は <a href="about.html#現状の数字">about.html の数字</a> および <code>autonomath.db</code> の SQL 検証で常時裏取りできます。</li>
+    </ul>
+
+    <h2>関連ページ</h2>
+    <ul>
+      <li><a href="about.html">AutonoMath とは</a> — なぜ aggregator を使わないか、誰が運営しているか</li>
+      <li><a href="pricing.html">料金</a> — 5 インターフェース (API / MCP / LINE / Widget / 士業 affiliate) 詳細</li>
+      <li><a href="facts.html">Facts</a> — 数字の出所と検証 SQL</li>
+      <li><a href="confidence.html">Confidence</a> — tier 判定ロジックと exclusion rules 181 本</li>
+      <li><a href="getting-started.html">5 分 Quickstart</a> — REST + MCP の初回呼出</li>
+    </ul>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    比較は <time datetime="2026-04-26">2026-04-26</time> 時点の各社公開情報に基づきます。各社サービス名 (noukaweb / 補助金ポータル / Stayway / J-Net21 / ミラサポ plus) は、それぞれの運営者の登録商標または商標です。
+    · 運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+    · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> / <a href="privacy.html">プライバシー</a>
+    · 修正提案 <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a>
+  </p>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の制度 API</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (公開準備中)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

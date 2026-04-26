@@ -126,7 +126,7 @@ privacy-safe な anon session cookie (`jpintel_sid`, 32-byte random, `SameSite=L
 | T3 | Hero subcopy | 具体数字は信頼を上げる | 「6,658 programs. Exclusion-aware. MCP-native.」 | 「6,658 制度 / 47 都道府県 / 日次更新」 | CTA click rate | 3,400 | 7 日 |
 | T4 | Pricing card 順序 | Free を左、Paid を右 (進行感) vs 逆 | Free → Paid | Paid → Free | CTA click → checkout | 1,200 paid | 14 日 |
 | T5 | Paid card highlight | Paid highlight で視線誘導 | highlight なし | Paid highlight | % of visits → checkout | 1,200 paid | 14 日 |
-| T6 | Free-tier limit | 300 req/day の方が first_call → paid 転換高い | 100 req/day | 300 req/day | paid / first_call | 800 first_call | 21 日 |
+| T6 | Free-tier limit | 100 req/月 の方が first_call → paid 転換高い | 50 req/月 (JST) | 100 req/月 (JST) | paid / first_call | 800 first_call | 21 日 |
 | T7 | Signup bonus credit | ¥500 (1,000 req 分) credit 付与は LTV 上げる | credit なし | ¥500 credit | LTV per paid | 1,500 paid | 28 日 |
 | T8 | Onboarding modal | modal で checklist は retention 上げる | plain redirect to dashboard | 3-step modal (key/curl/MCP) | D+7 active | 600 paid | 21 日 |
 | T9 | curl snippet 位置 | pricing 上部の方が index 下部より効く | index.html hero 下 | pricing.html hero 下 | CTA → checkout | 3,000 CTA | 14 日 |

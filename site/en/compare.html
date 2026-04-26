@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>AutonoMath vs. other Japanese subsidy search services — Bookyou Inc.</title>
+<meta name="description" content="Side-by-side comparison of AutonoMath vs. noukaweb, hojyokin-portal.jp, biz.stayway.jp, J-Net21, and ミラサポplus. 13 axes (program count, primary-source links, API/MCP, pricing, free tier, full-text search) based on each provider's public information as of 2026-04-26.">
+
+<meta property="og:title" content="AutonoMath vs. other Japanese subsidy search services">
+<meta property="og:description" content="Neutral 13-axis comparison across 6 services, based on public information as of 2026-04-26.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://autonomath.ai/en/compare.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath vs. other Japanese subsidy search services">
+<meta name="twitter:description" content="Neutral 13-axis comparison across 6 services (2026-04-26).">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/compare.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/compare.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/compare.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/compare.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "AutonoMath vs. other Japanese subsidy search services",
+  "description": "A neutral 13-axis comparison of AutonoMath, noukaweb, hojyokin-portal.jp, biz.stayway.jp, J-Net21, and ミラサポplus. Compares program count, primary-source URL coverage, API/MCP availability, pricing models, free tiers, and full-text search. Based on each provider's public information as of 2026-04-26.",
+  "url": "https://autonomath.ai/en/compare.html",
+  "datePublished": "2026-04-26",
+  "dateModified": "2026-04-26",
+  "inLanguage": "en",
+  "author": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "vatID": "T8010001213708",
+    "url": "https://autonomath.ai/en/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "vatID": "T8010001213708",
+    "url": "https://autonomath.ai/en/"
+  },
+  "mainEntityOfPage": "https://autonomath.ai/en/compare.html"
+}
+</script>
+
+<style>
+  .compare-page { padding: 48px 0 64px; }
+  .compare-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .compare-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 28px; max-width: 760px; }
+  .compare-page h2 { font-size: 22px; margin: 40px 0 12px; font-weight: 700; }
+  .compare-page h3 { font-size: 17px; margin: 22px 0 8px; font-weight: 700; }
+  .compare-page p, .compare-page ul { max-width: 760px; line-height: 1.75; }
+  .compare-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 16px 0 8px; }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 920px; background: var(--bg); }
+  .compare-table th, .compare-table td { border-bottom: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+  .compare-table thead th { background: var(--bg-alt); font-size: 12px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; position: sticky; top: 0; }
+  .compare-table tbody th { font-weight: 600; color: var(--text); white-space: nowrap; background: var(--bg-alt); width: 22%; }
+  .compare-table tbody tr:hover td, .compare-table tbody tr:hover th { background: rgba(30,58,138,0.04); }
+  .compare-table .col-us { background: rgba(30,58,138,0.03); }
+  .compare-table tbody tr:last-child th, .compare-table tbody tr:last-child td { border-bottom: 0; }
+  .compare-table .yes { color: #0f766e; font-weight: 600; }
+  .compare-table .no { color: var(--text-muted); }
+  .compare-table .partial { color: #b45309; font-weight: 600; }
+  .compare-table .unknown { color: var(--text-muted); font-style: italic; }
+  .compare-note { font-size: 13px; color: var(--text-muted); margin: 0 0 24px; max-width: 920px; }
+  .pick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 0; }
+  .pick-card { border: 1px solid var(--border); border-radius: 10px; padding: 20px; background: var(--bg); }
+  .pick-card h3 { margin: 0 0 6px; font-size: 16px; font-weight: 700; }
+  .pick-card .pick-tag { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 10px; }
+  .pick-card p { font-size: 14px; color: var(--text-muted); margin: 0 0 8px; line-height: 1.65; }
+  .pick-card .pick-rec { font-size: 13.5px; color: var(--text); margin: 8px 0 0; }
+  .pick-card .pick-rec strong { color: var(--accent); }
+  @media (max-width: 768px) {
+    .pick-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script defer src="../analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../compare.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="compare.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="compare-page">
+  <div class="container">
+
+    <h1>AutonoMath vs. other Japanese subsidy search services</h1>
+    <p class="lead">A neutral side-by-side of AutonoMath against the main consumer-discoverable Japanese subsidy / 助成金 search services, across 13 axes. Built from each provider's published information only; anything we could not verify is left as "Not publicly disclosed" rather than guessed. Reviewed monthly.</p>
+
+    <p class="compare-note">Six services compared: <strong>AutonoMath</strong> (this site) / <a href="https://noukaweb.com" rel="noopener nofollow" target="_blank">noukaweb</a> (agricultural subsidy DB) / <a href="https://hojyokin-portal.jp" rel="noopener nofollow" target="_blank">hojyokin-portal.jp</a> (補助金ポータル) / <a href="https://biz.stayway.jp" rel="noopener nofollow" target="_blank">biz.stayway.jp</a> (Stayway Biz) / <a href="https://j-net21.smrj.go.jp" rel="noopener" target="_blank">J-Net21</a> (operated by SMRJ, the SME support agency) / <a href="https://mirasapo-plus.go.jp" rel="noopener" target="_blank">ミラサポplus</a> (operated by the SME Agency, METI).</p>
+
+    <h2>Feature comparison</h2>
+
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th scope="col">Axis</th>
+            <th scope="col" class="col-us">AutonoMath</th>
+            <th scope="col">noukaweb</th>
+            <th scope="col">hojyokin-portal</th>
+            <th scope="col">biz.stayway</th>
+            <th scope="col">J-Net21</th>
+            <th scope="col">ミラサポplus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1. Program count (public-sector)</th>
+            <td class="col-us">10,790 searchable (tier S/A/B/C) + 13,578 total (incl. tier X quarantine)</td>
+            <td class="unknown">Not publicly disclosed (agriculture-focused)</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="unknown">Not publicly disclosed (article-led)</td>
+            <td class="unknown">Not publicly disclosed (active programs surfaced as feed)</td>
+            <td class="unknown">Not publicly disclosed (major + related programs)</td>
+          </tr>
+          <tr>
+            <th scope="row">2. Primary-source URL on each row (direct gov links)</th>
+            <td class="col-us"><span class="yes">Yes</span> — 99%+ of rows carry <code>source_url</code> + <code>fetched_at</code> (12 small-municipality rows lack URL because the issuing body has no CMS)</td>
+            <td class="unknown">Not publicly disclosed (needs verification)</td>
+            <td class="unknown">Not publicly disclosed (needs verification)</td>
+            <td class="unknown">Not publicly disclosed (needs verification)</td>
+            <td class="yes">Yes (links out to ministry / prefecture pages)</td>
+            <td class="yes">Yes (.go.jp official portal)</td>
+          </tr>
+          <tr>
+            <th scope="row">3. Public API</th>
+            <td class="col-us"><span class="yes">Yes</span> — REST <code>/v1/*</code> with OpenAPI 3.1</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+          </tr>
+          <tr>
+            <th scope="row">4. MCP (Model Context Protocol) server</th>
+            <td class="col-us"><span class="yes">Yes</span> — 72 tools, protocol 2025-06-18, distributed via stdio + Smithery + DXT</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+            <td class="no">None publicly listed</td>
+          </tr>
+          <tr>
+            <th scope="row">5. Designed for LLM-agent consumption</th>
+            <td class="col-us"><span class="yes">Yes (primary use case)</span> — callable directly from Claude / ChatGPT / Cursor via MCP; responses pre-normalized for AI</td>
+            <td class="no">Designed for human web browsing</td>
+            <td class="no">Designed for human web browsing</td>
+            <td class="no">Designed for human web browsing</td>
+            <td class="no">Designed for human web browsing</td>
+            <td class="no">Designed for human web browsing</td>
+          </tr>
+          <tr>
+            <th scope="row">6. Pricing model</th>
+            <td class="col-us">Fully metered ¥3/req (¥3.30 incl. tax). No tier SKUs, no seats, no minimums</td>
+            <td class="yes">Free</td>
+            <td class="unknown">Not publicly disclosed (signup required)</td>
+            <td class="unknown">Not publicly disclosed (article reading is free)</td>
+            <td class="yes">Free (public-sector service)</td>
+            <td class="yes">Free (public-sector service)</td>
+          </tr>
+          <tr>
+            <th scope="row">7. Free tier</th>
+            <td class="col-us">No signup; 50 req/month per IP (resets at JST month-start 00:00)</td>
+            <td class="yes">Fully free</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="yes">Fully free</td>
+            <td class="yes">Fully free</td>
+          </tr>
+          <tr>
+            <th scope="row">8. Full-text search (FTS5 / Japanese tokenization)</th>
+            <td class="col-us"><span class="yes">Yes</span> — SQLite FTS5 trigram + sqlite-vec semantic search</td>
+            <td class="partial">In-site search (implementation details not disclosed)</td>
+            <td class="partial">In-site search (implementation details not disclosed)</td>
+            <td class="partial">In-site search (implementation details not disclosed)</td>
+            <td class="partial">In-site search (implementation details not disclosed)</td>
+            <td class="partial">In-site search (implementation details not disclosed)</td>
+          </tr>
+          <tr>
+            <th scope="row">9. Per-row source license disclosure</th>
+            <td class="col-us"><span class="yes">Yes</span> — every row carries a license field (e-Gov=CC-BY-4.0, NTA invoice=PDL v1.0, gov_standard, proprietary, etc.)</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="partial">Governed by site Terms (no per-row license metadata)</td>
+            <td class="partial">Governed by site Terms (no per-row license metadata)</td>
+          </tr>
+          <tr>
+            <th scope="row">10. Statute-text navigation (e-Gov links)</th>
+            <td class="col-us"><span class="yes">Yes</span> — 9,484 laws ingested (continuously loading); per-article cross-link via program_law_refs</td>
+            <td class="no">Out of scope (subsidy search only)</td>
+            <td class="no">Out of scope (subsidy search only)</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope (subsidy listings only)</td>
+            <td class="no">Out of scope (subsidy listings only)</td>
+          </tr>
+          <tr>
+            <th scope="row">11. Adoption / case-study data</th>
+            <td class="col-us"><span class="yes">Yes</span> — 2,286 case_studies (filterable by industry / amount / round)</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="unknown">Not publicly disclosed</td>
+            <td class="partial">Some examples surfaced editorially</td>
+            <td class="partial">Has a 事例 (case studies) section (no API)</td>
+            <td class="yes">Has 事例ナビ (Web UI only)</td>
+          </tr>
+          <tr>
+            <th scope="row">12. Enforcement-action data</th>
+            <td class="col-us"><span class="yes">Yes</span> — 1,185 enforcement_cases (cross-searchable by ministry / law / sanction type)</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope</td>
+          </tr>
+          <tr>
+            <th scope="row">13. Corporate lookup (法人番号 / gBiz)</th>
+            <td class="col-us"><span class="yes">Yes</span> — 166,969 corporate_entity records (gBiz INFO ingest) + 13,801 qualified-invoice registrants (PDL v1.0 delta; full monthly bulk pending)</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope</td>
+            <td class="no">Out of scope (NTA / gBiz are separate services)</td>
+            <td class="no">Out of scope (NTA / gBiz are separate services)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="compare-note">Legend — <span class="yes">green</span>: confirmed from public sources / <span class="partial">amber</span>: partially present / <span class="no">grey ("None publicly listed")</span>: nothing on the official site / <span class="unknown">grey italic ("Not publicly disclosed")</span>: could not verify. "None publicly listed" / "Not publicly disclosed" does <em>not</em> assert the feature is absent — providers may add or undocument features at any time. Spot an error? Email <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> with a source URL and we'll fix it within 48 hours.</p>
+
+    <h2>Which one should you pick?</h2>
+    <p>Honest recommendations by use case. AutonoMath is not always the right answer.</p>
+
+    <div class="pick-grid">
+      <div class="pick-card">
+        <p class="pick-tag">SMB / Business owner</p>
+        <h3>Start with the free public portals</h3>
+        <p>If you only need to find one or a few subsidies for your own company, the SMRJ-operated portals — <strong>ミラサポplus</strong> and <strong>J-Net21</strong> — are free, official, and a perfectly fine starting point.</p>
+        <p class="pick-rec">If you want an LLM to read the public-call PDF and check eligibility against your business, filter case studies by industry, or pre-screen before handing things to a tax accountant, then <strong>AutonoMath</strong>'s API (¥3/req, 50 req/month free without signup) is worth a try.</p>
+      </div>
+
+      <div class="pick-card">
+        <p class="pick-tag">Tax / legal / consulting professionals</p>
+        <h3>Across many clients, primary-source linkage is mandatory</h3>
+        <p>If you serve 10+ client companies, citing stale amounts or already-ended programs from secondary aggregators creates real liability (景表法 / 善管注意義務 risk). You need primary-source URLs and fetch timestamps on every row.</p>
+        <p class="pick-rec"><strong>AutonoMath</strong> ships <code>source_url</code> + <code>fetched_at</code> on every row, direct e-Gov statute links, and 1,185 enforcement cases (vendor due diligence) — all callable from Claude / ChatGPT via MCP.</p>
+      </div>
+
+      <div class="pick-card">
+        <p class="pick-tag">Developers / LLM-agent builders</p>
+        <h3>If you need API/MCP, your shortlist is short</h3>
+        <p>noukaweb, hojyokin-portal, biz.stayway, J-Net21, and ミラサポplus do not publish open APIs or MCP servers as of 2026-04-26. Calling them from an AI agent means HTML scraping plus per-site Terms review.</p>
+        <p class="pick-rec"><strong>AutonoMath</strong> ships REST + MCP (protocol 2025-06-18) + OpenAPI 3.1 + 72 tools at launch. Evaluate with 50 free req/month, then pay strictly per request — no SDK, no seats.</p>
+      </div>
+    </div>
+
+    <h2>Update policy</h2>
+    <ul>
+      <li><strong>Cadence</strong>: monthly review. Each provider's public pages are re-fetched and changes reflected immediately.</li>
+      <li><strong>Coverage</strong>: services beyond this list will be added incrementally if they appear in user search intent (e.g., jGrants, J-LIS, J-Startup).</li>
+      <li><strong>Corrections</strong>: providers and users are welcome to submit corrections — <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> goes straight to the operator. Include a source URL and we will judge within 48 hours.</li>
+      <li><strong>No exaggeration</strong>: AutonoMath does not claim "industry's largest" or "No.1". Our numbers are verifiable on <a href="about.html#quick-facts">about.html</a> and via SQL against <code>autonomath.db</code>.</li>
+    </ul>
+
+    <h2>Related pages</h2>
+    <ul>
+      <li><a href="about.html">About AutonoMath</a> — why we don't use aggregators, who runs it</li>
+      <li><a href="pricing.html">Pricing</a> — five interfaces (API / MCP / LINE / Widget / advisor affiliate)</li>
+      <li><a href="getting-started.html">5-minute Quickstart</a> — first REST + MCP call</li>
+    </ul>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    Comparison reflects each provider's public information as of <time datetime="2026-04-26">2026-04-26</time>. Service names (noukaweb / 補助金ポータル / Stayway / J-Net21 / ミラサポplus) are registered or unregistered trademarks of their respective operators.
+    · Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) ·
+    <a href="/en/tokushoho.html">Tokushoho compliance</a> ·
+    <a href="/en/tos.html">Terms</a> ·
+    <a href="/en/privacy.html">Privacy</a> ·
+    Corrections: <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a>
+  </p>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>

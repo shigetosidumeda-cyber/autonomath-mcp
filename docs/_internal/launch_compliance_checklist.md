@@ -103,4 +103,4 @@ owner: you, target 全工程 10 min 以内。
 
 1. **商標リブランド (DOMAIN 未決定)** — `autonomath.ai` は Intel 著名商標衝突懸念 (`project_jpintel_trademark_intel_risk.md`)。AutonoMath へのリネームを採用済だが、`site/*.html`、`tls-check.yml`、mailto、meta og:url の一括置換が残存する可能性あり。2026-04-23 時点で `autonomath.ai` へ大部分移行済、grep で `autonomath.ai` 参照が残っていないか最終確認。
 2. **T-号 (適格請求書) 確認** — Bookyou 株式会社 **T8010001213708** (令和7年5月12日登録済) を使用。残タスクは Stripe Dashboard に登録 + `tokushoho.html` / `privacy.html` / invoice footer への記載反映のみ。
-3. **Pivot 後の pricing 整合性** — 2026-04-23 pivot: 3-tier (`plus/pro/business`) → pure metered (¥0.5/req 税別) へ。`site/pricing.html` / `tokushoho.html` / `docs/pricing.md` 更新済。Stripe 側は `STRIPE_PRICE_PER_REQUEST` (`lookup_key=per_request_v1`, `tax_behavior=exclusive`, metered) 1 本のみ live 登録、旧 Price は archive。
+3. **Pivot 後の pricing 整合性** — 2026-04-25 v3 改訂: 3-tier (`plus/pro/business`) → pure metered (¥3/req 税別) へ。`site/pricing.html` / `tokushoho.html` / `docs/pricing.md` 更新済。Stripe 側は `STRIPE_PRICE_PER_REQUEST` (`lookup_key=per_request_v3`, live `price_1TPw8sL3qgB3rEtw4GyG4DHi`, `tax_behavior=exclusive`, metered) 1 本のみ live 登録、旧 Price (`per_request_v1` ¥0.5 / `per_request_v2` ¥1) は archive。

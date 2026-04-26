@@ -22,7 +22,7 @@
 
 ### V3 — "Credit-only, no cash" (被招待者に ¥2,000 API credit、招待者に有料転換時 ¥2,000 credit)
 
-- 仕組み: 被招待者は Paid tier の使用量 (¥0.5/req) に充当できる ¥2,000 API credit を signup 時に獲得 (4,000 req 相当)。被招待者が Paid 転換 (カード登録 → 最初の invoice paid) した瞬間、招待者の Stripe `Customer.balance` に ¥2,000 credit を付与 (今後の請求に自動充当)。cash 払い戻し不可、譲渡不可、12 ヶ月で失効。
+- 仕組み: 被招待者は metered 使用量 (¥3/req) に充当できる ¥2,000 API credit を signup 時に獲得 (約 666 req 相当)。被招待者が Paid 転換 (カード登録 → 最初の invoice paid) した瞬間、招待者の Stripe `Customer.balance` に ¥2,000 credit を付与 (今後の請求に自動充当)。cash 払い戻し不可、譲渡不可、12 ヶ月で失効。
 - 利点: (a) 源泉徴収非該当 (現金給付でない)、(b) 資金決済法 3 条の前払式支払手段に該当させないため譲渡・払戻不可と明記、(c) ¥2,000 は 4,000 req 分 = pure metered のため「値引き」構成に自然に載る。月次使用量がそれ以下なら実質無料、それ以上なら差分のみ課金。弁護士確認前提だが、現金給付・景品給付と異なり metered 課金への credit 充当は Stripe 標準機能であり法的に清浄。
 - 欠点: インセンティブが薄く k (viral coefficient) が稼ぎにくい可能性。下記 §7 で測定して評価する。
 
@@ -39,7 +39,7 @@
 - 原則: 取引価額 ¥1,000 超は景品 20% 以下、¥1,000 以下は景品 ¥200 まで (一般懸賞)。総付景品は 20% / ¥200 ルール。
 - 本設計での整理: 被招待者向け ¥2,000 credit は「月額使用料の値引き (取引条件の一部)」と解釈し、景品類に該当させない。根拠: **消費者庁 Q&A で「値引き」「付随サービス」は景品類から除外**されている (景品類等の指定の告示の運用基準 4 項)。
 - 招待者向け ¥2,000 credit も同様に「将来の自社サービスの値引き」として扱う (現金化不可、他社サービスと交換不可を契約で明記)。
-- **残リスク: 弁護士確認必須**。pure metered (¥0.5/req) に対する ¥2,000 credit は使用量に応じて消化される「値引き」として構成する。景品類認定を避けるため、契約規約側でも「使用料金の値引き」と明記する。→ §4 の DB schema で `reward_type = 'service_credit'` と明記。
+- **残リスク: 弁護士確認必須**。pure metered (¥3/req) に対する ¥2,000 credit は使用量に応じて消化される「値引き」として構成する。景品類認定を避けるため、契約規約側でも「使用料金の値引き」と明記する。→ §4 の DB schema で `reward_type = 'service_credit'` と明記。
 - **要 弁護士 確認項目 (launch blocker):**
   1. ¥2,000 credit が「値引き」として整理可能か
   2. 招待者向け credit の「自社サービス限定」整理が値引き構成に合致するか
@@ -158,7 +158,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_referral_events_referred_unique ON referra
 
 ### `site/dashboard.html` に "招待" タブ追加
 - 表示項目: 自分のコード、発行済みシェア URL (コピーボタン)、累積 apply 数、converted 数、獲得 credit (yen)。
-- Free tier 閲覧時は「Paid (¥0.5/req) で有効化」バナーのみ。
+- Free tier 閲覧時は「Paid (¥3/req) で有効化」バナーのみ。
 
 ### `site/success.html` (checkout 成功後)
 - 「招待コードを取得」 CTA。クリックで `/v1/referrals/my-code` を叩き、share URL を pre-fill してコピー。
@@ -220,7 +220,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_referral_events_referred_unique ON referra
 ## 報告 (レポート)
 
 - **Chosen variant**: **V3 "Credit-only"**。理由は景表法/源泉徴収/資金決済法の 3 本すべてで blocker を最小化できる唯一の方式だから。
-- **Biggest legal risk**: **¥2,000 credit が景表法上の「景品」でなく「値引き」として整理できるか**。pure metered (¥0.5/req) では ¥2,000 = 4,000 req 分の「使用料金前倒し値引き」として自然に整理できる。**緩和策**: (a) 規約で `紹介特典` を一貫して「使用料金の値引き」と定義、(b) cash 化・譲渡・他社サービス交換を全て禁止、(c) launch 前に弁護士 1 回レビューで "値引き" 整理を書面で確定させる (launch blocker)。
+- **Biggest legal risk**: **¥2,000 credit が景表法上の「景品」でなく「値引き」として整理できるか**。pure metered (¥3/req) では ¥2,000 ≒ 666 req 分の「使用料金前倒し値引き」として自然に整理できる。**緩和策**: (a) 規約で `紹介特典` を一貫して「使用料金の値引き」と定義、(b) cash 化・譲渡・他社サービス交換を全て禁止、(c) launch 前に弁護士 1 回レビューで "値引き" 整理を書面で確定させる (launch blocker)。
 - **実装で事故る 3 箇所**:
   1. **Webhook 冪等性**: `invoice.paid` の Stripe retry で同一 `referral_event` に対し二重 credit を付ける事故。`reward_granted_at IS NULL` で guard + `referred_subscription_id` UNIQUE を厳守。
   2. **Self-referral の抜け道**: Stripe Customer を 2 つ作って同一カードで決済する手口。email hash + payment method fingerprint の両方で判定しないと一方だけでは弾けない。

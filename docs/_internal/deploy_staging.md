@@ -11,7 +11,7 @@ ordered checklist.
 - [ ] `flyctl version` — recent CLI.
 - [ ] Secrets staged locally (do NOT commit): `STRIPE_SECRET_KEY` (test),
       `STRIPE_WEBHOOK_SECRET` (staging endpoint), `STRIPE_PRICE_PER_REQUEST`
-      (the single metered price id, ¥0.5/req tax-exclusive), `STRIPE_METER_ID`,
+      (the single metered price id, ¥3/req tax-exclusive, lookup_key=`per_request_v3`), `STRIPE_METER_ID`,
       `STRIPE_BILLING_PORTAL_CONFIG_ID`, `API_KEY_SALT`
       (from `openssl rand -hex 32`), `SENTRY_DSN`, `JPINTEL_CORS_ORIGINS`.
 - [ ] Stripe dashboard: create a STAGING webhook endpoint pointing at
@@ -91,7 +91,7 @@ migration; do NOT attempt to hand-edit `schema_migrations`.
 - [ ] `GET /v1/programs/{id}` with a real id — 200, fields populated.
 - [ ] `GET /v1/exclusions` — 200.
 - [ ] Auth: request with no key — 401; with bad key — 401; with valid key — 200.
-- [ ] Rate limit: burst >100 req/day on a free key — 429 after quota exhausts.
+- [ ] Rate limit: anonymous tier 50 req/月 (JST 月初 reset) — 429 after quota exhausts.
 - [ ] `POST /v1/billing/webhook` with bad signature — 400.
 - [ ] Security headers present: `Strict-Transport-Security`,
       `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`.

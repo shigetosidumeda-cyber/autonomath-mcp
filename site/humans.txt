@@ -1,0 +1,19 @@
+/* TEAM */
+Founder & Engineer: 梅田茂利 (Umeda Shigetoshi)
+Contact: info@bookyou.net
+From: 東京都文京区, Japan
+
+/* THANKS */
+e-Gov / 国税庁 / 各省庁 / 47 都道府県 (一次資料の公開)
+Anthropic Claude Code (development pair)
+
+/* SITE */
+Last update: 2026-04-26
+Standards: HTML5 / CSS3 / JSON-LD / RFC 9116 (security.txt) / llmstxt.org
+Components: FastAPI / FastMCP / SQLite FTS5 / sqlite-vec
+Software: Claude Code (Opus 4.7) / VS Code / mkdocs Material
+
+/* OPERATOR */
+Bookyou株式会社 (法人番号 T8010001213708)
+東京都文京区小日向2-22-1
+登録 令和7年5月12日

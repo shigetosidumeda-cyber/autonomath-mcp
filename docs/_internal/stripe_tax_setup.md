@@ -11,7 +11,7 @@ compliance ゲート: [`docs/_internal/launch_compliance_checklist.md`](launch_c
 
 ## 0. 結論 (TL;DR)
 
-- 2026-04-23 pivot: pure metered 1 Price (`¥0.5 / req 税別`, `tax_behavior=exclusive`, `lookup_key=per_request_v1`) のみ。旧 3-tier (`plus/pro/business`) は廃止。
+- 2026-04-25 v3 改訂: pure metered 1 Price (`¥3 / req 税別`, `tax_behavior=exclusive`, `lookup_key=per_request_v3`, live `price_1TPw8sL3qgB3rEtw4GyG4DHi`) のみ。旧 3-tier (`plus/pro/business`) + legacy `per_request_v1` (¥0.5) / `per_request_v2` (¥1) は archive 済。
 - 税別表示 (外税) を採用。消費税法 63 条 総額表示義務は **消費者向け B2C** が対象。AutonoMath は開発者向け API (B2B) のため税別+自動請求で OK。landing の pricing 表示には "税別" を明記。
 - Stripe Tax を有効化しないと `automatic_tax` が動かない → コードは常に `automatic_tax={"enabled": True}` を送るので、本番切替時に必ず Dashboard で Stripe Tax を Activate する。
 - T-号 (適格請求書発行事業者登録番号) は **国税庁に 2 週間リード**。既に T8010001213708 (Bookyou 株式会社、令和7年5月12日登録) が登録済 → Stripe Dashboard に反映するだけ。
@@ -130,7 +130,7 @@ Stripe Dashboard のデフォルトレポートは **USD 換算** (Stripe 社の
 **env 手順** (Fly.io live):
 ```
 flyctl secrets set \
-  STRIPE_PRICE_PER_REQUEST=price_1TPAIUL3qgB3rEtwky3Bqi0X \
+  STRIPE_PRICE_PER_REQUEST=price_1TPw8sL3qgB3rEtw4GyG4DHi \
   STRIPE_API_VERSION=2024-11-20.acacia \
   STRIPE_BILLING_PORTAL_CONFIG_ID=bpc_1TPAI0L3qgB3rEtwDm85NMUQ \
   STRIPE_WEBHOOK_SECRET=whsec_REDACTED \

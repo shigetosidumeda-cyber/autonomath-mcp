@@ -184,12 +184,12 @@ W8 exit gate で (a)(b)(c) の **2 つ以上が red** なら Fork B へ切替 (1
 | F4. 農業 SaaS 連携 (agri-note / farmnote / kubota KSAS との API bridge) | 40 | OEM ではなく、彼らの内製 RAG から叩ける agri 特化 endpoint |
 | F5. 農業向け長文 20 本 (作物 × 制度) | 60 | programmatic 禁止、深い記事 5K 字 × 20 |
 | F6. docs rebrand (AGRI-FIRST タイトル) | 20 | landing + pricing に「農業 AI 特化」を明示 |
-| F7. 価格再設計 | 10 | 汎用 ¥0.5/req → agri 特化 ¥1.0/req に単価倍増 (代替少、niche premium) |
+| F7. 価格再設計 | 10 | 現行 ¥3/req は単一 (税別、`per_request_v3`)。tier/agri 単価倍増は廃止 (商業モデル「単一 metered」原則) |
 | F8. 予備 | 30 | incident / review |
 
 ### Fork B の勝ち筋
 - 農業 niche は競合ゼロ (Jグランツ MCP は汎用、agri-SaaS は制度 API 無)。
-- 客単価は上がり (agri 特化 ¥1.0/req で ¥50K-200K/月のヘビーユーザー想定)、ターゲット client は agri-tech startup 50 社 + 農協系 IT 部隊。
+- 客単価は上がり (¥3/req 統一で月 30K-100K req のヘビーユーザー = ¥90K-300K/月想定)、ターゲット client は agri-tech startup 50 社 + 農協系 IT 部隊。
 - Y1 ARR ¥1,000 万 の中央値は同じ、**下限 ¥100 万の riskfloor を上げられる** (agri is proven niche)。
 
 ### Fork B の敗け条件

@@ -15,8 +15,8 @@ user quote:
 
 | # | セグメント | 人数 | recruit チャネル | なぜ聞くか |
 |---|-----------|------|-----------------|-----------|
-| A | Indie AI 開発者 (日本 SMB 向けツール製作) | 10 | Zenn / Qiita の MCP/LLM 記事コメント、X #AI #MCP #Claude hashtag、Smithery/MCP registry 掲載者の DM | Paid ¥0.5/req の主購買層 (月 1K-10K req 帯)。払う動機と抵抗を最優先で取る |
-| B | Mid-sized SaaS engineer (日本 SaaS で社内 AI 機能を作る側) | 10 | Smart HR / freee / SmartRound の X mutual follow、Japan SaaS Slack、勉強会 LT 登壇者 | Paid ¥0.5/req のヘビー帯 (月 10K-100K req)。稟議プロセスと internal buy-in の阻害要因を取る |
+| A | Indie AI 開発者 (日本 SMB 向けツール製作) | 10 | Zenn / Qiita の MCP/LLM 記事コメント、X #AI #MCP #Claude hashtag、Smithery/MCP registry 掲載者の DM | Paid ¥3/req の主購買層 (月 1K-10K req 帯)。払う動機と抵抗を最優先で取る |
+| B | Mid-sized SaaS engineer (日本 SaaS で社内 AI 機能を作る側) | 10 | Smart HR / freee / SmartRound の X mutual follow、Japan SaaS Slack、勉強会 LT 登壇者 | Paid ¥3/req のヘビー帯 (月 10K-100K req)。稟議プロセスと internal buy-in の阻害要因を取る |
 | C | Enterprise 内製 RAG owner | 5 | LinkedIn DM (タイトル: AI Engineer / Platform Lead / RAG Lead)、X DM。**謝礼の代わりに 30 min の無料コンサル** | Paid ヘビー帯 (月 100K req+) の条件を確認。自動化方針のため個別 SLA / 契約 / on-prem は提供しないと明示し、それで不足な要求を聞く |
 | D | 「隣接だが非ターゲット」 (補助金コンサル、税理士 SaaS、行政書士ツール) | 5 | 業界団体 / X 検索 | 「買わない」ことを確認。営業電話されないか、ターゲット外し判断を裏取り |
 | **合計** | | **30** | | |
@@ -78,7 +78,7 @@ Mom-Test 鉄則: **未来形を聞かない、過去と現在だけ聞く**。
 ### 25-30 min — Switch / Pay / Recommend
 
 - 「今の調べ方を捨てて、これに置き換わるとしたら、何が揃っていたら置き換えますか」
-- 「従量 ¥0.5/req、月 1 万 req で ¥5,000、10 万 req で ¥5 万。自分のカードで払いますか、会社の経費ですか」(払う主体を特定)
+- 「従量 ¥3/req、月 1 万 req で ¥30,000、10 万 req で ¥30 万。自分のカードで払いますか、会社の経費ですか」(払う主体を特定)
 - 「会社経費なら、稟議を通すのに必要な書類 / SLA / 契約条項はなんですか」
 - 「誰にこれを紹介したくなりますか。名前出せる人 1-2 名」(紹介先が 0 なら fit 低い)
 
