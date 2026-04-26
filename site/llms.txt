@@ -1,0 +1,64 @@
+# AutonoMath
+
+> 日本の公的制度 (補助金・融資・税制・認定 + 採択事例 + 行政処分 + 法令 + 判例 + 入札 + 適格請求書) を横断検索する REST + MCP API。10,790 active programs (tier S/A/B/C 検索可、tier X = 1,923 quarantine 別) + 2,286 採択事例 + 108 融資 (担保・個人保証人・第三者保証人 三軸) + 1,185 行政処分 + 9,484 laws + 35 tax_rulesets + 2,065 court_decisions + 362 bids + 13,801 invoice_registrants + 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases、181 排他/前提ルール、99%+ rows に primary-source URL + fetched_at。MCP 72 tools (protocol 2025-06-18)、¥3/req metered (税込 ¥3.30) 完全従量、匿名 50 req/月 per IP 無料 (JST 月初 00:00 リセット)。
+
+This file follows the emerging llms.txt convention (https://llmstxt.org/) —
+a curated, plaintext index of canonical documents for LLM indexers.
+Canonical domain: https://autonomath.ai (Bookyou株式会社 / 法人番号 T8010001213708 / info@bookyou.net).
+English sibling: https://autonomath.ai/llms.en.txt
+Concatenated full docs: https://autonomath.ai/llms-full.txt
+
+## Operator
+
+Bookyou株式会社 (法人番号 T8010001213708) — 代表 梅田茂利 — info@bookyou.net
+
+## Docs
+
+- [Overview / 概要](https://autonomath.ai/docs/): what AutonoMath is, who it is for, position vs Jグランツ
+- [Getting started / 5 分クイックスタート](https://autonomath.ai/docs/getting-started/): install, API key, curl/Python/Node examples, Claude Desktop MCP config
+- [API reference (REST)](https://autonomath.ai/docs/api-reference/): all REST endpoints, parameters, response shapes
+- [MCP tools (72)](https://autonomath.ai/docs/mcp-tools/): 39 jpintel + 33 autonomath stdio tools, 2025-06-18 protocol
+- [Examples (Python + curl)](https://autonomath.ai/docs/examples/): copy-paste recipes
+- [Error handling](https://autonomath.ai/docs/error_handling/): error codes, retry semantics
+- [Exclusion rules](https://autonomath.ai/docs/exclusions/): how subsidy compatibility / exclusivity is modeled
+- [FAQ](https://autonomath.ai/docs/faq/): rate limits, data update cadence, SLA, licensing
+- [Pricing](https://autonomath.ai/docs/pricing/): ¥3/req 税別 (税込 ¥3.30) 完全従量、匿名 50 req/月 per IP 無料
+- [SLA](https://autonomath.ai/docs/sla/): availability target, credit policy, exclusions
+
+## Examples
+
+- [Examples (Python + curl)](https://autonomath.ai/docs/examples/)
+- [Try the prescreen widget](https://autonomath.ai/index.html#try)
+
+## MCP server
+
+- PyPI package: `autonomath-mcp` — `pip install autonomath-mcp`
+- Console script: `autonomath-mcp` (FastMCP stdio, 72 tools at default gates)
+- Repo: https://github.com/Bookyou/autonomath-mcp
+- Source dir is legacy `src/jpintel_mcp/` — do not rename (PyPI distribution name is `autonomath-mcp`, import path stays `jpintel_mcp`)
+
+## Data licenses
+
+- e-Gov 法令データ: CC-BY 4.0 (cc_by_4.0)
+- NTA 適格請求書発行事業者 bulk: PDL v1.0 (pdl_v1.0, public domain license, redistribution OK with attribution)
+- gBizINFO corporate metadata: 政府標準利用規約 (gov_standard)
+- Public-domain rows (gazette etc): public_domain
+- JST adoption records: proprietary (collected under data-collection phase TOS-allowance)
+- Per-row license is exposed via `am_source.license` (97,270 / 97,272 = 99.997% filled)
+- Full terms: https://autonomath.ai/tos.html
+
+## Structured data
+
+- [Sitemap index](https://autonomath.ai/sitemap-index.xml): all crawlable URLs
+- [Docs sitemap](https://autonomath.ai/docs/sitemap.xml): per-page URLs inside the docs tree
+- [Programs sitemap](https://autonomath.ai/sitemap-programs.xml): per-program SEO pages
+- Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on each `/programs/{id}.html`
+
+## Optional
+
+- [About / 会社情報](https://autonomath.ai/about.html)
+- [Glossary / 用語集](https://autonomath.ai/glossary.html)
+- [Pricing page (HTML)](https://autonomath.ai/pricing.html)
+- [Terms of service / 利用規約](https://autonomath.ai/tos.html)
+- [Privacy policy / プライバシー](https://autonomath.ai/privacy.html)
+- [Security disclosure (RFC 9116)](https://autonomath.ai/.well-known/security.txt)

@@ -1,0 +1,133 @@
+{#-
+  JSON-LD injected into the docs index <head> for AI crawler + Google
+  structured data discovery. Types used:
+    - SoftwareApplication  (the autonomath-mcp API itself)
+    - WebSite              (the docs root)
+    - Dataset              (the underlying 10,790-program corpus)
+    - WebAPI               (the REST + MCP API surface)
+  Source strategy: see docs/_internal/json_ld_strategy.md §4 for the
+  per-program GovernmentService / LoanOrCredit approach (generated
+  separately at site/structured/*.jsonld, not inlined here).
+
+  DOMAIN placeholder: the `{% raw %}...{% endraw %}` block emits the
+  literal string `{{DOMAIN}}` so the deploy pipeline (or `envsubst`) can
+  do the one-shot substitution post-rebrand.
+
+  Count invariants (must match landing page + pricing + server.json):
+    - programs           10,790  (searchable; full table incl. tier X = 13,578)
+    - case_studies       2,286
+    - loan_programs      108  (三軸分解)
+    - enforcement_cases  1,185
+    - exclusion_rules    181  (125 exclude + 17 prerequisite + 15 absolute + 24 other)
+    - MCP tools          72 at default gates  (39 jpintel [15 基本 + 7 one-shot + 拡張: 法令 [9,484 rows, 継続ロード中] / 税務ruleset [35 rows] / 判例 [2,065 rows] / 入札 [362 rows] / 適格事業者 [PDL v1.0, 13,801 rows delta] + cross-dataset glue] + 33 autonomath: V1 + V4 universal [annotations / validate / provenance entity / provenance fact] + Phase A absorption + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine [entity-fact DB: 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases]; AUTONOMATH_36_KYOTEI_ENABLED 有効化で 74)
+    - price/req          ¥3 税別 (¥3.30 税込)
+-#}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app",
+      "name": "AutonoMath",
+      "applicationCategory": "DeveloperApplication",
+      "applicationSubCategory": "API",
+      "operatingSystem": "any",
+      "description": "日本の制度データ (補助金・融資・税制・認定制度) 10,790 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を横断検索できる REST + MCP API。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出し可能。",
+      "inLanguage": "ja",
+      "offers": [
+        {"@type": "Offer", "name": "Free",           "price": "0", "priceCurrency": "JPY", "description": "50 req/月 per IP, 登録不要 (JST 月初リセット)"},
+        {"@type": "Offer", "name": "Paid (metered)", "price": "3", "priceCurrency": "JPY", "description": "¥3 / request 税別 (税込 ¥3.30, Stripe 従量)",
+         "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "request", "valueAddedTaxIncluded": false}}
+      ],
+      "featureList": [
+        "10,790 programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 を横断検索",
+        "181 排他・前提ルール (exclude 125 + prerequisite 17 + absolute 15 + その他 24)",
+        "MCP ネイティブ (72 tools at default gates, protocol 2025-06-18 — 39 jpintel + 33 autonomath)",
+        "Tier S/A/B/C/X 品質ラベル",
+        "融資は 担保 / 個人保証人 / 第三者保証人 の三軸分解",
+        "全件 source_url + fetched_at 付与"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#site",
+      "name": "AutonoMath docs",
+      "url": "{% raw %}{{DOMAIN}}{% endraw %}/docs/",
+      "inLanguage": "ja",
+      "publisher": {"@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "{% raw %}{{DOMAIN}}{% endraw %}/docs/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#dataset",
+      "name": "AutonoMath — 日本の制度データセット",
+      "alternateName": "AutonoMath Japanese Public-Program Dataset",
+      "description": "日本の公的制度 (補助金・助成金・融資・税制優遇・認定) 10,790 件 + 採択事例 2,286 + 融資 108 (担保・個人保証人・第三者保証人の三軸分解) + 行政処分 1,185 件 の正規化データセット。経済産業省・農林水産省・中小企業庁・日本政策金融公庫・都道府県・市町村の一次資料から収集、aggregator 除外。全件 source_url + fetched_at を付与、181 本の排他・前提ルールつき。法令データ (e-Gov CC-BY) を継続的にロード中。データセットは継続的に拡張中。",
+      "url": "{% raw %}{{DOMAIN}}{% endraw %}/docs/",
+      "sameAs": ["{% raw %}{{DOMAIN}}{% endraw %}/", "https://pypi.org/project/autonomath-mcp/"],
+      "keywords": [
+        "補助金", "助成金", "融資", "税制優遇", "認定制度", "行政処分", "採択事例",
+        "subsidy", "grant", "loan", "tax incentive", "certification", "Japan", "public programs",
+        "MCP", "Model Context Protocol", "REST API", "AI agent"
+      ],
+      "creator": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "url": "{% raw %}{{DOMAIN}}{% endraw %}/",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net"
+      },
+      "publisher": {"@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app"},
+      "license": "{% raw %}{{DOMAIN}}{% endraw %}/tos.html",
+      "isAccessibleForFree": true,
+      "conditionsOfAccess": "匿名 50 req/月 per IP 無料 (JST 月初リセット)、それ以上は ¥3/req 税別 (税込 ¥3.30) 従量課金。",
+      "inLanguage": "ja",
+      "spatialCoverage": {"@type": "Country", "name": "日本"},
+      "variableMeasured": [
+        {"@type": "PropertyValue", "name": "制度件数 (programs, searchable)", "value": 10790},
+        {"@type": "PropertyValue", "name": "採択事例件数 (case_studies)", "value": 2286},
+        {"@type": "PropertyValue", "name": "融資プログラム件数 (loan_programs)", "value": 108},
+        {"@type": "PropertyValue", "name": "行政処分件数 (enforcement_cases)", "value": 1185},
+        {"@type": "PropertyValue", "name": "排他・前提ルール件数 (exclusion_rules)", "value": 181},
+        {"@type": "PropertyValue", "name": "法令件数 (laws, e-Gov CC-BY, 継続ロード中)", "value": 9484},
+        {"@type": "PropertyValue", "name": "一次資料 URL 付与率", "value": "99%以上 (12件は自治体 CMS 不在)"}
+      ],
+      "distribution": [
+        {
+          "@type": "DataDownload",
+          "name": "REST API (OpenAPI 3.1)",
+          "contentUrl": "https://api.autonomath.ai/v1/openapi.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "MCP server (stdio, 72 tools at default gates, protocol 2025-06-18)",
+          "contentUrl": "https://pypi.org/project/autonomath-mcp/",
+          "encodingFormat": "application/x-python"
+        }
+      ]
+    },
+    {
+      "@type": "WebAPI",
+      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#webapi",
+      "name": "AutonoMath REST + MCP API",
+      "description": "日本の公的制度データを AI エージェント / 開発者向けに 1 API で提供。72 MCP tools at default gates — 39 jpintel (15 基本: search / get / batch × programs + case_studies + loan_programs + enforcement_cases, exclusions, meta + 7 one-shot: smb_starter_pack / subsidy_combo_finder / deadline_calendar / dd_profile_am / similar_cases / regulatory_prep_pack / subsidy_roadmap_3yr + 拡張: 法令 [9,484 行・継続ロード中] / 税務ruleset [35 行 live] / 適格事業者 [PDL v1.0, 13,801 行 delta] / 判例 [2,065 行 live] / 入札 [362 行 live] + cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check) + 33 autonomath (V1: entity-fact DB across tax measures / certifications / laws / authorities / loans / mutual insurance / list_tax_sunset_alerts + V4 universal 4: annotations / validate / provenance entity / provenance fact + Phase A absorption + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine + deep_health_am — 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases) + 多数の REST endpoints。MCP protocol 2025-06-18, stdio transport。",
+      "documentation": "{% raw %}{{DOMAIN}}{% endraw %}/docs/",
+      "termsOfService": "{% raw %}{{DOMAIN}}{% endraw %}/tos.html",
+      "provider": {"@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app"},
+      "endpointURL": "https://api.autonomath.ai/v1/",
+      "endpointDescription": "https://api.autonomath.ai/v1/openapi.json",
+      "inLanguage": "ja",
+      "isAccessibleForFree": true
+    }
+  ]
+}
+</script>

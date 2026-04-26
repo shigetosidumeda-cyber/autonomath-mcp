@@ -1,0 +1,861 @@
+[
+  {
+    "id": "combo:agri-max",
+    "label": "🌾 農業フルマックス(認定農業者 基盤+スマート農業+経営基盤強化)",
+    "sector": "農業",
+    "description": "認定農業者制度を入口に、スマート農業実証・産地パワーアップ・6次産業化・経営基盤強化準備金・スーパーL資金・環境保全型直接支払・次世代人材投資資金を一体で活用する、中規模家族経営〜法人経営体向けの最強スタック。",
+    "seidoIds": [
+      "agri-ninnei",
+      "agri-smart",
+      "agri-power-up",
+      "agri-6ji",
+      "agri-kiban-jun",
+      "agri-sl",
+      "agri-kankyou",
+      "agri-jisedai"
+    ],
+    "stacking_order": [
+      {
+        "step": 1,
+        "seidoId": "agri-ninnei",
+        "note": "最優先で取得(すべての入口)。市町村に5年計画を提出し認定。認定率は形式審査で90%超、所要約3ヶ月。"
+      },
+      {
+        "step": 2,
+        "seidoId": "agri-6ji",
+        "note": "6次産業化する場合は早期に総合化事業計画を認定取得(所要約6ヶ月)。後段の補助金の加点になる。"
+      },
+      {
+        "step": 3,
+        "seidoId": "agri-smart",
+        "note": "スマート農業実証はコンソーシアム組成が必須。採択は年1-2回のみ。産地パワーアップ事業と経費重複しないよう経費区分を明確にする。"
+      },
+      {
+        "step": 4,
+        "seidoId": "agri-power-up",
+        "note": "産地単位での収益力強化計画と一体申請。スマート実証と経費重複不可、機械・施設は本事業で別経費として申請する。"
+      },
+      {
+        "step": 5,
+        "seidoId": "agri-sl",
+        "note": "スーパーL資金は補助金の自己負担つなぎ+計画全体の事業資金として活用。無利子枠は認定計画に沿う範囲で。"
+      },
+      {
+        "step": 6,
+        "seidoId": "agri-kiban-jun",
+        "note": "認定農業者の決算時に交付金を準備金として積立。5年以内に機械取得で取崩す計画をセット。青色申告必須。"
+      },
+      {
+        "step": 7,
+        "seidoId": "agri-kankyou",
+        "note": "化学肥料・農薬5割低減+カバークロップ等で毎年直接支払を受取。取組記録の保管要。"
+      },
+      {
+        "step": 8,
+        "seidoId": "agri-jisedai",
+        "note": "後継者が49歳以下で独立新規就農する場合のみ。家族経営の場合は対象外なので、法人化して後継者を独立事業として申請するのが定石。"
+      }
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 1500,
+      "max": 5000,
+      "note": "モデルケース(22ha複合経営):スマート実証2,500万+産地パワーアップ1,500万+基盤強化準備金300万+環境直払80万+次世代人材450万=合計4,830万円(うち返済不要分約4,500万)。スーパーL資金は低利融資で別途レバレッジ。"
+    },
+    "critical_prerequisites": [
+      "認定農業者の認定(全ての前提)",
+      "青色申告の届出(経営基盤強化準備金の条件)",
+      "家族経営協定の締結(法人化していない場合は家族労働の配分明確化)"
+    ],
+    "compatibility_notes": [
+      "スマート農業実証と産地パワーアップ事業は経費重複不可。機械は一方で申請し、他方はソフト・データ解析で申請する等の棲分けが必要。",
+      "経営基盤強化準備金は認定計画に取崩予定の機械・施設を明記する必要あり。未記載資産での取崩しは不可。",
+      "次世代人材投資資金は独立新規就農者のみ対象(家族経営の後継者は対象外)。法人化+従業員化で適用可能に。",
+      "スーパーL資金と農業近代化資金の併用は可能だが、総額上限は経営規模により制限あり。"
+    ],
+    "policy_tags": [
+      "食料・農業・農村基本計画",
+      "みどりの食料システム戦略",
+      "地方創生",
+      "スマート農業推進"
+    ],
+    "target_size": "medium"
+  },
+  {
+    "id": "combo:care-max",
+    "label": "🏥 介護・医療フルマックス(三層加算+介護ロボ+ICT+雇用助成)",
+    "sector": "介護・医療",
+    "description": "介護職員処遇改善加算(新加算I)+特定処遇改善+ベースアップ支援の三層加算に、介護ロボット導入・ICT導入支援・地域医療介護総合確保基金・キャリアアップ助成金・人材開発支援助成金・業務改善助成金・65歳超雇用推進助成金・両立支援等助成金を重ねる介護事業者向け最強スタック。",
+    "seidoIds": [
+      "care-shoguu",
+      "care-tokutei",
+      "care-baseup",
+      "care-robot",
+      "care-ict",
+      "care-kikin",
+      "career-up",
+      "jinzai-kaihatsu",
+      "gyomu-kaizen",
+      "65sai-koyou",
+      "ryouritsu-shien",
+      "chukyosai"
+    ],
+    "stacking_order": [
+      {
+        "step": 1,
+        "seidoId": "care-shoguu",
+        "note": "入口の加算。新加算Iを取得するにはキャリアパス要件I-IIIと職場環境等要件(6カテゴリから複数)を満たす必要。毎年2月末が計画書提出期限。"
+      },
+      {
+        "step": 2,
+        "seidoId": "care-tokutei",
+        "note": "特定処遇改善加算は処遇改善加算I取得が前提。勤続10年以上の介護福祉士を優先配分するルールを設計。"
+      },
+      {
+        "step": 3,
+        "seidoId": "care-baseup",
+        "note": "ベースアップ等支援加算は三層目として併用可能。職員月額9,000円相当のベースアップを実現。"
+      },
+      {
+        "step": 4,
+        "seidoId": "care-robot",
+        "note": "介護ロボット導入支援は1機器30-100万円。職場環境等要件の『生産性向上』項目と連動させると加算維持にも寄与する。"
+      },
+      {
+        "step": 5,
+        "seidoId": "care-ict",
+        "note": "ICT導入支援は記録ソフト・タブレット・インカム等。LIFEとの連動を示せると採択率UP。"
+      },
+      {
+        "step": 6,
+        "seidoId": "care-kikin",
+        "note": "地域医療介護総合確保基金は都道府県ごとのメニュー。勤務環境改善事業・代替職員確保事業・研修事業等を選択。"
+      },
+      {
+        "step": 7,
+        "seidoId": "career-up",
+        "note": "非正規職員の正社員化で1人57万円。介護人材確保の王道。社労士経由で確実に取れる。"
+      },
+      {
+        "step": 8,
+        "seidoId": "jinzai-kaihatsu",
+        "note": "介護福祉士実務者研修・国家試験対策等の研修費+賃金助成。職員の資格取得を支援しながら加算要件も満たす二重効果。"
+      },
+      {
+        "step": 9,
+        "seidoId": "gyomu-kaizen",
+        "note": "最低賃金引上げ+設備投資を一体申請。介護助手等の時給1,113→1,200円等。"
+      },
+      {
+        "step": 10,
+        "seidoId": "65sai-koyou",
+        "note": "定年延長・65歳超継続雇用制度の整備で上限160万円。高齢介護職員の戦力化に必須。"
+      },
+      {
+        "step": 11,
+        "seidoId": "ryouritsu-shien",
+        "note": "育児休業・介護休業等の両立支援制度整備で28.5万円〜。女性職員が多い介護業界で取りやすい。"
+      },
+      {
+        "step": 12,
+        "seidoId": "chukyosai",
+        "note": "中退共で職員退職金を積立しつつ全額損金算入。新規加入時は国が掛金の1/2を1年間助成。"
+      }
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 2500,
+      "max": 8000,
+      "note": "モデルケース(有料老人ホーム50床・職員34名):処遇改善新加算I 1,872万+介護ロボ導入208万+ICT導入130万+キャリアアップ3名分171万+業務改善助成金300万+人材開発100万+基金事業200万=合計約2,980万円(ほぼ全額返済不要)。加算は毎年継続で5年累計1億5千万円規模。"
+    },
+    "critical_prerequisites": [
+      "介護保険指定事業所としての指定(入口)",
+      "キャリアパス規程の整備(加算要件I)",
+      "就業規則の正社員転換規定(キャリアアップ助成金要件)",
+      "賃金台帳・出勤簿の完全整備"
+    ],
+    "compatibility_notes": [
+      "三層加算(処遇改善・特定処遇・ベースアップ)は全て賃金改善への充当義務あり。見込総額の100%以上を配分する設計が必須。",
+      "介護ロボット導入支援とICT導入支援は同一機器の重複不可。ただし同一事業所の異なる機器であれば両方申請可。",
+      "キャリアアップ助成金の正社員化コースは処遇改善加算の配分ルールと整合させる必要(正社員化後の賃金改善を二重計上しないこと)。",
+      "業務改善助成金の賃金引上げと、加算の賃金改善は重複可能だが、同一原資としないよう実績報告で区別。"
+    ],
+    "policy_tags": [
+      "全世代型社会保障",
+      "介護人材確保対策",
+      "地域包括ケア",
+      "ICT・ロボット活用"
+    ],
+    "target_size": "any"
+  },
+  {
+    "id": "combo:info-max",
+    "label": "💻 情報サービス業フルマックス(強化税制+ものづくり+賃上げ+IT導入)",
+    "sector": "情報サービス業",
+    "description": "経営力向上計画を前提に、経営強化税制C類型・ものづくり補助金・IT導入補助金・賃上げ促進税制・研究開発税制・DX投資促進税制・キャリアアップ助成金を重ねる、中小SaaSベンダー・受託開発業向けスタック。",
+    "seidoIds": [
+      "keiei-koujou-keikaku",
+      "kyoka-zeisei",
+      "monozukuri",
+      "it-dounyuu",
+      "chinage-sokushin",
+      "kenkyu-kaihatsu-zeisei",
+      "dx-toushi-zeisei",
+      "career-up",
+      "safety-kyosai",
+      "small-biz-kyosai"
+    ],
+    "stacking_order": [
+      {
+        "step": 1,
+        "seidoId": "keiei-koujou-keikaku",
+        "note": "全ての前提。C類型で認定取得。"
+      },
+      {
+        "step": 2,
+        "seidoId": "kyoka-zeisei",
+        "note": "計画認定後に設備取得・即時償却選択。"
+      },
+      {
+        "step": 3,
+        "seidoId": "monozukuri",
+        "note": "デジタル枠・成長加速枠等で大型設備投資を補助。"
+      },
+      {
+        "step": 4,
+        "seidoId": "it-dounyuu",
+        "note": "SaaS導入・セキュリティ対策で上限450万。"
+      },
+      {
+        "step": 5,
+        "seidoId": "chinage-sokushin",
+        "note": "給与総額1.5%UP+教育訓練費10%UPで最大45%控除。"
+      },
+      {
+        "step": 6,
+        "seidoId": "kenkyu-kaihatsu-zeisei",
+        "note": "試験研究費に該当する開発は別途6-17%控除。"
+      },
+      {
+        "step": 7,
+        "seidoId": "dx-toushi-zeisei",
+        "note": "DX認定取得で税額控除+特別償却。"
+      },
+      {
+        "step": 8,
+        "seidoId": "career-up",
+        "note": "非正規エンジニアの正社員化で1人57万。"
+      },
+      {
+        "step": 9,
+        "seidoId": "safety-kyosai",
+        "note": "月20万×年240万を損金で積立。"
+      },
+      {
+        "step": 10,
+        "seidoId": "small-biz-kyosai",
+        "note": "役員個人で年84万所得控除。"
+      }
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 800,
+      "max": 3000,
+      "note": "モデルケース(従業員18名・売上2.8億円):ものづくり補助800万+IT導入200万+強化税制即時償却1,280万+賃上げ促進税制160万+各種共済積立+個人控除=初年度キャッシュ/税軽減合計約2,500万円"
+    },
+    "critical_prerequisites": [
+      "経営力向上計画の認定",
+      "青色申告",
+      "gBizIDプライム",
+      "認定支援機関との契約"
+    ],
+    "compatibility_notes": [
+      "ものづくり補助金と経営強化税制は同一設備で両方活用可。補助金は取得価額を減額する『圧縮記帳』扱いにする選択も可能。",
+      "賃上げ促進税制と研究開発税制は併用可。控除上限(法人税額の25%)の枠配分に注意。",
+      "DX投資促進税制は専用の『事業適応計画』認定が別途必要。"
+    ],
+    "policy_tags": [
+      "DX推進",
+      "2025年の崖対策",
+      "賃上げ"
+    ],
+    "target_size": "small"
+  },
+  {
+    "id": "combo:food-max",
+    "label": "🍜 飲食業フルマックス(省力化+賃上げ+助成金)",
+    "sector": "飲食業",
+    "description": "省力化投資補助金+業務改善助成金+キャリアアップ助成金+賃上げ促進税制+IT導入補助金+持続化補助金を組み合わせる飲食チェーン向けスタック。",
+    "seidoIds": [
+      "shouryoku-toushi",
+      "gyomu-kaizen",
+      "career-up",
+      "chinage-sokushin",
+      "it-dounyuu",
+      "jizokuka",
+      "safety-kyosai",
+      "small-biz-kyosai"
+    ],
+    "stacking_order": [
+      {
+        "step": 1,
+        "seidoId": "shouryoku-toushi",
+        "note": "配膳ロボ・券売機をカタログから選定。"
+      },
+      {
+        "step": 2,
+        "seidoId": "gyomu-kaizen",
+        "note": "最賃+90円引上げと設備投資を一体申請。"
+      },
+      {
+        "step": 3,
+        "seidoId": "career-up",
+        "note": "非正規の正社員化で1人57万。"
+      },
+      {
+        "step": 4,
+        "seidoId": "chinage-sokushin",
+        "note": "給与総額UPで税額控除。"
+      },
+      {
+        "step": 5,
+        "seidoId": "it-dounyuu",
+        "note": "POS・会計ソフト導入。"
+      },
+      {
+        "step": 6,
+        "seidoId": "jizokuka",
+        "note": "販路開拓・チラシ・店舗改装で上限200万。"
+      },
+      {
+        "step": 7,
+        "seidoId": "safety-kyosai",
+        "note": "法人で倒産防止共済積立。"
+      },
+      {
+        "step": 8,
+        "seidoId": "small-biz-kyosai",
+        "note": "役員個人の共済積立。"
+      }
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 400,
+      "max": 1500,
+      "note": "モデルケース(3店舗チェーン・従業員28名):省力化補助500万+業務改善助成300万+キャリアアップ3名分171万+持続化150万+税額控除100万+共済積立=初年度合計約1,220万円"
+    },
+    "critical_prerequisites": [
+      "就業規則の正社員転換規定",
+      "賃金台帳・出勤簿"
+    ],
+    "compatibility_notes": [
+      "業務改善助成金とキャリアアップ助成金の賃金UPは重複不可(同一従業員・同一期間)。",
+      "省力化投資補助金と持続化補助金は経費重複不可。別経費で棲分け。"
+    ],
+    "policy_tags": [
+      "最低賃金引上げ",
+      "省力化",
+      "観光需要対応"
+    ],
+    "target_size": "small"
+  },
+  {
+    "id": "combo:manufacturing-max",
+    "label": "🏭 製造業フルマックス(経営強化+ものづくり+省力化+賃上げ+DX)",
+    "sector": "製造業",
+    "description": "経営力向上計画認定を入口に、ものづくり補助金・経営強化税制・省力化投資補助金・業務改善助成金・賃上げ促進税制・DX投資促進税制・キャリアアップ助成金・GX補助金を組み合わせる中小製造業向け最強スタック。設備投資を補助金 + 即時償却で二重活用する。",
+    "seidoIds": [
+      "keiei-koujou-keikaku",
+      "monozukuri",
+      "kyoka-zeisei",
+      "shouryoku-toushi",
+      "gyomu-kaizen",
+      "chinage-sokushin",
+      "career-up",
+      "dx-toushi-zeisei",
+      "kenkyu-kaihatsu-zeisei",
+      "safety-kyosai",
+      "small-biz-kyosai",
+      "gx-hojokin"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "keiei-koujou-keikaku", "note": "全ての前提。中小企業等経営強化法に基づく計画認定を取得する(C類型がDX系では有利)。所要約1ヶ月。"},
+      {"step": 2, "seidoId": "monozukuri", "note": "デジタル枠・成長加速枠で大型設備投資を補助。第18次以降は事業計画書の生産性向上目標が必須。"},
+      {"step": 3, "seidoId": "kyoka-zeisei", "note": "計画認定後の設備取得で即時償却 or 税額控除10%。ものづくり補助金と同一設備でも併用可(圧縮記帳選択)。"},
+      {"step": 4, "seidoId": "shouryoku-toushi", "note": "カタログ型補助金で省力化機器を導入。中小機構カタログから選定するだけ。"},
+      {"step": 5, "seidoId": "gyomu-kaizen", "note": "最低賃金+90円引上げと設備投資を一体申請。最大600万円/事業所。"},
+      {"step": 6, "seidoId": "chinage-sokushin", "note": "給与総額1.5%UP+教育訓練費10%UPで最大45%税額控除。"},
+      {"step": 7, "seidoId": "career-up", "note": "非正規工員の正社員化で1人57万。社労士経由で確実取得。"},
+      {"step": 8, "seidoId": "dx-toushi-zeisei", "note": "DX認定 + 事業適応計画認定で税額控除5% + 特別償却30%。"},
+      {"step": 9, "seidoId": "kenkyu-kaihatsu-zeisei", "note": "試験研究費の6-17%税額控除。新製品・新工法開発に該当する設計費を計上。"},
+      {"step": 10, "seidoId": "gx-hojokin", "note": "省エネ設備・脱炭素投資への補助。GX 経営計画策定後に申請。"},
+      {"step": 11, "seidoId": "safety-kyosai", "note": "倒産防止共済 月20万 × 年240万を全額損金算入。"},
+      {"step": 12, "seidoId": "small-biz-kyosai", "note": "役員個人で年84万所得控除。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 1500,
+      "max": 5000,
+      "note": "モデルケース(従業員45名・売上12億円・年間設備投資1億円):ものづくり1,250万+経営強化税制即時償却4,000万+省力化補助500万+業務改善助成600万+賃上げ促進税制400万+DX税額控除200万+キャリアアップ3名分171万=初年度合計約7,100万円(うち返済不要+税軽減約7,000万円)"
+    },
+    "critical_prerequisites": [
+      "経営力向上計画の認定",
+      "青色申告",
+      "gBizIDプライム",
+      "認定支援機関(税理士・商工会議所等)との契約",
+      "賃金台帳・出勤簿の完全整備"
+    ],
+    "compatibility_notes": [
+      "ものづくり補助金と経営強化税制は同一設備で両方活用可能(補助金分は圧縮記帳が選択肢)。",
+      "省力化投資補助金とものづくり補助金は経費区分を明確化すれば併用可。同一機器の重複申請は不可。",
+      "業務改善助成金とキャリアアップ助成金の賃金引上げは重複対象不可(同一従業員・同一期間)。",
+      "DX投資促進税制は専用の事業適応計画(令和5年改正)認定が別途必要。",
+      "GX補助金は省エネ法の特定事業者要件と整合させる。"
+    ],
+    "policy_tags": [
+      "中小製造業強化",
+      "DX推進",
+      "GX(脱炭素)",
+      "賃上げ",
+      "サプライチェーン強靱化"
+    ],
+    "target_size": "medium"
+  },
+  {
+    "id": "combo:construction-max",
+    "label": "🏗️ 建設業フルマックス(経営事項+ものづくり+雇用+省力化)",
+    "sector": "建設業",
+    "description": "経営力向上計画+ものづくり補助金+省力化補助+業務改善助成+キャリアアップ助成+建設キャリアアップシステム連動の助成金を組み合わせる中小建設業向けスタック。i-Construction(ICT施工)導入が key。",
+    "seidoIds": [
+      "keiei-koujou-keikaku",
+      "monozukuri",
+      "shouryoku-toushi",
+      "gyomu-kaizen",
+      "career-up",
+      "chinage-sokushin",
+      "kyoka-zeisei",
+      "65sai-koyou",
+      "jinzai-kaihatsu",
+      "safety-kyosai",
+      "small-biz-kyosai"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "keiei-koujou-keikaku", "note": "経営事項審査(経審)の評点UPにも寄与する。"},
+      {"step": 2, "seidoId": "monozukuri", "note": "ICT建機・3次元測量機・BIM/CIM導入。i-Construction加点で採択率UP。"},
+      {"step": 3, "seidoId": "shouryoku-toushi", "note": "墨出ロボット・タワークレーン遠隔操作等を導入。"},
+      {"step": 4, "seidoId": "gyomu-kaizen", "note": "最低賃金引上げと安全装備投資を一体申請。"},
+      {"step": 5, "seidoId": "career-up", "note": "建設キャリアアップシステム連動。1人工 → 正社員転換で57万円。"},
+      {"step": 6, "seidoId": "chinage-sokushin", "note": "給与総額UPで税額控除。週休2日制と組み合わせ。"},
+      {"step": 7, "seidoId": "kyoka-zeisei", "note": "ICT建機の即時償却。経営強化法のC類型認定推奨。"},
+      {"step": 8, "seidoId": "65sai-koyou", "note": "ベテラン職人の継続雇用で上限160万。技能伝承の名目で活用。"},
+      {"step": 9, "seidoId": "jinzai-kaihatsu", "note": "若手技能者の研修費+賃金助成。一級技能士育成に。"},
+      {"step": 10, "seidoId": "safety-kyosai", "note": "倒産防止共済で連鎖倒産対策。"},
+      {"step": 11, "seidoId": "small-biz-kyosai", "note": "役員個人の退職金準備。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 1000,
+      "max": 3500,
+      "note": "モデルケース(土工事業者・従業員25名・売上6億円):ものづくり800万+省力化400万+業務改善300万+キャリアアップ4名分228万+賃上げ税制200万+jinzai-kaihatsu100万+65歳超160万=初年度合計約2,200万円"
+    },
+    "critical_prerequisites": [
+      "建設業許可",
+      "経営事項審査(該当時)",
+      "建設キャリアアップシステム登録(career-up連動時)",
+      "経営力向上計画の認定"
+    ],
+    "compatibility_notes": [
+      "ものづくり補助金のICT建機導入は『生産性革命推進事業』との二重申請不可。",
+      "業務改善助成金とキャリアアップ助成金の賃金引上げは同一従業員で重複不可。",
+      "65歳超雇用推進助成金は雇用契約変更が必要(継続雇用制度の整備)。",
+      "建設業特有の労働安全衛生法対応は補助金経費に該当する(安全装備等)。"
+    ],
+    "policy_tags": [
+      "i-Construction",
+      "週休2日制",
+      "技能伝承",
+      "建設キャリアアップシステム",
+      "賃上げ"
+    ],
+    "target_size": "medium"
+  },
+  {
+    "id": "combo:retail-max",
+    "label": "🛒 小売業フルマックス(省力化+IT+持続化+雇用助成)",
+    "sector": "小売業",
+    "description": "省力化投資補助金+IT導入補助金+持続化補助金+業務改善助成金+キャリアアップ助成金+賃上げ促進税制を組み合わせる中小小売業向けスタック。POSレジ・セルフレジ・在庫管理の高度化を進める。",
+    "seidoIds": [
+      "shouryoku-toushi",
+      "it-dounyuu",
+      "jizokuka",
+      "gyomu-kaizen",
+      "career-up",
+      "chinage-sokushin",
+      "monozukuri",
+      "safety-kyosai",
+      "small-biz-kyosai",
+      "ryouritsu-shien"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "shouryoku-toushi", "note": "セルフレジ・自動釣銭機・電子棚札をカタログから選定。"},
+      {"step": 2, "seidoId": "it-dounyuu", "note": "POSレジ・在庫管理SaaS・ECサイト構築。インボイス対応枠が有利。"},
+      {"step": 3, "seidoId": "jizokuka", "note": "店舗改装・チラシ・販路開拓で上限200万(賃上げ枠で250万)。"},
+      {"step": 4, "seidoId": "gyomu-kaizen", "note": "最低賃金+90円引上げと設備投資を一体申請。"},
+      {"step": 5, "seidoId": "career-up", "note": "パート従業員の正社員化で1人57万。"},
+      {"step": 6, "seidoId": "chinage-sokushin", "note": "給与総額1.5%UPで税額控除。"},
+      {"step": 7, "seidoId": "monozukuri", "note": "大型設備投資が必要な場合(物流センター・冷蔵庫等)。"},
+      {"step": 8, "seidoId": "ryouritsu-shien", "note": "女性パートが多い小売業で取りやすい両立支援助成金。"},
+      {"step": 9, "seidoId": "safety-kyosai", "note": "倒産防止共済で取引先連鎖倒産対策。"},
+      {"step": 10, "seidoId": "small-biz-kyosai", "note": "役員個人の所得控除。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 600,
+      "max": 2000,
+      "note": "モデルケース(食品スーパー3店舗・従業員40名):省力化500万+IT導入300万+持続化200万+業務改善400万+キャリアアップ3名分171万+賃上げ税制150万=初年度合計約1,720万円"
+    },
+    "critical_prerequisites": [
+      "就業規則の正社員転換規定",
+      "賃金台帳",
+      "gBizIDプライム(IT導入補助金)"
+    ],
+    "compatibility_notes": [
+      "省力化投資補助金とIT導入補助金は経費区分を分離すれば併用可(機器=省力化、ソフト=IT導入)。",
+      "持続化補助金と他補助金は同一経費の重複申請不可。",
+      "業務改善助成金とキャリアアップ助成金の賃金引上げは同一従業員不可。"
+    ],
+    "policy_tags": [
+      "省力化",
+      "インボイス対応",
+      "賃上げ",
+      "EC・オムニチャネル"
+    ],
+    "target_size": "small"
+  },
+  {
+    "id": "combo:transport-max",
+    "label": "🚚 運輸・物流業フルマックス(2024年問題対応+省力化+雇用)",
+    "sector": "運輸業",
+    "description": "ものづくり補助金+省力化投資補助金+業務改善助成金+キャリアアップ助成金+65歳超雇用推進助成金+賃上げ促進税制を組み合わせる中小運送業・物流倉庫業向けスタック。2024年問題(時間外規制)対応が必須テーマ。",
+    "seidoIds": [
+      "monozukuri",
+      "shouryoku-toushi",
+      "gyomu-kaizen",
+      "career-up",
+      "chinage-sokushin",
+      "65sai-koyou",
+      "it-dounyuu",
+      "keiei-koujou-keikaku",
+      "kyoka-zeisei",
+      "safety-kyosai",
+      "ryohi-nitto"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "keiei-koujou-keikaku", "note": "経営力向上計画認定で運送業向け税制優遇の入口に。"},
+      {"step": 2, "seidoId": "monozukuri", "note": "自動倉庫・パレタイザー・WMS・運行管理システム導入。物流DX枠が有利。"},
+      {"step": 3, "seidoId": "shouryoku-toushi", "note": "自動仕分け機・AGV・荷役ロボットをカタログから選定。"},
+      {"step": 4, "seidoId": "kyoka-zeisei", "note": "計画認定後の自動倉庫設備の即時償却 or 税額控除。"},
+      {"step": 5, "seidoId": "gyomu-kaizen", "note": "ドライバー賃金引上げ + デジタコ・点呼ロボット導入を一体申請。"},
+      {"step": 6, "seidoId": "career-up", "note": "非正規ドライバーの正社員化で1人57万。"},
+      {"step": 7, "seidoId": "chinage-sokushin", "note": "給与総額UPで税額控除。2024年問題対応で給与体系見直しと連動。"},
+      {"step": 8, "seidoId": "65sai-koyou", "note": "ベテランドライバーの継続雇用で上限160万。人手不足対策の柱。"},
+      {"step": 9, "seidoId": "it-dounyuu", "note": "運行管理SaaS・配車システム・電子点呼。"},
+      {"step": 10, "seidoId": "ryohi-nitto", "note": "ドライバー旅費の日当を経費化。"},
+      {"step": 11, "seidoId": "safety-kyosai", "note": "燃料費高騰・元請倒産リスク対策。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 1200,
+      "max": 4000,
+      "note": "モデルケース(運送業・従業員35名・車両20台):ものづくり1,000万+省力化500万+業務改善400万+キャリアアップ4名分228万+賃上げ税制300万+65歳超2名分320万=初年度合計約2,750万円"
+    },
+    "critical_prerequisites": [
+      "一般貨物自動車運送事業許可",
+      "Gマーク認定(取得すれば申請優遇)",
+      "経営力向上計画認定",
+      "デジタコ装着車両一覧の整備"
+    ],
+    "compatibility_notes": [
+      "ものづくり補助金の物流DX枠は厚労省『働き方改革推進助成金』との重複不可。",
+      "65歳超雇用推進助成金は雇用契約変更が必須(継続雇用制度規程整備)。",
+      "業務改善助成金は事業場単位で申請(本社+営業所が複数あれば各々申請可)。"
+    ],
+    "policy_tags": [
+      "物流2024年問題",
+      "ドライバー人手不足",
+      "物流DX",
+      "Gマーク",
+      "脱炭素物流"
+    ],
+    "target_size": "medium"
+  },
+  {
+    "id": "combo:hospitality-max",
+    "label": "🏨 宿泊・観光業フルマックス(インバウンド+省力化+多言語DX)",
+    "sector": "宿泊業",
+    "description": "ものづくり補助金+IT導入補助金+省力化投資補助金+持続化補助金+業務改善助成金+キャリアアップ助成金+賃上げ促進税制を組み合わせる中小旅館・ホテル・観光施設向けスタック。インバウンド対応と人手不足対策を両立する。",
+    "seidoIds": [
+      "monozukuri",
+      "it-dounyuu",
+      "shouryoku-toushi",
+      "jizokuka",
+      "gyomu-kaizen",
+      "career-up",
+      "chinage-sokushin",
+      "65sai-koyou",
+      "ryouritsu-shien",
+      "safety-kyosai",
+      "small-biz-kyosai"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "monozukuri", "note": "客室リニューアル・厨房機器更新・温泉設備改修。グリーン枠が有利。"},
+      {"step": 2, "seidoId": "shouryoku-toushi", "note": "セルフチェックイン機・配膳ロボ・客室清掃ロボ。"},
+      {"step": 3, "seidoId": "it-dounyuu", "note": "PMS・予約管理SaaS・多言語チャットボット・OTA連携。"},
+      {"step": 4, "seidoId": "jizokuka", "note": "多言語パンフレット・WEBサイト・販路開拓。インバウンド枠で250万。"},
+      {"step": 5, "seidoId": "gyomu-kaizen", "note": "客室清掃スタッフの賃金引上げと設備投資を一体申請。"},
+      {"step": 6, "seidoId": "career-up", "note": "非正規スタッフ(フロント・調理)の正社員化で1人57万。"},
+      {"step": 7, "seidoId": "chinage-sokushin", "note": "給与総額UPで税額控除。"},
+      {"step": 8, "seidoId": "65sai-koyou", "note": "ベテラン板前・仲居の継続雇用。技能継承の名目。"},
+      {"step": 9, "seidoId": "ryouritsu-shien", "note": "女性スタッフが多い宿泊業で活用しやすい両立支援。"},
+      {"step": 10, "seidoId": "safety-kyosai", "note": "観光需要の急変動対策。"},
+      {"step": 11, "seidoId": "small-biz-kyosai", "note": "経営者個人の所得控除。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 800,
+      "max": 3000,
+      "note": "モデルケース(温泉旅館・客室30室・従業員32名):ものづくり1,000万+省力化400万+IT導入250万+持続化200万+業務改善400万+キャリアアップ3名分171万=初年度合計約2,420万円"
+    },
+    "critical_prerequisites": [
+      "旅館業法に基づく許可",
+      "就業規則の正社員転換規定",
+      "賃金台帳",
+      "gBizIDプライム"
+    ],
+    "compatibility_notes": [
+      "省力化投資補助金とIT導入補助金は機器とソフトで棲み分けて併用。",
+      "ものづくり補助金のグリーン枠は省エネ計算(15% 以上削減)が必須。",
+      "持続化補助金のインバウンド枠は外国人観光客の集客実績or計画が必要。"
+    ],
+    "policy_tags": [
+      "インバウンド",
+      "宿泊DX",
+      "省力化",
+      "脱炭素",
+      "観光立国"
+    ],
+    "target_size": "medium"
+  },
+  {
+    "id": "combo:beauty-max",
+    "label": "💇 美容・サロン業フルマックス(IT+持続化+雇用+共済)",
+    "sector": "美容業",
+    "description": "IT導入補助金+持続化補助金+業務改善助成金+キャリアアップ助成金+賃上げ促進税制+小規模企業共済を組み合わせる美容室・サロン・エステ向けスタック。予約管理 SaaS 導入とスタイリスト育成が key。",
+    "seidoIds": [
+      "it-dounyuu",
+      "jizokuka",
+      "gyomu-kaizen",
+      "career-up",
+      "chinage-sokushin",
+      "shouryoku-toushi",
+      "jinzai-kaihatsu",
+      "safety-kyosai",
+      "small-biz-kyosai",
+      "ryouritsu-shien"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "it-dounyuu", "note": "予約管理SaaS(ホットペッパー連携)・電子カルテ・キャッシュレス決済を一括導入。"},
+      {"step": 2, "seidoId": "jizokuka", "note": "店舗改装・看板・ホームページリニューアルで上限200万。"},
+      {"step": 3, "seidoId": "shouryoku-toushi", "note": "シャンプー台自動洗髪機・予約自動受付システム。"},
+      {"step": 4, "seidoId": "gyomu-kaizen", "note": "アシスタント賃金引上げ+設備投資一体。"},
+      {"step": 5, "seidoId": "career-up", "note": "アシスタント→スタイリスト正社員化で1人57万。"},
+      {"step": 6, "seidoId": "chinage-sokushin", "note": "給与総額UPで税額控除。"},
+      {"step": 7, "seidoId": "jinzai-kaihatsu", "note": "美容師研修・技術講習費の助成。賃金助成も併用。"},
+      {"step": 8, "seidoId": "ryouritsu-shien", "note": "女性スタイリストの育休復帰支援。業界課題と直結。"},
+      {"step": 9, "seidoId": "safety-kyosai", "note": "倒産防止共済で資金繰り対策。"},
+      {"step": 10, "seidoId": "small-biz-kyosai", "note": "オーナー個人の退職金積立 + 所得控除年84万。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 400,
+      "max": 1500,
+      "note": "モデルケース(2店舗美容室・スタッフ12名):IT導入200万+持続化150万+業務改善300万+キャリアアップ2名分114万+jinzai-kaihatsu80万+賃上げ税制80万+共済積立=初年度合計約950万円"
+    },
+    "critical_prerequisites": [
+      "美容師免許保有スタッフ(美容師法)",
+      "就業規則(従業員5名以上)",
+      "gBizIDプライム"
+    ],
+    "compatibility_notes": [
+      "業務改善助成金とキャリアアップ助成金の賃金引上げは同一従業員不可。",
+      "jinzai-kaihatsu助成金は計画書事前提出が必須。",
+      "ホットペッパー連携などITツールはIT導入補助金のIT導入支援事業者に登録されたものに限定。"
+    ],
+    "policy_tags": [
+      "美容業DX",
+      "アシスタント定着",
+      "賃上げ",
+      "両立支援"
+    ],
+    "target_size": "small"
+  },
+  {
+    "id": "combo:realestate-max",
+    "label": "🏢 不動産・賃貸業フルマックス(節税+設備+共済)",
+    "sector": "不動産業",
+    "description": "経営力向上計画+経営強化税制+一括償却+中古資産耐用年数+不動産DX投資+賃上げ促進税制+各種共済を組み合わせる中小不動産賃貸・仲介業向けスタック。設備投資の即時償却で節税効果を最大化する。",
+    "seidoIds": [
+      "keiei-koujou-keikaku",
+      "kyoka-zeisei",
+      "ikkatsu-shoukyaku",
+      "chukoshisan-taiyonensu",
+      "dx-toushi-zeisei",
+      "chinage-sokushin",
+      "career-up",
+      "it-dounyuu",
+      "safety-kyosai",
+      "small-biz-kyosai",
+      "yakuin-shataku",
+      "yakuin-houshu-opt"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "keiei-koujou-keikaku", "note": "経営力向上計画認定で各種税制特例の入口に。"},
+      {"step": 2, "seidoId": "kyoka-zeisei", "note": "賃貸物件の設備(エアコン・給湯器・防犯機器)即時償却 or 税額控除10%。"},
+      {"step": 3, "seidoId": "ikkatsu-shoukyaku", "note": "10万円未満の少額資産+10-20万円の一括償却資産で年間取得を加速。"},
+      {"step": 4, "seidoId": "chukoshisan-taiyonensu", "note": "中古物件取得時の見積耐用年数で短期償却。"},
+      {"step": 5, "seidoId": "dx-toushi-zeisei", "note": "不動産管理SaaS・電子契約システム導入で税額控除。"},
+      {"step": 6, "seidoId": "it-dounyuu", "note": "Reizo・電子契約・物件管理SaaS・VR内見ツール導入。"},
+      {"step": 7, "seidoId": "chinage-sokushin", "note": "給与総額UPで税額控除。"},
+      {"step": 8, "seidoId": "career-up", "note": "非正規仲介スタッフの正社員化。"},
+      {"step": 9, "seidoId": "yakuin-shataku", "note": "役員社宅家賃の50%損金化。"},
+      {"step": 10, "seidoId": "yakuin-houshu-opt", "note": "役員報酬の事前確定届出給与で節税最適化。"},
+      {"step": 11, "seidoId": "safety-kyosai", "note": "倒産防止共済 月20万 × 年240万。"},
+      {"step": 12, "seidoId": "small-biz-kyosai", "note": "代表者個人の所得控除 年84万。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 700,
+      "max": 2500,
+      "note": "モデルケース(賃貸物件20棟・従業員8名・売上3億円):経営強化税制即時償却2,000万+一括償却400万+中古耐用年数効果300万+IT導入200万+共済積立324万+役員社宅+事前確定=初年度税軽減・キャッシュアウト圧縮約1,800万円"
+    },
+    "critical_prerequisites": [
+      "経営力向上計画の認定",
+      "青色申告法人",
+      "賃貸物件の固定資産台帳整備"
+    ],
+    "compatibility_notes": [
+      "経営強化税制と一括償却は同一資産で重複不可(どちらか一方を選択)。",
+      "中古耐用年数は取得時の見積年数を税務署届出。",
+      "役員社宅は通達 36-40 / 36-41 / 36-44 のうちどれが適用されるか事前判定必須。",
+      "事前確定届出給与は事業年度開始前に届出。"
+    ],
+    "policy_tags": [
+      "不動産節税",
+      "中古資産活用",
+      "不動産DX",
+      "役員給与最適化"
+    ],
+    "target_size": "small"
+  },
+  {
+    "id": "combo:professional-max",
+    "label": "📋 専門サービス・士業フルマックス(IT+持続化+共済+研究開発)",
+    "sector": "専門・技術サービス業",
+    "description": "IT導入補助金+持続化補助金+キャリアアップ助成金+賃上げ促進税制+研究開発税制+小規模企業共済+倒産防止共済を組み合わせる税理士・社労士・コンサル・設計事務所向けスタック。電子契約・クラウド会計の高度化が key。",
+    "seidoIds": [
+      "it-dounyuu",
+      "jizokuka",
+      "career-up",
+      "chinage-sokushin",
+      "kenkyu-kaihatsu-zeisei",
+      "kyosai-kin-zougaku",
+      "safety-kyosai",
+      "small-biz-kyosai",
+      "ideco",
+      "kigyogata-dc",
+      "chukyosai"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "it-dounyuu", "note": "クラウド会計・電子契約・案件管理SaaS・セキュリティ対策ソフト。インボイス枠が有利。"},
+      {"step": 2, "seidoId": "jizokuka", "note": "事務所改装・看板・パンフレット・セミナー集客で上限200万。"},
+      {"step": 3, "seidoId": "career-up", "note": "非正規アシスタントの正社員化。"},
+      {"step": 4, "seidoId": "chinage-sokushin", "note": "給与総額UPで税額控除。"},
+      {"step": 5, "seidoId": "kenkyu-kaihatsu-zeisei", "note": "新サービス開発(AI診断ツール等)の試験研究費を 6-17% 税額控除。"},
+      {"step": 6, "seidoId": "kyosai-kin-zougaku", "note": "中小機構の小規模共済で経営者退職金準備。"},
+      {"step": 7, "seidoId": "safety-kyosai", "note": "倒産防止共済 年240万を全額損金。"},
+      {"step": 8, "seidoId": "small-biz-kyosai", "note": "代表者個人の所得控除 年84万。"},
+      {"step": 9, "seidoId": "ideco", "note": "iDeCoで小規模企業共済+企業型DCの三段ロケット節税。"},
+      {"step": 10, "seidoId": "kigyogata-dc", "note": "企業型確定拠出年金で従業員退職金 + 法人損金。"},
+      {"step": 11, "seidoId": "chukyosai", "note": "中退共で従業員退職金。新規加入時は国が掛金1/2を1年間助成。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 350,
+      "max": 1200,
+      "note": "モデルケース(税理士事務所・職員8名・売上1.2億円):IT導入250万+持続化200万+キャリアアップ1名分57万+賃上げ税制80万+共済積立324万+iDeCo・企業型DC=初年度合計約950万円"
+    },
+    "critical_prerequisites": [
+      "各士業登録(税理士法・社労士法等)",
+      "賃金台帳",
+      "gBizIDプライム"
+    ],
+    "compatibility_notes": [
+      "kenkyu-kaihatsu-zeiseiは『試験研究費』の定義(措置法42条の4)を満たす必要。通常業務の改善は対象外。",
+      "iDeCoと企業型DCの併用は2022年10月から可能(従業員のみ自動加入)。",
+      "中退共は事業主と生計を一にする親族は加入不可。"
+    ],
+    "policy_tags": [
+      "士業DX",
+      "電子契約",
+      "節税",
+      "退職金スキーム"
+    ],
+    "target_size": "small"
+  },
+  {
+    "id": "combo:startup-max",
+    "label": "🚀 創業・スタートアップフルマックス(東京創業+J-StarX+エンジェル)",
+    "sector": "創業・スタートアップ",
+    "description": "東京都創業助成事業+J-StarX+エンジェル税制+ストックオプション税制適格要件+特許出願料減免+IP-ACCEL+持続化補助金を組み合わせる創業期・シード期向けスタック。資金調達と知財戦略を両輪で進める。",
+    "seidoIds": [
+      "tokyo-sogyo",
+      "j-starx",
+      "angel-zeisei",
+      "stock-option-tekikaku",
+      "tokkyo-genmen",
+      "ip-accel",
+      "inpit-shien",
+      "open-innovation",
+      "jizokuka",
+      "small-biz-kyosai",
+      "shihonsei-lone"
+    ],
+    "stacking_order": [
+      {"step": 1, "seidoId": "tokyo-sogyo", "note": "東京都の創業助成は最大400万円(設備・人件費・賃料等)。創業5年以内の法人/個人が対象。"},
+      {"step": 2, "seidoId": "j-starx", "note": "経産省 J-StarX(海外派遣型アクセラレーション)で米国・シリコンバレー研修。"},
+      {"step": 3, "seidoId": "angel-zeisei", "note": "エンジェル投資家からの資金調達 → 投資家側の所得税優遇で出資を引き出しやすく。"},
+      {"step": 4, "seidoId": "stock-option-tekikaku", "note": "税制適格ストックオプションで創業メンバーの株式報酬を最大化。要件は2023年改正対応。"},
+      {"step": 5, "seidoId": "tokkyo-genmen", "note": "特許出願料・審査請求料の減免(中小企業 1/2、創業10年以内なら 2/3)。"},
+      {"step": 6, "seidoId": "ip-accel", "note": "INPIT知財アクセラレーションプログラムで知財戦略策定支援。"},
+      {"step": 7, "seidoId": "inpit-shien", "note": "INPIT地域知財支援で知財専門家の無料派遣。"},
+      {"step": 8, "seidoId": "open-innovation", "note": "オープンイノベーション促進税制で大企業から出資を受けやすく。"},
+      {"step": 9, "seidoId": "jizokuka", "note": "創業枠で上限200万円。販路開拓・展示会出展に活用。"},
+      {"step": 10, "seidoId": "shihonsei-lone", "note": "資本性ローン(日本政策金融公庫)で資本としてカウント可能な融資 5,000万円〜。"},
+      {"step": 11, "seidoId": "small-biz-kyosai", "note": "代表者個人の所得控除 年84万 + 退職金準備。"}
+    ],
+    "estimated_annual_impact_man_yen": {
+      "min": 500,
+      "max": 2500,
+      "note": "モデルケース(SaaSスタートアップ・創業2年目・社員5名):東京都創業400万+J-StarX(現物給付)+持続化200万+特許出願料減免30万+資本性ローン3,000万円(キャッシュ)+ストックオプション評価益+オープンイノベーション(間接的にエンジェル投資)=合計約3,800万円規模(うち補助630万、融資3,000万、評価益170万)"
+    },
+    "critical_prerequisites": [
+      "創業 5-10 年以内 (制度ごとに条件異なる)",
+      "事業計画書",
+      "知財戦略の整理 (IP-ACCEL 申請時)",
+      "東京都内在住・本店所在地 (tokyo-sogyo 限定)"
+    ],
+    "compatibility_notes": [
+      "J-StarXは出張型なので tokyo-sogyo の人件費との重複懸念は基本なし。",
+      "エンジェル税制は投資家側の優遇制度(被投資側企業ではなく投資家が控除を受ける)。",
+      "ストックオプション税制適格要件は付与から行使までの期間・行使価額・年間1,200万円上限等の制約あり。",
+      "特許出願料減免と IP-ACCEL は併用可能。",
+      "資本性ローンは劣後ローンの一種で、自己資本扱いで融資審査評価UP。"
+    ],
+    "policy_tags": [
+      "創業支援",
+      "スタートアップエコシステム",
+      "知財戦略",
+      "海外展開",
+      "オープンイノベーション"
+    ],
+    "target_size": "small"
+  }
+]

@@ -1,0 +1,1 @@
+(function(){try{var cfg=window.JPINTEL_ANALYTICS;if(!cfg||!cfg.domain)return;var s=document.createElement('script');s.defer=true;s.setAttribute('data-domain',cfg.domain);s.src=cfg.src||'https://plausible.io/js/script.js';document.head.appendChild(s);}catch(_e){}})();

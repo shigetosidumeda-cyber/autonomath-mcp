@@ -1,0 +1,48 @@
+name: Self-improve orchestrator (weekly)
+
+# Weekly self-improve orchestrator run — all 10 closed-loop pipelines.
+#
+# Why: post-launch the orchestrator runs every loop sequentially in dry-run
+# (proposal only, no DB writes) so the operator can review per-loop output
+# under a single cadence. Each loop owns its own internal cadence
+# (daily/weekly/monthly) but the cron *invokes* the orchestrator weekly —
+# loops that don't need work that day return the zeroed scaffold cheaply.
+#
+# Cadence: Mon 09:30 JST (Mon 00:30 UTC) — same shape as refresh-sources.yml.
+# `--no-write` keeps the run side-effect-free (proposal-only, no JSON dump
+# committed); switch to `--execute` only after T+30d once each loop's
+# dry_run=False branch is real (memory: launch is 2026-05-06; weekly cron
+# lands artifacts inspected by hand for the first month, then promoted).
+#
+# Output: per-loop JSON output emitted to stdout; the orchestrator also
+# writes `analysis_wave18/self_improve_runs/<YYYY-MM-DD>.json` (uploaded as
+# a workflow artifact for operator review). We do not commit DB changes
+# from CI.
+#
+# LLM use: NONE (per `feedback_autonomath_no_api_use`). Self-improvement
+# burning Anthropic API tokens would break the ¥3/req economics instantly.
+on:
+  schedule:
+    - cron: '30 0 * * 1'   # Mon 00:30 UTC = Mon 09:30 JST
+  workflow_dispatch:
+
+jobs:
+  all-loops:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: '3.12'
+      - run: pip install -e ".[dev]"
+      # `--all` runs every loop in scripts/self_improve_orchestrator.LOOPS
+      # sequentially; `--no-write` keeps the run proposal-only (no JSON
+      # commit). Drop `--no-write` and add `--execute` once T+30d.
+      - run: python scripts/self_improve_orchestrator.py --all --no-write
+      - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        if: always()
+        with:
+          name: self-improve-all-loops
+          path: analysis_wave18/self_improve_runs/
+          if-no-files-found: ignore

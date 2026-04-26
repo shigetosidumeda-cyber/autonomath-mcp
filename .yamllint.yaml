@@ -1,0 +1,24 @@
+# yamllint config — loose defaults tuned for GitHub Actions YAML.
+# The default rules complain about line-length and truthy "on:" keys, both
+# of which are normal in workflow files. Turn those off.
+
+extends: default
+
+rules:
+  line-length: disable
+  truthy:
+    # GitHub Actions uses `on:` as a top-level key; yamllint treats it as a
+    # truthy token otherwise.
+    allowed-values: ["true", "false", "on", "off"]
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  document-start: disable
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
+  braces:
+    max-spaces-inside: 1
+  brackets:
+    max-spaces-inside: 1

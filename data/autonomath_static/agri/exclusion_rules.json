@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "schema_version": "autonomath/agri_exclusion_rules/1.0",
+    "description": "農業核心 4 制度 + 関連制度の排他・前提依存ルール。recommend / curation / docgen の 3 層で使用。",
+    "source_evidence": [
+      "https://www.nounavi-aomori.jp/start/support (経営開始資金の重複禁止文言)",
+      "https://www.nounavi-aomori.jp/start/beginning/step/plan (認定新規就農者 × 認定農業者 排他)",
+      "https://www.ninteikyo.com/news/スーパーL資金のご案内.pdf (認定農業者前提)",
+      "https://www.maff.go.jp/j/budget/attach/pdf/180831-75.pdf (スーパーL 金利軽減措置の前提条件)",
+      "BC666 image 7 の月別スケジュール (前提依存 + 順序制約の実運用確認)"
+    ],
+    "last_updated": "2026-04-16"
+  },
+  "rules": {
+    "excl-keiei-kaishi-vs-seikatsu-kyufu-absolute": {
+      "rule_id": "excl-keiei-kaishi-vs-seikatsu-kyufu-absolute",
+      "kind": "absolute",
+      "severity": "critical",
+      "program_a": "keiei-kaishi-shikin",
+      "program_b": null,
+      "program_b_group": [
+        "seikatsu-hogo",
+        "kyushoku-shien",
+        "other-seikatsu-kyufu-kokka"
+      ],
+      "description": "経営開始資金は、生活費を支給する国の他事業との重複受給不可。生活保護・求職者支援制度などを現に受けている場合は申請不可。",
+      "source_notes": "nounavi-aomori support: '生活費を支給する国の他の事業と重複受給していないこと'",
+      "source_urls": ["https://www.nounavi-aomori.jp/start/support"]
+    },
+    "excl-keiei-kaishi-vs-koyo-shuno-absolute": {
+      "rule_id": "excl-keiei-kaishi-vs-koyo-shuno-absolute",
+      "kind": "absolute",
+      "severity": "critical",
+      "program_a": "keiei-kaishi-shikin",
+      "program_b": "koyo-shuno-shikin",
+      "program_b_group": ["jissen-kenshu-shien"],
+      "description": "経営開始資金は、雇用就農資金や他の雇用就農者を対象とした実践研修支援事業による助成金との併用不可。",
+      "source_notes": "nounavi-aomori support: '雇用就農資金や他の雇用就農者を対象とした実践研修支援事業による助成金の交付を現に受けておらず'",
+      "source_urls": ["https://www.nounavi-aomori.jp/start/support"]
+    },
+    "excl-keiei-hatten-sedai-vs-keiei-kaishi-absolute": {
+      "rule_id": "excl-keiei-hatten-sedai-vs-keiei-kaishi-absolute",
+      "kind": "absolute",
+      "severity": "critical",
+      "program_a": "keiei-hatten-sedai",
+      "program_b": "keiei-kaishi-shikin",
+      "description": "経営発展支援事業の世代交代円滑化タイプは、経営開始資金と併用不可。世代交代タイプを使うなら経営開始資金を諦めるか、初期投資促進タイプを選ぶ。",
+      "source_notes": "nounavi-aomori support: '経営開始資金との併用不可'",
+      "source_urls": ["https://www.nounavi-aomori.jp/start/support"]
+    },
+    "excl-keiei-hatten-shoki-vs-keiei-kaishi-reduction": {
+      "rule_id": "excl-keiei-hatten-shoki-vs-keiei-kaishi-reduction",
+      "kind": "conditional_reduction",
+      "severity": "critical",
+      "program_a": "keiei-hatten-shoki",
+      "program_b": "keiei-kaishi-shikin",
+      "description": "経営発展支援事業の初期投資促進タイプは、経営開始資金と併用する場合、補助対象事業費の上限が 1,000 万 → 500 万に減額される。",
+      "conditional_reduction_to_man_yen": 500,
+      "source_notes": "nounavi-aomori support: '経営開始資金と併用する場合は、上限500万円'",
+      "source_urls": ["https://www.nounavi-aomori.jp/start/support"]
+    },
+    "excl-seinen-requires-cert-new-farmer": {
+      "rule_id": "excl-seinen-requires-cert-new-farmer",
+      "kind": "prerequisite",
+      "severity": "critical",
+      "program_a": "seinen-shuno-shikin",
+      "program_b": "認定新規就農者",
+      "description": "青年等就農資金を借りるには、市町村から認定新規就農者の認定を受けていることが前提。認定前に融資申請しても審査は開始されない。",
+      "prerequisite_grant_entity": "市町村",
+      "prerequisite_processing_months": 1,
+      "source_notes": "nounavi-aomori support: 対象者 '認定新規就農者'。BC666 実例 '4 月認定申請 → 5 月認定 → 5 月 7 日 青年等就農資金申込' で順序確定",
+      "source_urls": [
+        "https://www.nounavi-aomori.jp/start/support",
+        "https://www.nounavi-aomori.jp/start/beginning/step/plan"
+      ]
+    },
+    "excl-super-L-requires-cert-farmer": {
+      "rule_id": "excl-super-L-requires-cert-farmer",
+      "kind": "prerequisite",
+      "severity": "critical",
+      "program_a": "super-L-shikin",
+      "program_b": "認定農業者",
+      "description": "スーパーL資金を借りるには、市町村から認定農業者の認定を受けていることが前提。認定新規就農者では申請不可 (別制度)。",
+      "prerequisite_grant_entity": "市町村",
+      "prerequisite_processing_months": 1,
+      "source_notes": "ninteikyo.com PDF: '対象者：認定農業者（農業経営改善計画を作成して市町長の認定を受けた個人・法人）'",
+      "source_urls": ["https://www.ninteikyo.com/news/スーパーL資金のご案内.pdf"]
+    },
+    "excl-cert-new-farmer-vs-cert-farmer-mutex": {
+      "rule_id": "excl-cert-new-farmer-vs-cert-farmer-mutex",
+      "kind": "mutex_certification",
+      "severity": "critical",
+      "program_a": "認定新規就農者",
+      "program_b": "認定農業者",
+      "description": "認定新規就農者と認定農業者は同一経営体で同時には保持不可。ただし個人で認定新規就農者取得 → 法人化 → 法人として認定農業者取得の経営体切替で、時系列上は両方通過できる (BC666 image 7 の 4-6 月個人ルート + 7-9 月法人ルートが実例)。",
+      "mutex_resolution": "個人 → 法人で逐次取得 (経営体切替)",
+      "source_notes": "nounavi-aomori plan: '農業経営を開始して一定の期間（5年）を経過しない者を含みます。認定農業者は含みません。'",
+      "source_urls": ["https://www.nounavi-aomori.jp/start/beginning/step/plan"]
+    },
+    "excl-jun-bi-kin-vs-seikatsu-kyufu-absolute": {
+      "rule_id": "excl-jun-bi-kin-vs-seikatsu-kyufu-absolute",
+      "kind": "absolute",
+      "severity": "critical",
+      "program_a": "shuno-junbi-shikin",
+      "program_b": null,
+      "program_b_group": [
+        "seikatsu-hogo",
+        "kyushoku-shien",
+        "other-seikatsu-kyufu-kokka"
+      ],
+      "description": "就農準備資金は、生活保護や求職者支援制度などの生活費を支給する国の他事業との重複禁止。",
+      "source_notes": "nounavi-aomori support: '原則、生活保護や求職者支援制度など、生活費を支給する国の他の事業と重複受給していないこと'",
+      "source_urls": ["https://www.nounavi-aomori.jp/start/support"]
+    },
+    "excl-shinki-challenge-vs-keiei-kaishi-absolute": {
+      "rule_id": "excl-shinki-challenge-vs-keiei-kaishi-absolute",
+      "kind": "absolute",
+      "severity": "critical",
+      "program_a": "shinki-challenge",
+      "program_b": "keiei-kaishi-shikin",
+      "description": "新規就農者チャレンジ事業は、申請時点で経営開始資金 (含む旧就農準備・経営開始支援事業) を受けている者は申請できない絶対排他。",
+      "source_notes": "260126-9.pdf 第4 2(4): '経営開始資金等による資金の交付を申請時において受けていないこと'",
+      "source_urls": [
+        "https://www.maff.go.jp/j/new_farmer/n_syunou/260126.html",
+        "https://www.maff.go.jp/j/new_farmer/n_syunou/attach/pdf/260126-9.pdf"
+      ]
+    },
+    "excl-shinki-challenge-requires-cert-new-farmer": {
+      "rule_id": "excl-shinki-challenge-requires-cert-new-farmer",
+      "kind": "prerequisite",
+      "severity": "critical",
+      "program_a": "shinki-challenge",
+      "program_b": "認定新規就農者",
+      "description": "新規就農者チャレンジ事業には、申請時点で青年等就農計画の認定 (= 認定新規就農者) を受けていることが前提。",
+      "prerequisite_grant_entity": "市町村",
+      "prerequisite_processing_months": 1,
+      "source_notes": "260126-9.pdf 第4 2(2): '青年等就農計画の認定を申請時において受けていること'",
+      "source_urls": ["https://www.maff.go.jp/j/new_farmer/n_syunou/attach/pdf/260126-9.pdf"]
+    },
+    "excl-shinki-challenge-requires-regional-plan": {
+      "rule_id": "excl-shinki-challenge-requires-regional-plan",
+      "kind": "prerequisite",
+      "severity": "critical",
+      "program_a": "shinki-challenge",
+      "program_b": "地域計画目標地図位置付け",
+      "description": "新規就農者チャレンジ事業は、地域計画 (農業経営基盤強化促進法第19条) の目標地図に位置付けられているか、位置付けられることが確実と見込まれることが必須。",
+      "prerequisite_grant_entity": "市町村",
+      "prerequisite_processing_months": 3,
+      "source_notes": "260126-9.pdf 第4 2(3): '地域計画のうち目標地図に位置付けられ、又は位置付けられることが確実と見込まれること'",
+      "source_urls": ["https://www.maff.go.jp/j/new_farmer/n_syunou/attach/pdf/260126-9.pdf"]
+    },
+    "excl-shinki-challenge-requires-midori": {
+      "rule_id": "excl-shinki-challenge-requires-midori",
+      "kind": "prerequisite",
+      "severity": "critical",
+      "program_a": "shinki-challenge",
+      "program_b": "みどりの食料システム法 環境負荷低減",
+      "description": "新規就農者チャレンジ事業は、みどりの食料システム法に基づく環境負荷低減取組を事業実施期間中に実施することが必須。別紙様式第1号別添8 (環境負荷低減チェックシート) の提出で確認される。",
+      "prerequisite_grant_entity": null,
+      "prerequisite_processing_months": 0,
+      "source_notes": "260126-9.pdf 第4 2(6): '環境負荷低減事業活動の促進等に関する法律に基づく環境負荷低減に取り組むこと'",
+      "source_urls": ["https://www.maff.go.jp/j/new_farmer/n_syunou/attach/pdf/260126-9.pdf"]
+    },
+    "excl-keiei-kaishi-vs-keiei-keishou": {
+      "rule_id": "excl-keiei-kaishi-vs-keiei-keishou",
+      "kind": "absolute",
+      "severity": "critical",
+      "program_a": "keiei-kaishi-shikin",
+      "program_b": "keiei-keishou-hatten-shien",
+      "description": "経営開始資金は、経営継承・発展支援事業 (令和 8 年 3 月 31 日付け廃止前の旧要綱) による補助金を現に受けている or 過去に受けている者は申請不可。",
+      "source_notes": "roudou-162.pdf 第5の2(1)キ(ウ): '経営継承・発展支援事業による補助金の交付を現に受けておらず、かつ過去に受けていないこと'",
+      "source_urls": ["https://www.maff.go.jp/j/new_farmer/n_syunou/roudou.html"]
+    },
+    "excl-shinki-challenge-national-grant-exclusive": {
+      "rule_id": "excl-shinki-challenge-national-grant-exclusive",
+      "kind": "absolute",
+      "severity": "critical",
+      "program_a": "shinki-challenge",
+      "program_b": null,
+      "program_b_group": ["national_subsidy_same_asset"],
+      "description": "新規就農者チャレンジ事業は、本事業以外の国の補助事業の対象として導入等するものに対しては併用不可 (利子助成措置は除く)。同一機械・施設に対する国補助の二重受給禁止。",
+      "source_notes": "260126-9.pdf 第4 3(2)カ: '本事業以外の国の補助事業の対象として導入等するものでないこと (融資に関する利子の助成措置を除く)'",
+      "source_urls": ["https://www.maff.go.jp/j/new_farmer/n_syunou/attach/pdf/260126-9.pdf"]
+    },
+    "excl-national-vs-pref-same-asset": {
+      "rule_id": "excl-national-vs-pref-same-asset",
+      "kind": "cross_tier_same_asset",
+      "severity": "warning",
+      "program_a": null,
+      "program_b": null,
+      "program_a_group": ["national_subsidy"],
+      "program_b_group": ["pref_subsidy", "municipality_subsidy"],
+      "description": "国補助 (tier=national) と県/市補助 (tier=prefecture/municipality) を同一機械・施設に対して併用するには、裏負担分 (国補助後の自己負担) を上限とした重複排除が必要。一般原則として、同一資産に対する補助金合算が取得価額を超えることは禁止 (補助金等適正化法)。運用上は各制度の要綱確認が必須。",
+      "source_notes": "補助金等に係る予算の執行の適正化に関する法律 第11条 (他の補助金との調整)。MAFF 交付要綱 '他の国庫補助事業と重複して交付を受けることはできない' が標準文言。",
+      "source_urls": [
+        "https://elaws.e-gov.go.jp/document?lawid=330AC0000000179",
+        "https://www.maff.go.jp/j/budget/"
+      ],
+      "required_operator_confirm": "同一対象機械/施設の有無を operator が個別 check (検出条件: program_a.authority_level=national かつ program_b.authority_level in {prefecture, municipality} かつ asset_target 重複)"
+    },
+    "excl-super-L-vs-pref-loan-interest": {
+      "rule_id": "excl-super-L-vs-pref-loan-interest",
+      "kind": "cross_tier_loan_interest",
+      "severity": "info",
+      "program_a": "super-L-shikin",
+      "program_b": null,
+      "program_b_group": ["pref_loan_interest_subsidy"],
+      "description": "スーパーL資金 (国・JFC 融資) と都道府県独自の利子補給 / 利子助成は併用可能な場合が多いが、実質金利が 0% を下回る二重補給は禁止。県単独利子補給制度の要綱で必ず確認すること。一般原則: 国の金利軽減措置適用後の金利を基準に、県補給が残存金利の範囲内で適用される。",
+      "source_notes": "MAFF 180831-75.pdf (スーパーL 金利軽減措置 0% 下限)。各県 利子補給要綱 (例: 北海道農業振興公社、新潟県農業信用基金協会)。",
+      "source_urls": [
+        "https://www.maff.go.jp/j/budget/attach/pdf/180831-75.pdf"
+      ],
+      "required_operator_confirm": "県の利子補給要綱を operator が確認。実質金利が負にならないことを check。"
+    },
+    "excl-corp-established-vs-new-farmer-programs": {
+      "rule_id": "excl-corp-established-vs-new-farmer-programs",
+      "kind": "entity_scope_restriction",
+      "severity": "critical",
+      "program_a": null,
+      "program_b": null,
+      "program_a_group": ["established_corp_100ha_scale"],
+      "program_b_group": [
+        "keiei-kaishi-shikin",
+        "seinen-shuno-shikin",
+        "shinki-shuno-challenge",
+        "koyo-shuno-shikin",
+        "ninsho-shinki-shuno-sha"
+      ],
+      "description": "経営開始から5年以上経過した100ha級の法人農家は、新規就農者向け制度 (経営開始資金・青年等就農資金・就農準備資金・新規就農チャレンジ等) の対象外。100ha法人は '認定農業者' 区分で申請し、'認定新規就農者' 区分とは相互排他。operator は client の (a) 開業年数 (b) 法人区分 (c) 認定農業者/認定新規就農者どちらの認定かを取材時に確定し、この大分岐を最初に決める。",
+      "source_notes": "農業経営基盤強化促進法 第12条の2 (認定農業者制度) および 第14条の4 (認定新規就農者制度) により両認定は排他。MAFF 新規就農者向け資金要綱は '経営開始5年以内' を継続的に要件として明示。",
+      "source_urls": [
+        "https://elaws.e-gov.go.jp/document?lawid=355AC0000000065",
+        "https://www.maff.go.jp/j/kobetu_ninaite/n_seido/nintei_ninaite.html",
+        "https://www.maff.go.jp/j/new_farmer/n_support/nintei.html"
+      ],
+      "required_operator_confirm": "取材フェーズで client に (1) 開業年数 (2) 認定区分を確認し、該当区分の program のみを候補化。本ルールに抵触する recommendation は recommend フェーズで強制除外。"
+    },
+    "excl-seisan-kiban-vs-chikusan-cluster-same-facility": {
+      "rule_id": "excl-seisan-kiban-vs-chikusan-cluster-same-facility",
+      "kind": "same_asset_exclusive",
+      "severity": "critical",
+      "program_a": "sanchi-seisan-kiban-power-up",
+      "program_b": "chikusan-cluster-shisetsu",
+      "description": "産地生産基盤パワーアップ事業と畜産クラスター事業 (施設整備事業) は、同一施設・同一機械を対象とした重複交付は禁止。作目区分で使い分ける: 耕種 (米・麦・野菜・果樹) は産地パワーアップ、畜産 (酪農・肉用牛・養豚・養鶏) はクラスター。複合経営の場合は施設ごとに使い分け。",
+      "source_notes": "MAFF 産地生産基盤パワーアップ事業交付要綱 および 畜産クラスター事業実施要綱 共通の '他の国庫補助事業との重複禁止' 条項。",
+      "source_urls": [
+        "https://www.maff.go.jp/j/seisan/ryutu/attach/pdf/seisan_power_up-15.pdf",
+        "https://www.maff.go.jp/j/chikusan/kikaku/lin/l_hosin/attach/pdf/index-152.pdf"
+      ],
+      "required_operator_confirm": "対象施設・機械の作目区分を operator が識別し、耕種/畜産どちらの制度で申請するか事前に確定。複合経営の場合は施設ごとに切り分け書類を分離。"
+    },
+    "excl-chushokigyo-seicho-kasoku-vs-jigyou-saikouchiku-same-scope": {
+      "rule_id": "excl-chushokigyo-seicho-kasoku-vs-jigyou-saikouchiku-same-scope",
+      "kind": "same_asset_exclusive",
+      "severity": "critical",
+      "program_a": "chushokigyo-seicho-kasoku-hojokin",
+      "program_b": "jigyo-saikouchiku-hojokin",
+      "description": "中小企業成長加速化補助金と事業再構築補助金 (中小企業等事業再構築促進基金) は、同一の事業計画・同一の投資経費に対する重複交付不可。成長加速化は既存事業の拡大向け、再構築は業態転換・新分野展開向け。100ha 法人農家が農業周辺サービス (加工・直売・カフェ併設・輸出) に新規参入する場合は再構築、既存農作物の生産拡大で施設増設の場合は成長加速化を選択。",
+      "source_notes": "中小企業庁 成長加速化補助金公募要領 '他の国庫補助金との重複受給不可'。事業再構築補助金 公募要領 同旨。",
+      "source_urls": [
+        "https://www.chusho.meti.go.jp/keiei/shokibo/seicho_kasoku.html",
+        "https://jigyou-saikouchiku.go.jp/"
+      ],
+      "required_operator_confirm": "client の投資対象 (既存拡大 vs 新業態) を取材で確定し、どちらか一方を選択。両方検討する場合は投資経費を明確に切り分けた上で別個の事業計画として申請。"
+    },
+    "excl-tamenteki-vs-chusankan-area-allocation": {
+      "rule_id": "excl-tamenteki-vs-chusankan-area-allocation",
+      "kind": "area_allocation",
+      "severity": "warning",
+      "program_a": "tamenteki-kinou-shiharai",
+      "program_b": "chusankan-chiiki-chokusetsu-shiharai",
+      "description": "多面的機能支払交付金と中山間地域等直接支払交付金は、同一農用地に対して面積按分で併給可能。鴻巣市 (平地農業地域) は中山間対象外のため、Konosu 100ha corp は多面的機能のみ対象。鴻巣市の一部が指定地域になっている場合のみ中山間も検討。",
+      "source_notes": "MAFF 日本型直接支払制度 概要 '多面的機能支払・中山間直接支払・環境保全型直接支払は相互併給可 (面積按分)'。鴻巣市は農業振興地域の整備に関する法律上、平地農業地域に該当。",
+      "source_urls": [
+        "https://www.maff.go.jp/j/nousin/kanri/tamen_siharai.html",
+        "https://www.maff.go.jp/j/nousin/tyusan/siharai_seido/"
+      ],
+      "required_operator_confirm": "client 農地の所在が中山間地域指定を受けているか市町村 GIS で確認。鴻巣市 100ha 法人は原則多面的機能のみ。"
+    },
+    "excl-super-L-vs-nogyo-kindaika-same-purpose": {
+      "rule_id": "excl-super-L-vs-nogyo-kindaika-same-purpose",
+      "kind": "same_asset_exclusive",
+      "severity": "critical",
+      "program_a": "super-L-shikin",
+      "program_b": "nogyo-kindaika-shikin",
+      "description": "スーパーL資金と農業近代化資金は、同一資金使途 (同一機械・施設・運転資金) に対する重複融資を原則禁止。貸付限度 (スーパーL: 個人3億/法人10-30億、近代化: 個人1800万/法人2億) と金利優遇幅の違いから、100ha 法人は原則スーパーL優先。近代化資金は小規模投資向けのサブ融資として使い分け。",
+      "source_notes": "MAFF 農業経営基盤強化資金 (スーパーL) 要綱 および 農業近代化資金融通法 施行要綱 共通の '同一資金使途での重複融資禁止' 原則。JFC スーパーL案内。",
+      "source_urls": [
+        "https://www.jfc.go.jp/n/finance/search/10_keieishien_t.html",
+        "https://www.maff.go.jp/j/keiei/kinyu/k_seido/k_kindai.html"
+      ],
+      "required_operator_confirm": "資金使途を operator が分解。大型長期投資 (施設・大型機械・農地取得) はスーパーL、補完的中小投資は近代化で切り分け可能。同一資産に両方は不可。"
+    },
+    "excl-kigyoban-furusato-nouzei-vs-hojokin-same-asset": {
+      "rule_id": "excl-kigyoban-furusato-nouzei-vs-hojokin-same-asset",
+      "kind": "cross_tier_same_asset",
+      "severity": "warning",
+      "program_a": "kigyoban-furusato-nouzei",
+      "program_b": null,
+      "program_b_group": ["national_subsidy", "pref_subsidy"],
+      "description": "企業版ふるさと納税 (地方創生応援税制) と国・県の補助金を同一プロジェクトで併用する場合、税額控除と補助金の合算が寄附額 (=プロジェクト費用) を超えないよう注意。控除対象寄附とされるためには '補助事業の裏負担' として位置付けられないこと (自治体側が交付要件 check)。",
+      "source_notes": "内閣府 地方創生応援税制 (企業版ふるさと納税) ガイドライン '経済的利益の供与禁止'。",
+      "source_urls": [
+        "https://www.chisou.go.jp/tiiki/tiikisaisei/kigyou_furusato.html"
+      ],
+      "required_operator_confirm": "受入自治体の寄附受領証明に補助金併用申告を添付。自治体の事前確認が必要。"
+    }
+  }
+}

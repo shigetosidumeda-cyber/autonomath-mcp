@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support (email)
+    url: mailto:support@<DOMAIN_PLACEHOLDER>
+    about: Billing, API keys, account issues, or anything you'd rather not discuss in public. 24h response on weekdays.
+  - name: Security issues
+    url: mailto:security@<DOMAIN_PLACEHOLDER>
+    about: Vulnerability reports. Please do not open a public issue for security problems.

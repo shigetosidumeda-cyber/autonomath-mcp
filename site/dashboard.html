@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Dashboard — AutonoMath</title>
+<meta name="description" content="AutonoMath のユーザーダッシュボード。API キー、利用量、課金を管理。">
+<meta name="robots" content="noindex,nofollow">
+
+<meta property="og:title" content="Dashboard — AutonoMath">
+<meta property="og:description" content="AutonoMath のユーザーダッシュボード (ログイン必須)。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/dashboard.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og-square.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dashboard — AutonoMath">
+<meta name="twitter:description" content="AutonoMath のユーザーダッシュボード (ログイン必須)。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-square.png">
+
+<link rel="canonical" href="https://autonomath.ai/dashboard.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/dashboard.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/dashboard.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/dashboard.html">
+<!-- Preconnect to the API origin so the cookie-session + Bearer-flow
+     dashboards (dashboard.js + dashboard_v2.js) can fire /v1/me +
+     /v1/me/dashboard the moment the JS parses, rather than waiting
+     for the per-request DNS + TLS handshake. crossorigin matches the
+     fetch() mode used by both files. -->
+<link rel="preconnect" href="https://api.autonomath.ai" crossorigin>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/critical.css">
+<link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/styles.css"></noscript>
+<!-- dashboard.js wires this page to /v1/session + /v1/me/*. Pure ES2020, no
+     build step. Relative URLs = same-origin. If the dashboard is ever served
+     from a different host than the API, set window.AUTONOMATH_API_BASE
+     (legacy alias: window.JPINTEL_API_BASE) before loading dashboard.js
+     (and ensure CORS + allow_credentials on the API). -->
+<script defer src="dashboard.js"></script>
+<!-- dashboard_v2.js adds Bearer-authenticated views (paste-key flow) on top
+     of the cookie-session dashboard above. Reads localStorage.am_api_key
+     and calls /v1/me/dashboard, /v1/me/usage_by_tool,
+     /v1/me/billing_history, /v1/me/tool_recommendation,
+     /v1/me/alerts/*. If no key is in localStorage the additional sections
+     stay in their static demo state so the cookie-session flow is
+     unaffected. Both flows surface the same metered ¥3/req model. -->
+<script defer src="dashboard_v2.js"></script>
+<style>
+  .dash { padding: 48px 0 64px; }
+  .dash h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
+  .dash .sub { color: var(--text-muted); margin: 0 0 28px; font-size: 15px; }
+  .dash-nav { display: flex; gap: 22px; font-size: 14px; margin: 0 0 32px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+  .dash-nav a { color: var(--text-muted); }
+  .dash-nav a.active { color: var(--text); font-weight: 600; border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: -15px; }
+  .stat-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin: 0 0 28px; }
+  .stat-card { border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; background: var(--bg); }
+  .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; font-weight: 600; }
+  .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; color: var(--text); }
+  .stat-value .unit { font-size: 16px; font-weight: 500; color: var(--text-muted); }
+  .quota-bar { height: 8px; background: var(--bg-alt); border-radius: 4px; overflow: hidden; margin: 10px 0 4px; }
+  .quota-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .stat-note { font-size: 13px; color: var(--text-muted); margin: 4px 0 0; }
+  .chart-card { border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; background: var(--bg); margin: 0 0 28px; }
+  .chart-title { font-size: 14px; font-weight: 600; margin: 0 0 14px; color: var(--text); display: flex; justify-content: space-between; align-items: baseline; }
+  .chart-title .muted { color: var(--text-muted); font-size: 13px; font-weight: 500; }
+  .chart-svg { width: 100%; height: 80px; display: block; }
+  .chart-axis { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; margin: 6px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .keybox { border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; background: var(--bg); margin: 0 0 16px; }
+  .keybox .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 10px; font-weight: 600; }
+  .keybox .key { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; background: var(--bg-alt); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); color: var(--text); display: inline-block; margin: 0 10px 10px 0; }
+  .keybox .hash-prefix { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--text-muted); margin: 0 0 14px; }
+  .btn-ghost { background: var(--bg-alt); color: var(--text); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-ghost:hover { background: var(--bg-alt); }
+  .btn-danger { background: var(--bg); color: var(--danger); border: 1px solid var(--danger); padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-danger:hover { background: var(--bg-alt); }
+  /* Touch-device target sizing. Coarse pointers (touchscreens) get
+     enlarged tap targets per WCAG 2.5.5; mouse/trackpad keep the compact
+     desktop styling. */
+  @media (pointer: coarse) {
+    .btn-ghost,
+    .btn-danger { padding: 12px 18px; min-height: 44px; }
+  }
+  .actions-row { display: flex; gap: 20px; flex-wrap: wrap; margin: 32px 0 0; padding: 20px 0 0; border-top: 1px solid var(--border); font-size: 14px; }
+  .actions-row a { color: var(--text-muted); }
+  .actions-row a:hover { color: var(--accent); }
+  /* Alert subscription form. Auto-fit grid on wide screens, single
+     column on narrow phones. Style hoisted out of the inline attribute so
+     the @media rule can override. */
+  #dash2-alerts-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; align-items: end; }
+  @media (max-width: 480px) {
+    #dash2-alerts-form { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .dash { padding: 32px 0 48px; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .dash-nav { gap: 8px; font-size: 13px; flex-wrap: wrap; }
+  }
+  @media (max-width: 480px) {
+    .dash-nav { gap: 6px; font-size: 12px; }
+    .dash-nav a { padding: 8px 10px; min-height: 44px; }
+    #dash2-key-form { flex-direction: column; }
+    #dash2-key-input { min-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="dashboard.html" aria-current="page">Dashboard</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="dashboard.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="en/dashboard.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="dash">
+    <div class="container">
+
+      <!-- Dunning banner. Shown when /v1/me.subscription_status is
+           past_due / unpaid / canceled. Hidden by default; dashboard.js fills
+           in copy + button.href and toggles display. role="alert" so screen
+           readers announce it on first render. Hex colors hoisted into
+           .dunning-banner CSS class so dark-mode @media can override
+           (#7f1d1d on #0d1117 = 1.6:1 fail). -->
+      <div id="dash-dunning-banner" class="dunning-banner" role="alert" hidden
+           style="display:none;">
+        <span id="dash-dunning-msg" class="dunning-banner-msg"></span>
+        <a id="dash-dunning-portal" class="dunning-banner-action" href="#" role="button">Stripe ポータルへ</a>
+      </div>
+
+      <!-- New-key reveal box. Shown one-time on first dashboard
+           load after key creation (sessionStorage `am_first_key` bridge).
+           Hidden by default; dashboard.js populates and reveals if conditions
+           match, then clears sessionStorage so refresh hides it. -->
+      <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
+           style="display:none;">
+        <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの API key です。今すぐコピーしてください — 次回以降は表示されません。</p>
+        <code id="dash-newkey-value" class="newkey-value"></code>
+        <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">Copy key</button>
+        <button type="button" id="dash-newkey-dismiss" class="btn-ghost">表示を閉じる</button>
+      </div>
+
+      <h1>Dashboard</h1>
+      <p class="sub">signed in as <code>—</code></p>
+      <!-- Trust strip — discreet single line so logged-in users keep
+           verifiable provider info above the fold. Not behind auth. -->
+      <p class="trust-strip" style="margin:0 0 18px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+        運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+        · <a href="tokushoho.html">特商法表記</a>
+        · <a href="tos.html">利用規約</a>
+        · <a href="privacy.html">プライバシー</a>
+        · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
+        · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
+      </p>
+
+      <nav class="dash-nav" aria-label="Dashboard">
+        <a href="dashboard.html" class="active" aria-current="page">Overview</a>
+        <a href="#api-key-section" title="同一ページ内の API key ブロックへ">API key</a>
+        <a href="#billing-section" title="同一ページ内の Billing ブロックへ">Billing</a>
+        <a href="#dash2-billing-history" title="請求書一覧 (Stripe 同期、CSV/JSON ダウンロード)">Invoices</a>
+        <button type="button" class="link-button">Log out</button>
+      </nav>
+
+      <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
+        <p id="quota-counter-label" class="stat-label">This month's quota (anonymous)</p>
+        <p class="quota-counter-headline">
+          <span class="quota-counter-value">0</span>
+          <span class="unit"> / <span class="quota-counter-limit">—</span> calls this month</span>
+          <span class="quota-counter-pct"></span>
+        </p>
+        <div class="quota-counter-bar"
+             role="progressbar"
+             aria-label="Monthly API call quota (resets JST first-of-month 00:00)"
+             aria-valuenow="0"
+             aria-valuemin="0"
+             aria-valuemax="100">
+          <div class="quota-counter-fill"></div>
+        </div>
+        <p class="quota-counter-note">reset at 月初 00:00 JST</p>
+      </section>
+
+      <!-- Current Stripe billing period end. Filled by dashboard.src.js
+           (cookie session via /v1/me.subscription_current_period_end) and by
+           dashboard_v2.src.js (Bearer via /v1/me/dashboard.current_period_end).
+           Hidden until at least one path populates a date so anonymous /
+           pre-billing users do not see an empty placeholder. -->
+      <p id="dash-period-end" class="stat-note" hidden
+         style="display:none;margin:0 0 16px;font-weight:600;color:var(--text);">
+        今月の請求期間: <span id="dash-period-end-date">—</span> まで
+      </p>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <p class="stat-label">This month</p>
+          <p class="stat-value">— <span class="unit">calls</span></p>
+          <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
+          <p class="stat-note">読み込み中… ご利用は metered ¥3/req (税込 ¥3.30)、月次の上限はありません。</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Last 7 days</p>
+          <p class="stat-value">— <span class="unit">calls</span></p>
+          <p class="stat-note">読み込み中… ご利用に応じて表示されます。</p>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">
+          <span>Last 30 days</span>
+          <span class="muted" id="dash-chart-peak">読み込み中…</span>
+        </div>
+        <svg class="chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="30-day daily call chart">
+          <!-- Bars are populated by dashboard.js from /v1/me/usage. The SVG
+               renders empty until JS hydrates so first-time users see an
+               accurate "no usage yet" state instead of demo fixtures. -->
+        </svg>
+        <p class="chart-axis"><span id="dash-chart-start">—</span><span id="dash-chart-end">—</span></p>
+        <!-- Monthly projection line. dashboard.js extrapolates
+             month-to-date usage to month-end (linear) and shows ¥cost at
+             ¥3/req. Hidden on day 1-2 of the month (insufficient data). -->
+        <p id="dash-projection" class="stat-note" style="margin:14px 0 0;font-weight:600;color:var(--text);"></p>
+      </div>
+
+      <div class="keybox" id="api-key-section">
+        <p class="label">Your API key</p>
+        <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
+        <p class="hash-prefix">hash prefix: ————————</p>
+        <button class="btn-danger" id="dash-rotate-btn" type="button">Rotate key</button>
+        <button class="btn-ghost" id="dash-copy-btn" type="button">Copy prefix</button>
+        <p class="stat-note" style="margin-top:12px">Rotation invalidates the old key immediately. Update your clients before rotating.</p>
+      </div>
+
+      <div class="stat-card" id="billing-section" style="margin:0 0 16px">
+        <p class="stat-label">Billing</p>
+        <p class="stat-value" style="font-size:20px" data-billing-headline>読み込み中…</p>
+        <p class="stat-note" style="margin:8px 0 14px">ご利用は metered ¥3/req (税別 / 税込 ¥3.30) の従量課金です。月額固定費・最低利用料・tier はありません。請求書 (適格請求書) は Stripe ポータルからダウンロードできます。</p>
+        <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button">Stripe ポータルを開く &rarr;</a>
+        <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
+          ご不要になられましたら、Stripe ポータルから <strong>サブスクリプションをキャンセル</strong> できます。
+          キャンセル後も当月末までは API アクセス可能で、当月分のみ ¥3/req 従量請求が発生します。
+        </p>
+      </div>
+
+      <!-- ============================================================== -->
+      <!-- Self-serve dashboard sections wired via Bearer auth.            -->
+      <!-- dashboard_v2.js reads localStorage.am_api_key and pulls from    -->
+      <!-- /v1/me/* (no cookie session needed). Hidden until a key is      -->
+      <!-- pasted below; legacy cookie-session flow above is unaffected.   -->
+      <!-- ============================================================== -->
+
+      <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
+        <p class="stat-label">Usage details (paste API key)</p>
+        <p class="stat-note" style="margin:0 0 12px;">
+          API key を貼り付けてください。ブラウザの localStorage に保存され、
+          /v1/me/dashboard へ Bearer header として送信されます。サーバ側保存
+          (cookie session) は別フロー <code>Sign in</code> を使ってください。
+        </p>
+        <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <label for="dash2-key-input" class="visually-hidden">API key</label>
+          <input id="dash2-key-input" type="password" inputmode="text"
+                 placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                 style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;">
+          <button type="submit" class="btn btn-primary">Load dashboard</button>
+          <button type="button" id="dash2-key-clear" class="btn-ghost">Clear</button>
+        </form>
+        <p id="dash2-key-status" class="stat-note" style="margin:8px 0 0;color:var(--text-muted);"></p>
+      </section>
+
+      <section id="dash2-summary" class="stat-card" style="margin:0 0 16px;display:none;">
+        <p class="stat-label">30-day usage (Bearer)</p>
+        <p class="stat-value" id="dash2-summary-headline">— calls / ¥— spent</p>
+        <div class="quota-bar" aria-hidden="true"><div class="quota-fill" id="dash2-cap-fill" style="width:0%"></div></div>
+        <p class="stat-note" id="dash2-summary-note">月内予算 (cap) を設定すると、使い切った時点で 503 + cap_reached:true で停止します。</p>
+        <svg id="dash2-spark" class="chart-svg" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="30-day sparkline" style="margin-top:14px;height:60px"></svg>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;">
+          <label for="dash2-cap-input" class="stat-note" style="margin:0;">月次予算 (¥)</label>
+          <input id="dash2-cap-input" type="number" min="0" step="100"
+                 placeholder="例: 10000"
+                 style="width:140px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+          <button type="button" id="dash2-cap-save" class="btn-ghost">Save cap</button>
+          <button type="button" id="dash2-cap-clear" class="btn-ghost">Remove cap</button>
+        </div>
+      </section>
+
+      <section id="dash2-tool-usage" class="stat-card" style="margin:0 0 16px;display:none;">
+        <p class="stat-label">Tool usage — top 10 (last 30 days)</p>
+        <table id="dash2-tool-table" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;">
+          <thead>
+            <tr style="text-align:left;border-bottom:1px solid var(--border);">
+              <th scope="col" style="padding:6px 4px;">Endpoint</th>
+              <th scope="col" style="padding:6px 4px;text-align:right;">Calls</th>
+              <th scope="col" style="padding:6px 4px;text-align:right;">¥ Amount</th>
+              <th scope="col" style="padding:6px 4px;text-align:right;">Avg latency</th>
+            </tr>
+          </thead>
+          <tbody id="dash2-tool-tbody"></tbody>
+        </table>
+      </section>
+
+      <section id="dash2-billing-history" class="stat-card" style="margin:0 0 16px;display:none;">
+        <p class="stat-label">Billing history (Stripe)</p>
+        <p class="stat-note" id="dash2-billing-note" style="margin:0 0 8px;">Stripe Customer Portal と同期 (5 分キャッシュ)。</p>
+        <table id="dash2-billing-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="text-align:left;border-bottom:1px solid var(--border);">
+              <th scope="col" style="padding:6px 4px;">期間</th>
+              <th scope="col" style="padding:6px 4px;">Status</th>
+              <th scope="col" style="padding:6px 4px;text-align:right;">¥ Paid</th>
+              <th scope="col" style="padding:6px 4px;">Invoice</th>
+            </tr>
+          </thead>
+          <tbody id="dash2-billing-tbody"></tbody>
+        </table>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button type="button" id="dash2-billing-csv" class="btn-ghost">Download CSV</button>
+          <button type="button" id="dash2-billing-json" class="btn-ghost">Download JSON</button>
+        </div>
+      </section>
+
+      <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">
+        <p class="stat-label">Tool recommendation (intent → endpoint)</p>
+        <p class="stat-note" style="margin:0 0 10px;">
+          Dev: 自然文の意図から /v1/* エンドポイント候補を返します。
+          SMB は <a href="line.html">LINE 受付窓口</a> へ転送される対話 UI を想定。
+        </p>
+        <form id="dash2-rec-form" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <label for="dash2-rec-intent" class="visually-hidden">Intent</label>
+          <input id="dash2-rec-intent" type="text"
+                 placeholder="例: 設備投資の補助金、税額控除"
+                 style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+          <button type="submit" class="btn btn-primary">Recommend</button>
+        </form>
+        <ol id="dash2-rec-list" style="margin:12px 0 0;padding:0 0 0 18px;font-size:13px;color:var(--text);"></ol>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- Amendment-alert subscriptions (法令改正・制度新設・行政処分).      -->
+      <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (Bearer auth).     -->
+      <!-- Subscriptions are free — fan-out cost is absorbed as retention. -->
+      <!-- ============================================================== -->
+
+      <section id="dash2-alerts" class="stat-card" style="margin:0 0 16px;display:none;">
+        <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート (全ご利用者に無料)</h2>
+        <p class="stat-note" style="margin:0 0 12px;">
+          法令改正・制度新設・行政処分などの差分を Webhook (HTTPS のみ) または Email で
+          proactive 通知します。Subscription は<strong>無料</strong> (¥3/req に追加課金なし、有料プラン契約の有無を問いません)。
+          <code>filter_type</code> は <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
+          <code>industry_jsic</code> / <code>all</code> から選択、<code>min_severity</code> は
+          <code>critical</code> (制度終了・eligibility 変更) / <code>important</code> (金額・対象変更) /
+          <code>info</code> (出典再取得など) の 3 段階。詳しくは <a href="/docs/alerts_guide/">alerts guide</a>。
+        </p>
+
+        <p id="dash2-alerts-banner" role="status" aria-live="polite"
+           style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
+
+        <h3 class="dash-subsection-title">登録中の subscription (active)</h3>
+        <table id="dash2-alerts-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="text-align:left;border-bottom:1px solid var(--border);">
+              <th scope="col" style="padding:6px 4px;">id</th>
+              <th scope="col" style="padding:6px 4px;">filter_type</th>
+              <th scope="col" style="padding:6px 4px;">filter_value</th>
+              <th scope="col" style="padding:6px 4px;">severity</th>
+              <th scope="col" style="padding:6px 4px;">webhook_url</th>
+              <th scope="col" style="padding:6px 4px;">email</th>
+              <th scope="col" style="padding:6px 4px;text-align:right;">削除</th>
+            </tr>
+          </thead>
+          <tbody id="dash2-alerts-tbody"></tbody>
+        </table>
+
+        <h3 class="dash-subsection-title is-spaced">新規登録</h3>
+        <form id="dash2-alerts-form" autocomplete="off">
+          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+            <label for="dash2-alerts-company-url">Company URL (leave blank)</label>
+            <input id="dash2-alerts-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <div>
+            <label for="dash2-alerts-filter-type" class="stat-note" style="margin:0 0 4px;display:block;">filter_type <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+            <select id="dash2-alerts-filter-type" required aria-required="true"
+                    style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
+              <option value="tool">tool</option>
+              <option value="law_id" selected>law_id</option>
+              <option value="program_id">program_id</option>
+              <option value="industry_jsic">industry_jsic</option>
+              <option value="all">all (全件)</option>
+            </select>
+          </div>
+          <div>
+            <label for="dash2-alerts-filter-value" class="stat-note" style="margin:0 0 4px;display:block;">filter_value</label>
+            <input id="dash2-alerts-filter-value" type="text"
+                   placeholder="例: law_345AC0000000050"
+                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+          </div>
+          <div>
+            <label for="dash2-alerts-severity" class="stat-note" style="margin:0 0 4px;display:block;">min_severity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+            <select id="dash2-alerts-severity" required aria-required="true"
+                    style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
+              <option value="critical">critical (制度終了・eligibility)</option>
+              <option value="important" selected>important (金額・対象)</option>
+              <option value="info">info (cosmetic 含む全て)</option>
+            </select>
+          </div>
+          <div>
+            <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">webhook_url (https のみ、optional)</label>
+            <input id="dash2-alerts-webhook" type="url"
+                   placeholder="https://hooks.example.com/autonomath"
+                   pattern="https://.*"
+                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+          </div>
+          <div>
+            <label for="dash2-alerts-email" class="stat-note" style="margin:0 0 4px;display:block;">email (optional)</label>
+            <input id="dash2-alerts-email" type="email"
+                   placeholder="ops@example.com"
+                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+          </div>
+          <div>
+            <button type="submit" id="dash2-alerts-submit" class="btn btn-primary"
+                    style="width:100%;padding:10px 14px;">登録</button>
+          </div>
+        </form>
+        <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
+          少なくとも webhook_url か email のどちらか 1 つが必須。
+          内部 IP (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) は登録時に reject されます。
+        </p>
+      </section>
+
+      <div class="actions-row">
+        <a href="/docs/">Docs</a>
+        <a href="mailto:info@bookyou.net">Contact support</a>
+        <a href="tos.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の制度 API</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/feedback-widget.js" defer></script>
+<script src="dashboard_init.js" defer></script>
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

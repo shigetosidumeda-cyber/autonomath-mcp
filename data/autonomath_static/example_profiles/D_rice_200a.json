@@ -1,0 +1,60 @@
+{
+  "_meta": {
+    "schema_version": "9.2.0",
+    "user_type": "D",
+    "user_type_label": "集落営農",
+    "version": 1,
+    "parent_canonical_id": null,
+    "test_profile_id": "D_rice_200a"
+  },
+  "identity": {
+    "name": "鈴木 四郎",
+    "furigana": "スズキ シロウ",
+    "address": "新潟県長岡市○○町",
+    "postal_code": "940-0001",
+    "birth_date": {"era": "昭和", "year": 40, "month": 11, "day": 1},
+    "age": 61,
+    "phone": "0258-11-2222",
+    "email": ""
+  },
+  "plan": {
+    "municipalities": ["長岡市"],
+    "prefecture": "新潟県",
+    "crop": "水稲",
+    "sub_crops": ["大豆"],
+    "area_a": 200,
+    "cultivation_method": "露地栽培",
+    "start_year": 2026,
+    "start_month": 4,
+    "vision": "集落の農地200aを集約し、水稲を中心に大豆との輪作体系を確立。集落全体の農業所得向上を目指す。",
+    "farm_land_type": "農地中間管理機構",
+    "channel": "JA"
+  },
+  "qualifications": {
+    "stage": 0,
+    "entity_type": "collective",
+    "has_regional_plan": true,
+    "has_loan_ready": true,
+    "has_insurance": true,
+    "has_blue_tax": false,
+    "household_income_万": null
+  },
+  "financial": {
+    "available_capital_万": 500,
+    "existing_operations": []
+  },
+  "investments": [
+    {"name": "トラクター", "category": "machinery", "amount_万": 500, "useful_life": 8, "year": 2026},
+    {"name": "田植機", "category": "machinery", "amount_万": 300, "useful_life": 7, "year": 2026},
+    {"name": "コンバイン", "category": "machinery", "amount_万": 800, "useful_life": 7, "year": 2026},
+    {"name": "乾燥機・籾摺機", "category": "processing_equipment", "amount_万": 400, "useful_life": 10, "year": 2026}
+  ],
+  "fields": [
+    {"name": "集落圃場A", "address": "長岡市○○", "area_sqm": 10000, "field_type": "水田", "tenure": "農地中間管理機構"},
+    {"name": "集落圃場B", "address": "長岡市○○", "area_sqm": 10000, "field_type": "水田", "tenure": "農地中間管理機構"}
+  ],
+  "family": [],
+  "work_history": [
+    {"type": "employment", "organization": "自営農業（水稲）", "role": "経営主", "start_date": "1985年4月", "is_agriculture": true}
+  ]
+}

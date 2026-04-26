@@ -1,0 +1,61 @@
+/* AutonoMath docs — brand overrides.
+ * Accent pulled from site/styles.css (--accent: #1e3a8a) so the docs surface
+ * matches the landing page exactly. Deep-blue on white, high contrast.
+ */
+
+:root {
+  --md-primary-fg-color:        #1e3a8a;
+  --md-primary-fg-color--light: #2b4fad;
+  --md-primary-fg-color--dark:  #172b6b;
+  --md-accent-fg-color:         #1e3a8a;
+}
+
+[data-md-color-scheme="default"] {
+  --md-typeset-a-color: #1e3a8a;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #2b4fad;
+  --md-typeset-a-color:         #9dbcff;
+}
+
+/* Tighten line-height for dense Japanese text (matches landing page body). */
+.md-typeset {
+  line-height: 1.75;
+}
+
+/* Kill rounded edges on content area — landing page uses sharp corners. */
+.md-typeset pre > code,
+.md-typeset code {
+  border-radius: 2px;
+}
+
+/* Code blocks — match landing page --code-bg: #0f172a. */
+.md-typeset pre > code {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+/* Admonition — subtle, no heavy fill. */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 2px;
+}
+
+/* Footer link row should inherit brand color. */
+.md-footer-meta a {
+  color: #e5e5e5;
+}
+
+/* Wave 28 — feedback FAB right-edge clipping defense on phones.
+   The widget injects `.am-fb-fab` with right:20px/bottom:20px via
+   inline <style>. On <=480px tighten the offset and cap max-width
+   so the pill never extends past the readable edge of the docs body
+   (Material adds a 16px gutter on .md-content at mobile). */
+@media (max-width: 480px) {
+  .am-fb-fab {
+    right: 12px !important;
+    bottom: 12px !important;
+    max-width: calc(100vw - 24px);
+  }
+}

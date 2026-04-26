@@ -1,0 +1,781 @@
+{
+  "nodes": {
+    "hojokin": {
+      "id": "hojokin",
+      "kind": "term",
+      "label": "補助金",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "国や自治体が「使ってね」とくれるお金。返さなくていい。",
+        "technical": "国や自治体が特定の政策目的のために交付する返済不要の資金。事業計画の審査があり、採択後に実績を報告する義務がある。",
+        "legal": "補助金適正化法(補助金等に係る予算の執行の適正化に関する法律)の対象",
+        "example": "ものづくり補助金で最大1,250万円。機械装置の購入費の2/3が返ってくる。",
+        "metaphor": "国が「がんばれ!この道具代の2/3出すから」と言ってくれる奨学金みたいなもの。"
+      },
+      "aliases": [
+        "grant",
+        "subsidy"
+      ],
+      "tags": [
+        "money-type",
+        "cash-in"
+      ]
+    },
+    "joseikin": {
+      "id": "joseikin",
+      "kind": "term",
+      "label": "助成金",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "補助金と似てるけど、条件を満たせば基本もらえるお金。雇用関係が多い。",
+        "technical": "厚生労働省など所管官庁が定める要件を満たせば原則支給される資金。補助金と比べて審査が形式的で、要件充足型。",
+        "example": "キャリアアップ助成金:非正規を正社員にすると1人57万円支給。",
+        "metaphor": "予約制ではなく「要件を満たせば受付順」のお店みたいな感じ。"
+      },
+      "aliases": [
+        "grant",
+        "subsidy-koyo"
+      ],
+      "tags": [
+        "money-type"
+      ]
+    },
+    "tax-credit": {
+      "id": "tax-credit",
+      "kind": "term",
+      "label": "税額控除",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "払うべき税金から直接引いてくれる。たとえば10万円の控除なら10万円そのまま安くなる。",
+        "technical": "算出税額から直接差し引かれる税優遇。控除額=税軽減額そのもの。",
+        "example": "研究開発費1,000万円×控除率10% = 100万円が法人税から直接差し引かれる。",
+        "metaphor": "レジで100円クーポン使うのと同じ。100円そのまま安くなる。"
+      },
+      "tags": [
+        "money-type",
+        "tax"
+      ]
+    },
+    "loss-deduction": {
+      "id": "loss-deduction",
+      "kind": "term",
+      "label": "損金算入",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "会社の利益から経費として引いて、利益を小さくする。税金が軽くなる。",
+        "technical": "法人税の計算において所得から控除される経費扱い。税軽減額 ≒ 損金×実効税率(約30%)。",
+        "example": "倒産防止共済 年240万円 全額損金算入 → 税軽減 約72万円/年",
+        "metaphor": "給料から経費を引いてから税金を計算するのと同じ仕組み。"
+      },
+      "tags": [
+        "money-type",
+        "tax"
+      ]
+    },
+    "income-deduction": {
+      "id": "income-deduction",
+      "kind": "term",
+      "label": "所得控除",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "個人の所得から引いてくれる。iDeCoや小規模共済などで使う。",
+        "technical": "所得税の計算において総所得から差し引かれる控除。軽減額 ≒ 控除額×限界税率。",
+        "example": "小規模企業共済 年84万円を所得控除 → 所得税率30%なら税軽減約25万円",
+        "metaphor": "損金算入の個人版。"
+      },
+      "tags": [
+        "money-type",
+        "tax"
+      ]
+    },
+    "nintei-shien": {
+      "id": "nintei-shien",
+      "kind": "term",
+      "label": "認定経営革新等支援機関",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "国が「この人は中小企業の相談に乗れる」と認めた税理士や金融機関。",
+        "technical": "中小企業経営力強化支援法により認定された経営支援の専門家。税理士・公認会計士・金融機関・商工会議所など。補助金申請の多くで確認書が必要。",
+        "example": "ものづくり補助金、新事業進出補助金、経営力向上計画の認定に必須の伴走役。",
+        "metaphor": "中小企業の「かかりつけ医」の国公認版。"
+      },
+      "aliases": [
+        "認定支援機関"
+      ],
+      "tags": [
+        "entity",
+        "advisor"
+      ]
+    },
+    "jgrants": {
+      "id": "jgrants",
+      "kind": "term",
+      "label": "jGrants",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "国の補助金をオンライン申請できるサイト。",
+        "technical": "デジタル庁と中小企業庁が運営する補助金電子申請システム。GBizIDでログインし、国の補助金の多くをここから申請できる。",
+        "example": "ものづくり補助金・IT導入補助金・新事業進出補助金 すべてjGrants経由。",
+        "metaphor": "補助金版の確定申告e-Tax。"
+      },
+      "tags": [
+        "platform",
+        "entry-point"
+      ]
+    },
+    "gbizid": {
+      "id": "gbizid",
+      "kind": "term",
+      "label": "GBizIDプライム",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "国の電子申請を使うときの共通ログインID。無料だけど取得に2週間くらいかかる。",
+        "technical": "経産省が発行する法人共通認証ID。印鑑証明書を郵送して本人確認。jGrants、電子申請・届出システム等で使う。",
+        "example": "補助金を出す2週間以上前には必ず申請しておく。",
+        "metaphor": "法人のマイナンバーカードみたいなもの。"
+      },
+      "tags": [
+        "platform",
+        "entry-point"
+      ]
+    },
+    "kofu-kettei": {
+      "id": "kofu-kettei",
+      "kind": "term",
+      "label": "交付決定",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "「この補助金あげます」と国が正式にOKを出すこと。これが出るまで発注しちゃダメ。",
+        "technical": "補助事業者が提出した交付申請に対する官側の承認。発注・契約・支払いが対象経費として認められる起点日。",
+        "example": "採択通知 ≠ 交付決定。「採択」の後に別途「交付申請」→「交付決定」がある。",
+        "metaphor": "採択は「借りる予約」、交付決定が「契約成立」。契約前に業者に発注しちゃうと返還になる。"
+      },
+      "tags": [
+        "procedure",
+        "critical"
+      ]
+    },
+    "jisshi-hokoku": {
+      "id": "jisshi-hokoku",
+      "kind": "term",
+      "label": "実績報告書",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "補助金を使い終わったあと「ちゃんと使いました」と出す報告書。",
+        "technical": "補助事業完了後30日以内等に提出する報告書。経費内訳・成果物・証憑(請求書・領収書・振込証明)を添付。",
+        "example": "領収書の日付が交付決定前だと経費として認められず返還。"
+      },
+      "tags": [
+        "procedure"
+      ]
+    },
+    "jigyoka-hokoku": {
+      "id": "jigyoka-hokoku",
+      "kind": "term",
+      "label": "事業化状況報告",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "補助金で作った物が売上につながっているかを、5年間毎年報告するやつ。",
+        "technical": "補助事業終了後5年間、毎年1回、事業化状況・知財活用・売上実績を報告する義務。未提出は返還事由。",
+        "example": "ものづくり補助金・新事業進出補助金 すべてに付随する長期義務。",
+        "metaphor": "補助金は「5年ローンの保証人」みたいに後追いで面倒を見続ける。"
+      },
+      "tags": [
+        "procedure",
+        "long-term"
+      ]
+    },
+    "fuka-kachi-gaku": {
+      "id": "fuka-kachi-gaku",
+      "kind": "term",
+      "label": "付加価値額",
+      "difficulty": 4,
+      "explanation": {
+        "plain": "売上から仕入れや外注費を引いた残り。会社が本当に稼いだ価値。",
+        "technical": "営業利益 + 人件費 + 減価償却費 で計算(中小企業庁ロカベン定義)。多くの補助金が「付加価値額3%/年率UP」を成果指標にする。",
+        "example": "新事業進出補助金:5年間で付加価値額を年率3%以上UPが目標未達時は返還のおそれ。",
+        "metaphor": "会社の「稼ぎ力」を1つの数字にしたもの。"
+      },
+      "tags": [
+        "metric",
+        "kpi"
+      ]
+    },
+    "locabe": {
+      "id": "locabe",
+      "kind": "term",
+      "label": "ローカルベンチマーク(ロカベン)",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "中小企業の健康診断シート。売上とか利益とかを入れると自分の会社の位置が分かる。",
+        "technical": "経産省が提供する無料の企業診断ツール。6指標(売上高増加率・営業利益率・労働生産性等)+非財務面を可視化。補助金の事業計画書に添付を求められることが多い。",
+        "metaphor": "会社版の健康診断。"
+      },
+      "tags": [
+        "tool"
+      ]
+    },
+    "safety-kyosai": {
+      "id": "safety-kyosai",
+      "kind": "term",
+      "label": "経営セーフティ共済",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "取引先が倒産したときに備える共済。掛金は経費になるのが得。",
+        "technical": "正式名:中小企業倒産防止共済制度。月額最大20万円・累計800万円まで掛金全額損金算入。40ヶ月以上で解約時100%戻り。",
+        "example": "年240万円を掛けて実効税率30%なら税軽減約72万円/年。",
+        "metaphor": "節税できる「会社の貯金箱+倒産保険」。"
+      },
+      "aliases": [
+        "倒産防止共済"
+      ],
+      "tags": [
+        "seido"
+      ]
+    },
+    "small-biz-kyosai": {
+      "id": "small-biz-kyosai",
+      "kind": "term",
+      "label": "小規模企業共済",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "役員個人が積み立てる退職金。払った額がそのまま所得控除。",
+        "technical": "中小機構が運営する役員・個人事業主向けの退職金制度。月最大7万円(年84万円)全額所得控除。",
+        "metaphor": "役員本人のための「国公認の401k+退職金」。"
+      },
+      "tags": [
+        "seido"
+      ]
+    },
+    "keiei-koujou": {
+      "id": "keiei-koujou",
+      "kind": "term",
+      "label": "経営力向上計画",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "「うちは経営改善します」と国に出す計画書。これがあると多くの優遇を受けられる。",
+        "technical": "中小企業等経営強化法に基づく認定計画。税制・金融・信用保証等の優遇措置の前提資格。事業分野別指針に沿って策定。",
+        "example": "強化税制(即時償却)・事業承継税制・公庫融資 すべての入口。",
+        "metaphor": "コンビニで「アプリ会員ですか?」と聞かれるのと同じ。これないと割引適用ナシ。"
+      },
+      "tags": [
+        "seido",
+        "prerequisite"
+      ]
+    },
+    "monozukuri": {
+      "id": "monozukuri",
+      "kind": "term",
+      "label": "ものづくり補助金",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "革新的な新製品や生産プロセスの設備投資を半分以上肩代わりしてくれる補助金。",
+        "technical": "正式名:ものづくり・商業・サービス生産性向上促進補助金。中小企業の革新的サービス開発・試作品開発・生産プロセス改善のための設備投資等を支援。年3〜4回公募。",
+        "example": "1,000万円の機械を買う → 2/3補助なら667万円が国から戻る。",
+        "metaphor": "中小企業の「設備買いたい」夢を国が半額以上負担してくれる仕組み。"
+      },
+      "tags": [
+        "seido",
+        "flagship"
+      ]
+    },
+    "shinjigyou": {
+      "id": "shinjigyou",
+      "kind": "term",
+      "label": "新事業進出補助金",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "「うちの会社、新しい業種や新しい市場に進出したい」という時の大型補助金。",
+        "technical": "旧事業再構築補助金の後継制度。中小企業の新市場進出・新分野転換を支援。補助上限数千万円〜9,000万円、補助率1/2〜2/3。付加価値額目標達成が条件。",
+        "example": "製造業→IT業への転換、新業態の店舗展開など。",
+        "metaphor": "会社の「転職活動」を国が応援してくれる。"
+      },
+      "tags": [
+        "seido",
+        "pivot"
+      ]
+    },
+    "chinage-zeisei": {
+      "id": "chinage-zeisei",
+      "kind": "term",
+      "label": "賃上げ促進税制",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "社員の給料を上げた会社は、上げた分の最大45%を税金から引いてもらえる。",
+        "technical": "雇用者給与等支給額の前年度比増加額に対して税額控除。中小は最大45%(賃上げ2.5%以上+教育訓練費10%増+両立支援認定)。5年繰越可。",
+        "example": "給与総額を200万円UP → 最大90万円を法人税から直接控除。"
+      },
+      "tags": [
+        "seido",
+        "tax"
+      ]
+    },
+    "kyoka-zeisei": {
+      "id": "kyoka-zeisei",
+      "kind": "term",
+      "label": "経営強化税制",
+      "difficulty": 4,
+      "explanation": {
+        "plain": "設備投資を「今すぐ全部経費に落とせる」か「10%を税金から引くか」選べる優遇。",
+        "technical": "経営力向上計画の認定を受けた中小企業が、一定の設備を取得した場合に即時償却または10%税額控除を選択適用できる税制。",
+        "example": "1,000万円の設備を買って、利益出てる年なら即時償却で税軽減約300万円。"
+      },
+      "tags": [
+        "seido",
+        "tax"
+      ]
+    },
+    "it-dounyuu": {
+      "id": "it-dounyuu",
+      "kind": "term",
+      "label": "IT導入補助金",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "SaaSやシステム導入代金の半額を国が出してくれる。入門にちょうどいい。",
+        "technical": "中小企業・小規模事業者のITツール導入費用を補助。上限450万円、補助率1/2〜3/4。登録ITベンダー経由で申請するため、ベンダーが手続きの多くを代行。",
+        "example": "会計SaaS/CRM/労務管理ソフト等の導入コスト。",
+        "metaphor": "補助金の入門編。ベンダーが手続き代行してくれる。"
+      },
+      "tags": [
+        "seido"
+      ]
+    },
+    "career-up": {
+      "id": "career-up",
+      "kind": "term",
+      "label": "キャリアアップ助成金",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "パートやアルバイトを正社員にしたらもらえる助成金。1人57万円。",
+        "technical": "厚労省の雇用関係助成金の王道。正社員化コース:1人あたり57万円(賃金3%以上増が要件)。",
+        "metaphor": "正社員化1人で給料1ヶ月分が国から戻ってくる感覚。"
+      },
+      "tags": [
+        "seido",
+        "joseikin"
+      ]
+    },
+    "yorozu": {
+      "id": "yorozu",
+      "kind": "term",
+      "label": "よろず支援拠点",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "都道府県にある「中小企業のなんでも相談所」。無料でプロが相談にのってくれる。",
+        "technical": "中小企業庁が各都道府県に設置する経営相談窓口。補助金の相談・事業計画の壁打ち・専門家紹介まで無料。予約不要枠もあり。",
+        "example": "補助金申請の最初の入口として最強。",
+        "metaphor": "中小企業版の「無料の弁護士会相談」。"
+      },
+      "tags": [
+        "entity",
+        "entry-point"
+      ]
+    },
+    "shoukai-center": {
+      "id": "shoukai-center",
+      "kind": "term",
+      "label": "事業承継・引継ぎ支援センター",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "会社を誰かに引き継ぎたい or 買いたい時に無料で相談できる窓口。",
+        "technical": "中小機構が運営する公的窓口。全都道府県に設置。M&A・親族承継・第三者承継の無料相談、マッチング支援を実施。",
+        "metaphor": "公的M&A仲介。無料なので最初の入口にぴったり。"
+      },
+      "tags": [
+        "entity",
+        "entry-point"
+      ]
+    },
+    "zeirishi": {
+      "id": "zeirishi",
+      "kind": "term",
+      "label": "税理士",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "税金の専門家。会社の決算や節税のアドバイスをくれる。",
+        "technical": "税理士法に基づく国家資格。法人税・所得税・相続税の申告代理・税務相談が独占業務。顧問契約が一般的。",
+        "metaphor": "会社の「お金のホームドクター」。"
+      },
+      "tags": [
+        "entity",
+        "advisor"
+      ]
+    },
+    "sharoushi": {
+      "id": "sharoushi",
+      "kind": "term",
+      "label": "社会保険労務士",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "人を雇うときのルールや手続きの専門家。助成金の申請もやってくれる。",
+        "technical": "労働・社会保険法令に基づく国家資格。就業規則作成・雇用関係助成金申請・労務トラブル対応が得意。"
+      },
+      "aliases": [
+        "社労士"
+      ],
+      "tags": [
+        "entity",
+        "advisor"
+      ]
+    },
+    "benrishi": {
+      "id": "benrishi",
+      "kind": "term",
+      "label": "弁理士",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "特許や商標の専門家。",
+        "technical": "特許・実用新案・意匠・商標の出願代理を独占業務とする国家資格。"
+      },
+      "tags": [
+        "entity",
+        "advisor"
+      ]
+    },
+    "nisa": {
+      "id": "nisa",
+      "kind": "term",
+      "label": "新NISA",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "投資で儲かった分に税金がかからない個人用の非課税枠。",
+        "technical": "2024年から拡充された少額投資非課税制度。年間360万円(つみたて120万+成長240万)、生涯1,800万円まで非課税運用。恒久化。",
+        "metaphor": "国が「投資の税金を免除する特別会員カード」を配ってる感じ。"
+      },
+      "tags": [
+        "seido",
+        "personal"
+      ]
+    },
+    "ideco": {
+      "id": "ideco",
+      "kind": "term",
+      "label": "iDeCo",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "自分で作る年金。払ったお金がそのまま所得から引かれる。",
+        "technical": "個人型確定拠出年金。掛金全額所得控除+運用益非課税+受取時優遇の3段階節税。60歳まで引き出し不可。",
+        "metaphor": "60歳まで開けない税制優遇の貯金箱。"
+      },
+      "tags": [
+        "seido",
+        "personal"
+      ]
+    },
+    "furusato-kigyo": {
+      "id": "furusato-kigyo",
+      "kind": "term",
+      "label": "企業版ふるさと納税",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "自社本店以外の自治体に寄付すると、寄付額の最大9割が税金から戻る。",
+        "technical": "地方創生応援税制。損金算入(約3割軽減)+法人税・住民税・事業税の税額控除(最大6割)= 最大約9割。本店所在地自治体への寄付は対象外。"
+      },
+      "tags": [
+        "seido",
+        "tax"
+      ]
+    },
+    "shoukei-zeisei": {
+      "id": "shoukei-zeisei",
+      "kind": "term",
+      "label": "事業承継税制",
+      "difficulty": 4,
+      "explanation": {
+        "plain": "親から子へ会社の株を引き継ぐとき、相続税・贈与税を実質ゼロにしてくれる特例。",
+        "technical": "非上場株式の贈与・相続税を100%納税猶予・免除する特例措置。2027年3月31日までに特例承継計画の提出が必要。5年間の雇用8割維持等の事後要件あり。",
+        "metaphor": "親から子への会社バトンタッチを「税金で潰さない」ための国の救済策。"
+      },
+      "tags": [
+        "seido",
+        "succession"
+      ]
+    },
+    "kokko": {
+      "id": "kokko",
+      "kind": "term",
+      "label": "日本政策金融公庫",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "国が運営する銀行。中小企業や個人事業主に低利で貸してくれる。",
+        "technical": "100%政府出資の政策金融機関。創業融資・経営力強化資金・挑戦支援資本強化特別貸付(資本性劣後ローン)など幅広い商品。",
+        "metaphor": "中小企業向けの「国立銀行」。"
+      },
+      "aliases": [
+        "公庫",
+        "日本公庫"
+      ],
+      "tags": [
+        "entity",
+        "finance"
+      ]
+    },
+    "signal-net": {
+      "id": "signal-net",
+      "kind": "term",
+      "label": "信用保証協会",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "銀行から借りるとき、国が保証人になってくれる仕組み。",
+        "technical": "中小企業が民間金融機関から借入する際、各都道府県の保証協会が信用保証を付けてデフォルトリスクを肩代わり。セーフティネット保証・経営力強化保証等の制度あり。"
+      },
+      "tags": [
+        "entity",
+        "finance"
+      ]
+    },
+    "postpaid": {
+      "id": "postpaid",
+      "kind": "term",
+      "label": "後払い(補助金)",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "補助金は使ってから振り込まれる。立替が必要。",
+        "technical": "補助金は原則精算払い(後払い)。事業者は先に全額を自己資金or融資で支払い、実績報告後に確定額が振り込まれる。",
+        "example": "1,000万円の機械を2/3補助で買う場合、発注時に1,000万円払えるキャッシュが必要。",
+        "metaphor": "レストランで「レシート持ってきたら2/3返金」と言われるようなもの。最初に全額払う現金がいる。"
+      },
+      "tags": [
+        "procedure",
+        "cash-flow"
+      ]
+    },
+    "kaiko-kinyu": {
+      "id": "kaiko-kinyu",
+      "kind": "term",
+      "label": "資本性劣後ローン",
+      "difficulty": 4,
+      "explanation": {
+        "plain": "金融機関から見ると「自己資本」扱いになる特殊な借入。",
+        "technical": "日本政策金融公庫の挑戦支援資本強化特別貸付等。期限一括返済・業績連動金利・10〜20年長期。自己資本比率を上げられる。",
+        "metaphor": "借金なのに決算書では「資本金増えた」ように見える魔法の融資。"
+      },
+      "tags": [
+        "finance"
+      ]
+    },
+    "obligation": {
+      "id": "obligation",
+      "kind": "term",
+      "label": "義務(制度)",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "補助金や税制を使ったあとに「やらないといけないこと」。これを怠ると返還。",
+        "technical": "制度利用後の継続的なコンプライアンス要件。実績報告・事業化状況報告・雇用維持・設備処分制限等。",
+        "metaphor": "健康診断で「次の半年禁酒してください」と言われる感じ。"
+      },
+      "tags": [
+        "procedure"
+      ]
+    },
+    "prerequisite": {
+      "id": "prerequisite",
+      "kind": "term",
+      "label": "前提制度",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "A制度を使うにはB制度が先に必要、というやつ。",
+        "technical": "ある制度の適用を受けるために、事前に別制度の認定・登録等が必要な関係。経営強化税制→経営力向上計画 が典型。",
+        "metaphor": "免許を取るには仮免が先に必要、みたいな順序。"
+      },
+      "tags": [
+        "procedure"
+      ]
+    },
+    "stage-gate": {
+      "id": "stage-gate",
+      "kind": "term",
+      "label": "ステージゲート審査",
+      "difficulty": 4,
+      "explanation": {
+        "plain": "大型の研究開発補助金で、一定期間ごとに「続けるor打ち切り」を決める審査。",
+        "technical": "NEDO・Go-Tech事業等で採用。フェーズ毎に成果を評価し、次フェーズ進出可否を決定。未達で打ち切りもある。"
+      },
+      "tags": [
+        "procedure"
+      ]
+    },
+    "pivot": {
+      "id": "pivot",
+      "kind": "term",
+      "label": "業種転向(事業転換)",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "会社の本業を別の業種に切り替えること。",
+        "technical": "既存事業を縮小・撤退し、新分野に経営資源を移す経営戦略。新事業進出補助金・事業承継M&A補助金・Go-Tech等で公的支援が受けられる。",
+        "metaphor": "人の転職と同じ。会社の転職。"
+      },
+      "aliases": [
+        "事業転換",
+        "新分野進出"
+      ],
+      "tags": [
+        "strategy"
+      ]
+    },
+    "GX": {
+      "id": "GX",
+      "kind": "term",
+      "label": "グリーントランスフォーメーション(GX)",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "カーボンニュートラル/脱炭素への設備投資を国が応援する取り組み。",
+        "technical": "脱炭素・省エネ設備投資に対する補助金・税制優遇の総称。経産省・環境省主管の補助金が多い。"
+      },
+      "tags": [
+        "policy"
+      ]
+    },
+    "DX": {
+      "id": "DX",
+      "kind": "term",
+      "label": "デジタルトランスフォーメーション(DX)",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "紙やハンコの仕事をITに置き換える取り組み。国は補助金で応援してる。",
+        "technical": "デジタル技術で業務・組織・ビジネスモデルを変革すること。IT導入補助金・DX投資促進税制等で支援。"
+      },
+      "tags": [
+        "policy"
+      ]
+    },
+    "kojo-ritsu": {
+      "id": "kojo-ritsu",
+      "kind": "term",
+      "label": "控除率",
+      "difficulty": 3,
+      "explanation": {
+        "plain": "税金が何%引かれるかの割合。",
+        "technical": "税額控除制度における、対象額に乗じる割合。賃上げ促進税制は最大45%、研究開発税制は6〜17%等。"
+      },
+      "tags": [
+        "tax"
+      ]
+    },
+    "fairness-law": {
+      "id": "fairness-law",
+      "kind": "term",
+      "label": "補助金適正化法",
+      "difficulty": 4,
+      "explanation": {
+        "plain": "補助金を正しく使わせるための法律。ウソや目的外使用は違法。",
+        "technical": "正式名:補助金等に係る予算の執行の適正化に関する法律。目的外使用・虚偽申請への返還命令・加算金・刑事罰を規定。"
+      },
+      "tags": [
+        "legal"
+      ]
+    },
+    "kasanshu": {
+      "id": "kasanshu",
+      "kind": "term",
+      "label": "加算金(補助金返還)",
+      "difficulty": 4,
+      "explanation": {
+        "plain": "補助金を不正に使うと、返すだけじゃなくて罰金みたいな上乗せがある。",
+        "technical": "補助金適正化法に基づき、返還金額の年10.95%(日割計算)を上乗せで支払う制裁。"
+      },
+      "tags": [
+        "legal"
+      ]
+    },
+    "aoiro": {
+      "id": "aoiro",
+      "kind": "term",
+      "label": "青色申告",
+      "difficulty": 2,
+      "explanation": {
+        "plain": "税務署に「ちゃんと帳簿つけます」と届け出ておく申告方法。多くの優遇の前提。",
+        "technical": "所得税・法人税の特典申告制度。青色申告承認申請書の提出が必要。欠損金繰越・特別控除・多くの税制優遇の前提要件。"
+      },
+      "tags": [
+        "tax",
+        "prerequisite"
+      ]
+    },
+    "kessan": {
+      "id": "kessan",
+      "kind": "term",
+      "label": "決算書",
+      "difficulty": 1,
+      "explanation": {
+        "plain": "会社が1年間でいくら儲かったか/損したかを見せる書類。",
+        "technical": "貸借対照表(BS)・損益計算書(PL)・キャッシュフロー計算書(CF)・株主資本等変動計算書等の総称。補助金申請の多くで直近2期分を求められる。"
+      },
+      "tags": [
+        "document"
+      ]
+    }
+  },
+  "relations": [
+    {
+      "from": "kyoka-zeisei",
+      "to": "keiei-koujou",
+      "type": "prerequisite_of"
+    },
+    {
+      "from": "monozukuri",
+      "to": "nintei-shien",
+      "type": "uses"
+    },
+    {
+      "from": "monozukuri",
+      "to": "jgrants",
+      "type": "uses"
+    },
+    {
+      "from": "monozukuri",
+      "to": "gbizid",
+      "type": "prerequisite_of"
+    },
+    {
+      "from": "shinjigyou",
+      "to": "nintei-shien",
+      "type": "uses"
+    },
+    {
+      "from": "shinjigyou",
+      "to": "locabe",
+      "type": "uses"
+    },
+    {
+      "from": "shinjigyou",
+      "to": "pivot",
+      "type": "example_of"
+    },
+    {
+      "from": "safety-kyosai",
+      "to": "loss-deduction",
+      "type": "uses"
+    },
+    {
+      "from": "small-biz-kyosai",
+      "to": "income-deduction",
+      "type": "uses"
+    },
+    {
+      "from": "chinage-zeisei",
+      "to": "tax-credit",
+      "type": "uses"
+    },
+    {
+      "from": "kyoka-zeisei",
+      "to": "tax-credit",
+      "type": "uses"
+    },
+    {
+      "from": "monozukuri",
+      "to": "jigyoka-hokoku",
+      "type": "produces"
+    },
+    {
+      "from": "hojokin",
+      "to": "postpaid",
+      "type": "related_to"
+    },
+    {
+      "from": "hojokin",
+      "to": "fairness-law",
+      "type": "related_to"
+    }
+  ]
+}

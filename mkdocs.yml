@@ -1,0 +1,278 @@
+# AutonoMath — MkDocs Material config.
+#
+# Build locally:
+#   pip install -r docs-requirements.txt
+#   mkdocs build --strict
+#
+# Output: site/docs/  (nested so Cloudflare Pages can serve landing + docs
+# together from a single `site/` upload).
+
+site_name: AutonoMath
+site_description: AutonoMath — 日本の制度情報 (補助金 / 融資 / 税制 / 認定制度) 10,790件 (検索可・tier S/A/B/C) + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を REST + MCP API で横断検索
+site_author: Bookyou 株式会社
+site_url: "https://autonomath.ai/docs/"
+copyright: "© 2026 Bookyou 株式会社 (T8010001213708) · info@bookyou.net · AutonoMath"
+
+# Disable the github edit link — we don't want the internal repo structure
+# exposed publicly before rebrand lands. Re-enable post-launch by setting
+# `repo_url` + `edit_uri: edit/main/docs/`.
+edit_uri: ""
+
+docs_dir: docs
+site_dir: site/docs
+
+# Fail on broken internal links, missing nav entries, ambiguous refs.
+# This is the whole point of the migration: catch the accumulated
+# [text](link.md) drift that slipped through review.
+strict: true
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: ja
+  font:
+    text: Noto Sans JP
+    code: JetBrains Mono
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: ダークモードに切り替え
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: ライトモードに切り替え
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+  # Material's default "Made with Material" footer is replaced by
+  # overrides/partials/footer.html (single-line legal + source links).
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - assets/feedback-widget.js
+  - assets/feedback-init.js
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+      # Japanese headings need Unicode-preserving slugs so inline
+      # [text](file.md#日本語アンカー) links resolve at strict-mode build.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - pymdownx.mark
+
+plugins:
+  - search:
+      lang:
+        - ja
+        - en
+  - tags
+  # Material's social plugin auto-generates per-page OG images (1200x630
+  # PNG) using site_name + page title + description. Cards land at
+  # site/docs/assets/images/social/<page>.png and are referenced via the
+  # `<meta property="og:image">` tag injected into each page head.
+  # Requires cairosvg + pillow on the build host (added to docs-requirements.txt).
+  # Falls back to a default Roboto font (no custom font configured).
+  - social:
+      cards: true
+      cards_layout_options:
+        background_color: "#0F172A"  # AutonoMath dark navy
+        color: "#FFFFFF"
+  # git-revision-date-localized reads the last-commit timestamp per page
+  # and displays "最終更新" at the bottom. Requires the build to run
+  # inside a real git checkout with the `git` binary in PATH — both hold
+  # in CI (`.github/workflows/pages-preview.yml`).
+  #
+  # Local gotcha: on macOS under Rosetta an x86_64 venv python can't fork
+  # `git version` (rosetta/xcrun bug). If you hit `rosetta error: ... libxcrun`
+  # at `mkdocs build`, either rebuild your venv with an arm64 Python
+  # (`python3.13 -m venv .venv` under arm64 shell) or drop this plugin
+  # by commenting out the four lines below for the local run only.
+  # - git-revision-date-localized:  # TEMP disabled for local Rosetta build; CI re-enables via pages-preview.yml
+  #     enable_creation_date: false
+  #     type: date
+  #     fallback_to_build_date: true
+
+# Directories under docs/ that must not be rendered or published.
+# `_internal/` holds operational docs (deploy gotchas, email setup,
+# incident stash-files) that agents + ops keep in-repo but that must
+# never appear in public nav, search index, or sitemap.
+#
+# The 5 files below are ops-facing runbooks that previously leaked at
+# stable public URLs (e.g. /docs/monitoring/) because `not_in_nav` only
+# hides nav — it still builds + publishes the page. They contain Stripe
+# test-mode env var names, Fly app identifiers, Twilio routing, and other
+# operator-only detail that has no place on a public docs site.
+# Keep `canonical/` itself *out* of this list because docs/canonical/
+# also hosts public canonical product docs built into the nav.
+exclude_docs: |
+  _internal/
+  _internal/health_monitoring_runbook.md
+  _internal/dr_backup_runbook.md
+  assets/*.jsonld
+  overrides/
+  canonical/perf_baseline.md
+  canonical/stripe_smoke_runbook.md
+  improvement_loop.md
+  monitoring.md
+  observability.md
+  performance.md
+  disaster_recovery.md
+  solo_ops_handoff.md
+  hiring_decision_gate.md
+  organic_outreach_templates.md
+  launch_announcement_calendar.md
+  launch_assets/
+  launch_checklist.md
+  go_no_go_gate.md
+  rollback_runbook.md
+  security_posture.md
+  cs_templates.md
+  operator_daily.md
+  operator_dashboard_walkthrough.md
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+      name: GitHub
+  # The rebrand decision gates the social/contact block — revisit after
+  # project_jpintel_trademark_intel_risk lands.
+
+nav:
+  - ホーム: index.md
+
+  - 入門:
+      - はじめに: getting-started.md
+      - 料金: pricing.md
+      - MCP ツール: mcp-tools.md
+      - 排他ルール: exclusions.md
+      - FAQ: faq.md
+
+  - API リファレンス:
+      - REST API (112 endpoints): api-reference.md
+      - エラーハンドリング (20 codes): error_handling.md
+
+  - SDK:
+      - TypeScript / JavaScript: sdks/typescript.md
+
+  - 開発者向け:
+      - サンプル集: examples.md
+      - Prompt Cookbook: prompt_cookbook.md
+      - Per-Tool 精度表: per_tool_precision.md
+      - キャッシュ設計 (L0-L4): cache_architecture.md
+      - ダッシュボード: dashboard_guide.md
+      - アラート (amendment webhook): alerts_guide.md
+
+  - 運用:
+      - SLA: sla.md
+      - 長期戦略 (Y1-Y5): long_term_strategy.md
+      - 配布レジストリ (12 surfaces): registries.md
+      - Confidence (P5-attribution): confidence_methodology.md
+      - SEO 戦略: seo_strategy.md
+      - Invariant Runbook: invariant_runbook.md
+      - 自己改善 Loop: self_improve_loops.md
+      - Hallucination Guard 方針: hallucination_guard_methodology.md
+
+  - パートナー:
+      - Referral 仕組み: partner_referral_mechanism.md
+      - freee 会計: partnerships/freee.md
+      - Money Forward: partnerships/money_forward.md
+      - kintone (Cybozu): partnerships/kintone.md
+      - SmartHR: partnerships/smarthr.md
+      - Anthropic Directory: partnerships/anthropic_directory.md
+
+  - プレス:
+      - プレスキット: press_kit.md
+
+  - Healthcare V3:
+      - 6週ローンチ計画: healthcare_v3_plan.md
+      - Cohort Personas: healthcare_v3_cohort_personas.md
+
+  - English V4:
+      - 10日ローンチ計画: english_v4_plan.md
+      - i18n スタイルガイド: i18n_style_guide.md
+
+  - Real Estate V5:
+      - 4週ローンチ計画: real_estate_v5_plan.md
+      - Cohort Personas: real_estate_v5_cohort_personas.md
+
+  - コンプライアンス:
+      - 概要: compliance/INDEX.md
+      - プライバシーポリシー: compliance/privacy_policy.md
+      - 利用規約: compliance/terms_of_service.md
+      - 免責事項: compliance/landing_disclaimer.md
+      - データガバナンス: compliance/data_governance.md
+      - データ主体の権利: compliance/data_subject_rights.md
+      - 電子帳簿保存法: compliance/electronic_bookkeeping.md
+      - 特定商取引法に基づく表記: compliance/tokushoho.md
+
+  # Blog posts live at docs/blog/ (mkdocs source) → built to site/docs/blog/.
+  # A literal copy is also placed at site/blog/ for static Cloudflare routing.
+  # Drafts stay `published: false` in frontmatter until launch day flip
+  # (2026-05-06). At launch, flip frontmatter → true and unhide this nav.
+  - ブログ:
+      - ローンチ記事 (開発者向け): blog/2026-05-06-launch-day-developer.md
+      - ローンチ記事 (MCP / エージェント): blog/2026-05-06-launch-day-mcp-agent.md
+      - launch — 1 query で AI に聞く (intro): blog/2026-05-launch-intro.md
+      - 5 audience pitch (税理士/行政書士/SMB/VC/Dev): blog/2026-05-5_audience_pitch.md
+      - architecture — Pre-computed Reasoning Layer: blog/2026-05-architecture.md
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    anchors: warn
+    # Absolute links (e.g. /downloads/autonomath-mcp.mcpb) point at static
+    # assets served by Cloudflare Pages that live outside mkdocs' docs_dir.
+    # They are intentional cross-boundary links, not drift — ignore them
+    # rather than warn so strict-mode builds stay meaningful.
+    absolute_links: ignore
+    unrecognized_links: warn

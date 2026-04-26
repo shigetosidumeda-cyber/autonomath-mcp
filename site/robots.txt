@@ -1,0 +1,139 @@
+# robots.txt for autonomath.ai
+# 2026-04-23 / see docs/seo_technical_audit.md §6
+# Policy: allow search + LLM crawlers (organic acquisition only);
+# block SEO-spammer backlink crawlers.
+
+# ------------------------------------------------------------------
+# Search engines (primary) — full allow
+# ------------------------------------------------------------------
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: DuckDuckBot
+Allow: /
+
+# ------------------------------------------------------------------
+# AI crawlers / LLM training + answer engines — explicit allow
+# Rationale: publishing public-domain Japanese subsidy data into LLM
+# training corpora is the moat (see docs/json_ld_strategy.md §1).
+# ------------------------------------------------------------------
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+# ------------------------------------------------------------------
+# AI crawlers / answer engines (continued) — 2026-04-26 expansion
+# ByteDance / TikTok Doubao answer engine. Previously blocked as
+# "low-value crawler" but the LLM-corpus moat policy outranks SEO-spam
+# concerns: Bytespider's payload feeds an answer engine, not a backlink
+# graph. Move from Disallow to Allow per docs/json_ld_strategy.md §1
+# (publish public-domain Japanese subsidy data into LLM training corpora
+# is the moat).
+# ------------------------------------------------------------------
+User-agent: Bytespider
+Allow: /
+
+# ------------------------------------------------------------------
+# Aggressive / low-value crawlers — block
+# (Reconsider if product needs backlink or competitive data visibility.)
+# These are SEO-spam backlink crawlers and competitive-intel scrapers,
+# not AI training crawlers — blocking is consistent with the LLM-allow
+# policy above.
+# ------------------------------------------------------------------
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
+
+# ------------------------------------------------------------------
+# Default policy — allow public pages, block private / thin surfaces
+#
+# /en/ is the English mirror (5 pages, see docs/i18n_strategy.md).
+# It is crawl-allowed by the root Allow: / below; listed here for clarity.
+# ------------------------------------------------------------------
+User-agent: *
+Allow: /
+Allow: /en/
+Allow: /v1/openapi.json
+Allow: /v1/healthz
+Disallow: /admin/
+Disallow: /dashboard.html
+Disallow: /dashboard
+Disallow: /success.html
+Disallow: /success
+Disallow: /v1/
+Disallow: /.well-known/
+Crawl-delay: 1
+
+# ------------------------------------------------------------------
+# Sitemaps
+# Primary: sitemap-index.xml references all shards
+# (sitemap.xml + sitemap-programs.xml + sitemap-prefectures.xml + sitemap-audiences.xml).
+# Listed shards directly as fallback for crawlers that ignore index files.
+# Note: sitemap-structured.xml is excluded from the index — site/structured/
+# exceeds Cloudflare Pages 20k file limit and will be re-hosted on R2 post-launch.
+# ------------------------------------------------------------------
+Sitemap: https://autonomath.ai/sitemap-index.xml
+Sitemap: https://autonomath.ai/sitemap.xml
+Sitemap: https://autonomath.ai/sitemap-programs.xml
+Sitemap: https://autonomath.ai/sitemap-prefectures.xml
+Sitemap: https://autonomath.ai/sitemap-audiences.xml

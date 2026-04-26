@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>AutonoMath for administrative scriveners (gyoseishoshi) — subsidies + loans + permits in one query</title>
+<meta name="description" content="An administrative-scrivener (gyoseishoshi) playbook for AutonoMath. For construction, eldercare, freight, and waste-disposal license cases, pull related subsidies, loans, and enforcement history in a single call. Filter by region × industry × deadline. Cut proposal time to five minutes. ¥3/req metered.">
+
+<meta property="og:title" content="AutonoMath for administrative scriveners — subsidies + loans + permits in one query">
+<meta property="og:description" content="One call returns related subsidies, loans, and enforcement history for license cases. 181 exclusion rules prevent stacking failures.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/audiences/admin-scrivener.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath for administrative scriveners">
+<meta name="twitter:description" content="Subsidies + loans + permits, one query.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/admin-scrivener.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css">
+
+<script defer src="../../analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autonomath.ai/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://autonomath.ai/en/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "Administrative scriveners", "item": "https://autonomath.ai/en/audiences/admin-scrivener.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "Administrative scrivener practice support API",
+  "name": "AutonoMath for Administrative Scriveners",
+  "description": "AutonoMath for administrative scriveners (gyoseishoshi). For construction, eldercare, freight, and waste-disposal license cases, pull related subsidies, loans, and enforcement history in one call. Filter by region × industry × deadline.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "url": "https://autonomath.ai/en/",
+    "identifier": "T8010001213708"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Administrative scriveners and gyoseishoshi-houjin"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "Japan"
+  },
+  "inLanguage": "en",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP metered",
+      "price": "3",
+      "priceCurrency": "JPY"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "en",
+  "mainEntity": [
+    {"@type": "Question", "name": "Can I find subsidies for a construction-license renewal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Filter target_types=construction + prefecture and you'll get monozukuri subsidy, business-restructuring subsidy, and prefecture-specific construction programs. Sort by approaching deadline."}},
+    {"@type": "Question", "name": "How do I tie this to eldercare, freight, and waste-disposal licenses?", "acceptedAnswer": {"@type": "Answer", "text": "Filter by JSIC industry code and target_types: subsidies for eldercare operators, work-environment improvement for freight, labor-saving subsidies for waste disposal, etc."}},
+    {"@type": "Question", "name": "What are the 181 exclusion rules?", "acceptedAnswer": {"@type": "Answer", "text": "Structured rules encoding relations like subsidy A and B can't be combined or subsidy C requires prior certification D — 181 rules total (125 exclude + 17 prerequisite + 15 absolute + 24 other). POST a list of program_ids and you get back the conflicts."}},
+    {"@type": "Question", "name": "How many requests per case?", "acceptedAnswer": {"@type": "Answer", "text": "Pre-research 5-10 + proposal drafting 5-10 — about 10-20 req per case. 30 cases per month gives 300-600 req, around ¥900-1,800 (tax exclusive)."}},
+    {"@type": "Question", "name": "Does this work for nintei-keiei-kakushin-shien-kikan (Certified Management Innovation Support Organization) cases?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. monozukuri and business-restructuring subsidies require involvement from a certified support organization. AutonoMath surfaces the related programs, and registering as an advisor on our affiliate lets you receive SMB inquiries."}},
+    {"@type": "Question", "name": "Can I check enforcement history?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. enforcement_cases (1,185 rows under construction-business law, real-estate brokerage law, waste-disposal law, etc.) is queryable by corporate number or name. This overlaps the VC / M&A advisor due-diligence area."}},
+    {"@type": "Question", "name": "Can I connect with tax advisors and labor consultants?", "acceptedAnswer": {"@type": "Answer", "text": "The advisor-registry feature lets you discover other professionals inside AutonoMath, with profiles, specialties, and rate cards cross-referenced."}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="../index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="../getting-started.html">Docs</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../../audiences/admin-scrivener.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="admin-scrivener.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+        <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">Administrative scriveners</span>
+      </nav>
+      <h1 id="hero-title">AutonoMath for administrative scriveners (gyoseishoshi)</h1>
+      <p class="hero-sub">Subsidies + loans + permits + enforcement history in one query. Cut proposal time on construction, eldercare, freight, and waste-disposal cases to five minutes.</p>
+      <p class="hero-tag">For permit-driven practices, search across 13,578 related subsidies, 108 loans, and 1,185 enforcement cases. Filter by region &times; industry &times; deadline; the 181 exclusion rules catch stacking failures up front. 50 anonymous req/month to test-drive.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
+        <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
+        <a class="btn btn-secondary" href="index.html">Compare audiences</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="why-title">
+    <div class="container">
+      <h2 id="why-title" class="section-title">Why AutonoMath</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card">
+          <h3>Four datasets in one call</h3>
+          <p class="card-lead">programs + loans + enforcement + cases</p>
+          <p>For a permit case, retrieve "applicable subsidies + loans + enforcement history + adoption case studies" in a single call. Pipe the result into Claude or GPT to auto-draft the proposal.</p>
+        </article>
+
+        <article class="card">
+          <h3>181 exclusion rules</h3>
+          <p class="card-lead">Detect stacking failures up front</p>
+          <p>"Monozukuri subsidy + business-restructuring subsidy" combinations for construction firms are pre-evaluated against 181 rules. Avoid the "filed in combination, denied later" failure.</p>
+        </article>
+
+        <article class="card">
+          <h3>Region &times; industry &times; deadline</h3>
+          <p class="card-lead">Surface deadline-imminent cases</p>
+          <p>Filter by prefecture, JSIC industry code, and deadline date. "Tokyo &times; construction &times; within 30 days" pulls this month's cases for proposal agendas.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="usecase-title">
+    <div class="container">
+      <h2 id="usecase-title" class="section-title">Primary use cases</h2>
+      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="card">
+          <h3>1. Construction-license renewal + subsidy proposal</h3>
+          <p>For a renewal site visit, target_types="construction" + prefecture in one call. Pull monozukuri subsidy, Construction Career Up System programs, and prefectural construction subsidies, and propose them alongside the renewal paperwork.</p>
+        </article>
+
+        <article class="card">
+          <h3>2. Eldercare designation filings + related subsidies</h3>
+          <p>For long-term-care insurance designation cases, surface kaigo-shokuin processing-improvement add-on, special processing-improvement add-on, and ICT-introduction subsidies as related programs. Work-environment improvement subsidies attach naturally.</p>
+        </article>
+
+        <article class="card">
+          <h3>3. General-cargo freight startup support</h3>
+          <p>Alongside the freight-license filing, pull truck-driver work-environment improvement support, work-style-reform promotion subsidies, and JFC freight-industry loans in one call. Loans are pre-decomposed across collateral / personal-guarantor / third-party-guarantor axes.</p>
+        </article>
+
+        <article class="card">
+          <h3>4. Waste-disposal licenses + enforcement history</h3>
+          <p>For waste-disposal license cases, check enforcement history for competitors and counterparties (waste-disposal law, construction-business law) by corporate number, drawing from the 1,185 enforcement_cases.</p>
+        </article>
+
+        <article class="card">
+          <h3>5. Certified-support-organization linkage</h3>
+          <p>When supporting a Management Innovation Plan or Advanced Equipment Introduction Plan certification (nintei-keiei-kakushin-tou-shien-kikan), surface the post-certification subsidies and tax incentives. Cross-link with monozukuri and business-restructuring subsidy certification requirements.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
+    <div class="container">
+      <h2 id="quickstart-title" class="section-title">Start in 5 minutes</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card">
+          <h3>curl (anonymous, 50 free/mo)</h3>
+          <pre class="code-block"><code>curl 'https://api.autonomath.ai/v1/programs/search?\
+prefecture=東京都&amp;\
+target_types=建設業&amp;\
+deadline_within_days=30&amp;\
+limit=10'</code></pre>
+          <p class="demo-note">No signup, JST first-of-month reset.</p>
+        </article>
+
+        <article class="card">
+          <h3>Python (commercial, ¥3/req)</h3>
+          <pre class="code-block"><code>import httpx
+# unified_id or program name both work (dual-key supported)
+r = httpx.post(
+  "https://api.autonomath.ai/v1/exclusions/check",
+  json={"program_ids": ["P001", "P342"]},
+  headers={"X-API-Key": "sk_..."}
+)
+print(r.json()["conflicts"])</code></pre>
+          <p class="demo-note">181 exclusion rules (125 exclude + 17 prerequisite + 15 absolute + 24 other) flag conflicts.</p>
+        </article>
+
+        <article class="card">
+          <h3>Claude Desktop (MCP)</h3>
+          <pre class="code-block"><code>// claude_desktop_config.json
+{
+  "mcpServers": {
+    "autonomath": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {"AUTONOMATH_API_KEY": "sk_..."}
+    }
+  }
+}</code></pre>
+          <p class="demo-note">Use <code>regulatory_prep_pack</code> for one-shot license groundwork.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-preview" aria-labelledby="pricing-title">
+    <div class="container">
+      <h2 id="pricing-title" class="section-title">Administrative-scrivener pricing</h2>
+      <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 50 req/month anonymous and free.</p>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">Recommended interface pricing for administrative scriveners</caption>
+          <thead>
+            <tr>
+              <th scope="col">Interface</th>
+              <th scope="col">Free quota</th>
+              <th scope="col">Paid (tax excl.)</th>
+              <th scope="col">Tax incl.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">API + MCP</th><td>50 req/mo per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+            <tr><th scope="row">Professional-advisor affiliate (optional)</th><td>Free signup</td><td>¥3,000 / closed intro</td><td>¥3,300 / closed intro</td></tr>
+            <tr><th scope="row">Embedded widget — Standard (optional)</th><td>-</td><td>¥10,000 / mo (10,000 req included)</td><td>¥11,000 / mo</td></tr>
+            <tr><th scope="row">Embedded widget — Whitelabel (optional)</th><td>-</td><td>¥30,000 / mo (30,000 req included, no logo)</td><td>¥33,000 / mo</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pricing-note">Estimate: 30 cases/month &rarr; 10-20 req per case &rarr; 300-600 req/month &rarr; ¥900-¥1,800/month. <a href="../pricing.html">Full pricing &rarr;</a></p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="faq-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="faq-title" class="section-title">FAQ (administrative scriveners)</h2>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Can I find subsidies for a construction-license renewal?</h3>
+      <p>Yes. Filter target_types="construction" + prefecture and you'll get monozukuri subsidy, business-restructuring subsidy, and prefecture-specific construction programs. Sort by approaching deadline.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">How do I tie this to eldercare, freight, and waste-disposal licenses?</h3>
+      <p>Filter by JSIC industry code and target_types: subsidies for eldercare operators, work-environment improvement for freight, labor-saving subsidies for waste disposal, etc.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">What are the 181 exclusion rules?</h3>
+      <p>Structured rules encoding relations like "subsidy A and B can't be combined" or "subsidy C requires prior certification D" — 181 total (125 exclude + 17 prerequisite + 15 absolute + 24 other). POST program_ids and you get back the conflicts.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">How many requests per case?</h3>
+      <p>Pre-research 5-10 + proposal drafting 5-10 &rarr; about 10-20 req per case. 30 cases/month gives 300-600 req &rarr; ¥900-1,800 (tax exclusive).</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Does this work for Certified Management Innovation Support Organization cases?</h3>
+      <p>Yes. monozukuri and business-restructuring subsidies require involvement from a certified support organization (nintei-keiei-kakushin-tou-shien-kikan). AutonoMath surfaces the related programs, and the affiliate registry lets you receive SMB inquiries.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Can I check enforcement history?</h3>
+      <p>Yes. enforcement_cases (1,185 rows: construction-business law, real-estate brokerage law, waste-disposal law, etc.) is queryable by corporate number or name. Overlaps the VC / M&amp;A due-diligence area.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
+      <p><a href="tax-advisor.html">Tax advisors</a> (shared client cases) and <a href="smb.html">SMB owners</a> (the inquiring party) overlap.</p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="resources-title">
+    <div class="container">
+      <h2 id="resources-title" class="section-title">Administrative scrivener resources</h2>
+      <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="smb.html"><strong>SMB owner page (understand the inquiring party)</strong></a> &mdash; See how clients themselves use AutonoMath. LINE-bot-driven referrals registered as advisor &rarr; steady inbound channel.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; Pull related subsidies for permit cases in one call. Filter by target_types + prefecture + industry; 181 exclusion rules pre-detect incompatible combinations.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#enforcement-cases"><strong>REST API: /v1/enforcement-cases/search (1,185 rows)</strong></a> &mdash; Look up enforcement history (construction-business law, real-estate brokerage law, waste-disposal law, etc.) by corporate number. Useful for permit-succession DD too.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/req fully metered)</strong></a> &mdash; About 10-20 req per case; 30 cases/month = ¥900-1,800 (tax excl.). Zero monthly minimums.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../widget.html"><strong>Embed on your firm site (widget)</strong></a> &mdash; Drop the prescreen on your firm LP to capture inquiries. One-line script tag, white-label OK.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction. Profile by region &times; industry &times; specialty.</li>
+        <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 50 req/month covers 5-10 clients per month at zero cost.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="roadmap-title">
+    <div class="container">
+      <h2 id="roadmap-title" class="section-title">Roadmap</h2>
+      <div style="background:#fff8e1;border:2px solid #f59e0b;padding:18px 20px;border-radius:8px;margin:16px 0;">
+        <h3 style="font-size:17px;margin:0 0 10px;color:#7c2d12;">36 Kyotei (Article 36 agreement) template (beta, currently disabled)</h3>
+        <p style="margin:0 0 6px;">Under Article 36 of the Labor Standards Act and the Certified Labor and Social Security Attorney Act, draft generation of 36 Kyotei documents is gated behind the <code>AUTONOMATH_36_KYOTEI_ENABLED</code> environment variable (default: <code>False</code>).</p>
+        <p style="margin:0 0 6px;">The feature is provided on the premise of supervision by a Certified Labor and Social Security Attorney (社労士). Every output carries a "&#9888;&#65039; DRAFT ONLY: review by a 社労士 is required" disclaimer.</p>
+        <p style="margin:0;">Roadmap: by 2026 Q3 we plan to recruit supervising partners and finalize the enablement conditions.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 id="cta-title" class="section-title">Get started</h2>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="../dashboard.html">Try it free (50 req/mo)</a>
+        <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
+        <a class="btn btn-secondary" href="../index.html#demo">Try the 30-second prescreen</a>
+        <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
+        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+      </div>
+      <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. (T8010001213708) &middot; Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
+    </div>
+  </section>
+
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
+    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
+    <a href="/en/tos.html">Terms</a> |
+    <a href="/en/privacy.html">Privacy</a> |
+    <a href="/docs/api-reference/">OpenAPI</a> |
+    Data last refreshed: <time data-trust-fresh datetime="2026-04-25">Apr 25, 2026</time>
+  </p>
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="../about.html">About</a>
+      <a href="../getting-started.html">Getting started</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>

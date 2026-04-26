@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>AutonoMath demo terminal (standalone preview)</title>
+<meta name="description" content="AutonoMath 動くデモ (60 秒) のスタンドアロンプレビュー。同一マークアップはトップページにインライン埋め込み済み。">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://autonomath.ai/assets/demo-terminal.html">
+<link rel="stylesheet" href="demo-terminal.css">
+</head>
+<body>
+
+<!--
+  Standalone preview / reproduction of the embedded demo.
+  The same markup is inlined into ../index.html above the pricing CTA.
+  Pure HTML + CSS (no JS, no CDN). prefers-reduced-motion honored.
+-->
+
+<main>
+  <section class="jp-demo" aria-labelledby="jp-demo-title">
+    <h2 id="jp-demo-title">動くデモ (60 秒)</h2>
+    <p class="jp-demo-lead">3 つの呼び出しを順に: <code>/v1/programs/search</code> → <code>/v1/programs/{id}</code> → Claude Desktop の MCP tool。</p>
+
+    <div class="jp-term" role="img" aria-label="ターミナルで AutonoMath の 3 コマンドを順に実行するデモアニメーション">
+      <div class="jp-term-bar" aria-hidden="true">
+        <span class="jp-term-dot jp-term-dot--r"></span>
+        <span class="jp-term-dot jp-term-dot--y"></span>
+        <span class="jp-term-dot jp-term-dot--g"></span>
+        <span class="jp-term-title">demo — zsh — 96x28</span>
+      </div>
+      <div class="jp-term-body" aria-hidden="true">
+        <div class="jp-term-scene jp-term-scene-1">
+<span class="jp-p">~ $ </span><span class="jp-k1">curl -s "https://API/v1/programs/search?prefecture=青森県&amp;tier=A&amp;limit=3" | jq '.results[].primary_name'</span>
+<span class="jp-out">"青森 所得向上プログラム実践支援事業"
+"持続可能な農業経営確立事業"
+"令和７年度 弘前市農業労働力雇用環境整備事業費補助金"</span>
+        </div>
+        <div class="jp-term-scene jp-term-scene-2">
+<span class="jp-p">~ $ </span><span class="jp-k2">curl -s "https://API/v1/programs/UNI-6aa0d9f0d0" | jq '{name:.primary_name, max:.amount_max_man_yen, source:.source_url}'</span>
+<span class="jp-out">{
+  "name": "青森 所得向上プログラム実践支援事業",
+  "max": 50,
+  "source": "https://www.pref.aomori.lg.jp/soshiki/nourin/nosui/syotokukouzyoushien.html"
+}</span>
+        </div>
+        <div class="jp-term-scene jp-term-scene-3">
+<span class="jp-p">you &gt; </span><span class="jp-k3">青森県で使える A-tier の 農業補助金 は？</span>
+<span class="jp-sys">claude &gt; <span class="jp-dim">tool_call</span> search_programs(prefecture="青森県", tier=["A"], limit=3)
+claude &gt; <span class="jp-dim">tool_result</span> {"total": 7, "results": [...3 rows...]}
+claude &gt; 青森県の A-tier 補助金は 7 件、上位 3 件はこちらです:
+         1. 青森 所得向上プログラム実践支援事業 (上限 50 万円 / 県)
+         2. 持続可能な農業経営確立事業 (上限 10 万円 / 弘前市)
+         3. 令和７年度 弘前市農業労働力雇用環境整備事業費補助金 (上限 10 万円)
+         併用判定は check_exclusions で続けて確認できます。</span>
+        </div>
+        <span class="jp-caret" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <details class="jp-demo-more">
+      <summary>どう動いてる？ (データの出どころ)</summary>
+      <p>3 件とも DB の生データ。unified_id <code>UNI-6aa0d9f0d0</code> / <code>UNI-2bf38e170f</code> / <code>UNI-9e89c70718</code>、source_url は青森県 / 弘前市の一次資料ページを保持。API ホストは rebrand 待ちのため <code>API</code> と placeholder 表記。</p>
+    </details>
+
+    <aside class="jp-demo-transcript" role="complementary" aria-labelledby="jp-demo-transcript-title">
+      <h3 id="jp-demo-transcript-title">テキストで読む (transcript)</h3>
+      <p class="jp-demo-transcript-lead">JS / アニメーション非対応環境用の素のコマンドと応答。上の動画と同じ内容。</p>
+
+      <h4>1. <code>/v1/programs/search</code></h4>
+<pre><code>$ curl -s "https://API/v1/programs/search?prefecture=青森県&amp;tier=A&amp;limit=3" \
+    | jq '.results[].primary_name'
+"青森 所得向上プログラム実践支援事業"
+"持続可能な農業経営確立事業"
+"令和７年度 弘前市農業労働力雇用環境整備事業費補助金"</code></pre>
+
+      <h4>2. <code>/v1/programs/{unified_id}</code></h4>
+<pre><code>$ curl -s "https://API/v1/programs/UNI-6aa0d9f0d0" \
+    | jq '{name:.primary_name, max:.amount_max_man_yen, source:.source_url}'
+{
+  "name": "青森 所得向上プログラム実践支援事業",
+  "max": 50,
+  "source": "https://www.pref.aomori.lg.jp/soshiki/nourin/nosui/syotokukouzyoushien.html"
+}</code></pre>
+
+      <h4>3. Claude Desktop (MCP)</h4>
+<pre><code>you &gt; 青森県で使える A-tier の 農業補助金 は？
+
+claude &gt; [tool_call] search_programs(prefecture="青森県", tier=["A"], limit=3)
+claude &gt; [tool_result] {"total": 7, "results": [...3 rows...]}
+claude &gt; 青森県の A-tier 補助金は 7 件、上位 3 件はこちらです:
+         1. 青森 所得向上プログラム実践支援事業 (上限 50 万円 / 県)
+         2. 持続可能な農業経営確立事業 (上限 10 万円 / 弘前市)
+         3. 令和７年度 弘前市農業労働力雇用環境整備事業費補助金 (上限 10 万円)
+         併用判定は check_exclusions で続けて確認できます。</code></pre>
+
+      <p class="jp-demo-transcript-foot"><code>API</code> は launch 時の正式ホスト名に置き換わります (rebrand 進行中)。unified_id は 2026-04-23 時点の DB から。</p>
+    </aside>
+  </section>
+</main>
+
+</body>
+</html>

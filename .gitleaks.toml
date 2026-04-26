@@ -1,0 +1,73 @@
+# Gitleaks config for jpintel-mcp.
+# Default Gitleaks ruleset is inherited; this file only adds targeted
+# allowlisting for placeholder secrets that live in tracked example / test
+# files by design.
+#
+# Philosophy: stay TIGHT. Only allowlist files where fake values are part
+# of the documented contract (e.g., .env.example with `sk_test_xxx`).
+# Everything else should trip the scanner.
+
+title = "jpintel-mcp gitleaks"
+
+[extend]
+# Inherit every rule from the upstream default config. Our allowlist below
+# only relaxes matches against specific fixture paths / placeholder strings.
+useDefault = true
+
+[allowlist]
+description = "Placeholder secrets in examples + test fixtures + doc curl snippets"
+
+# Path-based allowlist. Keep this list minimal; prefer per-line
+# "gitleaks:allow" comments for one-off placeholders.
+paths = [
+  # .env.example ships placeholder values (sk_test_xxx, whsec_xxx, price_xxx,
+  # change-this-salt-in-prod). They must remain scannable context for ops.
+  '''^\.env\.example$''',
+
+  # Documented fake Stripe / webhook payloads used by tests. These exist today
+  # only inline in Python test files, but pre-declare the glob so future
+  # fixtures land here without re-tripping the scanner.
+  '''^tests/fixtures/.*''',
+  '''^sdk/python/tests/fixtures/.*''',
+  '''^sdk/typescript/src/__tests__/fixtures/.*''',
+
+  # OpenAPI sample responses can legitimately contain stripped-down placeholder
+  # tokens ("sk_test_xxx") in examples.
+  '''^docs/openapi/.*\.(json|ya?ml)$''',
+
+  # Issue / PR templates: maintainer-facing curl placeholders.
+  '''^\.github/ISSUE_TEMPLATE/.*\.ya?ml$''',
+  '''^\.github/PULL_REQUEST_TEMPLATE\.md$''',
+
+  # Public docs ship curl examples with elided keys (X-API-Key: jpintel_...).
+  # Allowlist only these specific files — do not wildcard all of docs/.
+  '''^docs/api-reference\.md$''',
+  '''^docs/getting-started\.md$''',
+  '''^docs/mcp-tools\.md$''',
+
+  # Smoke test deliberately uses sk_live_nonexistent_000 to exercise the
+  # 401 path. Never a real key.
+  '''^scripts/smoke_test\.sh$''',
+
+  # Marketing site home page embeds a curl example with "Bearer ..."
+  # placeholder. Kept tight to the single file.
+  '''^site/index\.html$''',
+]
+
+# String-based allowlist — only well-known placeholder shapes.
+regexes = [
+  # Stripe test-mode placeholders used in .env.example + docs.
+  '''sk_test_xxx''',
+  '''whsec_xxx''',
+  '''price_xxx''',
+  '''mtr_xxx''',
+  # Seed value for API_KEY_SALT in .env.example; explicit "replace me" marker.
+  '''change-this-salt-in-prod''',
+  # Documentation placeholders for jpintel API keys in curl examples /
+  # issue templates / smoke tests. These are NOT real keys — real keys
+  # will not match the elided `jpintel_...` form or the `_nonexistent_`
+  # sentinel.
+  '''jpintel_\.{3}''',
+  '''sk_live_abc12345''',
+  '''sk_live_nonexistent_000''',
+]

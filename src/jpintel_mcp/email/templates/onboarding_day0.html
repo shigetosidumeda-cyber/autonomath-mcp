@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutonoMath — APIキーを発行しました</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:640px;margin:24px auto;padding:0 20px;color:#111;line-height:1.7;">
+
+<h1 style="font-size:22px;margin:0 0 12px;">APIキーを発行しました。</h1>
+
+<p>{{email}} 宛にお申し込みいただきました。ありがとうございます。{{tier}} プラン(¥3/req 税別・税込 ¥3.30 の従量課金)で、以下の API キーを今回 <strong>一度だけ</strong>お送りします。コピーして安全な場所に保管してください。サーバ側ではハッシュ化した値のみ保持しており、再表示はできません。</p>
+
+<pre style="background:#111;color:#f7f7f7;padding:14px;border-radius:6px;overflow-x:auto;font-size:13px;"><code>{{api_key}}</code></pre>
+
+<p style="color:#555;font-size:14px;">(この鍵はこのメール内でのみ表示されます。紛失した場合は Stripe ポータルから鍵をローテートしてください。)</p>
+
+<h2 style="font-size:17px;margin-top:28px;">最初の3リクエスト</h2>
+<p>以下は動作確認の curl 例です。<code>YOUR_KEY</code> を上記の鍵に置き換えてそのまま実行できます。</p>
+
+<h3 style="font-size:15px;margin-top:20px;">1. 疎通確認 (/v1/ping)</h3>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+  https://api.autonomath.ai/v1/ping</code></pre>
+
+<h3 style="font-size:15px;margin-top:20px;">2. 東京都の中小企業向け制度を検索 (/v1/programs/search)</h3>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+  "https://api.autonomath.ai/v1/programs/search?prefecture=東京都&target_types=smb&limit=5"</code></pre>
+
+<h3 style="font-size:15px;margin-top:20px;">3. キーワード検索(補助金名・制度名)</h3>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+  "https://api.autonomath.ai/v1/programs/search?q=事業再構築&limit=5"</code></pre>
+
+<h2 style="font-size:17px;margin-top:28px;">次に読むもの</h2>
+<ul>
+  <li><a href="https://autonomath.ai/docs/getting-started" style="color:#1e3a8a;">Getting Started ドキュメント</a> — 全エンドポイント一覧 + OpenAPI 仕様</li>
+  <li><a href="https://autonomath.ai/dashboard.html" style="color:#1e3a8a;">ダッシュボード</a> — 利用回数・今月の課金見込みを確認</li>
+  <li><a href="https://autonomath.ai/examples/" style="color:#1e3a8a;">examples 集</a> — MCP 経由 / バッチ取得など実用スニペット</li>
+</ul>
+
+<p style="margin-top:24px;">詰まったら、このメール宛にそのまま返信するか <a href="mailto:info@bookyou.net" style="color:#1e3a8a;">info@bookyou.net</a> までお知らせください。人間が読みます。</p>
+
+<hr style="border:none;border-top:1px solid #eee;margin:32px 0 12px;">
+<p style="color:#888;font-size:12px;">
+AutonoMath — 日本の制度情報 API + MCP<br>
+このメールは API キー発行の控えとしてお送りしています(解除不可のトランザクションメール)。<br>
+お問い合わせ: <a href="mailto:info@bookyou.net" style="color:#888;">info@bookyou.net</a><br>
+運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1<br>
+ライセンス: ご利用は <a href="https://autonomath.ai/tos.html" style="color:#888;">利用規約</a> および <a href="https://autonomath.ai/privacy.html" style="color:#888;">プライバシーポリシー</a>に基づきます。
+</p>
+
+</body>
+</html>

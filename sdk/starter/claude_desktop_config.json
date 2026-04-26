@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "autonomath": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {
+        "AUTONOMATH_API_KEY": "am_xxx_replace_me_or_leave_blank_for_anon_tier"
+      }
+    }
+  }
+}

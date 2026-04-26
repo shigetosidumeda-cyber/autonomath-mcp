@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>AutonoMath Embed Widget — Demo</title>
+<meta name="description" content="AutonoMath 補助金検索 widget のスタンドアロンデモ。light / dark / カスタムテーマを並べて表示します。">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://autonomath.ai/widget/demo.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/widget/demo.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/widget/demo.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/widget/demo.html">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+  }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans JP", system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 24px;
+    margin: 0 0 6px;
+  }
+  h2 {
+    font-size: 16px;
+    margin: 28px 0 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  p.lead {
+    color: var(--muted);
+    margin: 0 0 20px;
+  }
+  .panel {
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 10px 0 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  .panel.dark {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+  pre {
+    background: #111827;
+    color: #f3f4f6;
+    padding: 14px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 12px;
+  }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 6px 0 0;
+  }
+</style>
+<meta property="og:title" content="AutonoMath Embed Widget — Demo">
+<meta property="og:description" content="AutonoMath 補助金検索 widget のスタンドアロンデモ。light / dark / カスタムテーマを並べて表示します。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/widget/demo.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath Embed Widget — Demo">
+<meta name="twitter:description" content="AutonoMath 補助金検索 widget のスタンドアロンデモ。light / dark / カスタムテーマを並べて表示します。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+</head>
+<body>
+<div class="wrap">
+  <h1>AutonoMath Embed Widget — Demo</h1>
+  <p class="lead">
+    本ページは widget の動作確認用です。実際の運用では
+    <a href="/widget.html">製品ページ</a> から申し込んで取得した
+    <code>wgt_live_...</code> キーをサイトに埋め込みます。
+  </p>
+
+  <h2>Light theme (default)</h2>
+  <div class="panel">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="light"
+         data-filters="prefecture,industry,target"
+         data-limit="5"></div>
+    <p class="note">
+      上の widget はデモキーで動作しています。実 API へのリクエストは
+      origin 一致チェックで拒否される想定です。実データが出ない場合、
+      本番キーでは期待通り表示されます。
+    </p>
+  </div>
+
+  <h2>Dark theme</h2>
+  <div class="panel dark">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="dark"
+         data-filters="prefecture,industry,target"
+         data-limit="5"></div>
+  </div>
+
+  <h2>Prefecture filter のみ (コンパクト版)</h2>
+  <div class="panel">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="light"
+         data-filters="prefecture"
+         data-limit="3"></div>
+  </div>
+
+  <h2>English UI (language=en)</h2>
+  <div class="panel">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="light"
+         data-language="en"
+         data-filters="prefecture,industry,target"
+         data-limit="5"></div>
+  </div>
+
+  <h2>Programmatic (JS API)</h2>
+  <div class="panel">
+    <div id="programmatic-target"></div>
+  </div>
+
+  <pre><code>new Autonomath.Widget({
+  container: '#programmatic-target',
+  key: 'wgt_live_00000000000000000000000000000000',
+  filters: ['industry', 'prefecture'],
+  theme: 'light',
+  language: 'ja',
+  limit: 5,
+  onResult: function (p) { console.log('matched:', p.unified_id); }
+});</code></pre>
+
+  <h2>埋め込みスニペット (2 行)</h2>
+  <pre><code>&lt;script src="https://autonomath.ai/widget/autonomath.js"&gt;&lt;/script&gt;
+&lt;div data-autonomath-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</code></pre>
+
+  <p class="note">
+    スニペット 1 枚で検索 UI + 結果リスト + 一次資料リンク + 「powered by AutonoMath」
+    フッター (Business plan のみ) が自動で組まれます。
+  </p>
+</div>
+
+<script src="autonomath.js"></script>
+<script>
+(function () {
+  if (!window.Autonomath || !window.Autonomath.Widget) return;
+  new Autonomath.Widget({
+    container: "#programmatic-target",
+    key: "wgt_live_00000000000000000000000000000000",
+    filters: ["industry", "prefecture"],
+    theme: "light",
+    language: "ja",
+    limit: 5,
+    onResult: function (p) {
+      if (typeof console !== "undefined") console.log("matched:", p.unified_id);
+    }
+  });
+})();
+</script>
+</body>
+</html>

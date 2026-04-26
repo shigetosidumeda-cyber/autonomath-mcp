@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>AutonoMath for tax advisors (zeirishi) — Special Measures Act, tax incentives, filing-season PR</title>
+<meta name="description" content="A tax-advisor (zeirishi) playbook for AutonoMath. Search the Special Measures Act, surface tax incentives (DX investment promotion, wage-increase promotion), receive law-revision alerts (e-bookkeeping / invoice system), and add a filing-season widget to your firm site. ¥3/req metered + ¥500/month law-revision alerts.">
+
+<meta property="og:title" content="AutonoMath for tax advisors — Special Measures Act + tax incentives + filing-season PR">
+<meta property="og:description" content="Answer 'which special measures apply this year?' in 30 seconds with Claude + AutonoMath. 35 tax_rulesets + Special Measures Act + circular cross-links.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/audiences/tax-advisor.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath for tax advisors">
+<meta name="twitter:description" content="Corporate tax Special Measures + tax incentives + filing-season PR in one stack.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/audiences/tax-advisor.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/tax-advisor.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/tax-advisor.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/tax-advisor.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css">
+
+<script defer src="../../analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autonomath.ai/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://autonomath.ai/en/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "Tax advisors", "item": "https://autonomath.ai/en/audiences/tax-advisor.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "Tax advisor practice support API + law-revision alerts",
+  "name": "AutonoMath for Tax Advisors",
+  "description": "AutonoMath for tax advisors (zeirishi). Corporate tax Special Measures Act and tax-incentive search; e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law revision alerts; a filing-season widget for client acquisition.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "url": "https://autonomath.ai/en/",
+    "identifier": "T8010001213708"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Tax advisors and tax corporations (zeirishi-houjin)"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "Japan"
+  },
+  "inLanguage": "en",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP metered",
+      "price": "3",
+      "priceCurrency": "JPY"
+    },
+    {
+      "@type": "Offer",
+      "name": "Law-revision alerts",
+      "price": "500",
+      "priceCurrency": "JPY"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "en",
+  "mainEntity": [
+    {"@type": "Question", "name": "What's the request volume for a firm with 80 clients (60 corporate / 20 individual)?", "acceptedAnswer": {"@type": "Answer", "text": "Roughly 5-10 inquiries per client per month &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 (tax exclusive). The March filing season spikes; budget ¥3-5,000/month as the upper bound."}},
+    {"@type": "Question", "name": "How much tax law is covered?", "acceptedAnswer": {"@type": "Answer", "text": "tax_rulesets are 35 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The Special Measures Act on Corporate Tax is searchable via the 9,484-row laws table (continuously loading). See the API reference for details."}},
+    {"@type": "Question", "name": "Are circulars and Q&A precedents available?", "acceptedAnswer": {"@type": "Answer", "text": "For now, statute text (e-Gov, CC-BY) and tax rulesets (NTA primary source) are available. Circulars and Q&A precedents have the schema in place but are still being loaded."}},
+    {"@type": "Question", "name": "How detailed are the law-revision alerts?", "acceptedAnswer": {"@type": "Answer", "text": "Statute name, revised article, effective date, and related program IDs are delivered by email and RSS. Monthly digests are free; real-time notifications are ¥500/month. Bodies are summaries only — primary-source URLs are always attached."}},
+    {"@type": "Question", "name": "Can I take inquiries via the professional-advisor affiliate?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Advisor signup is free; you only pay ¥3,000 per closed introduction (tax exclusive). List your specialty, region, and rate card in the profile, and SMB inquiries route in via the LINE bot."}},
+    {"@type": "Question", "name": "How does this fit Article 38 zeirishi-law confidentiality?", "acceptedAnswer": {"@type": "Answer", "text": "AutonoMath does not use submitted search queries as training data. Inference logs are used for billing reconciliation only. When entering client-specific business details, follow your firm's internal policy."}},
+    {"@type": "Question", "name": "Can I add a search box to my firm site?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The embeddable widget comes in Standard ¥10,000/month (10,000 req included, with logo) or Whitelabel ¥30,000/month (30,000 req included, no logo). One <script> line drops it in — useful for filing-season acquisition."}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="../index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="../getting-started.html">Docs</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../../audiences/tax-advisor.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="tax-advisor.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+        <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">Tax advisors</span>
+      </nav>
+      <h1 id="hero-title">AutonoMath for tax advisors (zeirishi)</h1>
+      <p class="hero-sub">Special Measures Act search + tax incentives + e-bookkeeping / invoice-system revision alerts. Stand up an in-firm RAG for 80 client engagements in 30 minutes.</p>
+      <p class="hero-tag">Sized for a 5-person firm with ~80 SMB clients. Wire the MCP server into Claude Desktop or your in-house RAG and search across 35 tax rulesets, 9,484 laws, and 13,578 programs. Revision alerts keep e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law changes from slipping past you.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
+        <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
+        <a class="btn btn-secondary" href="index.html">Compare audiences</a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="legal-disclaimer-title">
+    <div class="container">
+      <div role="note" style="background:#fff8e1;border:2px solid #f59e0b;padding:18px 20px;border-radius:8px;margin:24px 0;">
+        <h2 id="legal-disclaimer-title" style="font-size:18px;margin:0 0 10px;color:#7c2d12;">Article 52, Certified Public Tax Accountant Act</h2>
+        <p style="margin:0 0 6px;">AutonoMath does not perform tax representation, tax document preparation, or tax consultation.</p>
+        <p style="margin:0 0 6px;">This service only provides information on publicly available tax incentive programs.</p>
+        <p style="margin:0;">For specific tax judgments, please consult a 税理士 (Certified Public Tax Accountant).</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="why-title">
+    <div class="container">
+      <h2 id="why-title" class="section-title">Why AutonoMath</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card">
+          <h3>99%+ primary-source coverage</h3>
+          <p class="card-lead">NTA, MOF, e-Gov</p>
+          <p>tax_rulesets come from NTA primary documents; laws are e-Gov CC-BY; the Special Measures Act and related circulars are referenced at the article level. No aggregators (no second-hand sources). You can show the URL when explaining a position to a client.</p>
+        </article>
+
+        <article class="card">
+          <h3>181 exclusion rules</h3>
+          <p class="card-lead">Catch incompatible measures up front</p>
+          <p>Combinations like wage-increase promotion + SME investment promotion + DX investment promotion are encoded as 181 exclusion / prerequisite rules. Avoid the "filed in combination, denied later" failure mode.</p>
+        </article>
+
+        <article class="card">
+          <h3>Revision alerts</h3>
+          <p class="card-lead">e-bookkeeping, invoice-system, consumer-protection law</p>
+          <p>Register the articles you care about and receive revision, circular, and effective-date notifications by email. Monthly digest is free; real-time is ¥500/month. Designed to prevent filing-season incidents.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="usecase-title">
+    <div class="container">
+      <h2 id="usecase-title" class="section-title">Primary use cases</h2>
+      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="card">
+          <h3>1. "Which special measures apply this year?"</h3>
+          <p>Feed industry, headcount, and planned investment, and the prescreen endpoint returns the top 5 (wage-increase promotion, SME investment promotion, DX investment, special depreciation). Have Claude Desktop call <code>search_tax_incentives</code> via MCP and produce a proposal that cites article numbers, expiration dates, and exclusion rules.</p>
+        </article>
+
+        <article class="card">
+          <h3>2. Special Measures Act lookup + circular links</h3>
+          <p>Look up an article like Article 42-12-5 (wage-increase promotion) and get its revision history. <code>search_by_law</code> reverse-resolves related programs (subsidies and tax incentives).</p>
+        </article>
+
+        <article class="card">
+          <h3>3. Catching e-bookkeeping / invoice-system revisions</h3>
+          <p>Register the articles you care about and the alert arrives. Examples: revisions to Article 7 of the e-bookkeeping law (electronic-transaction data retention), the extension of the 2-percent special invoice-system rule, transitional measures for qualified invoices. Each comes with the primary-source URL.</p>
+        </article>
+
+        <article class="card">
+          <h3>4. Filing-season acquisition (widget)</h3>
+          <p>Drop a one-line <code>&lt;script&gt;</code> on the firm site to embed an "applicable special measures" search box. Standard ¥10,000/month (10,000 req included, with logo) or Whitelabel ¥30,000/month (30,000 req included, no logo). Visitors discover their own applicable measures, which converts to engagement.</p>
+        </article>
+
+        <article class="card">
+          <h3>5. Subsidy + tax-incentive cross-checks</h3>
+          <p>When a client stacks a subsidy with a tax incentive, run <code>combined_compliance_check</code> to confirm "monozukuri subsidy + wage-increase promotion" doesn't trip the exclusion ruleset.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
+    <div class="container">
+      <h2 id="quickstart-title" class="section-title">Start in 5 minutes</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card">
+          <h3>curl (anonymous, 50 free/mo)</h3>
+          <pre class="code-block"><code>curl 'https://api.autonomath.ai/v1/programs/search?q=賃上げ促進税制&amp;tier=S,A&amp;limit=5'</code></pre>
+          <p class="demo-note">No signup, JST first-of-month reset. Check remaining quota via <code>X-RateLimit-Remaining</code>.</p>
+        </article>
+
+        <article class="card">
+          <h3>Python (commercial, ¥3/req)</h3>
+          <pre class="code-block"><code>import httpx
+H = {"X-API-Key": "sk_..."}
+# 1. Search NTA-sourced tax rulesets
+r = httpx.get(
+  "https://api.autonomath.ai/v1/tax_rulesets/search",
+  params={"q": "電帳法 7 条", "limit": 10},
+  headers=H)
+for row in r.json()["items"]:
+    print(row["name"], row["source_url"])
+
+# 2. Pull tax incentives (DX, wage-increase, etc.)
+r2 = httpx.get(
+  "https://api.autonomath.ai/v1/am/tax_incentives",
+  params={"limit": 10}, headers=H)
+for row in r2.json()["items"]:
+    print(row["name"], row.get("sunset_at"))</code></pre>
+          <p class="demo-note">tax_rulesets/search is jpintel core (35 rows); am/tax_incentives is autonomath-sourced. Issue API keys from your dashboard.</p>
+        </article>
+
+        <article class="card">
+          <h3>Claude Desktop (MCP)</h3>
+          <pre class="code-block"><code>// ~/Library/Application Support/
+//   Claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "autonomath": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {"AUTONOMATH_API_KEY": "sk_..."}
+    }
+  }
+}</code></pre>
+          <p class="demo-note">All 72 tools are callable from Claude. <code>search_tax_incentives</code> et al.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-preview" aria-labelledby="pricing-title">
+    <div class="container">
+      <h2 id="pricing-title" class="section-title">Tax-advisor pricing</h2>
+      <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). The only fixed-fee item is the law-revision alert.</p>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">Tax-advisor recommended interface pricing</caption>
+          <thead>
+            <tr>
+              <th scope="col">Interface</th>
+              <th scope="col">Free quota</th>
+              <th scope="col">Paid (tax excl.)</th>
+              <th scope="col">Tax incl.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">API + MCP</th><td>50 req/mo per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+            <tr><th scope="row">Law-revision alerts</th><td>Monthly digest</td><td>¥500 / mo (real-time)</td><td>¥550 / mo</td></tr>
+            <tr><th scope="row">Embedded widget — Standard (optional)</th><td>-</td><td>¥10,000 / mo (10,000 req included)</td><td>¥11,000 / mo</td></tr>
+            <tr><th scope="row">Embedded widget — Whitelabel (optional)</th><td>-</td><td>¥30,000 / mo (30,000 req included, no logo)</td><td>¥33,000 / mo</td></tr>
+            <tr><th scope="row">Professional-advisor affiliate (optional)</th><td>Free signup</td><td>¥3,000 / closed intro</td><td>¥3,300 / closed intro</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pricing-note">Estimate: 80 clients &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400/month. Plan ¥5,000/month as the March filing-season ceiling. <a href="../pricing.html">Full pricing &rarr;</a></p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="faq-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="faq-title" class="section-title">FAQ (tax advisors)</h2>
+      <h3 style="font-size:16px;margin:18px 0 6px;">What's the request volume for a firm with 80 clients (60 corporate / 20 individual)?</h3>
+      <p>Roughly 5-10 inquiries per client per month &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 (tax exclusive). The March filing season spikes; budget ¥3-5,000/month as the upper bound.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">How much tax law is covered?</h3>
+      <p>tax_rulesets are 35 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The Special Measures Act on Corporate Tax is searchable via the 9,484-row laws table (continuously loading). See the API reference.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Are circulars and Q&amp;A precedents available?</h3>
+      <p>For now, statute text (e-Gov, CC-BY) and tax rulesets (NTA primary source) are available. Circulars and Q&amp;A precedents have the schema in place; data load is in progress.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">How detailed are the law-revision alerts?</h3>
+      <p>Statute name, revised article, effective date, and related program IDs delivered by email and RSS. Monthly digest free; real-time ¥500/month. Bodies are summaries with primary-source URLs.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Can I take inquiries via the professional-advisor affiliate?</h3>
+      <p>Yes. Advisor signup is free; ¥3,000 per closed introduction (tax exclusive). List specialty, region, and rate card; SMB inquiries route in via the LINE bot.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">How does this fit Article 38 zeirishi-law confidentiality?</h3>
+      <p>AutonoMath does not use submitted search queries as training data. Inference logs are used for billing reconciliation only. When entering client-specific business details, follow your firm's internal policy.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
+      <p><a href="admin-scrivener.html">Administrative scriveners</a> (permits + subsidy paperwork) and <a href="dev.html">AI agent developers</a> (in-firm RAG) overlap.</p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="resources-title">
+    <div class="container">
+      <h2 id="resources-title" class="section-title">Tax advisor resources</h2>
+      <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="smb.html"><strong>SMB owner page (understand the client)</strong></a> &mdash; See how clients use AutonoMath themselves. LINE-bot self-research &rarr; tax-advisor consultation is the natural inbound path.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="admin-scrivener.html"><strong>Administrative scrivener page (collaborator)</strong></a> &mdash; Useful when partnering with scriveners on permit cases. Tax + permit-succession DD overlap on M&amp;A and business succession.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#tax-rulesets"><strong>REST API: /v1/tax_rulesets/search (35 rows)</strong></a> &mdash; Query NTA-primary tax incentives (wage-hike, income-expansion, business-strengthening, etc.). Conditions and applicability checked mechanically.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#laws"><strong>REST API: /v1/laws/search (9,484 rows)</strong></a> &mdash; Full-text search of e-Gov CC-BY statute bodies. Cite specific articles directly (e.g., Sochi-ho Article 42-12-5), with revision history attached.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../alerts.html"><strong>Subscribe to revision alerts</strong></a> &mdash; Statute name, revised article, effective date by email + RSS. Monthly digest free; real-time ¥500/month. Summaries with primary-source URLs.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction.</li>
+        <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 50 req/month covers 5-10 clients per month at zero cost.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 id="cta-title" class="section-title">Get started</h2>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="../index.html#demo">Try the tax-incentive prescreen (30s)</a>
+        <a class="btn btn-secondary" href="../dashboard.html">Get an API key (Free 50 req/mo)</a>
+        <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
+        <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
+        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+      </div>
+      <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. (T8010001213708) &middot; Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
+    </div>
+  </section>
+
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
+    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
+    <a href="/en/tos.html">Terms</a> |
+    <a href="/en/privacy.html">Privacy</a> |
+    <a href="/docs/api-reference/">OpenAPI</a> |
+    Data last refreshed: <time data-trust-fresh datetime="2026-04-25">Apr 25, 2026</time>
+  </p>
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="../about.html">About</a>
+      <a href="../getting-started.html">Getting started</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>

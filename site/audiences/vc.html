@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>VC / M&amp;A 向け AutonoMath — 法人番号 due diligence + 処分歴 + 採択歴</title>
+<meta name="description" content="VC / M&A advisor 向け AutonoMath。法人番号 1 query で行政処分歴・採択歴・適格請求書登録・関連補助金・融資条件を横断取得。due-diligence パイプラインに組込み、enterprise scale OK。¥3/req metered。">
+
+<meta property="og:title" content="VC / M&amp;A advisor 向け AutonoMath">
+<meta property="og:description" content="法人番号 due diligence + 行政処分歴 5 年 + 採択歴 10 年。DD pipeline に組込み。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/audiences/vc.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VC / M&amp;A advisor 向け AutonoMath">
+<meta name="twitter:description" content="法人番号 due diligence パイプライン用 API。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/audiences/vc.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/vc.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/vc.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/vc.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script defer src="../analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://autonomath.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://autonomath.ai/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "VC / M&A advisor 向け", "item": "https://autonomath.ai/audiences/vc.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "法人 due-diligence 横断 API",
+  "name": "AutonoMath for VC / M&A Advisors",
+  "description": "VC / M&A advisor 向けの AutonoMath。法人番号 1 query で行政処分歴・採択歴・適格請求書登録・関連補助金を横断取得。DD pipeline に組込み可能、enterprise scale。",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "identifier": "T8010001213708"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "ベンチャーキャピタル・M&A 仲介・PE ファンド"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP 従量",
+      "price": "3",
+      "priceCurrency": "JPY"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "DD pipeline で 100 社並列に投げられますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。¥3/req metered で hard cap なし、スパイク時も 429 になりません。100 社 × 5 endpoint = 500 req → ¥1,500 (税別) で 1 batch 完了します。"}},
+    {"@type": "Question", "name": "行政処分歴は何年遡れますか?", "acceptedAnswer": {"@type": "Answer", "text": "enforcement_cases 1,185 件 (建設業法・宅建業法・産廃処理法・金商法・電気通信事業法等)。原則 5 年遡及、自治体公開分は遡及期間が異なる場合あり。各行に source_url + fetched_at 付き。"}},
+    {"@type": "Question", "name": "採択歴はどう取得しますか?", "acceptedAnswer": {"@type": "Answer", "text": "case_studies 2,286 件 (補助金採択公表分) を法人番号・名称で照会。10 年程度遡及可能 (制度ごとに公表期間が異なる)。<code>search_acceptance_stats_am</code> で業種・地域別の採択率も確認できます。"}},
+    {"@type": "Question", "name": "適格請求書発行事業者の確認は?", "acceptedAnswer": {"@type": "Answer", "text": "invoice_registrants 13,801 件 delta-only (PDL v1.0 attribution、国税庁公表 bulk pending)。法人番号で登録有無 + 登録日 + 業態を照会。インボイス対応の DD 観点で必須。"}},
+    {"@type": "Question", "name": "scale 制限はありますか?", "acceptedAnswer": {"@type": "Answer", "text": "enterprise scale でも料金は ¥3/req 一律 metered (税込 ¥3.30)。月額固定・seat fee・年間最低なし。月 1M req でも単価は変わりません。Stripe メータード請求で運用は scalable。"}},
+    {"@type": "Question", "name": "PII / 取引履歴は含まれますか?", "acceptedAnswer": {"@type": "Answer", "text": "AutonoMath は公的に開示された一次資料 (行政処分公表・採択結果公表・適格事業者登録 PDL v1.0) のみを扱います。個人 PII・取引履歴・財務情報は含みません。商業 DB との組合せ運用が前提です。"}},
+    {"@type": "Question", "name": "DD レポート自動化に組み込めますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。MCP server を Claude / GPT に直結 + REST endpoint を社内 RAG に統合する 2 系統。<code>dd_profile_am</code> tool が法人番号 1 件で標準 DD パッケージを返します。"}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="../index.html" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="../products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../prompts.html">Prompts</a>
+      <a href="../dashboard.html">ダッシュボードへ</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/audiences/vc.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/audiences/vc.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+        <a href="../index.html">ホーム</a> &raquo; <a href="index.html">Audience 別</a> &raquo; <span aria-current="page">VC / M&amp;A advisor 向け</span>
+      </nav>
+      <h1 id="hero-title">VC / M&amp;A advisor 向け AutonoMath</h1>
+      <p class="hero-sub">法人番号で行政処分歴 5 年 + 採択歴 10 年 + 適格請求書登録 を 1 query 横断。due-diligence パイプラインに組込む。</p>
+      <p class="hero-tag">投資・買収候補の法人番号を投げると、enforcement 1,185・case_studies 2,286・invoice_registrants 13,801・programs 13,578 を 1 call で抽出。¥3/req 完全従量、scale 制限なし、Stripe メータード課金で月次精算。</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#quickstart">5 分で始める &rarr;</a>
+        <a class="btn btn-secondary" href="../pricing.html">料金を見る</a>
+        <a class="btn btn-secondary" href="index.html">他の audience と比較</a>
+      </div>
+      <p class="trust-strip" style="margin:16px 0 0;font-size:13px;color:var(--text-muted);line-height:1.7;">
+        運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+        · <a href="../tokushoho.html">特商法表記</a> / <a href="../tos.html">利用規約</a> / <a href="../privacy.html">プライバシー</a>
+        · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
+        · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
+      </p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="why-title">
+    <div class="container">
+      <h2 id="why-title" class="section-title">なぜ AutonoMath か</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card">
+          <h3>法人番号 1 query で 4 dataset 横断</h3>
+          <p class="card-lead">enforcement + cases + invoice + programs</p>
+          <p>13 桁の法人番号 (国税庁公表) を投げるだけで、行政処分・採択履歴・適格事業者登録・関連制度を統一スキーマで返却。社内 DD ツールに REST or MCP で統合。</p>
+        </article>
+
+        <article class="card">
+          <h3>一次資料のみ、出典 URL 必須</h3>
+          <p class="card-lead">aggregator 不採用</p>
+          <p>行政処分は各監督官庁公表分、採択は経産省・農水省・中小企業庁・各自治体公表分、適格事業者は国税庁 PDL v1.0。aggregator (二次情報源) は使わない。各行に source_url + fetched_at 付き。</p>
+        </article>
+
+        <article class="card">
+          <h3>scale 制限なし、¥3/req 一律</h3>
+          <p class="card-lead">月額固定・seat なし</p>
+          <p>月 1M req でも単価は ¥3 (税込 ¥3.30) のまま。最低金額・年間契約・seat fee なし。Stripe メータード請求で運用 scalable、適格請求書 (T8010001213708) 自動発行。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="irr-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="irr-title" class="section-title">なぜ VC がこれを使うべきか &mdash; IRR の話</h2>
+      <ul style="max-width:820px;margin:0 auto;padding-left:1.2em;line-height:1.7;">
+        <li>ポートフォリオ会社が取りこぼしている補助金 = 事業外収益。100社 &times; 平均1件 &times; 平均¥500万 = ¥5億の取りこぼし。1年で IRR を 1-2pt 改善する原資。</li>
+        <li>DD で「未受給の優良制度」を発見 = 投資後 100 日プランの quick win。経営チームの信頼獲得に直結。</li>
+        <li>行政処分・ネガ判明 = 投資判断の事前回避。1案件あたり数千万〜数億の毀損回避はファンド全体の IRR を守る。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="usecase-title">
+    <div class="container">
+      <h2 id="usecase-title" class="section-title">主要 use case</h2>
+      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="card">
+          <h3>1. 投資候補の compliance check</h3>
+          <p>シードラウンドの 50 社を法人番号 batch 投入 &rarr; 行政処分歴 (建設業法・金商法・電気通信事業法等)、適格請求書登録の有無、関連補助金採択歴を一覧化。投資判断会議の事前資料を自動生成。</p>
+        </article>
+
+        <article class="card">
+          <h3>2. M&amp;A buy-side DD: 過去 5 年の行政処分</h3>
+          <p>買収対象 + 主要取引先 30 社の法人番号で行政処分歴を 1 batch。<code>check_enforcement_am</code> tool で重大処分 (営業停止・登録取消) を即抽出、レポート添付。</p>
+        </article>
+
+        <article class="card">
+          <h3>3. 採択歴で技術検証</h3>
+          <p>NEDO・経産省ものづくり補助金・中小企業庁事業再構築の採択履歴は技術力の客観指標。<code>search_acceptance_stats_am</code> で業種別採択率 + 当該社の採択回数を取得。</p>
+        </article>
+
+        <article class="card">
+          <h3>4. ポートフォリオ会社の支援可能制度</h3>
+          <p>投資後の value-up 文脈で、ポートフォリオ会社が使える補助金・税制特例・融資を 1 call で抽出。排他ルール 181 本で「これとこれは併用不可」を事前検出。</p>
+        </article>
+
+        <article class="card">
+          <h3>5. インボイス対応 DD</h3>
+          <p>取引先・仕入先の適格請求書発行事業者登録を法人番号で確認。invoice_registrants 13,801 件 (PDL v1.0 attribution、月次フル更新準備中) で登録日・業態を照会。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
+    <div class="container">
+      <h2 id="quickstart-title" class="section-title">5 分で始める</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card" style="min-width:0;">
+          <h3>curl (匿名 50 free/月)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>curl 'https://api.autonomath.ai/v1/am/enforcement?\
+corporate_number=8010001213708&amp;\
+since=2021-01-01&amp;\
+limit=20'</code></pre>
+          <p class="demo-note">corporate_number は 13 桁の国税庁発番号。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>Python batch (商用 ¥3/req)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code># pip install httpx
+import httpx, asyncio
+
+# DD 標準パッケージ: 法人番号 1 件で 3 endpoint を chain、複数法人を並列実行
+nums = ["8010001213708", "1010001067912"]  # 13 桁の国税庁発番号
+BASE = "https://api.autonomath.ai/v1"
+
+async def dd(client, num):
+    invoice = await client.get(f"{BASE}/invoice_registrants/T{num}")
+    enforce = await client.get(f"{BASE}/enforcement-cases/search",
+                               params={"corporate_number": num,
+                                       "since": "2021-01-01"})
+    cases = await client.get(f"{BASE}/case-studies/search",
+                             params={"q": num, "limit": 20})
+    return {"invoice": invoice.json(), "enforcement": enforce.json(),
+            "case_studies": cases.json()}
+
+async def main():
+    async with httpx.AsyncClient(headers={"X-API-Key": "sk_..."}) as client:
+        results = await asyncio.gather(*[dd(client, n) for n in nums])
+    for r in results:
+        print(r)
+
+asyncio.run(main())</code></pre>
+          <p class="demo-note">3 endpoint chain。100 社並列、hard cap なし。法人番号 1 件 = 3 req = ¥9 (税別)。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>Claude Desktop (MCP)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>// claude_desktop_config.json
+{
+  "mcpServers": {
+    "autonomath": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {"AUTONOMATH_API_KEY": "sk_..."}
+    }
+  }
+}
+// 使い方 (Claude にプロンプト):
+// 「法人番号 8010001213708 の DD profile を出して」
+// → MCP tool dd_profile_am(houjin_bangou=...) が
+//   invoice / enforcement / case_studies を 1 shot で集約</code></pre>
+          <p class="demo-note"><code>dd_profile_am</code> は MCP 専用 tool (REST 等価なし)。Claude / Cursor から法人番号 1 件で標準 DD パッケージ取得。<code>check_enforcement_am</code> も同様。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-preview" aria-labelledby="pricing-title">
+    <div class="container">
+      <h2 id="pricing-title" class="section-title">VC / M&amp;A 向け 料金</h2>
+      <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (税込 ¥3.30)。月額固定・seat fee・年間最低なし。</p>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">VC / M&amp;A 向け 料金例</caption>
+          <thead>
+            <tr>
+              <th scope="col">想定 batch</th>
+              <th scope="col">req 数</th>
+              <th scope="col">税別</th>
+              <th scope="col">税込</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">DD 1 社 (5 endpoint)</th><td>5</td><td>¥15</td><td>¥16.50</td></tr>
+            <tr><th scope="row">投資候補 50 社 1 batch</th><td>250</td><td>¥750</td><td>¥825</td></tr>
+            <tr><th scope="row">M&amp;A 取引先 100 社 1 batch</th><td>500</td><td>¥1,500</td><td>¥1,650</td></tr>
+            <tr><th scope="row">月次運用 (10 案件 &times; 平均 50 req)</th><td>5,000</td><td>¥15,000</td><td>¥16,500</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pricing-note">Stripe メータード課金、適格請求書 (T8010001213708) 自動発行。<a href="../pricing.html">詳細料金 &rarr;</a></p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="faq-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="faq-title" class="section-title">よくある質問 (VC / M&amp;A advisor)</h2>
+      <h3 style="font-size:16px;margin:18px 0 6px;">DD pipeline で 100 社並列に投げられますか?</h3>
+      <p>はい。¥3/req metered で hard cap なし、スパイク時も 429 になりません。100 社 &times; 5 endpoint = 500 req &rarr; ¥1,500 (税別) で 1 batch 完了します。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">行政処分歴は何年遡れますか?</h3>
+      <p>enforcement_cases 1,185 件 (建設業法・宅建業法・産廃処理法・金商法・電気通信事業法等)。原則 5 年遡及、自治体公開分は遡及期間が異なる場合あり。各行に source_url + fetched_at 付き。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">採択歴はどう取得しますか?</h3>
+      <p>case_studies 2,286 件 (補助金採択公表分) を法人番号・名称で照会。10 年程度遡及可能 (制度ごとに公表期間が異なる)。<code>search_acceptance_stats_am</code> で業種・地域別の採択率も確認できます。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">適格請求書発行事業者の確認は?</h3>
+      <p>invoice_registrants 13,801 件 delta-only (PDL v1.0 attribution、国税庁公表 bulk pending)。法人番号で登録有無 + 登録日 + 業態を照会。インボイス対応の DD 観点で必須。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">scale 制限はありますか?</h3>
+      <p>enterprise scale でも料金は ¥3/req 一律 metered。月額固定・seat fee・年間最低なし。月 1M req でも単価は変わりません。Stripe メータード請求で運用 scalable。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">PII / 取引履歴は含まれますか?</h3>
+      <p>AutonoMath は公的開示された一次資料 (行政処分公表・採択結果公表・適格事業者登録 PDL v1.0) のみを扱います。個人 PII・取引履歴・財務情報は含みません。商業 DB との組合せ運用が前提です。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">DD レポート自動化に組み込めますか?</h3>
+      <p>はい。MCP server を Claude / GPT に直結 + REST endpoint を社内 RAG に統合する 2 系統。<code>dd_profile_am</code> tool が法人番号 1 件で標準 DD パッケージを返します。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">関連 audience は?</h3>
+      <p>投資先 / 売主側で重なる stakeholders: <a href="tax-advisor.html">税理士</a> (税務 DD)、<a href="admin-scrivener.html">行政書士</a> (許認可承継 DD)、<a href="dev.html">AI agent 開発者</a> (社内 DD bot を組む側)、<a href="smb.html">SMB 経営者</a> (投資先候補)。<a href="index.html">5 audience 全体を比較</a>。</p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="resources-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="resources-title" class="section-title">VC / M&amp;A advisor 向けリソース</h2>
+      <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../facts.html"><strong>事実シート (data coverage)</strong></a> &mdash; 13,578 制度 + 2,286 採択事例 + 1,185 行政処分 + 13,801 適格事業者の正確な内訳。投資判断資料の出典 footnote として使える。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="dev.html"><strong>AI agent 開発者ページ</strong></a> &mdash; 社内 DD bot を組む際の MCP / REST 統合ガイド。Claude Desktop に直結 + 社内 RAG への REST 注入の 2 系統パターン。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>batch DD 実装例 (Python + curl + TypeScript)</strong></a> &mdash; シードラウンド 50 社の DD を 1 batch で回すコード。エラー処理 + retry 込み。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; 投資先候補の関連補助金・採択歴を法人番号 1 query で抽出。pagination + filter で大量 batch 対応。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools 一覧 (72 tools)</strong></a> &mdash; <code>dd_profile_am</code> + <code>check_enforcement_am</code> + <code>search_acceptance_stats_am</code> 等、DD パイプラインに直接組込み可能な関数群。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; 社内 DD ツールへの統合用 client SDK 自動生成のソース。Stoplight / Postman / Insomnia 対応。</li>
+        <li style="padding:10px 0;"><a href="../pricing.html"><strong>enterprise scale 料金</strong></a> &mdash; 月 1M req でも ¥3/req 一律、seat fee なし。100 社 batch DD = ¥1,500/回、月 5,000 req で ¥15,000。Stripe メータード請求。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 id="cta-title" class="section-title">始める</h2>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="../dashboard.html">API キー発行 (Free 50 req/月)</a>
+        <a class="btn btn-secondary" href="/docs/api-reference/">API リファレンス</a>
+        <a class="btn btn-secondary" href="/docs/openapi/v1.json">OpenAPI v1 (JSON)</a>
+        <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
+        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+      </div>
+      <p class="hero-note" style="margin-top:14px;">運営: Bookyou株式会社 (T8010001213708) &middot; 解約いつでも、最低金額・違約金なし &middot; <a href="../tokushoho.html">特商法表記</a> / <a href="../tos.html">利用規約</a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="../products.html">Products</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="../tos.html">利用規約</a>
+      <a href="../privacy.html">プライバシー</a>
+      <a href="../tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) &middot; 代表取締役 梅田茂利</p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

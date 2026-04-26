@@ -1,0 +1,101 @@
+{
+  "_meta": {
+    "schema_version": "9.2.0",
+    "user_type": "C",
+    "user_type_label": "法人参入",
+    "version": 1,
+    "parent_canonical_id": null,
+    "test_profile_id": "J_new_corp"
+  },
+  "identity": {
+    "name": "新法 四郎",
+    "furigana": "シンポウ シロウ",
+    "address": "千葉県船橋市○○3-4",
+    "postal_code": "273-0001",
+    "birth_date": {
+      "era": "平成",
+      "year": 1,
+      "month": 1,
+      "day": 10
+    },
+    "age": 37,
+    "phone": "047-111-4444",
+    "email": "shinpo@newcorp.example.com"
+  },
+  "plan": {
+    "municipalities": [
+      "船橋市"
+    ],
+    "prefecture": "千葉県",
+    "crop": "トマト",
+    "sub_crops": [
+      "パプリカ"
+    ],
+    "area_a": 40,
+    "cultivation_method": "施設栽培",
+    "start_year": 2026,
+    "start_month": 4,
+    "vision": "2024年設立の農業法人として施設トマト40aを経営。高品質トマトの契約出荷で売上2,000万円を目指す。",
+    "farm_land_type": "借入",
+    "channel": "契約"
+  },
+  "qualifications": {
+    "stage": 1,
+    "entity_type": "new_corp_5yr",
+    "has_regional_plan": true,
+    "has_loan_ready": true,
+    "has_insurance": true,
+    "has_blue_tax": true,
+    "household_income_万": null,
+    "capital_万": 300,
+    "employee_count": 5
+  },
+  "financial": {
+    "available_capital_万": 800,
+    "existing_operations": []
+  },
+  "investments": [
+    {
+      "name": "鉄骨ハウス",
+      "category": "facility_equipment",
+      "amount_万": 2500,
+      "useful_life": 20,
+      "year": 2026
+    },
+    {
+      "name": "環境制御システム",
+      "category": "facility_equipment",
+      "amount_万": 500,
+      "useful_life": 7,
+      "year": 2026
+    },
+    {
+      "name": "選果包装機",
+      "category": "processing_equipment",
+      "amount_万": 200,
+      "useful_life": 10,
+      "year": 2027
+    }
+  ],
+  "fields": [
+    {
+      "name": "借入農地",
+      "address": "船橋市○○",
+      "area_sqm": 4000,
+      "field_type": "ハウス",
+      "tenure": "借入"
+    }
+  ],
+  "family": [],
+  "work_history": [
+    {
+      "type": "employment",
+      "organization": "食品メーカー",
+      "role": "営業部長",
+      "start_date": "2010年4月",
+      "end_date": "2023年12月",
+      "is_agriculture": false
+    }
+  ],
+  "corporation_name": "株式会社新法アグリ"
+}

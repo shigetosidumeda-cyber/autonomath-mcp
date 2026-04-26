@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<!--
+  Pricing model (2026-04-25 改訂, 5-interface expansion, 完全従量):
+    - API + MCP: ¥3/req 税別 (税込 ¥3.30), 匿名 50 req/月 per IP 無料
+    - LINE bot: 月 10 件まで無料、11 件目以降 ¥3/質問 (税込 ¥3.30) 完全従量。公開 2026-05-06 waitlist
+    - 法令改正アラート: ¥500/月 (税込 ¥550), 月次ダイジェスト無料
+    - 埋込 Widget: Standard ¥10,000/月 (税込 ¥11,000, 10,000 req 含む) + ¥3/req overage, Whitelabel ¥30,000/月
+    - 士業 affiliate: 利用無料, advisor が ¥3,000/成約 支払い
+    Stripe Tax, インボイス (T8010001213708), 解約いつでも、tier/seat/最低金額なし。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>料金 — AutonoMath</title>
+<meta name="description" content="AutonoMath 料金 — API ¥3/req、LINE ¥3/質問、法令アラート ¥500/月、Widget ¥10,000/月、士業 affiliate ¥3,000/成約。Stripe Tax + インボイス対応、解約いつでも、ランク制なし。">
+
+<meta property="og:title" content="料金 — AutonoMath">
+<meta property="og:description" content="¥3/req から、用途別に 5 つのインターフェース。月額固定は ¥500 から。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/pricing.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="料金 — AutonoMath">
+<meta name="twitter:description" content="¥3/req から、用途別に 5 つのインターフェース。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/pricing.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/pricing.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/pricing.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/pricing.html">
+<!-- Preconnect to the API origin — Stripe checkout + portal links
+     trigger /v1/checkout/create-session and /v1/me/billing-portal
+     POSTs from this page; warming the TLS connection cuts ~150 ms
+     off the click-to-redirect path on cold visits. crossorigin
+     matches the fetch() mode in dashboard.js / Stripe glue. -->
+<link rel="preconnect" href="https://api.autonomath.ai" crossorigin>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css">
+
+<script defer src="analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "料金 — AutonoMath",
+  "description": "AutonoMath の 5 インターフェース料金: API ¥3/req / LINE ¥3/質問 / 法令アラート ¥500/月 / Widget ¥10,000/月 / 士業 affiliate 成約 ¥3,000。",
+  "url": "https://autonomath.ai/pricing.html",
+  "inLanguage": "ja",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Bookyou株式会社",
+      "identifier": "T8010001213708",
+      "email": "info@bookyou.net",
+      "url": "https://autonomath.ai/"
+    }
+  },
+  "primaryImageOfPage": {"@type": "ImageObject", "url": "https://autonomath.ai/assets/og.png"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Offer",
+  "name": "AutonoMath API + MCP — 完全従量",
+  "description": "REST + MCP API。¥3/req 税別 (税込 ¥3.30)。匿名 50 req/月 per IP は登録不要で無料 (JST 月初 00:00 リセット)。最低利用期間・解約違約金なし。",
+  "url": "https://autonomath.ai/pricing.html#api-paid",
+  "category": "API access",
+  "availability": "https://schema.org/InStock",
+  "businessFunction": "https://schema.org/Sell",
+  "priceCurrency": "JPY",
+  "price": "3.00",
+  "priceSpecification": {
+    "@type": "UnitPriceSpecification",
+    "price": "3.00",
+    "priceCurrency": "JPY",
+    "unitCode": "E50",
+    "unitText": "request",
+    "billingDuration": "P1M",
+    "billingIncrement": 1,
+    "valueAddedTaxIncluded": false,
+    "referenceQuantity": {
+      "@type": "QuantitativeValue",
+      "value": 1,
+      "unitCode": "E50",
+      "unitText": "request"
+    }
+  },
+  "includesObject": {
+    "@type": "TypeAndQuantityNode",
+    "amountOfThisGood": 50,
+    "unitCode": "E50",
+    "unitText": "free requests per IP per month",
+    "typeOfGood": {
+      "@type": "Service",
+      "name": "Anonymous tier (50 req/月 per IP)"
+    }
+  },
+  "eligibleCustomerType": [
+    "https://schema.org/PublicAdministration",
+    "https://schema.org/Person",
+    "https://schema.org/Enterprise"
+  ],
+  "eligibleRegion": {"@type": "Country", "name": "Japan"},
+  "seller": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "email": "info@bookyou.net",
+    "url": "https://autonomath.ai/"
+  },
+  "termsOfService": "https://autonomath.ai/tos.html"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Offer",
+  "name": "API anonymous monthly allowance",
+  "price": "0",
+  "priceCurrency": "JPY",
+  "description": "匿名 50 req/月 per IP 無料 (JST 月初 00:00 リセット)",
+  "url": "https://autonomath.ai/pricing.html#api-free",
+  "category": "API access",
+  "availability": "https://schema.org/InStock",
+  "inLanguage": "ja",
+  "eligibleQuantity": {
+    "@type": "QuantitativeValue",
+    "value": 50,
+    "unitText": "requests/month"
+  },
+  "eligibleRegion": {"@type": "Country", "name": "Japan"},
+  "seller": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "email": "info@bookyou.net",
+    "url": "https://autonomath.ai/"
+  },
+  "termsOfService": "https://autonomath.ai/tos.html"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "どれを選べばいい?", "acceptedAnswer": {"@type": "Answer", "text": "AI 開発者は API + MCP。スマホで使いたい個人 / 経営者は LINE bot。法令改正キャッチアップは アラート。自社サイト集客は Widget。士業・認定支援機関は advisor 登録。迷ったら 比較ページ の決定木。"}},
+    {"@type": "Question", "name": "複数同時に使えますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。1 アカウントで 5 インターフェース全てを購読可能。例: API (¥3/req) + アラート (¥500/月) + advisor 登録 の組合せなど。Stripe 1 請求書にまとめて明細化します。"}},
+    {"@type": "Question", "name": "途中で利用するインターフェースを変更できる?", "acceptedAnswer": {"@type": "Answer", "text": "はい。Stripe Customer Portal から各インターフェースの追加・切替・解約ができます。日割りは自動計算。インターフェースの組合せは自由で、上下のランクはありません。"}},
+    {"@type": "Question", "name": "使わない月も請求される?", "acceptedAnswer": {"@type": "Answer", "text": "従量制 (API / Widget overage) は 0 req なら ¥0。月額固定 (LINE Plus / アラート Real-time / Widget) は解約しない限り毎月請求されます。"}},
+    {"@type": "Question", "name": "契約書 / 個別見積は?", "acceptedAnswer": {"@type": "Answer", "text": "完全セルフサーブで運用しており、個別契約・個別見積はしていません。公開料金がそのまま全ユーザーに適用されます。"}},
+    {"@type": "Question", "name": "データ提供範囲は?", "acceptedAnswer": {"@type": "Answer", "text": "2026-04 時点で補助金・融資・税制・認定制度 13,578 件 (検索対象 10,790)、採択事例 2,286、融資 108 (担保・個人保証人・第三者保証人の三軸分解)、行政処分 1,185。全件一次資料 URL + fetched_at 付き。排他ルール 181 本。4-dataset 拡張 (法令 / 判例 / 入札 / 税務ruleset / 国税庁適格事業者) も含む。すべての数値はファクトシートに出典付きで掲載。"}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html" aria-current="page">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="prompts.html">Prompts</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="pricing.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="en/pricing.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="pricing-page">
+  <div class="container">
+    <h1>料金</h1>
+    <p class="lead">¥3/req から、用途別に 5 つのインターフェース。月額固定は ¥500 から。完全セルフサーブ、最低金額・契約・解約違約金なし。<strong>税込表示</strong>を併記しています。</p>
+    <!-- Trust strip — same composition as index.html so cross-page recall is consistent. -->
+    <p class="trust-strip" style="margin:0 0 24px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+      運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+      · <a href="tokushoho.html">特商法表記</a>
+      · <a href="tos.html">利用規約</a>
+      · <a href="privacy.html">プライバシー</a>
+      · 適格請求書 Stripe 自動発行
+      · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
+      · <a href="stats.html">公開統計</a>
+    </p>
+
+    <section aria-labelledby="api-title" style="margin-top:24px;">
+      <h2 id="api-title" class="section-title">1. API + MCP</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">AI 開発者 / Enterprise RAG 向け。72 MCP tools (39 コア + 33 autonomath) + REST。匿名 50 req/月 per IP は登録不要で使える。</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card" aria-labelledby="api-free">
+          <h2 id="api-free">匿名</h2>
+          <p class="tier-desc">試用 / 個人検証</p>
+          <p class="price">¥0</p>
+          <p class="price-unit"><span data-fact="anonymous_quota_per_month">50</span> req / 月 per IP (JST 月初 00:00 リセット)</p>
+          <ul class="feats">
+            <li>カード登録不要、device flow で即開始</li>
+            <li>全フィールド参照可 (fields=default)</li>
+            <li>MCP / REST 両対応</li>
+            <li>業務運用は Paid を推奨</li>
+          </ul>
+          <a class="btn btn-secondary" href="/docs/getting-started/">始める</a>
+        </article>
+
+        <article class="price-card highlight" aria-labelledby="api-paid">
+          <h2 id="api-paid">従量</h2>
+          <p class="tier-desc">商用 / 大規模 RAG / エージェント</p>
+          <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ req (税込)</small></p>
+          <p class="price-unit">税別 ¥<span data-fact="price_per_req">3</span>.00 + 消費税 10%、Stripe 従量</p>
+          <ul class="feats">
+            <li><strong>スループット制限なし</strong> — スパイク時も 429 を返さず ¥3/req のまま 100万 req/月 まで一律。</li>
+            <li><strong>月額予算上限を自分で設定可能</strong> — Customer Portal または <code>POST /v1/me/cap</code> で <code>monthly_cap_yen</code> を設定。月初〜上限到達まで通常稼働、到達した瞬間 503 + <code>cap_reached</code>、JST 月初 00:00 にリセット。デフォルトは無制限。</li>
+            <li>fields=full (enriched + source_mentions + lineage)</li>
+            <li>使わない月は請求 ¥0</li>
+            <li>適格請求書 (T8010001213708) Stripe 自動発行</li>
+            <li>解約は Stripe Customer Portal からカードを外すだけ</li>
+          </ul>
+          <details style="margin:12px 0 14px;font-size:13px;color:var(--text-muted);">
+            <summary style="cursor:pointer;font-weight:600;color:var(--text);">ご契約前にご確認ください</summary>
+            <ul style="margin:10px 0 4px 18px;padding:0;line-height:1.7;">
+              <li>1 リクエストあたり <strong>税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span></strong> (税抜 ¥<span data-fact="price_per_req">3</span> + 消費税 10%)。</li>
+              <li><strong>1 リクエスト = 1 HTTP / MCP tool 呼び出し。</strong>結果が 100 件返っても 1 req カウント。<code>/v1/healthz</code>・<code>/v1/me/*</code> 等のメタ系は無料カウント外。</li>
+              <li>毎月 1 日 00:00 〜 月末日 23:59 (JST) の利用量に基づき、翌月 1 日以降に登録カードへ自動請求。</li>
+              <li>最低利用期間・解約違約金なし。Customer Portal からカードを外せば即時 Free (<span data-fact="anonymous_quota_per_month">50</span> req/月) に戻る。</li>
+              <li>本サービスは情報提供に限定し、書類作成代行・法的助言・税務助言は行いません。</li>
+            </ul>
+          </details>
+          <label for="checkout-consent" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:13px;color:var(--text);line-height:1.5;cursor:pointer;">
+            <input type="checkbox" id="checkout-consent" style="margin-top:3px;flex-shrink:0;">
+            <span><a href="tos.html" rel="noopener">利用規約</a> ・ <a href="privacy.html" rel="noopener">プライバシー</a> ・ <a href="tokushoho.html" rel="noopener">特商法表記</a> に同意したうえで決済に進みます。</span>
+          </label>
+          <button class="btn btn-primary" type="button" id="checkout-btn" disabled aria-describedby="checkout-disabled-hint">カードを登録して開始</button>
+          <p id="checkout-disabled-hint" style="font-size:12px;color:var(--text-muted);margin:6px 0 0;">上記にご同意いただくとボタンが有効になります。</p>
+          <p id="checkout-status" class="newsletter-status" role="status" aria-live="polite"></p>
+        </article>
+
+      </div>
+      <div class="calc" style="margin-top:24px;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:12px;max-width:480px;">
+        <h3 style="margin:0 0 12px;font-size:16px;">月額試算</h3>
+        <label for="reqInput" style="display:block;font-size:14px;margin-bottom:6px;">月の質問数:</label>
+        <input id="reqInput" type="number" value="100" min="0" style="width:140px;padding:6px 10px;font-size:14px;border:1px solid var(--border,#d1d5db);border-radius:6px;">
+        <p style="margin:12px 0 0;font-size:14px;">料金: <strong id="costOut">¥165</strong> / 月 (税抜 ¥<span id="netOut">150</span>)</p>
+      </div>
+      <script>
+        (function () {
+          var r = document.getElementById('reqInput');
+          var c = document.getElementById('costOut');
+          var n = document.getElementById('netOut');
+          if (!r || !c || !n) return;
+          function recompute() {
+            var num = Math.max(0, parseInt(r.value || '0', 10));
+            var paid = Math.max(0, num - 50);
+            var net = paid * 3;
+            var tax = Math.round(net * 0.1);
+            var total = net + tax;
+            c.textContent = '¥' + total.toLocaleString();
+            n.textContent = net.toLocaleString();
+          }
+          r.addEventListener('input', recompute);
+          recompute();
+        })();
+      </script>
+      <script>
+        (function () {
+          var btn = document.getElementById('checkout-btn');
+          var status = document.getElementById('checkout-status');
+          var consent = document.getElementById('checkout-consent');
+          var hint = document.getElementById('checkout-disabled-hint');
+          if (!btn || !status) return;
+          if (consent) {
+            consent.addEventListener('change', function () {
+              btn.disabled = !consent.checked;
+              if (hint) hint.style.display = consent.checked ? 'none' : '';
+            });
+          }
+          btn.addEventListener('click', async function () {
+            if (consent && !consent.checked) {
+              status.className = 'newsletter-status err';
+              status.textContent = '規約等へのご同意をご確認ください';
+              return;
+            }
+            status.className = 'newsletter-status';
+            status.textContent = '送信中…';
+            btn.disabled = true;
+            var ctrl = new AbortController();
+            var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+            try {
+              var r = await fetch('/v1/billing/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                  success_url: 'https://autonomath.ai/success.html?session_id={CHECKOUT_SESSION_ID}',
+                  cancel_url: 'https://autonomath.ai/pricing.html?cancelled=1'
+                }),
+                signal: ctrl.signal
+              });
+              if (r.status === 402) {
+                status.className = 'newsletter-status err';
+                status.innerHTML = '決済設定が未完了です。<a href="/pricing.html" style="color:inherit;text-decoration:underline;">料金ページ</a> から再度お試しください。';
+                btn.disabled = false;
+                return;
+              }
+              if (r.status >= 500) {
+                status.className = 'newsletter-status err';
+                status.textContent = 'サーバーエラーが発生しました (HTTP ' + r.status + ')。数秒おいて再度お試しください';
+                btn.disabled = false;
+                return;
+              }
+              if (!r.ok) throw new Error('http ' + r.status);
+              var data = await r.json();
+              if (data && data.url) { window.location = data.url; }
+              else { throw new Error('no url'); }
+            } catch (err) {
+              status.className = 'newsletter-status err';
+              if (err && err.name === 'AbortError') {
+                status.textContent = '応答がありません (15 秒タイムアウト)。回線をご確認のうえ再度お試しください';
+              } else {
+                status.textContent = 'エラーが発生しました。時間をおいて再度お試しください';
+              }
+              btn.disabled = false;
+            } finally {
+              clearTimeout(timer);
+            }
+          });
+        })();
+      </script>
+    </section>
+
+    <section aria-labelledby="line-title" style="margin-top:56px;">
+      <h2 id="line-title" class="section-title">2. LINE bot</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">SME 経営者・士業・個人事業主向け。スマホの LINE で自然言語検索。</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card">
+          <h2>無料</h2>
+          <p class="tier-desc">月 10 件まで</p>
+          <p class="price">¥0</p>
+          <p class="price-unit">月 10 件まで検索無料</p>
+          <ul class="feats">
+            <li>友だち追加で即使える</li>
+            <li>自然言語で補助金検索</li>
+            <li>士業 affiliate への紹介連携</li>
+          </ul>
+          <a class="btn btn-secondary" href="line.html">LINE bot を追加</a>
+        </article>
+
+        <article class="price-card highlight">
+          <h2>従量 (11 件目以降)</h2>
+          <p class="tier-desc">月 11 件目から完全従量</p>
+          <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 質問 (税込)</small></p>
+          <p class="price-unit">税別 ¥<span data-fact="price_per_req">3</span> + 消費税 10%、月額固定なし</p>
+          <ul class="feats">
+            <li>採択事例 / 融資 / 行政処分 も引ける</li>
+            <li>LINE Pay / Apple Pay / Google Pay 都度払い、または Stripe にカード登録で月末まとめ</li>
+            <li>JST 月初 00:00 にカウンタリセット</li>
+            <li>いつでも解約可 (Stripe Customer Portal)</li>
+          </ul>
+          <a class="btn btn-primary" href="line.html">LINE bot を追加</a>
+          <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">公開: 2026-05-06 (waitlist 受付中)</p>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="alerts-title" style="margin-top:56px;">
+      <h2 id="alerts-title" class="section-title">3. 法令改正アラート</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">士業・経理担当・コンプラ担当向け。インボイス・電帳法・労基法改正を E メールで通知。</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card">
+          <h2>無料</h2>
+          <p class="tier-desc">月次ダイジェスト</p>
+          <p class="price">¥0</p>
+          <p class="price-unit">月 1 通の総合ダイジェスト</p>
+          <ul class="feats">
+            <li>主要法令の改正をまとめて月末送信</li>
+            <li>メール登録のみ、カード不要</li>
+            <li>解除はワンクリック</li>
+          </ul>
+          <a class="btn btn-secondary" href="alerts.html">ダイジェストを購読</a>
+        </article>
+
+        <article class="price-card highlight">
+          <h2>Real-time</h2>
+          <p class="tier-desc">施行前後の即時通知</p>
+          <p class="price">¥550 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 月 (税込)</small></p>
+          <p class="price-unit">税別 ¥<span data-fact="price_alerts_per_month">500</span> + 消費税 10%</p>
+          <ul class="feats">
+            <li>関心分野 (インボイス / 電帳法 / 労基法 / 建設業法 等) を選択</li>
+            <li>官報・e-Gov 更新を即時検知</li>
+            <li>関連判例・行政処分リンクも添付</li>
+            <li>いつでも解約可</li>
+          </ul>
+          <a class="btn btn-primary" href="alerts.html">Real-time に切り替え</a>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="widget-title" style="margin-top:56px;">
+      <h2 id="widget-title" class="section-title">4. 埋込 Widget</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">税理士 HP・商工会議所・士業事務所向け。自社サイトに 1 行で補助金検索を埋め込み。</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card">
+          <h2>Standard</h2>
+          <p class="tier-desc">ロゴ付き、10,000 req 含む</p>
+          <p class="price">¥11,000 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 月 (税込)</small></p>
+          <p class="price-unit">税別 ¥10,000 · overage 税込 ¥3.30/req</p>
+          <ul class="feats">
+            <li>&lt;script&gt; tag 1 行で追加</li>
+            <li>10,000 req/月 含む</li>
+            <li>検索結果に「AutonoMath 提供」</li>
+            <li>ドメイン制限 / IP allowlist 対応</li>
+          </ul>
+          <a class="btn btn-secondary" href="widget.html">Widget を導入</a>
+        </article>
+
+        <article class="price-card highlight">
+          <h2>Whitelabel</h2>
+          <p class="tier-desc">ブランド非表示</p>
+          <p class="price">¥33,000 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 月 (税込)</small></p>
+          <p class="price-unit">税別 ¥30,000 · overage 税込 ¥3.30/req</p>
+          <ul class="feats">
+            <li>Standard の全機能</li>
+            <li>ロゴ / クレジット 非表示</li>
+            <li>独自 CSS テーマ変数対応</li>
+            <li>30,000 req/月 含む</li>
+          </ul>
+          <a class="btn btn-primary" href="widget.html">Whitelabel に切り替え</a>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="advisors-title" style="margin-top:56px;">
+      <h2 id="advisors-title" class="section-title">5. 士業 affiliate</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">認定支援機関・税理士・社労士・中小企業診断士向け。AutonoMath 経由で案件紹介を受ける。</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card">
+          <h2>利用者</h2>
+          <p class="tier-desc">SME / 個人事業主</p>
+          <p class="price">¥0</p>
+          <p class="price-unit">相談は無料</p>
+          <ul class="feats">
+            <li>LINE bot / Web から advisor に質問</li>
+            <li>地域・業種・案件規模で matching</li>
+            <li>受任時は advisor との直接契約 (料金は advisor が提示)</li>
+          </ul>
+          <a class="btn btn-secondary" href="advisors.html">advisor を探す</a>
+        </article>
+
+        <article class="price-card highlight">
+          <h2>Advisor 登録</h2>
+          <p class="tier-desc">認定支援機関 / 税理士 / 社労士 / 診断士</p>
+          <p class="price">¥3,300 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 成約 (税込)</small></p>
+          <p class="price-unit">税別 ¥3,000 · 月額固定なし</p>
+          <ul class="feats">
+            <li>登録は無料、月額ゼロ</li>
+            <li>成約時のみ ¥3,000 支払い</li>
+            <li>プロフィール / 専門分野 / 料金表 を公開</li>
+            <li>顧客評価の開示義務あり (景表法対応)</li>
+          </ul>
+          <a class="btn btn-primary" href="advisors.html">Advisor 登録</a>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="common-title" style="margin-top:56px;">
+      <h2 id="common-title" class="section-title">全プラン共通</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>インボイス制度対応</h3>
+          <p class="card-lead">T8010001213708</p>
+          <p>Bookyou株式会社の適格請求書を Stripe Tax が自動発行。req 数 × 単価 + 消費税 10% を明細化。外税表示。</p>
+        </article>
+        <article class="card">
+          <h3>解約いつでも</h3>
+          <p class="card-lead">最低金額・違約金なし</p>
+          <p>Stripe Customer Portal から即時解約。API は匿名 50 req/月 の無料枠に戻り、LINE/アラートは無料枠運用へ、Widget は停止。</p>
+        </article>
+        <article class="card">
+          <h3>特商法記載 / 領収書自動</h3>
+          <p class="card-lead">景表法 / 消費者契約法 準拠</p>
+          <p>特商法表記・TOS・プライバシー・不良品対応窓口を整備。領収書は Stripe が自動発行、決済後ダッシュボードから DL 可。</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="faq-title" style="margin-top:56px;">
+      <h2 id="faq-title" class="section-title">よくある質問</h2>
+      <h3 style="font-size:16px;margin:18px 0 6px;">どれを選べばいい?</h3>
+      <p>AI 開発者は API + MCP。スマホで使いたい個人 / 経営者は LINE bot。法令改正キャッチアップは アラート。自社サイト集客は Widget。士業・認定支援機関は advisor 登録。迷ったら <a href="products.html">比較ページ</a> の決定木。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">複数同時に使えますか?</h3>
+      <p>はい。1 アカウントで 5 インターフェース全てを購読可能。例: API (¥3/req) + アラート (¥500/月) + advisor 登録 の組合せなど。Stripe 1 請求書にまとめて明細化します。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">途中で利用するインターフェースを変更できる?</h3>
+      <p>はい。Stripe Customer Portal から各インターフェースの追加・切替・解約ができます。日割りは自動計算。インターフェースの組合せは自由で、上下のランクはありません。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">使わない月も請求される?</h3>
+      <p>従量制 (API / Widget overage) は 0 req なら ¥0。月額固定 (LINE Plus / アラート Real-time / Widget) は解約しない限り毎月請求されます。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">契約書 / 個別見積は?</h3>
+      <p>完全セルフサーブで運用しており、個別契約・個別見積はしていません。公開料金がそのまま全ユーザーに適用されます。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">データ提供範囲は?</h3>
+      <p>2026-04 時点で補助金・融資・税制・認定制度 <span data-fact="total_programs">13,578</span> 件 (検索対象 <span data-fact="searchable_programs_total">10,790</span>)、採択事例 <span data-fact="case_studies_total">2,286</span>、融資 <span data-fact="loan_programs_total">108</span> (担保・個人保証人・第三者保証人の三軸分解)、行政処分 <span data-fact="enforcement_cases_total">1,185</span>。全件一次資料 URL + fetched_at 付き。排他ルール <span data-fact="exclusion_rules_total">181</span> 本。4-dataset 拡張 (法令 / 判例 / 入札 / 税務ruleset / 国税庁適格事業者) も含む。すべての数値は <a href="facts.html">ファクトシート</a> に出典付きで掲載。</p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="products.html">Products</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="facts.html">統計の出典 (ファクトシート)</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/feedback-widget.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.AutonoMathFeedback) {
+    window.AutonoMathFeedback.mount('body', { position: 'bottom-right' });
+  }
+});
+</script>
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

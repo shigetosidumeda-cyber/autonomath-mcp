@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>AutonoMath Embed Widget — Demo</title>
+<meta name="description" content="Standalone demo of the AutonoMath subsidy-search widget. Light, dark, compact, and programmatic embed examples — all rendered with the same production JS.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://autonomath.ai/en/widget/demo.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/widget/demo.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/widget/demo.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/widget/demo.html">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --accent: #0ea5e9;
+  }
+  body {
+    margin: 0;
+    padding: 32px 16px 64px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .lang-switch {
+    text-align: right;
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0 0 16px;
+  }
+  .lang-switch a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 12px;
+    min-height: 44px;
+    display: inline-block;
+  }
+  .lang-switch a[aria-current=page] {
+    color: var(--text);
+    font-weight: 600;
+  }
+  h1 {
+    font-size: 24px;
+    margin: 0 0 6px;
+  }
+  h2 {
+    font-size: 16px;
+    margin: 28px 0 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  p.lead {
+    color: var(--muted);
+    margin: 0 0 20px;
+  }
+  .panel {
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 10px 0 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  .panel.dark {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+  pre {
+    background: #111827;
+    color: #f3f4f6;
+    padding: 14px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 12px;
+  }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 6px 0 0;
+  }
+  a {
+    color: var(--accent);
+  }
+  nav.crumb {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+</style>
+<meta property="og:title" content="AutonoMath Embed Widget — Demo">
+<meta property="og:description" content="Standalone demo of the AutonoMath subsidy-search widget. Light, dark, compact, and programmatic embed examples — all rendered with the same production JS.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/widget/demo.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath Embed Widget — Demo">
+<meta name="twitter:description" content="Standalone demo of the AutonoMath subsidy-search widget. Light, dark, compact, and programmatic embed examples — all rendered with the same production JS.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+</head>
+<body>
+<div class="wrap">
+  <p class="lang-switch">
+    <a href="../../widget/demo.html" lang="ja" hreflang="ja">JP</a>
+    /
+    <a href="demo.html" lang="en" hreflang="en" aria-current="page">EN</a>
+  </p>
+  <nav class="crumb" aria-label="Breadcrumb">
+    <a href="../index.html">Home</a> &raquo; <a href="../widget.html">Widget</a> &raquo; <span aria-current="page">Demo</span>
+  </nav>
+  <h1>AutonoMath Embed Widget — Demo</h1>
+  <p class="lead">
+    This page renders the widget across themes and configurations. To use it
+    in production, sign up on the
+    <a href="../widget.html">Widget product page</a> and embed the
+    <code>wgt_live_...</code> key on your origin-allowlisted site.
+  </p>
+
+  <h2>Light theme (default, English UI)</h2>
+  <div class="panel">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="light"
+         data-language="en"
+         data-filters="prefecture,industry,target"
+         data-limit="5"></div>
+    <p class="note">
+      The widget above runs against a demo key. Real API requests are rejected
+      by the origin allowlist. With a production key on an allowlisted origin,
+      live results render.
+    </p>
+  </div>
+
+  <h2>Dark theme (English UI)</h2>
+  <div class="panel dark">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="dark"
+         data-language="en"
+         data-filters="prefecture,industry,target"
+         data-limit="5"></div>
+  </div>
+
+  <h2>Prefecture filter only (compact)</h2>
+  <div class="panel">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="light"
+         data-language="en"
+         data-filters="prefecture"
+         data-limit="3"></div>
+  </div>
+
+  <h2>Japanese UI (language=ja)</h2>
+  <div class="panel">
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="light"
+         data-language="ja"
+         data-filters="prefecture,industry,target"
+         data-limit="5"></div>
+  </div>
+
+  <h2>Programmatic (JS API)</h2>
+  <div class="panel">
+    <div id="programmatic-target"></div>
+  </div>
+
+  <pre><code>new Autonomath.Widget({
+  container: '#programmatic-target',
+  key: 'wgt_live_00000000000000000000000000000000',
+  filters: ['industry', 'prefecture'],
+  theme: 'light',
+  language: 'en',
+  limit: 5,
+  onResult: function (p) { console.log('matched:', p.unified_id); }
+});</code></pre>
+
+  <h2>Embed snippet (two lines)</h2>
+  <pre><code>&lt;script src="https://autonomath.ai/widget/autonomath.js"&gt;&lt;/script&gt;
+&lt;div data-autonomath-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</code></pre>
+
+  <p class="note">
+    A single snippet produces the search UI, results list, primary-source
+    links, and (on the Business plan) the "powered by AutonoMath" footer.
+    See <a href="../widget.html">the Widget product page</a> for plans and
+    pricing. Operated by Bookyou Inc. (T8010001213708) ·
+    <a href="mailto:info@bookyou.net">info@bookyou.net</a>.
+  </p>
+</div>
+
+<script src="../../widget/autonomath.js"></script>
+<script>
+(function () {
+  if (!window.Autonomath || !window.Autonomath.Widget) return;
+  new Autonomath.Widget({
+    container: "#programmatic-target",
+    key: "wgt_live_00000000000000000000000000000000",
+    filters: ["industry", "prefecture"],
+    theme: "light",
+    language: "en",
+    limit: 5,
+    onResult: function (p) {
+      if (typeof console !== "undefined") console.log("matched:", p.unified_id);
+    }
+  });
+})();
+</script>
+</body>
+</html>

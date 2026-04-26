@@ -1,0 +1,45 @@
+APIキーを発行しました。
+
+{{email}} 宛にお申し込みいただきました。ありがとうございます。{{tier}} プラン (¥3/req 税別・税込 ¥3.30 の従量課金) で、以下の API キーを今回 一度だけ お送りします。コピーして安全な場所に保管してください。サーバ側ではハッシュ化した値のみ保持しており、再表示はできません。
+
+    {{api_key}}
+
+(この鍵はこのメール内でのみ表示されます。紛失した場合は Stripe ポータルから鍵をローテートしてください。)
+
+---
+
+最初の3リクエスト:
+
+以下は動作確認の curl 例です。YOUR_KEY を上記の鍵に置き換えてそのまま実行できます。
+
+1) 疎通確認 (/v1/ping)
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     https://api.autonomath.ai/v1/ping
+
+2) 東京都の中小企業向け制度を検索 (/v1/programs/search)
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     "https://api.autonomath.ai/v1/programs/search?prefecture=東京都&target_types=smb&limit=5"
+
+3) キーワード検索 (補助金名・制度名)
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     "https://api.autonomath.ai/v1/programs/search?q=事業再構築&limit=5"
+
+---
+
+次に読むもの:
+
+- Getting Started: https://autonomath.ai/docs/getting-started
+- ダッシュボード(利用回数・今月の課金見込み): https://autonomath.ai/dashboard.html
+- examples 集 (MCP・バッチなど): https://autonomath.ai/examples/
+
+詰まったら、このメール宛にそのまま返信するか info@bookyou.net までお知らせください。人間が読みます。
+
+--
+AutonoMath — 日本の制度情報 API + MCP
+このメールは API キー発行の控えとしてお送りしています (解除不可のトランザクションメール)。
+お問い合わせ: info@bookyou.net
+運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
+ライセンス: ご利用は利用規約 (https://autonomath.ai/tos.html) およびプライバシーポリシー (https://autonomath.ai/privacy.html) に基づきます。

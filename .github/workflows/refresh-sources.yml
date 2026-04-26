@@ -1,0 +1,99 @@
+name: Refresh source URLs
+
+# Tiered URL liveness scan for the AutonoMath registry. Tier S/A run nightly
+# (daily), Tier B weekly, Tier C monthly. The Tier C pass is the largest
+# (~6,400 rows) so we cap concurrency to 5 and run --report-only — DB writes
+# stay confined to the daily S/A pass that already lives in production.
+#
+# All three jobs publish the per-tier freshness summary to
+# `data/source_freshness_report.json` via the script's append-mode merger,
+# and upload `data/refresh_sources_report.json` as a build artefact.
+#
+# Wall-clock estimate (Tier C): 6,567 rows / concurrency 5 with HEAD timeout
+# 15s ≈ 35-45 min. Comfortably under the 6h GitHub Actions free-tier ceiling.
+
+on:
+  schedule:
+    # Tier S/A: daily at 03:17 JST (18:17 UTC previous day).
+    - cron: '17 18 * * *'
+    # Tier B: weekly, Sunday 03:17 JST (Saturday 18:17 UTC).
+    - cron: '17 18 * * 6'
+    # Tier C: monthly, day-1 03:17 JST (last-day 18:17 UTC of prior month).
+    # GitHub schedules cron in UTC; this fires at 18:17 UTC on the 1st of
+    # each month, which is 03:17 JST on the 2nd — close enough to a "month
+    # start" cadence and avoids the brittle "last-day-of-month" expression.
+    - cron: '17 18 1 * *'
+  workflow_dispatch:
+    inputs:
+      tiers:
+        description: "Tier filter (e.g. 'S,A' or 'B' or 'C'). Defaults to S,A."
+        required: false
+        default: 'S,A'
+      report_only:
+        description: 'If true, --report-only (no DB writes).'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: read
+  issues: write   # for the tier-C dead-URL alert
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: '3.12'
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Decide tier scope from cron schedule
+        id: scope
+        env:
+          INPUT_TIERS: ${{ github.event.inputs.tiers }}
+          INPUT_REPORT_ONLY: ${{ github.event.inputs.report_only }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          set -euo pipefail
+          # workflow_dispatch wins; otherwise dispatch by cron expression.
+          if [ -n "${INPUT_TIERS:-}" ]; then
+            TIERS="$INPUT_TIERS"
+            REPORT_ONLY="${INPUT_REPORT_ONLY:-false}"
+          else
+            case "$CRON" in
+              "17 18 * * *")    TIERS="S,A"; REPORT_ONLY="false" ;;
+              "17 18 * * 6")    TIERS="B";   REPORT_ONLY="true"  ;;
+              "17 18 1 * *")    TIERS="C";   REPORT_ONLY="true"  ;;
+              *)                TIERS="S,A"; REPORT_ONLY="false" ;;
+            esac
+          fi
+          echo "tiers=$TIERS"           >> "$GITHUB_OUTPUT"
+          echo "report_only=$REPORT_ONLY" >> "$GITHUB_OUTPUT"
+
+      - name: Run liveness scan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ARGS=(--tier "${{ steps.scope.outputs.tiers }}")
+          if [ "${{ steps.scope.outputs.report_only }}" = "true" ]; then
+            ARGS+=(--report-only)
+          fi
+          python scripts/refresh_sources.py "${ARGS[@]}"
+
+      - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: refresh-report-${{ steps.scope.outputs.tiers }}
+          path: |
+            data/refresh_sources_report.json
+            data/source_freshness_report.json
+
+      # DB changes from CI are intentionally NOT persisted — the production
+      # DB is the Fly volume. Tier S/A writes here only to prove the script
+      # would have written; the Fly nightly cron (scripts/cron/refresh_sources_nightly.sh)
+      # is the authoritative writer.

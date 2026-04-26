@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>About — AutonoMath</title>
+<meta name="description" content="AutonoMath: REST + MCP API over 13,578 Japanese public programs (subsidies/loans/tax/certs). Built solo by Bookyou Inc., hosted in Tokyo, billed in JPY.">
+
+<meta property="og:title" content="About — AutonoMath">
+<meta property="og:description" content="What AutonoMath is, why it exists, and who built it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://autonomath.ai/en/about.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About — AutonoMath">
+<meta name="twitter:description" content="REST + MCP API over Japanese public programs.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/about.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/about.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/about.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/about.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About — AutonoMath",
+  "description": "AutonoMath: REST + MCP API over 13,578 Japanese public programs (subsidies/loans/tax/certifications). Built solo by Bookyou Inc., hosted in Tokyo, billed in JPY at ¥3/request metered.",
+  "url": "https://autonomath.ai/en/about.html",
+  "inLanguage": "en",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/en/"
+  },
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/en/",
+    "email": "info@bookyou.net",
+    "vatID": "T8010001213708",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "JP",
+      "addressRegion": "Tokyo",
+      "addressLocality": "Bunkyo-ku",
+      "streetAddress": "2-22-1 Kohinata"
+    },
+    "founder": {
+      "@type": "Person",
+      "name": "Shigetoshi Umeda"
+    }
+  }
+}
+</script>
+
+<style>
+  .about-page { padding: 48px 0 64px; }
+  .about-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .about-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 32px; max-width: 720px; }
+  .about-page h2 { font-size: 20px; margin: 36px 0 10px; font-weight: 700; }
+  .about-page p { max-width: 720px; }
+  .about-page table { width: 100%; max-width: 720px; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+  .about-page table th, .about-page table td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; vertical-align: top; }
+  .about-page table th { background: var(--bg-alt); width: 40%; font-weight: 600; }
+</style>
+
+<script defer src="../analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="about.html" aria-current="page">About</a>
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../about.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="about.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="about-page">
+  <div class="container">
+
+    <h1>About</h1>
+    <p class="lead">AutonoMath is a REST and MCP API that exposes Japanese public-program data &mdash; subsidies, loans, tax incentives, and certifications &mdash; to AI agents in a single call. 13,578 programs, plus 2,286 case studies (採択事例), 108 loan offerings, and 1,185 enforcement cases, are normalized from primary sources (METI, MAFF, SME Agency, Japan Finance Corporation), scored into tiers (S/A/B/C/X), cross-linked with 181 exclusion / prerequisite rules, searchable via FTS5 trigram over Japanese text, and every row carries <code>source_url</code> and <code>fetched_at</code> for lineage.</p>
+
+    <h2>Why it exists</h2>
+    <p>jGrants is Japan's application portal. It is not a discovery or compatibility layer. Asking "which subsidy matches this business, and which of them can be combined? has anyone like us actually been selected? which loan has no collateral and no guarantor? has any vendor been sanctioned?" still requires a human to browse ministry sites, download PDFs, cross-reference notice documents, and keep up with ad-hoc revisions. AutonoMath is that missing layer, packaged as an API that AI agents can actually call. MCP protocol version 2025-06-18; no SDK required.</p>
+
+    <h2>Who built it</h2>
+    <p>Operated by <strong>Bookyou株式会社</strong> (corporate number <code>T8010001213708</code>, 2-22-1 Kohinata, Bunkyo-ku, Tokyo), represented by <strong>Shigetoshi Umeda</strong> (梅田茂利). Built and maintained solo &mdash; design, implementation, data ingestion, operations, and support are all handled by one person. Hosted on Fly.io Tokyo (nrt). Billed via Stripe Tax with Japanese qualified-invoice (適格請求書) compliance under registration number T8010001213708 (assigned 2025-05-12).</p>
+
+    <h2>Quick facts</h2>
+    <table>
+      <tbody>
+        <tr><th>Programs indexed</th><td>13,578 (10,790 searchable in tier S/A/B/C + 1,923 tier X quarantine)</td></tr>
+        <tr><th>Case studies (採択事例)</th><td>2,286</td></tr>
+        <tr><th>Loan programs (detailed)</th><td>108 (with three-axis collateral / guarantor decomposition)</td></tr>
+        <tr><th>Enforcement cases</th><td>1,185</td></tr>
+        <tr><th>Laws (e-Gov CC-BY)</th><td>9,484 (continuously loading)</td></tr>
+        <tr><th>Tax rulesets</th><td>35</td></tr>
+        <tr><th>Court decisions</th><td>2,065</td></tr>
+        <tr><th>Bids</th><td>362</td></tr>
+        <tr><th>Invoice registrants</th><td>13,801 (PDL v1.0 delta-only; full ~4M monthly bulk pending)</td></tr>
+        <tr><th>autonomath.db entities</th><td>503,930 (across 12 record_kinds)</td></tr>
+        <tr><th>autonomath.db facts</th><td>6.12M</td></tr>
+        <tr><th>autonomath.db relations</th><td>23,805 (15 canonical relation types)</td></tr>
+        <tr><th>Primary-source coverage</th><td>99%+ (source_url + fetched_at on every row; 12 small-municipality rows lack URL)</td></tr>
+        <tr><th>Exclusion rules</th><td>181 (125 exclude + 17 prerequisite + 15 absolute + 24 other)</td></tr>
+        <tr><th>MCP tools</th><td>66 (38 jpintel + 28 autonomath: 17 V1 + 4 V4 universal + 7 Phase A absorption)</td></tr>
+        <tr><th>MCP protocol</th><td>2025-06-18</td></tr>
+        <tr><th>Region</th><td>Tokyo (Fly.io nrt)</td></tr>
+        <tr><th>Launch</th><td>2026-05-06</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Contact</h2>
+    <p>Email: <a href="mailto:info@bookyou.net">info@bookyou.net</a>. For press, the full kit (logos, founder bio, screenshots) is at <a href="../press/about.md">/press/about.md</a>. For Japanese legal disclosures (特定商取引法), see <a href="../tokushoho.html">the JP tokushoho page</a>.</p>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
+    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
+    <a href="/en/tos.html">Terms</a> |
+    <a href="/en/privacy.html">Privacy</a> |
+    <a href="/docs/api-reference/">OpenAPI</a> |
+    Data last refreshed: <time data-trust-fresh datetime="2026-04-25">Apr 25, 2026</time>
+  </p>
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>

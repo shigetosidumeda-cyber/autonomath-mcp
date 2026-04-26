@@ -1,0 +1,54 @@
+AutonoMath — はじめの3日
+
+{{tier}} プランのご利用ありがとうございます。発行した API キー（末尾: {{key_last4}}）で動き出すきっかけとして、今日は実際に叩ける3つの例と MCP 接続のスニペットをお送りします。
+
+{% if has_used_key %}
+すでに {{usage_count}} 回お使いですね。次のステップとして、まだ触っていないエンドポイントを一つ試してみてください。
+{% endif %}
+{% if not has_used_key %}
+まだの方 — 以下の curl はそのままターミナルに貼れば 1分で結果が返ります。
+YOUR_KEY だけご自身のキーに置き換えてください。
+{% endif %}
+
+---
+
+1) プログラムを取得 (programs.get)
+   {{examples.[0].name}} ({{examples.[0].bucket}})
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     https://api.autonomath.ai/v1/programs/{{examples.[0].unified_id}}
+
+2) キーワード検索 (programs.search)
+   {{examples.[1].name}} ({{examples.[1].bucket}})
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     "https://api.autonomath.ai/v1/programs?q=サイバーセキュリティ&prefecture=東京都"
+   -> {{examples.[1].unified_id}} を含むヒットが返ります
+
+3) 排他チェック (exclusions.check)
+   {{examples.[2].name}} ({{examples.[2].bucket}})
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     "https://api.autonomath.ai/v1/exclusions/check?a={{examples.[2].unified_id}}&b=UNI-14e57fbf79"
+
+---
+
+MCP クライアントで使う:
+
+{
+  "mcpServers": {
+    "autonomath": {
+      "command": "npx",
+      "args": ["-y", "@autonomath/mcp"],
+      "env": { "AUTONOMATH_API_KEY": "YOUR_KEY" }
+    }
+  }
+}
+
+詰まったら、このメールにそのまま返信してください。人間が読みます。
+
+--
+AutonoMath — 日本の制度情報 API + MCP
+お問い合わせ: info@bookyou.net
+運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
+配信停止: {{{pm:unsubscribe}}}

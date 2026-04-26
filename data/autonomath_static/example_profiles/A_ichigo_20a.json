@@ -1,0 +1,60 @@
+{
+  "_meta": {
+    "schema_version": "9.2.0",
+    "user_type": "A",
+    "user_type_label": "新規就農個人",
+    "version": 1,
+    "parent_canonical_id": null,
+    "test_profile_id": "A_ichigo_20a"
+  },
+  "identity": {
+    "name": "山田 太郎",
+    "furigana": "ヤマダ タロウ",
+    "address": "埼玉県さいたま市浦和区○○町1-2-3",
+    "postal_code": "330-0001",
+    "birth_date": {"era": "平成", "year": 6, "month": 4, "day": 10},
+    "age": 32,
+    "phone": "090-1111-2222",
+    "email": "yamada@example.com"
+  },
+  "plan": {
+    "municipalities": ["さいたま市"],
+    "prefecture": "埼玉県",
+    "crop": "いちご",
+    "sub_crops": [],
+    "area_a": 20,
+    "cultivation_method": "施設栽培（高設ベンチ）",
+    "start_year": 2026,
+    "start_month": 9,
+    "vision": "埼玉県さいたま市でいちご施設栽培20aを営農。いちご狩り観光農園と直売を組み合わせ、5年後に年間農業所得300万円以上を目指す。",
+    "farm_land_type": "農地中間管理機構",
+    "channel": "直売所"
+  },
+  "qualifications": {
+    "stage": 1,
+    "entity_type": "individual",
+    "has_regional_plan": true,
+    "has_loan_ready": true,
+    "has_insurance": true,
+    "has_blue_tax": false,
+    "household_income_万": 300
+  },
+  "financial": {
+    "available_capital_万": 300,
+    "existing_operations": []
+  },
+  "investments": [
+    {"name": "パイプハウス3棟", "category": "facility_equipment", "amount_万": 1200, "useful_life": 14, "year": 2026},
+    {"name": "高設ベンチ", "category": "facility_equipment", "amount_万": 800, "useful_life": 10, "year": 2026},
+    {"name": "環境制御装置", "category": "facility_equipment", "amount_万": 300, "useful_life": 7, "year": 2026}
+  ],
+  "fields": [
+    {"name": "第1圃場", "address": "さいたま市○○", "area_sqm": 2000, "field_type": "ハウス", "tenure": "農地中間管理機構"}
+  ],
+  "family": [
+    {"relation": "妻", "name": "山田 花子", "age": 30, "will_farm": true}
+  ],
+  "work_history": [
+    {"type": "agri_training", "organization": "埼玉県農業大学校", "start_date": "2025年4月", "end_date": "2026年3月", "is_agriculture": true}
+  ]
+}

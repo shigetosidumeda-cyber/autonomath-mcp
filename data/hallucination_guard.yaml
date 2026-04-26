@@ -1,0 +1,430 @@
+# AutonoMath hallucination_guard — launch v1 (60 entries)
+#
+# Schema: list of {phrase, severity, correction, law_basis, audience, vertical}
+#   severity ∈ {high, medium, low}
+#   audience ∈ {税理士, 行政書士, SMB, VC, Dev}
+#   vertical ∈ {補助金, 税制, 融資, 認定, 行政処分, 法令}
+#
+# 5 audience × 6 vertical × 2 phrase = 60 entries.
+# Post-launch: query_log_v2 + customer_feedback drive Loop A expansion to 1500+.
+
+entries:
+  # ── 税理士 × 補助金 (2) ────────────────────────────────────────────
+  - phrase: "ものづくり補助金は全業種で利用できる"
+    severity: high
+    correction: "対象は中小企業基本法上の中小企業・小規模事業者に限定。みなし大企業や非製造業の一部は対象外"
+    law_basis: "中小企業基本法 第2条"
+    audience: 税理士
+    vertical: 補助金
+  - phrase: "事業再構築補助金は採択されれば翌年も同額もらえる"
+    severity: high
+    correction: "事業再構築補助金は単年度交付で再採択は別申請。第13回公募で制度自体が刷新済"
+    law_basis: "事業再構築補助金交付規程"
+    audience: 税理士
+    vertical: 補助金
+
+  # ── 税理士 × 税制 (2) ──────────────────────────────────────────────
+  - phrase: "賃上げ促進税制と研究開発税制は無条件で併用できる"
+    severity: high
+    correction: "両制度は併用可能だが、税額控除上限は法人税額の20%が原則。賃上げ税制+R&D合算で別途上限調整あり"
+    law_basis: "租税特別措置法 第42条の12の5, 第42条の4"
+    audience: 税理士
+    vertical: 税制
+  - phrase: "中小企業経営強化税制は申告すれば自動的に適用される"
+    severity: high
+    correction: "経営力向上計画の主務大臣認定が前提。設備取得前の認定取得が必須で、事後申請は不可"
+    law_basis: "中小企業等経営強化法 第17条"
+    audience: 税理士
+    vertical: 税制
+
+  # ── 税理士 × 融資 (2) ──────────────────────────────────────────────
+  - phrase: "日本政策金融公庫の創業融資は無担保無保証人で誰でも借りられる"
+    severity: high
+    correction: "新創業融資制度は2024年4月廃止。現行は新規開業・スタートアップ支援資金で、原則無担保・無保証人だが審査あり"
+    law_basis: "日本政策金融公庫法 第11条"
+    audience: 税理士
+    vertical: 融資
+  - phrase: "セーフティネット保証は審査不要で即日融資される"
+    severity: high
+    correction: "市区町村長の認定取得+金融機関審査+信用保証協会審査の3段階。即日融資は不可"
+    law_basis: "中小企業信用保険法 第2条第5項"
+    audience: 税理士
+    vertical: 融資
+
+  # ── 税理士 × 認定 (2) ──────────────────────────────────────────────
+  - phrase: "経営革新計画は一度認定を受ければ永久有効"
+    severity: medium
+    correction: "経営革新計画の承認期間は3〜5年。期間満了後は新規申請が必要"
+    law_basis: "中小企業等経営強化法 第9条"
+    audience: 税理士
+    vertical: 認定
+  - phrase: "先端設備等導入計画は認定後に自動更新される"
+    severity: medium
+    correction: "先端設備等導入計画は3〜5年の計画期間で自動更新なし。固定資産税特例の期限とも別管理"
+    law_basis: "中小企業等経営強化法 第49条"
+    audience: 税理士
+    vertical: 認定
+
+  # ── 税理士 × 行政処分 (2) ──────────────────────────────────────────
+  - phrase: "個人事業主は税理士法の懲戒処分の対象外"
+    severity: high
+    correction: "税理士法上の懲戒は税理士本人が対象。個人事業主の顧問業務でも違反すれば税理士本人が処分される"
+    law_basis: "税理士法 第45条, 第46条"
+    audience: 税理士
+    vertical: 行政処分
+  - phrase: "軽微な記帳ミスなら税理士は懲戒されない"
+    severity: medium
+    correction: "故意でなくとも相当の注意を怠れば「不真正の税務書類の作成」に該当し戒告以上の対象"
+    law_basis: "税理士法 第45条第2項"
+    audience: 税理士
+    vertical: 行政処分
+
+  # ── 税理士 × 法令 (2) ──────────────────────────────────────────────
+  - phrase: "最新の税法解釈は判例で確定する"
+    severity: medium
+    correction: "判例は事実認定に強い拘束力を持つが、最終解釈は法令+政省令+通達。判例単独では確定しない"
+    law_basis: "国税通則法 第74条の11"
+    audience: 税理士
+    vertical: 法令
+  - phrase: "国税庁の通達は法律と同等の効力を持つ"
+    severity: high
+    correction: "通達は行政内部の解釈基準であり、納税者を直接拘束する法規ではない(最判昭和43.12.24)"
+    law_basis: "国家行政組織法 第14条第2項"
+    audience: 税理士
+    vertical: 法令
+
+  # ── 行政書士 × 補助金 (2) ──────────────────────────────────────────
+  - phrase: "小規模事業者持続化補助金は誰でも全業種で申請できる"
+    severity: high
+    correction: "商工会議所・商工会の経営計画書様式での確認が必須。常時使用する従業員数の上限あり(商業5人/製造20人等)"
+    law_basis: "小規模企業振興基本法 第2条"
+    audience: 行政書士
+    vertical: 補助金
+  - phrase: "IT導入補助金は来年も同じツールで再申請できる"
+    severity: medium
+    correction: "原則同一ツールでの再申請は不可。類型変更や別ITツールであれば再申請可能"
+    law_basis: "IT導入補助金交付規程"
+    audience: 行政書士
+    vertical: 補助金
+
+  # ── 行政書士 × 税制 (2) ────────────────────────────────────────────
+  - phrase: "中小企業投資促進税制は資本金規模に関係なく全控除を併用できる"
+    severity: high
+    correction: "資本金3000万円超の特定中小企業者等は税額控除不可、特別償却のみ。併用にも控除上限20%あり"
+    law_basis: "租税特別措置法 第42条の6"
+    audience: 行政書士
+    vertical: 税制
+  - phrase: "事業承継税制は申請すれば自動で適用される"
+    severity: high
+    correction: "都道府県知事への特例承継計画提出+認定+毎年の年次報告が必須。一つでも欠けると猶予打切"
+    law_basis: "中小企業における経営の承継の円滑化に関する法律 第12条"
+    audience: 行政書士
+    vertical: 税制
+
+  # ── 行政書士 × 融資 (2) ────────────────────────────────────────────
+  - phrase: "制度融資は信用保証協会の保証だけで担保不要"
+    severity: high
+    correction: "制度融資でも金融機関判断で不動産担保や代表者連帯保証を求められる場合あり。経営者保証ガイドライン準拠でも完全免除は限定的"
+    law_basis: "信用保証協会法 第20条"
+    audience: 行政書士
+    vertical: 融資
+  - phrase: "公庫融資は決算書がなくても創業時に審査される"
+    severity: medium
+    correction: "創業時は事業計画書+自己資金+創業の動機等で審査。決算書不要だが代替の根拠資料は必須"
+    law_basis: "日本政策金融公庫法 第11条"
+    audience: 行政書士
+    vertical: 融資
+
+  # ── 行政書士 × 認定 (2) ────────────────────────────────────────────
+  - phrase: "経営力向上計画は認定後ずっと有効"
+    severity: medium
+    correction: "計画期間は3〜5年で期間設定。期間満了後の継続は新規認定申請が必要"
+    law_basis: "中小企業等経営強化法 第17条"
+    audience: 行政書士
+    vertical: 認定
+  - phrase: "建設業許可は5年経てば自動更新される"
+    severity: high
+    correction: "建設業許可は5年ごとの更新申請が必須。期限切れ前申請がないと再度新規許可取得が必要"
+    law_basis: "建設業法 第3条第3項"
+    audience: 行政書士
+    vertical: 認定
+
+  # ── 行政書士 × 行政処分 (2) ────────────────────────────────────────
+  - phrase: "個人事業主の建設業者は監督処分の対象外"
+    severity: high
+    correction: "建設業法上の監督処分(指示・営業停止・許可取消)は法人個人を問わず適用"
+    law_basis: "建設業法 第28条, 第29条"
+    audience: 行政書士
+    vertical: 行政処分
+  - phrase: "産廃許可は行政指導を受けても処分歴に残らない"
+    severity: medium
+    correction: "行政指導は処分ではないが、後の取消事由判断や欠格要件審査で参照される"
+    law_basis: "廃棄物の処理及び清掃に関する法律 第14条第5項"
+    audience: 行政書士
+    vertical: 行政処分
+
+  # ── 行政書士 × 法令 (2) ────────────────────────────────────────────
+  - phrase: "改正法令の施行日と公布日は同じ"
+    severity: high
+    correction: "公布と施行は別。施行日は附則で個別指定され、公布から数か月〜数年後のことも多い"
+    law_basis: "法の適用に関する通則法 第2条"
+    audience: 行政書士
+    vertical: 法令
+  - phrase: "通達に従っていれば許認可審査では絶対に問題ない"
+    severity: medium
+    correction: "通達は行政内部の解釈基準。個別事案では通達と異なる審査結果もあり、最終判断は処分庁"
+    law_basis: "行政手続法 第5条"
+    audience: 行政書士
+    vertical: 法令
+
+  # ── SMB × 補助金 (2) ───────────────────────────────────────────────
+  - phrase: "補助金は申請すればほぼ全員もらえる"
+    severity: high
+    correction: "ものづくり補助金の採択率は概ね40〜60%、事業再構築補助金は30〜50%。審査に通らないケースが多数"
+    law_basis: "補助金等に係る予算の執行の適正化に関する法律 第6条"
+    audience: SMB
+    vertical: 補助金
+  - phrase: "補助金は採択されたら即入金される"
+    severity: high
+    correction: "原則は事業実施→実績報告→確定検査→精算払い。事前着手承認制度の例外を除き先払いではない"
+    law_basis: "補助金等適正化法 第15条, 第18条"
+    audience: SMB
+    vertical: 補助金
+
+  # ── SMB × 税制 (2) ─────────────────────────────────────────────────
+  - phrase: "賃上げ促進税制は赤字でも還付がもらえる"
+    severity: high
+    correction: "賃上げ促進税制は税額控除であり、法人税が出ない赤字企業は控除不可。中小は5年間繰越可能(令和6年度改正)"
+    law_basis: "租税特別措置法 第42条の12の5第3項"
+    audience: SMB
+    vertical: 税制
+  - phrase: "インボイス登録すれば自動的に消費税還付になる"
+    severity: high
+    correction: "インボイス登録は適格請求書発行事業者になるだけで、還付には課税事業者+一般課税(本則)の選択が必要"
+    law_basis: "消費税法 第57条の2"
+    audience: SMB
+    vertical: 税制
+
+  # ── SMB × 融資 (2) ─────────────────────────────────────────────────
+  - phrase: "公庫の融資は無担保無保証で誰でも通る"
+    severity: high
+    correction: "原則無担保無保証の制度はあるが、事業計画・自己資金・信用情報の審査は必須。否決事例も多数"
+    law_basis: "日本政策金融公庫法 第11条"
+    audience: SMB
+    vertical: 融資
+  - phrase: "民間銀行融資は決算書を見せれば必ず通る"
+    severity: medium
+    correction: "決算書は前提資料に過ぎず、事業計画・返済原資・担保保証・経営者属性で総合審査される"
+    law_basis: "銀行法 第13条の3の2"
+    audience: SMB
+    vertical: 融資
+
+  # ── SMB × 認定 (2) ─────────────────────────────────────────────────
+  - phrase: "経営革新計画は認定されれば補助金が必ずもらえる"
+    severity: high
+    correction: "経営革新計画は認定制度であり、補助金交付ではない。付帯支援(融資優遇等)はあるが補助金は別途公募審査"
+    law_basis: "中小企業等経営強化法 第9条"
+    audience: SMB
+    vertical: 認定
+  - phrase: "健康経営優良法人認定は申請すれば全社に与えられる"
+    severity: medium
+    correction: "経済産業省・日本健康会議の調査票で評価項目を満たすことが必要。認定数は毎年枠が設定される"
+    law_basis: "健康経営優良法人認定制度実施要領"
+    audience: SMB
+    vertical: 認定
+
+  # ── SMB × 行政処分 (2) ─────────────────────────────────────────────
+  - phrase: "個人事業主は労働基準法の処分対象外"
+    severity: high
+    correction: "労働基準法は労働者を1人でも使用する事業者に適用。個人事業主でも労基署の是正勧告・送検対象"
+    law_basis: "労働基準法 第10条"
+    audience: SMB
+    vertical: 行政処分
+  - phrase: "景品表示法違反は軽微なら不問"
+    severity: high
+    correction: "課徴金対象は売上3%、措置命令は違反規模を問わない。少額でも消費者庁の措置命令の事例多数"
+    law_basis: "不当景品類及び不当表示防止法 第7条, 第8条"
+    audience: SMB
+    vertical: 行政処分
+
+  # ── SMB × 法令 (2) ─────────────────────────────────────────────────
+  - phrase: "改正法は施行されてから対応すれば間に合う"
+    severity: medium
+    correction: "労働関連法・税法では附則経過措置や施行前準備義務あり。施行後対応では遅い実務多数"
+    law_basis: "法の適用に関する通則法 第2条"
+    audience: SMB
+    vertical: 法令
+  - phrase: "省令は法律より下位だから守らなくてよい"
+    severity: high
+    correction: "省令は委任立法として法律と一体で拘束力を持つ。違反は法律違反と同等の処分対象"
+    law_basis: "国家行政組織法 第12条第1項"
+    audience: SMB
+    vertical: 法令
+
+  # ── VC × 補助金 (2) ────────────────────────────────────────────────
+  - phrase: "投資先スタートアップは補助金を確実に獲得できる"
+    severity: medium
+    correction: "補助金は競争的審査で採択率制約あり。スタートアップ向け公募(SBIR等)も採択率20-50%程度"
+    law_basis: "中小企業技術革新制度実施方針"
+    audience: VC
+    vertical: 補助金
+  - phrase: "補助金獲得実績はバリュエーションに加算できる"
+    severity: low
+    correction: "補助金は将来CFに非反映の一時収入。DCF評価では原則加算しない、ARR/MRR系のSaaS指標とは別軸"
+    law_basis: "補助金等適正化法 第7条"
+    audience: VC
+    vertical: 補助金
+
+  # ── VC × 税制 (2) ──────────────────────────────────────────────────
+  - phrase: "エンジェル税制は全投資案件に自動適用される"
+    severity: high
+    correction: "適用対象は経済産業大臣の事前確認を受けたスタートアップへの個人投資のみ。法人VC投資は対象外"
+    law_basis: "租税特別措置法 第41条の19"
+    audience: VC
+    vertical: 税制
+  - phrase: "オープンイノベーション促進税制は赤字でも控除できる"
+    severity: medium
+    correction: "本制度は所得控除型で、課税所得がない赤字事業年度では控除効果なし"
+    law_basis: "租税特別措置法 第66条の13"
+    audience: VC
+    vertical: 税制
+
+  # ── VC × 融資 (2) ──────────────────────────────────────────────────
+  - phrase: "VC出資先は公庫からの融資審査で優遇される"
+    severity: medium
+    correction: "VC出資自体は加点要素となり得るが、審査は事業計画+返済可能性が主軸。VC出資のみで通過とはならない"
+    law_basis: "日本政策金融公庫法 第11条"
+    audience: VC
+    vertical: 融資
+  - phrase: "資本性ローンは返済不要"
+    severity: high
+    correction: "資本性ローン(資本性劣後ローン)は元本返済が満期一括だが返済不要ではない。期限利益喪失条項あり"
+    law_basis: "日本政策金融公庫法 第11条第1項"
+    audience: VC
+    vertical: 融資
+
+  # ── VC × 認定 (2) ──────────────────────────────────────────────────
+  - phrase: "J-Startup認定は申請すれば全社に付与される"
+    severity: high
+    correction: "経済産業省の推薦委員会による厳選。応募ベースではなく外部推薦+審査で年間数十社のみ"
+    law_basis: "J-Startup運営要領"
+    audience: VC
+    vertical: 認定
+  - phrase: "ストックオプション税制適格は契約書だけ整備すればよい"
+    severity: high
+    correction: "税制適格には付与時の権利行使価額・期間・上限等の租特法要件全充足が必要。1要件欠落で全額給与所得課税"
+    law_basis: "租税特別措置法 第29条の2"
+    audience: VC
+    vertical: 認定
+
+  # ── VC × 行政処分 (2) ──────────────────────────────────────────────
+  - phrase: "投資先のコンプラ違反はLPには影響ない"
+    severity: high
+    correction: "投資先の重大違反はファンドのレピュテーション・LP契約の表明保証違反になり得る"
+    law_basis: "金融商品取引法 第63条"
+    audience: VC
+    vertical: 行政処分
+  - phrase: "個人投資家のVC出資には金商法処分は及ばない"
+    severity: medium
+    correction: "適格機関投資家等特例業務でも届出義務+違反時の業務停止・廃止命令あり"
+    law_basis: "金融商品取引法 第63条第7項"
+    audience: VC
+    vertical: 行政処分
+
+  # ── VC × 法令 (2) ──────────────────────────────────────────────────
+  - phrase: "スタートアップは新法施行前なら旧法ルールでよい"
+    severity: medium
+    correction: "経過措置の有無は附則で個別指定。経過措置なしなら施行日から新法適用、契約も巻き戻し対象"
+    law_basis: "法の適用に関する通則法 第2条"
+    audience: VC
+    vertical: 法令
+  - phrase: "海外投資家へのSAFE発行は日本法令の制約を受けない"
+    severity: high
+    correction: "発行体が日本法人なら金商法+外為法+会社法が適用。新株予約権類似であれば届出・報告義務あり"
+    law_basis: "金融商品取引法 第2条, 外為法 第55条の8"
+    audience: VC
+    vertical: 法令
+
+  # ── Dev × 補助金 (2) ──────────────────────────────────────────────
+  - phrase: "補助金APIは公開仕様で誰でも自由に再配布できる"
+    severity: medium
+    correction: "中小企業庁・経産省等の補助金情報は出典明記+利用規約遵守が必要。再配布可否は規約ごとに異なる"
+    law_basis: "政府標準利用規約(第2.0版)"
+    audience: Dev
+    vertical: 補助金
+  - phrase: "Jグランツのデータはスクレイピングで全件取得できる"
+    severity: medium
+    correction: "Jグランツは公募ごとのページ構造で、利用規約にbot制限あり。bulk取得は事前承諾推奨"
+    law_basis: "Jグランツ利用規約"
+    audience: Dev
+    vertical: 補助金
+
+  # ── Dev × 税制 (2) ────────────────────────────────────────────────
+  - phrase: "国税庁のe-Tax APIは認証なしで法人番号から税情報を取得できる"
+    severity: high
+    correction: "e-Tax APIは利用者識別番号+電子証明書認証が必須。法人番号公表サイトは別系統で税情報は非公開"
+    law_basis: "国税電子申告・納税に関する法令解釈通達"
+    audience: Dev
+    vertical: 税制
+  - phrase: "適格請求書発行事業者の登録番号は誰でもバルクDLできる"
+    severity: low
+    correction: "国税庁公表サイトのbulkは月次差分提供。再配布はPDL v1.0準拠+出典明記+編集注記が条件"
+    law_basis: "Public Domain License v1.0 (国税庁公表ファイル)"
+    audience: Dev
+    vertical: 税制
+
+  # ── Dev × 融資 (2) ────────────────────────────────────────────────
+  - phrase: "公庫のAPIは公開されている"
+    severity: high
+    correction: "日本政策金融公庫はpublic API未提供。取得は公表PDF+IR資料の手動or合法スクレイピングのみ"
+    law_basis: "日本政策金融公庫法 第11条"
+    audience: Dev
+    vertical: 融資
+  - phrase: "信用保証協会の審査結果はオープンデータで取得できる"
+    severity: high
+    correction: "個別審査結果は信用保証協会の非公開情報。集計統計のみ全国信用保証協会連合会経由で取得可"
+    law_basis: "信用保証協会法 第32条(守秘義務)"
+    audience: Dev
+    vertical: 融資
+
+  # ── Dev × 認定 (2) ────────────────────────────────────────────────
+  - phrase: "経営力向上計画の認定一覧はAPI化されている"
+    severity: medium
+    correction: "中小企業庁が認定状況を公表しているが、API提供はなくCSV/PDFのみ。bulk取得は手動DL"
+    law_basis: "中小企業等経営強化法 第17条"
+    audience: Dev
+    vertical: 認定
+  - phrase: "建設業許可一覧は国交省が無料APIで提供している"
+    severity: medium
+    correction: "国交省は建設業者検索の検索フォームのみ。APIは未提供で全件取得は都道府県別CSV対応"
+    law_basis: "建設業法 第3条"
+    audience: Dev
+    vertical: 認定
+
+  # ── Dev × 行政処分 (2) ────────────────────────────────────────────
+  - phrase: "行政処分情報はOpenDataとして自由に利用できる"
+    severity: medium
+    correction: "公表情報でも氏名・法人名は個人情報保護法+各処分庁の公表ガイドラインに従う必要"
+    law_basis: "個人情報の保護に関する法律 第27条"
+    audience: Dev
+    vertical: 行政処分
+  - phrase: "国税庁の公示処分は永久にデータベース掲載される"
+    severity: low
+    correction: "公示は通常公表期間あり(例: 滞納処分は1年程度)。期間経過後の保持・再公開には独自配慮が必要"
+    law_basis: "国税徴収法 第141条"
+    audience: Dev
+    vertical: 行政処分
+
+  # ── Dev × 法令 (2) ────────────────────────────────────────────────
+  - phrase: "e-Govの法令APIは商用利用に制限がない"
+    severity: medium
+    correction: "e-Gov法令APIは政府標準利用規約v2.0準拠。出典明記+改変時の注記が必要、商用利用は可能"
+    law_basis: "政府標準利用規約(第2.0版)"
+    audience: Dev
+    vertical: 法令
+  - phrase: "判例DBは判決全文をAPI経由で取得できる"
+    severity: high
+    correction: "裁判所HP掲載の裁判例は個別PDF。bulk APIは未提供で、商用DBは判例タイムズ/D1-Law等の有料契約"
+    law_basis: "裁判所HP利用規約"
+    audience: Dev
+    vertical: 法令

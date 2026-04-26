@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<!--
+  EN mirror of /pricing.html (2026-04-26 5-interface parity, 完全従量).
+  JPY is the billed currency; USD figures are approximate at ¥150/$.
+  Card network handles FX. Tax-inclusive prices include 10% Japanese
+  consumption tax (JCT).
+    - API + MCP: ¥3/req tax exclusive (¥3.30 tax inclusive); 50 req/month
+      per IP anonymous monthly allowance.
+    - LINE bot: 10 queries/month free; ¥3/query (¥3.30 tax inclusive)
+      thereafter. Public 2026-05-06 (waitlist).
+    - Statute change alerts: ¥500/month (¥550 tax inclusive); free monthly
+      digest available.
+    - Embeddable widget: Standard ¥10,000/month (¥11,000 tax inclusive,
+      10,000 req included) + ¥3/req overage; Whitelabel ¥30,000/month.
+    - Advisor affiliate: free for end-users; advisors pay ¥3,000 per
+      successful retention (¥3,300 tax inclusive).
+  Operator: Bookyou株式会社 (T8010001213708). Stripe Tax + qualified
+  invoices, cancel anytime, no tier / seat / minimum.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Pricing — AutonoMath</title>
+<meta name="description" content="AutonoMath pricing across 5 interfaces — API ¥3/req, LINE ¥3/query, statute alerts ¥500/month, embed widget ¥10,000/month, advisor affiliate ¥3,000/match. Self-serve, JPY-billed via Stripe with Japanese qualified invoice (T8010001213708).">
+
+<meta property="og:title" content="Pricing — AutonoMath">
+<meta property="og:description" content="From ¥3/req. Five interfaces: API + MCP, LINE bot, statute alerts, embed widget, advisor affiliate. Monthly fixed plans start at ¥500.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/pricing.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pricing — AutonoMath">
+<meta name="twitter:description" content="From ¥3/req. Five interfaces, JPY billing, no tiers.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/pricing.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/pricing.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/pricing.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/pricing.html">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Pricing — AutonoMath",
+  "description": "AutonoMath pricing across 5 interfaces: API ¥3/req, LINE ¥3/query, statute alerts ¥500/month, embed widget ¥10,000/month, advisor affiliate ¥3,000/match.",
+  "inLanguage": "en",
+  "url": "https://autonomath.ai/en/pricing.html",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/en/",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Bookyou株式会社",
+      "identifier": "T8010001213708",
+      "email": "info@bookyou.net",
+      "url": "https://autonomath.ai/"
+    }
+  },
+  "primaryImageOfPage": {"@type": "ImageObject", "url": "https://autonomath.ai/assets/og.png"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Offer",
+      "name": "AutonoMath API + MCP — fully metered",
+      "description": "REST + MCP. ¥3 per request tax exclusive (¥3.30 tax inclusive, 10% JCT added at invoice). 50 req/month per IP anonymous monthly allowance with JST first-of-month 00:00 reset, no signup. No minimum term, no cancellation fee.",
+      "url": "https://autonomath.ai/en/pricing.html#api-paid",
+      "category": "API access",
+      "availability": "https://schema.org/InStock",
+      "businessFunction": "https://schema.org/Sell",
+      "priceCurrency": "JPY",
+      "price": "3.00",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "3.00",
+        "priceCurrency": "JPY",
+        "unitCode": "E50",
+        "unitText": "request",
+        "billingDuration": "P1M",
+        "billingIncrement": 1,
+        "valueAddedTaxIncluded": false
+      },
+      "includesObject": {
+        "@type": "TypeAndQuantityNode",
+        "amountOfThisGood": 50,
+        "unitCode": "E50",
+        "unitText": "free requests per IP per month",
+        "typeOfGood": {
+          "@type": "Service",
+          "name": "Anonymous monthly allowance (50 req/month per IP)"
+        }
+      },
+      "eligibleCustomerType": [
+        "https://schema.org/PublicAdministration",
+        "https://schema.org/Person",
+        "https://schema.org/Enterprise"
+      ],
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "Japan"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net",
+        "url": "https://autonomath.ai/"
+      },
+      "termsOfService": "https://autonomath.ai/tos.html"
+    },
+    {
+      "@type": "Offer",
+      "name": "API anonymous monthly allowance",
+      "price": "0",
+      "priceCurrency": "JPY",
+      "description": "50 req/month per IP free; resets at JST first-of-month 00:00.",
+      "url": "https://autonomath.ai/en/pricing.html#api-free",
+      "category": "API access",
+      "availability": "https://schema.org/InStock",
+      "inLanguage": "en",
+      "eligibleQuantity": {
+        "@type": "QuantitativeValue",
+        "value": 50,
+        "unitText": "requests/month"
+      },
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "Japan"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net",
+        "url": "https://autonomath.ai/"
+      },
+      "termsOfService": "https://autonomath.ai/tos.html"
+    },
+    {
+      "@type": "Offer",
+      "name": "AutonoMath LINE bot — metered",
+      "description": "Natural-language program search via LINE messenger. 10 queries/month free; ¥3 per query tax exclusive (¥3.30 tax inclusive) thereafter. No fixed monthly fee. Public 2026-05-06 (waitlist).",
+      "url": "https://autonomath.ai/en/pricing.html#line-paid",
+      "category": "Conversational interface",
+      "availability": "https://schema.org/PreOrder",
+      "businessFunction": "https://schema.org/Sell",
+      "priceCurrency": "JPY",
+      "price": "3.00",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "3.00",
+        "priceCurrency": "JPY",
+        "unitText": "query",
+        "billingIncrement": 1,
+        "valueAddedTaxIncluded": false
+      },
+      "includesObject": {
+        "@type": "TypeAndQuantityNode",
+        "amountOfThisGood": 10,
+        "unitText": "free queries per month",
+        "typeOfGood": {
+          "@type": "Service",
+          "name": "LINE bot free monthly allowance"
+        }
+      },
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "Japan"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "url": "https://autonomath.ai/en/",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net"
+      },
+      "termsOfService": "https://autonomath.ai/tos.html"
+    },
+    {
+      "@type": "Offer",
+      "name": "AutonoMath statute change alerts — Real-time",
+      "description": "E-mail notifications on Japanese statute amendments (invoice law, electronic-bookkeeping law, labor standards, construction business law, etc.). ¥500/month tax exclusive (¥550 tax inclusive). Free monthly digest available.",
+      "url": "https://autonomath.ai/en/pricing.html#alerts-paid",
+      "category": "Notification subscription",
+      "availability": "https://schema.org/InStock",
+      "businessFunction": "https://schema.org/Sell",
+      "priceCurrency": "JPY",
+      "price": "500.00",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "500.00",
+        "priceCurrency": "JPY",
+        "unitText": "month",
+        "billingDuration": "P1M",
+        "valueAddedTaxIncluded": false
+      },
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "Japan"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "url": "https://autonomath.ai/en/",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net"
+      },
+      "termsOfService": "https://autonomath.ai/tos.html"
+    },
+    {
+      "@type": "Offer",
+      "name": "AutonoMath embed widget — Standard",
+      "description": "One-line <script> tag embeds AutonoMath search on your site. ¥10,000/month tax exclusive (¥11,000 tax inclusive) including 10,000 req/month; overage ¥3/req tax exclusive (¥3.30 tax inclusive).",
+      "url": "https://autonomath.ai/en/pricing.html#widget-standard",
+      "category": "Embeddable widget",
+      "availability": "https://schema.org/InStock",
+      "businessFunction": "https://schema.org/Sell",
+      "priceCurrency": "JPY",
+      "price": "10000.00",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "10000.00",
+        "priceCurrency": "JPY",
+        "unitText": "month",
+        "billingDuration": "P1M",
+        "valueAddedTaxIncluded": false
+      },
+      "includesObject": {
+        "@type": "TypeAndQuantityNode",
+        "amountOfThisGood": 10000,
+        "unitText": "requests included per month",
+        "typeOfGood": {
+          "@type": "Service",
+          "name": "Widget request quota"
+        }
+      },
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "Japan"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "url": "https://autonomath.ai/en/",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net"
+      },
+      "termsOfService": "https://autonomath.ai/tos.html"
+    },
+    {
+      "@type": "Offer",
+      "name": "AutonoMath embed widget — Whitelabel",
+      "description": "All Standard features without the AutonoMath credit; custom CSS theming; 30,000 req/month included. ¥30,000/month tax exclusive (¥33,000 tax inclusive); overage ¥3/req tax exclusive.",
+      "url": "https://autonomath.ai/en/pricing.html#widget-whitelabel",
+      "category": "Embeddable widget",
+      "availability": "https://schema.org/InStock",
+      "businessFunction": "https://schema.org/Sell",
+      "priceCurrency": "JPY",
+      "price": "30000.00",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "30000.00",
+        "priceCurrency": "JPY",
+        "unitText": "month",
+        "billingDuration": "P1M",
+        "valueAddedTaxIncluded": false
+      },
+      "includesObject": {
+        "@type": "TypeAndQuantityNode",
+        "amountOfThisGood": 30000,
+        "unitText": "requests included per month",
+        "typeOfGood": {
+          "@type": "Service",
+          "name": "Widget request quota (whitelabel)"
+        }
+      },
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "Japan"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "url": "https://autonomath.ai/en/",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net"
+      },
+      "termsOfService": "https://autonomath.ai/tos.html"
+    },
+    {
+      "@type": "Offer",
+      "name": "AutonoMath advisor affiliate",
+      "description": "Listing for licensed Japanese advisors (認定経営革新等支援機関 / 税理士 / 社労士 / 中小企業診断士). Free to register; ¥3,000 per successful client retention tax exclusive (¥3,300 tax inclusive). End-user inquiries are free.",
+      "url": "https://autonomath.ai/en/pricing.html#advisor-paid",
+      "category": "Affiliate referral",
+      "availability": "https://schema.org/InStock",
+      "businessFunction": "https://schema.org/Sell",
+      "priceCurrency": "JPY",
+      "price": "3000.00",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "3000.00",
+        "priceCurrency": "JPY",
+        "unitText": "successful retention",
+        "valueAddedTaxIncluded": false
+      },
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "Japan"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "url": "https://autonomath.ai/en/",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net"
+      },
+      "termsOfService": "https://autonomath.ai/tos.html"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bookyou株式会社",
+  "alternateName": "AutonoMath",
+  "identifier": "T8010001213708",
+  "url": "https://autonomath.ai/",
+  "email": "info@bookyou.net"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Which interface should I pick?", "acceptedAnswer": {"@type": "Answer", "text": "AI developers: API + MCP. Individuals or business owners on a phone: LINE bot. Compliance and statute tracking: alerts. Embed search on your own site: widget. Licensed Japanese advisors / 認定支援機関: advisor listing. Unsure? See the decision tree on the comparison page."}},
+    {"@type": "Question", "name": "Can I use multiple interfaces at once?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — a single account can subscribe to all 5 interfaces. Example: API (¥3/req) + Real-time alerts (¥500/month) + advisor listing. Stripe consolidates everything onto one itemised invoice."}},
+    {"@type": "Question", "name": "Can I change interfaces mid-cycle?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Add, switch, or cancel any interface from Stripe Customer Portal. Pro-rating is automatic. Interfaces combine freely — there are no upper or lower tiers."}},
+    {"@type": "Question", "name": "Am I billed in months I don't use it?", "acceptedAnswer": {"@type": "Answer", "text": "Metered components (API / widget overage) bill ¥0 at 0 req. Fixed monthly plans (LINE metered overflow, Real-time alerts, widget Standard / Whitelabel) bill until cancelled."}},
+    {"@type": "Question", "name": "What happens if I hit the API anonymous monthly allowance?", "acceptedAnswer": {"@type": "Answer", "text": "The API returns 429 with Retry-After set to the seconds until JST first-of-month 00:00. Subscribe to Metered (¥3/req tax exclusive, ¥3.30 tax inclusive) and the cap is removed immediately — pay only for what you use."}},
+    {"@type": "Question", "name": "Volume discount for high usage?", "acceptedAnswer": {"@type": "Answer", "text": "Not at launch. A single rate keeps the pricing page readable. If you are consistently above 1 M req/month and want a custom rate, email us — but the public price applies to everyone by default."}},
+    {"@type": "Question", "name": "Can I issue multiple API keys?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — one per environment is common. Rotate or revoke from the billing portal; each key bills against your single metered subscription."}},
+    {"@type": "Question", "name": "Custom contracts or quotes?", "acceptedAnswer": {"@type": "Answer", "text": "Operations are fully self-serve; we do not negotiate individual contracts or custom quotes. The published pricing applies to every customer equally."}},
+    {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 13,578 Japanese public programs (subsidies, loans, tax incentives, certifications; 10,790 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition (collateral / personal guarantor / third-party guarantor), 1,185 enforcement actions, 181 exclusion + prerequisite rules. Every row carries a primary-source URL + fetched_at timestamp; aggregators are banned. The 4-dataset expansion (statutes / case law / public bids / tax rulesets / NTA qualified-issuer registry) is also included. All figures are sourced on the fact sheet."}},
+    {"@type": "Question", "name": "Invoicing (インボイス)?", "acceptedAnswer": {"@type": "Answer", "text": "Stripe Tax issues a qualified Japanese invoice in JPY with invoice-registration number T8010001213708 (Bookyou株式会社, registered 2025-05-12). Each invoice is itemised per billing period with req count × unit price and 10% JCT."}}
+  ]
+}
+</script>
+
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script defer src="../analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html" aria-current="page">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../pricing.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="pricing.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="pricing-page">
+  <div class="container">
+    <h1>Pricing</h1>
+    <p class="lead">Five interfaces, billed in JPY. Pay-as-you-go starts at ¥3/req; fixed monthly plans start at ¥500. Self-serve, no tiers, no contracts, no sales calls. Tax-inclusive figures include 10% Japanese consumption tax (JCT). USD amounts are approximate at ¥150/$ — your card network handles FX on the charge date.</p>
+
+    <section aria-labelledby="api-title" style="margin-top:24px;">
+      <h2 id="api-title" class="section-title">1. API + MCP</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">For AI developers and enterprise RAG. 72 MCP tools (39 core + 33 autonomath) plus REST. The 50 req/month per IP anonymous monthly allowance is usable without signup or card.</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card" aria-labelledby="api-free">
+          <h2 id="api-free">Anonymous</h2>
+          <p class="tier-desc">Evaluation / personal trials</p>
+          <p class="price">¥0</p>
+          <p class="price-unit"><span data-fact="anonymous_quota_per_month">50</span> req / month per IP (resets at JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> first-of-month 00:00)</p>
+          <ul class="feats">
+            <li>No card, no signup — start instantly via device flow</li>
+            <li>All fields readable (fields=default)</li>
+            <li>Both MCP and REST</li>
+            <li>Switch to metered for production workloads</li>
+          </ul>
+          <a class="btn btn-secondary" href="getting-started.html">Get started</a>
+        </article>
+
+        <article class="price-card highlight" aria-labelledby="api-paid">
+          <h2 id="api-paid">Metered</h2>
+          <p class="tier-desc">Production / large RAG / agents</p>
+          <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ req (tax incl.)</small></p>
+          <p class="price-unit">¥<span data-fact="price_per_req">3</span>.00 tax exclusive + 10% JCT, Stripe metered</p>
+          <ul class="feats">
+            <li><strong>No throughput throttling</strong> — never returns 429 mid-spike; the same ¥3/req rate holds up to 1M req/month.</li>
+            <li><strong>Self-set monthly spend cap.</strong> Set <code>monthly_cap_yen</code> in the Customer Portal or via <code>POST /v1/me/cap</code>. Normal operation until the month-to-date total hits the cap; once hit, the API returns 503 with <code>cap_reached</code> until JST first-of-month 00:00 reset. Default = uncapped.</li>
+            <li>fields=full (enriched + source_mentions + lineage)</li>
+            <li>Months with 0 req cost ¥0</li>
+            <li>Qualified Japanese invoice (T8010001213708) auto-issued by Stripe</li>
+            <li>Cancel anytime by removing the card in Stripe Customer Portal</li>
+            <li>Example: 100 req ≈ ¥330 / 1,000 req ≈ ¥3,300 / 10,000 req ≈ ¥33,000 (~$220) / 100,000 req ≈ ¥330,000 (~$2,200)</li>
+          </ul>
+          <details style="margin:12px 0 14px;font-size:13px;color:var(--text-muted);">
+            <summary style="cursor:pointer;font-weight:600;color:var(--text);">Before you subscribe</summary>
+            <ul style="margin:10px 0 4px 18px;padding:0;line-height:1.7;">
+              <li><strong>¥<span data-fact="price_per_req_inc_tax">3.30</span> tax inclusive</strong> per request (¥<span data-fact="price_per_req">3</span> tax exclusive + 10% JCT).</li>
+              <li><strong>1 request = 1 HTTP / MCP tool call.</strong> A response with 100 hits still counts as 1 req. <code>/v1/healthz</code> and <code>/v1/me/*</code> are uncounted.</li>
+              <li>Usage from JST 00:00 on day 1 to 23:59 on the last day of the month is auto-charged to the registered card on day 1 of the following month.</li>
+              <li>No minimum term, no cancellation fee. Removing the card in Customer Portal returns the account to the anonymous <span data-fact="anonymous_quota_per_month">50</span> req/month allowance immediately.</li>
+              <li>This service provides information only; no document drafting, no legal advice, no tax advice.</li>
+            </ul>
+          </details>
+          <label for="checkout-consent-en" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:13px;color:var(--text);line-height:1.5;cursor:pointer;">
+            <input type="checkbox" id="checkout-consent-en" style="margin-top:3px;flex-shrink:0;">
+            <span>I agree to the <a href="tos.html" rel="noopener">Terms of Service</a>, <a href="privacy.html" rel="noopener">Privacy Policy</a>, and the Japanese statutory disclosure (<a href="tokushoho.html" rel="noopener">特商法表記</a>) before proceeding to checkout.</span>
+          </label>
+          <button class="btn btn-primary" type="button" id="checkout-btn-en" disabled aria-describedby="checkout-disabled-hint-en">Subscribe (register card)</button>
+          <p id="checkout-disabled-hint-en" style="font-size:12px;color:var(--text-muted);margin:6px 0 0;">Confirm consent above to enable the button.</p>
+          <p id="checkout-status-en" class="newsletter-status" role="status" aria-live="polite"></p>
+        </article>
+
+      </div>
+      <div class="calc" style="margin-top:24px;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:12px;max-width:480px;">
+        <h3 style="margin:0 0 12px;font-size:16px;">Monthly estimate</h3>
+        <label for="reqInput" style="display:block;font-size:14px;margin-bottom:6px;">Requests per month:</label>
+        <input id="reqInput" type="number" value="100" min="0" style="width:140px;padding:6px 10px;font-size:14px;border:1px solid var(--border,#d1d5db);border-radius:6px;">
+        <p style="margin:12px 0 0;font-size:14px;">Bill: <strong id="costOut">¥165</strong> / month (¥<span id="netOut">150</span> tax exclusive)</p>
+      </div>
+      <script>
+        (function () {
+          var r = document.getElementById('reqInput');
+          var c = document.getElementById('costOut');
+          var n = document.getElementById('netOut');
+          if (!r || !c || !n) return;
+          function recompute() {
+            var num = Math.max(0, parseInt(r.value || '0', 10));
+            var paid = Math.max(0, num - 50);
+            var net = paid * 3;
+            var tax = Math.round(net * 0.1);
+            var total = net + tax;
+            c.textContent = '¥' + total.toLocaleString();
+            n.textContent = net.toLocaleString();
+          }
+          r.addEventListener('input', recompute);
+          recompute();
+        })();
+      </script>
+      <script>
+        (function () {
+          var btn = document.getElementById('checkout-btn-en');
+          var status = document.getElementById('checkout-status-en');
+          var consent = document.getElementById('checkout-consent-en');
+          var hint = document.getElementById('checkout-disabled-hint-en');
+          if (!btn || !status) return;
+          if (consent) {
+            consent.addEventListener('change', function () {
+              btn.disabled = !consent.checked;
+              if (hint) hint.style.display = consent.checked ? 'none' : '';
+            });
+          }
+          btn.addEventListener('click', async function () {
+            if (consent && !consent.checked) {
+              status.className = 'newsletter-status err';
+              status.textContent = 'Please confirm consent above.';
+              return;
+            }
+            status.className = 'newsletter-status';
+            status.textContent = 'Redirecting to Stripe…';
+            btn.disabled = true;
+            var ctrl = new AbortController();
+            var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+            try {
+              var r = await fetch('/v1/billing/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                  success_url: 'https://autonomath.ai/en/success.html?session_id={CHECKOUT_SESSION_ID}',
+                  cancel_url: 'https://autonomath.ai/en/pricing.html?cancelled=1'
+                }),
+                signal: ctrl.signal
+              });
+              if (r.status === 402) {
+                status.className = 'newsletter-status err';
+                status.innerHTML = 'Payment setup incomplete. Please retry from the <a href="/en/pricing.html" style="color:inherit;text-decoration:underline;">Pricing page</a>.';
+                btn.disabled = false;
+                return;
+              }
+              if (r.status >= 500) {
+                status.className = 'newsletter-status err';
+                status.textContent = 'Server error (HTTP ' + r.status + '). Please retry in a few seconds.';
+                btn.disabled = false;
+                return;
+              }
+              if (!r.ok) throw new Error('http ' + r.status);
+              var data = await r.json();
+              if (data && data.url) { window.location = data.url; }
+              else { throw new Error('no url'); }
+            } catch (err) {
+              status.className = 'newsletter-status err';
+              if (err && err.name === 'AbortError') {
+                status.textContent = 'No response (15 s timeout). Please check your connection and try again.';
+              } else {
+                status.textContent = 'Checkout failed. Please try again in a moment.';
+              }
+              btn.disabled = false;
+            } finally {
+              clearTimeout(timer);
+            }
+          });
+        })();
+      </script>
+    </section>
+
+    <section aria-labelledby="line-title" style="margin-top:56px;">
+      <h2 id="line-title" class="section-title">2. LINE bot</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">For SME owners, licensed advisors, and sole proprietors. Natural-language program search through LINE on your phone — no developer setup.</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card" aria-labelledby="line-free">
+          <h2 id="line-free">Free</h2>
+          <p class="tier-desc">First 10 queries per month</p>
+          <p class="price">¥0</p>
+          <p class="price-unit">10 queries/month, then upgrade for unlimited metered</p>
+          <ul class="feats">
+            <li>Add as a LINE friend, ready instantly</li>
+            <li>Ask in natural Japanese — subsidies, loans, certifications</li>
+            <li>Hand-off to a registered advisor when needed</li>
+          </ul>
+          <a class="btn btn-secondary" href="line.html">Add LINE bot</a>
+        </article>
+
+        <article class="price-card highlight" aria-labelledby="line-paid">
+          <h2 id="line-paid">Metered (queries 11+)</h2>
+          <p class="tier-desc">Pay-as-you-go from the 11th query</p>
+          <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ query (tax incl.)</small></p>
+          <p class="price-unit">¥<span data-fact="price_per_req">3</span> tax exclusive + 10% JCT, no fixed monthly fee</p>
+          <ul class="feats">
+            <li>Search adoption case studies, loan offers, and enforcement actions too</li>
+            <li>Pay per query via LINE Pay / Apple Pay / Google Pay, or register a card in Stripe for end-of-month billing</li>
+            <li>Counter resets at JST first-of-month 00:00</li>
+            <li>Cancel anytime via Stripe Customer Portal</li>
+          </ul>
+          <a class="btn btn-primary" href="line.html">Add LINE bot</a>
+          <p style="margin-top:8px;font-size:12px;color:var(--text-muted);">Public launch: 2026-05-06 (waitlist open)</p>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="alerts-title" style="margin-top:56px;">
+      <h2 id="alerts-title" class="section-title">3. Statute change alerts</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">For licensed advisors, in-house finance teams, and compliance staff. Email notifications when Japanese statutes (invoice law, electronic-bookkeeping law, labor standards, construction business law, etc.) are amended.</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card" aria-labelledby="alerts-free">
+          <h2 id="alerts-free">Digest</h2>
+          <p class="tier-desc">Monthly roll-up</p>
+          <p class="price">¥0</p>
+          <p class="price-unit">One consolidated email per month</p>
+          <ul class="feats">
+            <li>End-of-month roll-up of major statute amendments</li>
+            <li>Email-only signup, no card</li>
+            <li>One-click unsubscribe</li>
+          </ul>
+          <a class="btn btn-secondary" href="alerts.html">Subscribe to digest</a>
+        </article>
+
+        <article class="price-card highlight" aria-labelledby="alerts-paid">
+          <h2 id="alerts-paid">Real-time</h2>
+          <p class="tier-desc">Notifications around the effective date</p>
+          <p class="price">¥550 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ month (tax incl.)</small></p>
+          <p class="price-unit">¥<span data-fact="price_alerts_per_month">500</span> tax exclusive + 10% JCT</p>
+          <ul class="feats">
+            <li>Pick interest areas (invoice law / e-bookkeeping / labor standards / construction business law, etc.)</li>
+            <li>Detects updates from 官報 (Official Gazette) and e-Gov in real time</li>
+            <li>Includes links to related case law and enforcement actions</li>
+            <li>Cancel anytime</li>
+          </ul>
+          <a class="btn btn-primary" href="alerts.html">Switch to Real-time</a>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="widget-title" style="margin-top:56px;">
+      <h2 id="widget-title" class="section-title">4. Embeddable widget</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">For tax-accountant sites, chambers of commerce, and advisor offices. Drop a one-line script tag to embed AutonoMath search on your own site.</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card" aria-labelledby="widget-standard">
+          <h2 id="widget-standard">Standard</h2>
+          <p class="tier-desc">Branded, 10,000 req included</p>
+          <p class="price">¥11,000 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ month (tax incl.)</small></p>
+          <p class="price-unit">¥10,000 tax exclusive · overage ¥3.30/req tax incl.</p>
+          <ul class="feats">
+            <li>Single &lt;script&gt; tag install</li>
+            <li>10,000 req/month included</li>
+            <li>Search results display "Powered by AutonoMath"</li>
+            <li>Domain restriction / IP allowlist supported</li>
+          </ul>
+          <a class="btn btn-secondary" href="widget.html">Install widget</a>
+        </article>
+
+        <article class="price-card highlight" aria-labelledby="widget-whitelabel">
+          <h2 id="widget-whitelabel">Whitelabel</h2>
+          <p class="tier-desc">No AutonoMath branding</p>
+          <p class="price">¥33,000 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ month (tax incl.)</small></p>
+          <p class="price-unit">¥30,000 tax exclusive · overage ¥3.30/req tax incl.</p>
+          <ul class="feats">
+            <li>All Standard features</li>
+            <li>Logo and credit removed</li>
+            <li>Custom CSS theme variables</li>
+            <li>30,000 req/month included</li>
+          </ul>
+          <a class="btn btn-primary" href="widget.html">Switch to Whitelabel</a>
+        </article>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="advisors-title" style="margin-top:56px;">
+      <h2 id="advisors-title" class="section-title">5. Advisor affiliate</h2>
+      <p style="margin:-16px 0 24px;color:var(--text-muted);max-width:640px;">For licensed Japanese advisors — 認定経営革新等支援機関, tax accountants (税理士), labor &amp; social-security attorneys (社労士), and SME management consultants (中小企業診断士). Receive client referrals through AutonoMath.</p>
+      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="price-card" aria-labelledby="advisor-user">
+          <h2 id="advisor-user">End-user</h2>
+          <p class="tier-desc">SMEs / sole proprietors</p>
+          <p class="price">¥0</p>
+          <p class="price-unit">Inquiries are free</p>
+          <ul class="feats">
+            <li>Ask an advisor through LINE bot or web</li>
+            <li>Matched by region, industry, and engagement size</li>
+            <li>If you retain the advisor, you contract directly with them at their listed rate</li>
+          </ul>
+          <a class="btn btn-secondary" href="advisors.html">Find an advisor</a>
+        </article>
+
+        <article class="price-card highlight" aria-labelledby="advisor-paid">
+          <h2 id="advisor-paid">Advisor listing</h2>
+          <p class="tier-desc">認定支援機関 / 税理士 / 社労士 / 診断士</p>
+          <p class="price">¥3,300 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ retention (tax incl.)</small></p>
+          <p class="price-unit">¥3,000 tax exclusive · no fixed monthly fee</p>
+          <ul class="feats">
+            <li>Free to register, ¥0 monthly</li>
+            <li>Pay ¥3,000 only on successful client retention</li>
+            <li>Publish profile, specialty areas, and rate card</li>
+            <li>Customer-rating disclosure required (景表法 compliant)</li>
+          </ul>
+          <a class="btn btn-primary" href="advisors.html">Register as advisor</a>
+        </article>
+
+      </div>
+    </section>
+
+    <p class="pricing-note"><strong>Currency note.</strong> Billing is JPY. USD figures are approximate at ¥150/$ and will vary with your card network's FX rate on the charge date. Stripe Tax calculates and adds the 10% Japanese consumption tax to invoices (the listed ¥3 / ¥500 / ¥10,000 / ¥30,000 / ¥3,000 amounts are tax exclusive; the parenthesised figures are tax inclusive). Foreign-issued cards work without extra setup.</p>
+
+    <section aria-labelledby="common-title" style="margin-top:56px;">
+      <h2 id="common-title" class="section-title">All plans include</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Qualified invoice (インボイス)</h3>
+          <p class="card-lead">T8010001213708</p>
+          <p>Stripe Tax auto-issues a Japanese qualified invoice for Bookyou株式会社. Itemised per period: req count × unit price + 10% JCT. Tax-exclusive presentation.</p>
+        </article>
+        <article class="card">
+          <h3>Cancel anytime</h3>
+          <p class="card-lead">No minimum, no cancellation fee</p>
+          <p>Self-cancel from Stripe Customer Portal. The API reverts to the 50 req/month per IP anonymous monthly allowance, LINE/alerts revert to free, the widget stops serving.</p>
+        </article>
+        <article class="card">
+          <h3>Statutory disclosures</h3>
+          <p class="card-lead">特商法 / 景表法 / consumer-contract law</p>
+          <p>Japanese statutory disclosure (特商法表記), TOS, privacy policy, and a defect-handling contact are all in place. Receipts are auto-issued by Stripe and downloadable from the dashboard.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="faq-title" style="margin-top:56px;">
+      <h2 id="faq-title" class="section-title">FAQ</h2>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Which interface should I pick?</h3>
+      <p>AI developers: API + MCP. Individuals or business owners on a phone: LINE bot. Compliance &amp; statute tracking: alerts. Embed search on your own site: widget. Licensed Japanese advisors / 認定支援機関: advisor listing. Unsure? See the decision tree on the <a href="products.html">comparison page</a>.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Can I use multiple interfaces at once?</h3>
+      <p>Yes — a single account can subscribe to all 5 interfaces. Example: API (¥3/req) + Real-time alerts (¥500/month) + advisor listing. Stripe consolidates everything onto one itemised invoice.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Can I change interfaces mid-cycle?</h3>
+      <p>Yes. Add, switch, or cancel any interface from Stripe Customer Portal. Pro-rating is automatic. Interfaces combine freely — there are no upper or lower tiers.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Am I billed in months I don't use it?</h3>
+      <p>Metered components (API / widget overage) bill ¥0 at 0 req. Fixed monthly plans (LINE metered overflow, Real-time alerts, widget Standard / Whitelabel) bill until cancelled.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">What happens if I hit the API anonymous monthly allowance?</h3>
+      <p>The API returns 429 with <code>Retry-After</code> set to the seconds until JST first-of-month 00:00. Subscribe to Metered (¥3/req tax exclusive, ¥3.30 tax inclusive) and the cap is removed immediately — pay only for what you use.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Volume discount for high usage?</h3>
+      <p>Not at launch. A single rate keeps the pricing page readable. If you are consistently above 1 M req/month and want a custom rate, email us — but the public price applies to everyone by default.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Can I issue multiple API keys?</h3>
+      <p>Yes — one per environment is common. Rotate or revoke from the billing portal; each key bills against your single metered subscription.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Custom contracts or quotes?</h3>
+      <p>Operations are fully self-serve; we do not negotiate individual contracts or custom quotes. The published pricing applies to every customer equally.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Data coverage?</h3>
+      <p>As of April 2026: <span data-fact="total_programs">13,578</span> Japanese public programs (subsidies, loans, tax incentives, certifications; <span data-fact="searchable_programs_total">10,790</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs with three-axis risk decomposition (collateral / personal guarantor / third-party guarantor), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, <span data-fact="exclusion_rules_total">181</span> exclusion + prerequisite rules. Every row carries a primary-source URL + fetched_at timestamp; aggregators are banned. The 4-dataset expansion (statutes / case law / public bids / tax rulesets / NTA qualified-issuer registry) is also included. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">Invoicing (インボイス)?</h3>
+      <p>Stripe Tax issues a qualified Japanese invoice in JPY with invoice-registration number <strong>T8010001213708</strong> (Bookyou株式会社, registered 2025-05-12). Each invoice is itemised per billing period with req count × unit price and 10% JCT.</p>
+    </section>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
+    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
+    <a href="/en/tos.html">Terms</a> |
+    <a href="/en/privacy.html">Privacy</a> |
+    <a href="/docs/api-reference/">OpenAPI</a> |
+    Data last refreshed: <time data-trust-fresh datetime="2026-04-25">Apr 25, 2026</time>
+  </p>
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program platform — five interfaces.</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>

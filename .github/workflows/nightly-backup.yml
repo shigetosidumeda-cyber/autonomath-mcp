@@ -1,0 +1,147 @@
+name: nightly-backup
+
+# Runs the online SQLite backup inside the Fly machine, pulls the artifact off
+# via flyctl sftp, verifies sha256, then mirrors it to Cloudflare R2 with a
+# 14-day rolling window.
+#
+# Required GitHub repository secrets:
+#   FLY_API_TOKEN         Fly.io deploy token with ssh+sftp access to app `autonomath-api`.
+#   R2_ENDPOINT           Cloudflare R2 S3 endpoint (e.g. https://<accountid>.r2.cloudflarestorage.com).
+#   R2_ACCESS_KEY_ID      Cloudflare R2 access key id.
+#   R2_SECRET_ACCESS_KEY  Cloudflare R2 secret access key.
+#   R2_BUCKET             Target bucket name (e.g. autonomath-backups).
+#
+# If any R2 secret is missing the off-site upload step logs a warning and
+# exits success -- the on-machine backup still ran, so cron is not blocked.
+#
+# TODO (operator — manual Fly.io steps required if the Fly app is still named jpintel-mcp):
+#   The fly.toml already declares: app = "autonomath-api"
+#   If the live Fly app is still named "jpintel-mcp", complete the rename with:
+#     fly apps create autonomath-api          # create new app in same org
+#     fly deploy --app autonomath-api         # deploy current image to new app
+#     fly volumes move <vol-id> autonomath-api  # or re-attach volume
+#     fly apps destroy jpintel-mcp           # delete old app (irreversible)
+#   Until that is done, revert -a flags below to -a autonomath-api to keep CI green.
+
+on:
+  schedule:
+    # 18:17 UTC == 03:17 JST. Off-peak vs noon traffic spikes.
+    - cron: "17 18 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: nightly-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run backup on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/backup.py \
+              --db /data/jpintel.db \
+              --out /data/backups \
+              --keep 14 \
+              --gzip"
+
+      - name: Cleanup anon_rate_limit rows older than 3 months
+        # Keeps the per-IP quota table small. 2026-04-23 pricing pivot switched
+        # the bucket from daily (YYYY-MM-DD) to monthly (YYYY-MM-01 in JST);
+        # we need the current month for enforcement and a couple months back
+        # for abuse forensics. `date('now', '-90 days')` runs in the SQLite
+        # UTC clock which is close enough for a ~3-month rolling trim.
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          flyctl ssh console -a autonomath-api -C \
+            "sqlite3 /data/jpintel.db \"DELETE FROM anon_rate_limit WHERE date < date('now', '-90 days');\""
+
+      - name: Locate latest backup path on Fly machine
+        id: locate
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          LATEST=$(flyctl ssh console -a autonomath-api -C \
+              "ls -1t /data/backups/jpintel-*.db.gz | head -1" | tr -d '\r\n')
+          if [ -z "$LATEST" ]; then
+            echo "ERROR: could not locate latest backup on machine" >&2
+            exit 1
+          fi
+          echo "latest_remote=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "latest_basename=$(basename "$LATEST")" >> "$GITHUB_OUTPUT"
+
+      - name: Copy backup and checksum off Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          LATEST_REMOTE: ${{ steps.locate.outputs.latest_remote }}
+        run: |
+          set -euo pipefail
+          flyctl ssh sftp get "$LATEST_REMOTE"         -a autonomath-api
+          flyctl ssh sftp get "${LATEST_REMOTE}.sha256" -a autonomath-api
+          ls -la jpintel-*.db.gz jpintel-*.db.gz.sha256
+
+      - name: Verify sha256
+        run: |
+          set -euo pipefail
+          shasum -a 256 -c jpintel-*.db.gz.sha256
+
+      - name: Upload to Cloudflare R2 and rotate (fail-open if secrets missing)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          LATEST_BASENAME: ${{ steps.locate.outputs.latest_basename }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] \
+             || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ] \
+             || [ -z "${R2_ENDPOINT:-}" ] \
+             || [ -z "${R2_BUCKET:-}" ]; then
+            echo "::warning::R2 secrets not fully configured; skipping off-site upload." \
+              "Set R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_ENDPOINT / R2_BUCKET to enable."
+            exit 0
+          fi
+
+          # aws CLI ships preinstalled on ubuntu-latest.
+          PREFIX="autonomath-api"
+          aws s3 cp "$LATEST_BASENAME"         "s3://$R2_BUCKET/$PREFIX/" --endpoint-url "$R2_ENDPOINT"
+          aws s3 cp "${LATEST_BASENAME}.sha256" "s3://$R2_BUCKET/$PREFIX/" --endpoint-url "$R2_ENDPOINT"
+
+          # Rotation: keep only the 14 newest jpintel-*.db.gz + their .sha256 siblings.
+          # NOTE: backup filenames (jpintel-*.db.gz) are set by scripts/backup.py and
+          # are an internal artifact naming convention — leave the glob unchanged until
+          # backup.py is also updated to emit autonomath-*.db.gz filenames.
+          # ListObjectsV2 sorts lexicographically; our timestamp format YYYYMMDD-HHMMSS
+          # makes lex order == chronological order, so tail -n +15 gives us everything
+          # beyond the 14 most recent to delete.
+          KEEP=14
+          mapfile -t ALL < <(aws s3api list-objects-v2 \
+              --bucket "$R2_BUCKET" \
+              --prefix "$PREFIX/jpintel-" \
+              --endpoint-url "$R2_ENDPOINT" \
+              --query 'Contents[].Key' \
+              --output text | tr '\t' '\n' | grep -E '\.db\.gz$' | sort -r || true)
+
+          if [ "${#ALL[@]}" -gt "$KEEP" ]; then
+            for key in "${ALL[@]:$KEEP}"; do
+              echo "Pruning: $key (+ .sha256)"
+              aws s3 rm "s3://$R2_BUCKET/$key"         --endpoint-url "$R2_ENDPOINT" || true
+              aws s3 rm "s3://$R2_BUCKET/${key}.sha256" --endpoint-url "$R2_ENDPOINT" || true
+            done
+          else
+            echo "No rotation needed (${#ALL[@]} <= $KEEP)."
+          fi

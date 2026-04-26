@@ -1,0 +1,80 @@
+name: deploy
+
+# Gate production deployments on a green CI run for the same commit.
+# workflow_run fires when the "test" workflow completes on main; the
+# `if:` guard below ensures we only deploy when it passed.
+# workflow_dispatch lets an operator trigger a manual re-deploy of the
+# already-green HEAD without waiting for another CI cycle (the same
+# conclusion guard is not applied there — the operator is asserting the
+# commit is good).
+on:
+  workflow_run:
+    workflows: ["test"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  # Serialize deploys: only one rollout at a time for the same branch.
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fly:
+    name: Deploy to Fly.io
+    runs-on: ubuntu-latest
+    # For workflow_run events: only deploy when the triggering CI run passed.
+    # workflow_dispatch bypasses this guard (operator-initiated re-deploy of a
+    # commit already known to be green).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: read
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # For workflow_run events the triggering commit's SHA is in
+          # workflow_run.head_sha; for workflow_dispatch it is just GITHUB_SHA.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Set up flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Extract release version from pyproject.toml
+        id: version
+        # Pin SENTRY_RELEASE to the package version + commit sha so a hotfix
+        # redeploy at the same version still groups distinctly in Sentry.
+        # Format: "autonomath-mcp@<pyproject_version>+<short_sha>".
+        run: |
+          set -euo pipefail
+          PKG_VER=$(grep -E '^version\s*=' pyproject.toml | head -1 | sed -E 's/version\s*=\s*"([^"]+)"/\1/')
+          SHORT_SHA="${GITHUB_SHA::7}"
+          RELEASE="autonomath-mcp@${PKG_VER}+${SHORT_SHA}"
+          echo "release=${RELEASE}" >> "$GITHUB_OUTPUT"
+          echo "Computed SENTRY_RELEASE=${RELEASE}"
+
+      - name: Deploy (remote builder)
+        # --remote-only pushes the build to Fly's builder VM so local runner doesn't need docker.
+        # -e SENTRY_RELEASE=... sets the env on the machine at deploy time;
+        # complements the SENTRY_ENVIRONMENT already pinned in fly.toml.
+        run: flyctl deploy --remote-only -e SENTRY_RELEASE=${{ steps.version.outputs.release }}
+
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        # Stub: only fires if webhook secret is set; silently no-ops otherwise so absence
+        # of the secret doesn't itself fail the job.
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL not configured; skipping notification."
+            exit 0
+          fi
+          payload=$(printf '{"text":"autonomath-api deploy FAILED on %s (commit %s) — %s"}' \
+            "${GITHUB_REF_NAME}" "${GITHUB_SHA::7}" "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
+          curl -sS -X POST -H 'Content-Type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"

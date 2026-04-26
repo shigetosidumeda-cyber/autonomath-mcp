@@ -1,0 +1,166 @@
+name: data-integrity
+
+# URL integrity gate for AutonoMath. Runs ``scripts/url_integrity_scan.py``
+# against the SQLite registry and fails the run if any synthetic,
+# placeholder, loopback, or malformed URL is found.
+#
+# Rationale: even one fabricated URL (e.g. ``https://www.example.com/...``)
+# is 不当表示 under 景品表示法 4/5 条 when shipped to paying customers.
+# The scan is the mechanical guardrail against regression — the owner still
+# triages real failures.
+#
+# Triggers:
+#   - pull_request on paths that touch committed DBs / fixtures / the scan
+#     itself. PRs to non-DB code paths are NOT gated by this workflow to
+#     avoid blocking unrelated feature work.
+#   - nightly at 19:30 UTC (04:30 JST, after ingest-daily has had a chance
+#     to refresh the registry) so drift from upstream ingest gets caught
+#     within a day.
+#   - workflow_dispatch for manual re-runs after a fix.
+#
+# DB provisioning: the production DB lives on the Fly volume and is
+# gitignored (see ``.gitignore``: ``data/jpintel.db``). In CI we first try
+# any fixture / committed DB; if none is present we initialise an empty
+# schema via ``scripts/bootstrap_db.sh``-equivalent so the scan can still
+# run (and pass trivially). Nightly runs on the Fly machine scan the real
+# DB via ``flyctl ssh`` and upload the report.
+
+on:
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "data/**"
+      - "scripts/url_integrity_scan.py"
+      - ".github/workflows/data-integrity.yml"
+  schedule:
+    # 19:30 UTC == 04:30 JST. Runs after nightly-backup (03:17 JST) and
+    # ingest-daily (04:00 JST) so the scan sees the freshest data.
+    - cron: "30 19 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: data-integrity-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  scan-pr:
+    # Runs only on PR and manual dispatch — uses whatever DB the checkout
+    # provides (committed fixture OR bootstrapped empty schema).
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package (minimal deps for DB init)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Ensure a DB exists to scan
+        # ``data/jpintel.db`` is gitignored. If no committed fixture DB is
+        # present, initialise a fresh empty schema so the scan has a target
+        # and passes vacuously. A real (populated) fixture DB can be added
+        # under ``tests/fixtures/`` and copied into place here later.
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          if [ -f data/jpintel.db ]; then
+            echo "Using committed DB at data/jpintel.db."
+          elif [ -f tests/fixtures/jpintel.db ]; then
+            echo "Copying fixture DB into place."
+            cp tests/fixtures/jpintel.db data/jpintel.db
+          else
+            echo "No DB found; initialising empty schema via init_db()."
+            python -c "from jpintel_mcp.db.session import init_db; init_db()"
+          fi
+
+      - name: Run URL integrity scan
+        id: scan
+        # ``continue-on-error`` so we can upload the report artifact even on
+        # failure (when violations are found).
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python scripts/url_integrity_scan.py \
+            --db data/jpintel.db \
+            --report research/url_integrity_scan_ci.md \
+            --json research/url_integrity_scan_ci.json
+          echo "scan_exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Upload report as artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: url-integrity-scan-${{ github.run_id }}
+          path: |
+            research/url_integrity_scan_ci.md
+            research/url_integrity_scan_ci.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Fail job if scan reported violations
+        # The scan already exited non-zero; we run it under
+        # continue-on-error above to always upload the artifact, then
+        # surface the failure here so the PR gate still turns red.
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.scan.outcome }}" != "success" ]; then
+            echo "URL integrity scan found violations. See artifact:" \
+                 "url-integrity-scan-${{ github.run_id }}."
+            exit 1
+          fi
+          echo "URL integrity scan passed."
+
+  scan-nightly:
+    # Runs the scan on the production DB inside the Fly machine so we pick
+    # up any drift that CI's checkout-only view would miss. Requires
+    # FLY_API_TOKEN (already configured for nightly-backup / ingest-daily).
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run URL integrity scan on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/url_integrity_scan.py \
+              --db /data/jpintel.db \
+              --report /data/url_integrity_scan_ci.md \
+              --json /data/url_integrity_scan_ci.json"
+
+      - name: Copy report off the Fly machine
+        if: always()
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          flyctl ssh sftp get /data/url_integrity_scan_ci.md   -a autonomath-api || true
+          flyctl ssh sftp get /data/url_integrity_scan_ci.json -a autonomath-api || true
+
+      - name: Upload report as artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: url-integrity-scan-nightly-${{ github.run_id }}
+          path: |
+            url_integrity_scan_ci.md
+            url_integrity_scan_ci.json
+          if-no-files-found: warn
+          retention-days: 30

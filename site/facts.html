@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<!--
+  Canonical fact-sheet for AutonoMath.
+  Each <dt id="fact-XXX"> is a stable citation hook. Other surfaces wrap the
+  same number in <span data-fact="XXX"> so that a future drift detector can
+  diff page values against this sheet (and ultimately against /v1/meta).
+  Update cadence: regenerated when /v1/meta or pricing changes; "Last verified"
+  reflects the most recent manual cross-check against the live API.
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>AutonoMath ファクトシート | 統計の出典</title>
+<meta name="description" content="AutonoMath が公表する統計 (制度件数・entities・facts・¥3/req 等) の出典を一覧化したファクトシート。/v1/meta API を一次出典とし、JST 取得日を併記。">
+
+<meta property="og:title" content="AutonoMath ファクトシート | 統計の出典">
+<meta property="og:description" content="制度件数・entities・facts・料金など、サイト全体で引用される統計の出典を一次資料に紐付けて開示。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/facts.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath ファクトシート | 統計の出典">
+<meta name="twitter:description" content="制度件数・entities・facts・料金など、サイト全体で引用される統計の出典。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/facts.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/facts.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/facts.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/facts.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+
+<script defer src="analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "AutonoMath ファクトシート",
+  "description": "AutonoMath が公表する統計 (制度件数・entities・facts・料金) の正本一覧。各値は /v1/meta API を一次出典とし、JST 取得日を明記。",
+  "url": "https://autonomath.ai/facts.html",
+  "creator": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "email": "info@bookyou.net",
+    "url": "https://autonomath.ai/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "identifier": "T8010001213708"
+  },
+  "license": "https://autonomath.ai/tos.html",
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "datePublished": "2026-04-26",
+  "dateModified": "2026-04-26",
+  "spatialCoverage": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "distribution": {
+    "@type": "DataDownload",
+    "encodingFormat": "application/json",
+    "contentUrl": "https://api.autonomath.ai/v1/meta"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "サイトに表示されている数字 (例: 10,790 制度) の出典は?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "本ファクトシート (https://autonomath.ai/facts.html) が正本です。各値は /v1/meta API (https://api.autonomath.ai/v1/meta) を一次出典とし、JST 取得日を併記しています。サイト内の各数字は <span data-fact=\"...\"> でマークアップされており、ファクトシート上の <dt id=\"fact-...\"> と 1:1 対応します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "数字はどの頻度で更新されますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "/v1/meta は 60 秒キャッシュ付きでライブ集計されます。本ファクトシートは ingest cadence (週次〜月次) と料金改訂のタイミングで再生成し、Last verified 列に最新の手動クロスチェック日を記載します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Tier S/A/B/C の意味は?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "実データ充足度に基づく品質ラベルです。Tier S/A/B/C は検索対象、Tier X は quarantine (検索除外)。詳細は /docs/exclusions/ を参照。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="prompts.html">Prompts</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="facts.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="container" style="max-width:880px;padding-top:32px;padding-bottom:48px;">
+    <h1>ファクトシート — 統計の出典</h1>
+    <p class="lead">AutonoMath のサイト・ドキュメント・営業資料に登場する数値の正本です。各値は <code>/v1/meta</code> API を一次出典とし、取得日 (JST) を明記しています。サイト内の各数字は <code>&lt;span data-fact=&quot;ID&quot;&gt;</code> でマークアップされ、本ページの <code>&lt;dt id=&quot;fact-ID&quot;&gt;</code> に 1:1 で対応します。</p>
+
+    <p style="margin:0 0 24px;color:var(--text-muted);font-size:14px;">
+      最終更新: <time datetime="2026-04-26">2026-04-26 JST</time> ·
+      一次出典: <a href="https://api.autonomath.ai/v1/meta" rel="external"><code>GET /v1/meta</code></a> ·
+      ライセンス: <a href="tos.html">利用規約</a> 準拠 (各 sub-dataset の元ライセンスは出典欄を参照)
+    </p>
+
+    <section aria-labelledby="how-to-cite-title" style="margin-top:24px;">
+      <h2 id="how-to-cite-title" class="section-title">引用方法</h2>
+      <p>記者・研究者・パートナーがサイトの数値を引用する場合、以下のいずれかの形式を推奨します:</p>
+      <ul>
+        <li><strong>URL アンカー</strong>: <code>https://autonomath.ai/facts.html#fact-searchable_programs_total</code> を直接リンク</li>
+        <li><strong>API 直叩き</strong>: <code>curl https://api.autonomath.ai/v1/meta</code> (匿名 50 req/月 per IP 無料)</li>
+        <li><strong>テキスト引用</strong>: 「AutonoMath ファクトシート (2026-04-26 JST 取得) より」</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="dataset-title" style="margin-top:32px;">
+      <h2 id="dataset-title" class="section-title">データセット件数</h2>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-searchable_programs_total" style="font-weight:600;font-size:18px;">検索対象 制度件数: 10,790</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            Tier S/A/B/C の合計。Tier X (quarantine) を除外した値で、API 検索結果に現れる母集団。<br>
+            出典: <code>/v1/meta</code> の <code>tier_counts</code> sum (S+A+B+C) · 取得 2026-04-26 JST · 補助金・融資・税制・認定制度を含む
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-total_programs" style="font-weight:600;font-size:18px;">programs 総行数: 13,578</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            <code>programs</code> テーブル全行 (quarantine 含む)。<br>
+            出典: <code>/v1/meta.total_programs</code> · 取得 2026-04-26 JST · 一次資料 99%以上で <code>source_url</code> + <code>fetched_at</code> 付き
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-tier_s_count" style="font-weight:600;font-size:18px;">Tier S 件数: 114</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            最高品質 (実データ充足 10/10) ラベル。tier 判定は <code>docs/canonical/tier_methodology.md</code> 参照。<br>
+            出典: <code>/v1/meta.tier_counts.S</code> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-tier_a_count" style="font-weight:600;font-size:18px;">Tier A 件数: 1,340</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            実データ充足ベースの A ランク (検索可)。<br>
+            出典: <code>/v1/meta.tier_counts.A</code> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-tier_b_count" style="font-weight:600;font-size:18px;">Tier B 件数: 3,292</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            実データ充足ベースの B ランク (検索可)。<br>
+            出典: <code>/v1/meta.tier_counts.B</code> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-tier_c_count" style="font-weight:600;font-size:18px;">Tier C 件数: 6,044</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            実データ充足ベースの C ランク (検索可)。<br>
+            出典: <code>/v1/meta.tier_counts.C</code> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-quarantined_count" style="font-weight:600;font-size:18px;">Tier X (quarantine) 件数: 1,923</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            充足度不足のため検索除外。一次資料は保持しているが、tier 判定基準を満たさず非公開。<br>
+            出典: <code>/v1/meta.tier_counts.X</code> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-case_studies_total" style="font-weight:600;font-size:18px;">採択事例 件数: 2,286</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            <code>case_studies</code> テーブル。METI / JFC / JST 等の採択発表を一次収集。<br>
+            出典: <code>jpintel.db.case_studies</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-loan_programs_total" style="font-weight:600;font-size:18px;">融資プログラム 件数: 108</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            日本政策金融公庫等の制度融資を担保 / 個人保証人 / 第三者保証人の 3 軸で分解。<br>
+            出典: <code>jpintel.db.loan_programs</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-enforcement_cases_total" style="font-weight:600;font-size:18px;">行政処分 件数: 1,185</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            国土交通省・厚生労働省・公正取引委員会等の行政処分公示。<br>
+            出典: <code>jpintel.db.enforcement_cases</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-laws_total" style="font-weight:600;font-size:18px;">法令 件数: 9,484 (継続ロード中)</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            e-Gov 法令 API より取得。CC-BY 4.0 ライセンス下で再配布。<br>
+            出典: e-Gov 法令検索 (https://elaws.e-gov.go.jp/) · 取得 2026-04-26 JST · ライセンス CC-BY 4.0
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-tax_rulesets_total" style="font-weight:600;font-size:18px;">税務 ruleset 件数: 35</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            インボイス・電帳法・消費税等の税制ルール構造化データ。<br>
+            出典: <code>jpintel.db.tax_rulesets</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-court_decisions_total" style="font-weight:600;font-size:18px;">判例 件数: 2,065</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            最高裁・高裁・地裁の判例。裁判所判例検索より一次収集。<br>
+            出典: <code>jpintel.db.court_decisions</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-bids_total" style="font-weight:600;font-size:18px;">入札 件数: 362</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            国・地方公共団体・独立行政法人の入札公告。<br>
+            出典: <code>jpintel.db.bids</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-invoice_registrants_total" style="font-weight:600;font-size:18px;">適格請求書発行事業者 件数: 13,801 (PDL v1.0 delta)</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            国税庁適格請求書発行事業者公表サイトより delta 取得。月次フル取り込み (約 4M 行) は順次。<br>
+            出典: 国税庁 適格請求書発行事業者公表サイト (https://www.invoice-kohyo.nta.go.jp/) · 取得 2026-04-26 JST · ライセンス Public Domain Mark v1.0 (PDL v1.0)
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-exclusion_rules_total" style="font-weight:600;font-size:18px;">排他ルール 件数: 181</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            内訳: 125 exclude + 17 prerequisite + 15 absolute + 24 other。program_id 群を投げると衝突を構造判定。<br>
+            出典: <code>/v1/meta.exclusion_rules_count</code> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="entity-title" style="margin-top:40px;">
+      <h2 id="entity-title" class="section-title">autonomath.db (entity-fact DB) 件数</h2>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-total_entities" style="font-weight:600;font-size:18px;">entities 総数: 503,930</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            12 record_kinds (adoption / corporate_entity / statistic / enforcement / invoice_registrant / program / case_study / tax_measure / law / certification / authority / document) を統合。<br>
+            出典: <code>autonomath.db.am_entities</code> COUNT(*) · 取得 2026-04-26 JST · V4 absorption 後
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-total_facts" style="font-weight:600;font-size:18px;">facts 総数: 6.12M</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            entity-attribute-value (EAV) 構造の事実テーブル。<br>
+            出典: <code>autonomath.db.am_entity_facts</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-total_relations" style="font-weight:600;font-size:18px;">relations 総数: 23,805</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            15 種類の canonical relation type で entity 間を接続。<br>
+            出典: <code>autonomath.db.am_relation</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-total_aliases" style="font-weight:600;font-size:18px;">aliases 総数: 335,605</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            別名・略称・旧称テーブル。entity_id への解決に使用。<br>
+            出典: <code>autonomath.db.am_alias</code> COUNT(*) · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-mcp_tools_total" style="font-weight:600;font-size:18px;">MCP tools 数: 72</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            内訳: 39 コア (jpintel) + 33 autonomath (デフォルト gate; AUTONOMATH_36_KYOTEI_ENABLED 有効化で 74)。MCP protocol 2025-06-18。<br>
+            出典: <code>server.json</code> · 取得 2026-04-26 JST · v0.3.0
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="pricing-title" style="margin-top:40px;">
+      <h2 id="pricing-title" class="section-title">料金</h2>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-price_per_req" style="font-weight:600;font-size:18px;">API 単価 (税別): ¥3 / req</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            REST + MCP 共通。1 リクエスト = 1 HTTP / MCP tool 呼び出し。Stripe 従量。<br>
+            出典: <a href="pricing.html#api-paid">pricing.html#api-paid</a> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-price_per_req_inc_tax" style="font-weight:600;font-size:18px;">API 単価 (税込): ¥3.30 / req</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            税別 ¥3 + 消費税 10%。Stripe Tax で自動計算。<br>
+            出典: <a href="pricing.html#api-paid">pricing.html#api-paid</a> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-anonymous_quota_per_month" style="font-weight:600;font-size:18px;">匿名 quota: 50 req / 月 per IP</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            登録不要、JST 月初 00:00 リセット。<br>
+            出典: <a href="pricing.html#api-free">pricing.html#api-free</a> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="fact-price_alerts_per_month" style="font-weight:600;font-size:18px;">法令改正アラート 月額 (税別): ¥500 / 月</dt>
+          <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+            税込 ¥550。月次ダイジェストは無料。<br>
+            出典: <a href="pricing.html#alerts-title">pricing.html#alerts-title</a> · 取得 2026-04-26 JST
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="changelog-title" style="margin-top:40px;">
+      <h2 id="changelog-title" class="section-title">更新履歴</h2>
+      <ul style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
+        <li><strong>2026-04-26</strong> — 初版。15 fact (datasets) + 5 fact (autonomath.db) + 4 fact (pricing) を <code>/v1/meta</code> に紐付けて公開。<code>data-fact</code> マークアップを <code>index.html</code> / <code>pricing.html</code> に展開。</li>
+      </ul>
+    </section>
+
+    <p style="margin:32px 0 0;font-size:13px;color:var(--text-muted);">
+      数値の不一致を発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。本ファクトシートが正本であり、サイト他ページに残る古い数字はキャッシュ・移行漏れとして扱います。
+    </p>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+    · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> / <a href="privacy.html">プライバシー</a>
+    · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
+    · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
+  </p>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="products.html">Products</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="facts.html">ファクトシート</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利</p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/feedback-widget.js" defer></script>
+<script src="/assets/trust-strip.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.AutonoMathFeedback) {
+    window.AutonoMathFeedback.mount('body', { position: 'bottom-right' });
+  }
+});
+</script>
+
+</body>
+</html>

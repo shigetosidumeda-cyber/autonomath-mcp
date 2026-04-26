@@ -1,0 +1,122 @@
+-- 006_adoption.sql.draft
+-- DRAFT ONLY -- NOT EXECUTED by scripts/migrate.py.
+-- Proposed schema for adoption / 採択事例 data, based on the PoC ingest of
+-- 事業再構築補助金 rounds 8-13 (see research/adoption_ingest_PoC_report.md).
+-- Review gate: docs/POST_DEPLOY_PLAN_W5_W8.md §3.1 / GENERALIZATION_ROADMAP §2.
+-- DO NOT apply until column set is confirmed across >=2 more authorities
+-- (JFC, IT導入, 持続化) and naming-normalisation is agreed.
+--
+-- Design notes from the PoC (round 8-13 of 事業再構築補助金):
+--   * 事業者名 is the only reliably-present identifier for recipients; 法人番号
+--     was null for ~12% of rows. We keep both but index the normalised name.
+--   * 主たる業種 exists only in rounds 11+ (column drift). industry_category is
+--     therefore nullable; we encode "field was absent in this round" via
+--     source_schema_version column rather than magic null.
+--   * Per-round PDFs do NOT publish 採択金額. amount_yen is nullable until we
+--     ingest a source that has it (some sources do, e.g. IT導入 交付決定).
+--   * program_unified_id is nullable. Until 事業再構築補助金 is registered in
+--     programs, ingested rows use the sentinel UNI-PENDING-jigyou-saikouchiku.
+--     A later migration will replace sentinels with the real unified_id via
+--     UPDATE adoptions SET program_unified_id = ? WHERE program_unified_id = ?.
+--   * row_hash gives idempotent UPSERT.  source_checksum (per-PDF sha256)
+--     lets us skip re-parsing unchanged sources.
+
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS adoptions (
+    -- identity
+    row_hash              TEXT PRIMARY KEY,
+        -- sha1(program_unified_id || '|' || round || '|' || recipient_name
+        --      || '|' || project_title) -- deterministic, see PoC script
+    program_unified_id    TEXT,
+        -- FK → programs.unified_id; NULL or 'UNI-PENDING-*' allowed during
+        -- back-fill.  Not enforced as FOREIGN KEY because sentinel rows must
+        -- survive.
+    authority_key         TEXT NOT NULL,
+        -- short stable slug, e.g. 'jigyou_saikouchiku', 'it_dounyu',
+        -- 'monodukuri', 'jizokuka', 'jfc'.  Drives per-source parser choice.
+
+    -- round / time
+    round                 TEXT NOT NULL,
+        -- raw label as published, e.g. '第13回公募', 'R6第17回'.  Not
+        -- normalised; query side uses extracted fields.
+    round_num             INTEGER,
+        -- parsed from round label when unambiguous; else NULL.
+    fiscal_year           INTEGER,
+        -- 西暦 (e.g. 2024).  NULL when source spans fiscal years.
+    published_at          TEXT,
+        -- ISO-8601 date of the source PDF or HTML when known.
+
+    -- recipient
+    recipient_name        TEXT NOT NULL,
+    recipient_name_norm   TEXT NOT NULL,
+        -- NFKC + strip whitespace + ㈱/㈲ → 株式会社/有限会社.  Used for
+        -- ILIKE matching against programs.primary_name and aliases_json.
+    corporate_number      TEXT,
+        -- 13-digit 法人番号 when printed.  Primary key for future 法人情報 join.
+    recipient_prefecture  TEXT,
+    recipient_municipality TEXT,
+
+    -- project
+    industry_category     TEXT,
+        -- 業種 大分類 raw.  Null pre-round-11 for 事業再構築.
+    industry_code         TEXT,
+        -- optional JSIC code mapping.  Not populated by PoC.
+    project_title         TEXT,
+    project_summary       TEXT,
+        -- rare in per-round lists; populated from 成果報告 if matched later.
+    frame_label           TEXT,
+        -- 枠/類型 (e.g. 'GX進出類型').  Null for sources that don't report it.
+    support_org           TEXT,
+        -- 認定経営革新等支援機関.  Free-text as printed.
+
+    -- money
+    amount_yen            INTEGER,
+        -- 採択金額 or 交付決定額 in yen (converted from 万円 × 10000 when source
+        -- uses 万円).  NULL when source doesn't publish money.
+
+    -- lineage (parallels programs' lineage columns; 001_lineage.sql)
+    source_url            TEXT NOT NULL,
+    source_page           INTEGER,
+    source_fetched_at     TEXT NOT NULL,
+        -- ISO-8601 UTC.  Idempotent re-ingest compares source_checksum.
+    source_checksum       TEXT NOT NULL,
+        -- sha256 of the raw PDF / HTML bytes (NOT the row).
+    source_schema_version INTEGER NOT NULL DEFAULT 1,
+        -- bumped when column set materially changes (e.g. 事業再構築 r11
+        -- addition of 主たる業種).  Documents the drift inline.
+
+    created_at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    updated_at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_adoptions_program_unified_id
+    ON adoptions(program_unified_id);
+CREATE INDEX IF NOT EXISTS idx_adoptions_authority_key
+    ON adoptions(authority_key);
+CREATE INDEX IF NOT EXISTS idx_adoptions_round
+    ON adoptions(round);
+CREATE INDEX IF NOT EXISTS idx_adoptions_recipient_name_norm
+    ON adoptions(recipient_name_norm);
+CREATE INDEX IF NOT EXISTS idx_adoptions_corporate_number
+    ON adoptions(corporate_number);
+CREATE INDEX IF NOT EXISTS idx_adoptions_prefecture
+    ON adoptions(recipient_prefecture);
+CREATE INDEX IF NOT EXISTS idx_adoptions_source_checksum
+    ON adoptions(source_checksum);
+
+-- FTS index for `adoption.find_similar` (GENERALIZATION_ROADMAP §1 criterion b)
+-- project_title + project_summary + industry_category concatenated.
+CREATE VIRTUAL TABLE IF NOT EXISTS adoptions_fts USING fts5(
+    row_hash UNINDEXED,
+    project_title,
+    project_summary,
+    industry_category,
+    content='adoptions',
+    content_rowid='rowid'
+);
+
+-- Trigger set that keeps FTS in sync with adoptions is intentionally omitted
+-- from this DRAFT.  Add in the real migration once we have decided whether to
+-- FTS-index only rows with program_unified_id resolved (reduces noise) or all
+-- rows (simpler).  PoC output has none resolved yet, so the question is open.

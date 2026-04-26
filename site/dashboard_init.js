@@ -1,0 +1,2 @@
+(function(){function mountFeedback(){if(window.AutonoMathFeedback&&typeof window.AutonoMathFeedback.mount==='function'){window.AutonoMathFeedback.mount('body',{position:'bottom-right'});}}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',mountFeedback);}else{mountFeedback();}})();

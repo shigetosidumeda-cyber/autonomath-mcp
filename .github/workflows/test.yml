@@ -1,0 +1,88 @@
+name: test
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.13 first so it reports earliest; 3.11 is the floor declared in pyproject.toml.
+        python-version: ["3.13", "3.12", "3.11"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          # Cache pip using pyproject.toml as the key so dependency bumps invalidate cleanly.
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package with dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Ruff lint
+        run: ruff check .
+
+      - name: Ruff format check
+        run: ruff format --check .
+
+      - name: Pytest with coverage
+        run: pytest tests/ -v --cov=jpintel_mcp --cov-report=xml --cov-report=term --cov-fail-under=80
+
+      - name: pip-audit (supply chain)
+        # Added 2026-04-25 per CI security gating audit (a92f5354dc4848432).
+        # --strict fails the build on any unfixed CVE. Add `--ignore-vuln GHSA-...`
+        # only when a specific advisory has been triaged as not-applicable.
+        run: pip install pip-audit && pip-audit --strict
+
+      - name: mypy type-check
+        # Best-effort: treat new errors as red (CLAUDE.md quality gate).
+        # Run only on Python 3.12 to keep matrix runtime down; mypy output
+        # is Python-version-independent for this codebase.
+        if: matrix.python-version == '3.12'
+        run: |
+          pip install mypy types-requests pydantic>=2.9 pydantic-settings>=2.6 fastapi>=0.115
+          mypy src/
+
+      - name: Verify OpenAPI spec is up to date
+        # Regenerate the spec and diff against the committed file.
+        # A non-empty diff means someone changed the API without running
+        # `scripts/export_openapi.py` — treat it as a CI failure.
+        if: matrix.python-version == '3.12'
+        run: |
+          python scripts/export_openapi.py --out /tmp/openapi_ci.json
+          diff docs/openapi/v1.json /tmp/openapi_ci.json
+
+      - name: Install docs dependencies
+        if: matrix.python-version == '3.12'
+        run: pip install -r docs-requirements.txt
+
+      - name: mkdocs build --strict
+        if: matrix.python-version == '3.12'
+        run: mkdocs build --strict
+
+      - name: Upload coverage to Codecov
+        # Non-blocking: coverage reporting shouldn't gate PRs.
+        uses: codecov/codecov-action@0f8570b1a125f4937846a11fcfa3bcd548bd8c97 # v4.6.0
+        continue-on-error: true
+        with:
+          files: ./coverage.xml
+          flags: py${{ matrix.python-version }}
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}

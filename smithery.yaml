@@ -1,0 +1,69 @@
+# Smithery configuration file. Schema: https://smithery.ai/docs/build/project-config/smithery-yaml
+
+startCommand:
+  type: stdio
+
+configSchema:
+  type: object
+  required: []
+  properties:
+    autonomathApiKey:
+      type: string
+      description: >-
+        Optional API key from https://autonomath.ai/pricing. Anonymous tier is 50 req/month
+        per IP (JST first-of-month reset) and works without a key; metered paid tier
+        (¥3/req tax-exclusive, ¥3.30 tax-inclusive) requires one.
+    autonomathApiBase:
+      type: string
+      default: "https://autonomath.ai"
+      description: >-
+        Override the API base URL. Only set this for self-hosted or staging deployments.
+
+commandFunction: |-
+  (config) => ({
+    command: 'python',
+    args: ['-m', 'jpintel_mcp.mcp.server'],
+    env: {
+      JPINTEL_API_KEY: config.autonomathApiKey || '',
+      JPINTEL_API_BASE: config.autonomathApiBase || 'https://autonomath.ai'
+    }
+  })
+
+metadata:
+  version: "0.3.0"
+  displayName: "AutonoMath — 日本の制度 MCP (72 tools)"
+  description: >-
+    AutonoMath — 日本の公的制度 (補助金 / 助成金 / 融資 / 税制優遇 / 認定)
+    + 法令 / 判例 / 入札 / 税務ruleset / 適格事業者 の REST + MCP API.
+    13,578 programs + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 /
+    第三者保証人 の三軸分解) + 1,185 行政処分 + 181 排他・前提ルール +
+    法令 (e-Gov CC-BY, 9,484 件・継続ロード中) + 税務 ruleset (インボイス/電帳法, 35 件)
+    + 判例 (2,065 件) + 入札 (362 件)
+    + 適格事業者 (国税庁 PDL v1.0, 13,801 件 delta).
+    99%以上 source_url + fetched_at 付 (aggregator 除外).
+    72 MCP tools (39 コア: 15 基本 + 1 quota probe + 7 one-shot + 16 拡張 [法令 / 税務ruleset + cross-dataset glue
+    trace_program_to_law / find_cases_by_law / combined_compliance_check]
+    + 33 autonomath [V1 + 4 V4 universal annotation/validation/provenance + Phase A static/example/template/health + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine]:
+    entity-fact DB 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases),
+    protocol 2025-06-18, stdio. 匿名 50 req/月 per IP 無料
+    (JST 月初リセット) → ¥3/req 税別 (税込 ¥3.30) 従量 (Stripe Tax).
+  icon: "https://autonomath.ai/assets/mark.svg"
+  homepage: "https://autonomath.ai"
+  repository: "https://github.com/AutonoMath/autonomath-mcp"
+  license: "MIT"
+  categories:
+    - government
+    - legal
+    - finance
+  tags:
+    - japan
+    - japanese
+    - subsidies
+    - grants
+    - loans
+    - tax-incentives
+    - certifications
+    - enforcement
+    - case-studies
+    - exclusion-rules
+    - mcp-2025-06-18

@@ -1,0 +1,288 @@
+{
+  "generated_at": "2026-04-23 13:44:09 JST",
+  "base_url": "http://127.0.0.1:18080",
+  "hardware": "Darwin x86_64",
+  "protocol": {
+    "warmup": 20,
+    "sequential_n": 500,
+    "concurrent_n": 200,
+    "concurrency_levels": [
+      1,
+      10,
+      50
+    ],
+    "runs_per_cell": 3
+  },
+  "shapes": [
+    {
+      "name": "search(q=農業, limit=20)",
+      "cells": {
+        "sequential_500": {
+          "p50_ms": 4.588207695633173,
+          "p90_ms": 5.595833994448185,
+          "p95_ms": 6.216125097125769,
+          "p99_ms": 10.316749569028616,
+          "max_ms": 17.4365839920938,
+          "throughput_rps": 212.73476388656732,
+          "total_requests": 1500,
+          "ok": 74,
+          "errors": 1426,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c1": {
+          "p50_ms": 4.119459073990583,
+          "p90_ms": 5.278666969388723,
+          "p95_ms": 5.4847924038767815,
+          "p99_ms": 6.018958054482937,
+          "max_ms": 7.564375177025795,
+          "throughput_rps": 232.44262772469767,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c10": {
+          "p50_ms": 28.691915795207024,
+          "p90_ms": 46.24775005504489,
+          "p95_ms": 57.19083268195391,
+          "p99_ms": 70.7076657563448,
+          "max_ms": 102.74670924991369,
+          "throughput_rps": 304.08417359834766,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c50": {
+          "p50_ms": 227.96937497332692,
+          "p90_ms": 775.3194998949766,
+          "p95_ms": 934.510082937777,
+          "p99_ms": 1278.9503331296146,
+          "max_ms": 1329.8445837572217,
+          "throughput_rps": 128.90294280939457,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        }
+      },
+      "p50_ms": 4.588207695633173,
+      "p90_ms": 5.595833994448185,
+      "p95_ms": 6.216125097125769,
+      "p99_ms": 10.316749569028616
+    },
+    {
+      "name": "search(q=IT導入補助金, limit=20)",
+      "cells": {
+        "sequential_500": {
+          "p50_ms": 5.01112500205636,
+          "p90_ms": 6.18962524458766,
+          "p95_ms": 8.007958065718412,
+          "p99_ms": 15.82462526857853,
+          "max_ms": 25.707917287945747,
+          "throughput_rps": 190.43017292311342,
+          "total_requests": 1500,
+          "ok": 0,
+          "errors": 1500,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c1": {
+          "p50_ms": 5.005750339478254,
+          "p90_ms": 5.6905001401901245,
+          "p95_ms": 6.323458161205053,
+          "p99_ms": 7.323000114411116,
+          "max_ms": 13.473667204380035,
+          "throughput_rps": 198.15713055888975,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c10": {
+          "p50_ms": 36.05695813894272,
+          "p90_ms": 71.7747500166297,
+          "p95_ms": 92.80837513506413,
+          "p99_ms": 129.4225831516087,
+          "max_ms": 187.51354236155748,
+          "throughput_rps": 218.00594678256562,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c50": {
+          "p50_ms": 276.88012504950166,
+          "p90_ms": 981.4591659232974,
+          "p95_ms": 1209.2833328060806,
+          "p99_ms": 1529.3027916923165,
+          "max_ms": 1602.5527091696858,
+          "throughput_rps": 107.92498083138489,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        }
+      },
+      "p50_ms": 5.01112500205636,
+      "p90_ms": 6.18962524458766,
+      "p95_ms": 8.007958065718412,
+      "p99_ms": 15.82462526857853
+    },
+    {
+      "name": "search(q=補助金, prefecture=東京都, limit=20)",
+      "cells": {
+        "sequential_500": {
+          "p50_ms": 5.090291146188974,
+          "p90_ms": 6.258666981011629,
+          "p95_ms": 7.2913747280836105,
+          "p99_ms": 11.321042198687792,
+          "max_ms": 16.685707960277796,
+          "throughput_rps": 192.4959897365889,
+          "total_requests": 1500,
+          "ok": 0,
+          "errors": 1500,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c1": {
+          "p50_ms": 4.680375102907419,
+          "p90_ms": 5.535667296499014,
+          "p95_ms": 5.896667018532753,
+          "p99_ms": 6.249791011214256,
+          "max_ms": 6.684541702270508,
+          "throughput_rps": 215.90476876957806,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c10": {
+          "p50_ms": 29.065874870866537,
+          "p90_ms": 51.52033409103751,
+          "p95_ms": 60.11758418753743,
+          "p99_ms": 75.9590407833457,
+          "max_ms": 116.65337486192584,
+          "throughput_rps": 291.06873784119284,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c50": {
+          "p50_ms": 268.51916685700417,
+          "p90_ms": 867.6068326458335,
+          "p95_ms": 1061.6221250966191,
+          "p99_ms": 1338.5590841062367,
+          "max_ms": 1668.264125008136,
+          "throughput_rps": 112.19713260387917,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        }
+      },
+      "p50_ms": 5.090291146188974,
+      "p90_ms": 6.258666981011629,
+      "p95_ms": 7.2913747280836105,
+      "p99_ms": 11.321042198687792
+    },
+    {
+      "name": "get_program(random)",
+      "cells": {
+        "sequential_500": {
+          "p50_ms": 4.772000014781952,
+          "p90_ms": 5.693249870091677,
+          "p95_ms": 6.258500274270773,
+          "p99_ms": 8.375917095690966,
+          "max_ms": 18.864749930799007,
+          "throughput_rps": 206.94894190856797,
+          "total_requests": 1500,
+          "ok": 0,
+          "errors": 1500,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c1": {
+          "p50_ms": 4.669500049203634,
+          "p90_ms": 6.2095001339912415,
+          "p95_ms": 6.807167083024979,
+          "p99_ms": 10.236416012048721,
+          "max_ms": 13.39633297175169,
+          "throughput_rps": 200.94318527529114,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c10": {
+          "p50_ms": 27.551624923944473,
+          "p90_ms": 47.29662509635091,
+          "p95_ms": 64.89333370700479,
+          "p99_ms": 93.44533318653703,
+          "max_ms": 114.45908388122916,
+          "throughput_rps": 310.2641589731568,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        },
+        "concurrent_c50": {
+          "p50_ms": 225.9714580141008,
+          "p90_ms": 827.4472919292748,
+          "p95_ms": 992.4157918430865,
+          "p99_ms": 1207.9935828223825,
+          "max_ms": 1566.7756251059473,
+          "throughput_rps": 119.02945765083376,
+          "total_requests": 600,
+          "ok": 0,
+          "errors": 600,
+          "http_5xx": 0,
+          "timeouts": 0,
+          "runs": 3
+        }
+      },
+      "p50_ms": 4.772000014781952,
+      "p90_ms": 5.693249870091677,
+      "p95_ms": 6.258500274270773,
+      "p99_ms": 8.375917095690966
+    }
+  ],
+  "flags": [
+    "search(q=農業, limit=20) [concurrent_c50] p95=934.5ms exceeds 500ms — shipping blocker.",
+    "search(q=農業, limit=20) [concurrent_c50] p99=1279.0ms exceeds 1000ms.",
+    "search(q=IT導入補助金, limit=20) [concurrent_c50] p95=1209.3ms exceeds 500ms — shipping blocker.",
+    "search(q=IT導入補助金, limit=20) [concurrent_c50] p99=1529.3ms exceeds 1000ms.",
+    "search(q=補助金, prefecture=東京都, limit=20) [concurrent_c50] p95=1061.6ms exceeds 500ms — shipping blocker.",
+    "search(q=補助金, prefecture=東京都, limit=20) [concurrent_c50] p99=1338.6ms exceeds 1000ms.",
+    "get_program(random) [concurrent_c50] p95=992.4ms exceeds 500ms — shipping blocker.",
+    "get_program(random) [concurrent_c50] p99=1208.0ms exceeds 1000ms."
+  ]
+}

@@ -1,0 +1,225 @@
+name: sdk-publish
+
+# =============================================================================
+# OPERATOR RUNBOOK — launch-day npm actions (run manually, never in CI)
+# =============================================================================
+# Package was renamed from @jpintel/client → @autonomath/client BEFORE first
+# publish. Registry state (checked 2026-04-24): @jpintel/client = 404 (never
+# published), @autonomath/client = 404 (name available). No npm deprecate is
+# needed because nothing was ever published.
+#
+# On launch day, before running this workflow for the first time:
+#   1. Log in to npm with publish rights:
+#        npm login
+#   2. Create the @autonomath scope (happens automatically on first publish of
+#      any @autonomath/* package — no manual step needed if org does not exist):
+#        npm publish --access public --dry-run   # verify from sdk/typescript/
+#   3. If you ever need to claim the old name as a sentinel / redirect package:
+#        npm init -y && npm publish --access public   # in a scratch dir with name=@jpintel/client
+#        npm deprecate @jpintel/client "Renamed to @autonomath/client — npm install @autonomath/client"
+#      (Only do this if someone squats @jpintel/client after repo goes public.)
+#   4. Actual publish is handled by this workflow via git tag sdk-ts-v0.1.0:
+#        git tag sdk-ts-v0.1.0 && git push --tags
+# =============================================================================
+
+# Publishes the Python and TypeScript SDKs to PyPI / npm.
+#
+# Triggers:
+#   - tag push  sdk-python-v*  -> publish Python SDK only
+#   - tag push  sdk-ts-v*      -> publish TypeScript SDK only
+#   - manual workflow_dispatch with target=python|ts|both
+#
+# The main API package uses tag `v*` (see release.yml). SDK tags are namespaced
+# so the two release pipelines don't collide.
+
+on:
+  push:
+    tags:
+      - "sdk-python-v*"
+      - "sdk-ts-v*"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which SDK to publish"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - python
+          - ts
+          - both
+
+permissions:
+  contents: write
+  # Required for PyPI OIDC trusted publishing (safer than long-lived API tokens).
+  id-token: write
+
+jobs:
+  publish-python:
+    name: Publish Python SDK
+    runs-on: ubuntu-latest
+    # Run if: python tag pushed, OR manual dispatch with target in {python, both}.
+    if: |
+      startsWith(github.ref, 'refs/tags/sdk-python-v') ||
+      (github.event_name == 'workflow_dispatch' &&
+        (github.event.inputs.target == 'python' || github.event.inputs.target == 'both'))
+    environment: pypi
+    defaults:
+      run:
+        working-directory: sdk/python
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: sdk/python/pyproject.toml
+
+      - name: Install SDK with dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" build twine
+
+      - name: Run tests (fail-fast before upload)
+        run: pytest tests/ -v
+
+      - name: Build sdist + wheel
+        run: python -m build
+
+      - name: Publish to PyPI (OIDC trusted publishing)
+        # Preferred path: trusted-publisher configured on PyPI -> no API token needed.
+        # Falls back to PYPI_API_TOKEN if `password` is set. Toggle by commenting
+        # out the `password` line once trusted publishing is live.
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
+        with:
+          packages-dir: sdk/python/dist
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
+
+      - name: Extract changelog section for this tag
+        id: changelog
+        if: startsWith(github.ref, 'refs/tags/sdk-python-v')
+        run: |
+          TAG="${GITHUB_REF_NAME#sdk-python-v}"
+          CHANGELOG_FILE="CHANGELOG.md"
+          if [ -f "$CHANGELOG_FILE" ]; then
+            # Extract the section for version $TAG (## [$TAG]) up to the next ## header.
+            awk -v tag="$TAG" '
+              $0 ~ "^## \\[" tag "\\]" { flag=1; print; next }
+              flag && /^## / { flag=0 }
+              flag { print }
+            ' "$CHANGELOG_FILE" > /tmp/release_notes.md
+            echo "has_notes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No CHANGELOG.md found in sdk/python; release notes will be auto-generated."
+            echo "has_notes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release (Python SDK, with changelog body)
+        if: startsWith(github.ref, 'refs/tags/sdk-python-v') && steps.changelog.outputs.has_notes == 'true'
+        uses: softprops/action-gh-release@e7a8f85e1c67a31e6ed99a94b41bd0b71bbee6b8 # v2.0.9
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Python SDK ${{ github.ref_name }}"
+          body_path: /tmp/release_notes.md
+          files: sdk/python/dist/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+
+      - name: Create GitHub release (Python SDK, auto-generated notes)
+        if: startsWith(github.ref, 'refs/tags/sdk-python-v') && steps.changelog.outputs.has_notes != 'true'
+        uses: softprops/action-gh-release@e7a8f85e1c67a31e6ed99a94b41bd0b71bbee6b8 # v2.0.9
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Python SDK ${{ github.ref_name }}"
+          generate_release_notes: true
+          files: sdk/python/dist/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+
+  publish-ts:
+    name: Publish TypeScript SDK
+    runs-on: ubuntu-latest
+    if: |
+      startsWith(github.ref, 'refs/tags/sdk-ts-v') ||
+      (github.event_name == 'workflow_dispatch' &&
+        (github.event.inputs.target == 'ts' || github.event.inputs.target == 'both'))
+    environment: npm
+    defaults:
+      run:
+        working-directory: sdk/typescript
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+          cache-dependency-path: sdk/typescript/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests (fail-fast before publish)
+        run: npm run test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm
+        # --access public is required for scoped packages (@autonomath/client).
+        # --provenance generates a supply-chain attestation (npm SLSA).
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Extract changelog section for this tag
+        id: changelog
+        if: startsWith(github.ref, 'refs/tags/sdk-ts-v')
+        run: |
+          TAG="${GITHUB_REF_NAME#sdk-ts-v}"
+          CHANGELOG_FILE="CHANGELOG.md"
+          if [ -f "$CHANGELOG_FILE" ]; then
+            awk -v tag="$TAG" '
+              $0 ~ "^## \\[" tag "\\]" { flag=1; print; next }
+              flag && /^## / { flag=0 }
+              flag { print }
+            ' "$CHANGELOG_FILE" > /tmp/release_notes.md
+            echo "has_notes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No CHANGELOG.md found in sdk/typescript; release notes will be auto-generated."
+            echo "has_notes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release (TypeScript SDK, with changelog body)
+        if: startsWith(github.ref, 'refs/tags/sdk-ts-v') && steps.changelog.outputs.has_notes == 'true'
+        uses: softprops/action-gh-release@e7a8f85e1c67a31e6ed99a94b41bd0b71bbee6b8 # v2.0.9
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "TypeScript SDK ${{ github.ref_name }}"
+          body_path: /tmp/release_notes.md
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+
+      - name: Create GitHub release (TypeScript SDK, auto-generated notes)
+        if: startsWith(github.ref, 'refs/tags/sdk-ts-v') && steps.changelog.outputs.has_notes != 'true'
+        uses: softprops/action-gh-release@e7a8f85e1c67a31e6ed99a94b41bd0b71bbee6b8 # v2.0.9
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "TypeScript SDK ${{ github.ref_name }}"
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

@@ -1,0 +1,56 @@
+app = "autonomath-api"
+primary_region = "nrt"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  JPINTEL_LOG_LEVEL = "INFO"
+  JPINTEL_LOG_FORMAT = "json"
+  JPINTEL_DB_PATH = "/data/jpintel.db"
+  AUTONOMATH_DB_PATH = "/data/autonomath.db"
+  AUTONOMATH_ENABLED = "true"
+  SENTRY_ENVIRONMENT = "production"
+  # SENTRY_DSN, STRIPE_*, API_KEY_SALT, JPINTEL_CORS_ORIGINS: set via `flyctl secrets set`
+  # AUTONOMATH_DB_SOURCE_URL + AUTONOMATH_DB_SHA256 (optional R2 bootstrap): set via secrets
+
+# Run migrations on every deploy, before traffic shifts. Must be idempotent.
+# migrate.py reads JPINTEL_DB_PATH from env; it is safe on a fresh volume.
+[deploy]
+  release_command = "python scripts/migrate.py"
+  strategy = "rolling"
+
+[[mounts]]
+  source = "jpintel_data"
+  destination = "/data"
+  initial_size = "20gb"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # suspend is fine because min_machines_running = 1 keeps the primary up.
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 50
+    hard_limit = 100
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "10s"
+    grace_period = "120s"
+    method = "GET"
+    path = "/v1/am/health/deep"
+
+[metrics]
+  port = 9091
+  path = "/metrics"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 2
+  memory_mb = 4096

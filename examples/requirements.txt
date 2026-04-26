@@ -1,0 +1,8 @@
+# Python example dependencies.
+# httpx is the same client the jpintel-mcp server uses, so the examples
+# stay consistent with the rest of the codebase.
+httpx>=0.28
+
+# pandas is only needed by 04_pandas_export_csv.py. If you only want to run
+# examples 01-03, `pip install httpx` is enough.
+pandas>=2.0

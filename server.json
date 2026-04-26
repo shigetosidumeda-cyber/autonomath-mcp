@@ -1,0 +1,64 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.AutonoMath/autonomath-mcp",
+  "description": "AutonoMath — 日本の制度 (補助金/融資/税制/認定/法令) を AI agent から 1 query で。72-tool MCP (39 core + 33 autonomath: V1 + V4 universal annotation/validation/provenance + Phase A static/example/template/health + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine), 503,930 entities + 6.12M facts. ¥3/req metered、無料 50/月。",
+  "version": "0.3.0",
+  "repository": {
+    "url": "https://github.com/AutonoMath/autonomath-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://autonomath.ai",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "autonomath-mcp",
+      "version": "0.3.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "publisher": "Bookyou株式会社",
+      "publisher_invoice_registration_number": "T8010001213708",
+      "contact": "info@bookyou.net",
+      "tool_count": 72,
+      "resource_count": 28,
+      "resources": [
+        {"uri": "autonomath://schema/data_model", "name": "Data Model", "mimeType": "text/markdown"},
+        {"uri": "autonomath://schema/record_kinds", "name": "record_kind enum", "mimeType": "text/markdown"},
+        {"uri": "autonomath://schema/envelope", "name": "Response envelope schema (v2)", "mimeType": "text/markdown"},
+        {"uri": "autonomath://schema/tool_manifest", "name": "Tool manifest (summary)", "mimeType": "text/markdown"},
+        {"uri": "autonomath://policy/primary_source", "name": "Primary-Source Policy", "mimeType": "text/markdown"},
+        {"uri": "autonomath://policy/no_hallucination", "name": "No-Hallucination Policy", "mimeType": "text/markdown"},
+        {"uri": "autonomath://policy/tos_excerpt", "name": "Terms of Service excerpt", "mimeType": "text/markdown"},
+        {"uri": "autonomath://list/authorities", "name": "Authority canonical list", "mimeType": "text/markdown"},
+        {"uri": "autonomath://list/prefectures", "name": "47 Prefectures", "mimeType": "text/markdown"},
+        {"uri": "autonomath://list/program_kinds", "name": "program_kind enum", "mimeType": "text/markdown"},
+        {"uri": "autonomath://list/intent_types", "name": "Intent types (i01–i10)", "mimeType": "text/markdown"},
+        {"uri": "autonomath://list/graph_edge_types", "name": "Graph edge types", "mimeType": "text/markdown"},
+        {"uri": "autonomath://list/certification_kinds", "name": "Certification kinds", "mimeType": "text/markdown"},
+        {"uri": "autonomath://list/target_profiles", "name": "Target profile vocabulary", "mimeType": "text/markdown"},
+        {"uri": "autonomath://stats/freshness", "name": "Freshness snapshot", "mimeType": "text/markdown"},
+        {"uri": "autonomath://taxonomies/seido", "name": "Taxonomy: seido", "mimeType": "application/json"},
+        {"uri": "autonomath://taxonomies/glossary", "name": "Taxonomy: glossary", "mimeType": "application/json"},
+        {"uri": "autonomath://taxonomies/money_types", "name": "Taxonomy: money_types", "mimeType": "application/json"},
+        {"uri": "autonomath://taxonomies/obligations", "name": "Taxonomy: obligations", "mimeType": "application/json"},
+        {"uri": "autonomath://taxonomies/dealbreakers", "name": "Taxonomy: dealbreakers", "mimeType": "application/json"},
+        {"uri": "autonomath://taxonomies/sector_combos", "name": "Taxonomy: sector_combos", "mimeType": "application/json"},
+        {"uri": "autonomath://taxonomies/crop_library", "name": "Taxonomy: crop_library (agri)", "mimeType": "application/json"},
+        {"uri": "autonomath://taxonomies/exclusion_rules", "name": "Taxonomy: exclusion_rules (agri)", "mimeType": "application/json"},
+        {"uri": "autonomath://example_profiles/ichigo_20a", "name": "Example profile: ichigo_20a", "mimeType": "application/json"},
+        {"uri": "autonomath://example_profiles/rice_200a", "name": "Example profile: rice_200a", "mimeType": "application/json"},
+        {"uri": "autonomath://example_profiles/new_corp", "name": "Example profile: new_corp", "mimeType": "application/json"},
+        {"uri": "autonomath://example_profiles/dairy_100head", "name": "Example profile: dairy_100head", "mimeType": "application/json"},
+        {"uri": "autonomath://example_profiles/minimal", "name": "Example profile: minimal", "mimeType": "application/json"}
+      ],
+      "resources_gated": [
+        {"uri": "autonomath://templates/saburoku_kyotei", "name": "36協定 template", "mimeType": "text/plain", "gate": "AUTONOMATH_36_KYOTEI_ENABLED"}
+      ]
+    }
+  }
+}

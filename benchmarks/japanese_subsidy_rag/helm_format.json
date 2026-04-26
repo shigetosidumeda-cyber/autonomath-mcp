@@ -1,0 +1,105 @@
+{
+  "scenario_spec": {
+    "class_name": "benchmarks.japanese_subsidy_rag.scenario.JapaneseSubsidyRagScenario",
+    "args": {
+      "examples_path": "benchmarks/japanese_subsidy_rag/examples.jsonl",
+      "split_by_tier": true,
+      "tier_a_size": 30,
+      "tier_c_size": 60,
+      "shuffle_seed": 42
+    }
+  },
+  "name": "japanese_subsidy_rag",
+  "display_name": "Japanese Subsidy & Tax-Law RAG (ja-JP)",
+  "description": "Retrieval-augmented QA over authoritative Japanese public-program corpora. Tests deadline arithmetic, amount lookup, citation discipline, and refusal behavior on out-of-distribution program names. Two splits: Tier A (30 hand-curated gold) and Tier C (60 adversarial misconceptions sourced from production hallucination_guard).",
+  "language": "ja",
+  "tags": ["question_answering", "retrieval", "japanese", "domain_specific", "refusal", "citation", "subsidies", "tax_law", "public_administration"],
+  "canary_string": "BENCHMARK_DATA_SHOULD_NOT_BE_INCLUDED_IN_TRAINING_DATA_jpsubsidy_rag_v1__c0e7b3a4d8f29b1e7c5a4d63ef21b08a",
+  "adapter_spec": {
+    "method": "generation",
+    "global_prefix": "あなたは日本の公的支援制度に関する情報提供アシスタントです。質問に対して、根拠となる一次情報源(政府ウェブサイト・法令・告示)のURLを必ず引用して回答してください。情報が確認できない場合や、存在しない制度・回次を尋ねられた場合は、推測で回答せず「確認できません」と明示してください。\n\n",
+    "instructions": "以下の質問に対し、根拠URLを引用して回答してください。確認できない場合は「確認できません」と答えてください。",
+    "input_prefix": "質問: ",
+    "input_suffix": "\n",
+    "reference_prefix": "",
+    "output_prefix": "回答: ",
+    "output_suffix": "",
+    "max_tokens": 512,
+    "max_train_instances": 0,
+    "num_outputs": 1,
+    "temperature": 0.0,
+    "stop_sequences": ["\n質問:"]
+  },
+  "metric_specs": [
+    {
+      "class_name": "benchmarks.japanese_subsidy_rag.metrics.PrecisionAt1Metric",
+      "args": {
+        "tier_filter": "A",
+        "normalize": ["amount", "date", "law_article"],
+        "use_aliases": true
+      }
+    },
+    {
+      "class_name": "benchmarks.japanese_subsidy_rag.metrics.CitationRateMetric",
+      "args": {
+        "tier_filter": "A",
+        "match_mode": "registrable_domain"
+      }
+    },
+    {
+      "class_name": "benchmarks.japanese_subsidy_rag.metrics.HallucinationRateMetric",
+      "args": {
+        "tier_filter": "A",
+        "definition": "answered_confidently AND NOT match"
+      }
+    },
+    {
+      "class_name": "benchmarks.japanese_subsidy_rag.metrics.RefusalOrCorrectionAccMetric",
+      "args": {
+        "tier_filter": "C",
+        "refusal_phrases": ["確認できません", "情報なし", "不明", "わかりません", "I don't know", "I cannot confirm"],
+        "correction_match": "substring_normalized"
+      }
+    }
+  ],
+  "groups": ["japanese", "rag", "domain_qa", "refusal_evaluation"],
+  "data_augmentation_spec": {
+    "perturbation_specs": [],
+    "should_augment_train_instances": false,
+    "should_include_original_train": true,
+    "should_skip_unchanged_train": false,
+    "should_augment_eval_instances": false,
+    "should_include_original_eval": true,
+    "should_skip_unchanged_eval": false
+  },
+  "fairness_constraints": {
+    "no_external_api_required": true,
+    "no_internet_at_score_time": true,
+    "no_llm_as_judge": true,
+    "deterministic_scorer": true,
+    "evaluator_must_not_call_autonomath_api": true,
+    "self_report_retrieval_stack": ["model_id", "retriever_id", "corpus_id", "knowledge_cutoff"]
+  },
+  "version": "1.0.0",
+  "submitter": {
+    "organization": "Bookyou K.K.",
+    "houjin_bangou": "T8010001213708",
+    "contact": "info@bookyou.net",
+    "product": "AutonoMath",
+    "license": "CC-BY-4.0"
+  },
+  "preferred_score": "tier_a_precision_at_1",
+  "primary_split": "tier_a",
+  "splits": {
+    "tier_a": {
+      "size": 30,
+      "filter": "tier == 'A'",
+      "primary_metrics": ["precision_at_1", "citation_rate", "hallucination_rate"]
+    },
+    "tier_c": {
+      "size": 60,
+      "filter": "tier == 'C'",
+      "primary_metrics": ["refusal_or_correction_acc"]
+    }
+  }
+}

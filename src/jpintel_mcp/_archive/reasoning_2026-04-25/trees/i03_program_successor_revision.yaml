@@ -1,0 +1,78 @@
+intent_id: i03_program_successor_revision
+name_ja: ある制度の後継制度・改正内容
+
+extract_slots:
+  - key: program_id
+    required: false
+  - key: law_id
+    required: false
+  - key: fiscal_year
+    required: false
+    type: int
+  - key: change_type
+    required: false
+    enum: [新設, 拡充, 延長, 縮小, 廃止, 名称変更, 要件変更]
+
+require_any_of: [program_id, law_id]
+
+required_entities: [program, law_revision, tax_measure]
+required_edges:
+  - successor_of
+  - predecessor_of
+  - amended_by
+required_filters:
+  - program_id
+  - law_id
+  - fiscal_year
+  - change_type
+
+branches:
+  - when: program has abolition_note
+    action: show abolition_date + successor_program + transition_period
+  - when: fiscal_year == current_fy
+    action: show diff from previous_fy
+  - when: fiscal_year in future
+    action: show proposed revision + 成立状況 (税制改正大綱/成立済/未成立)
+
+answer_template: table
+answer_skeleton: |
+  【制度】 {program_name} (id={program_id})
+
+  【改正チェーン (新しい順)】
+  {revision_table}
+
+  【直近の改正 ({latest_fy}年度)】
+  - 種別: {latest_change_type}
+  - 変更内容: {latest_change_summary}
+  - 施行日: {effective_date}
+  - 経過措置: {transition_period}
+
+  【後継/廃止関係】
+  - 先行制度: {predecessor_name}
+  - 後継制度: {successor_name}
+  - 並存期間: {coexistence_window}
+
+  【既存顧客への影響チェックリスト】
+  {client_impact_checklist}
+
+  【一次資料】
+  {citation_urls}
+
+row_shape_revision: |
+  | {fy}年度 | {change_type} | {summary} | {source_url} |
+
+proactive_rules:
+  - id: transition_window
+    trigger: successor_name is not null
+    payload: list transition-period rules (existing recipients保護)
+  - id: client_recheck
+    trigger: change_type in [要件変更, 縮小, 廃止]
+    payload: suggest "既採択顧客の再確認が必要"
+  - id: upstream_law
+    trigger: law_id is not null
+    payload: link e-Gov law page for full text
+
+zero_result_hint: |
+  改正履歴が未収録です。revision_chain 未整備の可能性:
+  - canonical の revision_history[] を要追加 (09_user_queries.md P1)
+  - 現状は最新版のみ提供

@@ -1,0 +1,692 @@
+#!/usr/bin/env python3
+"""Nightly pre-compute table refresh (v8 P5-ε++ / dd_v8_C3 + dd_v8_D8).
+
+What it does:
+  Refreshes the 32 pc_* tables added across migrations 044 (14 tables) and
+  045 (18 tables) using a DELETE-then-INSERT pattern inside a single
+  transaction per table. Source rows are read from jpintel.db (programs /
+  loan_programs / enforcement_cases / laws / ...) and autonomath.db (am_*
+  entity-fact schema, opened read-only via a separate connection — no
+  ATTACH).
+
+Why DELETE-then-INSERT (not UPSERT or trigger):
+  * pc_* tables are pure materialized views over (potentially) two
+    databases. The cleanest way to keep them consistent with the
+    sources is "wipe + rebuild" inside a single tx, so a partial
+    refresh never leaves stale rows visible to readers.
+  * Refresh is nightly. The 5-10s downtime per table during the wipe is
+    invisible to customers (queries fall through to L0/L1 on miss).
+  * Total 32 tables = 14 (mig 044) + 18 (mig 045). Hits the v8 plan
+    T+30d target of 33 (33 = 19 launch baseline + 14, then this 18
+    expansion drives toward T+90d 47).
+
+What populates each table:
+  Each per-table refresh function below is intentionally a stub that:
+    1. Logs the table name + row count it would compute.
+    2. Writes ZERO rows (pre-launch state — population is a follow-up).
+
+  Once the source-side projection queries are agreed (per-tool tickets in
+  the v8 plan), drop the real SELECT into _refresh_<table>() and the cron
+  will start producing rows. The contract is: every _refresh_<table>
+  function must end with the table containing zero stale rows + N fresh
+  rows for the dimension it covers.
+
+Cache coupling:
+  After all 32 pc_* tables refresh, the cron also calls
+  cache.l4.sweep_expired() to drop TTL'd L4 entries — running this
+  *after* the pc_* refresh (rather than before) means any L4 hit served
+  during the refresh window still reflects the previous nightly state,
+  which is the consistent behaviour.
+
+Constraints:
+  * No Anthropic / claude / SDK calls. Pure SQLite + standard library.
+  * Read-only on autonomath.db (mode=ro URI) — the collection CLI owns
+    that file and we must not mutate it from the API repo.
+
+Usage:
+    python scripts/cron/precompute_refresh.py            # real run
+    python scripts/cron/precompute_refresh.py --dry-run  # log only
+    python scripts/cron/precompute_refresh.py --only pc_top_subsidies_by_industry,pc_combo_pairs
+"""
+from __future__ import annotations
+
+import argparse
+import logging
+import sqlite3
+import sys
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+# Allow running as a script without `pip install -e .`.
+_REPO = Path(__file__).resolve().parent.parent.parent
+_SRC = _REPO / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+
+from jpintel_mcp.cache.l4 import sweep_expired  # noqa: E402
+from jpintel_mcp.config import settings  # noqa: E402
+from jpintel_mcp.db.session import connect  # noqa: E402
+
+logger = logging.getLogger("autonomath.cron.precompute_refresh")
+
+
+PC_TABLES_C3 = (
+    # 14 tables added in migration 044 (dd_v8_C3).
+    "pc_top_subsidies_by_industry",
+    "pc_top_subsidies_by_prefecture",
+    "pc_law_to_program_index",
+    "pc_program_to_amendments",
+    "pc_acceptance_stats_by_program",
+    "pc_combo_pairs",
+    "pc_seasonal_calendar",
+    "pc_industry_jsic_aliases",
+    "pc_authority_to_programs",
+    "pc_law_amendments_recent",
+    "pc_enforcement_by_industry",
+    "pc_loan_by_collateral_type",
+    "pc_certification_by_subject",
+    "pc_starter_packs_per_audience",
+)
+
+PC_TABLES_D8 = (
+    # 18 tables added in migration 045 (dd_v8_D8).
+    "pc_amendment_recent_by_law",
+    "pc_program_geographic_density",
+    "pc_authority_action_frequency",
+    "pc_law_to_amendment_chain",
+    "pc_industry_jsic_to_program",
+    "pc_amount_max_distribution",
+    "pc_program_to_loan_combo",
+    "pc_program_to_certification_combo",
+    "pc_program_to_tax_combo",
+    "pc_acceptance_rate_by_authority",
+    "pc_application_close_calendar",
+    "pc_amount_to_recipient_size",
+    "pc_law_text_to_program_count",
+    "pc_court_decision_law_chain",
+    "pc_enforcement_industry_distribution",
+    "pc_loan_collateral_to_program",
+    "pc_invoice_registrant_by_pref",
+    "pc_amendment_severity_distribution",
+)
+
+# E1 wave (migration 048+): tables that physically live in autonomath.db
+# (the unified primary DB hosting jpi_* mirrored tables + am_* facts +
+# entity_id_map). Their refreshers manage their own connection + tx — the
+# outer _refresh_one skips the DELETE step on jpintel write_conn for these,
+# because the table doesn't exist there.
+PC_TABLES_AM = (
+    "jpi_pc_program_health",
+)
+
+PC_TABLES = PC_TABLES_C3 + PC_TABLES_D8 + PC_TABLES_AM
+
+
+def _configure_logging() -> None:
+    root = logging.getLogger("autonomath.cron.precompute_refresh")
+    root.setLevel(logging.INFO)
+    for h in list(root.handlers):
+        root.removeHandler(h)
+    fmt = logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
+    sh = logging.StreamHandler(stream=sys.stderr)
+    sh.setFormatter(fmt)
+    root.addHandler(sh)
+
+
+def _open_jpintel(db_path: Path) -> sqlite3.Connection:
+    return connect(db_path)
+
+
+def _open_autonomath_ro(db_path: Path) -> sqlite3.Connection | None:
+    """Open autonomath.db read-only. Returns None if file missing / disabled."""
+    if not settings.autonomath_enabled:
+        logger.info("autonomath_disabled skipping_am_db")
+        return None
+    if not db_path.is_file():
+        logger.warning("autonomath_db_missing path=%s", db_path)
+        return None
+    uri = f"file:{db_path}?mode=ro"
+    conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _refresh_one(
+    name: str,
+    refresher: Callable[[sqlite3.Connection, sqlite3.Connection | None], int],
+    write_conn: sqlite3.Connection,
+    read_conn: sqlite3.Connection | None,
+    dry_run: bool,
+    am_db_path: Path | None = None,
+) -> int:
+    """DELETE-then-INSERT one pc_* table inside a transaction. Returns rows.
+
+    Tables in PC_TABLES_AM live in autonomath.db, not jpintel.db. For those
+    the outer DELETE/tx is delegated to the refresher itself (it owns its own
+    write connection); we short-circuit the jpintel-side ceremony here.
+
+    `am_db_path` is forwarded only to AM-resident refreshers so that tests
+    (and callers running against a non-default autonomath.db) can override
+    the production path without monkeypatching settings.
+    """
+    if name in PC_TABLES_AM:
+        if dry_run:
+            existing = _count_am_table(name, am_db_path=am_db_path)
+            logger.info("pc_dry_run table=%s db=autonomath current_rows=%d", name, existing)
+            return 0
+        try:
+            rows = refresher(write_conn, read_conn, am_db_path=am_db_path)  # type: ignore[call-arg]
+            logger.info("pc_refreshed table=%s db=autonomath rows=%d", name, rows)
+            return rows
+        except Exception as e:
+            logger.exception("pc_refresh_failed table=%s err=%s", name, e)
+            return 0
+
+    if dry_run:
+        existing = write_conn.execute(
+            f"SELECT COUNT(*) FROM {name}"  # noqa: S608 — name from PC_TABLES whitelist
+        ).fetchone()[0]
+        logger.info("pc_dry_run table=%s current_rows=%d", name, int(existing))
+        return 0
+
+    write_conn.execute("BEGIN")
+    try:
+        write_conn.execute(
+            f"DELETE FROM {name}"  # noqa: S608 — whitelisted name
+        )
+        rows = refresher(write_conn, read_conn)
+        write_conn.execute("COMMIT")
+        logger.info("pc_refreshed table=%s rows=%d", name, rows)
+        return rows
+    except Exception as e:
+        write_conn.execute("ROLLBACK")
+        logger.exception("pc_refresh_failed table=%s err=%s", name, e)
+        return 0
+
+
+def _count_am_table(name: str, am_db_path: Path | None = None) -> int:
+    """Read-only row count from autonomath.db for dry-run reporting.
+
+    When `am_db_path` is None we fall through to settings.autonomath_db_path
+    (production behaviour). Tests pass a hermetic path; if the file or the
+    target table doesn't exist there, return 0 rather than raise.
+    """
+    am_path = am_db_path if am_db_path is not None else settings.autonomath_db_path
+    if not am_path.is_file():
+        return 0
+    uri = f"file:{am_path}?mode=ro"
+    conn = sqlite3.connect(uri, uri=True)
+    try:
+        exists = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+            (name,),
+        ).fetchone()
+        if exists is None:
+            return 0
+        return int(conn.execute(
+            f"SELECT COUNT(*) FROM {name}"  # noqa: S608 — PC_TABLES_AM whitelist
+        ).fetchone()[0])
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Per-table refreshers (pre-launch stubs).
+#
+# Each function:
+#   * Receives an already-open write_conn (jpintel.db) inside a BEGIN tx.
+#   * Receives read_conn (autonomath.db, read-only) — may be None when
+#     AUTONOMATH_ENABLED=0 or the file is missing.
+#   * Returns the number of rows it inserted into the pc_ table.
+#
+# The first wave is intentionally no-op: the table has just been wiped by
+# _refresh_one, so the function returning 0 leaves the table empty —
+# matching the launch-day expected state. Replace each body with the real
+# projection SELECT once the per-tool ticket is ready.
+# ---------------------------------------------------------------------------
+
+
+def _refresh_pc_top_subsidies_by_industry(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_top_subsidies_by_prefecture(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_law_to_program_index(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_program_to_amendments(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_acceptance_stats_by_program(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_combo_pairs(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_seasonal_calendar(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_industry_jsic_aliases(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_authority_to_programs(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_law_amendments_recent(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_enforcement_by_industry(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_loan_by_collateral_type(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_certification_by_subject(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_starter_packs_per_audience(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Per-table refreshers — D8 wave (migration 045, 18 tables).
+#
+# Same contract as the C3 wave above: returns rows inserted, accepts the
+# already-open write_conn (jpintel.db, inside a BEGIN tx) plus an optional
+# read_conn (autonomath.db, read-only). All bodies are stubs returning 0
+# pre-launch; population SELECTs land in follow-up tickets.
+# ---------------------------------------------------------------------------
+
+
+def _refresh_pc_amendment_recent_by_law(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_program_geographic_density(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_authority_action_frequency(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_law_to_amendment_chain(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_industry_jsic_to_program(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_amount_max_distribution(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_program_to_loan_combo(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_program_to_certification_combo(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_program_to_tax_combo(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_acceptance_rate_by_authority(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_application_close_calendar(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_amount_to_recipient_size(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_law_text_to_program_count(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_court_decision_law_chain(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_enforcement_industry_distribution(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_loan_collateral_to_program(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_invoice_registrant_by_pref(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+def _refresh_pc_amendment_severity_distribution(
+    w: sqlite3.Connection, r: sqlite3.Connection | None
+) -> int:
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Per-table refreshers — E1 wave (migration 048+, autonomath.db resident).
+#
+# These refreshers IGNORE the passed-in (jpintel) write_conn and read_conn,
+# and open their own rw connection to autonomath.db, because the target
+# table physically lives there alongside its source tables (am_entity_*,
+# entity_id_map, jpi_*). _refresh_one short-circuits its own DELETE/tx for
+# these — the refresher manages everything.
+# ---------------------------------------------------------------------------
+
+
+def _refresh_pc_program_health(
+    w: sqlite3.Connection,
+    r: sqlite3.Connection | None,
+    am_db_path: Path | None = None,
+) -> int:
+    """Aggregate am_entity_annotation -> per-program health snapshot.
+
+    Source: am_entity_annotation joined to jpi_programs via entity_id_map.
+    Window: last 90 days, excluding superseded rows.
+    Per program (jpi_programs.unified_id) we compute:
+      * quality_score          AVG of kind='quality_score'.score
+      * warning_count_recent   COUNT of kind='examiner_warning' AND
+                               severity IN ('warning','critical')
+      * critical_count_recent  COUNT of kind IN ('examiner_warning',
+                               'validation_failure') AND severity='critical'
+      * last_validated_at      MAX(observed_at)
+      * refreshed_at           datetime('now')
+
+    The whole DELETE+INSERT runs inside a single tx on autonomath.db so
+    readers never see a partially-rebuilt snapshot.
+
+    The optional `am_db_path` param overrides settings.autonomath_db_path
+    so tests (and `run(am_db_path=...)` callers) can target a hermetic DB
+    instead of the production one. Production callers pass nothing and
+    fall through to the configured default.
+    """
+    am_path = am_db_path if am_db_path is not None else settings.autonomath_db_path
+    if not am_path.is_file():
+        logger.warning("am_db_missing path=%s skipping_program_health", am_path)
+        return 0
+    conn = connect(am_path)
+    try:
+        # If the target table doesn't exist (e.g. test fixture's am_db
+        # didn't apply migration 048), there's nothing to refresh — bail
+        # out cleanly with 0 rows rather than crashing the whole nightly.
+        exists = conn.execute(
+            "SELECT name FROM sqlite_master "
+            "WHERE type='table' AND name='jpi_pc_program_health'"
+        ).fetchone()
+        if exists is None:
+            logger.warning("am_table_missing table=jpi_pc_program_health path=%s", am_path)
+            return 0
+        conn.execute("BEGIN")
+        conn.execute("DELETE FROM jpi_pc_program_health")
+        conn.execute(
+            """
+            WITH program_annot AS (
+              SELECT jp.unified_id AS program_id,
+                     ea.kind, ea.severity, ea.score, ea.observed_at
+              FROM am_entity_annotation ea
+              JOIN entity_id_map eim ON eim.am_canonical_id = ea.entity_id
+              JOIN jpi_programs   jp  ON jp.unified_id = eim.jpi_unified_id
+              WHERE ea.observed_at > datetime('now', '-90 days')
+                AND ea.superseded_at IS NULL
+            )
+            INSERT INTO jpi_pc_program_health (
+              program_id, quality_score, warning_count_recent,
+              critical_count_recent, last_validated_at, refreshed_at
+            )
+            SELECT
+              program_id,
+              AVG(CASE WHEN kind='quality_score' THEN score END),
+              SUM(CASE WHEN kind='examiner_warning'
+                        AND severity IN ('warning','critical') THEN 1 ELSE 0 END),
+              SUM(CASE WHEN kind IN ('examiner_warning','validation_failure')
+                        AND severity='critical' THEN 1 ELSE 0 END),
+              MAX(observed_at),
+              datetime('now')
+            FROM program_annot
+            GROUP BY program_id
+            """
+        )
+        rows = int(conn.execute(
+            "SELECT COUNT(*) FROM jpi_pc_program_health"
+        ).fetchone()[0])
+        conn.execute("COMMIT")
+        return rows
+    except Exception:
+        conn.execute("ROLLBACK")
+        raise
+    finally:
+        conn.close()
+
+
+REFRESHERS: dict[str, Callable[[sqlite3.Connection, sqlite3.Connection | None], int]] = {
+    # C3 wave (migration 044).
+    "pc_top_subsidies_by_industry": _refresh_pc_top_subsidies_by_industry,
+    "pc_top_subsidies_by_prefecture": _refresh_pc_top_subsidies_by_prefecture,
+    "pc_law_to_program_index": _refresh_pc_law_to_program_index,
+    "pc_program_to_amendments": _refresh_pc_program_to_amendments,
+    "pc_acceptance_stats_by_program": _refresh_pc_acceptance_stats_by_program,
+    "pc_combo_pairs": _refresh_pc_combo_pairs,
+    "pc_seasonal_calendar": _refresh_pc_seasonal_calendar,
+    "pc_industry_jsic_aliases": _refresh_pc_industry_jsic_aliases,
+    "pc_authority_to_programs": _refresh_pc_authority_to_programs,
+    "pc_law_amendments_recent": _refresh_pc_law_amendments_recent,
+    "pc_enforcement_by_industry": _refresh_pc_enforcement_by_industry,
+    "pc_loan_by_collateral_type": _refresh_pc_loan_by_collateral_type,
+    "pc_certification_by_subject": _refresh_pc_certification_by_subject,
+    "pc_starter_packs_per_audience": _refresh_pc_starter_packs_per_audience,
+    # D8 wave (migration 045).
+    "pc_amendment_recent_by_law": _refresh_pc_amendment_recent_by_law,
+    "pc_program_geographic_density": _refresh_pc_program_geographic_density,
+    "pc_authority_action_frequency": _refresh_pc_authority_action_frequency,
+    "pc_law_to_amendment_chain": _refresh_pc_law_to_amendment_chain,
+    "pc_industry_jsic_to_program": _refresh_pc_industry_jsic_to_program,
+    "pc_amount_max_distribution": _refresh_pc_amount_max_distribution,
+    "pc_program_to_loan_combo": _refresh_pc_program_to_loan_combo,
+    "pc_program_to_certification_combo": _refresh_pc_program_to_certification_combo,
+    "pc_program_to_tax_combo": _refresh_pc_program_to_tax_combo,
+    "pc_acceptance_rate_by_authority": _refresh_pc_acceptance_rate_by_authority,
+    "pc_application_close_calendar": _refresh_pc_application_close_calendar,
+    "pc_amount_to_recipient_size": _refresh_pc_amount_to_recipient_size,
+    "pc_law_text_to_program_count": _refresh_pc_law_text_to_program_count,
+    "pc_court_decision_law_chain": _refresh_pc_court_decision_law_chain,
+    "pc_enforcement_industry_distribution": _refresh_pc_enforcement_industry_distribution,
+    "pc_loan_collateral_to_program": _refresh_pc_loan_collateral_to_program,
+    "pc_invoice_registrant_by_pref": _refresh_pc_invoice_registrant_by_pref,
+    "pc_amendment_severity_distribution": _refresh_pc_amendment_severity_distribution,
+    # E1 wave (migration 048+, autonomath.db resident).
+    "jpi_pc_program_health": _refresh_pc_program_health,
+}
+
+
+def run(
+    db_path: Path,
+    am_db_path: Path,
+    only: list[str] | None,
+    dry_run: bool,
+) -> dict[str, int]:
+    counters: dict[str, int] = {}
+    targets = list(only) if only else list(PC_TABLES)
+    bad = [t for t in targets if t not in REFRESHERS]
+    if bad:
+        logger.error("unknown_pc_tables names=%s", bad)
+        return counters
+
+    logger.info(
+        "pc_refresh_start db=%s am_db=%s targets=%d dry_run=%s",
+        db_path,
+        am_db_path,
+        len(targets),
+        dry_run,
+    )
+
+    write_conn = _open_jpintel(db_path)
+    read_conn = _open_autonomath_ro(am_db_path)
+    try:
+        for name in targets:
+            counters[name] = _refresh_one(
+                name=name,
+                refresher=REFRESHERS[name],
+                write_conn=write_conn,
+                read_conn=read_conn,
+                dry_run=dry_run,
+                am_db_path=am_db_path,
+            )
+
+        if not dry_run:
+            swept = sweep_expired(db_path)
+            counters["__l4_swept__"] = swept
+
+        total = sum(v for k, v in counters.items() if not k.startswith("__"))
+        logger.info(
+            "pc_refresh_done tables=%d total_rows=%d l4_swept=%d",
+            len(targets),
+            total,
+            counters.get("__l4_swept__", 0),
+        )
+        return counters
+    finally:
+        if read_conn is not None:
+            read_conn.close()
+        write_conn.close()
+
+
+def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Refresh pc_* materialized tables")
+    p.add_argument(
+        "--db",
+        type=Path,
+        default=None,
+        help="Path to jpintel.db (default: settings.db_path)",
+    )
+    p.add_argument(
+        "--am-db",
+        type=Path,
+        default=None,
+        help="Path to autonomath.db (default: settings.autonomath_db_path)",
+    )
+    p.add_argument(
+        "--only",
+        type=str,
+        default="",
+        help="Comma-separated subset of pc_* table names",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Log targets only; no DELETE/INSERT/sweep",
+    )
+    return p.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    _configure_logging()
+    args = _parse_args(argv)
+
+    db_path = args.db if args.db else settings.db_path
+    am_db_path = args.am_db if args.am_db else settings.autonomath_db_path
+
+    only = [s.strip() for s in args.only.split(",") if s.strip()] or None
+
+    try:
+        run(
+            db_path=db_path,
+            am_db_path=am_db_path,
+            only=only,
+            dry_run=bool(args.dry_run),
+        )
+    except Exception as e:
+        logger.exception("pc_refresh_failed err=%s", e)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

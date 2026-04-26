@@ -1,0 +1,47 @@
+# BC666 事業計画書 3.30 xlsx → PlanUnderReview 変換マッピング
+#
+# ⚠️ **重要**: BC666 はまだ窓口に提出していない draft であって「正解」ではない。
+# Autonomath が完成したと言えるのは、このような draft を xlsx として食わせて
+# **窓口で通るか / 通らないか** を判定し、通らない箇所を finding として
+# 列挙できる状態。したがって本 fixture は「正解の取込み例」ではなく、
+# 「draft を validator にかけるための最小マッピング例」として扱う。
+#
+# Step 57 (2026-04-17) で 実 xlsx (/Users/shigetoumeda/Desktop/農業制度/
+# BLUECHIP666 事業計画書 3.30.xlsx) の cell ref に合わせて調整。
+#
+# 実 xlsx の 5 sheet:
+#   ①圃場・苗木現況 — 圃場 6 件 × (所在地 / 面積(ha) / SH 本数 / RE 本数)
+#   ②収穫期シフト表 — 6-9 月の収穫量 + 必要人員
+#   ③業務分担（通年） — オフィス / 現場人員の月別配置
+#   ④コスト一覧 — 人件費 (row 5-21) + 設備費 (row 26-)
+#   ⑤事業収支表 — 2026 年 収穫期の P/L 概算
+#
+# 申請制度選択 (selected_programs) と 添付書類 (submitted_attachments) は
+# xlsx 非掲載のため、operator が FE window-pass tool で別途入力する。
+
+budget_items:
+  sheet: "④コスト一覧"
+  # header は row 4、data は row 5 から
+  start_row: 5
+  columns:
+    item_id: B          # 費目・担当者
+    name: B             # 同上 (item_id = name で兼ねる)
+    category: C         # 計算根拠を category として暫定代用
+    amount_man_yen: E   # 年間合計 (円)
+  stop_on_empty: B
+  # 「合計」「---」を含む行は data ではないので停止 / skip
+  stop_if_contains:
+    - "合計"
+  skip_if_contains:
+    - "---"   # "--- 666が追加負担" / "--- BLUE CHIP 666 固定" の区切り行
+  # 円単位 → 万円単位 に変換 (実 xlsx は 500,000 等 円表記)
+  amount_divisor: 10000
+  # 人件費 sheet なので category は labor_cost に統一 (C 列の計算根拠は category 扱い不可)
+  category_default: labor_cost
+  # safety: 50 行以内で強制終了
+  max_rows: 50
+
+# selected_programs / submitted_attachments は xlsx 非掲載のため、
+# operator が FE window-pass tool で手入力する運用:
+#   POST /api/v1/agri/plan/window-pass-score
+#   { age, entity_kind, selected_programs: [...], submitted_attachments: [...] }

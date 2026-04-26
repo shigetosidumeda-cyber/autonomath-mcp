@@ -1,0 +1,149 @@
+{
+  "generated_at": "2026-04-26T05:09:13+00:00",
+  "dry_run": false,
+  "tiers_in_scope": [
+    "S"
+  ],
+  "rows_checked": 114,
+  "elapsed_seconds": 36.24,
+  "totals": {
+    "ok": 101,
+    "fail": 13
+  },
+  "writes": {
+    "update_fetched_at": 101,
+    "increment_fail": 13
+  },
+  "per_tier": {
+    "S": {
+      "total": 114,
+      "ok": 101,
+      "dead": 13
+    }
+  },
+  "per_host_checks_top20": [
+    [
+      "www.jst.go.jp",
+      23
+    ],
+    [
+      "www.nedo.go.jp",
+      14
+    ],
+    [
+      "sii.or.jp",
+      12
+    ],
+    [
+      "www.maff.go.jp",
+      8
+    ],
+    [
+      "www.pref.tokushima.lg.jp",
+      5
+    ],
+    [
+      "www.jfc.go.jp",
+      4
+    ],
+    [
+      "r6.jizokukahojokin.info",
+      3
+    ],
+    [
+      "www.amed.go.jp",
+      3
+    ],
+    [
+      "www.jizokukanb.com",
+      2
+    ],
+    [
+      "www.pref.yamagata.jp",
+      2
+    ],
+    [
+      "www.pref.hiroshima.lg.jp",
+      2
+    ],
+    [
+      "www.city.ichinoseki.iwate.jp",
+      2
+    ],
+    [
+      "www.pref.akita.lg.jp",
+      2
+    ],
+    [
+      "www.city.nagasaki.lg.jp",
+      1
+    ],
+    [
+      "www.city.tarumizu.lg.jp",
+      1
+    ],
+    [
+      "www.city.okayama.jp",
+      1
+    ],
+    [
+      "www.city.tsugaru.aomori.jp",
+      1
+    ],
+    [
+      "mirasapo-plus.go.jp",
+      1
+    ],
+    [
+      "www.city.maniwa.lg.jp",
+      1
+    ],
+    [
+      "www.city.nagahama.lg.jp",
+      1
+    ]
+  ],
+  "top_failing_hosts": [
+    [
+      "www.maff.go.jp",
+      2
+    ],
+    [
+      "www.city.ichinoseki.iwate.jp",
+      2
+    ],
+    [
+      "www.city.nagahama.lg.jp",
+      1
+    ],
+    [
+      "www.tokyo-kosha.or.jp",
+      1
+    ],
+    [
+      "www.jinsekigun.jp",
+      1
+    ],
+    [
+      "www.city.fukushima.fukushima.jp",
+      1
+    ],
+    [
+      "www.city.shibata.lg.jp",
+      1
+    ],
+    [
+      "www.pref.kochi.lg.jp",
+      1
+    ],
+    [
+      "www.city.tanabe.lg.jp",
+      1
+    ],
+    [
+      "www.city.takasaki.gunma.jp",
+      1
+    ]
+  ],
+  "quarantined_unified_ids": []
+}

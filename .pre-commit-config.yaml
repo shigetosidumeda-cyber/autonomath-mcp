@@ -1,0 +1,116 @@
+# Pre-commit hooks for jpintel-mcp.
+# Install once per clone: pip install pre-commit && pre-commit install
+# Run manually across the tree: pre-commit run --all-files
+# Update hook versions: pre-commit autoupdate
+#
+# research/ holds drafts (blog posts, notes, free-form markdown) and is
+# intentionally excluded from the strictest hooks — it is a scratch pad,
+# not shipped artifact.
+
+default_language_version:
+  python: python3.13
+
+# Apply to everything under the repo except the following paths.
+exclude: |
+  (?x)^(
+    \.venv/.*|
+    \.ruff_cache/.*|
+    \.pytest_cache/.*|
+    data/.*|
+    sdk/python/\.venv/.*|
+    sdk/typescript/node_modules/.*|
+    sdk/typescript/dist/.*|
+    docs/openapi/.*\.json
+  )$
+
+repos:
+  # ---------------------------------------------------------------------
+  # Stock hygiene hooks
+  # ---------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        # 500 KB cap. Data dumps / fixtures >500 KB should live in data/ (gitignored)
+        # or external storage, never committed.
+        args: ["--maxkb=500"]
+      - id: check-yaml
+        # Allow multi-doc YAML (GitHub Actions occasionally uses it).
+        args: ["--allow-multiple-documents"]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+        exclude: ^research/.*\.md$
+      - id: trailing-whitespace
+        exclude: ^research/.*\.md$
+        args: ["--markdown-linebreak-ext=md"]
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+
+  # ---------------------------------------------------------------------
+  # Ruff — lint + format. Version kept >= the floor declared in pyproject.toml
+  # [dev] extras (ruff>=0.8). Update with `pre-commit autoupdate`.
+  # ---------------------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+        # research/ has throwaway scripts / one-off snippets; don't gate on lint.
+        exclude: ^research/
+      - id: ruff-format
+        exclude: ^research/
+
+  # ---------------------------------------------------------------------
+  # YAML lint — strict only on workflow + top-level yaml configs.
+  # ---------------------------------------------------------------------
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        name: yamllint (workflows + top-level yaml)
+        # Only scan workflow files + top-level yaml (e.g., .pre-commit-config.yaml).
+        # fly.toml is TOML so not in scope.
+        files: ^(\.github/workflows/.*\.ya?ml|\.pre-commit-config\.yaml|\.gitleaks\.yaml)$
+        args: ["-c=.yamllint.yaml"]
+
+  # ---------------------------------------------------------------------
+  # Gitleaks — secret scanning on staged changes. `protect --staged` mode
+  # is the documented pre-commit pattern and runs fast (<1s typically).
+  # ---------------------------------------------------------------------
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        # Default entry is `gitleaks protect --verbose --redact --staged`.
+        # Config in .gitleaks.toml tunes allowlists for test fixtures +
+        # .env.example.
+
+  # ---------------------------------------------------------------------
+  # mypy — type checks on src/. Promoted to pre-commit-blocking per the
+  # 2026-04-25 CI security gating audit (a92f5354dc4848432).
+  # ---------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        name: mypy (src/jpintel_mcp)
+        files: ^src/jpintel_mcp/
+        args: ["--strict", "--ignore-missing-imports", "--no-implicit-reexport"]
+        additional_dependencies:
+          - pydantic>=2.9
+          - pydantic-settings>=2.6
+          - fastapi>=0.115
+          - types-requests
+
+  # ---------------------------------------------------------------------
+  # bandit — Python static security analyzer (CWE-style checks). Added
+  # 2026-04-25 per CI security gating audit (a92f5354dc4848432).
+  # ---------------------------------------------------------------------
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.9
+    hooks:
+      - id: bandit
+        args: ["-c", ".bandit.yaml"]
+        exclude: ^tests/

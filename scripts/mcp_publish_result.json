@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-04-25T09:03:18.658654+00:00",
+  "dry_run": false,
+  "results": [
+    {
+      "id": "mcp_registry",
+      "title": "MCP Official Registry",
+      "status": "fail",
+      "detail": "POST /v0/publish HTTP 403: {'title': 'Forbidden', 'status': 403, 'detail': \"You do not have permission to publish this server. You have permission to publish: io.github.shigetosidumeda-cyber/*. Attempting to publish: io.github.AutonoMath/autonomath-mcp. If you're trying to publish to a GitHub organi",
+      "url": "",
+      "manual_step": "Re-run with valid GH_TOKEN scoped to the AutonoMath org."
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "name": "@autonomath/sdk",
+  "version": "0.3.2",
+  "description": "Official TypeScript / JavaScript SDK for the AutonoMath REST + MCP API. Japanese institutional programs (補助金 / 融資 / 税制 / 認定): 10,972 programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + tax incentives + laws.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "autonomath",
+    "japan",
+    "subsidy",
+    "subsidies",
+    "loans",
+    "tax",
+    "tax-incentives",
+    "compliance",
+    "mcp",
+    "model-context-protocol",
+    "sdk",
+    "typescript",
+    "rest-api",
+    "japanese-government",
+    "補助金",
+    "融資",
+    "税制"
+  ],
+  "homepage": "https://autonomath.ai",
+  "bugs": {
+    "url": "https://github.com/AutonoMath/autonomath-mcp/issues",
+    "email": "info@bookyou.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AutonoMath/autonomath-mcp.git",
+    "directory": "sdk/typescript"
+  },
+  "author": {
+    "name": "Bookyou株式会社 (T8010001213708)",
+    "email": "info@bookyou.net",
+    "url": "https://autonomath.ai"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0"
+  }
+}

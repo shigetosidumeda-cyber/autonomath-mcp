@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>20 example prompts — Use AutonoMath in Claude / Cursor / ChatGPT</title>
+<meta name="description" content="20 ready-to-paste prompts for Claude Desktop, Cursor, and ChatGPT. Practical examples spanning new entrants to agriculture, DX subsidies, startup financing, R&D tax incentives, and regional revitalization — built around AutonoMath's MCP tools.">
+
+<meta property="og:title" content="20 example prompts — AutonoMath">
+<meta property="og:description" content="20 paste-ready prompts for Japanese public-program lookups in Claude / Cursor / ChatGPT.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://autonomath.ai/en/prompts.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="20 example prompts — AutonoMath">
+<meta name="twitter:description" content="20 paste-ready prompts for Japanese public-program lookups in Claude / Cursor / ChatGPT.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/prompts.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/prompts.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/prompts.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/prompts.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "20 example prompts — AutonoMath",
+  "description": "20 ready-to-paste prompts for using AutonoMath inside Claude Desktop, Cursor, and ChatGPT. Examples span agriculture, manufacturing DX, startups, R&D, and regional programs.",
+  "url": "https://autonomath.ai/en/prompts.html",
+  "inLanguage": "en",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/en/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "vatID": "T8010001213708",
+    "email": "info@bookyou.net"
+  }
+}
+</script>
+
+<script defer src="../analytics.js"></script>
+
+<style>
+  /* prompts page local styles — kept inline so styles.css stays untouched for other pages */
+  .prompts-hero { padding: 56px 0 40px; border-bottom: 1px solid var(--border); }
+  .prompts-hero h1 { font-size: 34px; letter-spacing: -0.015em; margin: 0 0 12px; line-height: 1.25; }
+  .prompts-hero .lead { color: var(--text-muted); font-size: 17px; margin: 0 0 14px; max-width: 680px; }
+  .prompts-hero .usage-note { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; font-size: 14px; color: var(--text-muted); margin: 22px 0 0; }
+  .prompts-hero .usage-note code { background: #e9ecf3; color: #111; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+  .prompts-hero .lang-note { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 14px 18px; font-size: 14px; color: #78350f; margin: 14px 0 0; line-height: 1.6; }
+
+  .prompts-toc { padding: 28px 0; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+  .prompts-toc h2 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin: 0 0 12px; }
+  .prompts-toc ol { margin: 0; padding: 0 0 0 22px; font-size: 14px; columns: 2; column-gap: 32px; }
+  .prompts-toc li { margin: 0 0 4px; break-inside: avoid; }
+  @media (max-width: 640px) { .prompts-toc ol { columns: 1; } }
+
+  .bucket { padding: 48px 0 8px; }
+  .bucket > h2 { font-size: 22px; margin: 0 0 8px; font-weight: 700; letter-spacing: -0.005em; }
+  .bucket > p.bucket-desc { color: var(--text-muted); font-size: 15px; margin: 0 0 28px; }
+
+  .prompt-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 26px 26px 22px;
+    margin: 0 0 22px;
+    background: #fff;
+    position: relative;
+  }
+  .prompt-card h3 { font-size: 19px; margin: 0 0 6px; font-weight: 700; line-height: 1.4; }
+  .prompt-card .hook { color: var(--accent); font-weight: 600; font-size: 14px; letter-spacing: 0.01em; margin: 0 0 14px; }
+
+  .prompt-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+    font-size: 12px;
+  }
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-alt);
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .meta-chip.persona { background: #eef2ff; border-color: #c7d2fe; color: #1e3a8a; }
+  .meta-chip.tools { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; }
+  .meta-chip.pro-badge { background: #fef3c7; border-color: #fcd34d; color: #78350f; font-weight: 600; }
+  .meta-chip.pro-badge::before { content: "★ "; }
+
+  .prompt-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 6px;
+  }
+  .prompt-block {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px 18px;
+    border-radius: 8px;
+    font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0 0 16px;
+    user-select: all;          /* triple-click friendly */
+    -webkit-user-select: all;
+    white-space: pre-wrap;
+    word-break: break-word;
+    display: block;
+    cursor: text;
+  }
+  .prompt-block::selection { background: #fde68a; color: #111; }
+
+  .prompt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 0 0 14px;
+  }
+  .copy-btn {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .copy-btn:hover { background: var(--bg-alt); border-color: #94a3b8; }
+  .copy-btn.copied { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
+  .desktop-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dotted currentColor;
+  }
+  .desktop-link:hover { opacity: 0.8; }
+  .tool-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 4px;
+    line-height: 1.55;
+  }
+  .tool-note strong { color: var(--text); font-weight: 600; }
+
+  .footer-cta {
+    padding: 56px 0 72px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-alt);
+    text-align: center;
+  }
+  .footer-cta h2 { font-size: 24px; margin: 0 0 10px; }
+  .footer-cta p { color: var(--text-muted); margin: 0 0 20px; font-size: 15px; }
+  .footer-cta .cta-row { justify-content: center; }
+
+  @media (max-width: 640px) {
+    .prompts-hero h1 { font-size: 26px; }
+    .prompt-card { padding: 20px 18px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="getting-started.html">Docs</a>
+      <a href="prompts.html" aria-current="page">Prompts</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../prompts.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="prompts.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="prompts-hero">
+    <div class="container">
+      <h1>Example prompts</h1>
+      <p class="lead">Once AutonoMath is connected to Claude Desktop, Cursor, or ChatGPT over MCP, paste any of these 20 examples directly. Each one sweeps across 5,400+ subsidies, loans, tax measures, and certifications — and finishes in about a minute.</p>
+      <p class="lead">For setup, see <a href="getting-started.html">getting-started</a>. The Claude Desktop configuration lives in the <a href="getting-started.html#mcp-claude-desktop">MCP setup section</a>.</p>
+      <div class="lang-note">
+        <strong>About the example prompts:</strong> the prompts below are written in Japanese to match the underlying corpus (Japanese public-program data from METI / MAFF / SME Agency / Japan Finance Corporation, etc.). LLMs like Claude / GPT handle Japanese-language input natively — paste them as-is and you will get Japanese responses. The AutonoMath API and MCP tools accept queries in any language, but always return source data in Japanese to preserve fidelity to the primary documents. To work in English, simply prefix your message with "Reply in English." and the LLM will translate the result for you.
+      </div>
+      <div class="usage-note">
+        <strong>How to use:</strong>
+        <ol style="margin: 8px 0 0; padding-left: 22px;">
+          <li>Click the "Copy" button on any card to grab the full prompt.</li>
+          <li>Paste it into the Claude Desktop / Cursor / ChatGPT Plus chat box.</li>
+          <li>Replace placeholders (location, crop, headcount, etc.) with your own situation and send.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="prompts-toc" aria-labelledby="toc-title">
+    <div class="container">
+      <h2 id="toc-title">20 prompts — table of contents</h2>
+      <ol>
+        <li><a href="#cat1">Category 1: Agriculture operators</a></li>
+        <li><a href="#cat2">Category 2: SMB manufacturing (DX / succession)</a></li>
+        <li><a href="#cat3">Category 3: Startups / new ventures</a></li>
+        <li><a href="#cat4">Category 4: R&amp;D / IP</a></li>
+        <li><a href="#cat5">Category 5: Regional / welfare / cross-industry</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY 1: AGRI ============ -->
+  <section class="bucket" id="cat1" aria-labelledby="cat1-title">
+    <div class="container">
+      <h2 id="cat1-title">Category 1: For agriculture operators (new entrants / scale-up / incorporation)</h2>
+      <p class="bucket-desc">The category where AutonoMath's agriculture-niche heritage shows up most. Goes three layers deep — national → prefecture → municipality — and covers compatibility (併給可否) for every program.</p>
+
+      <!-- #1 -->
+      <article class="prompt-card" id="p1">
+        <p class="hook">Chiba × paddy 30 ha × 認定農業者 — compare facility-investment subsidies including combinability</p>
+        <h3>#1 Facility-investment subsidies for a Chiba paddy operator (30 ha, 認定農業者)</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Corporate operator / 認定農業者</span>
+          <span class="meta-chip">Facility investment / scale-up</span>
+          <span class="meta-chip tools">search_programs → check_exclusions → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-1">千葉県で水田30ha規模の認定農業者が使える施設整備補助金を、併給可否も含めて5件比較して。補助率・上限額・申請窓口・公募スケジュールを表形式で並べ、同一設備への重複制限があれば排他ルールの根拠ID付きで示してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-1">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E5%8D%83%E8%91%89%E7%9C%8C%E3%81%A7%E6%B0%B4%E7%94%B030ha%E8%A6%8F%E6%A8%A1%E3%81%AE%E8%AA%8D%E5%AE%9A%E8%BE%B2%E6%A5%AD%E8%80%85%E3%81%8C%E4%BD%BF%E3%81%88%E3%82%8B%E6%96%BD%E8%A8%AD%E6%95%B4%E5%82%99%E8%A3%9C%E5%8A%A9%E9%87%91%E3%82%92%E3%80%81%E4%BD%B5%E7%B5%A6%E5%8F%AF%E5%90%A6%E3%82%82%E5%90%AB%E3%82%81%E3%81%A65%E4%BB%B6%E6%AF%94%E8%BC%83%E3%81%97%E3%81%A6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (prefecture + 認定農業者 + scale filter) → check_exclusions for the 5-program combinability matrix → get_program to fill in details.</p>
+      </article>
+
+      <!-- #2 -->
+      <article class="prompt-card" id="p2">
+        <p class="hook">経営開始資金 × other programs — surface every program that cannot be filed in parallel</p>
+        <h3>#2 List programs incompatible with the 認定新規就農者 経営開始資金</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">New farming entrant / agriculture support firm</span>
+          <span class="meta-chip">Combinability check</span>
+          <span class="meta-chip tools">check_exclusions → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-2">認定新規就農者が経営開始資金 (MAFF) を使っている場合に同時に申請できない制度はどれ？絶対排他・条件付き減額の両方を列挙し、それぞれの排他ルールIDと source_url を根拠として示してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-2">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E8%AA%8D%E5%AE%9A%E6%96%B0%E8%A6%8F%E5%B0%B1%E8%BE%B2%E8%80%85%E3%81%8C%E7%B5%8C%E5%96%B6%E9%96%8B%E5%A7%8B%E8%B3%87%E9%87%91%20(MAFF)%20%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%E5%A0%B4%E5%90%88%E3%81%AB%E5%90%8C%E6%99%82%E3%81%AB%E7%94%B3%E8%AB%8B%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84%E5%88%B6%E5%BA%A6%E3%81%AF%E3%81%A9%E3%82%8C%EF%BC%9F" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> check_exclusions (seeded with keiei-kaishi to walk every exclusion rule) → get_program to attach the latest text for each related program.</p>
+      </article>
+
+      <!-- #3 -->
+      <article class="prompt-card" id="p3">
+        <p class="hook">Kumamoto × tomato × planning to incorporate — sweep subsidies + loans + tax measures</p>
+        <h3>#3 Funding stack for a Kumamoto greenhouse operator going corporate</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Sole proprietor planning incorporation</span>
+          <span class="meta-chip">Incorporation / greenhouse cultivation</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-3">熊本県八代市で施設園芸トマト (1.5ha) を営む個人農家です。来年度に法人成りして規模拡大する計画で、必要資金は 8000 万円。国・熊本県・市町村の補助金、日本公庫スーパーL・経営体育成強化資金、農地所有適格法人向け税制優遇を一括で洗い出し、法人化前後で申請タイミングが変わるものを明示してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-3">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E7%86%8A%E6%9C%AC%E7%9C%8C%E5%85%AB%E4%BB%A3%E5%B8%82%E3%81%A7%E6%96%BD%E8%A8%AD%E5%9C%92%E8%8A%B8%E3%83%88%E3%83%9E%E3%83%88%20(1.5ha)%20%E3%82%92%E5%96%B6%E3%82%80%E5%80%8B%E4%BA%BA%E8%BE%B2%E5%AE%B6%E3%81%A7%E3%81%99%E3%80%82%E6%B3%95%E4%BA%BA%E6%88%90%E3%82%8A%E3%81%97%E3%81%A6%E8%A6%8F%E6%A8%A1%E6%8B%A1%E5%A4%A7%E3%81%99%E3%82%8B%E5%88%B6%E5%BA%A6%E3%82%92%E4%B8%80%E6%8B%AC%E3%81%A7%E6%B4%97%E3%81%84%E5%87%BA%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> Run search_programs against (prefecture + greenhouse + incorporation) several times → use get_program to align prerequisites such as 認定農業者 status.</p>
+      </article>
+
+      <!-- #4 -->
+      <article class="prompt-card" id="p4">
+        <p class="hook">Hokkaido × dairy × father-to-son succession — combine succession with scale-up</p>
+        <h3>#4 Hokkaido dairy: succession + smart-dairy programs</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Livestock operator / successor</span>
+          <span class="meta-chip">Succession / smart farming</span>
+          <span class="meta-chip tools">search_programs → check_exclusions</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-4">北海道十勝で搾乳牛 120 頭の酪農経営を父から引き継ぎます。経営継承 (第三者・親子) 支援、畜舎整備、ロボット搾乳機などスマート酪農導入、飼料高騰対策の 4 テーマで、国・北海道・市町村の制度を洗い出し、経営継承・発展等支援事業 (MAFF) と他制度の併給ルールも確認してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-4">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E5%8C%97%E6%B5%B7%E9%81%93%E5%8D%81%E5%8B%9D%E3%81%A7%E6%90%BE%E4%B9%B3%E7%89%9B%20120%20%E9%A0%AD%E3%81%AE%E9%85%AA%E8%BE%B2%E7%B5%8C%E5%96%B6%E3%82%92%E7%B6%99%E3%81%8E%E3%81%BE%E3%81%99%E3%80%82%E7%B5%8C%E5%96%B6%E7%B6%99%E6%89%BF%E3%80%81%E7%95%9C%E8%88%8E%E6%95%B4%E5%82%99%E3%80%81%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E9%85%AA%E8%BE%B2%E3%80%81%E9%A3%BC%E6%96%99%E5%AF%BE%E7%AD%96%E3%81%AE%204%20%E3%83%86%E3%83%BC%E3%83%9E%E3%81%A7%E6%B4%97%E3%81%84%E5%87%BA%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> Run search_programs across the four themes in parallel → check_exclusions to verify combinability between 経営継承・発展等支援事業 and the other programs.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY 2: SMB MANUFACTURING ============ -->
+  <section class="bucket" id="cat2" aria-labelledby="cat2-title">
+    <div class="container">
+      <h2 id="cat2-title">Category 2: SMB manufacturing (DX / labor-saving / succession)</h2>
+      <p class="bucket-desc">Mainstream manufacturing themes — ものづくり, labor-saving, succession, wage hikes — combining national programs with prefecture-specific subsidies.</p>
+
+      <!-- #5 -->
+      <article class="prompt-card" id="p5">
+        <p class="hook">30-employee metal-processing shop — equipment refresh ranked by subsidy rate</p>
+        <h3>#5 Metal processing, 30 employees: top 10 equipment-refresh programs by subsidy rate</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">SMB operator</span>
+          <span class="meta-chip">Capex / labor-saving</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-5">従業員30人の金属加工業で、設備更新に使える補助金・税制を、補助率の高い順に10件。上限額・対象経費・申請締切・必要な計画 (経営力向上計画・先端設備等導入計画など) を各制度ごとに明示してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-5">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E5%BE%93%E6%A5%AD%E5%93%A130%E4%BA%BA%E3%81%AE%E9%87%91%E5%B1%9E%E5%8A%A0%E5%B7%A5%E6%A5%AD%E3%81%A7%E3%80%81%E8%A8%AD%E5%82%99%E6%9B%B4%E6%96%B0%E3%81%AB%E4%BD%BF%E3%81%88%E3%82%8B%E8%A3%9C%E5%8A%A9%E9%87%91%E3%83%BB%E7%A8%8E%E5%88%B6%E3%82%92%E3%80%81%E8%A3%9C%E5%8A%A9%E7%8E%87%E3%81%AE%E9%AB%98%E3%81%84%E9%A0%86%E3%81%AB10%E4%BB%B6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (SMB manufacturing + equipment refresh) → get_program to sort by subsidy-rate / cap → also pull 中小企業経営強化税制 and 投資促進税制.</p>
+      </article>
+
+      <!-- #6 -->
+      <article class="prompt-card" id="p6">
+        <p class="hook">IT-Donyu × ものづくり — combinable? cite the article</p>
+        <h3>#6 IT-Donyu × ものづくり 補助金 combinability check</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">SMB operator / subsidy support firm</span>
+          <span class="meta-chip">Combinability</span>
+          <span class="meta-chip tools">check_exclusions → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-6">IT導入補助金とものづくり補助金は併給できる？根拠条文も教えて。同一経費への重複が禁止されている場合、対象経費を切り分ければ同一年度に両方申請できるのかも、公募要領の記述を引用して判定してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-6">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=IT%E5%B0%8E%E5%85%A5%E8%A3%9C%E5%8A%A9%E9%87%91%E3%81%A8%E3%82%82%E3%81%AE%E3%81%A5%E3%81%8F%E3%82%8A%E8%A3%9C%E5%8A%A9%E9%87%91%E3%81%AF%E4%BD%B5%E7%B5%A6%E3%81%A7%E3%81%8D%E3%82%8B%EF%BC%9F%E6%A0%B9%E6%8B%A0%E6%9D%A1%E6%96%87%E3%82%82%E6%95%99%E3%81%88%E3%81%A6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> check_exclusions to cross-reference the two programs → get_program to extract the same-expense prohibition clause from the 公募要領.</p>
+      </article>
+
+      <!-- #7 -->
+      <article class="prompt-card" id="p7">
+        <p class="hook">Aichi × auto-parts × M&A succession — tax measures + subsidies</p>
+        <h3>#7 Aichi auto-parts shop: M&amp;A succession program stack</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">SMB operator (seller / acquirer)</span>
+          <span class="meta-chip">Succession / M&amp;A</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-7">愛知県豊田市の自動車部品加工 (従業員 45 名) を、同業他社が M&A で承継します。事業承継・引継ぎ補助金 (経営革新枠・専門家活用枠)、法人版事業承継税制 (特例措置)、経営資源集約化税制、愛知県・豊田市の独自事業承継支援を横並びで教えてください。M&A 後の設備更新にも使える制度があれば合わせて。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-7">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E6%84%9B%E7%9F%A5%E7%9C%8C%E8%B1%8A%E7%94%B0%E5%B8%82%E3%81%AE%E8%87%AA%E5%8B%95%E8%BB%8A%E9%83%A8%E5%93%81%E5%8A%A0%E5%B7%A5%20(%E5%BE%93%E6%A5%AD%E5%93%A145%E5%90%8D)%20%E3%82%92%E3%80%81%E5%90%8C%E6%A5%AD%E4%BB%96%E7%A4%BE%E3%81%8C%20M%26A%20%E3%81%A7%E6%89%BF%E7%B6%99%E3%81%97%E3%81%BE%E3%81%99%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs across (succession / M&A / tax) on three axes → get_program to expand requirements (e.g. the 特例承継計画 submission deadline).</p>
+      </article>
+
+      <!-- #8 -->
+      <article class="prompt-card" id="p8">
+        <p class="hook">Printing × DX + wage hike — combine 賃上げ促進税制 with labor-saving subsidies</p>
+        <h3>#8 Printing shop DX + 賃上げ促進税制 stacking design</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">SMB operator</span>
+          <span class="meta-chip">DX / labor-saving / wage hike</span>
+          <span class="meta-chip tools">search_programs → check_exclusions</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-8">大阪市で従業員 18 名の印刷業です。枚葉機の更新 (2500 万円) とワークフロー DX 化 (500 万円) を来期実施し、あわせて賃金 3% 引上げを予定しています。中小企業省力化投資補助金・ものづくり補助金・IT 導入補助金のどれに寄せると、賃上げ促進税制 (中小枠) との組合せで手残りが最大化するか、補助金受給 → 税額控除の関係性を踏まえて提案してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-8">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E5%A4%A7%E9%98%AA%E5%B8%82%E3%81%A7%E5%BE%93%E6%A5%AD%E5%93%A1%2018%20%E5%90%8D%E3%81%AE%E5%8D%B0%E5%88%B7%E6%A5%AD%E3%81%A7%E3%81%99%E3%80%82%E6%9E%9A%E8%91%89%E6%A9%9F%E3%81%AE%E6%9B%B4%E6%96%B0%E3%81%A8%20DX%20%E5%8C%96%E3%81%8A%E3%82%88%E3%81%B3%E8%B3%83%E9%87%91%203%25%20%E5%BC%95%E4%B8%8A%E3%81%92%E3%82%92%E4%B8%80%E6%8B%AC%E3%81%A7%E7%B5%84%E3%81%BF%E7%AB%8B%E3%81%A6%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (DX + labor-saving) → check_exclusions to scrutinize same-expense overlap across the three programs → get_program for 賃上げ促進税制 base + uplift requirements.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY 3: STARTUP ============ -->
+  <section class="bucket" id="cat3" aria-labelledby="cat3-title">
+    <div class="container">
+      <h2 id="cat3-title">Category 3: Startups / new ventures</h2>
+      <p class="bucket-desc">From founder year-one to post-VC growth phases. Sweeps subsidies, public-finance loans, and certification programs (J-Startup, etc.).</p>
+
+      <!-- #9 -->
+      <article class="prompt-card" id="p9">
+        <p class="hook">Tokyo × first-year SaaS — full sweep of subsidies + loans + tax incentives</p>
+        <h3>#9 Tokyo first-year SaaS startup funding map</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Founder / CEO</span>
+          <span class="meta-chip">SaaS / formation</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-9">東京都で創業1年目のSaaSスタートアップが使える制度 (補助金・税制・融資含む)。資本金 500 万円、従業員 3 名、SEED 調達 3000 万円済み。国・東京都・東京都中小企業振興公社・日本公庫の区分ごとに整理し、エンジェル税制や特定新規中小会社投資税額控除なども合わせて教えてください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-9">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E6%9D%B1%E4%BA%AC%E9%83%BD%E3%81%A7%E5%89%B5%E6%A5%AD1%E5%B9%B4%E7%9B%AE%E3%81%AESaaS%E3%82%B9%E3%82%BF%E3%83%BC%E3%83%88%E3%82%A2%E3%83%83%E3%83%97%E3%81%8C%E4%BD%BF%E3%81%88%E3%82%8B%E5%88%B6%E5%BA%A6%20(%E8%A3%9C%E5%8A%A9%E9%87%91%E3%83%BB%E7%A8%8E%E5%88%B6%E3%83%BB%E8%9E%8D%E8%B3%87%E5%90%AB%E3%82%80)%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (formation + Tokyo + startup) → get_program to expand 角度 / stock-option tax incentive requirements.</p>
+      </article>
+
+      <!-- #10 -->
+      <article class="prompt-card" id="p10">
+        <p class="hook">After J-Startup designation — list every public-funding program that stacks on top</p>
+        <h3>#10 Public funding stackable on a J-Startup designation</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Designated startup / CFO</span>
+          <span class="meta-chip">Designation leverage</span>
+          <span class="meta-chip tools">search_programs → check_exclusions</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-10">J-Startup認定企業がさらに併用できる公的資金は？J-Startup 加点・優遇のある NEDO 公募事業、JETRO 海外展開支援、中小機構出資、日本公庫スタートアップ支援融資、各省庁のピッチ型公募 (SBIR 統合事業等) を横断的に列挙してください。認定の加点効果がどの事業で明示されているかも根拠付きで。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-10">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=J-Startup%E8%AA%8D%E5%AE%9A%E4%BC%81%E6%A5%AD%E3%81%8C%E3%81%95%E3%82%89%E3%81%AB%E4%BD%B5%E7%94%A8%E3%81%A7%E3%81%8D%E3%82%8B%E5%85%AC%E7%9A%84%E8%B3%87%E9%87%91%E3%81%AF%EF%BC%9F" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (designation = J-Startup boost) across every ministry → check_exclusions to verify duplicate-funding restrictions.</p>
+      </article>
+
+      <!-- #11 -->
+      <article class="prompt-card" id="p11">
+        <p class="hook">Fukuoka × hardware × prototype — funding ladder from prototype to mass production</p>
+        <h3>#11 Fukuoka hardware startup: prototype → mass-production funding plan</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Hardware founder</span>
+          <span class="meta-chip">Prototype / mass production / regional base</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-11">福岡市で IoT デバイスを開発するハードウェアスタートアップ (創業 2 年、エンジニア 5 名)。試作 (500 万円) → パイロット量産 (3000 万円) → 本量産 (2 億円) の 3 段階で、それぞれに適した補助金・助成金・融資を提案してください。福岡県・福岡市の独自ディープテック支援、STS 採択後の後続制度もセットで。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-11">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E7%A6%8F%E5%B2%A1%E5%B8%82%E3%81%A7%20IoT%20%E3%83%87%E3%83%90%E3%82%A4%E3%82%B9%E3%82%92%E9%96%8B%E7%99%BA%E3%81%99%E3%82%8B%E3%83%8F%E3%83%BC%E3%83%89%E3%82%A6%E3%82%A7%E3%82%A2%E3%82%B9%E3%82%BF%E3%83%BC%E3%83%88%E3%82%A2%E3%83%83%E3%83%97%E3%80%82%E8%A9%A6%E4%BD%9C%20%E2%86%92%20%E3%83%91%E3%82%A4%E3%83%AD%E3%83%83%E3%83%88%E9%87%8F%E7%94%A3%20%E2%86%92%20%E6%9C%AC%E9%87%8F%E7%94%A3%E3%81%AE%20%E3%82%B9%E3%83%86%E3%83%BC%E3%82%B8%E3%81%AB%E9%81%A9%E3%81%97%E3%81%9F%E5%88%B6%E5%BA%A6%E3%82%92%E6%8F%90%E6%A1%88%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> Run search_programs three times — one per stage (prototype / pilot / mass production) — and use get_program to map the amount range and eligible expenses into a step ladder.</p>
+      </article>
+
+      <!-- #12 -->
+      <article class="prompt-card" id="p12">
+        <p class="hook">Female founder × U-turn migration × service business — multi-axis criteria sweep</p>
+        <h3>#12 Female founder × regional migration × service business — program search</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Founder (female / U or I-turn)</span>
+          <span class="meta-chip">Migration / female founder</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-12">東京から長野県松本市に移住して、女性向けカウンセリング SaaS を起業予定です (個人事業 → 1 年後に法人化)。移住支援金 (地方創生)、女性起業家支援 (公庫女性・若者・シニア起業家資金)、長野県・松本市の創業支援、サービス業向け小規模事業者持続化補助金を横断で。各制度の女性加点・移住加点を明示してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-12">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E6%9D%B1%E4%BA%AC%E3%81%8B%E3%82%89%E9%95%B7%E9%87%8E%E7%9C%8C%E6%9D%BE%E6%9C%AC%E5%B8%82%E3%81%AB%E7%A7%BB%E4%BD%8F%E3%81%97%E3%81%A6%E5%A5%B3%E6%80%A7%E5%90%91%E3%81%91%E3%82%AB%E3%82%A6%E3%83%B3%E3%82%BB%E3%83%AA%E3%83%B3%E3%82%B0%20SaaS%20%E3%82%92%E8%B5%B7%E6%A5%AD%E4%BA%88%E5%AE%9A%E3%81%A7%E3%81%99%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> Multiple search_programs runs across "female", "migration", "founder" → get_program to read off the bonus criteria.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY 4: R&D / IP ============ -->
+  <section class="bucket" id="cat4" aria-labelledby="cat4-title">
+    <div class="container">
+      <h2 id="cat4-title">Category 4: R&amp;D / IP</h2>
+      <p class="bucket-desc">NEDO, AMED, JST, R&amp;D tax incentives, and IP subsidies. Covers university spinouts through mid-size R&amp;D-driven SMBs.</p>
+
+      <!-- #13 -->
+      <article class="prompt-card" id="p13">
+        <p class="hook">University spinout × NEDO + AMED + R&amp;D tax — full sweep</p>
+        <h3>#13 University spinout: NEDO / AMED / R&amp;D tax map</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">University spinout CEO / CSO</span>
+          <span class="meta-chip">Commissioned research / grants / tax</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-13">大学発ベンチャーが使えるNEDO委託・AMED補助金・各種R&D税制をまとめて。NEDO のディープテック・STS・用途開拓型、AMED の創薬・医療機器、JST の START・大学発新産業創出プログラム、中小企業技術基盤強化税制、オープンイノベーション促進税制を網羅してください。税制は中小法人と一般企業で要件が違うので分けて。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-13">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E5%A4%A7%E5%AD%A6%E7%99%BA%E3%83%99%E3%83%B3%E3%83%81%E3%83%A3%E3%83%BC%E3%81%8C%E4%BD%BF%E3%81%88%E3%82%8BNEDO%E5%A7%94%E8%A8%97%E3%83%BBAMED%E8%A3%9C%E5%8A%A9%E9%87%91%E3%83%BB%E5%90%84%E7%A8%AER%26D%E7%A8%8E%E5%88%B6%E3%82%92%E3%81%BE%E3%81%A8%E3%82%81%E3%81%A6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs filtered to funding_agency = NEDO/AMED/JST → get_program to surface tax requirements, branched by SMB vs. general corporation.</p>
+      </article>
+
+      <!-- #14 -->
+      <article class="prompt-card" id="p14">
+        <p class="hook">IP-acquisition support × R&amp;D subsidies — can the same project claim both?</p>
+        <h3>#14 IP support × R&amp;D subsidy combinability rules</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">IP lead / CTO</span>
+          <span class="meta-chip">IP / combinability</span>
+          <span class="meta-chip tools">check_exclusions → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-14">特許取得支援と研究開発補助金の併給ルールを整理して。知財関連: 中小企業等海外侵害対策支援事業、外国出願支援事業、INPIT 知財総合支援。R&D 関連: ものづくり補助金・サポイン事業・NEDO 用途開拓型。同一研究テーマで「R&D 補助金で開発 → 権利化費用は知財支援」の分離は可能か、同一経費重複禁止の境界を具体的に。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-14">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E7%89%B9%E8%A8%B1%E5%8F%96%E5%BE%97%E6%94%AF%E6%8F%B4%E3%81%A8%E7%A0%94%E7%A9%B6%E9%96%8B%E7%99%BA%E8%A3%9C%E5%8A%A9%E9%87%91%E3%81%AE%E4%BD%B5%E7%B5%A6%E3%83%AB%E3%83%BC%E3%83%AB%E3%82%92%E6%95%B4%E7%90%86%E3%81%97%E3%81%A6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> check_exclusions (IP programs × R&amp;D subsidies) → get_program to quote the same-expense definitions from each 公募要領.</p>
+      </article>
+
+      <!-- #15 -->
+      <article class="prompt-card" id="p15">
+        <p class="hook">Medical-device venture × PMDA approval — public support across development phases</p>
+        <h3>#15 Medical-device venture: AMED + PMDA-approval programs</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Medical-device startup</span>
+          <span class="meta-chip">Medical / regulatory</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-15">整形外科向け医療機器 (クラス III) を開発する中小企業です。非臨床試験から治験、PMDA 承認取得までの各フェーズで使える AMED 事業 (医療機器開発推進研究、実用化研究等)、中小企業向け試験研究費税制、PMDA 薬事相談費用の補助制度を整理してください。各フェーズで「ここまでやったら次はこれ」という接続関係もわかる形で。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-15">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E6%95%B4%E5%BD%A2%E5%A4%96%E7%A7%91%E5%90%91%E3%81%91%E5%8C%BB%E7%99%82%E6%A9%9F%E5%99%A8%20(%E3%82%AF%E3%83%A9%E3%82%B9%20III)%20%E3%82%92%E9%96%8B%E7%99%BA%E3%81%99%E3%82%8B%E4%B8%AD%E5%B0%8F%E4%BC%81%E6%A5%AD%E3%81%A7%E3%81%99%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs across the full AMED program pool → get_program to chain each phase's deliverables into the prerequisites of the next.</p>
+      </article>
+
+      <!-- #16 -->
+      <article class="prompt-card" id="p16">
+        <p class="hook">GX / carbon-neutrality R&amp;D — sweep across MoE + METI calls</p>
+        <h3>#16 GX R&amp;D: MoE + METI + prefecture subsidy map</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Climate startup / R&amp;D-driven SMB</span>
+          <span class="meta-chip">GX / carbon neutrality</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-16">水素・アンモニア活用の燃焼機器を研究開発する中小メーカーです。環境省のカーボンニュートラル関連補助、経産省 GX 実現に向けた金融支援 (GX 経済移行債関連)、NEDO 戦略イノベーション事業、都道府県独自の脱炭素補助を総ざらいしてください。補助金と GX-ETS や排出権クレジットとの関係も簡単に。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-16">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E6%B0%B4%E7%B4%A0%E3%83%BB%E3%82%A2%E3%83%B3%E3%83%A2%E3%83%8B%E3%82%A2%E6%B4%BB%E7%94%A8%E3%81%AE%E7%87%83%E7%84%BC%E6%A9%9F%E5%99%A8%E3%82%92%E7%A0%94%E7%A9%B6%E9%96%8B%E7%99%BA%E3%81%99%E3%82%8B%E4%B8%AD%E5%B0%8F%E3%83%A1%E3%83%BC%E3%82%AB%E3%83%BC%E3%81%A7%E3%81%99%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> Multi-keyword search_programs (GX / decarbonization / hydrogen) → get_meta to confirm result-set magnitudes.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY 5: REGIONAL / WELFARE / CROSS ============ -->
+  <section class="bucket" id="cat5" aria-labelledby="cat5-title">
+    <div class="container">
+      <h2 id="cat5-title">Category 5: Regional / welfare / cross-industry</h2>
+      <p class="bucket-desc">Regional revitalization down to the municipality level, welfare and employment programs, and cross-industry statistical aggregations (get_meta).</p>
+
+      <!-- #17 -->
+      <article class="prompt-card" id="p17">
+        <p class="hook">Matsue × small restaurant — exhaustive sweep down to the municipality</p>
+        <h3>#17 Every subsidy and loan available to a small restaurant in Matsue, Shimane</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Small business operator (restaurant)</span>
+          <span class="meta-chip">Municipality granularity</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-17">島根県松江市の小規模飲食店が使える補助金・融資を全部洗って。国・島根県・松江市の 3 階層で整理し、地域商社や商工会議所経由の助成も含めて。対象経費・上限額・申請窓口・想定公募回をまとめてください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-17">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E5%B3%B6%E6%A0%B9%E7%9C%8C%E6%9D%BE%E6%B1%9F%E5%B8%82%E3%81%AE%E5%B0%8F%E8%A6%8F%E6%A8%A1%E9%A3%B2%E9%A3%9F%E5%BA%97%E3%81%8C%E4%BD%BF%E3%81%88%E3%82%8B%E8%A3%9C%E5%8A%A9%E9%87%91%E3%83%BB%E8%9E%8D%E8%B3%87%E3%82%92%E5%85%A8%E9%83%A8%E6%B4%97%E3%81%A3%E3%81%A6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (prefecture = 島根 + restaurant + small) across three layers → get_program to fill in window URLs.</p>
+      </article>
+
+      <!-- #18 -->
+      <article class="prompt-card" id="p18">
+        <p class="hook">First-time disability hire — narrow to three employment grants</p>
+        <h3>#18 Three employment grants for SMBs hiring an employee with disabilities for the first time</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">SMB HR / 社労士</span>
+          <span class="meta-chip">Employment / welfare</span>
+          <span class="meta-chip tools">search_programs → get_program</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-18">障害者雇用を初めて行う中小企業が使える補助金・助成金を3つ挙げて。特定求職者雇用開発助成金 (特定就職困難者コース)、トライアル雇用助成金 (障害者トライアル)、障害者作業施設設置等助成金を想定。要件・支給額・支給期間・併給の可否を 3 件並べてください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-18">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E9%9A%9C%E5%AE%B3%E8%80%85%E9%9B%87%E7%94%A8%E3%82%92%E5%88%9D%E3%82%81%E3%81%A6%E8%A1%8C%E3%81%86%E4%B8%AD%E5%B0%8F%E4%BC%81%E6%A5%AD%E3%81%8C%E4%BD%BF%E3%81%88%E3%82%8B%E8%A3%9C%E5%8A%A9%E9%87%91%E3%83%BB%E5%8A%A9%E6%88%90%E9%87%91%E3%82%923%E3%81%A4%E6%8C%99%E3%81%92%E3%81%A6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (employment + disability) → get_program to compare unit grants and durations.</p>
+      </article>
+
+      <!-- #19 -->
+      <article class="prompt-card" id="p19">
+        <p class="hook">DB-wide statistics — surface tier and authority distributions via get_meta</p>
+        <h3>#19 Aggregate the AutonoMath DB by prefecture, implementing authority, and tier</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Researcher / journalist / API developer</span>
+          <span class="meta-chip">Bird's-eye statistics</span>
+          <span class="meta-chip tools">get_meta</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-19">AutonoMath のデータベース全体で、5400+ 件の制度が都道府県別・実施主体 (国/県/市区町村) 別・tier (S/A/B) 別にどう分布しているか get_meta で集計して表にしてください。上位 5 都道府県と下位 5 都道府県を示し、地域偏りが実データの制度量の偏りなのか収集カバレッジの偏りなのかの解釈も添えて。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-19">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=AutonoMath%20%E3%81%AE%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E5%85%A8%E4%BD%93%E3%81%A7%E3%80%815400%2B%20%E4%BB%B6%E3%81%AE%E5%88%B6%E5%BA%A6%E3%81%8C%E9%83%BD%E9%81%93%E5%BA%9C%E7%9C%8C%E5%88%A5%E3%83%BB%E5%AE%9F%E6%96%BD%E4%B8%BB%E4%BD%93%E5%88%A5%E3%83%BB%20tier%20%E5%88%A5%E3%81%AB%E3%81%A9%E3%81%86%E5%88%86%E5%B8%83%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%8B%20get_meta%20%E3%81%A7%E9%9B%86%E8%A8%88%E3%81%97%E3%81%A6%E8%A1%A8%E3%81%AB%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> Single get_meta call for the overall summary → leave interpretation to the LLM. A great first move for API developers.</p>
+      </article>
+
+      <!-- #20 -->
+      <article class="prompt-card" id="p20">
+        <p class="hook">Post-COVID cross-industry — inbound + tourism DX × regional revitalization</p>
+        <h3>#20 Tourism DX × inbound regional collaboration program inventory</h3>
+        <div class="prompt-meta">
+          <span class="meta-chip persona">Tourism operator / DMO</span>
+          <span class="meta-chip">Tourism / inbound / DX</span>
+          <span class="meta-chip tools">search_programs → check_exclusions</span>
+        </div>
+        <p class="prompt-label">Prompt (Japanese)</p>
+        <code class="copyable prompt-block" id="prompt-20">京都市で観光 DX プラットフォームを運営する地域連携 DMO です。観光庁のインバウンド拡大事業・地域一体となった観光地・観光産業の再生・高付加価値化、経産省の地域経済産業活性化対策、京都府・京都市の独自観光補助を棚卸しして。同一事業への観光庁 + 経産省併給不可のルールもあれば確認してください。</code>
+        <div class="prompt-actions">
+          <button type="button" class="copy-btn" data-target="prompt-20">Copy</button>
+          <a class="desktop-link" href="claude-code://new?prompt=%E4%BA%AC%E9%83%BD%E5%B8%82%E3%81%A7%E8%A6%B3%E5%85%89%20DX%20%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0%E3%82%92%E9%81%8B%E5%96%B6%E3%81%99%E3%82%8B%E5%9C%B0%E5%9F%9F%E9%80%A3%E6%90%BA%20DMO%20%E3%81%A7%E3%81%99%E3%80%82%E8%A6%B3%E5%85%89%E5%BA%81%E3%83%BB%E7%B5%8C%E7%94%A3%E7%9C%81%E3%83%BB%E4%BA%AC%E9%83%BD%E3%81%AE%E8%A3%9C%E5%8A%A9%E3%82%92%E6%A3%9A%E5%8D%B8%E3%81%97%E3%81%97%E3%81%A6%E3%80%82" rel="noopener">Try in Claude Desktop →</a>
+        </div>
+        <p class="tool-note"><strong>Exercises:</strong> search_programs (tourism DX + Kyoto) → check_exclusions to verify cross-ministry combinability rules.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ FOOTER CTA ============ -->
+  <section class="footer-cta">
+    <div class="container">
+      <h2>Want to try more?</h2>
+      <p>Start with <a href="getting-started.html">getting-started</a>, or browse all 5,400+ programs at <a href="/programs/">/programs/</a>.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="getting-started.html">Get started in 5 seconds →</a>
+        <a class="btn btn-secondary" href="/programs/">Browse all programs</a>
+        <a class="btn btn-secondary" href="pricing.html">See pricing</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="tos.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="../tokushoho.html">Legal (JP)</a>
+      <a href="../press/about.md">Press kit</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var id = btn.getAttribute('data-target');
+      var el = document.getElementById(id);
+      if (!el) return;
+      var text = el.textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function(){ flash(btn); }, function(){ fallback(text, btn); });
+      } else {
+        fallback(text, btn);
+      }
+    });
+  });
+  function flash(btn){
+    var orig = btn.textContent;
+    btn.classList.add('copied');
+    btn.textContent = 'Copied';
+    setTimeout(function(){ btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
+  }
+  function fallback(text, btn){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); flash(btn); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+})();
+</script>
+
+</body>
+</html>

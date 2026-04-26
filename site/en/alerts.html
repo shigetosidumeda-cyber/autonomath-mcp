@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>Law-revision alerts — invoice system, e-bookkeeping, subsidies — AutonoMath</title>
+<meta name="description" content="Email alerts for revisions to Japan's invoice system, e-bookkeeping (denshi-chobo) law, subsidies, loans, enforcement actions, tax rulesets, and court decisions. Filter by industry, prefecture, and topic. Monthly digest is free; real-time alerts are ¥500/month tax exclusive (¥550 incl.). Operated by Bookyou Inc.">
+
+<meta property="og:title" content="Law-revision alerts — invoice / e-bookkeeping / subsidy changes within 24 hours">
+<meta property="og:description" content="Email alerts within 24 hours of detection. Monthly digest free; real-time ¥500/month. Every alert ships with the primary-source URL.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/alerts.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Law-revision alerts — AutonoMath">
+<meta name="twitter:description" content="Invoice / e-bookkeeping / subsidy changes within 24 hours by email. ¥500/month.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/alerts.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/alerts.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/alerts.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/alerts.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autonomath.ai/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Products", "item": "https://autonomath.ai/en/products.html"},
+    {"@type": "ListItem", "position": 3, "name": "Law-revision alerts", "item": "https://autonomath.ai/en/alerts.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "AutonoMath Law-revision Alerts",
+  "description": "Email alerts for revisions to Japan's invoice system, e-bookkeeping law, subsidies, loans, enforcement actions, tax rulesets, and court decisions. Monthly digest is free; real-time alerts are ¥500/month tax exclusive.",
+  "brand": {"@type": "Brand", "name": "AutonoMath"},
+  "manufacturer": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "vatID": "T8010001213708",
+    "email": "info@bookyou.net"
+  },
+  "url": "https://autonomath.ai/en/alerts.html",
+  "inLanguage": "en",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Monthly digest",
+      "price": "0",
+      "priceCurrency": "JPY",
+      "description": "One email on the first of each month summarising the previous month's revisions. Free."
+    },
+    {
+      "@type": "Offer",
+      "name": "Real-time alerts",
+      "price": "500",
+      "priceCurrency": "JPY",
+      "description": "¥500/month tax exclusive (¥550 tax inclusive). Email delivered within 24 hours of detection.",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "500",
+        "priceCurrency": "JPY",
+        "unitText": "MONTH"
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "en",
+  "mainEntity": [
+    {"@type": "Question", "name": "How frequent are the emails?", "acceptedAnswer": {"@type": "Answer", "text": "The real-time plan (¥500/month) sends at most one email per day, and only on days where a revision matches your filters. Quiet days send nothing. The free plan sends one digest per month, on the first."}},
+    {"@type": "Question", "name": "Can I cancel anytime?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. There is no minimum term and no cancellation fee. Cancel via the unsubscribe link in any email or via the Stripe Customer Portal."}},
+    {"@type": "Question", "name": "How is my data handled?", "acceptedAnswer": {"@type": "Answer", "text": "Your email, corporate number, JSIC industry, and prefecture are used only to scope alert delivery. We do not share with third parties. See the privacy policy."}},
+    {"@type": "Question", "name": "Are the sources reliable?", "acceptedAnswer": {"@type": "Answer", "text": "Every alert links to the primary source — METI, MAFF, NTA, JFC, e-Gov, the courts, or the relevant prefecture. Aggregator and second-hand sources are excluded. The source_fetched_at timestamp tells you when we retrieved the data."}},
+    {"@type": "Question", "name": "How do I switch between digest and real-time?", "acceptedAnswer": {"@type": "Answer", "text": "Move from digest to real-time via Stripe Checkout. Move back by cancelling the real-time subscription and re-subscribing with the same email to the free digest. There are no tier ranks — only delivery cadence."}}
+  ]
+}
+</script>
+
+<style>
+  .alerts-hero { padding: 64px 0 40px; border-bottom: 1px solid var(--border); }
+  .alerts-hero h1 { font-size: 32px; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.01em; line-height: 1.25; }
+  .alerts-hero p.lead { font-size: 17px; color: var(--text-muted); margin: 0 0 8px; max-width: 640px; }
+  .alerts-hero p.tag { font-size: 14px; color: var(--text-muted); margin: 0; }
+
+  .alerts-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; padding: 48px 0; align-items: start; }
+  @media (max-width: 880px) { .alerts-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+  .signup-card { border: 1px solid var(--border); border-radius: 10px; padding: 28px 28px 24px; background: var(--bg); }
+  .signup-card h2 { font-size: 20px; font-weight: 700; margin: 0 0 18px; }
+  .field { margin: 0 0 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin: 0 0 6px; color: var(--text); }
+  .field input[type=email], .field input[type=text], .field select {
+    width: 100%; padding: 11px 12px; font-size: 14px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--bg); color: var(--text); font-family: inherit;
+    min-height: 44px;
+  }
+  .field .hint { font-size: 12px; color: var(--text-muted); margin: 4px 0 0; }
+  .field-inline { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; margin: 0; padding: 0; border: 0; }
+  .checkbox-group legend { font-size: 13px; font-weight: 600; padding: 0; margin: 0 0 8px; color: var(--text); }
+  .checkbox-group label { font-size: 14px; font-weight: 400; display: flex; gap: 8px; align-items: center; cursor: pointer; min-height: 44px; }
+  .checkbox-group input { flex-shrink: 0; min-width: 20px; min-height: 20px; }
+
+  .plan-radio { border: 0; padding: 0; margin: 0 0 16px; }
+  .plan-radio legend { font-size: 13px; font-weight: 600; padding: 0; margin: 0 0 8px; }
+  .plan-radio label { display: block; border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 0 0 8px; cursor: pointer; font-size: 14px; line-height: 1.55; min-height: 44px; }
+  .plan-radio label.selected { border-color: var(--accent); background: var(--bg-alt); }
+  .plan-radio input { margin: 0 8px 0 0; vertical-align: middle; min-width: 20px; min-height: 20px; }
+  .plan-radio .plan-price { font-weight: 600; color: var(--text); }
+  .plan-radio .plan-desc { color: var(--text-muted); font-size: 13px; margin: 2px 0 0; }
+
+  .preview-card { border: 1px solid var(--border); border-radius: 10px; padding: 0; background: var(--bg); overflow: hidden; }
+  .preview-card .preview-head { background: var(--bg-alt); padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-muted); font-family: ui-monospace, Menlo, monospace; }
+  .preview-card .preview-body { padding: 20px 22px; font-size: 13px; color: var(--text); line-height: 1.65; }
+  .preview-card h3 { font-size: 15px; font-weight: 700; margin: 0 0 8px; }
+  .preview-card .preview-lead { color: var(--text-muted); font-size: 13px; margin: 0 0 14px; }
+  .preview-card h4 { font-size: 13px; font-weight: 700; margin: 16px 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .preview-card ul.items { list-style: none; padding: 0; margin: 0; }
+  .preview-card ul.items li { border-left: 3px solid var(--accent); padding: 2px 0 6px 10px; margin: 0 0 10px; }
+  .preview-card ul.items .t { font-weight: 600; font-size: 13px; }
+  .preview-card ul.items .s { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin: 2px 0 2px; }
+  .preview-card ul.items .u { font-size: 11px; color: var(--text-muted); }
+  .preview-card ul.items .u a { color: var(--accent); }
+
+  .faq { padding: 48px 0 64px; border-top: 1px solid var(--border); }
+  .faq h2 { font-size: 22px; margin: 0 0 20px; }
+  .faq details { border-bottom: 1px solid var(--border); padding: 14px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; font-size: 15px; list-style: none; min-height: 44px; padding: 6px 0; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; float: right; color: var(--text-muted); font-weight: 400; }
+  .faq details[open] summary::after { content: "−"; }
+  .faq p { color: var(--text-muted); margin: 10px 0 0; font-size: 14px; }
+
+  .signup-status { font-size: 13px; margin: 12px 0 0; min-height: 1.4em; }
+  .signup-status.ok { color: #3fb950; }
+  .signup-status.err { color: var(--danger); }
+</style>
+
+<script defer src="../analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="alerts.html" aria-current="page">Alerts</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../alerts.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="alerts.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="alerts-hero">
+  <div class="container">
+    <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+      <a href="index.html">Home</a> &raquo; <a href="products.html">Products</a> &raquo; <span aria-current="page">Law-revision alerts</span>
+    </nav>
+    <h1>Law-revision alerts — never miss an invoice, e-bookkeeping, or subsidy change</h1>
+    <p class="lead">
+      Filter by industry, prefecture, and topic, and we'll email you within
+      24 hours of any matching change. Every alert links the primary source
+      (ministries, JFC, NTA, e-Gov, the courts).
+    </p>
+    <p class="tag">Monthly digest is free. Real-time alerts are ¥500/month (tax excl., ¥550 incl.). No minimum term, no cancellation fee.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="alerts-grid">
+
+    <form class="signup-card" id="alerts-signup" novalidate>
+      <h2>Subscribe to alerts</h2>
+
+      <div class="field">
+        <label for="email">Email <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+        <input type="email" id="email" name="email" required aria-required="true" autocomplete="email" placeholder="you@example.com">
+        <p class="hint">We'll send a confirmation email. Used only for alerts.</p>
+      </div>
+
+      <div class="field-inline">
+        <div class="field">
+          <label for="houjin_bangou">Corporate number (optional)</label>
+          <input type="text" id="houjin_bangou" name="houjin_bangou" pattern="\d{13}" maxlength="13" inputmode="numeric" placeholder="1234567890123">
+          <p class="hint">13 digits. Sole proprietors can leave blank.</p>
+        </div>
+        <div class="field">
+          <label for="prefecture">Prefecture (optional)</label>
+          <select id="prefecture" name="prefecture">
+            <option value="">-- not specified --</option>
+          </select>
+          <p class="hint">Scopes prefecture-level programs.</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="industry">Industry (optional, JSIC major division)</label>
+        <select id="industry" name="industry_codes" multiple size="4" aria-describedby="industry-hint">
+          <option value="A">A — Agriculture, forestry</option>
+          <option value="B">B — Fisheries</option>
+          <option value="C">C — Mining, quarrying, gravel</option>
+          <option value="D">D — Construction</option>
+          <option value="E">E — Manufacturing</option>
+          <option value="F">F — Electricity, gas, heat, water</option>
+          <option value="G">G — Information &amp; communications</option>
+          <option value="H">H — Transport, postal services</option>
+          <option value="I">I — Wholesale, retail</option>
+          <option value="J">J — Finance, insurance</option>
+          <option value="K">K — Real estate, leasing</option>
+          <option value="L">L — Scientific research, professional services</option>
+          <option value="M">M — Accommodation, food services</option>
+          <option value="N">N — Living-related, entertainment</option>
+          <option value="O">O — Education, learning support</option>
+          <option value="P">P — Medical, welfare</option>
+          <option value="Q">Q — Compound services</option>
+          <option value="R">R — Services (not elsewhere classified)</option>
+        </select>
+        <p class="hint" id="industry-hint">Hold Ctrl / Cmd to select multiple.</p>
+      </div>
+
+      <fieldset class="checkbox-group" aria-required="true">
+        <legend>Topics <span aria-hidden="true" style="color:var(--danger)">*</span></legend>
+        <label><input type="checkbox" name="areas" value="invoice" checked> Invoice system</label>
+        <label><input type="checkbox" name="areas" value="ebook"> E-bookkeeping (denshi-chobo)</label>
+        <label><input type="checkbox" name="areas" value="subsidy" checked> Subsidies</label>
+        <label><input type="checkbox" name="areas" value="loan"> Loans</label>
+        <label><input type="checkbox" name="areas" value="enforcement"> Enforcement actions</label>
+        <label><input type="checkbox" name="areas" value="tax_ruleset"> Tax rulesets</label>
+        <label><input type="checkbox" name="areas" value="court"> Court decisions</label>
+      </fieldset>
+
+      <fieldset class="plan-radio" style="margin-top:20px;">
+        <legend>Plan</legend>
+        <label class="selected" id="plan-free-label">
+          <input type="radio" name="plan" value="free" checked>
+          <span class="plan-price">Monthly digest — ¥0</span>
+          <div class="plan-desc">One email per month summarising the previous month. Free.</div>
+        </label>
+        <label id="plan-paid-label">
+          <input type="radio" name="plan" value="paid">
+          <span class="plan-price">Real-time alerts — ¥500/month (tax excl.)</span>
+          <div class="plan-desc">Within 24 hours of detection, scoped to your topics. ¥550 tax incl. No minimum term.</div>
+        </label>
+      </fieldset>
+
+      <button class="btn btn-primary" type="submit" style="width:100%; padding:14px; font-size:15px; margin-top:4px; min-height:48px;">Subscribe</button>
+      <p class="signup-status" id="signup-status" role="status" aria-live="polite"></p>
+      <p class="hint" style="margin-top:14px;">
+        By subscribing you agree to the
+        <a href="../tos.html">Terms of Service</a>,
+        <a href="privacy.html">Privacy Policy</a>, and
+        <a href="../tokushoho.html">Japanese commerce-law disclosures</a>.
+      </p>
+    </form>
+
+    <aside class="preview-card" aria-labelledby="preview-title">
+      <div class="preview-head">From: AutonoMath &lt;no-reply@autonomath.ai&gt; — Subject: [AutonoMath] Law-revision alert: 3 changes detected</div>
+      <div class="preview-body">
+        <h3 id="preview-title">3 changes detected</h3>
+        <p class="preview-lead">In the last 24 hours, the following changes matched your filters.</p>
+
+        <h4>Invoice system (1)</h4>
+        <ul class="items">
+          <li>
+            <div class="t">2-percent special-rule transition Q&amp;A updated</div>
+            <div class="s">NTA Tax Answer No.6505 clarifies the September 30, 2026 (Reiwa 8) treatment.</div>
+            <div class="u">
+              <a href="https://www.nta.go.jp/" rel="noopener">Open primary source</a> ·
+              <a href="#" rel="noopener">View in AutonoMath</a>
+            </div>
+          </li>
+        </ul>
+
+        <h4>Subsidies (1)</h4>
+        <ul class="items">
+          <li>
+            <div class="t">SME Growth Acceleration Subsidy — third call open</div>
+            <div class="s">Cap ¥100M, subsidy rate 1/2. SME Agency published the call on 2026-04-15.</div>
+            <div class="u">
+              <a href="https://www.chusho.meti.go.jp/" rel="noopener">Open primary source</a> ·
+              <a href="#" rel="noopener">View in AutonoMath</a>
+            </div>
+          </li>
+        </ul>
+
+        <h4>Enforcement (1)</h4>
+        <ul class="items">
+          <li>
+            <div class="t">Monozukuri Subsidy — grant decision rescinded (Tokyo, manufacturing)</div>
+            <div class="s">Following a Board of Audit finding, ¥42M of improper expenditure was ordered returned.</div>
+            <div class="u">
+              <a href="https://www.jbaudit.go.jp/" rel="noopener">Open primary source</a> ·
+              <a href="#" rel="noopener">View in AutonoMath</a>
+            </div>
+          </li>
+        </ul>
+
+        <p style="font-size:12px; color:var(--text-muted); margin:18px 0 0; padding-top:14px; border-top:1px solid var(--border);">
+          This is a preview. Real emails include the primary-source URL, an
+          unsubscribe link, and the legally required commerce-law disclosures.
+        </p>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<section class="faq">
+  <div class="container">
+    <h2>FAQ</h2>
+
+    <details>
+      <summary>How frequent are the emails?</summary>
+      <p>
+        The real-time plan (¥500/month) sends at most one email per day, and only on days where a matching change is detected. Quiet days send nothing. The free monthly digest goes out on the first of each month with the previous month's changes summarised in a single email.
+      </p>
+    </details>
+
+    <details>
+      <summary>Can I cancel anytime?</summary>
+      <p>
+        Yes. There is no minimum term and no cancellation fee. Click the unsubscribe link at the bottom of any email, or cancel via the Stripe Customer Portal.
+      </p>
+    </details>
+
+    <details>
+      <summary>How is my data handled?</summary>
+      <p>
+        Your email, corporate number, industry, and prefecture are used only to scope alert delivery. We do not share with third parties. Details in the <a href="privacy.html">privacy policy</a>.
+      </p>
+    </details>
+
+    <details>
+      <summary>Are the sources reliable?</summary>
+      <p>
+        Every alert links to the primary source (ministries, JFC, prefectures, e-Gov, NTA, the courts). Aggregator and second-hand sources are excluded. <code>source_fetched_at</code> tells you when we retrieved each row.
+      </p>
+    </details>
+
+    <details>
+      <summary>How do I switch between digest and real-time?</summary>
+      <p>
+        Move from digest to real-time via Stripe Checkout. To move back, cancel the real-time subscription and re-subscribe to the digest using the same email. There are no tier ranks — only delivery cadence differs.
+      </p>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="../tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var PREFS = ["Hokkaido","Aomori","Iwate","Miyagi","Akita","Yamagata","Fukushima","Ibaraki","Tochigi","Gunma","Saitama","Chiba","Tokyo","Kanagawa","Niigata","Toyama","Ishikawa","Fukui","Yamanashi","Nagano","Gifu","Shizuoka","Aichi","Mie","Shiga","Kyoto","Osaka","Hyogo","Nara","Wakayama","Tottori","Shimane","Okayama","Hiroshima","Yamaguchi","Tokushima","Kagawa","Ehime","Kochi","Fukuoka","Saga","Nagasaki","Kumamoto","Oita","Miyazaki","Kagoshima","Okinawa"];
+    var JP_PREFS = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
+    var sel = document.getElementById("prefecture");
+    if (!sel) return;
+    PREFS.forEach(function (label, i) {
+      var o = document.createElement("option");
+      // value is the JP-canonical name so the API sees the same value as JP form.
+      o.value = JP_PREFS[i];
+      o.textContent = label + " / " + JP_PREFS[i];
+      sel.appendChild(o);
+    });
+  })();
+
+  (function () {
+    var form = document.getElementById("alerts-signup");
+    var status = document.getElementById("signup-status");
+    if (!form) return;
+
+    var planInputs = form.querySelectorAll('input[name=plan]');
+    var freeLabel = document.getElementById("plan-free-label");
+    var paidLabel = document.getElementById("plan-paid-label");
+    function syncPlan() {
+      planInputs.forEach(function (input) {
+        var label = input.value === "free" ? freeLabel : paidLabel;
+        if (label) label.classList.toggle("selected", input.checked);
+      });
+    }
+    planInputs.forEach(function (i) { i.addEventListener("change", syncPlan); });
+    syncPlan();
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      status.className = "signup-status";
+      status.textContent = "Sending…";
+
+      var data = new FormData(form);
+      var areas = [];
+      form.querySelectorAll('input[name=areas]:checked').forEach(function (i) { areas.push(i.value); });
+      if (areas.length === 0) {
+        status.className = "signup-status err";
+        status.textContent = "Select at least one topic.";
+        return;
+      }
+      var industries = [];
+      var industrySel = form.industry;
+      if (industrySel && industrySel.selectedOptions) {
+        for (var i = 0; i < industrySel.selectedOptions.length; i++) {
+          industries.push(industrySel.selectedOptions[i].value);
+        }
+      }
+      var payload = {
+        email: (data.get("email") || "").trim(),
+        houjin_bangou: (data.get("houjin_bangou") || "").trim() || null,
+        industry_codes: industries,
+        areas_of_interest: areas,
+        prefecture: (data.get("prefecture") || "").trim() || null,
+        plan: data.get("plan") || "free",
+        source_lang: "en"
+      };
+
+      var submitBtn = form.querySelector('button[type=submit], input[type=submit]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      var apiBase = window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE || "https://api.autonomath.ai";
+      var ctrl = new AbortController();
+      var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+      fetch(apiBase + "/v1/compliance/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: ctrl.signal
+      }).then(function (r) {
+        return r.json().then(function (body) { return { ok: r.ok, body: body }; });
+      }).then(function (res) {
+        if (res.ok) {
+          status.className = "signup-status ok";
+          var msg = "Subscription received. We sent a confirmation email.";
+          if (payload.plan === "paid") {
+            msg += " Click the link inside to continue to checkout.";
+          }
+          status.textContent = msg;
+          form.reset();
+          syncPlan();
+        } else {
+          status.className = "signup-status err";
+          var detail = res.body && res.body.detail;
+          status.textContent = "Error: " + (typeof detail === "string" ? detail : "Please review your input.");
+        }
+      }).catch(function (err) {
+        status.className = "signup-status err";
+        if (err && err.name === "AbortError") {
+          status.textContent = "Timed out — slow connection or unresponsive server. Please retry.";
+        } else {
+          status.textContent = "Network error. Please try again later.";
+        }
+      }).then(function () {
+        clearTimeout(timer);
+        if (submitBtn) submitBtn.disabled = false;
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

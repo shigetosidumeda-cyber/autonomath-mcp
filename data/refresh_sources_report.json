@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-04-23T04:36:11+00:00",
+  "dry_run": true,
+  "rows_checked": 20,
+  "elapsed_seconds": 7.02,
+  "totals": {
+    "fail": 6,
+    "ok": 14,
+    "redirect_host_changed": 1
+  },
+  "writes": {
+    "would_increment_fail": 6,
+    "would_update_fetched_at": 14,
+    "would_log_redirect": 1
+  },
+  "per_host_checks_top20": [
+    [
+      "www.city.minamisoma.lg.jp",
+      1
+    ],
+    [
+      "www.pref.shimane.lg.jp",
+      1
+    ],
+    [
+      "akita-agri-navi.com",
+      1
+    ],
+    [
+      "www.pref.hiroshima.lg.jp",
+      1
+    ],
+    [
+      "www.city.nasukarasuyama.lg.jp",
+      1
+    ],
+    [
+      "www.nedo.go.jp",
+      1
+    ],
+    [
+      "www.agri.city.nagoya.jp",
+      1
+    ],
+    [
+      "www.city.shimotsuma.lg.jp",
+      1
+    ],
+    [
+      "www.city.takeo.lg.jp",
+      1
+    ],
+    [
+      "www.city.iwamizawa.hokkaido.jp",
+      1
+    ],
+    [
+      "www.city.hita.oita.jp",
+      1
+    ],
+    [
+      "hitoyoshi-life.jp",
+      1
+    ],
+    [
+      "www.takarashuzo.co.jp",
+      1
+    ],
+    [
+      "www.city.asakura.lg.jp",
+      1
+    ],
+    [
+      "www.maff.go.jp",
+      1
+    ],
+    [
+      "www1.g-reiki.net",
+      1
+    ],
+    [
+      "www.city.nanto.toyama.jp",
+      1
+    ],
+    [
+      "www.mhlw.go.jp",
+      1
+    ],
+    [
+      "www.city.akiruno.tokyo.jp",
+      1
+    ],
+    [
+      "www.city.unzen.nagasaki.jp",
+      1
+    ]
+  ],
+  "top_failing_hosts": [
+    [
+      "www.city.minamisoma.lg.jp",
+      1
+    ],
+    [
+      "www.pref.hiroshima.lg.jp",
+      1
+    ],
+    [
+      "www.city.iwamizawa.hokkaido.jp",
+      1
+    ],
+    [
+      "www.city.hita.oita.jp",
+      1
+    ],
+    [
+      "www.city.asakura.lg.jp",
+      1
+    ],
+    [
+      "www.city.unzen.nagasaki.jp",
+      1
+    ]
+  ],
+  "quarantined_unified_ids": []
+}

@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Regenerate site/assets/og*.png from a single source of truth.
+
+Sizes:
+  - og.png         1200 x 630  (Open Graph default, Facebook/LinkedIn)
+  - og-twitter.png 1200 x 675  (Twitter summary_large_image, 16:9)
+  - og-square.png  1200 x 1200 (LINE / square placements)
+
+Pure Pillow, no external image deps. Re-run via:
+
+    .venv/bin/python scripts/generate_og_images.py
+"""
+from __future__ import annotations
+
+from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFont
+
+REPO = Path(__file__).resolve().parent.parent
+ASSETS = REPO / "site" / "assets"
+
+JP_FONT_PATH = "/System/Library/Fonts/Hiragino Sans GB.ttc"
+EN_FONT_PATH = "/Library/Fonts/Arial Unicode.ttf"
+
+BG = (255, 255, 255)
+TEXT = (17, 17, 17)
+MUTED = (85, 85, 85)
+ACCENT = (30, 58, 138)
+BORDER = (229, 229, 229)
+
+
+def _load_font(path: str, size: int) -> ImageFont.FreeTypeFont:
+    return ImageFont.truetype(path, size)
+
+
+def _draw_brand_mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:
+    draw.rectangle((x, y, x + size, y + size), fill=ACCENT, outline=ACCENT)
+    fnt = _load_font(EN_FONT_PATH, int(size * 0.55))
+    bbox = draw.textbbox((0, 0), "AM", font=fnt)
+    tw = bbox[2] - bbox[0]
+    th = bbox[3] - bbox[1]
+    draw.text(
+        (x + (size - tw) / 2, y + (size - th) / 2 - bbox[1]),
+        "AM",
+        font=fnt,
+        fill=(255, 255, 255),
+    )
+
+
+def _render(width: int, height: int, headline: str, subline: str, kicker: str) -> Image.Image:
+    img = Image.new("RGB", (width, height), BG)
+    draw = ImageDraw.Draw(img)
+
+    pad = int(width * 0.06)
+    mark_size = int(width * 0.07)
+
+    _draw_brand_mark(draw, pad, pad, mark_size)
+    brand_fnt = _load_font(EN_FONT_PATH, int(mark_size * 0.55))
+    draw.text(
+        (pad + mark_size + int(pad * 0.3), pad + int(mark_size * 0.22)),
+        "AutonoMath",
+        font=brand_fnt,
+        fill=TEXT,
+    )
+
+    kicker_fnt = _load_font(JP_FONT_PATH, int(width * 0.025))
+    draw.text((pad, pad + mark_size + int(pad * 0.7)), kicker, font=kicker_fnt, fill=MUTED)
+
+    head_fnt = _load_font(JP_FONT_PATH, int(width * 0.052))
+    head_y = pad + mark_size + int(pad * 1.6)
+    draw.multiline_text((pad, head_y), headline, font=head_fnt, fill=TEXT, spacing=10)
+    head_bbox = draw.multiline_textbbox((pad, head_y), headline, font=head_fnt, spacing=10)
+    head_bottom = head_bbox[3]
+
+    sub_fnt = _load_font(JP_FONT_PATH, int(width * 0.026))
+    sub_y = head_bottom + int(pad * 0.6)
+    draw.text((pad, sub_y), subline, font=sub_fnt, fill=MUTED)
+
+    bottom_fnt = _load_font(EN_FONT_PATH, int(width * 0.022))
+    bottom_y = height - pad - int(width * 0.03)
+    draw.text((pad, bottom_y), "autonomath.ai · Bookyou Inc.", font=bottom_fnt, fill=MUTED)
+
+    draw.line(
+        [(pad, height - pad - int(width * 0.06)), (width - pad, height - pad - int(width * 0.06))],
+        fill=BORDER,
+        width=2,
+    )
+
+    return img
+
+
+def main() -> None:
+    headline = "日本の公的制度を、5 つの\nインターフェースで。"
+    subline = "API + MCP + LINE + 法令アラート + 埋込 Widget · ¥3/req metered"
+    kicker = "補助金 · 融資 · 税制 · 認定 · 13,578 制度 · 一次資料 100%"
+
+    targets = [
+        ("og.png", 1200, 630),
+        ("og-twitter.png", 1200, 675),
+        ("og-square.png", 1200, 1200),
+    ]
+
+    for name, w, h in targets:
+        out = ASSETS / name
+        img = _render(w, h, headline, subline, kicker)
+        img.save(out, "PNG", optimize=True)
+        print(f"wrote {out.relative_to(REPO)}  ({w}x{h})")
+
+
+if __name__ == "__main__":
+    main()

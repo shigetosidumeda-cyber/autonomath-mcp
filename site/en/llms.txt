@@ -1,0 +1,68 @@
+# AutonoMath (English index)
+
+> Cross-search REST + MCP API for Japanese public programs: 10,790 active subsidies / loans / tax measures / certifications (tier S/A/B/C searchable; tier X = 1,923 quarantine excluded) + 2,286 adoption case studies + 108 loan products (collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + 9,484 laws + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases, 181 exclusion/prerequisite rules, primary-source URL + fetched_at on 99%+ of rows. MCP-native (72 tools, protocol 2025-06-18). ¥3 per request metered (¥3.30 tax-inclusive), anonymous 50 req/month per IP free (JST first-of-month reset).
+
+This file follows the emerging llms.txt convention (https://llmstxt.org/) —
+a curated, plaintext index of canonical documents for LLM indexers.
+The Japanese-language sibling lives at https://autonomath.ai/llms.txt.
+A flat-root mirror of this English index is at https://autonomath.ai/llms.en.txt.
+Concatenated full docs: https://autonomath.ai/llms-full.en.txt
+Canonical domain: https://autonomath.ai (Bookyou Inc. / corporate number T8010001213708 / info@bookyou.net).
+
+Program names, law titles, and case-study fields are kept verbatim in
+Japanese. They are legal entity names; machine-translating them would
+invent canonical names that do not exist (a fraud-risk vector under
+Japanese 景表法 / 消費者契約法). The structural prose around the data is
+in English so English-language LLM crawlers can index the framing.
+
+## Operator
+
+Bookyou Inc. (Japanese corporate number T8010001213708) — Representative: Shigetoshi Umeda — info@bookyou.net
+
+## Docs
+
+- [Overview](https://autonomath.ai/docs/)
+- [Getting started (5-minute quickstart)](https://autonomath.ai/docs/getting-started/): install, API key, curl/Python/Node, Claude Desktop MCP config
+- [API reference (REST)](https://autonomath.ai/docs/api-reference/)
+- [MCP tools (72)](https://autonomath.ai/docs/mcp-tools/): 39 jpintel + 33 autonomath stdio tools
+- [Examples (Python + curl)](https://autonomath.ai/docs/examples/)
+- [Error handling](https://autonomath.ai/docs/error_handling/)
+- [Exclusion rules](https://autonomath.ai/docs/exclusions/)
+- [FAQ](https://autonomath.ai/docs/faq/)
+- [Pricing (¥3 per request metered)](https://autonomath.ai/docs/pricing/)
+- [SLA](https://autonomath.ai/docs/sla/)
+
+## Examples
+
+- [Examples (Python + curl)](https://autonomath.ai/docs/examples/)
+- [Try the prescreen widget](https://autonomath.ai/en/index.html#try)
+
+## MCP server
+
+- PyPI package: `autonomath-mcp` — `pip install autonomath-mcp`
+- Console script: `autonomath-mcp` (FastMCP stdio, 72 tools at default gates)
+- Repo: https://github.com/Bookyou/autonomath-mcp
+
+## Data licenses
+
+- e-Gov law corpus: CC-BY 4.0
+- NTA invoice-registrant bulk: PDL v1.0 (Public Domain License, redistribution OK with attribution)
+- gBizINFO corporate metadata: Japan Government Standard Terms of Use
+- Public-domain rows (gazette etc): public domain
+- Each row carries an explicit license via `am_source.license` (99.997% coverage)
+- Full terms: https://autonomath.ai/en/tos.html
+
+## Structured data
+
+- [Sitemap index](https://autonomath.ai/sitemap-index.xml)
+- [Docs sitemap](https://autonomath.ai/docs/sitemap.xml)
+- [Programs sitemap](https://autonomath.ai/sitemap-programs.xml)
+- Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on each `/programs/{id}.html`
+
+## Optional
+
+- [About](https://autonomath.ai/en/about.html)
+- [Pricing page (HTML)](https://autonomath.ai/en/pricing.html)
+- [Terms of service](https://autonomath.ai/en/tos.html)
+- [Privacy policy](https://autonomath.ai/en/privacy.html)
+- [Security disclosure (RFC 9116)](https://autonomath.ai/.well-known/security.txt)

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Stats — AutonoMath</title>
+<meta name="description" content="AutonoMath の透明性ダッシュボード。データセット件数 (programs / 採択事例 / 融資 / 行政処分 / 法令 / 税制 / 適格事業者) と source freshness、月間 API 利用量を一次資料件数ベースで公開。">
+<meta name="robots" content="index, follow">
+
+<meta property="og:title" content="Stats — AutonoMath">
+<meta property="og:description" content="データセット件数・freshness・月間利用量。一次資料 100% を数字で開示。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/stats.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Stats — AutonoMath">
+<meta name="twitter:description" content="データセット件数・freshness・月間利用量。一次資料 100% を数字で開示。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/stats.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/stats.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/stats.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/stats.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .stats-page { padding: 48px 0 64px; }
+  .stats-page h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
+  .stats-page .sub { color: var(--text-muted); margin: 0 0 28px; font-size: 15px; }
+  .stats-section { margin: 0 0 40px; }
+  .stats-section h2 { font-size: 18px; margin: 0 0 14px; font-weight: 700; }
+  .stats-section .desc { color: var(--text-muted); margin: 0 0 18px; font-size: 14px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    background: var(--bg);
+  }
+  .card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 6px;
+    font-weight: 600;
+  }
+  .card .value {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .card .value.pending { color: var(--text-muted); font-size: 16px; font-weight: 500; }
+  table.fresh {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 16px;
+    font-size: 14px;
+  }
+  table.fresh th,
+  table.fresh td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.fresh th {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    background: var(--bg-alt);
+  }
+  table.fresh td.num { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  table.fresh td.muted { color: var(--text-muted); font-size: 13px; }
+  .usage-chart-wrap { border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; background: var(--bg); }
+  .usage-chart-wrap svg { width: 100%; height: 120px; display: block; }
+  .usage-chart-wrap .axis { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; margin: 8px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .footer-note { margin: 8px 0 0; font-size: 13px; color: var(--text-muted); }
+  .updated-at { color: var(--text-muted); font-size: 13px; margin: 24px 0 0; padding-top: 16px; border-top: 1px solid var(--border); }
+  .updated-at code { background: var(--bg-alt); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .err { color: var(--danger); font-size: 13px; margin: 8px 0 0; }
+  @media (max-width: 768px) {
+    .stats-page { padding: 32px 0 48px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="stats.html" aria-current="page">Stats</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="stats.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="en/stats.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="stats-page">
+  <div class="container">
+
+    <h1>Stats</h1>
+    <p class="sub">AutonoMath の透明性ダッシュボード。データセット件数 / freshness / 月間 API 利用量。1 日 1 回 ライブ集計を更新。</p>
+
+    <!-- Coverage ------------------------------------------------------------ -->
+    <section class="stats-section" aria-labelledby="coverage-h">
+      <h2 id="coverage-h">Coverage — データセット件数</h2>
+      <p class="desc">jpintel.db の各テーブルの行数。aggregator (二次情報源) は <strong>0 件</strong>、すべて一次資料に紐づいています。</p>
+      <div class="grid" id="coverage-grid">
+        <div class="card"><p class="label">programs (補助金等)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">case_studies (採択事例)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">loan_programs (融資)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">enforcement_cases (行政処分)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">exclusion_rules (排他)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">laws_jpintel (法令)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">tax_rulesets (税制)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">court_decisions (判例)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">bids (入札)</p><p class="value pending">…</p></div>
+        <div class="card"><p class="label">invoice_registrants (適格事業者)</p><p class="value pending">…</p></div>
+      </div>
+      <p class="err" id="coverage-err" hidden></p>
+    </section>
+
+    <!-- Freshness ----------------------------------------------------------- -->
+    <section class="stats-section" aria-labelledby="freshness-h">
+      <h2 id="freshness-h">Freshness — source 取得時期</h2>
+      <p class="desc">各データセットの fetched_at の最古 / 最新 / 行間平均インターバル。古いほど stale、平均インターバルが大きいほど更新頻度が低いことを示します。</p>
+      <table class="fresh" aria-describedby="freshness-h">
+        <thead>
+          <tr><th scope="col">Source</th><th scope="col" class="num">Count</th><th scope="col">Min fetched_at</th><th scope="col">Max fetched_at</th><th scope="col" class="num">Avg interval (days)</th></tr>
+        </thead>
+        <tbody id="freshness-body">
+          <tr><td colspan="5" class="muted">読み込み中…</td></tr>
+        </tbody>
+      </table>
+      <p class="err" id="freshness-err" hidden></p>
+    </section>
+
+    <!-- Usage --------------------------------------------------------------- -->
+    <section class="stats-section" aria-labelledby="usage-h">
+      <h2 id="usage-h">Usage — 過去 30 日の API 利用量</h2>
+      <p class="desc">認証済み API key 経由の累積リクエスト数。匿名 (X-API-Key 無し) は集計対象外。グラフは日次、ラインは累積。</p>
+      <div class="usage-chart-wrap">
+        <svg id="usage-svg" viewBox="0 0 600 120" preserveAspectRatio="none" role="img" aria-label="過去 30 日の日別 API 利用量">
+          <text x="300" y="60" text-anchor="middle" font-size="12" fill="#555">読み込み中…</text>
+        </svg>
+        <p class="axis"><span id="usage-axis-from">—</span><span id="usage-axis-to">—</span></p>
+        <p class="footer-note" id="usage-total">合計: —</p>
+      </div>
+      <p class="err" id="usage-err" hidden></p>
+    </section>
+
+    <p class="updated-at">
+      Cadence: 1 日 1 回 ライブ集計 (5 分間メモリキャッシュ経由)。
+      Source: <code>GET /v1/stats/coverage</code> · <code>GET /v1/stats/freshness</code> · <code>GET /v1/stats/usage</code>。
+      最終生成: <code id="generated-at">—</code>
+    </p>
+
+  </div>
+</section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <p class="copy">© 2026 Bookyou株式会社 — 法人番号 T8010001213708</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // Allow override for cross-origin local dev; defaults to same-origin path
+  // so Pages -> Fly proxy works in production.
+  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "autonomath.ai" ? "https://api.autonomath.ai" : "");
+
+  var COVERAGE_LABELS = [
+    ["programs", "programs (補助金等)"],
+    ["case_studies", "case_studies (採択事例)"],
+    ["loan_programs", "loan_programs (融資)"],
+    ["enforcement_cases", "enforcement_cases (行政処分)"],
+    ["exclusion_rules", "exclusion_rules (排他)"],
+    ["laws_jpintel", "laws_jpintel (法令)"],
+    ["tax_rulesets", "tax_rulesets (税制)"],
+    ["court_decisions", "court_decisions (判例)"],
+    ["bids", "bids (入札)"],
+    ["invoice_registrants", "invoice_registrants (適格事業者)"]
+  ];
+
+  function fmtNum(n) {
+    if (n === null || n === undefined) return "—";
+    return Number(n).toLocaleString("ja-JP");
+  }
+
+  function showErr(el, err, retry) {
+    if (!el) return;
+    var friendlyMsg = err && err.name === "AbortError"
+      ? "タイムアウト — 再度お試しください"
+      : "読み込みに失敗しました。時間をおいて再試行してください";
+    el.innerHTML = "";
+    var span = document.createElement("span");
+    span.textContent = friendlyMsg + " · ";
+    el.appendChild(span);
+    if (retry) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "再試行";
+      btn.style.cssText = "margin:0 8px 0 0;padding:2px 10px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--bg-alt);cursor:pointer;";
+      btn.addEventListener("click", function () { el.hidden = true; retry(); });
+      el.appendChild(btn);
+    }
+    var link = document.createElement("a");
+    link.href = "status.html";
+    link.textContent = "障害状況";
+    el.appendChild(link);
+    el.hidden = false;
+  }
+
+  function loadCoverage() {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    fetch(BASE + "/v1/stats/coverage", { signal: ctrl.signal })
+      .then(function (r) {
+        if (!r.ok) throw new Error("coverage fetch failed: " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        var grid = document.getElementById("coverage-grid");
+        if (!grid) return;
+        grid.innerHTML = "";
+        COVERAGE_LABELS.forEach(function (pair) {
+          var key = pair[0], label = pair[1];
+          var card = document.createElement("div");
+          card.className = "card";
+          var lab = document.createElement("p");
+          lab.className = "label";
+          lab.textContent = label;
+          var val = document.createElement("p");
+          val.className = "value";
+          val.textContent = fmtNum(data[key]);
+          card.appendChild(lab);
+          card.appendChild(val);
+          grid.appendChild(card);
+        });
+        var ts = document.getElementById("generated-at");
+        if (ts && data.generated_at) ts.textContent = data.generated_at;
+      })
+      .catch(function (e) {
+        showErr(document.getElementById("coverage-err"), e, loadCoverage);
+      })
+      .then(function () { clearTimeout(timer); });
+  }
+
+  function loadFreshness() {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    fetch(BASE + "/v1/stats/freshness", { signal: ctrl.signal })
+      .then(function (r) {
+        if (!r.ok) throw new Error("freshness fetch failed: " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        var body = document.getElementById("freshness-body");
+        if (!body) return;
+        body.innerHTML = "";
+        Object.keys(data.sources).forEach(function (k) {
+          var s = data.sources[k];
+          var tr = document.createElement("tr");
+          var tdName = document.createElement("td");
+          tdName.textContent = k;
+          var tdCount = document.createElement("td");
+          tdCount.className = "num";
+          tdCount.textContent = fmtNum(s.count);
+          var tdMin = document.createElement("td");
+          tdMin.textContent = s.min || "—";
+          if (!s.min) tdMin.className = "muted";
+          var tdMax = document.createElement("td");
+          tdMax.textContent = s.max || "—";
+          if (!s.max) tdMax.className = "muted";
+          var tdAvg = document.createElement("td");
+          tdAvg.className = "num";
+          tdAvg.textContent = s.avg_interval_days === null || s.avg_interval_days === undefined
+            ? "—" : Number(s.avg_interval_days).toFixed(2);
+          tr.appendChild(tdName);
+          tr.appendChild(tdCount);
+          tr.appendChild(tdMin);
+          tr.appendChild(tdMax);
+          tr.appendChild(tdAvg);
+          body.appendChild(tr);
+        });
+      })
+      .catch(function (e) {
+        var body = document.getElementById("freshness-body");
+        if (body) body.innerHTML = "";
+        showErr(document.getElementById("freshness-err"), e, loadFreshness);
+      })
+      .then(function () { clearTimeout(timer); });
+  }
+
+  function renderUsage(daily, total, since, until) {
+    var svg = document.getElementById("usage-svg");
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = 600, H = 120, pad = 4;
+    var max = 0;
+    daily.forEach(function (d) { if (d.count > max) max = d.count; });
+    if (max < 1) max = 1;
+    var bw = (W - pad * 2) / daily.length;
+    daily.forEach(function (d, i) {
+      var h = (d.count / max) * (H - pad * 2);
+      var x = pad + i * bw;
+      var y = H - pad - h;
+      var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", x.toFixed(2));
+      rect.setAttribute("y", y.toFixed(2));
+      rect.setAttribute("width", Math.max(1, bw - 1).toFixed(2));
+      rect.setAttribute("height", Math.max(0, h).toFixed(2));
+      rect.setAttribute("fill", "#1e3a8a");
+      var title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = d.date + ": " + d.count + " calls (累積 " + d.cumulative + ")";
+      rect.appendChild(title);
+      svg.appendChild(rect);
+    });
+    var fr = document.getElementById("usage-axis-from");
+    var to = document.getElementById("usage-axis-to");
+    if (fr) fr.textContent = since;
+    if (to) to.textContent = until;
+    var t = document.getElementById("usage-total");
+    if (t) t.textContent = "合計: " + fmtNum(total) + " calls (過去 30 日)";
+  }
+
+  function loadUsage() {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    fetch(BASE + "/v1/stats/usage", { signal: ctrl.signal })
+      .then(function (r) {
+        if (!r.ok) throw new Error("usage fetch failed: " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        renderUsage(data.daily, data.total, data.since, data.until);
+      })
+      .catch(function (e) {
+        showErr(document.getElementById("usage-err"), e, loadUsage);
+      })
+      .then(function () { clearTimeout(timer); });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadCoverage();
+    loadFreshness();
+    loadUsage();
+  });
+})();
+</script>
+
+</body>
+</html>

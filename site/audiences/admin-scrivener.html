@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>行政書士向け AutonoMath — 補助金 + 融資 + 許認可 1 query 統合</title>
+<meta name="description" content="行政書士事務所向け AutonoMath 活用ガイド。建設業・介護・運送・産廃の許認可案件で、補助金・融資・行政処分歴を 1 call で抽出。地域 × 業種 × deadline で絞込、提案書作成を 5 分に短縮。¥3/req metered。">
+
+<meta property="og:title" content="行政書士向け AutonoMath — 補助金 + 融資 + 許認可 1 query 統合">
+<meta property="og:description" content="許認可案件の関連補助金・融資・処分歴を 1 call で抽出。排他ルール 181 本で併用失格を回避。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/audiences/admin-scrivener.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="行政書士向け AutonoMath">
+<meta name="twitter:description" content="補助金 + 融資 + 許認可 1 query 統合。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/admin-scrivener.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script defer src="../analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://autonomath.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://autonomath.ai/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "行政書士向け", "item": "https://autonomath.ai/audiences/admin-scrivener.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "行政書士業務支援 API",
+  "name": "AutonoMath for Administrative Scriveners",
+  "description": "行政書士向けの AutonoMath 活用。建設業・介護・運送・産廃の許認可案件で関連補助金・融資・行政処分歴を 1 call で抽出。地域 × 業種 × deadline で絞込。",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "identifier": "T8010001213708"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "行政書士・行政書士法人"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP 従量",
+      "price": "3",
+      "priceCurrency": "JPY"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "建設業許可の更新案件で補助金は探せますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。target_types=「建設業」+ prefecture を絞ると、ものづくり補助金・事業再構築補助金・各都道府県建設業向け制度等が抽出されます。期限間近順でソート可。"}},
+    {"@type": "Question", "name": "介護・運送・産廃の許認可とどう紐付けますか?", "acceptedAnswer": {"@type": "Answer", "text": "業種コード (JSIC) と target_types で絞込。介護事業者向け補助金、運送業向け労働環境整備補助金、産廃処理業向け省力化補助金などが該当します。"}},
+    {"@type": "Question", "name": "排他ルール 181 本とは何ですか?", "acceptedAnswer": {"@type": "Answer", "text": "「補助金 A と補助金 B は併用不可」「補助金 C は事前に認定 D が必要」等の関係を構造化した 181 ルール (125 exclude + 17 prerequisite + 15 absolute + 24 other)。program_ids を投げると衝突を返します。"}},
+    {"@type": "Question", "name": "案件 1 件あたりの req 数は?", "acceptedAnswer": {"@type": "Answer", "text": "事前リサーチ 5-10 req + 提案書作成 5-10 req → 案件 1 件 10-20 req 目安。月 30 件処理で 300-600 req → ¥900-1,800 (税別)。"}},
+    {"@type": "Question", "name": "認定支援機関の登録案件にも使えますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。ものづくり補助金・事業再構築補助金は認定支援機関の関与が要件。AutonoMath で関連制度を抽出し、士業 affiliate で advisor 登録すれば SMB からの問合せも受けられます。"}},
+    {"@type": "Question", "name": "行政処分歴を確認できますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。enforcement_cases 1,185 件 (建設業法・宅建業法・産廃処理法等) を法人番号・名称で照会可能。VC / M&amp;A advisor 領域とも重なります。"}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="../index.html" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="../products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../prompts.html">Prompts</a>
+      <a href="../dashboard.html">ダッシュボードへ</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/audiences/admin-scrivener.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/audiences/admin-scrivener.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+        <a href="../index.html">ホーム</a> &raquo; <a href="index.html">Audience 別</a> &raquo; <span aria-current="page">行政書士向け</span>
+      </nav>
+      <h1 id="hero-title">行政書士向け AutonoMath</h1>
+      <p class="hero-sub">補助金 + 融資 + 許認可 + 行政処分歴を 1 query で統合。建設業・介護・運送・産廃の案件提案を 5 分に短縮。</p>
+      <p class="hero-tag">許認可中心の業務で、関連補助金 13,578 件・融資 108 件・行政処分 1,185 件を横断検索。地域 &times; 業種 &times; deadline で絞込、排他ルール 181 本で併用失格を事前検出。50 req/月まで匿名で試せる。</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#quickstart">5 分で始める &rarr;</a>
+        <a class="btn btn-secondary" href="../pricing.html">料金を見る</a>
+        <a class="btn btn-secondary" href="index.html">他の audience と比較</a>
+      </div>
+      <p class="trust-strip" style="margin:16px 0 0;font-size:13px;color:var(--text-muted);line-height:1.7;">
+        運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+        · <a href="../tokushoho.html">特商法表記</a> / <a href="../tos.html">利用規約</a> / <a href="../privacy.html">プライバシー</a>
+        · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
+        · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
+      </p>
+    </div>
+  </section>
+
+  <section aria-labelledby="reassurance-title">
+    <div class="container">
+      <div style="background:var(--bg-alt);padding:16px;border-radius:6px;margin:24px 0;">
+        <h2 id="reassurance-title" style="font-size:18px;margin:0 0 8px;">行政書士の代替ではありません</h2>
+        <p style="margin:0;">AutonoMath は申請書類を作成しません。許認可申請の代理は行政書士法 §1-3 により行政書士の独占業務であり、AutonoMath が代行することはありません。AutonoMath は <strong>事前リサーチ</strong> (どの許認可がこの顧客に必要か / 排他ルール / 過去の処分事例) のみを提供します。許認可申請の業務量を減らすのではなく、リサーチ工数を減らして 1 案件あたりの粗利を上げるためのツールです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="why-title">
+    <div class="container">
+      <h2 id="why-title" class="section-title">なぜ AutonoMath か</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card" style="min-width:0;">
+          <h3>1 call で 4 データセット横断</h3>
+          <p class="card-lead">programs + loans + enforcement + cases</p>
+          <p>許認可案件で「使える補助金 + 融資 + 行政処分歴 + 採択事例」を 1 call で取得。Claude / GPT に投げて提案書ドラフトまで自動化できる。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>排他ルール 181 本</h3>
+          <p class="card-lead">併用失格を事前検出</p>
+          <p>建設業向けの「ものづくり補助金 + 事業再構築補助金」のような併用可否を 181 本のルールで判定。「気づかないまま併用申請 &rarr; 後日失格」を回避。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>地域 &times; 業種 &times; deadline</h3>
+          <p class="card-lead">期限間近案件の発掘</p>
+          <p>都道府県 &times; JSIC 業種 &times; 締切日でフィルタ。「東京都 &times; 建設業 &times; 30 日以内」で当月案件を抽出、提案アジェンダに組込み。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="usecase-title">
+    <div class="container">
+      <h2 id="usecase-title" class="section-title">主要 use case</h2>
+      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="card" style="min-width:0;">
+          <h3>1. 建設業許可更新 + 補助金提案</h3>
+          <p>許可更新で訪問する案件で、target_types=「建設業」+ prefecture を 1 call。ものづくり補助金・建設キャリアアップシステム関連・各県建設業向け制度を抽出し、更新書類とセットで提案。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>2. 介護事業者の指定申請 + 関連助成</h3>
+          <p>介護保険法上の指定申請を扱う際、介護職員処遇改善加算・特定処遇改善加算・ICT 導入支援補助金を関連 program として抽出。労働環境整備の助成も付帯。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>3. 運送業 (一般貨物自動車運送) 開業支援</h3>
+          <p>運送業許可申請に合わせ、トラックドライバー労働環境整備支援・働き方改革推進支援補助金・JFC 運送業向け融資を 1 call で取得。融資は担保・保証人三軸で分解済。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>4. 産廃処理業の許可 + 行政処分歴</h3>
+          <p>産業廃棄物処理業の許可案件で、競合・取引先の行政処分歴 (廃棄物処理法・建設業法) を法人番号で確認。enforcement_cases 1,185 件から該当を抽出。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>5. 認定支援機関連携 (経営革新計画)</h3>
+          <p>経営革新計画・先端設備等導入計画の認定取得を支援する際、認定取得後に使える補助金・税制優遇を抽出。事業再構築・ものづくり補助金の認定要件と紐付け。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
+    <div class="container">
+      <h2 id="quickstart-title" class="section-title">5 分で始める</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card" style="min-width:0;">
+          <h3>curl (匿名 50 free/月)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>curl 'https://api.autonomath.ai/v1/programs/search?\
+prefecture=東京都&amp;\
+target_types=建設業&amp;\
+deadline_within_days=30&amp;\
+limit=10'</code></pre>
+          <p class="demo-note">登録不要、JST 月初リセット。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>Python (商用 ¥3/req)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>import httpx
+# unified_id でも program 名でも OK (dual-key 対応)
+r = httpx.post(
+  "https://api.autonomath.ai/v1/exclusions/check",
+  json={"program_ids": ["P001", "P342"]},
+  headers={"X-API-Key": "sk_..."}
+)
+print(r.json()["conflicts"])</code></pre>
+          <p class="demo-note">排他ルール 181 本 (125 exclude + 17 prerequisite + 15 absolute + 24 other) で衝突を検出。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>Claude Desktop (MCP)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>// claude_desktop_config.json
+{
+  "mcpServers": {
+    "autonomath": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {"AUTONOMATH_API_KEY": "sk_..."}
+    }
+  }
+}</code></pre>
+          <p class="demo-note"><code>regulatory_prep_pack</code> tool で許認可一括下準備。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-preview" aria-labelledby="pricing-title">
+    <div class="container">
+      <h2 id="pricing-title" class="section-title">行政書士向け 料金</h2>
+      <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (税込 ¥3.30)。月 50 req まで匿名無料。</p>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">行政書士向けの推奨インターフェース料金</caption>
+          <thead>
+            <tr>
+              <th scope="col">インターフェース</th>
+              <th scope="col">無料枠</th>
+              <th scope="col">有料 (税別)</th>
+              <th scope="col">税込</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">API + MCP</th><td>50 req/月 per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+            <tr><th scope="row">士業 affiliate (任意)</th><td>登録無料</td><td>¥3,000 / 成約</td><td>¥3,300 / 成約</td></tr>
+            <tr><th scope="row">埋込 Widget Standard (任意)</th><td>-</td><td>¥10,000 / 月 (10,000 req 含む)</td><td>¥11,000 / 月</td></tr>
+            <tr><th scope="row">埋込 Widget Whitelabel (任意)</th><td>-</td><td>¥30,000 / 月 (30,000 req 含む、ロゴ非表示)</td><td>¥33,000 / 月</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pricing-note">想定: 月 30 案件 &rarr; 1 案件 10-20 req &rarr; 月 300-600 req &rarr; ¥900-¥1,800/月。<a href="../pricing.html">詳細料金 &rarr;</a></p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="faq-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="faq-title" class="section-title">よくある質問 (行政書士)</h2>
+      <h3 style="font-size:16px;margin:18px 0 6px;">建設業許可の更新案件で補助金は探せますか?</h3>
+      <p>はい。target_types=「建設業」+ prefecture を絞ると、ものづくり補助金・事業再構築補助金・各都道府県建設業向け制度等が抽出されます。期限間近順でソート可。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">介護・運送・産廃の許認可とどう紐付けますか?</h3>
+      <p>業種コード (JSIC) と target_types で絞込。介護事業者向け補助金、運送業向け労働環境整備補助金、産廃処理業向け省力化補助金などが該当します。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">排他ルール 181 本とは何ですか?</h3>
+      <p>「補助金 A と補助金 B は併用不可」「補助金 C は事前に認定 D が必要」等の関係を構造化した 181 ルール (125 exclude + 17 prerequisite + 15 absolute + 24 other)。program_ids を投げると衝突を返します。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">案件 1 件あたりの req 数は?</h3>
+      <p>事前リサーチ 5-10 req + 提案書作成 5-10 req &rarr; 案件 1 件 10-20 req 目安。月 30 件処理で 300-600 req &rarr; ¥900-1,800 (税別)。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">認定支援機関の登録案件にも使えますか?</h3>
+      <p>はい。ものづくり補助金・事業再構築補助金は認定支援機関の関与が要件。AutonoMath で関連制度を抽出し、士業 affiliate で advisor 登録すれば SMB からの問合せも受けられます。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">行政処分歴を確認できますか?</h3>
+      <p>はい。enforcement_cases 1,185 件 (建設業法・宅建業法・産廃処理法等) を法人番号・名称で照会可能。VC / M&amp;A advisor 領域とも重なります。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">関連 audience は?</h3>
+      <p><a href="tax-advisor.html">税理士</a> (顧問先共有案件)、<a href="smb.html">SMB 経営者</a> (相談元)、<a href="vc.html">VC / M&amp;A advisor</a> (DD enforcement check)、<a href="dev.html">AI agent developer</a> (事務所内 RAG 自作) と use case が重なる。<a href="index.html">5 audience 全体を比較</a>。</p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="resources-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="resources-title" class="section-title">行政書士向けリソース</h2>
+      <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="smb.html"><strong>SMB 経営者ページ (相談元の理解)</strong></a> &mdash; 顧客側がどんな目線で AutonoMath を使っているかを把握。LINE bot からの紹介経由で advisor 登録 = 安定した相談元になる。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; 許認可案件の関連補助金を 1 call で抽出。target_types + prefecture + industry で絞込、排他ルール 181 本で併用失格を事前検出。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#enforcement-cases"><strong>REST API: /v1/enforcement-cases/search (1,185 件)</strong></a> &mdash; 建設業法・宅建業法・産廃処理法等の行政処分歴を法人番号・名称で照会。許認可承継 DD でも使える。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>料金 (¥3/req 完全従量)</strong></a> &mdash; 案件 1 件 10-20 req 目安、月 30 件処理で ¥900-1,800 (税別)。月額固定 0 円、最低利用なし。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../widget.html"><strong>事務所サイトに埋め込む (widget)</strong></a> &mdash; 自事務所 LP に prescreen を貼って相談接点を作る。1 行 script タグで動く、white-label OK。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>士業 affiliate に登録</strong></a> &mdash; LINE bot 経由で SMB から相談を受ける側になる。登録無料、1 紹介成立 ¥3,000 (税別) advisor 受取。地域 &times; 業種 &times; 専門分野で profile 公開。</li>
+        <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5 分で開始 (quickstart)</strong></a> &mdash; API キー発行から最初の検索までの最短ルート。Free 50 req/月で 5-10 顧客分は完全無料運用可能。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="roadmap-title">
+    <div class="container">
+      <h2 id="roadmap-title" class="section-title">roadmap</h2>
+      <div style="background:#fff8e1;border:2px solid #f59e0b;padding:18px 20px;border-radius:8px;margin:16px 0;">
+        <h3 style="font-size:17px;margin:0 0 10px;color:#7c2d12;">36 協定テンプレート機能 (β、現在 disabled)</h3>
+        <p style="margin:0 0 6px;">労基法 第 36 条 + 社労士法に基づき、36 協定書類のドラフト生成は <code>AUTONOMATH_36_KYOTEI_ENABLED</code> 環境変数で gate されています (default: <code>False</code>)。</p>
+        <p style="margin:0 0 6px;">本機能は社労士の監修前提で提供され、出力には必ず「&#9888;&#65039; DRAFT ONLY: 社労士による review が必要」disclaimer が付きます。</p>
+        <p style="margin:0;">roadmap: 2026 Q3 までに監修 partner 募集、enable 条件を確定予定。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 id="cta-title" class="section-title">始める</h2>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="../dashboard.html">業務効率化を試す (Free 50 req/月)</a>
+        <a class="btn btn-secondary" href="../index.html#try">30 秒 prescreen で許認可候補を確認</a>
+        <a class="btn btn-secondary" href="/docs/getting-started/">ドキュメントを読む</a>
+        <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
+        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+      </div>
+      <p class="hero-note" style="margin-top:14px;">運営: Bookyou株式会社 (T8010001213708) &middot; 解約いつでも、最低金額・違約金なし &middot; <a href="../tokushoho.html">特商法表記</a> / <a href="../tos.html">利用規約</a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="../products.html">Products</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="../tos.html">利用規約</a>
+      <a href="../privacy.html">プライバシー</a>
+      <a href="../tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) &middot; 代表取締役 梅田茂利</p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

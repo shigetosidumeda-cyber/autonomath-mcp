@@ -1,0 +1,21 @@
+{#-
+  Minimal footer — replaces Material's "Made with Material" row with
+  legal + source links. Match landing page tone (plain text, single line).
+-#}
+<footer class="md-footer">
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+        {{ config.copyright }}
+        &middot;
+        <a href="/tokushoho.html">特定商取引法表記</a>
+        &middot;
+        <a href="/privacy.html">プライバシー</a>
+        &middot;
+        <a href="/tos.html">利用規約</a>
+        &middot;
+        <a href="https://github.com/{{ config.repo_name | default('shigetoumeda/autonomath-mcp', true) }}/blob/main/LICENSE">Source (MIT)</a>
+      </div>
+    </div>
+  </div>
+</footer>

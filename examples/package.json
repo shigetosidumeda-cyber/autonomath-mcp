@@ -1,0 +1,21 @@
+{
+  "name": "jpintel-examples",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Runnable examples for jpintel-mcp REST API + MCP server.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "example:ts:01": "tsx typescript/01_search_subsidies_by_prefecture.ts",
+    "example:ts:02": "tsx typescript/02_check_exclusions.ts",
+    "example:ts:03": "tsx typescript/03_mcp_claude_cli_example.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.0"
+  }
+}

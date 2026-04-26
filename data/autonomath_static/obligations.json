@@ -1,0 +1,470 @@
+{
+  "monozukuri": [
+    {
+      "id": "interim-report",
+      "label": "補助事業中間報告",
+      "rule": "事業期間中、交付決定から概ね6ヶ月経過時点で中間報告を提出",
+      "severity": "important",
+      "timing": {
+        "type": "once",
+        "monthOffset": 6
+      }
+    },
+    {
+      "id": "final-report",
+      "label": "補助事業実績報告書",
+      "rule": "補助事業完了から30日以内または補助事業完了期限日のいずれか早い日までに提出",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 14
+      }
+    },
+    {
+      "id": "confirmation-inspection",
+      "label": "確定検査 → 補助金額確定",
+      "rule": "実績報告書に基づく現地検査。検査後に交付額が確定する",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 15
+      }
+    },
+    {
+      "id": "biz-report",
+      "label": "事業化状況報告",
+      "rule": "補助事業終了後5年間、毎年1回、事業化・知的財産権・売上状況を報告。未提出は返還事由",
+      "severity": "critical",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 18,
+        "endMonth": 78,
+        "intervalMonths": 12
+      }
+    },
+    {
+      "id": "asset-ledger",
+      "label": "取得財産管理台帳の維持",
+      "rule": "取得した設備・財産について処分制限期間(耐用年数まで)、管理台帳を維持。処分は事前承認必須",
+      "severity": "info",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 14,
+        "endMonth": 78
+      }
+    },
+    {
+      "id": "revenue-payment",
+      "label": "収益納付の可能性",
+      "rule": "事業化により相当の収益が発生した場合、補助金額を上限として収益納付の義務",
+      "severity": "important",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 14,
+        "endMonth": 78
+      }
+    }
+  ],
+  "shinjigyou-shinshutsu": [
+    {
+      "id": "final-report",
+      "label": "補助事業実績報告書",
+      "rule": "補助事業完了後30日以内に提出",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 18
+      }
+    },
+    {
+      "id": "added-value-target",
+      "label": "付加価値額目標達成確認",
+      "rule": "事業計画の付加価値額目標(年率3%以上向上)の達成状況を年次報告",
+      "severity": "critical",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 30,
+        "endMonth": 90,
+        "intervalMonths": 12
+      }
+    },
+    {
+      "id": "wage-target",
+      "label": "給与支給総額目標達成確認",
+      "rule": "事業計画の給与支給総額年率1.5%以上向上の達成確認。未達は補助金返還",
+      "severity": "critical",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 30,
+        "endMonth": 90,
+        "intervalMonths": 12
+      }
+    },
+    {
+      "id": "biz-report",
+      "label": "事業化状況・知的財産権等報告",
+      "rule": "補助事業完了後5年間、毎年の事業化状況と知財の出願・活用状況を報告",
+      "severity": "critical",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 24,
+        "endMonth": 84,
+        "intervalMonths": 12
+      }
+    }
+  ],
+  "safety-kyosai": [
+    {
+      "id": "monthly",
+      "label": "毎月の掛金払込",
+      "rule": "月額最大20万円を継続払込。滞納時は共済資格喪失",
+      "severity": "info",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 0,
+        "endMonth": 120
+      }
+    },
+    {
+      "id": "milestone-40",
+      "label": "40ヶ月到達・全額戻りライン",
+      "rule": "40ヶ月以上加入で解約時100%戻り。これ以前の解約は元本割れ",
+      "severity": "important",
+      "timing": {
+        "type": "once",
+        "monthOffset": 40
+      }
+    },
+    {
+      "id": "cap-800",
+      "label": "累計800万円到達チェック",
+      "rule": "掛金の累計が800万円に達すると以降は増額不可",
+      "severity": "info",
+      "timing": {
+        "type": "once",
+        "monthOffset": 34
+      }
+    },
+    {
+      "id": "reactivation-rule",
+      "label": "再加入制限(2024改正)",
+      "rule": "解約した場合、解約後2年以内の再加入分は損金不算入。将来の戦略に要注意",
+      "severity": "critical",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 0,
+        "endMonth": 120
+      }
+    }
+  ],
+  "chinage-sokushin": [
+    {
+      "id": "wage-check",
+      "label": "雇用者給与等支給額1.5%以上増加の確認",
+      "rule": "適用年度の給与総額が前年度比1.5%以上増加していること(2.5%でさらに増率)",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 12
+      }
+    },
+    {
+      "id": "training-cost",
+      "label": "教育訓練費10%以上増(上乗せ要件)",
+      "rule": "教育訓練費が前年度比10%以上増で税額控除率+10%",
+      "severity": "important",
+      "timing": {
+        "type": "once",
+        "monthOffset": 12
+      }
+    },
+    {
+      "id": "filing-apply",
+      "label": "法人税申告での適用",
+      "rule": "別表+明細書の添付が必要。添付漏れは適用不可",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 14
+      }
+    },
+    {
+      "id": "carryforward",
+      "label": "繰越税額控除の適用判定(5年繰越)",
+      "rule": "控除しきれなかった額は5年間繰越可。黒字要件を年次確認",
+      "severity": "important",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 26,
+        "endMonth": 74,
+        "intervalMonths": 12
+      }
+    }
+  ],
+  "kyoka-zeisei": [
+    {
+      "id": "certify-first",
+      "label": "経営力向上計画の認定取得",
+      "rule": "設備取得前に認定が必要。順序を間違えると即時償却・税額控除は使えない",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 0
+      }
+    },
+    {
+      "id": "industrial-assoc",
+      "label": "工業会等証明書の取得",
+      "rule": "A類型(生産性向上)の場合、工業会等の証明書を設備取得前に取得",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 1
+      }
+    },
+    {
+      "id": "acquire",
+      "label": "対象設備の取得・事業供用",
+      "rule": "認定後1年以内に設備取得し事業供用",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 3
+      }
+    },
+    {
+      "id": "filing",
+      "label": "法人税申告で適用",
+      "rule": "別表添付必須。即時償却or10%税額控除の選択は申告時に確定",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 14
+      }
+    },
+    {
+      "id": "plan-update",
+      "label": "経営力向上計画の進捗確認(任意報告)",
+      "rule": "計画期間中の進捗確認を所管省庁に任意報告",
+      "severity": "info",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 12,
+        "endMonth": 48,
+        "intervalMonths": 12
+      }
+    }
+  ],
+  "keiei-koujou-keikaku": [
+    {
+      "id": "certify",
+      "label": "計画認定取得",
+      "rule": "所管省庁による認定。事業分野別の指針に沿った指標を設定",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 2
+      }
+    },
+    {
+      "id": "implementation",
+      "label": "計画実施",
+      "rule": "3〜5年の計画期間中、事業承継等を含む経営力向上の取組を実施",
+      "severity": "important",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 2,
+        "endMonth": 62
+      }
+    },
+    {
+      "id": "final-evaluation",
+      "label": "計画期間終了・成果評価",
+      "rule": "計画終了時に労働生産性等の向上指標の達成状況を評価",
+      "severity": "important",
+      "timing": {
+        "type": "once",
+        "monthOffset": 62
+      }
+    }
+  ],
+  "career-up": [
+    {
+      "id": "plan-submission",
+      "label": "キャリアアップ計画書の提出",
+      "rule": "転換等の実施前にキャリアアップ計画書をハローワークに提出",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 0
+      }
+    },
+    {
+      "id": "conversion",
+      "label": "正社員化の実施",
+      "rule": "計画書に基づき非正規→正社員への転換を実施",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 3
+      }
+    },
+    {
+      "id": "wage-increase",
+      "label": "転換時3%以上の賃金増額",
+      "rule": "転換時に賃金を3%以上増額。未達は支給対象外",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 3
+      }
+    },
+    {
+      "id": "apply-6mo",
+      "label": "転換後6ヶ月経過・支給申請",
+      "rule": "転換後6ヶ月の賃金支払実績を添えて支給申請(2ヶ月以内)",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 9
+      }
+    },
+    {
+      "id": "retention",
+      "label": "転換後の継続雇用確認",
+      "rule": "転換後の継続雇用が要件。退職時は返還検討",
+      "severity": "important",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 3,
+        "endMonth": 15
+      }
+    }
+  ],
+  "shoukei-zeisei": [
+    {
+      "id": "certified-plan",
+      "label": "特例承継計画の提出",
+      "rule": "2027年3月31日までに都道府県に提出必須",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 0
+      }
+    },
+    {
+      "id": "gift-succession",
+      "label": "贈与・相続の実行",
+      "rule": "後継者への株式贈与・相続を実行し、納税猶予の申告",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 6
+      }
+    },
+    {
+      "id": "employment-80",
+      "label": "雇用8割維持確認(年1回 × 5年)",
+      "rule": "贈与・相続後5年間、平均8割以上の雇用を維持。未達時は実績報告書で理由説明",
+      "severity": "critical",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 18,
+        "endMonth": 78,
+        "intervalMonths": 12
+      }
+    },
+    {
+      "id": "annual-report",
+      "label": "年次報告書の提出",
+      "rule": "毎年、都道府県知事への報告と税務署への継続届出",
+      "severity": "critical",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 18,
+        "endMonth": 78,
+        "intervalMonths": 12
+      }
+    },
+    {
+      "id": "cancel-events",
+      "label": "取消事由の継続監視",
+      "rule": "代表権喪失・株式譲渡・資産管理会社化等の取消事由が発生すると納税猶予が取消+利子税",
+      "severity": "critical",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 6,
+        "endMonth": 78
+      }
+    }
+  ],
+  "small-biz-kyosai": [
+    {
+      "id": "monthly",
+      "label": "毎月の掛金払込",
+      "rule": "月額最大7万円を継続払込",
+      "severity": "info",
+      "timing": {
+        "type": "continuous",
+        "startMonth": 0,
+        "endMonth": 240
+      }
+    },
+    {
+      "id": "milestone-12",
+      "label": "12ヶ月経過・掛捨てライン通過",
+      "rule": "12ヶ月未満で任意解約すると掛金は戻らない(掛捨て)",
+      "severity": "important",
+      "timing": {
+        "type": "once",
+        "monthOffset": 12
+      }
+    },
+    {
+      "id": "deduction-filing",
+      "label": "所得控除の申告",
+      "rule": "毎年の確定申告で小規模企業共済等掛金控除として申告(払込証明書添付)",
+      "severity": "critical",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 12,
+        "endMonth": 240,
+        "intervalMonths": 12
+      }
+    }
+  ],
+  "it-dounyuu": [
+    {
+      "id": "contract-after-decision",
+      "label": "交付決定後に契約・発注",
+      "rule": "交付決定前の発注・契約・支払は補助対象外。順序厳守",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 1
+      }
+    },
+    {
+      "id": "final-report",
+      "label": "事業実績報告",
+      "rule": "事業完了後、実績報告を期限内に提出",
+      "severity": "critical",
+      "timing": {
+        "type": "once",
+        "monthOffset": 5
+      }
+    },
+    {
+      "id": "effect-report",
+      "label": "事業実施効果報告",
+      "rule": "事業完了後、数年間にわたり生産性向上効果を報告(年1〜3回、枠による)",
+      "severity": "important",
+      "timing": {
+        "type": "recurring",
+        "startMonth": 12,
+        "endMonth": 48,
+        "intervalMonths": 12
+      }
+    }
+  ]
+}

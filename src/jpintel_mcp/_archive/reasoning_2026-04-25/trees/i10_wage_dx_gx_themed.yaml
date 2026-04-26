@@ -1,0 +1,82 @@
+intent_id: i10_wage_dx_gx_themed
+name_ja: 賃上げ/DX/GX 特化で使える制度
+
+extract_slots:
+  - key: theme
+    required: true
+    enum: [賃上げ, DX, GX_脱炭素, 省エネ, 人材育成, 事業再構築, 輸出, 研究開発]
+  - key: fiscal_year
+    required: false
+    type: int
+  - key: target_size
+    required: false
+    enum: [sole, small, sme, mid, large]
+  - key: prefecture
+    required: false
+
+required_entities: [program, tax_measure, loan_program]
+required_edges:
+  - themed_as
+  - compatible
+required_filters:
+  - theme
+  - fiscal_year
+
+branches:
+  - when: theme == 賃上げ
+    action: 賃上げ促進税制 + キャリアアップ助成金 + 業務改善助成金 を束ねる
+  - when: theme == DX
+    action: IT導入補助金 + DX投資促進税制 + ものづくり補助金(DX枠)
+  - when: theme in [GX_脱炭素, 省エネ]
+    action: SII省エネ補助 + カーボンニュートラル投資促進税制 + GX補助 (経産省)
+  - when: theme == 研究開発
+    action: 試験研究費税額控除 + Go-Tech (旧サポイン)
+  - when: fiscal_year is past
+    action: warn "過年度制度。最新年度で再検索"
+
+answer_template: bullet
+answer_skeleton: |
+  【テーマ】 {theme} / 年度: {fiscal_year}
+  【対象規模】 {target_size} / 地域: {prefecture}
+
+  【補助金 (テーマに強い上位 {top_n})】
+  {subsidy_bullets}
+
+  【税制特例】
+  {tax_bullets}
+
+  【融資/保証】
+  {loan_bullets}
+
+  【相互関係 (併用可否 要約)】
+  {compat_summary}
+
+  【典型スタッキング戦略】
+  {stack_strategy_bullets}
+
+  【先回り注意】
+  - 前提認定: {prerequisite_certs}
+  - 加点要件 (テーマ関連): {scoring_boost_rules}
+  - 期限が近い制度: {expiring_measures}
+
+  【一次資料】
+  {citation_urls}
+
+row_shape: |
+  - {program_name} ({authority_level} / {authority}) — 最大 ¥{max_amount_man}万 / テーマ該当度 {theme_score}/5 / 期間 {period}
+    根拠: {source_url}
+
+proactive_rules:
+  - id: prereq_cert
+    trigger: any subsidy requires 経営革新/経営力向上計画
+    payload: link to i05 certification howto
+  - id: stacking_theme
+    trigger: theme == 賃上げ
+    payload: "賃上げ促進税制 + キャリアアップ助成金 は同一賃上げ実績で両取り可能 (別経費)"
+  - id: gx_deadline
+    trigger: theme in [GX_脱炭素, 省エネ] and fiscal_year == current_fy
+    payload: flag "GX補助は年度前半で予算枯渇する傾向"
+
+zero_result_hint: |
+  theme の標準値でマッチしない。以下の 8 テーマから選択:
+  賃上げ / DX / GX_脱炭素 / 省エネ / 人材育成 / 事業再構築 / 輸出 / 研究開発

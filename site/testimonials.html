@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Testimonials — AutonoMath</title>
+<meta name="description" content="AutonoMath ユーザーの声。税理士 / 行政書士 / SMB / VC / 開発者の audience 別 testimonial。一次資料 100% / 排他ルール 181 本 / freshness 公開のサービスを実際に使っている人のコメント。">
+<meta name="robots" content="index, follow">
+
+<meta property="og:title" content="Testimonials — AutonoMath">
+<meta property="og:description" content="税理士・行政書士・SMB・VC・開発者の声。実利用者の testimonial を operator-moderation で公開。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/testimonials.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Testimonials — AutonoMath">
+<meta name="twitter:description" content="税理士・行政書士・SMB・VC・開発者の声。実利用者の testimonial を operator-moderation で公開。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/testimonials.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/testimonials.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/testimonials.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/testimonials.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Testimonials — AutonoMath",
+  "description": "AutonoMath ユーザーの testimonial。operator-moderation、捏造レビューなし。aggregate rating は最初の承認レビューが公開されるまで意図的に省略。",
+  "url": "https://autonomath.ai/testimonials.html",
+  "inLanguage": "ja",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/"
+  },
+  "about": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "alternateName": "AutonoMath",
+    "url": "https://autonomath.ai/",
+    "identifier": "T8010001213708",
+    "email": "info@bookyou.net"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "identifier": "T8010001213708"
+  }
+}
+</script>
+
+<style>
+  .tm-page { padding: 48px 0 64px; }
+  .tm-page h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
+  .tm-page .sub { color: var(--text-muted); margin: 0 0 28px; font-size: 15px; }
+  .tm-section { margin: 0 0 40px; }
+  .tm-section h2 { font-size: 18px; margin: 0 0 14px; font-weight: 700; }
+  .tm-list { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .tm-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    background: var(--bg);
+  }
+  .tm-card .badge {
+    display: inline-block;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 999px;
+    margin: 0 0 10px;
+  }
+  .tm-card .quote { margin: 0 0 12px; font-size: 15px; line-height: 1.7; color: var(--text); }
+  .tm-card .meta { font-size: 13px; color: var(--text-muted); }
+  .tm-card .meta a { color: var(--accent); }
+  .tm-empty { color: var(--text-muted); font-size: 14px; padding: 24px; text-align: center; border: 1px dashed var(--border); border-radius: 10px; background: var(--bg-alt); }
+
+  .tm-form-card { border: 1px solid var(--border); border-radius: 10px; padding: 24px 26px; background: var(--bg); margin: 0 0 36px; }
+  .tm-form-card h2 { margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+  .tm-form-card .form-sub { margin: 0 0 18px; color: var(--text-muted); font-size: 14px; }
+  .tm-form-grid { display: grid; gap: 14px; }
+  .tm-form-grid label { display: block; font-size: 13px; font-weight: 600; margin: 0 0 6px; color: var(--text); }
+  .tm-form-grid input,
+  .tm-form-grid select,
+  .tm-form-grid textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .tm-form-grid textarea { min-height: 110px; resize: vertical; }
+  .tm-form-grid .hint { color: var(--text-muted); font-size: 12px; margin: 4px 0 0; }
+  .tm-form-grid .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .tm-submit { background: var(--accent); color: #fff; border: 0; padding: 10px 18px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .tm-submit:hover { background: var(--accent-hover); }
+  .tm-submit:disabled { background: var(--text-muted); cursor: not-allowed; }
+  .form-msg { margin: 14px 0 0; font-size: 14px; }
+  .form-msg.ok { color: #15803d; }
+  .form-msg.err { color: var(--danger); }
+  @media (max-width: 600px) { .tm-form-grid .row-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="testimonials.html" aria-current="page">Testimonials</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="testimonials.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="en/testimonials.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="tm-page">
+  <div class="container">
+
+    <h1>Testimonials</h1>
+    <p class="sub">AutonoMath ユーザーの声。operator-moderation を経た投稿のみ表示。匿名投稿可、name / organization / linkedin は任意。</p>
+
+    <!-- Submission form ---------------------------------------------------- -->
+    <section class="tm-form-card" aria-labelledby="submit-h">
+      <h2 id="submit-h">Testimonial を投稿する</h2>
+      <p class="form-sub">投稿には API key が必要です (匿名投稿の防止)。投稿後 operator が確認 → 承認のうえ公開されます。</p>
+      <form id="tm-form" class="tm-form-grid" novalidate>
+        <div>
+          <label for="api-key">API key (X-API-Key) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <input type="text" id="api-key" name="api-key" autocomplete="off" placeholder="am_..." required aria-required="true">
+          <p class="hint">送信時のみ使用。サーバ側に保存されるのは hash のみ。</p>
+        </div>
+        <div>
+          <label for="audience">Audience <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <select id="audience" name="audience" required aria-required="true">
+            <option value="">— 選択してください —</option>
+            <option value="税理士">税理士</option>
+            <option value="行政書士">行政書士</option>
+            <option value="SMB">SMB (中小企業 / 個人事業)</option>
+            <option value="VC">VC (投資家)</option>
+            <option value="Dev">Dev (開発者)</option>
+          </select>
+        </div>
+        <div>
+          <label for="text">Testimonial 本文 (10〜2000 文字) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <textarea id="text" name="text" minlength="10" maxlength="2000" required aria-required="true" placeholder="AutonoMath を実務でどう使っているか、何が役に立ったか…"></textarea>
+        </div>
+        <div class="row-2">
+          <div>
+            <label for="name">お名前 (任意 / 匿名可)</label>
+            <input type="text" id="name" name="name" autocomplete="off" maxlength="80">
+          </div>
+          <div>
+            <label for="organization">所属 (任意)</label>
+            <input type="text" id="organization" name="organization" autocomplete="off" maxlength="120">
+          </div>
+        </div>
+        <div>
+          <label for="linkedin">LinkedIn URL (任意)</label>
+          <input type="url" id="linkedin" name="linkedin" autocomplete="off" maxlength="300" placeholder="https://www.linkedin.com/in/...">
+          <p class="hint">公開承認後、testimonial に併記されます。</p>
+        </div>
+        <div>
+          <button type="submit" class="tm-submit" id="tm-submit-btn">投稿する</button>
+        </div>
+        <p id="tm-form-msg" class="form-msg" role="status" aria-live="polite" hidden></p>
+      </form>
+    </section>
+
+    <!-- Approved list ------------------------------------------------------ -->
+    <section class="tm-section" aria-labelledby="approved-h">
+      <h2 id="approved-h">公開中の testimonial</h2>
+      <div id="tm-list" class="tm-list">
+        <p class="tm-empty">読み込み中…</p>
+      </div>
+    </section>
+
+  </div>
+</section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <p class="copy">© 2026 Bookyou株式会社 — 法人番号 T8010001213708</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || "";
+
+  function escapeHtml(s) {
+    if (s === null || s === undefined) return "";
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function renderList(rows) {
+    var list = document.getElementById("tm-list");
+    if (!list) return;
+    if (!rows || rows.length === 0) {
+      list.innerHTML = '<p class="tm-empty">承認済みの testimonial はまだありません。第一号を投稿してください。</p>';
+      return;
+    }
+    var html = rows.map(function (r) {
+      var name = r.name ? escapeHtml(r.name) : "<em>匿名</em>";
+      var org = r.organization ? " · " + escapeHtml(r.organization) : "";
+      var li = r.linkedin_url
+        ? ' · <a href="' + escapeHtml(r.linkedin_url) + '" rel="noopener noreferrer" target="_blank">LinkedIn</a>'
+        : "";
+      var when = r.approved_at ? r.approved_at.slice(0, 10) : "";
+      return '<article class="tm-card">'
+           +   '<span class="badge">' + escapeHtml(r.audience) + '</span>'
+           +   '<p class="quote">' + escapeHtml(r.text) + '</p>'
+           +   '<p class="meta">' + name + org + li + ' · 承認 ' + escapeHtml(when) + '</p>'
+           + '</article>';
+    }).join("");
+    list.innerHTML = html;
+  }
+
+  function loadList() {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    fetch(BASE + "/v1/testimonials", { signal: ctrl.signal })
+      .then(function (r) {
+        if (!r.ok) throw new Error("list fetch failed: " + r.status);
+        return r.json();
+      })
+      .then(function (data) { renderList(data.rows); })
+      .catch(function (e) {
+        var list = document.getElementById("tm-list");
+        if (!list) return;
+        var friendlyMsg = e && e.name === "AbortError"
+          ? "タイムアウト — 再度お試しください"
+          : "読み込みに失敗しました。時間をおいて再試行してください";
+        list.innerHTML = '<p class="tm-empty">' + friendlyMsg
+          + ' <button type="button" id="tm-retry" class="btn btn-secondary" style="margin-left:8px;">再試行</button>'
+          + ' · <a href="status.html">障害状況</a></p>';
+        var retry = document.getElementById("tm-retry");
+        if (retry) retry.addEventListener("click", loadList);
+      })
+      .then(function () { clearTimeout(timer); });
+  }
+
+  function showFormMsg(text, ok) {
+    var m = document.getElementById("tm-form-msg");
+    if (!m) return;
+    m.textContent = text;
+    m.className = "form-msg " + (ok ? "ok" : "err");
+    m.hidden = false;
+  }
+
+  function submit(e) {
+    e.preventDefault();
+    var btn = document.getElementById("tm-submit-btn");
+    var key = (document.getElementById("api-key").value || "").trim();
+    var audience = (document.getElementById("audience").value || "").trim();
+    var text = (document.getElementById("text").value || "").trim();
+    var name = (document.getElementById("name").value || "").trim() || null;
+    var organization = (document.getElementById("organization").value || "").trim() || null;
+    var linkedin = (document.getElementById("linkedin").value || "").trim() || null;
+    if (!key) { showFormMsg("API key を入力してください", false); return; }
+    if (!audience) { showFormMsg("audience を選択してください", false); return; }
+    if (text.length < 10) { showFormMsg("本文は 10 文字以上必要です", false); return; }
+
+    btn.disabled = true;
+    fetch(BASE + "/v1/me/testimonials", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": key
+      },
+      body: JSON.stringify({
+        audience: audience,
+        text: text,
+        name: name,
+        organization: organization,
+        linkedin_url: linkedin
+      })
+    }).then(function (r) {
+      if (r.status === 201) {
+        showFormMsg("投稿を受け付けました。承認後に公開されます。", true);
+        document.getElementById("tm-form").reset();
+      } else if (r.status === 401) {
+        showFormMsg("API key が無効です。", false);
+      } else if (r.status === 422) {
+        showFormMsg("入力内容を確認してください。audience / 本文 / 各文字数制限を満たす必要があります。", false);
+      } else {
+        showFormMsg("投稿に失敗しました (" + r.status + ")", false);
+      }
+    }).catch(function (e) {
+      showFormMsg("通信エラー: " + e.message, false);
+    }).then(function () {
+      btn.disabled = false;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var f = document.getElementById("tm-form");
+    if (f) f.addEventListener("submit", submit);
+    loadList();
+  });
+})();
+</script>
+
+</body>
+</html>

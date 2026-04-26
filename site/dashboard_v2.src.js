@@ -1,0 +1,860 @@
+// dashboard_v2.js — Bearer-authenticated self-serve dashboard sections.
+//
+// Adds Bearer-authenticated views on top of the existing cookie-session
+// dashboard at site/dashboard.js. The two flows are deliberately separate:
+//
+//   - dashboard.js          → cookie session, /v1/me + /v1/me/usage
+//   - dashboard_v2.js (this) → localStorage api_key + Bearer header,
+//                              calls /v1/me/dashboard, /v1/me/usage_by_tool,
+//                              /v1/me/billing_history, /v1/me/tool_recommendation
+//
+// Why two? An MCP user (Claude Desktop / Cursor / agent CLI) already holds
+// an `am_…` key but never sees the cookie-session page. They want a
+// self-serve URL they can paste their key into and inspect spend without
+// the redirect dance.
+//
+// No external deps, no CDN. Pure ES2020. SVG sparkline rendered inline so
+// the page does not need network access for charts.
+(() => {
+  'use strict';
+
+  const API_BASE = (typeof window !== 'undefined' && (
+    window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE
+  )) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'autonomath.ai'
+    ? 'https://api.autonomath.ai'
+    : '');
+  const api = (p) => API_BASE.replace(/\/$/, '') + p;
+  const KEY_NAME = 'am_api_key';
+
+  // ------------------------------------------------------------------
+  // tiny utils
+  // ------------------------------------------------------------------
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => (
+    { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]
+  ));
+
+  // 3-tier storage with private-browsing fallback.
+  //
+  // Safari Private Browsing throws QuotaExceededError on every
+  // localStorage.setItem; iOS WKWebView in low-storage state throws
+  // SecurityError. A silent catch loses the api_key on reload, so we
+  // cascade: localStorage (persistent) → sessionStorage (tab-scoped,
+  // survives reload) → in-memory (page-scoped). `storageMode` is
+  // updated on every successful set so the UI can warn the user that
+  // their key will not survive a tab close.
+  let storageMode = 'localStorage';
+  const memStore = Object.create(null);
+  const store = {
+    get() {
+      try {
+        const v = localStorage.getItem(KEY_NAME);
+        if (v) { storageMode = 'localStorage'; return v; }
+      } catch (_) { /* fall through */ }
+      try {
+        const v = sessionStorage.getItem(KEY_NAME);
+        if (v) { storageMode = 'sessionStorage'; return v; }
+      } catch (_) { /* fall through */ }
+      if (memStore[KEY_NAME]) { storageMode = 'memory'; return memStore[KEY_NAME]; }
+      return '';
+    },
+    set(v) {
+      try {
+        localStorage.setItem(KEY_NAME, v);
+        storageMode = 'localStorage';
+        return;
+      } catch (_) { /* fall through */ }
+      try {
+        sessionStorage.setItem(KEY_NAME, v);
+        storageMode = 'sessionStorage';
+        return;
+      } catch (_) { /* fall through */ }
+      memStore[KEY_NAME] = v;
+      storageMode = 'memory';
+    },
+    clear() {
+      try { localStorage.removeItem(KEY_NAME); } catch (_) {}
+      try { sessionStorage.removeItem(KEY_NAME); } catch (_) {}
+      delete memStore[KEY_NAME];
+    },
+    mode() { return storageMode; },
+  };
+
+  function authHeader() {
+    const k = store.get();
+    return k ? { 'Authorization': `Bearer ${k}` } : {};
+  }
+
+  // CSRF double-submit cookie pattern (Wave 16 P1). Mirror of the helper
+  // in dashboard.src.js so any session-cookie POST issued from this view
+  // (currently /v1/me/billing-portal) still passes the CSRF check when
+  // the user has a parallel cookie session open.
+  function _readCookie(name) {
+    if (typeof document === 'undefined' || !document.cookie) return '';
+    const parts = document.cookie.split(';');
+    for (let i = 0; i < parts.length; i++) {
+      const seg = parts[i].trim();
+      if (!seg) continue;
+      const eq = seg.indexOf('=');
+      const k = eq < 0 ? seg : seg.slice(0, eq);
+      if (k === name) {
+        return eq < 0 ? '' : decodeURIComponent(seg.slice(eq + 1));
+      }
+    }
+    return '';
+  }
+  function csrfHeaders() {
+    const tok = _readCookie('am_csrf');
+    return tok ? { 'X-CSRF-Token': tok } : {};
+  }
+
+  async function fetchJSON(path, opts = {}) {
+    const init = Object.assign({}, opts);
+    init.headers = Object.assign(
+      { 'Accept': 'application/json' },
+      authHeader(),
+      opts.body ? { 'Content-Type': 'application/json' } : {},
+      opts.headers || {}
+    );
+    // Default 15 s timeout. See dashboard.src.js fetchJSON for rationale.
+    let _timer = null;
+    if (!init.signal) {
+      const ctrl = new AbortController();
+      init.signal = ctrl.signal;
+      _timer = setTimeout(() => ctrl.abort(), opts.timeoutMs || 15000);
+    }
+    let resp;
+    try {
+      resp = await fetch(api(path), init);
+    } catch (err) {
+      if (err && err.name === 'AbortError') {
+        const e = new Error('タイムアウト — 回線が遅いか、サーバが応答していません。');
+        e.status = 0; e.timeout = true;
+        throw e;
+      }
+      throw err;
+    } finally {
+      if (_timer) clearTimeout(_timer);
+    }
+    let body = null;
+    const text = await resp.text();
+    if (text) {
+      try { body = JSON.parse(text); } catch { body = null; }
+    }
+    if (!resp.ok) {
+      const detail = (body && (body.detail || body.message)) || `HTTP ${resp.status}`;
+      const err = new Error(detail);
+      err.status = resp.status;
+      err.body = body;
+      throw err;
+    }
+    return body;
+  }
+
+  function setStatus(msg, isError = false) {
+    const el = $('#dash2-key-status');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.style.color = isError ? 'var(--danger)' : 'var(--text-muted)';
+  }
+
+  // Persistent storage-mode warning, separate from setStatus() (which is
+  // overwritten on every load tick). Lazily inserted as a sibling of
+  // #dash2-key-status so we don't require an HTML change. Idempotent.
+  function renderStorageWarning() {
+    const status = $('#dash2-key-status');
+    if (!status) return;
+    let warn = document.getElementById('dash2-key-storage-warning');
+    const mode = store.mode();
+    let msg = '';
+    if (mode === 'sessionStorage') {
+      msg = 'プライベートブラウジングで API キーは現在のタブのみ保持されます。';
+    } else if (mode === 'memory') {
+      msg = 'ブラウザ保存が無効のため、API キーはこのページを離れると失われます。';
+    }
+    if (!msg) {
+      if (warn) warn.remove();
+      return;
+    }
+    if (!warn) {
+      warn = document.createElement('p');
+      warn.id = 'dash2-key-storage-warning';
+      warn.className = 'stat-note';
+      warn.style.cssText = 'margin:6px 0 0;color:var(--danger);';
+      warn.setAttribute('role', 'status');
+      status.parentNode.insertBefore(warn, status.nextSibling);
+    }
+    warn.textContent = msg;
+  }
+
+  // ------------------------------------------------------------------
+  // sections (show/hide based on auth state)
+  // ------------------------------------------------------------------
+  const SECTIONS = [
+    'dash2-summary',
+    'dash2-tool-usage',
+    'dash2-billing-history',
+    'dash2-recommend',
+    'dash2-alerts',
+  ];
+
+  function showSections(on) {
+    // Both inline `display` AND the `hidden` attribute must be cleared.
+    // The legacy cookie-session flow in dashboard.js sets `hidden=""` on
+    // every .stat-card when /v1/me returns 401; the Bearer flow has its
+    // own auth signal (localStorage key) and must override that.
+    SECTIONS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (on) {
+        el.removeAttribute('hidden');
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  // Race-guard: dashboard.js (cookie session) calls showSignedOut() when
+  // /v1/me returns 401, which sets hidden="" on every .stat-card —
+  // including our Bearer-auth sections. If our loadAll() finishes BEFORE
+  // dashboard.js's /v1/me 401 lands, we win; otherwise dashboard.js
+  // re-hides us. Pull v2 sections out of __dashPostEls so the legacy
+  // flow stops touching them. Idempotent + late-binding-safe.
+  function detachFromLegacyHide() {
+    if (!Array.isArray(window.__dashPostEls)) return;
+    const ids = new Set(SECTIONS);
+    window.__dashPostEls = window.__dashPostEls.filter((el) => (
+      !el || !el.id || !ids.has(el.id)
+    ));
+  }
+
+  // ------------------------------------------------------------------
+  // Dunning banner — Bearer-flow customers must see past_due / unpaid
+  // alerts too. dashboard.js renders the same banner from /v1/me on the
+  // cookie-session path; here we read subscription_status from
+  // /v1/me/dashboard (server adds it to the response). Banner element
+  // (#dash-dunning-banner) is shared with the cookie-session flow.
+  // ------------------------------------------------------------------
+  const V2_DUNNING_COPY = Object.freeze({
+    past_due:   '💳 直近のお支払いに失敗しました。Stripe ポータルから支払い方法を更新してください。',
+    unpaid:     '⚠️ お支払い未確定です。サービス停止前に Stripe ポータルからご確認ください。',
+    incomplete: '⚠️ お支払い未確定です。サービス停止前に Stripe ポータルからご確認ください。',
+    canceled:   'ℹ️ サブスクリプションはキャンセル済みです。当月末まで API アクセス可能です。',
+  });
+  function renderV2Dunning(data) {
+    const banner = document.getElementById('dash-dunning-banner');
+    if (!banner) return;
+    const status = data && typeof data.subscription_status === 'string'
+      ? data.subscription_status.toLowerCase()
+      : null;
+    const msg = status && V2_DUNNING_COPY[status];
+    if (!msg) {
+      banner.hidden = true;
+      banner.style.display = 'none';
+      return;
+    }
+    const msgEl = document.getElementById('dash-dunning-msg');
+    if (msgEl) msgEl.textContent = msg;
+    const portalLink = document.getElementById('dash-dunning-portal');
+    if (portalLink && !portalLink.dataset.v2Bound) {
+      portalLink.dataset.v2Bound = '1';
+      portalLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const body = await fetchJSON('/v1/me/billing-portal', { method: 'POST', headers: csrfHeaders() });
+          if (body && body.url) window.location = body.url;
+        } catch (err) {
+          setStatus(err.message || 'Stripe ポータル URL を取得できませんでした。', true);
+        }
+      });
+    }
+    banner.hidden = false;
+    banner.style.display = 'block';
+  }
+
+  // ------------------------------------------------------------------
+  // /v1/me/dashboard render
+  // ------------------------------------------------------------------
+  // Render the "今月の請求期間: YYYY-MM-DD まで" line near usage stats.
+  // Bearer flow source-of-truth is /v1/me/dashboard.current_period_end (ISO
+  // 8601 UTC). The cookie-session flow in dashboard.src.js renders the same
+  // element from /v1/me — whichever path lands first wins. Hidden when the
+  // value is null (no Stripe subscription yet).
+  function renderV2PeriodEnd(data) {
+    const wrap = document.getElementById('dash-period-end');
+    if (!wrap) return;
+    const iso = data && typeof data.current_period_end === 'string'
+      ? data.current_period_end
+      : null;
+    if (!iso) {
+      // Do NOT clobber the cookie-session rendering: only hide here when
+      // we have nothing AND nothing else has populated the date already.
+      const dateEl = document.getElementById('dash-period-end-date');
+      const existing = dateEl && dateEl.textContent && dateEl.textContent !== '—';
+      if (!existing) {
+        wrap.hidden = true;
+        wrap.style.display = 'none';
+      }
+      return;
+    }
+    const date = String(iso).slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+    const dateEl = document.getElementById('dash-period-end-date');
+    if (dateEl) dateEl.textContent = date;
+    wrap.hidden = false;
+    wrap.style.display = '';
+  }
+
+  async function loadSummary() {
+    const data = await fetchJSON('/v1/me/dashboard?days=30');
+    renderV2Dunning(data);
+    renderV2PeriodEnd(data);
+    const headline = $('#dash2-summary-headline');
+    if (headline) {
+      headline.innerHTML =
+        `${data.last_30_calls.toLocaleString()} <span class="unit">calls / </span>` +
+        `¥${data.last_30_amount_yen.toLocaleString()}<span class="unit"> spent (30d)</span>`;
+    }
+    // Cap progress bar (month-to-date)
+    const fill = $('#dash2-cap-fill');
+    if (fill) {
+      if (data.monthly_cap_yen && data.monthly_cap_yen > 0) {
+        const pct = Math.min(100, Math.round((data.month_to_date_amount_yen / data.monthly_cap_yen) * 100));
+        fill.style.width = pct + '%';
+      } else {
+        fill.style.width = '0%';
+      }
+    }
+    const note = $('#dash2-summary-note');
+    if (note) {
+      const cap = data.monthly_cap_yen;
+      const mtd = data.month_to_date_amount_yen;
+      if (cap && cap > 0) {
+        // Avoid `??` for iPadOS < 13.4 (still in field on 5-yr-old iPad Air 2).
+        // A SyntaxError here would brick the entire IIFE and blank every v2 section.
+        const remain = data.cap_remaining_yen != null
+          ? data.cap_remaining_yen
+          : Math.max(0, cap - mtd);
+        note.textContent =
+          `今月: ¥${mtd.toLocaleString()} / ¥${cap.toLocaleString()} (残 ¥${remain.toLocaleString()})。` +
+          `単価 ¥${data.unit_price_yen}/req 税別。リセット: 翌月 1 日 00:00 JST。`;
+      } else {
+        note.textContent =
+          `今月: ¥${mtd.toLocaleString()} (上限なし)。月次予算を設定すると 503 で自動停止します。`;
+      }
+    }
+    // Pre-fill cap input
+    const capInput = $('#dash2-cap-input');
+    if (capInput && data.monthly_cap_yen != null) {
+      capInput.value = String(data.monthly_cap_yen);
+    }
+    renderSparkline(data.series || []);
+  }
+
+  function renderSparkline(series) {
+    const svg = $('#dash2-spark');
+    if (!svg) return;
+    const w = 300, h = 60;
+    const n = series.length;
+    if (n === 0) { svg.innerHTML = ''; return; }
+    const gap = 2;
+    const barW = Math.max(1, Math.floor((w - gap * (n - 1)) / n));
+    const maxV = Math.max(1, ...series.map((d) => d.calls || 0));
+    const baseY = h - 4;
+    const maxBarH = h - 8;
+    const rects = series.map((d, i) => {
+      const v = d.calls || 0;
+      const bh = maxV > 0 ? Math.round((v / maxV) * maxBarH) : 0;
+      const x = i * (barW + gap);
+      const y = baseY - bh;
+      return `<rect x="${x}" y="${y}" width="${barW}" height="${bh}" fill="#1e3a8a"><title>${escapeHtml(d.date)}: ${v} calls</title></rect>`;
+    }).join('');
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.innerHTML = rects;
+  }
+
+  // ------------------------------------------------------------------
+  // /v1/me/usage_by_tool render
+  // ------------------------------------------------------------------
+  async function loadToolUsage() {
+    const data = await fetchJSON('/v1/me/usage_by_tool?days=30&limit=10');
+    const tbody = $('#dash2-tool-tbody');
+    if (!tbody) return;
+    if (!data.top || data.top.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="padding:14px 4px;color:var(--text-muted);">利用履歴なし — まずは <a href="/docs/">Docs</a> から API を叩いてみてください。</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.top.map((row) => `
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:8px 4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;">${escapeHtml(row.endpoint)}</td>
+        <td style="padding:8px 4px;text-align:right;">${row.calls.toLocaleString()}</td>
+        <td style="padding:8px 4px;text-align:right;">¥${row.amount_yen.toLocaleString()}</td>
+        <td style="padding:8px 4px;text-align:right;color:var(--text-muted);">${row.avg_latency_ms != null ? row.avg_latency_ms + ' ms' : '—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  // ------------------------------------------------------------------
+  // /v1/me/billing_history render + CSV/JSON export
+  // ------------------------------------------------------------------
+  let _lastInvoices = [];
+
+  async function loadBillingHistory() {
+    const data = await fetchJSON('/v1/me/billing_history');
+    _lastInvoices = data.invoices || [];
+    const tbody = $('#dash2-billing-tbody');
+    const note = $('#dash2-billing-note');
+    if (!tbody) return;
+    if (_lastInvoices.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="padding:14px 4px;color:var(--text-muted);">請求書はまだありません — 翌月 1 日に Stripe から発行されます。</td></tr>`;
+      if (note) note.textContent = 'Stripe Customer Portal と同期 (5 分キャッシュ)。請求書はまだありません。';
+      return;
+    }
+    tbody.innerHTML = _lastInvoices.map((inv) => `
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:8px 4px;">${escapeHtml(inv.period_start || '—')} 〜 ${escapeHtml(inv.period_end || '—')}</td>
+        <td style="padding:8px 4px;">${escapeHtml(inv.status)}</td>
+        <td style="padding:8px 4px;text-align:right;">¥${(inv.amount_paid_yen || 0).toLocaleString()}</td>
+        <td style="padding:8px 4px;">${inv.hosted_invoice_url ? `<a href="${escapeHtml(inv.hosted_invoice_url)}" target="_blank" rel="noopener">View</a>` : '—'}${inv.invoice_pdf ? ` · <a href="${escapeHtml(inv.invoice_pdf)}" target="_blank" rel="noopener">PDF</a>` : ''}</td>
+      </tr>
+    `).join('');
+    if (note) note.textContent = `${_lastInvoices.length} 件 (5 分キャッシュ、cached_at: ${escapeHtml(data.cached_at || '—')})。`;
+  }
+
+  function downloadInvoices(format) {
+    if (_lastInvoices.length === 0) {
+      setStatus('請求書はまだありません。月次サイクルで Stripe から発行されます。', true);
+      return;
+    }
+    let body, mime, ext;
+    if (format === 'csv') {
+      const cols = ['id', 'number', 'period_start', 'period_end', 'amount_due_yen', 'amount_paid_yen', 'currency', 'status', 'hosted_invoice_url', 'created'];
+      const escape = (v) => {
+        if (v == null) return '';
+        const s = String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      body = cols.join(',') + '\n' + _lastInvoices.map((inv) => cols.map((c) => escape(inv[c])).join(',')).join('\n');
+      mime = 'text/csv;charset=utf-8';
+      ext = 'csv';
+    } else {
+      body = JSON.stringify(_lastInvoices, null, 2);
+      mime = 'application/json;charset=utf-8';
+      ext = 'json';
+    }
+    const blob = new Blob([body], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `autonomath-billing-${new Date().toISOString().slice(0, 10)}.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ------------------------------------------------------------------
+  // /v1/me/tool_recommendation render
+  // ------------------------------------------------------------------
+  async function recommendTool(intent) {
+    const data = await fetchJSON(`/v1/me/tool_recommendation?intent=${encodeURIComponent(intent)}&limit=5`);
+    const ol = $('#dash2-rec-list');
+    if (!ol) return;
+    if (!data.tools || data.tools.length === 0) {
+      ol.innerHTML = `<li>マッチするツールがありませんでした。</li>`;
+      return;
+    }
+    const fb = data.fallback_used ? '<p class="stat-note" style="margin:0 0 8px;color:var(--text-muted);">(キーワードで一致なし → 汎用候補にフォールバック)</p>' : '';
+    ol.innerHTML = fb + data.tools.map((t) => `
+      <li style="margin-bottom:8px;">
+        <code>${escapeHtml(t.endpoint)}</code> — ${escapeHtml(t.name)}
+        <span class="stat-note" style="color:var(--text-muted);">(信頼度 ${(t.confidence * 100).toFixed(0)}%)</span>
+        <br><span class="stat-note">${escapeHtml(t.why)}</span>
+      </li>
+    `).join('');
+  }
+
+  // ------------------------------------------------------------------
+  // /v1/me/cap toggle (POST)
+  // ------------------------------------------------------------------
+  async function saveCap(yenOrNull) {
+    return fetchJSON('/v1/me/cap', {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: JSON.stringify({ monthly_cap_yen: yenOrNull }),
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // amendment-alert subscriptions: /v1/me/alerts/{subscribe,subscriptions}
+  // ------------------------------------------------------------------
+
+  // RFC1918 + loopback + link-local literal IP detector. Mirrors the
+  // server-side guard in api/alerts.py so we fail-fast in the browser
+  // before round-tripping to the API. DNS names (e.g. internal.corp) are
+  // accepted here; the server defers those to fire-time.
+  const _RE_INTERNAL_IPV4 = new RegExp(
+    '^(?:' +
+      '127(?:\\.\\d{1,3}){3}' +              // 127.0.0.0/8 loopback
+      '|10(?:\\.\\d{1,3}){3}' +               // 10.0.0.0/8
+      '|192\\.168(?:\\.\\d{1,3}){2}' +        // 192.168.0.0/16
+      '|172\\.(?:1[6-9]|2\\d|3[01])(?:\\.\\d{1,3}){2}' + // 172.16/12
+      '|169\\.254(?:\\.\\d{1,3}){2}' +        // 169.254/16 link-local
+      '|0(?:\\.\\d{1,3}){3}' +                // 0.0.0.0/8
+    ')$'
+  );
+  const _RE_INTERNAL_IPV6 = /^(?:::1|fe80:|fc[0-9a-f]{2}:|fd[0-9a-f]{2}:)/i;
+
+  function _isInternalHost(host) {
+    if (!host) return true;
+    const h = host.replace(/^\[|\]$/g, '').toLowerCase();
+    if (_RE_INTERNAL_IPV4.test(h)) return true;
+    if (_RE_INTERNAL_IPV6.test(h)) return true;
+    if (h === 'localhost') return true;
+    return false;
+  }
+
+  function validateWebhookUrl(url) {
+    if (!url) return null; // empty = optional, skip validation
+    if (url.length > 2048) return 'webhook_url が長すぎます (2048 文字以内)';
+    let parsed;
+    try { parsed = new URL(url); }
+    catch { return 'webhook_url が URL として不正です'; }
+    if (parsed.protocol !== 'https:') return 'webhook_url は https:// で始まる必要があります';
+    if (!parsed.hostname) return 'webhook_url にホスト名が必要です';
+    if (_isInternalHost(parsed.hostname)) return 'webhook_url が internal/loopback IP を指しています';
+    return null;
+  }
+
+  function showAlertBanner(msg, isError) {
+    const el = $('#dash2-alerts-banner');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = msg ? '' : 'none';
+    if (isError) {
+      el.style.background = '#fff0f0';
+      el.style.color = 'var(--danger)';
+      el.style.borderColor = 'var(--danger)';
+    } else {
+      el.style.background = '#f0f9ff';
+      el.style.color = 'var(--text)';
+      el.style.borderColor = 'var(--border)';
+    }
+    if (!isError && msg) {
+      // toast-style auto-dismiss for success
+      setTimeout(() => {
+        if (el.textContent === msg) {
+          el.style.display = 'none';
+        }
+      }, 4000);
+    }
+  }
+
+  async function loadAlerts() {
+    const data = await fetchJSON('/v1/me/alerts/subscriptions');
+    const tbody = $('#dash2-alerts-tbody');
+    if (!tbody) return;
+    const rows = Array.isArray(data) ? data : (data && data.subscriptions) || [];
+    if (rows.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" style="padding:14px 4px;color:var(--text-muted);">' +
+        '登録中の subscription はありません。下記フォームから新規登録してください。' +
+        '</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map((sub) => `
+      <tr style="border-bottom:1px solid var(--border);" data-sub-id="${escapeHtml(String(sub.id))}">
+        <td style="padding:8px 4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">${escapeHtml(String(sub.id))}</td>
+        <td style="padding:8px 4px;">${escapeHtml(sub.filter_type || '')}</td>
+        <td style="padding:8px 4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;">${escapeHtml(sub.filter_value || '—')}</td>
+        <td style="padding:8px 4px;">${escapeHtml(sub.min_severity || '')}</td>
+        <td style="padding:8px 4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--text-muted);">${sub.webhook_url ? escapeHtml(sub.webhook_url) : '—'}</td>
+        <td style="padding:8px 4px;color:var(--text-muted);">${sub.email ? escapeHtml(sub.email) : '—'}</td>
+        <td style="padding:8px 4px;text-align:right;">
+          <button type="button" class="btn-danger dash2-alerts-delete"
+                  data-sub-id="${escapeHtml(String(sub.id))}"
+                  style="padding:4px 10px;font-size:12px;">削除</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function subscribeAlert(formData) {
+    return fetchJSON('/v1/me/alerts/subscribe', {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: JSON.stringify(formData),
+    });
+  }
+
+  async function deleteAlert(id) {
+    return fetchJSON(`/v1/me/alerts/subscriptions/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // boot
+  // ------------------------------------------------------------------
+
+  // Yield to the main thread between heavy DOM writes so the long-task
+  // budget (INP ≤200 ms target) does not get blown by 4 fetch + 4
+  // innerHTML steps stacked on the same task. setTimeout(_, 0) hops
+  // through the macrotask queue and lets paint + interaction events
+  // flush. requestAnimationFrame would couple the yield to the next
+  // refresh frame which can be ≥16 ms on phones; setTimeout 0 is
+  // typically <4 ms in modern engines while still being a real yield.
+  function yieldToMain() {
+    return new Promise((r) => setTimeout(r, 0));
+  }
+
+  async function loadAll() {
+    if (!store.get()) {
+      showSections(false);
+      setStatus('API key 未保存 — 上記フォームから貼り付けてください。');
+      return;
+    }
+    setStatus('読み込み中…');
+    showSections(true);
+    // Sequential w/ yields. Previously Promise.all parallelized the four
+    // fetches, but each .innerHTML assignment is its own long task; on
+    // mid-tier mobile (Snapdragon 7-class) the contiguous "fetch resolve
+    // → parse → write 4 sections" block ran 250–400 ms and dominated INP.
+    // Yielding between sections lets paint frames + tap targets respond.
+    try {
+      await loadSummary(); await yieldToMain();
+      await loadToolUsage(); await yieldToMain();
+      await loadBillingHistory(); await yieldToMain();
+      try {
+        await loadAlerts();
+      } catch (e) {
+        // alerts is non-fatal: 401 propagates so the outer handler can
+        // clear the key + flip back to the unauth state. Any other
+        // error renders inline so the prior 3 sections stay usable.
+        if (e.status !== 401) {
+          const tbody = document.getElementById('dash2-alerts-tbody');
+          if (tbody) {
+            tbody.innerHTML =
+              '<tr><td colspan="7" style="padding:14px 4px;color:var(--danger);">' +
+              'subscription 一覧取得に失敗: ' + escapeHtml(e.message || String(e)) +
+              '</td></tr>';
+          }
+        } else {
+          throw e;
+        }
+      }
+      setStatus('読み込み完了。');
+    } catch (e) {
+      if (e.status === 401) {
+        store.clear();
+        showSections(false);
+        setStatus('API key が無効でした。再度入力してください。', true);
+      } else {
+        setStatus(`エラー: ${e.message || e}`, true);
+      }
+    }
+  }
+
+  function bind() {
+    const form = $('#dash2-key-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inp = $('#dash2-key-input');
+        const v = (inp && inp.value || '').trim();
+        if (!v) return;
+        store.set(v);
+        if (inp) inp.value = '';
+        // Private-browsing transparency: warn if the key did not land in
+        // localStorage. sessionStorage survives reload but not tab close;
+        // memory loses the key on the next navigation. Rendered as a
+        // sibling element so loadAll()'s setStatus calls don't clobber it.
+        renderStorageWarning();
+        loadAll();
+      });
+    }
+    const clearBtn = $('#dash2-key-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        store.clear();
+        showSections(false);
+        setStatus('API key を削除しました。');
+        const warn = document.getElementById('dash2-key-storage-warning');
+        if (warn) warn.remove();
+      });
+    }
+    const recForm = $('#dash2-rec-form');
+    if (recForm) {
+      recForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const intent = ($('#dash2-rec-intent') || {}).value || '';
+        if (!intent.trim()) return;
+        try { await recommendTool(intent.trim()); }
+        catch (err) {
+          if (err.status === 401) {
+            setStatus('API key が無効です。', true);
+          } else {
+            const ol = $('#dash2-rec-list');
+            if (ol) ol.innerHTML = `<li style="color:var(--danger);">エラー: ${escapeHtml(err.message || String(err))}</li>`;
+          }
+        }
+      });
+    }
+    const capSave = $('#dash2-cap-save');
+    if (capSave) {
+      capSave.addEventListener('click', async () => {
+        const v = ($('#dash2-cap-input') || {}).value;
+        const num = v ? parseInt(v, 10) : null;
+        if (num != null && (Number.isNaN(num) || num < 0)) {
+          setStatus('上限は 0 以上の整数で指定してください (¥)。', true);
+          return;
+        }
+        try {
+          await saveCap(num);
+          setStatus(num != null ? `Cap saved: ¥${num.toLocaleString()}` : 'Cap removed.');
+          await loadSummary();
+        } catch (e) {
+          setStatus(`Cap save failed: ${e.message || e}`, true);
+        }
+      });
+    }
+    const capClear = $('#dash2-cap-clear');
+    if (capClear) {
+      capClear.addEventListener('click', async () => {
+        try {
+          await saveCap(null);
+          const inp = $('#dash2-cap-input');
+          if (inp) inp.value = '';
+          setStatus('Cap removed.');
+          await loadSummary();
+        } catch (e) {
+          setStatus(`Cap clear failed: ${e.message || e}`, true);
+        }
+      });
+    }
+    const csv = $('#dash2-billing-csv');
+    if (csv) csv.addEventListener('click', () => downloadInvoices('csv'));
+    const json = $('#dash2-billing-json');
+    if (json) json.addEventListener('click', () => downloadInvoices('json'));
+
+    // ----- amendment-alert subscriptions --------------------------------
+    const alertsForm = $('#dash2-alerts-form');
+    if (alertsForm) {
+      alertsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const honeypot = $('#dash2-alerts-company-url');
+        if (honeypot && honeypot.value) {
+          showAlertBanner('subscription を登録しました。', false);
+          return;
+        }
+        const filterType = ($('#dash2-alerts-filter-type') || {}).value || '';
+        const filterValue = (($('#dash2-alerts-filter-value') || {}).value || '').trim();
+        const severity = ($('#dash2-alerts-severity') || {}).value || 'important';
+        const webhook = (($('#dash2-alerts-webhook') || {}).value || '').trim();
+        const email = (($('#dash2-alerts-email') || {}).value || '').trim();
+
+        if (filterType !== 'all' && !filterValue) {
+          showAlertBanner(`filter_value は filter_type='${filterType}' のとき必須です。`, true);
+          return;
+        }
+        if (!webhook && !email) {
+          showAlertBanner('webhook_url か email のどちらか 1 つ以上を入力してください。', true);
+          return;
+        }
+        const webhookErr = validateWebhookUrl(webhook);
+        if (webhookErr) {
+          showAlertBanner(webhookErr, true);
+          return;
+        }
+
+        const payload = {
+          filter_type: filterType,
+          min_severity: severity,
+        };
+        if (filterType !== 'all') payload.filter_value = filterValue;
+        if (webhook) payload.webhook_url = webhook;
+        if (email) payload.email = email;
+
+        const submit = $('#dash2-alerts-submit');
+        if (submit) submit.disabled = true;
+        try {
+          const created = await subscribeAlert(payload);
+          showAlertBanner(`subscription #${created.id} を登録しました。`, false);
+          // reset form (preserve selects' defaults)
+          const fv = $('#dash2-alerts-filter-value');
+          const wb = $('#dash2-alerts-webhook');
+          const em = $('#dash2-alerts-email');
+          if (fv) fv.value = '';
+          if (wb) wb.value = '';
+          if (em) em.value = '';
+          await loadAlerts();
+        } catch (err) {
+          if (err.status === 401) {
+            showAlertBanner('API key が無効です。再度入力してください。', true);
+          } else {
+            showAlertBanner(`登録失敗: ${err.message || String(err)}`, true);
+          }
+        } finally {
+          if (submit) submit.disabled = false;
+        }
+      });
+    }
+
+    // Event-delegate the per-row delete button so freshly rendered rows
+    // also get the handler without re-binding after each loadAlerts().
+    const alertsTbody = $('#dash2-alerts-tbody');
+    if (alertsTbody) {
+      alertsTbody.addEventListener('click', async (e) => {
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+        const btn = target.closest('.dash2-alerts-delete');
+        if (!btn) return;
+        const id = btn.getAttribute('data-sub-id');
+        if (!id) return;
+        if (!window.confirm(`subscription #${id} を削除しますか？ (deactivate、再開は新規登録が必要)`)) {
+          return;
+        }
+        btn.disabled = true;
+        try {
+          await deleteAlert(id);
+          showAlertBanner(`subscription #${id} を削除しました。`, false);
+          await loadAlerts();
+        } catch (err) {
+          if (err.status === 404) {
+            showAlertBanner(`subscription #${id} は既に削除されています。`, true);
+            await loadAlerts();
+          } else if (err.status === 401) {
+            showAlertBanner('API key が無効です。', true);
+          } else {
+            showAlertBanner(`削除失敗: ${err.message || String(err)}`, true);
+            btn.disabled = false;
+          }
+        }
+      });
+    }
+  }
+
+  function boot() {
+    bind();
+    // Detach from dashboard.js's hide list both immediately AND after a
+    // brief delay — dashboard.js's buildScaffold runs in DOMContentLoaded
+    // too and our boot order is not guaranteed.
+    detachFromLegacyHide();
+    setTimeout(detachFromLegacyHide, 50);
+    setTimeout(detachFromLegacyHide, 250);
+    // If a previously-pasted key was loaded from sessionStorage / memory
+    // (private-tab reload), surface the persistence warning right away so
+    // the user knows it will not survive a tab close. store.get() updates
+    // storageMode as a side-effect — call it once before the warning.
+    store.get();
+    renderStorageWarning();
+    loadAll();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();

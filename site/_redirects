@@ -1,0 +1,81 @@
+# Cloudflare Pages redirects
+# Syntax: <from> <to> <status>  (200=rewrite, 301=permanent, 302=temp)
+# See https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Canonical trailing-slash for docs
+/docs  /docs/  301
+
+# Legacy /getting-started.html → mkdocs Material doc (Wave 23 cleanup).
+# Real onboarding lives at /docs/getting-started/. Internal links across
+# site/index.html, prescreen-demo.js, etc. still point at the .html path;
+# this server-side 301 is the primary fallback. site/getting-started.html
+# also exists as a meta-refresh stub for Cloudflare's static-first path.
+/getting-started.html  /docs/getting-started/  301
+/getting-started       /docs/getting-started/  301
+
+# NOTE: removed legacy `/programs/UNI-:id → /programs/ 301`. Per-program
+# SEO pages now live at /programs/UNI-xxx.html (10,951 deployed). CF Pages
+# auto-strips .html. If a legacy non-existent UNI-* path is hit, 404.
+
+# NOTE: pretty URL rewrites removed — CF Pages auto-strips .html
+# extension, so /pricing → site/pricing.html works natively. The
+# explicit `/pricing → /pricing.html 200` rules caused an infinite
+# redirect loop because CF Pages re-rewrote /pricing.html → /pricing.
+
+# Device flow activation — RFC 8628 verification_uri.
+# /go/ABCD-1234 → /go (page reads code from URL path or ?code= query).
+# Bare /go works natively via CF .html stripping.
+# S3 friction-removal landing — /go/upgrade?from=429 (linked from anon
+# 429 body + X-Anon-Upgrade-Url header) is the anon → paid conversion
+# entry point. Redirected to /go so users land on the existing Stripe
+# checkout UI without forking the device-flow logic; ?from=429 is
+# preserved by the 302 for funnel attribution.
+/go/upgrade /go  302
+/go/:code /go  302
+
+# ─────────────────────────────────────────────────────────────────────────
+# Common-broken inbound paths — catch-all redirects so external links from
+# blog posts, social media, CMS imports, and "guess-the-URL" attempts land
+# on a real page instead of 404. All targets verified to exist on disk.
+# ─────────────────────────────────────────────────────────────────────────
+
+# /blog → published mkdocs blog under docs.
+# We intentionally do not host a /blog landing page; the launch-week posts
+# and ongoing release notes live at /docs/blog/. site/blog/*.md are source
+# files only (not served as pages).
+/blog        /docs/blog/  301
+/blog/*      /docs/blog/  301
+
+# /api → REST API reference. Common guess from people who heard "API"
+# before finding the docs index. /docs/api-reference/ is the canonical home.
+/api         /docs/api-reference/  301
+/api/*       /docs/api-reference/  301
+
+# Auth-style aliases — we have no separate sign-in page; account / API key
+# management lives on the dashboard, which uses device-flow login.
+/sign-in     /dashboard.html  302
+/signin      /dashboard.html  302
+/login       /dashboard.html  302
+/log-in      /dashboard.html  302
+/signup      /dashboard.html  302
+/sign-up     /dashboard.html  302
+/register    /dashboard.html  302
+
+# Contact — there is no dedicated contact page; info@bookyou.net is the
+# operator inbox and /go.html is the only first-party interaction surface.
+/contact     /go.html  302
+/contact-us  /go.html  302
+/support     /go.html  302
+
+# Legacy "jpintel" brand — the product was renamed to AutonoMath
+# (jpintel collides with Intel as a 著名商標). Anything pointing at the old
+# brand should land on the homepage. Internal source path src/jpintel_mcp/
+# is unaffected; this is user-facing only.
+/jpintel        /  301
+/jpintel.html   /  301
+/jpintel/*      /  301
+
+# Dashboard convenience — bare /dashboard works via CF .html stripping,
+# but /dash and /account are common shortcuts users try.
+/dash        /dashboard.html  302
+/account     /dashboard.html  302

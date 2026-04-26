@@ -1,0 +1,87 @@
+intent_id: i07_adoption_cases
+name_ja: 採択事例・過去実績
+
+extract_slots:
+  - key: program_id
+    required: true
+  - key: round
+    required: false
+    type: int
+  - key: prefecture
+    required: false
+  - key: industry_jsic
+    required: false
+  - key: employee_range
+    required: false
+    type: tuple[int,int]
+  - key: amount_range_yen
+    required: false
+    type: tuple[int,int]
+
+required_entities: [program, case_study]
+required_edges:
+  - adopted_under
+required_filters:
+  - program_id
+  - round
+  - prefecture
+  - industry_jsic
+
+branches:
+  - when: program_id is null
+    action: fail — require program
+  - when: round is null
+    action: return all rounds + 採択率推移
+  - when: prefecture and industry_jsic both null
+    action: top-N by amount; note "絞り込み推奨"
+  - when: amount_range_yen is not null
+    action: warn amount_granted_yen は一部欠落
+
+answer_template: bullet
+answer_skeleton: |
+  【対象制度】 {program_name}
+  【絞込条件】 回={round} 都道府県={prefecture} 業種={industry_jsic} 従業員={employee_range}
+
+  【ヒット件数】 {hit_count} 件 / 全体 {total_for_round} 件 ({ratio_pct}%)
+  【採択率 (この回)】 {acceptance_rate_pct}%
+
+  【代表事例 (金額/類似性 降順 上位 {top_n})】
+  {case_bullets}
+
+  【都道府県別 採択分布】
+  {prefecture_histogram}
+
+  【業種別 採択分布】
+  {industry_histogram}
+
+  【類似企業プロフィール採択例】
+  {similar_cases}
+
+  【データ注意】
+  - amount_granted_yen が欠落している record あり (P2 backfill 未完)
+  - 全 105,341 行のうち industry_jsic タグ付き {jsic_coverage_pct}%
+
+  【一次資料】
+  {citation_urls}
+
+row_shape_case: |
+  - {company_name} ({houjin_bangou}) / {prefecture} / JSIC {industry_jsic} / 従業員{employees}名
+    採択額 ¥{amount_man}万 / 事業テーマ: {theme}
+    根拠: {source_url}
+
+proactive_rules:
+  - id: similar_cases
+    trigger: user profile supplied
+    payload: rank by (pref match + JSIC prefix match + employee band match)
+  - id: acceptance_rate
+    trigger: always if round is known
+    payload: show 採択率 trend line (last 5 rounds)
+  - id: amount_null_warn
+    trigger: "more than 30% of results have amount_granted_yen==null"
+    payload: flag data gap
+
+zero_result_hint: |
+  該当採択なし。確認:
+  - round 指定を外す
+  - industry_jsic を大分類まで緩める
+  - prefecture を隣接県まで広げる

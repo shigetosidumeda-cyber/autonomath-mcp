@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Getting started — AutonoMath</title>
+<meta name="description" content="Quick-start for AutonoMath: one curl + Claude Desktop MCP setup. Query 10,790 searchable Japanese public programs (subsidies, loans, tax, certifications) via 72 MCP tools.">
+
+<meta property="og:title" content="Getting started — AutonoMath">
+<meta property="og:description" content="Five-minute quick-start: anonymous-allowance curl, API key, Claude Desktop MCP config.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://autonomath.ai/en/getting-started.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Getting started — AutonoMath">
+<meta name="twitter:description" content="Quick-start: curl + MCP in five minutes.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/getting-started.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/docs/getting-started/">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/getting-started.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/docs/getting-started/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Getting started — AutonoMath",
+  "description": "Five-minute quick-start for AutonoMath. Anonymous-allowance curl, API key setup, and Claude Desktop MCP configuration. Search 10,790 Japanese public programs via 72 MCP tools (protocol 2025-06-18).",
+  "url": "https://autonomath.ai/en/getting-started.html",
+  "inLanguage": "en",
+  "datePublished": "2026-04-23",
+  "dateModified": "2026-04-26",
+  "author": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/en/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "email": "info@bookyou.net",
+    "identifier": "T8010001213708"
+  }
+}
+</script>
+
+<style>
+  .gs-page { padding: 48px 0 64px; }
+  .gs-page h1 { font-size: 30px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .gs-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 32px; max-width: 720px; }
+  .gs-page h2 { font-size: 20px; margin: 36px 0 10px; font-weight: 700; }
+  .gs-page h3 { font-size: 16px; margin: 20px 0 6px; font-weight: 700; }
+  .gs-page p { max-width: 720px; }
+  .gs-page ul { max-width: 720px; }
+  .gs-page .next-steps { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 32px 0 0; }
+</style>
+
+<script defer src="../analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="about.html">About</a>
+      <a href="getting-started.html" aria-current="page">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../docs/getting-started/" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="getting-started.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="gs-page">
+  <div class="container">
+
+    <h1>Getting started</h1>
+    <p class="lead">Five minutes from zero to a live query against 10,790 searchable Japanese public programs (tier S/A/B/C; plus 1,923 quarantined for review and excluded from search) — 2,286 case studies, 108 loan programs with three-axis risk decomposition, and 1,185 enforcement cases. Anonymous tier needs no API key (50 req/month per IP, JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> first-of-month reset); MCP setup below works with Claude Desktop, Cursor, Gemini, and any client speaking MCP protocol <code>2025-06-18</code>.</p>
+
+    <h2>1. First request (no API key)</h2>
+    <p>The anonymous monthly allowance auto-issues a 50 calls/month per IP budget (resets at JST first-of-month 00:00). This curl works as-is:</p>
+    <pre class="code-block" aria-label="curl example, no key"><code>curl "https://api.autonomath.ai/v1/programs/search?q=IT&amp;limit=5"</code></pre>
+    <p>Response is JSON: <code>{total, limit, offset, results: [{unified_id, primary_name, tier, amount_max_man_yen, prefecture, official_url, source_url, source_fetched_at, ...}]}</code>. Names and descriptions are Japanese; leave them as UTF-8.</p>
+    <p>Hitting the limit returns 429 with <code>{"limit": 50, "resets_at": "..."}</code> — wait until JST 月初 reset (00:00 first-of-month) or upgrade in §2. Transient 5xx (e.g. 503) returns a JSON <code>detail</code> body — retry with backoff.</p>
+
+    <h2>2. Get an API key (Paid · ¥3/req, ¥3.30 incl. tax)</h2>
+    <p>To remove the 50 req/month per IP cap, create a Stripe Checkout session. Billing is pay-per-request — add a card, pay only for what you use (tax exclusive; 10% JCT added at invoice):</p>
+    <pre class="code-block" aria-label="billing checkout"><code>curl -X POST https://api.autonomath.ai/v1/billing/checkout \
+  -H "Content-Type: application/json" \
+  -d '{
+    "success_url": "https://autonomath.ai/en/success.html?session_id={CHECKOUT_SESSION_ID}",
+    "cancel_url": "https://autonomath.ai/en/pricing.html",
+    "customer_email": "you@example.com"
+  }'</code></pre>
+    <p>Open the returned <code>url</code> in a browser, complete payment, and the landing page will display your API key. If you integrate your own UI, exchange the session directly:</p>
+    <pre class="code-block" aria-label="exchange checkout session for key"><code>curl -X POST https://api.autonomath.ai/v1/billing/keys/from-checkout \
+  -H "Content-Type: application/json" \
+  -d '{"session_id": "cs_live_..."}'
+# =&gt; {"api_key": "am_xxxxxxxxxxxxxxxx", "tier": "paid", "customer_id": "cus_..."}</code></pre>
+    <p><strong>The API key is returned once.</strong> Store it immediately; if lost, cancel the subscription via <code>/v1/billing/portal</code> and re-subscribe to issue a fresh key.</p>
+
+    <h2>3. Authenticated request</h2>
+    <pre class="code-block" aria-label="authenticated curl"><code>curl -H "X-API-Key: am_xxxxxxxxxxxxxxxx" \
+  "https://api.autonomath.ai/v1/programs/search?q=IT&amp;tier=S&amp;tier=A&amp;limit=5"</code></pre>
+
+    <h2>4. Python (requests)</h2>
+    <pre class="code-block" aria-label="python example"><code>import requests
+
+API_KEY = "am_xxxxxxxxxxxxxxxx"
+BASE = "https://api.autonomath.ai"
+
+r = requests.get(
+    f"{BASE}/v1/programs/search",
+    params={"q": "IT", "tier": ["S", "A"], "limit": 5},
+    headers={"X-API-Key": API_KEY},
+)
+r.raise_for_status()
+print(r.json()["total"], "results")</code></pre>
+
+    <h2>5. Node.js (fetch)</h2>
+    <pre class="code-block" aria-label="node example"><code>const API_KEY = "am_xxxxxxxxxxxxxxxx";
+const BASE = "https://api.autonomath.ai";
+
+const url = new URL(`${BASE}/v1/programs/search`);
+url.searchParams.set("q", "IT");
+url.searchParams.append("tier", "S");
+url.searchParams.append("tier", "A");
+
+const res = await fetch(url, { headers: { "X-API-Key": API_KEY } });
+const data = await res.json();
+console.log(`${data.total} results`);</code></pre>
+
+    <h2>6. MCP (Claude Desktop)</h2>
+    <p>MCP protocol version: <code>2025-06-18</code>. Recommended install path is <code>uvx</code> (no venv to maintain; auto-updates on each launch). Edit <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> on macOS (or the Windows equivalent) and add:</p>
+    <pre class="code-block" aria-label="Claude Desktop MCP config"><code>{
+  "mcpServers": {
+    "autonomath": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"]
+    }
+  }
+}</code></pre>
+    <ul>
+      <li>Alternatively: <code>pip install autonomath-mcp</code>, then <code>"command": "autonomath-mcp"</code>.</li>
+      <li>One-click: download the <a href="/downloads/autonomath-mcp.mcpb" download>.mcpb bundle</a> and double-click — Claude Desktop installs it.</li>
+      <li>Restart Claude Desktop. 72 tools appear — 39 jpintel (15 base: <code>search_programs</code>, <code>get_program</code>, <code>batch_get_programs</code>, <code>search_case_studies</code>, <code>get_case_study</code>, <code>search_loan_programs</code>, <code>get_loan_program</code>, <code>search_enforcement_cases</code>, <code>get_enforcement_case</code>, <code>list_exclusion_rules</code>, <code>check_exclusions</code>, <code>get_meta</code>, <code>enum_values</code>, <code>prescreen_programs</code>, <code>upcoming_deadlines</code>; 1 quota probe: <code>get_usage_status</code>; 7 one-shot: <code>smb_starter_pack</code>, <code>subsidy_combo_finder</code>, <code>deadline_calendar</code>, <code>dd_profile_am</code>, <code>similar_cases</code>, <code>regulatory_prep_pack</code>, <code>subsidy_roadmap_3yr</code>; 16 expansion: <code>search_laws</code>, <code>get_law</code>, <code>list_law_revisions</code>, <code>search_court_decisions</code>, <code>get_court_decision</code>, <code>find_precedents_by_statute</code>, <code>search_bids</code>, <code>get_bid</code>, <code>bid_eligible_for_profile</code>, <code>search_tax_rules</code>, <code>get_tax_rule</code>, <code>evaluate_tax_applicability</code>, <code>search_invoice_registrants</code>, <code>trace_program_to_law</code>, <code>find_cases_by_law</code>, <code>combined_compliance_check</code>) + 33 autonomath (17 V1 entity-fact DB tools: <code>search_tax_incentives</code>, <code>search_certifications</code>, <code>list_open_programs</code>, <code>enum_values_am</code>, <code>search_by_law</code>, <code>active_programs_at</code>, <code>related_programs</code>, <code>search_acceptance_stats_am</code>, <code>intent_of</code>, <code>reason_answer</code>, <code>get_am_tax_rule</code>, <code>search_gx_programs_am</code>, <code>search_loans_am</code>, <code>check_enforcement_am</code>, <code>search_mutual_plans_am</code>, <code>get_law_article_am</code>, <code>list_tax_sunset_alerts</code>; 4 V4 universal: <code>get_annotations</code>, <code>validate</code>, <code>get_provenance</code> (entity), <code>get_provenance_fact</code>; 5 Phase A: <code>list_static_resources_am</code>, <code>get_static_resource_am</code>, <code>list_example_profiles_am</code>, <code>get_example_profile_am</code>, <code>deep_health_am</code>; 7 lifecycle/abstract: <code>graph_traverse</code>, <code>unified_lifecycle_calendar</code>, <code>program_lifecycle</code>, <code>program_abstract_structured</code>, <code>prerequisite_chain</code>, <code>rule_engine_check</code>, <code>query_at_snapshot</code>; <code>render_36_kyotei_am</code> + <code>get_36_kyotei_metadata_am</code> are AUTONOMATH_36_KYOTEI_ENABLED-gated, off by default — pushes count to 74 if enabled).</li>
+    </ul>
+    <p>Cursor, Gemini, ChatGPT (MCP-capable) and other MCP 2025-06-18 clients follow the same pattern &mdash; drop the server into the client's MCP config.</p>
+
+    <h2>7. Smoke test</h2>
+    <pre class="code-block" aria-label="smoke test"><code># health check (no auth)
+curl https://api.autonomath.ai/healthz
+# =&gt; {"status":"ok"}
+
+# dataset summary (canonical /v1/meta; legacy /meta 308-redirects, so -L is required)
+curl -L https://api.autonomath.ai/v1/meta
+# =&gt; {
+#      "total_programs": 13578,
+#      "tier_counts": {"S": 1, "A": 543, "B": 59, "C": 10944},
+#      "exclusion_rules_count": 181,
+#      "last_ingested_at": "2026-04-25T10:30:00+09:00",
+#      "data_as_of": "2026-04-25",
+#      "data_lineage": {"last_fetched_at": "2026-04-25T05:14:33Z", "unique_checksums": 9421}
+#    }</code></pre>
+    <p>Both 200 means you are live.</p>
+
+    <div class="next-steps">
+      <h2 style="margin-top:0">Next</h2>
+      <ul style="margin:0">
+        <li>Full REST reference &mdash; <a href="../docs/api-reference/">api-reference</a> (JP with English field names)</li>
+        <li>Exclusion rules &mdash; <a href="../docs/exclusions/">exclusions</a></li>
+        <li>FAQ (rate limits, data freshness, SLA) &mdash; <a href="../docs/faq/">faq</a></li>
+        <li>MCP tools in detail &mdash; <a href="../docs/mcp-tools/">mcp-tools</a></li>
+      </ul>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+</body>
+</html>

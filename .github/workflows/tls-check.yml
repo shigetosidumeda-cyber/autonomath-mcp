@@ -1,0 +1,84 @@
+# TLS certificate expiry monitor.
+#
+# Fly manages TLS via Let's Encrypt. Renewal is automatic but silent — if it
+# fails (DNS misconfig, rate-limit, ACME-challenge break) the cert just expires
+# and users hit NET::ERR_CERT_DATE_INVALID. This job is the safety net.
+#
+# CHANGE THE DOMAIN CONSTANT AFTER REBRAND LANDS.
+# Intel-rebrand is pending (see LAUNCH_GAPS_AUDIT D10) so domain is a placeholder.
+
+name: tls-check
+
+on:
+  schedule:
+    # 03:00 UTC daily == 12:00 JST. Runs once per day.
+    - cron: "0 3 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    name: Check TLS expiry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # TODO(rebrand): replace with final production hostname once the
+      # trademark rebrand decision lands. Until then points at the Fly subdomain.
+      DOMAIN: DOMAIN_PLACEHOLDER
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    steps:
+      - name: Fetch certificate notAfter
+        id: cert
+        run: |
+          set -euo pipefail
+          if [ "${DOMAIN}" = "DOMAIN_PLACEHOLDER" ]; then
+            echo "::warning::DOMAIN not yet configured in tls-check.yml (rebrand pending). Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # openssl s_client -> x509 -dates gives notBefore / notAfter in UTC.
+          # Redirect stderr because s_client is chatty about verify chain.
+          dates=$(openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" < /dev/null 2>/dev/null \
+                    | openssl x509 -noout -dates)
+          echo "$dates"
+          not_after=$(echo "$dates" | grep '^notAfter=' | sed 's/^notAfter=//')
+          if [ -z "$not_after" ]; then
+            echo "::error::Could not parse notAfter from openssl output"
+            exit 1
+          fi
+          not_after_epoch=$(date -u -d "$not_after" +%s)
+          now_epoch=$(date -u +%s)
+          days_left=$(( (not_after_epoch - now_epoch) / 86400 ))
+          echo "days_left=$days_left" >> "$GITHUB_OUTPUT"
+          echo "not_after=$not_after" >> "$GITHUB_OUTPUT"
+          echo "Cert for $DOMAIN expires in $days_left days ($not_after)."
+
+      - name: Alert if <10 days
+        if: steps.cert.outputs.skip != 'true' && steps.cert.outputs.days_left != ''
+        env:
+          DAYS_LEFT: ${{ steps.cert.outputs.days_left }}
+          NOT_AFTER: ${{ steps.cert.outputs.not_after }}
+        run: |
+          set -euo pipefail
+          if [ "$DAYS_LEFT" -ge 10 ]; then
+            echo "OK: $DAYS_LEFT days until expiry."
+            exit 0
+          fi
+
+          msg="AutonoMath TLS cert for ${DOMAIN} expires in ${DAYS_LEFT} day(s) (${NOT_AFTER}). Let's Encrypt renewal may be stuck."
+          echo "::warning::$msg"
+
+          if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
+            payload=$(printf '{"text":"%s"}' "$msg")
+            curl -sS -X POST -H 'Content-Type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
+          else
+            echo "SLACK_WEBHOOK_URL not set; relying on GitHub Actions ::warning:: only."
+          fi
+
+          # Fail the job only when we cross the urgent threshold, so the red
+          # X in the Actions UI is itself an alert channel.
+          if [ "$DAYS_LEFT" -lt 5 ]; then
+            exit 1
+          fi

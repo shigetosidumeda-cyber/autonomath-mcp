@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<!--
+  AutonoMath Glossary (EN) — English mirror of /glossary.html.
+  Defines the 5 core terms (Subsidy / Grant / Loan / Tax Incentive / Certification)
+  plus AutonoMath-specific schema vocabulary (tier, unified_id, exclusion rules,
+  am_entity_facts, etc.) for English-speaking developers consuming the API/MCP.
+  Each <dt id="term-XXX"> is a stable citation hook; endpoint mappings included.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>Glossary — AutonoMath</title>
+<meta name="description" content="Definitions of the five Japanese public-support categories (subsidy, grant, loan, tax incentive, certification) plus AutonoMath schema terms (tier, unified_id, exclusion rules) for English-speaking API/MCP users.">
+
+<meta property="og:title" content="Glossary — Subsidy, Grant, Loan, Tax Incentive, Certification | AutonoMath">
+<meta property="og:description" content="The five Japanese public-support categories explained for English-speaking developers, plus AutonoMath schema vocabulary (tier, unified_id, am_entity_facts, exclusion rules).">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/glossary.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Glossary — AutonoMath">
+<meta name="twitter:description" content="Five Japanese public-support categories + AutonoMath schema terms in plain English.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/glossary.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/glossary.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/glossary.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/glossary.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script defer src="../analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTermSet",
+  "@id": "https://autonomath.ai/en/glossary.html#termset",
+  "name": "AutonoMath Glossary (EN)",
+  "description": "Definitions of the five Japanese public-support categories (subsidy, grant, loan, tax incentive, certification) and AutonoMath schema vocabulary (tier, unified_id, exclusion rules, am_entity_facts) for English-speaking developers.",
+  "url": "https://autonomath.ai/en/glossary.html",
+  "inLanguage": "en",
+  "creator": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "email": "info@bookyou.net",
+    "url": "https://autonomath.ai/en/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "url": "https://autonomath.ai/en/",
+    "identifier": "T8010001213708"
+  },
+  "license": "https://autonomath.ai/en/tos.html",
+  "datePublished": "2026-04-26",
+  "dateModified": "2026-04-26",
+  "hasDefinedTerm": [
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-subsidy",
+      "name": "Subsidy",
+      "alternateName": ["補助金", "Hojokin"],
+      "description": "A non-refundable financial grant from a Japanese government body (national ministry or local government) to a business, awarded to advance a policy goal such as industrial promotion, regional revitalization, decarbonization, or DX. Repayment is not required, but a results report is mandatory and refunds may be ordered for misuse or fraud. Funded by tax revenue, so a competitive screening (open call + selection) applies. Acceptance rates range 30-80% depending on the program. Examples include the Business Restructuring Subsidy and Monozukuri Subsidy.",
+      "url": "https://autonomath.ai/en/glossary.html#term-subsidy",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-grant",
+      "name": "Grant",
+      "alternateName": ["助成金", "Joseikin"],
+      "description": "Functionally similar to a subsidy, but the term is reserved primarily for employment- and labor-related programs administered by the Ministry of Health, Labour and Welfare (MHLW). Awarded on a requirements-met basis (no competitive selection); applications are accepted until the annual budget is exhausted. Funded by the Employment Insurance two-business account. Examples include the Career-Up Grant and Human Resources Development Grant.",
+      "url": "https://autonomath.ai/en/glossary.html#term-grant",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-loan",
+      "name": "Loan (public financing)",
+      "alternateName": ["融資", "Yuushi"],
+      "description": "Lending from public financial institutions (Japan Finance Corporation, Shoko Chukin Bank, or private loans guaranteed by Credit Guarantee Corporations). Repayment with interest is required, but rates (0.5-2% annually), terms (5-20 years), and unsecured/unguaranteed brackets are more favorable than commercial bank loans. AutonoMath decomposes 108 loan programs along three axes: collateral, individual guarantor, and third-party guarantor.",
+      "url": "https://autonomath.ai/en/glossary.html#term-loan",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-tax",
+      "name": "Tax Incentive",
+      "alternateName": ["税制優遇", "Zeisei yuugu"],
+      "description": "Reductions, special depreciation, or tax credits applied to corporate tax, income tax, fixed-asset tax, or consumption tax. Examples include the SME Investment Promotion Tax (30% special depreciation or 7% tax credit), R&D Tax Credit (6-14% of qualifying expenses), and Wage-Increase Promotion Tax Credit (up to 40%). Reductions translate directly into cash-flow improvement, and unlike subsidies there is no rejection risk (requirements-met basis). Many require a prior certification step plus filing during annual tax return.",
+      "url": "https://autonomath.ai/en/glossary.html#term-tax",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-certification",
+      "name": "Certification",
+      "alternateName": ["認定制度", "Nintei seido"],
+      "description": "Government programs that formally recognize (\"certify\") a business as meeting policy criteria. Examples include the Management Innovation Plan, Regional Future Driver Company, Health Management Excellence Corporation, Management Capability Enhancement Plan, and Business Continuity Capability Plan. Certifications carry no direct cash benefit but serve as a foundation for: subsidy scoring bonuses, preferential loan terms, public-procurement scoring bonuses, and as prerequisites for many tax incentives. AutonoMath has structured 66 certification schemes.",
+      "url": "https://autonomath.ai/en/glossary.html#term-certification",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-tier",
+      "name": "tier",
+      "description": "AutonoMath's per-program data-quality grade, populated from the actual completeness of fields and source-URL liveness. Tiers S/A/B/C are searchable; tier X is a quarantine reserved for programs with structural data defects (no amount, broken URL, aggregator-only source, ambiguous duplicate, etc.). Production breakdown: S=114, A=1,340, B=3,292, C=6,044, X=1,923. All search endpoints exclude tier X by default.",
+      "url": "https://autonomath.ai/en/glossary.html#term-tier",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-unified-id",
+      "name": "unified_id",
+      "description": "Stable canonical identifier assigned to each entity (program, corporation, certification, etc.) in the AutonoMath schema. Used to cross-reference between programs, case studies, exclusion rules, and laws. Survives source-URL changes and small editorial revisions; if the underlying program is restructured into a new scheme it gets a new unified_id with a relation row linking the predecessor.",
+      "url": "https://autonomath.ai/en/glossary.html#term-unified-id",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-exclusion-rules",
+      "name": "exclusion rules",
+      "description": "AutonoMath's 181-row table that captures cross-program compatibility constraints. Composition: 125 explicit-exclusion rules (programs that cannot be combined for the same expense), 17 prerequisite rules (program A requires program B first), 15 absolute rules (always-disqualifying conditions), and 24 other (annotation-style notes). Surfaced via POST /v1/programs/check_compatibility.",
+      "url": "https://autonomath.ai/en/glossary.html#term-exclusion-rules",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-am-entity-facts",
+      "name": "am_entity_facts",
+      "description": "The fact table in the AutonoMath EAV schema. Each row is a (entity_id, field_name, value, source_id) tuple, supporting time-versioned and provenance-tracked attributes for any entity. Currently 6.12M rows. Backed by the larger am_entities table (503,930 rows across 12 record_kinds: adoption, corporate_entity, statistic, enforcement, invoice_registrant, program, case_study, tax_measure, law, certification, authority, document).",
+      "url": "https://autonomath.ai/en/glossary.html#term-am-entity-facts",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-source-url",
+      "name": "source_url / fetched_at",
+      "description": "Provenance columns present on every row in AutonoMath. source_url points to the primary source (a Japanese government ministry, prefecture, or Japan Finance Corporation page) and fetched_at records when AutonoMath last retrieved that page. Aggregator sites are banned from source_url. Together they form the lineage contract that supports the 99%+ primary-source coverage claim.",
+      "url": "https://autonomath.ai/en/glossary.html#term-source-url",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-mcp",
+      "name": "MCP (Model Context Protocol)",
+      "description": "An open protocol (Anthropic, version 2025-06-18) for AI agents to call typed tools over stdio. AutonoMath ships an MCP server (autonomath-mcp on PyPI) exposing 72 tools covering subsidy/loan/tax/certification search, exclusion checks, case-study retrieval, and provenance lookups. No SDK is required; clients connect over stdio.",
+      "url": "https://autonomath.ai/en/glossary.html#term-mcp",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-houjin-bangou",
+      "name": "houjin_bangou (corporate number)",
+      "alternateName": ["法人番号"],
+      "description": "Japan's 13-digit national corporate identifier issued by the National Tax Agency. AutonoMath stores the corporate number for 87,076 corporate entities and 6,455 enforcement records, enabling direct lookup of sanctions, adopted subsidies, and qualified-invoice (適格請求書) status by corporate number.",
+      "url": "https://autonomath.ai/en/glossary.html#term-houjin-bangou",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-jgrants",
+      "name": "jGrants",
+      "description": "Japan's official online application portal for national subsidies, run by the Small and Medium Enterprise Agency. jGrants handles applications and document submission but does not provide discovery, compatibility checking, or cross-program comparison. AutonoMath complements jGrants by sitting upstream of it, helping AI agents and applicants identify which programs are worth applying for.",
+      "url": "https://autonomath.ai/en/glossary.html#term-jgrants",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/en/glossary.html#term-qualified-invoice",
+      "name": "qualified invoice (適格請求書)",
+      "description": "Japan's invoice-system document issued by businesses registered with the National Tax Agency (registration starts with \"T\"). Required for the recipient to claim consumption-tax input credit since 2023-10-01. Bookyou Inc. is a registered issuer (T8010001213708, registered 2025-05-12) and AutonoMath surfaces 13,801 invoice registrants from PDL v1.0 delta data.",
+      "url": "https://autonomath.ai/en/glossary.html#term-qualified-invoice",
+      "inDefinedTermSet": "https://autonomath.ai/en/glossary.html#termset"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can multiple subsidies and grants be combined?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In principle yes, but double-counting the same expense across two programs is forbidden (treated as fraud). In addition, individual programs may include explicit \"cannot combine with X\" clauses. AutonoMath's POST /v1/programs/check_compatibility enforces 181 exclusion rules (125 exclude + 17 prerequisite + 15 absolute + 24 other) and returns conflicts immediately when given two program_ids."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a recommended order to apply for these five categories?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard order: Certification, then Subsidy/Grant, then Loan, then Tax Incentive. Certifications act as prerequisites or scoring bonuses for the rest, subsidies/grants reduce upfront cash burden, loans cover the remaining gap, and tax incentives provide legitimate tax reduction at year-end. AutonoMath's GET /v1/am/list_open_programs returns programs ordered along this sequence given a corporate profile."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are typical subsidy acceptance rates?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Highly program-dependent. Business Restructuring Subsidy: 30-50%. Monozukuri Subsidy: 40-60%. IT Introduction Subsidy: 60-80%. AutonoMath holds 2,286 actual case studies and exposes them via GET /v1/case_studies/search by program_id. Acceptance rates are derived from the secretariat's published selection results, never estimated independently."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I apply for a loan or subsidy first?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Subsidies are paid in arrears (after project completion), so a loan is typically used to bridge cash flow during the project. The standard sequence: (1) receive subsidy approval notice, (2) take a Marukei loan or Credit-Guarantee-backed loan for working capital, (3) execute the project and pay expenses, (4) submit the subsidy claim and receive payment, (5) optionally prepay the loan. AutonoMath's GET /v1/programs/search?include_loans=true joins loan_programs and programs in one call."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do tax incentives require a separate application?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most tax incentives are two-step: (1) prior certification (e.g., Management Capability Enhancement Plan), and (2) filing the relevant attachment with the annual tax return. Some, such as the R&D Tax Credit, do not require prior certification. AutonoMath's GET /v1/tax-incentives/search returns 35 structured tax_rulesets with requirements, application procedure, and eligible asset types."
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autonomath.ai/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Glossary", "item": "https://autonomath.ai/en/glossary.html"}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../glossary.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="glossary.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="container" style="max-width:880px;padding-top:32px;padding-bottom:48px;">
+
+    <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
+      <a href="/en/">Home</a> &rsaquo; <span aria-current="page">Glossary</span>
+    </nav>
+
+    <h1>Glossary</h1>
+    <p class="lead">Definitions of the five Japanese public-support categories &mdash; subsidy, grant, loan, tax incentive, and certification &mdash; plus AutonoMath schema vocabulary (tier, unified_id, am_entity_facts, exclusion rules) for English-speaking developers consuming the API and MCP server.</p>
+
+    <p style="margin:0 0 24px;color:var(--text-muted);font-size:14px;">
+      Last updated: <time datetime="2026-04-26">2026-04-26 JST</time> &middot;
+      Sources: METI / MHLW / SME Agency / National Tax Agency / Japan Finance Corporation primary documents &middot;
+      Related: <a href="facts.html">Facts</a> &middot; <a href="../glossary.html" hreflang="ja">Japanese version</a>
+    </p>
+
+    <section aria-labelledby="quick-compare-title" style="margin-top:24px;">
+      <h2 id="quick-compare-title" class="section-title">Five-category comparison</h2>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">Quick comparison of the five categories &mdash; repayment, screening, funding source, cash benefit.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Term</th>
+              <th scope="col">Repayment</th>
+              <th scope="col">Screening</th>
+              <th scope="col">Funded by</th>
+              <th scope="col">Cash benefit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><a href="#term-subsidy">Subsidy</a></th>
+              <td>Not required</td>
+              <td>Competitive</td>
+              <td>Tax revenue</td>
+              <td>Direct payment</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-grant">Grant</a></th>
+              <td>Not required</td>
+              <td>Requirements-met</td>
+              <td>Employment Insurance</td>
+              <td>Direct payment</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-loan">Loan</a></th>
+              <td>Required + interest</td>
+              <td>Credit review</td>
+              <td>Public finance</td>
+              <td>Low-interest lending</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-tax">Tax incentive</a></th>
+              <td>Not required (reduction)</td>
+              <td>Requirements-met</td>
+              <td>Foregone tax</td>
+              <td>Tax reduction</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-certification">Certification</a></th>
+              <td>&mdash;</td>
+              <td>Plan review</td>
+              <td>&mdash;</td>
+              <td>Indirect (scoring bonus)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="terms-title" style="margin-top:40px;">
+      <h2 id="terms-title" class="section-title">Term details</h2>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-subsidy" style="font-weight:700;font-size:20px;">Subsidy (補助金 / hojokin)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">A non-refundable financial grant from a Japanese government body (national ministry or local government) to a business, awarded to advance a policy goal &mdash; industrial promotion, regional revitalization, decarbonization, DX adoption, etc. <strong>Repayment is not required</strong>, but a results report (<em>jisseki houkokusho</em>) is mandatory; refunds may be ordered for misuse, fraud, or off-purpose spending. Funded by tax revenue, so a <strong>competitive screening</strong> (open call + selection) applies and acceptance rates range 30-80% depending on the program. Examples: <strong>Business Restructuring Subsidy</strong> (METI, up to ¥150M), <strong>Monozukuri Subsidy</strong> (SMRJ, up to ¥40M), <strong>IT Introduction Subsidy</strong> (SME Agency, up to ¥4.5M). Roughly 80% of AutonoMath's 10,790 searchable programs fall in this category.</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>Vs. Grant</strong>: Grant is requirements-met (no competition); Subsidy is competitive.<br>
+              <strong>Vs. Loan</strong>: Loan requires repayment with interest; Subsidy is non-refundable but paid in arrears (bridge financing often needed).<br>
+              <strong>Endpoint</strong>: <code>GET /v1/programs/search?kind=subsidy</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-grant" style="font-weight:700;font-size:20px;">Grant (助成金 / joseikin)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">Functionally similar to a subsidy, but the term is reserved primarily for <strong>employment- and labor-related programs administered by the Ministry of Health, Labour and Welfare (MHLW)</strong>. <strong>Awarded on a requirements-met basis</strong>: there is no competitive selection or acceptance ratio; applications are accepted until the annual budget is exhausted. Funded by the <strong>Employment Insurance two-business account</strong> (employer contribution). Examples: <strong>Career-Up Grant</strong> (non-regular to regular conversion, up to ¥800k per worker), <strong>Human Resources Development Grant</strong> (training expense), <strong>Work-Life Balance Grant</strong> (childcare/nursing leave), <strong>Work Improvement Grant</strong> (wage increase + capital investment). Specific qualifiers apply &mdash; e.g., delinquent social-insurance payment disqualifies.</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>Vs. Subsidy</strong>: Grant has no competitive selection; Subsidy does.<br>
+              <strong>Application desks</strong>: Prefectural Labour Bureau / Hello Work (vs. METI bureaus or program secretariats for subsidies).<br>
+              <strong>Endpoint</strong>: <code>GET /v1/programs/search?kind=subsidy&amp;authority=厚生労働省</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-loan" style="font-weight:700;font-size:20px;">Loan (融資 / yuushi, public financing)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">Lending from <strong>public financial institutions</strong> &mdash; <strong>Japan Finance Corporation (JFC)</strong>, <strong>Shoko Chukin Bank</strong>, or <strong>private bank loans guaranteed by the Credit Guarantee Corporation</strong>. Repayment with <strong>interest is required</strong>, but rates (0.5-2% annually), terms (5-20 years), and unsecured/unguaranteed brackets are far more favorable than commercial bank loans. Examples: <strong>Marukei Loan</strong> (Chamber-of-Commerce-recommended, unsecured + unguaranteed, up to ¥20M), <strong>New Business Start-up Loan</strong> (JFC, up to ¥72M), <strong>Super-L Loan</strong> for agriculture (JFC, up to ¥300M), <strong>Safety-Net Guarantee</strong> (Credit Guarantee Corporation). AutonoMath decomposes 108 loan programs along <strong>three axes: collateral / individual guarantor / third-party guarantor</strong>.</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>Vs. Subsidy</strong>: Subsidy is non-refundable but paid in arrears; Loan repays with interest but funds upfront &mdash; combining them is the norm.<br>
+              <strong>Screening axes</strong>: Credit history (no tax delinquency), business plan, collateral / guarantor.<br>
+              <strong>Endpoint</strong>: <code>GET /v1/loan-programs/search</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-tax" style="font-weight:700;font-size:20px;">Tax Incentive (税制優遇 / zeisei yuugu)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">A program that applies <strong>reductions, special depreciation, or tax credits</strong> to corporate tax, income tax, fixed-asset tax, or consumption tax. Examples: <strong>SME Investment Promotion Tax</strong> (30% special depreciation or 7% tax credit on machinery), <strong>R&amp;D Tax Credit</strong> (6-14% credit on qualifying expenses), <strong>Wage-Increase Promotion Tax Credit</strong> (up to 40% of incremental payroll), <strong>Fixed-Asset Tax Special Measures</strong> (50% reduction with Management Capability Enhancement Plan certification). <strong>Reductions translate directly into cash-flow improvement</strong>, and unlike subsidies there is <strong>no rejection risk</strong> (requirements-met basis). Many require a two-step structure: prior certification + filing during the annual tax return.</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>Vs. Subsidy</strong>: Subsidy pays cash; Tax Incentive reduces tax owed (no benefit if loss-making).<br>
+              <strong>Vs. Certification</strong>: SME Investment Promotion Tax and similar require Management Capability Enhancement Plan certification first &mdash; Certification comes upstream.<br>
+              <strong>Endpoint</strong>: <code>GET /v1/tax-incentives/search</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-certification" style="font-weight:700;font-size:20px;">Certification (認定制度 / nintei seido)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">A government program that formally <strong>recognizes ("certifies") a business</strong> as meeting policy criteria. Examples: <strong>Management Innovation Plan</strong> (prefectural certification), <strong>Regional Future Driver Company</strong> (METI selection), <strong>Health Management Excellence Corporation</strong> (METI + Japan Health Council), <strong>Management Capability Enhancement Plan</strong> (competent-minister certification), <strong>Business Continuity Capability Plan</strong> (METI bureau certification). <strong>No direct cash benefit</strong>, but certifications serve as the foundation for: <strong>subsidy scoring bonuses</strong> (raising acceptance odds), <strong>preferential loan terms</strong> (JFC interest-rate reductions), <strong>public-procurement scoring bonuses</strong> (overall-evaluation tendering), and <strong>tax-incentive prerequisites</strong>. Certifications themselves are free apart from stamp duty; the application document is what is reviewed. AutonoMath has structured 66 certification schemes.</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>Vs. Subsidy</strong>: Subsidy is cash; Certification is a credential (prerequisite for subsidy / loan / tax).<br>
+              <strong>Acquisition order</strong>: Certification first, then Subsidy / Tax Incentive application.<br>
+              <strong>Endpoint</strong>: <code>GET /v1/certifications/search</code>
+            </p>
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="schema-title" style="margin-top:40px;">
+      <h2 id="schema-title" class="section-title">AutonoMath schema vocabulary</h2>
+      <p style="font-size:14.5px;color:var(--text-muted);margin:0 0 16px;">Terms specific to the AutonoMath data model and API surface, useful when reading endpoint responses or designing AI agent workflows.</p>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-tier" style="font-weight:700;font-size:18px;"><code>tier</code></dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            Per-program data-quality grade, populated from actual completeness of fields and source-URL liveness (not opinion). <strong>Tiers S / A / B / C are searchable</strong>; <strong>tier X is a quarantine</strong> reserved for programs with structural defects (no amount, broken URL, aggregator-only source, ambiguous duplicate). Production breakdown: S=114, A=1,340, B=3,292, C=6,044, X=1,923. <strong>All search endpoints exclude tier X by default.</strong> Tier X subcategories include <code>external_info_entry</code>, <code>no_amount_data</code>, <code>placeholder_url</code>, <code>dedup_ambiguous_resolved</code>.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-unified-id" style="font-weight:700;font-size:18px;"><code>unified_id</code></dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            Stable canonical identifier assigned to each entity (program, corporation, certification, etc.). Used to cross-reference between programs, case studies, exclusion rules, laws, and enforcement records. Survives source-URL changes and editorial revisions. If a program is restructured into a new scheme, it receives a new <code>unified_id</code> with a relation row in <code>am_relation</code> linking the predecessor &mdash; preserving lineage without conflating identities.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-exclusion-rules" style="font-weight:700;font-size:18px;">exclusion rules</dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            AutonoMath's <strong>181-row table</strong> capturing cross-program compatibility constraints. Composition: <strong>125 explicit-exclusion</strong> rules (programs that cannot be combined for the same expense), <strong>17 prerequisite</strong> rules (program A requires program B first), <strong>15 absolute</strong> rules (always-disqualifying conditions), and <strong>24 other</strong> (annotation-style notes). Surfaced via <code>POST /v1/programs/check_compatibility</code>.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-am-entity-facts" style="font-weight:700;font-size:18px;"><code>am_entity_facts</code></dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            The fact table in the AutonoMath EAV (entity-attribute-value) schema. Each row is a <code>(entity_id, field_name, value, source_id)</code> tuple, supporting time-versioned and provenance-tracked attributes for any entity. <strong>6.12M rows</strong>. Companion to <code>am_entities</code> (503,930 rows across 12 record_kinds: adoption, corporate_entity, statistic, enforcement, invoice_registrant, program, case_study, tax_measure, law, certification, authority, document).
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-source-url" style="font-weight:700;font-size:18px;"><code>source_url</code> / <code>fetched_at</code></dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            Provenance columns present on every row. <code>source_url</code> points to the primary source &mdash; a Japanese government ministry, prefecture, or Japan Finance Corporation page. <strong>Aggregator sites (noukaweb, hojyokin-portal, biz.stayway, etc.) are banned from <code>source_url</code></strong> &mdash; this is enforced because past incidents created fraud risk. <code>fetched_at</code> records when AutonoMath last retrieved that page (rendered as "source fetched" &mdash; never "last verified" &mdash; to remain semantically honest under Japan's misleading-display law).
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-mcp" style="font-weight:700;font-size:18px;">MCP (Model Context Protocol)</dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            An open protocol from Anthropic (version <code>2025-06-18</code>) for AI agents to call typed tools over stdio. AutonoMath ships an MCP server (<code>autonomath-mcp</code> on PyPI) exposing <strong>72 tools</strong> covering subsidy / loan / tax / certification search, exclusion checks, case-study retrieval, and provenance lookups. No SDK required &mdash; clients connect over stdio.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-houjin-bangou" style="font-weight:700;font-size:18px;"><code>houjin_bangou</code> (corporate number, 法人番号)</dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            Japan's <strong>13-digit national corporate identifier</strong> issued by the National Tax Agency. AutonoMath stores corporate numbers for <strong>87,076 corporate entities</strong> and <strong>6,455 enforcement records</strong>, enabling direct lookup of sanctions, adopted subsidies, and qualified-invoice registration status by corporate number.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-jgrants" style="font-weight:700;font-size:18px;">jGrants</dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            Japan's official online application portal for national subsidies, run by the SME Agency. jGrants handles applications and document submission but does <strong>not</strong> provide discovery, compatibility checking, or cross-program comparison. AutonoMath complements jGrants by sitting upstream of it &mdash; identifying which programs are worth applying for, then jGrants is where the application is filed.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-qualified-invoice" style="font-weight:700;font-size:18px;">qualified invoice (適格請求書)</dt>
+          <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
+            Japan's invoice-system document issued by businesses registered with the National Tax Agency (registration number starts with <code>T</code>). <strong>Required for the recipient to claim consumption-tax input credit</strong> since 2023-10-01. Bookyou Inc. is a registered issuer (<code>T8010001213708</code>, registered 2025-05-12). AutonoMath surfaces 13,801 invoice registrants (PDL v1.0 delta data; full ~4M-row monthly bulk pending).
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="faq-title" style="margin-top:40px;">
+      <h2 id="faq-title" class="section-title">FAQ</h2>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:14px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-combine" style="font-weight:600;font-size:16px;">Q. Can multiple subsidies and grants be combined?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            In principle yes, but <strong>double-counting the same expense across two programs is forbidden</strong> (treated as fraud under the term "duplicated expense recording"). Individual programs may also include explicit "cannot combine with X" clauses. AutonoMath's <code>POST /v1/programs/check_compatibility</code> enforces <strong>181 exclusion rules</strong> (125 exclude + 17 prerequisite + 15 absolute + 24 other) and returns conflicts immediately when given two program_ids.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-priority" style="font-weight:600;font-size:16px;">Q. Is there a recommended order to apply for these five categories?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            Standard order: <strong>Certification &rarr; Subsidy/Grant &rarr; Loan &rarr; Tax Incentive</strong>. Certifications act as prerequisites or scoring bonuses for the rest, subsidies/grants reduce upfront cash burden, loans cover the remaining gap, and tax incentives provide legitimate tax reduction at year-end. AutonoMath's <code>GET /v1/am/list_open_programs</code> returns programs ordered along this sequence given a corporate profile.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-acceptance-rate" style="font-weight:600;font-size:16px;">Q. What are typical subsidy acceptance rates?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            Highly program-dependent. Business Restructuring Subsidy: 30-50%. Monozukuri Subsidy: 40-60%. IT Introduction Subsidy: 60-80%. AutonoMath holds <strong>2,286 actual case studies</strong> and exposes them via <code>GET /v1/case_studies/search</code> by program_id. Acceptance rates are <strong>derived from the secretariat's published selection results</strong>, never estimated independently by AutonoMath.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-loan-vs-subsidy" style="font-weight:600;font-size:16px;">Q. Should I apply for a loan or subsidy first?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            Subsidies are <strong>paid in arrears</strong> (after project completion), so a loan is typically used to bridge cash flow during the project. The standard sequence: (1) receive subsidy approval notice, (2) take a Marukei loan or Credit-Guarantee-backed loan for working capital, (3) execute the project and pay expenses, (4) submit the subsidy claim and receive payment, (5) optionally prepay the loan. AutonoMath's <code>GET /v1/programs/search?include_loans=true</code> joins <code>loan_programs</code> and <code>programs</code> in one call.
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-tax-application" style="font-weight:600;font-size:16px;">Q. Do tax incentives require a separate application?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            Most tax incentives are <strong>two-step</strong>: (1) prior certification (e.g., Management Capability Enhancement Plan), and (2) filing the relevant attachment with the annual tax return. Some, such as the R&amp;D Tax Credit, do not require prior certification. AutonoMath's <code>GET /v1/tax-incentives/search</code> returns <strong>35 structured tax_rulesets</strong> with requirements, application procedure, and eligible asset types.
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="next-title" style="margin-top:40px;">
+      <h2 id="next-title" class="section-title">Read next</h2>
+      <ul style="margin:0;padding-left:20px;line-height:2;font-size:15px;">
+        <li><a href="getting-started.html">Getting started</a> &mdash; from API key to first call</li>
+        <li><a href="pricing.html">Pricing</a> &mdash; ¥3/request metered, anonymous 50/month/IP free</li>
+        <li><a href="facts.html">Facts</a> &mdash; sources for every number on this site (program counts, entities, facts)</li>
+        <li><a href="products.html">Products</a> &mdash; REST + MCP surface overview</li>
+        <li><a href="../glossary.html" hreflang="ja">Japanese glossary</a> &mdash; the original 用語集 with 5-term comparison table</li>
+      </ul>
+    </section>
+
+    <p style="margin:32px 0 0;font-size:13px;color:var(--text-muted);">
+      For terminology disagreements or terms you would like added, contact <a href="mailto:info@bookyou.net">info@bookyou.net</a>. This page is updated as cited laws and public guidelines change (changefreq: monthly).
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="glossary.html" aria-current="page">Glossary</a>
+      <a href="facts.html">Facts</a>
+      <a href="tos.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="tokushoho.html">Legal (JP)</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) &middot; CEO Shigetoshi Umeda &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script src="/assets/feedback-widget.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.AutonoMathFeedback) {
+    window.AutonoMathFeedback.mount('body', { position: 'bottom-right' });
+  }
+});
+</script>
+
+</body>
+</html>

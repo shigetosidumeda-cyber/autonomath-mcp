@@ -1,0 +1,2686 @@
+[
+  {
+    "id": "safety-kyosai",
+    "name": "経営セーフティ共済(倒産防止共済)",
+    "category": "法人節税",
+    "subCategory": "共済・積立",
+    "authority": "中小機構",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "月額最大20万円・年240万円を全額損金算入。累計800万円まで。40ヶ月以上加入で解約時100%戻り。実質的な繰延節税+いざというときの無担保融資枠。",
+    "amount": {
+      "min": 20,
+      "max": 240,
+      "unit": "万円/年",
+      "note": "累計800万円まで"
+    },
+    "annualImpactEstimate": 80,
+    "eligibility": [
+      "1年以上事業継続",
+      "中小企業者"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 1,
+    "deadline": "通年",
+    "guardrails": [
+      "2024年10月改正:解約後2年以内の再加入分は損金不算入",
+      "40ヶ月未満の解約は元本割れ",
+      "法人の損金算入は別表十 (七) 添付必須"
+    ],
+    "combinableWith": [
+      "small-biz-kyosai"
+    ],
+    "tags": [
+      "返済不要",
+      "節税",
+      "共済",
+      "全法人対象"
+    ],
+    "sourceHint": "中小機構 経営セーフティ共済"
+  },
+  {
+    "id": "small-biz-kyosai",
+    "name": "小規模企業共済(個人・役員向け)",
+    "category": "個人移転",
+    "subCategory": "共済・退職金",
+    "authority": "中小機構",
+    "fundingType": [
+      "所得控除"
+    ],
+    "summary": "経営者個人が加入。月最大7万円・年84万円を全額所得控除。将来の受取は退職所得/公的年金扱いで低税率。実質的な役員退職金の前払い。",
+    "amount": {
+      "min": 12,
+      "max": 84,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 35,
+    "eligibility": [
+      "常時使用する従業員20人以下(商業サービス5人以下)の会社の役員"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 1,
+    "deadline": "通年",
+    "guardrails": [
+      "従業員数を超えると加入不可",
+      "任意解約の一時金は解約手当金として課税",
+      "12ヶ月未満は掛け捨て"
+    ],
+    "combinableWith": [
+      "safety-kyosai",
+      "ideco"
+    ],
+    "tags": [
+      "所得控除",
+      "退職金",
+      "役員"
+    ],
+    "sourceHint": "中小機構 小規模企業共済"
+  },
+  {
+    "id": "kyoka-zeisei",
+    "name": "中小企業経営強化税制",
+    "category": "法人節税",
+    "subCategory": "設備投資税制",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "税額控除",
+      "損金算入"
+    ],
+    "summary": "経営力向上計画の認定を受けた中小企業が、対象設備を取得した場合に即時償却または取得価額の10%(資本金3000万円超は7%)の税額控除。A類型(生産性向上)・B類型(収益力強化)・C類型(デジタル化)・D類型(経営資源集約化)。",
+    "amount": {
+      "min": 100,
+      "max": 5000,
+      "unit": "%控除",
+      "note": "10%税額控除 or 即時償却"
+    },
+    "annualImpactEstimate": 300,
+    "eligibility": [
+      "青色申告の中小企業者",
+      "経営力向上計画の認定"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 3,
+    "deadline": "2027年3月31日まで(延長の可能性)",
+    "guardrails": [
+      "設備取得前に認定取得が必須(順序厳守)",
+      "業種別の生産性向上要件を満たす必要",
+      "対象設備の範囲が限定的(機械装置160万以上等)"
+    ],
+    "prerequisite": [
+      "keiei-koujou-keikaku"
+    ],
+    "tags": [
+      "税制",
+      "設備投資",
+      "即時償却"
+    ],
+    "sourceHint": "中小企業庁 経営強化税制"
+  },
+  {
+    "id": "chusho-toushi-sokushin",
+    "name": "中小企業投資促進税制",
+    "category": "法人節税",
+    "subCategory": "設備投資税制",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "税額控除",
+      "損金算入"
+    ],
+    "summary": "機械装置(160万円以上)等を取得した中小企業が、30%特別償却または7%税額控除(資本金3000万円以下)。経営力向上計画不要で使いやすい。",
+    "amount": {
+      "min": 50,
+      "max": 3000,
+      "unit": "%控除"
+    },
+    "annualImpactEstimate": 150,
+    "eligibility": [
+      "中小企業者",
+      "指定事業"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 1,
+    "deadline": "2027年3月31日まで",
+    "guardrails": [
+      "資本金1億円超は特別償却のみ",
+      "貸付用設備は対象外"
+    ],
+    "combinableWith": [
+      "kyoka-zeisei"
+    ],
+    "tags": [
+      "税制",
+      "設備投資"
+    ]
+  },
+  {
+    "id": "chinage-sokushin",
+    "name": "賃上げ促進税制(中小企業向け)",
+    "category": "法人節税",
+    "subCategory": "雇用税制",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "税額控除"
+    ],
+    "summary": "雇用者給与等支給額を前年比1.5%以上増加で増加額の15%、2.5%以上で30%、教育訓練費10%UPで+10%、えるぼし/くるみん認定で+5%。最大45%税額控除。中小は5年繰越可。",
+    "amount": {
+      "min": 15,
+      "max": 45,
+      "unit": "%控除"
+    },
+    "annualImpactEstimate": 200,
+    "eligibility": [
+      "青色申告",
+      "中小企業者"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 1,
+    "deadline": "2027年3月31日まで",
+    "guardrails": [
+      "雇用調整助成金等との調整あり(給与額から控除)",
+      "法人税額の20%が上限",
+      "中小の繰越控除は黒字要件"
+    ],
+    "tags": [
+      "税制",
+      "賃上げ",
+      "人件費"
+    ]
+  },
+  {
+    "id": "kenkyu-kaihatsu-zeisei",
+    "name": "研究開発税制(試験研究費の税額控除)",
+    "category": "法人節税",
+    "subCategory": "R&D税制",
+    "authority": "経済産業省",
+    "fundingType": [
+      "税額控除"
+    ],
+    "summary": "試験研究費の総額の6〜14%を法人税額から控除。中小企業は一律12%+増減で最大17%。特別試験研究費(大学・スタートアップ共同研究)は20〜30%。",
+    "amount": {
+      "min": 6,
+      "max": 30,
+      "unit": "%控除"
+    },
+    "annualImpactEstimate": 250,
+    "eligibility": [
+      "試験研究費を計上",
+      "青色申告"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 1,
+    "deadline": "通年(各事業年度)",
+    "guardrails": [
+      "研究開発費の定義が厳格(新規性・技術的創意)",
+      "法人税額の25%(中小は35%)が控除上限",
+      "税務調査で否認リスク中程度"
+    ],
+    "tags": [
+      "税制",
+      "R&D",
+      "知財"
+    ]
+  },
+  {
+    "id": "shougaku-gensho",
+    "name": "少額減価償却資産の特例",
+    "category": "法人節税",
+    "subCategory": "即時損金",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "取得価額30万円未満の減価償却資産を年間300万円を上限に全額即時損金算入。PC・什器・機材の決算期末投資に強い。",
+    "amount": {
+      "min": 30,
+      "max": 300,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 90,
+    "eligibility": [
+      "中小企業者(青色申告)"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 0,
+    "deadline": "2026年3月31日取得分まで(延長見込み)",
+    "guardrails": [
+      "年間合計300万円が上限",
+      "貸付用資産は2022年改正で対象外"
+    ],
+    "tags": [
+      "即効",
+      "決算対策"
+    ]
+  },
+  {
+    "id": "ikkatsu-shoukyaku",
+    "name": "一括償却資産(20万円未満)",
+    "category": "法人節税",
+    "subCategory": "即時損金",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "取得価額20万円未満の資産を3年均等償却(月割不要)。償却資産税の課税対象外。少額特例と使い分け。",
+    "amount": {
+      "min": 20,
+      "max": 100,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 20,
+    "eligibility": [
+      "全法人"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 0,
+    "deadline": "通年",
+    "guardrails": [
+      "除却・売却しても3年償却継続"
+    ],
+    "tags": [
+      "即効"
+    ]
+  },
+  {
+    "id": "dx-toushi-zeisei",
+    "name": "DX投資促進税制",
+    "category": "法人節税",
+    "subCategory": "DX税制",
+    "authority": "経済産業省",
+    "fundingType": [
+      "税額控除",
+      "損金算入"
+    ],
+    "summary": "DX認定+事業適応計画の認定を受けた法人のデジタル関連投資に、3%(グループ外連携5%)税額控除または30%特別償却。",
+    "amount": {
+      "min": 100,
+      "max": 3000,
+      "unit": "%控除"
+    },
+    "annualImpactEstimate": 150,
+    "eligibility": [
+      "DX認定事業者",
+      "事業適応計画認定"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 6,
+    "deadline": "2027年3月31日まで(要確認)",
+    "guardrails": [
+      "DX認定のハードルが高い",
+      "対象投資はクラウド・データ連携等に限定"
+    ],
+    "tags": [
+      "税制",
+      "DX",
+      "大型"
+    ]
+  },
+  {
+    "id": "open-innovation",
+    "name": "オープンイノベーション促進税制",
+    "category": "投資優遇",
+    "subCategory": "出資税制",
+    "authority": "経済産業省",
+    "fundingType": [
+      "所得控除"
+    ],
+    "summary": "自社でスタートアップ(設立10年未満)に1億円以上出資した場合、出資額の25%を所得控除(上限50億円)。法人側の株価下落リスクに対する優遇。",
+    "amount": {
+      "min": 2500,
+      "max": 125000,
+      "unit": "%控除",
+      "note": "出資額の25%控除"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "国内法人",
+      "純投資目的"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 2,
+    "deadline": "2026年3月31日まで",
+    "guardrails": [
+      "5年以内に譲渡すると益金算入",
+      "既存株式の買取は対象外"
+    ],
+    "tags": [
+      "税制",
+      "スタートアップ",
+      "大型"
+    ]
+  },
+  {
+    "id": "kigyo-furusato",
+    "name": "企業版ふるさと納税",
+    "category": "法人節税",
+    "subCategory": "寄付税制",
+    "authority": "内閣府",
+    "fundingType": [
+      "税額控除",
+      "損金算入"
+    ],
+    "summary": "地方公共団体の地方創生プロジェクトに寄付すると、損金算入(3割軽減)+税額控除(最大6割)=最大約9割の税軽減。自社本店所在地への寄付は対象外。",
+    "amount": {
+      "min": 10,
+      "max": 10000,
+      "unit": "%控除",
+      "note": "寄付額の最大9割軽減"
+    },
+    "annualImpactEstimate": 100,
+    "eligibility": [
+      "青色申告法人",
+      "寄付先が本店所在地外"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 1,
+    "deadline": "2025年度(延長見込み)",
+    "guardrails": [
+      "返礼品の受領禁止",
+      "本店所在地自治体への寄付は対象外",
+      "寄付額の最低10万円"
+    ],
+    "tags": [
+      "税制",
+      "寄付",
+      "ブランディング"
+    ]
+  },
+  {
+    "id": "tanki-maebarai",
+    "name": "短期前払費用の特例",
+    "category": "法人節税",
+    "subCategory": "決算対策",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "支払った日から1年以内に役務提供を受ける費用は、支払時に全額損金算入可。家賃・保険料・サブスクの年払いで決算期の利益調整。",
+    "amount": {
+      "min": 10,
+      "max": 1000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 50,
+    "eligibility": [
+      "継続適用が必要"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 0,
+    "deadline": "通年",
+    "guardrails": [
+      "初回適用後は継続要件",
+      "収益と直接対応する費用は対象外",
+      "金額の重要性要件"
+    ],
+    "tags": [
+      "決算対策",
+      "即効"
+    ]
+  },
+  {
+    "id": "kyosai-kin-zougaku",
+    "name": "交際費等の損金算入特例(中小)",
+    "category": "法人節税",
+    "subCategory": "損金算入",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "資本金1億円以下の中小企業は、交際費のうち年800万円までを全額損金算入可(または接待飲食費の50%選択)。",
+    "amount": {
+      "min": 100,
+      "max": 800,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 160,
+    "eligibility": [
+      "資本金1億円以下"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 0,
+    "deadline": "2027年3月31日まで",
+    "guardrails": [
+      "1人5,000円以下の飲食費は交際費から除外",
+      "私的支出の混在に注意"
+    ],
+    "tags": [
+      "即効",
+      "中小特例"
+    ]
+  },
+  {
+    "id": "chukoshisan-taiyonensu",
+    "name": "中古資産の耐用年数短縮",
+    "category": "法人節税",
+    "subCategory": "減価償却",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "中古車・中古機械を簡便法で短い耐用年数で償却。4年落ち普通車なら初年度で全額損金可能(月割制約あり)。",
+    "amount": {
+      "min": 50,
+      "max": 1000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 70,
+    "eligibility": [
+      "中古資産の取得"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 0,
+    "deadline": "通年",
+    "guardrails": [
+      "事業供用の実態要件",
+      "私的使用は給与課税"
+    ],
+    "tags": [
+      "即効",
+      "決算対策"
+    ]
+  },
+  {
+    "id": "bosai-gensai",
+    "name": "中小企業防災・減災投資促進税制",
+    "category": "法人節税",
+    "subCategory": "設備投資税制",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "事業継続力強化計画の認定を受けた中小企業が、防災・減災設備を取得した場合、取得価額の18%特別償却。",
+    "amount": {
+      "min": 50,
+      "max": 2000,
+      "unit": "%控除"
+    },
+    "annualImpactEstimate": 80,
+    "eligibility": [
+      "事業継続力強化計画の認定"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 3,
+    "deadline": "2027年3月31日まで",
+    "guardrails": [
+      "計画認定前の取得は対象外"
+    ],
+    "prerequisite": [
+      "jigyou-keizoku-keikaku"
+    ],
+    "tags": [
+      "税制",
+      "BCP"
+    ]
+  },
+  {
+    "id": "m-and-a-zeisei",
+    "name": "中小企業事業再編投資損失準備金",
+    "category": "法人節税",
+    "subCategory": "M&A税制",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "経営力向上計画に基づくM&A実施時、株式取得価額の最大100%を準備金として積立・損金算入。10年目以降5年で取崩益金算入。",
+    "amount": {
+      "min": 100,
+      "max": 100000,
+      "unit": "万円/累計"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "経営力向上計画の認定",
+      "M&A実施"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 6,
+    "deadline": "2027年3月31日まで",
+    "guardrails": [
+      "出口のタイミングで益金算入"
+    ],
+    "prerequisite": [
+      "keiei-koujou-keikaku"
+    ],
+    "tags": [
+      "税制",
+      "M&A",
+      "大型"
+    ]
+  },
+  {
+    "id": "yakuin-houshu-opt",
+    "name": "役員報酬の最適化設計",
+    "category": "個人移転",
+    "subCategory": "報酬設計",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "定期同額給与の月額設定を、社保標準報酬月額のバンド境界直下に合わせ、社保料を最小化。法人税・所得税・社保の合計最適化。",
+    "amount": {
+      "min": 30,
+      "max": 200,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 80,
+    "eligibility": [
+      "役員報酬を受給中"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 1,
+    "deadline": "期首から3ヶ月以内",
+    "guardrails": [
+      "期中変更は原則損金不算入",
+      "著しく低額は給与の寄附認定リスク",
+      "事前確定届出給与は変更不可"
+    ],
+    "tags": [
+      "役員",
+      "社保",
+      "即効"
+    ]
+  },
+  {
+    "id": "yakuin-shataku",
+    "name": "役員社宅制度",
+    "category": "個人移転",
+    "subCategory": "福利厚生",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "法人契約で賃貸住宅を借り、役員に社宅として貸与。賃料相当額(固定資産税評価額ベース)の負担で、実質的に家賃の50〜90%が経費化。",
+    "amount": {
+      "min": 50,
+      "max": 400,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 120,
+    "eligibility": [
+      "法人契約可能な物件"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 1,
+    "deadline": "通年",
+    "guardrails": [
+      "賃料相当額の計算式を満たさないと給与課税",
+      "豪華社宅(240㎡超等)は全額給与課税",
+      "社宅規程の整備必須"
+    ],
+    "tags": [
+      "役員",
+      "住宅"
+    ]
+  },
+  {
+    "id": "ryohi-nitto",
+    "name": "出張旅費規程(日当の非課税)",
+    "category": "個人移転",
+    "subCategory": "福利厚生",
+    "authority": "国税庁",
+    "fundingType": [
+      "非課税枠",
+      "損金算入"
+    ],
+    "summary": "旅費規程を整備し、社会通念上相当な日当を支給。役員も含めて非課税で受取可能。国内1日5,000〜10,000円、海外1〜3万円が目安。",
+    "amount": {
+      "min": 20,
+      "max": 200,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 60,
+    "eligibility": [
+      "旅費規程整備",
+      "全従業員への適用"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 1,
+    "deadline": "通年",
+    "guardrails": [
+      "役員のみへの高額日当は否認リスク",
+      "出張の実態(報告書)必須"
+    ],
+    "tags": [
+      "役員",
+      "非課税",
+      "即効"
+    ]
+  },
+  {
+    "id": "yakuin-taishoku",
+    "name": "役員退職金プラン",
+    "category": "個人移転",
+    "subCategory": "退職金",
+    "authority": "国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "将来の役員退職金を見越し、生命保険・小規模企業共済・法人契約のハーフタックス等で積立。退職所得控除(勤続年数×70万円+α)と1/2課税で極めて低税率。",
+    "amount": {
+      "min": 100,
+      "max": 10000,
+      "unit": "万円/累計"
+    },
+    "annualImpactEstimate": 150,
+    "eligibility": [
+      "役員"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 3,
+    "deadline": "通年",
+    "guardrails": [
+      "功績倍率(通常2〜3倍)超は過大役員退職金として否認",
+      "2012年改正後は短期勤続役員に制限"
+    ],
+    "tags": [
+      "役員",
+      "退職金",
+      "長期"
+    ]
+  },
+  {
+    "id": "ideco",
+    "name": "iDeCo(個人型確定拠出年金)",
+    "category": "個人移転",
+    "subCategory": "年金",
+    "authority": "国民年金基金連合会",
+    "fundingType": [
+      "所得控除",
+      "非課税枠"
+    ],
+    "summary": "個人で掛金拠出、全額所得控除+運用益非課税+受取時も優遇。役員は月額2.3万円(年27.6万円)が上限(企業型DCなし)。",
+    "amount": {
+      "min": 6,
+      "max": 27.6,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 10,
+    "eligibility": [
+      "国民年金1〜3号被保険者"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 2,
+    "deadline": "通年",
+    "guardrails": [
+      "60歳まで原則引き出し不可",
+      "2024年改正で上限拡大議論中"
+    ],
+    "combinableWith": [
+      "small-biz-kyosai"
+    ],
+    "tags": [
+      "個人",
+      "年金",
+      "所得控除"
+    ]
+  },
+  {
+    "id": "kigyogata-dc",
+    "name": "企業型確定拠出年金(選択制DC)",
+    "category": "個人移転",
+    "subCategory": "年金",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "損金算入",
+      "非課税枠"
+    ],
+    "summary": "法人が制度導入、役員も加入可。給与の一部を拠出に振替える選択制DCは社保料も下がる(標準報酬月額から除外)。月55,000円まで(他制度なし時)。",
+    "amount": {
+      "min": 24,
+      "max": 66,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 40,
+    "eligibility": [
+      "厚生年金被保険者",
+      "企業型DC規約の整備"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 4,
+    "deadline": "通年",
+    "guardrails": [
+      "選択制の場合、給与減額による将来年金減",
+      "制度設計コスト"
+    ],
+    "tags": [
+      "役員",
+      "年金",
+      "社保"
+    ]
+  },
+  {
+    "id": "new-nisa",
+    "name": "新NISA(少額投資非課税制度)",
+    "category": "個人移転",
+    "subCategory": "資産運用",
+    "authority": "金融庁",
+    "fundingType": [
+      "非課税枠"
+    ],
+    "summary": "つみたて投資枠120万+成長投資枠240万=年360万円、生涯1,800万円まで運用益・配当非課税。恒久化。",
+    "amount": {
+      "min": 120,
+      "max": 360,
+      "unit": "万円/年",
+      "note": "生涯1800万円"
+    },
+    "annualImpactEstimate": 15,
+    "eligibility": [
+      "18歳以上"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 1,
+    "deadline": "通年",
+    "guardrails": [
+      "損益通算不可",
+      "売却枠は翌年復活"
+    ],
+    "tags": [
+      "個人",
+      "非課税",
+      "即効"
+    ]
+  },
+  {
+    "id": "chukyosai",
+    "name": "中小企業退職金共済(中退共)",
+    "category": "法人節税",
+    "subCategory": "福利厚生",
+    "authority": "勤労者退職金共済機構",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "従業員の退職金を共済積立。全額損金算入+新規加入時は国が助成(月額1/2を1年間、上限5,000円)。",
+    "amount": {
+      "min": 12,
+      "max": 360,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "従業員を雇用する中小企業"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 1,
+    "deadline": "通年",
+    "guardrails": [
+      "役員は加入不可",
+      "退職時は共済から直接従業員へ支給"
+    ],
+    "tags": [
+      "従業員",
+      "退職金"
+    ]
+  },
+  {
+    "id": "monozukuri",
+    "name": "ものづくり・商業・サービス生産性向上補助金",
+    "category": "補助金",
+    "subCategory": "設備投資",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "革新的な製品・サービスの開発や生産プロセスの改善のための設備投資を支援。通常枠750〜1,250万円、成長枠/グローバル/製品・サービス高付加価値化/グローバル市場開拓等の複数枠。補助率1/2〜2/3。",
+    "amount": {
+      "min": 750,
+      "max": 3000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 800,
+    "eligibility": [
+      "中小企業・小規模事業者",
+      "付加価値額3%以上UPの計画"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 14,
+    "deadline": "年3〜4回公募",
+    "guardrails": [
+      "交付決定前の発注は補助対象外",
+      "実績報告・事業化報告5年間",
+      "採択率30〜60%"
+    ],
+    "tags": [
+      "大型",
+      "設備投資",
+      "王道"
+    ]
+  },
+  {
+    "id": "shouryoku-toushi",
+    "name": "中小企業省力化投資補助金",
+    "category": "補助金",
+    "subCategory": "設備投資",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "人手不足対応で省力化効果のある機器等の導入を支援。カタログ型(登録機器から選定)と一般型(オーダーメイド)。上限最大1,500万円、補助率1/2。",
+    "amount": {
+      "min": 200,
+      "max": 1500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 500,
+    "eligibility": [
+      "人手不足の課題",
+      "中小企業者"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 10,
+    "deadline": "通年公募",
+    "guardrails": [
+      "カタログ掲載機器に限定(カタログ型)",
+      "省力化効果の定量報告義務"
+    ],
+    "tags": [
+      "省力化",
+      "設備投資"
+    ]
+  },
+  {
+    "id": "it-dounyuu",
+    "name": "IT導入補助金",
+    "category": "補助金",
+    "subCategory": "ITツール",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "ソフトウェア・クラウドサービス導入を支援。通常枠(最大450万)、インボイス対応枠、セキュリティ対策推進枠、複数社連携IT導入枠。補助率1/2〜3/4。",
+    "amount": {
+      "min": 30,
+      "max": 450,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 200,
+    "eligibility": [
+      "中小・小規模事業者",
+      "登録ITベンダー経由"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 4,
+    "deadline": "年4〜5回公募",
+    "guardrails": [
+      "対象ITツールは事前登録必須",
+      "ベンダー選定が採択を左右"
+    ],
+    "tags": [
+      "IT",
+      "SaaS",
+      "入門"
+    ]
+  },
+  {
+    "id": "jizokuka",
+    "name": "小規模事業者持続化補助金",
+    "category": "補助金",
+    "subCategory": "販路開拓",
+    "authority": "日本商工会議所/全国商工会連合会",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "販路開拓・生産性向上のための販促・HP・店舗改装等。通常50万、特別枠200万(賃金引上/卒業/インボイス等)。補助率2/3。",
+    "amount": {
+      "min": 50,
+      "max": 200,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 120,
+    "eligibility": [
+      "小規模事業者(従業員5〜20名以下)",
+      "商工会議所/商工会の指導"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 6,
+    "deadline": "年4回公募",
+    "guardrails": [
+      "商工会議所の事業支援計画書必須",
+      "採択率50〜70%"
+    ],
+    "tags": [
+      "入門",
+      "販路"
+    ]
+  },
+  {
+    "id": "shinjigyou-shinshutsu",
+    "name": "新事業進出補助金(旧事業再構築補助金後継)",
+    "category": "補助金",
+    "subCategory": "新事業",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "中小企業の新市場・新分野進出を支援する大型補助金。上限数千万〜9,000万円、補助率1/2〜2/3。事業計画の革新性・市場性が重視される。",
+    "amount": {
+      "min": 1500,
+      "max": 9000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 2000,
+    "eligibility": [
+      "中小企業者",
+      "新事業進出の事業計画"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 18,
+    "deadline": "年2〜3回公募",
+    "guardrails": [
+      "事業計画書のハードル極めて高い(認定支援機関必須)",
+      "付加価値額・給与額の目標未達時返還あり",
+      "補助事業期間14ヶ月+5年報告"
+    ],
+    "tags": [
+      "大型",
+      "新事業",
+      "王道"
+    ]
+  },
+  {
+    "id": "jigyou-shoukei",
+    "name": "事業承継・M&A補助金",
+    "category": "補助金",
+    "subCategory": "M&A",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "事業承継やM&Aを契機とした新たな取組を支援。経営革新事業(600万)、専門家活用事業(600万)、廃業・再チャレンジ事業(150万)等。補助率1/2〜2/3。",
+    "amount": {
+      "min": 150,
+      "max": 800,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "事業承継・M&Aの実施または予定"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 12,
+    "deadline": "年2〜3回公募",
+    "guardrails": [
+      "M&A仲介手数料は専門家活用事業のみ対象"
+    ],
+    "tags": [
+      "M&A",
+      "承継"
+    ]
+  },
+  {
+    "id": "gx-hojokin",
+    "name": "GX(グリーントランスフォーメーション)関連補助金",
+    "category": "補助金",
+    "subCategory": "環境",
+    "authority": "経済産業省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "省エネ・脱炭素化・カーボンニュートラル投資を支援する複数制度の総称(省エネ補助金、工場・事業場型、先進的省エネ等)。最大15億円規模あり。",
+    "amount": {
+      "min": 100,
+      "max": 150000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 1500,
+    "eligibility": [
+      "省エネ効果の定量目標",
+      "エネルギー管理"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 18,
+    "deadline": "年1〜2回公募",
+    "guardrails": [
+      "省エネ計算の専門知識必要",
+      "5年以上の効果報告"
+    ],
+    "tags": [
+      "大型",
+      "環境",
+      "エネルギー"
+    ]
+  },
+  {
+    "id": "nedo-sbir",
+    "name": "NEDO SBIR推進プログラム",
+    "category": "補助金",
+    "subCategory": "R&D",
+    "authority": "NEDO",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "スタートアップ・中小企業の研究開発を多段階で支援(フィジビリ→PoC→実用化)。累計数千万〜数億円規模。",
+    "amount": {
+      "min": 500,
+      "max": 30000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 3000,
+    "eligibility": [
+      "研究開発型中小企業・スタートアップ"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 24,
+    "deadline": "テーマ別公募",
+    "guardrails": [
+      "技術の新規性・社会実装可能性の審査厳格",
+      "ステージゲート"
+    ],
+    "tags": [
+      "大型",
+      "R&D",
+      "スタートアップ"
+    ]
+  },
+  {
+    "id": "go-tech",
+    "name": "Go-Tech事業(成長型中小企業等研究開発支援)",
+    "category": "補助金",
+    "subCategory": "R&D",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "中小企業と大学・公設試等との共同研究を支援。3年間で最大9,750万円、補助率2/3。",
+    "amount": {
+      "min": 3000,
+      "max": 9750,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 3000,
+    "eligibility": [
+      "中小企業者",
+      "大学等との共同研究",
+      "事業化計画"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 36,
+    "deadline": "年1回公募",
+    "guardrails": [
+      "大学連携の枠組み構築が前提",
+      "事業化指標の未達ペナルティ"
+    ],
+    "tags": [
+      "大型",
+      "R&D",
+      "連携"
+    ]
+  },
+  {
+    "id": "jetro-kaigai",
+    "name": "JETRO 新輸出大国コンソーシアム等",
+    "category": "補助金",
+    "subCategory": "海外展開",
+    "authority": "JETRO",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "海外販路開拓・越境EC・商談会出展等の海外展開支援。出展料補助、専門家派遣、通訳費用助成等。",
+    "amount": {
+      "min": 30,
+      "max": 500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 150,
+    "eligibility": [
+      "海外展開意欲のある中小企業"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "テーマ別公募",
+    "guardrails": [
+      "事前登録必要"
+    ],
+    "tags": [
+      "海外",
+      "販路"
+    ]
+  },
+  {
+    "id": "j-starx",
+    "name": "J-StarX(海外スタートアップ派遣)",
+    "category": "補助金",
+    "subCategory": "海外展開",
+    "authority": "経済産業省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "シリコンバレー・シンガポール等の海外拠点でのアクセラレータープログラム派遣を支援。渡航費・滞在費・参加費等を補助。",
+    "amount": {
+      "min": 100,
+      "max": 1000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 300,
+    "eligibility": [
+      "スタートアップ・起業家",
+      "海外展開意欲"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 6,
+    "deadline": "年複数回",
+    "guardrails": [
+      "選考あり",
+      "英語必須"
+    ],
+    "tags": [
+      "海外",
+      "スタートアップ"
+    ]
+  },
+  {
+    "id": "brand-kakuritsu",
+    "name": "特許庁 ブランド確立支援(地域団体商標等)",
+    "category": "補助金",
+    "subCategory": "知財",
+    "authority": "特許庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "ブランディング戦略策定から商標出願までを支援。",
+    "amount": {
+      "min": 50,
+      "max": 500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 80,
+    "eligibility": [
+      "中小企業・団体"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 8,
+    "deadline": "年1〜2回公募",
+    "guardrails": [],
+    "tags": [
+      "知財",
+      "ブランド"
+    ]
+  },
+  {
+    "id": "gaikoku-shutsugan",
+    "name": "中小企業等外国出願支援事業",
+    "category": "補助金",
+    "subCategory": "知財",
+    "authority": "特許庁/中小機構",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "中小企業の外国特許・商標・意匠出願費用の半額を助成。1企業あたり年間上限300万円。",
+    "amount": {
+      "min": 50,
+      "max": 300,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 150,
+    "eligibility": [
+      "中小企業",
+      "PCT出願等"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "年1〜2回公募",
+    "guardrails": [
+      "事業完了前の支払は対象外"
+    ],
+    "tags": [
+      "知財",
+      "海外"
+    ]
+  },
+  {
+    "id": "career-up",
+    "name": "キャリアアップ助成金",
+    "category": "助成金",
+    "subCategory": "雇用",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "非正規雇用労働者の処遇改善を支援。正社員化コース(1人57万円〜)、賃金規定改定コース、諸手当制度共通化コース等、複数コース。",
+    "amount": {
+      "min": 30,
+      "max": 80,
+      "unit": "万円/人"
+    },
+    "annualImpactEstimate": 300,
+    "eligibility": [
+      "雇用保険適用事業主",
+      "キャリアアップ計画書の提出"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 12,
+    "deadline": "通年",
+    "guardrails": [
+      "正社員化の6ヶ月前〜6ヶ月後の賃金要件",
+      "就業規則の整備必須",
+      "不正受給ペナルティ重い"
+    ],
+    "tags": [
+      "雇用",
+      "人件費",
+      "定番"
+    ]
+  },
+  {
+    "id": "jinzai-kaihatsu",
+    "name": "人材開発支援助成金",
+    "category": "助成金",
+    "subCategory": "教育訓練",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "OFF-JT研修やOJT研修の経費・賃金を助成。人材育成支援コース、教育訓練休暇等付与コース、人への投資促進コース等。経費助成45〜75%+賃金助成。",
+    "amount": {
+      "min": 20,
+      "max": 1000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 200,
+    "eligibility": [
+      "雇用保険適用事業主",
+      "職業訓練実施計画届"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "通年",
+    "guardrails": [
+      "訓練実施計画は開始1ヶ月前までに提出",
+      "記録管理厳格"
+    ],
+    "tags": [
+      "教育",
+      "雇用"
+    ]
+  },
+  {
+    "id": "ryouritsu-shien",
+    "name": "両立支援等助成金",
+    "category": "助成金",
+    "subCategory": "雇用",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "仕事と家庭の両立支援。出生時両立支援コース(男性育休)、育児休業等支援コース、介護離職防止支援コース。1人あたり28.5万〜。",
+    "amount": {
+      "min": 28.5,
+      "max": 70,
+      "unit": "万円/人"
+    },
+    "annualImpactEstimate": 50,
+    "eligibility": [
+      "育休取得実績等",
+      "中小企業"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 12,
+    "deadline": "通年",
+    "guardrails": [
+      "就業規則への明文化必要"
+    ],
+    "tags": [
+      "雇用",
+      "福利厚生"
+    ]
+  },
+  {
+    "id": "gyomu-kaizen",
+    "name": "業務改善助成金",
+    "category": "助成金",
+    "subCategory": "賃金引上",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "事業場内最低賃金を一定額以上引き上げ、設備投資等を行った中小企業に費用の一部を助成。最大600万円、補助率3/4〜9/10。",
+    "amount": {
+      "min": 30,
+      "max": 600,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 250,
+    "eligibility": [
+      "事業場内最低賃金と地域最賃の差50円以内",
+      "中小企業"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "通年",
+    "guardrails": [
+      "賃上げ実施後の申請不可(計画→実施の順)"
+    ],
+    "tags": [
+      "賃上げ",
+      "設備投資"
+    ]
+  },
+  {
+    "id": "hatarakikata-kaikaku",
+    "name": "働き方改革推進支援助成金",
+    "category": "助成金",
+    "subCategory": "働き方",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "労働時間短縮・年休取得促進等のための取組(労務管理ソフト導入、コンサル、研修等)に経費助成。上限100〜730万円、補助率3/4。",
+    "amount": {
+      "min": 50,
+      "max": 730,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 200,
+    "eligibility": [
+      "中小企業",
+      "労働時間等の改善計画"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "通年",
+    "guardrails": [
+      "成果目標未達時は助成額減額"
+    ],
+    "tags": [
+      "働き方",
+      "労務"
+    ]
+  },
+  {
+    "id": "tokutei-kyushoku",
+    "name": "特定求職者雇用開発助成金",
+    "category": "助成金",
+    "subCategory": "雇用",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "高齢者・障害者・就職困難者等を雇入れた事業主に賃金の一部を助成。複数コース(特定就職困難者、生涯現役、被災者、生活保護受給者等)。1人あたり60万〜240万円。",
+    "amount": {
+      "min": 60,
+      "max": 240,
+      "unit": "万円/人"
+    },
+    "annualImpactEstimate": 200,
+    "eligibility": [
+      "ハローワーク経由の雇入れ",
+      "継続雇用"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 18,
+    "deadline": "通年",
+    "guardrails": [
+      "対象者要件厳格"
+    ],
+    "tags": [
+      "雇用",
+      "採用"
+    ]
+  },
+  {
+    "id": "trial-koyou",
+    "name": "トライアル雇用助成金",
+    "category": "助成金",
+    "subCategory": "雇用",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "就業経験不足の求職者を試行雇用(原則3ヶ月)で雇入れた事業主に月額4万円(若者は5万円)を助成。",
+    "amount": {
+      "min": 12,
+      "max": 15,
+      "unit": "万円/人"
+    },
+    "annualImpactEstimate": 30,
+    "eligibility": [
+      "ハローワーク経由",
+      "トライアル雇用求人"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 3,
+    "deadline": "通年",
+    "guardrails": [
+      "対象者の就労経験要件"
+    ],
+    "tags": [
+      "雇用",
+      "採用"
+    ]
+  },
+  {
+    "id": "65sai-koyou",
+    "name": "65歳超雇用推進助成金",
+    "category": "助成金",
+    "subCategory": "高齢雇用",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "定年延長・65歳超継続雇用・高齢者雇用管理制度を整備した事業主に助成。65歳超継続雇用促進コースは上限160万円。",
+    "amount": {
+      "min": 15,
+      "max": 160,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 60,
+    "eligibility": [
+      "就業規則の改正"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 4,
+    "deadline": "通年",
+    "guardrails": [],
+    "tags": [
+      "雇用",
+      "高齢者"
+    ]
+  },
+  {
+    "id": "koukou-keiei-kyoka",
+    "name": "日本公庫 中小企業経営力強化資金",
+    "category": "融資",
+    "subCategory": "公的融資",
+    "authority": "日本政策金融公庫",
+    "fundingType": [
+      "低利融資"
+    ],
+    "summary": "認定経営革新等支援機関と共に事業計画を策定する中小企業に無担保・低利で融資。上限7,200万円(運転4,800万円)。",
+    "amount": {
+      "min": 500,
+      "max": 7200,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "認定支援機関の指導",
+      "事業計画"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 2,
+    "deadline": "通年",
+    "guardrails": [
+      "事業計画と実績の乖離報告義務"
+    ],
+    "tags": [
+      "融資",
+      "無担保"
+    ]
+  },
+  {
+    "id": "maru-kei",
+    "name": "マル経融資(小規模事業者経営改善資金)",
+    "category": "融資",
+    "subCategory": "公的融資",
+    "authority": "日本政策金融公庫",
+    "fundingType": [
+      "低利融資"
+    ],
+    "summary": "商工会議所・商工会の推薦で無担保無保証人・低金利の融資。上限2,000万円。",
+    "amount": {
+      "min": 100,
+      "max": 2000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "小規模事業者",
+      "商工会議所等での経営指導を6ヶ月以上"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 2,
+    "deadline": "通年",
+    "guardrails": [
+      "商工会議所の推薦必須"
+    ],
+    "tags": [
+      "融資",
+      "無担保",
+      "無保証"
+    ]
+  },
+  {
+    "id": "shihonsei-lone",
+    "name": "挑戦支援資本強化特別貸付(資本性劣後ローン)",
+    "category": "融資",
+    "subCategory": "資本性",
+    "authority": "日本政策金融公庫",
+    "fundingType": [
+      "低利融資"
+    ],
+    "summary": "金融機関からは資本とみなされ、自己資本比率が向上。最大10億円・期間15年。毎年の業績連動金利。",
+    "amount": {
+      "min": 1000,
+      "max": 100000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "事業計画の成長性",
+      "他行との協調融資"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 4,
+    "deadline": "通年",
+    "guardrails": [
+      "黒字時は業績連動で金利上昇",
+      "期限一括返済"
+    ],
+    "tags": [
+      "融資",
+      "大型",
+      "資本性"
+    ]
+  },
+  {
+    "id": "keiei-kyoka-hoshou",
+    "name": "経営力強化保証制度",
+    "category": "融資",
+    "subCategory": "信用保証",
+    "authority": "信用保証協会",
+    "fundingType": [
+      "低利融資",
+      "減免"
+    ],
+    "summary": "認定支援機関の支援を受ける中小企業の信用保証料を0.2%減免。上限2.8億円。",
+    "amount": {
+      "min": 500,
+      "max": 28000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 50,
+    "eligibility": [
+      "認定支援機関の関与",
+      "事業計画"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 2,
+    "deadline": "通年",
+    "guardrails": [
+      "事業計画の進捗報告義務"
+    ],
+    "tags": [
+      "融資",
+      "保証料減免"
+    ]
+  },
+  {
+    "id": "safety-net",
+    "name": "セーフティネット保証(4号・5号等)",
+    "category": "融資",
+    "subCategory": "信用保証",
+    "authority": "信用保証協会",
+    "fundingType": [
+      "低利融資"
+    ],
+    "summary": "業況悪化業種に該当する中小企業向け、100%保証の信用保証。市区町村の認定が必要。",
+    "amount": {
+      "min": 500,
+      "max": 28000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "指定業種",
+      "売上減少等の要件",
+      "市区町村の認定"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 1,
+    "deadline": "随時",
+    "guardrails": [
+      "認定書は有効期限30日"
+    ],
+    "tags": [
+      "融資",
+      "危機対応"
+    ]
+  },
+  {
+    "id": "josei-wakamono",
+    "name": "女性、若者/シニア起業家支援資金",
+    "category": "融資",
+    "subCategory": "創業",
+    "authority": "日本政策金融公庫",
+    "fundingType": [
+      "低利融資"
+    ],
+    "summary": "女性・35歳未満・55歳以上の起業家に特別金利の融資。上限7,200万円、運転4,800万円。",
+    "amount": {
+      "min": 500,
+      "max": 7200,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "該当する属性",
+      "新規開業または開業後7年以内"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 2,
+    "deadline": "通年",
+    "guardrails": [],
+    "tags": [
+      "創業",
+      "融資"
+    ]
+  },
+  {
+    "id": "tokkyo-genmen",
+    "name": "特許料等減免制度",
+    "category": "知財",
+    "subCategory": "知財",
+    "authority": "特許庁",
+    "fundingType": [
+      "減免"
+    ],
+    "summary": "中小企業・小規模事業者・個人事業主は審査請求料・特許料(1〜10年分)が半額または1/3に。2019年改正で手続簡素化。",
+    "amount": {
+      "min": 10,
+      "max": 200,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 50,
+    "eligibility": [
+      "中小企業・個人事業主・研究開発型スタートアップ"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 0,
+    "deadline": "随時",
+    "guardrails": [
+      "出願時の申告が必要"
+    ],
+    "tags": [
+      "知財",
+      "減免"
+    ]
+  },
+  {
+    "id": "super-sokuji",
+    "name": "スーパー早期審査",
+    "category": "知財",
+    "subCategory": "審査",
+    "authority": "特許庁",
+    "fundingType": [
+      "減免"
+    ],
+    "summary": "中小企業・個人・大学等の特許出願を無料で超早期に審査(平均2.7ヶ月)。海外出願も必要条件。",
+    "amount": {
+      "min": 0,
+      "max": 0,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "実施関連要件",
+      "海外出願要件"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 3,
+    "deadline": "随時",
+    "guardrails": [
+      "事情説明書必要"
+    ],
+    "tags": [
+      "知財",
+      "無料"
+    ]
+  },
+  {
+    "id": "inpit-shien",
+    "name": "INPIT 知財総合支援窓口",
+    "category": "知財",
+    "subCategory": "相談",
+    "authority": "INPIT",
+    "fundingType": [
+      "減免"
+    ],
+    "summary": "弁理士・弁護士の無料相談、知財戦略支援、海外出願相談を無料で受けられる窓口。",
+    "amount": {
+      "min": 0,
+      "max": 0,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 30,
+    "eligibility": [
+      "中小企業・個人事業主"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 0,
+    "deadline": "随時",
+    "guardrails": [],
+    "tags": [
+      "知財",
+      "無料"
+    ]
+  },
+  {
+    "id": "ip-accel",
+    "name": "IPAS(知財アクセラレーションプログラム)",
+    "category": "知財",
+    "subCategory": "スタートアップ",
+    "authority": "特許庁",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "スタートアップに対して知財戦略の専門家(ビジネス・知財)チームを派遣。無償。",
+    "amount": {
+      "min": 0,
+      "max": 0,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 50,
+    "eligibility": [
+      "スタートアップ",
+      "創業10年以内等"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "年1回公募",
+    "guardrails": [
+      "選考あり"
+    ],
+    "tags": [
+      "知財",
+      "スタートアップ",
+      "無料"
+    ]
+  },
+  {
+    "id": "tokyo-sogyo",
+    "name": "東京都 創業助成事業",
+    "category": "自治体",
+    "subCategory": "東京都",
+    "authority": "東京都中小企業振興公社",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "都内創業予定者・創業5年未満の中小企業者の創業初期経費を助成。上限400万円、補助率2/3。",
+    "amount": {
+      "min": 100,
+      "max": 400,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 150,
+    "eligibility": [
+      "都内所在",
+      "一定の創業支援事業の利用"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 12,
+    "deadline": "年2回公募",
+    "guardrails": [
+      "採択率20%前後",
+      "TOKYO創業ステーション利用等の要件"
+    ],
+    "tags": [
+      "自治体",
+      "創業"
+    ]
+  },
+  {
+    "id": "tokyo-yakushin",
+    "name": "躍進的な事業推進のための設備投資支援事業",
+    "category": "自治体",
+    "subCategory": "東京都",
+    "authority": "東京都中小企業振興公社",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "都内中小企業の新製品・新サービス開発のための設備投資を支援。上限1億円、補助率1/2〜2/3。",
+    "amount": {
+      "min": 1000,
+      "max": 10000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 2500,
+    "eligibility": [
+      "都内中小企業",
+      "事業計画"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 18,
+    "deadline": "年1回公募",
+    "guardrails": [
+      "採択率低"
+    ],
+    "tags": [
+      "自治体",
+      "大型"
+    ]
+  },
+  {
+    "id": "tokyo-seihin-kaihatsu",
+    "name": "東京都 新製品・新技術開発助成事業",
+    "category": "自治体",
+    "subCategory": "東京都",
+    "authority": "東京都中小企業振興公社",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "都内中小企業の新製品・新技術の研究開発費を助成。上限1,500万円、補助率1/2。",
+    "amount": {
+      "min": 300,
+      "max": 1500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 400,
+    "eligibility": [
+      "都内中小企業",
+      "新規性のある開発"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 12,
+    "deadline": "年2回公募",
+    "guardrails": [],
+    "tags": [
+      "自治体",
+      "R&D"
+    ]
+  },
+  {
+    "id": "tokyo-bcp",
+    "name": "東京都 BCP実践促進助成金",
+    "category": "自治体",
+    "subCategory": "東京都",
+    "authority": "東京都中小企業振興公社",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "中小企業のBCP対策(緊急時通信手段、データバックアップ、発電機、安否確認システム等)を助成。上限1,500万円、補助率1/2〜2/3。",
+    "amount": {
+      "min": 50,
+      "max": 1500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 200,
+    "eligibility": [
+      "都内中小企業",
+      "BCP策定済み"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "通年",
+    "guardrails": [
+      "BCP策定が前提"
+    ],
+    "tags": [
+      "自治体",
+      "BCP"
+    ]
+  },
+  {
+    "id": "tokyo-cyber",
+    "name": "東京都 サイバーセキュリティ対策促進助成金",
+    "category": "自治体",
+    "subCategory": "東京都",
+    "authority": "東京都中小企業振興公社",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "中小企業のセキュリティ対策機器・ソフト・クラウドサービス導入費用を助成。上限1,500万円、補助率1/2。",
+    "amount": {
+      "min": 50,
+      "max": 1500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 300,
+    "eligibility": [
+      "都内中小企業",
+      "SECURITY ACTION宣言"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "年1〜2回公募",
+    "guardrails": [],
+    "tags": [
+      "自治体",
+      "セキュリティ"
+    ]
+  },
+  {
+    "id": "tokyo-dx",
+    "name": "東京都 DX推進サポート事業",
+    "category": "自治体",
+    "subCategory": "東京都",
+    "authority": "東京都中小企業振興公社",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "中小企業のDX推進の専門家派遣+経費助成。段階的支援。",
+    "amount": {
+      "min": 100,
+      "max": 1000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 250,
+    "eligibility": [
+      "都内中小企業"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 10,
+    "deadline": "年1〜2回公募",
+    "guardrails": [],
+    "tags": [
+      "自治体",
+      "DX"
+    ]
+  },
+  {
+    "id": "keiei-koujou-keikaku",
+    "name": "経営力向上計画(認定)",
+    "category": "法人節税",
+    "subCategory": "前提計画",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "税額控除",
+      "低利融資"
+    ],
+    "summary": "経営強化税制・事業承継税制・公庫融資等の前提となる認定計画。業種別の指針に沿って策定、各省庁の認定。多数の優遇措置の入口。",
+    "amount": {
+      "min": 0,
+      "max": 0,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "中小企業者"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 2,
+    "deadline": "通年",
+    "guardrails": [
+      "事業年度の途中で認定可、ただし税制は取得前に必要"
+    ],
+    "tags": [
+      "前提",
+      "計画",
+      "必須"
+    ]
+  },
+  {
+    "id": "jigyou-keizoku-keikaku",
+    "name": "事業継続力強化計画(認定)",
+    "category": "法人節税",
+    "subCategory": "前提計画",
+    "authority": "中小企業庁",
+    "fundingType": [
+      "税額控除",
+      "低利融資"
+    ],
+    "summary": "防災・減災税制や低利融資の前提となる計画。策定難易度は低く、取るべき前提資格。",
+    "amount": {
+      "min": 0,
+      "max": 0,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "中小企業者"
+    ],
+    "difficulty": 1,
+    "timelineMonths": 1,
+    "deadline": "通年",
+    "guardrails": [],
+    "tags": [
+      "前提",
+      "計画"
+    ]
+  },
+  {
+    "id": "shoukei-zeisei",
+    "name": "事業承継税制(特例措置)",
+    "category": "事業承継",
+    "subCategory": "相続・贈与",
+    "authority": "中小企業庁/国税庁",
+    "fundingType": [
+      "非課税枠"
+    ],
+    "summary": "非上場株式の贈与・相続税を100%納税猶予・免除する特例措置。2027年までに特例承継計画の提出が必要。オーナー企業の出口戦略に強力。",
+    "amount": {
+      "min": 0,
+      "max": 1000000,
+      "unit": "万円/累計"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "非上場中小企業",
+      "特例承継計画(2027/3/31まで)"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 24,
+    "deadline": "特例承継計画は2027/3/31まで",
+    "guardrails": [
+      "5年間の雇用8割維持等の要件",
+      "取消事由発生で猶予税額+利子税",
+      "後継者要件厳格"
+    ],
+    "tags": [
+      "承継",
+      "大型",
+      "長期"
+    ]
+  },
+  {
+    "id": "sangyo-koyou-antei",
+    "name": "産業雇用安定助成金(スキルアップ支援)",
+    "category": "助成金",
+    "subCategory": "雇用",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "在籍型出向を活用した労働者のスキル向上や、事業構造転換に伴う人材育成を支援。コース複数。",
+    "amount": {
+      "min": 100,
+      "max": 500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 100,
+    "eligibility": [
+      "雇用保険適用事業主"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "通年",
+    "guardrails": [],
+    "tags": [
+      "雇用",
+      "教育"
+    ]
+  },
+  {
+    "id": "jinzai-kakuho-shien",
+    "name": "人材確保等支援助成金",
+    "category": "助成金",
+    "subCategory": "雇用",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "雇用管理制度の整備(評価・処遇制度、健康づくり制度、メンター制度等)を助成。中小企業団体助成コース等。",
+    "amount": {
+      "min": 57,
+      "max": 150,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 80,
+    "eligibility": [
+      "就業規則の整備",
+      "離職率の目標達成"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 12,
+    "deadline": "通年",
+    "guardrails": [
+      "離職率要件未達時は不支給"
+    ],
+    "tags": [
+      "雇用",
+      "定着"
+    ]
+  },
+  {
+    "id": "angel-zeisei",
+    "name": "エンジェル税制",
+    "category": "投資優遇",
+    "subCategory": "個人投資家",
+    "authority": "経済産業省",
+    "fundingType": [
+      "所得控除"
+    ],
+    "summary": "個人がベンチャー企業へ投資した場合、投資額を所得控除(優遇措置A: 上限800万、B: 投資額を他株式譲渡益から控除)。2023年改正で20億円まで非課税の枠新設。",
+    "amount": {
+      "min": 10,
+      "max": 200000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "個人投資家",
+      "特定中小企業"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 3,
+    "deadline": "投資年度",
+    "guardrails": [
+      "企業の事前確認必須",
+      "保有期間要件"
+    ],
+    "tags": [
+      "個人",
+      "投資",
+      "大型"
+    ]
+  },
+  {
+    "id": "stock-option-tekikaku",
+    "name": "税制適格ストックオプション",
+    "category": "投資優遇",
+    "subCategory": "報酬設計",
+    "authority": "経済産業省/国税庁",
+    "fundingType": [
+      "非課税枠"
+    ],
+    "summary": "役職員への無償新株予約権。権利行使時非課税、売却時譲渡所得課税(約20%)。2023年改正で年間権利行使価額の上限拡大(設立5年未満3600万、5〜20年未満1200万)。",
+    "amount": {
+      "min": 0,
+      "max": 0,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "非上場会社役職員",
+      "発行会社の要件"
+    ],
+    "difficulty": 4,
+    "timelineMonths": 3,
+    "deadline": "随時",
+    "guardrails": [
+      "権利行使価額は発行時の株価以上",
+      "年間行使価額の上限"
+    ],
+    "tags": [
+      "役員",
+      "報酬",
+      "スタートアップ"
+    ]
+  },
+  {
+    "id": "agri-ninnei",
+    "name": "認定農業者制度 経営改善計画",
+    "category": "補助金",
+    "subCategory": "農業計画",
+    "authority": "農林水産省/市町村",
+    "fundingType": [
+      "返済不要",
+      "低利融資",
+      "減免"
+    ],
+    "summary": "農業経営改善計画(5年計画)を市町村に提出して認定を受けると、スーパーL資金等の低利融資・各種補助金の上乗せ・農業者年金保険料補助・経営基盤強化準備金等の優遇を一括で受けられる農業セクターの根幹資格。",
+    "amount": {
+      "min": 0,
+      "max": 0,
+      "unit": "万円/年",
+      "note": "前提資格"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "認定対象者(個人・法人・集落営農組織)",
+      "5年計画の策定"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 3,
+    "deadline": "通年",
+    "guardrails": [
+      "5年後の経営指標達成義務",
+      "未達時は認定取消の可能性"
+    ],
+    "tags": [
+      "農業",
+      "前提",
+      "計画"
+    ],
+    "sourceHint": "農水省 認定農業者制度 / 農業経営基盤強化促進法"
+  },
+  {
+    "id": "agri-smart",
+    "name": "スマート農業技術の開発・実証プロジェクト",
+    "category": "補助金",
+    "subCategory": "農業DX",
+    "authority": "農林水産省/農研機構",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "ロボット・AI・IoT・ドローン等のスマート農業技術を導入・実証する取組を支援。補助上限数千万円〜1億円超、補助率1/2〜2/3。産地の生産性を飛躍的に向上させる案件を優先採択。",
+    "amount": {
+      "min": 1000,
+      "max": 10000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 1500,
+    "eligibility": [
+      "認定農業者又は法人",
+      "実証コンソーシアムの組成"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 18,
+    "deadline": "年1〜2回公募",
+    "guardrails": [
+      "実証データの報告義務",
+      "事業化計画の提示"
+    ],
+    "prerequisite": [
+      "agri-ninnei"
+    ],
+    "tags": [
+      "農業",
+      "DX",
+      "大型"
+    ],
+    "sourceHint": "農研機構 / 農水省スマート農業実証プロジェクト"
+  },
+  {
+    "id": "agri-power-up",
+    "name": "産地生産基盤パワーアップ事業",
+    "category": "補助金",
+    "subCategory": "農業設備",
+    "authority": "農林水産省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "収益力強化に取り組む産地の機械・施設導入を支援する大型補助金。補助率1/2、上限は産地計画に応じて数千万円〜数億円規模。共同利用施設・個別農家いずれも対象。",
+    "amount": {
+      "min": 500,
+      "max": 50000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 3000,
+    "eligibility": [
+      "産地の収益力強化計画",
+      "認定農業者等の受益者"
+    ],
+    "difficulty": 5,
+    "timelineMonths": 14,
+    "deadline": "年1回公募",
+    "guardrails": [
+      "産地全体での取組整合性",
+      "5年間の成果報告"
+    ],
+    "prerequisite": [
+      "agri-ninnei"
+    ],
+    "tags": [
+      "農業",
+      "大型",
+      "設備"
+    ],
+    "sourceHint": "農水省 産地生産基盤パワーアップ事業"
+  },
+  {
+    "id": "agri-6ji",
+    "name": "6次産業化推進事業(総合化事業計画認定)",
+    "category": "補助金",
+    "subCategory": "農業高付加価値",
+    "authority": "農林水産省",
+    "fundingType": [
+      "返済不要",
+      "低利融資"
+    ],
+    "summary": "農林漁業者が生産から加工・販売まで一体的に取り組む6次産業化事業計画を認定。認定されると補助金・低利融資・税制優遇(事業用固定資産の課税標準軽減)・農地転用特例等を受けられる。",
+    "amount": {
+      "min": 100,
+      "max": 5000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 600,
+    "eligibility": [
+      "農林漁業者",
+      "5年以内の総合化事業計画"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "通年",
+    "guardrails": [
+      "計画実施状況の年次報告",
+      "成果未達時の認定取消"
+    ],
+    "prerequisite": [
+      "agri-ninnei"
+    ],
+    "tags": [
+      "農業",
+      "6次産業",
+      "加工"
+    ],
+    "sourceHint": "農水省 6次産業化・地産地消法"
+  },
+  {
+    "id": "agri-jisedai",
+    "name": "農業次世代人材投資資金(経営開始資金)",
+    "category": "助成金",
+    "subCategory": "農業人材",
+    "authority": "農林水産省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "49歳以下の独立新規就農者に対し、経営開始後の最長3年間、年間最大150万円を交付。新規就農者の定着を図る。",
+    "amount": {
+      "min": 150,
+      "max": 450,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 150,
+    "eligibility": [
+      "独立・自営就農時49歳以下",
+      "認定新規就農者",
+      "市町村へ就農計画提出"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 3,
+    "deadline": "通年",
+    "guardrails": [
+      "就農実態の年次確認",
+      "離農時の返還"
+    ],
+    "tags": [
+      "農業",
+      "人材",
+      "新規就農"
+    ],
+    "sourceHint": "農水省 農業次世代人材投資事業"
+  },
+  {
+    "id": "agri-kankyou",
+    "name": "環境保全型農業直接支払交付金",
+    "category": "補助金",
+    "subCategory": "農業環境",
+    "authority": "農林水産省/都道府県",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "化学肥料・化学農薬を5割以上低減する取組と合わせて、カバークロップ・堆肥施用・有機農業等を実施する農業者に、面積に応じた交付金を直接支払。",
+    "amount": {
+      "min": 20,
+      "max": 500,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 80,
+    "eligibility": [
+      "化学肥料・農薬5割以上低減",
+      "環境保全型農業の取組"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 2,
+    "deadline": "年1回",
+    "guardrails": [
+      "取組記録の保管5年",
+      "現地確認"
+    ],
+    "tags": [
+      "農業",
+      "環境",
+      "直接支払"
+    ],
+    "sourceHint": "農水省 環境保全型農業直接支払交付金"
+  },
+  {
+    "id": "agri-kiban-jun",
+    "name": "農業経営基盤強化準備金制度",
+    "category": "法人節税",
+    "subCategory": "農業税制",
+    "authority": "農林水産省/国税庁",
+    "fundingType": [
+      "損金算入"
+    ],
+    "summary": "認定農業者が交付金等を経営基盤強化準備金として積み立てた場合、積立時に全額損金算入可。将来の機械・施設取得時に取崩して損金算入と相殺でき、農業版の圧縮記帳として極めて強力。",
+    "amount": {
+      "min": 100,
+      "max": 3000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 300,
+    "eligibility": [
+      "認定農業者(個人・法人)",
+      "経営改善計画への記載"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 1,
+    "deadline": "決算時",
+    "guardrails": [
+      "5年以内の取崩不履行は益金算入",
+      "個人は青色申告必須"
+    ],
+    "prerequisite": [
+      "agri-ninnei"
+    ],
+    "tags": [
+      "農業",
+      "税制",
+      "積立"
+    ],
+    "sourceHint": "租税特別措置法第24条の2(農業経営基盤強化準備金)"
+  },
+  {
+    "id": "agri-sl",
+    "name": "スーパーL資金(日本政策金融公庫 農業経営改善資金)",
+    "category": "融資",
+    "subCategory": "農業融資",
+    "authority": "日本政策金融公庫 農林水産事業",
+    "fundingType": [
+      "低利融資"
+    ],
+    "summary": "認定農業者向けの大型低利融資。上限3億円(個人)・10億円(法人)、償還期間25年以内(うち据置10年)。認定計画に沿う投資ならほぼ全用途が対象。",
+    "amount": {
+      "min": 500,
+      "max": 100000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 0,
+    "eligibility": [
+      "認定農業者",
+      "経営改善計画に沿う投資"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 2,
+    "deadline": "通年",
+    "guardrails": [
+      "計画進捗の定期報告",
+      "利子助成との併用条件"
+    ],
+    "prerequisite": [
+      "agri-ninnei"
+    ],
+    "tags": [
+      "農業",
+      "融資",
+      "大型"
+    ],
+    "sourceHint": "日本政策金融公庫 農林水産事業"
+  },
+  {
+    "id": "care-shoguu",
+    "name": "介護職員処遇改善加算(新加算I)",
+    "category": "補助金",
+    "subCategory": "介護処遇",
+    "authority": "厚生労働省/都道府県",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "介護報酬に上乗せ支給される加算。キャリアパス要件と職場環境等要件を満たす事業所に介護報酬の最大約18%(新加算Iの場合)を上乗せ。介護職員の賃金改善に充当義務。",
+    "amount": {
+      "min": 100,
+      "max": 10000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 1800,
+    "eligibility": [
+      "介護保険指定事業所",
+      "キャリアパス要件I-III",
+      "職場環境等要件"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 2,
+    "deadline": "年1回計画書+月次請求",
+    "guardrails": [
+      "賃金改善実績報告",
+      "充当義務(全額を賃金に)"
+    ],
+    "tags": [
+      "介護",
+      "加算",
+      "処遇改善"
+    ],
+    "sourceHint": "厚労省 介護職員処遇改善加算 2024年改定"
+  },
+  {
+    "id": "care-tokutei",
+    "name": "介護職員等特定処遇改善加算",
+    "category": "補助金",
+    "subCategory": "介護処遇",
+    "authority": "厚生労働省/都道府県",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "勤続10年以上の介護福祉士等への更なる処遇改善を行う事業所向けの加算。処遇改善加算I取得が前提。月額平均8万円相当以上の賃金改善を実施する事業所を優遇。",
+    "amount": {
+      "min": 100,
+      "max": 5000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 900,
+    "eligibility": [
+      "処遇改善加算I取得",
+      "勤続10年以上の介護福祉士の存在"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 2,
+    "deadline": "年1回計画書+月次請求",
+    "guardrails": [
+      "配分ルール遵守",
+      "実績報告"
+    ],
+    "prerequisite": [
+      "care-shoguu"
+    ],
+    "tags": [
+      "介護",
+      "加算",
+      "特定処遇"
+    ],
+    "sourceHint": "厚労省 介護職員等特定処遇改善加算"
+  },
+  {
+    "id": "care-baseup",
+    "name": "介護職員等ベースアップ等支援加算",
+    "category": "補助金",
+    "subCategory": "介護処遇",
+    "authority": "厚生労働省",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "介護職員の賃金を月額平均9,000円程度引き上げるための加算。介護報酬に上乗せ。処遇改善加算I+特定処遇改善加算と三層で併用可能。",
+    "amount": {
+      "min": 50,
+      "max": 3000,
+      "unit": "万円/年"
+    },
+    "annualImpactEstimate": 500,
+    "eligibility": [
+      "介護保険指定事業所"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 2,
+    "deadline": "年1回計画書+月次請求",
+    "guardrails": [
+      "全額を賃金改善に充当",
+      "実績報告"
+    ],
+    "tags": [
+      "介護",
+      "加算",
+      "ベースアップ"
+    ],
+    "sourceHint": "厚労省 介護職員等ベースアップ等支援加算"
+  },
+  {
+    "id": "care-robot",
+    "name": "介護ロボット導入支援事業",
+    "category": "補助金",
+    "subCategory": "介護設備",
+    "authority": "厚生労働省/都道府県",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "移乗支援・見守り・入浴支援・移動支援・排泄支援・コミュニケーション型ロボット等の導入経費を補助。1機器30〜100万円、ICT導入と併せると上限拡大。",
+    "amount": {
+      "min": 30,
+      "max": 1500,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 400,
+    "eligibility": [
+      "介護保険事業所",
+      "導入計画の提出"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "年1〜2回公募",
+    "guardrails": [
+      "導入後の効果測定報告",
+      "ロボット稼働実績の提出"
+    ],
+    "tags": [
+      "介護",
+      "設備",
+      "省力化"
+    ],
+    "sourceHint": "厚労省 地域医療介護総合確保基金 介護ロボット導入支援"
+  },
+  {
+    "id": "care-ict",
+    "name": "介護ICT導入支援事業",
+    "category": "補助金",
+    "subCategory": "介護DX",
+    "authority": "厚生労働省/都道府県",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "記録・請求ソフト・タブレット・インカム・Wi-Fi環境整備等のICT機器導入経費を補助。上限は事業所規模により100万〜260万円、補助率1/2〜3/4。",
+    "amount": {
+      "min": 100,
+      "max": 260,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 180,
+    "eligibility": [
+      "介護保険事業所",
+      "ICT導入計画"
+    ],
+    "difficulty": 2,
+    "timelineMonths": 4,
+    "deadline": "年1〜2回公募",
+    "guardrails": [
+      "導入効果の測定報告",
+      "LIFE等への連動"
+    ],
+    "tags": [
+      "介護",
+      "ICT",
+      "DX"
+    ],
+    "sourceHint": "厚労省 地域医療介護総合確保基金 ICT導入支援"
+  },
+  {
+    "id": "care-kikin",
+    "name": "地域医療介護総合確保基金(医療分・介護分)",
+    "category": "補助金",
+    "subCategory": "介護基盤",
+    "authority": "厚生労働省/都道府県",
+    "fundingType": [
+      "返済不要"
+    ],
+    "summary": "都道府県計画に基づき、医療・介護従事者の確保・養成、施設整備、勤務環境改善等を支援する包括的基金。事業メニューは都道府県ごとに異なる。",
+    "amount": {
+      "min": 50,
+      "max": 10000,
+      "unit": "万円/件"
+    },
+    "annualImpactEstimate": 500,
+    "eligibility": [
+      "都道府県の実施メニューに該当する事業"
+    ],
+    "difficulty": 3,
+    "timelineMonths": 6,
+    "deadline": "年1〜2回公募",
+    "guardrails": [
+      "都道府県の運用ルール遵守"
+    ],
+    "tags": [
+      "介護",
+      "医療",
+      "基盤"
+    ],
+    "sourceHint": "厚労省 地域医療介護総合確保基金"
+  }
+]

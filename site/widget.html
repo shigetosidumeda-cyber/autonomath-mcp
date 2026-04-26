@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>あなたのサイトに補助金検索を 1 行で — AutonoMath Widget</title>
+<meta name="description" content="税理士事務所・商工会議所・中小企業支援サイト向け。HTMLに1行足すだけで補助金検索UIが表示される組み込み型JS widget。Business ¥10,000/月 (10,000 req 含む) + 税込 ¥3.30/req overage、Whitelabel ¥30,000/月 無制限 (fair use)。">
+
+<meta property="og:title" content="AutonoMath Widget — 1 行で組み込める補助金検索">
+<meta property="og:description" content="税理士・支援機関のサイトに&lt;script&gt;1行で補助金検索 widget を埋め込み。Business ¥10,000/月、Whitelabel ¥30,000/月。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/widget.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonoMath Widget — 1 行で組み込める補助金検索">
+<meta name="twitter:description" content="HTMLに1行足すだけで補助金検索UIを表示。Business ¥10,000/月 / Whitelabel ¥30,000/月。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/widget.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/widget.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/widget.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/widget.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "AutonoMath Widget",
+  "description": "税理士・支援機関のサイトに <script> 1 行で埋め込める補助金検索 widget。Business ¥10,000/月 (10,000 req 含む) + ¥3/req overage、Whitelabel ¥30,000/月 (ロゴ・色カスタマイズ可)。",
+  "brand": {"@type": "Brand", "name": "AutonoMath"},
+  "url": "https://autonomath.ai/widget.html",
+  "inLanguage": "ja",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Business",
+      "price": "10000",
+      "priceCurrency": "JPY",
+      "description": "¥10,000/月 税別 (税込 ¥11,000)、10,000 req 含む、overage ¥3/req",
+      "url": "https://autonomath.ai/widget.html",
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net",
+        "url": "https://autonomath.ai/"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Whitelabel",
+      "price": "30000",
+      "priceCurrency": "JPY",
+      "description": "¥30,000/月 税別 (税込 ¥33,000)、ロゴ・色カスタマイズ可",
+      "url": "https://autonomath.ai/widget.html",
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Bookyou株式会社",
+        "identifier": "T8010001213708",
+        "email": "info@bookyou.net",
+        "url": "https://autonomath.ai/"
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bookyou株式会社",
+  "legalName": "Bookyou株式会社",
+  "alternateName": "AutonoMath",
+  "identifier": "T8010001213708",
+  "email": "info@bookyou.net",
+  "url": "https://autonomath.ai/",
+  "inLanguage": "ja",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressRegion": "Tokyo",
+    "addressLocality": "Bunkyo-ku",
+    "streetAddress": "2-22-1 Kohinata"
+  },
+  "founder": {
+    "@type": "Person",
+    "name": "Shigetoshi Umeda"
+  }
+}
+</script>
+
+<style>
+  .widget-hero {
+    padding: 48px 0 24px;
+    text-align: center;
+  }
+  .widget-hero h1 {
+    font-size: clamp(26px, 4.2vw, 40px);
+    line-height: 1.25;
+    margin: 0 0 14px;
+  }
+  .widget-hero p.lead {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto 18px;
+  }
+  .code-block {
+    position: relative;
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: 10px;
+    padding: 18px 60px 18px 18px;
+    font: 500 14px/1.65 "SF Mono", "Menlo", "Cascadia Mono", ui-monospace, monospace;
+    overflow-x: auto;
+    white-space: pre;
+    text-align: left;
+  }
+  .code-block .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f3f4f6;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    font: 500 12px "Noto Sans JP", system-ui, sans-serif;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .code-block .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .demo-wrap {
+    margin: 28px auto 48px;
+    max-width: 820px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .demo-wrap h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 14px;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 28px 0 48px;
+  }
+  .feature {
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+  }
+  .feature h3 {
+    font-size: 16px;
+    margin: 0 0 6px;
+  }
+  .feature p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .plan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin: 24px 0;
+  }
+  .plan {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+  .plan.highlight {
+    border-color: var(--accent);
+    border-width: 2px;
+  }
+  .plan h3 {
+    margin: 0 0 4px;
+    font-size: 20px;
+  }
+  .plan .price {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 12px 0 4px;
+  }
+  .plan .unit {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 16px;
+  }
+  .plan ul {
+    margin: 0 0 18px;
+    padding: 0 0 0 20px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .plan .btn {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    background: var(--accent);
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 0;
+    cursor: pointer;
+    font: 600 14px "Noto Sans JP", system-ui, sans-serif;
+  }
+  .plan .btn:hover {
+    background: var(--accent-hover);
+    text-decoration: none;
+  }
+  .plan .btn--secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .plan .btn--secondary:hover {
+    background: var(--accent);
+    color: #ffffff;
+  }
+  .signup {
+    margin: 48px 0;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-alt);
+  }
+  .signup h2 {
+    margin: 0 0 14px;
+  }
+  .signup .field {
+    margin: 10px 0;
+  }
+  .signup label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .signup input[type="email"],
+  .signup input[type="text"],
+  .signup textarea,
+  .signup select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+  }
+  .signup textarea {
+    min-height: 72px;
+    resize: vertical;
+  }
+  .signup .status {
+    margin: 10px 0 0;
+    font-size: 13px;
+  }
+  .signup .status.err { color: var(--danger); }
+  .signup .status.ok { color: #3fb950; }
+  .tokushoho-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 12px 0 0;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="widget.html" aria-current="page">Widget</a>
+      <a href="https://github.com/AutonoMath" rel="noopener">GitHub</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="widget.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="en/widget.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="widget-hero container">
+    <h1>あなたのサイトに<br>補助金検索を 1 行で</h1>
+    <p class="lead">
+      税理士事務所・商工会議所・中小企業支援サイトの HP に
+      <code>&lt;script&gt;</code> タグ 1 行で埋め込める補助金検索
+      widget。フィルタ UI・結果リスト・一次資料リンクを自動で生成し、
+      お客様は「自社サイトでそのまま検索できる」体験を得られます。
+    </p>
+
+    <div class="code-block" id="snippet-pre">
+<span><!-- 1. この 2 行をあなたのサイトの HTML に貼るだけ。 --></span>
+<span>&lt;script async src="https://autonomath.ai/widget/autonomath.js"&gt;&lt;/script&gt;</span>
+<span>&lt;div data-autonomath-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
+      <button class="copy-btn" type="button" id="copy-btn" aria-label="コピー">コピー</button>
+    </div>
+  </section>
+
+  <section class="demo-wrap container">
+    <h2>ライブデモ (本番と同じ JS)</h2>
+    <div data-autonomath-widget
+         data-key="wgt_live_00000000000000000000000000000000"
+         data-theme="light"
+         data-filters="prefecture,industry,target"
+         data-limit="5"></div>
+    <p class="tokushoho-note">
+      ※ 上記は表示例です。許可された origin を登録した本番キーでは
+      お客様のサイト上で正常に結果が表示されます。
+      詳細は <a href="/widget/demo.html">ドキュメント</a> をご覧ください。
+    </p>
+  </section>
+
+  <section class="container">
+    <h2 style="text-align:center;margin:36px 0 8px;">なぜ widget が使われるか</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <h3>組み込みは 1 行</h3>
+        <p>
+          script タグを貼って div を置くだけ。React / Vue に依存せず、
+          ビルド不要で既存の HP にそのまま差せます。
+        </p>
+      </div>
+      <div class="feature">
+        <h3>検索結果は常に最新</h3>
+        <p>
+          AutonoMath 本体の 13,578 制度 DB を参照。毎晩更新される
+          一次資料リンクと締切を widget にそのまま反映します。
+        </p>
+      </div>
+      <div class="feature">
+        <h3>Origin 制限で安全</h3>
+        <p>
+          キーは登録した URL からのみ使用可能。広告のクリックボムや
+          第三者サイトでの無断流用を防ぎます。
+        </p>
+      </div>
+      <div class="feature">
+        <h3>UI は自社サイトに馴染む</h3>
+        <p>
+          light / dark テーマ + CSS オーバーライド対応。既存サイトの
+          配色・フォントに合わせて違和感なく埋め込めます。
+        </p>
+      </div>
+      <div class="feature">
+        <h3>一次資料リンクで信頼性</h3>
+        <p>
+          全制度に中央省庁・自治体・日本政策金融公庫等の公式 URL を
+          リンク。来訪者は「ちゃんとした根拠」を直接確認できます。
+        </p>
+      </div>
+      <div class="feature">
+        <h3>セルフサーブ・月額定額</h3>
+        <p>
+          Business 以上で included 10,000 req/月。お問い合わせ不要で
+          Stripe Checkout 完了後、すぐキー発行されます。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" aria-labelledby="plan-title">
+    <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">料金プラン</h2>
+    <p style="text-align:center;color:var(--text-muted);">
+      完全従量の API (税込 ¥3.30/req) とは別プランです。サイト埋め込みのニーズに合わせて
+      月額ベースで設計しています。
+    </p>
+
+    <div class="plan-grid">
+      <article class="plan highlight" aria-labelledby="plan-business">
+        <h3 id="plan-business">Business</h3>
+        <p class="price">¥10,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
+        <p class="unit">10,000 req/月 含む、超過分 税込 ¥3.30/req</p>
+        <ul>
+          <li>税理士事務所・支援機関の HP 向け</li>
+          <li>10,000 req/月 が標準利用分として含まれる</li>
+          <li>超過は税込 ¥3.30/req を Stripe usage-based で自動請求</li>
+          <li>「powered by AutonoMath」フッターを表示</li>
+          <li>複数 origin (本番 + staging 等) 登録可</li>
+          <li>適格請求書 (T8010001213708) を Stripe が自動発行</li>
+        </ul>
+        <button type="button" class="btn" data-plan="business" id="cta-business">Business を申し込む</button>
+      </article>
+
+      <article class="plan" aria-labelledby="plan-whitelabel">
+        <h3 id="plan-whitelabel">Whitelabel</h3>
+        <p class="price">¥30,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
+        <p class="unit">100,000 req/月 fair use、ブランド表示なし</p>
+        <ul>
+          <li>自社ブランドで提供する商工会議所・金融機関向け</li>
+          <li>「powered by AutonoMath」フッターを非表示に</li>
+          <li>100,000 req/月 (fair use) まで追加課金なし</li>
+          <li>Business と同じ origin 制限・一次資料リンク</li>
+          <li>月 100,000 req を大幅超過した場合のみ個別連絡</li>
+          <li>適格請求書 (T8010001213708) を Stripe が自動発行</li>
+        </ul>
+        <button type="button" class="btn btn--secondary" data-plan="business_whitelabel" id="cta-whitelabel">Whitelabel を申し込む</button>
+      </article>
+    </div>
+  </section>
+
+  <section class="signup container" aria-labelledby="signup-title">
+    <h2 id="signup-title">申し込みフォーム</h2>
+    <p style="color:var(--text-muted);font-size:14px;">
+      下記を記入して「決済に進む」を押すと Stripe Checkout に遷移します。
+      決済完了後、<code>wgt_live_...</code> キーが管理ダッシュボード経由で発行されます。
+    </p>
+    <form id="signup-form">
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+        <label for="company_url">Company URL (leave blank)</label>
+        <input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="signup-email">メールアドレス (請求書送付先) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+        <input type="email" id="signup-email" required aria-required="true" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="signup-plan">プラン</label>
+        <select id="signup-plan">
+          <option value="business">Business ¥10,000/月</option>
+          <option value="business_whitelabel">Whitelabel ¥30,000/月</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="signup-origins">許可 origin (1 行 1 件、https:// 付き) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+        <textarea id="signup-origins" required aria-required="true" placeholder="https://example.com&#10;https://*.example.com"></textarea>
+      </div>
+      <div class="field">
+        <label for="signup-label">ラベル (任意、ダッシュボードで表示)</label>
+        <input type="text" id="signup-label" maxlength="120" placeholder="例: 当事務所サイト">
+      </div>
+      <div class="field">
+        <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;">
+          <input type="checkbox" id="signup-consent" style="margin-top:3px;">
+          <span style="font-size:13px;">
+            <a href="tos.html" rel="noopener">利用規約</a> ・
+            <a href="privacy.html" rel="noopener">プライバシーポリシー</a> ・
+            <a href="tokushoho.html" rel="noopener">特定商取引法に基づく表記</a>
+            を読み、同意しました。
+          </span>
+        </label>
+      </div>
+      <button type="submit" class="btn" id="signup-submit" disabled>決済に進む</button>
+      <p class="status" id="signup-status" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="tokushoho-note">
+      最低利用期間・解約違約金はありません。Stripe Customer Portal から
+      いつでもキャンセル可能。消費税 10% は Stripe が自動計算、
+      適格請求書に外税表示されます (登録番号 T8010001213708)。
+    </p>
+  </section>
+
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+    · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> / <a href="privacy.html">プライバシー</a>
+    · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
+    · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
+  </p>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の制度 API</p>
+      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="widget/demo.html">Widget Docs</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="widget/autonomath.js"></script>
+<script src="/assets/trust-strip.js" defer></script>
+<script>
+(function () {
+  // Copy button
+  var btn = document.getElementById("copy-btn");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      var text = [
+        '<script async src="https://autonomath.ai/widget/autonomath.js"><\/script>',
+        '<div data-autonomath-widget data-key="wgt_live_YOUR_KEY"><\/div>'
+      ].join("\n");
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          btn.textContent = "コピー済";
+          setTimeout(function () { btn.textContent = "コピー"; }, 1800);
+        });
+      }
+    });
+  }
+
+  // Plan CTAs scroll to form and preselect
+  ["cta-business", "cta-whitelabel"].forEach(function (id) {
+    var b = document.getElementById(id);
+    if (!b) return;
+    b.addEventListener("click", function () {
+      var plan = b.getAttribute("data-plan") || "business";
+      var sel = document.getElementById("signup-plan");
+      if (sel) sel.value = plan;
+      var form = document.getElementById("signup-form");
+      if (form && form.scrollIntoView) form.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  // Consent gating
+  var consent = document.getElementById("signup-consent");
+  var submit = document.getElementById("signup-submit");
+  if (consent && submit) {
+    consent.addEventListener("change", function () {
+      submit.disabled = !consent.checked;
+    });
+  }
+
+  // Submit
+  var form = document.getElementById("signup-form");
+  if (!form) return;
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var status = document.getElementById("signup-status");
+    status.className = "status";
+
+    var honeypot = document.getElementById("company_url");
+    if (honeypot && honeypot.value) {
+      status.className = "status";
+      status.textContent = "送信完了";
+      return;
+    }
+
+    var email = document.getElementById("signup-email").value.trim();
+    var plan = document.getElementById("signup-plan").value;
+    var label = document.getElementById("signup-label").value.trim();
+    var rawOrigins = document.getElementById("signup-origins").value;
+    var origins = rawOrigins.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+
+    if (origins.length === 0) {
+      status.className = "status err";
+      status.textContent = "許可 origin を 1 件以上指定してください。";
+      return;
+    }
+
+    status.textContent = "送信中…";
+    submit.disabled = true;
+
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+
+    fetch("/v1/widget/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        plan: plan,
+        label: label || null,
+        origins: origins,
+        success_url: "https://autonomath.ai/success.html?w={CHECKOUT_SESSION_ID}",
+        cancel_url: "https://autonomath.ai/widget.html?cancelled=1"
+      }),
+      signal: ctrl.signal
+    })
+    .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
+    .then(function (res) {
+      clearTimeout(timer);
+      if (!res.ok) {
+        var msg = (res.body && (res.body.detail || res.body.error)) || "エラーが発生しました。";
+        status.className = "status err";
+        status.textContent = typeof msg === "string" ? msg : "エラーが発生しました。";
+        submit.disabled = false;
+        return;
+      }
+      if (res.body && res.body.checkout_url) {
+        window.location = res.body.checkout_url;
+      } else {
+        status.className = "status err";
+        status.textContent = "Checkout URL を取得できませんでした。";
+        submit.disabled = false;
+      }
+    })
+    .catch(function (err) {
+      clearTimeout(timer);
+      status.className = "status err";
+      if (err && err.name === "AbortError") {
+        status.textContent = "タイムアウト — 回線が遅いか、サーバが応答していません。再度お試しください。";
+      } else {
+        status.textContent = "通信エラーです。時間をおいて再度お試しください。";
+      }
+      submit.disabled = false;
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

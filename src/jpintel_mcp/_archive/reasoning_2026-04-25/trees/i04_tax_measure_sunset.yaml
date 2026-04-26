@@ -1,0 +1,67 @@
+intent_id: i04_tax_measure_sunset
+name_ja: 税制特例の適用期限
+
+extract_slots:
+  - key: measure_id
+    required: true
+    enum_source: registry.tax_measures
+  - key: as_of_date
+    required: false
+    type: date        # defaults to today
+
+required_entities: [tax_measure]
+required_edges: []
+required_filters:
+  - measure_id
+  - as_of_date
+
+branches:
+  - when: as_of_date > application_period_to
+    action: mark status=expired + show successor
+  - when: as_of_date between application_period_from and application_period_to
+    action: status=active + show 残日数
+  - when: as_of_date < application_period_from
+    action: status=not_yet_active + show open date
+  - when: abolition_note is not null
+    action: prepend 廃止警告 section
+
+answer_template: bullet
+answer_skeleton: |
+  【特例】 {measure_name} ({tax_category})
+  【根拠法令】 {root_law}
+
+  【適用期限】
+  - 開始: {period_from}
+  - 終了: {period_to}  ← {period_to_label}
+  - 本日時点ステータス: {status}
+  - 残日数: {days_remaining}
+
+  【延長の動向】
+  - 令和{latest_fy}年度税制改正: {latest_revision_note}
+  - 延長可能性の公表: {extension_signal}
+
+  【廃止・後継】
+  - 廃止予定: {abolition_date}
+  - 後継制度: {successor_measure}
+  - 経過措置: {transition_rule}
+
+  【先回り注意】
+  {proactive_warnings}
+
+  【一次資料】
+  {citation_urls}
+
+proactive_rules:
+  - id: deadline_alarm
+    trigger: days_remaining between 0 and 180
+    payload: "🔥 期限まで{days_remaining}日。駆込み対応の準備"
+  - id: successor_switch
+    trigger: status==expired and successor_measure is not null
+    payload: redirect to successor
+  - id: uncertain_extension
+    trigger: period_to within next fiscal year and no extension_signal
+    payload: flag "延長未確定。今期中に適用を完了する前提で設計"
+
+zero_result_hint: |
+  measure_id が解決できません。以下候補から選択:
+  {measure_fuzzy_candidates}

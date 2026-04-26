@@ -1,0 +1,80 @@
+intent_id: i08_similar_municipality_programs
+name_ja: 類似自治体の制度
+
+extract_slots:
+  - key: source_municipality
+    required: false
+  - key: muni_population_band
+    required: false
+    enum: [under_10k, 10k_30k, 30k_100k, 100k_300k, 300k_plus, 政令市, 中核市]
+  - key: program_category
+    required: true
+    enum: [空家対策, 結婚新生活, 子育て, 移住定住, 省エネ, 地域振興,
+           商店街, 農業, 水道PFI, 消防, ふるさと納税]
+  - key: pref_cluster
+    required: false
+    enum: [北海道東北, 関東, 北陸甲信越, 東海, 近畿, 中国四国, 九州沖縄]
+
+require_any_of: [source_municipality, muni_population_band]
+
+required_entities: [municipality, program]
+required_edges:
+  - offered_by
+required_filters:
+  - muni_population_band
+  - program_category
+  - pref_cluster
+
+branches:
+  - when: source_municipality is not null
+    action: derive muni_population_band + pref_cluster from master
+  - when: muni_population_band is not null and pref_cluster is null
+    action: peer set = all muni in band nationwide
+  - when: program_category has no records in our DB
+    action: hint D1/D4 gap (muni catalog 未整備)
+
+answer_template: table
+answer_skeleton: |
+  【基準自治体】 {source_municipality} (人口帯: {muni_population_band} / クラスタ: {pref_cluster})
+  【カテゴリ】 {program_category}
+
+  【ピア自治体 ({peer_count}市区町村)】
+  {peer_roster}
+
+  【制度実施状況 (比較表)】
+  {comparison_table}
+
+  【制度設計 類似性 上位 {top_n}】
+  {similar_design_bullets}
+
+  【テンプレート条例/要綱の例】
+  {template_ordinance_urls}
+
+  【未カバーのピア自治体】
+  {uncovered_peers_note}
+
+  【データ注意】
+  - 1,788 市町村の網羅率は {muni_coverage_pct}% (P1 gap)
+  - 政令20市 + 中核62市 = 82 は重点整備
+
+  【一次資料】
+  {citation_urls}
+
+row_shape_muni: |
+  | {muni_name} ({pref}/{population}人) | {program_name} | 上限 ¥{max_amount_man}万 | {eligibility_summary} | {source_url} |
+
+proactive_rules:
+  - id: peer_roster
+    trigger: always
+    payload: generate peer roster (same band + cluster)
+  - id: template_ordinance
+    trigger: program_category has reference municipality
+    payload: link 標準条例案 or 他市の条例 PDF
+  - id: coverage_gap
+    trigger: muni_coverage_pct < 50
+    payload: honest warning + fallback URL (10_muni_master)
+
+zero_result_hint: |
+  該当自治体の制度がデータ未収録。フォールバック:
+  - 10_municipality_master の HP リンク参照を提示
+  - "全市町村 program catalog" は P1 未完

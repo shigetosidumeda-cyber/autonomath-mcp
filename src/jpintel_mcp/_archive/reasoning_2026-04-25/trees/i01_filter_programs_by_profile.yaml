@@ -1,0 +1,102 @@
+intent_id: i01_filter_programs_by_profile
+name_ja: 業種×地域×規模で使える補助金一覧
+
+# --- inputs the LLM must extract from the user query ---
+extract_slots:
+  - key: prefecture
+    required: false
+    enum_source: registry.prefectures
+  - key: municipality
+    required: false
+    enum_source: registry.municipalities
+  - key: jsic_industry
+    required: false
+    enum_source: registry.jsic_letters       # A..T
+  - key: business_size
+    required: false
+    enum: [sole, small, sme, mid, large]
+  - key: employee_count
+    required: false
+    type: int
+  - key: active_on
+    required: false
+    type: date                                 # defaults to today
+  - key: fiscal_year
+    required: false
+    type: int
+  - key: funding_purpose
+    required: false
+    type: list[str]
+
+# --- entities / edges the precomputer must have ready ---
+required_entities: [program, prefecture, municipality]
+required_edges:
+  - applicable_to        # program -> (prefecture|industry|size)
+required_filters:
+  - active_on
+  - region
+  - industry
+  - size
+
+# --- branch logic ---
+branches:
+  - when: prefecture is null and municipality is null
+    action: national_layer_only
+    notes: fall back to national; flag in response.hint
+  - when: prefecture is not null and municipality is null
+    action: national + prefecture layers
+  - when: municipality is not null
+    action: national + prefecture + municipality layers
+  - when: employee_count is not null
+    action: map to business_size via size_band_rules
+  - when: fiscal_year is not null
+    action: restrict to validity windows overlapping JP fiscal year
+
+# --- answer skeleton template (bullet list, layered) ---
+answer_template: bullet
+answer_skeleton: |
+  【対象プロフィール】 都道府県={prefecture} 市区町村={municipality} 業種={jsic_industry}({industry_label}) 規模={business_size} 基準日={active_on}
+
+  【国の制度 ({national_count}件)】
+  {national_bullets}
+
+  【都道府県の制度 ({prefecture_count}件)】
+  {prefecture_bullets}
+
+  【市区町村の制度 ({municipality_count}件)】
+  {municipality_bullets}
+
+  【前提となる可能性がある認定】
+  {certification_prereqs}
+
+  【先回りで確認すべきこと】
+  - 公募要領の最新版 (締切迫り: {urgent_deadlines})
+  - 併給不可リスト: {incompat_roster}
+  - 加点要件: {scoring_boost_certs}
+
+  【一次資料】
+  {citation_urls}
+
+# --- per-row bullet shape ---
+row_shape: |
+  - {program_name} ({authority_level} / {authority}) — 最大 ¥{max_amount_man}万 / 補助率 {subsidy_rate} / 締切 {deadline}
+    根拠: {source_url} (最終確認 {source_fetched_at})
+
+# --- proactive hints (先回り提案) ---
+proactive_rules:
+  - id: certification_prereq
+    trigger: any program in result has prerequisite_certification != null
+    payload: list certifications with取得方法 link
+  - id: stacking_partners
+    trigger: any program has compat edge != empty
+    payload: list top-3 stacking partners
+  - id: urgent_deadline
+    trigger: any program.deadline - active_on < 30 days
+    payload: flag as 🔥締切迫り
+
+# --- fallback ---
+zero_result_hint: |
+  現状データで該当ゼロ。以下を緩めて再試行してください:
+  - jsic_industry を大分類(A-T)のみに
+  - business_size を一段広げる (sme -> small+sme+mid)
+  - active_on を外す

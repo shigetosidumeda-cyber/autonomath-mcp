@@ -1,0 +1,86 @@
+intent_id: i09_succession_closure
+name_ja: 事業承継・廃業時に使える制度
+
+extract_slots:
+  - key: lifecycle_stage
+    required: true
+    enum:
+      - 親族内承継
+      - 第三者承継_MA売手
+      - 第三者承継_MA買手
+      - 従業員承継
+      - 廃業_再チャレンジ
+      - 廃業_清算のみ
+  - key: target_role
+    required: false
+    enum: [現経営者, 後継者, 買手法人, 売手法人, 廃業者]
+  - key: budget_range_yen
+    required: false
+    type: tuple[int,int]
+  - key: prefecture
+    required: false
+
+required_entities: [program, tax_measure]
+required_edges:
+  - applicable_to_lifecycle
+  - compatible
+required_filters:
+  - lifecycle_stage
+  - target_role
+
+branches:
+  - when: lifecycle_stage == 親族内承継
+    action: prioritize 事業承継税制(贈与・相続) + 経営承継円滑化法
+  - when: lifecycle_stage in [第三者承継_MA売手, 第三者承継_MA買手]
+    action: add 事業承継・引継ぎ補助金 (M&A型) + 中小経営強化税制 D類型
+  - when: lifecycle_stage == 廃業_再チャレンジ
+    action: 事業承継・引継ぎ補助金 廃業・再チャレンジ枠 + 再就職支援
+  - when: lifecycle_stage == 廃業_清算のみ
+    action: 限定的。主に税務処理 + 法人解散登記。warning "補助金は再挑戦前提が原則"
+
+answer_template: bullet
+answer_skeleton: |
+  【ライフサイクル】 {lifecycle_stage} / 役割: {target_role}
+  【予算感】 {budget_range_label}
+
+  【使える補助金】
+  {subsidy_bullets}
+
+  【使える税制特例】
+  {tax_measure_bullets}
+
+  【使える融資/保証】
+  {loan_bullets}
+
+  【前提となる認定/計画】
+  {prerequisite_certs}
+
+  【典型スタッキング例】
+  {stack_pattern_example}
+
+  【先回りアラート】
+  - 申告・申請の時期: {timing_warnings}
+  - 専門家相談推奨: {advisor_recommendations}
+  - 期限切れが迫る制度: {expiring_measures}
+
+  【一次資料】
+  {citation_urls}
+
+row_shape_program: |
+  - {program_name} ({authority}) — 最大 ¥{max_amount_man}万 / 対象: {target_role} / 要件: {key_req}
+    根拠: {source_url}
+
+proactive_rules:
+  - id: tax_chain
+    trigger: lifecycle_stage in [親族内承継, 第三者承継_MA買手]
+    payload: chain 事業承継税制 → 納税猶予 → 免除 の時系列
+  - id: advisor_window
+    trigger: always
+    payload: "税理士 + 弁護士 (MA含む場合) + 金融機関 早期相談を推奨"
+  - id: successor_loss_reserve
+    trigger: lifecycle_stage == 第三者承継_MA買手
+    payload: link 中小企業事業再編投資損失準備金
+
+zero_result_hint: |
+  ライフサイクル分類が不明瞭。以下の6分類で再入力ください:
+  親族内承継 / MA売手 / MA買手 / 従業員承継 / 廃業再チャレンジ / 廃業清算

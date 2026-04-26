@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-label="jpintel-mcp terminal demo: curl search then exclusions check">
+  <title>jpintel-mcp 15s demo — curl /v1/programs/search then /v1/exclusions/check</title>
+  <desc>Terminal-style animated demo cycling every 15 seconds.</desc>
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .bar { fill: #161b22; }
+      .dot { stroke: #0d1117; stroke-width: 0.5; }
+      .dot-r { fill: #ff5f56; }
+      .dot-y { fill: #ffbd2e; }
+      .dot-g { fill: #27c93f; }
+      .title { fill: #8b949e; font: 11px ui-monospace, "SF Mono", Menlo, monospace; }
+      text.t { font: 13px ui-monospace, "SF Mono", Menlo, monospace; fill: #c9d1d9; }
+      .prompt { fill: #7ee787; }
+      .flag   { fill: #d2a8ff; }
+      .str    { fill: #a5d6ff; }
+      .key    { fill: #79c0ff; }
+      .num    { fill: #ffa657; }
+      .dim    { fill: #6e7681; }
+      .ok     { fill: #7ee787; }
+      .warn   { fill: #ffa657; }
+      .cursor { fill: #c9d1d9; }
+      g.step { opacity: 0; }
+      g#s1 { animation: f1 15s infinite; }
+      g#s2 { animation: f2 15s infinite; }
+      g#s3 { animation: f3 15s infinite; }
+      g#s4 { animation: f4 15s infinite; }
+      g#s5 { animation: f5 15s infinite; }
+      g#s6 { animation: f6 15s infinite; }
+      @keyframes f1 { 0%,4% {opacity:0} 5%,100% {opacity:1} }
+      @keyframes f2 { 0%,18% {opacity:0} 19%,100% {opacity:1} }
+      @keyframes f3 { 0%,32% {opacity:0} 33%,100% {opacity:1} }
+      @keyframes f4 { 0%,48% {opacity:0} 49%,100% {opacity:1} }
+      @keyframes f5 { 0%,62% {opacity:0} 63%,100% {opacity:1} }
+      @keyframes f6 { 0%,78% {opacity:0} 79%,100% {opacity:1} }
+      #caret { animation: blink 1s steps(2) infinite; }
+      @keyframes blink { 50% { opacity: 0; } }
+      /* Honor OS-level "Reduce motion" preference — freeze on the final step. */
+      @media (prefers-reduced-motion: reduce) {
+        g#s1, g#s2, g#s3, g#s4, g#s5, g#s6 { animation: none; opacity: 1; }
+        #caret { animation: none; opacity: 1; }
+      }
+    </style>
+  </defs>
+
+  <rect class="bg" width="720" height="420" rx="8"/>
+  <rect class="bar" width="720" height="28" rx="8"/>
+  <rect class="bar" y="20" width="720" height="10"/>
+  <circle class="dot dot-r" cx="16" cy="14" r="6"/>
+  <circle class="dot dot-y" cx="34" cy="14" r="6"/>
+  <circle class="dot dot-g" cx="52" cy="14" r="6"/>
+  <text class="title" x="360" y="18" text-anchor="middle">jpintel-mcp — 15s demo</text>
+
+  <g id="s1" class="step">
+    <text class="t" x="16" y="58">
+      <tspan class="prompt">$</tspan>
+      <tspan> curl </tspan>
+      <tspan class="flag">-H</tspan>
+      <tspan> </tspan>
+      <tspan class="str">"Authorization: Bearer $KEY"</tspan>
+      <tspan> \</tspan>
+    </text>
+    <text class="t" x="36" y="76">
+      <tspan class="str">"https://&lt;DOMAIN_PLACEHOLDER&gt;/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5"</tspan>
+    </text>
+  </g>
+
+  <g id="s2" class="step">
+    <text class="t" x="16" y="102"><tspan class="dim">HTTP/2 200 · 84 ms</tspan></text>
+  </g>
+
+  <g id="s3" class="step">
+    <text class="t" x="16" y="124">{</text>
+    <text class="t" x="32" y="142">
+      <tspan class="key">"total"</tspan>
+      <tspan>: </tspan>
+      <tspan class="num">7</tspan>
+      <tspan>, </tspan>
+      <tspan class="key">"limit"</tspan>
+      <tspan>: </tspan>
+      <tspan class="num">5</tspan>
+      <tspan>,</tspan>
+    </text>
+    <text class="t" x="32" y="160">
+      <tspan class="key">"results"</tspan>
+      <tspan>: [</tspan>
+    </text>
+    <text class="t" x="48" y="178">
+      <tspan>{</tspan>
+      <tspan class="key">"unified_id"</tspan>
+      <tspan>: </tspan>
+      <tspan class="str">"meti-it-2026"</tspan>
+      <tspan>, </tspan>
+      <tspan class="key">"tier"</tspan>
+      <tspan>: </tspan>
+      <tspan class="str">"S"</tspan>
+      <tspan>,</tspan>
+    </text>
+    <text class="t" x="60" y="196">
+      <tspan class="key">"primary_name"</tspan>
+      <tspan>: </tspan>
+      <tspan class="str">"IT導入補助金2026"</tspan>
+      <tspan>, </tspan>
+      <tspan class="key">"amount_max_man_yen"</tspan>
+      <tspan>: </tspan>
+      <tspan class="num">450</tspan>
+      <tspan>},</tspan>
+    </text>
+    <text class="t" x="48" y="214">
+      <tspan>{</tspan>
+      <tspan class="key">"unified_id"</tspan>
+      <tspan>: </tspan>
+      <tspan class="str">"jizokuka-r8"</tspan>
+      <tspan>, </tspan>
+      <tspan class="key">"tier"</tspan>
+      <tspan>: </tspan>
+      <tspan class="str">"A"</tspan>
+      <tspan>, …}</tspan>
+    </text>
+    <text class="t" x="32" y="232">]}</text>
+  </g>
+
+  <g id="s4" class="step">
+    <text class="t" x="16" y="264">
+      <tspan class="prompt">$</tspan>
+      <tspan> curl </tspan>
+      <tspan class="flag">-X POST</tspan>
+      <tspan> </tspan>
+      <tspan class="str">"https://&lt;DOMAIN_PLACEHOLDER&gt;/v1/exclusions/check"</tspan>
+      <tspan> \</tspan>
+    </text>
+    <text class="t" x="36" y="282">
+      <tspan class="flag">-d</tspan>
+      <tspan> </tspan>
+      <tspan class="str">'{"program_ids":["meti-it-2026","jizokuka-r8"]}'</tspan>
+    </text>
+  </g>
+
+  <g id="s5" class="step">
+    <text class="t" x="16" y="308"><tspan class="dim">HTTP/2 200 · 12 ms</tspan></text>
+  </g>
+
+  <g id="s6" class="step">
+    <text class="t" x="16" y="330">{</text>
+    <text class="t" x="32" y="348">
+      <tspan class="key">"conflicts"</tspan>
+      <tspan>: [{</tspan>
+    </text>
+    <text class="t" x="48" y="366">
+      <tspan class="key">"rule"</tspan>
+      <tspan>: </tspan>
+      <tspan class="str">"absolute"</tspan>
+      <tspan>, </tspan>
+      <tspan class="key">"between"</tspan>
+      <tspan>: [</tspan>
+      <tspan class="str">"meti-it-2026"</tspan>
+      <tspan>, </tspan>
+      <tspan class="str">"jizokuka-r8"</tspan>
+      <tspan>],</tspan>
+    </text>
+    <text class="t" x="48" y="384">
+      <tspan class="key">"evidence_url"</tspan>
+      <tspan>: </tspan>
+      <tspan class="str">"https://www.chusho.meti.go.jp/..."</tspan>
+      <tspan>}],</tspan>
+    </text>
+    <text class="t" x="32" y="402">
+      <tspan class="key">"safe_to_combine"</tspan>
+      <tspan>: </tspan>
+      <tspan class="warn">false</tspan>
+    </text>
+    <text class="t" x="16" y="402">
+      <tspan>} </tspan>
+    </text>
+    <rect id="caret" class="cursor" x="52" y="391" width="8" height="14"/>
+  </g>
+</svg>

@@ -1,0 +1,80 @@
+# Tier A - hand-verified gold seed. CI fails build if any 1 regresses.
+# Each entry verified against a primary source URL AND a deterministic DB query.
+# ``gold_sql`` is the ground-truth query - running it on the live DB MUST return ``gold_value``.
+#
+# IMPORTANT (memory: feedback_no_fake_data):
+# Only the 5 seeds below are LLM-curated. The remaining 25 (TA003-TA004,
+# TA007-TA029) are gated to user manual curation - LLM gold-answer
+# fabrication is a 詐欺 risk against paying customers.
+# Tracked in P2.3.2.
+
+version: 1
+generated_at: "2026-04-25"
+threshold_precision_at_1: 0.85   # 26 of 30 must pass once full
+
+questions:
+  - id: TA001
+    question: "事業再構築補助金 第12回 公募締切日は?"
+    tool: search_acceptance_stats_am
+    arguments: {round_label: "第12回", program_name_contains: "事業再構築"}
+    gold_value: "2024-07-26"
+    gold_field: application_close_date
+    gold_sql: |
+      SELECT application_close_date FROM am_application_round
+      WHERE round_label = '第12回'
+        AND budget_yen = 150000000000
+      LIMIT 1;
+    gold_source_url: "https://jigyou-saikouchiku.go.jp/pdf/result/tokubetsu_all12.pdf"
+
+  - id: TA002
+    question: "事業再構築補助金 第12回 予算額は?"
+    tool: search_acceptance_stats_am
+    arguments: {round_label: "第12回", program_name_contains: "事業再構築"}
+    gold_value: 150000000000
+    gold_field: budget_yen
+    gold_sql: |
+      SELECT budget_yen FROM am_application_round
+      WHERE round_label = '第12回' AND budget_yen IS NOT NULL
+      LIMIT 1;
+    gold_source_url: "https://jigyou-saikouchiku.go.jp/pdf/result/tokubetsu_all12.pdf"
+
+  - id: TA005
+    question: "2割特例 (小規模事業者の消費税納税額軽減) の終了日は?"
+    tool: get_am_tax_rule
+    arguments: {ruleset_name_contains: "2割特例"}
+    gold_value: "2026-09-30"
+    gold_field: effective_until
+    gold_sql: |
+      SELECT effective_until FROM jpi_tax_rulesets
+      WHERE ruleset_name LIKE '%2割特例%'
+      LIMIT 1;
+    gold_source_url: "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_keikasochi.htm"
+
+  - id: TA006
+    question: "適格請求書 免税事業者からの課税仕入 80%控除 経過措置の終了日?"
+    tool: get_am_tax_rule
+    arguments: {ruleset_name_contains: "80%控除"}
+    gold_value: "2026-09-30"
+    gold_field: effective_until
+    gold_sql: |
+      SELECT effective_until FROM jpi_tax_rulesets
+      WHERE ruleset_name LIKE '%80%%控除%'
+      LIMIT 1;
+    gold_source_url: "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_keikasochi.htm"
+
+  - id: TA030
+    question: "雇用就農資金 (新規就農者向け) の上限額は?"
+    tool: search_gx_programs_am
+    arguments: {primary_name: "雇用就農資金"}
+    gold_value: 240
+    gold_field: amount_max_man_yen
+    gold_sql: |
+      SELECT amount_max_man_yen FROM programs
+      WHERE primary_name = '雇用就農資金'
+        AND amount_max_man_yen = 240
+      LIMIT 1;
+    gold_source_url: "https://www.maff.go.jp/j/new_farmer/n_syunou/funding.html"
+
+# TODO(user manual curate, P2.3.2): TA003-TA004, TA007-TA029 = 25 more.
+# DO NOT have an LLM fabricate gold answers - feedback_no_fake_data.
+# Each ~6 min hand curation; 25 x 6 = 2.5h budget per P1 design Section 9.

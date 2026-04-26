@@ -1,0 +1,75 @@
+intent_id: i02_program_deadline_documents
+name_ja: ある制度の申請締切・必要書類
+
+extract_slots:
+  - key: program_id
+    required: true
+    enum_source: registry.programs
+  - key: round
+    required: false
+    type: int
+  - key: doc_type
+    required: false
+    enum: [公募要領, 申請様式, QA, 記入例, 完了報告書, 交付規程]
+
+required_entities: [program, program_document]
+required_edges:
+  - has_document
+required_filters:
+  - program_id
+  - round
+  - doc_type
+
+branches:
+  - when: round is null
+    action: return latest round + note 次回公募予定 if available
+  - when: doc_type is null
+    action: return all doc types
+  - when: program has no application_window_json
+    action: flag status=window_unknown in response
+
+answer_template: bullet
+answer_skeleton: |
+  【制度名】 {program_name} ({round_label})
+  【所管】 {authority} ({authority_level})
+  【根拠法令】 {root_law}
+
+  【公募スケジュール】
+  - 公募開始: {window_start}
+  - 申請締切: {window_end} (残 {days_left} 日)
+  - 採択発表予定: {award_date}
+  - 交付決定: {grant_date}
+
+  【必要書類】
+  {doc_bullets}
+
+  【様式ダウンロード】
+  {form_urls}
+
+  【前回 (第{prev_round}回) との違い】
+  {diff_from_prev_round}
+
+  【前提認定】
+  {prerequisite_certifications}
+
+  【一次資料】
+  {citation_urls}
+
+row_shape_document: |
+  - [{doc_type}] {title} ({format}, {pages}p, 署名要={signature_required})
+    URL: {url} (最終確認 {fetched_at})
+
+proactive_rules:
+  - id: next_round
+    trigger: round is past_deadline
+    payload: suggest next round + expected open date
+  - id: related_forms
+    trigger: doc_type == 公募要領 and 記入例 exists
+    payload: link 記入例
+  - id: signature_gap
+    trigger: any required doc has signature_required==true
+    payload: flag 印鑑準備要
+
+zero_result_hint: |
+  program_id が解決できません。類似名を以下候補から選んでください:
+  {program_fuzzy_candidates}

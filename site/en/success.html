@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Payment complete — AutonoMath</title>
+<meta name="description" content="API key issuance page after Stripe checkout.">
+<meta name="robots" content="noindex,nofollow">
+
+<meta property="og:title" content="Payment complete — AutonoMath">
+<meta property="og:description" content="Issues your API key after Stripe checkout.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/success.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og-square.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Payment complete — AutonoMath">
+<meta name="twitter:description" content="Issues your API key after Stripe checkout.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-square.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/success.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/success.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/success.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/success.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  /* success.html — post-checkout key reveal. Matches dashboard design tokens. */
+  .success { padding: 48px 0 64px; }
+  .success-head { margin: 0 0 28px; }
+  .success-check {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #15803d;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    margin: 0 0 14px;
+  }
+  .success h1 {
+    font-size: 30px;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    font-weight: 800;
+  }
+  .success .sub {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .state-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    background: var(--bg);
+    margin: 0 0 18px;
+  }
+  .state-card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+
+  .key-block {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 15px;
+    background: var(--bg-alt);
+    padding: 12px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    word-break: break-all;
+    white-space: pre-wrap;
+    margin: 0 0 12px;
+    line-height: 1.5;
+  }
+  .key-warning {
+    background: #fff8e6;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px 18px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0 0 12px;
+    white-space: pre;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0 0 6px;
+  }
+  .btn-ghost {
+    background: var(--bg-alt);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-ghost:hover { background: var(--bg-alt); }
+  .btn-ghost.copied {
+    border-color: #15803d;
+    color: #15803d;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 14px 0 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  .meta-row span strong { color: var(--text); font-weight: 600; }
+
+  .next-steps {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    background: var(--bg);
+    margin: 24px 0 0;
+  }
+  .next-steps h2 {
+    font-size: 16px;
+    margin: 0 0 14px;
+    font-weight: 700;
+  }
+  .next-steps ol {
+    margin: 0;
+    padding: 0 0 0 20px;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .next-steps ol li { margin: 0 0 4px; }
+  .next-steps code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .alert {
+    border: 1px solid var(--danger);
+    background: #fff0f0;
+    color: var(--danger);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin: 0 0 18px;
+  }
+  .alert strong { display: block; margin-bottom: 4px; font-size: 15px; }
+  .alert a { color: var(--danger); font-weight: 600; text-decoration: underline; }
+
+  .spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 18px;
+  }
+  .spinner::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    animation: succ-spin 0.8s linear infinite;
+  }
+  @keyframes succ-spin { to { transform: rotate(360deg); } }
+
+  /* Focus ring only for keyboard users — the programmatic .focus() after a
+     state transition should not draw an outline for mouse/touch users.
+     :focus-visible already handles this; we just need to suppress the
+     browser's default :focus on tabindex=-1 containers. */
+  [id^="state-"]:focus { outline: none; }
+  [id^="state-"]:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .spinner::before { animation: none; border-top-color: var(--accent); }
+  }
+
+  @media (max-width: 768px) {
+    .success { padding: 32px 0 48px; }
+    .success h1 { font-size: 24px; }
+    .code-block { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="../docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="../dashboard.html">Dashboard</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/success.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/success.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="success">
+    <div class="container" style="max-width:760px;">
+
+      <!-- Loading state (default) -->
+      <div id="state-loading" tabindex="-1">
+        <p class="spinner" role="status" aria-live="polite">Issuing your API key&hellip;</p>
+      </div>
+
+      <!-- Success state -->
+      <div id="state-success" tabindex="-1" hidden>
+        <div class="success-head">
+          <div class="success-check" aria-hidden="true">&check;</div>
+          <h1>Payment complete &mdash; your API key has been issued</h1>
+          <p class="sub">Copy the key below to a safe place. It cannot be displayed again once you close this page.</p>
+        </div>
+
+        <div class="state-card">
+          <p class="label">Your API key</p>
+          <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
+          <p class="key-warning" role="alert">This key is shown only once at issuance. Copy it now and store it somewhere safe.</p>
+          <div class="btn-row">
+            <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; Copy API key</button>
+          </div>
+          <div class="meta-row" aria-label="metadata">
+            <span>tier: <strong id="meta-tier">—</strong></span>
+            <span>customer_id: <strong id="meta-customer">—</strong></span>
+          </div>
+        </div>
+
+        <div class="state-card">
+          <p class="label">Try it in 5 seconds (curl)</p>
+          <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
+          <div class="btn-row">
+            <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; Copy curl</button>
+          </div>
+        </div>
+
+        <div class="next-steps">
+          <h2>Next steps</h2>
+          <ol>
+            <li><a href="getting-started.html">Getting started</a> &mdash; Python / Node minimal examples, authentication, rate limits</li>
+            <li><a href="../dashboard.html">Dashboard</a> &mdash; usage, key rotation, billing portal</li>
+            <li><a href="getting-started.html#6-mcp-claude-desktop">Claude Desktop (MCP) setup</a> &mdash; call all 72 tools (39 jpintel + 33 autonomath: 17 V1 + 4 V4 universal + 5 Phase A + 7 lifecycle/abstract/prerequisite/graph/snapshot/rule_engine) directly from your agent over stdio</li>
+          </ol>
+        </div>
+
+        <div class="next-steps" style="margin-top:18px;">
+          <h2>Account management &amp; cancellation</h2>
+          <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">Fully self-serve. No minimum term, no cancellation fees. Remove your card from the Customer Portal and you immediately revert to Free (50 req/month per IP); no further charges are made.</p>
+          <div class="btn-row">
+            <a class="btn btn-secondary" href="../dashboard.html" style="text-decoration:none;">Open Customer Portal (card / cancel)</a>
+            <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20Account%20deletion%20request" style="text-decoration:none;">Account deletion request</a>
+          </div>
+          <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
+            <strong>Security tips:</strong> Enable two-factor authentication (2FA) in the Stripe Customer Portal, and store your API key as an environment variable (<code>AUTONOMATH_API_KEY</code>). If you suspect the key has leaked, rotate it immediately from the Dashboard.
+          </p>
+        </div>
+      </div>
+
+      <!-- Error states -->
+      <div id="state-error-unpaid" tabindex="-1" hidden>
+        <div class="alert" role="alert">
+          <strong>Payment is not yet confirmed</strong>
+          Stripe may still be propagating the charge. Wait a few seconds and retry.
+        </div>
+        <div class="btn-row">
+          <button id="retry-btn" class="btn btn-primary" type="button">Retry</button>
+          <a class="btn btn-secondary" href="pricing.html">Back to Pricing</a>
+        </div>
+      </div>
+
+      <div id="state-error-conflict" tabindex="-1" hidden>
+        <div class="alert" role="alert">
+          <strong>An API key has already been issued</strong>
+          One key has already been issued for this subscription. Rotate it from the Dashboard to issue a new one.
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="../dashboard.html">Open Dashboard</a>
+          <a class="btn btn-secondary" href="getting-started.html">Getting started</a>
+        </div>
+      </div>
+
+      <div id="state-error-network" tabindex="-1" hidden>
+        <div class="alert" role="alert">
+          <strong>A network error occurred</strong>
+          <span id="err-detail">Please wait a moment and retry, or contact support.</span>
+        </div>
+        <div class="btn-row">
+          <button id="retry-btn-network" class="btn btn-primary" type="button">Retry</button>
+          <a class="btn btn-secondary" href="tokushoho.html">Contact support</a>
+        </div>
+      </div>
+
+      <div id="state-error-missing" tabindex="-1" hidden>
+        <div class="alert" role="alert">
+          <strong>session_id is missing from the URL</strong>
+          This page is meant to be reached after Stripe checkout, with <code>?session_id=cs_…</code> appended. If you opened it directly, please re-subscribe from the Pricing page.
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="pricing.html">Back to Pricing</a>
+          <a class="btn btn-secondary" href="../dashboard.html">Already subscribed? Open Dashboard</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="tos.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="tokushoho.html">Legal (JP)</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script>
+  // success.html — vanilla ES2020. CSP-safe (inline, no external).
+  // Posts the Stripe session_id to /v1/billing/keys/from-checkout and
+  // reveals the one-time API key. Pre-auth (no cookie); same-origin by
+  // default, override via window.AUTONOMATH_API_BASE (legacy alias:
+  // window.JPINTEL_API_BASE) if split host.
+  (function () {
+    'use strict';
+
+    var API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || '';
+    var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    // Track whether we've shown the initial state. The initial transition
+    // (loading -> result) happens before any keyboard interaction, so we
+    // skip focus-move on the very first render; subsequent transitions
+    // (retry button, etc.) do move focus for a11y announcement.
+    var _stateFirstShow = true;
+
+    function showOnly(id) {
+      var ids = [
+        'state-loading',
+        'state-success',
+        'state-error-unpaid',
+        'state-error-conflict',
+        'state-error-network',
+        'state-error-missing'
+      ];
+      for (var i = 0; i < ids.length; i++) {
+        var el = $(ids[i]);
+        if (!el) continue;
+        if (ids[i] === id) { el.removeAttribute('hidden'); }
+        else { el.setAttribute('hidden', ''); }
+      }
+
+      var target = $(id);
+      if (!target) return;
+
+      // Always announce via aria-live on the error messages (they already
+      // have role="alert"), so screen readers pick up content changes even
+      // without focus-moving. For keyboard users who clicked Retry etc.,
+      // we additionally move focus to the new heading/alert for clarity.
+      if (_stateFirstShow) { _stateFirstShow = false; return; }
+
+      var heading = target.querySelector('h1, [role="alert"]');
+      var focusEl = heading || target;
+      try {
+        if (!focusEl.hasAttribute('tabindex')) {
+          focusEl.setAttribute('tabindex', '-1');
+        }
+        focusEl.focus({ preventScroll: false });
+      } catch (_e) { /* focus best-effort */ }
+    }
+
+    function getSessionId() {
+      try {
+        var q = new URLSearchParams(window.location.search);
+        var sid = q.get('session_id');
+        return sid && /^cs_[a-zA-Z0-9_]+$/.test(sid) ? sid : null;
+      } catch (_e) { return null; }
+    }
+
+    function buildCurl(apiKey) {
+      // Endpoint exists: /v1/programs/search (see api-reference.md).
+      // Header name: X-API-Key (same as getting-started.md §3).
+      return 'curl -H "X-API-Key: ' + apiKey + '" \\\n' +
+             '  "https://api.autonomath.ai/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
+    }
+
+    async function copyText(text, btn, labelCopied, labelOrig) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          // Fallback for insecure contexts (local http:// preview).
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'absolute';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); } finally { document.body.removeChild(ta); }
+        }
+        if (btn) {
+          btn.classList.add('copied');
+          btn.textContent = labelCopied;
+          setTimeout(function () {
+            btn.classList.remove('copied');
+            btn.textContent = labelOrig;
+          }, 1600);
+        }
+      } catch (_e) {
+        if (btn) btn.textContent = 'Copy failed';
+      }
+    }
+
+    function renderSuccess(body) {
+      var rawKey = String(body.api_key || '');
+      var tier = String(body.tier || '—');
+      var customerId = String(body.customer_id || '—');
+
+      // Raw key is held in sessionStorage ONLY for the success-page-to-dashboard
+      // hop (clears on tab close). NEVER write the raw key to localStorage —
+      // a persisted secret across browser sessions is a credential-leak surface
+      // (P1, audit 2026-04-26). Dashboard "welcome back" UX must rely on
+      // key_last4 / key_id from the server, not on the raw key.
+      try { sessionStorage.setItem('am_first_key', rawKey); } catch (_e) {}
+
+      var keyEl = $('api-key-block');
+      if (keyEl) keyEl.textContent = rawKey;
+
+      var tierEl = $('meta-tier');
+      if (tierEl) tierEl.textContent = tier;
+
+      var custEl = $('meta-customer');
+      if (custEl) custEl.textContent = customerId;
+
+      var curlEl = $('curl-block');
+      var curl = buildCurl(rawKey);
+      if (curlEl) curlEl.textContent = curl;
+
+      var copyKeyBtn = $('copy-key-btn');
+      if (copyKeyBtn) {
+        var labelKey = copyKeyBtn.textContent;
+        copyKeyBtn.onclick = function () {
+          copyText(rawKey, copyKeyBtn, 'Copied', labelKey);
+        };
+      }
+
+      var copyCurlBtn = $('copy-curl-btn');
+      if (copyCurlBtn) {
+        var labelCurl = copyCurlBtn.textContent;
+        copyCurlBtn.onclick = function () {
+          copyText(curl, copyCurlBtn, 'Copied', labelCurl);
+        };
+      }
+
+      showOnly('state-success');
+    }
+
+    async function issueKey() {
+      var sid = getSessionId();
+      if (!sid) { showOnly('state-error-missing'); return; }
+
+      showOnly('state-loading');
+
+      var ctrl = new AbortController();
+      var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+
+      try {
+        var resp = await fetch(api('/v1/billing/keys/from-checkout'), {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ session_id: sid }),
+          signal: ctrl.signal
+        });
+
+        var text = await resp.text();
+        var body = null;
+        if (text) {
+          try { body = JSON.parse(text); } catch (_e) { body = { detail: text }; }
+        }
+
+        if (resp.ok) {
+          if (body && body.api_key) {
+            renderSuccess(body);
+          } else {
+            $('err-detail').textContent = 'The server response did not include api_key. Press "Retry" below or contact support (you will not be double-charged).';
+            showOnly('state-error-network');
+          }
+          return;
+        }
+
+        if (resp.status === 402) { showOnly('state-error-unpaid'); return; }
+        if (resp.status === 409) { showOnly('state-error-conflict'); return; }
+
+        if (resp.status >= 500) {
+          var sdetail = (body && (body.detail || body.message)) || ('HTTP ' + resp.status);
+          $('err-detail').textContent = 'Server error (HTTP ' + resp.status + '): ' + sdetail + ' — your payment has gone through. Press "Retry" below (you will not be double-charged). If the issue persists, contact support.';
+          showOnly('state-error-network');
+          return;
+        }
+
+        var detail = (body && (body.detail || body.message)) || ('HTTP ' + resp.status);
+        $('err-detail').textContent = 'Server error: ' + detail + ' — press "Retry" below, or contact support.';
+        showOnly('state-error-network');
+      } catch (err) {
+        if (err && err.name === 'AbortError') {
+          $('err-detail').textContent = 'No response (15-second timeout). Your payment may already have completed. Press "Retry" below (you will not be double-charged).';
+        } else {
+          $('err-detail').textContent = 'Could not reach the network. If you are offline, please check your connection and press "Retry" below (you will not be double-charged).';
+        }
+        showOnly('state-error-network');
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    function bind() {
+      var retry = $('retry-btn');
+      if (retry) retry.addEventListener('click', issueKey);
+      var retryN = $('retry-btn-network');
+      if (retryN) retryN.addEventListener('click', issueKey);
+    }
+
+    function boot() {
+      bind();
+      issueKey();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+</script>
+
+</body>
+</html>

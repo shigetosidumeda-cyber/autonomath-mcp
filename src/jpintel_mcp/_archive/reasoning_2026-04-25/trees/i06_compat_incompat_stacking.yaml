@@ -1,0 +1,80 @@
+intent_id: i06_compat_incompat_stacking
+name_ja: ある制度と併用可/不可の他制度
+
+extract_slots:
+  - key: program_ids
+    required: true
+    type: list[str]
+    min_items: 1
+    max_items: 8
+  - key: shared_cost_items
+    required: false
+    type: list[str]
+
+required_entities: [program, tax_measure]
+required_edges:
+  - compatible
+  - incompatible
+  - prerequisite
+required_filters:
+  - program_ids
+
+branches:
+  - when: len(program_ids) == 1
+    action: enumerate all compat/incompat partners of this program
+  - when: len(program_ids) == 2
+    action: pairwise verdict table
+  - when: len(program_ids) >= 3
+    action: N*N matrix + summary verdict (ok/violation/prerequisite_missing/unknown)
+  - when: all pairs rule_type == combine_ok
+    action: verdict=combine_ok + still warn 同一経費重複禁止
+  - when: any pair rule_type == exclude
+    action: verdict=violation + list offending pair + cite condition
+
+answer_template: table
+answer_skeleton: |
+  【判定対象】
+  {program_list_bullets}
+
+  【総合判定】 {overall_verdict}
+  - combine_ok: 併給可能 (ただし同一経費重複は原則不可)
+  - violation:  併給不可な組合せあり
+  - prerequisite_missing: 前提となる認定/計画が未取得
+  - unknown:    ルール未収録 (要1次資料確認)
+
+  【ペア別 判定マトリクス】
+  {pair_matrix_table}
+
+  【違反ルール詳細】
+  {violation_detail_bullets}
+
+  【stack 推奨パターン】
+  {suggested_stack_patterns}
+
+  【共通のNG事項 (デフォルト)】
+  - 同一補助対象経費での重複は原則 不可
+  - 国の他補助金と同一事業は対象外
+  - 公的医療/介護保険 報酬との重複不可
+  - 固定価格買取制度(FIT)と同一事業不可
+
+  【一次資料】
+  {citation_urls}
+
+row_shape_pair: |
+  | {prog_a} | {prog_b} | {verdict} | {condition} | {source_url} |
+
+proactive_rules:
+  - id: cost_overlap_warning
+    trigger: always
+    payload: warn 同一経費重複禁止
+  - id: stack_pattern
+    trigger: overall_verdict == combine_ok
+    payload: show canonical 3-tier stack (国+県+市) example
+  - id: prerequisite_gap
+    trigger: any program requires certification not yet held
+    payload: list missing certifications
+
+zero_result_hint: |
+  該当ルールが未収録。確認手順:
+  - 各 program の公募要領 "他の補助金との重複" 節を直接参照
+  - 03_exclusion_rules は主力制度のみ (compat graph 整備は P0 課題)

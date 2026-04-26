@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<!--
+  site/go.html — device-flow activation page (RFC 8628 §3.3).
+
+  Flow:
+    1. MCP server mints a device_code on /v1/device/authorize and tells the
+       user to open /go/ABCD-1234 (or /go?code=ABCD-1234).
+    2. This page pre-fills the user_code from the path/query, asks for the
+       user's email, then POSTs /v1/billing/checkout to get a Stripe
+       Checkout URL (Apple Pay + Google Pay + card — the "payment methods
+       dashboard" in Stripe has both enabled by default).
+    3. Stripe Checkout's success_url redirects back to this page with
+       ?session_id=cs_... &code=ABCD-1234. The JS then POSTs
+       /v1/device/complete with user_code + session_id. On 200 we show
+       "✅ 有効化完了 — Claude に戻ってください".
+    4. The MCP poller (already running) sees status=activated on its next
+       /v1/device/token poll and stores the api_key in the OS keychain.
+
+  Stripe Checkout pitfall (from CLAUDE.md): do NOT pass
+  consent_collection={"terms_of_service": "required"}. We reuse the
+  existing /v1/billing/checkout endpoint which already handles this via
+  custom_text.submit.message.
+
+  Routing: Cloudflare Pages serves this at /go.html. site/_redirects
+  rewrites /go and /go/:code to this file. The page reads the code from
+  either the query string (?code=...) or the path (/go/ABCD-1234).
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>有効化 — AutonoMath</title>
+<meta name="description" content="AutonoMath MCP の自動認証ページ。Apple Pay / Google Pay / カードで ¥3/req 従量課金を有効化します。">
+<meta name="robots" content="noindex,nofollow">
+
+<meta property="og:title" content="有効化 — AutonoMath">
+<meta property="og:description" content="MCP の自動認証ページ。設定ファイルの編集は不要です。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/go">
+<meta property="og:image" content="https://autonomath.ai/assets/og-square.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<link rel="canonical" href="https://autonomath.ai/go">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/go">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/go.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/go">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+
+<style>
+  .go-page { padding: 40px 0 72px; }
+  .go-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    padding: 28px 28px 24px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .go-card h1 {
+    font-size: 24px;
+    margin: 0 0 6px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .go-card .lead {
+    color: var(--text-muted);
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+  .field { margin: 0 0 14px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .field input[type="email"],
+  .field input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .field input[readonly] {
+    background: var(--bg-alt);
+    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0.08em;
+  }
+  .field .hint {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .cta-btn {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    border-radius: 10px;
+    border: 0;
+    background: var(--accent, #111);
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cta-btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+  .cta-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 10px 0 0;
+  }
+
+  .alert {
+    border: 1px solid var(--danger);
+    background: #fff0f0;
+    color: var(--danger);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin: 0 0 18px;
+  }
+  .alert strong { display: block; margin-bottom: 4px; font-size: 15px; }
+
+  .ok {
+    border: 1px solid #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+    padding: 18px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    margin: 0 0 14px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .ok .check {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #15803d;
+    color: #fff;
+    font-weight: 800;
+    line-height: 28px;
+    margin-right: 8px;
+  }
+
+  .spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 12px 0 0;
+  }
+  .spinner::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    animation: go-spin 0.8s linear infinite;
+  }
+  @keyframes go-spin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner::before { animation: none; border-top-color: var(--accent); }
+  }
+
+  .consent {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 4px 0 14px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .consent input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
+
+  .recovery-box {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    padding: 10px 14px;
+    background: var(--bg-alt);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+</style>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="go" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="en/go.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="go-page">
+  <div class="container">
+
+    <div id="state-form" class="go-card" tabindex="-1">
+      <h1>MCP を有効化</h1>
+      <p class="lead">
+        Claude など MCP クライアントから AutonoMath を使い続けるために、
+        カードを登録します。<strong>設定ファイルの編集は不要です。</strong>
+        支払い後、自動的にキーが MCP サーバーへ渡ります。
+      </p>
+
+      <form id="go-form" novalidate>
+        <div class="field">
+          <label for="user_code">確認コード</label>
+          <div class="recovery-box" id="recovery-box" aria-hidden="true">ABCD-1234</div>
+          <input
+            id="user_code"
+            name="user_code"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            inputmode="latin"
+            maxlength="9"
+            placeholder="ABCD-1234">
+          <p class="hint">URL (/go/ABCD-1234) からアクセスした場合は自動入力済みです。</p>
+        </div>
+
+        <div class="field">
+          <label for="email">メールアドレス <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <input id="email" name="email" type="email" autocomplete="email" required aria-required="true" placeholder="you@example.com">
+          <p class="hint">Stripe のレシート・適格請求書の送付先です。</p>
+        </div>
+
+        <label class="consent" for="consent">
+          <input id="consent" type="checkbox">
+          <span>
+            <a href="tos.html" rel="noopener">利用規約</a> ・
+            <a href="privacy.html" rel="noopener">プライバシーポリシー</a> ・
+            <a href="tokushoho.html" rel="noopener">特定商取引法に基づく表記</a>
+            を読み、同意したうえで決済に進みます。
+          </span>
+        </label>
+
+        <button id="cta" class="cta-btn" type="submit" disabled>
+          ¥3/req で有効化 — Apple Pay / Google Pay 対応
+        </button>
+        <p class="cta-sub">税別 ¥3/req (税込 ¥3.30)。使わない月は ¥0。最低利用期間なし。</p>
+
+        <p id="form-error" class="alert" role="alert" hidden></p>
+      </form>
+    </div>
+
+    <div id="state-processing" class="go-card" tabindex="-1" hidden>
+      <h1>有効化を処理中…</h1>
+      <p class="lead">Stripe の決済を確認しています。このまま数秒お待ちください。</p>
+      <p class="spinner" role="status" aria-live="polite">処理中… / Processing…</p>
+    </div>
+
+    <div id="state-done" class="go-card" tabindex="-1" hidden>
+      <div class="ok" role="status" aria-live="polite">
+        <span class="check" aria-hidden="true">&check;</span>
+        有効化完了 &mdash; Claude に戻ってください
+      </div>
+      <p class="lead">
+        MCP サーバーは自動的に新しい資格情報を受け取ります。
+        <strong>Claude で同じ質問をもう一度送る</strong>だけで課金モード (¥3/req) に切り替わります。
+        設定ファイルの編集・再起動は不要です。
+      </p>
+      <p class="cta-sub">
+        使用量の確認やカード変更は <a href="dashboard.html">Dashboard</a> から。
+        解約は Stripe Customer Portal でカードを外すだけです (即時 Free 50 req/月 に戻ります)。
+      </p>
+    </div>
+
+    <div id="state-error" class="go-card" tabindex="-1" hidden>
+      <div class="alert" role="alert">
+        <strong>エラーが発生しました</strong>
+        <span id="err-detail">時間をおいて再試行するか、<a href="mailto:info@bookyou.net">info@bookyou.net</a> までお知らせください。</span>
+      </div>
+      <button id="retry-btn" class="cta-btn" type="button">再試行 / Retry</button>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の制度 API</p>
+      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script>
+  // go.html — vanilla ES2020. CSP-safe (inline script, no external).
+  // Device flow activation: user_code from URL → email + consent →
+  // Stripe Checkout → on redirect with session_id, POST /v1/device/complete.
+  (function () {
+    'use strict';
+
+    var API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || '';
+    var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    // user_code pattern: 4 chars + dash + 4 chars from
+    // ABCDEFGHJKLMNPQRSTUVWXYZ23456789. Allow lowercase → uppercased on normalize.
+    var USER_CODE_RE = /^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/;
+
+    function normalizeUserCode(raw) {
+      if (!raw) return '';
+      var v = String(raw).toUpperCase().replace(/[^A-HJ-NP-Z2-9\-]/g, '');
+      // Accept 8 chars (no dash) → insert dash.
+      if (/^[A-HJ-NP-Z2-9]{8}$/.test(v)) {
+        return v.slice(0, 4) + '-' + v.slice(4);
+      }
+      return v;
+    }
+
+    function getCodeFromLocation() {
+      try {
+        // /go/ABCD-1234 path form
+        var path = window.location.pathname || '';
+        var m = path.match(/\/go\/([A-Z0-9\-]{4,16})\/?$/i);
+        if (m) return normalizeUserCode(m[1]);
+        // ?code=ABCD-1234 query form
+        var q = new URLSearchParams(window.location.search);
+        var c = q.get('code');
+        if (c) return normalizeUserCode(c);
+      } catch (_e) { /* noop */ }
+      return '';
+    }
+
+    function getSessionIdFromLocation() {
+      try {
+        var q = new URLSearchParams(window.location.search);
+        var sid = q.get('session_id');
+        return sid && /^cs_[a-zA-Z0-9_]+$/.test(sid) ? sid : null;
+      } catch (_e) { return null; }
+    }
+
+    function showOnly(id) {
+      var ids = ['state-form', 'state-processing', 'state-done', 'state-error'];
+      for (var i = 0; i < ids.length; i++) {
+        var el = $(ids[i]);
+        if (!el) continue;
+        if (ids[i] === id) {
+          el.removeAttribute('hidden');
+          try { el.focus({ preventScroll: false }); } catch (_e) { /* focus best-effort */ }
+        } else {
+          el.setAttribute('hidden', '');
+        }
+      }
+    }
+
+    function setError(msg) {
+      var el = $('err-detail');
+      if (el) {
+        if (msg) el.textContent = msg;
+      }
+      showOnly('state-error');
+    }
+
+    // --- Form wiring ------------------------------------------------------
+
+    function initForm() {
+      var code = getCodeFromLocation();
+      var input = $('user_code');
+      var box = $('recovery-box');
+      if (code && input) {
+        input.value = code;
+        input.setAttribute('readonly', '');
+        if (box) box.textContent = code;
+      } else {
+        if (box) box.textContent = '—';
+      }
+
+      var consent = $('consent');
+      var cta = $('cta');
+      function syncCta() {
+        var ok = consent && consent.checked;
+        // basic email sanity (HTML5 :valid is not reliable cross-browser without submit)
+        var email = ($('email') && $('email').value || '').trim();
+        var emailOk = /.+@.+\..+/.test(email);
+        var codeOk = USER_CODE_RE.test(normalizeUserCode(input && input.value || ''));
+        cta.disabled = !(ok && emailOk && codeOk);
+      }
+      if (consent) consent.addEventListener('change', syncCta);
+      var emailEl = $('email');
+      if (emailEl) emailEl.addEventListener('input', syncCta);
+      if (input && !input.hasAttribute('readonly')) {
+        input.addEventListener('input', function () {
+          // Re-uppercase / insert dash as the user types.
+          var v = normalizeUserCode(input.value);
+          if (v !== input.value) input.value = v;
+          if (box) box.textContent = v || '—';
+          syncCta();
+        });
+      }
+      syncCta();
+
+      var form = $('go-form');
+      if (form) form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var userCode = normalizeUserCode(input.value);
+        if (!USER_CODE_RE.test(userCode)) {
+          var fe = $('form-error');
+          if (fe) { fe.textContent = '確認コードの形式が正しくありません (例: ABCD-1234)。'; fe.removeAttribute('hidden'); }
+          return;
+        }
+        var email = (emailEl && emailEl.value || '').trim();
+        if (!email) {
+          var fe2 = $('form-error');
+          if (fe2) { fe2.textContent = 'メールアドレスを入力してください。'; fe2.removeAttribute('hidden'); }
+          return;
+        }
+        startCheckout(userCode, email);
+      });
+    }
+
+    // --- Stripe Checkout handoff -----------------------------------------
+
+    function startCheckout(userCode, email) {
+      var cta = $('cta');
+      if (cta) cta.disabled = true;
+      var fe = $('form-error');
+      if (fe) fe.setAttribute('hidden', '');
+
+      // success_url carries session_id + user_code so the redirect back
+      // into this page can call /v1/device/complete. Stripe substitutes
+      // {CHECKOUT_SESSION_ID} on its side.
+      var successUrl = window.location.origin + '/go/' + encodeURIComponent(userCode) +
+        '?session_id={CHECKOUT_SESSION_ID}&code=' + encodeURIComponent(userCode);
+      var cancelUrl = window.location.origin + '/go/' + encodeURIComponent(userCode) +
+        '?code=' + encodeURIComponent(userCode) + '&cancelled=1';
+
+      fetch(api('/v1/billing/checkout'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          customer_email: email
+        })
+      }).then(function (r) {
+        return r.text().then(function (text) {
+          var body = null;
+          try { body = text ? JSON.parse(text) : null; } catch (_e) { body = { detail: text }; }
+          if (!r.ok) {
+            var msg = (body && (body.detail || body.message)) || ('HTTP ' + r.status);
+            throw new Error(msg);
+          }
+          return body;
+        });
+      }).then(function (data) {
+        if (data && data.url) {
+          window.location = data.url;
+        } else {
+          throw new Error('no url in response');
+        }
+      }).catch(function (err) {
+        if (cta) cta.disabled = false;
+        setError('決済ページへの遷移でエラー: ' + (err && err.message || err) + ' — 時間をおいて再試行してください。');
+      });
+    }
+
+    // --- /v1/device/complete (post-Stripe redirect) ----------------------
+
+    function completeAfterCheckout() {
+      var sid = getSessionIdFromLocation();
+      var code = getCodeFromLocation();
+      if (!sid || !code) return false;
+
+      showOnly('state-processing');
+
+      fetch(api('/v1/device/complete'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ user_code: code, stripe_checkout_session_id: sid })
+      }).then(function (r) {
+        return r.text().then(function (text) {
+          var body = null;
+          try { body = text ? JSON.parse(text) : null; } catch (_e) { body = { detail: text }; }
+          return { ok: r.ok, status: r.status, body: body };
+        });
+      }).then(function (resp) {
+        if (resp.ok && resp.body && resp.body.ok) {
+          showOnly('state-done');
+          // Clean the URL so a reload doesn't re-trigger /complete.
+          try {
+            var clean = window.location.origin + '/go/' + encodeURIComponent(code);
+            window.history.replaceState({}, '', clean);
+          } catch (_e) { /* noop */ }
+          return;
+        }
+        var msg = (resp.body && (resp.body.detail || resp.body.message)) || ('HTTP ' + resp.status);
+        setError('有効化に失敗しました: ' + msg + ' — 時間をおいて再試行してください。');
+      }).catch(function (err) {
+        setError('通信エラー: ' + (err && err.message || err));
+      });
+      return true;
+    }
+
+    function boot() {
+      // If ?cancelled=1 → show form with a gentle banner, no Stripe call.
+      try {
+        var q = new URLSearchParams(window.location.search);
+        if (q.get('cancelled') === '1') {
+          var fe = $('form-error');
+          if (fe) { fe.textContent = '決済がキャンセルされました。再度お試しください。'; fe.removeAttribute('hidden'); }
+        }
+      } catch (_e) { /* noop */ }
+
+      initForm();
+      var retry = $('retry-btn');
+      if (retry) retry.addEventListener('click', function () {
+        showOnly('state-form');
+      });
+
+      // If we came back from Stripe with a session_id, jump straight to
+      // /complete. initForm() has already wired the form in case the user
+      // navigates back to it.
+      if (getSessionIdFromLocation()) {
+        completeAfterCheckout();
+      } else {
+        showOnly('state-form');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+</script>
+
+</body>
+</html>

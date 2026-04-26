@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<!--
+  AutonoMath 用語集 — 5 つのコア用語 (補助金 / 助成金 / 融資 / 税制優遇 / 認定制度) の定義。
+  Wave 16 SEO audit P0: 5 audience (税理士 / 行政書士 / SMB / VC / dev) 全員が
+  最初の 30 秒で「補助金 vs 助成金」「融資 vs 補助金」を判別できる必要がある。
+  各 <dt id="term-XXX"> は安定した citation hook。endpoint 対応も併記。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>用語集 — 補助金・助成金・融資・税制優遇・認定制度の違い | AutonoMath</title>
+<meta name="description" content="補助金 / 助成金 / 融資 / 税制優遇 / 認定制度 — 公的支援 5 用語の定義と違いを 1 ページで解説。各用語に対応する AutonoMath API endpoint を併記。出典: 経産省・厚労省・中小企業庁の一次資料。">
+
+<meta property="og:title" content="用語集 — 公的支援 5 用語の違い (補助金 / 助成金 / 融資 / 税制優遇 / 認定制度)">
+<meta property="og:description" content="補助金と助成金の違い、融資・税制優遇・認定制度の位置付けを 1 ページで整理。AutonoMath API endpoint と紐付け。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/glossary.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="用語集 — 補助金・助成金・融資・税制優遇・認定制度の違い | AutonoMath">
+<meta name="twitter:description" content="公的支援の 5 用語の定義・違い・API endpoint を 1 ページで。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/glossary.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/glossary.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/glossary.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/glossary.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+
+<script defer src="analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTermSet",
+  "@id": "https://autonomath.ai/glossary.html#termset",
+  "name": "AutonoMath 公的支援 用語集",
+  "description": "日本の公的支援制度を理解するための基礎 5 用語 (補助金 / 助成金 / 融資 / 税制優遇 / 認定制度) の定義と違い。",
+  "url": "https://autonomath.ai/glossary.html",
+  "inLanguage": "ja",
+  "creator": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "email": "info@bookyou.net",
+    "url": "https://autonomath.ai/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "identifier": "T8010001213708"
+  },
+  "license": "https://autonomath.ai/tos.html",
+  "datePublished": "2026-04-26",
+  "dateModified": "2026-04-26",
+  "hasDefinedTerm": [
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/glossary.html#term-subsidy",
+      "name": "補助金",
+      "alternateName": [
+        "Subsidy",
+        "Hojokin"
+      ],
+      "description": "国・自治体が政策目的達成のため事業者に給付する resource。返還不要 (但し成果報告必須、目的外使用や虚偽申請は返還命令対象)。代表例は事業再構築補助金・ものづくり補助金。原資は税金。競争審査が伴うため公募・採択倍率が存在する。",
+      "url": "https://autonomath.ai/glossary.html#term-subsidy",
+      "inDefinedTermSet": "https://autonomath.ai/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/glossary.html#term-grant",
+      "name": "助成金",
+      "alternateName": [
+        "Grant",
+        "Joseikin"
+      ],
+      "description": "補助金とほぼ同義だが、特に厚生労働省管轄 (雇用・労働関連) で使われる。要件を満たせば原則受給可 (補助金は競争審査有り)。代表例はキャリアアップ助成金・人材開発支援助成金。原資は雇用保険二事業。",
+      "url": "https://autonomath.ai/glossary.html#term-grant",
+      "inDefinedTermSet": "https://autonomath.ai/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/glossary.html#term-loan",
+      "name": "融資",
+      "alternateName": [
+        "Loan",
+        "Yuushi"
+      ],
+      "description": "公的金融機関 (日本政策金融公庫、商工中金、信用保証協会保証付き民間融資) からの貸付。返還必須・利息有り。代表例は公庫マル経融資・新規開業資金・農業経営基盤強化資金 (スーパーL)。担保 / 個人保証人 / 第三者保証人の 3 軸で条件が変わる。",
+      "url": "https://autonomath.ai/glossary.html#term-loan",
+      "inDefinedTermSet": "https://autonomath.ai/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/glossary.html#term-tax",
+      "name": "税制優遇",
+      "alternateName": [
+        "Tax incentive",
+        "Zeisei yuugu"
+      ],
+      "description": "法人税 / 所得税 / 固定資産税 / 消費税の軽減・特別償却・税額控除。代表例は中小企業投資促進税制・研究開発税制・賃上げ促進税制。減免額が即 cash flow 改善に直結し、補助金と異なり申請不採択リスクが無い (要件充足主義)。",
+      "url": "https://autonomath.ai/glossary.html#term-tax",
+      "inDefinedTermSet": "https://autonomath.ai/glossary.html#termset"
+    },
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://autonomath.ai/glossary.html#term-certification",
+      "name": "認定制度",
+      "alternateName": [
+        "Certification",
+        "Nintei seido"
+      ],
+      "description": "経営革新計画・地域未来牽引企業・健康経営優良法人・経営力向上計画など、行政が事業者を「認定」する制度群。直接の cash benefit は無いが、補助金加点 / 融資条件優遇 / 公的入札加点等の foundation となる。",
+      "url": "https://autonomath.ai/glossary.html#term-certification",
+      "inDefinedTermSet": "https://autonomath.ai/glossary.html#termset"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "補助金と助成金は複数併用できますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "原則として併用可能ですが、同一経費の重複計上は禁止です (「経費の二重計上」は不正受給扱い)。さらに制度ごとに「他の補助金との併用不可」条項が設定されている場合があります。AutonoMath の /v1/programs/check_compatibility は 181 本の排他ルール (125 exclude + 17 prerequisite + 15 absolute + 24 other) を構造判定するため、program_id を投げれば衝突の有無を即座に返します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "5 用語の優先順位 (申請順) はありますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "原則: 認定制度 → 補助金/助成金 → 融資 → 税制優遇 の順で検討します。認定制度は補助金加点や融資条件優遇の前提となるため最初に取得、補助金/助成金で初期投資の自己負担を圧縮、不足分を融資で調達、最後に税制優遇で legitimate な節税を行うのが標準フロー。AutonoMath /v1/am/list_open_programs に法人 profile を投げると認定→補助金→融資の順で並びます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "補助金の採択率はどのくらいですか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "制度により大きく異なります。事業再構築補助金は 30-50%、ものづくり補助金は 40-60%、IT導入補助金は 60-80% 程度。AutonoMath は 2,286 件の実採択事例 (case_studies) を保持し、/v1/case_studies/search で program_id 別の採択企業一覧を返します。採択率は AutonoMath が独自試算するのではなく、事務局公表の採択結果から逆算する原則です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "融資と補助金、どちらが先ですか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "補助金は「精算払い」(事業完了後に支払われる) のため、事業実施期間中の cash flow を融資で繋ぐのが標準です。具体的には: (1) 補助金交付決定通知を受領、(2) 公庫マル経 / 信用保証協会保証付き融資で事業資金を借入、(3) 事業実施・経費支払い、(4) 補助金請求・入金、(5) 融資の繰上返済 (任意) という流れ。AutonoMath は loan_programs と programs を 1 つの API call (/v1/programs/search?include_loans=true) で横断できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "税制優遇は申請が必要ですか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "税制優遇の多くは「事前認定 + 確定申告で適用」の 2 段階です。例えば中小企業投資促進税制は経営力向上計画の認定 (認定制度) → 設備投資 → 確定申告書に明細書を添付、という流れ。研究開発税制のように事前認定不要のものもあります。AutonoMath /v1/tax-incentives/search は要件・申請手続・対象設備を構造化した 35 件の tax_rulesets を返します。"
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://autonomath.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "用語集", "item": "https://autonomath.ai/glossary.html"}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">Audiences</a>
+      <a href="prompts.html">Prompts</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="glossary.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/glossary.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="container" style="max-width:880px;padding-top:32px;padding-bottom:48px;">
+
+    <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
+      <a href="/">ホーム</a> &rsaquo; <span aria-current="page">用語集</span>
+    </nav>
+
+    <h1>用語集 — 公的支援 5 用語</h1>
+    <p class="lead">補助金・助成金・融資・税制優遇・認定制度。日本の公的支援を理解する基礎用語の定義と違いを 1 ページで整理しました。各用語に対応する AutonoMath API endpoint も併記しています。</p>
+
+    <p style="margin:0 0 24px;color:var(--text-muted);font-size:14px;">
+      最終更新: <time datetime="2026-04-26">2026-04-26 JST</time> ·
+      出典: 経産省 / 厚労省 / 中小企業庁 / 国税庁 / 日本政策金融公庫 一次資料 ·
+      関連: <a href="facts.html">ファクトシート</a> · <a href="programs/">制度一覧</a>
+    </p>
+
+    <section aria-labelledby="quick-compare-title" style="margin-top:24px;">
+      <h2 id="quick-compare-title" class="section-title">5 用語 早見表</h2>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">5 用語の早見比較表 — 返還義務・審査方式・原資・cash benefit</caption>
+          <thead>
+            <tr>
+              <th scope="col">用語</th>
+              <th scope="col">返還</th>
+              <th scope="col">審査</th>
+              <th scope="col">原資</th>
+              <th scope="col">cash benefit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><a href="#term-subsidy">補助金</a></th>
+              <td>原則不要</td>
+              <td>競争審査</td>
+              <td>税金</td>
+              <td>直接給付</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-grant">助成金</a></th>
+              <td>原則不要</td>
+              <td>要件充足</td>
+              <td>雇用保険</td>
+              <td>直接給付</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-loan">融資</a></th>
+              <td>必須 + 利息</td>
+              <td>信用審査</td>
+              <td>公的金融</td>
+              <td>低利貸付</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-tax">税制優遇</a></th>
+              <td>不要 (減免)</td>
+              <td>要件充足</td>
+              <td>税収減</td>
+              <td>納税額減</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#term-certification">認定制度</a></th>
+              <td>—</td>
+              <td>計画審査</td>
+              <td>—</td>
+              <td>間接 (加点)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="terms-title" style="margin-top:40px;">
+      <h2 id="terms-title" class="section-title">用語の詳細</h2>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-subsidy" style="font-weight:700;font-size:20px;">補助金 (ほじょきん / Subsidy)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">国・自治体が政策目的 (産業振興・地域活性化・脱炭素・DX 推進など) を達成するため、事業者に給付する resource です。<strong>原則として返還不要</strong>ですが、成果報告 (実績報告書) は必須で、目的外使用や虚偽申請が判明した場合は返還命令の対象になります。原資は税金のため、競争審査 (公募 + 採択) を伴うのが標準で、採択倍率は制度により 30-80% と幅広い。代表例は<strong>事業再構築補助金</strong> (経産省、最大 1.5 億円)・<strong>ものづくり補助金</strong> (中小機構、最大 4,000 万円)・<strong>IT導入補助金</strong> (中小企業庁、最大 450 万円)。AutonoMath の検索対象 10,790 件のうち約 80% がこのカテゴリです。</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>助成金との違い</strong>: 助成金は要件充足主義 (要件を満たせば原則受給可)、補助金は競争審査 (採択枠内のみ)。<br>
+              <strong>融資との違い</strong>: 融資は返還 + 利息あり、補助金は返還不要 (但し精算払いのため一時的に立替が必要)。<br>
+              <strong>対応 endpoint</strong>: <code>GET /v1/programs/search?kind=subsidy</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-grant" style="font-weight:700;font-size:20px;">助成金 (じょせいきん / Grant)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">補助金とほぼ同義ですが、特に<strong>厚生労働省管轄</strong>の雇用・労働関連で使われる用語です。<strong>要件を満たせば原則受給可</strong>であり、補助金のような競争審査・採択枠の概念がありません (予算枠を超えると年度末に締め切り)。原資は<strong>雇用保険二事業</strong> (事業主負担分) です。代表例は<strong>キャリアアップ助成金</strong> (非正規→正規転換、最大 80 万円/人)・<strong>人材開発支援助成金</strong> (従業員研修費)・<strong>両立支援等助成金</strong> (育児/介護休業)・<strong>業務改善助成金</strong> (賃上げ + 設備投資)。社会保険料の納付遅延がある事業者は受給不可など、固有要件があります。</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>補助金との違い</strong>: 助成金は要件充足主義 (採択倍率の概念なし)、補助金は競争審査。<br>
+              <strong>申請窓口</strong>: 都道府県労働局 / ハローワーク (補助金は経産局や事務局)。<br>
+              <strong>対応 endpoint</strong>: <code>GET /v1/programs/search?kind=subsidy&amp;authority=厚生労働省</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-loan" style="font-weight:700;font-size:20px;">融資 (ゆうし / Loan)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">公的金融機関 (<strong>日本政策金融公庫</strong>・<strong>商工中金</strong>・<strong>信用保証協会保証付き民間融資</strong>) からの貸付制度です。<strong>返還必須 + 利息有り</strong>ですが、民間プロパー融資より低利 (年 0.5%-2% 程度)・長期 (5-20 年)・無担保枠あり等、優遇された条件で借りられます。代表例は<strong>マル経融資</strong> (商工会議所推薦、無担保無保証、最大 2,000 万円)・<strong>新規開業資金</strong> (公庫、最大 7,200 万円)・<strong>農業経営基盤強化資金 (スーパーL資金)</strong> (公庫、最大 3 億円)・<strong>セーフティネット保証</strong> (信用保証協会)。AutonoMath は<strong>担保 / 個人保証人 / 第三者保証人の 3 軸</strong>で 108 件の融資制度を分解しています。</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>補助金との違い</strong>: 補助金は返還不要だが精算払い、融資は返還必須だが事前入金 → cash flow 補完目的で併用が標準。<br>
+              <strong>審査軸</strong>: 信用 (税金滞納なし)・事業計画・担保 / 保証人。<br>
+              <strong>対応 endpoint</strong>: <code>GET /v1/loan-programs/search</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-tax" style="font-weight:700;font-size:20px;">税制優遇 (ぜいせいゆうぐう / Tax Incentive)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">法人税 / 所得税 / 固定資産税 / 消費税の<strong>軽減・特別償却・税額控除</strong>を行う制度群です。代表例は<strong>中小企業投資促進税制</strong> (機械装置 30% 特別償却 or 7% 税額控除)・<strong>研究開発税制</strong> (試験研究費の 6-14% 税額控除)・<strong>賃上げ促進税制</strong> (給与増加額の最大 40% 税額控除)・<strong>固定資産税の特例</strong> (経営力向上計画認定で 1/2 軽減)。<strong>減免額が即 cash flow 改善に直結</strong>し、補助金と異なり申請不採択リスクが無い (要件充足主義)。多くは事前認定 (認定制度) + 確定申告で適用、の 2 段階構造です。</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>補助金との違い</strong>: 補助金は cash 給付、税制優遇は納税額減 (赤字企業は効果なし)。<br>
+              <strong>認定制度との関係</strong>: 中小企業投資促進税制等は経営力向上計画認定が前提 → 認定制度を先に取得。<br>
+              <strong>対応 endpoint</strong>: <code>GET /v1/tax-incentives/search</code>
+            </p>
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
+          <dt id="term-certification" style="font-weight:700;font-size:20px;">認定制度 (にんていせいど / Certification)</dt>
+          <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
+            <p style="margin:0 0 12px;">行政が事業者を「認定」する制度群です。代表例は<strong>経営革新計画</strong> (都道府県認定)・<strong>地域未来牽引企業</strong> (経産省選定)・<strong>健康経営優良法人</strong> (経産省 + 日本健康会議)・<strong>経営力向上計画</strong> (主務大臣認定)・<strong>事業継続力強化計画</strong> (経産局認定)。直接の cash benefit は無いが、<strong>補助金加点</strong> (採択倍率を引き上げる) / <strong>融資条件優遇</strong> (公庫の利率引下げ) / <strong>公的入札加点</strong> (総合評価落札方式) / <strong>税制優遇の前提</strong>等の foundation となります。認定取得自体は無料 (印紙代のみ) で、計画書の質が審査基準。AutonoMath は 66 件の認定制度を構造化しています。</p>
+            <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
+              <strong>補助金との違い</strong>: 補助金は cash、認定は資格 (補助金/融資/税制の前提)。<br>
+              <strong>取得順序</strong>: 認定 → 補助金/税制申請、が標準フロー。<br>
+              <strong>対応 endpoint</strong>: <code>GET /v1/certifications/search</code>
+            </p>
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="faq-title" style="margin-top:40px;">
+      <h2 id="faq-title" class="section-title">よくある質問 (FAQ)</h2>
+      <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:14px;margin:0;padding:0;">
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-combine" style="font-weight:600;font-size:16px;">Q. 補助金と助成金は複数併用できますか?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            原則として併用可能ですが、<strong>同一経費の重複計上は禁止</strong>です (「経費の二重計上」は不正受給扱い)。さらに制度ごとに「他の補助金との併用不可」条項が設定されている場合があります。AutonoMath の <code>POST /v1/programs/check_compatibility</code> は<strong>181 本の排他ルール</strong> (125 exclude + 17 prerequisite + 15 absolute + 24 other) を構造判定するため、program_id を投げれば衝突の有無を即座に返します。
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-priority" style="font-weight:600;font-size:16px;">Q. 5 用語の優先順位 (申請順) はありますか?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            原則: <strong>認定制度 → 補助金/助成金 → 融資 → 税制優遇</strong>の順で検討します。認定制度は補助金加点や融資条件優遇の前提となるため最初に取得、補助金/助成金で初期投資の自己負担を圧縮、不足分を融資で調達、最後に税制優遇で legitimate な節税を行うのが標準フローです。AutonoMath の <code>GET /v1/am/list_open_programs</code> に法人 profile を投げると、認定→補助金→融資の順で並びます。
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-acceptance-rate" style="font-weight:600;font-size:16px;">Q. 補助金の採択率はどのくらいですか?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            制度により大きく異なります。事業再構築補助金は 30-50%、ものづくり補助金は 40-60%、IT導入補助金は 60-80% 程度。AutonoMath は<strong>2,286 件の実採択事例</strong> (case_studies) を保持し、<code>GET /v1/case_studies/search</code> で program_id 別の採択企業一覧を返します。採択率は AutonoMath が独自試算するのではなく、<strong>事務局公表の採択結果から逆算</strong>する原則です。
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-loan-vs-subsidy" style="font-weight:600;font-size:16px;">Q. 融資と補助金、どちらが先ですか?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            補助金は<strong>「精算払い」(事業完了後に支払われる)</strong>のため、事業実施期間中の cash flow を融資で繋ぐのが標準です。具体的には: (1) 補助金交付決定通知を受領、(2) 公庫マル経 / 信用保証協会保証付き融資で事業資金を借入、(3) 事業実施・経費支払い、(4) 補助金請求・入金、(5) 融資の繰上返済 (任意) という流れ。AutonoMath は loan_programs と programs を 1 つの API call (<code>GET /v1/programs/search?include_loans=true</code>) で横断できます。
+          </dd>
+        </div>
+
+        <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+          <dt id="faq-tax-application" style="font-weight:600;font-size:16px;">Q. 税制優遇は申請が必要ですか?</dt>
+          <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
+            税制優遇の多くは<strong>「事前認定 + 確定申告で適用」の 2 段階</strong>です。例えば中小企業投資促進税制は経営力向上計画の認定 (認定制度) → 設備投資 → 確定申告書に明細書を添付、という流れ。研究開発税制のように事前認定不要のものもあります。AutonoMath の <code>GET /v1/tax-incentives/search</code> は要件・申請手続・対象設備を構造化した <strong>35 件の tax_rulesets</strong> を返します。
+          </dd>
+        </div>
+
+      </dl>
+    </section>
+
+    <section aria-labelledby="next-title" style="margin-top:40px;">
+      <h2 id="next-title" class="section-title">次に読む</h2>
+      <ul style="margin:0;padding-left:20px;line-height:2;font-size:15px;">
+        <li><a href="programs/">制度一覧</a> — 10,790 件の補助金・融資・税制・認定制度を都道府県・分類別に検索</li>
+        <li><a href="pricing.html">料金ページ</a> — API + MCP は ¥3/req、匿名 50 req/月 per IP 無料</li>
+        <li><a href="facts.html">ファクトシート</a> — サイトの数値の出典 (制度件数・entities・facts) 一覧</li>
+        <li><a href="/docs/getting-started/">Getting Started</a> — API キー取得から最初の 1 call まで</li>
+        <li><a href="audiences/">Audience 別ピッチ</a> — 税理士 / 行政書士 / SMB / VC / dev 向けの使い方</li>
+      </ul>
+    </section>
+
+    <p style="margin:32px 0 0;font-size:13px;color:var(--text-muted);">
+      用語定義の不一致や追加してほしい用語がある場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。本ページは出典法令・公的ガイドラインの改正に応じて更新します (changefreq: monthly)。
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="products.html">Products</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="glossary.html">用語集</a>
+      <a href="facts.html">ファクトシート</a>
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利</p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/feedback-widget.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.AutonoMathFeedback) {
+    window.AutonoMathFeedback.mount('body', { position: 'bottom-right' });
+  }
+});
+</script>
+
+</body>
+</html>

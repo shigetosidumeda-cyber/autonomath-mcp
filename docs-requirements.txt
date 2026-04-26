@@ -1,0 +1,16 @@
+# Docs build dependencies — installed only in CI + local `mkdocs build`.
+# Kept out of pyproject.toml so the Fly.io prod container stays slim.
+#
+# To rebuild docs locally:
+#   pip install -r docs-requirements.txt
+#   mkdocs build --strict
+mkdocs-material==9.5.*
+mkdocs-git-revision-date-localized-plugin==1.2.*
+pymdown-extensions>=10.16.1
+# mkdocs Material `social` plugin renders per-page OG cards (1200x630 PNG)
+# under site/docs/assets/images/social/. Requires cairosvg + pillow at build
+# time. pillow ships transitively via mkdocs-material; cairosvg pulls in
+# cairocffi → libcairo (preinstalled on ubuntu-latest, no apt step needed).
+# pages-preview.yml runs on ubuntu-latest so this works out of the box.
+cairosvg>=2.7,<3
+pillow>=10

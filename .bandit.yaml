@@ -1,0 +1,10 @@
+# Bandit configuration — Python static security analyzer.
+# Added 2026-04-25 per CI security gating audit (a92f5354dc4848432).
+
+exclude_dirs:
+  - tests
+  - .venv
+  - .git
+
+skips:
+  - B101  # assert_used — pytest tests use it

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>税理士向け AutonoMath — 措置法・税制特例・確定申告 PR</title>
+<meta name="description" content="税理士事務所向け AutonoMath 活用ガイド。法人税 措置法 検索、税制特例 (DX 投資促進・賃上げ促進)、電帳法・インボイス 改正アラート、確定申告期の Widget 集客。¥3/req metered + 法令アラート ¥500/月。">
+
+<meta property="og:title" content="税理士向け AutonoMath — 措置法・税制特例・確定申告 PR">
+<meta property="og:description" content="顧問先からの「使える特例は?」に Claude + AutonoMath で 30 秒回答。税制 ruleset 35 件 + 措置法 + 通達リンク。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/audiences/tax-advisor.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="税理士向け AutonoMath">
+<meta name="twitter:description" content="法人税 措置法 + 税制特例 + 確定申告 PR を 1 本化。">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/audiences/tax-advisor.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/tax-advisor.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/tax-advisor.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/tax-advisor.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script defer src="../analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://autonomath.ai/"},
+    {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://autonomath.ai/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "税理士向け", "item": "https://autonomath.ai/audiences/tax-advisor.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "税理士業務支援 API + 法令改正アラート",
+  "name": "AutonoMath for Tax Advisors",
+  "description": "税理士向けの AutonoMath 活用。法人税 措置法・税制特例検索、電帳法・インボイス・改正電通法等の改正アラート、確定申告期の集客 Widget。",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "identifier": "T8010001213708"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "税理士・税理士法人"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP 従量",
+      "price": "3",
+      "priceCurrency": "JPY"
+    },
+    {
+      "@type": "Offer",
+      "name": "法令改正アラート",
+      "price": "500",
+      "priceCurrency": "JPY"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "顧問先 80 社 (法人 60 / 個人 20) でどれくらいの req 数になりますか?", "acceptedAnswer": {"@type": "Answer", "text": "想定では 1 社あたり月 5-10 件の問合せ → 月 400-800 req → ¥1,200-¥2,400 (税別)。3 月の確定申告期は跳ね上がるため、¥3-5,000/月 を上限目安に。"}},
+    {"@type": "Question", "name": "扱える税法はどこまで?", "acceptedAnswer": {"@type": "Answer", "text": "tax_rulesets は 2026-04 時点 35 件 (インボイス・電帳法等中心) で継続拡張中。法人税 措置法は 9,484 件の laws テーブルから検索可能 (継続ロード中)。詳細は API リファレンス参照。"}},
+    {"@type": "Question", "name": "通達・質疑応答事例まで参照できますか?", "acceptedAnswer": {"@type": "Answer", "text": "現時点 で参照可能なのは法令本文 (e-Gov CC-BY) と税務 ruleset (国税庁原典)。通達・質疑応答事例は schema 構築済み・データロード準備中。"}},
+    {"@type": "Question", "name": "改正アラートはどの程度詳細ですか?", "acceptedAnswer": {"@type": "Answer", "text": "法令名・改正条項・施行日・関連制度 ID を email + RSS で配信。月次ダイジェスト無料、real-time 通知 ¥500/月。本文は要約のみ、原典 URL は必ず付与する。"}},
+    {"@type": "Question", "name": "顧問先からの相談を士業 affiliate で受けられますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。advisor 登録は無料、成約時のみ ¥3,000 (税別)。プロフィールに専門分野・地域・料金表を載せ、SMB 経営者からの問合せが LINE bot 経由で届きます。"}},
+    {"@type": "Question", "name": "守秘義務 (税理士法 38 条) との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "AutonoMath は検索クエリを学習データに使用しません。推論ログは課金照合のみに利用。顧客固有の事業情報を入力する場合は事務所内ポリシーに従ってください。"}},
+    {"@type": "Question", "name": "jGrants や経産省サイトを直接見ればいいのでは?", "acceptedAnswer": {"@type": "Answer", "text": "jGrants は申請ポータルです。「自分の顧客に該当する制度を網羅的に発見する」「複数の制度の併用可否を判定する」「他省庁・地方自治体の制度まで横串で検索する」ことはできません。AutonoMath は 13,578 件 (jGrants 掲載 + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 9,484 法令) を 1 つの API で照会でき、181 の exclusion / prerequisite ルールで併用可否も機械判定します。事務所内で「この顧客に対象の制度を 30 秒で全件出す」運用ができます。"}},
+    {"@type": "Question", "name": "顧問先への営業材料として使えるか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。「あなたの会社で使える補助金候補を AutonoMath で全件抽出すると ¥X,XXX 万円分の上限がありました」というレポートを毎月顧問先に出すことで、関与度向上と追加業務獲得に使えます。1 顧客あたり数 req で済むため、月 50 req 無料枠で 5–10 顧客分は完全無料、それ以上は ¥3/req。"}},
+    {"@type": "Question", "name": "TKC / 弥生 / freee と何が違うのか?", "acceptedAnswer": {"@type": "Answer", "text": "申告ソフトは「税額計算 + 申告書出力」に特化しており、「顧問先が使える補助金 / 認定 / 融資の発見」はカバーしません。AutonoMath は申告ソフトの代替ではなく、補完ツール (顧問関与の前段リサーチ + 改正アラート + 過去採択事例) です。月顧問料 ¥30,000 の顧問先に「今期使えそうな補助金 3 件、申告期前に検討を」を毎月送るだけで関与度が上がり、追加業務 (補助金申請補助 / 経営相談) の獲得に繋がります。"}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="../index.html" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="../products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../prompts.html">Prompts</a>
+      <a href="../dashboard.html">ダッシュボードへ</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/audiences/tax-advisor.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/audiences/tax-advisor.html" lang="en" hreflang="en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+        <a href="../index.html">ホーム</a> &raquo; <a href="index.html">Audience 別</a> &raquo; <span aria-current="page">税理士向け</span>
+      </nav>
+      <h1 id="hero-title">税理士向け AutonoMath</h1>
+      <p class="hero-sub">法人税 措置法 検索 + 税制特例 + 電帳法・インボイス 改正アラート。顧問先 80 社対応の所内 RAG を 30 分で立ち上げる。</p>
+      <p class="hero-tag">5 名規模事務所、SMB 顧客 80 社想定。Claude Desktop / 自社 RAG に MCP server を繋ぎ、tax_rulesets 35 件 + laws 9,484 件 + programs 13,578 件を横断。改正アラートで電帳法・インボイス・改正電通法を取りこぼさない。</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#quickstart">5 分で始める &rarr;</a>
+        <a class="btn btn-secondary" href="../pricing.html">料金を見る</a>
+        <a class="btn btn-secondary" href="index.html">他の audience と比較</a>
+      </div>
+      <p class="trust-strip" style="margin:16px 0 0;font-size:13px;color:var(--text-muted);line-height:1.7;">
+        運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+        · <a href="../tokushoho.html">特商法表記</a> / <a href="../tos.html">利用規約</a> / <a href="../privacy.html">プライバシー</a>
+        · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
+        · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
+      </p>
+    </div>
+  </section>
+
+  <section aria-labelledby="legal-disclaimer-title">
+    <div class="container">
+      <div role="note" style="background:#fff8e1;border:2px solid #f59e0b;padding:18px 20px;border-radius:8px;margin:24px 0;">
+        <h2 id="legal-disclaimer-title" style="font-size:18px;margin:0 0 10px;color:#7c2d12;">税理士法 第 52 条 (税理士業務の制限)</h2>
+        <p style="margin:0 0 6px;">jpintel-mcp (AutonoMath) は税務代理・税務書類作成・税務相談を行うものではありません。</p>
+        <p style="margin:0 0 6px;">本サービスは公開されている税制優遇制度の情報提供 (情報処理) のみを行います。</p>
+        <p style="margin:0;">個別具体的な税務判断は、必ず税理士にご相談ください。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="why-title">
+    <div class="container">
+      <h2 id="why-title" class="section-title">なぜ AutonoMath か</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card" style="min-width:0;">
+          <h3>一次資料 99%以上</h3>
+          <p class="card-lead">国税庁・財務省・e-Gov</p>
+          <p>tax_rulesets は国税庁原典、laws は e-Gov CC-BY、措置法・通達は条項単位で参照。aggregator (二次情報源) は使わない。顧問先への説明根拠として URL を提示できる。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>排他ルール 181 本</h3>
+          <p class="card-lead">特例の併用失格を事前検出</p>
+          <p>賃上げ促進税制 + 中小企業投資促進税制 + DX 投資促進税制 等の併用可否を 181 本の排他/前提ルールで構造化。「気づかないまま併用申告 &rarr; 後日否認」を回避できる。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>改正アラート</h3>
+          <p class="card-lead">電帳法・インボイス・改正電通法</p>
+          <p>関心条項を登録すると、改正・通達発出・施行日を email で通知。月次ダイジェストは無料、real-time 通知は ¥500/月。確定申告期の事故を予防する。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="usecase-title">
+    <div class="container">
+      <h2 id="usecase-title" class="section-title">主要 use case</h2>
+      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+        <article class="card" style="min-width:0;">
+          <h3>1. 顧問先からの「今年使える特例は?」</h3>
+          <p>業種・規模・投資予定額を入れると、prescreen エンドポイントが上位 5 件 (賃上げ促進・中小企業投資促進・DX 投資・特別償却) を返す。Claude Desktop で MCP tool <code>search_tax_incentives</code> を呼び、根拠条項 + 適用期限 + 排他ルールを併記した提案書を生成。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>2. 措置法 検索 + 通達リンク</h3>
+          <p>措置法 42 条の 12 の 5 (賃上げ促進税制) のような条項を検索し、最新改正履歴を取得。<code>search_by_law</code> で関連制度 (補助金・優遇税制) を逆引きできる。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>3. 電帳法・インボイス 改正キャッチ</h3>
+          <p>関心条項を登録するとアラートが届く。例: 電子帳簿保存法 7 条 (電子取引データ保存) の改正、インボイス 2 割特例の延長、適格請求書の経過措置等。原典 URL 付き。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>4. 確定申告期の集客 (Widget)</h3>
+          <p>事務所サイトに &lt;script&gt; 1 行で「使える特例検索」ボックスを埋込。Standard 月 ¥10,000 (10,000 req 含む、ロゴ付) または Whitelabel 月 ¥30,000 (30,000 req 含む、ロゴ非表示)。来訪者がその場で自社向け特例を発見 &rarr; 申告依頼につながる導線。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>5. 顧問先の補助金併用 cross-check</h3>
+          <p>顧問先が補助金 + 税制特例を併用する場合、<code>combined_compliance_check</code> で「ものづくり補助金 + 賃上げ促進税制」の組合せが排他ルールに抵触しないかを確認。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
+    <div class="container">
+      <h2 id="quickstart-title" class="section-title">5 分で始める</h2>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+        <article class="card" style="min-width:0;">
+          <h3>curl (匿名 50 free/月)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>curl 'https://api.autonomath.ai/v1/programs/search?q=賃上げ促進税制&amp;tier=S,A&amp;limit=5'</code></pre>
+          <p class="demo-note">登録不要、JST 月初リセット。ヘッダ <code>X-RateLimit-Remaining</code> で残数確認。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>Python (商用 ¥3/req)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>import httpx
+H = {"X-API-Key": "sk_..."}
+# 1. 税務 ruleset (国税庁原典) を検索
+r = httpx.get(
+  "https://api.autonomath.ai/v1/tax_rulesets/search",
+  params={"q": "電帳法 7 条", "limit": 10},
+  headers=H)
+for row in r.json()["items"]:
+    print(row["name"], row["source_url"])
+
+# 2. 税制特例 (DX 投資促進・賃上げ促進等) を抽出
+r2 = httpx.get(
+  "https://api.autonomath.ai/v1/am/tax_incentives",
+  params={"limit": 10}, headers=H)
+for row in r2.json()["items"]:
+    print(row["name"], row.get("sunset_at"))</code></pre>
+          <p class="demo-note">tax_rulesets/search は jpintel コア (35 件)、am/tax_incentives は autonomath 由来。API key は dashboard.html から発行。</p>
+        </article>
+
+        <article class="card" style="min-width:0;">
+          <h3>Claude Desktop (MCP)</h3>
+          <pre class="code-block" style="min-width:0;max-width:100%;"><code>// ~/Library/Application Support/
+//   Claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "autonomath": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {"AUTONOMATH_API_KEY": "sk_..."}
+    }
+  }
+}</code></pre>
+          <p class="demo-note">72 tools が Claude から呼べる。<code>search_tax_incentives</code> 等。</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-preview" aria-labelledby="pricing-title">
+    <div class="container">
+      <h2 id="pricing-title" class="section-title">税理士向け 料金</h2>
+      <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (税込 ¥3.30)。月額固定は法令アラートのみ。</p>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">税理士向けの推奨インターフェース料金</caption>
+          <thead>
+            <tr>
+              <th scope="col">インターフェース</th>
+              <th scope="col">無料枠</th>
+              <th scope="col">有料 (税別)</th>
+              <th scope="col">税込</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">API + MCP</th><td>50 req/月 per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+            <tr><th scope="row">法令改正アラート</th><td>月次ダイジェスト</td><td>¥500 / 月 (real-time)</td><td>¥550 / 月</td></tr>
+            <tr><th scope="row">埋込 Widget Standard (任意)</th><td>-</td><td>¥10,000 / 月 (10,000 req 含む)</td><td>¥11,000 / 月</td></tr>
+            <tr><th scope="row">埋込 Widget Whitelabel (任意)</th><td>-</td><td>¥30,000 / 月 (30,000 req 含む、ロゴ非表示)</td><td>¥33,000 / 月</td></tr>
+            <tr><th scope="row">士業 affiliate (任意)</th><td>登録無料</td><td>¥3,000 / 成約</td><td>¥3,300 / 成約</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pricing-note">想定: 顧問先 80 社 &rarr; 月 400-800 req &rarr; ¥1,200-¥2,400/月。確定申告期 (3 月) は ¥5,000/月 上限が目安。<a href="../pricing.html">詳細料金 &rarr;</a></p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="faq-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="faq-title" class="section-title">よくある質問 (税理士)</h2>
+      <h3 style="font-size:16px;margin:18px 0 6px;">顧問先 80 社 (法人 60 / 個人 20) でどれくらいの req 数になりますか?</h3>
+      <p>1 社あたり月 5-10 件の問合せ &rarr; 月 400-800 req &rarr; ¥1,200-¥2,400 (税別) が目安。3 月の確定申告期は跳ね上がるため、¥3-5,000/月 を上限想定に。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">扱える税法はどこまで?</h3>
+      <p>tax_rulesets は 2026-04 時点 35 件 (インボイス・電帳法等中心) で継続拡張中。法人税 措置法は 9,484 件の laws テーブルから検索可能 (継続ロード中)。詳細は API リファレンス。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">通達・質疑応答事例まで参照できますか?</h3>
+      <p>現時点で参照可能なのは法令本文 (e-Gov CC-BY) と税務 ruleset (国税庁原典)。通達・質疑応答事例は schema 構築済み・データロード準備中。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">改正アラートはどの程度詳細ですか?</h3>
+      <p>法令名・改正条項・施行日・関連制度 ID を email + RSS で配信。月次ダイジェスト無料、real-time 通知 ¥500/月。本文は要約のみ、原典 URL を付与。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">顧問先からの相談を士業 affiliate で受けられますか?</h3>
+      <p>はい。advisor 登録は無料、成約時のみ ¥3,000 (税別)。プロフィールに専門分野・地域・料金表を載せ、SMB 経営者からの問合せが LINE bot 経由で届きます。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">守秘義務 (税理士法 38 条) との整合は?</h3>
+      <p>AutonoMath は検索クエリを学習データに使用しません。推論ログは課金照合のみに利用。顧客固有の事業情報を入力する場合は事務所内ポリシーに従ってください。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">jGrants や経産省サイトを直接見ればいいのでは?</h3>
+      <p>jGrants は申請ポータルです。「自分の顧客に該当する制度を網羅的に発見する」「複数の制度の併用可否を判定する」「他省庁・地方自治体の制度まで横串で検索する」ことはできません。AutonoMath は 13,578 件 (jGrants 掲載 + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 9,484 法令) を 1 つの API で照会でき、181 の exclusion / prerequisite ルールで併用可否も機械判定します。事務所内で「この顧客に対象の制度を 30 秒で全件出す」運用ができます。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">顧問先への営業材料として使えるか?</h3>
+      <p>はい。「あなたの会社で使える補助金候補を AutonoMath で全件抽出すると ¥X,XXX 万円分の上限がありました」というレポートを毎月顧問先に出すことで、関与度向上と追加業務獲得に使えます。1 顧客あたり数 req で済むため、月 50 req 無料枠で 5–10 顧客分は完全無料、それ以上は ¥3/req。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">TKC / 弥生 / freee と何が違うのか?</h3>
+      <p>申告ソフトは「税額計算 + 申告書出力」に特化しており、「顧問先が使える補助金 / 認定 / 融資の発見」はカバーしません。AutonoMath は申告ソフトの代替ではなく、補完ツール (顧問関与の前段リサーチ + 改正アラート + 過去採択事例) です。月顧問料 ¥30,000 の顧問先に「今期使えそうな補助金 3 件、申告期前に検討を」を毎月送るだけで関与度が上がり、追加業務 (補助金申請補助 / 経営相談) の獲得に繋がります。</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">関連 audience は?</h3>
+      <p><a href="admin-scrivener.html">行政書士</a> (許認可 + 補助金書類)、<a href="dev.html">AI agent developer</a> (事務所内 RAG 自作)、<a href="vc.html">VC / M&amp;A advisor</a> (DD enforcement check)、<a href="smb.html">SMB 経営者</a> (顧問先のセルフ調査) と use case が重なる。<a href="index.html">5 audience 全体を比較</a>。</p>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="resources-title" style="background:var(--bg-alt);">
+    <div class="container">
+      <h2 id="resources-title" class="section-title">税理士向けリソース</h2>
+      <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="smb.html"><strong>SMB 経営者ページ (顧問先の理解)</strong></a> &mdash; 顧問先がどんな目線で AutonoMath を使っているかを把握。LINE bot 経由のセルフ調査 &rarr; 税理士相談という流入経路。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="admin-scrivener.html"><strong>行政書士ページ (協業相手)</strong></a> &mdash; 顧問先の許認可案件で行政書士と協業する際の参考。事業承継・M&amp;A での税務 + 許認可承継 DD で重なる。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#tax-rulesets"><strong>REST API: /v1/tax_rulesets/search (35 件)</strong></a> &mdash; 賃上げ促進税制・所得拡大促進・経営強化法等の優遇税制を国税庁原典から照会。条件判定 + 適用可否を機械チェック。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#laws"><strong>REST API: /v1/laws/search (9,484 件)</strong></a> &mdash; e-Gov CC-BY 法令本文の全文検索。措置法 42 条の 12 の 5 等の条項を直接引用、改正履歴も自動取得。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../alerts.html"><strong>改正アラート登録</strong></a> &mdash; 法令名・改正条項・施行日を email + RSS で配信。月次ダイジェスト無料、real-time 通知 ¥500/月。本文要約 + 原典 URL 付与。</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>士業 affiliate に登録</strong></a> &mdash; LINE bot 経由で SMB から相談を受ける側になる。登録無料、1 紹介成立 ¥3,000 (税別) advisor 受取。</li>
+        <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5 分で開始 (quickstart)</strong></a> &mdash; API キー発行から最初の検索までの最短ルート。月 50 req 無料枠で 5-10 顧客分は完全無料運用可能。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 id="cta-title" class="section-title">始める</h2>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="../index.html#try">税制優遇 prescreen を試す (30 秒)</a>
+        <a class="btn btn-secondary" href="../dashboard.html">API キー発行 (Free 50 req/月)</a>
+        <a class="btn btn-secondary" href="/docs/getting-started/">ドキュメントを読む</a>
+        <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
+        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+      </div>
+      <p class="hero-note" style="margin-top:14px;">運営: Bookyou株式会社 (T8010001213708) &middot; 解約いつでも、最低金額・違約金なし &middot; <a href="../tokushoho.html">特商法表記</a> / <a href="../tos.html">利用規約</a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="../products.html">Products</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="../tos.html">利用規約</a>
+      <a href="../privacy.html">プライバシー</a>
+      <a href="../tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) &middot; 代表取締役 梅田茂利</p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

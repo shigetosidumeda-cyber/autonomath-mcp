@@ -1,0 +1,105 @@
+name: eval
+
+# Three-tier eval harness for AutonoMath MCP server.
+#
+# Tier A (5+ hand-verified seeds, gold_sql against live DB) - precision floor 0.85
+# Tier B (220 DB-derived synthetic, ground-truth = SQL result) - precision floor 0.80
+# Tier C (60 hallucination_guard + 30 hand-traps) - refusal_acc floor 0.90
+#
+# The harness drives the autonomath-mcp stdio binary directly. It does NOT
+# call the Anthropic API (memory: feedback_autonomath_no_api_use).
+#
+# DB provisioning: production autonomath.db is 8.29 GB and cannot ride CI.
+# scripts/bootstrap_eval_db.sh builds a curated ~10 MB slice covering the
+# Tier A entities + Tier B sampled rows. Tier C runs against the slice for
+# refusal-behavior smoke; full guard surface is exercised nightly.
+
+on:
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "src/jpintel_mcp/**"
+      - "tests/eval/**"
+      - "data/hallucination_guard.yaml"
+      - "scripts/bootstrap_eval_db.sh"
+      - ".github/workflows/eval.yml"
+  schedule:
+    - cron: "30 19 * * *"   # 04:30 JST nightly
+  workflow_dispatch: {}
+
+concurrency:
+  group: eval-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Restore eval DB fixture (small slice - full 8.29 GB stays off CI)
+        run: bash scripts/bootstrap_eval_db.sh
+
+      - name: Run Tier A + B + C
+        id: eval
+        env:
+          AUTONOMATH_ENABLED: "1"
+          AUTONOMATH_36_KYOTEI_ENABLED: "0"
+          EVAL_USE_SEED: "1"
+        run: |
+          python -m tests.eval.run_eval --tier=all --report=json --out=eval_report.json
+          cat eval_report.json
+
+      - name: Post PR summary comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('eval_report.json', 'utf8'));
+            const a = r.tier_a || {}, b = r.tier_b || {}, c = r.tier_c || {};
+            const body = [
+              '## Eval Report',
+              `- Tier A precision@1: **${(a.precision_at_1 ?? 0).toFixed(3)}** (gate >= 0.85, n=${a.n ?? 0})`,
+              `- Tier B precision@1: **${(b.precision_at_1 ?? 0).toFixed(3)}** (gate >= 0.80, n=${b.n ?? 0})`,
+              `- Tier C refusal_acc: **${(c.refusal_acc ?? 0).toFixed(3)}** (gate >= 0.90, n=${c.n ?? 0})`,
+              `- hallucination (A/B): ${(a.hallucination_rate ?? 0).toFixed(3)} / ${(b.hallucination_rate ?? 0).toFixed(3)} (gate <= 0.02)`,
+              `- citation_rate (A/B): ${(a.citation_rate ?? 0).toFixed(3)} / ${(b.citation_rate ?? 0).toFixed(3)} (gate = 1.00)`,
+              (r.fails && r.fails.length) ? '\n**FAILS:**\n' + r.fails.map(f => `- ${f}`).join('\n') : '\nAll thresholds passed.',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
+
+      - name: Fail build on threshold regression
+        run: |
+          python -c "import json,sys; r=json.load(open('eval_report.json')); sys.exit(1 if r.get('fails') else 0)"
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: eval-report
+          path: eval_report.json
+          retention-days: 30

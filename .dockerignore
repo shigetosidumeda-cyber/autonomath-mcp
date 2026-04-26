@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtualenvs
+.venv/
+venv/
+
+# Local data — bake only the launch-day seed files (jpintel.db + unified_registry.json)
+# so deploys = data refresh. Everything else under data/ stays out (would balloon
+# image size by 100s of MB of intermediate JSONL / parquet / cache).
+data/*
+!data/jpintel.db
+!data/unified_registry.json
+/tmp/jpintel-backups/
+# autonomath.db (7.3 GB) + backup snapshots sit at repo root (not under data/).
+# Ship via R2 + AUTONOMATH_DB_SOURCE_URL bootstrap on first boot — never bake
+# into the Docker image (blows the layer and 10+ min build time).
+autonomath.db
+autonomath.db-shm
+autonomath.db-wal
+autonomath.db.*
+autonomath.db.pre_*
+autonomath.db.WAS_*
+autonomath.db.CORRUPT_*
+
+# Research + raw inputs (large, not needed at runtime)
+research/
+site/
+sdk/
+
+# Dev / VCS
+.git/
+.github/
+.gitignore
+.env
+.env.*
+!.env.example
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests (not needed in production image)
+tests/

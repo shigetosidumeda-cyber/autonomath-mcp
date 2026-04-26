@@ -1,0 +1,8685 @@
+{
+  "_meta": {
+    "version": "1.1.0",
+    "total_crops": 54,
+    "description": "crop_library v1.1 (53 品目): 米 6 variants + 欠落 6 品目 追加 (2026-04-22)"
+  },
+  "categories": {
+    "facility_vegetable": {
+      "label": "施設野菜",
+      "label_en": "Greenhouse Vegetables",
+      "eigyo_type": "施設野菜"
+    },
+    "open_vegetable": {
+      "label": "露地野菜",
+      "label_en": "Open-field Vegetables",
+      "eigyo_type": "露地野菜"
+    },
+    "facility_flower": {
+      "label": "施設花卉",
+      "label_en": "Greenhouse Flowers",
+      "eigyo_type": "施設花き"
+    },
+    "open_flower": {
+      "label": "露地花卉",
+      "label_en": "Open-field Flowers",
+      "eigyo_type": "露地花き"
+    },
+    "fruit_tree": {
+      "label": "果樹",
+      "label_en": "Fruit Trees",
+      "eigyo_type": "果樹"
+    },
+    "paddy": {
+      "label": "水田作",
+      "label_en": "Paddy Crops",
+      "eigyo_type": "水田作"
+    },
+    "upland_crop": {
+      "label": "畑作",
+      "label_en": "Upland Crops",
+      "eigyo_type": "畑作"
+    },
+    "tea": {
+      "label": "茶",
+      "label_en": "Tea",
+      "eigyo_type": "工芸農作"
+    },
+    "livestock": {
+      "label": "畜産",
+      "label_en": "Livestock",
+      "eigyo_type": "畜産"
+    },
+    "special_crop": {
+      "label": "特用作物",
+      "label_en": "Special Crops",
+      "eigyo_type": "特用作物"
+    }
+  },
+  "crops": {
+    "apple_open": {
+      "_meta": {
+        "crop_id": "apple_open",
+        "crop_name": "りんご",
+        "cultivation_method": "露地栽培（わい化栽培・普通栽培）",
+        "region_note": "青森・長野・岩手・山形等の主産地を想定。わい化栽培（M.9台木）が拡大中",
+        "sources": [
+          "農水省 営農類型別経営統計（果樹）",
+          "青森県りんご試験場 りんご栽培指針",
+          "長野県農業試験場 りんご栽培指針",
+          "JA全農 果樹経営モデル（りんご）"
+        ],
+        "crop_category": "fruit_tree"
+      },
+      "yield": {
+        "yield_per_10a": 3500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.0,
+          0.0,
+          0.1,
+          0.3,
+          0.6,
+          0.85,
+          1.0
+        ],
+        "maturity_note": "定植1〜2年目収穫なし（樹体養成）。3年目10%→7年目成園。わい化は成園到達が1〜2年早い",
+        "target_note": "全国平均3,000〜3,500kg/10a。わい化で4,000〜5,000kg可。ふじ・つがる・シナノゴールド等",
+        "yield_per_10a_low": 2500,
+        "yield_per_10a_high": 4000,
+        "plant_count_per_10a_typical": 40,
+        "plant_count_per_10a_low": 35,
+        "plant_count_per_10a_high": 60
+      },
+      "channels": [
+        {
+          "name": "JA出荷（市場）",
+          "ratio": 0.5,
+          "price": 180,
+          "note": "秀品・優品が市場出荷。ふじは200〜250円/kg。早生（つがる）は150円前後"
+        },
+        {
+          "name": "直売・通信販売",
+          "ratio": 0.35,
+          "price": 300,
+          "note": "産地直送EC・道の駅。訳あり品も直販可。箱（10kg）3,000〜5,000円"
+        },
+        {
+          "name": "加工向け（ジュース・ジャム）",
+          "ratio": 0.15,
+          "price": 60,
+          "note": "規格外品・摘果リンゴ。加工業者向け"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 60,
+        "2": 100,
+        "3": 80,
+        "4": 80,
+        "5": 120,
+        "6": 160,
+        "7": 120,
+        "8": 100,
+        "9": 80,
+        "10": 200,
+        "11": 160,
+        "12": 40
+      },
+      "labor_note": "年間約1,300h/10a。収穫・摘果・袋かけに集中。2〜3月剪定も重要作業",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "りんご苗木（M.9わい化台木）",
+          "unit": "1本",
+          "price": 2000,
+          "qty_per_10a": 300,
+          "qty_note": "わい化: 300〜400本/10a（株間1m×列間2.5m）。普通栽培: 40〜50本/10a",
+          "qty_maturity_curve": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "有機肥料・化成肥料",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1,
+          "qty_note": "春肥・夏肥・秋肥の3回施肥。わい化は小面積で多回施肥"
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬（殺菌殺虫）",
+          "unit": "10aあたり",
+          "price": 120000,
+          "qty_per_10a": 1,
+          "qty_note": "黒星病・うどんこ病・モモシンクイガ対策。年間15〜20回散布"
+        },
+        {
+          "category": "資材費",
+          "item": "袋・反射シート・収穫かご",
+          "unit": "10aあたり",
+          "price": 80000,
+          "qty_per_10a": 1,
+          "qty_note": "袋かけ用資材・着色促進反射シート・梱包材"
+        },
+        {
+          "category": "その他",
+          "item": "授粉用花粉・摘果・鳥獣害対策",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1,
+          "qty_note": "人工授粉花粉代・鳥獣防除ネット維持費"
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "わい化用棚・支柱（鉄柱）",
+          "type": "構築物",
+          "amount_per_10a": 1500000,
+          "useful_life": 20,
+          "spec_template": "わい化栽培用垣根仕立て棚。普通栽培は不要"
+        },
+        {
+          "item": "スピードスプレーヤ（SS機）",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 10,
+          "spec_template": "中型SS。りんご産地の必須機械"
+        },
+        {
+          "item": "選果機（光センサー糖度選別）",
+          "type": "機械装置",
+          "amount_fixed": 5000000,
+          "useful_life": 12,
+          "spec_template": "糖度・色度・傷検出。JA共同選果に参加する場合は不要"
+        },
+        {
+          "item": "CA冷蔵庫（長期貯蔵）",
+          "type": "建物",
+          "amount_fixed": 3000000,
+          "useful_life": 20,
+          "spec_template": "CA（気体調節）貯蔵。ふじを翌年4〜5月まで出荷可能に"
+        },
+        {
+          "item": "高所作業台車",
+          "type": "機械装置",
+          "amount_fixed": 300000,
+          "useful_life": 8,
+          "spec_template": "剪定・袋かけ・収穫用昇降作業台"
+        },
+        {
+          "item": "草刈機（乗用）",
+          "type": "機械装置",
+          "amount_fixed": 500000,
+          "useful_life": 7,
+          "spec_template": "園地草生管理用"
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4,
+          "spec_template": "1台"
+        }
+      ],
+      "calendar_marks": {
+        "1": "○",
+        "2": "■剪定",
+        "3": "■剪定・病害虫防除開始",
+        "4": "■人工授粉・摘花",
+        "5": "■摘果（仕上げ摘果）",
+        "6": "■袋かけ・夏肥",
+        "7": "■病害虫防除・摘葉",
+        "8": "■着色管理・反射シート",
+        "9": "■早生品種収穫（つがる等）",
+        "10": "■収穫（ふじ等）★最繁忙",
+        "11": "■収穫（晩生・ふじ仕上げ）",
+        "12": "○貯蔵・出荷"
+      },
+      "calendar_legend": "■=主作業期 ○=管理。永年性作物のため7年計画で作成。CA貯蔵で出荷時期分散可",
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法。苗木は繰延資産（3年均等償却）または取得年度一括損金算入",
+      "subsidy_programs": {
+        "果樹経営支援対策事業": "わい化への改植支援（高生産性品種・栽培方式転換）",
+        "経営発展支援事業": "機械・貯蔵施設整備が対象",
+        "果樹共済": "収穫共済（ひょう・霜害等）＋樹体共済",
+        "収入保険": "全品目対象",
+        "産地生産基盤パワーアップ事業": "産地全体でのわい化転換に活用",
+        "農業近代化資金": "機械・施設整備の低利融資"
+      },
+      "risk_notes": {
+        "晩霜被害": "4月開花期の遅霜が致命的。凍霜害対策（スプリンクラー防霜）が必要な地域も",
+        "ひょう害": "夏季ひょう害リスク。ひょう除けネット設置（10a 300〜500万）で回避",
+        "高齢化・担い手不足": "わい化への転換で省力化・規模拡大が可能",
+        "作業集中": "5〜6月摘果・10〜11月収穫が最繁忙。雇用確保が規模拡大の鍵",
+        "カーボンニュートラル": "SS機の省エネ化・ドローン防除への転換で補助金活用余地"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.25,
+        0.3,
+        0.25,
+        0.2
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.1,
+        0.05
+      ]
+    },
+    "asparagus_open": {
+      "_meta": {
+        "crop_id": "asparagus_open",
+        "crop_name": "アスパラガス",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培（立茎栽培）",
+        "region_note": "北海道・佐賀・長野。永年性（10年以上収穫可）",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 1000,
+        "unit": "kg",
+        "maturity_curve": [
+          0,
+          0.2,
+          0.5,
+          0.8,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9,
+          0.8
+        ],
+        "plant_count_per_10a_typical": 2000,
+        "plant_count_per_10a_low": 1500,
+        "plant_count_per_10a_high": 2800,
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 1200
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.6,
+          "price": 800,
+          "note": "市場出荷。単価高い"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.4,
+          "price": 1200,
+          "note": "直売所。鮮度勝負"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0.1,
+        0.25,
+        0.3,
+        0.15,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.12,
+        0.12,
+        0.1,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 20,
+        "2": 30,
+        "3": 80,
+        "4": 120,
+        "5": 150,
+        "6": 100,
+        "7": 80,
+        "8": 80,
+        "9": 60,
+        "10": 40,
+        "11": 20,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "根株",
+          "unit": "10aあたり",
+          "price": 150000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "雨よけハウス",
+          "type": "構築物",
+          "amount_per_10a": 2000000,
+          "useful_life": 14
+        },
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 2000000,
+          "useful_life": 8
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "beef_breeding_livestock": {
+      "_meta": {
+        "crop_id": "beef_breeding_livestock",
+        "crop_name": "肉牛（繁殖）",
+        "crop_category": "livestock",
+        "cultivation_method": "繁殖牛20頭規模",
+        "region_note": "鹿児島・宮崎・北海道。子牛販売が主収入",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": null,
+        "unit": "繁殖牛1頭あたり年間0.9頭（子牛生産）",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 700,
+        "plant_count_per_10a_typical": 20,
+        "plant_count_per_10a_low": 15,
+        "plant_count_per_10a_high": 50
+      },
+      "channels": [
+        {
+          "name": "子牛市場",
+          "ratio": 1.0,
+          "price": 700000,
+          "note": "子牛1頭70万円（黒毛和種）"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.09,
+        0.08,
+        0.08,
+        0.09
+      ],
+      "labor_per_10a_monthly": {
+        "1": 150,
+        "2": 150,
+        "3": 150,
+        "4": 150,
+        "5": 150,
+        "6": 150,
+        "7": 160,
+        "8": 160,
+        "9": 150,
+        "10": 150,
+        "11": 150,
+        "12": 150
+      },
+      "materials": [
+        {
+          "category": "飼料費",
+          "item": "粗飼料+配合飼料",
+          "unit": "年間/頭",
+          "price": 200000,
+          "qty_per_10a": 20
+        },
+        {
+          "category": "衛生費",
+          "item": "獣医・衛生",
+          "unit": "年間/頭",
+          "price": 25000,
+          "qty_per_10a": 20
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "牛舎",
+          "type": "構築物",
+          "amount_fixed": 15000000,
+          "useful_life": 22
+        },
+        {
+          "item": "飼料庫",
+          "type": "構築物",
+          "amount_fixed": 3000000,
+          "useful_life": 15
+        },
+        {
+          "item": "堆肥舎",
+          "type": "構築物",
+          "amount_fixed": 5000000,
+          "useful_life": 15
+        },
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "bell_pepper_facility": {
+      "_meta": {
+        "crop_id": "bell_pepper_facility",
+        "crop_name": "ピーマン",
+        "crop_category": "facility_vegetable",
+        "cultivation_method": "施設栽培（促成・半促成）",
+        "region_note": "宮崎・茨城・高知が主産地",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 10000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 2500,
+        "plant_count_per_10a_low": 2000,
+        "plant_count_per_10a_high": 3200,
+        "yield_per_10a_low": 6000,
+        "yield_per_10a_high": 14000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.7,
+          "price": 300,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.3,
+          "price": 450,
+          "note": "直売所"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.15,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 80,
+        "2": 80,
+        "3": 100,
+        "4": 120,
+        "5": 150,
+        "6": 160,
+        "7": 160,
+        "8": 150,
+        "9": 120,
+        "10": 100,
+        "11": 80,
+        "12": 80
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "ピーマン苗",
+          "unit": "1株",
+          "price": 150,
+          "qty_per_10a": 2500
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 150000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 100000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "暖房・電気",
+          "unit": "10aあたり",
+          "price": 300000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ビニールハウス",
+          "type": "構築物",
+          "amount_per_10a": 5000000,
+          "useful_life": 14
+        },
+        {
+          "item": "環境制御装置",
+          "type": "機械装置",
+          "amount_per_10a": 1000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "blueberry_open": {
+      "_meta": {
+        "crop_id": "blueberry_open",
+        "crop_name": "ブルーベリー",
+        "crop_category": "fruit_tree",
+        "cultivation_method": "露地栽培（摘み取り園向き）",
+        "region_note": "全国可。観光農園との相性が良い。6次産業化品目",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 600,
+        "unit": "kg",
+        "maturity_curve": [
+          0,
+          0,
+          0.1,
+          0.3,
+          0.6,
+          0.8,
+          1.0
+        ],
+        "yield_per_10a_low": 800,
+        "yield_per_10a_high": 1500,
+        "plant_count_per_10a_typical": 200,
+        "plant_count_per_10a_low": 170,
+        "plant_count_per_10a_high": 300
+      },
+      "channels": [
+        {
+          "name": "摘み取り園",
+          "ratio": 0.5,
+          "price": 3000,
+          "note": "観光農園。入園料含むkg換算"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.3,
+          "price": 2000,
+          "note": "パック販売"
+        },
+        {
+          "name": "加工（ジャム等）",
+          "ratio": 0.2,
+          "price": 800,
+          "note": "6次産業化"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.2,
+        0.4,
+        0.3,
+        0.1,
+        0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.08,
+        0.1,
+        0.1,
+        0.1,
+        0.07,
+        0.05,
+        0.05,
+        0.1
+      ],
+      "labor_per_10a_monthly": {
+        "1": 20,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40,
+        "6": 100,
+        "7": 150,
+        "8": 120,
+        "9": 40,
+        "10": 20,
+        "11": 20,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗木",
+          "unit": "1本",
+          "price": 1500,
+          "qty_per_10a": 300
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "資材費",
+          "item": "防鳥ネット",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "防鳥ネット",
+          "type": "構築物",
+          "amount_per_10a": 1000000,
+          "useful_life": 10
+        },
+        {
+          "item": "潅水設備",
+          "type": "建物附属設備",
+          "amount_per_10a": 500000,
+          "useful_life": 10
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "broccoli_open": {
+      "_meta": {
+        "crop_id": "broccoli_open",
+        "crop_name": "ブロッコリー",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培（春・秋2作）",
+        "region_note": "北海道・埼玉・愛知。2026年から指定野菜に昇格",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 1200,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 4500,
+        "plant_count_per_10a_low": 3500,
+        "plant_count_per_10a_high": 5500,
+        "yield_per_10a_low": 800,
+        "yield_per_10a_high": 2000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.8,
+          "price": 300,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.2,
+          "price": 450,
+          "note": "直売所"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.05,
+        0,
+        0,
+        0.05,
+        0.1,
+        0.15,
+        0.15
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.08,
+        0.1,
+        0.1,
+        0.08,
+        0.05,
+        0.05,
+        0.1,
+        0.12,
+        0.1,
+        0.1,
+        0.07
+      ],
+      "labor_per_10a_monthly": {
+        "1": 30,
+        "2": 40,
+        "3": 60,
+        "4": 70,
+        "5": 60,
+        "6": 30,
+        "7": 30,
+        "8": 50,
+        "9": 70,
+        "10": 60,
+        "11": 50,
+        "12": 30
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 35000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 25000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "予冷庫",
+          "type": "構築物",
+          "amount_fixed": 2000000,
+          "useful_life": 15
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "broiler_livestock": {
+      "_meta": {
+        "crop_id": "broiler_livestock",
+        "crop_name": "ブロイラー",
+        "crop_category": "livestock",
+        "cultivation_method": "平飼い/ケージ 年間6回転 10,000羽規模",
+        "region_note": "鹿児島・宮崎・岩手",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": null,
+        "unit": "1羽あたり出荷体重3kg（飼育50日）",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "channels": [
+        {
+          "name": "処理場出荷",
+          "ratio": 0.95,
+          "price": 300,
+          "note": "1羽300円"
+        },
+        {
+          "name": "ブランド鶏",
+          "ratio": 0.05,
+          "price": 500
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.09,
+        0.09,
+        0.08,
+        0.08
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.09,
+        0.08,
+        0.08,
+        0.09
+      ],
+      "labor_per_10a_monthly": {
+        "1": 150,
+        "2": 150,
+        "3": 150,
+        "4": 150,
+        "5": 150,
+        "6": 150,
+        "7": 160,
+        "8": 160,
+        "9": 160,
+        "10": 150,
+        "11": 150,
+        "12": 150
+      },
+      "materials": [
+        {
+          "category": "飼料費",
+          "item": "配合飼料",
+          "unit": "年間/1000羽",
+          "price": 1500000,
+          "qty_per_10a": 10
+        },
+        {
+          "category": "雛代",
+          "item": "初生雛",
+          "unit": "1羽",
+          "price": 60,
+          "qty_per_10a": 60000
+        },
+        {
+          "category": "衛生費",
+          "item": "ワクチン・消毒",
+          "unit": "年間/1000羽",
+          "price": 80000,
+          "qty_per_10a": 10
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "鶏舎",
+          "type": "構築物",
+          "amount_fixed": 25000000,
+          "useful_life": 22
+        },
+        {
+          "item": "給餌・給水設備",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 7
+        },
+        {
+          "item": "ふん尿処理",
+          "type": "構築物",
+          "amount_fixed": 5000000,
+          "useful_life": 15
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "cabbage_open": {
+      "_meta": {
+        "crop_id": "cabbage_open",
+        "crop_name": "キャベツ",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培（春・秋2作）",
+        "region_note": "群馬・愛知・千葉が主産地。高冷地では夏秋取り",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 4500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 5000,
+        "yield_per_10a_high": 7000,
+        "plant_count_per_10a_typical": 3300,
+        "plant_count_per_10a_low": 2800,
+        "plant_count_per_10a_high": 4000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.8,
+          "price": 80,
+          "note": "市場出荷。1玉1.2kg×80円/kg"
+        },
+        {
+          "name": "加工・業務用",
+          "ratio": 0.2,
+          "price": 50,
+          "note": "カット野菜工場向け"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0,
+        0,
+        0,
+        0.1,
+        0.15,
+        0.15
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.08,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.1,
+        0.08,
+        0.07
+      ],
+      "labor_per_10a_monthly": {
+        "1": 30,
+        "2": 50,
+        "3": 80,
+        "4": 60,
+        "5": 50,
+        "6": 40,
+        "7": 40,
+        "8": 60,
+        "9": 80,
+        "10": 70,
+        "11": 60,
+        "12": 30
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗",
+          "unit": "10aあたり",
+          "price": 80000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "管理機",
+          "type": "機械装置",
+          "amount_fixed": 500000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "carrot_open": {
+      "_meta": {
+        "crop_id": "carrot_open",
+        "crop_name": "にんじん",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培（春播き・夏播き）",
+        "region_note": "北海道・千葉・徳島が主産地",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 3500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 4000,
+        "yield_per_10a_high": 6000,
+        "plant_count_per_10a_typical": 55000,
+        "plant_count_per_10a_low": 45000,
+        "plant_count_per_10a_high": 70000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.8,
+          "price": 120,
+          "note": "市場出荷"
+        },
+        {
+          "name": "加工",
+          "ratio": 0.2,
+          "price": 70,
+          "note": "ジュース・カット野菜"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.1,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.1
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.08,
+        0.1,
+        0.1,
+        0.08,
+        0.07,
+        0.07
+      ],
+      "labor_per_10a_monthly": {
+        "1": 20,
+        "2": 20,
+        "3": 40,
+        "4": 50,
+        "5": 60,
+        "6": 70,
+        "7": 40,
+        "8": 40,
+        "9": 50,
+        "10": 60,
+        "11": 50,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 20000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "にんじん収穫機",
+          "type": "機械装置",
+          "amount_fixed": 2500000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "cherry_open": {
+      "_meta": {
+        "crop_id": "cherry_open",
+        "crop_name": "さくらんぼ",
+        "crop_category": "fruit_tree",
+        "cultivation_method": "露地栽培（雨よけ）",
+        "region_note": "山形（全国の7割）。佐藤錦が主力",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 800,
+        "unit": "kg",
+        "maturity_curve": [
+          0,
+          0,
+          0,
+          0.1,
+          0.3,
+          0.5,
+          0.8,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 30,
+        "plant_count_per_10a_low": 20,
+        "plant_count_per_10a_high": 45,
+        "yield_per_10a_low": 300,
+        "yield_per_10a_high": 800
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.3,
+          "price": 2000,
+          "note": "市場出荷。高単価"
+        },
+        {
+          "name": "さくらんぼ狩り",
+          "ratio": 0.4,
+          "price": 5000,
+          "note": "観光農園。kg換算"
+        },
+        {
+          "name": "直売・贈答",
+          "ratio": 0.3,
+          "price": 3000,
+          "note": "贈答用"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.6,
+        0.4,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.15,
+        0.1,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 40,
+        "2": 80,
+        "3": 80,
+        "4": 100,
+        "5": 150,
+        "6": 300,
+        "7": 200,
+        "8": 40,
+        "9": 30,
+        "10": 30,
+        "11": 30,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗木",
+          "unit": "1本",
+          "price": 3000,
+          "qty_per_10a": 40
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 80000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "雨よけテント",
+          "type": "構築物",
+          "amount_per_10a": 3000000,
+          "useful_life": 10
+        },
+        {
+          "item": "SS機",
+          "type": "機械装置",
+          "amount_fixed": 2000000,
+          "useful_life": 10
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "chrysanthemum_facility": {
+      "_meta": {
+        "crop_id": "chrysanthemum_facility",
+        "crop_name": "菊",
+        "crop_category": "facility_flower",
+        "cultivation_method": "施設栽培（電照栽培・周年出荷）",
+        "region_note": "愛知・沖縄・福岡。仏花需要で安定。電照で開花調整",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 50000,
+        "unit": "本",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 100000,
+        "yield_per_10a_high": 150000,
+        "plant_count_per_10a_typical": 35000,
+        "plant_count_per_10a_low": 28000,
+        "plant_count_per_10a_high": 45000
+      },
+      "channels": [
+        {
+          "name": "市場出荷",
+          "ratio": 0.9,
+          "price": 40,
+          "note": "1本40円平均"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.1,
+          "price": 60,
+          "note": "仏壇用束"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.06,
+        0.06,
+        0.12,
+        0.06,
+        0.06,
+        0.06,
+        0.06,
+        0.15,
+        0.12,
+        0.06,
+        0.06,
+        0.13
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.1
+      ],
+      "labor_per_10a_monthly": {
+        "1": 100,
+        "2": 100,
+        "3": 120,
+        "4": 100,
+        "5": 100,
+        "6": 100,
+        "7": 100,
+        "8": 140,
+        "9": 120,
+        "10": 100,
+        "11": 100,
+        "12": 120
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "菊苗・挿し穂",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 100000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 100000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "電照・暖房",
+          "unit": "10aあたり",
+          "price": 600000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ビニールハウス",
+          "type": "構築物",
+          "amount_per_10a": 5000000,
+          "useful_life": 14
+        },
+        {
+          "item": "電照設備",
+          "type": "機械装置",
+          "amount_per_10a": 1500000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "cucumber_facility": {
+      "_meta": {
+        "crop_id": "cucumber_facility",
+        "crop_name": "きゅうり",
+        "cultivation_method": "施設栽培（ビニールハウス）",
+        "region_note": "関東以西の施設栽培を想定。2作型（春夏作＋秋冬作）または夏秋作（抑制）",
+        "sources": [
+          "農水省 営農類型別経営統計（野菜）",
+          "埼玉県農業技術研究センター きゅうり栽培指針",
+          "JA全農 野菜経営モデル（施設きゅうり）"
+        ],
+        "crop_category": "facility_vegetable"
+      },
+      "yield": {
+        "yield_per_10a": 9000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目70%（作型習得中）→3年目以降フル収量。年2作で春夏5,000kg+秋冬4,000kg=計9,000kg",
+        "target_note": "施設きゅうり全国平均7,500〜9,000kg/10a。高度環境制御で12,000kg超も可",
+        "yield_per_10a_low": 12000,
+        "yield_per_10a_high": 20000,
+        "plant_count_per_10a_typical": 2000,
+        "plant_count_per_10a_low": 1500,
+        "plant_count_per_10a_high": 2800
+      },
+      "channels": [
+        {
+          "name": "JA出荷（市場）",
+          "ratio": 0.6,
+          "price": 160,
+          "note": "市場価格は季節変動大。夏場安値（60〜80円/kg）、春秋高値（200〜300円/kg）。平均160円"
+        },
+        {
+          "name": "直売所・飲食店",
+          "ratio": 0.3,
+          "price": 250,
+          "note": "産直・道の駅・飲食店卸。規格外品も販売可能"
+        },
+        {
+          "name": "加工向け（漬物等）",
+          "ratio": 0.1,
+          "price": 80,
+          "note": "規格外品・余剰分の加工向け。漬物工場・食品メーカー"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 40,
+        "2": 50,
+        "3": 120,
+        "4": 150,
+        "5": 150,
+        "6": 130,
+        "7": 60,
+        "8": 50,
+        "9": 120,
+        "10": 150,
+        "11": 150,
+        "12": 120
+      },
+      "labor_note": "年間約1,290h/10a（農水省営農類型別経営統計）。春夏作3〜7月・秋冬作9〜12月の2作型。収穫調製が月150hで最繁忙",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "きゅうり苗（接ぎ木）",
+          "unit": "1株",
+          "price": 120,
+          "qty_per_10a": 3000,
+          "qty_note": "2作合計3,000株/10a（1作1,500株）。接ぎ木苗で土壌病害回避",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "化成肥料・有機肥料",
+          "unit": "10aあたり",
+          "price": 90000,
+          "qty_per_10a": 1,
+          "qty_note": "年間施肥費用（元肥＋追肥）。2作合計"
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬（殺菌殺虫）",
+          "unit": "10aあたり",
+          "price": 120000,
+          "qty_per_10a": 1,
+          "qty_note": "うどんこ病・べと病・アザミウマ対策。年間防除費"
+        },
+        {
+          "category": "資材費",
+          "item": "支柱・ネット・誘引クリップ",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1,
+          "qty_note": "誘引用資材。毎作更新分"
+        },
+        {
+          "category": "光熱費",
+          "item": "暖房用重油・電気",
+          "unit": "10aあたり",
+          "price": 150000,
+          "qty_per_10a": 1,
+          "qty_note": "秋冬作の暖房費が中心。重油価格変動に注意"
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ビニールハウス（鉄骨）",
+          "type": "構築物",
+          "amount_per_10a": 5000000,
+          "useful_life": 20,
+          "spec_template": "{area_a}a分"
+        },
+        {
+          "item": "暖房機（重油ボイラー）",
+          "type": "機械装置",
+          "amount_per_10a": 1500000,
+          "useful_life": 10,
+          "spec_template": "各1台"
+        },
+        {
+          "item": "潅水設備（自動点滴）",
+          "type": "建物附属設備",
+          "amount_per_10a": 800000,
+          "useful_life": 10,
+          "spec_template": "各1式"
+        },
+        {
+          "item": "環境モニタリング装置",
+          "type": "器具備品",
+          "amount_per_10a": 500000,
+          "useful_life": 7,
+          "spec_template": "温度・湿度・CO2センサー各1式"
+        },
+        {
+          "item": "選別機・洗浄機",
+          "type": "機械装置",
+          "amount_fixed": 1000000,
+          "useful_life": 10,
+          "spec_template": "きゅうり専用選別ライン"
+        },
+        {
+          "item": "冷蔵庫・予冷庫",
+          "type": "器具備品",
+          "amount_fixed": 500000,
+          "useful_life": 8,
+          "spec_template": "1〜2t規模"
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4,
+          "spec_template": "1台"
+        }
+      ],
+      "calendar_marks": {
+        "1": "○",
+        "2": "○準備",
+        "3": "■定植(春夏)",
+        "4": "■収穫(春夏)",
+        "5": "■収穫(春夏)",
+        "6": "■収穫(春夏)",
+        "7": "○片付・整地",
+        "8": "○",
+        "9": "■定植(秋冬)",
+        "10": "■収穫(秋冬)",
+        "11": "■収穫(秋冬)",
+        "12": "■収穫(秋冬)"
+      },
+      "calendar_legend": "■=収穫期 ○=準備・整地・育苗。2作型（春夏作3〜7月・秋冬作9〜12月）",
+      "repair_rates": {
+        "構築物": 2,
+        "建物附属設備": 2,
+        "default": 5
+      },
+      "depreciation_method": "定額法",
+      "subsidy_programs": {
+        "経営体育成支援事業": "ハウス・暖房機等が対象（認定農業者・認定新規就農者）",
+        "農業近代化資金": "施設・機械整備の低利融資",
+        "野菜需給安定対策": "価格低落時の補填",
+        "収入保険": "全品目対象の収入補償",
+        "産地生産基盤パワーアップ事業": "産地全体の施設整備に活用可"
+      },
+      "risk_notes": {
+        "価格変動": "市場価格の季節変動が大きい（夏場安値）。直売・契約栽培で安定化",
+        "労働集中": "収穫は毎日作業。雇用確保が経営規模拡大の鍵",
+        "連作障害": "接ぎ木苗使用または土壌消毒が必須",
+        "暖房費": "冬季の重油価格上昇がコスト増リスク"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0.1,
+        0.2,
+        0.25,
+        0.2,
+        0.15,
+        0.1,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.15,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.07
+      ]
+    },
+    "daikon_open": {
+      "_meta": {
+        "crop_id": "daikon_open",
+        "crop_name": "大根",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培",
+        "region_note": "北海道・千葉・青森が主産地",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 5000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.9,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 6000,
+        "plant_count_per_10a_low": 5000,
+        "plant_count_per_10a_high": 8000,
+        "yield_per_10a_low": 3000,
+        "yield_per_10a_high": 7000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.7,
+          "price": 50,
+          "note": "市場出荷"
+        },
+        {
+          "name": "加工（たくあん等）",
+          "ratio": 0.2,
+          "price": 30,
+          "note": "加工向け"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.1,
+          "price": 100,
+          "note": "直売所"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.1,
+        0.08,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.08,
+        0.15,
+        0.15,
+        0.14
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.05,
+        0.08,
+        0.1,
+        0.08,
+        0.05,
+        0.05,
+        0.1,
+        0.12,
+        0.12,
+        0.1,
+        0.07
+      ],
+      "labor_per_10a_monthly": {
+        "1": 30,
+        "2": 20,
+        "3": 40,
+        "4": 50,
+        "5": 40,
+        "6": 20,
+        "7": 20,
+        "8": 50,
+        "9": 70,
+        "10": 80,
+        "11": 60,
+        "12": 30
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 15000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 25000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 15000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "大根収穫機",
+          "type": "機械装置",
+          "amount_fixed": 2000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "dairy_livestock": {
+      "_meta": {
+        "crop_id": "dairy_livestock",
+        "crop_name": "酪農（乳牛）",
+        "crop_category": "livestock",
+        "cultivation_method": "搾乳牛50頭規模（フリーストール+パーラー）",
+        "region_note": "北海道（全国の6割）。都府県は飼料高騰で厳しいが支援制度充実",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": null,
+        "unit": "頭あたり年間乳量8,500kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 7000,
+        "yield_per_10a_high": 10000,
+        "plant_count_per_10a_typical": 40,
+        "plant_count_per_10a_low": 30,
+        "plant_count_per_10a_high": 80
+      },
+      "channels": [
+        {
+          "name": "指定団体出荷",
+          "ratio": 0.9,
+          "price": 110,
+          "note": "1kgあたり。乳価110円"
+        },
+        {
+          "name": "自家加工（チーズ等）",
+          "ratio": 0.1,
+          "price": 500,
+          "note": "6次産業化"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.09,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.09,
+        0.09,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 250,
+        "2": 250,
+        "3": 250,
+        "4": 250,
+        "5": 250,
+        "6": 250,
+        "7": 260,
+        "8": 260,
+        "9": 250,
+        "10": 250,
+        "11": 250,
+        "12": 250
+      },
+      "materials": [
+        {
+          "category": "飼料費",
+          "item": "配合飼料+粗飼料",
+          "unit": "年間/頭",
+          "price": 400000,
+          "qty_per_10a": 50
+        },
+        {
+          "category": "衛生費",
+          "item": "獣医・衛生",
+          "unit": "年間/頭",
+          "price": 30000,
+          "qty_per_10a": 50
+        },
+        {
+          "category": "繁殖費",
+          "item": "人工授精・受精卵",
+          "unit": "年間/頭",
+          "price": 15000,
+          "qty_per_10a": 50
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "牛舎（フリーストール）",
+          "type": "構築物",
+          "amount_fixed": 50000000,
+          "useful_life": 22
+        },
+        {
+          "item": "搾乳パーラー",
+          "type": "機械装置",
+          "amount_fixed": 15000000,
+          "useful_life": 10
+        },
+        {
+          "item": "バルククーラー",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "飼料調製設備（TMRミキサー等）",
+          "type": "機械装置",
+          "amount_fixed": 5000000,
+          "useful_life": 7
+        },
+        {
+          "item": "ふん尿処理施設",
+          "type": "構築物",
+          "amount_fixed": 10000000,
+          "useful_life": 15
+        },
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 5000000,
+          "useful_life": 8
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "edamame_open": {
+      "_meta": {
+        "crop_id": "edamame_open",
+        "crop_name": "枝豆",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培",
+        "region_note": "新潟・群馬・千葉。ブランド枝豆は高単価",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 600,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 20000,
+        "plant_count_per_10a_low": 15000,
+        "plant_count_per_10a_high": 25000,
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 900
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.6,
+          "price": 500
+        },
+        {
+          "name": "直売",
+          "ratio": 0.4,
+          "price": 800
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.15,
+        0.35,
+        0.35,
+        0.15,
+        0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.12,
+        0.1,
+        0.1,
+        0.08,
+        0.05,
+        0.03,
+        0.02
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 20,
+        "4": 40,
+        "5": 50,
+        "6": 60,
+        "7": 80,
+        "8": 80,
+        "9": 40,
+        "10": 10,
+        "11": 5,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 20000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 15000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 10000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "eggplant_facility": {
+      "_meta": {
+        "crop_id": "eggplant_facility",
+        "crop_name": "ナス",
+        "crop_category": "facility_vegetable",
+        "cultivation_method": "施設栽培（半促成・長期どり）",
+        "region_note": "関東以西の施設栽培を想定。高知・熊本が主産地",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 12000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 1800,
+        "plant_count_per_10a_low": 1400,
+        "plant_count_per_10a_high": 2500,
+        "yield_per_10a_low": 8000,
+        "yield_per_10a_high": 18000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.6,
+          "price": 250,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.3,
+          "price": 400,
+          "note": "直売所・飲食店"
+        },
+        {
+          "name": "加工",
+          "ratio": 0.1,
+          "price": 150,
+          "note": "漬物・惣菜向け"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.15,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 80,
+        "2": 80,
+        "3": 100,
+        "4": 120,
+        "5": 150,
+        "6": 180,
+        "7": 180,
+        "8": 160,
+        "9": 140,
+        "10": 100,
+        "11": 80,
+        "12": 80
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "ナス苗",
+          "unit": "1株",
+          "price": 200,
+          "qty_per_10a": 2000
+        },
+        {
+          "category": "肥料費",
+          "item": "有機肥料・液肥",
+          "unit": "10aあたり",
+          "price": 180000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 120000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "暖房・電気",
+          "unit": "10aあたり",
+          "price": 350000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ビニールハウス",
+          "type": "構築物",
+          "amount_per_10a": 5000000,
+          "useful_life": 14
+        },
+        {
+          "item": "環境制御装置",
+          "type": "機械装置",
+          "amount_per_10a": 1200000,
+          "useful_life": 7
+        },
+        {
+          "item": "潅水設備",
+          "type": "建物附属設備",
+          "amount_per_10a": 800000,
+          "useful_life": 10
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "fig_open": {
+      "_meta": {
+        "crop_id": "fig_open",
+        "crop_name": "いちじく",
+        "crop_category": "fruit_tree",
+        "cultivation_method": "露地栽培",
+        "region_note": "和歌山・愛知・大阪。日持ちしないため直売向き",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 1500,
+        "unit": "kg",
+        "maturity_curve": [
+          0,
+          0,
+          0.2,
+          0.5,
+          0.8,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 70,
+        "plant_count_per_10a_low": 50,
+        "plant_count_per_10a_high": 100,
+        "yield_per_10a_low": 600,
+        "yield_per_10a_high": 1500
+      },
+      "channels": [
+        {
+          "name": "直売",
+          "ratio": 0.6,
+          "price": 600
+        },
+        {
+          "name": "JA出荷",
+          "ratio": 0.3,
+          "price": 300
+        },
+        {
+          "name": "加工",
+          "ratio": 0.1,
+          "price": 200
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.25,
+        0.4,
+        0.3,
+        0.05,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05,
+        0.1
+      ],
+      "labor_per_10a_monthly": {
+        "1": 40,
+        "2": 60,
+        "3": 50,
+        "4": 50,
+        "5": 60,
+        "6": 80,
+        "7": 100,
+        "8": 150,
+        "9": 180,
+        "10": 100,
+        "11": 40,
+        "12": 30
+      },
+      "materials": [
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "雨よけ施設",
+          "type": "構築物",
+          "amount_per_10a": 1500000,
+          "useful_life": 10
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "grape_open": {
+      "_meta": {
+        "crop_id": "grape_open",
+        "crop_name": "ブドウ",
+        "cultivation_method": "露地栽培（棚仕立て・垣根仕立て）",
+        "region_note": "山梨・長野・岡山・山形等の主産地を想定。暖地は生食大粒、冷涼地はワイン用も",
+        "sources": [
+          "農水省 営農類型別経営統計（果樹）",
+          "山梨県果樹試験場 ブドウ栽培指針",
+          "長野県農業試験場 ワイン用ブドウ栽培指針",
+          "JA全農 果樹経営モデル"
+        ],
+        "crop_category": "fruit_tree"
+      },
+      "yield": {
+        "yield_per_10a": 1500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.0,
+          0.0,
+          0.1,
+          0.3,
+          0.5,
+          0.7,
+          1.0
+        ],
+        "maturity_note": "定植1-2年目: 収穫なし（樹体養成）。3年目10%→7年目成園。永年性作物のため7年計画必須",
+        "target_note": "大粒生食（シャインマスカット等）1,500kg/10a。巨峰系1,800kg。ワイン用600〜800kg",
+        "yield_per_10a_low": 1000,
+        "yield_per_10a_high": 1800,
+        "plant_count_per_10a_typical": 200,
+        "plant_count_per_10a_low": 150,
+        "plant_count_per_10a_high": 280
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.3,
+          "price": 1200,
+          "note": "シャインマスカットは1,500〜2,000円/kg。巨峰・デラウェアは800〜1,000円/kg"
+        },
+        {
+          "name": "直売・観光ぶどう園",
+          "ratio": 0.5,
+          "price": 2000,
+          "note": "観光ぶどう園は1房あたり800〜2,000円。摘み取り体験"
+        },
+        {
+          "name": "ワイン醸造・加工",
+          "ratio": 0.2,
+          "price": 500,
+          "note": "ワイン用は500円/kg前後。自社醸造ならワイン1本2,000〜5,000円"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 40,
+        "2": 60,
+        "3": 80,
+        "4": 80,
+        "5": 100,
+        "6": 120,
+        "7": 140,
+        "8": 160,
+        "9": 120,
+        "10": 60,
+        "11": 40,
+        "12": 30
+      },
+      "labor_note": "1-2月: 剪定。3-4月: 棚修繕・芽かき。5-6月: 摘房・摘粒・ジベレリン処理。7-8月: 袋掛け・収穫。年間約1,030h/10a",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "ブドウ苗木",
+          "unit": "1本",
+          "price": 2500,
+          "qty_per_10a": 100,
+          "qty_note": "棚仕立て100本/10a（株間2m×列間3m）。垣根は200本。初年度のみ",
+          "qty_maturity_curve": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "堆肥・化成肥料",
+          "unit": "10aあたり",
+          "price": 15000,
+          "qty_per_10a": 1,
+          "qty_note": "堆肥2t/10a＋化成肥料。成園後は減肥傾向"
+        },
+        {
+          "category": "農薬費",
+          "item": "殺菌剤・殺虫剤",
+          "unit": "10aあたり",
+          "price": 20000,
+          "qty_per_10a": 1,
+          "qty_note": "べと病・灰色かび病・晩腐病対策。年間10〜15回散布"
+        },
+        {
+          "category": "資材費",
+          "item": "袋・紐・ジベレリン・雨除け資材",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1,
+          "qty_note": "果実袋・誘引紐・ジベレリン処理剤・簡易雨除け被覆"
+        },
+        {
+          "category": "その他",
+          "item": "出荷箱・運賃・獣害対策",
+          "unit": "10aあたり",
+          "price": 10000,
+          "qty_per_10a": 1,
+          "qty_note": "出荷用化粧箱・宅配便送料・獣害防護柵維持"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "棚設置（鉄線棚・コンクリート柱）",
+          "amount_万": 200,
+          "category": "facility_equipment",
+          "useful_life": 20,
+          "note": "10a 150〜250万。垣根仕立ては100万/10a"
+        },
+        {
+          "name": "雨除け施設",
+          "amount_万": 150,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "簡易雨除け。シャインマスカットはほぼ必須"
+        },
+        {
+          "name": "苗木代（初年度のみ）",
+          "amount_万": 25,
+          "category": "facility_equipment",
+          "useful_life": 30,
+          "note": "100本×2,500円=25万/10a"
+        },
+        {
+          "name": "防除機（SS）",
+          "amount_万": 200,
+          "category": "machinery",
+          "useful_life": 10,
+          "note": "スピードスプレーヤ。中古80〜"
+        },
+        {
+          "name": "乗用草刈機",
+          "amount_万": 50,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "冷蔵庫",
+          "amount_万": 80,
+          "category": "processing_equipment",
+          "useful_life": 10,
+          "note": "予冷用。出荷時期調整"
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "■剪定",
+        "2": "■剪定■施肥",
+        "3": "■棚修繕■芽かき",
+        "4": "■新梢管理■摘心",
+        "5": "■摘房■ジベレリン1回目",
+        "6": "■ジベレリン2回目■摘粒",
+        "7": "■袋掛け■防除■着色管理",
+        "8": "■収穫（早生品種）■出荷",
+        "9": "■収穫（シャインマスカット等）■観光ぶどう園",
+        "10": "■晩生品種収穫■お礼肥",
+        "11": "■落葉■棚整理",
+        "12": "■休眠期■機械整備"
+      },
+      "calendar_legend": "1-2月剪定→5-6月摘房摘粒→7-9月収穫。永年性作物のため7年計画で作成",
+      "repair_rates": {
+        "構築物": 0.03,
+        "農業機械": 0.05,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法。苗木は繰延資産（3年で均等償却） or 取得年度に全額損金算入",
+      "subsidy_programs": {
+        "経営発展支援事業": "施設・機械・果樹の新植改植が対象",
+        "果樹経営支援対策": "改植（高品質品種への転換）支援",
+        "果樹共済": "収穫共済＋樹体共済",
+        "収入保険": "全品目対象の収入補償",
+        "鳥獣被害防止総合対策交付金": "獣害防護柵設置"
+      },
+      "wine_specific": {
+        "note": "ワイン用ブドウの場合の特記事項",
+        "yield_per_10a": 700,
+        "price_per_kg": 500,
+        "self_winery": {
+          "license": "酒類製造免許（税務署申請）",
+          "min_production": "6kl/年（日本酒・ビール以外）",
+          "investment_万": 1500,
+          "note": "醸造設備・タンク・瓶詰ライン。ワイン1本原価500〜1,000円、販売2,000〜5,000円"
+        },
+        "related_programs": {
+          "6次産業化総合化事業計画": "ワイナリー認定で農業改良資金（無利子）対象に",
+          "農山漁村振興交付金": "ワインツーリズム・農泊連携"
+        }
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.3,
+        0.4,
+        0.3,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.15,
+        0.1,
+        0.1,
+        0.15,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "layer_chicken_livestock": {
+      "_meta": {
+        "crop_id": "layer_chicken_livestock",
+        "crop_name": "採卵鶏",
+        "crop_category": "livestock",
+        "cultivation_method": "ケージ飼育 10,000羽規模",
+        "region_note": "茨城・千葉・鹿児島。鳥インフル対策が最重要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": null,
+        "unit": "1羽あたり年間280個",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          0.9
+        ],
+        "yield_per_10a_low": 20000,
+        "yield_per_10a_high": 35000,
+        "plant_count_per_10a_typical": 10000,
+        "plant_count_per_10a_low": 5000,
+        "plant_count_per_10a_high": 20000
+      },
+      "channels": [
+        {
+          "name": "GPセンター出荷",
+          "ratio": 0.9,
+          "price": 20,
+          "note": "1個20円"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.1,
+          "price": 40,
+          "note": "平飼い卵は高単価"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.08,
+        0.08,
+        0.07,
+        0.07,
+        0.08,
+        0.09,
+        0.09,
+        0.1
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.08,
+        0.08,
+        0.08,
+        0.1
+      ],
+      "labor_per_10a_monthly": {
+        "1": 200,
+        "2": 200,
+        "3": 200,
+        "4": 200,
+        "5": 200,
+        "6": 200,
+        "7": 210,
+        "8": 210,
+        "9": 200,
+        "10": 200,
+        "11": 200,
+        "12": 200
+      },
+      "materials": [
+        {
+          "category": "飼料費",
+          "item": "配合飼料",
+          "unit": "年間/1000羽",
+          "price": 2500000,
+          "qty_per_10a": 10
+        },
+        {
+          "category": "衛生費",
+          "item": "ワクチン・消毒",
+          "unit": "年間/1000羽",
+          "price": 100000,
+          "qty_per_10a": 10
+        },
+        {
+          "category": "雛代",
+          "item": "初生雛",
+          "unit": "1羽",
+          "price": 200,
+          "qty_per_10a": 10000
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "鶏舎（ウインドウレス）",
+          "type": "構築物",
+          "amount_fixed": 30000000,
+          "useful_life": 22
+        },
+        {
+          "item": "ケージ設備",
+          "type": "器具備品",
+          "amount_fixed": 10000000,
+          "useful_life": 10
+        },
+        {
+          "item": "集卵・選別設備",
+          "type": "機械装置",
+          "amount_fixed": 5000000,
+          "useful_life": 7
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "lettuce_open": {
+      "_meta": {
+        "crop_id": "lettuce_open",
+        "crop_name": "レタス",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培（高冷地夏秋どり）",
+        "region_note": "長野・茨城・群馬。高冷地の夏秋レタスが高単価",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 3000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 2800,
+        "yield_per_10a_high": 4000,
+        "plant_count_per_10a_typical": 6000,
+        "plant_count_per_10a_low": 5000,
+        "plant_count_per_10a_high": 7500
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.9,
+          "price": 150,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.1,
+          "price": 200,
+          "note": "直売所"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.08,
+        0.12,
+        0.15,
+        0.15,
+        0.12,
+        0.08,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.12,
+        0.1,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.07,
+        0.07
+      ],
+      "labor_per_10a_monthly": {
+        "1": 20,
+        "2": 20,
+        "3": 50,
+        "4": 70,
+        "5": 80,
+        "6": 90,
+        "7": 90,
+        "8": 80,
+        "9": 60,
+        "10": 40,
+        "11": 20,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 20000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "予冷庫",
+          "type": "構築物",
+          "amount_fixed": 2000000,
+          "useful_life": 15
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "mandarin_open": {
+      "_meta": {
+        "crop_id": "mandarin_open",
+        "crop_name": "みかん（温州みかん）",
+        "cultivation_method": "露地栽培（傾斜地・平坦地）",
+        "region_note": "和歌山・愛媛・静岡・熊本・長崎等の主産地を想定。傾斜地園が多い",
+        "sources": [
+          "農水省 営農類型別経営統計（果樹）",
+          "愛媛県農業試験場 かんきつ栽培指針",
+          "JA全農 果樹経営モデル（温州みかん）"
+        ],
+        "crop_category": "fruit_tree"
+      },
+      "yield": {
+        "yield_per_10a": 3000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.0,
+          0.0,
+          0.1,
+          0.4,
+          0.7,
+          0.9,
+          1.0
+        ],
+        "maturity_note": "定植1〜2年目収穫なし。3年目10%→7年目成園（3,000kg）。隔年結果傾向あり（豊作・不作交互）",
+        "target_note": "全国平均2,500〜3,000kg/10a。優良産地・高品質管理で4,000〜5,000kg。高糖度・小玉化トレンド",
+        "yield_per_10a_low": 2000,
+        "yield_per_10a_high": 3000,
+        "plant_count_per_10a_typical": 120,
+        "plant_count_per_10a_low": 100,
+        "plant_count_per_10a_high": 150
+      },
+      "channels": [
+        {
+          "name": "JA出荷（市場）",
+          "ratio": 0.5,
+          "price": 90,
+          "note": "秀品・優品が市場出荷。規格外品は加工向け。平均単価90〜100円/kg"
+        },
+        {
+          "name": "直売・通信販売",
+          "ratio": 0.3,
+          "price": 200,
+          "note": "産地直送・EC販売。高糖度選果品は箱（5kg）2,000〜3,000円"
+        },
+        {
+          "name": "加工向け（ジュース・缶詰）",
+          "ratio": 0.2,
+          "price": 40,
+          "note": "規格外品・余剰品。加工業者向け低単価"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 40,
+        "2": 40,
+        "3": 60,
+        "4": 60,
+        "5": 80,
+        "6": 80,
+        "7": 60,
+        "8": 60,
+        "9": 60,
+        "10": 100,
+        "11": 160,
+        "12": 180
+      },
+      "labor_note": "年間約980h/10a。収穫（11〜12月）が最繁忙。傾斜地では機械化困難で手作業が多い",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "温州みかん苗木",
+          "unit": "1本",
+          "price": 1500,
+          "qty_per_10a": 80,
+          "qty_note": "80本/10a（株間3m×列間4m）。初年度のみ",
+          "qty_maturity_curve": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "有機肥料・化成肥料",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1,
+          "qty_note": "秋肥（礼肥）・春肥・夏肥の3回施肥。有機質肥料による品質向上重要"
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬（殺菌殺虫）",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1,
+          "qty_note": "そうか病・カイガラムシ・ハダニ対策。年間10〜12回散布"
+        },
+        {
+          "category": "資材費",
+          "item": "収穫かご・ハサミ・梱包資材",
+          "unit": "10aあたり",
+          "price": 20000,
+          "qty_per_10a": 1,
+          "qty_note": "出荷箱・テープ・収穫用資材"
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "モノレール（傾斜地用）",
+          "type": "構築物",
+          "amount_per_10a": 2000000,
+          "useful_life": 15,
+          "spec_template": "傾斜地園の資材・収穫物運搬用"
+        },
+        {
+          "item": "スピードスプレーヤ（SS機）",
+          "type": "機械装置",
+          "amount_fixed": 2500000,
+          "useful_life": 10,
+          "spec_template": "中型SS。傾斜地対応型"
+        },
+        {
+          "item": "選果機（糖度選別付き）",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 12,
+          "spec_template": "光センサー非破壊糖度計付き"
+        },
+        {
+          "item": "スプリンクラー・潅水設備",
+          "type": "建物附属設備",
+          "amount_per_10a": 500000,
+          "useful_life": 15,
+          "spec_template": "夏季かん水・凍霜害防止用"
+        },
+        {
+          "item": "冷蔵貯蔵庫",
+          "type": "建物",
+          "amount_fixed": 2000000,
+          "useful_life": 20,
+          "spec_template": "10〜20t規模。出荷時期分散に有効"
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4,
+          "spec_template": "1台"
+        }
+      ],
+      "calendar_marks": {
+        "1": "○礼肥",
+        "2": "○剪定",
+        "3": "○剪定・施肥",
+        "4": "○芽吹き管理",
+        "5": "■摘蕾",
+        "6": "■摘果",
+        "7": "■摘果・夏肥",
+        "8": "■管理（日焼け防止）",
+        "9": "○着色促進（早生品種）",
+        "10": "■収穫（極早生・早生）",
+        "11": "■収穫（普通温州）★最繁忙",
+        "12": "■収穫・貯蔵"
+      },
+      "calendar_legend": "■=主作業期 ○=管理作業。永年性作物のため7年計画で作成。隔年結果に注意",
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法。苗木は繰延資産（3年均等償却）または取得年度一括損金算入",
+      "subsidy_programs": {
+        "果樹経営支援対策事業": "改植・高品質品種への転換支援。温州→高糖度系品種",
+        "経営発展支援事業": "機械・施設整備が対象",
+        "果樹共済": "収穫共済＋樹体共済（気象災害・病害等）",
+        "収入保険": "全品目対象",
+        "傾斜地農業支援（各県）": "中山間地域等直接支払。傾斜地加算あり",
+        "農業近代化資金": "選果機・機械整備の低利融資"
+      },
+      "risk_notes": {
+        "隔年結果": "豊作年と不作年が交互になりやすい。摘果管理が収量安定の鍵",
+        "価格低下トレンド": "消費量減少傾向。高糖度化・ブランド化・直販強化が必要",
+        "傾斜地労働": "機械化困難で高齢化による担い手不足が深刻",
+        "凍霜害": "春の遅霜と冬季凍害に注意。防霜対策投資が必要な地域も"
+      },
+      "monthly_revenue_curve_12": [
+        0.2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.2,
+        0.3,
+        0.3
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "melon_facility": {
+      "_meta": {
+        "crop_id": "melon_facility",
+        "crop_name": "メロン",
+        "crop_category": "facility_vegetable",
+        "cultivation_method": "施設栽培（温室メロン）",
+        "region_note": "静岡・茨城・北海道が主産地",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 3000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.5,
+          0.7,
+          0.85,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 1200,
+        "plant_count_per_10a_low": 900,
+        "plant_count_per_10a_high": 1600,
+        "yield_per_10a_low": 2000,
+        "yield_per_10a_high": 4500
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.5,
+          "price": 800,
+          "note": "市場出荷。高級品は1個5000円超"
+        },
+        {
+          "name": "直売・贈答",
+          "ratio": 0.5,
+          "price": 1500,
+          "note": "贈答用・ネット販売"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0.05,
+        0.2,
+        0.3,
+        0.25,
+        0.15,
+        0.05,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.15,
+        0.12,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.06,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 60,
+        "2": 100,
+        "3": 150,
+        "4": 180,
+        "5": 180,
+        "6": 160,
+        "7": 140,
+        "8": 120,
+        "9": 100,
+        "10": 80,
+        "11": 60,
+        "12": 50
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "メロン苗",
+          "unit": "1株",
+          "price": 300,
+          "qty_per_10a": 2000
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 150000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "暖房",
+          "unit": "10aあたり",
+          "price": 500000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ガラス温室",
+          "type": "構築物",
+          "amount_per_10a": 10000000,
+          "useful_life": 20
+        },
+        {
+          "item": "環境制御装置",
+          "type": "機械装置",
+          "amount_per_10a": 2000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "onion_open": {
+      "_meta": {
+        "crop_id": "onion_open",
+        "crop_name": "たまねぎ",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培",
+        "region_note": "北海道・佐賀・兵庫が主産地。北海道は春播き秋収穫、他は秋播き初夏収穫",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 5000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 25000,
+        "plant_count_per_10a_low": 20000,
+        "plant_count_per_10a_high": 30000,
+        "yield_per_10a_low": 3500,
+        "yield_per_10a_high": 7000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.8,
+          "price": 100,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.2,
+          "price": 150,
+          "note": "直売・加工"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0.2,
+        0.4,
+        0.2,
+        0,
+        0,
+        0.1,
+        0.1,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.1,
+        0.15,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.1,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 20,
+        "2": 20,
+        "3": 30,
+        "4": 50,
+        "5": 80,
+        "6": 100,
+        "7": 30,
+        "8": 20,
+        "9": 40,
+        "10": 60,
+        "11": 50,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 35000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 25000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "たまねぎ収穫機",
+          "type": "機械装置",
+          "amount_fixed": 2000000,
+          "useful_life": 7
+        },
+        {
+          "item": "乾燥調製施設",
+          "type": "構築物",
+          "amount_fixed": 3000000,
+          "useful_life": 15
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "paprika_facility": {
+      "_meta": {
+        "crop_id": "paprika_facility",
+        "crop_name": "パプリカ",
+        "crop_category": "facility_vegetable",
+        "cultivation_method": "施設栽培（環境制御型大型ハウス）",
+        "region_note": "宮城・茨城・大分。国産比率は約30%、オランダ式環境制御が増加",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 8000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.5,
+          0.7,
+          0.85,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 2000,
+        "plant_count_per_10a_low": 1500,
+        "plant_count_per_10a_high": 2800,
+        "yield_per_10a_low": 5000,
+        "yield_per_10a_high": 12000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.6,
+          "price": 500,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.4,
+          "price": 700,
+          "note": "直売所・飲食店"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.03,
+        0.03,
+        0.05,
+        0.08,
+        0.12,
+        0.15,
+        0.15,
+        0.12,
+        0.1,
+        0.08,
+        0.05,
+        0.04
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 80,
+        "2": 80,
+        "3": 120,
+        "4": 140,
+        "5": 160,
+        "6": 180,
+        "7": 180,
+        "8": 160,
+        "9": 140,
+        "10": 120,
+        "11": 80,
+        "12": 80
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "パプリカ苗",
+          "unit": "1株",
+          "price": 250,
+          "qty_per_10a": 2000
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 120000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "暖房・CO2施用",
+          "unit": "10aあたり",
+          "price": 600000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "大型鉄骨ハウス",
+          "type": "構築物",
+          "amount_per_10a": 12000000,
+          "useful_life": 20
+        },
+        {
+          "item": "統合環境制御",
+          "type": "機械装置",
+          "amount_per_10a": 3000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "peach_open": {
+      "_meta": {
+        "crop_id": "peach_open",
+        "crop_name": "桃",
+        "crop_category": "fruit_tree",
+        "cultivation_method": "露地栽培",
+        "region_note": "山梨・福島・長野。高単価品目",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 2000,
+        "unit": "kg",
+        "maturity_curve": [
+          0,
+          0,
+          0.1,
+          0.3,
+          0.5,
+          0.8,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 25,
+        "plant_count_per_10a_low": 18,
+        "plant_count_per_10a_high": 35,
+        "yield_per_10a_low": 800,
+        "yield_per_10a_high": 2000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.4,
+          "price": 400,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売・贈答",
+          "ratio": 0.6,
+          "price": 800,
+          "note": "高級贈答。桃狩り"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.3,
+        0.5,
+        0.2,
+        0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.1,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 40,
+        "2": 80,
+        "3": 80,
+        "4": 100,
+        "5": 120,
+        "6": 150,
+        "7": 200,
+        "8": 200,
+        "9": 80,
+        "10": 40,
+        "11": 40,
+        "12": 30
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "桃苗木",
+          "unit": "1本",
+          "price": 2500,
+          "qty_per_10a": 50
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 120000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "SS機",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 10
+        },
+        {
+          "item": "選果機",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 12
+        },
+        {
+          "item": "冷蔵庫",
+          "type": "構築物",
+          "amount_fixed": 2000000,
+          "useful_life": 15
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "pear_open": {
+      "_meta": {
+        "crop_id": "pear_open",
+        "crop_name": "梨",
+        "crop_category": "fruit_tree",
+        "cultivation_method": "露地栽培（棚仕立て）",
+        "region_note": "千葉・茨城・栃木。幸水・豊水が主力",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 3000,
+        "unit": "kg",
+        "maturity_curve": [
+          0,
+          0,
+          0.1,
+          0.3,
+          0.6,
+          0.8,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 30,
+        "plant_count_per_10a_low": 25,
+        "plant_count_per_10a_high": 40,
+        "yield_per_10a_low": 1500,
+        "yield_per_10a_high": 3500
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.5,
+          "price": 250,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売・贈答",
+          "ratio": 0.5,
+          "price": 500,
+          "note": "梨狩り・贈答用"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.3,
+        0.4,
+        0.2,
+        0.1,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05,
+        0.1
+      ],
+      "labor_per_10a_monthly": {
+        "1": 40,
+        "2": 100,
+        "3": 80,
+        "4": 80,
+        "5": 100,
+        "6": 120,
+        "7": 100,
+        "8": 150,
+        "9": 200,
+        "10": 80,
+        "11": 40,
+        "12": 30
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "梨苗木",
+          "unit": "1本",
+          "price": 2000,
+          "qty_per_10a": 40
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 100000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "資材費",
+          "item": "袋・ネット",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "棚（鉄柱+ワイヤー）",
+          "type": "構築物",
+          "amount_per_10a": 1500000,
+          "useful_life": 20
+        },
+        {
+          "item": "SS機",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 10
+        },
+        {
+          "item": "選果機",
+          "type": "機械装置",
+          "amount_fixed": 2000000,
+          "useful_life": 12
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "persimmon_open": {
+      "_meta": {
+        "crop_id": "persimmon_open",
+        "crop_name": "柿",
+        "crop_category": "fruit_tree",
+        "cultivation_method": "露地栽培（平核無・富有柿）",
+        "region_note": "和歌山・奈良・福岡。干し柿加工で6次産業化",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 2500,
+        "unit": "kg",
+        "maturity_curve": [
+          0,
+          0,
+          0.1,
+          0.3,
+          0.5,
+          0.8,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 30,
+        "plant_count_per_10a_low": 22,
+        "plant_count_per_10a_high": 40,
+        "yield_per_10a_low": 1000,
+        "yield_per_10a_high": 2500
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.5,
+          "price": 200
+        },
+        {
+          "name": "直売・贈答",
+          "ratio": 0.3,
+          "price": 400
+        },
+        {
+          "name": "干し柿加工",
+          "ratio": 0.2,
+          "price": 600
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.3,
+        0.4,
+        0.3
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.05,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 30,
+        "2": 60,
+        "3": 60,
+        "4": 60,
+        "5": 80,
+        "6": 80,
+        "7": 60,
+        "8": 40,
+        "9": 30,
+        "10": 100,
+        "11": 150,
+        "12": 80
+      },
+      "materials": [
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "SS機",
+          "type": "機械装置",
+          "amount_fixed": 2000000,
+          "useful_life": 10
+        },
+        {
+          "item": "干し柿加工施設",
+          "type": "構築物",
+          "amount_fixed": 3000000,
+          "useful_life": 15
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "pig_livestock": {
+      "_meta": {
+        "crop_id": "pig_livestock",
+        "crop_name": "養豚",
+        "crop_category": "livestock",
+        "cultivation_method": "一貫経営（繁殖→肥育）母豚50頭規模",
+        "region_note": "鹿児島・宮崎・群馬。飼料価格と枝肉価格の差益",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": null,
+        "unit": "母豚1頭あたり年間20頭出荷",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 1500,
+        "yield_per_10a_high": 2500,
+        "plant_count_per_10a_typical": 1000,
+        "plant_count_per_10a_low": 500,
+        "plant_count_per_10a_high": 2000
+      },
+      "channels": [
+        {
+          "name": "食肉市場",
+          "ratio": 0.9,
+          "price": 35000,
+          "note": "枝肉1頭3.5万円"
+        },
+        {
+          "name": "直売・ブランド豚",
+          "ratio": 0.1,
+          "price": 50000,
+          "note": "ブランド化"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.09,
+        0.09,
+        0.08
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.09,
+        0.09,
+        0.09,
+        0.08,
+        0.09
+      ],
+      "labor_per_10a_monthly": {
+        "1": 200,
+        "2": 200,
+        "3": 200,
+        "4": 200,
+        "5": 200,
+        "6": 200,
+        "7": 210,
+        "8": 210,
+        "9": 210,
+        "10": 200,
+        "11": 200,
+        "12": 200
+      },
+      "materials": [
+        {
+          "category": "飼料費",
+          "item": "配合飼料",
+          "unit": "年間/母豚",
+          "price": 600000,
+          "qty_per_10a": 50
+        },
+        {
+          "category": "衛生費",
+          "item": "獣医・薬品",
+          "unit": "年間/母豚",
+          "price": 40000,
+          "qty_per_10a": 50
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "豚舎（ウインドウレス）",
+          "type": "構築物",
+          "amount_fixed": 40000000,
+          "useful_life": 22
+        },
+        {
+          "item": "自動給餌設備",
+          "type": "機械装置",
+          "amount_fixed": 5000000,
+          "useful_life": 7
+        },
+        {
+          "item": "ふん尿処理施設",
+          "type": "構築物",
+          "amount_fixed": 15000000,
+          "useful_life": 15
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "potato_open": {
+      "_meta": {
+        "crop_id": "potato_open",
+        "crop_name": "じゃがいも",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培",
+        "region_note": "北海道（全国の8割）・長崎・鹿児島",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 3200,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 4000,
+        "plant_count_per_10a_low": 3000,
+        "plant_count_per_10a_high": 5500,
+        "yield_per_10a_low": 2000,
+        "yield_per_10a_high": 4500
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.7,
+          "price": 100,
+          "note": "市場出荷"
+        },
+        {
+          "name": "加工（ポテチ等）",
+          "ratio": 0.2,
+          "price": 60,
+          "note": "加工業者向け"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.1,
+          "price": 200,
+          "note": "直売所"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.15,
+        0.35,
+        0.3,
+        0.1,
+        0.05,
+        0.05,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.15,
+        0.2,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.03,
+        0.02
+      ],
+      "labor_per_10a_monthly": {
+        "1": 10,
+        "2": 10,
+        "3": 40,
+        "4": 60,
+        "5": 40,
+        "6": 30,
+        "7": 60,
+        "8": 50,
+        "9": 20,
+        "10": 10,
+        "11": 10,
+        "12": 10
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種いも",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 25000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "ポテトハーベスター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 7
+        },
+        {
+          "item": "貯蔵庫",
+          "type": "構築物",
+          "amount_fixed": 2000000,
+          "useful_life": 15
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "rice_paddy": {
+      "_meta": {
+        "crop_id": "rice_paddy",
+        "crop_name": "水稲",
+        "cultivation_method": "機械化体系（5〜30ha規模）",
+        "region_note": "関東〜九州の平坦部を想定。北海道・東北は収量補正が必要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "農水省 水田農業の課題と対応",
+          "JA全農 水稲栽培マニュアル",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "crop_category": "paddy"
+      },
+      "yield": {
+        "yield_per_10a": 530,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目80%→3年目100%。水稲は習熟が早い",
+        "target_note": "玄米ベース。全国平均約530kg/10a（R5年産）",
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 650,
+        "plant_count_per_10a_typical": 22000,
+        "plant_count_per_10a_low": 18000,
+        "plant_count_per_10a_high": 28000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.7,
+          "price": 220,
+          "note": "玄米60kgあたり約13,200円（kg単価220円）。R5年産コシヒカリ基準"
+        },
+        {
+          "name": "直売・EC",
+          "ratio": 0.2,
+          "price": 400,
+          "note": "精米5kg 2,000円相当。ブランド米は更に高単価"
+        },
+        {
+          "name": "加工用米・飼料用米",
+          "ratio": 0.1,
+          "price": 120,
+          "note": "飼料用米は水田活用交付金（5.5〜10.5万円/10a）が主収入"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 2,
+        "2": 5,
+        "3": 15,
+        "4": 30,
+        "5": 20,
+        "6": 10,
+        "7": 10,
+        "8": 15,
+        "9": 25,
+        "10": 15,
+        "11": 5,
+        "12": 2
+      },
+      "labor_note": "3〜4月: 育苗・田植え準備。4〜5月: 田植え。6〜8月: 水管理・防除。9〜10月: 収穫・乾燥調製。年間約154h/10a（機械化体系）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種もみ",
+          "unit": "kg",
+          "price": 600,
+          "qty_per_10a": 5,
+          "qty_note": "直播は7〜8kg/10a",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥",
+          "unit": "10aあたり",
+          "price": 12000,
+          "qty_per_10a": 1,
+          "qty_note": "硫安・塩加里・リン酸等。有機栽培は増額"
+        },
+        {
+          "category": "農薬費",
+          "item": "除草剤・殺虫殺菌剤",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "箱処理＋本田除草＋穂イモチ防除"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "軽油・電気",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1,
+          "qty_note": "トラクター・田植機・コンバイン燃料＋乾燥機電気"
+        },
+        {
+          "category": "その他",
+          "item": "育苗資材・出荷袋・乾燥費",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗培土・苗箱・出荷用紙袋等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "トラクター（30〜50PS）",
+          "amount_万": 400,
+          "category": "machinery",
+          "useful_life": 8,
+          "note": "中古200〜新品600万"
+        },
+        {
+          "name": "田植機（6条乗用）",
+          "amount_万": 250,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古100〜新品400万"
+        },
+        {
+          "name": "コンバイン（4〜5条）",
+          "amount_万": 600,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古300〜新品1000万"
+        },
+        {
+          "name": "乾燥調製施設",
+          "amount_万": 500,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "遠赤外線乾燥機＋籾摺機＋計量選別機"
+        },
+        {
+          "name": "育苗ハウス",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "パイプハウス1棟"
+        },
+        {
+          "name": "防除機（ブームスプレーヤ）",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "—",
+        "2": "■土壌分析",
+        "3": "■育苗開始■田起こし",
+        "4": "■代かき■田植え",
+        "5": "■除草■水管理開始",
+        "6": "■中干し■追肥",
+        "7": "■穂肥■防除",
+        "8": "■落水■登熟管理",
+        "9": "■収穫(早生)■乾燥調製",
+        "10": "■収穫(晩生)■出荷",
+        "11": "■秋耕■わら処理",
+        "12": "■機械整備"
+      },
+      "calendar_legend": "3月育苗→4月田植え→6月中干し→9-10月収穫→11月秋耕",
+      "repair_rates": {
+        "農業機械": 0.05,
+        "施設": 0.03,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法（農業所得計算では定額法が一般的）",
+      "subsidy_programs": {
+        "水田活用の直接支払交付金": "飼料用米・WCS・加工用米等を生産する場合",
+        "畑作物の直接支払交付金": "麦・大豆等への転作時",
+        "ナラシ対策": "米・麦・大豆の収入減少補填",
+        "多面的機能支払交付金": "田9,200円/10a（全活動参加時）",
+        "中山間地域等直接支払交付金": "傾斜地の場合"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0,
+        0,
+        0,
+        0.2,
+        0.25,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "rose_facility": {
+      "_meta": {
+        "crop_id": "rose_facility",
+        "crop_name": "バラ",
+        "crop_category": "facility_flower",
+        "cultivation_method": "施設栽培（温室ロックウール栽培）",
+        "region_note": "愛知・静岡・山形。切り花の高級品目",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 80000,
+        "unit": "本",
+        "maturity_curve": [
+          0.3,
+          0.6,
+          0.8,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 80000,
+        "yield_per_10a_high": 120000,
+        "plant_count_per_10a_typical": 5500,
+        "plant_count_per_10a_low": 4500,
+        "plant_count_per_10a_high": 7000
+      },
+      "channels": [
+        {
+          "name": "市場出荷",
+          "ratio": 0.8,
+          "price": 80,
+          "note": "1本80円（平均）。品種で20〜500円"
+        },
+        {
+          "name": "直売・ブライダル",
+          "ratio": 0.2,
+          "price": 200,
+          "note": "高品質品"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.08,
+        0.12,
+        0.08,
+        0.12,
+        0.08,
+        0.05,
+        0.05,
+        0.08,
+        0.08,
+        0.1,
+        0.11
+      ],
+      "monthly_expense_curve_12": [
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 120,
+        "2": 120,
+        "3": 140,
+        "4": 140,
+        "5": 160,
+        "6": 140,
+        "7": 120,
+        "8": 120,
+        "9": 140,
+        "10": 140,
+        "11": 140,
+        "12": 120
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "バラ苗",
+          "unit": "1株",
+          "price": 500,
+          "qty_per_10a": 3000
+        },
+        {
+          "category": "肥料費",
+          "item": "液肥",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "暖房",
+          "unit": "10aあたり",
+          "price": 800000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ガラス温室",
+          "type": "構築物",
+          "amount_per_10a": 15000000,
+          "useful_life": 20
+        },
+        {
+          "item": "ロックウール栽培設備",
+          "type": "器具備品",
+          "amount_per_10a": 3000000,
+          "useful_life": 10
+        },
+        {
+          "item": "環境制御装置",
+          "type": "機械装置",
+          "amount_per_10a": 3000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "shiitake_special": {
+      "_meta": {
+        "crop_id": "shiitake_special",
+        "crop_name": "しいたけ（菌床）",
+        "crop_category": "special_crop",
+        "cultivation_method": "菌床栽培（施設内）",
+        "region_note": "徳島・大分・北海道。周年栽培可能",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 20000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 3000,
+        "plant_count_per_10a_low": 2000,
+        "plant_count_per_10a_high": 5000,
+        "yield_per_10a_low": 300,
+        "yield_per_10a_high": 900
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.6,
+          "price": 500,
+          "note": "生しいたけ市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.3,
+          "price": 700,
+          "note": "直売所"
+        },
+        {
+          "name": "乾燥しいたけ",
+          "ratio": 0.1,
+          "price": 3000,
+          "note": "付加価値品"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.06,
+        0.06,
+        0.06,
+        0.08,
+        0.1,
+        0.12,
+        0.12
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 100,
+        "2": 100,
+        "3": 100,
+        "4": 100,
+        "5": 100,
+        "6": 80,
+        "7": 80,
+        "8": 80,
+        "9": 100,
+        "10": 120,
+        "11": 120,
+        "12": 120
+      },
+      "materials": [
+        {
+          "category": "菌床費",
+          "item": "菌床ブロック",
+          "unit": "1個",
+          "price": 200,
+          "qty_per_10a": 20000
+        },
+        {
+          "category": "光熱動力費",
+          "item": "空調・加湿",
+          "unit": "10aあたり",
+          "price": 300000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "栽培施設（空調付き）",
+          "type": "構築物",
+          "amount_per_10a": 8000000,
+          "useful_life": 15
+        },
+        {
+          "item": "培養室設備",
+          "type": "機械装置",
+          "amount_per_10a": 2000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "soybean_upland": {
+      "_meta": {
+        "crop_id": "soybean_upland",
+        "crop_name": "大豆",
+        "crop_category": "upland_crop",
+        "cultivation_method": "畑作（田畑輪換含む）",
+        "region_note": "北海道・宮城・佐賀。転作作物として重要。ゲタ対象",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 170,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 150,
+        "yield_per_10a_high": 250,
+        "plant_count_per_10a_typical": 15000,
+        "plant_count_per_10a_low": 12000,
+        "plant_count_per_10a_high": 20000
+      },
+      "channels": [
+        {
+          "name": "JA集荷",
+          "ratio": 1.0,
+          "price": 250,
+          "note": "+ 畑作物直接支払交付金(ゲタ)"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 10,
+        "6": 15,
+        "7": 15,
+        "8": 10,
+        "9": 10,
+        "10": 15,
+        "11": 10,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 3000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 4000000,
+          "useful_life": 8
+        },
+        {
+          "item": "コンバイン（汎用）",
+          "type": "機械装置",
+          "amount_fixed": 8000000,
+          "useful_life": 7
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "spinach_facility": {
+      "_meta": {
+        "crop_id": "spinach_facility",
+        "crop_name": "ほうれん草",
+        "crop_category": "facility_vegetable",
+        "cultivation_method": "施設栽培（周年栽培）",
+        "region_note": "群馬・埼玉・千葉が主産地。年5〜7作の周年栽培",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 15000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.6,
+          0.8,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 3000,
+        "yield_per_10a_high": 4500,
+        "plant_count_per_10a_typical": 50000,
+        "plant_count_per_10a_low": 40000,
+        "plant_count_per_10a_high": 65000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.7,
+          "price": 300,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売",
+          "ratio": 0.3,
+          "price": 450,
+          "note": "直売所"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.05,
+        0.05,
+        0.05,
+        0.08,
+        0.1,
+        0.12,
+        0.13
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 100,
+        "2": 100,
+        "3": 100,
+        "4": 100,
+        "5": 100,
+        "6": 80,
+        "7": 80,
+        "8": 80,
+        "9": 100,
+        "10": 120,
+        "11": 120,
+        "12": 100
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 100000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ビニールハウス",
+          "type": "構築物",
+          "amount_per_10a": 4000000,
+          "useful_life": 14
+        },
+        {
+          "item": "潅水設備",
+          "type": "建物附属設備",
+          "amount_per_10a": 600000,
+          "useful_life": 10
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "strawberry_facility": {
+      "_meta": {
+        "crop_id": "strawberry_facility",
+        "crop_name": "いちご",
+        "cultivation_method": "施設栽培（高設ベンチ）",
+        "region_note": "関東以西の施設栽培を想定。寒冷地は補正が必要",
+        "sources": [
+          "埼玉県農業技術研究センター技術資料",
+          "JA全農いちご栽培マニュアル",
+          "農水省 営農類型別経営統計"
+        ],
+        "crop_category": "facility_vegetable"
+      },
+      "yield": {
+        "yield_per_10a": 3500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.3,
+          0.6,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "maturity_note": "1年目30%→5年目100%（成園比）",
+        "target_note": "施設いちご平均収量（高設ベンチ）",
+        "yield_per_10a_low": 3500,
+        "yield_per_10a_high": 5500,
+        "plant_count_per_10a_typical": 8000,
+        "plant_count_per_10a_low": 6500,
+        "plant_count_per_10a_high": 10000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.2,
+          "price": 800,
+          "note": "市場出荷。手数料あり"
+        },
+        {
+          "name": "直売所",
+          "ratio": 0.3,
+          "price": 1500,
+          "note": "直売所・飲食店卸"
+        },
+        {
+          "name": "いちご狩り",
+          "ratio": 0.5,
+          "price": 2500,
+          "note": "観光農園（2500円/kg相当）"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 180,
+        "2": 200,
+        "3": 100,
+        "4": 74,
+        "5": 74,
+        "6": 100,
+        "7": 120,
+        "8": 120,
+        "9": 200,
+        "10": 120,
+        "11": 120,
+        "12": 180
+      },
+      "labor_note": "9月定植→12〜5月収穫→6〜8月育苗・管理",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "いちご苗",
+          "unit": "1株",
+          "price": 300,
+          "qty_per_10a": 10000,
+          "qty_note": "高設ベンチ 株数=10000/10a",
+          "qty_maturity_curve": [
+            0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "有機肥料・元肥",
+          "unit": "20kg袋",
+          "price": 2500,
+          "qty_per_10a": 200,
+          "qty_note": "10aあたり200袋",
+          "qty_maturity_curve": [
+            0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "液肥",
+          "unit": "20L",
+          "price": 3000,
+          "qty_per_10a": 150,
+          "qty_note": "養液栽培用",
+          "qty_maturity_curve": [
+            0,
+            0.75,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "1式",
+          "price": 1,
+          "qty_per_10a": 1290000,
+          "qty_note": "年間防除費（円/10a）",
+          "qty_maturity_curve": [
+            0,
+            0.9,
+            0.96,
+            1.0,
+            1.02
+          ]
+        },
+        {
+          "category": "諸材料費",
+          "item": "培地・ヤシガラ等",
+          "unit": "1式",
+          "price": 1,
+          "qty_per_10a": 500000,
+          "qty_note": "高設ベンチ用培地（初年度のみ全量）",
+          "qty_maturity_curve": [
+            0,
+            1.0,
+            1.0,
+            0.5,
+            0.5
+          ]
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ビニールハウス（パイプ）",
+          "type": "構築物",
+          "amount_per_10a": 6000000,
+          "useful_life": 14,
+          "spec_template": "780㎡×{棟数}棟"
+        },
+        {
+          "item": "高設ベンチシステム",
+          "type": "器具備品",
+          "amount_per_10a": 4000000,
+          "useful_life": 10,
+          "spec_template": "{area_a}a分一式"
+        },
+        {
+          "item": "環境制御装置",
+          "type": "機械装置",
+          "amount_per_10a": 1500000,
+          "useful_life": 7,
+          "spec_template": "各1式"
+        },
+        {
+          "item": "潅水設備",
+          "type": "建物附属設備",
+          "amount_per_10a": 1000000,
+          "useful_life": 10,
+          "spec_template": "各1式"
+        },
+        {
+          "item": "冷蔵庫・保冷設備",
+          "type": "器具備品",
+          "amount_per_10a": 750000,
+          "useful_life": 8,
+          "spec_template": "各1式"
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4,
+          "spec_template": "1台"
+        },
+        {
+          "item": "農具一式",
+          "type": "器具備品",
+          "amount_fixed": 500000,
+          "useful_life": 5,
+          "spec_template": "各1式"
+        }
+      ],
+      "calendar_marks": {
+        "1": "■",
+        "2": "■",
+        "3": "■",
+        "4": "■",
+        "5": "■",
+        "6": "Ｐ",
+        "7": "Ｐ",
+        "8": "Ｐ",
+        "9": "○",
+        "10": "○",
+        "11": "○",
+        "12": "■"
+      },
+      "calendar_legend": "■=収穫 ○=定植・養生 Ｐ=育苗",
+      "repair_rates": {
+        "構築物": 2,
+        "建物附属設備": 2,
+        "default": 5
+      },
+      "depreciation_method": "定額",
+      "monthly_revenue_curve_12": [
+        0.2,
+        0.2,
+        0.15,
+        0.1,
+        0.05,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.05,
+        0.25
+      ],
+      "monthly_expense_curve_12": [
+        0.08,
+        0.08,
+        0.05,
+        0.05,
+        0.05,
+        0.08,
+        0.1,
+        0.1,
+        0.15,
+        0.1,
+        0.08,
+        0.08
+      ]
+    },
+    "sweet_potato_open": {
+      "_meta": {
+        "crop_id": "sweet_potato_open",
+        "crop_name": "さつまいも",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培",
+        "region_note": "鹿児島・茨城・千葉。焼き芋ブームで高単価化",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 2500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 3300,
+        "plant_count_per_10a_low": 2500,
+        "plant_count_per_10a_high": 4500,
+        "yield_per_10a_low": 1500,
+        "yield_per_10a_high": 3500
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.5,
+          "price": 150,
+          "note": "市場出荷"
+        },
+        {
+          "name": "直売・焼き芋",
+          "ratio": 0.3,
+          "price": 400,
+          "note": "ブランド芋は高単価"
+        },
+        {
+          "name": "加工（芋焼酎等）",
+          "ratio": 0.2,
+          "price": 80,
+          "note": "鹿児島の焼酎原料"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.05,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.2,
+        0.3,
+        0.25,
+        0.15
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.08,
+        0.1,
+        0.15,
+        0.1,
+        0.08,
+        0.08,
+        0.1,
+        0.1,
+        0.06,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 10,
+        "2": 10,
+        "3": 30,
+        "4": 40,
+        "5": 60,
+        "6": 40,
+        "7": 30,
+        "8": 30,
+        "9": 60,
+        "10": 80,
+        "11": 50,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗つる",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 25000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 15000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "キュアリング貯蔵庫",
+          "type": "構築物",
+          "amount_fixed": 2000000,
+          "useful_life": 15
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "tea_open": {
+      "_meta": {
+        "crop_id": "tea_open",
+        "crop_name": "茶",
+        "crop_category": "tea",
+        "cultivation_method": "露地栽培（摘採機使用）",
+        "region_note": "静岡・鹿児島・三重。永年性作物。摘採は年3〜4回",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 1500,
+        "unit": "kg(生葉)",
+        "maturity_curve": [
+          0,
+          0,
+          0.1,
+          0.3,
+          0.6,
+          0.8,
+          1.0
+        ],
+        "yield_per_10a_low": 300,
+        "yield_per_10a_high": 500,
+        "plant_count_per_10a_typical": 1800,
+        "plant_count_per_10a_low": 1500,
+        "plant_count_per_10a_high": 2300
+      },
+      "channels": [
+        {
+          "name": "JA・茶商",
+          "ratio": 0.8,
+          "price": 300,
+          "note": "荒茶加工後出荷"
+        },
+        {
+          "name": "自園自製直販",
+          "ratio": 0.2,
+          "price": 800,
+          "note": "高付加価値"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0.5,
+        0.15,
+        0.15,
+        0,
+        0.1,
+        0.1,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.15,
+        0.1,
+        0.1,
+        0.05,
+        0.08,
+        0.08,
+        0.05,
+        0.04
+      ],
+      "labor_per_10a_monthly": {
+        "1": 30,
+        "2": 50,
+        "3": 60,
+        "4": 80,
+        "5": 200,
+        "6": 120,
+        "7": 100,
+        "8": 40,
+        "9": 80,
+        "10": 60,
+        "11": 30,
+        "12": 20
+      },
+      "materials": [
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "加工費",
+          "item": "荒茶加工",
+          "unit": "10aあたり",
+          "price": 100000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "乗用摘採機",
+          "type": "機械装置",
+          "amount_fixed": 5000000,
+          "useful_life": 7
+        },
+        {
+          "item": "防霜ファン",
+          "type": "構築物",
+          "amount_per_10a": 1000000,
+          "useful_life": 15
+        },
+        {
+          "item": "荒茶加工機（自製の場合）",
+          "type": "機械装置",
+          "amount_fixed": 10000000,
+          "useful_life": 10
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "tomato_facility": {
+      "_meta": {
+        "crop_id": "tomato_facility",
+        "crop_name": "トマト",
+        "cultivation_method": "施設栽培（促成長期どり・土耕/養液）",
+        "region_note": "関東以西の施設栽培を想定。東北・北海道は暖房費増・作型変更あり",
+        "sources": [
+          "農水省 営農類型別経営統計（施設野菜）",
+          "千葉県農業技術センター トマト栽培指針",
+          "JA全農 高糖度トマト栽培マニュアル",
+          "農研機構 施設トマトの経営モデル"
+        ],
+        "crop_category": "facility_vegetable"
+      },
+      "yield": {
+        "yield_per_10a": 12000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.6,
+          0.8,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目60%→3年目100%。促成長期どりで12t/10a（土耕）。養液栽培は15〜20t",
+        "target_note": "大玉トマト基準。ミニトマトは8〜10t/10a（単価が高い）",
+        "yield_per_10a_low": 10000,
+        "yield_per_10a_high": 20000,
+        "plant_count_per_10a_typical": 2500,
+        "plant_count_per_10a_low": 2000,
+        "plant_count_per_10a_high": 3500
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.5,
+          "price": 350,
+          "note": "大玉L玉 市場卸売価格350円/kg前後（年間平均）"
+        },
+        {
+          "name": "直売所",
+          "ratio": 0.3,
+          "price": 500,
+          "note": "直売は市場価格の1.3〜1.5倍"
+        },
+        {
+          "name": "加工・EC",
+          "ratio": 0.2,
+          "price": 600,
+          "note": "高糖度トマト・ジュース原料。ECは600〜800円/kg"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 120,
+        "2": 140,
+        "3": 160,
+        "4": 160,
+        "5": 140,
+        "6": 100,
+        "7": 80,
+        "8": 120,
+        "9": 160,
+        "10": 160,
+        "11": 140,
+        "12": 120
+      },
+      "labor_note": "8月定植→翌年7月まで長期どり。12〜5月が収穫最盛期。年間約1,600h/10a。パート雇用が前提（収穫・選果）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "トマト接木苗",
+          "unit": "1株",
+          "price": 120,
+          "qty_per_10a": 2500,
+          "qty_note": "10aあたり2,500株（株間30cm×畝間150cm）。接木苗は1株100〜150円",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥・液肥",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1,
+          "qty_note": "養液栽培は液肥のみで管理。土耕は元肥＋追肥"
+        },
+        {
+          "category": "農薬費",
+          "item": "殺虫殺菌剤・天敵",
+          "unit": "10aあたり",
+          "price": 25000,
+          "qty_per_10a": 1,
+          "qty_note": "IPM（天敵利用）で農薬削減可能。灰色かび病・葉かび病・コナジラミが主要病害虫"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "重油・電気・CO2",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1,
+          "qty_note": "冬季暖房（重油＋ヒートポンプ）＋電動ファン＋CO2施用。ヒートポンプ併用で30%削減可"
+        },
+        {
+          "category": "その他",
+          "item": "誘引資材・出荷箱・マルチ",
+          "unit": "10aあたり",
+          "price": 15000,
+          "qty_per_10a": 1,
+          "qty_note": "誘引紐・クリップ・出荷段ボール・マルチフィルム等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "パイプハウス（鉄骨補強）",
+          "amount_万": 800,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "10a 800〜1200万円。鉄骨補強は耐風圧40m/s"
+        },
+        {
+          "name": "暖房機（重油温風機）",
+          "amount_万": 200,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "10万kcal級。ヒートポンプ併用で300万"
+        },
+        {
+          "name": "灌水・養液システム",
+          "amount_万": 150,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "養液栽培はベッド含め300万/10a"
+        },
+        {
+          "name": "環境制御装置",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 7,
+          "note": "温度・湿度・CO2の自動制御"
+        },
+        {
+          "name": "選果機・出荷設備",
+          "amount_万": 200,
+          "category": "processing_equipment",
+          "useful_life": 10,
+          "note": "光センサー選果は500万〜"
+        },
+        {
+          "name": "トラクター（小型）",
+          "amount_万": 150,
+          "category": "machinery",
+          "useful_life": 8
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "■収穫■暖房管理",
+        "2": "■収穫■追肥",
+        "3": "■収穫最盛期",
+        "4": "■収穫■玉伸び管理",
+        "5": "■収穫■着果管理",
+        "6": "■収穫終了■片付け",
+        "7": "■土壌消毒■準備",
+        "8": "■定植■活着管理",
+        "9": "■誘引■整枝■着果開始",
+        "10": "■摘葉■温度管理■収穫開始",
+        "11": "■収穫■暖房開始",
+        "12": "■収穫■暖房管理"
+      },
+      "calendar_legend": "8月定植→10月収穫開始→翌6月収穫終了（促成長期どり）",
+      "repair_rates": {
+        "構築物": 0.04,
+        "建物附属設備": 0.05,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法",
+      "subsidy_programs": {
+        "経営発展支援事業": "施設・機械導入（認定新規就農者向け）",
+        "農地利用効率化等支援交付金": "機械・施設導入（融資必須）",
+        "スマート農業技術活用促進事業": "環境制御装置・自動灌水等",
+        "園芸施設共済": "ハウスの自然災害補償（加入推奨）",
+        "収入保険": "全品目対象の収入補償"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.1,
+        0.2,
+        0.25,
+        0.2,
+        0.15,
+        0.1,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.15,
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.07
+      ]
+    },
+    "watermelon_open": {
+      "_meta": {
+        "crop_id": "watermelon_open",
+        "crop_name": "スイカ",
+        "crop_category": "open_vegetable",
+        "cultivation_method": "露地栽培（トンネル早出し含む）",
+        "region_note": "熊本・千葉・山形",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 3000,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 600,
+        "plant_count_per_10a_low": 400,
+        "plant_count_per_10a_high": 800,
+        "yield_per_10a_low": 2000,
+        "yield_per_10a_high": 5000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.7,
+          "price": 200
+        },
+        {
+          "name": "直売",
+          "ratio": 0.3,
+          "price": 350
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.2,
+        0.4,
+        0.3,
+        0.1,
+        0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.12,
+        0.1,
+        0.08,
+        0.05,
+        0.05,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 10,
+        "2": 10,
+        "3": 50,
+        "4": 80,
+        "5": 100,
+        "6": 120,
+        "7": 150,
+        "8": 100,
+        "9": 40,
+        "10": 10,
+        "11": 10,
+        "12": 10
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "苗",
+          "unit": "10aあたり",
+          "price": 60000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 20000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "資材費",
+          "item": "マルチ・トンネル",
+          "unit": "10aあたり",
+          "price": 40000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 3000000,
+          "useful_life": 8
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "welsh_onion_open": {
+      "_meta": {
+        "crop_id": "welsh_onion_open",
+        "crop_name": "ねぎ（長ねぎ）",
+        "cultivation_method": "露地栽培（夏ねぎ・秋冬ねぎ）",
+        "region_note": "関東（千葉・埼玉・茨城）・東北・北海道の主産地を想定。夏ねぎは東北・北海道、秋冬ねぎは関東が中心",
+        "sources": [
+          "農水省 営農類型別経営統計（野菜）",
+          "千葉県農業試験場 ねぎ栽培技術指針",
+          "JA全農 野菜経営モデル（ねぎ）"
+        ],
+        "crop_category": "open_vegetable"
+      },
+      "yield": {
+        "yield_per_10a": 3500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.7,
+          0.85,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目70%（管理技術習得中）→3年目フル収量。作型安定後3,500〜4,000kg/10a",
+        "target_note": "全国平均3,000〜3,500kg/10a。高品質管理で4,000〜4,500kg。秋冬作が高単価",
+        "yield_per_10a_low": 3000,
+        "yield_per_10a_high": 4500,
+        "plant_count_per_10a_typical": 10000,
+        "plant_count_per_10a_low": 8000,
+        "plant_count_per_10a_high": 14000
+      },
+      "channels": [
+        {
+          "name": "JA出荷（市場）",
+          "ratio": 0.7,
+          "price": 130,
+          "note": "秋冬（10〜12月）が高値200〜250円/kg。夏場は100円前後。平均130円/kg"
+        },
+        {
+          "name": "直売所・飲食店",
+          "ratio": 0.2,
+          "price": 200,
+          "note": "地元直売・飲食店契約。泥付き・葉付きで差別化"
+        },
+        {
+          "name": "加工向け（カット野菜等）",
+          "ratio": 0.1,
+          "price": 80,
+          "note": "カット野菜工場・外食向け。規格統一が条件"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 60,
+        "2": 60,
+        "3": 100,
+        "4": 120,
+        "5": 80,
+        "6": 60,
+        "7": 60,
+        "8": 80,
+        "9": 120,
+        "10": 200,
+        "11": 200,
+        "12": 160
+      },
+      "labor_note": "年間約1,300h/10a。収穫・調製（皮むき・根切り）に労働集中。秋冬作（10〜12月）が最繁忙",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "ねぎ種子",
+          "unit": "1式",
+          "price": 25000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗→移植型。10a当たり種子費用"
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥（化成・堆肥）",
+          "unit": "10aあたり",
+          "price": 80000,
+          "qty_per_10a": 1,
+          "qty_note": "堆肥1t/10a＋化成肥料。土寄せに合わせた追肥が重要"
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬（殺菌殺虫除草）",
+          "unit": "10aあたり",
+          "price": 50000,
+          "qty_per_10a": 1,
+          "qty_note": "べと病・さび病・ネギアザミウマ対策。除草剤も重要"
+        },
+        {
+          "category": "資材費",
+          "item": "マルチ・育苗トレイ・箱・テープ",
+          "unit": "10aあたり",
+          "price": 30000,
+          "qty_per_10a": 1,
+          "qty_note": "出荷調製資材・育苗資材"
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター（30馬力以上）",
+          "type": "機械装置",
+          "amount_fixed": 3500000,
+          "useful_life": 10,
+          "spec_template": "深耕・畝立て用"
+        },
+        {
+          "item": "ねぎ移植機",
+          "type": "機械装置",
+          "amount_fixed": 1500000,
+          "useful_life": 10,
+          "spec_template": "乗用型または歩行型"
+        },
+        {
+          "item": "ねぎ収穫機（掘り取り機）",
+          "type": "機械装置",
+          "amount_fixed": 2000000,
+          "useful_life": 10,
+          "spec_template": "乗用型。作業効率化に必須"
+        },
+        {
+          "item": "調製機（皮むき・切断）",
+          "type": "機械装置",
+          "amount_fixed": 1200000,
+          "useful_life": 8,
+          "spec_template": "ねぎ専用調製ライン"
+        },
+        {
+          "item": "乾燥機・予冷庫",
+          "type": "器具備品",
+          "amount_fixed": 500000,
+          "useful_life": 8,
+          "spec_template": "鮮度保持・出荷調整用"
+        },
+        {
+          "item": "動力噴霧機",
+          "type": "機械装置",
+          "amount_fixed": 300000,
+          "useful_life": 8,
+          "spec_template": "防除用スピードスプレーヤまたは背負式"
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4,
+          "spec_template": "1台"
+        }
+      ],
+      "calendar_marks": {
+        "1": "○",
+        "2": "○育苗",
+        "3": "■育苗・播種",
+        "4": "■育苗・播種",
+        "5": "■定植",
+        "6": "■管理（除草・土寄せ）",
+        "7": "■管理",
+        "8": "■管理",
+        "9": "■定植（秋冬作）",
+        "10": "■収穫（秋冬）",
+        "11": "■収穫（秋冬）★高値",
+        "12": "■収穫（秋冬）★高値"
+      },
+      "calendar_legend": "■=主要作業 ○=準備。秋冬収穫（10〜12月）が市場高値期",
+      "repair_rates": {
+        "農業機械": 5,
+        "default": 5
+      },
+      "depreciation_method": "定額法",
+      "subsidy_programs": {
+        "農業経営基盤強化資金（スーパーL）": "農地取得・機械整備の低利融資",
+        "農業近代化資金": "機械・施設整備の低利融資",
+        "野菜需給安定対策": "価格低落時の補填（指定野菜）",
+        "収入保険": "全品目対象の収入補償",
+        "人・農地プラン": "地域農業の中心経営体として位置づけで支援対象に"
+      },
+      "risk_notes": {
+        "価格変動": "市場価格の季節変動。秋冬高値・夏場安値。作型分散で安定化",
+        "連作障害": "同一圃場での連作は黒腐菌核病リスク。3〜4年輪作推奨",
+        "機械依存": "移植・収穫機の導入が規模拡大の前提。初期投資高め",
+        "調製労働": "皮むき・根切り等の調製作業が大きな負担。機械化または雇用が必要"
+      },
+      "monthly_revenue_curve_12": [
+        0.15,
+        0.15,
+        0.15,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.2,
+        0.35
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.15
+      ]
+    },
+    "wheat_upland": {
+      "_meta": {
+        "crop_id": "wheat_upland",
+        "crop_name": "小麦",
+        "crop_category": "upland_crop",
+        "cultivation_method": "畑作（田畑輪換含む）",
+        "region_note": "北海道・関東・九州。水田活用交付金の対象",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 400,
+        "unit": "kg",
+        "maturity_curve": [
+          0.9,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "plant_count_per_10a_typical": 450000,
+        "plant_count_per_10a_low": 350000,
+        "plant_count_per_10a_high": 550000,
+        "yield_per_10a_low": 200,
+        "yield_per_10a_high": 500
+      },
+      "channels": [
+        {
+          "name": "JA集荷",
+          "ratio": 1.0,
+          "price": 50,
+          "note": "+ 畑作物直接支払交付金(ゲタ)。実質200円/kg相当"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.1,
+        0.1,
+        0.1,
+        0.15,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 10,
+        "4": 10,
+        "5": 15,
+        "6": 20,
+        "7": 5,
+        "8": 5,
+        "9": 5,
+        "10": 15,
+        "11": 15,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 10000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター（大型）",
+          "type": "機械装置",
+          "amount_fixed": 5000000,
+          "useful_life": 8
+        },
+        {
+          "item": "コンバイン（汎用）",
+          "type": "機械装置",
+          "amount_fixed": 8000000,
+          "useful_life": 7
+        },
+        {
+          "item": "乾燥調製施設",
+          "type": "構築物",
+          "amount_fixed": 5000000,
+          "useful_life": 15
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "rice_main": {
+      "_meta": {
+        "crop_id": "rice_main",
+        "crop_name": "主食用米（コシヒカリ等）",
+        "cultivation_method": "機械化体系（コシヒカリ・あきたこまち・ひとめぼれ・ヒノヒカリ等、食用一般米）",
+        "region_note": "関東〜九州の平坦部を想定。北海道・東北は収量補正が必要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "農水省 水田農業の課題と対応",
+          "JA全農 水稲栽培マニュアル",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "crop_category": "paddy",
+        "subsidy_eligible": [
+          "ナラシ対策（収入減少影響緩和）",
+          "経営所得安定対策"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 530,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目80%→3年目100%。水稲は習熟が早い",
+        "target_note": "玄米ベース。全国平均約530kg/10a（R5年産）",
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 650,
+        "plant_count_per_10a_typical": 22000,
+        "plant_count_per_10a_low": 18000,
+        "plant_count_per_10a_high": 28000
+      },
+      "channels": [
+        {
+          "name": "JA出荷",
+          "ratio": 0.6,
+          "price": 220,
+          "note": "玄米60kgあたり約13,200円。ブランド米は+20%"
+        },
+        {
+          "name": "直売・EC・米穀店",
+          "ratio": 0.3,
+          "price": 400,
+          "note": "精米5kg 2,000円相当"
+        },
+        {
+          "name": "外食・中食向け業務用",
+          "ratio": 0.1,
+          "price": 180,
+          "note": "低価格帯、大量ロット"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 2,
+        "2": 5,
+        "3": 15,
+        "4": 30,
+        "5": 20,
+        "6": 10,
+        "7": 10,
+        "8": 15,
+        "9": 25,
+        "10": 15,
+        "11": 5,
+        "12": 2
+      },
+      "labor_note": "3〜4月: 育苗・田植え準備。4〜5月: 田植え。6〜8月: 水管理・防除。9〜10月: 収穫・乾燥調製。年間約154h/10a（機械化体系）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種もみ",
+          "unit": "kg",
+          "price": 600,
+          "qty_per_10a": 5,
+          "qty_note": "直播は7〜8kg/10a",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥",
+          "unit": "10aあたり",
+          "price": 12000,
+          "qty_per_10a": 1,
+          "qty_note": "硫安・塩加里・リン酸等。有機栽培は増額"
+        },
+        {
+          "category": "農薬費",
+          "item": "除草剤・殺虫殺菌剤",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "箱処理＋本田除草＋穂イモチ防除"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "軽油・電気",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1,
+          "qty_note": "トラクター・田植機・コンバイン燃料＋乾燥機電気"
+        },
+        {
+          "category": "その他",
+          "item": "育苗資材・出荷袋・乾燥費",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗培土・苗箱・出荷用紙袋等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "トラクター（30〜50PS）",
+          "amount_万": 400,
+          "category": "machinery",
+          "useful_life": 8,
+          "note": "中古200〜新品600万"
+        },
+        {
+          "name": "田植機（6条乗用）",
+          "amount_万": 250,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古100〜新品400万"
+        },
+        {
+          "name": "コンバイン（4〜5条）",
+          "amount_万": 600,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古300〜新品1000万"
+        },
+        {
+          "name": "乾燥調製施設",
+          "amount_万": 500,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "遠赤外線乾燥機＋籾摺機＋計量選別機"
+        },
+        {
+          "name": "育苗ハウス",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "パイプハウス1棟"
+        },
+        {
+          "name": "防除機（ブームスプレーヤ）",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "—",
+        "2": "■土壌分析",
+        "3": "■育苗開始■田起こし",
+        "4": "■代かき■田植え",
+        "5": "■除草■水管理開始",
+        "6": "■中干し■追肥",
+        "7": "■穂肥■防除",
+        "8": "■落水■登熟管理",
+        "9": "■収穫(早生)■乾燥調製",
+        "10": "■収穫(晩生)■出荷",
+        "11": "■秋耕■わら処理",
+        "12": "■機械整備"
+      },
+      "calendar_legend": "3月育苗→4月田植え→6月中干し→9-10月収穫→11月秋耕",
+      "repair_rates": {
+        "農業機械": 0.05,
+        "施設": 0.03,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法（農業所得計算では定額法が一般的）",
+      "subsidy_programs": {
+        "水田活用の直接支払交付金": "飼料用米・WCS・加工用米等を生産する場合",
+        "畑作物の直接支払交付金": "麦・大豆等への転作時",
+        "ナラシ対策": "米・麦・大豆の収入減少補填",
+        "多面的機能支払交付金": "田9,200円/10a（全活動参加時）",
+        "中山間地域等直接支払交付金": "傾斜地の場合"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0,
+        0,
+        0,
+        0.2,
+        0.25,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "rice_feed": {
+      "_meta": {
+        "crop_id": "rice_feed",
+        "crop_name": "飼料用米",
+        "cultivation_method": "機械化体系（多収性品種、水田活用直払 対象）",
+        "region_note": "関東〜九州の平坦部を想定。北海道・東北は収量補正が必要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "農水省 水田農業の課題と対応",
+          "JA全農 水稲栽培マニュアル",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "crop_category": "paddy",
+        "subsidy_eligible": [
+          "水田活用の直接支払交付金（飼料用米）",
+          "多収性品種加算",
+          "耕畜連携加算"
+        ],
+        "subsidy_unit_yen_per_10a": {
+          "base": 55000,
+          "max_with_bonus": 105000
+        }
+      },
+      "yield": {
+        "yield_per_10a": 650,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目80%→3年目100%。水稲は習熟が早い",
+        "target_note": "玄米ベース。全国平均約530kg/10a（R5年産）",
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 650,
+        "plant_count_per_10a_typical": 22000,
+        "plant_count_per_10a_low": 18000,
+        "plant_count_per_10a_high": 28000
+      },
+      "channels": [
+        {
+          "name": "需要者契約（畜産農家/飼料会社）",
+          "ratio": 1.0,
+          "price": 120,
+          "note": "kg120円程度、水田活用交付金 55,000〜105,000円/10a が主収入"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 2,
+        "2": 5,
+        "3": 15,
+        "4": 30,
+        "5": 20,
+        "6": 10,
+        "7": 10,
+        "8": 15,
+        "9": 25,
+        "10": 15,
+        "11": 5,
+        "12": 2
+      },
+      "labor_note": "3〜4月: 育苗・田植え準備。4〜5月: 田植え。6〜8月: 水管理・防除。9〜10月: 収穫・乾燥調製。年間約154h/10a（機械化体系）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種もみ",
+          "unit": "kg",
+          "price": 600,
+          "qty_per_10a": 5,
+          "qty_note": "直播は7〜8kg/10a",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥",
+          "unit": "10aあたり",
+          "price": 12000,
+          "qty_per_10a": 1,
+          "qty_note": "硫安・塩加里・リン酸等。有機栽培は増額"
+        },
+        {
+          "category": "農薬費",
+          "item": "除草剤・殺虫殺菌剤",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "箱処理＋本田除草＋穂イモチ防除"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "軽油・電気",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1,
+          "qty_note": "トラクター・田植機・コンバイン燃料＋乾燥機電気"
+        },
+        {
+          "category": "その他",
+          "item": "育苗資材・出荷袋・乾燥費",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗培土・苗箱・出荷用紙袋等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "トラクター（30〜50PS）",
+          "amount_万": 400,
+          "category": "machinery",
+          "useful_life": 8,
+          "note": "中古200〜新品600万"
+        },
+        {
+          "name": "田植機（6条乗用）",
+          "amount_万": 250,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古100〜新品400万"
+        },
+        {
+          "name": "コンバイン（4〜5条）",
+          "amount_万": 600,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古300〜新品1000万"
+        },
+        {
+          "name": "乾燥調製施設",
+          "amount_万": 500,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "遠赤外線乾燥機＋籾摺機＋計量選別機"
+        },
+        {
+          "name": "育苗ハウス",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "パイプハウス1棟"
+        },
+        {
+          "name": "防除機（ブームスプレーヤ）",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "—",
+        "2": "■土壌分析",
+        "3": "■育苗開始■田起こし",
+        "4": "■代かき■田植え",
+        "5": "■除草■水管理開始",
+        "6": "■中干し■追肥",
+        "7": "■穂肥■防除",
+        "8": "■落水■登熟管理",
+        "9": "■収穫(早生)■乾燥調製",
+        "10": "■収穫(晩生)■出荷",
+        "11": "■秋耕■わら処理",
+        "12": "■機械整備"
+      },
+      "calendar_legend": "3月育苗→4月田植え→6月中干し→9-10月収穫→11月秋耕",
+      "repair_rates": {
+        "農業機械": 0.05,
+        "施設": 0.03,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法（農業所得計算では定額法が一般的）",
+      "subsidy_programs": {
+        "水田活用の直接支払交付金": "飼料用米・WCS・加工用米等を生産する場合",
+        "畑作物の直接支払交付金": "麦・大豆等への転作時",
+        "ナラシ対策": "米・麦・大豆の収入減少補填",
+        "多面的機能支払交付金": "田9,200円/10a（全活動参加時）",
+        "中山間地域等直接支払交付金": "傾斜地の場合"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0,
+        0,
+        0,
+        0.2,
+        0.25,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "rice_flour": {
+      "_meta": {
+        "crop_id": "rice_flour",
+        "crop_name": "米粉用米",
+        "cultivation_method": "機械化体系（米粉需要向け多収品種）",
+        "region_note": "関東〜九州の平坦部を想定。北海道・東北は収量補正が必要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "農水省 水田農業の課題と対応",
+          "JA全農 水稲栽培マニュアル",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "crop_category": "paddy",
+        "subsidy_eligible": [
+          "水田活用の直接支払交付金（米粉用米）"
+        ],
+        "subsidy_unit_yen_per_10a": {
+          "base": 80000
+        }
+      },
+      "yield": {
+        "yield_per_10a": 530,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目80%→3年目100%。水稲は習熟が早い",
+        "target_note": "玄米ベース。全国平均約530kg/10a（R5年産）",
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 650,
+        "plant_count_per_10a_typical": 22000,
+        "plant_count_per_10a_low": 18000,
+        "plant_count_per_10a_high": 28000
+      },
+      "channels": [
+        {
+          "name": "米粉メーカー契約",
+          "ratio": 1.0,
+          "price": 150,
+          "note": "kg150円程度、水田活用交付金 80,000円/10a"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 2,
+        "2": 5,
+        "3": 15,
+        "4": 30,
+        "5": 20,
+        "6": 10,
+        "7": 10,
+        "8": 15,
+        "9": 25,
+        "10": 15,
+        "11": 5,
+        "12": 2
+      },
+      "labor_note": "3〜4月: 育苗・田植え準備。4〜5月: 田植え。6〜8月: 水管理・防除。9〜10月: 収穫・乾燥調製。年間約154h/10a（機械化体系）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種もみ",
+          "unit": "kg",
+          "price": 600,
+          "qty_per_10a": 5,
+          "qty_note": "直播は7〜8kg/10a",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥",
+          "unit": "10aあたり",
+          "price": 12000,
+          "qty_per_10a": 1,
+          "qty_note": "硫安・塩加里・リン酸等。有機栽培は増額"
+        },
+        {
+          "category": "農薬費",
+          "item": "除草剤・殺虫殺菌剤",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "箱処理＋本田除草＋穂イモチ防除"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "軽油・電気",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1,
+          "qty_note": "トラクター・田植機・コンバイン燃料＋乾燥機電気"
+        },
+        {
+          "category": "その他",
+          "item": "育苗資材・出荷袋・乾燥費",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗培土・苗箱・出荷用紙袋等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "トラクター（30〜50PS）",
+          "amount_万": 400,
+          "category": "machinery",
+          "useful_life": 8,
+          "note": "中古200〜新品600万"
+        },
+        {
+          "name": "田植機（6条乗用）",
+          "amount_万": 250,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古100〜新品400万"
+        },
+        {
+          "name": "コンバイン（4〜5条）",
+          "amount_万": 600,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古300〜新品1000万"
+        },
+        {
+          "name": "乾燥調製施設",
+          "amount_万": 500,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "遠赤外線乾燥機＋籾摺機＋計量選別機"
+        },
+        {
+          "name": "育苗ハウス",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "パイプハウス1棟"
+        },
+        {
+          "name": "防除機（ブームスプレーヤ）",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "—",
+        "2": "■土壌分析",
+        "3": "■育苗開始■田起こし",
+        "4": "■代かき■田植え",
+        "5": "■除草■水管理開始",
+        "6": "■中干し■追肥",
+        "7": "■穂肥■防除",
+        "8": "■落水■登熟管理",
+        "9": "■収穫(早生)■乾燥調製",
+        "10": "■収穫(晩生)■出荷",
+        "11": "■秋耕■わら処理",
+        "12": "■機械整備"
+      },
+      "calendar_legend": "3月育苗→4月田植え→6月中干し→9-10月収穫→11月秋耕",
+      "repair_rates": {
+        "農業機械": 0.05,
+        "施設": 0.03,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法（農業所得計算では定額法が一般的）",
+      "subsidy_programs": {
+        "水田活用の直接支払交付金": "飼料用米・WCS・加工用米等を生産する場合",
+        "畑作物の直接支払交付金": "麦・大豆等への転作時",
+        "ナラシ対策": "米・麦・大豆の収入減少補填",
+        "多面的機能支払交付金": "田9,200円/10a（全活動参加時）",
+        "中山間地域等直接支払交付金": "傾斜地の場合"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0,
+        0,
+        0,
+        0.2,
+        0.25,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "rice_export": {
+      "_meta": {
+        "crop_id": "rice_export",
+        "crop_name": "新市場開拓米（輸出米）",
+        "cultivation_method": "機械化体系（輸出契約米・海外需要対応）",
+        "region_note": "関東〜九州の平坦部を想定。北海道・東北は収量補正が必要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "農水省 水田農業の課題と対応",
+          "JA全農 水稲栽培マニュアル",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "crop_category": "paddy",
+        "subsidy_eligible": [
+          "水田活用の直接支払交付金（新市場開拓用米）",
+          "輸出拡大実行戦略加算"
+        ],
+        "subsidy_unit_yen_per_10a": {
+          "base": 40000
+        }
+      },
+      "yield": {
+        "yield_per_10a": 530,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目80%→3年目100%。水稲は習熟が早い",
+        "target_note": "玄米ベース。全国平均約530kg/10a（R5年産）",
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 650,
+        "plant_count_per_10a_typical": 22000,
+        "plant_count_per_10a_low": 18000,
+        "plant_count_per_10a_high": 28000
+      },
+      "channels": [
+        {
+          "name": "商社・輸出業者",
+          "ratio": 1.0,
+          "price": 200,
+          "note": "輸出向け kg200円、水田活用交付金 40,000円/10a + 輸出加算"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 2,
+        "2": 5,
+        "3": 15,
+        "4": 30,
+        "5": 20,
+        "6": 10,
+        "7": 10,
+        "8": 15,
+        "9": 25,
+        "10": 15,
+        "11": 5,
+        "12": 2
+      },
+      "labor_note": "3〜4月: 育苗・田植え準備。4〜5月: 田植え。6〜8月: 水管理・防除。9〜10月: 収穫・乾燥調製。年間約154h/10a（機械化体系）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種もみ",
+          "unit": "kg",
+          "price": 600,
+          "qty_per_10a": 5,
+          "qty_note": "直播は7〜8kg/10a",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥",
+          "unit": "10aあたり",
+          "price": 12000,
+          "qty_per_10a": 1,
+          "qty_note": "硫安・塩加里・リン酸等。有機栽培は増額"
+        },
+        {
+          "category": "農薬費",
+          "item": "除草剤・殺虫殺菌剤",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "箱処理＋本田除草＋穂イモチ防除"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "軽油・電気",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1,
+          "qty_note": "トラクター・田植機・コンバイン燃料＋乾燥機電気"
+        },
+        {
+          "category": "その他",
+          "item": "育苗資材・出荷袋・乾燥費",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗培土・苗箱・出荷用紙袋等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "トラクター（30〜50PS）",
+          "amount_万": 400,
+          "category": "machinery",
+          "useful_life": 8,
+          "note": "中古200〜新品600万"
+        },
+        {
+          "name": "田植機（6条乗用）",
+          "amount_万": 250,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古100〜新品400万"
+        },
+        {
+          "name": "コンバイン（4〜5条）",
+          "amount_万": 600,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古300〜新品1000万"
+        },
+        {
+          "name": "乾燥調製施設",
+          "amount_万": 500,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "遠赤外線乾燥機＋籾摺機＋計量選別機"
+        },
+        {
+          "name": "育苗ハウス",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "パイプハウス1棟"
+        },
+        {
+          "name": "防除機（ブームスプレーヤ）",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "—",
+        "2": "■土壌分析",
+        "3": "■育苗開始■田起こし",
+        "4": "■代かき■田植え",
+        "5": "■除草■水管理開始",
+        "6": "■中干し■追肥",
+        "7": "■穂肥■防除",
+        "8": "■落水■登熟管理",
+        "9": "■収穫(早生)■乾燥調製",
+        "10": "■収穫(晩生)■出荷",
+        "11": "■秋耕■わら処理",
+        "12": "■機械整備"
+      },
+      "calendar_legend": "3月育苗→4月田植え→6月中干し→9-10月収穫→11月秋耕",
+      "repair_rates": {
+        "農業機械": 0.05,
+        "施設": 0.03,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法（農業所得計算では定額法が一般的）",
+      "subsidy_programs": {
+        "水田活用の直接支払交付金": "飼料用米・WCS・加工用米等を生産する場合",
+        "畑作物の直接支払交付金": "麦・大豆等への転作時",
+        "ナラシ対策": "米・麦・大豆の収入減少補填",
+        "多面的機能支払交付金": "田9,200円/10a（全活動参加時）",
+        "中山間地域等直接支払交付金": "傾斜地の場合"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0,
+        0,
+        0,
+        0.2,
+        0.25,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "rice_sake": {
+      "_meta": {
+        "crop_id": "rice_sake",
+        "crop_name": "酒造用米（山田錦・五百万石等）",
+        "cultivation_method": "酒蔵契約栽培（山田錦・五百万石・美山錦・雄町等の酒造好適米）",
+        "region_note": "関東〜九州の平坦部を想定。北海道・東北は収量補正が必要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "農水省 水田農業の課題と対応",
+          "JA全農 水稲栽培マニュアル",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "crop_category": "paddy",
+        "subsidy_eligible": [
+          "水田活用の直接支払交付金（加工用米）",
+          "産地交付金（地域ブランド加算）"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 530,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目80%→3年目100%。水稲は習熟が早い",
+        "target_note": "玄米ベース。全国平均約530kg/10a（R5年産）",
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 650,
+        "plant_count_per_10a_typical": 22000,
+        "plant_count_per_10a_low": 18000,
+        "plant_count_per_10a_high": 28000
+      },
+      "channels": [
+        {
+          "name": "酒蔵契約",
+          "ratio": 1.0,
+          "price": 450,
+          "note": "山田錦等 玄米kg450円、食用米より高単価"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 2,
+        "2": 5,
+        "3": 15,
+        "4": 30,
+        "5": 20,
+        "6": 10,
+        "7": 10,
+        "8": 15,
+        "9": 25,
+        "10": 15,
+        "11": 5,
+        "12": 2
+      },
+      "labor_note": "3〜4月: 育苗・田植え準備。4〜5月: 田植え。6〜8月: 水管理・防除。9〜10月: 収穫・乾燥調製。年間約154h/10a（機械化体系）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種もみ",
+          "unit": "kg",
+          "price": 600,
+          "qty_per_10a": 5,
+          "qty_note": "直播は7〜8kg/10a",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥",
+          "unit": "10aあたり",
+          "price": 12000,
+          "qty_per_10a": 1,
+          "qty_note": "硫安・塩加里・リン酸等。有機栽培は増額"
+        },
+        {
+          "category": "農薬費",
+          "item": "除草剤・殺虫殺菌剤",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "箱処理＋本田除草＋穂イモチ防除"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "軽油・電気",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1,
+          "qty_note": "トラクター・田植機・コンバイン燃料＋乾燥機電気"
+        },
+        {
+          "category": "その他",
+          "item": "育苗資材・出荷袋・乾燥費",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗培土・苗箱・出荷用紙袋等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "トラクター（30〜50PS）",
+          "amount_万": 400,
+          "category": "machinery",
+          "useful_life": 8,
+          "note": "中古200〜新品600万"
+        },
+        {
+          "name": "田植機（6条乗用）",
+          "amount_万": 250,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古100〜新品400万"
+        },
+        {
+          "name": "コンバイン（4〜5条）",
+          "amount_万": 600,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古300〜新品1000万"
+        },
+        {
+          "name": "乾燥調製施設",
+          "amount_万": 500,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "遠赤外線乾燥機＋籾摺機＋計量選別機"
+        },
+        {
+          "name": "育苗ハウス",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "パイプハウス1棟"
+        },
+        {
+          "name": "防除機（ブームスプレーヤ）",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "—",
+        "2": "■土壌分析",
+        "3": "■育苗開始■田起こし",
+        "4": "■代かき■田植え",
+        "5": "■除草■水管理開始",
+        "6": "■中干し■追肥",
+        "7": "■穂肥■防除",
+        "8": "■落水■登熟管理",
+        "9": "■収穫(早生)■乾燥調製",
+        "10": "■収穫(晩生)■出荷",
+        "11": "■秋耕■わら処理",
+        "12": "■機械整備"
+      },
+      "calendar_legend": "3月育苗→4月田植え→6月中干し→9-10月収穫→11月秋耕",
+      "repair_rates": {
+        "農業機械": 0.05,
+        "施設": 0.03,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法（農業所得計算では定額法が一般的）",
+      "subsidy_programs": {
+        "水田活用の直接支払交付金": "飼料用米・WCS・加工用米等を生産する場合",
+        "畑作物の直接支払交付金": "麦・大豆等への転作時",
+        "ナラシ対策": "米・麦・大豆の収入減少補填",
+        "多面的機能支払交付金": "田9,200円/10a（全活動参加時）",
+        "中山間地域等直接支払交付金": "傾斜地の場合"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0,
+        0,
+        0,
+        0.2,
+        0.25,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "rice_organic": {
+      "_meta": {
+        "crop_id": "rice_organic",
+        "crop_name": "有機米（JAS認証）",
+        "cultivation_method": "有機JAS認証栽培（無農薬・無化学肥料、最低3年移行期間）",
+        "region_note": "関東〜九州の平坦部を想定。北海道・東北は収量補正が必要",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "農水省 水田農業の課題と対応",
+          "JA全農 水稲栽培マニュアル",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "crop_category": "paddy",
+        "subsidy_eligible": [
+          "環境保全型農業直接支払（有機農業）",
+          "みどりの食料システム戦略推進交付金",
+          "水田活用の直接支払交付金（有機米）"
+        ],
+        "subsidy_unit_yen_per_10a": {
+          "environment_base": 14000,
+          "midori_bonus": 6000
+        }
+      },
+      "yield": {
+        "yield_per_10a": 400,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "maturity_note": "1年目80%→3年目100%。水稲は習熟が早い",
+        "target_note": "玄米ベース。全国平均約530kg/10a（R5年産）",
+        "yield_per_10a_low": 400,
+        "yield_per_10a_high": 650,
+        "plant_count_per_10a_typical": 22000,
+        "plant_count_per_10a_low": 18000,
+        "plant_count_per_10a_high": 28000
+      },
+      "channels": [
+        {
+          "name": "有機米 直売・EC",
+          "ratio": 0.5,
+          "price": 600,
+          "note": "精米5kg 3,000円相当、プレミア価格"
+        },
+        {
+          "name": "JA 有機専用枠",
+          "ratio": 0.3,
+          "price": 400,
+          "note": "玄米60kg 24,000円等"
+        },
+        {
+          "name": "自然食品店",
+          "ratio": 0.2,
+          "price": 550,
+          "note": "契約小売"
+        }
+      ],
+      "labor_per_10a_monthly": {
+        "1": 2,
+        "2": 5,
+        "3": 15,
+        "4": 30,
+        "5": 20,
+        "6": 10,
+        "7": 10,
+        "8": 15,
+        "9": 25,
+        "10": 15,
+        "11": 5,
+        "12": 2
+      },
+      "labor_note": "3〜4月: 育苗・田植え準備。4〜5月: 田植え。6〜8月: 水管理・防除。9〜10月: 収穫・乾燥調製。年間約154h/10a（機械化体系）",
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種もみ",
+          "unit": "kg",
+          "price": 600,
+          "qty_per_10a": 5,
+          "qty_note": "直播は7〜8kg/10a",
+          "qty_maturity_curve": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "category": "肥料費",
+          "item": "元肥・追肥",
+          "unit": "10aあたり",
+          "price": 12000,
+          "qty_per_10a": 1,
+          "qty_note": "硫安・塩加里・リン酸等。有機栽培は増額"
+        },
+        {
+          "category": "農薬費",
+          "item": "除草剤・殺虫殺菌剤",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "箱処理＋本田除草＋穂イモチ防除"
+        },
+        {
+          "category": "光熱動力費",
+          "item": "軽油・電気",
+          "unit": "10aあたり",
+          "price": 5000,
+          "qty_per_10a": 1,
+          "qty_note": "トラクター・田植機・コンバイン燃料＋乾燥機電気"
+        },
+        {
+          "category": "その他",
+          "item": "育苗資材・出荷袋・乾燥費",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1,
+          "qty_note": "育苗培土・苗箱・出荷用紙袋等"
+        }
+      ],
+      "standard_investments": [
+        {
+          "name": "トラクター（30〜50PS）",
+          "amount_万": 400,
+          "category": "machinery",
+          "useful_life": 8,
+          "note": "中古200〜新品600万"
+        },
+        {
+          "name": "田植機（6条乗用）",
+          "amount_万": 250,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古100〜新品400万"
+        },
+        {
+          "name": "コンバイン（4〜5条）",
+          "amount_万": 600,
+          "category": "machinery",
+          "useful_life": 7,
+          "note": "中古300〜新品1000万"
+        },
+        {
+          "name": "乾燥調製施設",
+          "amount_万": 500,
+          "category": "facility_equipment",
+          "useful_life": 15,
+          "note": "遠赤外線乾燥機＋籾摺機＋計量選別機"
+        },
+        {
+          "name": "育苗ハウス",
+          "amount_万": 100,
+          "category": "facility_equipment",
+          "useful_life": 10,
+          "note": "パイプハウス1棟"
+        },
+        {
+          "name": "防除機（ブームスプレーヤ）",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 7
+        },
+        {
+          "name": "軽トラック",
+          "amount_万": 80,
+          "category": "machinery",
+          "useful_life": 4
+        }
+      ],
+      "calendar_marks": {
+        "1": "—",
+        "2": "■土壌分析",
+        "3": "■育苗開始■田起こし",
+        "4": "■代かき■田植え",
+        "5": "■除草■水管理開始",
+        "6": "■中干し■追肥",
+        "7": "■穂肥■防除",
+        "8": "■落水■登熟管理",
+        "9": "■収穫(早生)■乾燥調製",
+        "10": "■収穫(晩生)■出荷",
+        "11": "■秋耕■わら処理",
+        "12": "■機械整備"
+      },
+      "calendar_legend": "3月育苗→4月田植え→6月中干し→9-10月収穫→11月秋耕",
+      "repair_rates": {
+        "農業機械": 0.05,
+        "施設": 0.03,
+        "default": 0.04
+      },
+      "depreciation_method": "定額法（農業所得計算では定額法が一般的）",
+      "subsidy_programs": {
+        "水田活用の直接支払交付金": "飼料用米・WCS・加工用米等を生産する場合",
+        "畑作物の直接支払交付金": "麦・大豆等への転作時",
+        "ナラシ対策": "米・麦・大豆の収入減少補填",
+        "多面的機能支払交付金": "田9,200円/10a（全活動参加時）",
+        "中山間地域等直接支払交付金": "傾斜地の場合"
+      },
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0,
+        0,
+        0,
+        0.2,
+        0.25,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05,
+        0.05
+      ]
+    },
+    "buckwheat_upland": {
+      "_meta": {
+        "crop_id": "buckwheat_upland",
+        "crop_name": "そば",
+        "crop_category": "upland_crop",
+        "cultivation_method": "機械化体系（主に北海道・東北・信越の転作作物）",
+        "region_note": "北海道・宮城・佐賀。転作作物として重要。ゲタ対象",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "subsidy_eligible": [
+          "経営所得安定対策（畑作物の直接支払交付金）",
+          "水田活用の直接支払交付金（転作そば）"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 70,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 150,
+        "yield_per_10a_high": 250,
+        "plant_count_per_10a_typical": 15000,
+        "plant_count_per_10a_low": 12000,
+        "plant_count_per_10a_high": 20000
+      },
+      "channels": [
+        {
+          "name": "製粉業者契約",
+          "ratio": 0.8,
+          "price": 350,
+          "note": "kg350円、契約出荷が多い"
+        },
+        {
+          "name": "JA・直販",
+          "ratio": 0.2,
+          "price": 500,
+          "note": "新そば直販は高単価"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 10,
+        "6": 15,
+        "7": 15,
+        "8": 10,
+        "9": 10,
+        "10": 15,
+        "11": 10,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 3000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 4000000,
+          "useful_life": 8
+        },
+        {
+          "item": "コンバイン（汎用）",
+          "type": "機械装置",
+          "amount_fixed": 8000000,
+          "useful_life": 7
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "corn_feed_upland": {
+      "_meta": {
+        "crop_id": "corn_feed_upland",
+        "crop_name": "飼料用とうもろこし",
+        "crop_category": "upland_crop",
+        "cultivation_method": "大規模機械化（北海道・九州の畜産連携）",
+        "region_note": "北海道・宮城・佐賀。転作作物として重要。ゲタ対象",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "subsidy_eligible": [
+          "水田活用の直接支払交付金（飼料作物）",
+          "耕畜連携助成"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 700,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 150,
+        "yield_per_10a_high": 250,
+        "plant_count_per_10a_typical": 15000,
+        "plant_count_per_10a_low": 12000,
+        "plant_count_per_10a_high": 20000
+      },
+      "channels": [
+        {
+          "name": "畜産農家 需要者契約",
+          "ratio": 1.0,
+          "price": 40,
+          "note": "水田活用交付金 + 耕畜連携加算が主収入"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 10,
+        "6": 15,
+        "7": 15,
+        "8": 10,
+        "9": 10,
+        "10": 15,
+        "11": 10,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 3000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 4000000,
+          "useful_life": 8
+        },
+        {
+          "item": "コンバイン（汎用）",
+          "type": "機械装置",
+          "amount_fixed": 8000000,
+          "useful_life": 7
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "sugar_beet_upland": {
+      "_meta": {
+        "crop_id": "sugar_beet_upland",
+        "crop_name": "てん菜（ビート）",
+        "crop_category": "upland_crop",
+        "cultivation_method": "大規模機械化（北海道限定、製糖用）",
+        "region_note": "北海道・宮城・佐賀。転作作物として重要。ゲタ対象",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "subsidy_eligible": [
+          "経営所得安定対策（畑作物の直接支払交付金/ゲタ対策）"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 6500,
+        "unit": "kg",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 150,
+        "yield_per_10a_high": 250,
+        "plant_count_per_10a_typical": 15000,
+        "plant_count_per_10a_low": 12000,
+        "plant_count_per_10a_high": 20000
+      },
+      "channels": [
+        {
+          "name": "製糖工場 契約",
+          "ratio": 1.0,
+          "price": 20,
+          "note": "kg20円、ゲタ対策で加算"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 10,
+        "6": 15,
+        "7": 15,
+        "8": 10,
+        "9": 10,
+        "10": 15,
+        "11": 10,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 3000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 4000000,
+          "useful_life": 8
+        },
+        {
+          "item": "コンバイン（汎用）",
+          "type": "機械装置",
+          "amount_fixed": 8000000,
+          "useful_life": 7
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "peanut_upland": {
+      "_meta": {
+        "crop_id": "peanut_upland",
+        "crop_name": "落花生",
+        "crop_category": "upland_crop",
+        "cultivation_method": "機械化体系（千葉・茨城主力、ピーナッツ生産）",
+        "region_note": "北海道・宮城・佐賀。転作作物として重要。ゲタ対象",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "subsidy_eligible": [
+          "経営所得安定対策"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 180,
+        "unit": "kg（さや付き）",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 150,
+        "yield_per_10a_high": 250,
+        "plant_count_per_10a_typical": 15000,
+        "plant_count_per_10a_low": 12000,
+        "plant_count_per_10a_high": 20000
+      },
+      "channels": [
+        {
+          "name": "JA・加工業者",
+          "ratio": 0.6,
+          "price": 800,
+          "note": "サヤ付きkg800円"
+        },
+        {
+          "name": "直売・ギフト",
+          "ratio": 0.4,
+          "price": 2000,
+          "note": "殻付き煎り・剥き実で高単価"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 10,
+        "6": 15,
+        "7": 15,
+        "8": 10,
+        "9": 10,
+        "10": 15,
+        "11": 10,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 3000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 4000000,
+          "useful_life": 8
+        },
+        {
+          "item": "コンバイン（汎用）",
+          "type": "機械装置",
+          "amount_fixed": 8000000,
+          "useful_life": 7
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "carnation_facility": {
+      "_meta": {
+        "crop_id": "carnation_facility",
+        "crop_name": "カーネーション",
+        "crop_category": "facility_flower",
+        "cultivation_method": "施設栽培（温室、養液栽培含む）",
+        "region_note": "愛知・静岡・山形。切り花の高級品目",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "subsidy_eligible": [
+          "産地パワーアップ事業",
+          "園芸施設共済",
+          "みどりの食料システム戦略（花き環境配慮）"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 120000,
+        "unit": "本",
+        "maturity_curve": [
+          0.3,
+          0.6,
+          0.8,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 80000,
+        "yield_per_10a_high": 120000,
+        "plant_count_per_10a_typical": 5500,
+        "plant_count_per_10a_low": 4500,
+        "plant_count_per_10a_high": 7000
+      },
+      "channels": [
+        {
+          "name": "花き市場（卸売）",
+          "ratio": 0.85,
+          "price": 40,
+          "note": "母の日商戦で上振れ"
+        },
+        {
+          "name": "直売・契約",
+          "ratio": 0.15,
+          "price": 80,
+          "note": "ブライダル・ギフト向け"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.08,
+        0.12,
+        0.08,
+        0.12,
+        0.08,
+        0.05,
+        0.05,
+        0.08,
+        0.08,
+        0.1,
+        0.11
+      ],
+      "monthly_expense_curve_12": [
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 120,
+        "2": 120,
+        "3": 140,
+        "4": 140,
+        "5": 160,
+        "6": 140,
+        "7": 120,
+        "8": 120,
+        "9": 140,
+        "10": 140,
+        "11": 140,
+        "12": 120
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "バラ苗",
+          "unit": "1株",
+          "price": 500,
+          "qty_per_10a": 3000
+        },
+        {
+          "category": "肥料費",
+          "item": "液肥",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "暖房",
+          "unit": "10aあたり",
+          "price": 800000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ガラス温室",
+          "type": "構築物",
+          "amount_per_10a": 15000000,
+          "useful_life": 20
+        },
+        {
+          "item": "ロックウール栽培設備",
+          "type": "器具備品",
+          "amount_per_10a": 3000000,
+          "useful_life": 10
+        },
+        {
+          "item": "環境制御装置",
+          "type": "機械装置",
+          "amount_per_10a": 3000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "primula_facility": {
+      "_meta": {
+        "crop_id": "primula_facility",
+        "crop_name": "プリムラ（鴻巣特産）",
+        "crop_category": "facility_flower",
+        "cultivation_method": "施設栽培（埼玉県鴻巣市が日本一、ポット栽培）",
+        "region_note": "愛知・静岡・山形。切り花の高級品目",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "subsidy_eligible": [
+          "産地パワーアップ事業",
+          "園芸施設共済",
+          "埼玉県 花き振興事業"
+        ]
+      },
+      "yield": {
+        "yield_per_10a": 80000,
+        "unit": "ポット",
+        "maturity_curve": [
+          0.3,
+          0.6,
+          0.8,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 80000,
+        "yield_per_10a_high": 120000,
+        "plant_count_per_10a_typical": 5500,
+        "plant_count_per_10a_low": 4500,
+        "plant_count_per_10a_high": 7000
+      },
+      "channels": [
+        {
+          "name": "花き市場",
+          "ratio": 0.7,
+          "price": 150,
+          "note": "ポット150円、冬季需要"
+        },
+        {
+          "name": "ホームセンター・直売",
+          "ratio": 0.3,
+          "price": 250,
+          "note": "ギフト・園芸需要"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0.05,
+        0.08,
+        0.12,
+        0.08,
+        0.12,
+        0.08,
+        0.05,
+        0.05,
+        0.08,
+        0.08,
+        0.1,
+        0.11
+      ],
+      "monthly_expense_curve_12": [
+        0.1,
+        0.1,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08
+      ],
+      "labor_per_10a_monthly": {
+        "1": 120,
+        "2": 120,
+        "3": 140,
+        "4": 140,
+        "5": 160,
+        "6": 140,
+        "7": 120,
+        "8": 120,
+        "9": 140,
+        "10": 140,
+        "11": 140,
+        "12": 120
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "バラ苗",
+          "unit": "1株",
+          "price": 500,
+          "qty_per_10a": 3000
+        },
+        {
+          "category": "肥料費",
+          "item": "液肥",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 200000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "光熱動力費",
+          "item": "暖房",
+          "unit": "10aあたり",
+          "price": 800000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "ガラス温室",
+          "type": "構築物",
+          "amount_per_10a": 15000000,
+          "useful_life": 20
+        },
+        {
+          "item": "ロックウール栽培設備",
+          "type": "器具備品",
+          "amount_per_10a": 3000000,
+          "useful_life": 10
+        },
+        {
+          "item": "環境制御装置",
+          "type": "機械装置",
+          "amount_per_10a": 3000000,
+          "useful_life": 7
+        },
+        {
+          "item": "軽トラック",
+          "type": "車両運搬具",
+          "amount_fixed": 1500000,
+          "useful_life": 4
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    },
+    "peanut_open": {
+      "_meta": {
+        "crop_id": "peanut_open",
+        "crop_name": "落花生",
+        "crop_category": "upland_crop",
+        "cultivation_method": "露地栽培 (千葉・茨城主力、機械収穫)",
+        "region_note": "北海道・宮城・佐賀。転作作物として重要。ゲタ対象",
+        "sources": [
+          "農水省 営農類型別経営統計",
+          "各県農業技術センター標準栽培指針"
+        ],
+        "subsidy_eligible": [
+          "経営所得安定対策"
+        ],
+        "alias_of": "peanut_upland"
+      },
+      "yield": {
+        "yield_per_10a": 180,
+        "unit": "kg（さや付き）",
+        "maturity_curve": [
+          0.8,
+          0.9,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "yield_per_10a_low": 150,
+        "yield_per_10a_high": 250,
+        "plant_count_per_10a_typical": 15000,
+        "plant_count_per_10a_low": 12000,
+        "plant_count_per_10a_high": 20000
+      },
+      "channels": [
+        {
+          "name": "JA・加工業者",
+          "ratio": 0.6,
+          "price": 800,
+          "note": "サヤ付きkg800円"
+        },
+        {
+          "name": "直売・ギフト",
+          "ratio": 0.4,
+          "price": 2000,
+          "note": "殻付き煎り・剥き実で高単価"
+        }
+      ],
+      "monthly_revenue_curve_12": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.0,
+        0
+      ],
+      "monthly_expense_curve_12": [
+        0.05,
+        0.05,
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.15,
+        0.1,
+        0.1,
+        0.1,
+        0.05,
+        0.05
+      ],
+      "labor_per_10a_monthly": {
+        "1": 5,
+        "2": 5,
+        "3": 5,
+        "4": 5,
+        "5": 10,
+        "6": 15,
+        "7": 15,
+        "8": 10,
+        "9": 10,
+        "10": 15,
+        "11": 10,
+        "12": 5
+      },
+      "materials": [
+        {
+          "category": "種苗費",
+          "item": "種子",
+          "unit": "10aあたり",
+          "price": 3000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "肥料費",
+          "item": "肥料",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        },
+        {
+          "category": "農薬費",
+          "item": "農薬",
+          "unit": "10aあたり",
+          "price": 8000,
+          "qty_per_10a": 1
+        }
+      ],
+      "standard_investments": [
+        {
+          "item": "トラクター",
+          "type": "機械装置",
+          "amount_fixed": 4000000,
+          "useful_life": 8
+        },
+        {
+          "item": "コンバイン（汎用）",
+          "type": "機械装置",
+          "amount_fixed": 8000000,
+          "useful_life": 7
+        }
+      ],
+      "repair_rates": {
+        "構築物": 3,
+        "農業機械": 5,
+        "default": 4
+      },
+      "depreciation_method": "定額法"
+    }
+  }
+}

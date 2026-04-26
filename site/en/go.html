@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<!--
+  site/en/go.html — English mirror of site/go.html (device-flow activation,
+  RFC 8628 §3.3). Same JS, English-translated UI. JA at ../go.html.
+
+  Routing: Cloudflare Pages serves this at /en/go.html. The bare /go path
+  (and /go/:code) still routes to the JA site/go.html via site/_redirects.
+  Direct EN entry: /en/go.html or /en/go.html?code=ABCD-1234.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Activate — AutonoMath</title>
+<meta name="description" content="AutonoMath MCP device-flow activation page. Pay with Apple Pay, Google Pay, or card to enable ¥3/req metered billing — no config-file edit required.">
+<meta name="robots" content="noindex,nofollow">
+
+<meta property="og:title" content="Activate — AutonoMath">
+<meta property="og:description" content="Device-flow activation for AutonoMath MCP. No config-file edit required.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/go.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og-square.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<link rel="canonical" href="https://autonomath.ai/en/go.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/go">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/go.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/go">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Activate — AutonoMath",
+  "description": "Device-flow activation page for AutonoMath MCP clients. Pay with Apple Pay, Google Pay, or card to enable ¥3/req metered billing.",
+  "url": "https://autonomath.ai/en/go.html",
+  "inLanguage": "en",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/en/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "email": "info@bookyou.net",
+    "identifier": "T8010001213708"
+  }
+}
+</script>
+
+<style>
+  .go-page { padding: 40px 0 72px; }
+  .go-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    padding: 28px 28px 24px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .go-card h1 {
+    font-size: 24px;
+    margin: 0 0 6px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .go-card .lead {
+    color: var(--text-muted);
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+  .field { margin: 0 0 14px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .field input[type="email"],
+  .field input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .field input[readonly] {
+    background: var(--bg-alt);
+    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0.08em;
+  }
+  .field .hint {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .cta-btn {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    border-radius: 10px;
+    border: 0;
+    background: var(--accent, #111);
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cta-btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+  .cta-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 10px 0 0;
+  }
+
+  .alert {
+    border: 1px solid var(--danger);
+    background: #fff0f0;
+    color: var(--danger);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin: 0 0 18px;
+  }
+  .alert strong { display: block; margin-bottom: 4px; font-size: 15px; }
+
+  .ok {
+    border: 1px solid #16a34a;
+    background: #f0fdf4;
+    color: #15803d;
+    padding: 18px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    margin: 0 0 14px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .ok .check {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #15803d;
+    color: #fff;
+    font-weight: 800;
+    line-height: 28px;
+    margin-right: 8px;
+  }
+
+  .spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 12px 0 0;
+  }
+  .spinner::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    animation: go-spin 0.8s linear infinite;
+  }
+  @keyframes go-spin { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner::before { animation: none; border-top-color: var(--accent); }
+  }
+
+  .consent {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 4px 0 14px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .consent input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
+
+  .recovery-box {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    padding: 10px 14px;
+    background: var(--bg-alt);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+</style>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../go" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="go.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="go-page">
+  <div class="container">
+
+    <div id="state-form" class="go-card" tabindex="-1">
+      <h1>Activate MCP</h1>
+      <p class="lead">
+        Register a card so MCP clients like Claude can keep using AutonoMath.
+        <strong>No config-file edit required.</strong>
+        After payment, the key is automatically handed to the MCP server.
+      </p>
+
+      <form id="go-form" novalidate>
+        <div class="field">
+          <label for="user_code">Confirmation code</label>
+          <div class="recovery-box" id="recovery-box" aria-hidden="true">ABCD-1234</div>
+          <input
+            id="user_code"
+            name="user_code"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            inputmode="latin"
+            maxlength="9"
+            placeholder="ABCD-1234">
+          <p class="hint">If you opened this page from <code>/go/ABCD-1234</code>, the code is pre-filled.</p>
+        </div>
+
+        <div class="field">
+          <label for="email">Email address <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+          <input id="email" name="email" type="email" autocomplete="email" required aria-required="true" placeholder="you@example.com">
+          <p class="hint">Stripe receipts and qualified invoices are delivered here.</p>
+        </div>
+
+        <label class="consent" for="consent">
+          <input id="consent" type="checkbox">
+          <span>
+            I have read and agree to the
+            <a href="tos.html" rel="noopener">Terms of Service</a> &middot;
+            <a href="privacy.html" rel="noopener">Privacy Policy</a> &middot;
+            <a href="../tokushoho.html" rel="noopener">Specified Commercial Transactions Act notice (JP)</a>
+            before proceeding to payment.
+          </span>
+        </label>
+
+        <button id="cta" class="cta-btn" type="submit" disabled>
+          Activate at ¥3/req &mdash; Apple Pay / Google Pay supported
+        </button>
+        <p class="cta-sub">¥3/req tax exclusive (¥3.30 incl.). ¥0 in months you don't use it. No minimum commitment.</p>
+
+        <p id="form-error" class="alert" role="alert" hidden></p>
+      </form>
+    </div>
+
+    <div id="state-processing" class="go-card" tabindex="-1" hidden>
+      <h1>Processing activation…</h1>
+      <p class="lead">Confirming the Stripe payment. This will take a few seconds.</p>
+      <p class="spinner" role="status" aria-live="polite">Processing…</p>
+    </div>
+
+    <div id="state-done" class="go-card" tabindex="-1" hidden>
+      <div class="ok" role="status" aria-live="polite">
+        <span class="check" aria-hidden="true">&check;</span>
+        Activation complete &mdash; return to Claude
+      </div>
+      <p class="lead">
+        Your MCP server will pick up the new credentials automatically.
+        <strong>Just resend the same prompt in Claude</strong> and it will switch to metered mode (¥3/req).
+        No config-file edits or restarts required.
+      </p>
+      <p class="cta-sub">
+        View usage or change cards from the <a href="dashboard.html">Dashboard</a>.
+        To cancel, simply remove your card via the Stripe Customer Portal &mdash; you'll fall back to the free 50 req/month tier immediately.
+      </p>
+    </div>
+
+    <div id="state-error" class="go-card" tabindex="-1" hidden>
+      <div class="alert" role="alert">
+        <strong>An error occurred</strong>
+        <span id="err-detail">Please try again shortly, or contact <a href="mailto:info@bookyou.net">info@bookyou.net</a>.</span>
+      </div>
+      <button id="retry-btn" class="cta-btn" type="button">Retry</button>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+      <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708)</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="tos.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="../tokushoho.html">Legal (JP)</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script>
+  // go.html — vanilla ES2020. CSP-safe (inline script, no external).
+  // Device flow activation: user_code from URL → email + consent →
+  // Stripe Checkout → on redirect with session_id, POST /v1/device/complete.
+  // Identical logic to site/go.html (JA). UI strings are English here.
+  (function () {
+    'use strict';
+
+    var API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || '';
+    var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    // user_code pattern: 4 chars + dash + 4 chars from
+    // ABCDEFGHJKLMNPQRSTUVWXYZ23456789. Allow lowercase → uppercased on normalize.
+    var USER_CODE_RE = /^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/;
+
+    function normalizeUserCode(raw) {
+      if (!raw) return '';
+      var v = String(raw).toUpperCase().replace(/[^A-HJ-NP-Z2-9\-]/g, '');
+      // Accept 8 chars (no dash) → insert dash.
+      if (/^[A-HJ-NP-Z2-9]{8}$/.test(v)) {
+        return v.slice(0, 4) + '-' + v.slice(4);
+      }
+      return v;
+    }
+
+    function getCodeFromLocation() {
+      try {
+        // /go/ABCD-1234 path form (also /en/go/ABCD-1234 if redirected here)
+        var path = window.location.pathname || '';
+        var m = path.match(/\/go\/([A-Z0-9\-]{4,16})\/?$/i);
+        if (m) return normalizeUserCode(m[1]);
+        // ?code=ABCD-1234 query form
+        var q = new URLSearchParams(window.location.search);
+        var c = q.get('code');
+        if (c) return normalizeUserCode(c);
+      } catch (_e) { /* noop */ }
+      return '';
+    }
+
+    function getSessionIdFromLocation() {
+      try {
+        var q = new URLSearchParams(window.location.search);
+        var sid = q.get('session_id');
+        return sid && /^cs_[a-zA-Z0-9_]+$/.test(sid) ? sid : null;
+      } catch (_e) { return null; }
+    }
+
+    function showOnly(id) {
+      var ids = ['state-form', 'state-processing', 'state-done', 'state-error'];
+      for (var i = 0; i < ids.length; i++) {
+        var el = $(ids[i]);
+        if (!el) continue;
+        if (ids[i] === id) {
+          el.removeAttribute('hidden');
+          try { el.focus({ preventScroll: false }); } catch (_e) { /* focus best-effort */ }
+        } else {
+          el.setAttribute('hidden', '');
+        }
+      }
+    }
+
+    function setError(msg) {
+      var el = $('err-detail');
+      if (el) {
+        if (msg) el.textContent = msg;
+      }
+      showOnly('state-error');
+    }
+
+    // --- Form wiring ------------------------------------------------------
+
+    function initForm() {
+      var code = getCodeFromLocation();
+      var input = $('user_code');
+      var box = $('recovery-box');
+      if (code && input) {
+        input.value = code;
+        input.setAttribute('readonly', '');
+        if (box) box.textContent = code;
+      } else {
+        if (box) box.textContent = '—';
+      }
+
+      var consent = $('consent');
+      var cta = $('cta');
+      function syncCta() {
+        var ok = consent && consent.checked;
+        // basic email sanity (HTML5 :valid is not reliable cross-browser without submit)
+        var email = ($('email') && $('email').value || '').trim();
+        var emailOk = /.+@.+\..+/.test(email);
+        var codeOk = USER_CODE_RE.test(normalizeUserCode(input && input.value || ''));
+        cta.disabled = !(ok && emailOk && codeOk);
+      }
+      if (consent) consent.addEventListener('change', syncCta);
+      var emailEl = $('email');
+      if (emailEl) emailEl.addEventListener('input', syncCta);
+      if (input && !input.hasAttribute('readonly')) {
+        input.addEventListener('input', function () {
+          // Re-uppercase / insert dash as the user types.
+          var v = normalizeUserCode(input.value);
+          if (v !== input.value) input.value = v;
+          if (box) box.textContent = v || '—';
+          syncCta();
+        });
+      }
+      syncCta();
+
+      var form = $('go-form');
+      if (form) form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var userCode = normalizeUserCode(input.value);
+        if (!USER_CODE_RE.test(userCode)) {
+          var fe = $('form-error');
+          if (fe) { fe.textContent = 'Confirmation code is invalid (expected ABCD-1234).'; fe.removeAttribute('hidden'); }
+          return;
+        }
+        var email = (emailEl && emailEl.value || '').trim();
+        if (!email) {
+          var fe2 = $('form-error');
+          if (fe2) { fe2.textContent = 'Please enter your email address.'; fe2.removeAttribute('hidden'); }
+          return;
+        }
+        startCheckout(userCode, email);
+      });
+    }
+
+    // --- Stripe Checkout handoff -----------------------------------------
+
+    function startCheckout(userCode, email) {
+      var cta = $('cta');
+      if (cta) cta.disabled = true;
+      var fe = $('form-error');
+      if (fe) fe.setAttribute('hidden', '');
+
+      // success_url carries session_id + user_code so the redirect back
+      // into this page can call /v1/device/complete. Stripe substitutes
+      // {CHECKOUT_SESSION_ID} on its side.
+      var successUrl = window.location.origin + '/go/' + encodeURIComponent(userCode) +
+        '?session_id={CHECKOUT_SESSION_ID}&code=' + encodeURIComponent(userCode);
+      var cancelUrl = window.location.origin + '/go/' + encodeURIComponent(userCode) +
+        '?code=' + encodeURIComponent(userCode) + '&cancelled=1';
+
+      fetch(api('/v1/billing/checkout'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          customer_email: email
+        })
+      }).then(function (r) {
+        return r.text().then(function (text) {
+          var body = null;
+          try { body = text ? JSON.parse(text) : null; } catch (_e) { body = { detail: text }; }
+          if (!r.ok) {
+            var msg = (body && (body.detail || body.message)) || ('HTTP ' + r.status);
+            throw new Error(msg);
+          }
+          return body;
+        });
+      }).then(function (data) {
+        if (data && data.url) {
+          window.location = data.url;
+        } else {
+          throw new Error('no url in response');
+        }
+      }).catch(function (err) {
+        if (cta) cta.disabled = false;
+        setError('Failed to reach the payment page: ' + (err && err.message || err) + ' — please try again shortly.');
+      });
+    }
+
+    // --- /v1/device/complete (post-Stripe redirect) ----------------------
+
+    function completeAfterCheckout() {
+      var sid = getSessionIdFromLocation();
+      var code = getCodeFromLocation();
+      if (!sid || !code) return false;
+
+      showOnly('state-processing');
+
+      fetch(api('/v1/device/complete'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ user_code: code, stripe_checkout_session_id: sid })
+      }).then(function (r) {
+        return r.text().then(function (text) {
+          var body = null;
+          try { body = text ? JSON.parse(text) : null; } catch (_e) { body = { detail: text }; }
+          return { ok: r.ok, status: r.status, body: body };
+        });
+      }).then(function (resp) {
+        if (resp.ok && resp.body && resp.body.ok) {
+          showOnly('state-done');
+          // Clean the URL so a reload doesn't re-trigger /complete.
+          try {
+            var clean = window.location.origin + '/go/' + encodeURIComponent(code);
+            window.history.replaceState({}, '', clean);
+          } catch (_e) { /* noop */ }
+          return;
+        }
+        var msg = (resp.body && (resp.body.detail || resp.body.message)) || ('HTTP ' + resp.status);
+        setError('Activation failed: ' + msg + ' — please try again shortly.');
+      }).catch(function (err) {
+        setError('Network error: ' + (err && err.message || err));
+      });
+      return true;
+    }
+
+    function boot() {
+      // If ?cancelled=1 → show form with a gentle banner, no Stripe call.
+      try {
+        var q = new URLSearchParams(window.location.search);
+        if (q.get('cancelled') === '1') {
+          var fe = $('form-error');
+          if (fe) { fe.textContent = 'Payment was cancelled. Please try again.'; fe.removeAttribute('hidden'); }
+        }
+      } catch (_e) { /* noop */ }
+
+      initForm();
+      var retry = $('retry-btn');
+      if (retry) retry.addEventListener('click', function () {
+        showOnly('state-form');
+      });
+
+      // If we came back from Stripe with a session_id, jump straight to
+      // /complete. initForm() has already wired the form in case the user
+      // navigates back to it.
+      if (getSessionIdFromLocation()) {
+        completeAfterCheckout();
+      } else {
+        showOnly('state-form');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+</script>
+
+</body>
+</html>

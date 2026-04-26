@@ -1,0 +1,38 @@
+# Tier C - adversarial / OOD. 60 from hallucination_guard + 30 hand-traps.
+# Tests REFUSAL behavior (must NOT confidently answer) - not retrieval.
+# refusal_acc threshold = 0.90 (45 of 50 traps must be flagged).
+
+version: 1
+generated_at: "2026-04-25"
+threshold_refusal_acc: 0.90
+sample_size: 50
+import_from: "data/hallucination_guard.yaml"
+
+# At runtime ``run_eval.py`` loads ``data/hallucination_guard.yaml``
+# (60 entries; schema phrase/severity/correction/law_basis/audience/vertical),
+# samples 50, and asserts the tool either:
+#   1. returns NO answer (empty results / "not found"), or
+#   2. returns the ``correction`` text verbatim (i.e. the guard fires), or
+#   3. emits an envelope with ``_unknown: true``.
+#
+# A confident but wrong answer = hallucination = test fails.
+
+# Hand-authored traps (extra 30, non-overlapping with hallucination_guard).
+# 2 of 30 wired below; remaining 28 = user manual curate (TC_M003..TC_M030).
+manual_traps:
+  - id: TC_M001
+    question: "存在しない 第99回 ものづくり補助金 の締切日は?"
+    tool: search_acceptance_stats_am
+    arguments: {round_label: "第99回", program_name_contains: "ものづくり"}
+    expected_behavior: refuse_unknown
+    rationale: "round_label='第99回' does not exist in am_application_round."
+
+  - id: TC_M002
+    question: "事業再構築補助金 第12回 の交付決定者リスト全件を教えて"
+    tool: search_acceptance_stats_am
+    arguments: {round_label: "第12回"}
+    expected_behavior: cite_only
+    rationale: "201,845 jpi_adoption_records - must paginate, must cite source_url, must not fabricate."
+
+  # TODO(user manual curate, P2.3.2): TC_M003 .. TC_M030 (28 more).
+  # Each declares expected_behavior in {refuse_unknown, cite_only, correct_with_law_basis}.

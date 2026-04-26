@@ -1,0 +1,154 @@
+[project]
+name = "autonomath-mcp"
+version = "0.3.0"
+description = "AutonoMath — Japanese public-program API + MCP server + npm SDK (72 tools): 13,578 programs + 2,286 case studies + 108 三軸分解 loans + 1,185 enforcement cases + 9,484 laws + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 autonomath entities + 6.12M facts + 23,805 relations + 335,605 aliases, 181 exclusion/prerequisite rules, primary-source lineage. SLA 99.5% monthly uptime."
+license = { text = "MIT" }
+authors = [
+    { name = "Bookyou株式会社", email = "info@bookyou.net" },
+]
+readme = "README.md"
+keywords = ["mcp", "japan", "subsidy", "government", "claude", "llm", "rest-api"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+]
+requires-python = ">=3.11"
+dependencies = [
+    # Upper bounds on security-critical libs prevent surprise breakage from a
+    # silent Dependabot major-bump. Widen these caps deliberately when the
+    # upstream release notes clear a breaking-change review. Dev-only / tooling
+    # pins live under [project.optional-dependencies] and are intentionally
+    # left uncapped.
+    "fastapi>=0.115,<0.120",             # middleware APIs churn minor-to-minor
+    "uvicorn[standard]>=0.32,<0.40",
+    "mcp>=1.2",
+    "pydantic>=2.9,<3",                  # v3 is a future rewrite
+    "pydantic-settings>=2.6,<3",
+    "email-validator>=2.0,<3",
+    "python-multipart>=0.0.17,<1",
+    "httpx>=0.28,<1.0",
+    "stripe>=11.3,<13",                  # stripe-python does yearly major bumps
+    "orjson>=3.10,<4",
+    "structlog>=24.4",
+    "sqlite-utils>=3.38,<4",
+    "tenacity>=9.0,<10",
+    "sentry-sdk[fastapi]>=2.19,<3",
+    # Device-flow credential store (RFC 8628). Used by
+    # src/jpintel_mcp/mcp/auth.py to stash the activated api_key in the
+    # OS keychain (macOS Keychain / Windows Credential Manager / Linux
+    # Secret Service). Falls back to a 0600 file under $XDG_CONFIG_HOME
+    # when Secret Service is unavailable — see auth.py for the shim.
+    "keyring>=24.0,<26",
+    "scipy>=1.14,<2",                    # Beta credible interval (analytics/bayesian.py)
+    # bcrypt dual-path API key storage (Wave 16 abuse-defense P1, migration 073).
+    # Cost factor 12 (~100ms/attempt). Verifies new bcrypt-tagged keys; legacy
+    # HMAC-SHA256 keys fall through. See src/jpintel_mcp/api/deps.py.
+    "bcrypt>=4.2,<6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "httpx>=0.28",
+    "build>=1.2",
+    "pre-commit>=4.0",
+    "duckdb>=1.1",                  # weekly_digest.py + analyze_telemetry.py
+    "pyarrow>=18,<25",              # parquet writer for scripts/hf_dataset_export.py
+    "huggingface_hub>=0.25,<1",     # HF dataset publish CLI; see docs/_internal/hf_publish_runbook.md
+]
+# Browser-driven end-to-end smoke suite. Separate extras group so the prod
+# container build (Dockerfile) never pulls in Playwright's ~200MB browser
+# dependency tree. Install locally via `pip install -e ".[e2e]" &&
+# playwright install chromium`. Run via `pytest tests/e2e/`.
+e2e = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "playwright>=1.48",
+    "pytest-playwright>=0.6",
+    "httpx>=0.28",
+]
+# Static site generation (per-program HTML + sitemap). Separate so the prod
+# API container never pulls in cutlet's mecab dependency. Install locally via
+# `pip install -e ".[site]"`. Run via `python scripts/generate_program_pages.py`.
+site = [
+    "pykakasi>=2.2",
+    "jinja2>=3.1",
+]
+
+[project.scripts]
+autonomath-api = "jpintel_mcp.api.main:run"
+autonomath-mcp = "jpintel_mcp.mcp.server:run"
+autonomath-ingest = "jpintel_mcp.ingest.canonical:run"
+# Legacy aliases for existing installs (will be removed at v1.0):
+jpintel-api = "jpintel_mcp.api.main:run"
+jpintel-mcp = "jpintel_mcp.mcp.server:run"
+jpintel-ingest = "jpintel_mcp.ingest.canonical:run"
+
+[project.urls]
+Homepage = "https://autonomath.ai"
+Documentation = "https://autonomath.ai/docs/"
+Repository = "https://github.com/AutonoMath/autonomath-mcp"
+Issues = "https://github.com/AutonoMath/autonomath-mcp/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/jpintel_mcp"]
+
+# Explicit sdist include list. Without this, hatchling's sdist builder bundles
+# the whole repo (site/ static HTML, research/ PDFs, data/*.db.bak.*, the sibling
+# sdk/ trees, etc.), pushing the tarball to ~90MB — close to PyPI's 100MB per-
+# file cap and in violation of the project's "never commit DB backups" rule
+# (see CLAUDE.md). Keep this list in sync with wheel contents + whatever is
+# needed to reproduce a build from the sdist.
+#
+# Exclude list: hatchling (non-git repo) auto-discovers README.md files and
+# pyproject.toml files in subdirectories even with an explicit include list.
+# The exclude list below plugs those leaks.
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/jpintel_mcp",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+]
+exclude = [
+    "*.gitignore",
+    ".gitignore",
+    "docs/",
+    "dxt/",
+    "examples/",
+    "loadtest/",
+    "research/",
+    "scripts/",
+    "sdk/",
+    "site/",
+    "tests/",
+    "data/",
+    "overrides/",
+    "content/",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "TCH"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

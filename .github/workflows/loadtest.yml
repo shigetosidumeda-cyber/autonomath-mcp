@@ -1,0 +1,143 @@
+name: loadtest
+
+# Manual-only. k6 sends REAL traffic at whatever URL we point it at —
+# running on every push would both waste CI minutes and regularly DoS
+# staging. workflow_dispatch with explicit inputs is the contract.
+#
+# Use cases:
+#   - D-1 rehearsal: run programs_search against staging, lock the
+#     baseline into research/perf_baseline.md before launch.
+#   - Post-deploy gate: confirm a change that touched the search path
+#     didn't regress p95.
+#   - Incident root-cause: reproduce a spike locally after the fact.
+#
+# Secrets required:
+#   STAGING_URL                 — base URL for the target (no trailing /)
+#   LOADTEST_PRO_KEY            — test-tier pro API key (NOT production)
+#   LOADTEST_WEBHOOK_SECRET     — Stripe webhook TEST signing secret
+#                                 (must match the staging STRIPE_WEBHOOK_SECRET)
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: "Which k6 script to run"
+        required: true
+        default: "programs_search"
+        type: choice
+        options:
+          - programs_search
+          - webhook_stripe
+          - both
+      target_url:
+        description: "Base URL override (leave empty to use STAGING_URL secret)"
+        required: false
+        default: ""
+      anon_skip:
+        description: "programs_search only: 1 = force all traffic through pro key (bypasses anon rate limit)"
+        required: false
+        default: "0"
+        type: choice
+        options:
+          - "0"
+          - "1"
+
+concurrency:
+  # One load test at a time. Overlapping runs skew each other's numbers
+  # and double the traffic on staging.
+  group: loadtest-global
+  cancel-in-progress: false
+
+jobs:
+  loadtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BASE_URL: ${{ github.event.inputs.target_url || secrets.STAGING_URL }}
+      TEST_PRO_KEY: ${{ secrets.LOADTEST_PRO_KEY }}
+      STRIPE_WEBHOOK_TEST_SECRET: ${{ secrets.LOADTEST_WEBHOOK_SECRET }}
+      # Fixed subscription id for the webhook run — idempotency depends
+      # on it being stable across retries. Rotate weekly or scrub rows
+      # between runs; see loadtest/README.md "Safety rails".
+      STRIPE_TEST_SUBSCRIPTION_ID: sub_loadtest_ci_weekly
+      STRIPE_TEST_CUSTOMER_ID: cus_loadtest_ci
+      ANON_SKIP: ${{ github.event.inputs.anon_skip }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Guard — refuse to run against production URL
+        # Belt-and-suspenders. If someone ever pastes the prod URL into
+        # target_url we abort before sending any traffic.
+        run: |
+          echo "Target: $BASE_URL"
+          if [ -z "$BASE_URL" ]; then
+            echo "::error::BASE_URL is empty. Set STAGING_URL secret or provide target_url input."
+            exit 1
+          fi
+          case "$BASE_URL" in
+            *autonomath-api.fly.dev*|*api.autonomath.ai*|*autonomath.ai*|*jpintel-mcp.fly.dev*|*api.jpintel.jp*|*jpintel.jp*)
+              echo "::error::Refusing to run load test against what looks like production: $BASE_URL"
+              exit 1
+              ;;
+          esac
+
+      - name: Install k6
+        # Pin the major — k6's summary JSON schema has changed between
+        # v0.46 and v0.51. Downstream artifact consumers expect v0.51+.
+        uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1.1.0
+        with:
+          k6-version: "0.51.0"
+
+      - name: Run programs_search
+        if: ${{ github.event.inputs.script == 'programs_search' || github.event.inputs.script == 'both' }}
+        id: ps
+        # --summary-export writes the machine-readable summary we upload
+        # as the gate artifact. thresholds already live in the script, so
+        # k6 exits non-zero on breach and the step fails naturally.
+        run: |
+          mkdir -p loadtest/out
+          k6 run \
+            --summary-export=loadtest/out/programs_search_summary.json \
+            loadtest/programs_search.js \
+            | tee loadtest/out/programs_search_stdout.txt
+
+      - name: Run webhook_stripe
+        if: ${{ github.event.inputs.script == 'webhook_stripe' || github.event.inputs.script == 'both' }}
+        id: ws
+        run: |
+          mkdir -p loadtest/out
+          if [ -z "${STRIPE_WEBHOOK_TEST_SECRET:-}" ]; then
+            echo "::error::LOADTEST_WEBHOOK_SECRET not set; cannot sign Stripe webhooks."
+            exit 1
+          fi
+          k6 run \
+            --summary-export=loadtest/out/webhook_stripe_summary.json \
+            loadtest/webhook_stripe.js \
+            | tee loadtest/out/webhook_stripe_stdout.txt
+
+      - name: Upload k6 summary artifacts
+        # Always upload — even on threshold breach we want the numbers
+        # for after-the-fact analysis.
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: k6-summary-${{ github.run_id }}
+          path: |
+            loadtest/out/
+            loadtest/summary_programs_search.json
+            loadtest/summary_webhook_stripe.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Post-run cleanup reminder
+        if: ${{ github.event.inputs.script == 'webhook_stripe' || github.event.inputs.script == 'both' }}
+        # The webhook script inserts an api_keys row for SUBSCRIPTION_ID.
+        # Only one (idempotency), but it still pollutes staging. Print
+        # the cleanup SQL so the operator can run it via flyctl ssh.
+        run: |
+          echo "::warning::Webhook run left an api_keys row on staging."
+          echo "Clean up after verification:"
+          echo "  fly ssh console -a autonomath-api-staging -C \\"
+          echo "    \"sqlite3 /data/jpintel.db \\\"DELETE FROM api_keys WHERE stripe_subscription_id='$STRIPE_TEST_SUBSCRIPTION_ID';\\\"\""

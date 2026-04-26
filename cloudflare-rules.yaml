@@ -1,0 +1,240 @@
+# Cloudflare WAF + Rate-Limit rules for AutonoMath
+# ====================================================================
+#
+# This file is OPERATOR-ONLY and is NOT consumed by the application.
+# It documents the rules to apply via the Cloudflare API or dashboard
+# (Security → WAF → Custom Rules / Rate Limiting Rules) for the zone
+# that hosts api.autonomath.ai and autonomath.ai.
+#
+# Apply procedure (manual, no automation by design):
+#   1. Open Cloudflare dashboard → Security → WAF → Custom Rules
+#   2. Create each `custom_rules` entry below in the order given.
+#   3. Open Security → WAF → Rate Limiting Rules
+#   4. Create each `rate_limiting_rules` entry.
+#   5. Set them all to "Deploy" status (not "Log only") for prod.
+#
+# Why YAML, not Terraform: rule sets are tuned by hand based on real
+# 429/5xx telemetry; an auto-applied IaC pipeline would either overwrite
+# operator tweaks or require a PR for every threshold nudge. Solo-ops
+# memory: prefer manual apply for security gates that rarely change.
+#
+# Edge defense layers (top-down):
+#   1. Cloudflare WAF — these rules. Block known-bad UAs / abusive paths.
+#   2. Cloudflare Rate Limiting — coarse zone-wide ceilings.
+#   3. App middleware (api/middleware/rate_limit.py) — per-key/IP burst.
+#   4. App router dep (api/anon_limit.py) — 50 req/月 anon quota.
+#   5. App middleware (api/middleware/customer_cap.py) — per-key spend cap.
+#
+# Memory references:
+#   * project_autonomath_business_model — ¥3/req metered, anon 50/月
+#   * feedback_autonomath_no_api_use     — abuse cost is direct ¥, must
+#                                          shed before reaching app code
+#   * project_jpintel_trademark_intel_risk — name posture ("AutonoMath")
+
+# --------------------------------------------------------------------
+# WAF Custom Rules (block / challenge based on request shape)
+# --------------------------------------------------------------------
+custom_rules:
+  - name: block_empty_user_agent
+    description: |
+      Block requests to any /v1/* path with an empty or missing User-Agent.
+      Real SDKs (autonomath-python, anthropic) and curl/wget all set one;
+      a missing UA is a near-perfect signal of a custom scraper that
+      doesn't even pretend to be a browser.
+    expression: |
+      (http.request.uri.path matches "^/v1/")
+      and (len(http.user_agent) lt 1)
+    action: block
+
+  - name: block_unkeyed_curl_wget_on_data_paths
+    description: |
+      curl/wget WITHOUT an X-API-Key header on the data-bearing endpoints
+      is almost always a scraper. Real CLI users run `curl -H "X-API-Key: ..."`
+      which lifts this rule — the rule fires only for the no-auth case.
+      We deliberately do NOT block curl on /healthz, /readyz, the OpenAPI
+      spec, or the /docs surface; those are how operators verify status.
+    expression: |
+      (lower(http.user_agent) contains "curl/" or
+       lower(http.user_agent) contains "wget/")
+      and (http.request.uri.path matches "^/v1/(programs|loan_programs|enforcement|case_studies|laws|court_decisions|bids|tax_rulesets|invoice_registrants|am)/")
+      and (not any(http.request.headers.names[*] in {"x-api-key" "X-API-Key"}))
+      and (not lower(http.request.headers["authorization"][0]) contains "bearer ")
+    action: managed_challenge
+
+  - name: block_known_bad_bots
+    description: |
+      Generic broad-spectrum scraper UAs that have no legitimate use on a
+      paid-data API. The list is conservative (no Googlebot, no
+      uptimerobot, no Stripe) so we never block crawlers that we WANT
+      indexing the public docs site at autonomath.ai/docs/.
+    expression: |
+      lower(http.user_agent) contains "ahrefsbot" or
+      lower(http.user_agent) contains "semrushbot" or
+      lower(http.user_agent) contains "mj12bot" or
+      lower(http.user_agent) contains "dotbot" or
+      lower(http.user_agent) contains "petalbot" or
+      lower(http.user_agent) contains "seekport" or
+      lower(http.user_agent) contains "blexbot" or
+      lower(http.user_agent) contains "serpstatbot"
+    action: block
+
+  - name: challenge_5xx_loop_offenders
+    description: |
+      An IP that has triggered > 100 5xx responses within 1 minute is
+      either a mis-configured client or a fuzzer probing for unhandled
+      paths. Managed challenge (rather than outright block) so legitimate
+      clients can solve and continue; persistent fuzzing escalates via
+      Cloudflare's adaptive scoring.
+
+      Note: implemented as a Rate Limiting Rule below
+      (`rate_limiting_rules.challenge_5xx_loop`) because Custom Rules
+      cannot key on response code. Documented here for completeness.
+    expression: "see rate_limiting_rules.challenge_5xx_loop"
+    action: managed_challenge
+
+  - name: tor_exit_passthrough
+    description: |
+      We DO NOT block Tor exit nodes. Tor users still pay ¥3/req when
+      authed, or burn anon quota at 50/month per /64 like everyone else.
+      The throughput economics make Tor unattractive for scraping at our
+      volumes (Tor exits are slow, our anon cap is monthly), so blocking
+      them costs goodwill with researcher / journalist / activist users
+      with no defensive benefit.
+
+      This is an explicit allow rule rather than absence-of-block so an
+      operator who later adds a generic IP-reputation block doesn't
+      accidentally take Tor down too.
+    expression: |
+      ip.src in $tor_exit_nodes
+    action: skip
+    products:
+      - waf
+
+  - name: block_excessive_query_length
+    description: |
+      A `q=` query parameter longer than 1024 chars is either FTS-poisoning
+      or accidental URL-encoded HTML pasted into a curl one-liner. Our
+      legitimate FTS queries are 2-200 chars in practice.
+    expression: |
+      (http.request.uri.path matches "^/v1/")
+      and (len(http.request.uri.query) gt 4096)
+    action: block
+
+  - name: deny_admin_paths_off_allowlist
+    description: |
+      /v1/admin/* is operator-only and gated by ADMIN_API_KEY at the app
+      layer. The WAF adds a second gate: only requests from the operator's
+      static IP allowlist may reach those paths at all. Without this, a
+      leaked ADMIN_API_KEY would expose moderation and admin endpoints
+      directly to the open internet.
+
+      $autonomath_operator_ips is a Cloudflare IP List the operator
+      maintains by hand.
+    expression: |
+      (http.request.uri.path matches "^/v1/admin/")
+      and (not ip.src in $autonomath_operator_ips)
+    action: block
+
+# --------------------------------------------------------------------
+# Rate Limiting Rules (Cloudflare-side, per-zone)
+# --------------------------------------------------------------------
+# These complement (do NOT replace) the in-app token bucket. The app
+# limit is per-key/IP at 1-10 req/sec; the Cloudflare limit is global
+# per-path so a coordinated multi-IP attack (still hard with /64
+# normalisation but possible) trips the zone ceiling first.
+rate_limiting_rules:
+  - name: zone_v1_global_cap
+    description: |
+      Global cap of 1000 req/min on /v1/* across all callers. Sized at
+      ~10x the realistic peak we expect at launch (paid keys average 5-50
+      req/min each; 20 active simultaneously = 1000). Tripping this is a
+      strong DDoS signal — operators receive a Sentry alert via
+      Cloudflare → Sentry webhook.
+    expression: "http.request.uri.path matches \"^/v1/\""
+    period_seconds: 60
+    requests_per_period: 1000
+    action: block
+    block_duration_seconds: 60
+    counting_expression: ""
+
+  - name: zone_search_path_cap
+    description: |
+      /v1/programs/search is the most expensive endpoint (FTS5 + tier
+      sort). Cap at 500 req/min globally so a search-bomb cannot
+      monopolise the SQLite read pool.
+    expression: |
+      http.request.uri.path eq "/v1/programs/search"
+    period_seconds: 60
+    requests_per_period: 500
+    action: block
+    block_duration_seconds: 60
+
+  - name: per_ip_burst_safeguard
+    description: |
+      Defense-in-depth for the in-app per-IP throttle. App limits anon to
+      1 req/sec; Cloudflare adds a per-IP 120 req/min ceiling so a client
+      that ignores 429s and keeps hammering still cannot saturate the
+      origin connection pool.
+    expression: "http.request.uri.path matches \"^/v1/\""
+    period_seconds: 60
+    requests_per_period: 120
+    counting_expression: "(ip.src)"
+    action: managed_challenge
+    block_duration_seconds: 600
+
+  - name: challenge_5xx_loop
+    description: |
+      An IP returning > 100 5xx responses within 1 minute gets a managed
+      challenge for 10 minutes. Cuts off fuzzers that probe unhandled
+      paths in a loop without bothering legitimate clients (a paid SDK
+      user who briefly hits 5xx during a Fly redeploy will see < 10
+      consecutive 5xx, well under the threshold).
+    expression: "http.request.uri.path matches \"^/v1/\""
+    period_seconds: 60
+    requests_per_period: 100
+    counting_expression: "(ip.src)"
+    response_status_codes:
+      - 500
+      - 502
+      - 503
+      - 504
+    action: managed_challenge
+    block_duration_seconds: 600
+
+  - name: per_key_emergency_cap
+    description: |
+      Final safety net: any single API key sending > 5000 req/min is
+      almost certainly a bug (runaway agent loop). The app middleware
+      throttles at 10 req/sec = 600 req/min so reaching 5000 means the
+      throttle was bypassed somehow (spoofed Fly-Client-IP header etc.).
+    expression: |
+      http.request.uri.path matches "^/v1/"
+      and any(http.request.headers.names[*] in {"x-api-key" "X-API-Key"})
+    period_seconds: 60
+    requests_per_period: 5000
+    counting_expression: |
+      (http.request.headers["x-api-key"][0])
+    action: block
+    block_duration_seconds: 300
+
+# --------------------------------------------------------------------
+# Page Rules / Bot Fight Mode (notes, not auto-applied)
+# --------------------------------------------------------------------
+notes:
+  bot_fight_mode: |
+    Enable Cloudflare "Bot Fight Mode" (Free tier feature) on the zone.
+    It catches headless-Chrome and basic browser-emulation libraries
+    (selenium, puppeteer with default flags) without requiring custom
+    rules. Set "Verified Bots" to ALLOW so Googlebot / Bingbot / Stripe
+    webhooks are never challenged.
+  super_bot_fight_mode: |
+    Pro-plan upgrade. Gives JS-challenge for "definitely automated"
+    score and finer-grained verified-bot list. Defer until paid traffic
+    crosses ~¥1M/月; the Free tier rules above + in-app throttle are
+    sufficient pre-launch.
+  geo_blocks: |
+    Do NOT geo-block. AutonoMath is a Japanese-data product but the
+    customer base includes Japanese-speaking diaspora SMBs and JP-aware
+    tax/ag advisors based abroad. A geo-block at the WAF layer would
+    cut high-value users for negligible defensive gain (the data is
+    public; Japanese-language scraping from outside JP is rare).

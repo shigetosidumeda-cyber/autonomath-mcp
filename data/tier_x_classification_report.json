@@ -1,0 +1,43 @@
+{
+  "report_kind": "tier_x_exclusion_reason_classification",
+  "generated_at": "2026-04-26",
+  "wave": "Wave 17 data freshness audit",
+  "severity": "P0",
+  "migration_file": "scripts/migrations/074_tier_x_exclusion_reason_classify.sql",
+  "backup_file": "data/jpintel.db.bak-tier-x-1777177626",
+  "total_tier_x_rows": 1741,
+  "pre_distribution": {
+    "tier_x_quarantine_migration_050": 1206,
+    "NULL_or_empty": 509,
+    "legacy: 令和4年度予算表記": 26
+  },
+  "post_distribution": {
+    "external_info_entry": 875,
+    "legacy_year_budget": 54,
+    "no_amount_data": 560,
+    "unclassified_legacy": 246,
+    "unknown_target": 6
+  },
+  "rows_classified": 1495,
+  "unclassified_legacy_count": 246,
+  "opaque_remaining": 0,
+  "null_remaining": 0,
+  "enum_codes": [
+    "dead_official_url",
+    "duplicate_of",
+    "external_info_entry",
+    "insufficient_data",
+    "legacy_year_budget",
+    "manual_quarantine",
+    "no_amount_data",
+    "no_source_url",
+    "unclassified_legacy",
+    "unknown_target"
+  ],
+  "soft_enforcement_triggers": [
+    "trg_programs_exclusion_reason_enum_x",
+    "trg_programs_exclusion_reason_enum_x_ins"
+  ],
+  "review_queue_file": "data/tier_x_review_queue.jsonl",
+  "review_queue_size": 50
+}

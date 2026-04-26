@@ -1,0 +1,127 @@
+# Healthcare V3 — 5 Cohort Personas
+
+**目的**: 2026-08-04 launch 前の MCP / API ツール設計と blog 記事の
+ペルソナ整合チェック。各 persona は **1 cohort = 1 SaaS / 1 ユースケース**
+を仮定し、**¥3/req metered + zero-touch + organic** の制約を満たすかを
+明示する。
+
+> 想定総母数: 医療法人 3-5k 法人 / 介護施設 50k+ / 薬局 60k+ / 訪問介護 30k+。
+> launch+30d で 1 cohort 顧客が 50+ req/day を継続 → 継続 / 未達 → sunset。
+
+---
+
+## 1. 医療法人 経営者 (院長 + 経営)
+
+- **ロール**: 中堅医療法人 (病床 50-300) の理事長兼院長。
+- **担当範囲**: 病院経営、加算届出、人員配置、設備投資。
+- **困りごと**:
+  - 介護報酬加算 / 医療機能評価機構認定 / 在宅療養支援病院 等の
+    届出基準が法改定で頻繁に変わり、社労士に都度依頼すると
+    返答待ちで意思決定が 1-2 週間ずれる。
+  - DPC 病院維持の経営判断材料が欲しいが、自治体補助の最新情報が
+    厚労省 PDF と県庁 HTML に分散して読み切れない。
+- **AutonoMath での解像**:
+  - `search_healthcare_programs(law_basis='医療法', institution_type='医療法人')`
+    で県別の最新加算 / 補助を 1 call 取得。
+  - `dd_medical_institution_am(canonical_id)` で自院の
+    cert + 行政処分歴 + 制度適用可否を 1-shot dump。
+- **流入想定**: blog 「医療法人 理事長が 5 分で県補助を網羅する MCP 設定」。
+- **解像度確認**: ¥3/req × 月 100 call = ¥300。社労士 1 時間 ¥15,000 比で
+  zero-touch 整合。
+
+## 2. 介護施設 オーナー
+
+- **ロール**: 特養 / 老健 / 有料老人ホームを 1-5 施設運営する代表。
+- **担当範囲**: 介護報酬請求、加算管理、人員基準維持、設備整備補助申請。
+- **困りごと**:
+  - 介護保険法 3 年改定 (次回 2027-04) で加算要件が大幅変更。
+    施設長が把握しきれず、加算取り逃しが年間数百万円単位で発生。
+  - 自治体の開設費補助 / 設備整備補助は県市町村ごとに条件が違い、
+    複数施設展開時の比較ができない。
+- **AutonoMath での解像**:
+  - `search_care_subsidies(prefecture='大阪府', institution_type_target='介護施設')`
+    で県内の現行助成・加算を一覧。
+  - `search_healthcare_compliance(institution_type='介護施設')` で同業の
+    行政処分事例 → 内部監査 checklist の自動更新。
+- **流入想定**: blog 「介護施設 オーナーが加算取り逃しゼロにする
+  3 ステップ (MCP / Claude)」。
+- **解像度確認**: ¥3/req × 月 200 call = ¥600。年間取り逃し ¥3M 比較で
+  圧倒的に低コスト。
+
+## 3. 薬局 経営者
+
+- **ロール**: 調剤薬局 1-10 店舗の経営者 / 管理薬剤師。
+- **担当範囲**: 薬機法 遵守、調剤報酬、地域連携薬局 / 専門医療機関連携薬局
+  認定取得、機能強化加算届出。
+- **困りごと**:
+  - PMDA 承認情報 / 薬機法改定 / 厚労省通知が並行に流れ、
+    通知の見落としで監査指摘になる。
+  - 認定薬局 申請要件が県庁ごとに微妙に違い、複数県展開時に
+    再確認コストが嵩む。
+- **AutonoMath での解像**:
+  - `check_drug_approval(generic_name=...)` で PMDA 承認状況を
+    1 call で取得 (添付文書 url 含む)。
+  - `search_care_subsidies(law_basis='薬機法')` で薬局向け補助を一覧。
+  - `dd_medical_institution_am` で自薬局の認定 / 加算届出履歴 dump。
+- **流入想定**: blog 「薬局経営者が薬機法改定を見逃さない MCP setup」。
+- **解像度確認**: ¥3/req × 月 150 call = ¥450。認定取り逃し 1 件 ¥1M 級
+  → 比較にならない。
+
+## 4. 医療 SaaS 開発者
+
+- **ロール**: 電子カルテ / 予約 / レセプト系 SaaS の開発者・PdM。
+- **担当範囲**: 自社 SaaS に「制度情報 + 加算判定 + 法令引用」機能を
+  組み込みたい開発者。
+- **困りごと**:
+  - 厚労省 PDF / e-Gov XML を自社で parse すると 工数 6 人月 + 維持費が
+    青天井。商用 license 付きの構造化 API がなかった。
+  - LLM agent から「介護報酬加算の根拠条文を引用」させたいが、
+    アグリゲータの URL を渡すと 詐欺リスクで顧客クレーム化する。
+- **AutonoMath での解像**:
+  - REST API `/v1/healthcare/programs` (W4 で公開) を SaaS バックエンドに
+    プロキシ。出典 URL は一次情報のみ保証。
+  - MCP 経由で Claude Sub-agent に `search_healthcare_programs` を
+    与え、自社 UI から自然言語クエリ。
+- **流入想定**: blog 「医療 SaaS に 1 日で制度情報を組み込む
+  (AutonoMath REST + MCP)」。
+- **解像度確認**: ¥3/req × エンドユーザ 1,000 call/日 = ¥3,000/日 = ¥90k/月。
+  自前構築 6 人月 ¥6M+ 比較で初年度即回収。
+
+## 5. 介護 SaaS 開発者
+
+- **ロール**: 介護記録 / シフト管理 / 請求支援 SaaS の開発者・PdM。
+- **担当範囲**: 自社 SaaS に「介護加算 自動判定 + 県別補助検索」を
+  組み込む開発者。
+- **困りごと**:
+  - 介護報酬は 3 年改定で加算条件が頻繁に書き換わる。改定対応の
+    リリースが追いつかず、解約理由の上位に。
+  - 自治体補助は県・市・町村レベルで分散し、自社で fetch 維持できない。
+- **AutonoMath での解像**:
+  - `search_care_subsidies(authority_level='prefecture')` で 47 都道府県の
+    補助を network 化。
+  - `get_medical_institution(canonical_id)` で施設マスタの
+    cert + 加算届出履歴を都度参照、SaaS 側のマスタ管理を縮小。
+- **流入想定**: blog 「介護 SaaS の改定対応コストを 1/10 にする
+  AutonoMath 連携」。
+- **解像度確認**: ¥3/req × エンドユーザ 500 call/日 = ¥1,500/日 = ¥45k/月。
+  改定対応 1 サイクル ¥3M 比較で 5+ 年分の budget。
+
+---
+
+## 整合チェック (5 personas 横断)
+
+- **¥3/req metered で全 persona ROI 黒字** — tier SKU 不要を再確認。
+- **zero-touch 整合** — 5 persona いずれも DPA / Slack Connect / phone を
+  必要としない。SaaS 開発者 2 名は技術 docs + REST/MCP のみで完結。
+- **organic 整合** — 5 persona × blog 1 本 = 計 5 記事で SEO 入口。
+  広告 / 営業 / cold outreach なし。
+- **データ衛生** — 5 persona いずれも一次情報 (厚労省 / PMDA / e-Gov / 自治体)
+  を要求。アグリゲータ ban list は強化方向のみ。
+
+## 不採用 persona (記録)
+
+- **患者** (B2C 領域) — zero-touch と整合しない、CS 負荷が線形に増える。
+- **歯科医院 / 鍼灸接骨院** — 母数は大きいが法令体系が別 (歯科は医療法
+  傘下だが加算体系が異なる)。V4 候補。
+- **製薬企業 治験担当** — PMDA 一次情報の再配布リスクが高く、license
+  獲得前は提供しない。launch+90d で license 再評価。

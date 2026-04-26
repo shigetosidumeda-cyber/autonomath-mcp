@@ -1,0 +1,18 @@
+{#-
+  Theme override: inject docs/assets/index_jsonld.html JSON-LD into the
+  index page <head> only. Other pages get the standard Material <head>.
+
+  Detection: Material sets `page.is_homepage` true for the configured
+  `docs_dir/index.md`. Using that flag keeps per-program JSON-LD pages
+  (site/structured/*.jsonld) as the authoritative source for individual
+  GovernmentService entries — docs index carries only the SoftwareApplication
+  + WebSite graph.
+-#}
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  {% if page and page.is_homepage %}
+    {% include "partials/index_jsonld.html" %}
+  {% endif %}
+{% endblock %}

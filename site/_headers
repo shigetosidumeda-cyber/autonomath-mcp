@@ -1,0 +1,126 @@
+# Cloudflare Pages _headers — autonomath.ai
+# Reference: https://developers.cloudflare.com/pages/configuration/headers/
+# Generated 2026-04-25 to support /structured/*.jsonld MIME + cache headers.
+
+# Site-wide security headers. CSP is intentionally permissive on style-src
+# (mkdocs-material + per-program SEO pages use inline <style>) and on
+# script-src 'unsafe-inline' because several pages ship vetted inline
+# <script> blocks: success.html post-Stripe key reveal, pricing.html /
+# en/pricing.html Subscribe-button + ToS-consent gate, go.html device-link
+# flow, line.html waitlist, widget.html copy-snippet, index.html / 404.html
+# small page-level scripts. Remote scripts remain blocked ('self' only) so
+# this does not open us to third-party CDN compromise; the residual XSS
+# surface is governed by server-side input sanitization (no user input is
+# reflected into HTML on these pages). Future hardening: extract all inline
+# blocks to self-hosted .js files and drop 'unsafe-inline'.
+# `connect-src` allows the API origin (api.autonomath.ai) so dashboard JS
+# can fetch /v1/me/* with credentials. JSON-LD <script type=application/ld+json>
+# is parsed as data, not executed, so it is unaffected by script-src.
+# `object-src 'none'` blocks legacy <object>/<embed>/<applet> injection.
+# `frame-src 'none'` makes explicit that we never embed third-party iframes
+# (Stripe checkout is a top-level redirect, not an embedded iframe). This
+# does not affect form-action which already permits checkout/billing.stripe.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.autonomath.ai; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# JSON-LD structured-data feed for AI training crawlers.
+# Content-Type per https://www.w3.org/TR/json-ld11/ §IANA registration.
+/structured/*.jsonld
+  Content-Type: application/ld+json; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400
+  X-Content-Type-Options: nosniff
+  Access-Control-Allow-Origin: *
+
+# Sitemaps must be served as XML to be parsed by Googlebot / Bingbot.
+/sitemap*.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+# RSS 2.0 announcements feed (release notes, dataset ingests, migrations).
+# Served as application/rss+xml per RSS 2.0 spec; UTF-8 charset declared
+# explicitly so Cloudflare's content-type sniffer does not downgrade to
+# text/xml on browsers that do not advertise RSS in Accept.
+/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/en/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+# robots.txt
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+# RFC 9116 security.txt — responsible disclosure contact.
+/.well-known/security.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400
+
+# llms.txt / llms-full.txt — AI-friendly site map for LLM crawlers.
+# Served as text/markdown per llmstxt.org convention (the file body is
+# markdown-formatted with H1, blockquote TL;DR, and section link lists).
+/llms.txt
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/llms.en.txt
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/en/llms.txt
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/llms-full.txt
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/llms-full.en.txt
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+# Homepage — short cache, longer edge cache for crawlers.
+/index.html
+  Cache-Control: public, max-age=300, s-maxage=600
+
+# Per-program SEO pages — cacheable for a day, SWR a week.
+/programs/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Fingerprinted static assets — immutable, 1y cache.
+# Note: site/styles.css and site/dashboard.js are *not* fingerprinted —
+# they live at fixed paths because 10,953 generated program pages
+# reference them by name. The 1y immutable cache here mainly serves
+# fingerprinted mkdocs assets (site/docs/**/*.<hash>.min.css|js).
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# Self-hosted Noto Sans JP woff2 subsets (mkdocs theme).
+# Path-fingerprinted by sha10 of the upstream gstatic URL → safe to
+# cache 1y immutable. Access-Control-Allow-Origin enables cross-subdomain
+# use (e.g. api.autonomath.ai docs preview).
+/static/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# OG / Twitter PNGs + decorative WebP previews. PNG sources stay because
+# the Twitter card scraper does not reliably resolve WebP. 30-day cache
+# is plenty — these are pure marketing assets.
+/assets/*.png
+  Cache-Control: public, max-age=2592000
+
+/assets/*.webp
+  Cache-Control: public, max-age=2592000
+
+/assets/*.svg
+  Cache-Control: public, max-age=2592000

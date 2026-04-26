@@ -1,0 +1,65 @@
+{
+  "_meta": {
+    "schema_version": "9.2.0",
+    "user_type": "A",
+    "user_type_label": "新規就農個人",
+    "version": 1,
+    "parent_canonical_id": null,
+    "test_profile_id": "N_minimal"
+  },
+  "identity": {
+    "name": "最小 八郎",
+    "furigana": "サイショウ ハチロウ",
+    "address": "群馬県前橋市○○町8-9",
+    "postal_code": "371-0001",
+    "birth_date": {
+      "era": "平成",
+      "year": 10,
+      "month": 1,
+      "day": 1
+    },
+    "age": 28,
+    "phone": "027-111-8888",
+    "email": ""
+  },
+  "plan": {
+    "municipalities": [
+      "前橋市"
+    ],
+    "prefecture": "群馬県",
+    "crop": "ねぎ",
+    "sub_crops": [],
+    "area_a": 1,
+    "cultivation_method": "露地栽培",
+    "start_year": 2026,
+    "start_month": 4,
+    "vision": "小規模から始める。",
+    "farm_land_type": "借入",
+    "channel": "JA"
+  },
+  "qualifications": {
+    "stage": 0,
+    "entity_type": "individual",
+    "has_regional_plan": false,
+    "has_loan_ready": false,
+    "has_insurance": false,
+    "has_blue_tax": false,
+    "household_income_万": null
+  },
+  "financial": {
+    "available_capital_万": 0,
+    "existing_operations": []
+  },
+  "investments": [],
+  "fields": [
+    {
+      "name": "借入予定地",
+      "address": "前橋市○○",
+      "area_sqm": 100,
+      "field_type": "露地",
+      "tenure": "借入"
+    }
+  ],
+  "family": [],
+  "work_history": []
+}

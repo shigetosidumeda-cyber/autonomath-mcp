@@ -1,0 +1,99 @@
+# Cloudflare Pages fallback deploy for site/
+#
+# Purpose: keep a warm, static mirror of site/ on Cloudflare Pages so that if
+# Fly.io (Tokyo) is degraded on launch day we can flip DNS to Pages in <5min
+# and serve landing + legal + status.html instead of a generic 503.
+#
+# Required GitHub repository secrets:
+#   CF_API_TOKEN   Cloudflare API token with scope:
+#                    Account → Cloudflare Pages → Edit
+#                  Create at https://dash.cloudflare.com/profile/api-tokens
+#   CF_ACCOUNT_ID  Cloudflare account ID (right sidebar of any CF dashboard page)
+#
+# Project name: autonomath-fallback
+#   This workflow targets the Cloudflare Pages project "autonomath-fallback".
+#   Must match the Project Name configured in Cloudflare Pages dashboard.
+#
+# TODO (operator — manual dashboard steps required before launch):
+#   1. In the Cloudflare Pages dashboard, create a new project named exactly:
+#        autonomath-fallback
+#      Connect it to this GitHub repo, build command: `mkdocs build --strict`,
+#      output directory: `site`.
+#   2. If a custom domain is needed, configure it in the new project's
+#      "Custom domains" settings (e.g. fallback.autonomath.ai → CNAME to
+#      autonomath-fallback.pages.dev).
+#   3. Transfer any DNS CNAME entries that currently point to
+#      jpintel-mcp-fallback.pages.dev to autonomath-fallback.pages.dev.
+#   4. Verify a deployment completes successfully from the new project.
+#   5. Delete the old project "jpintel-mcp-fallback" from the dashboard.
+#   The old project name "jpintel-mcp-fallback" exposed the deprecated brand
+#   in preview URLs (jpintel-mcp-fallback.pages.dev) — do not recreate it.
+#
+# No dependencies on Fly secrets; this workflow is independent of deploy.yml.
+
+name: pages-preview
+
+on:
+  push:
+    branches:
+      - main
+      - "release/*"
+    paths:
+      - "site/**"
+      - "docs/**"
+      - "mkdocs.yml"
+      - "docs-requirements.txt"
+      - "overrides/**"
+      - ".github/workflows/pages-preview.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy site/ to Cloudflare Pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout
+        # fetch-depth: 0 is required by mkdocs-git-revision-date-localized so
+        # every page can show its true last-commit timestamp (otherwise it
+        # falls back to build date, losing "最終更新" accuracy).
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: docs-requirements.txt
+
+      - name: Install docs dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs-requirements.txt
+
+      - name: Build docs (MkDocs Material → site/docs/)
+        # strict: fail on broken internal links / missing nav entries.
+        # This is the primary quality gate against [text](link.md) drift.
+        run: mkdocs build --strict
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: autonomath-fallback
+          directory: site
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # Branch name drives Pages' preview vs production routing:
+          #   main        → production (fallback.<domain>)
+          #   release/*   → preview deployments for pre-launch drills
+          branch: ${{ github.ref_name }}

@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "schema_version": "9.2.0",
+    "user_type": "B",
+    "user_type_label": "既存農家",
+    "test_profile_id": "Q_dairy_100head"
+  },
+  "identity": {
+    "name": "酪農太郎",
+    "birth_date": {
+      "era": "昭和",
+      "year": 55,
+      "month": 3,
+      "day": 15
+    },
+    "age": 45,
+    "address": "北海道帯広市"
+  },
+  "plan": {
+    "municipalities": [
+      "帯広市"
+    ],
+    "prefecture": "北海道",
+    "crop": "酪農（乳牛）",
+    "sub_crops": [],
+    "area_a": 500,
+    "cultivation_method": "フリーストール+パーラー",
+    "start_year": 2020,
+    "start_month": 4,
+    "vision": "搾乳牛100頭規模への増頭。TMR飼料体系の導入で労働効率化",
+    "farm_land_type": "自作+借地",
+    "channel": "指定団体出荷"
+  },
+  "qualifications": {
+    "stage": 2,
+    "entity_type": "individual",
+    "has_regional_plan": true,
+    "has_loan_ready": true,
+    "has_insurance": true,
+    "has_blue_tax": true,
+    "household_income_万": 800
+  },
+  "financial": {
+    "available_capital_万": 500,
+    "existing_operations": [
+      {
+        "crop": "酪農（乳牛）",
+        "area_a": 300,
+        "annual_revenue_万": 4000,
+        "annual_expense_万": 3200
+      }
+    ]
+  },
+  "investments": [
+    {
+      "name": "牛舎増築",
+      "category": "facility_equipment",
+      "amount_万": 3000,
+      "useful_life": 22,
+      "year": 1
+    },
+    {
+      "name": "搾乳ロボット",
+      "category": "machinery",
+      "amount_万": 2000,
+      "useful_life": 10,
+      "year": 1
+    },
+    {
+      "name": "TMRミキサー",
+      "category": "machinery",
+      "amount_万": 500,
+      "useful_life": 7,
+      "year": 1
+    }
+  ],
+  "fields": [
+    {
+      "name": "本牧場",
+      "address": "帯広市○○町",
+      "area_sqm": 50000,
+      "field_type": "牧草地+飼料畑",
+      "tenure": "自作"
+    }
+  ],
+  "family": [
+    {
+      "relation": "妻",
+      "name": "花子",
+      "age": 43,
+      "will_farm": true
+    }
+  ],
+  "work_history": [
+    {
+      "type": "農業",
+      "organization": "自営",
+      "start_date": "2005-04",
+      "end_date": null,
+      "is_agriculture": true
+    }
+  ]
+}

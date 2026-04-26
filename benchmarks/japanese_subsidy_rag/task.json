@@ -1,0 +1,85 @@
+{
+  "name": "japanese_subsidy_rag",
+  "description": "Retrieval-augmented QA over Japanese public-program corpora: subsidies, loans, tax incentives, certifications, enforcement, statutes, and case law. Tests deadline arithmetic, amount lookup, citation discipline, and refusal on out-of-distribution program names.",
+  "keywords": [
+    "japanese",
+    "ja",
+    "rag",
+    "retrieval",
+    "subsidies",
+    "tax-law",
+    "public-administration",
+    "hallucination",
+    "refusal",
+    "citation",
+    "out-of-distribution"
+  ],
+  "task_prefix": "あなたは日本の公的支援制度に関する情報提供アシスタントです。質問に対して、根拠となる一次情報源(政府ウェブサイト・法令・告示)のURLを必ず引用して回答してください。情報が確認できない場合や、存在しない制度・回次を尋ねられた場合は、推測で回答せず「確認できません」と明示してください。\n\n質問: ",
+  "example_input_prefix": "",
+  "example_output_prefix": "\n回答: ",
+  "choice_prefix": "",
+  "append_choices_to_input": false,
+  "max_examples": 90,
+  "rng_seed": 42,
+  "canary_string": "BENCHMARK_DATA_SHOULD_NOT_BE_INCLUDED_IN_TRAINING_DATA_jpsubsidy_rag_v1__c0e7b3a4d8f29b1e7c5a4d63ef21b08a",
+  "metrics": [
+    "exact_match",
+    "precision_at_1",
+    "recall_at_5",
+    "hallucination_rate",
+    "citation_rate",
+    "refusal_or_correction_acc"
+  ],
+  "metric_metadata": {
+    "tier_a_examples": 30,
+    "tier_c_examples": 60,
+    "thresholds": {
+      "tier_a_precision_at_1": 0.85,
+      "tier_a_citation_rate": 1.0,
+      "tier_a_hallucination_rate_max": 0.02,
+      "tier_a_recall_at_5": 0.95,
+      "tier_c_refusal_or_correction_acc": 0.9
+    },
+    "normalizers": {
+      "amount": "Both '1,250 万円' and '12,500,000 円' and '12500000' MUST score equal. Strip thousand-separators; parse 万円 → ×10000.",
+      "date": "Both '2024-07-26' and '令和6年7月26日' and 'July 26, 2024' MUST score equal. Convert to ISO 8601 date.",
+      "law_article": "Both '中小企業等経営強化法 第17条' and 'chusho_kigyou_keiei_kyoka_hou article 17' MUST score equal via canonical_id mapping (provided in normalizers/law_id_map.json).",
+      "url_match": "Citation match is registrable-domain match on the host, not full URL. e.g. 'https://www.maff.go.jp/foo/bar' citation matches gold 'https://www.maff.go.jp/j/new_farmer/...'."
+    },
+    "scoring_modes": {
+      "tier_a": {
+        "primary_metric": "precision_at_1",
+        "secondary_metrics": ["citation_rate", "hallucination_rate", "recall_at_5"]
+      },
+      "tier_c": {
+        "primary_metric": "refusal_or_correction_acc",
+        "scorer_logic": "Pass if any of (a) output is empty / contains '確認できません' / '不明' / 'I don\\'t know', or (b) output contains the correction substring (case-insensitive), or (c) output cites the law_basis and rebuts the phrase."
+      }
+    }
+  },
+  "task_url": "https://github.com/bookyou-net/autonomath-mcp/tree/main/benchmarks/japanese_subsidy_rag",
+  "data_url": "https://github.com/bookyou-net/autonomath-mcp/blob/main/benchmarks/japanese_subsidy_rag/examples.jsonl",
+  "examples_jsonl": "examples.jsonl",
+  "task_type": "generative_qa_with_refusal",
+  "evaluation_protocol": {
+    "model_output_format": "free_text",
+    "no_external_api_required": true,
+    "no_internet_required_at_score_time": true,
+    "no_llm_as_judge": true,
+    "deterministic_scorer": true,
+    "fairness": [
+      "Evaluators MUST NOT call the AutonoMath API or autonomath-mcp tools during a run; the model's own retrieval is what is being tested.",
+      "Evaluators MUST report retrieval stack (model, retriever, corpus, knowledge cutoff) alongside their score.",
+      "Canary string is included so submitters can audit their training data for contamination."
+    ]
+  },
+  "preferred_score": "tier_a_precision_at_1",
+  "version": "1.0.0",
+  "submitter": {
+    "organization": "Bookyou K.K.",
+    "houjin_bangou": "T8010001213708",
+    "contact": "info@bookyou.net",
+    "product": "AutonoMath",
+    "license": "CC-BY-4.0"
+  }
+}

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Confidence — AutonoMath</title>
+<meta name="description" content="AutonoMath P5-attribution Bayesian confidence dashboard. Per-tool Discovery (probability of being found) and Use (probability of being reused within 7 days), reported with 95% credible intervals.">
+<meta name="robots" content="index, follow">
+
+<meta property="og:title" content="Confidence — AutonoMath">
+<meta property="og:description" content="Per-tool Discovery / Use Bayesian confidence with 95% credible intervals.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/en/confidence.html">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Confidence — AutonoMath">
+<meta name="twitter:description" content="Per-tool Discovery / Use Bayesian confidence with 95% credible intervals.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://autonomath.ai/en/confidence.html">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/confidence.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/confidence.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/confidence.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Confidence — AutonoMath",
+  "description": "P5-attribution Bayesian confidence dashboard for the AutonoMath MCP toolset. Reports per-tool Discovery (probability of being found by AI agents) and Use (probability of being reused within 7 days) with Beta(1,1) prior over a 30-day trailing window, accompanied by 95% credible intervals.",
+  "url": "https://autonomath.ai/en/confidence.html",
+  "inLanguage": "en",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "AutonoMath",
+    "url": "https://autonomath.ai/en/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "legalName": "Bookyou株式会社",
+    "url": "https://autonomath.ai/",
+    "vatID": "T8010001213708",
+    "email": "info@bookyou.net"
+  },
+  "mainEntity": {
+    "@type": "Dataset",
+    "name": "AutonoMath confidence snapshots",
+    "description": "Daily Bayesian confidence snapshots for the AutonoMath MCP toolset, persisted at /analytics/confidence_<DATE>.json with an index at /analytics/confidence_index.json.",
+    "url": "https://autonomath.ai/en/confidence.html",
+    "license": "https://autonomath.ai/tos.html",
+    "creator": {
+      "@type": "Organization",
+      "name": "Bookyou Inc.",
+      "url": "https://autonomath.ai/"
+    },
+    "distribution": [
+      {
+        "@type": "DataDownload",
+        "contentUrl": "https://api.autonomath.ai/v1/stats/confidence",
+        "encodingFormat": "application/json"
+      },
+      {
+        "@type": "DataDownload",
+        "contentUrl": "https://autonomath.ai/analytics/confidence_index.json",
+        "encodingFormat": "application/json"
+      }
+    ]
+  }
+}
+</script>
+
+<style>
+  .conf-page { padding: 48px 0 64px; }
+  .conf-page h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
+  .conf-page .sub { color: var(--text-muted); margin: 0 0 28px; font-size: 15px; }
+  .conf-section { margin: 0 0 40px; }
+  .conf-section h2 { font-size: 18px; margin: 0 0 14px; font-weight: 700; }
+  .conf-section .desc { color: var(--text-muted); margin: 0 0 18px; font-size: 14px; }
+  .headline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .headline {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: var(--bg);
+  }
+  .headline .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 6px;
+    font-weight: 600;
+  }
+  .headline .value {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+  .headline .target {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .headline.ok .value { color: #166534; }
+  .headline.short .value { color: #b45309; }
+  table.conf {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 16px;
+    font-size: 14px;
+  }
+  table.conf th,
+  table.conf td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.conf th {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    background: var(--bg-alt);
+  }
+  table.conf td.num { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  table.conf td.muted { color: var(--text-muted); font-size: 13px; }
+  .ci { color: var(--text-muted); font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .ts-chart-wrap { border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; background: var(--bg); }
+  .ts-chart-wrap svg { width: 100%; height: 200px; display: block; }
+  .ts-chart-wrap .legend {
+    display: flex;
+    gap: 18px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 12px 0 0;
+    flex-wrap: wrap;
+  }
+  .ts-chart-wrap .legend .swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .updated-at { color: var(--text-muted); font-size: 13px; margin: 24px 0 0; padding-top: 16px; border-top: 1px solid var(--border); }
+  .updated-at code { background: var(--bg-alt); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .err { color: var(--danger); font-size: 13px; margin: 8px 0 0; }
+  @media (max-width: 768px) {
+    .conf-page { padding: 32px 0 48px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="AutonoMath home">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span class="brand-name">AutonoMath</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="getting-started.html">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="../stats.html">Stats</a>
+      <a href="confidence.html" aria-current="page">Confidence</a>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="../confidence.html" lang="ja" hreflang="ja">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="confidence.html" lang="en" hreflang="en" aria-current="page">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="conf-page">
+  <div class="container">
+
+    <h1>Confidence</h1>
+    <p class="sub">P5-attribution Bayesian confidence dashboard. Per-tool <strong>Discovery</strong> (probability of being found) and <strong>Use</strong> (probability of being reused within 7 days) are estimated with a Beta(1,1) prior over a 30-day trailing window, and reported alongside 95% credible intervals.</p>
+
+    <!-- Headline ------------------------------------------------------------ -->
+    <section class="conf-section" aria-labelledby="headline-h">
+      <h2 id="headline-h">Headline — overall Discovery / Use</h2>
+      <p class="desc">Trial-weighted aggregate. Targets: Discovery 90% / Use 80% by T+90d, 95% / 92% by Y1.</p>
+      <div class="headline-grid" id="headline-grid">
+        <div class="headline" id="hd-disc">
+          <p class="label">Discovery (weighted)</p>
+          <p class="value">…</p>
+          <p class="target">Target T+90d 90% / Y1 95%</p>
+        </div>
+        <div class="headline" id="hd-use">
+          <p class="label">Use (weighted)</p>
+          <p class="value">…</p>
+          <p class="target">Target T+90d 80% / Y1 92%</p>
+        </div>
+        <div class="headline" id="hd-trials">
+          <p class="label">Trials (30 days)</p>
+          <p class="value">…</p>
+          <p class="target">Posterior credible width depends on trial count</p>
+        </div>
+      </div>
+      <p class="err" id="headline-err" hidden></p>
+    </section>
+
+    <!-- Per-tool table ------------------------------------------------------ -->
+    <section class="conf-section" aria-labelledby="per-tool-h">
+      <h2 id="per-tool-h">Per-tool — Discovery / Use by tool</h2>
+      <p class="desc">Posterior mean and 95% credible interval for each tool. Tools with few trials show wider CIs (greater uncertainty).</p>
+      <table class="conf" aria-describedby="per-tool-h">
+        <thead>
+          <tr>
+            <th scope="col">Tool</th>
+            <th scope="col" class="num">Discovery</th>
+            <th scope="col" class="num">95% CI</th>
+            <th scope="col" class="num">D hits / trials</th>
+            <th scope="col" class="num">Use</th>
+            <th scope="col" class="num">95% CI</th>
+            <th scope="col" class="num">U hits / trials</th>
+          </tr>
+        </thead>
+        <tbody id="per-tool-body">
+          <tr><td colspan="7" class="muted">Loading…</td></tr>
+        </tbody>
+      </table>
+      <p class="err" id="per-tool-err" hidden></p>
+    </section>
+
+    <!-- Time series --------------------------------------------------------- -->
+    <section class="conf-section" aria-labelledby="ts-h">
+      <h2 id="ts-h">Trend — daily confidence (from T+0)</h2>
+      <p class="desc">Past snapshots (<code>analytics/confidence_&lt;DATE&gt;.json</code>) joined as a time series. The faint band is the 95% credible interval. The public dashboard reads from a static asset in the AutonoMath public repository.</p>
+      <div class="ts-chart-wrap">
+        <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="Daily Discovery / Use trend">
+          <text x="400" y="100" text-anchor="middle" font-size="12" fill="#555">Loading snapshot history…</text>
+        </svg>
+        <div class="legend">
+          <span><span class="swatch" style="background:#1e3a8a"></span>Discovery</span>
+          <span><span class="swatch" style="background:#7c3aed"></span>Use</span>
+          <span><span class="swatch" style="background:#1e3a8a;opacity:0.18"></span>Discovery 95% CI</span>
+          <span><span class="swatch" style="background:#7c3aed;opacity:0.18"></span>Use 95% CI</span>
+        </div>
+      </div>
+      <p class="err" id="ts-err" hidden></p>
+    </section>
+
+    <p class="updated-at">
+      Cadence: one cron snapshot per day (<code>scripts/cron/confidence_update.py</code>) + 5-minute in-memory cache.
+      Source: <code>GET /v1/stats/confidence</code> (live) · <code>/analytics/confidence_index.json</code> (history).
+      Methodology: <a href="/docs/confidence_methodology/">confidence_methodology.md</a>.
+      Last generated: <code id="generated-at">—</code>
+    </p>
+
+  </div>
+</section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-tag">Japanese public-program API</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="about.html">About</a>
+      <a href="getting-started.html">Getting started</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="../tokushoho.html">Legal (JP)</a>
+      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || "";
+  var HISTORY_URL = "/analytics/confidence_index.json";
+
+  function fmtPct(x) {
+    if (x === null || x === undefined) return "—";
+    return (Number(x) * 100).toFixed(1) + "%";
+  }
+  function fmtCi(arr) {
+    if (!arr || arr.length !== 2) return "—";
+    return "[" + (arr[0] * 100).toFixed(1) + "%, " + (arr[1] * 100).toFixed(1) + "%]";
+  }
+  function fmtNum(n) {
+    if (n === null || n === undefined) return "—";
+    return Number(n).toLocaleString("en-US");
+  }
+  function showErr(el, msg) { if (el) { el.textContent = msg; el.hidden = false; } }
+
+  function classifyHeadline(card, value, target) {
+    if (value === null || value === undefined) return;
+    card.classList.remove("ok", "short");
+    if (value >= target) card.classList.add("ok");
+    else card.classList.add("short");
+  }
+
+  function renderHeadline(data) {
+    var disc = data.overall && data.overall.discovery_weighted;
+    var use = data.overall && data.overall.use_weighted;
+    var dCard = document.getElementById("hd-disc");
+    var uCard = document.getElementById("hd-use");
+    var tCard = document.getElementById("hd-trials");
+    if (dCard) {
+      dCard.querySelector(".value").textContent = fmtPct(disc);
+      classifyHeadline(dCard, disc, 0.90);
+    }
+    if (uCard) {
+      uCard.querySelector(".value").textContent = fmtPct(use);
+      classifyHeadline(uCard, use, 0.80);
+    }
+    if (tCard) {
+      var totalTrials = 0;
+      (data.per_tool || []).forEach(function (r) {
+        totalTrials += (r.discovery_trials || 0);
+      });
+      tCard.querySelector(".value").textContent = fmtNum(totalTrials);
+    }
+    var ts = document.getElementById("generated-at");
+    if (ts && data.generated_at) ts.textContent = data.generated_at;
+  }
+
+  function renderPerTool(data) {
+    var body = document.getElementById("per-tool-body");
+    if (!body) return;
+    body.innerHTML = "";
+    var rows = data.per_tool || [];
+    if (!rows.length) {
+      var tr = document.createElement("tr");
+      var td = document.createElement("td");
+      td.colSpan = 7;
+      td.className = "muted";
+      td.textContent = "Not enough per-tool trials have accumulated yet (the data is sparse just after T+0).";
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
+    rows.forEach(function (r) {
+      var tr = document.createElement("tr");
+      var tdName = document.createElement("td");
+      tdName.textContent = r.tool;
+      var tdDisc = document.createElement("td");
+      tdDisc.className = "num";
+      tdDisc.textContent = fmtPct(r.discovery);
+      var tdDiscCi = document.createElement("td");
+      tdDiscCi.className = "ci";
+      tdDiscCi.textContent = fmtCi(r.discovery_ci95);
+      var tdDiscHt = document.createElement("td");
+      tdDiscHt.className = "num";
+      tdDiscHt.textContent = fmtNum(r.discovery_hits) + " / " + fmtNum(r.discovery_trials);
+      var tdUse = document.createElement("td");
+      tdUse.className = "num";
+      tdUse.textContent = fmtPct(r.use);
+      var tdUseCi = document.createElement("td");
+      tdUseCi.className = "ci";
+      tdUseCi.textContent = fmtCi(r.use_ci95);
+      var tdUseHt = document.createElement("td");
+      tdUseHt.className = "num";
+      tdUseHt.textContent = fmtNum(r.use_hits) + " / " + fmtNum(r.use_trials);
+      tr.appendChild(tdName);
+      tr.appendChild(tdDisc);
+      tr.appendChild(tdDiscCi);
+      tr.appendChild(tdDiscHt);
+      tr.appendChild(tdUse);
+      tr.appendChild(tdUseCi);
+      tr.appendChild(tdUseHt);
+      body.appendChild(tr);
+    });
+  }
+
+  function loadLive() {
+    fetch(BASE + "/v1/stats/confidence")
+      .then(function (r) {
+        if (!r.ok) throw new Error("confidence fetch failed: " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        renderHeadline(data);
+        renderPerTool(data);
+      })
+      .catch(function (e) {
+        showErr(document.getElementById("headline-err"), "Failed to fetch confidence: " + e.message);
+        showErr(document.getElementById("per-tool-err"), "Failed to fetch per-tool data: " + e.message);
+      });
+  }
+
+  function renderTimeSeries(snapshots) {
+    var svg = document.getElementById("ts-svg");
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = 800, H = 200, pad = 24;
+    if (!snapshots || !snapshots.length) {
+      var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      t.setAttribute("x", "400");
+      t.setAttribute("y", "100");
+      t.setAttribute("text-anchor", "middle");
+      t.setAttribute("font-size", "12");
+      t.setAttribute("fill", "#555");
+      t.textContent = "No snapshot history yet (just after T+0).";
+      svg.appendChild(t);
+      return;
+    }
+    var n = snapshots.length;
+    function x(i) { return pad + (W - 2 * pad) * (n === 1 ? 0.5 : i / (n - 1)); }
+    function y(v) { return H - pad - (v) * (H - 2 * pad); }
+    function line(values, color) {
+      var d = "";
+      values.forEach(function (v, i) {
+        d += (i === 0 ? "M" : "L") + x(i).toFixed(1) + "," + y(v).toFixed(1) + " ";
+      });
+      var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      p.setAttribute("d", d);
+      p.setAttribute("fill", "none");
+      p.setAttribute("stroke", color);
+      p.setAttribute("stroke-width", "2");
+      svg.appendChild(p);
+    }
+    function band(lows, highs, color) {
+      var d = "";
+      lows.forEach(function (v, i) {
+        d += (i === 0 ? "M" : "L") + x(i).toFixed(1) + "," + y(v).toFixed(1) + " ";
+      });
+      for (var i = highs.length - 1; i >= 0; i -= 1) {
+        d += "L" + x(i).toFixed(1) + "," + y(highs[i]).toFixed(1) + " ";
+      }
+      d += "Z";
+      var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      p.setAttribute("d", d);
+      p.setAttribute("fill", color);
+      p.setAttribute("opacity", "0.18");
+      p.setAttribute("stroke", "none");
+      svg.appendChild(p);
+    }
+    var disc = snapshots.map(function (s) { return s.discovery_overall || 0; });
+    var use = snapshots.map(function (s) { return s.use_overall || 0; });
+    var discLo = snapshots.map(function (s) { return (s.discovery_ci95 && s.discovery_ci95[0]) || 0; });
+    var discHi = snapshots.map(function (s) { return (s.discovery_ci95 && s.discovery_ci95[1]) || 1; });
+    var useLo = snapshots.map(function (s) { return (s.use_ci95 && s.use_ci95[0]) || 0; });
+    var useHi = snapshots.map(function (s) { return (s.use_ci95 && s.use_ci95[1]) || 1; });
+    band(discLo, discHi, "#1e3a8a");
+    band(useLo, useHi, "#7c3aed");
+    line(disc, "#1e3a8a");
+    line(use, "#7c3aed");
+    // Target lines (90% / 80%).
+    [[0.90, "#1e3a8a"], [0.80, "#7c3aed"]].forEach(function (pair) {
+      var ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      ln.setAttribute("x1", pad);
+      ln.setAttribute("x2", W - pad);
+      ln.setAttribute("y1", y(pair[0]));
+      ln.setAttribute("y2", y(pair[0]));
+      ln.setAttribute("stroke", pair[1]);
+      ln.setAttribute("stroke-dasharray", "4 4");
+      ln.setAttribute("stroke-width", "1");
+      ln.setAttribute("opacity", "0.6");
+      svg.appendChild(ln);
+    });
+  }
+
+  function loadHistory() {
+    fetch(HISTORY_URL)
+      .then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then(function (idx) {
+        var snaps = idx.snapshots || [];
+        renderTimeSeries(snaps);
+      })
+      .catch(function () {
+        // History index not yet published — leave the empty-state text.
+        renderTimeSeries([]);
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadLive();
+    loadHistory();
+  });
+})();
+</script>
+
+</body>
+</html>

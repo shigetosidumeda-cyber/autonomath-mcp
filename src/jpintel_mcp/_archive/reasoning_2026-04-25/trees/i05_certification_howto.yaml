@@ -1,0 +1,79 @@
+intent_id: i05_certification_howto
+name_ja: ある認定の取得方法・要件
+
+extract_slots:
+  - key: certification_id
+    required: true
+    enum_source: registry.certifications
+  - key: region
+    required: false    # 都道府県 for 地方認定
+
+required_entities: [certification, authority, program]
+required_edges:
+  - certifying_authority
+  - unlocks_program
+required_filters:
+  - certification_id
+  - region
+
+branches:
+  - when: certifying_authority_level == prefecture
+    action: require region; branch to 都道府県商工労働部
+  - when: certification has application_fee_yen > 0
+    action: surface fee on top
+  - when: unlocks_program set is empty
+    action: warn "認定単独のメリットは薄い"
+
+answer_template: decision_flow
+answer_skeleton: |
+  【認定名】 {cert_name}
+  【根拠法令】 {root_law}
+  【認定機関】 {certifying_org} (上位省庁: {parent_ministry})
+
+  【取得フロー】
+  Step 1. 要件確認
+    {requirements_bullets}
+  Step 2. 計画書作成 (目安 {plan_pages}ページ)
+    必要項目: {plan_sections}
+  Step 3. 事前相談 (任意 / 推奨)
+    窓口: {pre_consult_window}
+  Step 4. 提出
+    提出先: {submission_target}
+    添付書類: {attached_docs}
+    申請料: ¥{application_fee_yen}
+  Step 5. 審査 (処理日数 中央値 {processing_days_median}日)
+  Step 6. 認定書交付
+    有効期間: {validity_period}
+
+  【認定取得で開くドア】
+  {unlocked_programs_bullets}
+
+  【先回り情報】
+  - 並行して取っておくと有効な認定: {parallel_certs}
+  - 更新/変更申請の条件: {renewal_rule}
+
+  【一次資料】
+  {citation_urls}
+
+row_shape_unlocked: |
+  - {program_name} ({authority_level}) — 加点/必須区分: {boost_type}
+    根拠: {source_url}
+
+proactive_rules:
+  - id: unlocked_programs
+    trigger: unlocks_program edges > 0
+    payload: list top-10 programs
+  - id: parallel_certs
+    trigger: same authority_level has sibling certifications
+    payload: suggest paired certifications
+  - id: fee_zero_ok
+    trigger: application_fee_yen == 0
+    payload: highlight "公的認定 申請料無料"
+
+zero_result_hint: |
+  認定が見つかりません。代表的な認定:
+  - 経営革新計画
+  - 経営力向上計画
+  - 先端設備等導入計画
+  - 健康経営優良法人
+  - 事業継続力強化計画

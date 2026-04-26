@@ -1,0 +1,146 @@
+name: e2e
+
+# End-to-end browser smoke suite (Playwright). Runs against the deployed
+# staging target so it exercises the full uvicorn + SQLite + static-site
+# wiring.
+#
+# Triggers:
+#   - pull_request to main: catch regressions before merge
+#   - nightly at 02:00 JST (17:00 UTC): catch overnight drift (Stripe
+#     price-id rotations, CDN cache invalidations, staging DB resets)
+#   - workflow_dispatch: on-demand, with an optional `target` input to
+#     point at prod (the manual "D-Day smoke" knob, which sets
+#     --run-production so @pytest.mark.production tests execute)
+#
+# Chromium only — smaller runner image and faster cold start than all
+# three Playwright engines. Firefox / WebKit gaps are not launch blockers
+# for a REST+MCP product.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "src/jpintel_mcp/api/**"
+      - "src/jpintel_mcp/billing/**"
+      - "tests/e2e/**"
+      - ".github/workflows/e2e.yml"
+      - "pyproject.toml"
+  schedule:
+    # 17:00 UTC = 02:00 JST next day (cron runs in UTC; schedule for
+    # off-peak in the target region so any transient 429 doesn't drown
+    # real users).
+    - cron: "0 17 * * *"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Base URL for the browser (staging default)"
+        required: false
+        default: "https://autonomath-api-staging.fly.dev"
+      run_production:
+        description: "Also run @pytest.mark.production tests (manual only)"
+        required: false
+        default: "false"
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Default target = staging. PR / nightly use this; workflow_dispatch
+      # overrides via the input.
+      JPINTEL_E2E_BASE_URL: ${{ github.event.inputs.target || 'https://autonomath-api-staging.fly.dev' }}
+      # Headless always in CI — browser engine starts faster and the
+      # screenshot-on-failure path doesn't need a display.
+      JPINTEL_E2E_HEADLESS: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Set up Node (Playwright needs node for its CLI)
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+
+      - name: Install Python deps (e2e extras)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[e2e]"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            playwright-chromium-${{ runner.os }}-
+
+      - name: Install chromium (Playwright)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        # chromium only — skips firefox + webkit (~200MB saved, ~25s faster).
+        # --with-deps installs the OS-level libs chromium needs on Ubuntu.
+        run: python -m playwright install --with-deps chromium
+
+      - name: Install chromium OS deps (cache hit path)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        # When the browser binary is cached, we still need the shared libs
+        # on fresh runners. --with-deps alone won't redownload the binary.
+        run: python -m playwright install-deps chromium
+
+      - name: Run E2E tests
+        id: pytest
+        # Not using -x (fail-fast) because we want full screenshots on
+        # every failing page, not just the first.
+        run: |
+          EXTRA=""
+          if [ "${{ github.event.inputs.run_production }}" = "true" ]; then
+            EXTRA="--run-production"
+          fi
+          pytest tests/e2e/ -v --tb=short $EXTRA
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: e2e-screenshots-${{ github.run_id }}
+          path: tests/e2e/_artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Comment on PR with failure links
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const runId = context.runId;
+            const artifactUrl = `https://github.com/${owner}/${repo}/actions/runs/${runId}`;
+            const body = [
+              '### E2E smoke failed',
+              '',
+              `- Workflow run: ${artifactUrl}`,
+              `- Screenshots: download the \`e2e-screenshots-${runId}\` artifact from the run page (7-day retention).`,
+              `- Target: \`${process.env.JPINTEL_E2E_BASE_URL}\``,
+              '',
+              'If this is a flake, rerun the workflow. If it repeats, check the`',
+              'referenced screenshot + `pytest -v` output before merging.',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: context.issue.number,
+              body
+            });

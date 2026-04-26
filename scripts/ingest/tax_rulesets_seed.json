@@ -1,0 +1,948 @@
+[
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "credit",
+    "canonical_name": "免税事業者等からの課税仕入 経過措置 80%控除 (令和5年10月〜令和8年9月)",
+    "summary": "2023-10-01から2026-09-30までの、適格請求書発行事業者以外からの課税仕入について、区分記載請求書等の保存を要件に仕入税額相当額の80%を控除できる。",
+    "description": "インボイス制度導入時の取引急減回避を目的とした3年限定の経過措置。買手は区分記載請求書等 + 帳簿 (『80%控除対象』の旨を明記) を保存することで、税額相当額の80%を控除できる。対象取引日が2026-10-01以降の場合は50%経過措置 (第2段階) に切り替わる。",
+    "legal_basis": ["所得税法等の一部を改正する法律(平成二十八年法律第十五号)附則第52条", "消費税法第30条"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": "2026-09-30",
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "supplier_is_qualified_invoice_issuer", "value": false},
+        {"op": "gte", "field": "transaction_date_serial", "value": 20231001},
+        {"op": "lte", "field": "transaction_date_serial", "value": 20260930},
+        {"op": "eq", "field": "classified_invoice_retained", "value": true}
+      ]
+    },
+    "rate_or_amount": "仕入税額相当額 × 80%",
+    "calculation_formula": "控除額 = 課税仕入に係る税額相当額 × 0.80",
+    "filing_requirements": "区分記載請求書等 + 帳簿に「80%控除対象」の旨を記載して保存。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_kojinjigyosha.htm",
+    "confidence": 0.94
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "credit",
+    "canonical_name": "免税事業者等からの課税仕入 経過措置 50%控除 (令和8年10月〜令和11年9月)",
+    "summary": "2026-10-01から2029-09-30までの、適格請求書発行事業者以外からの課税仕入について、仕入税額相当額の50%を控除できる。",
+    "description": "80%経過措置からの段階的縮小。2029-09-30を以て完全に廃止される。帳簿の記載要件は80%措置と同様 (『50%控除対象』の旨を明記)。",
+    "legal_basis": ["所得税法等の一部を改正する法律(平成二十八年法律第十五号)附則第53条", "消費税法第30条"],
+    "effective_start_date": "2026-10-01",
+    "effective_end_date": "2029-09-30",
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "supplier_is_qualified_invoice_issuer", "value": false},
+        {"op": "gte", "field": "transaction_date_serial", "value": 20261001},
+        {"op": "lte", "field": "transaction_date_serial", "value": 20290930},
+        {"op": "eq", "field": "classified_invoice_retained", "value": true}
+      ]
+    },
+    "rate_or_amount": "仕入税額相当額 × 50%",
+    "calculation_formula": "控除額 = 課税仕入に係る税額相当額 × 0.50",
+    "filing_requirements": "区分記載請求書等 + 帳簿に「50%控除対象」の旨を記載して保存。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_kojinjigyosha.htm",
+    "confidence": 0.94
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "exemption",
+    "canonical_name": "2割特例 (小規模事業者の消費税納税額軽減)",
+    "summary": "インボイス制度を機に免税事業者から課税事業者となった小規模事業者は、2023-10-01から2026-09-30までの属する課税期間について、売上税額の2割を納税額とできる。",
+    "description": "事前届出不要。確定申告書への記載のみで適用。基準期間の課税売上高が1,000万円以下であることが前提で、インボイス登録により課税事業者となった者が対象。簡易課税制度との選択適用。",
+    "legal_basis": ["所得税法等の一部を改正する法律(令和五年法律第三号)附則第51条の2", "消費税法第37条"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": "2026-09-30",
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "newly_registered_invoice_issuer", "value": true},
+        {"op": "eq", "field": "was_exempt_business_before_registration", "value": true},
+        {"op": "lte", "field": "taxable_sales_jpy_base_period", "value": 10000000},
+        {"op": "gte", "field": "transaction_date_serial", "value": 20231001},
+        {"op": "lte", "field": "transaction_date_serial", "value": 20260930}
+      ]
+    },
+    "rate_or_amount": "納税額 = 売上税額 × 20%",
+    "calculation_formula": "納付消費税額 = 課税売上に係る消費税額 × 0.2",
+    "filing_requirements": "事前届出不要。消費税確定申告書に2割特例適用の旨を記載。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_tokurei.htm",
+    "confidence": 0.95
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "少額特例 (1万円未満の課税仕入、帳簿のみ保存で控除可)",
+    "summary": "基準期間の課税売上高1億円以下または特定期間の課税売上高5,000万円以下の事業者は、2023-10-01から2029-09-30までの1取引税込1万円未満の課税仕入について、帳簿のみの保存で仕入税額控除が認められる。",
+    "description": "適格請求書の保存が不要となる事務負担軽減の経過措置。対象は買手側で、1取引の税込金額 (本体+消費税) が10,000円未満であれば、売手が免税事業者・課税事業者いずれでも適用可。帳簿には通常の区分記載要件 (相手方・日付・内容・金額) の記載が必要。",
+    "legal_basis": ["所得税法等の一部を改正する法律(平成二十八年法律第十五号)附則第53条の2", "消費税法第30条"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": "2029-09-30",
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "transaction_amount_yen_including_tax", "value": 9999},
+        {"op": "any", "of": [
+          {"op": "lte", "field": "taxable_sales_jpy_base_period", "value": 100000000},
+          {"op": "lte", "field": "taxable_sales_jpy_specific_period", "value": 50000000}
+        ]},
+        {"op": "gte", "field": "transaction_date_serial", "value": 20231001},
+        {"op": "lte", "field": "transaction_date_serial", "value": 20290930}
+      ]
+    },
+    "rate_or_amount": "100% 控除 (帳簿保存のみで可)",
+    "calculation_formula": null,
+    "filing_requirements": "適格請求書の保存不要。帳簿に相手方・取引年月日・取引内容・支払対価の額を記載。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.94
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "registration",
+    "canonical_name": "適格請求書発行事業者登録 (BtoB課税売上がある事業者)",
+    "summary": "課税売上1,000万円超の事業者、またはBtoB取引が主で買手の仕入税額控除を確保したい事業者は、適格請求書発行事業者の登録申請 (インボイス登録申請書) を行う必要がある。",
+    "description": "登録により、取引先 (買手) はインボイスを受領でき仕入税額控除が可能となる。登録すると課税事業者となり、基準期間の課税売上高が1,000万円以下でも消費税の納税義務が生じる。個人番号 (T + 13桁の法人番号 or 固有番号) が付与される。",
+    "legal_basis": ["消費税法第57条の2"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "any",
+      "of": [
+        {"op": "gte", "field": "taxable_sales_jpy_previous", "value": 10000001},
+        {"op": "all", "of": [
+          {"op": "eq", "field": "business_counterparty_type", "value": "btob"},
+          {"op": "eq", "field": "wants_invoice_issuance", "value": true}
+        ]}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "「適格請求書発行事業者の登録申請書」をe-Tax又は所轄税務署に提出。登録希望日の15日前までに申請。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm",
+    "confidence": 0.93
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "registration",
+    "canonical_name": "免税事業者が登録を見合わせる判断 (BtoC主体・売上1,000万円以下)",
+    "summary": "課税売上高1,000万円以下でBtoC取引が主な事業者は、インボイス登録を見合わせることで免税事業者として消費税納税義務を免れ得る。",
+    "description": "買手が一般消費者 (インボイス不要) の場合、登録しないことによる取引機会喪失は限定的。登録すると課税事業者となり納税義務が発生するため、取引構造 (BtoB比率) に応じた判断が必要。",
+    "legal_basis": ["消費税法第9条", "消費税法第57条の2"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "taxable_sales_jpy_previous", "value": 10000000},
+        {"op": "eq", "field": "business_counterparty_type", "value": "btoc"},
+        {"op": "not", "of": {"op": "has_invoice_registration"}}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "登録申請書を提出しない。既に登録済みの場合は「適格請求書発行事業者の登録の取消しを求める旨の届出書」を提出。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "registration",
+    "canonical_name": "適格請求書発行事業者登録の取消届出",
+    "summary": "登録事業者が免税事業者に戻る場合、「登録取消届出書」を翌課税期間の15日前までに提出することで登録を取り消せる。",
+    "description": "取消しの効力は届出書提出日の翌課税期間初日から。取消し後は登録番号が失効し、インボイスの発行はできなくなる。ただし2割特例等の経過措置を適用していた期間の義務は残る。",
+    "legal_basis": ["消費税法第57条の2第10項"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "has_invoice_registration"},
+        {"op": "eq", "field": "wants_to_cancel_registration", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "「適格請求書発行事業者の登録の取消しを求める旨の届出書」を翌課税期間の初日から起算して15日前の日までに所轄税務署長に提出。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "適格請求書の記載要件 (6項目)",
+    "summary": "適格請求書には (1)発行者の氏名/名称及び登録番号 (2)取引年月日 (3)取引内容 (軽減税率対象ならその旨) (4)税率ごとに区分した対価の合計額及び適用税率 (5)税率ごとに区分した消費税額 (6)受領者の氏名/名称 が記載されていなければならない。",
+    "description": "6項目いずれかが欠けるとインボイスとして認められず、買手は仕入税額控除が取れない。適格簡易請求書 (BtoC小売・飲食・タクシー等) は (6) の受領者氏名を省略可。手書き訂正は発行者による訂正済み書面の再交付が必要。",
+    "legal_basis": ["消費税法第57条の4第1項", "消費税法施行規則第26条の6"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "invoice_has_issuer_name_and_registration", "value": true},
+        {"op": "eq", "field": "invoice_has_transaction_date", "value": true},
+        {"op": "eq", "field": "invoice_has_transaction_detail", "value": true},
+        {"op": "eq", "field": "invoice_has_rate_separated_total", "value": true},
+        {"op": "eq", "field": "invoice_has_rate_separated_tax_amount", "value": true},
+        {"op": "any", "of": [
+          {"op": "eq", "field": "invoice_has_recipient_name", "value": true},
+          {"op": "eq", "field": "is_simplified_invoice_eligible", "value": true}
+        ]}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "記載要件を満たす書面または電磁的記録を交付・保存。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.93
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "適格返還請求書の1万円未満免除",
+    "summary": "税込1万円未満の売上返品・値引き・割戻しについては、適格返還請求書の交付義務が免除される。",
+    "description": "振込手数料相当額を売上値引きとして処理する場合 (銀行振込の手数料差引) を含め、税込1万円未満であれば返還請求書の発行不要。帳簿記録のみで対応可能。",
+    "legal_basis": ["消費税法第57条の4第3項", "消費税法施行令第70条の9第2項"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "is_sales_return_or_discount", "value": true},
+        {"op": "lte", "field": "return_amount_yen_including_tax", "value": 9999}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "適格返還請求書の発行不要。帳簿に返還の内容と金額を記録。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.93
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "買手側の保存要件 (帳簿+適格請求書の原則)",
+    "summary": "仕入税額控除を受けるには、課税仕入の事実を記録した帳簿と適格請求書 (または適格簡易請求書) の両方を7年間保存する必要がある。",
+    "description": "帳簿の記載要件: 相手方の氏名/名称、取引年月日、取引内容、支払対価の額。保存期間は課税期間末日の翌日から2か月を経過した日から7年間。少額特例・古物商特例等の例外あり。",
+    "legal_basis": ["消費税法第30条第7項", "消費税法施行令第50条"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "ledger_retained", "value": true},
+        {"op": "eq", "field": "qualified_invoice_retained", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "帳簿 + 適格請求書を課税期間末日の翌日から2か月+7年間保存。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.94
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "登録番号フォーマット検証 (T + 13桁)",
+    "summary": "適格請求書発行事業者の登録番号は、法人は「T + 13桁の法人番号」、個人事業者/人格のない社団等は「T + 13桁の固有番号」のフォーマット。",
+    "description": "『T』は半角大文字ラテン文字、数字部分は半角。国税庁の『適格請求書発行事業者公表サイト』で番号の有効性・登録者情報を検証可能。",
+    "legal_basis": ["消費税法第57条の2第4項", "消費税法施行規則第26条の4"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "invoice_registration_number_format_valid", "value": true},
+        {"op": "has_invoice_registration"}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "国税庁『適格請求書発行事業者公表サイト』(https://www.invoice-kohyo.nta.go.jp/) で番号を照会。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.94
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "課税事業者判定 (基準期間1,000万円基準)",
+    "summary": "基準期間 (個人は前々年、法人は前々事業年度) の課税売上高が1,000万円を超える事業者は消費税の納税義務を負う (課税事業者)。",
+    "description": "基準期間課税売上高 ≤1,000万円でも、特定期間 (個人は前年上半期、法人は前事業年度上半期) の課税売上高及び給与等支払額がいずれも1,000万円超の場合は課税事業者となる (特定期間判定)。",
+    "legal_basis": ["消費税法第9条", "消費税法第9条の2"],
+    "effective_start_date": "2013-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "any",
+      "of": [
+        {"op": "gte", "field": "taxable_sales_jpy_base_period", "value": 10000001},
+        {"op": "all", "of": [
+          {"op": "gte", "field": "taxable_sales_jpy_specific_period", "value": 10000001},
+          {"op": "gte", "field": "salary_paid_jpy_specific_period", "value": 10000001}
+        ]}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "課税事業者は消費税確定申告書を課税期間末日の翌日から2か月以内に提出。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6501.htm",
+    "confidence": 0.95
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "exemption",
+    "canonical_name": "簡易課税制度の選択 (基準期間5,000万円以下)",
+    "summary": "基準期間の課税売上高が5,000万円以下の事業者は、事前届出により簡易課税制度を選択でき、業種別のみなし仕入率で仕入税額控除を計算できる。",
+    "description": "みなし仕入率は第一種(卸売)90%、第二種(小売)80%、第三種(製造等)70%、第四種(その他)60%、第五種(サービス等)50%、第六種(不動産)40%。2割特例と同一課税期間で選択適用可 (届出状況による)。",
+    "legal_basis": ["消費税法第37条", "消費税法施行令第57条"],
+    "effective_start_date": "2019-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "taxable_sales_jpy_base_period", "value": 50000000},
+        {"op": "eq", "field": "simplified_taxation_election_filed", "value": true}
+      ]
+    },
+    "rate_or_amount": "業種別みなし仕入率 40%-90%",
+    "calculation_formula": "控除対象仕入税額 = 売上税額 × みなし仕入率",
+    "filing_requirements": "「消費税簡易課税制度選択届出書」を適用課税期間開始の前日までに提出。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6505.htm",
+    "confidence": 0.94
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "古物商・質屋・宅建業者の特例 (適格請求書発行事業者以外からの仕入)",
+    "summary": "古物商・質屋・宅地建物取引業者等が、適格請求書発行事業者以外 (消費者・免税事業者等) から棚卸資産として一定の資産を買い受ける場合、帳簿のみの保存で仕入税額控除が認められる。",
+    "description": "対象業者は古物営業法・質屋営業法・宅建業法等で許可登録を受けた事業者。対象資産は棚卸資産 (古物・質物・建物等) に限る。帳簿に『古物商特例』等の旨と取引年月日・内容・金額・相手方氏名を記載。",
+    "legal_basis": ["消費税法施行令第49条第1項第1号ハ", "消費税法施行規則第15条の4"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "in", "field": "buyer_business_type", "values": ["kobutsu_shou", "shichiya", "takken"]},
+        {"op": "eq", "field": "supplier_is_qualified_invoice_issuer", "value": false},
+        {"op": "eq", "field": "item_is_inventory_asset", "value": true}
+      ]
+    },
+    "rate_or_amount": "100% 控除 (帳簿保存のみで可)",
+    "calculation_formula": null,
+    "filing_requirements": "帳簿に特例適用の旨と取引年月日・内容・金額・相手方氏名を記載。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.9
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "公共交通機関特例 (3万円未満)",
+    "summary": "税込3万円未満の公共交通機関 (鉄道・バス・船舶) による旅客の運送については、帳簿のみの保存で仕入税額控除が認められる。",
+    "description": "自動券売機等で発券される乗車券等の場合に適用。乗車券等の回収があった場合も帳簿のみ保存で可。3万円未満判定は1回の取引単位 (同一人が同一日に同一区間を複数回乗車した場合でも区間ごと・往復ごと)。",
+    "legal_basis": ["消費税法施行令第49条第1項第1号イ", "消費税法施行規則第15条の4"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "service_type", "value": "public_transport"},
+        {"op": "lte", "field": "transaction_amount_yen_including_tax", "value": 29999}
+      ]
+    },
+    "rate_or_amount": "100% 控除 (帳簿保存のみで可)",
+    "calculation_formula": null,
+    "filing_requirements": "帳簿に公共交通機関特例の旨と金額等を記載。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.93
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "自動販売機特例 (3万円未満)",
+    "summary": "税込3万円未満の自動販売機・自動サービス機による商品の販売等については、帳簿のみの保存で仕入税額控除が認められる。",
+    "description": "対象は飲料・食品の自動販売機、コインロッカー・コインランドリー等のサービス提供機。帳簿に『自動販売機特例』の旨と設置場所・取引内容・金額を記載。ネット通販・コンビニ等は対象外。",
+    "legal_basis": ["消費税法施行令第49条第1項第1号ロ", "消費税法施行規則第15条の4"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "service_type", "value": "vending_machine"},
+        {"op": "lte", "field": "transaction_amount_yen_including_tax", "value": 29999}
+      ]
+    },
+    "rate_or_amount": "100% 控除 (帳簿保存のみで可)",
+    "calculation_formula": null,
+    "filing_requirements": "帳簿に自動販売機特例の旨と設置場所・取引内容・金額を記載。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "従業員出張旅費等特例",
+    "summary": "従業員に支給する出張旅費・宿泊費・日当で、通常必要と認められる範囲内のものについては、帳簿のみの保存で仕入税額控除が認められる。",
+    "description": "対象は通勤手当 (通常必要額の範囲)、出張旅費・宿泊費・日当 (所得税法上非課税となる範囲)。立替精算が前提となる取引で、証憑類は事業者の給与・経費処理の範囲で保存。",
+    "legal_basis": ["消費税法施行令第49条第1項第1号ニ", "所得税法第9条第1項第4号"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "expense_type", "value": "employee_travel_allowance"},
+        {"op": "eq", "field": "within_income_tax_exempt_range", "value": true}
+      ]
+    },
+    "rate_or_amount": "100% 控除 (帳簿保存のみで可)",
+    "calculation_formula": null,
+    "filing_requirements": "帳簿に特例適用の旨と従業員氏名・出張目的・金額を記載。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.9
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "立替金精算の取り扱い (立替金精算書による対応)",
+    "summary": "従業員等が第三者から受領したインボイスで宛名が従業員名となっているものは、立替金精算書を併せて保存することで、事業者の仕入税額控除に用いることができる。",
+    "description": "立替金精算書には、従業員氏名、取引年月日、取引内容、支払金額及び仕入税額控除を適用する事業者の氏名/名称・登録番号情報を記載。インボイスのコピー + 精算書で帳簿保存要件を満たす。",
+    "legal_basis": ["消費税法施行規則第26条の7"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "invoice_issued_to_employee", "value": true},
+        {"op": "eq", "field": "reimbursement_statement_retained", "value": true},
+        {"op": "eq", "field": "invoice_copy_retained", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "インボイス (コピー可) + 立替金精算書を併せて保存。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_qa.htm",
+    "confidence": 0.9
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "電子インボイス (電磁的記録) の保存方法",
+    "summary": "電磁的記録で授受した適格請求書は、電子帳簿保存法の電子取引データ保存要件に従い、真実性・可視性を確保して保存する必要がある。",
+    "description": "真実性確保: (1)タイムスタンプ付与、(2)訂正削除の履歴が残る (または行えない) システム使用、(3)事務処理規程の備付け、のいずれかを満たす。可視性確保: 画面・書面で速やかに出力できる + 検索機能 (日付・相手方・金額の3要件) を確保。",
+    "legal_basis": ["電子帳簿保存法第7条", "消費税法第30条第7項", "電子帳簿保存法施行規則第4条"],
+    "effective_start_date": "2023-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "invoice_format", "value": "electronic"},
+        {"op": "any", "of": [
+          {"op": "eq", "field": "timestamp_applied", "value": true},
+          {"op": "eq", "field": "system_prevents_alteration", "value": true},
+          {"op": "eq", "field": "administration_regulation_in_place", "value": true}
+        ]},
+        {"op": "eq", "field": "search_function_available_date_party_amount", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "電子帳簿保存法の電子取引データ保存要件に従い保存。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/07denshi/01.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "電子取引データ保存の義務化 (宥恕措置終了後)",
+    "summary": "2024-01-01以降に行う電子取引データは電磁的記録による保存が義務化され、宥恕措置 (書面出力保存可) は2023-12-31で終了した。",
+    "description": "電子取引データ (メール添付PDF、ECサイトのWeb明細、EDI等) は原則として電磁的記録のまま保存する必要がある。ただし2024-01-01以降も、相当の理由があり所轄税務署長がやむを得ないと認める場合は書面出力保存の猶予措置あり (恒久措置化)。",
+    "legal_basis": ["電子帳簿保存法第7条", "電子帳簿保存法施行規則第4条"],
+    "effective_start_date": "2024-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "transaction_channel", "value": "electronic"},
+        {"op": "gte", "field": "transaction_date_serial", "value": 20240101}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "原則として電磁的記録のまま保存。猶予措置適用の場合、相当の理由を税務調査時に説明できるよう整理。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/07denshi/01.htm",
+    "confidence": 0.93
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "電子取引データ保存の検索要件 (日付・相手先・金額)",
+    "summary": "電子取引データの保存にあたっては、(1)取引年月日、(2)取引金額、(3)取引先 を検索条件として指定できる機能を確保する必要がある。",
+    "description": "基準期間の売上高が5,000万円以下の事業者で、税務調査時にダウンロードの求めに応じられる場合は、検索機能確保義務が緩和され、日付/金額の範囲指定と2以上の項目を組み合わせた検索までは不要 (単純な検索のみで可)。",
+    "legal_basis": ["電子帳簿保存法施行規則第4条第1項第3号"],
+    "effective_start_date": "2024-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "transaction_channel", "value": "electronic"},
+        {"op": "eq", "field": "search_function_date_available", "value": true},
+        {"op": "eq", "field": "search_function_amount_available", "value": true},
+        {"op": "eq", "field": "search_function_party_available", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "日付・相手先・金額を検索条件にできるシステムまたはインデックス (ファイル名規則/索引簿) を整備。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/07denshi/01.htm",
+    "confidence": 0.93
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "電子取引データの真実性確保 (タイムスタンプ・規程のいずれか)",
+    "summary": "電子取引データの真実性確保のため、(1)タイムスタンプ付与、(2)訂正削除履歴の残るシステム、(3)訂正削除防止の事務処理規程、のいずれか一つを選択し運用する必要がある。",
+    "description": "タイムスタンプは『一般財団法人日本データ通信協会』認定のタイムスタンプサービスを使用。規程を選ぶ場合は、訂正削除の手順・担当者・記録様式を定めた『電子取引データの訂正及び削除の防止に関する事務処理規程』を備え付け運用する。",
+    "legal_basis": ["電子帳簿保存法施行規則第4条第1項第1号-第2号"],
+    "effective_start_date": "2022-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "any",
+      "of": [
+        {"op": "eq", "field": "timestamp_applied", "value": true},
+        {"op": "eq", "field": "system_retains_edit_history", "value": true},
+        {"op": "eq", "field": "administration_regulation_in_place", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "選択した真実性確保措置を実装・運用。規程は税務調査時に提示できる形で備付け。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/07denshi/01.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "スキャナ保存の要件 (解像度・カラー・タイムスタンプ)",
+    "summary": "紙で受領した請求書等をスキャナ保存する場合、解像度200dpi以上、赤・緑・青それぞれ256階調以上 (24ビットカラー以上)、入力から概ね7営業日以内のタイムスタンプ付与 (または相当の代替措置) が必要。",
+    "description": "一般書類 (重要書類以外) は白黒階調 (256階調) でも可。スマートフォン・デジタルカメラ撮影も要件を満たせば可。2022年改正で税務署長の事前承認制度は廃止、検索要件は『日付・金額・相手先』に限定。",
+    "legal_basis": ["電子帳簿保存法第4条第3項", "電子帳簿保存法施行規則第2条"],
+    "effective_start_date": "2022-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "gte", "field": "scanner_resolution_dpi", "value": 200},
+        {"op": "any", "of": [
+          {"op": "eq", "field": "scan_is_24bit_color", "value": true},
+          {"op": "eq", "field": "document_is_non_critical_grayscale_ok", "value": true}
+        ]},
+        {"op": "any", "of": [
+          {"op": "eq", "field": "timestamp_applied_within_7days", "value": true},
+          {"op": "eq", "field": "system_prevents_alteration", "value": true}
+        ]}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "スキャン後に原本廃棄する場合も、保存された電磁的記録が要件を満たすこと。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/07scan/01.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "corporate",
+    "ruleset_kind": "preservation",
+    "canonical_name": "優良な電子帳簿の要件 (過少申告加算税 5%軽減)",
+    "summary": "一定水準を満たす優良な電子帳簿を備え付けている場合、所得税・法人税・消費税の過少申告加算税が5%軽減される (事前届出要)。",
+    "description": "『優良』の要件: (1)訂正削除の履歴が残ること、(2)帳簿相互間の関連性が確認できること、(3)検索機能 (日付・金額・相手先) を確保していること。軽減適用は『国税関係帳簿の電磁的記録等による保存等を行う者の届出書』を事前 (適用事業年度開始日から3か月以内) に提出した場合に限る。",
+    "legal_basis": ["電子帳簿保存法第8条第4項", "電子帳簿保存法施行規則第5条第5項"],
+    "effective_start_date": "2022-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "yuryo_denshi_chobo_advance_notice_filed", "value": true},
+        {"op": "eq", "field": "system_retains_edit_history", "value": true},
+        {"op": "eq", "field": "ledger_cross_reference_available", "value": true},
+        {"op": "eq", "field": "search_function_date_amount_party_available", "value": true}
+      ]
+    },
+    "rate_or_amount": "過少申告加算税率 -5%",
+    "calculation_formula": null,
+    "filing_requirements": "「国税関係帳簿の電磁的記録等による保存等を行う者の届出書」を適用課税期間開始日から3か月以内に提出。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/08yuryo/01.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "corporate",
+    "ruleset_kind": "preservation",
+    "canonical_name": "国税関係帳簿書類の電磁的保存 (任意適用)",
+    "summary": "自己が最初の記録段階から一貫して電子計算機を使用して作成する国税関係帳簿書類は、電磁的記録 (COM含む) による保存が任意で認められる (2022年改正で事前承認不要)。",
+    "description": "対象帳簿: 仕訳帳・総勘定元帳等の主要簿 + 得意先元帳・商品有高帳等の補助簿。対象書類: 請求書・領収書・契約書等の写し。システム関係書類 (操作説明書等) の備付け、見読可能性、検索機能の確保が要件。",
+    "legal_basis": ["電子帳簿保存法第4条第1項-第2項", "電子帳簿保存法施行規則第2条-第3条"],
+    "effective_start_date": "2022-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "ledger_created_consistently_by_computer", "value": true},
+        {"op": "eq", "field": "system_manual_available", "value": true},
+        {"op": "eq", "field": "records_viewable_on_screen_and_print", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "事前承認不要。ただし優良電子帳簿の軽減措置を受けるには事前届出が必要。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/08yuryo/01.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "電子取引データ保存の猶予措置 (相当の理由)",
+    "summary": "電子取引データの電磁的記録保存が困難な『相当の理由』があり、税務調査時にダウンロードの求め及び書面出力への対応ができる事業者は、電磁的記録保存要件の適用が猶予される。",
+    "description": "『相当の理由』の判断は所轄税務署長が行う。人員不足・システム未整備・コスト負担等が具体的事情として例示される。猶予措置は恒久措置化され事前届出不要。ただし検索機能要件・真実性要件は不問となるが、書面出力 + 電磁的記録の保存は必要。",
+    "legal_basis": ["電子帳簿保存法施行規則第4条第3項"],
+    "effective_start_date": "2024-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "transaction_channel", "value": "electronic"},
+        {"op": "eq", "field": "relevant_reason_for_non_compliance", "value": true},
+        {"op": "eq", "field": "can_respond_to_tax_audit_download_request", "value": true},
+        {"op": "eq", "field": "printed_output_available", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "事前届出不要。税務調査時に相当の理由を説明できるよう記録を整理。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/07denshi/01.htm",
+    "confidence": 0.9
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "preservation",
+    "canonical_name": "電子取引データの検索要件の緩和 (基準期間売上5,000万円以下)",
+    "summary": "基準期間の売上高が5,000万円以下の小規模事業者は、税務調査時にダウンロードの求めに応じることができれば、電子取引データの検索機能要件が免除される。",
+    "description": "小規模事業者向けの事務負担軽減措置。検索機能は全く不要となるため、ファイル名規則や索引簿の整備も不要。ただし、税務調査時には日付・相手先等で該当データを抽出してダウンロード提供できる状態である必要がある。",
+    "legal_basis": ["電子帳簿保存法施行規則第4条第1項第3号ただし書"],
+    "effective_start_date": "2024-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "taxable_sales_jpy_base_period", "value": 50000000},
+        {"op": "eq", "field": "can_respond_to_tax_audit_download_request", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "事前届出不要。税務調査時のダウンロード要請への応答体制を整備。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/07denshi/01.htm",
+    "confidence": 0.91
+  },
+  {
+    "unified_id": null,
+    "tax_category": "income",
+    "ruleset_kind": "deduction",
+    "canonical_name": "住宅ローン控除 (認定住宅・令和4年以降入居)",
+    "summary": "令和4年以降に認定長期優良住宅・認定低炭素住宅等を取得し居住の用に供した者は、最大13年間にわたり住宅ローン年末残高の0.7%を所得税から控除できる。",
+    "description": "借入限度額は認定住宅で4,500万円 (子育て世帯等は5,000万円) 等区分により異なる。控除率0.7%、控除期間13年 (既存住宅等は10年)。所得要件: 合計所得金額2,000万円以下。2024年以降の新築住宅は原則として省エネ基準適合必須。",
+    "legal_basis": ["租税特別措置法第41条", "租税特別措置法施行令第26条"],
+    "effective_start_date": "2022-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "property_is_certified_long_term_quality", "value": true},
+        {"op": "lte", "field": "total_income_jpy", "value": 20000000},
+        {"op": "gte", "field": "residence_start_date_serial", "value": 20220101}
+      ]
+    },
+    "rate_or_amount": "年末残高 × 0.7% (最大13年)",
+    "calculation_formula": "控除額 = min(住宅借入金等年末残高, 借入限度額) × 0.7%",
+    "filing_requirements": "初年度は確定申告。2年目以降は給与所得者は年末調整で可。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1211-1.htm",
+    "confidence": 0.91
+  },
+  {
+    "unified_id": null,
+    "tax_category": "corporate",
+    "ruleset_kind": "credit",
+    "canonical_name": "中小企業者等の法人税軽減税率 (年800万円以下部分 15%)",
+    "summary": "資本金1億円以下の中小法人は、各事業年度の所得金額のうち年800万円以下の部分について、法人税の軽減税率15% (本則19%) が適用される。",
+    "description": "対象法人: 資本金または出資金の額が1億円以下で、大法人に100%支配されていない中小法人等。適用期間は期限法で延長を繰り返しており、現在は2025-03-31までに開始する事業年度に適用。800万円超部分は本則23.2%。",
+    "legal_basis": ["租税特別措置法第42条の3の2", "法人税法第66条"],
+    "effective_start_date": "2012-04-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "capital_jpy", "value": 100000000},
+        {"op": "eq", "field": "is_wholly_owned_by_large_corp", "value": false}
+      ]
+    },
+    "rate_or_amount": "15% (年800万円以下部分)",
+    "calculation_formula": "法人税額 = min(所得金額, 8,000,000) × 0.15 + max(所得金額 - 8,000,000, 0) × 0.232",
+    "filing_requirements": "法人税確定申告書で軽減税率を適用して計算。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/hojin/5759.htm",
+    "confidence": 0.9
+  },
+  {
+    "unified_id": null,
+    "tax_category": "corporate",
+    "ruleset_kind": "special_depreciation",
+    "canonical_name": "少額減価償却資産の特例 (中小企業、30万円未満、年300万円まで)",
+    "summary": "中小企業者等は、取得価額30万円未満の減価償却資産について、事業年度の取得合計300万円を限度として取得時の全額損金算入が認められる。",
+    "description": "対象法人: 青色申告書を提出する中小企業者等 (資本金1億円以下・大法人の完全子会社でない等)。適用期間は租特法の期限法で延長を繰り返しており、2026-03-31までの取得分に適用される現行措置。資産1つあたりの取得価額で判定。",
+    "legal_basis": ["租税特別措置法第67条の5", "租税特別措置法施行令第39条の28"],
+    "effective_start_date": "2003-04-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "capital_jpy", "value": 100000000},
+        {"op": "eq", "field": "blue_form_return_filed", "value": true},
+        {"op": "lte", "field": "asset_acquisition_price_jpy", "value": 299999},
+        {"op": "lte", "field": "yearly_small_asset_total_jpy", "value": 3000000}
+      ]
+    },
+    "rate_or_amount": "取得価額全額損金算入 (年300万円上限)",
+    "calculation_formula": "損金算入額 = min(取得価額合計, 3,000,000) (資産1件 < 300,000円)",
+    "filing_requirements": "確定申告書別表十六(七)を添付。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/hojin/5408.htm",
+    "confidence": 0.92
+  },
+  {
+    "unified_id": null,
+    "tax_category": "corporate",
+    "ruleset_kind": "credit",
+    "canonical_name": "中小企業投資促進税制 (機械装置等の特別償却・税額控除)",
+    "summary": "中小企業者等が指定期間に特定の機械装置・器具備品等を取得した場合、取得価額の30%の特別償却または7%の税額控除 (資本金3,000万円以下の特定中小企業者等) が選択適用できる。",
+    "description": "対象設備: 機械装置 (160万円以上)、工具 (30万円以上かつ複数合計120万円以上)、ソフトウェア (70万円以上)、貨物自動車 (3.5t以上)、内航船舶等。税額控除は法人税額の20%が上限。",
+    "legal_basis": ["租税特別措置法第42条の6", "租税特別措置法施行令第27条の6"],
+    "effective_start_date": "2017-04-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "capital_jpy", "value": 100000000},
+        {"op": "eq", "field": "blue_form_return_filed", "value": true},
+        {"op": "in", "field": "asset_category", "values": ["machinery", "tools", "software", "cargo_truck", "inland_vessel"]},
+        {"op": "gte", "field": "asset_acquisition_price_jpy", "value": 1600000}
+      ]
+    },
+    "rate_or_amount": "特別償却 30% または 税額控除 7%",
+    "calculation_formula": "特別償却額 = 取得価額 × 0.30 / 税額控除額 = 取得価額 × 0.07 (法人税額の20%上限)",
+    "filing_requirements": "確定申告書別表六(十三)(十四) または別表十六(一)(二)を添付。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/hojin/5433.htm",
+    "confidence": 0.88,
+    "needs_verification": true
+  },
+  {
+    "unified_id": null,
+    "tax_category": "corporate",
+    "ruleset_kind": "credit",
+    "canonical_name": "中小企業賃上げ促進税制 (給与等支給額増加の税額控除)",
+    "summary": "中小企業者等が前年比で雇用者給与等支給額を1.5%以上増加させた場合、増加額の15%を法人税額から控除できる (最大45%まで上乗せあり)。",
+    "description": "基本15%は雇用者給与等支給額の増加1.5%以上で適用。教育訓練費増加10%以上等の上乗せ要件で最大45%。税額控除は法人税額の20%が上限で、5年間の繰越控除が可能 (2024年改正)。",
+    "legal_basis": ["租税特別措置法第42条の12の5", "租税特別措置法施行令第27条の12の5"],
+    "effective_start_date": "2024-04-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "lte", "field": "capital_jpy", "value": 100000000},
+        {"op": "eq", "field": "blue_form_return_filed", "value": true},
+        {"op": "gte", "field": "salary_increase_rate_pct", "value": 1.5}
+      ]
+    },
+    "rate_or_amount": "税額控除 15%〜最大45%",
+    "calculation_formula": "控除額 = 雇用者給与等支給額の増加額 × 15% (+上乗せ率)",
+    "filing_requirements": "確定申告書別表六(二十四)を添付。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/hojin/5927.htm",
+    "confidence": 0.87,
+    "needs_verification": true
+  },
+  {
+    "unified_id": null,
+    "tax_category": "income",
+    "ruleset_kind": "deduction",
+    "canonical_name": "青色申告特別控除 (65万円・55万円・10万円)",
+    "summary": "青色申告書を提出する個人事業主は、事業所得・不動産所得について55万円の特別控除 (複式簿記+貸借対照表添付)、e-Tax申告または優良電子帳簿で65万円、簡易簿記のみで10万円の特別控除を受けられる。",
+    "description": "65万円控除の要件: (1)複式簿記、(2)貸借対照表及び損益計算書を確定申告書に添付、(3)確定申告期限内提出、(4)e-Taxによる申告 または 優良電子帳簿の備付け。不動産所得は事業的規模 (おおむね10室/5棟以上) が必要。",
+    "legal_basis": ["租税特別措置法第25条の2", "所得税法第143条"],
+    "effective_start_date": "2020-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "all",
+      "of": [
+        {"op": "eq", "field": "blue_form_return_filed", "value": true},
+        {"op": "in", "field": "income_type", "values": ["business", "real_estate"]},
+        {"op": "any", "of": [
+          {"op": "all", "of": [
+            {"op": "eq", "field": "double_entry_bookkeeping", "value": true},
+            {"op": "eq", "field": "balance_sheet_attached", "value": true},
+            {"op": "any", "of": [
+              {"op": "eq", "field": "filed_via_etax", "value": true},
+              {"op": "eq", "field": "yuryo_denshi_chobo_advance_notice_filed", "value": true}
+            ]}
+          ]},
+          {"op": "eq", "field": "simple_bookkeeping_only", "value": true}
+        ]}
+      ]
+    },
+    "rate_or_amount": "65万円 / 55万円 / 10万円",
+    "calculation_formula": null,
+    "filing_requirements": "青色申告承認申請書を適用年の3月15日までに提出 (新規開業は開業から2か月以内)。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2072.htm",
+    "confidence": 0.93
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "消費税の軽減税率 (8%) 適用対象",
+    "summary": "飲食料品 (酒類・外食を除く) 及び定期購読契約の週2回以上発行される新聞については、消費税の軽減税率 8% が適用される (標準税率は10%)。",
+    "description": "外食の定義: 飲食店営業を行う事業者がテーブル・椅子等の設備を有する場所で飲食させる役務。テイクアウト・宅配は軽減税率対象。一体資産 (税抜1万円以下で食品価額が2/3以上) は全体が軽減税率対象。",
+    "legal_basis": ["消費税法第2条第1項第9号の2", "消費税法別表第一の二"],
+    "effective_start_date": "2019-10-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "any",
+      "of": [
+        {"op": "all", "of": [
+          {"op": "eq", "field": "item_is_food_or_beverage", "value": true},
+          {"op": "eq", "field": "item_is_alcohol", "value": false},
+          {"op": "eq", "field": "item_is_eating_out", "value": false}
+        ]},
+        {"op": "eq", "field": "item_is_qualifying_newspaper_subscription", "value": true}
+      ]
+    },
+    "rate_or_amount": "消費税率 8% (国税 6.24% + 地方税 1.76%)",
+    "calculation_formula": null,
+    "filing_requirements": "レジ・インボイスで税率ごとに区分して記帳・発行。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/01.htm",
+    "confidence": 0.94
+  },
+  {
+    "unified_id": null,
+    "tax_category": "consumption",
+    "ruleset_kind": "other",
+    "canonical_name": "新設法人の納税義務免除の特例 (資本金1,000万円以上は初年度から課税)",
+    "summary": "新設法人で事業年度開始日の資本金または出資金の額が1,000万円以上の法人は、基準期間がない設立1期目・2期目から消費税の納税義務を負う。",
+    "description": "新規設立法人の特例。基準期間に準ずる『特定新規設立法人』の判定 (特殊関係法人の売上基準) もあり、資本金1,000万円未満でも課税される場合がある。インボイス登録による課税事業者化とは別枠の判定。",
+    "legal_basis": ["消費税法第12条の2", "消費税法第12条の3"],
+    "effective_start_date": "2013-01-01",
+    "effective_end_date": null,
+    "eligibility_conditions_json": {
+      "op": "any",
+      "of": [
+        {"op": "gte", "field": "capital_jpy_at_period_start", "value": 10000000},
+        {"op": "eq", "field": "is_specific_new_established_corp", "value": true}
+      ]
+    },
+    "rate_or_amount": null,
+    "calculation_formula": null,
+    "filing_requirements": "設立後速やかに「消費税の新設法人に該当する旨の届出書」を提出 (法人設立届出書で代用可)。",
+    "authority": "国税庁",
+    "authority_url": "https://www.nta.go.jp/",
+    "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6503.htm",
+    "confidence": 0.91
+  }
+]

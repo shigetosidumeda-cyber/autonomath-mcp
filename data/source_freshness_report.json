@@ -1,0 +1,59 @@
+{
+  "loop": "loop_i_doc_freshness",
+  "generated_at": "2026-04-26T05:09:13+00:00",
+  "dry_run": false,
+  "stale_threshold_days": 60,
+  "rows_scanned": 13578,
+  "stale_count": 16,
+  "broken_count": 13,
+  "per_tier": {
+    "A": {
+      "total": 1427,
+      "stale": 0,
+      "broken": 0
+    },
+    "B": {
+      "total": 3716,
+      "stale": 2,
+      "broken": 2
+    },
+    "C": {
+      "total": 6567,
+      "stale": 14,
+      "broken": 6
+    },
+    "S": {
+      "total": 114,
+      "stale": 0,
+      "broken": 13
+    },
+    "X": {
+      "total": 1741,
+      "stale": 0,
+      "broken": 0
+    }
+  },
+  "high_priority_broken": [],
+  "history": [
+    {
+      "generated_at": "2026-04-26T05:09:13+00:00",
+      "tiers_in_scope": [
+        "S"
+      ],
+      "rows_checked": 114,
+      "per_tier": {
+        "S": {
+          "total": 114,
+          "ok": 101,
+          "dead": 13
+        }
+      },
+      "totals": {
+        "ok": 101,
+        "fail": 13
+      },
+      "elapsed_seconds": 36.24,
+      "dry_run": false
+    }
+  ]
+}

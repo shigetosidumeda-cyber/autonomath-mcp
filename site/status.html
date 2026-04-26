@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Status — AutonoMath</title>
+<meta name="description" content="AutonoMath の稼働状況 / Current operational status of the AutonoMath API.">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://autonomath.ai/status">
+<link rel="alternate" hreflang="ja" href="https://autonomath.ai/status.html">
+<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/status.html">
+<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/status.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<style>
+  /* Mirror of styles.css palette (kept inline so status page works even if
+     Pages' asset routing is slow on the first request during an outage). */
+  :root {
+    --accent: #1e3a8a;
+    --text: #111111;
+    --text-muted: #555555;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg-alt: #f7f7f8;
+    --ok: #15803d;
+    --warn: #b45309;
+    --down: #b91c1c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
+      "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 64px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    font-weight: 700;
+    text-decoration: none;
+    margin-bottom: 28px;
+  }
+  .brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  h1 {
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    font-weight: 800;
+  }
+  .lead {
+    color: var(--text-muted);
+    margin: 0 0 32px;
+    font-size: 15px;
+  }
+  .state {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 0 0 14px;
+    background: var(--bg);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .state.active {
+    border-width: 2px;
+    background: var(--bg-alt);
+  }
+  .state .dot {
+    font-size: 24px;
+    line-height: 1;
+    flex: 0 0 auto;
+    margin-top: 2px;
+  }
+  .state h2 {
+    font-size: 17px;
+    margin: 0 0 4px;
+    font-weight: 700;
+  }
+  .state p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .state.ok.active { border-color: var(--ok); }
+  .state.ok.active h2 { color: var(--ok); }
+  .state.warn.active { border-color: var(--warn); }
+  .state.warn.active h2 { color: var(--warn); }
+  .state.down.active { border-color: var(--down); }
+  .state.down.active h2 { color: var(--down); }
+  .state:not(.active) { opacity: 0.5; }
+  .updated {
+    margin: 28px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .updated code {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  .links {
+    margin: 24px 0 0;
+    font-size: 14px;
+  }
+  .links a { color: var(--accent); }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .top-bar .brand { margin-bottom: 0; }
+  .lang-switch { font-size: 13px; color: var(--text-muted); }
+  .lang-switch a { color: var(--accent); text-decoration: none; padding: 4px 6px; }
+  .lang-switch a[aria-current="page"] { color: var(--text); font-weight: 600; }
+  .lang-switch .sep { color: var(--border); }
+  .fallback-note {
+    margin: 24px 0 0;
+    padding: 12px 16px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    background: var(--bg-alt);
+  }
+  .site-footer .footer-inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .site-footer .footer-brand { font-weight: 700; color: var(--text); margin: 0 0 4px; font-size: 14px; }
+  .site-footer .footer-tag { margin: 0 0 12px; }
+  .site-footer .footer-nav { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 10px; }
+  .site-footer .footer-nav a { color: var(--accent); text-decoration: none; }
+  .site-footer .footer-nav a:hover { text-decoration: underline; }
+  .site-footer .footer-entity { margin: 0 0 4px; }
+  .site-footer .footer-entity a { color: var(--accent); }
+  .site-footer .footer-copy { margin: 0; font-size: 12px; }
+  .skip-link {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    padding: 10px 14px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 0 0 6px 6px;
+    z-index: 100;
+    text-decoration: none;
+    transform: translateY(-110%);
+    transition: transform 0.1s ease;
+  }
+  .skip-link:focus,
+  .skip-link:focus-visible { transform: translateY(0); outline: 2px solid #fff; outline-offset: -4px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+</style>
+<meta property="og:title" content="Status — AutonoMath">
+<meta property="og:description" content="AutonoMath の稼働状況 / Current operational status of the AutonoMath API.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://autonomath.ai/status">
+<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Status — AutonoMath">
+<meta name="twitter:description" content="AutonoMath の稼働状況 / Current operational status of the AutonoMath API.">
+<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<main id="main" class="container">
+
+  <div class="top-bar">
+    <a class="brand" href="/" aria-label="AutonoMath ホーム">
+      <span class="brand-mark" aria-hidden="true">AM</span>
+      <span>AutonoMath</span>
+    </a>
+    <span class="lang-switch" role="group" aria-label="Language / 言語">
+      <a href="status.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <a href="en/status.html" lang="en" hreflang="en">EN</a>
+    </span>
+  </div>
+
+  <h1>稼働状況 / Status</h1>
+  <p class="lead">
+    API (api.autonomath.ai) とランディング (autonomath.ai) の現在のステータス。<br>
+    Current status of the API and landing site.
+  </p>
+
+  <!--
+    To change state on incident:
+      1. Remove "active" from the current state.
+      2. Add "active" to the new state (ok / warn / down).
+      3. Update "最終更新 / Last updated" below.
+      4. Commit + push; Cloudflare Pages redeploys in <30s.
+    Default = ok.
+  -->
+
+  <section class="state ok active" aria-label="operational">
+    <span class="dot" aria-hidden="true">🟢</span>
+    <div>
+      <h2>運用中 / Operational</h2>
+      <p>全システム正常稼働中。API、ランディング、決済すべて利用可能。<br>
+         All systems operational — API, landing, and billing are up.</p>
+    </div>
+  </section>
+
+  <section class="state warn" aria-label="degraded">
+    <span class="dot" aria-hidden="true">🟡</span>
+    <div>
+      <h2>限定運用 / Degraded</h2>
+      <p>一部機能の遅延または障害あり。詳細は本ページの更新をご確認ください。<br>
+         Partial outage or elevated latency. Check the note below for details.</p>
+    </div>
+  </section>
+
+  <section class="state down" aria-label="down">
+    <span class="dot" aria-hidden="true">🔴</span>
+    <div>
+      <h2>停止中 / Down (fallback mode)</h2>
+      <p>API は現在停止しています。本ページは静的フォールバックから配信されています。<br>
+         The API is currently down. This page is served from the static fallback mirror.</p>
+    </div>
+  </section>
+
+  <p class="updated">
+    最終更新 / Last updated:
+    <code>2026-04-23 (launch rehearsal — default state)</code>
+  </p>
+
+  <p class="fallback-note">
+    本ページが表示されている場合、ランディングはフォールバック経由で提供されている可能性があります。
+    API (<code>api.autonomath.ai</code>) の復旧後、DNS を通常系へ戻します。
+    <br>
+    If you are seeing this page, the landing may be served from the Cloudflare Pages
+    fallback. DNS will revert to Fly once the API is healthy.
+  </p>
+
+  <p class="fallback-note">
+    透明性のため記載しています。インシデント発生時、過負荷や悪用パターンを検知した場合に API アクセスを一時的に停止することがあります。停止・復旧の状況は本ページで 5 分以内に更新します。
+    <br>
+    For transparency: during an incident or abuse pattern, we may temporarily pause API access. Status updates here within 5 minutes.
+  </p>
+
+  <p class="links">
+    <a href="/">← ホームへ戻る / Back to home</a>
+  </p>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <p class="footer-brand">AutonoMath</p>
+    <p class="footer-tag">日本の制度 API</p>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+</body>
+</html>

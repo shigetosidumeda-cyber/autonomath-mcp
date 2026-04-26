@@ -1,0 +1,165 @@
+{
+  "schema_version": "autonomath/dealbreakers/1.0",
+  "description": "5 PDF + 11 公式様式 + 3 web 記事から抽出した、即不採択になる実物 dealbreaker。各 制度の reviewerProfile.dealbreakers に追加 + Opus prompt の強制制約に使う。",
+  "source_evidence": [
+    "PDF: business-plan-sample-cafe.pdf (持続化補助金)",
+    "WebFetch: tsunagu-office.net 持続化補助金の書き方",
+    "PDF: 21.MODEL_keiei.pdf (早期経営改善計画 5 企業事例)",
+    "公式様式: 慰労金 / 緊急包括支援交付金"
+  ],
+  "universal_dealbreakers": [
+    {
+      "id": "no_numerical_evidence",
+      "label": "数値根拠なし",
+      "detail": "市場規模・成長率・客単価などに RESAS / 業界統計 / 公的調査の出典なし",
+      "severity": "critical",
+      "applies_to": "all"
+    },
+    {
+      "id": "no_competitor_analysis",
+      "label": "競合分析欠落",
+      "detail": "競合 3 社以上の比較表なし、自社優位性を客観データで示せていない",
+      "severity": "critical",
+      "applies_to": "all"
+    },
+    {
+      "id": "ineligible_expense_mixed",
+      "label": "補助対象外経費の混入",
+      "detail": "従業員給与、汎用設備の単純更新、参加費、ハードウェア単体 等が経費明細に含まれる",
+      "severity": "critical",
+      "applies_to": "all"
+    },
+    {
+      "id": "too_many_pending",
+      "label": "[要確認] が 15 項目以上",
+      "detail": "申請書として未完成、最低 15 項目以上が未確定 = 即不採択",
+      "severity": "critical",
+      "applies_to": "all"
+    },
+    {
+      "id": "plan_misalignment",
+      "label": "経営計画と補助事業計画の不整合",
+      "detail": "課題 ↔ 対応策の対応関係が欠落、SWOT と数値計画の整合性なし",
+      "severity": "critical",
+      "applies_to": "all"
+    },
+    {
+      "id": "no_implementation_specifics",
+      "label": "業者名・期間・予算 不明",
+      "detail": "外部委託先名 / 実施期間 / 単価 × 数量 が明示されていない、実現可能性が示せない",
+      "severity": "critical",
+      "applies_to": "all"
+    },
+    {
+      "id": "guaranteed_acceptance",
+      "label": "採択率を保証する文言",
+      "detail": "「必ず採択される」「採択率 90% 達成」等、景表法違反 (優良誤認) リスク",
+      "severity": "critical",
+      "applies_to": "all"
+    },
+    {
+      "id": "no_innovation",
+      "label": "商品の新規性なし",
+      "detail": "既存商品/サービスのまま、販売方法やデジタル活用での差別化も書けていない",
+      "severity": "warning",
+      "applies_to": "all"
+    },
+    {
+      "id": "verbose_redundant",
+      "label": "蛇足が多い記載",
+      "detail": "感情的アピール、要点を箇条書きで整理していない、読みづらい",
+      "severity": "warning",
+      "applies_to": "all"
+    }
+  ],
+  "program_specific_dealbreakers": {
+    "monozukuri": [
+      {
+        "id": "value_added_below_3pct",
+        "label": "付加価値額年率 +3% 未達",
+        "detail": "付加価値額 = 営業利益 + 人件費 + 減価償却費。年率 +3% 未達は即不採択",
+        "severity": "critical"
+      },
+      {
+        "id": "wage_below_15pct",
+        "label": "給与支給総額年率 +1.5% 未達",
+        "detail": "5 年間の給与増加率が 1.5%/年 未達",
+        "severity": "critical"
+      },
+      {
+        "id": "min_wage_below_30",
+        "label": "事業場内最低賃金が地域最賃 +30 円未満",
+        "detail": "賃上げ加点を狙う場合は特に厳格チェック",
+        "severity": "critical"
+      },
+      {
+        "id": "single_person_organization",
+        "label": "代表 1 人体制",
+        "detail": "実施体制が代表 1 人依存 = 実現可能性 NG",
+        "severity": "critical"
+      },
+      {
+        "id": "missing_certified_supporter",
+        "label": "認定支援機関確認書の欠落または本文との食い違い",
+        "detail": "確認書必須、本文と内容齟齬がある場合も NG",
+        "severity": "critical"
+      }
+    ],
+    "jizokuka": [
+      {
+        "id": "exceed_8_pages",
+        "label": "経営計画 + 補助事業計画が 8 ページ超過",
+        "detail": "経費明細表 + 資金調達方法を除いて最大 8 枚",
+        "severity": "critical"
+      },
+      {
+        "id": "project_name_too_long",
+        "label": "事業名が 30 文字超過",
+        "detail": "事業名は 30 文字以内、これを超えると形式不備で受理不可",
+        "severity": "critical"
+      },
+      {
+        "id": "missing_business_support_plan",
+        "label": "商工会議所の事業支援計画書 (様式4) 未取得",
+        "detail": "商工会議所が発行する事業支援計画書が必須、取得に時間がかかるため早期着手必須",
+        "severity": "critical"
+      }
+    ],
+    "saikouchiku": [
+      {
+        "id": "exceed_15_pages",
+        "label": "事業計画書が 15 ページ超過",
+        "detail": "事業再構築補助金は 15 ページ以内厳守",
+        "severity": "critical"
+      },
+      {
+        "id": "no_revenue_decline",
+        "label": "売上 10% 減少要件未達 (枠による)",
+        "detail": "通常枠は 10% 以上の売上減少が要件 (コロナ影響等)",
+        "severity": "critical"
+      }
+    ],
+    "agri-jisedai": [
+      {
+        "id": "age_over_50",
+        "label": "年齢 50 歳以上",
+        "detail": "次世代人材投資資金は 50 歳未満限定",
+        "severity": "critical"
+      },
+      {
+        "id": "no_certification",
+        "label": "認定新規就農者 未認定",
+        "detail": "市町村の認定新規就農者 (青年等就農計画認定) が前提",
+        "severity": "critical"
+      }
+    ],
+    "kyoka-zeisei": [
+      {
+        "id": "no_keiei_koujou_certification",
+        "label": "経営力向上計画 未認定",
+        "detail": "経営力向上計画認定が前提、計画認定後の設備取得のみ対象",
+        "severity": "critical"
+      }
+    ]
+  }
+}
