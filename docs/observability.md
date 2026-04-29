@@ -137,11 +137,11 @@ Custom app-level メトリクスは現状 expose しない (FastAPI に `prometh
 
 <a id="cf-analytics"></a>
 
-- 静的 site (`autonomath.ai/`, `autonomath.ai/docs/`) は Cloudflare Pages
+- 静的 site (`zeimu-kaikei.ai/`, `zeimu-kaikei.ai/docs/`) は Cloudflare Pages
 - Web Analytics (free tier) を `site/` の HTML head にスニペット注入済 (
   `overrides/partials/footer.html`).
 - 計測対象: page view / referrer / 国コード / Core Web Vitals (LCP / FID / CLS)
-- ダッシュボード: Cloudflare dash → Web Analytics → `autonomath.ai`
+- ダッシュボード: Cloudflare dash → Web Analytics → `zeimu-kaikei.ai`
 - PII 非収集. IP / cookie 不使用 (Cloudflare の cookieless analytics 機能).
 
 KPI:
@@ -231,8 +231,8 @@ Twilio / Slack / Discord webhook は導入しない (運用負荷とノイズリ
 - 旅行中・移動中も Sentry iOS push が届く設定
 - バックアップ on-call なし (solo + zero-touch 制約上構造的に不可)
 - 30 min 以内応答できないと判明した場合のみ:
-  1. status page (`autonomath.ai/status`) に手動で incident 起票
-  2. `service@autonomath.ai` 自動応答に "investigating" を一時掲示
+  1. status page (`zeimu-kaikei.ai/status`) に手動で incident 起票
+  2. `service@zeimu-kaikei.ai` 自動応答に "investigating" を一時掲示
   3. 復旧後 24 hr 以内に postmortem を `docs/_internal/incidents/` に記録
 
 ### Escalation

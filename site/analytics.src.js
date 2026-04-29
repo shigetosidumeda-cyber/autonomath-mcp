@@ -3,7 +3,7 @@
 // Activate on launch by setting window.JPINTEL_ANALYTICS before this script
 // loads, e.g. from a small inline tag in index.html/pricing.html:
 //
-//   <script>window.JPINTEL_ANALYTICS = { domain: "autonomath.ai" };</script>
+//   <script>window.JPINTEL_ANALYTICS = { domain: "zeimu-kaikei.ai" };</script>
 //
 // If unset this file is a no-op. No external request is made.
 (function () {

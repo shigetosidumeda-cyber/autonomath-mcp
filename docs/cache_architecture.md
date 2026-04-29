@@ -1,6 +1,6 @@
 # Cache architecture (4-Layer L0–L4)
 
-AutonoMath's API is built on a **Pre-computed Reasoning Layer**: customer
+税務会計AI's API is built on a **Pre-computed Reasoning Layer**: customer
 queries do not trigger ad-hoc joins, FTS scans, or multi-tool plans at
 request time. Every shape an answer can take has already been computed
 overnight, or is being served straight from a hot cache row. This page
@@ -41,9 +41,9 @@ The on-disk SQLite files plus their FTS5 trigram indexes.
   `invoice_registrants`, plus the join tables `program_law_refs` and
   `enforcement_decision_refs`.
 - `autonomath.db` (8.29 GB, unified primary as of 2026-04-25): the entity-fact
-  EAV schema (`am_entities`, `am_entity_facts`, `am_relation`, `am_alias`,
-  `am_authority`, `am_region`, ...). Owned by the data-collection CLI;
-  the API repo opens it read-only.
+  EAV schema (503,930 件の正規化レコード, 612 万件の structured 属性,
+  17.7 万件の関係性 link, 別名・略称 index, 所管庁 index, 地域 index など).
+  Owned by the data-collection CLI; the API repo opens it read-only.
 
 L0 is the only layer that holds ground truth. Every other layer is a
 projection or cache of L0 rows — corruption here is the only thing that

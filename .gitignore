@@ -71,7 +71,20 @@ research/
 
 # Test artifacts (Bandit scan output etc.)
 *.bandit.json
-analytics/
+
+# analytics/ — funnel cron output. Directory itself is ignored except
+# the daily JSONL rollups (cf_daily.jsonl / pypi_daily.jsonl /
+# npm_daily.jsonl + indexnow_log.jsonl) that we want versioned so the
+# operator-only /dashboard/analytics.html dashboard has a portable history.
+# IndexNow snapshot is a single JSON URL list used by the cron diff —
+# also versioned so the cron has a stable previous-run reference.
+# Confidence rollups + ad-hoc exports stay out of git.
+analytics/*
+!analytics/cf_daily.jsonl
+!analytics/pypi_daily.jsonl
+!analytics/npm_daily.jsonl
+!analytics/indexnow_log.jsonl
+!analytics/indexnow_snapshot.json
 
 # Cloudflare Wrangler cache
 .wrangler/
@@ -109,3 +122,38 @@ yarn-error.log*
 mcp-server.local.json
 .env.*
 !.env.example
+
+# Common Python / tooling caches not yet listed above
+.python-version
+.tox/
+coverage.xml
+.coverage.*
+.hypothesis/
+
+# Windows / cross-OS artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor swap / lock files
+*~
+.\#*
+\#*\#
+
+# Cryptographic material — never commit
+*.key
+*.pem
+*.pfx
+*.p12
+*.jks
+*.keystore
+*credentials.json
+*credentials.yaml
+*credentials.yml
+service-account*.json
+
+# Local SQLite WAL/SHM next to repo-root databases
+autonomath.db-wal
+autonomath.db-shm
+jpintel.db-wal
+jpintel.db-shm

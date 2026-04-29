@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate 47 prefecture-level SEO landing pages for AutonoMath (autonomath.ai).
+"""Generate 47 prefecture-level SEO landing pages for AutonoMath (zeimu-kaikei.ai).
 
 Targets long-tail organic queries like:
     "<都道府県名> 補助金"
@@ -92,7 +92,7 @@ DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_TEMPLATE_DIR = REPO_ROOT / "site" / "_templates"
 DEFAULT_OUT = REPO_ROOT / "site" / "prefectures"
 DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-prefectures.xml"
-DEFAULT_DOMAIN = "autonomath.ai"
+DEFAULT_DOMAIN = "zeimu-kaikei.ai"
 
 PROGRAMS_PER_PAGE = 20
 CASES_PER_PAGE = 10
@@ -391,8 +391,8 @@ def _overview_paragraph(pref_ja: str, programs_count: int, cases_count: int,
         f"国税庁の税制優遇措置、各種認定制度が事業者向けに提供されています。AutonoMath では、"
         f"{pref_ja}に関連する補助金・助成金 {programs_count} 件、{pref_ja}所在事業者の採択事例 {cases_count} 件、"
         f"全国対応の政策金融融資 {loans_count} 件、{pref_ja}関連の行政処分公示 {enforcements_count} 件を、"
-        f"一次情報のみを出典とする形で集約しています。アグリゲータサイト ({BANNED_AGGREGATORS}) は出典源から除外しているため、"
-        "詐欺リスク・誤情報リスクを抑えた上で制度横断の意思決定にご活用いただけます。"
+        f"一次情報のみを出典とする形で集約しています。集約サイト ({BANNED_AGGREGATORS}) は出典源から除外しているため、"
+        "誤情報リスク・申請失敗リスクを抑えた上で制度横断の意思決定にご活用いただけます。"
     )
 
 
@@ -419,10 +419,12 @@ def _page_title(pref_ja: str, programs_count: int) -> str:
 
 
 def _org_node(domain: str) -> dict[str, Any]:
+    # Canonical Organization @id, unified across all template generators.
     return {
         "@type": "Organization",
-        "@id": "#autonomath-org",
-        "name": "AutonoMath",
+        "@id": "https://zeimu-kaikei.ai/#publisher",
+        "name": "税務会計AI",
+        "alternateName": ["AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "legalName": OPERATOR_NAME,
         "taxID": OPERATOR_CORPORATE_NUMBER,
@@ -437,6 +439,14 @@ def _org_node(domain: str) -> dict[str, Any]:
             "email": OPERATOR_EMAIL,
             "contactType": "customer support",
         },
+        "logo": {
+            "@type": "ImageObject",
+            "url": f"https://{domain}/assets/logo.png",
+            "width": 600,
+            "height": 60,
+        },
+        # TODO populate when LinkedIn / GitHub / X / Crunchbase live.
+        "sameAs": [],
     }
 
 

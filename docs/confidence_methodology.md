@@ -1,6 +1,6 @@
 # Confidence — Methodology (P5-attribution)
 
-`/v1/stats/confidence` は AutonoMath の **Bayesian 信頼度** ダッシュボードです。
+`/v1/stats/confidence` は 税務会計AI の **Bayesian 信頼度** ダッシュボードです。
 tool 単位で **Discovery** (見つけられる確率) と **Use** (実 action に変わる確率) を
 推定し、95% credible interval と一緒に公開しています。本ページはそのモデル定義 (式・前提・PII の扱い) をまとめたものです。
 

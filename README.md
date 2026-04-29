@@ -1,28 +1,40 @@
-# AutonoMath — Japanese Subsidy/Grant/Loan Database API + MCP Server
+# 税務会計AI — Japanese Institutional Data Search API + MCP Server
 
-*Updated 2026-04-25 — v0.3.0*
+*Updated 2026-04-29 — v0.3.1*
 
 [![PyPI version](https://img.shields.io/pypi/v/autonomath-mcp.svg)](https://pypi.org/project/autonomath-mcp/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![MCP 2025-06-18](https://img.shields.io/badge/MCP-2025--06--18-6E56CF.svg)](https://modelcontextprotocol.io/)
-[![CodeQL](https://github.com/AutonoMath/autonomath-mcp/workflows/CodeQL/badge.svg)](https://github.com/AutonoMath/autonomath-mcp/actions/workflows/codeql.yml)
-[![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://autonomath.ai)
+[![CodeQL](https://github.com/shigetosidumeda-cyber/jpintel-mcp/workflows/CodeQL/badge.svg)](https://github.com/shigetosidumeda-cyber/jpintel-mcp/actions/workflows/codeql.yml)
+[![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://zeimu-kaikei.ai)
 
-日本の公的制度 (補助金・融資・税制・認定) **10,790 件 検索可能** (tier S/A/B/C; tier X 隔離 1,923 件含む全表 13,578 件) + 採択事例 **2,286** + 融資 **108** (担保・個人保証人・第三者保証人 三軸分解) + 行政処分 **1,185** + 法令 **9,484** + 判例 **2,065** + 入札 **362** + 適格事業者 **13,801** を横断検索する REST + MCP API。AI エージェント・Claude Desktop・企業内 RAG 向け。
+日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 / 適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185) を REST + MCP API で検索。一次資料 URL 付き、¥3/req、anon 50/月 free。
 
-*English: Search 10,790 Japanese government subsidies, loans, and tax programs from Claude Desktop, Cursor, ChatGPT, or any REST client.*
+*English: Search Japanese institutional data via REST + MCP API. 11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. Primary-source URLs, ¥3/request, 50/month free anonymous.*
 
-## Why AutonoMath
+## What this is
 
-- **10,790 searchable programs** (tier S=114 / A=1,340 / B=3,292 / C=6,044) across 47 prefectures + national (補助金・融資・税制・認定; full table 13,578 incl. tier X quarantine 1,923)
-- **2,286 採択事例 + 108 融資 + 1,185 行政処分 + 2,065 court decisions + 362 bids** — 単なる制度 DB ではなく「発見 + 併用可否判定 + 実績確認 + vendor vetting + 判例 + 入札」を 1 API
-- **181 exclusion / prerequisite rules** for automatic 併給不可 + 前提条件 detection (125 exclude + 17 prerequisite + 15 absolute + 24 other kinds, 農業系 + 非農業系)
-- **MCP native** — 72 tools at default gates (39 コア: 制度検索・採択事例・融資・行政処分 + get_usage_status (quota probe) + prescreen + upcoming_deadlines + 7 one-shot discovery (smb_starter_pack / subsidy_combo_finder / deadline_calendar / dd_profile_am / similar_cases / regulatory_prep_pack / subsidy_roadmap_3yr) + 拡張 [法令 e-Gov CC-BY 9,484 件・継続ロード中 / 税務ruleset インボイス+電帳法 35 件 live / 適格事業者 13,801 件 delta / 判例 2,065 件 / 入札 362 件 + cross-dataset glue] / 33 autonomath: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases の entity-fact DB + list_tax_sunset_alerts + V4 universal annotation/validation/provenance + Phase A static/example/health + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine。36協定 2 tools は AUTONOMATH_36_KYOTEI_ENABLED gate で off)、protocol 2025-06-18、stdio で Claude Desktop / Cursor / ChatGPT / Gemini から直呼び
-- **REST API** — 30+ endpoints: `/v1/programs/*`, `/v1/laws/*`, `/v1/tax_rulesets/*`, `/v1/case-studies/*`, `/v1/loan-programs/*`, `/v1/enforcement-cases/*`, `/v1/exclusions/*`, `/v1/am/*` (16 autonomath), customer self-serve `/v1/me/*` (cap / dashboard / usage_by_tool / billing_history / tool_recommendation / alerts / testimonials), transparency `/v1/stats/{coverage,freshness,usage}`, public `/v1/testimonials`. 完全な OpenAPI: [`docs/openapi/v1.json`](./docs/openapi/v1.json)
-- **REST fallback** — curl / Python / Node / anywhere
-- **Primary-source URLs on 99%+ of rows** (source_url + fetched_at; 12件は小規模自治体 CMS 不在のため URL 未取得、aggregator は除外)
-- **¥3/req metered** (税込 ¥3.30)、匿名 50 req/月 無料 (登録不要、JST 月初リセット)
+A search index over Japanese institutional public data, exposed as REST + MCP. Returns records with primary-source URLs.
+
+## What this isn't
+
+- Not legal advice (弁護士法 § 72)
+- Not tax advice (税理士法 § 52)
+- Not 行政書士 work (行政書士法 § 1)
+- Not real-time amendment tracking (snapshot data, partial historical diffs)
+- Verify primary sources before any business decision
+
+## Coverage
+
+- **11,684 searchable programs** across 47 prefectures + national (補助金・融資・税制・認定; tier S=114 / A=1,340 / B=4,186 / C=6,044; full table = 14,472, tier X quarantine = 2,788)
+- **2,286 採択事例 + 108 融資 (担保・個人保証人・第三者保証人 三軸分解) + 1,185 行政処分 + 2,065 court decisions + 362 bids**
+- **154 laws full-text indexed + 9,484 law catalog stubs** (e-Gov CC-BY; full-text load incremental — name resolver covers all 9,484, body text 154) **+ 50 tax rulesets + 13,801 invoice registrants (PDL v1.0 delta)**
+- **181 exclusion / prerequisite rules** (125 exclude + 17 prerequisite + 15 absolute + 24 other)
+- **89 MCP tools** at default gates (39 core + 50 autonomath, includes Wave 21 + Wave 22 composition tools + Wave 23 industry pack wrappers `pack_construction` / `pack_manufacturing` / `pack_real_estate` that bundle programs + saiketsu + 通達 in 1 req), protocol 2025-06-18, stdio. 36協定 2 tools held behind `AUTONOMATH_36_KYOTEI_ENABLED` gate
+- **REST API** — endpoints under `/v1/programs/*`, `/v1/laws/*`, `/v1/tax_rulesets/*`, `/v1/case-studies/*`, `/v1/loan-programs/*`, `/v1/enforcement-cases/*`, `/v1/exclusions/*`, `/v1/am/*`. OpenAPI: [`docs/openapi/v1.json`](./docs/openapi/v1.json)
+- **Primary-source URLs on 99%+ of rows** (source_url + fetched_at; 12 rows lack URL because the originating small-municipality CMS has no dedicated page; aggregators are excluded)
+- **¥3/req metered** (税込 ¥3.30), anonymous 50 req/月 free (no signup; JST 月初リセット)
 
 ## 30-second quickstart (Claude Desktop)
 
@@ -44,7 +56,7 @@ Restart Claude Desktop, then ask: 「農業に使える東京都の補助金を�
 ### HTTP fallback (uvx インストール時)
 
 `uvx autonomath-mcp` で取得した wheel には DB が同梱されていないため、起動時に
-ローカル DB が空であることを検知し、自動で **`api.autonomath.ai` への HTTP fallback**
+ローカル DB が空であることを検知し、自動で **`api.zeimu-kaikei.ai` への HTTP fallback**
 モードに切替えます。匿名 50 req/月 は IP 単位で同一に適用 (¥3/req メータリングも同じ)。
 
 ```jsonc
@@ -57,7 +69,7 @@ Restart Claude Desktop, then ask: 「農業に使える東京都の補助金を�
         // optional: API key (匿名 50 req/月 を超える場合)
         "AUTONOMATH_API_KEY": "ak_live_xxx",
         // optional: staging / self-hosted upstream
-        "AUTONOMATH_API_BASE": "https://api.autonomath.ai"
+        "AUTONOMATH_API_BASE": "https://api.zeimu-kaikei.ai"
       }
     }
   }
@@ -68,7 +80,7 @@ HTTP fallback で完全に動作するツール (top 10): `search_programs` / `g
 `search_case_studies` / `search_loan_programs` / `search_enforcement_cases` /
 `search_tax_incentives` / `search_certifications` / `list_open_programs` /
 `dd_profile_am` (REST chain hint) / `rule_engine_check` (remote_only)。それ以外
-の 56 tools は `error: "remote_only_via_REST_API"` を返し、対応する REST URL を
+の 89 tools は `error: "remote_only_via_REST_API"` を返し、対応する REST URL を
 案内します。フル機能を使う場合はリポジトリを clone してローカル DB を取得して
 ください。
 
@@ -76,15 +88,15 @@ HTTP fallback で完全に動作するツール (top 10): `search_programs` / `g
 
 ```bash
 # Primary (X-API-Key header, used across our docs)
-curl "https://api.autonomath.ai/v1/programs/search?q=農業&prefecture=東京都" \
+curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都" \
   -H "X-API-Key: YOUR_API_KEY"
 
 # Also supported: Bearer token
-curl "https://api.autonomath.ai/v1/programs/search?q=農業&prefecture=東京都" \
+curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都" \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
-Get an API key at <https://autonomath.ai/>.
+Get an API key at <https://zeimu-kaikei.ai/>.
 
 ### Output sample
 
@@ -108,7 +120,7 @@ Get an API key at <https://autonomath.ai/>.
 
 ## MCP tools
 
-72 tools at default gates (39 コア + 33 autonomath), MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
+89 tools at default gates (39 コア + 50 autonomath; includes Wave 21 + Wave 22 composition tools + Wave 23 industry pack wrappers [pack_construction / pack_manufacturing / pack_real_estate]), MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
 
 | Group | Coverage |
 |-------|----------|
@@ -119,31 +131,27 @@ Get an API key at <https://autonomath.ai/>.
 | **Lifecycle / graph (4)** | unified_lifecycle_calendar, program_lifecycle, program_abstract_structured, graph_traverse |
 | **Other (4)** | prerequisite_chain, rule_engine_check, query_at_snapshot, list_tax_sunset_alerts |
 
-Full list: [docs/mcp-tools.md](https://autonomath.ai/docs/mcp-tools/)
+Full list: [docs/mcp-tools.md](https://zeimu-kaikei.ai/docs/mcp-tools/)
 
 ## REST API & SDKs
 
-> WARNING: Python SDK is pre-release — direct git install only. TypeScript SDK is on npm.
+> WARNING: Both SDKs are pre-release — direct git install only. PyPI / npm publish pending.
 
 **OpenAPI spec**
 
-- Live: <https://api.autonomath.ai/openapi.json>
+- Live: <https://api.zeimu-kaikei.ai/openapi.json>
 - Committed copy: [`docs/openapi/v1.json`](./docs/openapi/v1.json)
 
 **Python SDK** (`autonomath`) — hand-written, lives at [`sdk/python/autonomath/`](./sdk/python/autonomath/). Not yet on PyPI. Direct install from git:
 
 ```bash
-pip install "git+https://github.com/AutonoMath/autonomath-mcp.git#subdirectory=sdk/python"
+pip install "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git#subdirectory=sdk/python"
 ```
 
-**TypeScript / JavaScript SDK** (`@autonomath/sdk`) — lives at [`sdk/typescript/src/`](./sdk/typescript/src/). Available on npm as well as direct git install:
+**TypeScript / JavaScript SDK** (`@autonomath/sdk`) — lives at [`sdk/typescript/src/`](./sdk/typescript/src/). Not yet on npm. Direct install from git:
 
 ```bash
-# npm (preferred)
-npm install @autonomath/sdk
-
-# or direct from git
-npm install "git+https://github.com/AutonoMath/autonomath-mcp.git#subdirectory=sdk/typescript"
+npm install "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git#subdirectory=sdk/typescript"
 ```
 
 The package ships dual ESM + CJS output with `.d.ts` and exposes both REST (`@autonomath/sdk`) and MCP (`@autonomath/sdk/mcp`) entry points. Zero runtime dependencies (uses platform `fetch`).
@@ -163,7 +171,7 @@ uvx autonomath-mcp
 
 ## Data sources
 
-All programs cite primary sources — 経産省, 農林水産省 (MAFF), 日本政策金融公庫 (JFC), 総務省, and 47 都道府県公報. 99%+ records carry `source_url` + `source_fetched_at` lineage (12 rows are small-municipality programs lacking a dedicated CMS page). Schema documented at [/docs/json_ld_strategy](https://autonomath.ai/docs/json_ld_strategy).
+All programs cite primary sources — 経産省, 農林水産省 (MAFF), 日本政策金融公庫 (JFC), 総務省, and 47 都道府県公報. 99%+ records carry `source_url` + `source_fetched_at` lineage (12 rows are small-municipality programs lacking a dedicated CMS page). Schema documented at [/docs/json_ld_strategy](https://zeimu-kaikei.ai/docs/json_ld_strategy).
 
 ## Evaluation
 
@@ -205,9 +213,10 @@ gated behind feature flags and primary-source ingest is rolling.
   + 8 静的タクソノミ + 5 example profiles + 4 utility modules
   (`wareki` / `jp_money` / `jp_constants` / `templates/saburoku_kyotei`)
   + `models/premium_response.py` + `/v1/am/health/deep` mounted on
-  `health_router` (no AnonIpLimitDep). Default-gate runtime tool count: **72**
+  `health_router` (no AnonIpLimitDep). Default-gate runtime tool count: **89**
   (36協定 2 tools held behind `AUTONOMATH_36_KYOTEI_ENABLED`; healthcare +
-  real_estate cohorts also gated off pending plan execution).
+  real_estate cohorts also gated off pending plan execution; `query_at_snapshot` +
+  `intent_of` + `reason_answer` gated off pending fix).
 - **Healthcare V3** (T+90d, 2026-08-04) — `medical_institutions` +
   `care_subsidies` (migration 039); +6 MCP tools when
   `HEALTHCARE_ENABLED=true`. Plan: [`docs/healthcare_v3_plan.md`](./docs/healthcare_v3_plan.md).
@@ -217,7 +226,7 @@ gated behind feature flags and primary-source ingest is rolling.
 
 ## SLA & infrastructure
 
-- **Monthly uptime target: 99.5%** on `api.autonomath.ai` (Fly.io
+- **Monthly uptime target: 99.5%** on `api.zeimu-kaikei.ai` (Fly.io
   Tokyo + Cloudflare Pages + Cloudflare WAF). Token-bucket rate-limit
   middleware + WAF managed-ruleset are in front of every request.
   See [`docs/sla.md`](./docs/sla.md).
@@ -229,8 +238,8 @@ gated behind feature flags and primary-source ingest is rolling.
 
 ## Support
 
-- Docs: <https://autonomath.ai/docs/>
-- Issues: <https://github.com/AutonoMath/autonomath-mcp/issues>
+- Docs: <https://zeimu-kaikei.ai/docs/>
+- Issues: <https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues>
 - Email: <info@bookyou.net>
 
 ## License
@@ -238,3 +247,14 @@ gated behind feature flags and primary-source ingest is rolling.
 MIT © 2026 [Bookyou株式会社](https://bookyou.net) (T8010001213708) — 代表 梅田茂利
 </content>
 </invoke>
+
+## Badges
+
+[![PyPI version](https://img.shields.io/pypi/v/autonomath-mcp)](https://pypi.org/project/autonomath-mcp/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/autonomath-mcp)](https://pypi.org/project/autonomath-mcp/)
+[![License](https://img.shields.io/github/license/shigetosidumeda-cyber/jpintel-mcp)](./LICENSE)
+[![MCP 2025-06-18](https://img.shields.io/badge/MCP-2025--06--18-6E56CF)](https://modelcontextprotocol.io/specification/2025-06-18)
+[![API status](https://img.shields.io/badge/api-status-4c1)](https://zeimu-kaikei.ai/status)
+
+Offline / mirrored copies of the same badges live in [`badges/`](./badges/)
+for use in environments where shields.io is unreachable.

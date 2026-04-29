@@ -14,9 +14,9 @@ Headers set (all via ``setdefault`` — never override an upstream
 middleware that has already chosen a value):
 
 * ``Strict-Transport-Security`` — 1 year + includeSubDomains + preload.
-  Long max-age + preload is intentional: ``autonomath.ai`` is operator-
+  Long max-age + preload is intentional: ``zeimu-kaikei.ai`` is operator-
   controlled, never returns to plain HTTP, and we want every browser
-  + every ``api.autonomath.ai`` subdomain to refuse cleartext from
+  + every ``api.zeimu-kaikei.ai`` subdomain to refuse cleartext from
   the very first request. Listing on the HSTS preload registry is a
   follow-up domain-side action (not code).
 * ``Content-Security-Policy`` — ``default-src 'self'`` plus an
@@ -69,7 +69,7 @@ if TYPE_CHECKING:
 # Frozen at import time; building the dict on every request would be
 # pure waste (these strings never change at runtime).
 _SECURITY_HEADERS: dict[str, str] = {
-    # 1 year, includeSubDomains, preload — autonomath.ai is HTTPS-only
+    # 1 year, includeSubDomains, preload — zeimu-kaikei.ai is HTTPS-only
     # and we want browsers to refuse plain HTTP on the very first hit.
     "Strict-Transport-Security": (
         "max-age=31536000; includeSubDomains; preload"

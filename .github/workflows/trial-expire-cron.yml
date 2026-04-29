@@ -1,0 +1,118 @@
+name: trial-expire-cron
+
+# Daily revoke of expired trial API keys.
+#
+# Why this exists
+# ---------------
+# `src/jpintel_mcp/api/signup.py` issues tier='trial' keys with
+# `trial_expires_at = now() + 14d` and a 200-request cap. Without a
+# scheduled sweep these keys would remain live indefinitely — a revenue
+# leak, since a trial-key holder is exempt from Stripe metered billing.
+# `scripts/cron/expire_trials.py` is the sweeper; this workflow is the
+# only thing that invokes it on a schedule.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api`. Same secret already used by
+#                   nightly-backup.yml + analytics-cron.yml.
+#
+# Failure routing
+# ---------------
+# expire_trials exits 1 only when revoke_key() raised an exception on
+# at least one row (real Sentry-worthy failure). Empty runs (scanned=0)
+# exit 0 — the daily summary log line in Fly's logs is enough operator
+# signal. The workflow's `if: failure()` Sentry alert step is therefore
+# a real-issue gate, not noise.
+
+on:
+  schedule:
+    # 19:10 UTC == 04:10 JST. Same daily cadence as the trial 14-day
+    # window — picks up evening-of-day-14 expirations the next morning
+    # without a same-day grace race. Staggered +10 min vs ingest-daily
+    # (0 19) and nta-corpus-incremental (5 19) to avoid Fly machine
+    # contention.
+    - cron: "10 19 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (count only, no revokes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      limit:
+        description: "Max rows to revoke this run (default 1000)"
+        required: false
+        default: "1000"
+
+concurrency:
+  group: trial-expire-cron
+  cancel-in-progress: false
+
+jobs:
+  expire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run expire_trials on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          LIMIT: ${{ inputs.limit || '1000' }}
+        run: |
+          set -euo pipefail
+          # Build the flag set. Schedule-driven runs always go live;
+          # workflow_dispatch can opt into --dry-run from the UI.
+          FLAGS="--limit ${LIMIT}"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          # `flyctl ssh console -C "<cmd>"` runs <cmd> non-interactively
+          # in the autonomath-api machine. The python entry uses the
+          # baked-in /app/.venv interpreter so we inherit JPINTEL_DB_PATH
+          # / SENTRY_DSN / api_key_salt from the Fly secret store.
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/expire_trials.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop. The Fly-side run already emits a Sentry breadcrumb when expire_trials.py raises, so this is a defense-in-depth surface for the case where flyctl ssh itself fails (e.g. machine offline)."
+            exit 0
+          fi
+          # Minimal Sentry "Store" API POST. We use the workflow-side
+          # alert specifically for the case where the Fly machine never
+          # ran the script (machine down, SSH refused, deploy lock) —
+          # that path can't emit its own Sentry event because the
+          # process never started. Inside-the-machine failures are
+          # already captured by safe_capture_message().
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=trial-expire-cron/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.trial-expire-cron",
+            "platform": "other",
+            "message": "trial-expire-cron failed: flyctl ssh exited non-zero (machine offline, SSH refused, or deploy lock). Check Fly.io app autonomath-api logs.",
+            "tags": {
+              "workflow": "trial-expire-cron",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

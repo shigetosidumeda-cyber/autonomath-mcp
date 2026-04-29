@@ -130,7 +130,7 @@ def _send_dunning_safe(
                 ).strftime("%Y-%m-%d %H:%M JST")
             except Exception:
                 next_retry_at = ""
-        portal_url = "https://autonomath.ai/billing/portal"
+        portal_url = "https://zeimu-kaikei.ai/billing/portal"
         _get_email_client().send_dunning(
             to=to,
             attempt_count=attempt_count,
@@ -446,6 +446,25 @@ def _apply_invoice_metadata_safe(customer_id: str | None) -> None:
     # the dev/CI default, and we never want a half-empty footer in prod, so
     # require BOTH to be set before sending.
     if not reg_no or not footer:
+        # R1 from Stripe audit: in prod a missing T番号 is a 適格請求書発行事業者
+        # compliance breach (令和7年5月12日, T8010001213708). The Sentry alert
+        # rule `invoice_missing_tnumber` (monitoring/sentry_alert_rules.yml)
+        # fires on `message:"invoice missing tnumber" level:error`; without
+        # this emitter the rule would silently never fire. Dev/CI is exempted
+        # because empty env vars are the documented "feature off" path there.
+        if settings.env == "prod":
+            try:
+                from jpintel_mcp.observability import safe_capture_message
+
+                safe_capture_message(
+                    "invoice missing tnumber",
+                    level="error",
+                    customer_id=customer_id,
+                    reg_no_set=bool(reg_no),
+                    footer_set=bool(footer),
+                )
+            except Exception:  # noqa: BLE001 — observability cannot raise
+                logger.debug("sentry_capture_failed", exc_info=True)
         return
     try:
         # Stripe `invoice_settings.custom_fields` constraints (2024-11-20.acacia):
@@ -500,7 +519,16 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
     s = _stripe()
     price_id = settings.stripe_price_per_request
     if not price_id:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "price not configured")
+        # Operator-side mis-configuration (Fly secret unset). Was 400, but
+        # the caller did nothing wrong — this is a service-availability
+        # condition. 503 maps cleanly to the canonical envelope's
+        # `service_unavailable` code (see _http_exception_handler in
+        # api/main.py) so an LLM caller reading `error.code` sees an
+        # actionable retry signal instead of a misleading client-error tag.
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "billing not configured",
+        )
 
     # Stripe Tax + インボイス制度 wiring (see `research/stripe_jct_setup.md`,
     # `docs/stripe_tax_setup.md`):
@@ -527,7 +555,7 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
     # 表示する (2026-04-23 修正). 以前の ToS-required consent flag は Stripe
     # Dashboard 側 ToS URL 未設定だと live mode で 500 になるため撤去した
     # (research/data_expansion_design.md:243). リンク先 HTML は
-    # https://autonomath.ai/tos.html + /privacy.html.
+    # https://zeimu-kaikei.ai/tos.html + /privacy.html.
     session = s.checkout.Session.create(
         mode="subscription",
         line_items=[{"price": price_id}],
@@ -539,8 +567,8 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
         custom_text={
             "submit": {
                 "message": (
-                    "ご登録により利用規約 (https://autonomath.ai/tos.html) "
-                    "およびプライバシーポリシー (https://autonomath.ai/privacy.html) "
+                    "ご登録により利用規約 (https://zeimu-kaikei.ai/tos.html) "
+                    "およびプライバシーポリシー (https://zeimu-kaikei.ai/privacy.html) "
                     "に同意したものとみなされます。"
                 )
             }
@@ -890,62 +918,40 @@ async def webhook(
                 )
         elif etype == "customer.subscription.updated":
             sub_id = obj.get("id")
-            # P1 race fix (audit a23909ea8a7d67d64, 2026-04-25): wrap the
-            # per-subscription work in an advisory lock so a concurrent
-            # bg_task_queue `stripe_status_refresh` for the same sub_id
-            # cannot race the UPDATE on api_keys. The lock uses its OWN
-            # short-lived connection because the request-scoped `conn` is
-            # already inside the BEGIN IMMEDIATE event-dedup transaction
-            # (see Fix 3 above) and SQLite does not allow nested
-            # transactions on the same connection.
-            _lock_conn = None
-            try:
-                _lock_conn = _db_connect()
-                with advisory_lock(_lock_conn, f"subscription:{sub_id}", ttl_s=30):
-                    price_id = obj["items"]["data"][0]["price"]["id"]
-                    tier = resolve_tier_from_price(price_id)
-                    n = update_tier_by_subscription(conn, sub_id, tier)
-                    logger.info("tier-updated sub=%s tier=%s rows=%d", sub_id, tier, n)
-                    # Cache the new subscription state. The payload carries
-                    # the updated status / period_end / cancel flag, so no
-                    # live retrieve needed.
-                    status_val, cpe_int, cancel_bool = _extract_subscription_state(obj)
-                    if status_val:
-                        update_subscription_status(
-                            conn,
-                            sub_id,
-                            status=status_val,
-                            current_period_end=cpe_int,
-                            cancel_at_period_end=cancel_bool,
-                        )
-            except LockNotAcquired:
-                # A concurrent refresh holds the lock; the other holder will
-                # write a fresh-enough state. We still proceed with the tier
-                # write because the webhook payload IS the authoritative tier
-                # change source — losing it is worse than racing.
-                logger.info(
-                    "subscription_updated_lock_busy sub=%s — applying tier+status without lock",
+            # The outer `BEGIN IMMEDIATE` on `conn` (Fix 3 dedup
+            # transaction) already holds the SQLite RESERVED writer
+            # lock, so any concurrent `stripe_status_refresh` worker
+            # opening a fresh connection is automatically serialized at
+            # the SQLite level — there is no race the application code
+            # can introduce. A previous version opened a SECOND
+            # connection inside this branch and asked it to take an
+            # advisory lock; that deadlocked the request against itself
+            # (the second conn waited on the RESERVED lock held by the
+            # request conn for the full 300s busy_timeout). Removing
+            # the advisory_lock attempt is correct because:
+            #   1. The outer BEGIN IMMEDIATE already serializes writers.
+            #   2. The webhook payload IS the authoritative tier change
+            #      source, so even if a concurrent refresh did sneak in
+            #      between transactions, applying the webhook tier last
+            #      wins — losing it (LockNotAcquired path before) was
+            #      strictly worse than letting it execute under the
+            #      regular SQLite writer-serialization.
+            price_id = obj["items"]["data"][0]["price"]["id"]
+            tier = resolve_tier_from_price(price_id)
+            n = update_tier_by_subscription(conn, sub_id, tier)
+            logger.info("tier-updated sub=%s tier=%s rows=%d", sub_id, tier, n)
+            # Cache the new subscription state. The payload carries the
+            # updated status / period_end / cancel flag, so no live
+            # retrieve needed.
+            status_val, cpe_int, cancel_bool = _extract_subscription_state(obj)
+            if status_val:
+                update_subscription_status(
+                    conn,
                     sub_id,
+                    status=status_val,
+                    current_period_end=cpe_int,
+                    cancel_at_period_end=cancel_bool,
                 )
-                price_id = obj["items"]["data"][0]["price"]["id"]
-                tier = resolve_tier_from_price(price_id)
-                n = update_tier_by_subscription(conn, sub_id, tier)
-                logger.info("tier-updated sub=%s tier=%s rows=%d", sub_id, tier, n)
-                status_val, cpe_int, cancel_bool = _extract_subscription_state(obj)
-                if status_val:
-                    update_subscription_status(
-                        conn,
-                        sub_id,
-                        status=status_val,
-                        current_period_end=cpe_int,
-                        cancel_at_period_end=cancel_bool,
-                    )
-            finally:
-                if _lock_conn is not None:
-                    try:
-                        _lock_conn.close()
-                    except Exception:
-                        pass
         elif etype == "customer.subscription.deleted":
             sub_id = obj.get("id")
             n = revoke_subscription(conn, sub_id)

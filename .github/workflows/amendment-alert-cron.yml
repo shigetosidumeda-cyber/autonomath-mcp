@@ -1,0 +1,83 @@
+name: amendment-alert-cron
+
+# Daily amendment alert fan-out (Tier 3 P5-ι++ / dd_v8_08 H/I).
+#
+# Reads new am_amendment_snapshot rows (autonomath.db) since the last
+# successful run, infers severity from the diff, then dispatches webhooks +
+# Postmark email to matching alert_subscriptions rows in jpintel.db.
+#
+# Distinct from `dispatch_webhooks.py` (¥3/req metered customer webhooks
+# under /v1/me/webhooks) — this surface is FREE retention fan-out for the
+# amendment audit feed. project_autonomath_business_model keeps ¥3/req
+# immutable; alerts do NOT bill.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Required Fly machine secrets:
+#   POSTMARK_API_TOKEN  Postmark API key. Consumed for the
+#                       'amendment-alert' template send.
+#   SENTRY_DSN          Optional. Inside-the-machine errors emit a Sentry
+#                       breadcrumb when amendment_alert.py raises.
+
+on:
+  schedule:
+    # 20:30 UTC == 05:30 JST. After news-pipeline (04:30 JST) + ingest
+    # so the snapshot table has the freshest diffs.
+    - cron: "30 20 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no webhook POST, no email send)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: amendment-alert-cron
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  fan-out:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run amendment alert fan-out on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/amendment_alert.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=amendment-alert-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.amendment-alert-cron\",\"platform\":\"other\",\"message\":\"amendment-alert-cron failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"amendment-alert-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

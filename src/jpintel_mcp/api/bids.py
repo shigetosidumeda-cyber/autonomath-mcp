@@ -28,8 +28,10 @@ import sqlite3
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.api.programs import _build_fts_match
 
@@ -45,46 +47,93 @@ class BidOut(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     unified_id: str = Field(..., description="BID-<10 lowercase hex>")
-    bid_title: str = Field(..., description="案件名")
+    bid_title: str = Field(
+        ..., description="Bid title (案件名) — short headline as published by the procuring entity."
+    )
     bid_kind: BidKind = Field(
         ...,
         description=(
-            "open (一般競争) | selective (指名競争) | "
-            "negotiated (随意契約) | kobo_subsidy (公募型補助)"
+            "Bid procedure kind. open = 一般競争 (open competitive); "
+            "selective = 指名競争 (selective tender); "
+            "negotiated = 随意契約 (negotiated contract); "
+            "kobo_subsidy = 公募型補助 (subsidy-style open call)."
         ),
     )
-    procuring_entity: str = Field(..., description="発注機関名")
-    procuring_houjin_bangou: str | None = Field(
-        default=None, description="13-digit 法人番号 of the procuring entity (soft ref)"
+    procuring_entity: str = Field(
+        ..., description="Procuring entity name (発注機関名) — ministry / agency / 自治体 issuing the tender."
     )
-    ministry: str | None = Field(default=None, description="所管府省")
-    prefecture: str | None = Field(default=None, description="都道府県")
+    procuring_houjin_bangou: str | None = Field(
+        default=None,
+        description=(
+            "13-digit 法人番号 of the procuring entity (soft ref to houjin_master)."
+        ),
+    )
+    ministry: str | None = Field(
+        default=None,
+        description="Ministry / agency in charge (所管府省) — e.g. 農林水産省, 経済産業省.",
+    )
+    prefecture: str | None = Field(
+        default=None,
+        description="Prefecture (都道府県) — full-suffix kanji form, e.g. 東京都. NULL for nationwide bids.",
+    )
     program_id_hint: str | None = Field(
         default=None,
-        description="programs.unified_id when the bid is the procurement arm of a funded 補助事業 (soft ref)",
+        description=(
+            "Soft reference to programs.unified_id when this bid is the procurement "
+            "arm of a funded 補助事業."
+        ),
     )
-    announcement_date: str | None = Field(default=None, description="ISO 8601 公告日")
+    announcement_date: str | None = Field(
+        default=None,
+        description="Announcement date / 公告日 (ISO 8601 YYYY-MM-DD).",
+    )
     question_deadline: str | None = Field(
-        default=None, description="ISO 8601 質問受付期限"
+        default=None,
+        description="Question-submission deadline / 質問受付期限 (ISO 8601 YYYY-MM-DD).",
     )
     bid_deadline: str | None = Field(
-        default=None, description="ISO 8601 入札書提出期限"
+        default=None,
+        description="Bid-submission deadline / 入札書提出期限 (ISO 8601 YYYY-MM-DD).",
     )
-    decision_date: str | None = Field(default=None, description="ISO 8601 落札決定日")
+    decision_date: str | None = Field(
+        default=None,
+        description="Award-decision date / 落札決定日 (ISO 8601 YYYY-MM-DD).",
+    )
     budget_ceiling_yen: int | None = Field(
-        default=None, description="予定価格 / 契約限度額 (JPY, 税込 if disclosed)"
+        default=None,
+        description=(
+            "Budget ceiling / contract cap (予定価格 / 契約限度額) in JPY, "
+            "tax-inclusive when disclosed by the procuring entity."
+        ),
     )
     awarded_amount_yen: int | None = Field(
-        default=None, description="落札金額 (JPY, 税込 if disclosed)"
+        default=None,
+        description=(
+            "Awarded amount (落札金額) in JPY, tax-inclusive when disclosed."
+        ),
     )
-    winner_name: str | None = Field(default=None, description="落札者名 (as published)")
+    winner_name: str | None = Field(
+        default=None,
+        description="Winning bidder name (落札者名) — as published by the procuring entity.",
+    )
     winner_houjin_bangou: str | None = Field(
-        default=None, description="13-digit 法人番号 of the winner (soft ref)"
+        default=None,
+        description="13-digit 法人番号 of the winning bidder (soft ref to houjin_master).",
     )
-    participant_count: int | None = Field(default=None, description="入札参加者数")
-    bid_description: str | None = Field(default=None, description="調達概要 / 仕様要旨")
+    participant_count: int | None = Field(
+        default=None,
+        description="Number of participating bidders (入札参加者数).",
+    )
+    bid_description: str | None = Field(
+        default=None,
+        description="Procurement scope / specification summary (調達概要 / 仕様要旨).",
+    )
     eligibility_conditions: str | None = Field(
-        default=None, description="参加資格要件 (等級 / 所在地 / 実績 等)"
+        default=None,
+        description=(
+            "Participation eligibility conditions (参加資格要件) — "
+            "grade rating / location / past-performance requirements."
+        ),
     )
     classification_code: str | None = Field(
         default=None, description="'役務' | '物品' | '工事' (or finer JGS code)"
@@ -144,7 +193,70 @@ def _row_to_bid(row: sqlite3.Row) -> BidOut:
 _HOUJIN_BANGOU_PATTERN = r"^\d{13}$"
 
 
-@router.get("/search", response_model=BidsSearchResponse)
+@router.get(
+    "/search",
+    response_model=BidsSearchResponse,
+    summary="Search Japanese government bids (入札案件)",
+    description=(
+        "Search 362 入札案件 (government procurement bids) sourced from "
+        "GEPS (政府電子調達) + ministry / 自治体 procurement portals. "
+        "Filter by `bid_kind` (open / selective / negotiated / "
+        "kobo_subsidy), 発注機関 法人番号, 落札者 法人番号, programs.unified_id "
+        "hint, awarded_amount band, deadline window.\n\n"
+        "**When to use:** caller asks 'who won the 国土交通省 2025 IT "
+        "procurement?' or 'are there still-open 物品調達 in 関東 with "
+        "award ceiling > 1億?'. Pair with `/v1/am/enforcement` to "
+        "screen winners for 入札参加資格停止.\n\n"
+        "**FTS quirk:** terms < 3 chars will not match (trigram "
+        "tokenizer limitation); use the structured filters instead "
+        "or longer phrases. When `q` is omitted, results sort by "
+        "most recently published first."
+    ),
+    responses={
+        200: {
+            "description": "Paginated bids.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total": 1,
+                        "limit": 20,
+                        "offset": 0,
+                        "results": [
+                            {
+                                "unified_id": "BID-cf1aff5eb7",
+                                "bid_title": "農林水産省永年勤続者表彰用銀杯等の製造（単価契約）",
+                                "bid_kind": "open",
+                                "procuring_entity": "農林水産省",
+                                "procuring_houjin_bangou": None,
+                                "ministry": "農林水産省",
+                                "prefecture": None,
+                                "program_id_hint": None,
+                                "announcement_date": "2026-04-14",
+                                "question_deadline": None,
+                                "bid_deadline": "2026-04-27",
+                                "decision_date": None,
+                                "budget_ceiling_yen": None,
+                                "awarded_amount_yen": None,
+                                "winner_name": None,
+                                "winner_houjin_bangou": None,
+                                "participant_count": None,
+                                "bid_description": None,
+                                "eligibility_conditions": None,
+                                "classification_code": "物品の製造",
+                                "source_url": "https://www.maff.go.jp/j/supply/nyusatu/buppin_ekimu/sonota1/index.html",
+                                "source_excerpt": None,
+                                "source_checksum": None,
+                                "confidence": 0.92,
+                                "fetched_at": "2026-04-25T04:06:20Z",
+                                "updated_at": "2026-04-25T04:06:20Z",
+                            }
+                        ],
+                    }
+                }
+            },
+        }
+    },
+)
 def search_bids(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -345,8 +457,14 @@ def get_bid(
     unified_id: str,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> BidOut:
-    """Return a single 入札案件 by BID-<10 hex> unified_id."""
+) -> JSONResponse:
+    """Return a single 入札案件 by BID-<10 hex> unified_id.
+
+    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
+    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this 入札
+    in a work-paper can reproduce the lookup later and detect whether the
+    corpus mutated. See docs/audit_trail.md.
+    """
     row = conn.execute(
         "SELECT * FROM bids WHERE unified_id = ?", (unified_id,)
     ).fetchone()
@@ -356,4 +474,6 @@ def get_bid(
         )
 
     log_usage(conn, ctx, "bids.get", params={"unified_id": unified_id})
-    return _row_to_bid(row)
+    body = _row_to_bid(row).model_dump(mode="json")
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))

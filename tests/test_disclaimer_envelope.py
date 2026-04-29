@@ -5,14 +5,17 @@ Covers
 1. Each sensitive tool surfaces a non-empty `_disclaimer` string in the
    envelope merge path. Sensitive set = {dd_profile_am, regulatory_prep_pack,
    combined_compliance_check, rule_engine_check, predict_subsidy_outcome,
-   score_dd_risk}.
+   score_dd_risk, intent_of, reason_answer, search_tax_incentives,
+   get_am_tax_rule, list_tax_sunset_alerts}. Tax tools were promoted on
+   2026-04-29 (税理士法 §52 fence — zeimu-kaikei.ai brand sits in 税務会計
+   territory; every tax surface MUST decline 税務助言).
 
 2. `disclaimer_level="minimal"` shortens the disclaimer (less than the
    "standard" form) — for token-sensitive surfaces.
 
-3. Non-sensitive tools (`get_meta`, `search_tax_incentives`, ...) do NOT
-   carry a `_disclaimer` field — adding it everywhere would dilute the
-   warning and waste tokens.
+3. Non-sensitive tools (`get_meta`, `search_programs`, ...) do NOT carry a
+   `_disclaimer` field — adding it everywhere would dilute the warning and
+   waste tokens.
 
 This guards against the J9-style regression where a wired field exists in
 envelope_wrapper but no caller actually surfaces it on the tool response.
@@ -57,7 +60,13 @@ def _import_build_envelope():
 
 
 def test_sensitive_tools_carry_disclaimer():
-    """All 6 sensitive tools yield a non-empty `_disclaimer` via _envelope_merge."""
+    """All sensitive tools yield a non-empty `_disclaimer` via _envelope_merge.
+
+    Set includes the original 6 (DD / compliance / scoring) plus intent_of /
+    reason_answer (added 2026-04-25) plus tax tools search_tax_incentives /
+    get_am_tax_rule / list_tax_sunset_alerts (added 2026-04-29 for 税理士法
+    §52 fence — zeimu-kaikei.ai brand).
+    """
     _envelope_merge = _import_envelope_merge()
     _, _, sensitive = _import_build_envelope()
 
@@ -68,6 +77,11 @@ def test_sensitive_tools_carry_disclaimer():
         "rule_engine_check",
         "predict_subsidy_outcome",
         "score_dd_risk",
+        "intent_of",
+        "reason_answer",
+        "search_tax_incentives",
+        "get_am_tax_rule",
+        "list_tax_sunset_alerts",
     }
     assert expected.issubset(sensitive), (
         f"SENSITIVE_TOOLS missing entries: {expected - sensitive}"
@@ -108,6 +122,11 @@ def test_disclaimer_level_minimal_is_shorter():
         "rule_engine_check",
         "predict_subsidy_outcome",
         "score_dd_risk",
+        "intent_of",
+        "reason_answer",
+        "search_tax_incentives",
+        "get_am_tax_rule",
+        "list_tax_sunset_alerts",
     ):
         std = disclaimer_for(tool_name, "standard")
         mini = disclaimer_for(tool_name, "minimal")
@@ -142,14 +161,19 @@ def test_disclaimer_level_minimal_is_shorter():
 
 
 def test_non_sensitive_tools_omit_disclaimer():
-    """get_meta / search_tax_incentives etc. must NOT have `_disclaimer`."""
+    """get_meta / search_programs / search_certifications must NOT have `_disclaimer`.
+
+    Note: search_tax_incentives, get_am_tax_rule, list_tax_sunset_alerts were
+    REMOVED from this set on 2026-04-29 — they are now sensitive (税理士法 §52
+    fence). See test_sensitive_tools_carry_disclaimer.
+    """
     _envelope_merge = _import_envelope_merge()
     build_envelope, disclaimer_for, _ = _import_build_envelope()
 
     for tool_name in (
         "get_meta",
-        "search_tax_incentives",
         "search_programs",
+        "search_certifications",
     ):
         # disclaimer_for returns None directly.
         assert disclaimer_for(tool_name) is None

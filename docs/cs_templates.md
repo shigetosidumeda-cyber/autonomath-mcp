@@ -17,13 +17,13 @@
 ### A-1. 「¥3 にすると思ったより高い、安くならない?」
 
 ```
-件名: AutonoMath 料金体系について (Re: お問い合わせ)
+件名: 税務会計AI 料金体系について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 ご質問の bulk discount につきまして、現状のご案内です。
 
-- AutonoMath は ¥3/request (税込 ¥3.30) の完全従量制で運用しております
+- 税務会計AI は ¥3/request (税込 ¥3.30) の完全従量制で運用しております
 - 数量割引・年契約割引・seat ライセンスは設けておりません
 - 理由は 100% organic acquisition + solo ops の構造上、個別交渉に
   リソースを割けない点と、価格を 1 本化することで請求の透明性を
@@ -53,16 +53,16 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 課金開始の手順について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 ご質問の paid 切替につきまして、ご案内いたします。
 
-AutonoMath は tier (プラン) を切り替える仕組みではなく、
+税務会計AI は tier (プラン) を切り替える仕組みではなく、
 カード登録後はそのまま metered 課金に移行いたします。
 
 手順:
 
-1. https://autonomath.ai/dashboard へログイン
+1. https://zeimu-kaikei.ai/dashboard へログイン
 2. 「お支払い情報」より Stripe の card 登録
 3. 登録完了後、その月の 51 リクエスト目以降が ¥3/request
    (税込 ¥3.30) で課金されます
@@ -83,7 +83,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: データソースの取り扱いについて (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 データソースの方針につきまして、ご案内いたします。
 
@@ -111,7 +111,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: PII の取り扱いについて (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 PII redaction の運用につきまして、ご案内いたします。
 
@@ -137,9 +137,9 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 海外制度の対応について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
-国際展開のロードマップにつきまして、ご案内いたします。
+国際展開の開発予定につきまして、ご案内いたします。
 
 - 現状: 日本国内の制度 (補助金・融資・税制・認定) のみが対象です
 - V4 English (T+150 日予定): 日本国内制度の英語インターフェース版を
@@ -162,7 +162,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: ご請求についてのお問い合わせ (Re: dispute)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 Stripe 経由でお申し出いただいた dispute を確認いたしました。
 
@@ -187,7 +187,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: ご利用内容の確認について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 ご請求への懸念につきまして、確認結果をお送りいたします。
 
@@ -215,7 +215,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 障害期間のご請求について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 障害期間の取り扱いにつきまして、ご案内いたします。
 
@@ -241,11 +241,11 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 利用上限 (cap) の設定について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 cap (利用上限) の仕様につきまして、ご案内いたします。
 
-- AutonoMath の既定値は cap = NULL (上限なし) です
+- 税務会計AI の既定値は cap = NULL (上限なし) です
 - これは「Free 50 を超えた分は上限なく metered 課金される」状態を
   意味します
 - 上限を設けたい場合は、dashboard の Self-cap 機能で月次の
@@ -271,7 +271,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 二重請求のご指摘について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 ご指摘いただいた二重請求につきまして、確認結果をご報告します。
 
@@ -296,9 +296,9 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ### C-1. Planned maintenance pre-notice (24h 前)
 
 ```
-件名: [予定] AutonoMath メンテナンス (YYYY-MM-DD HH:MM JST)
+件名: [予定] 税務会計AI メンテナンス (YYYY-MM-DD HH:MM JST)
 
-AutonoMath をご利用いただきありがとうございます。
+税務会計AI をご利用いただきありがとうございます。
 
 下記の通り予定メンテナンスを実施いたします。
 
@@ -307,7 +307,7 @@ AutonoMath をご利用いただきありがとうございます。
 - 内容: SQLite migration / Fly.io machine 再起動
 - 課金: 停止期間中の 5xx は課金対象外です
 
-復旧後 https://status.autonomath.ai に完了通知を掲載します。
+復旧後 https://status.zeimu-kaikei.ai に完了通知を掲載します。
 
 ご不便をおかけしますが、ご理解のほどよろしくお願いいたします。
 
@@ -319,9 +319,9 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ### C-2. Unplanned outage post-mortem (1h 経過時点での暫定通知)
 
 ```
-件名: [障害] AutonoMath API 障害のご報告 (YYYY-MM-DD)
+件名: [障害] 税務会計AI API 障害のご報告 (YYYY-MM-DD)
 
-AutonoMath をご利用の皆様
+税務会計AI をご利用の皆様
 
 下記の障害が発生したことをご報告いたします。
 
@@ -332,7 +332,7 @@ AutonoMath をご利用の皆様
 - 暫定原因: (例) Fly.io Tokyo region machine の再起動失敗
 - 課金: 障害期間中の 5xx は課金対象から除外済み
 - 恒久対策と詳細 RCA: 7 営業日以内に
-  status.autonomath.ai/incidents/YYYY-MM-DD に掲載予定
+  status.zeimu-kaikei.ai/incidents/YYYY-MM-DD に掲載予定
 
 ご不便をおかけしました。
 
@@ -344,9 +344,9 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ### C-3. Data corruption restoration (DB 破損 → backup 復旧)
 
 ```
-件名: [障害] AutonoMath DB 復旧のご報告 (YYYY-MM-DD)
+件名: [障害] 税務会計AI DB 復旧のご報告 (YYYY-MM-DD)
 
-AutonoMath をご利用の皆様
+税務会計AI をご利用の皆様
 
 YYYY-MM-DD HH:MM JST 頃、jpintel.db (programs テーブル) で
 データ不整合を検知いたしました。下記の通り対応いたしました。
@@ -372,7 +372,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: [重要] 個人情報インシデントのご報告 (YYYY-MM-DD)
 
-AutonoMath をご利用の皆様
+税務会計AI をご利用の皆様
 
 YYYY-MM-DD HH:MM JST、当方の運用上の不備により、一部のお客様の
 情報が意図しない範囲に閲覧可能な状態となっていたことを
@@ -401,7 +401,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: [予定] API key 検証 secret (PEPPER) ローテーションについて
 
-AutonoMath をご利用の皆様
+税務会計AI をご利用の皆様
 
 セキュリティ運用の一環として、下記の通り API key 検証用の
 PEPPER ローテーションを実施いたします。
@@ -427,7 +427,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: ご指摘いただいた制度情報について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 ご指摘いただいた制度情報につきまして、下記の通り対応いたします。
 
@@ -451,7 +451,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: source_url リンク切れのご報告について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 source_url の dead link 報告、ありがとうございます。
 
@@ -461,7 +461,7 @@ source_url の dead link 報告、ありがとうございます。
   - nightly liveness scan (refresh_sources.py) で同状態を検知済み
   - 後継 URL を web archive または同省庁の現行ページから探索のうえ、
     24 時間以内に置換予定です
-  - 後継が見つからない場合は当該 program を tier='X' (quarantine) へ
+  - 後継が見つからない場合は当該 program を公開保留 (二次レビュー待ち) へ
     移動し、検索結果から除外します
 
 別の制度を引き続きご利用いただけますと幸いです。
@@ -471,16 +471,16 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 
 ---
 
-### D-3. Tier 異議 (tier 'X' 不当 quarantine の異議)
+### D-3. Tier 異議 (公開保留判定の異議)
 
 ```
 件名: Tier 判定へのご異議について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 Tier 判定へのご異議、ありがとうございます。
 
-- 対象 program ID: prog_XXX (現状 tier='X' = quarantine)
+- 対象 program ID: prog_XXX (現状 公開保留 = 二次レビュー待ち)
 - 判定根拠: source_url 失効 / 公示期限切れ / 一次資料との不整合
 - ご指摘内容: (例) 当該制度は現在も募集中である
 - 対応:
@@ -502,7 +502,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 排他ルール判定へのご指摘について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 排他ルール (exclusion_rules) の判定にご指摘ありがとうございます。
 
@@ -528,18 +528,18 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 法令基礎 (law_basis) のご指摘について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 引用条文の誤りのご指摘、ありがとうございます。
 
 - 対象: program ID prog_XXX / law_basis フィールド
 - 現状: 「租税特別措置法 第 XX 条」
 - ご指摘: 正しくは「租税特別措置法 第 YY 条第 Z 項」
-- 確認方法: e-Gov 法令検索 + 当方の am_law_article テーブル
+- 確認方法: e-Gov 法令検索 + 当方の法令条文 index
   (28,048 rows) から条文 hash 突合
 - 対応: 一次資料で確認のうえ、24-48h 以内に修正反映予定
 
-am_law_article は施行日付き snapshot を保持しているため、過去
+法令条文 index は施行日付き snapshot を保持しているため、過去
 時点の条文も検索可能です。誤り反映と同時に、修正前後の差分も
 内部 changelog に記録いたします。
 
@@ -555,7 +555,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: 契約書類のご依頼について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 DPA / MSA / NDA のご依頼、ありがとうございます。
 
@@ -563,10 +563,10 @@ DPA / MSA / NDA のご依頼、ありがとうございます。
 おり、個別の契約書ご対応は承っておりません。代わりに公開済みの
 規約類で同等の内容をご確認いただける構成としております。
 
-- 利用規約: https://autonomath.ai/docs/compliance/terms_of_service/
-- プライバシーポリシー: https://autonomath.ai/docs/compliance/privacy_policy/
-- データガバナンス: https://autonomath.ai/docs/compliance/data_governance/
-- データ主体の権利: https://autonomath.ai/docs/compliance/data_subject_rights/
+- 利用規約: https://zeimu-kaikei.ai/docs/compliance/terms_of_service/
+- プライバシーポリシー: https://zeimu-kaikei.ai/docs/compliance/privacy_policy/
+- データガバナンス: https://zeimu-kaikei.ai/docs/compliance/data_governance/
+- データ主体の権利: https://zeimu-kaikei.ai/docs/compliance/data_subject_rights/
 
 社内ご審査が個別契約を必須とする場合、現状の運営体制では
 ご要件をお引き受けできない可能性が高いです。事前にお知らせいただき、
@@ -582,7 +582,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: SLA 水準についてのご質問 (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 SLA 99.9% のご要望、ありがとうございます。
 
@@ -607,7 +607,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: コミュニケーションチャネルのご相談 (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 専用 Slack channel のご要望、ありがとうございます。
 
@@ -618,7 +618,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
   https://github.com/Bookyou/autonomath/discussions
 - 個別の問い合わせ: 本 email アドレス (info@bookyou.net)
 - Bug report: GitHub Issues
-- 障害情報: status.autonomath.ai
+- 障害情報: status.zeimu-kaikei.ai
 
 solo ops の運営方針上、複数チャネル運用は対応外です。
 ご理解のほどよろしくお願いいたします。
@@ -633,7 +633,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: ミーティングのご依頼について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 ミーティングのご依頼、ありがとうございます。
 
@@ -642,7 +642,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 
 - 技術質問: 本 email にて、再現手順 / 該当 endpoint / 想定 vs 実際
   をいただければ、内容に応じて返信いたします
-- 製品 demo: 公開ドキュメント (https://autonomath.ai/docs/) と
+- 製品 demo: 公開ドキュメント (https://zeimu-kaikei.ai/docs/) と
   Free 50 req/月 でお試しいただけます
 - 価格交渉: ¥3/req (税込 ¥3.30) 一律のため、call による交渉は
   実施しておりません
@@ -660,11 +660,11 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 ```
 件名: ご契約形態のご相談について (Re: お問い合わせ)
 
-ご連絡ありがとうございます。AutonoMath の梅田です。
+ご連絡ありがとうございます。税務会計AI の梅田です。
 
 年契約・enterprise tier のご検討、ありがとうございます。
 
-恐れ入りますが、AutonoMath は ¥3/request (税込 ¥3.30) の完全
+恐れ入りますが、税務会計AI は ¥3/request (税込 ¥3.30) の完全
 従量制のみで運用しており、下記の形態はご提供しておりません。
 
 - 年契約 / 月固定 / seat ライセンス

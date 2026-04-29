@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<!-- Auto-poll: refresh every 5 minutes so an open tab stays current.
+     We poll the JSON via fetch (below) for the metrics, but the meta
+     refresh is the safety net for stale browser tabs. -->
+<meta http-equiv="refresh" content="300">
+<title>SLA — 税務会計AI</title>
+<meta name="description" content="税務会計AI API の稼働率 (uptime) と p95 レイテンシ — 7日ローリング window. Bookyou株式会社 (T8010001213708).">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://zeimu-kaikei.ai/sla.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --accent: #1e3a8a;
+    --text: #111111;
+    --text-muted: #555555;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg-alt: #f7f7f8;
+    --ok: #15803d;
+    --warn: #b45309;
+    --down: #b91c1c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
+      "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 64px;
+  }
+  h1 { font-size: 1.6em; margin: 0 0 .25em; }
+  h2 { font-size: 1.15em; margin: 1.6em 0 .4em; color: var(--accent); }
+  p, li { color: var(--text); }
+  .muted { color: var(--text-muted); font-size: .92em; }
+  .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    margin: 10px 0;
+  }
+  .metric .label { color: var(--text-muted); font-size: .85em; }
+  .metric .value { font-size: 1.7em; font-weight: 600; }
+  .ok { color: var(--ok); }
+  .warn { color: var(--warn); }
+  .down { color: var(--down); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 540px) { .grid { grid-template-columns: 1fr; } }
+  table { border-collapse: collapse; width: 100%; margin-top: .6em; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: .94em; }
+  code { font-family: "SF Mono", Menlo, monospace; font-size: .9em; background: var(--bg-alt); padding: 2px 5px; border-radius: 3px; }
+  footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: .88em; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>SLA / 稼働状況</h1>
+  <p class="muted">税務会計AI API の稼働率と p95 レイテンシ。7日ローリングwindow、auto-refresh 5分。
+  Operator: Bookyou株式会社 (法人番号 T8010001213708)。</p>
+
+  <h2>現在の指標</h2>
+  <div class="grid">
+    <div class="metric">
+      <span class="label">Uptime (7d rolling)</span>
+      <span class="value" id="uptime-value">—</span>
+      <span class="muted" id="uptime-detail">読込中…</span>
+    </div>
+    <div class="metric">
+      <span class="label">p95 latency (7d)</span>
+      <span class="value" id="p95-value">—</span>
+      <span class="muted" id="p95-detail">読込中…</span>
+    </div>
+  </div>
+
+  <h2>SLA Target (公開)</h2>
+  <table>
+    <tr><th>指標</th><th>目標値</th><th>計測ウィンドウ</th></tr>
+    <tr><td>Uptime</td><td>99.0% 以上</td><td>7日ローリング</td></tr>
+    <tr><td>p95 latency</td><td>&lt; 1500 ms</td><td>1時間ローリング</td></tr>
+    <tr><td>5xx エラー率</td><td>&lt; 0.5%</td><td>1時間ローリング</td></tr>
+  </table>
+  <p class="muted">内部 SLO は 99.5% で運用。詳細は <code>monitoring/sla_targets.md</code>。
+  プラットフォーム障害（Cloudflare / Fly 公開ステータス記載分）と 48h 前事前告知メンテは breach 計算から除外します。</p>
+
+  <h2>API API 経路</h2>
+  <p>このページは <code>GET /v1/health/sla</code> を polling しています。</p>
+  <pre><code>$ curl https://api.zeimu-kaikei.ai/v1/health/sla?window=7d</code></pre>
+
+  <h2>関連リンク</h2>
+  <ul>
+    <li><a href="/status.html">Status (自由記述)</a></li>
+    <li><a href="/data-freshness.html">データ鮮度 (per-dataset)</a></li>
+    <li><a href="/audit-log.html">改正検出ログ</a> / <a href="/audit-log.rss">RSS</a></li>
+    <li><a href="/v1/corrections/feed">Corrections RSS</a> (CC-BY-4.0 メタデータ)</li>
+  </ul>
+
+  <footer>
+    Generated client-side from <code>/v1/health/sla</code>. Last fetch:
+    <span id="last-fetch">—</span>.
+    <br>(C) 2026 Bookyou株式会社. CC-BY-4.0 メタデータ.
+  </footer>
+</div>
+
+<script>
+  // Vanilla JS — no framework. Polls /v1/health/sla every 5 min.
+  // Intentionally simple to satisfy the "no complex JS" CLAUDE.md rule.
+  function fmtPct(n) {
+    if (n === null || n === undefined) return "—";
+    return Number(n).toFixed(2) + "%";
+  }
+  function fmtMs(n) {
+    if (n === null || n === undefined) return "n/a";
+    return Number(n).toLocaleString() + " ms";
+  }
+  function classify(uptime, p95) {
+    var u = (uptime === null || uptime === undefined) ? null
+            : (uptime >= 99.5 ? "ok" : (uptime >= 99.0 ? "warn" : "down"));
+    var p = (p95 === null || p95 === undefined) ? null
+            : (p95 < 1500 ? "ok" : (p95 < 3000 ? "warn" : "down"));
+    return { u: u, p: p };
+  }
+  async function refresh() {
+    try {
+      var base = "https://api.zeimu-kaikei.ai";
+      // Same-origin fallback for local dev / when api subdomain is down.
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        base = "";
+      }
+      var r = await fetch(base + "/v1/health/sla?window=7d", { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      var j = await r.json();
+      var c = classify(j.uptime_pct, j.p95_latency_ms);
+      var uEl = document.getElementById("uptime-value");
+      var pEl = document.getElementById("p95-value");
+      uEl.textContent = fmtPct(j.uptime_pct);
+      uEl.className = "value " + (c.u || "");
+      pEl.textContent = fmtMs(j.p95_latency_ms);
+      pEl.className = "value " + (c.p || "");
+      document.getElementById("uptime-detail").textContent =
+        j.sample_count + " requests sampled";
+      document.getElementById("p95-detail").textContent =
+        "目標: < " + (j.target.p95_latency_ms || 1500) + " ms";
+      document.getElementById("last-fetch").textContent = j.generated_at;
+    } catch (err) {
+      document.getElementById("uptime-detail").textContent = "fetch error: " + err.message;
+    }
+  }
+  refresh();
+  setInterval(refresh, 5 * 60 * 1000);
+</script>
+</body>
+</html>

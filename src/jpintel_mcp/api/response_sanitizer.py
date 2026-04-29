@@ -315,6 +315,15 @@ class ResponseSanitizerMiddleware(BaseHTTPMiddleware):
             return response
         if request.url.path == "/v1/billing/refund_request":
             return response
+        # `/v1/me/alerts/*` echoes the caller's own delivery email back so
+        # the user can confirm what they just registered. The email belongs
+        # to the same authenticated principal (X-API-Key) and is the only
+        # surface where the cron resolves "who to notify"; redacting it to
+        # `<email-redacted>` would defeat the confirmation handshake. The
+        # endpoint never emits third-party PII (it only returns the row
+        # the caller created or owns).
+        if request.url.path.startswith("/v1/me/alerts"):
+            return response
 
         # Snapshot raw headers BEFORE iterating the body — Starlette's
         # StreamingResponse strips Content-Length once the body iterator

@@ -379,7 +379,7 @@ if settings.prerequisite_chain_enabled:
             ),
         ] = 3,
     ) -> dict[str, Any]:
-        """[R5-PREREQUISITE-CHAIN] 前提認定 chain — 対象 program に必要な認定/計画/登録 + 取得時間 + 費用を 1 コール。
+        """[R5-PREREQUISITE-CHAIN] Returns curated prerequisite chain for a program (認定 / 計画 / 登録) with preparation_time_days + preparation_cost_yen. Coverage is partial (135/8,203 programs = 1.6%); empty chain ≠ no prerequisites — verify primary source (公募要領 / obtain_url).
 
         WHAT: ``am_prerequisite_bundle`` (795 rows / 135 programs / 1.6%
         coverage) を起点に、対象 program の前提取得物を kind 別 (cert /

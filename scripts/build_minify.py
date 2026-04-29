@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static-asset optimizer for AutonoMath / autonomath.ai (Cloudflare Pages).
+"""Static-asset optimizer for AutonoMath / zeimu-kaikei.ai (Cloudflare Pages).
 
 Performs three things, all idempotent:
 

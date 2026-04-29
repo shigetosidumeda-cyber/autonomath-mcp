@@ -7,7 +7,7 @@ PyPI wheel, which **excludes** ``data/`` per ``pyproject.toml`` line 135.
 ``db.session.connect()`` therefore opens an empty SQLite file and every
 one of the 66 tools returns 0 rows — silent broken.
 
-This module routes tool calls to ``api.autonomath.ai`` whenever the
+This module routes tool calls to ``api.zeimu-kaikei.ai`` whenever the
 local DB is missing data (row count of ``programs`` < 100). The MCP
 process behaves identically from the caller's perspective: same JSON
 shape, same metering (¥3/req), same anonymous 50/月 quota — the
@@ -20,7 +20,7 @@ Design notes
   surfaced to the tool so the user sees the real error.
 - ``AUTONOMATH_API_KEY`` env passed as ``X-API-Key``. Anonymous (no
   key) is allowed — the REST side gates the 50/月 quota by IP.
-- ``AUTONOMATH_API_BASE`` env override (default ``https://api.autonomath.ai``)
+- ``AUTONOMATH_API_BASE`` env override (default ``https://api.zeimu-kaikei.ai``)
   for staging / local dev.
 - User-Agent carries the MCP package version so the REST side can
   segment fallback traffic in dashboards.
@@ -48,7 +48,7 @@ logger = logging.getLogger("jpintel.mcp.http_fallback")
 # Environment knobs
 # --------------------------------------------------------------------------- #
 
-_DEFAULT_API_BASE = "https://api.autonomath.ai"
+_DEFAULT_API_BASE = "https://api.zeimu-kaikei.ai"
 _DEFAULT_TIMEOUT = 10.0
 _DEFAULT_RETRY = 1
 

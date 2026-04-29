@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  /news/* sitemap shard for zeimu-kaikei.ai (制度変更検出 auto-news).
+  Generated 2026-04-29 to host the URLs emitted by
+  scripts/cron/generate_news_posts.py. This shard exists so the
+  weekly cron can rewrite a single small file without touching the
+  larger /programs/* and /audiences/* shards.
+
+  The cron currently does NOT rewrite this file in-place — it only
+  emits the per-post HTML. A separate static-site task can scan
+  site/news/ and regenerate this shard the same way scripts/sitemap_gen.py
+  rebuilds the others. For now we list the index entry only; per-post
+  entries are appended as posts are generated.
+
+  When am_amendment_diff has 0 rows in the window the cron logs
+  "no posts to generate" and this file is unchanged — keeping the
+  honesty constraint (no fabricated entries).
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://zeimu-kaikei.ai/news/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/news/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/news/"/>
+  </url>
+</urlset>

@@ -1,0 +1,122 @@
+name: precompute-refresh-cron
+
+# Nightly pre-compute table refresh (v8 P5-ε++ / dd_v8_C3 + dd_v8_D8).
+#
+# Refreshes 32 pc_* materialized views over jpintel.db + autonomath.db
+# using DELETE-then-INSERT inside a single transaction per table.
+#
+# Also wires the L4 cache warmer (l4_cache_warm.py) and the daily
+# confidence snapshot (confidence_update.py) into the same workflow —
+# all 3 are read-mostly nightly tasks that depend on the freshest
+# usage_events + program / am_* state.
+#
+# Sequence:
+#   1. precompute_refresh.py   — rebuild pc_* views (32 tables, ~5-10s each).
+#   2. l4_cache_warm.py        — re-rank top-N hot endpoints into l4_query_cache.
+#   3. confidence_update.py    — Bayesian Discovery + Use snapshot.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Required Fly machine secrets: none new — scripts read-only against
+# /data/jpintel.db + /data/autonomath.db (or fall back to repo root).
+#
+# Failure routing: each script exits 0 on no-data state (e.g. usage_events
+# empty pre-launch). Hard failures trigger the Sentry alert step.
+
+on:
+  schedule:
+    # 21:30 UTC == 06:30 JST. After news-pipeline + amendment-alert
+    # so we materialize over the freshest diff/snapshot state.
+    - cron: "30 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run all 3 stages with --dry-run"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      stage:
+        description: "Run one stage only (precompute/l4/confidence, blank = all)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "precompute"
+          - "l4"
+          - "confidence"
+
+concurrency:
+  group: precompute-refresh-cron
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Refresh pc_* materialized views
+        if: inputs.stage == '' || inputs.stage == 'precompute'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/precompute_refresh.py ${FLAGS}"
+
+      - name: Warm L4 cache
+        if: inputs.stage == '' || inputs.stage == 'l4'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/l4_cache_warm.py ${FLAGS}"
+
+      - name: Update confidence snapshot
+        if: inputs.stage == '' || inputs.stage == 'confidence'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/confidence_update.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=precompute-refresh-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.precompute-refresh-cron\",\"platform\":\"other\",\"message\":\"precompute-refresh-cron failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"precompute-refresh-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

@@ -1,16 +1,16 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
-  "version": "0.3.0",
-  "description": "AutonoMath — 72-tool MCP (39 core + 33 autonomath: V1 + 4 V4 universal annotation/validation/provenance + Phase A static/example/template/health + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine; protocol 2025-06-18) over Japanese primary-gov sources: 13,578 programs (補助金/融資/税制/認定) + 2,286 採択事例 + 108 融資 (三軸分解: 担保/個人保証人/第三者保証人) + 1,185 行政処分 + 503,930 autonomath entities + 6.12M facts + 23,805 relations + 335,605 aliases + laws (e-Gov CC-BY; 9,484 rows, continually loading) + tax rulesets (インボイス/電帳法; 35 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (国税庁適格事業者, PDL v1.0; 13,801 rows delta). 181 exclusion/prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. 99%+ rows: source_url + fetched_at; no aggregators. ¥3/req tax-excl (¥3.30 incl); 50 req/月 per IP free (JST 月初リセット). Bookyou株式会社 / info@bookyou.net.",
+  "version": "0.3.1",
+  "description": "Search Japanese institutional data via REST + MCP API. 11,684 searchable subsidies (full table 14,472 incl. tier X quarantine) + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records + 108 loan products (collateral / personal-guarantor / third-party-guarantor 3-axis decomposition) + 362 bids + 181 exclusion/prerequisite rules. 89 MCP tools at default gates (39 core + 50 autonomath, including industry packs pack_construction / pack_manufacturing / pack_real_estate), MCP protocol 2025-06-18. 99%+ rows carry primary-source URL + fetched_at; aggregator sources excluded. ¥3/req tax-exclusive (¥3.30 incl), anonymous 50 req/month per IP free (JST first-of-month reset). Not legal/tax/行政書士 advice; verify primary sources before any business decision. Operator: Bookyou株式会社 (T8010001213708, info@bookyou.net).",
   "author": {
     "name": "Bookyou株式会社",
-    "url": "https://autonomath.ai"
+    "url": "https://zeimu-kaikei.ai"
   },
   "license": "MIT",
-  "homepage": "https://autonomath.ai",
+  "homepage": "https://zeimu-kaikei.ai",
   "repository": {
-    "url": "https://github.com/AutonoMath/autonomath-mcp",
+    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
     "source": "github"
   },
   "protocol": "mcp-2025-06-18",
@@ -20,7 +20,7 @@
     "command": "uvx autonomath-mcp",
     "alt": {
       "pip": "pip install autonomath-mcp && autonomath-mcp",
-      "claude_desktop": "Install the .mcpb bundle at https://autonomath.ai/downloads/autonomath-mcp.mcpb"
+      "claude_desktop": "Install the .mcpb bundle at https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb"
     }
   },
   "packages": [
@@ -28,7 +28,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "autonomath-mcp",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
@@ -38,7 +38,7 @@
   "tools": [
     {
       "name": "search_programs",
-      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索 (search 13,578 Japanese public programs: 補助金 / 助成金 / 融資 / 税制 / 認定). Tier-graded quality labels (S/A/B/C/X) with primary-source URL + fetched_at on every row. For program definitions (eligibility, amount, window); use search_case_studies for actual recipients."
+      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索 (search 11,684 searchable Japanese public programs of 14,472 total). Tier-graded quality labels (S=114 / A=1,340 / B=4,186 / C=6,044) with primary-source URL + fetched_at on every row; tier X (2,788) quarantined, excluded by default. Typical args: prefecture='東京都' (47 都道府県), target_industry JSIC 1-letter code (D=建設, E=製造, K=不動産…), funding_purpose ('equipment' / 'it_introduction' / 'gx' / 'business_restructuring'). For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
     },
     {
       "name": "get_program",
@@ -74,7 +74,7 @@
     },
     {
       "name": "search_enforcement_cases",
-      "description": "会計検査院 不正・不当請求 事例検索 — 1,185 cases of improper 補助金 handling (不当請求 / 目的外使用 / 重複受給 / 資格不備). For 詐欺 detection, due-diligence, recipient-name substring match across reason_excerpt / source_title. Spread across METI / MAFF / 国交省 / 厚労省; not queryable elsewhere"
+      "description": "会計検査院 不当・不正受給事例を横断検索 — 1,185 cases of improper 補助金 handling (不当請求 / 目的外使用 / 重複受給 / 資格不備). For due-diligence vetting (vendor / counterparty / 取引先 名), recipient-name substring match across reason_excerpt / source_title. Spread across METI / MAFF / 国交省 / 厚労省; not queryable elsewhere. Typical args: entity_name (法人名 / 受給者名 部分一致), authority='METI' / 'MAFF' / '国交省' / '厚労省', event_type='improper_grant' / 'purpose_violation' / 'duplicate_receipt' / 'eligibility_defect'."
     },
     {
       "name": "get_enforcement_case",
@@ -210,7 +210,7 @@
     },
     {
       "name": "active_programs_at",
-      "description": "am_amendment_snapshot (14,596 rows) を walk して指定日付時点で active な制度を返す — 過去・現在・未来の任意 snapshot で「いつ何が動いていたか」を取得"
+      "description": "am_amendment_snapshot (14,596 件キャプチャ、 うち約 2,500 件にコンテンツハッシュ・ 144 件に確定日付) を walk して指定日付時点で active な制度を返す — 確定日付付き行でのみ time-series が成立 (response の data_quality.amendment_snapshot_caveat を参照)"
     },
     {
       "name": "related_programs",
@@ -302,7 +302,7 @@
     }
   ],
   "requirements": {
-    "api_key": "https://autonomath.ai/pricing — anonymous tier 50 calls/month per IP free (no key, JST first-of-month reset); metered paid tier ¥3/req tax-exclusive (¥3.30 tax-inclusive) requires a key"
+    "api_key": "https://zeimu-kaikei.ai/pricing — anonymous tier 50 calls/month per IP free (no key, JST first-of-month reset); metered paid tier ¥3/req tax-exclusive (¥3.30 tax-inclusive) requires a key"
   },
   "language": "ja-JP",
   "categories": ["government", "legal", "finance"],
@@ -339,12 +339,13 @@
   ],
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
-      "program_count": 13578,
+      "program_count_searchable": 11684,
+      "program_count_total": 14472,
       "case_study_count": 2286,
       "loan_program_count": 108,
       "enforcement_case_count": 1185,
       "exclusion_rule_count": 181,
-      "tool_count": 72,
+      "tool_count": 89,
       "tier_labels": ["S", "A", "B", "C", "X"],
       "languages_supported": ["ja-JP"],
       "free_tier_monthly_calls_per_ip": 50,

@@ -24,7 +24,7 @@ AI エージェントが 1 query で呼び出せる REST + MCP API です。
 
 solo 開発、¥3/req 完全従量、匿名 50 req/月 per IP 無料。
 
-https://autonomath.ai
+https://zeimu-kaikei.ai
 
 #AutonoMath #MCP #AI
 ```
@@ -84,8 +84,8 @@ AI が即答できる API が欲しかった、というだけです。
 ```
 5/ 技術 stack
 
-- SQLite + FTS5 trigram (日本語複合語検索)
-- sqlite-vec (entity-fact vec、503k entities・段階的有効化中)
+- SQLite + 全文検索インデックス (3-gram, 日本語複合語検索)
+- ベクトル検索 (entity-fact vec、503k entities・段階的有効化中)
 - FastAPI + FastMCP (protocol 2025-06-18 stdio)
 - Fly.io 東京 + Cloudflare Pages + Stripe metered
 
@@ -115,7 +115,7 @@ aggregator (noukaweb / hojyokin-portal 等) は source_url から完全 ban。
 ```
 7/ 使い始めは 3 通り。
 
-1. curl https://api.autonomath.ai/v1/programs/search?q=...
+1. curl https://api.zeimu-kaikei.ai/v1/programs/search?q=...
 2. Claude Desktop: claude_desktop_config.json に
    { "command":"uvx", "args":["autonomath-mcp"] }
 3. pip install autonomath-mcp
@@ -132,7 +132,7 @@ aggregator (noukaweb / hojyokin-portal 等) は source_url から完全 ban。
 ```
 8/ 質問・Issue 歓迎します。
 
-- FTS5 trigram の日本語落とし穴
+- 全文検索インデックス (3-gram) の日本語落とし穴
 - MCP ツール設計 tradeoff
 - なぜ tier 廃止 / 完全従量にしたか
 - solo + zero-touch 運営の現実

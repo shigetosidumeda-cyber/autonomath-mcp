@@ -23,6 +23,7 @@ jobs:
   fly:
     name: Deploy to Fly.io
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     # For workflow_run events: only deploy when the triggering CI run passed.
     # workflow_dispatch bypasses this guard (operator-initiated re-deploy of a
     # commit already known to be green).

@@ -137,7 +137,7 @@ def get_annotations(
         ),
     ] = _DEFAULT_LIMIT,
 ) -> dict[str, Any]:
-    """[ANNOTATION] am_entity_annotation を entity_id で逆引き — examiner feedback / quality score / validation failure / ML 推論を 1 コールで取得.
+    """[ANNOTATION] Returns annotation rows from am_entity_annotation for a given entity_id (examiner feedback / quality score / validation failure / ML inference). Default visibility='public' returns 0 rows for currently-ingested data (16,474 rows are all 'internal'); pass include_internal=True to surface those.
 
     WHAT: ``am_entity_annotation`` table (migration 046 で導入された汎用注釈
     レイヤー、現在 16,474 行) を ``entity_id`` で絞って返す。kind / severity /

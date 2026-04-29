@@ -1,0 +1,90 @@
+name: index-now-cron
+
+# Daily IndexNow ping. Reads site/sitemap-*.xml shards, diffs against the
+# previous run's snapshot, and POSTs new URLs to api.indexnow.org so Bing /
+# Yandex / Naver / Yep crawl them within minutes instead of weeks.
+#
+# Schedule: 18:30 UTC == 03:30 JST. Runs 30 min after analytics-cron so
+# overnight sitemap regeneration (if any) is already pushed to main.
+#
+# Required GitHub repository secrets:
+#   INDEXNOW_KEY    Pre-shared 32+ char URL-safe token. Must match the key
+#                   file uploaded to https://zeimu-kaikei.ai/<KEY>.txt.
+#                   Generate with:
+#                     python -c "import secrets; print(secrets.token_urlsafe(32))"
+#   INDEXNOW_HOST   Domain without scheme. Default: zeimu-kaikei.ai.
+#
+# The commit step uses the default GITHUB_TOKEN (no separate PAT) — that's
+# enough write access for `actions/checkout` + `git push origin HEAD:main`
+# when `permissions.contents: write` is set below. See analytics-cron.yml
+# for the same pattern.
+
+on:
+  schedule:
+    # 18:30 UTC == 03:30 JST. Runs after analytics-cron (18:00 UTC).
+    - cron: "30 18 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Submit ALL urls, ignoring prev snapshot"
+        required: false
+        default: "false"
+      dry_run:
+        description: "Dry-run (no POST to IndexNow)"
+        required: false
+        default: "false"
+
+concurrency:
+  group: index-now-cron
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install httpx
+        run: pip install "httpx>=0.28,<1.0"
+
+      - name: Run IndexNow ping
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          INDEXNOW_HOST: ${{ secrets.INDEXNOW_HOST }}
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          python scripts/cron/index_now_ping.py $ARGS
+
+      - name: Commit + push snapshot + log deltas
+        run: |
+          set -euo pipefail
+          git config user.name "autonomath-indexnow-bot"
+          git config user.email "info@bookyou.net"
+          # Force-add — analytics/ is gitignored except for negated entries.
+          git add -f \
+            analytics/indexnow_log.jsonl \
+            analytics/indexnow_snapshot.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No IndexNow deltas to commit."
+            exit 0
+          fi
+          DATE=$(date -u +"%Y-%m-%d")
+          git commit -m "chore(seo): IndexNow ping ${DATE}"
+          git push origin HEAD:main

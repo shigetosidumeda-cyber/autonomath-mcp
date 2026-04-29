@@ -30,7 +30,8 @@ dev = [
 
 [project.urls]
 Homepage = "https://autonomath.ai"
-Repository = "https://github.com/AutonoMath/autonomath-mcp"
+# TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
+Repository = "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
 
 [build-system]
 requires = ["hatchling"]

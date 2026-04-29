@@ -1,0 +1,77 @@
+name: same-day-push-cron
+
+# 同日 push (consultant trigger #3 of the trio).
+#
+# Polls am_amendment_diff + programs.updated_at for new program rows in
+# the last 30 minutes, joins client_profiles, and fans out alerts to
+# matched consultants. Same-day delivery, not next-day. ¥3 metered per
+# delivery. Idempotency via same_day_push_log so a (program, profile)
+# pair fires at most once.
+#
+# Cadence: every 30 minutes. GitHub Actions schedule jitter is up to 15
+# minutes; the in-DB idempotency log absorbs duplicate ticks safely.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no email, no billing)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      window_minutes:
+        description: "Lookback window in minutes (default 30)"
+        required: false
+        default: "30"
+
+concurrency:
+  group: same-day-push-cron
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9  # < 30-min interval to prevent overlap
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run same_day_push
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          WINDOW_MIN: ${{ inputs.window_minutes || '30' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--window-minutes ${WINDOW_MIN}"
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/same_day_push.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=same-day-push-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.same-day-push-cron\",\"platform\":\"other\",\"message\":\"same-day-push-cron failed. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"same-day-push-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

@@ -1,4 +1,4 @@
-# AutonoMath — Monitoring & Alerting Runbook
+# 税務会計AI — Monitoring & Alerting Runbook
 
 Internal ops reference. Solo operator (梅田茂利, info@bookyou.net). Zero-touch, no dashboards to watch 24/7.
 
@@ -68,7 +68,7 @@ Panels (3 rows × 4 columns, see `docs/_internal/observability_dashboard.md §2`
 | 2 | Active Fly.io instances | `fly_app_running_machines` |
 | 2 | CPU % / Memory MB | Fly built-in VM metrics |
 | 2 | DB size (`/data` used %) | Fly volume metrics |
-| 2 | SQLite WAL size MB | structlog cron `stat /data/jpintel.db-wal` pushed via `/internal/metrics` |
+| 2 | SQLite 書込ログ size MB | structlog cron `stat /data/jpintel.db-wal` pushed via `/internal/metrics` |
 | 3 | Stripe billable requests today / MTD | `jpintel_keys_issued_total` counter (Prometheus) |
 | 3 | Stripe webhook failure count (1 h rolling) | structlog `jpintel.billing` error events |
 | 3 | New API keys issued 24 h | `jpintel_keys_issued_total` |
@@ -297,7 +297,7 @@ Live DB at drill time: 12,038 programs rows. All 7 backups were readable and str
 
 ### Fly.io region outage (Tokyo / nrt)
 
-**Honest assessment:** AutonoMath runs single-region (nrt), single machine (`min_machines_running = 1`). There is **no hot failover**. During a Fly.io nrt outage:
+**Honest assessment:** 税務会計AI runs single-region (nrt), single machine (`min_machines_running = 1`). There is **no hot failover**. During a Fly.io nrt outage:
 
 - The API (`/v1/*`, `/meta`, MCP server) is **unavailable**.
 - Cloudflare Pages static site (landing, pricing, docs) remains up and returns **HTTP 503** from a static `status.json` for API routes.

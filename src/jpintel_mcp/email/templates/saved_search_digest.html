@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>保存条件 「{{saved_name}}」 に新着 {{match_count}} 件 — 税務会計AI</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;color:#222;max-width:640px;margin:0 auto;padding:20px;">
+
+<h1 style="font-size:20px;color:#111;margin:0 0 8px;">あなたの保存条件 「{{saved_name}}」 に新着 {{match_count}} 件</h1>
+<p style="color:#555;font-size:14px;margin:0 0 24px;">
+  税務会計AI が登録された保存条件 「<strong>{{saved_name}}</strong>」 をスキャンしたところ、新しく一致する制度が <strong>{{match_count}} 件</strong> 見つかりました。<br>
+  頻度: {{frequency}}
+</p>
+
+<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;">
+
+{{#each matches}}
+<div style="margin:0 0 18px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:6px;">
+  <p style="margin:0 0 4px;font-size:16px;font-weight:600;color:#111;">
+    <a href="{{url}}" style="color:#0a66c2;text-decoration:none;">{{name}}</a>
+  </p>
+  <p style="margin:0 0 6px;font-size:13px;color:#666;">
+    {{prefecture}} / {{authority_name}}
+  </p>
+  <p style="margin:0;font-size:13px;color:#444;">
+    {{#if amount_max_man_yen}}上限 {{amount_max_man_yen}} 万円{{/if}}{{#if subsidy_rate}} ・ 補助率 {{subsidy_rate}}{{/if}}
+  </p>
+  {{#if official_url}}
+  <p style="margin:6px 0 0;font-size:12px;color:#888;">
+    公式: <a href="{{official_url}}" style="color:#888;">{{official_url}}</a>
+  </p>
+  {{/if}}
+</div>
+{{/each}}
+
+<hr style="border:none;border-top:1px solid #ddd;margin:24px 0;">
+
+<p style="font-size:14px;margin:0 0 12px;">
+  <a href="{{manage_url}}" style="color:#0a66c2;text-decoration:none;">条件を変更/削除</a>
+</p>
+
+<h2 style="font-size:14px;color:#444;margin:32px 0 8px;">税理士法 §52 / 弁護士法 §72 該当の業務はおこないません</h2>
+<p style="font-size:13px;color:#555;margin:0 0 12px;">
+  {{disclaimer}}
+</p>
+<p style="font-size:13px;color:#555;margin:0 0 12px;">
+  税務会計AI は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
+</p>
+
+<hr style="border:none;border-top:1px solid #eee;margin:24px 0 12px;">
+
+<p style="font-size:12px;color:#888;margin:0 0 4px;">
+  税務会計AI — 日本の制度情報 API + MCP<br>
+  このメールは保存条件 「{{saved_name}}」 (id={{saved_id}}) の {{frequency}} 配信です。<br>
+  お問い合わせ: <a href="mailto:info@bookyou.net" style="color:#888;">info@bookyou.net</a><br>
+  運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1<br>
+  配信停止: {{{pm:unsubscribe}}}
+</p>
+
+</body>
+</html>

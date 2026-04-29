@@ -53,25 +53,25 @@ import requests
 
 # Step 1: 補助金候補
 progs = requests.get(
-    "https://api.autonomath.ai/v1/programs/search",
+    "https://api.zeimu-kaikei.ai/v1/programs/search",
     params={"q": "飲食店 開業", "prefecture": "東京", "limit": 20},
 ).json()
 
 # Step 2: 排他チェック
 excl = requests.post(
-    "https://api.autonomath.ai/v1/programs/check_exclusions",
+    "https://api.zeimu-kaikei.ai/v1/programs/check_exclusions",
     json={"unified_ids": [p["unified_id"] for p in progs["results"]]},
 ).json()
 
 # Step 3: 融資候補 (3 軸: 担保/個人保証人/第三者保証人)
 loans = requests.get(
-    "https://api.autonomath.ai/v1/loans/search",
+    "https://api.zeimu-kaikei.ai/v1/loans/search",
     params={"purpose": "開業", "no_personal_guarantor": True, "limit": 10},
 ).json()
 
 # Step 4: 許認可 (autonomath certifications)
 auths = requests.get(
-    "https://api.autonomath.ai/v1/am/certifications/search",
+    "https://api.zeimu-kaikei.ai/v1/am/certifications/search",
     params={"q": "食品衛生"},
 ).json()
 ```
@@ -93,7 +93,7 @@ Bot (AutonoMath via LINE):
   ✓ 「神奈川県設備投資促進補助金」(最大 200 万円)
   ⚠ ものづくり + 事業再構築は **同一設備への併給不可** (排他ルール 011)
 
-  詳細 → https://autonomath.ai/programs/UNI-xxxxx
+  詳細 → https://zeimu-kaikei.ai/programs/UNI-xxxxx
 ```
 
 匿名 50 req/月、API key 不要。経営者本人が直接触れる料金帯にしてあります。
@@ -106,7 +106,7 @@ Bot (AutonoMath via LINE):
 
 ```python
 result = requests.post(
-    "https://api.autonomath.ai/v1/dd/profile",
+    "https://api.zeimu-kaikei.ai/v1/dd/profile",
     json={"corporate_number": "T1234567890123"},
 ).json()
 
@@ -138,7 +138,7 @@ M&A 1 件あたりのデュー期間が短縮できる想定。
 }
 ```
 
-これだけで 72 ツールが即時アクティブ。`search_programs` `check_exclusions` `prescreen_programs` `subsidy_combo_finder` 等を Claude / Cursor / ChatGPT から自然言語で呼べます。
+これだけで 69 ツールが即時アクティブ。`search_programs` `check_exclusions` `prescreen_programs` `subsidy_combo_finder` 等を Claude / Cursor / ChatGPT から自然言語で呼べます。
 
 ### REST (Python SDK / TypeScript SDK)
 
@@ -158,7 +158,7 @@ const r = await c.programs.search({ q: "DX 中小企業", prefecture: "大阪" }
 
 - ¥3/req tax-excl (¥3.30 incl)
 - 匿名 50/月 free per IP
-- API key 取得は self-serve: <https://autonomath.ai/dashboard.html>
+- API key 取得は self-serve: <https://zeimu-kaikei.ai/dashboard.html>
 
 ---
 

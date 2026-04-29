@@ -15,7 +15,7 @@ all other `/v1/am/*` paths.
 ## Endpoint specification
 
 ```
-GET https://api.autonomath.ai/v1/am/health/deep
+GET https://api.zeimu-kaikei.ai/v1/am/health/deep
 ```
 
 Returns 200 with `DeepHealthResponse` (`api/_response_models.py:515`):
@@ -34,19 +34,19 @@ The same logic is exposed via the `deep_health_am` MCP tool
 - Cloudflare dashboard → **Health Checks** → **Create**
 - Type: HTTPS
 - Method: GET
-- URL: `https://api.autonomath.ai/v1/am/health/deep`
+- URL: `https://api.zeimu-kaikei.ai/v1/am/health/deep`
 - Interval: 60 sec
 - Expected codes: `200`
 - Response Body Match: `healthy` (substring)
 - Notification: **Cloudflare Notifications** → email to `info@bookyou.net`
 
-Free on any Cloudflare plan that already fronts `autonomath.ai`. Multi-region
+Free on any Cloudflare plan that already fronts `zeimu-kaikei.ai`. Multi-region
 probing included by default.
 
 ### UptimeRobot (alternative)
 
 - Add monitor → **HTTP(s)**
-- URL: `https://api.autonomath.ai/v1/am/health/deep`
+- URL: `https://api.zeimu-kaikei.ai/v1/am/health/deep`
 - Interval: 5 min (Free plan limit)
 - Keyword: `healthy`
 - Notification: email to `info@bookyou.net`
@@ -74,7 +74,7 @@ autonomath.db, or migrations mismatch).
 ## Manual probe
 
 ```bash
-curl -sS https://api.autonomath.ai/v1/am/health/deep | jq
+curl -sS https://api.zeimu-kaikei.ai/v1/am/health/deep | jq
 ```
 
 Expected: `overall.status = "healthy"`, every entry under `checks` reports

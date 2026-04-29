@@ -163,7 +163,7 @@ def test_run_due_sends_rows_past_send_at_and_marks_them(conn: sqlite3.Connection
         conn,
         now=advanced,
         client=_mock_client(captured),
-        usage_count_fn=lambda _c, _k: 5,  # force day14 skip if it ever got picked
+        usage_count_fn=lambda _c, _k: 5,  # active-user usage_count for the templates
     )
 
     assert summary["picked"] == 3
@@ -215,9 +215,14 @@ def test_run_due_is_idempotent_on_rerun(conn: sqlite3.Connection):
     assert len(captured) == first_call_count
 
 
-def test_run_due_day14_active_skip_marks_sent_without_http(conn: sqlite3.Connection):
-    """When usage_count > 0 at D+14 time, the send helper skips and the row
-    is still stamped with sent_at so the cron stops picking it."""
+def test_run_due_day14_active_user_receives_power_tips(conn: sqlite3.Connection):
+    """D+14 redesign 2026-04-29: active customers RECEIVE the mail (power-user tips).
+
+    Pre-redesign D+14 was an inactive-only reminder gated by usage_count==0.
+    The new D+14 ("3 つの省力化 Tips") fires for everyone — MCP wiring,
+    /programs/batch, monthly_cap_yen — and the row is stamped with sent_at
+    via the success path, not the active-skip path.
+    """
     base = datetime(2026, 5, 1, 12, 0, tzinfo=UTC)
     enqueue_onboarding_sequence(
         conn, api_key_id="hash_abcd1234", email="alice@example.com", now=base
@@ -228,15 +233,15 @@ def test_run_due_day14_active_skip_marks_sent_without_http(conn: sqlite3.Connect
         conn,
         now=advanced,
         client=_mock_client(captured),
-        usage_count_fn=lambda _c, _k: 10,  # active customer — day14 skipped
+        usage_count_fn=lambda _c, _k: 10,  # active customer — D+14 still fires
     )
 
-    # day1 + day3 + day7 sent (HTTP), day14 skipped (no HTTP), day30 not due
+    # day1 + day3 + day7 + day14 all sent (HTTP); day30 not due yet.
     assert summary["picked"] == 4
-    assert summary["sent"] == 3
-    assert summary["skipped"] == 1
+    assert summary["sent"] == 4
+    assert summary["skipped"] == 0
     aliases_sent = [json.loads(r.content)["TemplateAlias"] for r in captured]
-    assert TEMPLATE_DAY14 not in aliases_sent
+    assert TEMPLATE_DAY14 in aliases_sent
 
     day14_row = conn.execute(
         "SELECT sent_at FROM email_schedule WHERE api_key_id = ? AND kind = 'day14'",

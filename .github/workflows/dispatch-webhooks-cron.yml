@@ -1,0 +1,90 @@
+name: dispatch-webhooks-cron
+
+# Customer webhook dispatcher (¥3/req metered, HMAC-signed).
+#
+# Distinct from amendment-alert-cron (FREE retention surface). This cron
+# handles the structured product-event surface registered via
+# /v1/me/webhooks: program.created / program.amended / enforcement.added /
+# tax_ruleset.amended / invoice_registrant.matched.
+#
+# Each successful HTTP 2xx delivery emits one Stripe usage_record at
+# ¥3/req. Failed deliveries (timeout, 4xx, 5xx) and retries do NOT bill.
+#
+# Cadence: every 10 minutes (workflow runs at :05 / :15 / :25 / ... ).
+# 5 minutes is the GitHub Actions practical floor and the Fly billing
+# concern. 10 minutes balances delivery latency against thundering-herd
+# risk on the autonomath-api machine.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Required Fly machine secrets:
+#   STRIPE_SECRET_KEY    For the usage_record POST on successful delivery.
+#   SENTRY_DSN           Optional. Hard failures emit a Sentry breadcrumb.
+
+on:
+  schedule:
+    # */10 = every 10 minutes. NOTE: GitHub Actions cron has up to 15-min
+    # scheduling jitter under load, so this is a "best-effort 10-min" not
+    # a hard SLA. For sub-minute delivery use the in-process bg worker
+    # (api/_bg_task_worker.py) — this cron is the durable retry layer.
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no HTTP POST, no Stripe usage record)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  # cancel-in-progress=true: if the previous tick is still running we
+  # cancel and start fresh (idempotent — the script gates re-entry on
+  # delivery state). Avoids back-pressure when a single delivery hangs.
+  group: dispatch-webhooks-cron
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9  # < cron interval to prevent overlap
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Dispatch pending webhooks
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/dispatch_webhooks.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=dispatch-webhooks-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.dispatch-webhooks-cron\",\"platform\":\"other\",\"message\":\"dispatch-webhooks-cron failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"dispatch-webhooks-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

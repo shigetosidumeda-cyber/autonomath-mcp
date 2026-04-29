@@ -41,7 +41,7 @@ _LOG = logging.getLogger("jpintel.scripts.http")
 
 DEFAULT_USER_AGENT = (
     "jpintel-mcp-ingest/1.0 "
-    "(+https://autonomath.ai; contact=ops@autonomath.ai)"
+    "(+https://zeimu-kaikei.ai; contact=ops@zeimu-kaikei.ai)"
 )
 DEFAULT_PER_HOST_DELAY_SEC = 1.0  # 1 req/sec/host per §5
 DEFAULT_TIMEOUT_SEC = 15.0

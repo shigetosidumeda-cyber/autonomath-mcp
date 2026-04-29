@@ -20,7 +20,7 @@
 
 ### Cloudflare Pages
 - **Project**: `autonomath` (NOT `autonomath-fallback`)
-- **Domains**: autonomath.ai / www.autonomath.ai / autonomath.pages.dev
+- **Domains**: zeimu-kaikei.ai / www.zeimu-kaikei.ai / autonomath.pages.dev
 - **Latest deploy**: 7ab7530a (2026-04-25 ~09:38Z)
 - **Files**: 11,186 (excluding site/structured/* which is 10,951 .jsonld files left aside due to 20k limit)
 
@@ -360,7 +360,7 @@ End of L-series in-progress signal.
 
 production v16 で確認:
 ```json
-GET https://api.autonomath.ai/v1/am/health/deep
+GET https://api.zeimu-kaikei.ai/v1/am/health/deep
 {"status":"unhealthy", "version":"v0.2.0",
  "checks":{
    "db_jpintel_reachable":{"status":"fail",

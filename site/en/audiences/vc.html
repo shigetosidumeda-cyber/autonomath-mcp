@@ -10,8 +10,8 @@
 <meta property="og:title" content="AutonoMath for VC / M&amp;A advisors">
 <meta property="og:description" content="Corporate-number due diligence: 5 years of enforcement, 10 years of adoption history. DD-pipeline ready.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/en/audiences/vc.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/en/audiences/vc.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
@@ -20,12 +20,12 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AutonoMath for VC / M&amp;A advisors">
 <meta name="twitter:description" content="Corporate-number due-diligence pipeline API.">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/en/audiences/vc.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/vc.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/vc.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/vc.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/en/audiences/vc.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/audiences/vc.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/audiences/vc.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/audiences/vc.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -39,9 +39,9 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autonomath.ai/en/"},
-    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://autonomath.ai/en/audiences/"},
-    {"@type": "ListItem", "position": 3, "name": "VC / M&A advisors", "item": "https://autonomath.ai/en/audiences/vc.html"}
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://zeimu-kaikei.ai/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://zeimu-kaikei.ai/en/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "VC / M&A advisors", "item": "https://zeimu-kaikei.ai/en/audiences/vc.html"}
   ]
 }
 </script>
@@ -56,7 +56,7 @@
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://autonomath.ai/en/",
+    "url": "https://zeimu-kaikei.ai/en/",
     "identifier": "T8010001213708"
   },
   "audience": {
@@ -103,13 +103,12 @@
 <header class="site-header" role="banner">
   <div class="container header-inner">
     <a class="brand" href="../index.html" aria-label="AutonoMath home">
-      <span class="brand-mark" aria-hidden="true">AM</span>
       <span class="brand-name">AutonoMath</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="../getting-started.html">Docs</a>
       <a href="../pricing.html">Pricing</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
       <span class="lang-switch" role="group" aria-label="Language / 言語">
         <a href="../../audiences/vc.html" lang="ja" hreflang="ja">JP</a>
         <span class="sep" aria-hidden="true">/</span>
@@ -205,7 +204,7 @@
 
         <article class="card">
           <h3>curl (anonymous, 50 free/mo)</h3>
-          <pre class="code-block"><code>curl 'https://api.autonomath.ai/v1/am/enforcement?\
+          <pre class="code-block"><code>curl 'https://api.zeimu-kaikei.ai/v1/am/enforcement?\
 corporate_number=8010001213708&amp;\
 since=2021-01-01&amp;\
 limit=20'</code></pre>
@@ -219,7 +218,7 @@ import httpx, asyncio
 
 # Standard DD package: 3 endpoints chained per number, run in parallel
 nums = ["8010001213708", "1010001067912"]  # 13-digit NTA-issued IDs
-BASE = "https://api.autonomath.ai/v1"
+BASE = "https://api.zeimu-kaikei.ai/v1"
 
 async def dd(client, num):
     invoice = await client.get(f"{BASE}/invoice_registrants/T{num}")
@@ -321,7 +320,7 @@ asyncio.run(main())</code></pre>
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="dev.html"><strong>AI agent developer page</strong></a> &mdash; The MCP / REST integration guide for in-house DD bots. Two patterns: drop into Claude Desktop directly, or pipe REST into in-house RAG.</li>
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>Batch DD examples (Python + curl + TypeScript)</strong></a> &mdash; Code for running a 50-target seed-round DD in one batch. Error handling and retries included.</li>
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; Pull related subsidies and adoption history for any corporate number. Pagination and filters for batch workloads.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (72 tools)</strong></a> &mdash; <code>dd_profile_am</code> + <code>check_enforcement_am</code> + <code>search_acceptance_stats_am</code> and more, ready to plug into your DD pipeline.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (89 tools)</strong></a> &mdash; <code>dd_profile_am</code> + <code>check_enforcement_am</code> + <code>search_acceptance_stats_am</code> and more, ready to plug into your DD pipeline.</li>
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; Source for client SDK auto-generation when integrating into in-house DD tools. Stoplight / Postman / Insomnia compatible.</li>
         <li style="padding:10px 0;"><a href="../pricing.html"><strong>Enterprise-scale pricing</strong></a> &mdash; ¥3/req at any scale, no seat fees. 100-target batch DD = ¥1,500 per run; 5,000 req/month = ¥15,000. Stripe metered billing.</li>
       </ul>
@@ -336,7 +335,7 @@ asyncio.run(main())</code></pre>
         <a class="btn btn-secondary" href="../getting-started.html">Get started</a>
         <a class="btn btn-secondary" href="/docs/openapi/v1.json">OpenAPI v1 (JSON)</a>
         <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
-        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
       </div>
       <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. (T8010001213708) &middot; Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
     </div>
@@ -367,7 +366,7 @@ asyncio.run(main())</code></pre>
       <a href="../getting-started.html">Getting started</a>
       <a href="../pricing.html">Pricing</a>
       <a href="../tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
     <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

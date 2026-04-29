@@ -2,34 +2,34 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "AutonoMath MCP Tools (72 tools)",
-  "description": "AutonoMath は MCP (Model Context Protocol) サーバーとして 72 ツール (39 コア + 33 autonomath = V1 17 + V4 universal 4 + Phase A absorption 5 + lifecycle/abstract/prerequisite/graph/snapshot/rule_engine 7) を公開する。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出せる。",
+  "headline": "税務会計AI MCP Tools (89 tools)",
+  "description": "税務会計AI は MCP (Model Context Protocol) サーバーとして 89 ツール (39 コア + 50 autonomath at default gates) を公開する。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出せる。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-26",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://autonomath.ai/about.html"
+    "url": "https://zeimu-kaikei.ai/about.html"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://autonomath.ai/og/default.png"
+      "url": "https://zeimu-kaikei.ai/og/default.png"
     }
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://autonomath.ai/docs/mcp-tools/"
+    "@id": "https://zeimu-kaikei.ai/docs/mcp-tools/"
   }
 }
 </script>
 
 # MCP Tools
 
-> **要約 (summary):** AutonoMath は MCP (Model Context Protocol) サーバーとして **72 ツール (39 コア + 33 autonomath)** を default gates で公開する。39 コアは制度 / 採択事例 / 融資 / 行政処分 の 4 データセットに対する search/get、排他判定、バッチ取得、メタ情報、canonical filter 値を事前列挙する `enum_values`、クォータ probe `get_usage_status`、申請者プロフィールから一発判定する `prescreen_programs`、締切カレンダー `upcoming_deadlines`、さらに 5-7 call chain を 1 call に畳む 7 つの one-shot 合成ツール (`smb_starter_pack` / `subsidy_combo_finder` / `deadline_calendar` / `dd_profile_am` / `similar_cases` / `regulatory_prep_pack` / `subsidy_roadmap_3yr`) に加え、拡張データセット: 法令 (e-Gov CC-BY, 9,484 件・継続ロード中) / 税務ruleset (35 件 live) / 適格事業者 (PDL v1.0, 13,801 件 delta) / 判例・入札 と cross-dataset glue ツールを含む。33 autonomath は entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance) を `search_tax_incentives` / `search_certifications` / `reason_answer` / `search_by_law` / `list_tax_sunset_alerts` 等で公開、加えて V4 universal 4 (`get_annotations` / `validate` / `get_provenance` / `get_provenance_for_fact`)、Phase A absorption 5 (`list_static_resources_am` / `get_static_resource_am` / `list_example_profiles_am` / `get_example_profile_am` / `deep_health_am`)、lifecycle / graph / snapshot / rule_engine / abstract / prerequisite 7 (`unified_lifecycle_calendar` / `program_lifecycle` / `prerequisite_chain` / `graph_traverse` / `query_at_snapshot` / `rule_engine_check` / `program_abstract_structured`) を含む (`AUTONOMATH_ENABLED=false` で無効化可能、`render_36_kyotei_am` 系は `AUTONOMATH_36_KYOTEI_ENABLED=true` で別途 opt-in、enable で 74 tools)。Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini から直接呼び出せる。
+> **要約 (summary):** 税務会計AI は MCP (Model Context Protocol) サーバーとして **89 ツール (39 コア + 50 autonomath)** を default gates で公開する。39 コアは制度 / 採択事例 / 融資 / 行政処分 の 4 データセットに対する search/get、排他判定、バッチ取得、メタ情報、canonical filter 値を事前列挙する `enum_values`、クォータ probe `get_usage_status`、申請者プロフィールから一発判定する `prescreen_programs`、締切カレンダー `upcoming_deadlines`、さらに 5-7 call chain を 1 call に畳む 7 つの one-shot 合成ツール (`smb_starter_pack` / `subsidy_combo_finder` / `deadline_calendar` / `dd_profile_am` / `similar_cases` / `regulatory_prep_pack` / `subsidy_roadmap_3yr`) に加え、拡張データセット: 法令 (e-Gov CC-BY, 法令本文 154 件 + 法令メタデータ 9,484 件・本文ロード継続中) / 税務ruleset (35 件 live) / 適格事業者 (PDL v1.0, 13,801 件 delta) / 判例・入札 と cross-dataset glue ツールを含む。50 autonomath は entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance) を `search_tax_incentives` / `search_certifications` / `search_by_law` / `list_tax_sunset_alerts` 等で公開、加えてメタデータ tools 4 (`get_annotations` / `validate` / `get_provenance` / `get_provenance_for_fact`)、静的データセット tools 5 (`list_static_resources_am` / `get_static_resource_am` / `list_example_profiles_am` / `get_example_profile_am` / `deep_health_am`)、lifecycle / graph / rule_engine / abstract / prerequisite (`unified_lifecycle_calendar` / `program_lifecycle` / `prerequisite_chain` / `graph_traverse` / `rule_engine_check` / `program_abstract_structured` / `related_programs`) を含む (`AUTONOMATH_ENABLED=false` で無効化可能、`render_36_kyotei_am` 系は `AUTONOMATH_36_KYOTEI_ENABLED=true` で別途 opt-in、enable で 91 tools。`query_at_snapshot` / `intent_of` / `reason_answer` は env-flag gated off pending fix)。Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini から直接呼び出せる。
 
 **Protocol:** MCP 2025-06-18 (FastMCP SDK, Python `mcp` package). Transport: stdio JSON-RPC.
 
@@ -43,7 +43,7 @@
 | 行政書士 (建設業) | `search_programs` / `check_exclusions` / `search_loans_am` / `search_certifications` / `get_law_article_am` | [#行政書士-建設業-向け](#行政書士-建設業-向け) |
 | SMB 経営者 (LINE bot) | `smb_starter_pack` / `deadline_calendar` / `subsidy_combo_finder` / `list_open_programs` | [#smb-経営者向け](#smb-経営者向け) |
 | VC / M&A advisor | `dd_profile_am` / `check_enforcement_am` / `search_acceptance_stats_am` / `similar_cases` | [#vc--ma-advisor-向け](#vc--ma-advisor-向け) |
-| AI agent developer | (全 72 tools) / `enum_values_am` / `intent_of` / `reason_answer` / `validate` / `get_provenance` / `graph_traverse` / `get_usage_status` | [#ai-agent-developer-向け](#ai-agent-developer-向け) |
+| AI agent developer | (全 89 tools) / `enum_values_am` / `validate` / `get_provenance` / `graph_traverse` / `get_usage_status` | [#ai-agent-developer-向け](#ai-agent-developer-向け) |
 
 audience 別の章は本ファイル末尾「Audience 別ガイド」に展開。
 
@@ -63,7 +63,7 @@ MCP server は stdio 転送で動作する。`autonomath-mcp` バイナリ (`pip
 
 | name | type | default | description |
 |------|------|---------|-------------|
-| `q` | string \| null | null | 自由記述。3 文字以上で FTS5 trigram、2 文字以下は substring 一致 |
+| `q` | string \| null | null | 自由記述。3 文字以上で 全文検索インデックス (3-gram)、2 文字以下は substring 一致 |
 | `tier` | string[] \| null | null | `S` / `A` / `B` / `C` / `X` の OR 集合 |
 | `prefecture` | string \| null | null | 都道府県名 (完全一致) |
 | `authority_level` | string \| null | null | 正本 (英語): `national` / `prefecture` / `municipality` / `financial`。日本語別名 (`国` / `都道府県` / `市区町村` / `公庫`) も受け付け、サーバ側で英語に正規化 |
@@ -71,7 +71,7 @@ MCP server は stdio 転送で動作する。`autonomath-mcp` バイナリ (`pip
 | `target_type` | string[] \| null | null | 対象者種別のフィルタ |
 | `amount_min_man_yen` | number \| null | null | 助成上限の下限 (万円) |
 | `amount_max_man_yen` | number \| null | null | 助成上限の上限 (万円) |
-| `include_excluded` | bool | false | `true` で tier=X も含める |
+| `include_excluded` | bool | false | `true` で公開保留中の制度も含める |
 | `limit` | int | 20 | 1〜100 |
 | `offset` | int | 0 | ページング |
 | `fields` | string | `"default"` | `"minimal"` / `"default"` / `"full"`。レスポンスサイズ切替 |
@@ -180,9 +180,9 @@ await client.call_tool("search_programs", {
 - `search_programs` で候補が絞り込まれた後、ユーザーが 1 件の詳細を求めたとき
 - 「この制度の申請窓口の締切は？」「必要書類は？」のような掘り下げ質問
 
-**EMPTY 時の挙動:** 該当 `unified_id` が DB に存在しない場合は 404 相当の structured envelope `{"error": {"code": "not_found", "message": "program not found", "hint": "snapshot_size=N, alternative=search_programs", "retry_with": ["search_programs"]}}` を返す (MCP over JSON-RPC では raise は -32603 Internal Error に畳まれて情報落ちするため、常に dict 返却)。AI agent は `search_programs` で stale id か絶対 not-found か判別可。
+**EMPTY 時の挙動:** 該当 `unified_id` が DB に存在しない場合は 404 相当の structured 注記 `{"error": {"code": "not_found", "message": "program not found", "hint": "snapshot_size=N, alternative=search_programs", "retry_with": ["search_programs"]}}` を返す (MCP over JSON-RPC では raise は -32603 Internal Error に畳まれて情報落ちするため、常に dict 返却)。AI agent は `search_programs` で stale id か絶対 not-found か判別可。
 
-**エラー:** 存在しない ID は例外を投げず、上記 EMPTY envelope と同形で返す。
+**エラー:** 存在しない ID は例外を投げず、上記 EMPTY 注記 と同形で返す。
 
 **Example (Python via FastMCP client):**
 
@@ -207,7 +207,7 @@ await client.call_tool("get_program", {
 
 | name | type | default | description |
 |------|------|---------|-------------|
-| `unified_ids` | string[] | (required) | 1〜50 件の制度 ID。重複は自動 dedupe (最初の出現順で一意化)。空配列 / 50 超は構造化エラー envelope (`error.code="empty_input"` / `"too_many"`) |
+| `unified_ids` | string[] | (required) | 1〜50 件の制度 ID。重複は自動 dedupe (最初の出現順で一意化)。空配列 / 50 超は構造化エラー注記 (`error.code="empty_input"` / `"too_many"`) |
 
 **戻り値:**
 
@@ -283,7 +283,7 @@ await client.call_tool("get_program", {
 - ユーザーが「どの補助金を併用すると失格になる？」と聞いたとき
 - 農業制度の全体像 (新規就農 / 認定農業者 / スーパー L の依存関係) を表示するとき
 
-**注:** 現在 181 件 (hand-seeded 35 = 農業核心 22 + 非農業 13 + 要綱 一次資料 auto-extracted 146)。kind 内訳 `exclude` 125 / `prerequisite` 17 / `absolute` 15 / その他 24。[exclusions.md](./exclusions.md) 参照。
+**注:** 現在 181 件 (hand-seeded 35 = 農業核心 22 + 非農業 13 + 要綱 PDF からの heuristic 抽出 146)。kind 内訳 `exclude` 125 / `prerequisite` 17 / `absolute` 15 / その他 24。 146 件の heuristic 抽出は人手レビュー済みだが取りこぼしの可能性が残る。 [exclusions.md](./exclusions.md) 参照。
 
 ---
 
@@ -321,6 +321,8 @@ await client.call_tool("get_program", {
 - ユーザーが複数の候補制度をリストアップして「これ全部併用できる？」と聞いたとき
 - `search_programs` で複数候補を提示した後、自動的に安全性チェックをかけたいとき
 
+> **限界:** ルール母集団は 181 件 (hand-seeded 35 + 要綱 PDF heuristic 抽出 146)。 `hits: []` は「未登録の組合せ」を含むため安全保証ではない。 実申請前に `source_urls` の一次資料を人手で確認することを caller (LLM client) は user に明示すること。
+
 **エラー:** 空配列は例外 (`ValueError: program_ids required`)。
 
 ---
@@ -356,7 +358,7 @@ await client.call_tool("get_program", {
 
 ## 採択事例 / 融資 / 行政処分 ツール
 
-制度 (programs) と並ぶ 3 つのデータセットそれぞれに `search` / `get` ツールが用意されている。全て同一の検索モデル (FTS5 trigram + 構造化フィルタ) で、primary-source lineage (`source_url` + `fetched_at`) を全行に含む。REST 相当エンドポイントの詳細引数は [OpenAPI spec](./api-reference.md#openapi-spec) を参照 (`/v1/case-studies/*`, `/v1/enforcement/*`, `/v1/loans/*` は OpenAPI JSON のみで定義、`api-reference.md` への個別章は未掲載)。
+制度 (programs) と並ぶ 3 つのデータセットそれぞれに `search` / `get` ツールが用意されている。全て同一の検索モデル (全文検索インデックス (3-gram) + 構造化フィルタ) で、primary-source lineage (`source_url` + `fetched_at`) を全行に含む。REST 相当エンドポイントの詳細引数は [OpenAPI spec](./api-reference.md#openapi-spec) を参照 (`/v1/case-studies/*`, `/v1/enforcement/*`, `/v1/loans/*` は OpenAPI JSON のみで定義、`api-reference.md` への個別章は未掲載)。
 
 ### `search_case_studies` / `get_case_study`
 
@@ -364,7 +366,7 @@ await client.call_tool("get_program", {
 
 **代表引数 (search):** `q`, `program_ids[]`, `company_size`, `prefecture`, `year`, `limit`, `offset`。
 **取得:** `get_case_study(case_id)` で詳細。
-**EMPTY 時の挙動 (get_case_study):** `case_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=2286, alternative=search_case_studies"}}`。
+**EMPTY 時の挙動 (get_case_study):** `case_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=2286, alternative=search_case_studies"}}`。
 
 ### `search_loan_programs` / `get_loan_program`
 
@@ -372,7 +374,7 @@ await client.call_tool("get_program", {
 
 **代表引数 (search):** `q`, `collateral_required`, `personal_guarantor_required`, `third_party_guarantor_required`, `target_type[]`, `amount_min_man_yen`, `amount_max_man_yen`, `rate_max`, `limit`, `offset`。
 **取得:** `get_loan_program(loan_id)` で詳細。
-**EMPTY 時の挙動 (get_loan_program):** `loan_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=108, alternative=search_loan_programs"}}`。
+**EMPTY 時の挙動 (get_loan_program):** `loan_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=108, alternative=search_loan_programs"}}`。
 
 ### `search_enforcement_cases` / `get_enforcement_case`
 
@@ -380,7 +382,7 @@ await client.call_tool("get_program", {
 
 **代表引数 (search):** `q`, `agency`, `year`, `company_name`, `action_type`, `limit`, `offset`。
 **取得:** `get_enforcement_case(case_id)` で詳細。
-**EMPTY 時の挙動 (get_enforcement_case):** `case_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=1185, alternative=search_enforcement_cases"}}`。
+**EMPTY 時の挙動 (get_enforcement_case):** `case_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=1185, alternative=search_enforcement_cases"}}`。
 
 これら 3 セットを `search_programs` と組み合わせると、「この補助金に採択された同業者の事例は?」「この融資は無担保・無保証で通せるか?」「検討中の業者に処分歴はないか?」を 1 セッションで解決できる。
 
@@ -424,7 +426,7 @@ await client.call_tool("get_program", {
 **特徴:**
 
 - rows は caveat で「隠さず」、理由を添えて残す (「足りない可能性」「認定新規就農者 未申告」等)
-- tier=X / excluded 行は常に除外
+- 公開保留中 / excluded 行は常に除外
 - `profile_echo` に入力の正規化結果を返すので、UI は canonical 表示で echo できる
 
 **Example (Python via FastMCP client):**
@@ -497,12 +499,12 @@ await client.call_tool("prescreen_programs", {
 
 ### `search_laws`
 
-**目的:** 日本の法令 (e-Gov法令) を横断検索。法令名・条文本文に対して FTS5 trigram + 構造化フィルタ (法令種別 / 所管省庁 / 施行日) を適用。全件 CC-BY ライセンスで一次資料 URL + fetched_at 付き。
+**目的:** 日本の法令 (e-Gov法令) を横断検索。法令名・条文本文に対して 全文検索インデックス (3-gram) + 構造化フィルタ (法令種別 / 所管省庁 / 施行日) を適用。全件 CC-BY ライセンスで一次資料 URL + fetched_at 付き。
 
 ### `get_law`
 
 **目的:** 特定の法令 ID から完全な法令本文 (目次 + 全条文 + 附則) を取得。`search_laws` / `find_precedents_by_statute` / `trace_program_to_law` の結果で返る law_id を渡して詳細展開に使う。
-**EMPTY 時の挙動:** `law_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=9484, alternative=search_laws"}}`。AI agent は `search_laws` で stale id か絶対 not-found か判別可。
+**EMPTY 時の挙動:** `law_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=9484, alternative=search_laws"}}`。AI agent は `search_laws` で stale id か絶対 not-found か判別可。
 
 ### `list_law_revisions`
 
@@ -515,7 +517,7 @@ await client.call_tool("prescreen_programs", {
 ### `get_court_decision`
 
 **目的:** 判例 1 件の完全詳細 (当事者・事実関係・争点・判示事項・主文・参照条文・下級審履歴) を取得。`search_court_decisions` / `find_precedents_by_statute` / `find_cases_by_law` の候補を深堀する用途。
-**EMPTY 時の挙動:** `decision_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=2065, alternative=search_court_decisions"}}`。
+**EMPTY 時の挙動:** `decision_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=2065, alternative=search_court_decisions"}}`。
 
 ### `find_precedents_by_statute`
 
@@ -528,7 +530,7 @@ await client.call_tool("prescreen_programs", {
 ### `get_bid`
 
 **目的:** 入札案件 1 件の完全詳細 (発注機関 / 品目 / 仕様書 / 参加資格 / 入札方式 / 予定価格 / 落札結果) を取得。`bid_eligible_for_profile` の結果や `search_bids` ヒット行から深堀するときに呼ぶ。
-**EMPTY 時の挙動:** `bid_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=362, alternative=search_bids"}}`。
+**EMPTY 時の挙動:** `bid_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=362, alternative=search_bids"}}`。
 
 ### `bid_eligible_for_profile`
 
@@ -541,7 +543,7 @@ await client.call_tool("prescreen_programs", {
 ### `get_tax_rule`
 
 **目的:** 税務 ruleset 1 件の完全詳細 (適用要件 / 経過措置 / 帳簿要件 / 例外規定 / 関連 Q&A) を取得。具体的な取引パターンが現行の経過措置でどう扱われるか、の確定情報を得るのに使う。
-**EMPTY 時の挙動:** `rule_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=35, alternative=search_tax_rules"}}`。
+**EMPTY 時の挙動:** `rule_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=35, alternative=search_tax_rules"}}`。
 
 ### `evaluate_tax_applicability`
 
@@ -592,6 +594,8 @@ smb_starter_pack(prefecture="東京都", industry_jsic="A-011", employees=15)
 **EMPTY 時の挙動**: 0 combo の場合 `combos: []` + `meta.suggestions: ["budget を下げる", "industry_jsic を外す"]` を返す。
 **Audience**: SMB 経営者 / 行政書士
 
+> **限界:** combo 候補は editorial template (手動作成 56 件) と排他ルール 181 件 (hand-seeded 35 + 要綱 PDF heuristic 抽出 146) を組み合わせて生成する。 一般的な組合せパターンの参考としては有用だが、 `conflict_rule_id: null` (= ルール未登録) は「併用安全」を保証しない。 実申請前に必ず一次資料を確認すること。
+
 ```python
 await client.call_tool("subsidy_combo_finder", {
     "keyword": "ものづくり",
@@ -628,7 +632,7 @@ await client.call_tool("deadline_calendar", {
 **引数**: `houjin_bangou` (str, required, 13桁) / `include_facts` (bool, default=True)
 **戻り値**: `{"entity": {...}, "adoptions": [...], "invoice_registrant": {...}, "enforcement": [...], "facts": {...}, "audit_log": [...]}`
 **呼ぶタイミング**: VC / M&A advisor が DD 中、対象法人を 13 桁番号で 1 発 dossier 化したい時。
-**EMPTY 時の挙動**: 該当 houjin_bangou が DB に無い場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=87093 corporate entities, alternative=search_invoice_registrants"}}`。
+**EMPTY 時の挙動**: 該当 houjin_bangou が DB に無い場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=87093 corporate entities, alternative=search_invoice_registrants"}}`。
 **Audience**: VC / M&A advisor
 
 ```python
@@ -696,7 +700,7 @@ await client.call_tool("regulatory_prep_pack", {
 
 ## Autonomath ツール (28 件、`AUTONOMATH_ENABLED=true` で有効)
 
-`autonomath.db` (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases) を expose する 28 tools。entity-fact EAV schema 上で「税優遇 / 認定 / 法令 / 採択統計 / 融資 / 共済 / 行政処分」を横断検索。V1 17 + V4 universal 4 + Phase A absorption 7 (本ツール群は環境変数 `AUTONOMATH_ENABLED=false` で全無効化可能)。
+`autonomath.db` (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases) を expose する 28 tools。entity-fact EAV schema 上で「税優遇 / 認定 / 法令 / 採択統計 / 融資 / 共済 / 行政処分」を横断検索。V1 17 + メタデータ tools 4 + 静的データセット tools 7 (本ツール群は環境変数 `AUTONOMATH_ENABLED=false` で全無効化可能)。
 
 ### `search_tax_incentives`
 
@@ -754,7 +758,7 @@ await client.call_tool("search_certifications", {
 **引数**: `field` (str, required) / `prefix` (str, optional)
 **戻り値**: `{"field": "...", "values": [{"value": "...", "label": "...", "count": N}, ...]}`
 **呼ぶタイミング**: agent が search 前に「使える industry_jsic ってどれ？」と聞く時。
-**EMPTY 時の挙動**: field 名が unknown → 404 + structured envelope `{"error": {"code": "unknown_field", "hint": "valid fields: record_kind|relation_type|..."}}`。
+**EMPTY 時の挙動**: field 名が unknown → 404 + structured 注記 `{"error": {"code": "unknown_field", "hint": "valid fields: record_kind|relation_type|..."}}`。
 **Audience**: Dev
 
 ### `search_by_law`
@@ -839,7 +843,7 @@ await client.call_tool("search_acceptance_stats_am", {
 **引数**: `measure_name_or_id` (str, required, e.g. 'DX投資促進税制' / 'tax_measure:12_tax_incentives:000013:...') / `rule_type` (literal "credit"|"deduction"|"reduction"|"special_depreciation"|"immediate_writeoff"|"exemption", optional)
 **戻り値**: `DetailResponse[TaxRule]`
 **呼ぶタイミング**: 税理士が ruleset の適用パターンを精査する時。
-**EMPTY 時の挙動**: `rule_id` が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=35, alternative=search_tax_rules"}}`。
+**EMPTY 時の挙動**: `rule_id` が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=35, alternative=search_tax_rules"}}`。
 **Audience**: 税理士
 
 ```python
@@ -909,7 +913,7 @@ await client.call_tool("search_loans_am", {
 **引数**: `law_id` (str, required) / `article` (str, required)
 **戻り値**: `DetailResponse[LawArticle]`
 **呼ぶタイミング**: 行政書士 / 税理士が条文の現行 wording を確認する時。
-**EMPTY 時の挙動**: 該当条文が DB に存在しない場合 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=28048 articles, alternative=search_by_law"}}`。
+**EMPTY 時の挙動**: 該当条文が DB に存在しない場合 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=28048 articles, alternative=search_by_law"}}`。
 **Audience**: 行政書士 / 税理士
 
 ### `list_tax_sunset_alerts`
@@ -933,7 +937,7 @@ await client.call_tool("list_tax_sunset_alerts", {
 #     "rationale": "年度末 (3/31) 期限・後継未定"}, ...]}
 ```
 
-### V4 universal (4 件)
+### メタデータ tools (4 件)
 
 #### `get_annotations`
 
@@ -1005,7 +1009,7 @@ await client.call_tool("get_provenance", {
 **引数**: `fact_id` (int, required, `am_entity_facts.id` の AUTOINCREMENT integer)
 **戻り値**: `{"fact_id": ..., "entity_id": "...", "field_name": "...", "field_value_text": "...", "source": {"source_id": ..., "source_url": "...", "license": "..."}, "fallback": false, "license_summary": {...}}`
 **呼ぶタイミング**: 「この値だけの出典」を取りに行く時 (entity 全体じゃなく行単位)。
-**EMPTY 時の挙動**: fact_id 不在 → 404 + structured envelope。`source_id` が NULL の legacy fact は entity-level `am_entity_source` の候補 list を `fallback_sources` に返し `fallback: true` を立てる。
+**EMPTY 時の挙動**: fact_id 不在 → 404 + structured 注記。`source_id` が NULL の legacy fact は entity-level `am_entity_source` の候補 list を `fallback_sources` に返し `fallback: true` を立てる。
 **Audience**: VC / Dev
 
 ```python
@@ -1021,13 +1025,13 @@ await client.call_tool("get_provenance_for_fact", {
 
 ### Lifecycle / Graph / Snapshot / Quota (8 件)
 
-`unified_lifecycle_calendar` / `program_lifecycle` / `prerequisite_chain` / `graph_traverse` / `query_at_snapshot` / `rule_engine_check` / `program_abstract_structured` の 7 つは agent-side reasoning の合成ツール、`get_usage_status` は META 系のクォータ probe。すべて `AUTONOMATH_ENABLED=1` 既定で有効 (`get_usage_status` は jpintel 側、それ以外は autonomath 側)。
+`unified_lifecycle_calendar` / `program_lifecycle` / `prerequisite_chain` / `graph_traverse` / `query_at_snapshot` / `rule_engine_check` / `program_abstract_structured` の 7 つは複合検索の合成ツール、`get_usage_status` は META 系のクォータ probe。すべて `AUTONOMATH_ENABLED=1` 既定で有効 (`get_usage_status` は jpintel 側、それ以外は autonomath 側)。 lifecycle / snapshot 系 (`program_lifecycle` / `query_at_snapshot` / `unified_lifecycle_calendar`) は `am_amendment_snapshot` を参照するため、 改正の日付別追跡には利用できない (各 tool 章の限界注記を参照)。
 
 #### `get_usage_status`
 
 **目的**: META — 1 リクエストを消費せずに API クォータ残量を確認する probe。`anonymous` / `paid` / `free` の tier 別に `limit` / `remaining` / `used` / `reset_at` / `reset_timezone` を返す。
 **引数**: `api_key` (str, optional, 省略=anonymous)
-**戻り値**: `{"tier": "anonymous", "limit": 50, "remaining": ..., "used": ..., "reset_at": "2026-05-01T00:00:00+09:00", "reset_timezone": "JST", "upgrade_url": "https://autonomath.ai/pricing.html", "note": "..."}`
+**戻り値**: `{"tier": "anonymous", "limit": 50, "remaining": ..., "used": ..., "reset_at": "2026-05-01T00:00:00+09:00", "reset_timezone": "JST", "upgrade_url": "https://zeimu-kaikei.ai/pricing.html", "note": "..."}`
 **呼ぶタイミング**: agent が長い batch (例: 60 件 search) を流す前に消費可能数を見積もる時。MCP stdio 経由ではクライアント IP が無いため anonymous 残数は ceiling のみ。`api_key` を渡せば月次の正確な used 数を返す。
 **EMPTY 時の挙動**: paid tier は `limit` / `remaining` が `null` (metered, no cap) になる。
 **Audience**: Dev / AI agent developer
@@ -1055,6 +1059,8 @@ await client.call_tool("get_usage_status", {"api_key": "sk_live_..."})
 **EMPTY 時の挙動**: 対象期間にイベント 0 → `total_events: 0` + `calendar: []` + `data_quality.amendment_snapshot_caveat` をそのまま返す。
 **Audience**: 税理士 / VC / SMB 経営者
 
+> **限界:** `kind: "amendment"` の event は `am_amendment_snapshot` (14,596 行) から生成されるが、 82.3% の行は historical diff hash が空で、 改正の日付別追跡には利用できない。 確定的に時間軸が引けるのは `effective_from` / `effective_until` を持つ 144 行のみ。 `tax_sunset` / `application_close` / `law_cliff` は別ソース (`am_tax_rule` / `am_application_round` / `laws.effective_until`) なので影響なし。 response の `data_quality.amendment_snapshot_caveat` を必ず読むこと。
+
 ```python
 await client.call_tool("unified_lifecycle_calendar", {
     "start_date": "2026-05-01",
@@ -1080,6 +1086,8 @@ await client.call_tool("unified_lifecycle_calendar", {
 **呼ぶタイミング**: 1 件の制度について「今使えるか」「いつ切れるか」を 1 hop で判定したい時。`prescreen_programs` の前段、`get_program` の補助。
 **EMPTY 時の挙動**: `unified_id` 不在 → 404 + `error.code="not_found"`。判定材料が不足する場合は `status: "unknown"` + `evidence.gaps: [...]` を返す。
 **Audience**: 税理士 / 行政書士 / SMB
+
+> **限界:** この tool は `am_amendment_snapshot` から schema-level snapshot を返す。 14,596 行のうち 82.3% は historical diff hash が空で、 改正の日付別追跡には利用できない。 `effective_from` / `effective_until` が NULL でない 144 行のみ時間軸として確定済み。 `evidence.amendment_snapshots` が `[]` でも「改正なし」を意味しない。 `status` は `effective_from` / `sunset_at` のみで決まり、 中間版 (v1 → v2 → v3) の追跡はできない。
 
 ```python
 await client.call_tool("program_lifecycle", {
@@ -1149,12 +1157,14 @@ await client.call_tool("graph_traverse", {
 
 #### `query_at_snapshot`
 
-**目的**: AUDIT — programs query を「過去のある日付」の状態に pin する時間軸検索。`valid_from <= as_of_date AND (valid_until IS NULL OR valid_until > as_of_date)` で bitemporal に再現。返却 row + `audit_trail` 3 軸 (`source_url` + `fetched_at` + `valid_from`) で法廷証拠 reproducibility。
+**目的**: programs query を「過去のある日付」の状態に pin する時間軸検索。`valid_from <= as_of_date AND (valid_until IS NULL OR valid_until > as_of_date)` で bitemporal に再現。返却 row + `audit_trail` 3 軸 (`source_url` + `fetched_at` + `valid_from`) を付与。
 **引数**: `query_payload` (object, required, `q` / `tier` / `prefecture` / `authority_level` / `program_kind` / `limit` を持つ。`/v1/programs/search` と同形) / `as_of_date` (str, required, ISO YYYY-MM-DD)
 **戻り値**: `{"results": [{"unified_id": "...", "primary_name": "...", "tier": "A", ...}], "as_of_date": "2025-10-01", "audit_trail": {"source_url": "...", "fetched_at": "...", "valid_from": "..."}, "total": ...}`
-**呼ぶタイミング**: 「2025年4月時点で使えた青森県の補助金は？」のような過去断面で監査・反論材料を作る時。
+**呼ぶタイミング**: 「2025年4月時点で使えた青森県の補助金は？」のような過去断面で参照したい時。
 **EMPTY 時の挙動**: 該当 0 → `results: []` + `audit_trail: null`。`as_of_date` 不正 → `error.code="invalid_date_format"`。
 **Audience**: VC / 監査 / 行政書士
+
+> **限界:** この tool は `am_amendment_snapshot` の schema-level snapshot を参照する。 14,596 行のうち 82.3% は historical diff hash が空で、 任意日付における中間版 (v1 → v2) の差分は再現できない。 `valid_from` / `valid_until` が NULL でない 144 行のみ時間軸が確定済み。 法的監査・証拠用途では本 tool 単独に依拠せず、 `source_url` の一次資料 (法令施行日 / 要綱改訂版) を必ず別途確認すること。
 
 ```python
 await client.call_tool("query_at_snapshot", {
@@ -1200,7 +1210,7 @@ await client.call_tool("rule_engine_check", {
 **引数**: `program_id` (str, required, `programs.unified_id`、例 `UNI-16b8d86302`) / `audience` (str, default=`"foreign_employer"`, enum: `foreign_employer` / `smb` / `tax_advisor` / `admin_scrivener` / `vc`)
 **戻り値**: `{"program_id": "...", "audience": "foreign_employer", "abstract": {"official_name_ja": "...", "legal_id": "...", "summary_ja": "...", "eligibility_ja": [...], "amount_band_ja": "...", "audience_specific_flags": {...}}, "i18n_hints": {"official_name_must_keep_ja": true, "translatable_fields": [...]}}`
 **呼ぶタイミング**: 多言語 LLM client が ja → en / vi / zh 等に翻訳する直前の素材取得。LLM に raw `enriched` を流すより token 効率が良い。
-**EMPTY 時の挙動**: program_id が `excluded=1` / tier=X → `error.code="not_found"`。audience が 5 enum 外 → `error.code="invalid_enum"`。
+**EMPTY 時の挙動**: program_id が `excluded=1` / 公開保留 → `error.code="not_found"`。audience が 5 enum 外 → `error.code="invalid_enum"`。
 **Audience**: AI agent developer / 多言語 SaaS
 
 ```python
@@ -1220,7 +1230,7 @@ await client.call_tool("program_abstract_structured", {
 #                   "translatable_fields": ["summary_ja", "eligibility_ja", "amount_band_ja"]}}
 ```
 
-### Phase A absorption (7 件)
+### 静的データセット tools (7 件)
 
 #### `list_static_resources_am`
 
@@ -1247,7 +1257,7 @@ await client.call_tool("list_static_resources_am", {})
 **引数**: `resource_id` (str, required)
 **戻り値**: `DetailResponse[StaticResource]`
 **呼ぶタイミング**: agent が JSIC 階層を bulk 取得して enum 化する時。
-**EMPTY 時の挙動**: resource_id 不在 → 404 + structured envelope `{"error": {"code": "not_found", "hint": "alternative=list_static_resources_am"}}`。
+**EMPTY 時の挙動**: resource_id 不在 → 404 + structured 注記 `{"error": {"code": "not_found", "hint": "alternative=list_static_resources_am"}}`。
 **Audience**: Dev
 
 #### `list_example_profiles_am`
@@ -1265,7 +1275,7 @@ await client.call_tool("list_static_resources_am", {})
 **引数**: `profile_id` (str, required)
 **戻り値**: `DetailResponse[ExampleProfile]`
 **呼ぶタイミング**: demo 環境で profile を 1 個 inject する時。
-**EMPTY 時の挙動**: profile_id 不在 → 404 + structured envelope `{"error": {"code": "not_found", "hint": "snapshot_size=5, alternative=list_example_profiles_am"}}`。
+**EMPTY 時の挙動**: profile_id 不在 → 404 + structured 注記 `{"error": {"code": "not_found", "hint": "snapshot_size=5, alternative=list_example_profiles_am"}}`。
 **Audience**: Dev
 
 #### `render_36_kyotei_am`
@@ -1336,7 +1346,7 @@ await client.call_tool("list_static_resources_am", {})
 
 ### AI agent developer 向け
 
-全 72 tools 利用可。導線設計のキー tool: `enum_values_am` (引数の正規化先列挙) / `intent_of` (LLM-free 分類器) / `reason_answer` (説明生成) / `validate` (入力 sanity check) / `get_provenance` (出典 chain) / `graph_traverse` (異種 entity 横断) / `get_usage_status` (batch 前のクォータ probe)。
+全 89 tools 利用可。導線設計のキー tool: `enum_values_am` (引数の正規化先列挙) / `validate` (入力 sanity check) / `get_provenance` (出典 chain) / `graph_traverse` (異種 entity 横断) / `get_usage_status` (batch 前のクォータ probe)。
 
 - 起動時: `enum_values_am(field="record_kind")` で agent の system prompt に注入
 - 受信時: `intent_of(query=...)` で routing

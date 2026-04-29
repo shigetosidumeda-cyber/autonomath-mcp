@@ -45,7 +45,7 @@ flyctl secrets set \
   STRIPE_BILLING_PORTAL_CONFIG_ID=bpc_... \
   API_KEY_SALT="$(openssl rand -hex 32)" \
   SENTRY_DSN=https://...@sentry.io/... \
-  JPINTEL_CORS_ORIGINS=https://staging.autonomath.ai,http://localhost:3000
+  JPINTEL_CORS_ORIGINS=https://staging.zeimu-kaikei.ai,http://localhost:3000
 ```
 
 Deploy:

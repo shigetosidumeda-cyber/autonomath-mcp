@@ -60,7 +60,7 @@
 ### curl
 
 ```bash
-curl -sS "https://api.autonomath.ai/v1/admin/funnel?start=2026-05-06&end=2026-05-20" \
+curl -sS "https://api.zeimu-kaikei.ai/v1/admin/funnel?start=2026-05-06&end=2026-05-20" \
   -H "X-API-Key: [set ADMIN_API_KEY env var]" | jq
 ```
 
@@ -96,7 +96,7 @@ curl -sS "https://api.autonomath.ai/v1/admin/funnel?start=2026-05-06&end=2026-05
 ### curl
 
 ```bash
-curl -sS "https://api.autonomath.ai/v1/admin/cohort?cohort_month=2026-05" \
+curl -sS "https://api.zeimu-kaikei.ai/v1/admin/cohort?cohort_month=2026-05" \
   -H "X-API-Key: [set ADMIN_API_KEY env var]" | jq
 ```
 
@@ -139,7 +139,7 @@ curl -sS "https://api.autonomath.ai/v1/admin/cohort?cohort_month=2026-05" \
 ### curl
 
 ```bash
-curl -sS "https://api.autonomath.ai/v1/admin/top-errors?hours=24&limit=20" \
+curl -sS "https://api.zeimu-kaikei.ai/v1/admin/top-errors?hours=24&limit=20" \
   -H "X-API-Key: [set ADMIN_API_KEY env var]" | jq
 ```
 

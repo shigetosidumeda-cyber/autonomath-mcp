@@ -1,0 +1,125 @@
+{
+  "$schema_note": "MF Cloud アプリポータルは公式 schema URL を公開していないため、freee の app-submission v1 を踏襲した internal schema。実申請時はアプリポータル UI のフォーム項目に値をマップして入力する。",
+  "manifest_version": 1,
+  "submission_target": "マネーフォワード クラウド アプリポータル (Public app)",
+  "app": {
+    "name_ja": "税務会計AI",
+    "name_en": "Zeimu Kaikei AI",
+    "tagline_ja": "MF クラウドから、補助金・税制・法令・判例・インボイス登録番号を AI 横断検索",
+    "tagline_en": "Cross-search Japanese subsidies, tax incentives, statutes, court decisions, and invoice registrants from inside Money Forward Cloud.",
+    "category": "AI / 業務効率化",
+    "subcategory": "経理・税務アシスタント",
+    "icon": "submission/screenshots/icon-512x512.png",
+    "highlight_images": [
+      {
+        "title": "補助金検索",
+        "description": "都道府県とキーワードで該当補助金 Top 5 を出典付きで返します。",
+        "image": "submission/screenshots/01-subsidy-search.png"
+      },
+      {
+        "title": "税制優遇検索",
+        "description": "賃上げ促進税制・中小企業経営強化税制など、適用期間付きで一覧。",
+        "image": "submission/screenshots/02-tax-incentive.png"
+      },
+      {
+        "title": "インボイス登録番号確認",
+        "description": "T+13 桁の登録番号から事業者名・有効性を即時確認。国税庁公表サイトへの deep-link 付き。",
+        "image": "submission/screenshots/03-invoice-check.png"
+      },
+      {
+        "title": "法令検索",
+        "description": "電子帳簿保存法 第7条 等、e-Gov 法令データを横断検索 (CC-BY 4.0)。",
+        "image": "submission/screenshots/04-laws.png"
+      },
+      {
+        "title": "判例検索",
+        "description": "裁判所判例検索の公開判例から類似事案を表示。",
+        "image": "submission/screenshots/05-court.png"
+      }
+    ],
+    "youtube_url": null,
+    "integration_page_url": "https://zeimu-kaikei.ai/mf",
+    "help_page_url": "https://zeimu-kaikei.ai/docs/mf",
+    "privacy_policy_url": "https://zeimu-kaikei.ai/privacy",
+    "terms_of_service_url": "https://zeimu-kaikei.ai/terms",
+    "tokutei_shotorihiki_url": "https://zeimu-kaikei.ai/tokutei",
+    "support_email": "info@bookyou.net",
+    "developer": {
+      "company_name": "Bookyou株式会社",
+      "houjin_bangou": "T8010001213708",
+      "representative": "梅田茂利",
+      "address": "東京都文京区小日向2-22-1",
+      "contact_email": "info@bookyou.net",
+      "website": "https://bookyou.net/"
+    },
+    "demo_account": {
+      "instructions_ja": "MF アプリポータル審査用に、sandbox 用の MF 事業者アカウントと zeimu-kaikei.ai 側の demo dataset (公開制度データのみ) を用意します。本番事業所と接続せず、公開済みの補助金・税制・インボイス公表情報のみを返します。",
+      "mf_test_email": "mf-review@bookyou.net",
+      "mf_test_password": "(別途 secure_notes で送付)",
+      "zeimu_kaikei_demo_url": "https://zeimu-kaikei.ai/demo"
+    }
+  },
+  "oauth": {
+    "spec": "RFC6749 authorization_code grant",
+    "client_authentication_method": "CLIENT_SECRET_BASIC",
+    "authorization_url": "https://app.biz.moneyforward.com/oauth/authorize",
+    "token_url": "https://app.biz.moneyforward.com/oauth/token",
+    "revoke_url": "https://app.biz.moneyforward.com/oauth/revoke",
+    "redirect_uris": [
+      "https://mf-plugin.zeimu-kaikei.ai/oauth/callback"
+    ],
+    "scopes": [
+      "mfc/ac/data.read"
+    ],
+    "scope_justification_ja": "MF クラウド会計から事業者表示名と tenant_uid を取得し、検索クエリの都道府県スコープと appendix としての事業者表示にのみ利用します。仕訳・元帳・取引明細・口座連携・従業員情報は読み取りません。書込み権限は一切要求しません。",
+    "tenant_model_note": "MF の OAuth は事業者単位 (tenant) 認可。本アプリは個人ユーザー単位の行動ログを取らず、tenant_uid のみを billing 整合に使用します。"
+  },
+  "pricing": {
+    "model": "metered_per_request",
+    "currency": "JPY",
+    "free_quota_per_month": 50,
+    "unit_price_jpy_inclusive_tax": 3.30,
+    "unit_price_jpy_exclusive_tax": 3.00,
+    "tax_rate": 0.10,
+    "billing_cycle": "monthly",
+    "billing_target": "marketplace_app_subscription",
+    "description_ja": "MF アプリポータル経由の本アプリ利用者は月 50 リクエストまで無料、超過分は 1 リクエスト ¥3.30 (税込) の従量課金です。座席数や Pro/Free 等のティア課金は一切ありません。請求は Bookyou株式会社 (T8010001213708) が Stripe 経由で適格請求書として発行します。MF 利用者の MF 側請求には影響しません。",
+    "description_en": "Up to 50 requests / month are free. Beyond that, JPY 3.30 (inclusive of 10% tax) per request. No seat fees, no tier upgrades. Billed monthly via Stripe by Bookyou K.K. (qualified-invoice issuer T8010001213708)."
+  },
+  "compliance": {
+    "personal_information_handling_ja": "MF クラウドから取得する事業者表示名と tenant_uid は、検索クエリの内部スコープと利用量計測にのみ使用し、Bookyou のサーバーには 30 日を超えて保持しません。仕訳データ・取引明細・従業員情報は本アプリで一切読み取りません。詳細はプライバシーポリシーをご参照ください。",
+    "data_retention_days": 30,
+    "data_residency": "Japan (Fly.io HND, Cloudflare Tokyo edge)",
+    "third_party_subprocessors": [
+      { "name": "Fly.io", "role": "Web ホスティング", "country": "US (但し HND リージョン物理配置)" },
+      { "name": "Cloudflare", "role": "CDN / WAF", "country": "Global" },
+      { "name": "Stripe", "role": "決済処理", "country": "JP entity (Stripe Japan KK)" }
+    ],
+    "zeirishi_disclaimer_ja": "本サービスは情報提供のみを目的とし、税理士法第52条に基づく個別の税務相談・申告書作成等には該当しません。最終的な税務判断は、貴社の顧問税理士にご確認ください。本免責事項はプラグイン UI フッターに常時表示し、API レスポンスにも `_disclaimer` フィールドとして同梱します。",
+    "appi_compliance": true,
+    "denshi_chobo_hou_compliance": true,
+    "qualified_invoice_issuer": "T8010001213708"
+  },
+  "support": {
+    "channels": [
+      "email: info@bookyou.net (営業日 24h 以内返信目標)"
+    ],
+    "self_service_only": true,
+    "phone_support": false,
+    "sla": "best-effort (no contractual uptime; 過去 90 日 99.9% 達成中)"
+  },
+  "infra": {
+    "host": "https://mf-plugin.zeimu-kaikei.ai",
+    "region": "Fly.io HND",
+    "runtime": "Python 3.11 + FastAPI + Uvicorn",
+    "csp_frame_ancestors": [
+      "https://app.biz.moneyforward.com",
+      "https://accounting.biz.moneyforward.com",
+      "https://invoice.biz.moneyforward.com",
+      "https://expense.biz.moneyforward.com",
+      "https://payroll.biz.moneyforward.com",
+      "https://hr.biz.moneyforward.com",
+      "https://biz.moneyforward.com"
+    ]
+  }
+}

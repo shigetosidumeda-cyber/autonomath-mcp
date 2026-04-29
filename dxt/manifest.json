@@ -2,18 +2,18 @@
   "dxt_version": "0.1",
   "name": "autonomath-mcp",
   "display_name": "AutonoMath — 日本の制度 API",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "icon": "icon.png",
-  "description": "AutonoMath — 72-tool MCP (39 core + 33 autonomath: V1 + 4 V4 universal annotation/validation/provenance + Phase A static/example/template/health + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine; protocol 2025-06-18) over Japanese primary-gov sources: 13,578 programs (補助金/融資/税制/認定) + 2,286 採択事例 + 108 融資 (三軸分解) + 1,185 行政処分 + laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta, PDL v1.0) + autonomath entity-fact DB (503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases). 181 exclusion/prerequisite rules; cross-dataset glue. 99%+ rows: source_url + fetched_at; no aggregators. ¥3/req (¥3.30 incl); 50/月 free.",
-  "long_description": "AutonoMath exposes Japanese subsidy, loan, tax incentive, and certification program data through 72 MCP tools. 39 core tools (jpintel.db): base coverage of 13,578 programs + 2,286 case_studies + 108 loan_programs + 1,185 enforcement_cases (plus get_usage_status quota probe); expansion adds laws (e-Gov法令, CC-BY; 9,484 rows, continually loading), tax rulesets (インボイス + 電帳法; 35 rows live), court decisions (2,065 rows), bids (362 rows), and invoice registrants (国税庁適格事業者, PDL v1.0; 13,801 rows delta), plus cross-dataset glue (trace_program_to_law / find_cases_by_law / combined_compliance_check). 33 autonomath tools (autonomath.db): 17 V1 + 4 V4 universal (annotations / validation / provenance entity / provenance fact) + 7 Phase A absorption (static resources / example profiles / 36 kyotei template / deep_health) over an entity-fact EAV DB with 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance, exposed via search_tax_incentives / search_certifications / search_by_law / reason_answer / list_tax_sunset_alerts / get_annotations / validate / get_provenance / list_static_resources_am / render_36_kyotei_am / deep_health_am etc. (gated by AUTONOMATH_ENABLED env var). 99%+ rows carry source_url + fetched_at pointing at a primary government source; aggregator sources are banned. Three-axis loan decomposition (collateral / personal guarantor / third-party guarantor). 181 exclusion + prerequisite rules. `enum_values` / `enum_values_am` publish live canonical vocabulary for filter fields. Free anonymous tier: 50 req/month per IP (JST first-of-month reset); Paid ¥3/req tax-exclusive (¥3.30 tax-inclusive, metered). Operator: Bookyou株式会社 (インボイス登録番号 T8010001213708). MCP protocol 2025-06-18.",
+  "description": "日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 / 適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185 / 入札 362 / 融資 108) を REST + MCP API (89 tools) で横断検索。一次資料 URL 付き、¥3/req metered (税込 ¥3.30) 完全従量、anon 50/月 per IP free。",
+  "long_description": "Search Japanese institutional public data via REST + MCP API. Coverage: 11,684 searchable subsidies (補助金/融資/税制/認定; tier S=114 / A=1,340 / B=4,186 / C=6,044; full table 14,472 incl. tier X 2,788 quarantine) + 154 laws full-text indexed + 9,484 law catalog stubs (e-Gov, CC-BY; full-text load incremental) + 2,065 court decisions + 50 tax rulesets (インボイス/電帳法 + 研究開発 + IT導入会計処理) + 13,801 invoice registrants (国税庁適格事業者, PDL v1.0) + 2,286 adoption cases + 1,185 enforcement records + 108 loan products (担保 / 個人保証人 / 第三者保証人 三軸独立 enum) + 362 bids + 181 exclusion/prerequisite rules. 89 MCP tools at default gates (39 core + 50 autonomath, including industry packs pack_construction / pack_manufacturing / pack_real_estate). MCP protocol 2025-06-18. Records carry primary-source URL + fetched_at on 99%+ of rows; aggregator sources are excluded. Pricing: ¥3/req tax-exclusive (¥3.30 tax-inclusive, Stripe metered); anonymous tier 50 req/month per IP free (no signup, JST first-of-month reset). Not legal/tax/行政書士 advice; verify primary sources before any business decision. Operator: Bookyou株式会社 (インボイス登録番号 T8010001213708, info@bookyou.net).",
   "author": {
     "name": "Bookyou株式会社",
     "email": "info@bookyou.net",
-    "url": "https://autonomath.ai"
+    "url": "https://zeimu-kaikei.ai"
   },
-  "homepage": "https://autonomath.ai",
-  "documentation": "https://autonomath.ai/docs/",
-  "support": "https://autonomath.ai/docs/faq",
+  "homepage": "https://zeimu-kaikei.ai",
+  "documentation": "https://zeimu-kaikei.ai/docs/",
+  "support": "https://zeimu-kaikei.ai/docs/faq",
   "license": "MIT",
   "keywords": [
     "japan",
@@ -36,7 +36,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/AutonoMath/autonomath-mcp"
+    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
   },
   "server": {
     "type": "python",
@@ -52,7 +52,7 @@
   "tools": [
     {
       "name": "search_programs",
-      "description": "Search 13,578 Japanese public programs (national + prefectural subsidies, loans, tax incentives, certifications) with tier / prefecture / funding_purpose / amount filters. Every row carries primary-source URL + fetched_at."
+      "description": "Search 11,684 searchable Japanese public programs of 14,472 total (national + prefectural subsidies, loans, tax incentives, certifications) with tier / prefecture / funding_purpose / amount filters. Tier S=114 / A=1,340 / B=4,186 / C=6,044 searchable; tier X (2,788) quarantined, excluded by default. Typical args: prefecture='東京都' (47 都道府県), target_industry JSIC 1-letter (D=建設, E=製造, K=不動産…), funding_purpose ('equipment'/'it_introduction'/'gx'/'business_restructuring'). Every row carries primary-source URL + fetched_at."
     },
     {
       "name": "get_program",
@@ -332,7 +332,7 @@
     },
     {
       "name": "rule_engine_check",
-      "description": "[R9-UNIFIED-RULE-ENGINE] One-tool rule evaluation across all 6 corpora (49,247 rows): exclusion + compat_matrix (48,815-row dark inventory) + combo + subsidy + tax + validation."
+      "description": "[R9-UNIFIED-RULE-ENGINE] One-tool rule evaluation across 6 corpora: exclusion (181 hand-curated rules) + compat_matrix (約4,300 sourced pairs + 約44,500 heuristic-inferred pairs marked status='unknown') + combo + subsidy + tax + validation."
     },
     {
       "name": "query_at_snapshot",
@@ -343,7 +343,7 @@
     {"uri": "autonomath://schema/data_model", "name": "Data Model", "description": "Canonical DB schema overview (tables, columns, relationships).", "mimeType": "text/markdown"},
     {"uri": "autonomath://schema/record_kinds", "name": "record_kind enum", "description": "Discriminator values for am_entities.record_kind.", "mimeType": "text/markdown"},
     {"uri": "autonomath://schema/envelope", "name": "Response envelope schema (v2)", "description": "Canonical JSON envelope shape every tool returns.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://schema/tool_manifest", "name": "Tool manifest (summary)", "description": "Quick reference for the 33 autonomath tools.", "mimeType": "text/markdown"},
+    {"uri": "autonomath://schema/tool_manifest", "name": "Tool manifest (summary)", "description": "Quick reference for the 50 autonomath tools.", "mimeType": "text/markdown"},
     {"uri": "autonomath://policy/primary_source", "name": "Primary-Source Policy", "description": "Rule that every fact must trace to a government primary source.", "mimeType": "text/markdown"},
     {"uri": "autonomath://policy/no_hallucination", "name": "No-Hallucination Policy", "description": "Hard rules the client LLM must follow when speaking on top of AutonoMath data.", "mimeType": "text/markdown"},
     {"uri": "autonomath://policy/tos_excerpt", "name": "Terms of Service excerpt", "description": "Key ToS clauses relevant to client LLM operators.", "mimeType": "text/markdown"},

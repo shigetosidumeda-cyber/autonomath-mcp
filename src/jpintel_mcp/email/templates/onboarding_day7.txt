@@ -1,39 +1,58 @@
-この1週間、{{usage_count}} 回のクエリ。
+この 1 週間、{{usage_count}} 回のクエリ。
 
-キー末尾 {{key_last4}} ({{tier}} プラン) で、あなたは {{usage_count}} 回のリクエストを送ってくださいました。ありがとうございます。
+キー末尾 {{key_last4}} ({{tier}} プラン) で、これまでに {{usage_count}} 回のリクエストを送ってくださいました。ありがとうございます。
 
-今日は、まだ試していない方向けに「AutonoMath の2つの効く使い方」をご紹介します。
-
----
-
-1) 排他ルール (exclusions.check) で二重申請リスクを潰す
-
-日本の補助金・交付金には「この A と B は同時に受給不可」というルールが無数にあります。AutonoMath には公式ソースから抽出した exclusion_rules を載せていて、2つの unified_id を渡すだけで判定できます。
-
-curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.autonomath.ai/v1/exclusions/check?a=UNI-xxxx&b=UNI-yyyy"
--> { "blocked": true, "kind": "absolute", "source": "..." }
-
-クライアントに「併用不可リスクの自動チェック」を出せるのは、この API の一番の強みです。
-
-2) source_mentions で回答を監査可能にする
-
-すべての program レスポンスには source_mentions_json が付いています。
-「この金額はどの公式文書の何ページに載っていたのか」を辿れるので、
-LLM の回答を監査にかけるユーザーには必須です。
-
-curl -H "X-API-Key: YOUR_KEY" \
-  https://api.autonomath.ai/v1/programs/UNI-xxxx \
-  | jq '.source_mentions_json'
+そろそろ「自分の使い方をどう測るか」と「思っていたより手数を減らせるか」が気になるタイミングかもしれません。今日はその 2 つだけお送りします。
 
 ---
 
-他の使い方: https://autonomath.ai/examples/
+1) 自分の利用状況を JSON で取る
+
+   ダッシュボードに載っている数字は、API でも取れます。日次の呼び出し数を 30 日分まとめて取得する例:
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     "https://api.zeimu-kaikei.ai/v1/me/usage?days=30"
+
+   返り値: [{"date":"2026-04-22","count":18}, ...]
+   請求見込みもこの数字 × ¥3.30 で算出できます。
+   ツール別の内訳が欲しい場合は /v1/me/usage_by_tool も使えます。
+
+   ダッシュボード: https://zeimu-kaikei.ai/dashboard.html
+   Stripe ポータル: https://zeimu-kaikei.ai/billing/portal
+
+2) 監査用に source_mentions を辿る
+
+   すべての program レスポンスには source_mentions_json が付いています。
+   「この金額はどの公式文書の何ページに載っていたのか」を辿れるので、
+   LLM の回答を監査にかけるユーザーには必須です。
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     https://api.zeimu-kaikei.ai/v1/programs/UNI-14e57fbf79 \
+     | jq '.source_mentions_json'
+
+3) 排他ルールで二重申請リスクを潰す
+
+   2 つの unified_id を渡すと「同時受給可否」を返します。クライアントに
+   「併用不可リスクの自動チェック」を提示できる、この API の核機能の一つです。
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     "https://api.zeimu-kaikei.ai/v1/exclusions/check?a=UNI-xxxx&b=UNI-yyyy"
+
+---
+
+他の使い方: https://zeimu-kaikei.ai/examples/
 
 感想・改善点は、このメールに返信で結構です。
 
+---
+
+税理士法 §52 / 弁護士法 §72 該当の業務はおこないません:
+
+AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
+
 --
 AutonoMath — 日本の制度情報 API + MCP
+このメールは AutonoMath の活性化シーケンス (D+7) としてお送りしています。
 お問い合わせ: info@bookyou.net
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
 配信停止: {{{pm:unsubscribe}}}

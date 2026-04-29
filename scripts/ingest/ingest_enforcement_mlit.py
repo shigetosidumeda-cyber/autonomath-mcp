@@ -105,7 +105,7 @@ KANKOCHO_TRAVEL_XLSX = "https://www.mlit.go.jp/kankocho/content/001913487.xlsx"
 
 USER_AGENT = (
     "jpintel-mcp-ingest/1.0 "
-    "(+https://autonomath.ai; contact=ops@autonomath.ai)"
+    "(+https://zeimu-kaikei.ai; contact=ops@zeimu-kaikei.ai)"
 )
 
 PER_REQUEST_DELAY_SEC = 1.0

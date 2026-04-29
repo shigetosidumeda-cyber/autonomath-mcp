@@ -78,7 +78,7 @@ def _render(width: int, height: int, headline: str, subline: str, kicker: str) -
 
     bottom_fnt = _load_font(EN_FONT_PATH, int(width * 0.022))
     bottom_y = height - pad - int(width * 0.03)
-    draw.text((pad, bottom_y), "autonomath.ai · Bookyou Inc.", font=bottom_fnt, fill=MUTED)
+    draw.text((pad, bottom_y), "zeimu-kaikei.ai · Bookyou Inc.", font=bottom_fnt, fill=MUTED)
 
     draw.line(
         [(pad, height - pad - int(width * 0.06)), (width - pad, height - pad - int(width * 0.06))],

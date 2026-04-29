@@ -210,6 +210,134 @@ def _reset_anon_rate_limit(seeded_db: Path):
         _reset_rate_limit_buckets()
     except ImportError:
         pass
+    # Drop per-endpoint per-IP buckets (e.g. /v1/programs/search 30/min cap)
+    # so accumulated quota from earlier tests on the shared 'testclient' IP
+    # does not 429 unrelated tests later in the run. This middleware was
+    # added during Wave 21-22 and only `tests/api/test_search_fts5.py` had
+    # a local autouse reset; without a global reset, every test that calls
+    # /v1/programs/search after the 30th hit returns 429.
+    try:
+        from jpintel_mcp.api.middleware.per_ip_endpoint_limit import (
+            _reset_per_ip_endpoint_buckets,
+        )
+        _reset_per_ip_endpoint_buckets()
+    except ImportError:
+        pass
+    yield
+
+
+@pytest.fixture(autouse=True)
+def _sync_bg_task_queue(seeded_db: Path, monkeypatch):
+    """Run bg_task_queue handlers inline in tests, and unify all
+    `_get_email_client` / `get_client` resolution paths so a test patch
+    on any one of them is observed by every handler.
+
+    Production wires `api/_bg_task_queue.enqueue` to insert a row that an
+    asyncio worker (`api/_bg_task_worker.run_worker_loop`) drains. The
+    worker is NOT running under pytest, so any side-effect that the
+    application code defers to the queue (welcome / dunning / key-rotated
+    emails, Stripe status refresh, etc.) silently never executes — and
+    assertions like `len(captured_emails) == 1` regress to 0.
+
+    Additionally: `me._get_email_client`, `billing._get_email_client`,
+    `email.get_client`, and `email.postmark.get_client` are FOUR distinct
+    rebinding surfaces that all converge on the same Postmark client in
+    production. The bg_task_worker handlers resolve via
+    `jpintel_mcp.email.get_client` so a test that patches only
+    `me._get_email_client` (legacy pattern) silently misses the
+    queue-deferred path. We bridge them here: every direct lookup goes
+    through a single mediator that returns the FIRST patched stub it
+    finds. Test fakes pile up consistently.
+    """
+    from jpintel_mcp.api import _bg_task_queue as _q
+    from jpintel_mcp.api import _bg_task_worker as _w
+    from jpintel_mcp.api import billing as _billing
+    from jpintel_mcp.api import me as _me
+    from jpintel_mcp import email as _email_pkg
+    from jpintel_mcp.email import postmark as _postmark
+
+    _real_enqueue = _q.enqueue
+    _real_billing_get = _billing._get_email_client
+    _real_me_get = _me._get_email_client
+    _real_email_get = _email_pkg.get_client
+    _real_postmark_get = _postmark.get_client
+
+    _seen_ids: set[int] = set()
+
+    def _resolve_email_client():
+        """Return whichever email-client stub the test has set, falling
+        back to the production resolver.
+
+        We only inspect the "upstream" patch surfaces (billing._get_email_client
+        and me._get_email_client) — the email package surfaces themselves are
+        ALWAYS bound to this resolver once the fixture runs, so re-entering
+        them would recurse. The production fallback is the captured original
+        `_real_postmark_get` (closed over before any patching happened).
+        """
+        for getter, baseline in (
+            (_billing._get_email_client, _real_billing_get),
+            (_me._get_email_client, _real_me_get),
+        ):
+            if getter is not baseline:
+                return getter()
+        return _real_postmark_get()
+
+    monkeypatch.setattr(_email_pkg, "get_client", _resolve_email_client)
+    monkeypatch.setattr(_postmark, "get_client", _resolve_email_client)
+
+    # Kinds whose handler opens its own DB connection and would deadlock
+    # against the caller's outstanding BEGIN IMMEDIATE writer (handler
+    # path: bg_task_worker._db_connect() → UPDATE inside the handler →
+    # SQLite busy_timeout-blocks until the request commits). We persist
+    # the row but DON'T run the handler — tests that need the effect
+    # must drain the queue manually after the request returns (the
+    # billing-webhook tests do exactly this via claim_next + _dispatch_one).
+    _ASYNC_ONLY_KINDS = {"stripe_status_refresh"}
+
+    def _sync_enqueue(
+        conn,
+        kind,
+        payload,
+        dedup_key=None,
+        run_at=None,
+        max_attempts=5,
+    ):
+        row_id = _real_enqueue(
+            conn,
+            kind,
+            payload,
+            dedup_key=dedup_key,
+            run_at=run_at,
+            max_attempts=max_attempts,
+        )
+        if row_id in _seen_ids:
+            return row_id
+        _seen_ids.add(row_id)
+        if kind in _ASYNC_ONLY_KINDS:
+            return row_id
+        handler = _w._HANDLERS.get(kind)
+        if handler is None:
+            return row_id
+        # Fire the handler synchronously for the kinds whose effect tests
+        # routinely assert (welcome / dunning / key_rotated / trial mails).
+        # These handlers do read-only-or-additive writes that don't conflict
+        # with the caller's transaction at the SQLite-row level.
+        handler(payload)
+        # Mark the row as 'done' so a subsequent manual queue drain inside
+        # the test (e.g. test_billing_webhook_idempotency drains explicitly
+        # to verify dedup row count) doesn't re-fire the same handler.
+        # Use the caller's conn — opening a SECOND conn here would race
+        # the caller's still-open BEGIN IMMEDIATE (the webhook handler
+        # has not yet committed when sync_enqueue runs from inside its
+        # request scope) and the second conn would block on busy_timeout.
+        try:
+            from jpintel_mcp.api._bg_task_queue import mark_done as _mark_done
+            _mark_done(conn, row_id)
+        except Exception:
+            pass
+        return row_id
+
+    monkeypatch.setattr(_q, "enqueue", _sync_enqueue)
     yield
 
 

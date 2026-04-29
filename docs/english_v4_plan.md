@@ -1,6 +1,6 @@
 # English V4 Launch Plan (P6-E, dd_v8_03)
 
-Target slot: **T+150d** post AutonoMath launch (2026-05-06 + 150 = 2026-10-03).
+Target slot: **T+150d** post 税務会計AI launch (2026-05-06 + 150 = 2026-10-03).
 Implementation budget: **10 working days** spread across the slot.
 Owner: B6 subagent (this file is the spec, not the rollout log).
 
@@ -27,34 +27,17 @@ Owner: B6 subagent (this file is the spec, not the rollout log).
 
 ## Day-by-day timeline
 
-### D1 — `am_alias.language` migration (collection-CLI)
+### D1 — 別名・略称 index に language 列追加 (collection-CLI)
 
-Migration: `scripts/migrations/040_am_alias_language.sql`.
+Migration: `scripts/migrations/040_alias_language.sql`.
 
-```sql
--- 040_am_alias_language.sql
--- P6-E: tag aliases by language so English fallback can resolve to
--- the official English transliteration of authorities, laws, programs.
-ALTER TABLE am_alias ADD COLUMN language TEXT
-    NOT NULL DEFAULT 'ja'
-    CHECK (language IN ('ja','en','kana','romaji'));
-
-CREATE INDEX ix_am_alias_language ON am_alias(canonical_id, language);
-
--- Backfill: alias_kind='english' rows → language='en'.
-UPDATE am_alias SET language = 'en' WHERE alias_kind = 'english';
--- Backfill: alias_kind='kana' rows → language='kana'.
-UPDATE am_alias SET language = 'kana' WHERE alias_kind = 'kana';
--- Backfill: rows whose alias matches a Latin-only regex → 'romaji'
--- (handled by the post-migration python script `scripts/i18n/backfill_romaji.py`
--- to keep regex out of SQLite for portability).
-```
+別名・略称 index に `language` 列 (`ja` / `en` / `kana` / `romaji` の 4 値 enum、 default `ja`、 NOT NULL) を追加し、 `(canonical_id, language)` の複合 index を張る。 既存 row の backfill は alias_kind に基づいて行い、 Latin-only regex は portability のため SQLite ではなく `scripts/i18n/backfill_romaji.py` で post-process する。
 
 - Owner: collection CLI worker (NOT this subagent — out of scope per
   the task constraints in `feedback_data_collection_tos_ignore`).
-- Verification: `SELECT language, COUNT(*) FROM am_alias GROUP BY 1`
+- Verification: 別名・略称 index に対し `SELECT language, COUNT(*) GROUP BY 1`
   should show ja >> en > kana > romaji after backfill.
-- Backout: `ALTER TABLE am_alias DROP COLUMN language;`
+- Backout: language 列を DROP COLUMN
   (sqlite 3.35+; we are on 3.43, safe.)
 
 ### D2-D3 — i18n message catalog expansion (~200 keys)
@@ -64,12 +47,12 @@ keys landed today). D2 expands by category:
 
 | Category | Key prefix | Count target | Source of strings |
 |---|---|---|---|
-| Envelope (16 tools × 4 statuses) | `envelope.<status>.<tool>` | 64 | `envelope_wrapper.DEFAULT_EXPLANATIONS` |
+| 注記 (16 tools × 4 statuses) | `envelope.<status>.<tool>` | 64 | `envelope_wrapper.DEFAULT_EXPLANATIONS` |
 | Error user_message | `error.<code>` | 25 | `cs_features.USER_MESSAGES` |
 | Onboarding tips | `tips.<n>` | 30 | `cs_features.onboarding_tips_for_age_days` |
 | Suggestion templates | `suggest.<intent>` | 40 | `cs_features.derive_suggestions` |
 | Input warnings | `warn.<rule>` | 20 | `cs_features.derive_input_warnings` |
-| Meta block field labels | `meta.<field>` | 15 | (REST + MCP envelope) |
+| Meta block field labels | `meta.<field>` | 15 | (REST + MCP 注記) |
 | Discovery one-shots | `oneshot.<tool>` | 14 | server.py 7 one-shots × ja+en hint |
 | **Total** | | **~208** | |
 
@@ -110,7 +93,7 @@ each tool pass it through.
 
 `scripts/regen_llms_full_en.py` (new) mirrors `regen_llms_full.py` but:
 - writes to `site/llms-full.en.txt`
-- pulls English aliases for program names from `am_alias WHERE language='en'`
+- pulls English aliases for program names from the 別名・略称 index filtered by `language='en'`
 - prepends an English overview header
 - preserves the same compact-program inventory structure so AI agents
   can switch between the two with one URL change

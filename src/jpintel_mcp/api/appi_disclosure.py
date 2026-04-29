@@ -240,12 +240,26 @@ def _appi_enabled() -> bool:
     "/disclosure_request",
     response_model=DisclosureResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="APPI §31 個人情報開示請求の受付",
+    summary="Submit an APPI Article 31 personal-data disclosure request",
     description=(
-        "個人情報の保護に関する法律 第31条 に基づく開示請求を受付けます。"
-        " このエンドポイントは受付番号の発行と運営宛通知のみを行い、"
-        " 実際の開示は 14 日以内に運営側で本人確認の上で別途対応します。"
-        " 個人情報そのものはこのレスポンスでは返却しません。"
+        "Intake for disclosure requests under the Act on the Protection of "
+        "Personal Information (個人情報の保護に関する法律 / APPI), Article 31. "
+        "This endpoint only records the request and notifies the operator "
+        "(Bookyou株式会社) — the actual disclosure is performed within 14 "
+        "days after operator-side identity verification, out-of-band. "
+        "Personal data itself is **never** returned in this response; the "
+        "body carries only the receipt number, expected response window, "
+        "and the operator contact (info@bookyou.net).\n\n"
+        "**Use this when** a data subject (typically a 13-digit 法人番号 "
+        "holder whose record we mirror) wants to know which of their "
+        "fields are stored. Identity verification methods accepted: "
+        "personal-seal certificate (印鑑証明), driver's licence, individual "
+        "number card (マイナンバーカード). The operator may refuse with a "
+        "reason code under §31-2 (e.g. would jeopardise a third party).\n\n"
+        "(個人情報の保護に関する法律 第31条 に基づく開示請求を受付けます。"
+        "受付番号の発行と運営宛通知のみを行い、実際の開示は 14 日以内に"
+        "運営側で本人確認の上で別途対応します。個人情報そのものは"
+        "このレスポンスでは返却しません。)"
     ),
 )
 def submit_disclosure_request(

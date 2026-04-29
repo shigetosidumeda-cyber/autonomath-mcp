@@ -1,4 +1,4 @@
-# AutonoMath — Invariant Runbook
+# 税務会計AI — Invariant Runbook
 
 Tiered safety invariants. Per dd_v8_05 / v8 P5-θ++ plan.
 
@@ -59,7 +59,7 @@ Note: Fly Tokyo machines run UTC by default. Convert JST schedules to UTC before
 
 ```ini
 [Unit]
-Description=AutonoMath Weekly Invariant Check
+Description=税務会計AI Weekly Invariant Check
 After=network-online.target
 
 [Service]
@@ -76,7 +76,7 @@ StandardError=append:/var/log/autonomath/weekly_invariant.log
 
 ```ini
 [Unit]
-Description=Run AutonoMath Weekly Invariant Check every Monday 04:00 JST
+Description=Run 税務会計AI Weekly Invariant Check every Monday 04:00 JST
 
 [Timer]
 OnCalendar=Sun 19:00:00 UTC

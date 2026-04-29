@@ -153,29 +153,80 @@ def _read_cap_and_count(
 
     Anonymous keys (key_hash==None) never reach this function. The COUNT only
     bills metered & successful (status<400) rows so 4xx/5xx don't burn cap.
+
+    Migration 086: when the caller's row carries a non-NULL parent_key_id,
+    we walk to the parent's row and read the parent's `monthly_cap_yen`,
+    then aggregate the COUNT across every key in the tree (parent + all
+    siblings + the caller). This means a SaaS partner's 1,000 child keys
+    share ONE cap — children are invisible to Stripe and cannot escape
+    their share of the parent's quota by spreading traffic.
     """
     row = conn.execute(
-        "SELECT tier, monthly_cap_yen FROM api_keys WHERE key_hash = ?",
+        "SELECT tier, monthly_cap_yen, id, parent_key_id "
+        "FROM api_keys WHERE key_hash = ?",
         (key_hash,),
     ).fetchone()
     if row is None:
         return (None, 0, None)
-    cap = row["monthly_cap_yen"]
     tier = row["tier"]
+    row_keys = row.keys() if hasattr(row, "keys") else []
+    parent_key_id = row["parent_key_id"] if "parent_key_id" in row_keys else None
+    own_id = row["id"] if "id" in row_keys else None
+
+    # Resolve the cap source: child rows inherit the parent's cap, parent
+    # rows carry their own. Legacy rows (no id column) keep single-row
+    # scope.
+    if parent_key_id is not None:
+        # Child key — read cap from the parent row.
+        prow = conn.execute(
+            "SELECT monthly_cap_yen FROM api_keys WHERE id = ?",
+            (parent_key_id,),
+        ).fetchone()
+        cap = prow["monthly_cap_yen"] if prow else row["monthly_cap_yen"]
+        root = parent_key_id
+    else:
+        cap = row["monthly_cap_yen"]
+        root = own_id
+
     # Aggregate usage in the current JST calendar month. usage_events.ts is
     # an ISO8601 UTC string; we compare against the JST month boundary
     # converted to UTC. The query uses idx_usage_key_ts (key_hash, ts).
     month_start_jst = _jst_month_start()
     month_start_utc_iso = month_start_jst.astimezone(UTC).isoformat()
-    (count,) = conn.execute(
-        """SELECT COUNT(*)
-             FROM usage_events
-            WHERE key_hash = ?
-              AND ts >= ?
-              AND metered = 1
-              AND status < 400""",
-        (key_hash, month_start_utc_iso),
-    ).fetchone()
+
+    if root is None:
+        # Legacy row (pre-086 schema) — single-key scope.
+        (count,) = conn.execute(
+            """SELECT COUNT(*)
+                 FROM usage_events
+                WHERE key_hash = ?
+                  AND ts >= ?
+                  AND metered = 1
+                  AND status < 400""",
+            (key_hash, month_start_utc_iso),
+        ).fetchone()
+    else:
+        # Tree scope: parent + every child whose parent_key_id == root.
+        tree_rows = conn.execute(
+            "SELECT key_hash FROM api_keys "
+            "WHERE id = ? OR parent_key_id = ?",
+            (root, root),
+        ).fetchall()
+        tree_hashes = [
+            r["key_hash"] if hasattr(r, "keys") else r[0] for r in tree_rows
+        ]
+        if not tree_hashes:
+            tree_hashes = [key_hash]
+        placeholders = ",".join("?" * len(tree_hashes))
+        (count,) = conn.execute(
+            f"""SELECT COUNT(*)
+                  FROM usage_events
+                 WHERE key_hash IN ({placeholders})
+                   AND ts >= ?
+                   AND metered = 1
+                   AND status < 400""",  # noqa: S608 — placeholders only
+            (*tree_hashes, month_start_utc_iso),
+        ).fetchone()
     return (cap, int(count), tier)
 
 

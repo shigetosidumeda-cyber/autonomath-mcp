@@ -26,7 +26,7 @@
 ## Post-fix で採用した修正 (file-level)
 
 - `site/styles.css` — `.skip-link` (translateY で 100% 上に退避、focus 時に 0 へ復帰) と `@media (prefers-reduced-motion: reduce)` 追加
-- `site/index.html` / `pricing.html` / `dashboard.html` / `success.html` / `privacy.html` / `tos.html` / `tokushoho.html` — skip link + `href="#"` → `https://github.com/AutonoMath` (公開準備中の旨 aria-label に明示) に置換
+- `site/index.html` / `pricing.html` / `dashboard.html` / `success.html` / `privacy.html` / `tos.html` / `tokushoho.html` — skip link + `href="#"` → `https://github.com/shigetosidumeda-cyber/jpintel-mcp` (公開準備中の旨 aria-label に明示) に置換
 - `site/status.html` — inline `<style>` を使用のため skip link CSS + reduced-motion ルールも内部に追加、`<main>` に `id="main"` 付与
 - `site/dashboard.html` — `dash-nav` 内プレースホルダ anchor に `aria-disabled` + `title`、Overview に `aria-current="page"`、API key / Billing ブロックに id 付与しフラグメント到達可能化
 - `site/dashboard.js` — sign-in form に `<label for>` + `aria-labelledby` + `aria-describedby`、error msg に `role="alert"`/`aria-live="polite"`

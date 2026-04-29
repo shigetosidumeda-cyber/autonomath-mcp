@@ -49,6 +49,7 @@ from jpintel_mcp.analytics.bayesian import (  # noqa: E402
     use_confidence,
 )
 from jpintel_mcp.config import settings  # noqa: E402
+from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.confidence_update")
 
@@ -322,14 +323,29 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    snapshot = run(
-        window_days=args.window_days,
-        out_path=args.out,
-        db_path=args.db,
-        dry_run=args.dry_run,
-    )
-    if not snapshot:
-        return 1
+    with heartbeat("confidence_update") as hb:
+        snapshot = run(
+            window_days=args.window_days,
+            out_path=args.out,
+            db_path=args.db,
+            dry_run=args.dry_run,
+        )
+        if isinstance(snapshot, dict):
+            hb["rows_processed"] = int(
+                snapshot.get("rows", snapshot.get("samples", 0)) or 0
+            )
+            hb["metadata"] = {
+                "window_days": args.window_days,
+                "dry_run": bool(args.dry_run),
+            }
+        else:
+            hb["metadata"] = {
+                "window_days": args.window_days,
+                "dry_run": bool(args.dry_run),
+                "snapshot_present": bool(snapshot),
+            }
+        if not snapshot:
+            return 1
     return 0
 
 

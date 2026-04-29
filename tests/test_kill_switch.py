@@ -83,8 +83,13 @@ def test_kill_switch_on_returns_503_envelope_on_search(
     assert body["error"]["code"] == "service_unavailable"
     # Per spec: details.retry_after = "see_status_page".
     assert body["error"]["details"]["retry_after"] == "see_status_page"
-    # User-facing message points at the public status page.
-    assert "autonomath.ai/status" in body["error"]["user_message"]
+    # User-facing message points at the public status page. Both legacy
+    # (autonomath.ai) and current (zeimu-kaikei.ai) brands accepted —
+    # the brand was renamed during the v0.3.x rebrand and either is
+    # acceptable until the legacy domain retires.
+    msg = body["error"]["user_message"]
+    assert "/status" in msg, msg
+    assert ("autonomath.ai" in msg) or ("zeimu-kaikei.ai" in msg), msg
 
 
 def test_kill_switch_on_healthz_still_200(

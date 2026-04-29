@@ -1,4 +1,4 @@
-# AutonoMath — Disaster Recovery Plan v2
+# 税務会計AI — Disaster Recovery Plan v2
 
 Internal ops reference. Solo operator (梅田茂利, info@bookyou.net). Zero-touch, no 24/7 NOC.
 
@@ -49,8 +49,8 @@ Each scenario lists: **Detection** (how we notice) / **Runbook** (numbered steps
   1. `flyctl status --app autonomath-api` — confirm machine state (`stopped` or `crashed`).
   2. If Fly is mid-auto-restart: wait 60 s, re-check.
   3. If still down after 90 s: `flyctl machine restart <id> --app autonomath-api`.
-  4. Re-smoke: `BASE_URL=https://api.autonomath.ai ./scripts/smoke_test.sh`.
-- **Blast radius**: All customers, ~30 s. No data loss (SQLite WAL flush on graceful stop).
+  4. Re-smoke: `BASE_URL=https://api.zeimu-kaikei.ai ./scripts/smoke_test.sh`.
+- **Blast radius**: All customers, ~30 s. No data loss (SQLite 書込ログ flush on graceful stop).
 - **Post-mortem**: Template §A. Required if more than 2 occurrences in 30 d.
 
 ### Scenario 2 — Volume corruption
@@ -91,13 +91,13 @@ Each scenario lists: **Detection** (how we notice) / **Runbook** (numbered steps
 
 ### Scenario 5 — Cloudflare Pages outage
 
-- **Detection**: UptimeRobot fail on `https://autonomath.ai/`. API may stay up via `api.autonomath.ai` direct.
+- **Detection**: UptimeRobot fail on `https://zeimu-kaikei.ai/`. API may stay up via `api.zeimu-kaikei.ai` direct.
 - **Runbook**:
   1. Confirm Cloudflare status page.
   2. If Cloudflare-wide: nothing to do — recovery is upstream.
-  3. If only Pages: switch DNS for `autonomath.ai` to a Cloudflare Worker that serves a cached `index.html` from KV.
+  3. If only Pages: switch DNS for `zeimu-kaikei.ai` to a Cloudflare Worker that serves a cached `index.html` from KV.
   4. Post a pinned status note (no ETA) on X.
-- **Blast radius**: Marketing + docs site only. API customers (using `api.autonomath.ai` directly) unaffected.
+- **Blast radius**: Marketing + docs site only. API customers (using `api.zeimu-kaikei.ai` directly) unaffected.
 - **Post-mortem**: Template §B. Required if site > 30 min down.
 
 ### Scenario 6 — DNS / domain expiry
@@ -141,7 +141,7 @@ Each scenario lists: **Detection** (how we notice) / **Runbook** (numbered steps
   1. Confirm nrt-only (not Fly-wide) via status page.
   2. Bring up standby machine in `fra`: `flyctl machine clone <nrt-id> --region fra --app autonomath-api`. Volume is auto-replicated nightly via cross-region R2 snapshot (see §3).
   3. Restore latest R2 snapshot to fra volume (~5 min).
-  4. DNS flip: Cloudflare dashboard → `api.autonomath.ai` A record → fra IP. TTL 60 s.
+  4. DNS flip: Cloudflare dashboard → `api.zeimu-kaikei.ai` A record → fra IP. TTL 60 s.
   5. Wait propagation, verify smoke test.
   6. On nrt recovery: flip DNS back, decommission fra clone (next quarterly drill rotation).
 - **Blast radius**: All customers, ~1 h. RPO=0 if cross-region snapshot is fresh (< 24 h).

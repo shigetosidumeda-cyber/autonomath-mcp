@@ -14,6 +14,17 @@ The tool is read-only, queries am_entities rows with canonical_id matching
 'program:gx:%' populated by `ingest/gx_seed/ingest.py`. It joins
 am_amount_condition and am_application_round for eligibility_quick_summary.
 
+NOTE (post phantom-moat audit, 2026-04-29): when this stub gets wired,
+any join against am_amount_condition MUST include the filter
+`am_amount_condition.template_default = 0`. Migration 078 introduced the
+`template_default` column flagging 27,233 quarantined rows whose
+`fixed_yen` was filled with the program-ceiling template default
+(¥500K / ¥2M and 9 other ceiling buckets) instead of a real per-record
+amount. ETL re-promotion (`scripts/etl/repromote_amount_conditions.py`)
+also flags new bucketed inserts. Skipping the filter would surface
+~242k bucket-default rows as if they were genuine grants. Honest set
+post-quarantine = 8,480 rows.
+
 Returned keys:
     canonical_id, program_name, theme, agency, program_kind,
     amount_max_yen, subsidy_rate,

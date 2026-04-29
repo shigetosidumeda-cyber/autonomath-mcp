@@ -1,0 +1,90 @@
+name: health-drill-monthly
+
+# Monthly DR drill — exercise scenario 1-3 in dry-run mode (K8 / wave 18).
+#
+# Solo ops cannot run live failovers (no on-call rotation). This drill is
+# the cheap substitute: every month on the 1st we sanity-check that the
+# recovery preconditions still hold without actually killing the VM or
+# wiping the volume.
+#
+# Scenarios:
+#   1. VM crash         — probe /healthz 3x, verify Fly auto-restart works.
+#   2. Volume corrupt   — verify AUTONOMATH_DB_URL + R2 HEAD reachable.
+#   3. R2 outage        — verify /data/autonomath.db SHA matches local.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Required Fly machine env (read-only, asserted by the drill):
+#   AUTONOMATH_DB_URL      R2 URL the entrypoint pulls from on SHA mismatch.
+#   AUTONOMATH_DB_SHA256   Expected SHA of the production autonomath.db.
+#   R2_ENDPOINT            R2 S3 endpoint (consumed by entrypoint, drill
+#                          only HEAD-probes).
+#   SENTRY_DSN             Optional. Drill failures emit Sentry breadcrumb.
+
+on:
+  schedule:
+    # 18:15 UTC on the 1st = 03:15 JST 2nd of month. Pre-launch we run
+    # monthly; if we move to weekly post-launch bump the cron expression
+    # here. Off-peak vs both daily ingest jobs. Staggered +15 min vs
+    # analytics-cron (0 18 *) and -15 min vs nta-bulk-monthly (30 18 1)
+    # to avoid GHA scheduler + Fly machine ssh contention.
+    - cron: "15 18 1 * *"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Run only one scenario (1/2/3, blank = all)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "1"
+          - "2"
+          - "3"
+
+concurrency:
+  group: health-drill-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run DR drill on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          ONLY: ${{ inputs.only || '' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ -n "${ONLY}" ]; then FLAGS="--only ${ONLY}"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/health_drill.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=health-drill-monthly/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.health-drill-monthly\",\"platform\":\"other\",\"message\":\"health-drill-monthly failed: flyctl ssh exited non-zero or scenario regressed. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"health-drill-monthly\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

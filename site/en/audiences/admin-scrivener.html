@@ -11,8 +11,8 @@
 <meta property="og:title" content="AutonoMath for administrative scriveners — subsidies + loans + permits in one query">
 <meta property="og:description" content="One call returns related subsidies, loans, and enforcement history for license cases. 181 exclusion rules prevent stacking failures.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/en/audiences/admin-scrivener.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/en/audiences/admin-scrivener.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
@@ -21,12 +21,12 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AutonoMath for administrative scriveners">
 <meta name="twitter:description" content="Subsidies + loans + permits, one query.">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/en/audiences/admin-scrivener.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/admin-scrivener.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/admin-scrivener.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/admin-scrivener.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/en/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/audiences/admin-scrivener.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/audiences/admin-scrivener.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -40,9 +40,9 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autonomath.ai/en/"},
-    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://autonomath.ai/en/audiences/"},
-    {"@type": "ListItem", "position": 3, "name": "Administrative scriveners", "item": "https://autonomath.ai/en/audiences/admin-scrivener.html"}
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://zeimu-kaikei.ai/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://zeimu-kaikei.ai/en/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "Administrative scriveners", "item": "https://zeimu-kaikei.ai/en/audiences/admin-scrivener.html"}
   ]
 }
 </script>
@@ -57,7 +57,7 @@
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://autonomath.ai/en/",
+    "url": "https://zeimu-kaikei.ai/en/",
     "identifier": "T8010001213708"
   },
   "audience": {
@@ -104,13 +104,12 @@
 <header class="site-header" role="banner">
   <div class="container header-inner">
     <a class="brand" href="../index.html" aria-label="AutonoMath home">
-      <span class="brand-mark" aria-hidden="true">AM</span>
       <span class="brand-name">AutonoMath</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="../getting-started.html">Docs</a>
       <a href="../pricing.html">Pricing</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
       <span class="lang-switch" role="group" aria-label="Language / 言語">
         <a href="../../audiences/admin-scrivener.html" lang="ja" hreflang="ja">JP</a>
         <span class="sep" aria-hidden="true">/</span>
@@ -206,7 +205,7 @@
 
         <article class="card">
           <h3>curl (anonymous, 50 free/mo)</h3>
-          <pre class="code-block"><code>curl 'https://api.autonomath.ai/v1/programs/search?\
+          <pre class="code-block"><code>curl 'https://api.zeimu-kaikei.ai/v1/programs/search?\
 prefecture=東京都&amp;\
 target_types=建設業&amp;\
 deadline_within_days=30&amp;\
@@ -219,7 +218,7 @@ limit=10'</code></pre>
           <pre class="code-block"><code>import httpx
 # unified_id or program name both work (dual-key supported)
 r = httpx.post(
-  "https://api.autonomath.ai/v1/exclusions/check",
+  "https://api.zeimu-kaikei.ai/v1/exclusions/check",
   json={"program_ids": ["P001", "P342"]},
   headers={"X-API-Key": "sk_..."}
 )
@@ -328,7 +327,7 @@ print(r.json()["conflicts"])</code></pre>
         <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
         <a class="btn btn-secondary" href="../index.html#demo">Try the 30-second prescreen</a>
         <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
-        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
       </div>
       <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. (T8010001213708) &middot; Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
     </div>
@@ -359,7 +358,7 @@ print(r.json()["conflicts"])</code></pre>
       <a href="../getting-started.html">Getting started</a>
       <a href="../pricing.html">Pricing</a>
       <a href="../tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
     <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

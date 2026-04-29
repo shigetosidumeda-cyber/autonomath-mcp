@@ -28,7 +28,9 @@ import time
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -89,6 +91,25 @@ def _row_to_law(row: sqlite3.Row) -> Law:
 @router.get(
     "/search",
     response_model=LawSearchResponse,
+    summary="Search Japanese laws (法令): 憲法 / 法律 / 政令 / 省令 / 告示",
+    description=(
+        "Search the e-Gov 法令 catalog (9,484 rows + still loading) "
+        "across `law_title + law_short_title + law_number + summary`. "
+        "Filter by `law_type` (constitution / act / cabinet_order / "
+        "imperial_order / ministerial_ordinance / rule / notice / "
+        "guideline), 所管府省 (`ministry`), revision_status, and "
+        "promulgated / enforced date windows.\n\n"
+        "**License:** e-Gov 法令データ is **CC-BY 4.0** (attribution "
+        "required, redistribution permitted with attribution). The "
+        "`source_url` on each row points to the canonical e-Gov 法令検索 "
+        "permalink — relay it.\n\n"
+        "**FTS quirk:** trigram tokenizer matches single kanji; for "
+        "2+ char kanji compounds quote the phrase (`q=\"所得税法\"`). "
+        "Terms < 3 chars fall through to LIKE.\n\n"
+        "Pair with `GET /v1/laws/{unified_id}/related-programs` to "
+        "trace which 補助金 cite a given statute as authority / "
+        "eligibility / exclusion / penalty."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
@@ -350,8 +371,47 @@ def search_laws(
 @router.get(
     "/{unified_id}",
     response_model=Law,
+    summary="Get a single law (法令) by unified_id (LAW-*)",
+    description=(
+        "Look up one 法令 by stable `unified_id` (`LAW-<10 hex>`). "
+        "Returns 法令番号 (e.g. 昭和四十年法律第三十三号), 正式名称, "
+        "略称, 所管府省, 公布日 / 施行日 / 改正日, 条文数, 2-3 line "
+        "abstract (`summary`), `subject_areas` tags (subsidy_clawback "
+        "/ tax_credit / etc.), and `full_text_url` (e-Gov 法令検索 "
+        "permalink for humans).\n\n"
+        "**License:** e-Gov 法令データ is CC-BY 4.0 (cc_by_4.0). "
+        "Relay `source_url` + attribution.\n\n"
+        "Pair with `GET /v1/laws/{unified_id}/related-programs` to "
+        "trace which programs cite this law."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
+        200: {
+            "description": "Single law row.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "unified_id": "LAW-64c08d2649",
+                        "law_number": "昭和四十年法律第三十三号",
+                        "law_title": "所得税法",
+                        "law_short_title": "所得税法",
+                        "law_type": "act",
+                        "ministry": "財務省",
+                        "promulgated_date": "1965-03-31",
+                        "enforced_date": "2026-04-01",
+                        "last_amended_date": "2026-03-31",
+                        "revision_status": "current",
+                        "article_count": 245,
+                        "full_text_url": "https://laws.e-gov.go.jp/law/340AC0000000033",
+                        "summary": "所得に対する税の課税標準・税額等を定める。",
+                        "subject_areas": ["税法", "所得税"],
+                        "source_url": "https://laws.e-gov.go.jp/law/340AC0000000033",
+                        "fetched_at": "2026-04-20T05:14:33Z",
+                        "confidence": 1.0,
+                    }
+                }
+            },
+        },
         404: {
             "model": ErrorEnvelope,
             "description": "law not found — `error.code='no_matching_records'`.",
@@ -362,8 +422,15 @@ def get_law(
     unified_id: str,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> Law:
-    """Return a single law including summary, article_count, and lineage."""
+) -> JSONResponse:
+    """Return a single law including summary, article_count, and lineage.
+
+    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
+    `corpus_snapshot_id` (ISO-8601 of latest am_amendment_diff detection or
+    MAX(fetched_at) fallback) and `corpus_checksum` (sha256:<16hex>) so an
+    auditor citing this row in a work-paper can reproduce the lookup later
+    and detect whether the corpus mutated. See docs/audit_trail.md.
+    """
     row = conn.execute(
         "SELECT * FROM laws WHERE unified_id = ?", (unified_id,)
     ).fetchone()
@@ -373,7 +440,9 @@ def get_law(
         )
 
     log_usage(conn, ctx, "laws.get", params={"unified_id": unified_id})
-    return _row_to_law(row)
+    body = _row_to_law(row).model_dump(mode="json")
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))
 
 
 @router.get(

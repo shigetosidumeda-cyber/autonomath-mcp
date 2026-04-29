@@ -8,7 +8,7 @@
 >
 > Validate before send (memory `feedback_validate_before_apply`):
 > - 数値 13,578 / 66 / ¥3 を必ず確認
-> - URL 動作確認 (https://autonomath.ai, /docs/, GitHub, PyPI)
+> - URL 動作確認 (https://zeimu-kaikei.ai, /docs/, GitHub, PyPI)
 > - 過剰強調 (必ず / 絶対 / 保証 / 業界初) 削除済み (INV-22)
 
 ---
@@ -24,7 +24,7 @@ one call.
 
 Built solo. Metered ¥3/req. 50/month free per IP.
 
-https://autonomath.ai
+https://zeimu-kaikei.ai
 
 #MCP #ClaudeDesktop
 ```
@@ -78,8 +78,8 @@ I wanted one API where Claude can just answer.
 ```
 5/ Tech stack:
 
-- SQLite + FTS5 trigram (Japanese compound word search)
-- sqlite-vec for entity-fact vec layer (504k entities, 6.12M facts; gradual activation, FTS5 primary)
+- SQLite + 全文検索インデックス (3-gram, Japanese compound word search)
+- ベクトル検索 for entity-fact vec layer (504k entities, 6.12M facts; gradual activation, 全文検索インデックス primary)
 - FastAPI (REST) + FastMCP (stdio MCP, protocol 2025-06-18)
 - Fly.io Tokyo + Cloudflare Pages + Stripe metered
 ```
@@ -105,7 +105,7 @@ source_url — past industry incidents created 詐欺 risk.
 ```
 7/ How to start (3 paths):
 
-1. curl https://api.autonomath.ai/v1/programs/search?q=...
+1. curl https://api.zeimu-kaikei.ai/v1/programs/search?q=...
 2. Claude Desktop: add `{"command":"uvx","args":["autonomath-mcp"]}` to
    claude_desktop_config.json
 3. pip install autonomath-mcp
@@ -120,14 +120,14 @@ Anonymous 50 req/month free per IP. JST monthly reset.
 ```
 8/ Happy to AMA on:
 
-- FTS5 trigram pitfalls for Japanese
+- 全文検索インデックス (3-gram) pitfalls for Japanese
 - MCP tool design tradeoffs
 - Why pure metered (no tier SKU)
 - Solo + zero-touch ops at scale
 
 GitHub: https://github.com/[USERNAME]/[REPO]
 PyPI: pypi.org/project/autonomath-mcp/
-Docs: autonomath.ai/docs/
+Docs: zeimu-kaikei.ai/docs/
 
 Reply / DM open.
 ```

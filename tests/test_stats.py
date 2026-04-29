@@ -158,10 +158,14 @@ def test_coverage_tolerates_missing_table(client, seeded_db: Path):
 
 def test_freshness_returns_min_max_per_source(client, seeded_db: Path):
     # Add a source_fetched_at to programs so MIN/MAX are non-null.
+    # The seeded_db fixture is session-scoped and OTHER tests in the suite
+    # (test_meta_freshness, test_search_relevance, etc.) insert programs
+    # with source_fetched_at. Wipe ALL stamps first so this test owns the
+    # exact two rows that drive MIN/MAX/avg_interval. Otherwise the count,
+    # min, max, and avg_interval can drift unpredictably as the suite grows.
     c = sqlite3.connect(seeded_db)
     try:
-        # Neutralize stamps from prior session-scoped tests (test_meta_freshness leaks UNI-test-b-1).
-        c.execute("UPDATE programs SET source_fetched_at = NULL WHERE unified_id LIKE 'UNI-test-%'")
+        c.execute("UPDATE programs SET source_fetched_at = NULL")
         c.execute(
             "UPDATE programs SET source_fetched_at = ? WHERE unified_id = ?",
             ("2026-04-20T10:00:00+00:00", "UNI-test-s-1"),
@@ -173,6 +177,13 @@ def test_freshness_returns_min_max_per_source(client, seeded_db: Path):
         c.commit()
     finally:
         c.close()
+
+    # Bust any cached freshness response from a prior test.
+    try:
+        from jpintel_mcp.api.stats import _reset_stats_cache
+        _reset_stats_cache()
+    except Exception:
+        pass
 
     r = client.get("/v1/stats/freshness")
     assert r.status_code == 200, r.text
@@ -187,11 +198,32 @@ def test_freshness_returns_min_max_per_source(client, seeded_db: Path):
     assert prog["avg_interval_days"] == 5.0
 
 
-def test_freshness_zero_rows_returns_nulls(client):
+def test_freshness_zero_rows_returns_nulls(client, seeded_db: Path):
+    # Wipe both case_studies + loan_programs so the assertion holds even
+    # when other tests in the session have inserted rows.
+    c = sqlite3.connect(seeded_db)
+    try:
+        try:
+            c.execute("DELETE FROM case_studies")
+            c.execute("DELETE FROM loan_programs")
+            c.commit()
+        except sqlite3.OperationalError:
+            # Tables may not exist on a minimal DB; that's fine — they
+            # collapse to count=0 in the freshness rollup either way.
+            pass
+    finally:
+        c.close()
+    try:
+        from jpintel_mcp.api.stats import _reset_stats_cache
+        _reset_stats_cache()
+    except Exception:
+        pass
+
     r = client.get("/v1/stats/freshness")
     assert r.status_code == 200
     body = r.json()
-    # case_studies / loan_programs have 0 rows on the test DB.
+    # case_studies / loan_programs have 0 rows on the test DB after the
+    # explicit wipe above.
     cs = body["sources"]["case_studies"]
     assert cs["count"] == 0
     assert cs["min"] is None

@@ -122,16 +122,35 @@ def generate_api_key() -> tuple[str, str]:
 
 # tier => (settings_attr_for_daily_cap, is_metered)
 # Post-2026-04-23 pricing pivot: AutonoMath is pure metered ¥3/req 税別.
-# Only two tiers exist at runtime on an authenticated key:
-#   "free" — DUNNING DEMOTE state (customer whose card is failing). Short
-#            daily cap via RATE_LIMIT_FREE_PER_DAY (default 100). NOT the
-#            public anonymous Free tier (that lives in anon_rate_limit,
-#            50/month per IP, applied via AnonIpLimitDep).
-#   "paid" — metered via Stripe usage_records at ¥3/req, no 429 enforcement.
+# Three tiers exist at runtime on an authenticated key:
+#   "free"  — DUNNING DEMOTE state (customer whose card is failing). Short
+#             daily cap via RATE_LIMIT_FREE_PER_DAY (default 100). NOT the
+#             public anonymous Free tier (that lives in anon_rate_limit,
+#             50/month per IP, applied via AnonIpLimitDep).
+#   "paid"  — metered via Stripe usage_records at ¥3/req, no 429 enforcement.
+#   "trial" — email-only 14d / 200 req hard cap, no Stripe. The cap is
+#             enforced synchronously in _enforce_quota against the
+#             api_keys.trial_requests_used counter (see TRIAL_REQUEST_CAP
+#             below) — the daily cron sweep is belt-and-suspenders only.
+#             The 'trial_request_cap' settings attr is sentinel-only; the
+#             actual cap is the TRIAL_REQUEST_CAP module-level constant.
 TIER_LIMITS = {
     "free": ("rate_limit_free_per_day", False),
     "paid": (None, True),
+    "trial": ("trial_request_cap", False),
 }
+
+# Hard cap on a trial key's lifetime request count. Mirrors
+# api/signup.py::TRIAL_REQUEST_CAP — duplicated here so the request hot
+# path (deps.require_key → _enforce_quota) does NOT pull api/signup into
+# the import graph (signup.py depends on api.deps; importing back the
+# other way would cycle).
+TRIAL_REQUEST_CAP = 200
+
+# Public landing page that 429-ing trial keys are pointed at. Same string
+# the day-11 nudge + day-14 expired email use, so a user who hits the cap
+# and a user who runs out the clock see the same destination.
+TRIAL_UPGRADE_URL = "https://zeimu-kaikei.ai/pricing.html?from=trial#api-paid"
 
 
 def _day_bucket(ts: datetime | None = None) -> str:
@@ -146,15 +165,42 @@ class ApiContext:
         tier: str,
         customer_id: str | None,
         stripe_subscription_id: str | None = None,
+        key_id: int | None = None,
+        parent_key_id: int | None = None,
     ):
         self.key_hash = key_hash
         self.tier = tier
         self.customer_id = customer_id
         self.stripe_subscription_id = stripe_subscription_id
+        # Migration 086 (parent/child fan-out): `key_id` mirrors the
+        # api_keys.id column (rowid alias), `parent_key_id` is non-NULL
+        # on child keys. _enforce_quota and CustomerCapMiddleware
+        # aggregate metering at the TREE scope (parent + all siblings)
+        # rather than per-row, so a SaaS partner's 1,000 child keys
+        # share ONE Stripe subscription and ONE monthly_cap_yen.
+        self.key_id = key_id
+        self.parent_key_id = parent_key_id
 
     @property
     def metered(self) -> bool:
         return self.tier == "paid"
+
+    @property
+    def is_child(self) -> bool:
+        """True iff this key is a sub-key of a parent (migration 086)."""
+        return self.parent_key_id is not None
+
+    @property
+    def root_key_id(self) -> int | None:
+        """Return the parent's id if this is a child, else this key's id.
+
+        Used by `_enforce_quota` and `CustomerCapMiddleware` to scope the
+        usage_events aggregation across the entire parent/child tree.
+        Returns None for legacy rows where `id` was never backfilled
+        (older keys created before migration 086 ran) — callers fall
+        back to single-row scope in that case.
+        """
+        return self.parent_key_id if self.parent_key_id is not None else self.key_id
 
 
 async def require_key(
@@ -180,15 +226,40 @@ async def require_key(
     # api_key_salt); the bcrypt check is the dual-path migration target
     # so an attacker who exfiltrated an old DB without the live salt
     # still has to brute-force at ~100ms/attempt.
+    #
+    # Migration 086: also fetch parent_key_id + id so _enforce_quota and
+    # the cap middleware can aggregate across the parent/child tree. A
+    # child key inherits the parent's tier, stripe_subscription_id, and
+    # monthly_cap_yen — but the cap is enforced at TREE scope, not row
+    # scope, so a child cannot escape its share of the parent's quota.
     row = conn.execute(
         "SELECT tier, customer_id, stripe_subscription_id, revoked_at, "
-        "key_hash_bcrypt "
+        "key_hash_bcrypt, id, parent_key_id "
         "FROM api_keys WHERE key_hash = ?",
         (key_hash,),
     ).fetchone()
     if row is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid api key")
     if row["revoked_at"]:
+        # Trial-tier revokes carry a recovery hint so the caller's
+        # tooling can surface "your trial ended → here's how to keep
+        # going at ¥3.30/req" instead of a generic 401 (Bug 4 from the
+        # 2026-04-29 funnel audit). Paid-tier revokes still 401 with a
+        # bare detail; the customer already has dashboard access via
+        # session cookie and doesn't need a CTA.
+        if row["tier"] == "trial":
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED,
+                detail={
+                    "detail": (
+                        "トライアル期間または上限に達したため API キーは"
+                        "失効しています。"
+                    ),
+                    "upgrade_url": TRIAL_UPGRADE_URL,
+                    "cta_text_ja": "API キー発行で続行 (¥3.30/req)",
+                    "trial_expired": True,
+                },
+            )
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "api key revoked")
     # Dual-path verify: when key_hash_bcrypt is non-NULL we MUST also
     # pass bcrypt.checkpw, otherwise an HMAC collision (cryptographically
@@ -200,11 +271,21 @@ async def require_key(
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid api key")
 
     tier = row["tier"]
+    # Migration 086: read id + parent_key_id when present. The columns
+    # exist on every row from that migration onward, but legacy DB
+    # snapshots (used in some test fixtures) may pre-date the column —
+    # guard the lookup so a missing column key surfaces as None rather
+    # than KeyError.
+    row_keys = row.keys() if hasattr(row, "keys") else []
+    key_id = row["id"] if "id" in row_keys else None
+    parent_key_id = row["parent_key_id"] if "parent_key_id" in row_keys else None
     ctx = ApiContext(
         key_hash=key_hash,
         tier=tier,
         customer_id=row["customer_id"],
         stripe_subscription_id=row["stripe_subscription_id"],
+        key_id=key_id,
+        parent_key_id=parent_key_id,
     )
     _enforce_quota(conn, ctx)
     return ctx
@@ -219,21 +300,119 @@ def _seconds_until_utc_midnight(now: datetime | None = None) -> int:
     return max(1, int((tomorrow - now).total_seconds()))
 
 
+def _collect_tree_key_hashes(
+    conn: sqlite3.Connection, ctx: ApiContext
+) -> list[str]:
+    """Return every key_hash in the parent/child tree containing ctx.
+
+    Migration 086 semantics: a child key inherits the parent's tier,
+    stripe_subscription_id, and monthly_cap_yen — but the cap is
+    enforced at TREE scope (parent + all siblings + the calling child)
+    so a SaaS partner's 1,000 child keys cannot collectively burst past
+    the parent's quota.
+
+    Resolution order:
+      * Legacy row (no id column / pre-086 row): return [ctx.key_hash]
+        only — single-row scope, same as the historical behaviour.
+      * Parent row (parent_key_id IS NULL): return parent's key_hash
+        plus every child whose parent_key_id == ctx.key_id.
+      * Child row (parent_key_id IS NOT NULL): walk to parent first,
+        then collect parent + all siblings.
+
+    The list always includes ctx.key_hash. Returned hashes are NOT
+    filtered by revoked_at — usage_events are immutable history; even
+    a revoked sibling's past consumption still counts toward the
+    parent's monthly cap (otherwise revoking would silently refund spend).
+    """
+    if ctx.key_hash is None:
+        return []
+    root = ctx.root_key_id
+    if root is None:
+        # Legacy / not-yet-migrated row — single-key scope.
+        return [ctx.key_hash]
+    rows = conn.execute(
+        "SELECT key_hash FROM api_keys "
+        "WHERE id = ? OR parent_key_id = ?",
+        (root, root),
+    ).fetchall()
+    hashes = [r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows]
+    if ctx.key_hash not in hashes:
+        # Defensive: in tests / dev where rowid != id, ensure caller's
+        # own key_hash is always in the result.
+        hashes.append(ctx.key_hash)
+    return hashes
+
+
 def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
     if ctx.key_hash is None:
         return
     limit_key, metered = TIER_LIMITS.get(ctx.tier, (None, False))
     if metered:
         return
+
+    # Trial-tier hard cap (Bug 1 from the 2026-04-29 funnel audit).
+    # The advertised promise on homepage / 429 envelope / trial.html /
+    # day-0 email is "14 日 / 200 req"; until 2026-04-29 the 200-req half
+    # was 100% unenforced because ApiContext.metered=False made the
+    # CustomerCapMiddleware skip these rows AND the request path never
+    # incremented api_keys.trial_requests_used. We now read the counter
+    # directly from api_keys (incremented by _record_usage_async post-
+    # response, plus the inline log_usage path for cron tests) and 429
+    # synchronously BEFORE the router runs. The cron sweep at 04:00 JST
+    # is now belt-and-suspenders only.
+    if ctx.tier == "trial":
+        row = conn.execute(
+            "SELECT trial_requests_used FROM api_keys WHERE key_hash = ?",
+            (ctx.key_hash,),
+        ).fetchone()
+        used = int(row["trial_requests_used"] or 0) if row else 0
+        if used >= TRIAL_REQUEST_CAP:
+            raise HTTPException(
+                status.HTTP_429_TOO_MANY_REQUESTS,
+                detail={
+                    "error": "trial_request_cap_reached",
+                    "trial_request_cap": TRIAL_REQUEST_CAP,
+                    "trial_requests_used": used,
+                    "trial_terms": (
+                        f"トライアルは 14 日間または {TRIAL_REQUEST_CAP} "
+                        "リクエストまで無料です。"
+                    ),
+                    "upgrade_url": TRIAL_UPGRADE_URL,
+                    "cta_text_ja": "API キー発行で続行 (¥3.30/req)",
+                    "message": (
+                        f"トライアルの上限 {TRIAL_REQUEST_CAP} リクエストに"
+                        "達しました。¥3.30/req (税込) で続行できます。"
+                    ),
+                },
+            )
+        # Trial tier shares the daily-limit code path with 'free' below
+        # for the sentinel attribute, but the hard cap above is the
+        # operative gate. Return so we don't double-check a daily bucket
+        # against a setting that doesn't exist.
+        return
+
     if limit_key is None:
         return
     daily_limit = getattr(settings, limit_key)
 
     bucket = _day_bucket()
-    (n,) = conn.execute(
-        "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND ts >= ?",
-        (ctx.key_hash, bucket),
-    ).fetchone()
+    # Migration 086: aggregate across the parent/child tree so a SaaS
+    # partner cannot burst the daily-limit budget by spreading traffic
+    # across many child keys. For legacy rows (no id column) the helper
+    # returns [ctx.key_hash], preserving the historical single-row scope.
+    tree_hashes = _collect_tree_key_hashes(conn, ctx)
+    if len(tree_hashes) == 1:
+        (n,) = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND ts >= ?",
+            (tree_hashes[0], bucket),
+        ).fetchone()
+    else:
+        placeholders = ",".join("?" * len(tree_hashes))
+        (n,) = conn.execute(
+            f"SELECT COUNT(*) FROM usage_events "
+            f"WHERE key_hash IN ({placeholders}) AND ts >= ?",  # noqa: S608 — placeholders only
+            (*tree_hashes, bucket),
+        ).fetchone()
     if n >= daily_limit:
         raise HTTPException(
             status.HTTP_429_TOO_MANY_REQUESTS,
@@ -281,6 +460,10 @@ def _record_usage_async(
     latency_ms: int | None,
     result_count: int | None,
     stripe_subscription_id: str | None,
+    tier: str | None = None,
+    client_tag: str | None = None,
+    quantity: int = 1,
+    audit_seal: dict[str, Any] | None = None,
 ) -> None:
     """Deferred body of ``log_usage`` — runs after the response is flushed.
 
@@ -299,7 +482,28 @@ def _record_usage_async(
     billing-induced 502s are not. Stripe ``report_usage_async`` already
     swallows exceptions; the local INSERT + UPDATE catch broadly so a
     transient SQLite lock can never crash a background worker.
+
+    Migration 085: ``client_tag`` is the validated X-Client-Tag header
+    forwarded from ``ClientTagMiddleware`` via ``request.state.client_tag``.
+    NULL when the caller did not pass the header — the 90% case.
+
+    ``quantity`` (default 1) is the per-request weight for Stripe metered
+    billing. Bulk endpoints (``POST /v1/programs/batch``) pass
+    ``quantity=len(unified_ids)`` so the Stripe ``usage_record`` is N
+    units. Local ``usage_events`` rows still write a single audit row —
+    Stripe-side weight + a single local row gives auditors a clean
+    "1 batch request, N billed units" mapping. We coerce to >= 1
+    defensively; an explicit 0 from a caller is treated as 1.
+
+    Migration 089 (税理士事務所 bundle): when ``audit_seal`` is supplied
+    (built by ``api._audit_seal.build_seal``), the deferred path also
+    persists it to the ``audit_seals`` table for 7-year statutory
+    retention per 税理士法 §41 / 法人税法 §150-2 / 所得税法 §148. The
+    seal write is best-effort — a missing migration 089 never blocks
+    the response or the usage_events INSERT.
     """
+    if quantity < 1:
+        quantity = 1
     usage_event_id: int | None = None
     try:
         conn = connect()
@@ -310,8 +514,8 @@ def _record_usage_async(
             cur = conn.execute(
                 "INSERT INTO usage_events("
                 "  key_hash, endpoint, ts, status, metered, params_digest,"
-                "  latency_ms, result_count"
-                ") VALUES (?,?,?,?,?,?,?,?)",
+                "  latency_ms, result_count, client_tag, quantity"
+                ") VALUES (?,?,?,?,?,?,?,?,?,?)",
                 (
                     key_hash,
                     endpoint,
@@ -321,6 +525,8 @@ def _record_usage_async(
                     digest,
                     latency_ms,
                     result_count,
+                    client_tag,
+                    quantity,
                 ),
             )
             usage_event_id = cur.lastrowid
@@ -328,6 +534,31 @@ def _record_usage_async(
                 "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
                 (datetime.now(UTC).isoformat(), key_hash),
             )
+            # Bump the trial counter exactly once per request that
+            # reaches the deferred logger. We tick on every status code
+            # (including 4xx/5xx) so a trial caller cannot drain the API
+            # by making malformed requests — Bug 1 (2026-04-29 funnel
+            # audit) advertised cap is "14 日 / 200 req" with no carve-
+            # out for failed calls. The synchronous gate in
+            # _enforce_quota reads back this counter on the NEXT request.
+            if tier == "trial":
+                conn.execute(
+                    "UPDATE api_keys "
+                    "SET trial_requests_used = "
+                    "  COALESCE(trial_requests_used, 0) + 1 "
+                    "WHERE key_hash = ?",
+                    (key_hash,),
+                )
+            # Migration 089: persist audit_seal alongside usage_events for
+            # 7-year statutory retention (税理士事務所 bundle). Best-effort
+            # — a missing migration 089 is swallowed inside persist_seal.
+            if audit_seal is not None:
+                try:
+                    from jpintel_mcp.api._audit_seal import persist_seal
+
+                    persist_seal(conn, seal=audit_seal, api_key_hash=key_hash)
+                except Exception:  # noqa: BLE001
+                    pass
         except Exception:  # noqa: BLE001
             usage_event_id = None
         finally:
@@ -346,7 +577,11 @@ def _record_usage_async(
         try:
             from jpintel_mcp.billing.stripe_usage import report_usage_async
 
-            report_usage_async(stripe_subscription_id, usage_event_id=usage_event_id)
+            report_usage_async(
+                stripe_subscription_id,
+                quantity=quantity,
+                usage_event_id=usage_event_id,
+            )
         except Exception:  # noqa: BLE001
             pass
 
@@ -360,7 +595,12 @@ def log_usage(
     latency_ms: int | None = None,
     result_count: int | None = None,
     background_tasks: BackgroundTasks | None = None,
-) -> None:
+    request: Request | None = None,
+    client_tag: str | None = None,
+    quantity: int = 1,
+    response_body: Any = None,
+    issue_audit_seal: bool = False,
+) -> dict[str, Any] | None:
     """Insert one row into usage_events.
 
     Migration 061 added two nullable columns:
@@ -392,8 +632,35 @@ def log_usage(
     closed by ``get_db()``'s finally clause before BackgroundTasks fire.
     """
     if ctx.key_hash is None:
-        return
+        return None
     digest = compute_params_digest(endpoint, params)
+
+    # Migration 085: pull the validated X-Client-Tag stashed on
+    # request.state by ClientTagMiddleware. Caller may also pass an
+    # explicit client_tag (cron jobs, tests). When both are absent we
+    # write NULL — the 90% case.
+    if client_tag is None and request is not None:
+        client_tag = getattr(request.state, "client_tag", None)
+
+    # Migration 089: build the audit_seal envelope for the response IFF the
+    # caller opted in (issue_audit_seal=True). Sealing is opt-in because
+    # most internal endpoints (dashboard reads, /healthz) carry no audit
+    # value — only customer-facing data tools surface a seal. The seal is
+    # built synchronously here so the caller can embed it in the response
+    # body; the DB persist runs in the deferred path so it never blocks.
+    audit_seal: dict[str, Any] | None = None
+    if issue_audit_seal and status_code < 400:
+        try:
+            from jpintel_mcp.api._audit_seal import build_seal
+
+            audit_seal = build_seal(
+                endpoint=endpoint,
+                request_params=params,
+                response_body=response_body,
+                client_tag=client_tag,
+            )
+        except Exception:  # noqa: BLE001
+            audit_seal = None
 
     if background_tasks is not None:
         # Hot path: defer all writes until after response flush.
@@ -407,15 +674,19 @@ def log_usage(
             latency_ms,
             result_count,
             ctx.stripe_subscription_id,
+            ctx.tier,
+            client_tag,
+            quantity,
+            audit_seal,
         )
-        return
+        return audit_seal
 
     # Legacy / non-request path: inline writes on the supplied conn.
     cur = conn.execute(
         "INSERT INTO usage_events("
         "  key_hash, endpoint, ts, status, metered, params_digest,"
-        "  latency_ms, result_count"
-        ") VALUES (?,?,?,?,?,?,?,?)",
+        "  latency_ms, result_count, client_tag, quantity"
+        ") VALUES (?,?,?,?,?,?,?,?,?,?)",
         (
             ctx.key_hash,
             endpoint,
@@ -425,6 +696,8 @@ def log_usage(
             digest,
             latency_ms,
             result_count,
+            client_tag,
+            quantity,
         ),
     )
     usage_event_id = cur.lastrowid
@@ -432,6 +705,28 @@ def log_usage(
         "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
         (datetime.now(UTC).isoformat(), ctx.key_hash),
     )
+    # Bump the trial cap counter on the inline path too (Bug 1, 2026-04-29).
+    # Tests that drive log_usage directly (without BackgroundTasks) need
+    # the same accounting as the hot path so the synchronous gate in
+    # _enforce_quota fires deterministically against the inline-written
+    # counter rather than against a counter that only updates in the
+    # async branch.
+    if ctx.tier == "trial":
+        conn.execute(
+            "UPDATE api_keys "
+            "SET trial_requests_used = "
+            "  COALESCE(trial_requests_used, 0) + 1 "
+            "WHERE key_hash = ?",
+            (ctx.key_hash,),
+        )
+    # Migration 089: persist the seal alongside the inline usage_events row.
+    if audit_seal is not None:
+        try:
+            from jpintel_mcp.api._audit_seal import persist_seal
+
+            persist_seal(conn, seal=audit_seal, api_key_hash=ctx.key_hash)
+        except Exception:  # noqa: BLE001
+            pass
     # Fire-and-forget Stripe usage_records report for metered ("paid") tier.
     # 4xx/5xx are not billed. Local import prevents a hard dep on stripe
     # during tests that construct ApiContext directly without Stripe env.
@@ -445,6 +740,7 @@ def log_usage(
             report_usage_async(ctx.stripe_subscription_id, usage_event_id=usage_event_id)
         except Exception:  # noqa: BLE001
             pass
+    return audit_seal
 
 
 def hash_ip_for_telemetry(ip: str | None, day: str | None = None) -> str | None:

@@ -28,7 +28,9 @@ import sqlite3
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.api.programs import (
     KANA_EXPANSIONS,
@@ -81,7 +83,59 @@ def _row_to_decision(row: sqlite3.Row) -> CourtDecision:
     )
 
 
-@router.get("/search", response_model=CourtDecisionSearchResponse)
+@router.get(
+    "/search",
+    response_model=CourtDecisionSearchResponse,
+    summary="Search Japanese court decisions (判決 / 決定 / 命令)",
+    description=(
+        "Search 2,065 court decisions (判例) sourced from courts.go.jp "
+        "判例検索 across `case_name + subject_area + key_ruling + "
+        "impact_on_business`. Filter by 裁判所名 / `court_level` "
+        "(supreme / high / district / summary / family) / "
+        "`decision_type` (判決 / 決定 / 命令) / `subject_area` "
+        "(租税 / 行政 / 補助金適正化法 / etc.) / decided_from/to date "
+        "window / `references_law_id` (cites this LAW-* unified_id).\n\n"
+        "**Precedent weight:** each row carries `precedent_weight` in "
+        "`{binding, persuasive, informational}`. binding = 最高裁 or "
+        "大法廷; persuasive = 高裁 / 地裁 leading case; "
+        "informational = case reference. LLM agents should surface "
+        "`precedent_weight` when relaying — a 地裁 ruling is not the "
+        "same as 最高裁 binding precedent.\n\n"
+        "For statute-citation crawls (which decisions cite this law?), "
+        "prefer `POST /v1/court-decisions/by-statute`."
+    ),
+    responses={
+        200: {
+            "description": "Paginated court decisions.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total": 1,
+                        "limit": 20,
+                        "offset": 0,
+                        "results": [
+                            {
+                                "unified_id": "HAN-5954003266",
+                                "case_name": "所得税更正処分取消等請求事件",
+                                "case_number": "平成30(行ヒ)422",
+                                "court": "最高裁判所第三小法廷",
+                                "court_level": "supreme",
+                                "decision_date": "2020-03-24",
+                                "decision_type": "判決",
+                                "subject_area": "租税",
+                                "precedent_weight": "binding",
+                                "key_ruling": "国税通則法24条所定の更正処分の取消…",
+                                "full_text_url": "https://www.courts.go.jp/app/hanrei_jp/detail2?id=89311",
+                                "source_url": "https://www.courts.go.jp/...",
+                                "fetched_at": "2026-04-20T05:14:33Z",
+                            }
+                        ],
+                    }
+                }
+            },
+        }
+    },
+)
 def search_court_decisions(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -277,13 +331,62 @@ def search_court_decisions(
     )
 
 
-@router.get("/{unified_id}", response_model=CourtDecision)
+@router.get(
+    "/{unified_id}",
+    response_model=CourtDecision,
+    summary="Get a single court decision by unified_id (HAN-*)",
+    description=(
+        "Look up one 判例 by stable `unified_id` (`HAN-<10 hex>`). "
+        "Returns 事件名, 事件番号, 裁判所, 言渡日, 判決種別, 分野, "
+        "主要判示事項 (`key_ruling`), 実務影響 (`impact_on_business`), "
+        "`precedent_weight`, courts.go.jp permalink, and `pdf_url` "
+        "(全文 PDF mirror).\n\n"
+        "Discovery flow: call `GET /v1/court-decisions/search` first, "
+        "then follow up on each `unified_id` here for the full key "
+        "ruling text + practical impact summary."
+    ),
+    responses={
+        200: {
+            "description": "Single court decision row.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "unified_id": "HAN-5954003266",
+                        "case_name": "所得税更正処分取消等請求事件",
+                        "case_number": "平成30(行ヒ)422",
+                        "court": "最高裁判所第三小法廷",
+                        "court_level": "supreme",
+                        "decision_date": "2020-03-24",
+                        "decision_type": "判決",
+                        "subject_area": "租税",
+                        "precedent_weight": "binding",
+                        "key_ruling": "更正処分の理由付記の…",
+                        "impact_on_business": "国税不服審判の段階で…",
+                        "full_text_url": "https://www.courts.go.jp/app/hanrei_jp/detail2?id=89311",
+                        "pdf_url": "https://www.courts.go.jp/app/files/hanrei_jp/311/089311_hanrei.pdf",
+                        "source_url": "https://www.courts.go.jp/app/hanrei_jp/detail2?id=89311",
+                        "source_excerpt": "…(裁判所サイトより抜粋)",
+                        "confidence": 0.9,
+                        "fetched_at": "2026-04-20T05:14:33Z",
+                    }
+                }
+            },
+        }
+    },
+)
 def get_court_decision(
     unified_id: str,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> CourtDecision:
-    """Return a single court decision with full source lineage."""
+) -> JSONResponse:
+    """Return a single court decision with full source lineage.
+
+    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
+    `corpus_snapshot_id` (ISO-8601 of latest am_amendment_diff detection or
+    MAX(fetched_at) fallback) and `corpus_checksum` (sha256:<16hex>) so an
+    auditor citing this 判例 in a work-paper can reproduce the lookup later
+    and detect whether the corpus mutated. See docs/audit_trail.md.
+    """
     row = conn.execute(
         "SELECT * FROM court_decisions WHERE unified_id = ?",
         (unified_id,),
@@ -297,7 +400,9 @@ def get_court_decision(
     log_usage(
         conn, ctx, "court_decisions.get", params={"unified_id": unified_id}
     )
-    return _row_to_decision(row)
+    body = _row_to_decision(row).model_dump(mode="json")
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))
 
 
 @router.post("/by-statute", response_model=CourtDecisionSearchResponse)

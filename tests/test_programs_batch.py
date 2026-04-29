@@ -37,6 +37,13 @@ _ENVELOPE_ONLY_KEYS = {
     "meta",
 }
 
+# REST-only payload keys not present on MCP transport. See
+# tests/test_programs.py::_REST_ONLY_KEYS for full rationale; mirrored
+# here so the per-row batch parity check below recognises them.
+_REST_ONLY_ROW_KEYS = {
+    "static_url",
+}
+
 
 # ---------------------------------------------------------------------------
 # Happy path
@@ -206,7 +213,10 @@ def test_batch_mcp_parity(client, paid_key):
         r["unified_id"] for r in mcp["results"]
     ]
     for rest_row, mcp_row in zip(rest["results"], mcp["results"], strict=False):
-        assert set(rest_row.keys()) == set(mcp_row.keys())
+        # REST rows ship static_url (per-program SEO link) in addition to
+        # the shared payload; MCP rows omit it. Compare modulo that.
+        rest_row_keys = set(rest_row.keys()) - _REST_ONLY_ROW_KEYS
+        assert rest_row_keys == set(mcp_row.keys())
 
 
 def test_batch_mcp_over_50_returns_error_envelope(client):

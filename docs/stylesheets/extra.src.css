@@ -47,7 +47,7 @@
   color: #e5e5e5;
 }
 
-/* Wave 28 — feedback FAB right-edge clipping defense on phones.
+/* feedback FAB right-edge clipping defense on phones.
    The widget injects `.am-fb-fab` with right:20px/bottom:20px via
    inline <style>. On <=480px tighten the offset and cap max-width
    so the pill never extends past the readable edge of the docs body

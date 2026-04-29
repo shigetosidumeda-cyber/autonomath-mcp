@@ -4,34 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>支払い完了 — AutonoMath</title>
+<title>支払い完了 — 税務会計AI</title>
 <meta name="description" content="Stripe 決済完了後の API キー発行ページ。">
 <meta name="robots" content="noindex,nofollow">
 
-<meta property="og:title" content="支払い完了 — AutonoMath">
+<meta property="og:title" content="支払い完了 — 税務会計AI">
 <meta property="og:description" content="Stripe 決済後に API キーを発行します。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/success.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og-square.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/success.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="支払い完了 — AutonoMath">
+<meta name="twitter:title" content="支払い完了 — 税務会計AI">
 <meta name="twitter:description" content="Stripe 決済後に API キーを発行します。">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-square.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
 
-<link rel="canonical" href="https://autonomath.ai/success.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/success.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/success.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/success.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/success.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/success.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/success.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/success.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=20260428a">
 <style>
   /* success.html — post-checkout key reveal. Matches dashboard design tokens. */
   .success { padding: 48px 0 64px; }
@@ -237,9 +237,8 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="AutonoMath ホーム">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/docs/">Docs</a>
@@ -272,14 +271,14 @@
         </div>
 
         <div class="state-card">
-          <p class="label">Your API key</p>
+          <p class="label">Your APIキー</p>
           <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
           <p class="key-warning" role="alert">この key は発行時 1 回だけ表示されます。今すぐコピーして保管してください。</p>
           <div class="btn-row">
-            <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; API key をコピー</button>
+            <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキー をコピー</button>
           </div>
           <div class="meta-row" aria-label="metadata">
-            <span>tier: <strong id="meta-tier">—</strong></span>
+            <span>plan: <strong>完全従量 ¥3/リクエスト (税込 ¥3.30)</strong></span>
             <span>customer_id: <strong id="meta-customer">—</strong></span>
           </div>
         </div>
@@ -297,16 +296,16 @@
           <ol>
             <li><a href="/docs/getting-started">Getting Started</a> &mdash; Python / Node の最小例、認証、rate limit</li>
             <li><a href="dashboard.html">Dashboard</a> &mdash; 利用量、key rotate、billing portal</li>
-            <li><a href="/docs/getting-started#6-mcp-claude-desktop-設定">Claude Desktop (MCP) 設定</a> &mdash; stdio で 72 tools (39 jpintel + 33 autonomath: 17 V1 + 4 V4 universal + 5 Phase A + 7 lifecycle/abstract/prerequisite/graph/snapshot/rule_engine) をエージェントから直呼び</li>
+            <li><a href="/docs/getting-started#6-mcp-claude-desktop-設定">Claude Desktop (MCP) 設定</a> &mdash; stdio で 89 tools (39 jpintel + 50 autonomath: 認定支援機関データセット + メタデータ tools + 静的データセット tools + lifecycle/abstract/prerequisite/graph/rule_engine/related_programs) をエージェントから直呼び</li>
           </ol>
         </div>
 
         <div class="next-steps" style="margin-top:18px;">
           <h2>アカウント管理・解約</h2>
-          <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">完全セルフサーブです。最低利用期間・解約違約金はありません。Customer Portal からカードを外すと即座に Free (50 req/月 per IP) に戻り、以後の課金は停止します。</p>
+          <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">完全セルフサーブです。最低利用期間・解約違約金はありません。Stripe Customer Portal からサブスクリプションをキャンセルすると以後の課金は停止し、匿名 50 リクエスト/月 per IP の利用に戻ります。</p>
           <div class="btn-row">
-            <a class="btn btn-secondary" href="dashboard.html" style="text-decoration:none;">Customer Portal を開く (カード / 解約)</a>
-            <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20削除請求" style="text-decoration:none;">アカウント削除請求</a>
+            <a class="btn btn-secondary" href="dashboard.html" style="text-decoration:none;">Dashboard を開く (Stripe ポータル / 解約)</a>
+            <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20削除請求" style="text-decoration:none;">アカウント削除請求</a>
           </div>
           <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
             <strong>セキュリティのご推奨:</strong> Stripe Customer Portal で 2 要素認証 (2FA) を有効化し、API キーは環境変数 (<code>AUTONOMATH_API_KEY</code>) で管理することを強く推奨します。鍵の流出に気付いた場合は Dashboard から即時ローテーションしてください。
@@ -328,7 +327,7 @@
 
       <div id="state-error-conflict" tabindex="-1" hidden>
         <div class="alert" role="alert">
-          <strong>API key は既に発行済みです</strong>
+          <strong>APIキー は既に発行済みです</strong>
           このサブスクリプションでは既に 1 つ発行されています。Dashboard から key をローテーションすると、新しい key を再発行できます。
         </div>
         <div class="btn-row">
@@ -366,7 +365,7 @@
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">日本の制度 API</p>
     </div>
     <nav class="footer-nav" aria-label="フッター">
@@ -447,7 +446,7 @@
       // Endpoint exists: /v1/programs/search (see api-reference.md).
       // Header name: X-API-Key (same as getting-started.md §3).
       return 'curl -H "X-API-Key: ' + apiKey + '" \\\n' +
-             '  "https://api.autonomath.ai/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
+             '  "https://api.zeimu-kaikei.ai/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
     }
 
     async function copyText(text, btn, labelCopied, labelOrig) {
@@ -480,7 +479,6 @@
 
     function renderSuccess(body) {
       var rawKey = String(body.api_key || '');
-      var tier = String(body.tier || '—');
       var customerId = String(body.customer_id || '—');
 
       // Raw key is held in sessionStorage ONLY for the success-page-to-dashboard
@@ -493,8 +491,9 @@
       var keyEl = $('api-key-block');
       if (keyEl) keyEl.textContent = rawKey;
 
-      var tierEl = $('meta-tier');
-      if (tierEl) tierEl.textContent = tier;
+      // tier field intentionally not rendered. Business model is fully metered
+      // ¥3/req — no tier SKUs are exposed to users. The API still emits a
+      // legacy `tier` for internal logging/billing routing only.
 
       var custEl = $('meta-customer');
       if (custEl) custEl.textContent = customerId;

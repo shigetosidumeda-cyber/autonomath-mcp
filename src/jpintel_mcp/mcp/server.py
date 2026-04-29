@@ -10,6 +10,7 @@ Run:
 from __future__ import annotations
 
 import functools
+import hashlib
 import inspect
 import json
 import logging
@@ -32,16 +33,16 @@ from jpintel_mcp.api.vocab import (
 )
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.session import connect, init_db
-from jpintel_mcp.mcp.auth import (  # noqa: F401  # === DEVICE FLOW AUTH (RFC 8628) PATCH ===
-    ensure_authenticated,
-    get_stored_token,
-    handle_quota_exceeded,
-)
 from jpintel_mcp.mcp._constants import PrefectureParam
 from jpintel_mcp.mcp._http_fallback import (  # === S3 HTTP FALLBACK (uvx empty-DB fix) ===
     detect_fallback_mode,
     http_call,
     remote_only_error,
+)
+from jpintel_mcp.mcp.auth import (  # noqa: F401  # === DEVICE FLOW AUTH (RFC 8628) PATCH ===
+    ensure_authenticated,
+    get_stored_token,
+    handle_quota_exceeded,
 )
 from jpintel_mcp.models import MINIMAL_FIELD_WHITELIST
 
@@ -691,7 +692,7 @@ def _count_results(result: Any) -> int:
 # When ``uvx autonomath-mcp`` ships the wheel without ``data/`` (excluded in
 # pyproject.toml), the local ``data/jpintel.db`` is empty and every tool
 # returns 0 rows. ``_fallback_call()`` checks the cached fallback flag and,
-# if active, routes the request to ``api.autonomath.ai`` via the helper in
+# if active, routes the request to ``api.zeimu-kaikei.ai`` via the helper in
 # ``jpintel_mcp.mcp._http_fallback``. Returns ``None`` when the local DB is
 # fine, so the call site continues with the existing SQL path. Tools that
 # don't have a REST equivalent (dd_profile_am / rule_engine_check) get a
@@ -2102,7 +2103,8 @@ def get_usage_status(
         {"tier":"paid","limit":null,"remaining":null,"used":1247,
          "reset_at":"2026-05-01T00:00:00+00:00","reset_timezone":"UTC"}
     """
-    from datetime import timedelta, timezone as _tz
+    from datetime import timedelta
+    from datetime import timezone as _tz
 
     _JST = _tz(timedelta(hours=9))
 
@@ -2146,7 +2148,7 @@ def get_usage_status(
             "used": 0,  # unknown
             "reset_at": _jst_next_month_iso(),
             "reset_timezone": "JST",
-            "upgrade_url": "https://autonomath.ai/go",
+            "upgrade_url": "https://zeimu-kaikei.ai/go",
             "note": (
                 "Anonymous tier は IP+fingerprint 単位で "
                 f"{settings.anon_rate_limit_per_month} req/月 (JST 月初 00:00 リセット)。"
@@ -2174,7 +2176,7 @@ def get_usage_status(
                 "used": 0,
                 "reset_at": _utc_next_month_iso(),
                 "reset_timezone": "UTC",
-                "upgrade_url": "https://autonomath.ai/go",
+                "upgrade_url": "https://zeimu-kaikei.ai/go",
                 "note": (
                     "Provided api_key did not match any issued key. "
                     "Was it rotated? POST /v1/me/rotate-key issues a fresh key once."
@@ -2193,7 +2195,7 @@ def get_usage_status(
                 "used": 0,
                 "reset_at": _utc_next_month_iso(),
                 "reset_timezone": "UTC",
-                "upgrade_url": "https://autonomath.ai/go",
+                "upgrade_url": "https://zeimu-kaikei.ai/go",
                 "note": (
                     "API key has been revoked. Issue a new one via the dashboard "
                     "(POST /v1/me/rotate-key) or sign in again."
@@ -2249,7 +2251,7 @@ def get_usage_status(
             "used": used_int,
             "reset_at": tomorrow.isoformat(),
             "reset_timezone": "UTC",
-            "upgrade_url": "https://autonomath.ai/go",
+            "upgrade_url": "https://zeimu-kaikei.ai/go",
             "note": (
                 f"Free (dunning-demote) tier — daily cap {daily_limit} req。"
                 "UTC 翌日 00:00 リセット。請求情報を更新すると paid tier に復帰。"
@@ -7313,6 +7315,468 @@ def evaluate_tax_applicability(
 
 
 # ---------------------------------------------------------------------------
+# 会計士 work-paper bundle (3 tools, §47条の2 + §52 sensitive).
+#
+# All three tools wrap the helpers in ``api/audit.py``. Pure SQL; no LLM
+# calls. Customer-facing surface is gated to authenticated MCP sessions
+# at the FastMCP transport layer (anonymous callers get the same 401 the
+# REST endpoints return). Each response carries the standard §47条の2 +
+# §52 envelope on the four sensitive surfaces (compose_audit_workpaper,
+# audit_batch_evaluate, resolve_citation_chain) — see envelope_wrapper.
+# SENSITIVE_TOOLS for the registry side.
+# ---------------------------------------------------------------------------
+
+
+_KAIKEI_DISCLAIMER = (
+    "本 response は公開税制・補助金・法令情報の検索結果と機械的予測のみで、"
+    "監査意見・税務判断・申告書作成代行は提供しません (公認会計士法 §47条の2 / "
+    "税理士法 §52)。監査人は本書の内容を自らの責任において検証し、§47条の2 に"
+    "従って監査調書を保存してください。"
+)
+
+
+@mcp.tool(annotations=_READ_ONLY)
+@_with_mcp_telemetry
+def compose_audit_workpaper(
+    client_id: Annotated[
+        str,
+        Field(
+            description=(
+                "Audit firm's internal client identifier. ASCII only "
+                "(alphanumeric + . _ : -), 1..128 chars. NEVER 法人番号."
+            ),
+            min_length=1,
+            max_length=128,
+        ),
+    ],
+    target_ruleset_ids: Annotated[
+        list[str],
+        Field(
+            description=(
+                "List of TAX-<10 hex> ids to evaluate. Cap: 100. Order is "
+                "preserved in the work-paper."
+            ),
+            min_length=1,
+            max_length=100,
+        ),
+    ],
+    business_profile: Annotated[
+        dict[str, Any],
+        Field(
+            description=(
+                "Client's business attribute bag. Same shape as "
+                "evaluate_tax_applicability."
+            ),
+        ),
+    ],
+    audit_period: Annotated[
+        str | None,
+        Field(
+            description=(
+                "Audit period token: YYYY / YYYY-Q1..Q4 / YYYY-MM. "
+                "PDF render is cached to "
+                "data/workpapers/{api_key_id}_{audit_period}.pdf — re-pull "
+                "within the period is read-from-disk and not re-metered."
+            ),
+            max_length=16,
+        ),
+    ] = None,
+    report_format: Annotated[
+        Literal["csv", "pdf", "md", "docx"],
+        Field(description="Output format."),
+    ] = "pdf",
+) -> dict[str, Any]:
+    """[KAIKEI] 監査ワークペーパー (PDF/CSV/MD/DOCX) を 1 件の client + ruleset セットに対して生成する。corpus_snapshot_id + sha256 + §47条の2 wording を全 surface に埋め込む。WeasyPrint レンダ → data/workpapers/ に cache、再 pull は無料。¥3 × N + ¥30 export fee。§47条の2 + §52 sensitive — 監査意見の代替ではない。
+    """
+    import re as _re
+
+    if not _re.match(r"^[A-Za-z0-9._:\\-]{1,128}$", client_id):
+        return _err(
+            "invalid_enum",
+            "client_id must be ASCII (alphanumeric + . _ : -), 1..128 chars",
+        )
+    for uid in target_ruleset_ids:
+        if not _re.match(_TAX_ID_RE, uid):
+            return _err(
+                "invalid_enum",
+                f"target_ruleset_ids contains malformed id: {uid!r} "
+                "(expected TAX-<10 hex>)",
+            )
+
+    try:
+        from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
+        from jpintel_mcp.api.audit import (
+            _AUDIT_DISCLAIMER,
+            _AUDIT_DISCLAIMER_EN,
+            _BRAND,
+            _WORKPAPER_CACHE_DIR,
+            _WORKPAPER_EXPORT_UNITS,
+            _audit_period_token,
+            _render_csv,
+            _render_docx,
+            _render_md,
+            _render_pdf,
+            _render_pdf_weasyprint,
+        )
+        from jpintel_mcp.api.tax_rulesets import (
+            _evaluate_ruleset,
+            resolve_citation_tree,
+        )
+    except ImportError as exc:  # pragma: no cover
+        return _err("internal", f"workpaper helpers unavailable: {exc}")
+
+    conn = connect()
+    try:
+        ids = list(dict.fromkeys(target_ruleset_ids))
+        placeholders = ",".join("?" * len(ids))
+        rows = conn.execute(
+            f"SELECT * FROM tax_rulesets WHERE unified_id IN ({placeholders})",
+            ids,
+        ).fetchall()
+        by_id = {r["unified_id"]: r for r in rows}
+        ordered_rows = [by_id[uid] for uid in ids if uid in by_id]
+        if not ordered_rows:
+            return _err(
+                "no_matching_records",
+                f"none of the supplied tax_ruleset ids exist: {ids}",
+            )
+
+        evaluated: list[dict[str, Any]] = []
+        for r in ordered_rows:
+            result = _evaluate_ruleset(r, business_profile)
+            cite_tree = resolve_citation_tree(conn, r, result)
+            d = result.model_dump(mode="json")
+            d["citation_tree"] = cite_tree
+            evaluated.append(d)
+
+        snapshot_id, checksum = compute_corpus_snapshot(conn)
+
+        # MCP layer treats api_key_id as 'mcp' (no FastAPI ctx). The cache
+        # still works — distinct period strings produce distinct files.
+        api_key_id = "mcp"
+        period = _audit_period_token(audit_period)
+
+        pdf_cache_hit = False
+        pdf_cache_path = None
+        if report_format == "csv":
+            body_bytes = _render_csv(
+                client_id=client_id,
+                snapshot_id=snapshot_id,
+                checksum=checksum,
+                rows=evaluated,
+            )
+            mime = "text/csv; charset=utf-8"
+        elif report_format == "md":
+            body_bytes = _render_md(
+                client_id=client_id,
+                snapshot_id=snapshot_id,
+                checksum=checksum,
+                rows=evaluated,
+            )
+            mime = "text/markdown; charset=utf-8"
+        elif report_format == "docx":
+            body_bytes = _render_docx(
+                client_id=client_id,
+                snapshot_id=snapshot_id,
+                checksum=checksum,
+                rows=evaluated,
+            )
+            mime = (
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            )
+        else:  # pdf
+            pdf_cache_path = _WORKPAPER_CACHE_DIR / f"{api_key_id}_{period}.pdf"
+            if pdf_cache_path.exists():
+                body_bytes = pdf_cache_path.read_bytes()
+                pdf_cache_hit = True
+            else:
+                ok = _render_pdf_weasyprint(
+                    out_path=pdf_cache_path,
+                    client_id=client_id,
+                    snapshot_id=snapshot_id,
+                    checksum=checksum,
+                    rows=evaluated,
+                    audit_period=period,
+                    api_key_id=api_key_id,
+                )
+                if ok and pdf_cache_path.exists():
+                    body_bytes = pdf_cache_path.read_bytes()
+                else:
+                    body_bytes = _render_pdf(
+                        client_id=client_id,
+                        snapshot_id=snapshot_id,
+                        checksum=checksum,
+                        rows=evaluated,
+                    )
+            mime = "application/pdf"
+
+        body_sha = hashlib.sha256(body_bytes).hexdigest()
+        units = 0 if pdf_cache_hit else len(ids) + _WORKPAPER_EXPORT_UNITS
+
+        import base64
+
+        return {
+            "client_id": client_id,
+            "audit_period": period,
+            "api_key_id": api_key_id,
+            "report_format": report_format,
+            "report_mime": mime,
+            "report_bytes_sha256": body_sha,
+            "report_inline_base64": base64.b64encode(body_bytes).decode("ascii"),
+            "pdf_cache_hit": pdf_cache_hit,
+            "pdf_cache_path": str(pdf_cache_path) if pdf_cache_path else None,
+            "ruleset_count": len(ids),
+            "results": evaluated,
+            "billing": {
+                "units": units,
+                "yen_excl_tax": units * 3,
+                "yen_incl_tax": int(round(units * 3 * 1.10)),
+                "fan_out_factor": 1,
+                "cache_hit_free": pdf_cache_hit,
+            },
+            "corpus_snapshot_id": snapshot_id,
+            "corpus_checksum": checksum,
+            "brand": _BRAND,
+            "_disclaimer": _AUDIT_DISCLAIMER,
+            "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
+        }
+    finally:
+        conn.close()
+
+
+@mcp.tool(annotations=_READ_ONLY)
+@_with_mcp_telemetry
+def audit_batch_evaluate(
+    audit_firm_id: Annotated[
+        str,
+        Field(
+            description=(
+                "Audit firm's own identifier (echoed back). ASCII ≤128 chars."
+            ),
+            min_length=1,
+            max_length=128,
+        ),
+    ],
+    profiles: Annotated[
+        list[dict[str, Any]],
+        Field(
+            description=(
+                "List of {client_id, profile} dicts. client_id ASCII ≤128, "
+                "profile is the same shape as evaluate_tax_applicability. "
+                "Cap: 5,000."
+            ),
+            min_length=1,
+            max_length=5000,
+        ),
+    ],
+    target_ruleset_ids: Annotated[
+        list[str],
+        Field(
+            description=(
+                "TAX-<10 hex> ids to evaluate against EVERY profile. Cap: 100."
+            ),
+            min_length=1,
+            max_length=100,
+        ),
+    ],
+) -> dict[str, Any]:
+    """[KAIKEI] Batch evaluation across an audit firm's client population. ¥3 × N profiles billing (K=10 fan-out → 5,000×100=50,000 units / ¥150,000). Returns per-profile results + anomalies (population-deviation flags) + kaikei_fields (調書記載要否 / 重要性閾値 / 監査リスク評価) per cell. §47条の2 + §52 sensitive — checklist, not 監査意見.
+    """
+    import re as _re
+
+    for uid in target_ruleset_ids:
+        if not _re.match(_TAX_ID_RE, uid):
+            return _err(
+                "invalid_enum",
+                f"target_ruleset_ids contains malformed id: {uid!r} "
+                "(expected TAX-<10 hex>)",
+            )
+    for p in profiles:
+        cid = (p or {}).get("client_id")
+        if not isinstance(cid, str) or not _re.match(
+            r"^[A-Za-z0-9._:\\-]{1,128}$", cid
+        ):
+            return _err(
+                "invalid_enum",
+                f"profiles entry missing or malformed client_id: {p!r}",
+            )
+        if not isinstance(p.get("profile"), dict):
+            return _err(
+                "invalid_enum",
+                f"profiles entry missing dict 'profile' field: {p!r}",
+            )
+
+    try:
+        from jpintel_mcp.api.audit import (
+            _AUDIT_DISCLAIMER,
+            _AUDIT_DISCLAIMER_EN,
+            _BATCH_K,
+            _BRAND,
+            _kaikei_fields,
+        )
+        from jpintel_mcp.api.tax_rulesets import _evaluate_ruleset
+    except ImportError as exc:  # pragma: no cover
+        return _err("internal", f"audit batch helpers unavailable: {exc}")
+
+    conn = connect()
+    try:
+        ids = list(dict.fromkeys(target_ruleset_ids))
+        placeholders = ",".join("?" * len(ids))
+        rs_rows = conn.execute(
+            f"SELECT * FROM tax_rulesets WHERE unified_id IN ({placeholders})",
+            ids,
+        ).fetchall()
+        rs_by_uid = {r["unified_id"]: r for r in rs_rows}
+        ordered_rs = [rs_by_uid[uid] for uid in ids if uid in rs_by_uid]
+        if not ordered_rs:
+            return _err(
+                "no_matching_records",
+                f"none of the supplied tax_ruleset ids exist: {ids}",
+            )
+
+        per_profile: list[dict[str, Any]] = []
+        applicable_counts: dict[str, int] = dict.fromkeys(ids, 0)
+        for item in profiles:
+            cid = item["client_id"]
+            prof = item["profile"]
+            per_ruleset: list[dict[str, Any]] = []
+            for rs_row in ordered_rs:
+                r = _evaluate_ruleset(rs_row, prof)
+                if r.applicable:
+                    applicable_counts[r.unified_id] = (
+                        applicable_counts.get(r.unified_id, 0) + 1
+                    )
+                per_ruleset.append(r.model_dump(mode="json"))
+            per_profile.append({"client_id": cid, "results": per_ruleset})
+
+        n_profiles = len(profiles)
+        mode_applicable: dict[str, bool] = {}
+        for uid, n_yes in applicable_counts.items():
+            mode_applicable[uid] = n_yes > (n_profiles - n_yes)
+        anomalies: list[dict[str, Any]] = []
+        if n_profiles >= 3:
+            for entry in per_profile:
+                for r in entry["results"]:
+                    uid = r["unified_id"]
+                    if uid not in mode_applicable:
+                        continue
+                    if r["applicable"] != mode_applicable[uid]:
+                        anomalies.append(
+                            {
+                                "client_id": entry["client_id"],
+                                "ruleset_id": uid,
+                                "deviation": "applicable_minority"
+                                if r["applicable"]
+                                else "non_applicable_minority",
+                                "population_mode_applicable": mode_applicable[uid],
+                                "population_size": n_profiles,
+                            }
+                        )
+
+        anomaly_keys: set[tuple[str, str]] = {
+            (a["client_id"], a["ruleset_id"]) for a in anomalies
+        }
+        for entry in per_profile:
+            cid = entry["client_id"]
+            for cell in entry["results"]:
+                uid = cell["unified_id"]
+                cell["kaikei_fields"] = _kaikei_fields(
+                    cell, rs_by_uid.get(uid), is_anomaly=(cid, uid) in anomaly_keys
+                )
+
+        kaikei_summary: dict[str, int] = {"low": 0, "medium": 0, "high": 0}
+        workpaper_required_count = 0
+        for entry in per_profile:
+            for cell in entry["results"]:
+                kf = cell.get("kaikei_fields") or {}
+                risk = (kf.get("audit_risk") or {}).get("level")
+                if risk in kaikei_summary:
+                    kaikei_summary[risk] += 1
+                if kf.get("workpaper_required"):
+                    workpaper_required_count += 1
+
+        n_evals = n_profiles * len(ids)
+        units = max(1, (n_evals + _BATCH_K - 1) // _BATCH_K)
+
+        return {
+            "audit_firm_id": audit_firm_id,
+            "profile_count": n_profiles,
+            "ruleset_count": len(ids),
+            "evaluations": n_evals,
+            "results": per_profile,
+            "anomalies": anomalies,
+            "kaikei_summary": {
+                "audit_risk_counts": kaikei_summary,
+                "workpaper_required_count": workpaper_required_count,
+                "evaluations": n_evals,
+            },
+            "billing": {
+                "units": units,
+                "yen_excl_tax": units * 3,
+                "yen_incl_tax": int(round(units * 3 * 1.10)),
+                "fan_out_factor": _BATCH_K,
+            },
+            "brand": _BRAND,
+            "_disclaimer": _AUDIT_DISCLAIMER,
+            "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
+        }
+    finally:
+        conn.close()
+
+
+@mcp.tool(annotations=_READ_ONLY)
+@_with_mcp_telemetry
+def resolve_citation_chain(
+    ruleset_id: Annotated[
+        str,
+        Field(
+            description=(
+                "TAX-<10 hex> id. Returns the full provenance graph rooted "
+                "at this ruleset."
+            ),
+            pattern=_TAX_ID_RE,
+        ),
+    ],
+) -> dict[str, Any]:
+    """[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。NTA primary source corpus (autonomath.db migration 103: 通達 3,221 / 質疑応答 286 / 文書回答 278) + jpintel.db laws + court_decisions を walk。出力 tree は監査調書 索引にそのまま貼付可。¥3 / call。§47条の2 + §52 sensitive — citing tax authorities is sensitive territory.
+    """
+    try:
+        from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
+        from jpintel_mcp.api.audit import (
+            _AUDIT_DISCLAIMER,
+            _AUDIT_DISCLAIMER_EN,
+            _BRAND,
+            _build_cite_chain,
+        )
+    except ImportError as exc:  # pragma: no cover
+        return _err("internal", f"cite_chain helpers unavailable: {exc}")
+
+    conn = connect()
+    try:
+        row = conn.execute(
+            "SELECT * FROM tax_rulesets WHERE unified_id = ?", (ruleset_id,)
+        ).fetchone()
+        if row is None:
+            return _err(
+                "no_matching_records",
+                f"tax_ruleset not found: {ruleset_id}",
+            )
+        chain = _build_cite_chain(conn, row)
+        snapshot_id, checksum = compute_corpus_snapshot(conn)
+        return {
+            **chain,
+            "billing": {"units": 1, "yen_excl_tax": 3, "yen_incl_tax": 3},
+            "corpus_snapshot_id": snapshot_id,
+            "corpus_checksum": checksum,
+            "brand": _BRAND,
+            "_disclaimer": _AUDIT_DISCLAIMER,
+            "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
+        }
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
 # Invoice registrants (1)
 # ---------------------------------------------------------------------------
 
@@ -7810,6 +8274,21 @@ def combined_compliance_check(
             ),
         ),
     ] = None,
+    include_inferred: Annotated[
+        bool,
+        Field(
+            description=(
+                "When False (default), the compat_matrix section is filtered to "
+                "rows with inferred_only=0 — pairs that carry a primary-source "
+                "citation in source_url. The 40k+ heuristic-only inferred rows "
+                "are excluded from `pairs[]` but their count is surfaced in "
+                "`compat_matrix.inferred_excluded_count` so callers see the "
+                "honest coverage gap (景表法 fence). Set True to widen the "
+                "search to all rows incl. inferred ones — appropriate when the "
+                "caller wants signal even at lower confidence."
+            ),
+        ),
+    ] = False,
 ) -> dict[str, Any]:
     """OMNIBUS-COMPLIANCE: one-shot compliance report combining (a) exclusion_rules check for the named program, (b) tax_rulesets evaluation against business_profile, (c) top-N relevant bids (filtered by program_id_hint when program_unified_id is set, otherwise by business_profile.prefecture), and (d) when `candidate_program_ids` ≥ 2: pairwise am_compat_matrix lookup + am_combo_calculator member-containment match. Use when the caller says "check everything for this business/program at once".
 
@@ -7824,9 +8303,9 @@ def combined_compliance_check(
       - exclusion_check: {hits[], checked_rules} (empty when program_unified_id is None)
       - tax_evaluation: {results[], applicable_count, applicable_ruleset_ids} — results is applicable-only by default; set tax_verbose=True to include non-matching rulesets.
       - relevant_bids: [BidOut …] (up to top_bids)
-      - compat_matrix: {pairs[], incompatible_count, case_by_case_count, unknown_count, missing_count} (only when candidate_program_ids has ≥2 entries; reads am_compat_matrix in native key shape).
+      - compat_matrix: {pairs[], incompatible_count, case_by_case_count, unknown_count, missing_count, include_inferred, inferred_excluded_count} (only when candidate_program_ids has ≥2 entries; reads am_compat_matrix in native key shape; pairs[] filtered to inferred_only=0 by default — set include_inferred=True to widen).
       - combo_calculator: {matched_combos[], unmatched_count} (only when candidate_program_ids has ≥2 entries; member-containment match against am_combo_calculator).
-      - data_quality: {exclusion_join_coverage_pct, compat_unknown_bucket_pct} — honest data-coverage surface so the LLM does not silently treat dark-inventory gaps as "all clear".
+      - data_quality: {exclusion_join_coverage_pct, compat_unknown_bucket_pct, compat_inferred_pct} — honest data-coverage surface so the LLM does not silently treat dark-inventory gaps as "all clear".
       - summary: terse natural-language roll-up.
 
     CHAIN:
@@ -7973,6 +8452,7 @@ def combined_compliance_check(
         compat_section: dict[str, Any] | None = None
         combo_section: dict[str, Any] | None = None
         compat_unknown_pct: float | None = None
+        compat_inferred_pct: float | None = None
         if (
             isinstance(candidate_program_ids, list)
             and len(candidate_program_ids) >= 2
@@ -7986,23 +8466,49 @@ def combined_compliance_check(
                 ids_sorted = sorted(set(candidate_program_ids))
                 pairs_out: list[dict[str, Any]] = []
                 missing_count = 0
+                inferred_excluded_count = 0
                 inc_n = cbc_n = unk_n = 0
+                # Migration 077 fix #2 (phantom-moat audit): authoritative-only
+                # by default. The inferred_only=0 filter prefers rows with a
+                # primary-source citation in source_url. include_inferred=True
+                # widens the SELECT to all rows; the count of pairs hidden by
+                # the filter surfaces in compat_matrix.inferred_excluded_count.
+                if include_inferred:
+                    base_sql_ab = (
+                        "SELECT * FROM am_compat_matrix "
+                        "WHERE program_a_id=? AND program_b_id=? LIMIT 1"
+                    )
+                    base_sql_ba = base_sql_ab
+                else:
+                    base_sql_ab = (
+                        "SELECT * FROM am_compat_matrix "
+                        "WHERE program_a_id=? AND program_b_id=? "
+                        "AND inferred_only=0 LIMIT 1"
+                    )
+                    base_sql_ba = base_sql_ab
                 for i in range(len(ids_sorted)):
                     for j in range(i + 1, len(ids_sorted)):
                         a, b = ids_sorted[i], ids_sorted[j]
-                        row = am_conn.execute(
-                            "SELECT * FROM am_compat_matrix "
-                            "WHERE program_a_id=? AND program_b_id=? LIMIT 1",
-                            (a, b),
-                        ).fetchone()
+                        row = am_conn.execute(base_sql_ab, (a, b)).fetchone()
                         if row is None:
-                            row = am_conn.execute(
-                                "SELECT * FROM am_compat_matrix "
-                                "WHERE program_a_id=? AND program_b_id=? LIMIT 1",
-                                (b, a),
-                            ).fetchone()
+                            row = am_conn.execute(base_sql_ba, (b, a)).fetchone()
                         if row is None:
                             missing_count += 1
+                            # When the authoritative filter is on, also count
+                            # how many pairs DID have an inferred-only row
+                            # that we suppressed — distinguishes "no data"
+                            # from "data exists but uncited" so the LLM
+                            # can decide whether to retry with include_inferred.
+                            if not include_inferred:
+                                inferred_row = am_conn.execute(
+                                    "SELECT 1 FROM am_compat_matrix "
+                                    "WHERE (program_a_id=? AND program_b_id=?) "
+                                    "OR (program_a_id=? AND program_b_id=?) "
+                                    "LIMIT 1",
+                                    (a, b, b, a),
+                                ).fetchone()
+                                if inferred_row is not None:
+                                    inferred_excluded_count += 1
                             continue
                         status = row["compat_status"]
                         if status == "incompatible":
@@ -8028,6 +8534,8 @@ def combined_compliance_check(
                     "case_by_case_count": cbc_n,
                     "unknown_count": unk_n,
                     "missing_count": missing_count,
+                    "include_inferred": include_inferred,
+                    "inferred_excluded_count": inferred_excluded_count,
                 }
 
                 # Combo calculator member-containment scan — 56-row table, O(56).
@@ -8067,11 +8575,17 @@ def combined_compliance_check(
                 # data_quality.compat_unknown_bucket_pct — global ratio of unknown
                 # rows in am_compat_matrix. This is a STATIC honesty surface (not
                 # filtered by candidate_program_ids) so the LLM never mistakes
-                # "no incompatibility found" for "verified compatible" while
-                # 4,849 / 48,815 ≈ 9.93% of the matrix is the unknown bucket.
+                # "no incompatibility found" for "verified compatible".
+                # Post-migration 077 (phantom-moat audit fix #2, 2026-04-29):
+                # the 4,849 unknown+no-evidence rows were deleted, so the
+                # remaining "unknown" rows all carry an evidence_relation
+                # pointer. The pct also now distinguishes inferred_only rows
+                # so the LLM can see how much of the corpus is heuristic vs.
+                # primary-source-cited.
                 tot_row = am_conn.execute(
                     "SELECT "
                     "  SUM(CASE WHEN compat_status='unknown' THEN 1 ELSE 0 END) AS u, "
+                    "  SUM(CASE WHEN inferred_only=1 THEN 1 ELSE 0 END) AS inf, "
                     "  COUNT(*) AS t "
                     "FROM am_compat_matrix"
                 ).fetchone()
@@ -8079,6 +8593,11 @@ def combined_compliance_check(
                     compat_unknown_pct = round(
                         100.0 * (tot_row["u"] or 0) / float(tot_row["t"]), 2
                     )
+                    compat_inferred_pct = round(
+                        100.0 * (tot_row["inf"] or 0) / float(tot_row["t"]), 2
+                    )
+                else:
+                    compat_inferred_pct = None
             except (sqlite3.OperationalError, FileNotFoundError, ImportError):
                 # autonomath.db absent / table missing — surface empty sections
                 # so the LLM can see the dark inventory was attempted but the
@@ -8158,6 +8677,12 @@ def combined_compliance_check(
                 # corpora share zero key space today; honest 0.0 is the correct
                 # disclosure. P0.4 / P0.5 may close this with a mapping table.
                 "compat_unknown_bucket_pct": compat_unknown_pct,
+                # Migration 077 (phantom-moat audit fix #2, 2026-04-29):
+                # share of am_compat_matrix rows with no source_url citation.
+                # Pairs returned in compat_matrix.pairs[] are filtered to
+                # inferred_only=0 by default; this pct is the corpus-wide
+                # inferred share so the LLM can size the gap honestly.
+                "compat_inferred_pct": compat_inferred_pct,
             }
         # Surface coverage gaps so the LLM doesn't mistake "0 bids" for "no bids exist".
         coverage: dict[str, Any] = {}
@@ -8620,7 +9145,7 @@ def run() -> None:
     # Cache the fallback decision once. ``detect_fallback_mode()`` returns
     # True iff the local ``data/jpintel.db`` is empty / missing — typical
     # of a ``uvx autonomath-mcp`` install where the wheel ships without
-    # data/. When True, the 10 wired tools route to ``api.autonomath.ai``
+    # data/. When True, the 10 wired tools route to ``api.zeimu-kaikei.ai``
     # transparently; the remaining tools surface ``remote_only`` envelopes.
     # Logs the decision so operators see it in stdio handshake noise.
     _fallback = detect_fallback_mode()

@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Documentation & FAQ
+    url: https://zeimu-kaikei.ai/docs/
+    about: Quickstart, MCP setup, REST API reference, pricing, and known limitations. Most questions are answered here.
   - name: Support (email)
-    url: mailto:support@<DOMAIN_PLACEHOLDER>
-    about: Billing, API keys, account issues, or anything you'd rather not discuss in public. 24h response on weekdays.
-  - name: Security issues
-    url: mailto:security@<DOMAIN_PLACEHOLDER>
-    about: Vulnerability reports. Please do not open a public issue for security problems.
+    url: mailto:info@bookyou.net
+    about: Billing, API keys, account issues, or anything you'd rather not discuss in public. Solo operator — best-effort response, no SLA.
+  - name: Security report
+    url: mailto:info@bookyou.net
+    about: Vulnerability reports. Please do not open a public issue for security problems. See SECURITY.md for the disclosure policy.

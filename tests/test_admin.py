@@ -286,7 +286,8 @@ def test_admin_cohort_zero_when_table_missing(
     assert body["active_d7"] == 0
     assert body["churn_count"] == 0
     assert body["churn_reason_breakdown"] == {}
-    assert body["note"] is not None
+    # Cohort note must explain the zero-rows surface (table missing).
+    assert isinstance(body["note"], str) and len(body["note"]) > 0
 
 
 # ---------------------------------------------------------------------------

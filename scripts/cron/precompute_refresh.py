@@ -66,9 +66,15 @@ _SRC = _REPO / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+# Make sibling cron scripts importable (e.g. refresh_amendment_diff).
+_CRON_DIR = Path(__file__).resolve().parent
+if str(_CRON_DIR) not in sys.path:
+    sys.path.insert(0, str(_CRON_DIR))
+
 from jpintel_mcp.cache.l4 import sweep_expired  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
+from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.precompute_refresh")
 
@@ -118,8 +124,14 @@ PC_TABLES_D8 = (
 # entity_id_map). Their refreshers manage their own connection + tx — the
 # outer _refresh_one skips the DELETE step on jpintel write_conn for these,
 # because the table doesn't exist there.
+#
+# `am_amendment_diff` (migration 075) is append-only — its refresher must
+# NEVER DELETE. The PC_TABLES_AM short-circuit in _refresh_one is exactly
+# what we need: it delegates the entire tx to the refresher, which for the
+# diff refresher is "INSERT only when something actually changed."
 PC_TABLES_AM = (
     "jpi_pc_program_health",
+    "am_amendment_diff",
 )
 
 PC_TABLES = PC_TABLES_C3 + PC_TABLES_D8 + PC_TABLES_AM
@@ -546,6 +558,30 @@ def _refresh_pc_program_health(
         conn.close()
 
 
+def _refresh_am_amendment_diff(
+    w: sqlite3.Connection,
+    r: sqlite3.Connection | None,
+    am_db_path: Path | None = None,
+) -> int:
+    """Append-only amendment diff log (Z3 phantom-moat fix, migration 075).
+
+    Delegates to scripts/cron/refresh_amendment_diff.run() so the cron
+    body lives next to the table it owns. Returns the number of diff rows
+    appended in this run (0 when nothing changed — the idempotent path).
+
+    The wrapped function manages its own connection + tx. _refresh_one's
+    PC_TABLES_AM short-circuit means we never DELETE here; that is the
+    point of an append-only log.
+    """
+    am_path = am_db_path if am_db_path is not None else settings.autonomath_db_path
+    # Local import to avoid loading the cron module unless this refresher
+    # actually fires (matches the pattern used elsewhere in this file).
+    from refresh_amendment_diff import run as _refresh_diff  # noqa: PLC0415
+
+    counters = _refresh_diff(am_db_path=am_path, limit=None, dry_run=False)
+    return int(counters.get("diff_rows_inserted", 0))
+
+
 REFRESHERS: dict[str, Callable[[sqlite3.Connection, sqlite3.Connection | None], int]] = {
     # C3 wave (migration 044).
     "pc_top_subsidies_by_industry": _refresh_pc_top_subsidies_by_industry,
@@ -583,6 +619,8 @@ REFRESHERS: dict[str, Callable[[sqlite3.Connection, sqlite3.Connection | None], 
     "pc_amendment_severity_distribution": _refresh_pc_amendment_severity_distribution,
     # E1 wave (migration 048+, autonomath.db resident).
     "jpi_pc_program_health": _refresh_pc_program_health,
+    # Z3 wave (migration 075, autonomath.db resident, append-only).
+    "am_amendment_diff": _refresh_am_amendment_diff,
 }
 
 
@@ -675,16 +713,28 @@ def main(argv: list[str] | None = None) -> int:
 
     only = [s.strip() for s in args.only.split(",") if s.strip()] or None
 
-    try:
-        run(
-            db_path=db_path,
-            am_db_path=am_db_path,
-            only=only,
-            dry_run=bool(args.dry_run),
-        )
-    except Exception as e:
-        logger.exception("pc_refresh_failed err=%s", e)
-        return 1
+    with heartbeat("precompute_refresh") as hb:
+        try:
+            counters = run(
+                db_path=db_path,
+                am_db_path=am_db_path,
+                only=only,
+                dry_run=bool(args.dry_run),
+            )
+        except Exception as e:
+            logger.exception("pc_refresh_failed err=%s", e)
+            return 1
+        if isinstance(counters, dict):
+            hb["rows_processed"] = int(
+                counters.get("rows_inserted", counters.get("refreshed", 0)) or 0
+            )
+            hb["metadata"] = {
+                k: counters.get(k)
+                for k in ("targets", "swept", "skipped", "dry_run")
+                if k in counters
+            }
+        else:
+            hb["metadata"] = {"only": only, "dry_run": bool(args.dry_run)}
     return 0
 
 

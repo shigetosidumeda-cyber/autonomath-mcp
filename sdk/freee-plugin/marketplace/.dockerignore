@@ -1,0 +1,7 @@
+node_modules
+test
+submission
+.env
+.env.*
+*.log
+.DS_Store

@@ -1,0 +1,221 @@
+{
+  "_schema": "v1",
+  "_note": "47 都道府県 + 政令市 20 の補助金一覧 seed URL。 各 seed は 補助金 / 助成金 / 支援金 listing への入口。 WebSearch + WebFetch で 2026-04-29 に実在 + 補助金 listing 存在を確認した URL のみ retain。",
+  "_user_agent": "JpIntelBot/1.0 (+https://zeimu-kaikei.ai/about)",
+  "_license_default": "gov_standard_v2.0",
+  "_verified_at": "2026-04-29",
+  "prefectures": {
+    "北海道": [
+      {"url": "https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/", "kind": "subsidy_listing", "topic": "中小企業課 補助金・助成金・支援金"},
+      {"url": "https://www.pref.hokkaido.lg.jp/category/d011/c067/s312/", "kind": "category", "topic": "中小企業対策・支援"}
+    ],
+    "青森県": [
+      {"url": "https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/hojyokinseido_tirasi_itiran.html", "kind": "subsidy_listing", "topic": "中小企業 主な補助金等"},
+      {"url": "https://www.pref.aomori.lg.jp/hojokin/index_1.html", "kind": "subsidy_listing", "topic": "補助金・助成金"}
+    ],
+    "岩手県": [
+      {"url": "https://www.pref.iwate.jp/engan/keiei/1077763/index.html", "kind": "subsidy_listing", "topic": "事業者向け補助金・助成金等支援情報"},
+      {"url": "https://www.pref.iwate.jp/engan/keiei/1072771/shien/1013973.html", "kind": "subsidy_listing", "topic": "補助金・助成金"}
+    ],
+    "宮城県": [
+      {"url": "https://www.pref.miyagi.jp/life/7/25/331/index.html", "kind": "subsidy_listing", "topic": "補助金・助成金"},
+      {"url": "https://www.pref.miyagi.jp/soshiki/chukisi/", "kind": "category", "topic": "中小企業支援室"}
+    ],
+    "秋田県": [
+      {"url": "https://www.pref.akita.lg.jp/pages/genre/34580", "kind": "subsidy_listing", "topic": "補助金"},
+      {"url": "https://www.pref.akita.lg.jp/pages/genre/14152", "kind": "subsidy_listing", "topic": "補助制度"},
+      {"url": "https://www.pref.akita.lg.jp/pages/genre/41822", "kind": "subsidy_listing", "topic": "各種支援・助成金情報"}
+    ],
+    "山形県": [
+      {"url": "https://www.pref.yamagata.jp/sangyo/jigyousha/joseikin.html", "kind": "subsidy_listing", "topic": "助成・補助金等"},
+      {"url": "https://www.pref.yamagata.jp/joseishien/index.html", "kind": "subsidy_listing", "topic": "助成・支援制度"}
+    ],
+    "福島県": [
+      {"url": "https://www.pref.fukushima.lg.jp/life/sub/2/", "kind": "subsidy_listing", "topic": "助成金・補助金"},
+      {"url": "https://www.pref.fukushima.lg.jp/site/ontai/hojyojyosei.html", "kind": "subsidy_listing", "topic": "各種補助金・助成金"}
+    ],
+    "茨城県": [
+      {"url": "https://www.pref.ibaraki.jp/shokorodo/sansei/kikaku/guidbook.html", "kind": "subsidy_listing", "topic": "中小企業・小規模企業支援施策ガイドブック"},
+      {"url": "https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/r6.html", "kind": "subsidy_listing", "topic": "市町村等に対する助成制度概要"}
+    ],
+    "栃木県": [
+      {"url": "https://www.pref.tochigi.lg.jp/d02/saieneshouene/yuushihojyokin.html", "kind": "subsidy_listing", "topic": "融資・補助金"},
+      {"url": "https://www.pref.tochigi.lg.jp/f03/index.html", "kind": "category", "topic": "経営支援課"},
+      {"url": "https://www.pref.tochigi.lg.jp/f03/kunikeizaitaisaku.html", "kind": "subsidy_listing", "topic": "中小企業向け 国の補助金等メニュー"}
+    ],
+    "群馬県": [
+      {"url": "https://www.pref.gunma.jp/site/hojokin/10638.html", "kind": "subsidy_listing", "topic": "補助金等の情報"},
+      {"url": "https://www.pref.gunma.jp/page/638116.html", "kind": "subsidy_listing", "topic": "助成・支援制度"},
+      {"url": "https://www.pref.gunma.jp/soshiki/149/", "kind": "category", "topic": "地域企業支援課"}
+    ],
+    "埼玉県": [
+      {"url": "https://www.pref.saitama.lg.jp/a0801/kigyoushien_portal.html", "kind": "subsidy_listing", "topic": "事業者支援ポータル"},
+      {"url": "https://www.pref.saitama.lg.jp/shigoto/sangyo/kigyo/kigyoshien/index.html", "kind": "category", "topic": "中小企業支援"},
+      {"url": "https://www.pref.saitama.lg.jp/a0106/shienseido/index.html", "kind": "subsidy_listing", "topic": "市町村に対する支援制度"}
+    ],
+    "千葉県": [
+      {"url": "https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html", "kind": "subsidy_listing", "topic": "中小企業者向け助成金"},
+      {"url": "https://www.pref.chiba.lg.jp/keisei/genkist/kanrenseisaku.html", "kind": "subsidy_listing", "topic": "中小企業に対する支援策"}
+    ],
+    "東京都": [
+      {"url": "https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/jyosei", "kind": "subsidy_listing", "topic": "産業労働局 助成・商工"},
+      {"url": "https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou", "kind": "category", "topic": "中小企業支援"},
+      {"url": "https://www.hataraku.metro.tokyo.lg.jp/shogai/josei/", "kind": "subsidy_listing", "topic": "企業向け奨励金・助成金"}
+    ],
+    "神奈川県": [
+      {"url": "https://www.pref.kanagawa.jp/menu/5/20/116/index.html", "kind": "subsidy_listing", "topic": "企業支援・補助・融資"},
+      {"url": "https://www.pref.kanagawa.jp/docs/jf2/index.html", "kind": "category", "topic": "中小企業支援課"}
+    ],
+    "新潟県": [
+      {"url": "https://www.pref.niigata.lg.jp/site/sangyorodo/hojyokin.html", "kind": "subsidy_listing", "topic": "国及び県の企業向け補助金概要"},
+      {"url": "https://www.pref.niigata.lg.jp/sec/sangyoseisaku/1211994088184.html", "kind": "subsidy_listing", "topic": "補助金・貸付金・各種産業支援"},
+      {"url": "https://www.pref.niigata.lg.jp/life/sub/5/", "kind": "subsidy_listing", "topic": "補助・助成・融資"}
+    ],
+    "富山県": [
+      {"url": "https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/hojokin/index.html", "kind": "subsidy_listing", "topic": "助成・補助金"},
+      {"url": "https://www.pref.toyama.jp/mokutekibetsu/joseiyushi/index.html", "kind": "subsidy_listing", "topic": "助成・融資"},
+      {"url": "https://www.pref.toyama.jp/1300/shien0507.html", "kind": "subsidy_listing", "topic": "中小企業 支援制度"}
+    ],
+    "石川県": [
+      {"url": "https://www.pref.ishikawa.lg.jp/kinyuu/index.html", "kind": "category", "topic": "商工労働部経営支援課"},
+      {"url": "https://www.pref.ishikawa.lg.jp/kinyuu/keieishien/hisai_attention.html", "kind": "subsidy_listing", "topic": "事業者支援施策"}
+    ],
+    "福井県": [
+      {"url": "https://www.pref.fukui.lg.jp/doc/sanroubu/zyouhou.html", "kind": "subsidy_listing", "topic": "事業者向け支援制度"},
+      {"url": "https://www.pref.fukui.lg.jp/doc/sanroubu/shien.html", "kind": "subsidy_listing", "topic": "事業者向け支援制度のご案内"},
+      {"url": "https://www.pref.fukui.lg.jp/objective-info/aiding/index.html", "kind": "subsidy_listing", "topic": "助成・融資"}
+    ],
+    "山梨県": [
+      {"url": "https://www.pref.yamanashi.jp/shinchaku/shoukosomu/0111/shoukosomu1911.html", "kind": "subsidy_listing", "topic": "中小企業への支援策一覧"},
+      {"url": "https://www.pref.yamanashi.jp/shigoto/hojo/shokogyo/josei.html", "kind": "subsidy_listing", "topic": "助成・補助"},
+      {"url": "https://www.pref.yamanashi.jp/jigyosha/", "kind": "category", "topic": "事業者向け情報"}
+    ],
+    "長野県": [
+      {"url": "https://www.pref.nagano.lg.jp/sangyo/shokogyo/joseikin/index.html", "kind": "subsidy_listing", "topic": "助成金・優遇制度"},
+      {"url": "https://www.pref.nagano.lg.jp/sangyo/shokogyo/chusho/index.html", "kind": "category", "topic": "中小企業支援"}
+    ],
+    "岐阜県": [
+      {"url": "https://www.pref.gifu.lg.jp/page/1479.html", "kind": "subsidy_listing", "topic": "助成金・補助金等の情報"},
+      {"url": "https://www.pref.gifu.lg.jp/page/56629.html", "kind": "category", "topic": "商工業振興・経営支援"},
+      {"url": "https://www.pref.gifu.lg.jp/life/sub/10/", "kind": "subsidy_listing", "topic": "補助金・優遇制度"}
+    ],
+    "静岡県": [
+      {"url": "https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/1047031/index.html", "kind": "subsidy_listing", "topic": "支援・補助金 経営支援課"},
+      {"url": "https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/shienhojokin/index.html", "kind": "subsidy_listing", "topic": "支援・補助金 商工振興課"},
+      {"url": "https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/index.html", "kind": "subsidy_listing", "topic": "企業支援 助成・融資"}
+    ],
+    "愛知県": [
+      {"url": "https://www.pref.aichi.jp/life/sub/2/", "kind": "subsidy_listing", "topic": "助成金・補助金"},
+      {"url": "https://www.pref.aichi.jp/life/5/24/88/", "kind": "category", "topic": "中小企業支援"},
+      {"url": "https://www.pref.aichi.jp/soshiki/sangyoshinko/jidosha-siensaku.html", "kind": "subsidy_listing", "topic": "愛知県の中小企業支援"}
+    ],
+    "三重県": [
+      {"url": "https://www.pref.mie.lg.jp/KOYOKEI/HP/m0136700072.htm", "kind": "subsidy_listing", "topic": "現在受付中の補助金一覧"},
+      {"url": "https://www.pref.mie.lg.jp/common/05/ci600005557.htm", "kind": "subsidy_listing", "topic": "ものづくり産業 補助金"}
+    ],
+    "滋賀県": [
+      {"url": "https://www.pref.shiga.lg.jp/zigyousya/shien/syoukouroudou/", "kind": "subsidy_listing", "topic": "中小企業・商工・労働関連"},
+      {"url": "https://www.pref.shiga.lg.jp/zigyousya/shien/", "kind": "category", "topic": "支援・助成・補助"},
+      {"url": "https://www.pref.shiga.lg.jp/kasseika/index.html", "kind": "subsidy_listing", "topic": "しがの中小企業応援サイト"}
+    ],
+    "京都府": [
+      {"url": "https://www.pref.kyoto.jp/shinchaku/jose/index.html", "kind": "subsidy_listing", "topic": "助成制度"},
+      {"url": "https://www.pref.kyoto.jp/sangyoshigoto/business/index.html", "kind": "category", "topic": "中小企業支援・海外ビジネス支援"}
+    ],
+    "大阪府": [
+      {"url": "https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/index.html", "kind": "category", "topic": "企業支援"},
+      {"url": "https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieishien/shienkin/index.html", "kind": "subsidy_listing", "topic": "支援金・補助金"},
+      {"url": "https://www.pref.osaka.lg.jp/o050010/zaisei/sonota/hojyokinn.html", "kind": "subsidy_listing", "topic": "補助金一覧"},
+      {"url": "https://www.pref.osaka.lg.jp/o110010/shokosomu/shiensaku/index.html", "kind": "subsidy_listing", "topic": "おすすめ支援策"}
+    ],
+    "兵庫県": [
+      {"url": "https://web.pref.hyogo.lg.jp/hojo_yushi/index.html", "kind": "subsidy_listing", "topic": "補助・融資"},
+      {"url": "https://web.pref.hyogo.lg.jp/work/cate3_332.html", "kind": "category", "topic": "中小企業支援"},
+      {"url": "https://web.pref.hyogo.lg.jp/work/cate3_310.html", "kind": "subsidy_listing", "topic": "起業"},
+      {"url": "https://web.pref.hyogo.lg.jp/kk08/hojojigyou.html", "kind": "subsidy_listing", "topic": "市町への補助事業"}
+    ],
+    "奈良県": [
+      {"url": "https://www.pref.nara.jp/66466.htm", "kind": "subsidy_listing", "topic": "補助金制度のご案内"},
+      {"url": "https://www.pref.nara.jp/15779.htm", "kind": "subsidy_listing", "topic": "各種助成事業"},
+      {"url": "https://www.pref.nara.jp/47179.htm", "kind": "category", "topic": "起業・経営をサポートする奈良県施策"}
+    ],
+    "和歌山県": [
+      {"url": "https://www.pref.wakayama.lg.jp/prefg/061000/d00155919.html", "kind": "subsidy_listing", "topic": "各種支援制度のご案内"},
+      {"url": "https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund.html", "kind": "subsidy_listing", "topic": "わかやま中小企業元気ファンド"}
+    ],
+    "鳥取県": [
+      {"url": "https://www.pref.tottori.lg.jp/125052.htm", "kind": "subsidy_listing", "topic": "鳥取県の補助金"},
+      {"url": "https://www.pref.tottori.lg.jp/289922.htm", "kind": "category", "topic": "中小企業・小規模事業者への支援"},
+      {"url": "https://www.pref.tottori.lg.jp/shoukou-portalsite/", "kind": "subsidy_listing", "topic": "とっとり産業支援ナビ"}
+    ],
+    "島根県": [
+      {"url": "https://www.pref.shimane.lg.jp/keieishien/", "kind": "category", "topic": "中小企業課"},
+      {"url": "https://www.pref.shimane.lg.jp/industry/syoko/sangyo/chusho/", "kind": "subsidy_listing", "topic": "中小企業支援"}
+    ],
+    "岡山県": [
+      {"url": "https://www.pref.okayama.jp/page/383431.html", "kind": "subsidy_listing", "topic": "補助金等情報"},
+      {"url": "https://www.pref.okayama.jp/soshiki/45/", "kind": "category", "topic": "経営支援課"},
+      {"url": "https://www.pref.okayama.jp/soshiki/43/", "kind": "category", "topic": "産業振興課"}
+    ],
+    "広島県": [
+      {"url": "https://www.pref.hiroshima.lg.jp/soshiki/26/hojyokin.html", "kind": "subsidy_listing", "topic": "補助金情報"},
+      {"url": "https://www.pref.hiroshima.lg.jp/site/covid-support/jigyosha-all.html", "kind": "subsidy_listing", "topic": "事業者向け 主な支援策"}
+    ],
+    "山口県": [
+      {"url": "https://www.pref.yamaguchi.lg.jp/soshiki/17/300929.html", "kind": "subsidy_listing", "topic": "YAMAGUCHI 補助金カンタン検索"},
+      {"url": "https://www.pref.yamaguchi.lg.jp/soshiki/135/180854.html", "kind": "subsidy_listing", "topic": "補助金"}
+    ],
+    "徳島県": [
+      {"url": "https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/zyoseiyushi/", "kind": "subsidy_listing", "topic": "助成・融資"},
+      {"url": "https://www.pref.tokushima.lg.jp/entrepreneur/policy/funds/subsidy/", "kind": "subsidy_listing", "topic": "起業・創業 補助金・助成金"}
+    ],
+    "香川県": [
+      {"url": "https://www.pref.kagawa.lg.jp/sangyo/zigyou/index.html", "kind": "subsidy_listing", "topic": "商工労働部支援制度（補助金等）一覧"},
+      {"url": "https://www.pref.kagawa.lg.jp/sangyo/miraitoshi/index.html", "kind": "subsidy_listing", "topic": "未来投資応援補助金"}
+    ],
+    "愛媛県": [
+      {"url": "https://www.pref.ehime.jp/page/4595.html", "kind": "subsidy_listing", "topic": "助成・優遇制度"},
+      {"url": "https://www.pref.ehime.jp/page/61933.html", "kind": "subsidy_listing", "topic": "中小企業等に対する支援策"},
+      {"url": "https://www.pref.ehime.jp/site/madoguchi/list201-637.html", "kind": "subsidy_listing", "topic": "支援の窓口 助成・優遇制度"}
+    ],
+    "高知県": [
+      {"url": "https://www.pref.kochi.lg.jp/category/bunya/kenseijoho/johokokai/hojokin/more@docs_1.html", "kind": "subsidy_listing", "topic": "補助金（交付金含）"},
+      {"url": "https://www.pref.kochi.lg.jp/bunya/shigoto_sangyo/hojo_shien/more.html", "kind": "subsidy_listing", "topic": "補助・支援"}
+    ],
+    "福岡県": [
+      {"url": "https://www.pref.fukuoka.lg.jp/life/4/32/134/", "kind": "subsidy_listing", "topic": "中小企業支援・融資制度"},
+      {"url": "https://www.pref.fukuoka.lg.jp/life/4/38/169/", "kind": "subsidy_listing", "topic": "補助事業・制度資金"}
+    ],
+    "佐賀県": [
+      {"url": "https://www.pref.saga.lg.jp/kiji00374164/index.html", "kind": "subsidy_listing", "topic": "佐賀県の補助制度一覧"},
+      {"url": "https://www.pref.saga.lg.jp/list03487.html", "kind": "subsidy_listing", "topic": "補助金をご検討の方へ"},
+      {"url": "https://www.pref.saga.lg.jp/list00575.html", "kind": "subsidy_listing", "topic": "支援・補助"}
+    ],
+    "長崎県": [
+      {"url": "https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/", "kind": "subsidy_listing", "topic": "中小企業支援・金融"},
+      {"url": "https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/sangyoshien/27sangyousien/721418.html", "kind": "subsidy_listing", "topic": "産業支援制度"}
+    ],
+    "熊本県": [
+      {"url": "https://www.pref.kumamoto.jp/soshiki/61/", "kind": "category", "topic": "商工振興金融課"},
+      {"url": "https://www.pref.kumamoto.jp/soshiki/61/215469.html", "kind": "subsidy_listing", "topic": "中小企業・小規模事業者への支援"}
+    ],
+    "大分県": [
+      {"url": "https://www.pref.oita.jp/life/sub/6/index-2.html", "kind": "subsidy_listing", "topic": "助成金・補助金"},
+      {"url": "https://www.pref.oita.jp/site/sme/list21659-25676.html", "kind": "subsidy_listing", "topic": "補助金（商業・サービス業）"},
+      {"url": "https://www.pref.oita.jp/soshiki/14000/oita-chusho2.html", "kind": "subsidy_listing", "topic": "おおいた中小企業支援ポータル"}
+    ],
+    "宮崎県": [
+      {"url": "https://www.pref.miyazaki.lg.jp/shokoseisaku/shigoto/shokogyo/20230309092545.html", "kind": "subsidy_listing", "topic": "中小企業のための支援事業案内"},
+      {"url": "http://www.pref.miyazaki.lg.jp/contents/org/shoko/seisaku/chyusyo_portal/", "kind": "subsidy_listing", "topic": "中小企業支援ポータル"}
+    ],
+    "鹿児島県": [
+      {"url": "http://www.pref.kagoshima.jp/sangyo-rodo/rodo/zyosei/index.html", "kind": "subsidy_listing", "topic": "助成金"},
+      {"url": "https://www.pref.kagoshima.jp/af02/keieikakushin/jigyouhishienhojokin.html", "kind": "subsidy_listing", "topic": "中小企業経営革新支援事業費補助金"}
+    ],
+    "沖縄県": [
+      {"url": "https://www.pref.okinawa.jp/shigoto/shien/1010056/1022724/1010103.html", "kind": "subsidy_listing", "topic": "中小企業支援制度一覧"},
+      {"url": "https://www.pref.okinawa.jp/site/sangyo/sangyo/chushoshien/index.html", "kind": "category", "topic": "中小企業支援"},
+      {"url": "https://www.pref.okinawa.jp/shigoto/shien/1010056/index.html", "kind": "subsidy_listing", "topic": "中小企業支援"}
+    ]
+  }
+}

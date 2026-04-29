@@ -3,31 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AutonoMath — 詰まったところ、ありますか?</title>
+<title>AutonoMath — 玄人向けの 3 つの省力化Tips</title>
 </head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:640px;margin:24px auto;padding:0 20px;color:#111;line-height:1.7;">
 
-<h1 style="font-size:22px;margin:0 0 12px;">詰まったところ、ありますか?</h1>
+<h1 style="font-size:22px;margin:0 0 12px;">玄人向けの 3 つの省力化 Tips</h1>
 
-<p>キー末尾 <code>{{key_last4}}</code>({{tier}} プラン)を発行してから2週間、まだ最初のリクエストをいただいていません。</p>
+<p>キー末尾 <code>{{key_last4}}</code>({{tier}} プラン)を発行してから 2 週間、{{usage_count}} 回ご利用いただきました。「ループ叩きで雑コーディングしている」段階から「予算と運用が整った」段階に移れる、よく効く 3 つの設定だけお送りします。</p>
 
-<p>セールスのリマインドではありません。<strong>なぜ使い始めにつまずいたか</strong>だけ教えてもらえると、今後のドキュメント改善の材料になります。</p>
+<h2 style="font-size:17px;margin-top:28px;">1. MCP 経由でループを LLM に押し込む</h2>
+<p>curl で 1 件ずつ叩いている場合、Claude Desktop / Cursor / Cline から MCP 経由で呼ぶと、自然言語側で<strong>クエリ生成と結果の正規化</strong>がそのまま噛みます。下の設定を 1 回入れれば、以降は「東京都の中小企業向けで 1000 万円以上の補助金を10件、それぞれ排他ルールも付けて」と書くだけです。</p>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>{
+  "mcpServers": {
+    "autonomath": {
+      "command": "npx",
+      "args": ["-y", "@autonomath/mcp"],
+      "env": { "AUTONOMATH_API_KEY": "YOUR_KEY" }
+    }
+  }
+}</code></pre>
+<p style="margin:6px 0;"><a href="https://zeimu-kaikei.ai/integrations/" style="color:#1e3a8a;">クライアント別セットアップ詳細</a></p>
 
-<p>よくある詰まりどころ:</p>
-<ul style="color:#444;">
-  <li>ドキュメントが見つけにくい → <a href="https://autonomath.ai/getting-started/" style="color:#1e3a8a;">Getting Started</a> を最短3分で用意しています</li>
-  <li>欲しいプログラムの unified_id が分からない → <a href="https://autonomath.ai/examples/" style="color:#1e3a8a;">examples 集</a>に検索パターン例あり</li>
-  <li>MCP クライアントから呼びたい → <a href="https://autonomath.ai/mcp-tools/" style="color:#1e3a8a;">MCP セットアップ</a></li>
-  <li>特定の制度が DB にない → <strong>このメールに返信で</strong>教えてください。可能な範囲で追加します</li>
-</ul>
+<h2 style="font-size:17px;margin-top:28px;">2. <code>/programs/batch</code> で N 倍の節約</h2>
+<p>取引先の DD / 申請候補のスクリーニングなど、<strong>N 件まとめて取りに行くなら 1 リクエストにまとめる</strong>のが効きます。N 個の <code>get_program</code> を 1 回の POST にできて、課金も 1 回分です。</p>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+  "https://api.zeimu-kaikei.ai/v1/programs/batch" \
+  -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'</code></pre>
+<p style="color:#444;font-size:14px;">同じく <code>/v1/invoice_registrants/batch</code> (法人番号 N 件) や <code>/v1/am/dd_profile/batch</code> もあります。50 件まで 1 リクエスト・¥3.30 でまとめられます。</p>
 
-<p style="margin-top:24px;">もしこの API がご期待と違うようであれば、<a href="https://autonomath.ai/billing/portal" style="color:#1e3a8a;">Stripe ポータル</a>からいつでもキャンセルできます。それでもフィードバックは大歓迎です。</p>
+<h2 style="font-size:17px;margin-top:28px;">3. <code>monthly_cap_yen</code> で予算上限を縛る</h2>
+<p>従量課金の不安は <strong>「気づいたら ¥10 万」</strong>に集中します。鍵単位の月次 ¥ ハード上限を 1 行で設定できます(JST 月初 00:00 リセット)。例えば月 ¥3,000 まで:</p>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+  "https://api.zeimu-kaikei.ai/v1/me/cap" \
+  -d '{"monthly_cap_yen": 3000}'</code></pre>
+<p style="color:#444;font-size:14px;">上限到達後はそのキーが <code>402 Payment Required</code> を返します。本番アプリでも安心して使えるようになります。解除は <code>{"monthly_cap_yen": null}</code> です。</p>
 
-<p>お返事お待ちしています。</p>
+<p style="margin-top:28px;">他の運用 Tips は <a href="https://zeimu-kaikei.ai/docs/getting-started/" style="color:#1e3a8a;">Getting Started</a> と <a href="https://zeimu-kaikei.ai/examples/" style="color:#1e3a8a;">examples 集</a>にまとめてあります。</p>
+
+<p>ご質問・改善点・「こうしたい」は、このメールに返信ください。人間が読みます。</p>
+
+<h2 style="font-size:15px;margin-top:32px;color:#444;">税理士法 §52 / 弁護士法 §72 該当の業務はおこないません</h2>
+<p style="font-size:13px;color:#666;">AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。</p>
 
 <hr style="border:none;border-top:1px solid #eee;margin:32px 0 12px;">
 <p style="color:#888;font-size:12px;">
 AutonoMath — 日本の制度情報 API + MCP<br>
+このメールは AutonoMath の活性化シーケンス (D+14) としてお送りしています。<br>
 お問い合わせ: <a href="mailto:info@bookyou.net" style="color:#888;">info@bookyou.net</a><br>
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1<br>
 配信停止: <a href="{{{pm:unsubscribe}}}" style="color:#888;">ここをクリック</a>

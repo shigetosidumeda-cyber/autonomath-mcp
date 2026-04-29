@@ -28,9 +28,12 @@ name: weekly-backup-autonomath
 
 on:
   schedule:
-    # 19:00 UTC Sunday == 04:00 JST Monday. Off-peak; well clear of the
-    # 18:17 UTC nightly jpintel.db backup.
-    - cron: "0 19 * * 0"
+    # 19:45 UTC Sunday == 04:45 JST Monday. Off-peak; well clear of the
+    # 18:17 UTC nightly jpintel.db backup. Pushed to :45 (was :00) to
+    # avoid Fly machine ssh contention with the daily Sunday cluster
+    # (ingest-daily 19:00 / nta-corpus-incremental 19:05 /
+    # trial-expire 19:10 / data-integrity 19:30 / news-pipeline 19:35).
+    - cron: "45 19 * * 0"
   workflow_dispatch: {}
 
 concurrency:

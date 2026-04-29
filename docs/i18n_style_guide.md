@@ -1,6 +1,6 @@
 # i18n Style Guide (P6-E, English V4)
 
-Hand-curation rules for the English half of the AutonoMath message
+Hand-curation rules for the English half of the 税務会計AI message
 catalog (`src/jpintel_mcp/i18n/__init__.py`). Every English string in
 the codebase MUST follow this guide. Tests in `tests/test_i18n.py`
 enforce the mechanical rules; the prose rules below are reviewed by a
@@ -31,7 +31,7 @@ human at PR time.
   - No: "No Matching Programs Found."
 - **Tool names stay snake_case** (e.g. `search_tax_incentives`) — they
   are referenced as identifiers, not English nouns.
-- **Acronyms are uppercased**: NTA, METI, MHLW, FSA, JFC, SMRJ, FTS5,
+- **Acronyms are uppercased**: NTA, METI, MHLW, FSA, JFC, SMRJ,
   MCP, REST, API. Never "Nta" or "metI".
 
 ## 3. Punctuation
@@ -104,7 +104,7 @@ then **acronym only** afterwards.
 - Keep host names verbatim: "e-Gov", "j-net21", "mirasapo-plus".
 - Lowercase URL paths: "/v1/programs/search", not "/V1/PROGRAMS/SEARCH".
 - Inline URLs without anchor text are fine in error messages:
-  "See https://autonomath.ai/docs/api-reference/."
+  "See https://zeimu-kaikei.ai/docs/api-reference/."
 
 ## 5. Length budget
 
@@ -126,7 +126,7 @@ then **acronym only** afterwards.
   references a specific program, keep the program name in Japanese.
 - **No "Japan's first" / "the only" / "best-in-class"** marketing claims.
 - **No "official partner" / "endorsed by"** language re. ministries —
-  AutonoMath is not endorsed by any ministry.
+  税務会計AI is not endorsed by any ministry.
 
 ## 7. Patterns to copy
 
@@ -203,7 +203,7 @@ this guide. Specifically:
   remains parseable by a one-line splitter.
 - **Sibling files.**
   - `site/llms.en.txt` (short index, ~40 lines) points at
-    `https://autonomath.ai/llms-full.en.txt` as the canonical full dump.
+    `https://zeimu-kaikei.ai/llms-full.en.txt` as the canonical full dump.
   - `site/llms.txt` and `site/llms-full.txt` remain the Japanese siblings
     and are NOT touched by the en regenerator.
 - **robots.txt.** The default policy `User-agent: *` `Allow: /` plus the

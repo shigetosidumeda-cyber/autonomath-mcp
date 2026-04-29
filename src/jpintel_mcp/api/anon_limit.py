@@ -37,11 +37,31 @@ from jpintel_mcp.config import settings
 # AnonQuotaHeaderMiddleware response header (X-Anon-Upgrade-Url), and any
 # future surface that wants to point an LLM caller at the conversion path.
 # `?from=429` lets the landing page distinguish friction-driven hits from
-# organic /go traffic for funnel analysis.
-UPGRADE_URL_BASE = "https://autonomath.ai/go"
-UPGRADE_URL_FROM_429 = f"{UPGRADE_URL_BASE}/upgrade?from=429"
+# organic traffic for funnel analysis.
+#
+# Both `UPGRADE_URL_BASE` (non-429 anon) and `UPGRADE_URL_FROM_429` (429
+# envelope) now point at `/upgrade.html` — the plain landing page that
+# explains the 50 req/月 cap, points at `pricing.html#api-paid`, and
+# lists the `/go` device-flow as a tertiary "if you actually have a
+# device code" option. Earlier versions sent non-429 anon callers to
+# `/go` directly, but `/go.html` is the device-flow activation page that
+# REQUIRES a `user_code` (e.g. ABCD-1234) — anon callers without a code
+# bounced. /go/upgrade fix landed the redirect via `site/_redirects`
+# (`/go/upgrade → /upgrade.html`); pointing the header straight at
+# `/upgrade.html` skips the redirect hop entirely.
+UPGRADE_URL_BASE = "https://zeimu-kaikei.ai/upgrade.html"
+UPGRADE_URL_FROM_429 = "https://zeimu-kaikei.ai/upgrade.html?from=429"
 CTA_TEXT_JA = "API key を発行して制限を解除"
 CTA_TEXT_EN = "Get an API key to remove the limit"
+# Conversion-pathway audit 2026-04-29: alongside the paid upgrade path we
+# also surface the email-only trial. An evaluator who hit the anon cap and
+# isn't ready to drop a card has a one-click alternative that captures their
+# email so we can remarket / rescue / learn (vs the prior 100% silent bounce).
+# The homepage form is the entry point for the trial; the anchor #trial
+# scrolls them straight to it.
+TRIAL_SIGNUP_URL_FROM_429 = "https://zeimu-kaikei.ai/?from=429#trial"
+TRIAL_CTA_TEXT_JA = "カードなしで試す (14 日 / 200 req)"
+TRIAL_CTA_TEXT_EN = "Try without a card (14 days / 200 requests)"
 
 
 class _AnonRateLimitExceeded(HTTPException):
@@ -494,6 +514,19 @@ async def enforce_anon_ip_limit(request: Request) -> None:
                 "upgrade_url": UPGRADE_URL_FROM_429,
                 "cta_text_ja": CTA_TEXT_JA,
                 "cta_text_en": CTA_TEXT_EN,
+                # Conversion-pathway audit 2026-04-29: also surface the
+                # email-only trial path. An evaluator who isn't ready to
+                # drop a card has a one-click alternative that captures
+                # their email so we can remarket / rescue / learn —
+                # 100% of anon bouncers leave no contact info today.
+                "trial_signup_url": TRIAL_SIGNUP_URL_FROM_429,
+                "trial_cta_text_ja": TRIAL_CTA_TEXT_JA,
+                "trial_cta_text_en": TRIAL_CTA_TEXT_EN,
+                "trial_terms": {
+                    "duration_days": 14,
+                    "request_cap": 200,
+                    "card_required": False,
+                },
             },
             headers={
                 "Retry-After": str(retry_after),
@@ -502,6 +535,7 @@ async def enforce_anon_ip_limit(request: Request) -> None:
                 "X-Anon-Quota-Remaining": "0",
                 "X-Anon-Quota-Reset": resets_at,
                 "X-Anon-Upgrade-Url": UPGRADE_URL_FROM_429,
+                "X-Anon-Trial-Url": TRIAL_SIGNUP_URL_FROM_429,
             },
         )
 
@@ -529,6 +563,9 @@ __all__ = [
     "AnonIpLimitDep",
     "CTA_TEXT_EN",
     "CTA_TEXT_JA",
+    "TRIAL_CTA_TEXT_EN",
+    "TRIAL_CTA_TEXT_JA",
+    "TRIAL_SIGNUP_URL_FROM_429",
     "UPGRADE_URL_BASE",
     "UPGRADE_URL_FROM_429",
     "anon_rate_limit_exception_handler",

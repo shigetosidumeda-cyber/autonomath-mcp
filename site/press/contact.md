@@ -36,7 +36,7 @@
 | 適格請求書登録日 | 2025-05-12 (令和7年5月12日) |
 | 所在地 | 東京都文京区小日向2-22-1 |
 | 代表者 | 梅田茂利 (Shigetoshi Umeda) |
-| 製品 | AutonoMath (https://autonomath.ai) |
+| 製品 | AutonoMath (https://zeimu-kaikei.ai) |
 | Press contact | info@bookyou.net |
 
 ## 関連資料

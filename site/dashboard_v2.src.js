@@ -20,8 +20,8 @@
 
   const API_BASE = (typeof window !== 'undefined' && (
     window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE
-  )) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'autonomath.ai'
-    ? 'https://api.autonomath.ai'
+  )) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'zeimu-kaikei.ai'
+    ? 'https://api.zeimu-kaikei.ai'
     : '');
   const api = (p) => API_BASE.replace(/\/$/, '') + p;
   const KEY_NAME = 'am_api_key';
@@ -85,7 +85,7 @@
     return k ? { 'Authorization': `Bearer ${k}` } : {};
   }
 
-  // CSRF double-submit cookie pattern (Wave 16 P1). Mirror of the helper
+  // CSRF double-submit cookie pattern. Mirror of the helper
   // in dashboard.src.js so any session-cookie POST issued from this view
   // (currently /v1/me/billing-portal) still passes the CSRF check when
   // the user has a parallel cookie session open.

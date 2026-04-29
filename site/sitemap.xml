@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Static page sitemap for jpintel-mcp site/ surface.
-  Generated: 2026-04-23 — replace https://autonomath.ai at deploy time
+  Generated: 2026-04-23 — replace https://zeimu-kaikei.ai at deploy time
   (see docs/seo_technical_audit.md and project_jpintel_trademark_intel_risk).
   Updated 2026-04-25: legal pages (privacy/tos/tokushoho) added per audit
   a30f4c848bdd242a6 — tokushoho is a Japanese e-commerce legal requirement
@@ -16,16 +16,25 @@
   also added on the JP /products.html, /widget.html, /alerts.html entries.
   /en/widget/demo.html and /en/dashboard.html stay out of the sitemap
   (demo.html and dashboard.html are noindex).
-  Updated 2026-04-26 (Wave 22): EN /en/line.html, /en/advisors.html, and
+  Updated 2026-04-26: EN /en/line.html, /en/advisors.html, and
   /en/facts.html added with hreflang pairs to JP; reciprocal EN hreflang
   also added on the JP /line.html, /advisors.html, /facts.html entries.
-  Updated 2026-04-26 (Wave 26): EN /en/confidence.html added with hreflang
+  Updated 2026-04-26: EN /en/confidence.html added with hreflang
   pair to JP; reciprocal EN hreflang added on JP /confidence.html.
   /alerts-unsubscribe.html and /en/alerts-unsubscribe.html stay out of the
   sitemap (both noindex,nofollow — confirmation surface only).
-  Updated 2026-04-26 (Wave 26 cont.): EN /en/partners.html and
+  Updated 2026-04-26: EN /en/partners.html and
   /en/prompts.html added with hreflang pairs to JP; reciprocal EN hreflang
   also added on the JP /partners.html and /prompts.html entries.
+  Updated 2026-04-26: /compare.html and /en/compare.html added
+  with hreflang pairs (neutral 6-service / 13-axis comparison page).
+  /sources.html and /en/sources.html already present; /facts.html JP/EN
+  also already present. /humans.txt already present.
+  Updated 2026-04-29: /status/ live status page added (trust
+  signal for prospect evaluation). Distinct from /status.html which is the
+  static fallback served on DNS flip during incidents — that one stays
+  noindex. The new /status/index.html polls /v1/am/health/deep + PyPI from
+  the browser; index,follow so it can rank for "AutonoMath status" queries.
 
   Excluded by design:
     - /en/tokushoho.html (noindex — JP-only legal surface with EN pointer)
@@ -41,67 +50,75 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://autonomath.ai/</loc>
+    <loc>https://zeimu-kaikei.ai/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/</loc>
+    <loc>https://zeimu-kaikei.ai/en/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/pricing.html</loc>
+    <loc>https://zeimu-kaikei.ai/pricing.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/pricing.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/pricing.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/pricing.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/pricing.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/getting-started.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/getting-started.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/docs/getting-started/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/getting-started.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/getting-started.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/about.html</loc>
+    <loc>https://zeimu-kaikei.ai/playground.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/playground.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/playground.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/about.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/about.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/about.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/about.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/about.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/about.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/about.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/about.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/about.html"/>
   </url>
   <!--
     llms.txt + llms-full.txt entries: AI-friendly site map per llmstxt.org.
@@ -110,421 +127,607 @@
     the convention. Served as text/markdown (see _headers).
   -->
   <url>
-    <loc>https://autonomath.ai/llms.txt</loc>
+    <loc>https://zeimu-kaikei.ai/llms.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/llms.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms.txt"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/llms.en.txt</loc>
+    <loc>https://zeimu-kaikei.ai/llms.en.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/llms.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms.txt"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/llms.txt</loc>
+    <loc>https://zeimu-kaikei.ai/en/llms.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms.txt"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/llms-full.txt</loc>
+    <loc>https://zeimu-kaikei.ai/llms-full.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/llms-full.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/llms-full.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms-full.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms-full.txt"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/llms-full.en.txt</loc>
+    <loc>https://zeimu-kaikei.ai/llms-full.en.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/llms-full.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/llms-full.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms-full.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms-full.txt"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/humans.txt</loc>
+    <loc>https://zeimu-kaikei.ai/humans.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/docs/</loc>
+    <loc>https://zeimu-kaikei.ai/docs/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/docs/getting-started</loc>
+    <loc>https://zeimu-kaikei.ai/docs/getting-started</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/docs/getting-started/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/getting-started.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/getting-started.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/docs/api-reference</loc>
+    <loc>https://zeimu-kaikei.ai/docs/api-reference</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/docs/mcp-tools</loc>
+    <loc>https://zeimu-kaikei.ai/docs/mcp-tools</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/docs/exclusions</loc>
+    <loc>https://zeimu-kaikei.ai/docs/exclusions</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/docs/faq</loc>
+    <loc>https://zeimu-kaikei.ai/docs/faq</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/privacy.html</loc>
+    <loc>https://zeimu-kaikei.ai/privacy.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/privacy.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/privacy.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/privacy.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/privacy.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/tos.html</loc>
+    <loc>https://zeimu-kaikei.ai/tos.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/tos.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/tos.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/tos.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/tos.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/tokushoho.html</loc>
+    <loc>https://zeimu-kaikei.ai/tokushoho.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/facts.html</loc>
+    <loc>https://zeimu-kaikei.ai/facts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/facts.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/glossary.html</loc>
+    <loc>https://zeimu-kaikei.ai/glossary.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/glossary.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/glossary.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/glossary.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/glossary.html"/>
   </url>
 
   <!-- Audience landing pages (JP + EN) live in sitemap-audiences.xml — the canonical shard with hreflang annotations. Not duplicated here. -->
 
   <!-- JP-only marketing surface (no EN mirror): press, partners, products, line, prompts, alerts, widget, testimonials, stats, confidence, advisors. -->
   <url>
-    <loc>https://autonomath.ai/products.html</loc>
+    <loc>https://zeimu-kaikei.ai/products.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/products.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/products.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/products.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/products.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/products.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/products.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/products.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/products.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/products.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/products.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/products.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/products.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/products.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/products.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/programs/</loc>
+    <loc>https://zeimu-kaikei.ai/programs/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/press/</loc>
+    <loc>https://zeimu-kaikei.ai/press/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://autonomath.ai/partners.html</loc>
+    <loc>https://zeimu-kaikei.ai/partners.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/partners.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/partners.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/partners.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/partners.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/widget.html</loc>
+    <loc>https://zeimu-kaikei.ai/widget.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/widget.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/widget.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/widget.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/widget.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/line.html</loc>
+    <loc>https://zeimu-kaikei.ai/line.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/line.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/line.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/line.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/line.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/line.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/line.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/prompts.html</loc>
+    <loc>https://zeimu-kaikei.ai/prompts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/prompts.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/prompts.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/prompts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/prompts.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/alerts.html</loc>
+    <loc>https://zeimu-kaikei.ai/alerts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/alerts.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/alerts.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/alerts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/alerts.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/testimonials.html</loc>
+    <loc>https://zeimu-kaikei.ai/testimonials.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/testimonials.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/testimonials.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/testimonials.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/testimonials.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/stats.html</loc>
+    <loc>https://zeimu-kaikei.ai/stats.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/stats.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/stats.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/stats.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/stats.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/status.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/status.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/status.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/status.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/status.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/status.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/status.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/status.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/go.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/go.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/go"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/go.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/go"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/go"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/go.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/go"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/confidence.html</loc>
+    <loc>https://zeimu-kaikei.ai/confidence.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/confidence.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/confidence.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/confidence.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/confidence.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/advisors.html</loc>
+    <loc>https://zeimu-kaikei.ai/advisors.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/advisors.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/line.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/line.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/line.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/line.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/line.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/line.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/line.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/line.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/advisors.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/advisors.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/advisors.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/facts.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/facts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/facts.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/changelog.html</loc>
+    <loc>https://zeimu-kaikei.ai/changelog.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/changelog.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/changelog.html</loc>
+    <!-- Live status page: trust signal for prospects evaluating reliability.
+         Distinct from /status.html (the static fallback served when DNS
+         is flipped to the Pages mirror during an incident). The /status/
+         directory page polls /v1/am/health/deep + PyPI from the browser
+         every 30s. Index,follow so it can rank for "zeimu-kaikei status"
+         queries. Added 2026-04-29. -->
+    <loc>https://zeimu-kaikei.ai/status/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/en/changelog.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/changelog.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/sources.html</loc>
+    <loc>https://zeimu-kaikei.ai/sources.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/sources.html"/>
   </url>
   <url>
-    <loc>https://autonomath.ai/en/sources.html</loc>
+    <loc>https://zeimu-kaikei.ai/en/sources.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://autonomath.ai/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://autonomath.ai/en/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://autonomath.ai/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/sources.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/en/compare.html</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare.html"/>
+  </url>
+  <!--
+    Per-competitor /compare/{slug}/ landing pages — 2026-04-29 launch.
+    Honest, hand-curated comparison vs 10 alternative JP institutional-data
+    sources. Generated by scripts/generate_compare_pages.py from
+    docs/compare_matrix.csv. JP-only at launch (no /en/ siblings yet).
+  -->
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/tdb/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/tdb/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/tdb/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/tsr/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/tsr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/tsr/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/gbizinfo/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/gbizinfo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/gbizinfo/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/jgrants/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/jgrants/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/jgrants/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/mirasapo/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/mirasapo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/mirasapo/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/moneyforward/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/moneyforward/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/moneyforward/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/freee/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/freee/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/freee/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/navit/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/navit/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/navit/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/nta-invoice/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/nta-invoice/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/nta-invoice/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/compare/diy-scraping/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/diy-scraping/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/diy-scraping/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/claude-desktop.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/claude-desktop.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/claude-desktop.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/cursor.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/cursor.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/cursor.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/cline.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/cline.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/cline.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html"/>
+  </url>
+  <!--
+    Trust-signal trio (2026-04-29): public roadmap, live data
+    freshness dashboard, and source citation transparency. All three
+    expose internal state externally for credibility (anti-aggregator
+    differentiator). JP-only at launch (no /en/ siblings yet).
+  -->
+  <url>
+    <loc>https://zeimu-kaikei.ai/roadmap.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/roadmap.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/roadmap.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/data-freshness.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/data-freshness.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/data-freshness.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/transparency.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/transparency.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/transparency.html"/>
   </url>
 </urlset>

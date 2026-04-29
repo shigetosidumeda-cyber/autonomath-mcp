@@ -19,8 +19,8 @@ launch — see ``docs/healthcare_v3_plan.md``.
 
 Registration is gated by ``AUTONOMATH_HEALTHCARE_ENABLED`` (default
 ``False``). At launch (2026-05-06) the env var stays unset, keeping the
-public manifest at the canonical 66 tools. Operators who flip it to
-``True`` see 72 tools (66 + 6 stubs) and can start testing the contract
+public manifest at the canonical 69 tools. Operators who flip it to
+``True`` see 75 tools (69 + 6 stubs) and can start testing the contract
 shape ahead of the W4 implementation.
 """
 

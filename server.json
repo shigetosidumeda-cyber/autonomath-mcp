@@ -1,19 +1,19 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.AutonoMath/autonomath-mcp",
-  "description": "AutonoMath — 日本の制度 (補助金/融資/税制/認定/法令) を AI agent から 1 query で。72-tool MCP (39 core + 33 autonomath: V1 + V4 universal annotation/validation/provenance + Phase A static/example/template/health + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine), 503,930 entities + 6.12M facts. ¥3/req metered、無料 50/月。",
-  "version": "0.3.0",
+  "name": "io.github.shigetosidumeda-cyber/jpintel-mcp",
+  "description": "日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 / 適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185 / 入札 362 / 融資 108) を REST + MCP API (89 tools) で横断検索。一次資料 URL + fetched_at 99%+、¥3/req metered (税込 ¥3.30) 完全従量、anon 50/月 per IP free (JST 月初リセット)。",
+  "version": "0.3.1",
   "repository": {
-    "url": "https://github.com/AutonoMath/autonomath-mcp",
+    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
     "source": "github"
   },
-  "websiteUrl": "https://autonomath.ai",
+  "websiteUrl": "https://zeimu-kaikei.ai",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "autonomath-mcp",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "transport": {
         "type": "stdio"
       }
@@ -24,7 +24,7 @@
       "publisher": "Bookyou株式会社",
       "publisher_invoice_registration_number": "T8010001213708",
       "contact": "info@bookyou.net",
-      "tool_count": 72,
+      "tool_count": 89,
       "resource_count": 28,
       "resources": [
         {"uri": "autonomath://schema/data_model", "name": "Data Model", "mimeType": "text/markdown"},

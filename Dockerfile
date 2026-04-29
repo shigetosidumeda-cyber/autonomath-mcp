@@ -71,7 +71,8 @@ FROM --platform=linux/amd64 python:3.12-slim-bookworm AS runtime
 LABEL org.opencontainers.image.title="AutonoMath API"
 LABEL org.opencontainers.image.vendor="Bookyou株式会社"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.source="https://github.com/AutonoMath/autonomath-mcp"
+# TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
+LABEL org.opencontainers.image.source="https://github.com/shigetosidumeda-cyber/jpintel-mcp"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -116,8 +117,11 @@ COPY scripts/ /app/scripts/
 # Keeps deploys = data refresh; no R2 round-trip for jpintel.db.
 COPY data/jpintel.db /seed/jpintel.db
 COPY data/unified_registry.json /seed/unified_registry.json
+# Phase A static taxonomies + example profiles + 36協定 templates (~84KB tarred).
+# entrypoint.sh copies /seed/autonomath_static/ → /data/autonomath_static/ if MANIFEST.md missing.
+COPY data/autonomath_static/ /seed/autonomath_static/
 # Update this when the baked seed changes, so entrypoint.sh re-copies on next boot.
-ENV DATA_SEED_VERSION=2026-04-25-v3
+ENV DATA_SEED_VERSION=2026-04-26-v4
 
 # -- entrypoint: created by separate agent. Performs:
 #       1. R2 download of autonomath.db -> /data/autonomath.db (if absent)

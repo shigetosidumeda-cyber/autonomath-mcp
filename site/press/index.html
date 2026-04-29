@@ -11,8 +11,8 @@
 <meta property="og:title" content="AutonoMath プレスキット / Press kit">
 <meta property="og:description" content="Boilerplate、fact sheet、quote、ロゴ、スクリーンショット、press contact。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/press/">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/press/">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
@@ -21,16 +21,16 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AutonoMath プレスキット / Press kit">
 <meta name="twitter:description" content="Boilerplate、fact sheet、quote、ロゴ、スクリーンショット、press contact。">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/press/">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/press/">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/press/">
+<link rel="canonical" href="https://zeimu-kaikei.ai/press/">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/press/">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/press/">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
 </head>
 <body>
 <a class="skip-link" href="#main">メインコンテンツへスキップ</a>
@@ -38,7 +38,6 @@
 <header class="site-header" role="banner">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="AutonoMath ホーム">
-      <span class="brand-mark" aria-hidden="true">AM</span>
       <span class="brand-name">AutonoMath</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
@@ -79,10 +78,10 @@
 AutonoMath は、日本の公的制度データ — 補助金・融資・税制優遇・認定制度・法令・行政処分・税務ruleset・適格事業者 —
 を AI エージェントから 1 API で呼び出せる REST + MCP サーバーです。
 経産省・農水省・中小企業庁・日本政策金融公庫など一次情報源から
-10,790 検索可制度 (tier S/A/B/C; 登録総数 13,578) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 9,484 法令 + 13,801 適格事業者を正規化し、
-Tier 分類・181 排他ルール・FTS5 trigram 検索・出典 URL リネージを提供します。
+10,790 検索可制度 (tier S/A/B/C; 登録総数 13,578) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 法令本文 154 + 法令メタデータ 9,484 + 13,801 適格事業者を正規化し、
+Tier 分類・181 排他ルール・日本語の高速全文検索・出典 URL リネージを提供します。
 Claude Desktop / ChatGPT / Cursor / Gemini が stdio で直接呼び出せ、SDK 不要。
-料金は完全従量 ¥3/req 税別、匿名 50 req/月 per IP 無料。
+料金は完全従量 ¥3/リクエスト 税別、匿名 50 リクエスト/月 per IP 無料。
 運営は Bookyou株式会社 (代表 梅田茂利)。Launch: 2026-05-06。
 </p>
 
@@ -93,15 +92,15 @@ Claude Desktop / ChatGPT / Cursor / Gemini が stdio で直接呼び出せ、SDK
   <tr><td>代表</td><td>梅田茂利 (Shigetoshi Umeda)</td></tr>
   <tr><td>所在地</td><td>東京都文京区小日向2-22-1</td></tr>
   <tr><td>Launch 日</td><td>2026-05-06</td></tr>
-  <tr><td>価格</td><td>¥3/req 税別 (税込 ¥3.30)、匿名 50 req/月 無料</td></tr>
+  <tr><td>価格</td><td>¥3/リクエスト 税別 (税込 ¥3.30)、匿名 50 リクエスト/月 無料</td></tr>
   <tr><td>制度件数</td><td>10,790 (検索可) / 13,578 (登録総数 incl. quarantine)</td></tr>
   <tr><td>採択事例</td><td>2,286</td></tr>
   <tr><td>融資件数</td><td>108 (三軸分解)</td></tr>
   <tr><td>行政処分</td><td>1,185</td></tr>
-  <tr><td>法令</td><td>9,484 (e-Gov, CC-BY)</td></tr>
+  <tr><td>法令</td><td>本文 154 件 + メタデータ 9,484 件 (e-Gov, CC-BY、 本文ロード継続中)</td></tr>
   <tr><td>適格事業者</td><td>13,801 (PDL v1.0)</td></tr>
   <tr><td>entity-fact</td><td>503,930 entities + 6.12M facts</td></tr>
-  <tr><td>MCP ツール</td><td>66 (38 jpintel + 28 autonomath)</td></tr>
+  <tr><td>MCP ツール</td><td>69 (39 jpintel + 30 autonomath at default gates)</td></tr>
   <tr><td>MCP プロトコル</td><td>2025-06-18</td></tr>
   <tr><td>ホスティング</td><td>Fly.io Tokyo (nrt)</td></tr>
   <tr><td>取得</td><td>100% organic (SEO / GEO / MCP registry)</td></tr>
@@ -120,10 +119,10 @@ solo + zero-touch 運営のため電話・対面・営業 cold call は対応し
 
 <h2>Downloadable (launch 後公開)</h2>
 <ul>
-  <li>Press kit ZIP (この資料 + ロゴ + screenshots): <code>https://autonomath.ai/press/autonomath-press-kit.zip</code></li>
+  <li>Press kit ZIP (この資料 + ロゴ + screenshots): <code>https://zeimu-kaikei.ai/press/autonomath-press-kit.zip</code></li>
   <li>Logos pack (SVG/PNG): <a href="logos.zip">logos.zip</a> (placeholder)</li>
-  <li>OGP 画像 pack: <code>https://autonomath.ai/press/og-pack.zip</code></li>
-  <li>Fact sheet PDF: <code>https://autonomath.ai/press/fact-sheet.pdf</code></li>
+  <li>OGP 画像 pack: <code>https://zeimu-kaikei.ai/press/og-pack.zip</code></li>
+  <li>Fact sheet PDF: <code>https://zeimu-kaikei.ai/press/fact-sheet.pdf</code></li>
 </ul>
 
 <p style="margin-top: 48px; color: #888; font-size: 0.9em;">

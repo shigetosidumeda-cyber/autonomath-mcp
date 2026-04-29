@@ -169,7 +169,7 @@ ingest は **authority 単位で独立**。1 省庁の 404 / 500 / layout 変更
   一致禁止なら skip + `skip_reason=robots`。
 - **1 req/sec/host**、連続 60 req で 15s 追加クールダウン。gov 系で
   robots.txt が無いホストも同レートを適用。
-- User-Agent = `jpintel-mcp-ingest/1.0 (+https://autonomath.ai; contact=ops@autonomath.ai)`
+- User-Agent = `jpintel-mcp-ingest/1.0 (+https://zeimu-kaikei.ai; contact=ops@zeimu-kaikei.ai)`
   (rebrand 未確定。§constraints)。
 - PDF は 10 MB 上限、HTML も 2 MB で打ち切って "not-a-page" 扱い。
 - 共通ユーティリティは `scripts/lib/http.py`。
@@ -287,3 +287,199 @@ run ごとに 1 行、構造化ログで:
   fix するまで domain 固定記載は避ける。
 - この仕組みは **社内運用のみ**。エンドユーザーに「自動更新中です」と
   advertise しない (SLA 化した瞬間に pager 案件が増える)。
+
+---
+
+## §9 Wave 21-22 cron grid (2026-04-29 audit)
+
+Wave 21-22 は ingest 以外の cron を 19 本追加した (audit-log RSS, Stripe
+reconcile, KPI digest, DR drill 等)。**全 cron は heartbeat 行を
+`cron_runs` テーブル (mig 102) に書く** — `/v1/admin/cron_status` で
+オペレータが「最後に走ったのいつ?」を 1 query で見える。
+
+### Schedule grid (UTC → JST)
+
+| Workflow                     | Cron (UTC)        | JST 換算           | Script(s) | 用途 |
+|------------------------------|-------------------|--------------------|-----------|------|
+| nightly-backup               | `17 18 * * *`     | 03:17 JST 毎日     | `scripts/backup.py`                    | jpintel.db 日次 backup → R2 |
+| analytics-cron               | `0 18 * * *`      | 03:00 JST 毎日     | `cf_analytics_export.py` + `pypi_downloads.py` + `npm_downloads.py` | DL stats |
+| nta-bulk-monthly             | `0 18 1 * *`      | 03:00 JST 月初     | `ingest_nta_invoice_bulk.py`           | 適格事業者 4M-row bulk |
+| health-drill-monthly         | `0 18 1 * *`      | 03:00 JST 月初     | `health_drill.py`                      | DR scenario 1-3 dry-run |
+| index-now-cron               | `30 18 * * *`     | 03:30 JST 毎日     | `index_now_ping.py`                    | Bing/Yandex/Naver fan-out |
+| refresh-sources              | `17 18 * * *`     | 03:17 JST 毎日     | `scripts/refresh_sources.py`           | URL 整合性 |
+| amendment-alert-cron         | `30 20 * * *`     | 05:30 JST 毎日     | `amendment_alert.py`                   | 改正 fan-out (FREE) |
+| billing-health-cron          | `0 20 * * *`      | 05:00 JST 毎日     | `stripe_reconcile.py` + `stripe_usage_backfill.py` + `predictive_billing_alert.py` + `stripe_cost_alert.py` | Stripe 4 連 |
+| dispatch-webhooks-cron       | `*/10 * * * *`    | 10 分毎           | `dispatch_webhooks.py`                 | 顧客 webhook (¥3/req) |
+| eval                         | `30 19 * * *`     | 04:30 JST 毎日     | `scripts/eval/*`                       | retrieval QA |
+| data-integrity               | `30 19 * * *`     | 04:30 JST 毎日     | `scripts/url_integrity_scan.py`        | URL 詐称検出 |
+| ingest-daily                 | `0 19 * * *`      | 04:00 JST 毎日     | `scripts/ingest_tier.py daily`         | Tier 1 ingest |
+| trial-expire-cron            | `0 19 * * *`      | 04:00 JST 毎日     | `expire_trials.py`                     | trial revoke |
+| pages-regenerate             | `17 19 * * *`     | 04:17 JST 毎日     | `scripts/generate_program_pages.py`    | SEO page rebuild |
+| news-pipeline-cron           | `30 19 * * *`     | 04:30 JST 毎日     | `refresh_amendment_diff.py` + `generate_news_posts.py` + `regenerate_rss.py` + `regenerate_audit_log_rss.py` | 4-stage news + RSS |
+| ingest-weekly                | `0 20 * * 0`      | 05:00 JST 日曜     | `scripts/ingest_tier.py weekly`        | Tier 2 ingest |
+| weekly-backup-autonomath     | `0 19 * * 0`      | 04:00 JST 月曜     | `scripts/backup.py`                    | autonomath.db 週次 |
+| incremental-law-load         | `30 19 * * 0`     | 04:30 JST 月曜     | `incremental_law_fulltext.py`          | 300 laws/週 |
+| saved-searches-cron          | `0 21 * * *`      | 06:00 JST 毎日     | `run_saved_searches.py`                | 顧客 saved-search digest (¥3) |
+| kpi-digest-cron              | `0 21 * * *`      | 06:00 JST 毎日     | `webhook_health.py` + `send_daily_kpi_digest.py` | オペレータ KPI mail |
+| precompute-refresh-cron      | `30 21 * * *`     | 06:30 JST 毎日     | `precompute_refresh.py` + `l4_cache_warm.py` + `confidence_update.py` | pc_* 再構築 |
+| ingest-monthly               | `0 21 1 * *`      | 06:00 JST 月初     | `scripts/ingest_tier.py monthly`       | Tier 3 ingest |
+| ministry-ingest-monthly      | `30 21 5 * *`     | 06:30 JST 5日      | `scripts/ingest/<ministry>.py`         | MAFF/MIC/MOJ/MHLW |
+| competitive-watch            | `0 9 * * *`       | 18:00 JST 毎日     | `scripts/competitive_watch.py`         | 競合 SEO 観測 |
+| tls-check                    | `0 3 * * *`       | 12:00 JST 毎日     | `scripts/tls_check.py`                 | 証明書監視 |
+| codeql                       | `0 3 * * 1`       | 12:00 JST 月曜     | (CodeQL action)                        | static analysis |
+| self-improve-weekly          | `30 0 * * 1`      | 09:30 JST 月曜     | `scripts/self_improve/*`               | weekly review |
+
+### Required secrets (env var name → consumer)
+
+| Secret name           | Where set      | Consumer cron(s) |
+|-----------------------|----------------|------------------|
+| `FLY_API_TOKEN`       | GitHub repo    | 全 GHA ssh-cron  |
+| `R2_ENDPOINT`         | GitHub + Fly   | nightly-backup, weekly-backup-autonomath |
+| `R2_ACCESS_KEY_ID`    | GitHub + Fly   | 同上                                      |
+| `R2_SECRET_ACCESS_KEY`| GitHub + Fly   | 同上                                      |
+| `R2_BUCKET`           | GitHub + Fly   | 同上                                      |
+| `STRIPE_SECRET_KEY`   | Fly            | billing-health-cron, dispatch-webhooks-cron, kpi-digest-cron |
+| `POSTMARK_API_TOKEN`  | Fly            | amendment-alert-cron, kpi-digest-cron, billing-health-cron, saved-searches-cron, trial-expire-cron |
+| `SENTRY_DSN`          | GitHub + Fly   | 全 cron (failure ステップで使用)            |
+| `INDEXNOW_KEY`        | Fly            | index-now-cron                            |
+| `CF_API_TOKEN`        | GitHub         | analytics-cron (Cloudflare Web Analytics)  |
+| `CF_ZONE_ID`          | GitHub         | analytics-cron                             |
+| `SLACK_WEBHOOK_INGEST`| GitHub         | ingest-daily/weekly/monthly, ministry-ingest-monthly |
+| `AUTONOMATH_BUDGET_JPY` | Fly (optional) | billing-health-cron (default ¥10,000)    |
+| `AUTONOMATH_DB_URL`   | Fly            | health-drill-monthly                       |
+| `AUTONOMATH_DB_SHA256`| Fly            | health-drill-monthly                       |
+
+### Heartbeat / health check
+
+migration 102 (`scripts/migrations/102_cron_runs_heartbeat.sql`) adds
+`cron_runs(id, cron_name, started_at, finished_at, status, rows_processed,
+rows_skipped, error_message, metadata_json, workflow_run_id, git_sha)` to
+**jpintel.db**. Every cron should `INSERT INTO cron_runs (cron_name,
+started_at, status) VALUES (?, ?, 'running')` at start, then `UPDATE`
+the row with `status / finished_at / metadata_json` on exit.
+
+Operator check:
+```sql
+-- "Show me the latest run per cron" — flag anything > 26 h stale on a
+-- daily cron, > 8 d on a weekly cron, > 32 d on a monthly cron.
+SELECT cron_name, MAX(started_at) AS last, status
+FROM cron_runs
+GROUP BY cron_name
+ORDER BY last DESC;
+```
+
+The wiring of the heartbeat call inside each script is **opt-in retrofit
+work** (not done in this audit pass). The table + indexes ship now so the
+retrofit can land incrementally without a schema bump.
+
+### Orphans / wiring notes (2026-04-29 audit)
+
+* `scripts/cron/backfill_compat_source.py` — one-shot backfill (mig 077
+  fix), **not** scheduled. Run via `flyctl ssh ... python …
+  backfill_compat_source.py` when needed.
+* `scripts/cron/backup_jpintel.py` + `backup_autonomath.py` — Python
+  re-implementations of the existing `scripts/backup.py` flow with
+  inline R2 upload. **Not yet wired into a workflow** — the existing
+  `nightly-backup.yml` + `weekly-backup-autonomath.yml` use
+  `scripts/backup.py` instead. The Python variants ship as Fly-side
+  cron substrate; once Fly Scheduled Machines is enabled the operator
+  can wire them via `[[processes]]` in `fly.toml`. Today they are
+  callable via manual `flyctl ssh` invocation.
+* `scripts/cron/r2_backup.sh` — bash entry point for the same backup
+  flow; called by `backup_*.py`. Idempotent re-runs are safe.
+* `scripts/cron/refresh_sources_nightly.sh` — legacy Fly-side wrapper;
+  **superseded** by `.github/workflows/refresh-sources.yml`. Do not
+  schedule both — keep this script for rollback only.
+* `scripts/cron/cross_source_check.py` — see §10. **Not yet scheduled
+  in CI** because of the mig 107 baseline-gating prerequisite (P0 risk
+  of 4.88M correction_log spam on first wet run). Manual invocation
+  via `flyctl ssh` only until baseline gate is verified live.
+* `scripts/cron/regenerate_corrections_rss.py` — static counterpart of
+  `GET /v1/corrections/feed`. **Not yet scheduled.** Designed to run
+  off the same Fly machine as `cross_source_check.py`; to wire, append
+  a step inside `.github/workflows/news-pipeline-cron.yml` (it already
+  ssh-es into Fly) — gated on the cross-source baseline migration.
+* `scripts/cron/sync_kintone.py` — daily kintone push for saved
+  searches with kintone integration. **Header claims invocation via
+  `saved-searches-cron.yml --kintone` flag, but that flag is not yet
+  wired in `run_saved_searches.py` or the workflow.** Today the
+  feature is one-shot — customers must hit
+  `POST /v1/integrations/kintone/sync` themselves. Cron wiring is
+  pending B-tier prioritization. Documented in
+  `integrations_setup.md` line 97 — keep that line honest if the
+  cron wires up.
+
+---
+
+## §10 Cross-source agreement cron — baseline gating
+
+`scripts/cron/cross_source_check.py` is the hourly refresher for
+`am_entity_facts.confirming_source_count` (mig 101 #6) and the writer
+that emits `correction_log` rows tagged `cross_source_conflict` when
+the live distinct-source count drops below the previously-stored value
+(mig 101 #4 + #8).
+
+**P0 risk solved by mig 107 (2026-04-29 Trust 8-pack audit):** the
+very first wet run of this cron after migration 101 went live would
+emit ~4.88M `correction_log` rows. Every fact whose stored
+`confirming_source_count` was the column DEFAULT (1) and whose live
+distinct-source count came in at 0 or 1 (e.g. NULL `source_id`
+because mig 049's `am_entity_facts.source_id` backfill is still
+pending — see CLAUDE.md "V4 absorption" section) would look like a
+regression `prev > live` and trigger:
+
+  * one `correction_log` row INSERT,
+  * one markdown post under `site/news/correction-{id}.html`,
+  * one feed-item append into `site/audit-log.rss`.
+
+At 4.88M rows this would DDOS the public RSS feed and instantly
+destroy our reputation as a trust-substrate operator (the entire
+moat hinges on the corrections feed being signal, not noise).
+
+### Solution: self-tracking baseline state (mig 107)
+
+Migration 107 (`scripts/migrations/107_cross_source_baseline_state.sql`,
+**target_db: autonomath**, idempotent) adds a single-row state table:
+
+```sql
+CREATE TABLE IF NOT EXISTS cross_source_baseline_state (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  baseline_run_at TIMESTAMP,
+  baseline_completed BOOLEAN DEFAULT 0
+);
+INSERT OR IGNORE INTO cross_source_baseline_state (id, baseline_completed)
+VALUES (1, 0);
+```
+
+The cron consults this row at the start of every run:
+
+| `baseline_completed` | Behaviour |
+|----------------------|-----------|
+| `0` (initial)        | Auto-baseline mode: refresh `confirming_source_count` but write **zero** `correction_log` rows. Mark `baseline_completed = 1` + set `baseline_run_at = NOW()` on exit. |
+| `1` (post-baseline)  | Normal regression detection — `correction_log` rows fire on `prev > live`. |
+
+### CLI flags
+
+| Flag        | Effect |
+|-------------|--------|
+| `--baseline`| Force baseline mode regardless of state. Operator re-baseline path: re-run after a known data migration (e.g. mig 049 `source_id` backfill) without spamming the corrections feed. Marks state complete on success. |
+| `--dry-run` | No writes at all (no count refresh, no correction_log rows, no state mutation). |
+
+### Honest caveat
+
+Baseline mode SUPPRESSES any genuine regression that happened to be
+already present in the DB at the moment of the first wet run. Such a
+regression re-emits on the **next** non-baseline tick because the live
+count drops below the now-recorded baseline value. Net detection
+latency loss is at most 1 cron tick (~hourly). The trade-off is
+deliberate: 1 hour of detection latency on real regressions vs. ~4.88M
+false-positive `correction_log` rows on the first run. Trust-substrate
+math says we eat the latency.
+
+### Cost note
+
+`cross_source_check.py` is internal data normalization — it does NOT
+emit a `usage_events` row and does NOT count against the `¥3/req`
+metering. The cron is operator-side observability, not a billable
+customer surface.
+

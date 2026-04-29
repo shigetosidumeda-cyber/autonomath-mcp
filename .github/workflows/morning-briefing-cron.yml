@@ -1,0 +1,88 @@
+name: morning-briefing-cron
+
+# Daily morning briefing sweep (06:05 JST per-customer 5-line summary).
+#
+# Staggered 5 minutes after saved-searches-cron (06:00 JST = 21:00 UTC)
+# so the two flyctl ssh sessions do not collide on machine startup. Bills
+# ¥3 per delivered briefing — empty briefings (no new programs / no
+# deadlines / no amendments) are NOT sent and NOT billed.
+#
+# Required GitHub repository secret: FLY_API_TOKEN (same as
+# saved-searches-cron / analytics-cron / trial-expire-cron).
+#
+# Postmark template `morning_briefing` MUST exist before the first run
+# delivers content. See docs/email/templates.md for the create steps —
+# in its absence the cron logs `email_module_unavailable` and skips.
+
+on:
+  schedule:
+    # 21:05 UTC = 06:05 JST. 5-min stagger from saved-searches-cron at
+    # 21:00 UTC so the two crons do not contend for the same Fly machine.
+    - cron: "5 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no email, no Stripe push)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: morning-briefing-cron
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run morning briefing sweep on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="--dry-run"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/morning_briefing.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=morning-briefing-cron/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.morning-briefing-cron",
+            "platform": "other",
+            "message": "morning-briefing-cron failed: flyctl ssh exited non-zero.",
+            "tags": {
+              "workflow": "morning-briefing-cron",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>税務会計AI: トライアル期間終了のお知らせ</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:640px;margin:24px auto;padding:0 20px;color:#111;line-height:1.7;">
+
+<h1 style="font-size:22px;margin:0 0 12px;">トライアル期間終了のお知らせ</h1>
+
+<p>
+{{#equal cause "cap"}}
+税務会計AI のトライアル (キー末尾 <code>{{key_last4}}</code>) は <strong>200 リクエストの上限</strong>に達したため自動的に失効しました。
+{{/equal}}
+{{#equal cause "expired"}}
+税務会計AI のトライアル (キー末尾 <code>{{key_last4}}</code>) は <strong>14 日の有効期間</strong>が経過したため自動的に失効しました。
+{{/equal}}
+</p>
+
+<p>
+続けてご利用いただく場合は、¥3.30/req (税込・¥3/req 税別) の従量課金プランで API キーを発行できます。最低利用期間・解約違約金はありません。使わない月は ¥0 です。
+</p>
+
+<p style="text-align:center;margin:28px 0;">
+  <a href="{{checkout_url}}" style="display:inline-block;background:#1e3a8a;color:#fff;text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:600;font-size:15px;">API キー発行で続行 (¥3.30/req)</a>
+</p>
+
+<h2 style="font-size:17px;margin-top:28px;">有料プランの内訳</h2>
+<ul style="font-size:14px;color:#333;">
+  <li>¥3/req 税別 (税込 ¥3.30) 完全従量、最低金額・契約なし</li>
+  <li>MCP tools / REST API すべて利用可能 (トライアルと同じ)</li>
+  <li>月次請求書 (適格請求書 / インボイス制度対応 T8010001213708) を Stripe より自動発行</li>
+  <li>解約はいつでも Stripe Customer Portal からカードを外すだけ</li>
+</ul>
+
+<h2 style="font-size:17px;margin-top:28px;">継続しない場合</h2>
+<p>
+そのまま放置していただいても問題ありません。トライアル鍵は既に無効化されており、追加の請求は発生しません。匿名 50 req/月 per IP の Free 枠は引き続きご利用いただけます。
+</p>
+
+<h2 style="font-size:17px;margin-top:28px;">フィードバックを聞かせてください</h2>
+<p>
+トライアル中に「ここが詰まった」「この機能が欲しい」「このデータ古い」等あれば、このメールにそのまま返信してください。人間が読みます。改善の最大の入口です。
+</p>
+
+<h2 style="font-size:17px;margin-top:28px;">税理士法 §52 / 弁護士法 §72 該当の業務はおこないません</h2>
+<p style="font-size:13px;color:#666;line-height:1.7;">
+税務会計AI は日本の制度情報の検索インデックス API です。<strong>税務助言・法律相談・申請代行・社会保険労務士業務はおこないません</strong>。出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は <a href="https://zeimu-kaikei.ai/tos.html" style="color:#1e3a8a;">利用規約</a> をご確認ください。
+</p>
+
+<hr style="border:none;border-top:1px solid #eee;margin:32px 0 12px;">
+<p style="color:#888;font-size:12px;">
+税務会計AI — 日本の制度情報 API + MCP<br>
+このメールはトライアル終了のお知らせとしてお送りしています (取引関連メール)。<br>
+お問い合わせ: <a href="mailto:info@bookyou.net" style="color:#888;">info@bookyou.net</a><br>
+運営: Bookyou株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
+</p>
+
+</body>
+</html>

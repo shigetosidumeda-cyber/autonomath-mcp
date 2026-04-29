@@ -1,0 +1,105 @@
+name: kpi-digest-cron
+
+# Daily 06:00 JST operator KPI email digest.
+#
+# Composes a single email per day to info@bookyou.net summarising the
+# KPIs surfaced by ops_quick_stats.py / GET /v1/admin/kpi:
+#   * MAU (anon + paid), MRR + W/W Δ, ¥/customer, cap usage
+#   * Trial signups (24h) + 30d trial→paid conversion
+#   * Churn (7d), past-due subs, unsynced metered events (>1h),
+#     reconcile drift %
+#   * GEO citation rate
+#   * Sentry / Stripe cached rows
+#
+# Severity rollup is rendered Sentry-style at the top.
+#
+# Also wires webhook_health.py — synthetic Stripe webhook health monitor
+# (R3 fix from Stripe audit) — into the same workflow because both are
+# operator-only, single-recipient signals that share Postmark + Sentry
+# config and should fire close together.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Required Fly machine secrets:
+#   POSTMARK_API_TOKEN   Postmark API key for the digest send.
+#   STRIPE_SECRET_KEY    For Stripe-webhook-health Stripe API reads.
+#   SENTRY_DSN           Optional. Both scripts emit Sentry events on
+#                       threshold breach.
+
+on:
+  schedule:
+    # 21:00 UTC == 06:00 JST. Same minute as the saved-searches digest
+    # but those are server-side flyctl ssh runs and can interleave
+    # safely (read-only on different rows).
+    # 21:00 UTC clashes with saved-searches-cron (also 0 21 * * *) — we
+    # accept the overlap because both are read-mostly daily emails and
+    # GitHub Actions cron jitter spreads them out in practice.
+    - cron: "0 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Render only (no email send, no Sentry transmit)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: kpi-digest-cron
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Webhook health probe
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/webhook_health.py ${FLAGS}"
+
+      - name: Send daily KPI digest
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/send_daily_kpi_digest.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=kpi-digest-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.kpi-digest-cron\",\"platform\":\"other\",\"message\":\"kpi-digest-cron failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"kpi-digest-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

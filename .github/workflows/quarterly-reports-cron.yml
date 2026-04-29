@@ -1,0 +1,111 @@
+name: quarterly-reports-cron
+
+# Quarterly PDF batch render — fires Q1 (Apr 1), Q2 (Jul 1), Q3 (Oct 1),
+# Q4 (Jan 1) at 00:00 UTC.
+#
+# Each run loops over every paid api_keys row with at least one
+# client_profile and pre-renders the quarterly PDF into the on-disk
+# cache so the customer's subsequent download is a cache hit (no extra
+# ¥3 charge — billing happened at render time).
+#
+# The script auto-detects which quarter to render from the current date
+# (so a single workflow file with one cron expression handles all four
+# boundaries). Off-cycle workflow_dispatch runs require explicit
+# year+quarter inputs.
+
+on:
+  schedule:
+    # 00:00 UTC on the 1st of January, April, July, October.
+    # 09:00 JST same day. Customers wake up to fresh quarterly PDFs in
+    # their dashboard / email.
+    - cron: "0 0 1 1,4,7,10 *"
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "Force a specific fiscal year (e.g. 2026)"
+        required: false
+        default: ""
+      quarter:
+        description: "Force a specific quarter (1-4)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+      dry_run:
+        description: "Run with --dry-run"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: quarterly-reports-cron
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run quarterly batch on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          YEAR: ${{ inputs.year || '' }}
+          QUARTER: ${{ inputs.quarter || '' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ -n "${YEAR}" ]; then
+            FLAGS="${FLAGS} --year ${YEAR}"
+          fi
+          if [ -n "${QUARTER}" ]; then
+            FLAGS="${FLAGS} --quarter ${QUARTER}"
+          fi
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/generate_quarterly_reports.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=quarterly-reports-cron/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.quarterly-reports-cron",
+            "platform": "other",
+            "message": "quarterly-reports-cron failed: flyctl ssh exited non-zero.",
+            "tags": {
+              "workflow": "quarterly-reports-cron",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

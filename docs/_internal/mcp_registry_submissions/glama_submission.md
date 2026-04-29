@@ -11,7 +11,7 @@ crawl cycle (daily).
 
 ## Action checklist
 
-- [ ] Repo is public at `github.com/shigetoumeda/autonomath-mcp`
+- [ ] Repo is public at `github.com/shigetosidumeda-cyber/jpintel-mcp`
 - [ ] Root `mcp-server.json` is valid (already drafted, post-rebrand required)
 - [ ] Root `README.md` has badges row, install command, tools list, link to
       docs (done — post-rebrand replacement only)
@@ -29,8 +29,8 @@ crawl cycle (daily).
 | Server name | `autonomath-mcp` |
 | Short description (EN) | MCP server for Japanese institutional programs — 13,578 subsidies / loans / tax / certifications + 2,286 case studies + 108 三軸分解融資 + 1,185 enforcement cases, 35-rule exclusion checker, primary-source lineage. |
 | Short description (JA) | 日本の公的制度 (補助金・融資・税制・認定) 13,578 件 + 採択事例 2,286 + 融資 108 (三軸分解) + 行政処分 1,185 を横断検索・排他チェックする MCP サーバ (12 tools)。 |
-| GitHub repo URL | `https://github.com/AutonoMath/autonomath-mcp` |
-| Homepage URL | `https://autonomath.ai` |
+| GitHub repo URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| Homepage URL | `https://zeimu-kaikei.ai` |
 | Install command | `uvx autonomath-mcp` |
 | Alternate install | `pip install autonomath-mcp` / Claude Desktop: `autonomath-mcp.mcpb` |
 | Author GitHub username | `AutonoMath` (organization) |

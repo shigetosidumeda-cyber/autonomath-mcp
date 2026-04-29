@@ -215,6 +215,38 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
   dropping the filter without telling the caller
   (`regulatory_prep_pack` was). +2 tests, 531 passing.
 
+## [0.3.1] — 2026-04-29 — Wave 30 disclaimer hardening + launch-blocker batch
+
+### Added
+
+- **Three new disclaimer settings** in `src/jpintel_mcp/config.py`: gates for sensitive-tool envelope hardening + anonymous quota warning body injection.
+- **§52 disclaimer hardening** across **11 sensitive-tool branches** in `src/jpintel_mcp/mcp/autonomath_tools/envelope_wrapper.py` (`SENSITIVE_TOOLS` frozenset extended; tax surfaces — `search_tax_incentives`, `get_am_tax_rule`, `list_tax_sunset_alerts` — explicitly carry 税理士法 §52 fence; existing 7 sensitive tools tightened).
+- **Tax surface §52 disclaimers** added to REST envelopes in `src/jpintel_mcp/api/tax_rulesets.py` and `src/jpintel_mcp/api/autonomath.py`.
+- **Anonymous quota warning body injection** in `src/jpintel_mcp/api/middleware/anon_quota_header.py` (warns user before they hit the 50/month JST cap, not after).
+- **4 broken-tool gates** wired in `snapshot_tool.py` + `tools.py`:
+  `AUTONOMATH_SNAPSHOT_ENABLED` (`query_at_snapshot`, migration 067 missing),
+  `AUTONOMATH_REASONING_ENABLED` (`intent_of` + `reason_answer`, package missing),
+  `AUTONOMATH_GRAPH_ENABLED` (`related_programs`, `am_node` table missing).
+  Flipping all 3 ON restores the 72-tool surface (broken tools still error until the underlying schema / package lands).
+
+### Changed
+
+- **Tool count surface 72 → 68 at default gates** (4 broken tools gated off pending fix; `mcp-server.json` `tool_count` updated; `dxt/manifest.json` `long_description` updated).
+- **Brand rename** completed across user-facing manifest + description copy: jpintel internal package path retained (`src/jpintel_mcp/`), but every user-visible string now reads AutonoMath / Bookyou株式会社. Internal file paths intentionally untouched per CLAUDE.md "Never rename `src/jpintel_mcp/`" rule.
+- **Homepage CRO + phantom-moat copy fix**: marketing copy realigned to honest counts (10,790 searchable / full table 13,578 incl. tier X quarantine; am_amount_condition 35,713 row count moved out of public-facing surfaces because 76% of rows are template-default values from a single broken ETL pass).
+- `pyproject.toml` `[project.urls]` block — dead URL fix + Repository / Issues pointed at the live `shigetosidumeda-cyber/jpintel-mcp` repo until the AutonoMath GitHub org is claimed.
+- `server.json` + `mcp-server.json` + `dxt/manifest.json` description URLs realigned with the live homepage `https://zeimu-kaikei.ai`.
+
+### Fixed
+
+- Stale `dist/` artifacts (`dist/autonomath_mcp-0.3.0-py3-none-any.whl` / sdist / `.mcpb` were built **before** the §52 disclaimer hardening + brand rename + quota header changes landed). Rebuilt at v0.3.1 — site/downloads/autonomath-mcp.mcpb now points at the v0.3.1 bundle.
+
+### Notes
+
+- v0.3.0 `dist/` artifacts are **retained** in-repo (not deleted) so any pinned downstream consumer can still install `autonomath-mcp==0.3.0`. The v0.3.1 artifacts are the publish target.
+- `@autonomath/sdk` (npm) is on a **separate version track** (currently 0.3.2) per `feedback_no_priority_question` memory note; it is not bumped by this batch.
+- Smithery pulls from the GitHub repo directly; this version bump only requires a git tag once the launch CLI advances.
+
 ## [0.3.0] - 2026-04-25 (Phase A absorption)
 
 ### Added

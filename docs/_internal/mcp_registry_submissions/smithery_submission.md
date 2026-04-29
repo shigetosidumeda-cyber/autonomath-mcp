@@ -64,5 +64,5 @@ Flag if any of these appear during claim flow, do not accept:
 
 ## Placeholders
 
-`autonomath-mcp`, `autonomath.ai`, `shigetoumeda`, `autonomath-mcp` — rewritten by
+`autonomath-mcp`, `zeimu-kaikei.ai`, `shigetoumeda`, `autonomath-mcp` — rewritten by
 `scripts/rebrand_mcp_entries.sh`.

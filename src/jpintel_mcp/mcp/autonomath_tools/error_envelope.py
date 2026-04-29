@@ -165,7 +165,7 @@ ERROR_CODES: dict[str, dict[str, str]] = {
 
 #: Base documentation URL. Each code's anchor is
 #: ``{DOC_URL}#<code>`` — see ``docs/error_handling.md``.
-DOC_URL = "https://autonomath.ai/docs/error_handling"
+DOC_URL = "https://zeimu-kaikei.ai/docs/error_handling"
 
 
 # ---------------------------------------------------------------------------

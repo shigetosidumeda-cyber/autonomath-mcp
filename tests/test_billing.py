@@ -141,8 +141,15 @@ def test_checkout_503_when_stripe_not_configured(client, monkeypatch):
     assert "stripe" in r.json()["detail"].lower()
 
 
-def test_checkout_400_when_price_not_configured(client, monkeypatch):
-    """STRIPE_PRICE_PER_REQUEST unset → 400. Guards against silent misconfig."""
+def test_checkout_503_when_price_not_configured(client, monkeypatch):
+    """STRIPE_PRICE_PER_REQUEST unset → 503 service_unavailable.
+
+    Was 400 historically; flipped to 503 because the caller did nothing wrong
+    — this is an operator-side mis-configuration (Fly secret unset) and 503
+    maps cleanly to the canonical envelope's `service_unavailable` code so an
+    LLM caller reading `error.code` sees an actionable retry signal instead
+    of a misleading client-error tag.
+    """
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
@@ -154,8 +161,15 @@ def test_checkout_400_when_price_not_configured(client, monkeypatch):
             "cancel_url": "https://example.test/no",
         },
     )
-    assert r.status_code == 400
-    assert "price" in r.json()["detail"].lower()
+    assert r.status_code == 503
+    body = r.json()
+    # Detail string carries the explanation; envelope `error.code` carries
+    # the canonical machine-readable code.
+    detail_str = body["detail"] if isinstance(body["detail"], str) else str(body["detail"])
+    assert "billing" in detail_str.lower() or "price" in detail_str.lower()
+    err = body.get("error") or {}
+    if err:
+        assert err.get("code") == "service_unavailable"
 
 
 def test_portal_calls_stripe_with_customer_and_return_url(client, stripe_env, monkeypatch):
@@ -729,8 +743,29 @@ def test_webhook_returns_fast_with_slow_outbound_io(
         f"webhook took {elapsed:.3f}s — slow outbound IO must be deferred "
         f"to BackgroundTasks (perf gate per audit a9fd80e134b538a32)"
     )
-    # Confirm the slow ops were SCHEDULED (not skipped entirely).
+    # Confirm the Stripe API ops were SCHEDULED via BackgroundTasks
+    # (not run inline).
     fn_names = {name for name, _, _ in skipped}
-    assert "_send_welcome_safe" in fn_names, fn_names
     assert "_apply_invoice_metadata_safe" in fn_names, fn_names
     assert "_check_b2b_tax_id_safe" in fn_names, fn_names
+    # Welcome email moved to the durable bg_task_queue (P1 credential-leak
+    # fix per audit 2026-04-26) instead of in-memory BackgroundTasks. The
+    # raw API key must never live in BackgroundTasks closures because that
+    # surface is not durable across pod restarts and showing the key in
+    # plaintext in another in-process queue is a leak surface. Verify the
+    # enqueue landed in the persisted bg_task_queue with kind="welcome_email"
+    # instead of asserting `_send_welcome_safe` was passed to add_task.
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT 1 FROM bg_task_queue"
+            " WHERE kind = ? AND dedup_key = ?",
+            ("welcome_email", "welcome:sub_perf_gate"),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row is not None, (
+        "welcome email enqueue missing from bg_task_queue — webhook must "
+        "persist the welcome mail through the durable queue, not via "
+        "in-memory BackgroundTasks (audit 2026-04-26)"
+    )

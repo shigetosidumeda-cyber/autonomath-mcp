@@ -310,13 +310,26 @@ def _appi_enabled() -> bool:
     "/deletion_request",
     response_model=DeletionResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="APPI §33 個人情報削除請求の受付",
+    summary="Submit an APPI Article 33 personal-data deletion request",
     description=(
-        "個人情報の保護に関する法律 第33条 に基づく削除請求を受付けます。"
-        " このエンドポイントは受付番号の発行と運営宛通知のみを行い、"
-        " 実際の削除は 30 日以内に運営側で本人確認の上で別途対応します"
-        " (§33-3 法定上限)。 個人情報そのものはこのレスポンスでは返却・"
-        " 操作しません。"
+        "Intake for deletion requests under the Act on the Protection of "
+        "Personal Information (個人情報の保護に関する法律 / APPI), Article 33. "
+        "This endpoint only records the request and notifies the operator "
+        "(Bookyou株式会社) — the actual deletion is performed within 30 "
+        "days after operator-side identity verification (§33-3 statutory "
+        "ceiling). Personal data itself is **never** returned or mutated in "
+        "this response; the body carries only the receipt number, expected "
+        "response window, and the operator contact (info@bookyou.net).\n\n"
+        "**Use this when** a data subject wants their record removed from "
+        "our mirror of NTA invoice-registrant data, gbiz corporate facts, "
+        "or audit-log artefacts that contain their identifiers. Pass "
+        "`target_data_categories[]` to scope the request (a closed enum "
+        "covers the categories we hold). The operator may decline with a "
+        "reason code under §33-1 (e.g. statutory retention obligation).\n\n"
+        "(個人情報の保護に関する法律 第33条 に基づく削除請求を受付けます。"
+        "受付番号の発行と運営宛通知のみを行い、実際の削除は 30 日以内に"
+        "運営側で本人確認の上で別途対応します (§33-3 法定上限)。個人情報"
+        "そのものはこのレスポンスでは返却・操作しません。)"
     ),
 )
 def submit_deletion_request(

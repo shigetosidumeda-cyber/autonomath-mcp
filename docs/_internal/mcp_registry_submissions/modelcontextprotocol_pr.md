@@ -75,7 +75,7 @@ Built on FastMCP SDK >=1.2. Protocol 2025-06-18 is the declared floor.
 | Placeholder | Source |
 |---|---|
 | `autonomath-mcp` | PyPI package name after rebrand |
-| `autonomath.ai` | Production landing page domain after rebrand |
+| `zeimu-kaikei.ai` | Production landing page domain after rebrand |
 | `shigetoumeda` | GitHub org/user after rebrand |
 | `autonomath-mcp` | GitHub repo slug after rebrand |
 | `Bookyou 株式会社` | Publisher display name |

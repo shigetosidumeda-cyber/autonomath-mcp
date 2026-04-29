@@ -245,7 +245,7 @@ def submit_dxt(repo: Path, dry_run: bool = False) -> SubResult:
             "self-distributing; no programmatic submission. Anthropic External "
             "Plugins Directory (separate, manual review) is form-based."
         ),
-        url="https://autonomath.ai/downloads/autonomath-mcp.mcpb",
+        url="https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb",
         manual_step=(
             "Optional: open https://clau.de/plugin-directory-submission and "
             "fill the form using docs/_internal/mcp_registry_submissions/anthropic_external_plugins.md "
@@ -278,7 +278,7 @@ def submit_smithery(repo: Path, dry_run: bool = False) -> SubResult:
         url="https://smithery.ai/server/io.github.AutonoMath/autonomath-mcp",
         manual_step=(
             "On launch day: open https://smithery.ai/new and paste the repo "
-            "URL https://github.com/AutonoMath/autonomath-mcp to force an "
+            "URL https://github.com/shigetosidumeda-cyber/jpintel-mcp to force an "
             "immediate crawl. Then claim ownership via dashboard.smithery.ai."
         ),
     )
@@ -348,7 +348,7 @@ def submit_mcp_so(repo: Path, dry_run: bool = False) -> SubResult:
         url="https://mcp.so/submit",
         manual_step=(
             "Open https://mcp.so/submit; fields: name=AutonoMath, "
-            "repo=https://github.com/AutonoMath/autonomath-mcp, "
+            "repo=https://github.com/shigetosidumeda-cyber/jpintel-mcp, "
             "category=government/finance, install=`uvx autonomath-mcp`."
         ),
     )

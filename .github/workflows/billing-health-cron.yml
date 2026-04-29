@@ -1,0 +1,147 @@
+name: billing-health-cron
+
+# Daily Stripe billing-health pipeline.
+#
+# Composes 4 billing-adjacent cron scripts that all read Stripe + local
+# usage_events and emit Sentry / email alerts when something drifts.
+# Grouped because they share Stripe rate-limit budget and we want a
+# deterministic sequence (reconcile first → backfill the gap → predictive
+# alert on the cleaned data → cost alert).
+#
+#   1. stripe_reconcile.py        — diff local vs Stripe usage, alert.
+#   2. stripe_usage_backfill.py   — heal NULL stripe_synced_at rows
+#                                   (run hourly normally, daily fallback
+#                                   here covers the case where the Fly-
+#                                   side hourly cron stalled).
+#   3. predictive_billing_alert.py — flag api_keys whose usage spiked
+#                                   3x rolling avg (CS Feature D).
+#   4. stripe_cost_alert.py       — flag when MTD infra spend approaches
+#                                   the ¥10K/mo budget cap.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Required Fly machine secrets (set via `flyctl secrets set ...`):
+#   STRIPE_SECRET_KEY    Stripe secret key (live or test). Consumed by
+#                       stripe_reconcile + stripe_cost_alert.
+#   STRIPE_API_KEY       Alias used by some scripts; same value as above.
+#   POSTMARK_API_TOKEN   Postmark transactional API token. Consumed by
+#                       predictive_billing_alert (template billing-alert).
+#   SENTRY_DSN           Optional. Cost / health alerts emit a
+#                       message-level event to Sentry when threshold breached.
+#   AUTONOMATH_BUDGET_JPY Optional override of the ¥10,000/mo cap.
+#
+# Failure routing: each script exits 0 on no-finding-state. Hard failures
+# (DB unreadable, Stripe API key invalid) exit non-zero and trigger the
+# workflow's Sentry alert step.
+
+on:
+  schedule:
+    # 20:00 UTC == 05:00 JST. Sits after ingest-daily (04:00 JST) and
+    # the news-pipeline (04:30 JST) so usage_events from any same-day
+    # async dispatch has settled before reconciliation reads.
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run all stages with --dry-run (no Stripe writes, no email)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      stage:
+        description: "Run one stage only (reconcile/backfill/predictive/cost, blank = all)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "reconcile"
+          - "backfill"
+          - "predictive"
+          - "cost"
+
+concurrency:
+  group: billing-health-cron
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Stripe reconcile
+        if: inputs.stage == '' || inputs.stage == 'reconcile'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/stripe_reconcile.py ${FLAGS}"
+
+      - name: Stripe usage backfill (NULL stripe_synced_at heal)
+        if: inputs.stage == '' || inputs.stage == 'backfill'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/stripe_usage_backfill.py ${FLAGS}"
+
+      - name: Predictive billing alert
+        if: inputs.stage == '' || inputs.stage == 'predictive'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/predictive_billing_alert.py ${FLAGS}"
+
+      - name: Stripe cost alert
+        if: inputs.stage == '' || inputs.stage == 'cost'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/stripe_cost_alert.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=billing-health-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.billing-health-cron\",\"platform\":\"other\",\"message\":\"billing-health-cron failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"billing-health-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

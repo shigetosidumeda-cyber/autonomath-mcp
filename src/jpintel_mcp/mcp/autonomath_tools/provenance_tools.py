@@ -163,7 +163,7 @@ def get_provenance(
         ),
     ] = 200,
 ) -> dict[str, Any]:
-    """[PROVENANCE] entity_id に紐づく全 source を一括返却 — どの URL から / どの license で 取得したかを 1 コールで列挙 (am_entity_source × am_source JOIN, license_summary 同梱, include_facts=True で 個別 fact 単位の出典も).
+    """[PROVENANCE] Returns source attribution for the entity at point-in-time of last fetch — all rows from am_entity_source × am_source JOIN with license_summary. include_facts=True adds per-fact provenance via am_entity_facts.source_id where set.
 
     WHAT: 1) am_entity_source × am_source で entity に紐づく全 source rows
     (role, source_url, domain, license, source_type, fetched_at). 2) per-license
@@ -339,7 +339,7 @@ def get_provenance_for_fact(
         ),
     ],
 ) -> dict[str, Any]:
-    """[PROVENANCE-FACT] 単一 fact_id の出典を返す — am_entity_facts.source_id → am_source 1 件 (NULL のときは entity-level am_entity_source の候補 list に fallback).
+    """[PROVENANCE-FACT] Returns source attribution for a single fact_id at point-in-time of last fetch. Resolves am_entity_facts.source_id → am_source. When source_id is NULL (legacy fact pre-2026-04-25), falls back to entity-level am_entity_source candidate list.
 
     WHAT: am_entity_facts row → source_id → am_source 1 件返却.
     source_id が NULL の legacy fact は entity-level am_entity_source から

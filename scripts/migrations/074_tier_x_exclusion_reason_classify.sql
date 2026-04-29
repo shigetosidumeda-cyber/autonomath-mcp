@@ -41,6 +41,15 @@
 -- 1. Reference enum table (idempotent, lookup + documentation)
 ------------------------------------------------------------------------
 
+-- Pre-flight: `source_last_check_status` is required by the dead_official_url
+-- backfill rule below. The column was historically added by
+-- `scripts/refresh_sources.py` at startup, but a fresh prod DB whose first
+-- run is this migration (e.g. test_lineage / a CI-rebuild) fails with
+-- "no such column". Add it idempotently here. We can't use `ALTER TABLE
+-- IF NOT EXISTS`, so the migration runner's duplicate-column-skip path
+-- (see migrate.py:223) catches the re-run as a no-op.
+ALTER TABLE programs ADD COLUMN source_last_check_status INTEGER;
+
 CREATE TABLE IF NOT EXISTS exclusion_reason_codes (
     code        TEXT PRIMARY KEY,
     description TEXT NOT NULL,

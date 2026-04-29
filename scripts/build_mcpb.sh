@@ -14,8 +14,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC_DIR="$ROOT/dxt"
 OUT_DIR="$ROOT/site/downloads"
 OUT_FILE="$OUT_DIR/autonomath-mcp.mcpb"
+DIST_DIR="$ROOT/dist"
 
 mkdir -p "$OUT_DIR"
+mkdir -p "$DIST_DIR"
 
 # Pick a Python with tomllib (3.11+). Prefer .venv, fall back to system.
 PY_BIN="python3"
@@ -36,7 +38,15 @@ if [ "$MF_VER" != "$PY_VER" ] || [ "$MF_VER" != "$SRV_VER" ]; then
 fi
 
 rm -f "$OUT_FILE"
-( cd "$SRC_DIR" && zip -q -X "$OUT_FILE" manifest.json )
+# Bundle every file in dxt/ (manifest.json + icon.png + README.md if present)
+# into the .mcpb. Matches v0.3.0 bundle composition.
+( cd "$SRC_DIR" && zip -q -X "$OUT_FILE" manifest.json $( [ -f icon.png ] && echo icon.png ) $( [ -f README.md ] && echo README.md ) )
+
+# Mirror the bundle into dist/ with the version-stamped name so downstream
+# publish scripts can verify the version-pinned artifact.
+DIST_FILE="$DIST_DIR/autonomath-mcp-$MF_VER.mcpb"
+cp -f "$OUT_FILE" "$DIST_FILE"
 
 echo "built: $OUT_FILE"
+echo "mirrored: $DIST_FILE"
 unzip -l "$OUT_FILE"

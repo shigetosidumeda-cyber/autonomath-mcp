@@ -4,53 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Stats — AutonoMath</title>
-<meta name="description" content="AutonoMath transparency dashboard: dataset row counts, source freshness, and 30-day API usage. Every number is a primary-source-backed live count from /v1/stats.">
+<title>Stats — 税務会計AI</title>
+<meta name="description" content="税務会計AI transparency dashboard: dataset row counts, source freshness, and 30-day API usage. Every number is a primary-source-backed live count from /v1/stats.">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="Stats — AutonoMath">
+<meta property="og:title" content="Stats — 税務会計AI">
 <meta property="og:description" content="Dataset counts, freshness, and 30-day usage. 100% primary-source-backed numbers.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/en/stats.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/en/stats.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stats — AutonoMath">
+<meta name="twitter:title" content="Stats — 税務会計AI">
 <meta name="twitter:description" content="Dataset counts, freshness, and 30-day usage. 100% primary-source-backed numbers.">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/en/stats.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/stats.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/stats.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/stats.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/en/stats.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/stats.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/stats.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/stats.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Stats — AutonoMath",
-  "description": "AutonoMath transparency dashboard reporting dataset row counts, source freshness, and 30-day API usage. Counts are served live from /v1/stats and refreshed once per day.",
-  "url": "https://autonomath.ai/en/stats.html",
+  "name": "Stats — 税務会計AI",
+  "description": "税務会計AI transparency dashboard reporting dataset row counts, source freshness, and 30-day API usage. Counts are served live from /v1/stats and refreshed once per day.",
+  "url": "https://zeimu-kaikei.ai/en/stats.html",
   "inLanguage": "en",
   "isPartOf": {
     "@type": "WebSite",
-    "name": "AutonoMath",
-    "url": "https://autonomath.ai/en/"
+    "name": "税務会計AI",
+    "url": "https://zeimu-kaikei.ai/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
     "legalName": "Bookyou株式会社",
-    "url": "https://autonomath.ai/",
+    "url": "https://zeimu-kaikei.ai/",
     "email": "info@bookyou.net",
     "identifier": "T8010001213708"
   }
@@ -131,9 +131,8 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="AutonoMath home">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="index.html" aria-label="税務会計AI home">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="getting-started.html">Docs</a>
@@ -153,7 +152,7 @@
   <div class="container">
 
     <h1>Stats</h1>
-    <p class="sub">AutonoMath transparency dashboard: dataset row counts, freshness, and 30-day API usage. Live aggregation refreshed once per day.</p>
+    <p class="sub">税務会計AI transparency dashboard: dataset row counts, freshness, and 30-day API usage. Live aggregation refreshed once per day.</p>
 
     <!-- Coverage ------------------------------------------------------------ -->
     <section class="stats-section" aria-labelledby="coverage-h">
@@ -225,7 +224,7 @@
 
   // Allow override for cross-origin local dev; defaults to same-origin path
   // so Pages -> Fly proxy works in production.
-  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "autonomath.ai" ? "https://api.autonomath.ai" : "");
+  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "zeimu-kaikei.ai" ? "https://api.zeimu-kaikei.ai" : "");
 
   var COVERAGE_LABELS = [
     ["programs", "programs (subsidies etc.)"],

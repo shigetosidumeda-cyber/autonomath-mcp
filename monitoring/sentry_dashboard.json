@@ -1,0 +1,234 @@
+{
+  "_comment": [
+    "Sentry custom dashboard config for AutonoMath / jpintel-mcp.",
+    "DRAFT — not applied. See docs/runbook/sentry_setup.md for the manual",
+    "creation procedure (Sentry → Dashboards → + Create Dashboard).",
+    "",
+    "Schema notes:",
+    "- Sentry's exported dashboard JSON shape is undocumented and unstable;",
+    "  this file uses a simplified internal schema. The runbook maps each",
+    "  widget to the correct Dashboard UI controls.",
+    "- Queries use the Discover/EventsV2 query syntax where applicable, and",
+    "  raw SQL where the data lives in our DB (Stripe MRR, backup manifest)",
+    "  rather than Sentry events.",
+    "- A widget marked `data_source: stripe_metric` requires a custom Sentry",
+    "  metric we emit from a cron job (see monitoring_gaps section)."
+  ],
+  "dashboard": {
+    "title": "AutonoMath — Solo Ops Dashboard",
+    "owner": "info@bookyou.net",
+    "description": "Single pane for the operator. 12 widgets covering revenue, traffic, errors, latency, infra, content quality.",
+    "default_environment": "production",
+    "default_time_range": "24h",
+    "layout": "4x3",
+    "widgets": [
+      {
+        "id": 1,
+        "title": "MRR (¥)",
+        "type": "big_number",
+        "row": 1,
+        "col": 1,
+        "data_source": "stripe_metric",
+        "query": "metric:billing.mrr_jpy",
+        "aggregate": "last(extra.mrr_jpy)",
+        "compare_to": "30d_ago",
+        "format": "currency_jpy",
+        "explainer": "Monthly recurring revenue, computed by scripts/cron/stripe_cost_alert.py from Stripe Reports API and emitted as a Sentry message tagged metric:billing.mrr_jpy. Comparison against 30d ago shows month-over-month delta. Widget renders as a big number with %-change annotation."
+      },
+      {
+        "id": 2,
+        "title": "Active paying customers",
+        "type": "big_number",
+        "row": 1,
+        "col": 2,
+        "data_source": "stripe_metric",
+        "query": "metric:billing.active_paying_customers",
+        "aggregate": "last(extra.count)",
+        "compare_to": "7d_ago",
+        "format": "integer",
+        "explainer": "Count of api_keys with active=1 AND stripe_subscription_id IS NOT NULL AND not in canceled state. Emitted from the same cron as widget #1. Anonymous users (50/month free) are NOT counted here. Drop = churn signal; sudden drop = billing webhook breakage signal."
+      },
+      {
+        "id": 3,
+        "title": "24h API request count by endpoint",
+        "type": "stacked_bar",
+        "row": 1,
+        "col": 3,
+        "data_source": "sentry_transactions",
+        "query": "event.type:transaction transaction.op:http.server",
+        "aggregate": "count()",
+        "group_by": ["transaction"],
+        "limit": 10,
+        "time_range": "24h",
+        "interval": "1h",
+        "explainer": "Top 10 endpoints by hourly transaction count. Shows traffic shape (which routes are hot, where customers are spending the meter). Useful for spotting a sudden hot endpoint that might indicate a customer integration loop."
+      },
+      {
+        "id": 4,
+        "title": "24h error rate",
+        "type": "line",
+        "row": 1,
+        "col": 4,
+        "data_source": "sentry_transactions",
+        "query": "event.type:transaction transaction.op:http.server",
+        "aggregate": "failure_rate()",
+        "time_range": "24h",
+        "interval": "10m",
+        "y_axis": {"min": 0, "max": 0.05, "format": "percent"},
+        "thresholds": [
+          {"value": 0.005, "color": "green", "label": "SLO target 0.5%"},
+          {"value": 0.01, "color": "orange", "label": "alert threshold 1%"},
+          {"value": 0.02, "color": "red", "label": "page threshold 2%"}
+        ],
+        "explainer": "Rolling 24h error rate at 10-min granularity. Three threshold lines visualize the SLO budget vs alert vs page lines from sentry_alert_rules.yml (rule api_5xx_rate)."
+      },
+      {
+        "id": 5,
+        "title": "Webhook health (Stripe + Postmark)",
+        "type": "table",
+        "row": 2,
+        "col": 1,
+        "data_source": "sentry_events",
+        "query": "logger:[autonomath.billing.webhook,autonomath.email.postmark]",
+        "group_by": ["logger", "level"],
+        "aggregate": "count()",
+        "time_range": "24h",
+        "explainer": "Two-column table: webhook source × log level. Row totals catch webhook-handler exceptions (R3 / rule webhook_handler_exception_rate). A normal day shows mostly INFO with a small WARN tail. ERROR rows >0 = investigate."
+      },
+      {
+        "id": 6,
+        "title": "DB query latency (p50 / p95 / p99)",
+        "type": "line",
+        "row": 2,
+        "col": 2,
+        "data_source": "sentry_transactions",
+        "query": "event.type:transaction transaction.op:db",
+        "aggregate": ["p50(transaction.duration)", "p95(transaction.duration)", "p99(transaction.duration)"],
+        "time_range": "24h",
+        "interval": "10m",
+        "y_axis": {"format": "milliseconds"},
+        "thresholds": [
+          {"value": 100, "color": "orange", "label": "p95 SLO 100ms"}
+        ],
+        "explainer": "Three-line chart of DB transaction latencies. SQLite reads should be <50ms p95; >100ms means write contention (WAL checkpoint behind) or a missing index. p99 spike with stable p50 = tail latency / large query, not capacity issue."
+      },
+      {
+        "id": 7,
+        "title": "Anonymous quota usage distribution",
+        "type": "histogram",
+        "row": 2,
+        "col": 3,
+        "data_source": "raw_sql",
+        "db": "jpintel.db",
+        "query": "SELECT usage_count_bucket, COUNT(*) AS ip_count FROM ( SELECT CASE WHEN total <= 5 THEN '0-5' WHEN total <= 15 THEN '6-15' WHEN total <= 30 THEN '16-30' WHEN total <= 49 THEN '31-49' WHEN total = 50 THEN '50 (capped)' ELSE '50+ (illegal)' END AS usage_count_bucket FROM ( SELECT ip_hash, COUNT(*) AS total FROM anon_quota_log WHERE strftime('%Y-%m', request_at, 'localtime', '+9 hours') = strftime('%Y-%m', 'now', 'localtime', '+9 hours') GROUP BY ip_hash ) ) GROUP BY usage_count_bucket ORDER BY MIN(CASE usage_count_bucket WHEN '0-5' THEN 1 WHEN '6-15' THEN 2 WHEN '16-30' THEN 3 WHEN '31-49' THEN 4 WHEN '50 (capped)' THEN 5 ELSE 6 END)",
+        "explainer": "Distribution of monthly anonymous-quota usage per IP (JST 月初 reset). The '50 (capped)' bucket size is the leading conversion signal — those IPs hit the wall and either churn or sign up for the paid ¥3/req tier. The '50+ (illegal)' bucket should be 0 — it indicates a quota-bypass bug."
+      },
+      {
+        "id": 8,
+        "title": "Trial signup → paid conversion rate (rolling 7d)",
+        "type": "big_number",
+        "row": 2,
+        "col": 4,
+        "data_source": "raw_sql",
+        "db": "jpintel.db",
+        "query": "WITH trial_signups AS (SELECT api_key_id, created_at FROM api_keys WHERE is_trial=1 AND created_at >= datetime('now', '-14 days')), paid_conversions AS (SELECT api_key_id FROM api_keys WHERE stripe_subscription_id IS NOT NULL AND first_paid_at IS NOT NULL AND first_paid_at - created_at < 7*86400) SELECT CAST((SELECT COUNT(*) FROM paid_conversions) AS REAL) / NULLIF((SELECT COUNT(*) FROM trial_signups), 0) AS conversion_rate",
+        "format": "percent_2dp",
+        "compare_to": "30d_ago",
+        "explainer": "Trial → paid within 7 days, rolling 14d window (= last 7 days of trials, allowing 7-day conversion window). Sub-1% = product-market fit signal too weak. >5% = healthy. Comparison vs 30d ago indicates trend."
+      },
+      {
+        "id": 9,
+        "title": "Backup last success time",
+        "type": "table",
+        "row": 3,
+        "col": 1,
+        "data_source": "raw_sql",
+        "db": "jpintel.db",
+        "query": "SELECT db_name, MAX(succeeded_at) AS last_success, ROUND((julianday('now') - julianday(MAX(succeeded_at))) * 24, 1) AS hours_since FROM backup_runs GROUP BY db_name",
+        "thresholds": [
+          {"column": "hours_since", "value": 2, "color": "green", "label": "jpintel hourly OK"},
+          {"column": "hours_since", "value": 4, "color": "orange", "label": "jpintel late"},
+          {"column": "hours_since", "value": 25, "color": "orange", "label": "autonomath late"},
+          {"column": "hours_since", "value": 48, "color": "red", "label": "autonomath miss"}
+        ],
+        "explainer": "Two-row table: jpintel (target 1h) and autonomath (target 24h). Rule backup_integrity_failure pages on missing run; this widget gives advance visibility. Driven by analytics/backups.jsonl (manifest written by both backup crons)."
+      },
+      {
+        "id": 10,
+        "title": "License coverage (am_source.license filled %)",
+        "type": "big_number",
+        "row": 3,
+        "col": 2,
+        "data_source": "raw_sql",
+        "db": "autonomath.db",
+        "query": "SELECT 100.0 * SUM(CASE WHEN license IS NOT NULL AND license != '' THEN 1 ELSE 0 END) / COUNT(*) AS license_coverage_pct FROM am_source",
+        "format": "percent_2dp",
+        "thresholds": [
+          {"value": 99, "color": "green"},
+          {"value": 95, "color": "orange"},
+          {"value": 90, "color": "red"}
+        ],
+        "explainer": "Share of am_source rows with a non-null license string. Covered by /v1/am/health/deep::license_coverage check (warn at >1% null). Drop indicates a new ingest source skipped license-tagging — must fix before public-facing surface (景表法 + license-respect dignity)."
+      },
+      {
+        "id": 11,
+        "title": "GEO citation rate (last 7d)",
+        "type": "line",
+        "row": 3,
+        "col": 3,
+        "data_source": "raw_sql",
+        "db": "jpintel.db",
+        "query": "SELECT date(request_at, 'localtime', '+9 hours') AS day_jst, 100.0 * SUM(CASE WHEN user_agent LIKE '%GPTBot%' OR user_agent LIKE '%ClaudeBot%' OR user_agent LIKE '%PerplexityBot%' OR user_agent LIKE '%Google-Extended%' OR user_agent LIKE '%CCBot%' OR user_agent LIKE '%anthropic-ai%' THEN 1 ELSE 0 END) / COUNT(*) AS llm_crawl_pct FROM anon_quota_log WHERE request_at >= datetime('now', '-7 days') GROUP BY day_jst ORDER BY day_jst",
+        "y_axis": {"format": "percent"},
+        "explainer": "Share of anonymous traffic from known LLM crawlers. Per memory feedback_organic_only_no_ads we depend on GEO (generative engine optimization), not ads. A rising trend means LLM agents are citing/indexing us; flat at 0 means we're invisible to AI answer surfaces. Analytics-only widget — no action threshold."
+      },
+      {
+        "id": 12,
+        "title": "Top 10 slowest queries (last 24h)",
+        "type": "table",
+        "row": 3,
+        "col": 4,
+        "data_source": "sentry_transactions",
+        "query": "event.type:transaction transaction.op:db",
+        "aggregate": "p95(transaction.duration)",
+        "group_by": ["transaction.description", "transaction"],
+        "order_by": "-p95(transaction.duration)",
+        "limit": 10,
+        "time_range": "24h",
+        "explainer": "Top 10 DB query patterns by p95 latency over 24h. Pairs with widget #6 to identify which specific query is dragging the tail. SQLite FTS5 trigram queries are known offenders — see CLAUDE.md gotcha on the tokenizer fix."
+      }
+    ]
+  },
+  "monitoring_gaps_requiring_code": [
+    {
+      "widget_id": 1,
+      "widget_title": "MRR (¥)",
+      "gap": "Need a cron that calls Stripe Reports API and emits safe_capture_message(metric='billing.mrr_jpy', mrr_jpy=...) at level=info. Current scripts/cron/stripe_cost_alert.py only computes MTD fees, not MRR. Suggested: extend that script with --emit-mrr flag, or new scripts/cron/stripe_mrr_metric.py daily.",
+      "estimated_effort": "30 min code + 5 min cron schedule"
+    },
+    {
+      "widget_id": 2,
+      "widget_title": "Active paying customers",
+      "gap": "Same emitter as widget 1; query is local DB though, not Stripe. Cron computes COUNT and emits safe_capture_message(metric='billing.active_paying_customers', count=...).",
+      "estimated_effort": "10 min — share emitter with widget 1"
+    },
+    {
+      "widget_id": 7,
+      "widget_title": "Anonymous quota usage distribution",
+      "gap": "Requires anon_quota_log table to exist with (ip_hash, request_at) rows. Verify in src/jpintel_mcp/api/_anon_ip_limit.py — log table may be in-memory / not persisted. If not persisted, add a daily aggregation cron writing to a histogram table.",
+      "estimated_effort": "verify first; if missing, ~2h to schema + cron"
+    },
+    {
+      "widget_id": 9,
+      "widget_title": "Backup last success time",
+      "gap": "backup_runs table or the analytics/backups.jsonl manifest must be queryable. Both backup crons (backup_jpintel.py + backup_autonomath.py) already write to BACKUP_MANIFEST_PATH=analytics/backups.jsonl per disaster_recovery.md. Sentry's raw_sql data source can't read JSONL directly — need either (a) a tiny backup_runs SQLite table or (b) widget reads from a /v1/internal/backup_status endpoint.",
+      "estimated_effort": "1h — option (a) is simpler"
+    },
+    {
+      "widget_id": 11,
+      "widget_title": "GEO citation rate",
+      "gap": "Requires anon_quota_log to retain user_agent. Check current schema — if user_agent is dropped for privacy / quota efficiency, this widget cannot function. PII consideration: user_agent strings are not PII under common law but are under GDPR strict reading. Solo-ops decision: keep raw UA only for known crawler patterns, drop everything else after 7d.",
+      "estimated_effort": "1h to add UA retention + 30 min Sentry widget config"
+    }
+  ]
+}

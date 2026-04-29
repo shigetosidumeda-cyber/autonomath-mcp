@@ -15,10 +15,13 @@ Same-origin requests (no ``Origin`` header) and server-to-server callers
 (curl, Stripe webhook, internal cron) are unaffected — those callers do
 not include the ``Origin`` header.
 
-Whitelist comes from ``settings.cors_origins`` (comma-separated). Default:
-``https://autonomath.ai,https://api.autonomath.ai``. Operators must set
-``JPINTEL_CORS_ORIGINS`` explicitly to allow ``http://localhost:3000`` etc.
-in dev environments.
+Whitelist comes from ``settings.cors_origins`` (comma-separated). Default
+includes apex + www + api for ``zeimu-kaikei.ai`` and ``autonomath.ai``
+(see ``config.py`` for the canonical list). Apex AND www must both be
+listed — Cloudflare Pages serves the marketing site at apex by default,
+but `www` is also accessible and any browser request from there must
+not be silently dropped. Operators must set ``JPINTEL_CORS_ORIGINS``
+explicitly to allow ``http://localhost:3000`` etc. in dev environments.
 
 Allowlist exempts ``/healthz``, ``/readyz``, and the Stripe webhook —
 monitoring + Stripe callbacks may originate from origins we cannot

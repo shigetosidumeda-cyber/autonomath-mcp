@@ -2,9 +2,11 @@
 
 Pins a query to the dataset state at a historical date so the caller can
 reproduce the exact ``programs`` rows that were live at that timestamp.
-Drives the **法廷証拠 (court-admissible evidence) reproducibility** value
-prop for tax accountants / 行政書士 / 弁護士 who need 申告時点の制度状態
-fixed for audit (電子帳簿保存法 §4-3 真実性確保).
+Returns rows + a 3-axis timestamp (``source_url`` + ``fetched_at`` +
+``valid_from``) so the caller has a reproducible reference for their own
+audit trail. Output is search-derived from public-source data; legal
+admissibility of any reproduced state requires the user's own primary-
+source verification.
 
 Schema dependency: migration 067 added ``valid_from`` / ``valid_until``
 columns to the 8 core jpintel.db tables. This tool reads ``programs`` only
@@ -33,10 +35,10 @@ Response shape (envelope)::
     }
 
 The ``audit_trail`` block carries the 3-axis timestamp triple
-(``source_url`` + ``fetched_at`` + ``valid_from``) the operator needs to
-reconstruct provenance during a tax audit / litigation. ``predicate``
-echoes the exact SQL fragment so the auditor can replay the query
-deterministically against a snapshot of the DB.
+(``source_url`` + ``fetched_at`` + ``valid_from``) the caller can use
+to reference provenance in their own audit trail. ``predicate`` echoes
+the exact SQL fragment so the caller can replay the query against a
+snapshot of the DB.
 
 Gating: respects ``settings.r8_versioning_enabled`` (env
 ``AUTONOMATH_R8_VERSIONING_ENABLED``). When disabled, returns a
@@ -53,20 +55,20 @@ from typing import Annotated, Any
 
 from pydantic import Field
 
-from jpintel_mcp.config import Settings
+from jpintel_mcp.config import Settings, settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .error_envelope import make_error
 
 logger = logging.getLogger("jpintel.mcp.autonomath.snapshot")
 
-# Disclaimer text. Tracks the 法廷証拠 framing in
-# docs/compliance/data_governance.md §「法廷証拠 reproducibility 保証」.
+# Disclaimer text. Reminds callers that snapshot reproducibility does
+# not substitute for primary-source verification.
 _DISCLAIMER = (
     "本 response は R8 dataset versioning に基づく as-of スナップショットです。"
-    "valid_from / valid_until / source_fetched_at / source_url の 4 軸で再現可能"
-    "(電子帳簿保存法 §4-3 真実性確保 + 個情法 26 条) ですが、最終的な制度該当性"
-    "判断は一次資料 (source_url) と税理士 / 弁護士確認を優先してください。"
+    "valid_from / valid_until / source_fetched_at / source_url の 4 軸で同一"
+    "クエリを再実行可能ですが、最終的な制度該当性判断は一次資料 (source_url) と"
+    "税理士 / 弁護士確認を優先してください。"
 )
 
 _PREDICATE_SQL = "valid_from <= ? AND (valid_until IS NULL OR valid_until > ?)"
@@ -77,7 +79,15 @@ def _validate_iso_date(s: str) -> str:
     return _dt.date.fromisoformat(s).isoformat()
 
 
-@mcp.tool(annotations=_READ_ONLY)
+# TODO(2026-04-29): query_at_snapshot is currently broken — migration 067
+# (referenced in this module's header docstring) was never written, so the
+# `valid_from` / `valid_until` columns this tool selects from `programs`
+# do not exist. Every invocation errors with "no such column: valid_from".
+# Gated behind AUTONOMATH_SNAPSHOT_ENABLED (default False) so the broken
+# tool stays out of `tools/list`. Re-enable by writing migration 067 to
+# add `valid_from` / `valid_until` (TEXT, ISO-8601 timestamps) to programs
+# / laws / tax_rulesets, backfilling from `source_fetched_at`, then
+# flipping the env flag to "1".
 def query_at_snapshot(
     query_payload: Annotated[
         dict[str, Any],
@@ -105,7 +115,7 @@ def query_at_snapshot(
         ),
     ],
 ) -> dict[str, Any]:
-    """[AUDIT] R8 — pin programs query to historical dataset state. Returns rows + 3-axis audit trail (source_url + fetched_at + valid_from) for 法廷証拠 reproducibility.
+    """[AUDIT] R8 — pin programs query to historical dataset state. Returns rows + 3-axis reference (source_url + fetched_at + valid_from) so the caller can re-run the same query against the same snapshot. Output is search-derived; legal admissibility requires the caller's own primary-source verification.
 
     WHAT: Replays the search filter set in ``query_payload`` against
     ``programs`` with the bitemporal predicate ``valid_from <= as_of_date
@@ -115,9 +125,9 @@ def query_at_snapshot(
     drawn from the first result row.
 
     WHEN:
-      - 「2026-03-15 申告時点で公募中だった補助金リスト」(tax filing audit)
-      - 「弁護士 due-diligence: 契約締結時の規制状態を再現」
-      - 「税理士: 過去 3 年分の制度該当判定を 2027 年に検証」
+      - 「2026-03-15 申告時点で公募中だった補助金リスト」(historical query)
+      - 「契約締結時の規制状態を確認」(reference state)
+      - 「過去 3 年分の制度状態を後日参照」
 
     WHEN NOT:
       - 現時点 live のみ知りたい → search_programs (R8 不要、cache hit)
@@ -266,3 +276,10 @@ def query_at_snapshot(
         "audit_trail": audit_trail,
         "_disclaimer": _DISCLAIMER,
     }
+
+
+# Gate registration on AUTONOMATH_SNAPSHOT_ENABLED so the broken tool is
+# absent from `tools/list` until migration 067 lands. Body-only definition
+# above remains importable for tests / future fix.
+if settings.autonomath_snapshot_enabled:
+    query_at_snapshot = mcp.tool(annotations=_READ_ONLY)(query_at_snapshot)

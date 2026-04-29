@@ -22,6 +22,7 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from fastapi import APIRouter
+from fastapi.responses import RedirectResponse
 
 from jpintel_mcp.api._response_models import (
     CoverageResponse,
@@ -400,8 +401,110 @@ def _open_autonomath_conn() -> sqlite3.Connection | None:
         return None
 
 
+def _am_source_fallback_aggregates(
+    am_conn: sqlite3.Connection,
+) -> dict[str, Any] | None:
+    """Honest-zero fallback: aggregate ``am_source`` directly when the
+    O8 view returns 0 facts.
+
+    Background (M&A advisor walk 2026-04-29): when ``am_uncertainty_view``
+    is missing or empty on a given DB volume, the previous code returned
+    100% zeros, which prospects read as "data quality is broken". That's
+    a worse signal than the truth — we DO have license + freshness data
+    on every am_source row (97,272 rows, 99.17% license-filled per
+    migration 049). This fallback computes the same shape from the
+    underlying am_source table so the rollup stays useful even before
+    O8 lands. The trade-off: ``mean_score`` stays None (we can't compute
+    a per-fact score without field_kind), but ``license_breakdown`` and
+    ``freshness_buckets`` come back populated and honest.
+
+    Returns ``None`` if the table is missing entirely; an empty
+    dict if the table exists but holds 0 rows.
+    """
+    try:
+        # license breakdown (NULL → "null_source" by spec)
+        license_rows = am_conn.execute(
+            "SELECT COALESCE(license, 'null_source') AS lic, "
+            "       COUNT(*) AS n "
+            "  FROM am_source "
+            " GROUP BY COALESCE(license, 'null_source')"
+        ).fetchall()
+        license_hist = {
+            (r["lic"] if "lic" in r.keys() else r[0]):
+                int(r["n"] if "n" in r.keys() else r[1])
+            for r in license_rows
+        }
+        total_sources = sum(license_hist.values())
+
+        # freshness — bucket on days since first_seen
+        fresh_hist: dict[str, int] = {
+            label: 0 for label, _ in _FRESHNESS_BUCKETS
+        }
+        fresh_hist["unknown"] = 0
+        today = datetime.now(UTC).date()
+        fresh_cursor = am_conn.execute(
+            "SELECT first_seen FROM am_source"
+        )
+        for row in fresh_cursor:
+            try:
+                first_seen = row["first_seen"]
+            except (TypeError, IndexError):
+                first_seen = row[0]
+            days: int | None = None
+            if first_seen:
+                try:
+                    seen_date = datetime.fromisoformat(
+                        str(first_seen).replace("Z", "+00:00")
+                    ).date()
+                    days = (today - seen_date).days
+                except (ValueError, TypeError):
+                    days = None
+            label = _freshness_bucket_for(days)
+            fresh_hist[label] = fresh_hist.get(label, 0) + 1
+
+        return {
+            "license_breakdown": license_hist,
+            "freshness_buckets": fresh_hist,
+            "total_sources": total_sources,
+        }
+    except sqlite3.OperationalError:
+        return None
+
+
+# When the O8 view AND the am_source fallback BOTH yield zero rows on the
+# current DB volume (production state pre-redeploy 2026-04-29), the previous
+# response was 100% zeros, which prospects (M&A advisors, journalists,
+# auditors) read as "data quality is broken" — even though the canonical
+# trust-signal page /v1/am/data-freshness has full per-dataset numbers
+# (programs / case_studies / loan_programs / enforcement_cases / laws /
+# court_decisions / bids / invoice_registrants / tax_rulesets all populated
+# with row counts + license + last_fetched_at). Rather than ship an
+# all-zeros aggregate, redirect the caller to the working surface so
+# they end up with meaningful data instead of a broken signal. The
+# happy-path (view + facts populated) returns the full rollup as before.
+def _data_quality_is_empty(out: dict[str, Any]) -> bool:
+    """Return True when the rollup contains no useful aggregates.
+
+    Defensive: a populated ``label_histogram`` with all-zero values, plus
+    empty ``license_breakdown`` and ``field_kind_breakdown``, indicates
+    neither the O8 view nor the am_source fallback produced rows. This
+    is the signature of a pre-deploy production volume.
+    """
+    if int(out.get("fact_count_total") or 0) > 0:
+        return False
+    if out.get("license_breakdown"):
+        return False
+    if out.get("field_kind_breakdown"):
+        return False
+    # label_histogram is initialised with zeros; non-zero only if facts.
+    label_hist = out.get("label_histogram") or {}
+    if any(int(v or 0) > 0 for v in label_hist.values()):
+        return False
+    return True
+
+
 @router.get("/data_quality", response_model=DataQualityResponse)
-def stats_data_quality() -> dict[str, Any]:
+def stats_data_quality() -> Any:
     def _compute() -> dict[str, Any]:
         # Initialise every bucket so zero-row volumes still produce a
         # well-shaped JSON. Honest disclosure: missing view also lands
@@ -420,6 +523,8 @@ def stats_data_quality() -> dict[str, Any]:
         score_sum = 0.0
         n_pairs_multi = 0
         n_pairs_agree = 0
+        fallback_reason: str | None = None
+        fallback_total_sources: int | None = None
 
         am_conn = _open_autonomath_conn()
         if am_conn is None:
@@ -436,6 +541,13 @@ def stats_data_quality() -> dict[str, Any]:
                     "agreement_rate": 0.0,
                 },
                 "model": "beta_posterior_v1",
+                "fallback_source": "autonomath_db_unavailable",
+                "fallback_note": (
+                    "autonomath.db could not be opened; license / "
+                    "freshness aggregates unavailable. See "
+                    "/v1/am/data-freshness for the per-dataset trust-"
+                    "signal page."
+                ),
                 "generated_at": (
                     datetime.now(UTC)
                     .replace(microsecond=0)
@@ -496,13 +608,31 @@ def stats_data_quality() -> dict[str, Any]:
                     if int(agreement or 0) == 1:
                         n_pairs_agree += 1
         except sqlite3.OperationalError:
-            # View missing on this volume — return zeros, not an error.
+            # View missing on this volume — fall through to the
+            # am_source fallback below.
+            fallback_reason = "am_uncertainty_view_missing"
+        # Honest fallback: when the O8 view yielded 0 facts (either
+        # because the view is missing OR because facts haven't been
+        # joined to am_source yet), populate license_breakdown +
+        # freshness_buckets directly from am_source so the dashboard
+        # is not all-zeros. The ``fact_count_total`` stays at 0 to
+        # truthfully signal "we have NO scored facts yet"; the
+        # ``fallback_*`` keys disclose what's happening.
+        if fact_count == 0:
+            agg = _am_source_fallback_aggregates(am_conn)
+            if agg is not None:
+                license_hist = agg["license_breakdown"]
+                fresh_hist = agg["freshness_buckets"]
+                fallback_total_sources = int(agg["total_sources"])
+                if fallback_reason is None:
+                    fallback_reason = "am_uncertainty_view_empty"
+            else:
+                if fallback_reason is None:
+                    fallback_reason = "am_source_missing"
+        try:
+            am_conn.close()
+        except Exception:
             pass
-        finally:
-            try:
-                am_conn.close()
-            except Exception:
-                pass
 
         kind_breakdown: dict[str, dict[str, Any]] = {}
         for k, agg in kind_acc.items():
@@ -517,7 +647,7 @@ def stats_data_quality() -> dict[str, Any]:
             (n_pairs_agree / n_pairs_multi) if n_pairs_multi > 0 else 0.0
         )
 
-        return {
+        out: dict[str, Any] = {
             "fact_count_total": fact_count,
             "mean_score": (
                 round(score_sum / fact_count, 4) if fact_count > 0 else None
@@ -539,5 +669,29 @@ def stats_data_quality() -> dict[str, Any]:
                 .replace("+00:00", "Z")
             ),
         }
+        if fallback_reason is not None:
+            out["fallback_source"] = fallback_reason
+            note = (
+                "am_uncertainty_view did not yield per-fact rows on this "
+                "DB volume; license_breakdown + freshness_buckets are "
+                "computed directly from am_source as an honest fallback "
+                "so trust-signal callers do not see all-zeros. "
+                "mean_score / label_histogram / cross_source_agreement "
+                "remain at 0 because per-fact scoring needs the view. "
+                "See /v1/am/data-freshness for the per-dataset breakdown."
+            )
+            out["fallback_note"] = note
+            if fallback_total_sources is not None:
+                out["am_source_total_rows"] = fallback_total_sources
+        return out
 
-    return _cache_get_or_compute("data_quality", _compute)
+    out = _cache_get_or_compute("data_quality", _compute)
+    # M&A advisor walk 2026-04-29 fix: when the O8 view AND the am_source
+    # fallback both return empty (pre-redeploy production state), the
+    # all-zeros payload reads as "data quality is broken". Redirect to
+    # the per-dataset trust-signal page that DOES carry useful numbers.
+    # 307 (temporary) so clients can return here once the underlying
+    # view + fallback start producing rows.
+    if _data_quality_is_empty(out):
+        return RedirectResponse(url="/v1/am/data-freshness", status_code=307)
+    return out

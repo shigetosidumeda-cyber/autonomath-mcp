@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Analytics — Operator Dashboard</title>
+<!--
+  Operator-only funnel dashboard. Pulls:
+    - Cloudflare visitors / page views (analytics/cf_daily.jsonl)
+    - PyPI downloads          (analytics/pypi_daily.jsonl)
+    - npm downloads           (analytics/npm_daily.jsonl)
+    - /v1/stats/funnel        (live, admin-key gated)
+
+  Two data paths supported:
+    A) Static export: drop the JSONL files into site/dashboard/_data/ at
+       build time (a one-shot copy script can do this weekly). The page
+       reads them with relative fetch().
+    B) Live API: paste your ADMIN_API_KEY in the field below; the page
+       fetches /v1/stats/funnel.
+
+  CLAUDE.md/legal: this page MUST NOT be indexed (robots noindex above
+  + robots.txt Disallow /dashboard/ once added).
+-->
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 24px;
+         background: #0e1116; color: #e6edf3; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: #8b949e; font-size: 13px; margin-bottom: 24px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+          padding: 16px; margin-bottom: 16px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .kpi { display: flex; gap: 24px; flex-wrap: wrap; }
+  .kpi div { min-width: 100px; }
+  .kpi .v { font-size: 24px; font-weight: 700; }
+  .kpi .l { color: #8b949e; font-size: 12px; text-transform: uppercase; }
+  input { background: #0e1116; color: #e6edf3; border: 1px solid #30363d;
+          padding: 6px 10px; border-radius: 4px; font-family: monospace; width: 360px; }
+  button { background: #238636; color: white; border: 0; padding: 6px 14px;
+           border-radius: 4px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid #30363d; }
+  th { color: #8b949e; font-weight: 500; }
+  canvas { max-height: 280px; }
+  .err { color: #f85149; font-size: 12px; }
+  .ok { color: #3fb950; font-size: 12px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<h1>Analytics — operator only</h1>
+<p class="sub">noindex / nofollow. Funnel + acquisition + downloads. Reads JSONL snapshots from <code>_data/</code> and live <code>/v1/stats/funnel</code>.</p>
+
+<div class="card">
+  <div style="margin-bottom: 8px;">
+    <input id="apiKey" type="password" placeholder="ADMIN_API_KEY (paste, never stored)">
+    <input id="apiBase" type="text" placeholder="https://api.zeimu-kaikei.ai" value="https://api.zeimu-kaikei.ai">
+    <button onclick="loadAll()">Load</button>
+    <span id="status" class="sub"></span>
+  </div>
+  <div class="kpi" id="kpi"></div>
+</div>
+
+<div class="row">
+  <div class="card"><h3 style="margin-top:0;font-size:14px;">Funnel (visitors → keys → first metered)</h3><canvas id="funnelChart"></canvas></div>
+  <div class="card"><h3 style="margin-top:0;font-size:14px;">Cloudflare visitors / pageviews</h3><canvas id="cfChart"></canvas></div>
+</div>
+
+<div class="row">
+  <div class="card"><h3 style="margin-top:0;font-size:14px;">PyPI downloads (autonomath-mcp)</h3><canvas id="pypiChart"></canvas></div>
+  <div class="card"><h3 style="margin-top:0;font-size:14px;">npm downloads (@autonomath/sdk)</h3><canvas id="npmChart"></canvas></div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;font-size:14px;">Funnel rows (last 14d)</h3>
+  <table id="funnelTable"><thead><tr>
+    <th>date</th><th>visitors</th><th>keys issued</th><th>first metered</th><th>requests</th><th>active keys</th>
+  </tr></thead><tbody></tbody></table>
+</div>
+
+<script>
+async function fetchJsonl(path) {
+  try {
+    const r = await fetch(path);
+    if (!r.ok) return [];
+    const text = await r.text();
+    return text.trim().split('\n').filter(Boolean).map(JSON.parse);
+  } catch (e) { return []; }
+}
+
+async function fetchFunnel(base, key) {
+  if (!key) return null;
+  try {
+    const r = await fetch(base + '/v1/stats/funnel?days=14',
+      { headers: { 'X-API-Key': key } });
+    if (!r.ok) {
+      document.getElementById('status').className = 'err';
+      document.getElementById('status').textContent = 'funnel: ' + r.status;
+      return null;
+    }
+    return await r.json();
+  } catch (e) {
+    document.getElementById('status').className = 'err';
+    document.getElementById('status').textContent = 'funnel: ' + e.message;
+    return null;
+  }
+}
+
+function lineChart(id, labels, datasets) {
+  const ctx = document.getElementById(id);
+  if (window['_c_'+id]) window['_c_'+id].destroy();
+  window['_c_'+id] = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: { plugins: { legend: { labels: { color: '#e6edf3' } } },
+               scales: { x: { ticks: { color: '#8b949e' } },
+                         y: { ticks: { color: '#8b949e' }, beginAtZero: true } } }
+  });
+}
+
+function kpi(label, val) {
+  return `<div><div class="l">${label}</div><div class="v">${val}</div></div>`;
+}
+
+async function loadAll() {
+  const key = document.getElementById('apiKey').value.trim();
+  const base = document.getElementById('apiBase').value.trim().replace(/\/$/, '');
+
+  const [cf, pypi, npm, funnel] = await Promise.all([
+    fetchJsonl('_data/cf_daily.jsonl'),
+    fetchJsonl('_data/pypi_daily.jsonl'),
+    fetchJsonl('_data/npm_daily.jsonl'),
+    fetchFunnel(base, key),
+  ]);
+
+  // KPIs
+  const lastCf = cf[cf.length - 1] || {};
+  const lastPypi = pypi[pypi.length - 1] || {};
+  const lastNpm = npm[npm.length - 1] || {};
+  const totalKeys = funnel ? funnel.rows.reduce((a, r) => a + r.api_keys_issued, 0) : 0;
+  const totalMetered = funnel ? funnel.rows.reduce((a, r) => a + r.first_metered_request, 0) : 0;
+  document.getElementById('kpi').innerHTML =
+    kpi('Visitors (last day)', lastCf.unique_visitors ?? '—') +
+    kpi('Page views (last day)', lastCf.page_views ?? '—') +
+    kpi('PyPI day', lastPypi.last_day ?? '—') +
+    kpi('npm day', lastNpm.downloads ?? '—') +
+    kpi('Keys issued (14d)', totalKeys) +
+    kpi('Activated paid (14d)', totalMetered);
+
+  // Charts
+  if (cf.length) lineChart('cfChart', cf.map(r => r.date), [
+    { label: 'visitors', data: cf.map(r => r.unique_visitors), borderColor: '#3fb950' },
+    { label: 'page views', data: cf.map(r => r.page_views), borderColor: '#1f6feb' },
+  ]);
+  if (pypi.length) lineChart('pypiChart', pypi.map(r => r.date), [
+    { label: 'last_day', data: pypi.map(r => r.last_day), borderColor: '#f0883e' },
+  ]);
+  if (npm.length) lineChart('npmChart', npm.map(r => r.date), [
+    { label: 'downloads', data: npm.map(r => r.downloads), borderColor: '#bc8cff' },
+  ]);
+  if (funnel) {
+    lineChart('funnelChart', funnel.rows.map(r => r.date), [
+      { label: 'visitors', data: funnel.rows.map(r => r.visitors), borderColor: '#3fb950' },
+      { label: 'keys issued', data: funnel.rows.map(r => r.api_keys_issued), borderColor: '#1f6feb' },
+      { label: 'first metered', data: funnel.rows.map(r => r.first_metered_request), borderColor: '#f85149' },
+    ]);
+    const tbody = document.querySelector('#funnelTable tbody');
+    tbody.innerHTML = funnel.rows.slice().reverse().map(r =>
+      `<tr><td>${r.date}</td><td>${r.visitors}</td><td>${r.api_keys_issued}</td>` +
+      `<td>${r.first_metered_request}</td><td>${r.requests}</td><td>${r.keys_with_requests}</td></tr>`).join('');
+    document.getElementById('status').className = 'ok';
+    document.getElementById('status').textContent = 'loaded';
+  }
+}
+</script>
+</body>
+</html>

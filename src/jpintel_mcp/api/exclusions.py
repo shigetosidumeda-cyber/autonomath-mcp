@@ -1,7 +1,7 @@
 import json
 import sqlite3
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.models import (
@@ -39,8 +39,35 @@ def _row_to_rule(row: sqlite3.Row) -> ExclusionRule:
 
 
 @router.get("/rules", response_model=list[ExclusionRule])
-def list_rules(conn: DbDep, ctx: ApiContextDep) -> list[ExclusionRule]:
-    rows = conn.execute("SELECT * FROM exclusion_rules ORDER BY rule_id").fetchall()
+def list_rules(
+    conn: DbDep,
+    ctx: ApiContextDep,
+    limit: int = Query(
+        200,
+        ge=1,
+        le=500,
+        description=(
+            "Maximum number of rules to return. Defaults to 200 (currently "
+            "returns the full ruleset of 181). Cap is 500 to bound response "
+            "size for AI-agent callers paying ¥3/req."
+        ),
+    ),
+    offset: int = Query(
+        0,
+        ge=0,
+        description="Number of rules to skip for pagination (0 = first page).",
+    ),
+) -> list[ExclusionRule]:
+    # NOTE: response shape stays a bare JSON array for backwards
+    # compatibility with the python SDK (`list_exclusion_rules`) and the
+    # existing `test_list_exclusion_rules` contract. Adding `limit`/`offset`
+    # as declared Query params is what unblocks the strict_query middleware
+    # — once they appear in the route's ``dependant.query_params`` set, the
+    # middleware allows them through (see `api/middleware/strict_query.py`).
+    rows = conn.execute(
+        "SELECT * FROM exclusion_rules ORDER BY rule_id LIMIT ? OFFSET ?",
+        (limit, offset),
+    ).fetchall()
     log_usage(conn, ctx, "exclusions.rules")
     return [_row_to_rule(r) for r in rows]
 

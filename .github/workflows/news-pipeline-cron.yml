@@ -1,0 +1,142 @@
+name: news-pipeline-cron
+
+# Daily news + RSS regeneration pipeline.
+#
+# Composes 4 cron scripts that share a producer/consumer relationship:
+#   1. refresh_amendment_diff.py          — append-only diff log refresher
+#                                           (feeds the next 3 jobs).
+#   2. generate_news_posts.py             — emits site/news/*.html from new
+#                                           am_amendment_diff rows.
+#   3. regenerate_rss.py                  — site/rss.xml + site/en/rss.xml
+#                                           from site/news/*.html.
+#   4. regenerate_audit_log_rss.py        — site/audit-log.rss from
+#                                           am_amendment_diff (separate feed).
+#
+# Sequence matters: (1) populates the diff log, (2) reads diffs and writes
+# news posts, (3) reads news posts and writes the public news RSS, (4)
+# reads diffs directly (separate audit feed). Running them in one workflow
+# keeps the lineage simple — a partial failure short-circuits the rest of
+# the pipeline rather than emitting a half-stale feed.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api`. Same secret already used by
+#                   nightly-backup.yml / saved-searches-cron.yml.
+#
+# Optional Fly machine secrets (consumed inside the scripts; document here
+# so operator knows what to `flyctl secrets set`):
+#   SENTRY_DSN      Optional. Scripts emit Sentry breadcrumbs on hard
+#                   failure. Workflow's own `if: failure()` step also
+#                   alerts Sentry on flyctl ssh failure (machine offline).
+
+on:
+  schedule:
+    # 19:35 UTC == 04:35 JST. Sits after nightly-backup (03:17 JST) and
+    # ingest-daily (04:00 JST) so the pipeline reads the freshest data.
+    # Staggered +5 min vs data-integrity (30 19) to avoid Fly machine
+    # ssh contention; both workflows flyctl ssh into the same machine.
+    - cron: "35 19 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run all 4 stages with --dry-run (compute + log only)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      stage:
+        description: "Run one stage only (diff/news/rss/audit-rss, blank = all)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "diff"
+          - "news"
+          - "rss"
+          - "audit-rss"
+
+concurrency:
+  group: news-pipeline-cron
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Refresh amendment diff log
+        if: inputs.stage == '' || inputs.stage == 'diff'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/refresh_amendment_diff.py ${FLAGS}"
+
+      - name: Generate news posts
+        if: inputs.stage == '' || inputs.stage == 'news'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/generate_news_posts.py ${FLAGS}"
+
+      - name: Regenerate news RSS (ja + en)
+        if: inputs.stage == '' || inputs.stage == 'rss'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/regenerate_rss.py ${FLAGS}"
+
+      - name: Regenerate audit-log RSS
+        if: inputs.stage == '' || inputs.stage == 'audit-rss'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/regenerate_audit_log_rss.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=news-pipeline-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.news-pipeline-cron\",\"platform\":\"other\",\"message\":\"news-pipeline-cron failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"news-pipeline-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

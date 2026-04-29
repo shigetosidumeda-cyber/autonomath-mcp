@@ -3,7 +3,7 @@
 **事業者名**: Bookyou株式会社
 **法人番号**: T8010001213708
 **所在地**: 東京都文京区小日向2-22-1
-**サービス名**: AutonoMath (autonomath.ai)
+**サービス名**: AutonoMath (zeimu-kaikei.ai)
 **最終改訂日**: 2026-04-24
 **施行日**: 2026-04-24
 
@@ -184,7 +184,7 @@ query log は 90 日を経過した時点で自動的に削除されます。統
 
 本サービスは API-only の設計であり、**一切の Cookie を発行しません**。
 
-- 本ドキュメントを公開する静的サイト (autonomath.ai) にも analytics tool (Google Analytics 等) を設置しない方針です。
+- 本ドキュメントを公開する静的サイト (zeimu-kaikei.ai) にも analytics tool (Google Analytics 等) を設置しない方針です。
 - 将来 analytics を導入する場合は、本ポリシーを改訂し、明示的な opt-in を取得します。
 
 ---
@@ -221,6 +221,7 @@ query log は 90 日を経過した時点で自動的に削除されます。統
 ## 15. 連絡先
 
 **Bookyou株式会社**
+代表取締役: 梅田 茂利
 〒112-0006 東京都文京区小日向2-22-1
 法人番号: T8010001213708
 Email: `info@bookyou.net`

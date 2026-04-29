@@ -10,10 +10,10 @@
   // ------------------------------------------------------------------
   // config
   // ------------------------------------------------------------------
-  const API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'autonomath.ai' ? 'https://api.autonomath.ai' : '');
+  const API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'zeimu-kaikei.ai' ? 'https://api.zeimu-kaikei.ai' : '');
   const api = (p) => API_BASE.replace(/\/$/, '') + p;
 
-  // CSRF double-submit cookie pattern (Wave 16 P1). On /v1/session sign-in
+  // CSRF double-submit cookie pattern. On /v1/session sign-in
   // the server sets a non-httponly `am_csrf` cookie alongside the session
   // cookie. Every state-changing session-cookie POST must echo the cookie
   // value back as `X-CSRF-Token`. We also keep the historic
@@ -321,7 +321,7 @@
         setAlert(`usage: ${e.message || e}`);
       });
     } catch (e) {
-      // Wave 21 P0 fix #2: suppress the red banner for the unauthenticated
+      // Suppress the red banner for the unauthenticated
       // initial load. A first-time visitor with no cookie hits /v1/me and
       // gets 401 (or 404 against a static-host preview, or 0 for offline).
       // Showing "HTTP 404" / "ネットワークエラー" here is hostile UX —

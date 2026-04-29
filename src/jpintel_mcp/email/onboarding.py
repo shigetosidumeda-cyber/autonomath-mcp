@@ -28,15 +28,16 @@ explicit client for control; production paths call through `get_client()`.
                           this" recipes; first cron-fired mail of the sequence
     - `onboarding-day3`   activation examples + MCP wire-up
     - `onboarding-day7`   usage reflection + power-feature surfacing
-    - `onboarding-day14`  inactive-only soft reminder (usage_count == 0)
-    - `onboarding-day30`  NPS feedback (one question)
+    - `onboarding-day14`  power-user tips (MCP / batch / monthly_cap_yen)
+    - `onboarding-day30`  open-ended feedback ask (NO scale, just reply)
 
-The D+14 function is the only one with a gating rule inside the module —
-it returns a `{"skipped": true, "reason": "active"}` stub when
-`usage_count > 0`. Keeping the rule here (not in the scheduler) means
-the same check runs whether the mail is fired from cron, a replay, or an
-ops-initiated resend. The scheduler still has to mark the row `sent_at`
-so the cron does not keep picking it — see `send_scheduled_emails.py`.
+Historical note: D+14 used to be an "inactive-only reminder" gated by
+`usage_count == 0`. The 2026-04-29 onboarding redesign re-purposed it as
+power-user tips and removed the skip rule — the inactive-customer ask
+now lives in D+30 ("Q. なぜ使い始められなかったのでしょうか?"). The
+scheduler retains its `{"skipped": true, "reason": "active"}` branch as
+a no-op safety net for custom usage_count_fn injectors, but the in-tree
+helper no longer emits it.
 
 All functions return whatever Postmark returns (a dict) or the test-mode
 stub — never raise. Matches the `send_welcome` contract so callers can
@@ -257,7 +258,7 @@ def send_day7_value(
 
 
 # ---------------------------------------------------------------------------
-# Day 14 — inactive reminder (ONLY when usage_count == 0)
+# Day 14 — power-user tips (MCP / batch / monthly_cap_yen)
 # ---------------------------------------------------------------------------
 
 
@@ -269,21 +270,26 @@ def send_day14_inactive_reminder(
     usage_count: int,
     client: PostmarkClient | None = None,
 ) -> dict[str, Any]:
-    """D+14 — soft check-in, only when the customer has sent ZERO requests.
+    """D+14 — power-user tips (MCP integration, /programs/batch, monthly_cap_yen).
 
-    Gating is intentionally *inside* the module (not at the cron layer) so
-    every call site — cron, replay, ops — applies the same rule. A user
-    who has made any request at all is NOT stalled on activation; sending
-    them a "詰まっていますか？" mail is noise.
+    Renamed in spirit (function symbol kept for scheduler back-compat) on
+    2026-04-29. The original "inactive reminder" framing was deprecated —
+    a customer who is paying but inactive at D+14 is better served by D+30
+    feedback ask, not another nudge mail. The new D+14 spotlights three
+    operational features that turn casual usage into production usage:
 
-    Returns `{"skipped": true, "reason": "active"}` when skipped so the
-    scheduler can still mark `sent_at` and stop picking the row up. Leaving
-    `sent_at` NULL for an active user would re-trigger the skip every
-    cron run forever.
+      * MCP wiring (Claude / Cursor / Cline) — push the curl loop into the LLM.
+      * /programs/batch — N entities, 1 request, 1 ¥3.30 charge.
+      * monthly_cap_yen — hard ¥ ceiling per key (JST 月初 reset).
+
+    Sent regardless of `usage_count` — the copy is useful for both
+    high-frequency users (production guardrails) and one-off users
+    (lowering the friction to come back). The scheduler no longer treats
+    `{"skipped": True, "reason": "active"}` returns specially because we
+    no longer emit them; the legacy branch in scheduler.run_due remains a
+    no-op for any caller that supplies a custom usage_count_fn that
+    legitimately wants to skip.
     """
-    if usage_count > 0:
-        return {"skipped": True, "reason": "active"}
-
     return _client_or(client)._send(
         to=to,
         template_alias=TEMPLATE_DAY14,
@@ -297,7 +303,7 @@ def send_day14_inactive_reminder(
 
 
 # ---------------------------------------------------------------------------
-# Day 30 — feedback (one NPS-style question, max)
+# Day 30 — feedback (one open-ended question, no scale)
 # ---------------------------------------------------------------------------
 
 
@@ -309,17 +315,23 @@ def send_day30_feedback(
     usage_count: int,
     client: PostmarkClient | None = None,
 ) -> dict[str, Any]:
-    """D+30 — single-question feedback ask.
+    """D+30 — single open-ended feedback ask. NO NPS scale.
 
-    Design constraint: ONE question. NPS-style ("0-10 would you recommend
-    jpintel-mcp to a colleague?"). The template links the customer to a
-    reply-to-this-email path so there is no form infra to build — the
-    reply lands in the POSTMARK_FROM_REPLY monitored mailbox.
+    Design constraint: ONE question, no number, no form. The 2026-04-29
+    redesign deliberately dropped the 0-10 NPS scale: solo-ops zero-touch
+    has no resources to triage NPS scores at scale, and a free-text reply
+    surfaces signal that a number cannot ("I'd pay double if you added
+    the 〇〇 dataset" / "MCP setup ate two hours, please document
+    Cline-specific timeout"). The reply lands in POSTMARK_FROM_REPLY
+    which is the operator's monitored mailbox.
 
     We send regardless of `usage_count` because the signal from an
-    inactive 30-day user is itself the most valuable NPS data point
+    inactive 30-day user is itself the most valuable data point
     ("I paid and never used it because…"). The copy branches on
-    `has_used_key` so the ask is framed correctly.
+    `has_used_key` so active vs inactive customers get differently framed
+    asks (active: "what would make it better?" / inactive: "why didn't
+    you start?"). This is the LAST automated mail in the onboarding
+    sequence; subsequent contact is operator-initiated only.
     """
     return _client_or(client)._send(
         to=to,

@@ -2,34 +2,34 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "AutonoMath FAQ",
-  "description": "AutonoMath についてよく聞かれる質問 15 件。更新頻度・データソース・SLA・解約・rate limit リセット等。",
+  "headline": "税務会計AI FAQ",
+  "description": "税務会計AI についてよく聞かれる質問 16 件。更新頻度・データソース・法律相談/申請代行の対象外・SLA・解約・rate limit リセット等。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-26",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://autonomath.ai/about.html"
+    "url": "https://zeimu-kaikei.ai/about.html"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://autonomath.ai/og/default.png"
+      "url": "https://zeimu-kaikei.ai/og/default.png"
     }
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://autonomath.ai/docs/faq/"
+    "@id": "https://zeimu-kaikei.ai/docs/faq/"
   }
 }
 </script>
 
 # FAQ
 
-> **要約 (summary):** AutonoMath についてよく聞かれる質問 15 件。更新頻度・データソース・SLA・解約・rate limit リセット等。
+> **要約 (summary):** 税務会計AI についてよく聞かれる質問 16 件。更新頻度・データソース・法律相談/申請代行の対象外・SLA・解約・rate limit リセット等。
 
 ## Q1. データはどの頻度で更新されるか (Update cadence)
 
@@ -52,7 +52,7 @@ canonical データは **月次で再 ingest** を予定。日次の差分更新
 
 ## Q3. これは法的・税務アドバイスか (Is this legal/tax advice?)
 
-**いいえ。** AutonoMath は構造化された一般情報 (制度要件・金額・URL・排他関係) を返す **データ API** であり、個別案件の助言を行わない。
+**いいえ。** 税務会計AI は構造化された一般情報 (制度要件・金額・URL・排他関係) を返す **データ API** であり、個別案件の助言を行わない。
 
 - 行政書士法第1条の2 (書類作成独占)
 - 税理士法第52条 (税務代理独占)
@@ -60,21 +60,25 @@ canonical データは **月次で再 ingest** を予定。日次の差分更新
 
 上記の業務は提供せず、構造的にリスクを排除する設計。個別判断は一次資料または専門家へ。
 
+## Q3.1. これで法律相談できますか? / 申請代行できますか? (Can this give legal advice or file applications?)
+
+いいえ、 これは検索 API です。 法律相談 / 税務相談 / 行政書士業務代行は提供しません。 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1 該当行為は対象外。 検索結果は一次資料 URL を必ず開いて確認してください。
+
 ## Q4. サブスクリプションの解約方法 (Canceling)
 
 `POST /v1/billing/portal` で Stripe Customer Portal URL を取得し、ブラウザから解約操作。当期末まで API key 有効、次期から revoke される。詳細: [pricing.md](./pricing.md#解約返金-cancellation--refunds)。
 
 ## Q5. データの正確性は保証されるか (Data accuracy)
 
-**保証しない** が、各レコードに **tier ラベル** と **coverage_score** を付けて正直に露出する:
+**保証しない。** 各レコードに **tier ラベル** を付けて enrichment 充足度を正直に露出する。**tier は内容の正確性ではなく、当方が拾えた次元の数を表す指標**:
 
-- **Tier S (59件):** URL + 一次資料 + 全 A-J 次元 enriched、verified
-- **Tier A (525件):** 主要次元は verified、一部 J_statistics 等が null
-- **Tier B (3,297件):** 部分 enriched、coverage 中程度 (**網羅が浅い**)
-- **Tier C (2,421件):** sparse、基本情報のみ
-- **Tier X (469件):** excluded / deprecated (default では検索結果から除外)
+- **Tier S (114件):** URL + 一次資料 + A-J 次元のほぼ全て enriched
+- **Tier A (1,340件):** 主要次元 enriched、一部 (J_statistics 等) が null
+- **Tier B (4,186件):** 部分 enriched、coverage 中程度 (**網羅が浅い**)
+- **Tier C (6,044件):** sparse、基本情報のみ
+- **公開保留 (2,788件):** 二次レビュー待ち (default では検索結果から除外)
 
-**Tier B 以下は内容検証が浅いため、本番投入前に `official_url` で一次確認を推奨。** 誤りを見つけた場合は issue にご報告ください。
+**全 tier で正確性は保証しない。** 検索結果は必ず `source_url` の一次資料を開いて内容確認すること。誤りを見つけた場合は issue にご報告ください。
 
 ## Q6. 日本語・英語の混在 (Japanese/English mix)
 
@@ -93,7 +97,7 @@ launch 時点は **全 tier best effort**。契約上の可用性保証はなく
 - **全 tier:** best effort、月次目標 99.0% (fair-warning / 契約上の保証ではない)
 - 個別 SLA 条項 (99.5% 以上 / credit 条項等) は提供していない (完全セルフサーブ方針)
 
-public status page は Month 1 末に公開予定 (`status.autonomath.ai` placeholder)。
+public status page は Month 1 末に公開予定 (`status.zeimu-kaikei.ai` placeholder)。
 
 ## Q9. オフライン / self-host 可能か (Offline / self-hosted)
 
@@ -129,9 +133,9 @@ public status page は Month 1 末に公開予定 (`status.autonomath.ai` placeh
 
 カバー範囲外の組み合わせで `check_exclusions` が空配列 (`hits: []`) を返しても「併用安全」を保証するものではない。最終判断は一次資料で確認を。詳細: [exclusions.md](./exclusions.md)。
 
-## Q14. FTS5 の日本語検索の挙動 (Japanese FTS behavior)
+## Q14. 全文検索の日本語検索の挙動 (Japanese FTS behavior)
 
-- 3 文字以上のクエリ: FTS5 trigram で検索 (`rank` 順)
+- 3 文字以上のクエリ: 全文検索インデックス (3-gram) で検索 (`rank` 順)
 - 2 文字以下のクエリ: `primary_name` / `aliases_json` の substring 一致にフォールバック
 
 例: `q=IT導入` は 3 文字以上なので FTS ヒット、`q=IT` は substring。英数字の短いクエリは精度が落ちるため、3 文字以上を推奨。
@@ -139,9 +143,9 @@ public status page は Month 1 末に公開予定 (`status.autonomath.ai` placeh
 ## Q15. データの商用利用・再配布は可能か (Commercial use / redistribution)
 
 - **API response の商用利用:** 自社プロダクト内での参照・表示は OK (Free / Paid どちらでも)。
-- **bulk 再配布 (データセット販売等):** 元データ自体は一次資料のため出典明記で再配布可能。自社サービスに組み込む場合は Paid (¥3/req 税別 / 税込 ¥3.30) で叩けば制限なし。
-- **出典明記:** 推奨 (`official_url` / `source_urls` をユーザーに提示)。
-- 元データ自体は日本政府の公開一次資料であり、出典明記で再配布可能なものが中心。個情法・GDPR 対応として applicant 名のマスク等は実施済み。
+- **bulk 再配布 (データセット販売等):** 元データのライセンスは出典ごとに異なる (例: e-Gov 法令 = CC-BY 4.0、国税庁 適格事業者 = PDL v1.0 出典明記+編集注記、JST = proprietary 等)。 一律で再配布可能とは限らないため、bulk 再配布前に各 record の `source_url` のライセンス条件を必ず確認すること。
+- **出典明記:** 必須 (`official_url` / `source_urls` をユーザーに提示)。集約サイト経由ではなく、各 record の一次資料 URL を表示する。
+- 個情法対応として applicant 個人名のマスク等は実施済み。
 
 ## その他
 
@@ -155,6 +159,6 @@ public status page は Month 1 末に公開予定 (`status.autonomath.ai` placeh
 - [index.md](./index.md) — 概要
 - [getting-started.md](./getting-started.md) — 導入
 - [api-reference.md](./api-reference.md) — 全エンドポイント仕様
-- [pricing.md](./pricing.md) — tier 別制限
+- [pricing.md](./pricing.md) — 料金 (Free 50 req/月 / Paid ¥3/req)
 - [exclusions.md](./exclusions.md) — 排他ルールの概念
 - [mcp-tools.md](./mcp-tools.md) — MCP ツール

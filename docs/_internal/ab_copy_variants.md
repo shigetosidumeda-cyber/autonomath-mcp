@@ -1,6 +1,6 @@
 # A/B Copy Variants — AutonoMath
 
-> **要約:** 2026-05-06 launch 直後から回す A/B テスト用のコピー素材集。`docs/conversion_funnel.md` §4 の P0 レバー「Pricing 上部 curl snippet 常設」「Hero 明瞭化」に対応する paste-ready variant。Japanese primary、Do-not-edit-HTML 原則 (本稿は投入前の素材庫)。ドメイン名は rebrand pending のため `autonomath.ai` placeholder で固定。
+> **要約:** 2026-05-06 launch 直後から回す A/B テスト用のコピー素材集。`docs/conversion_funnel.md` §4 の P0 レバー「Pricing 上部 curl snippet 常設」「Hero 明瞭化」に対応する paste-ready variant。Japanese primary、Do-not-edit-HTML 原則 (本稿は投入前の素材庫)。ドメイン名は rebrand pending のため `zeimu-kaikei.ai` placeholder で固定。
 
 関連: `site/index.html` L74-85 (index hero)、`site/pricing.html` L46-48 (pricing hero)、L50-108 (price grid)、`docs/conversion_funnel.md` §4 #2, §5 T3/T9。
 
@@ -89,7 +89,7 @@
 <section class="code-demo" aria-labelledby="pricing-demo-title">
   <h2 id="pricing-demo-title" class="section-title">30 秒で叩く</h2>
   <p class="demo-lead">Free tier キーで動く。アカウント不要で response 形式を確認できる。</p>
-  <pre class="code-block" aria-label="curl コマンド例"><code>$ curl https://autonomath.ai/v1/programs/search?q=農業&limit=5 \
+  <pre class="code-block" aria-label="curl コマンド例"><code>$ curl https://zeimu-kaikei.ai/v1/programs/search?q=農業&limit=5 \
     -H "X-API-Key: YOUR_KEY"</code></pre>
   <p class="demo-note">レスポンス (抜粋):</p>
   <pre class="code-block" aria-label="JSON レスポンス例"><code>{

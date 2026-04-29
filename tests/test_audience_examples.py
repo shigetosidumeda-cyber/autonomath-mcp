@@ -39,30 +39,36 @@ _REPO = Path(__file__).resolve().parent.parent
 _SITE_AUDIENCES = _REPO / "site" / "audiences"
 
 # Match calls like:
-#   curl 'https://api.autonomath.ai/v1/programs/search?q=...'
-#   curl "https://api.autonomath.ai/v1/exclusions/check"
-#   httpx.get("https://api.autonomath.ai/v1/...")
-#   httpx.post("https://api.autonomath.ai/v1/...", json=...)
+#   curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=...'
+#   curl "https://api.zeimu-kaikei.ai/v1/exclusions/check"
+#   httpx.get("https://api.zeimu-kaikei.ai/v1/...")
+#   httpx.post("https://api.zeimu-kaikei.ai/v1/...", json=...)
+#
+# Both the live brand (`zeimu-kaikei.ai`) and the legacy brand
+# (`autonomath.ai`) are accepted so the tests survive copy-rebrand
+# work in either direction without dropping examples on the floor.
+_API_HOST_RE = r"api\.(?:zeimu-kaikei|autonomath)\.ai"
 _CURL_URL_RE = re.compile(
-    r"https?://api\.autonomath\.ai(/[A-Za-z0-9_/{}.-]+(?:\?[^\s'\"`]*)?)"
+    rf"https?://{_API_HOST_RE}(/[A-Za-z0-9_/{{}}.-]+(?:\?[^\s'\"`]*)?)"
 )
 _HTTPX_GET_RE = re.compile(
-    r"httpx\.get\s*\(\s*[\"'](https?://api\.autonomath\.ai/[^\"']+)[\"']"
+    rf"httpx\.get\s*\(\s*[\"'](https?://{_API_HOST_RE}/[^\"']+)[\"']"
 )
 _HTTPX_POST_RE = re.compile(
-    r"httpx\.post\s*\(\s*[\"'](https?://api\.autonomath\.ai/[^\"']+)[\"']"
+    rf"httpx\.post\s*\(\s*[\"'](https?://{_API_HOST_RE}/[^\"']+)[\"']"
 )
 
 
 def _normalise_url(raw: str) -> str:
-    """Strip the api.autonomath.ai host + collapse continuation backslashes.
+    """Strip the api host + collapse continuation backslashes.
 
     Audience HTML often wraps long URLs across visual lines via a literal
     backslash + newline. The browser collapses that on render but our
-    regex needs to do the same before we hand it to TestClient.
+    regex needs to do the same before we hand it to TestClient. Strips
+    either the live brand (`zeimu-kaikei.ai`) or legacy (`autonomath.ai`).
     """
-    # Drop scheme + host
-    path = re.sub(r"^https?://api\.autonomath\.ai", "", raw)
+    # Drop scheme + host (live or legacy brand)
+    path = re.sub(rf"^https?://{_API_HOST_RE}", "", raw)
     # Collapse backslash-newline-whitespace continuations (HTML-encoded
     # versions arrive as literal backslashes in the source text).
     path = re.sub(r"\\\s*", "", path)
@@ -176,13 +182,29 @@ def test_audience_example_routes_resolve(client, audience, method, path):
 
 @pytest.mark.skipif(BeautifulSoup is None, reason="bs4 not installed")
 def test_no_aggregator_hosts_in_examples():
-    """K2 / J7 reminder: audience pages must not link to noukaweb /
-    hojyokin-portal style aggregators (CONSTITUTION 13.x). If a future
-    edit regresses this, fail loudly before the page ships."""
+    """K2 / J7 reminder: audience pages must not LINK or REFERENCE
+    noukaweb / hojyokin-portal style aggregators inside live URLs or
+    code samples (CONSTITUTION 13.x). Prose mentions are allowed —
+    several pages explain *why* these aggregators are 不採用 / banned,
+    and the explanatory copy is a feature, not a regression. If a
+    future edit regresses this, fail loudly before the page ships."""
     banned = ("noukaweb", "hojyokin-portal", "biz.stayway")
     for html_path in sorted(_SITE_AUDIENCES.glob("*.html")):
-        text = html_path.read_text(encoding="utf-8")
+        soup = BeautifulSoup(html_path.read_text(encoding="utf-8"), "html.parser")
+        # Concatenate every URL context (link href / src / code blocks)
+        # — the only places where a banned aggregator would constitute
+        # an actual citation. Plain prose is excluded.
+        url_surfaces: list[str] = []
+        for tag in soup.find_all(["a", "link", "img", "script", "iframe"]):
+            for attr in ("href", "src"):
+                v = tag.get(attr)
+                if v:
+                    url_surfaces.append(str(v))
+        for code in soup.find_all(["code", "pre"]):
+            url_surfaces.append(code.get_text("\n", strip=False))
+        haystack = "\n".join(url_surfaces)
         for needle in banned:
-            assert needle not in text, (
-                f"{html_path.name} mentions banned aggregator '{needle}'"
+            assert needle not in haystack, (
+                f"{html_path.name} cites banned aggregator '{needle}' "
+                f"in a link / code surface"
             )

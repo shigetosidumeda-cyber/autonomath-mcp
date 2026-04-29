@@ -173,7 +173,12 @@ def _ensure_base_schema(conn: sqlite3.Connection) -> None:
             conn.executescript(stmt)
         except sqlite3.OperationalError as e:
             msg = str(e).lower()
-            if "no such column" in msg and "create index" in stmt.lower():
+            stmt_lower = stmt.lower()
+            is_index_stmt = (
+                "create index" in stmt_lower
+                or "create unique index" in stmt_lower
+            )
+            if "no such column" in msg and is_index_stmt:
                 _LOG.warning("schema_index_deferred stmt=%r err=%s", stmt, e)
                 continue
             raise

@@ -146,7 +146,7 @@ def _verification_url(token: str) -> str:
 
     Matches the router prefix below — change both or neither.
     """
-    return f"https://autonomath.ai/v1/compliance/verify/{token}"
+    return f"https://zeimu-kaikei.ai/v1/compliance/verify/{token}"
 
 
 def _send_verification_email(email: str, verify_token: str, unsub_token: str) -> None:
@@ -299,8 +299,8 @@ class SubscribeResponse(BaseModel):
 
 class CheckoutRequest(BaseModel):
     subscriber_id: int
-    success_url: str = "https://autonomath.ai/alerts.html?status=ok"
-    cancel_url: str = "https://autonomath.ai/alerts.html?status=canceled"
+    success_url: str = "https://zeimu-kaikei.ai/alerts.html?status=ok"
+    cancel_url: str = "https://zeimu-kaikei.ai/alerts.html?status=canceled"
 
 
 class CheckoutResponse(BaseModel):
@@ -329,7 +329,7 @@ _HTML_OK_TEMPLATE = """<!DOCTYPE html>
 <body>
   <h1>{title}</h1>
   <p>{body}</p>
-  <p><a href="https://autonomath.ai/">&larr; ホームへ</a></p>
+  <p><a href="https://zeimu-kaikei.ai/">&larr; ホームへ</a></p>
 </body>
 </html>
 """
@@ -473,7 +473,7 @@ def verify(verification_token: str, conn: DbDep) -> HTMLResponse:
         return _html_ok(
             "メールアドレスを確認しました",
             "次に決済をお済ませください: "
-            f"<a href='https://autonomath.ai/alerts.html?subscriber_id={int(row['id'])}&checkout=1'>決済に進む</a>",
+            f"<a href='https://zeimu-kaikei.ai/alerts.html?subscriber_id={int(row['id'])}&checkout=1'>決済に進む</a>",
         )
     return _html_ok(
         "メールアドレスを確認しました",
@@ -589,8 +589,8 @@ def stripe_checkout(payload: CheckoutRequest, conn: DbDep) -> CheckoutResponse:
         custom_text={
             "submit": {
                 "message": (
-                    "ご登録により利用規約 (https://autonomath.ai/tos.html) "
-                    "およびプライバシーポリシー (https://autonomath.ai/privacy.html) "
+                    "ご登録により利用規約 (https://zeimu-kaikei.ai/tos.html) "
+                    "およびプライバシーポリシー (https://zeimu-kaikei.ai/privacy.html) "
                     "に同意したものとみなされます。"
                 )
             }

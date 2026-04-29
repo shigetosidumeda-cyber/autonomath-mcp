@@ -34,10 +34,17 @@ from __future__ import annotations
 from jpintel_mcp.api.middleware.anon_quota_header import (
     AnonQuotaHeaderMiddleware,
 )
+from jpintel_mcp.api.middleware.client_tag import (
+    ClientTagMiddleware,
+    validate_client_tag,
+)
 from jpintel_mcp.api.middleware.customer_cap import (
     CustomerCapMiddleware,
     _reset_cap_cache_state,
     invalidate_cap_cache,
+)
+from jpintel_mcp.api.middleware.deprecation_warning import (
+    DeprecationWarningMiddleware,
 )
 from jpintel_mcp.api.middleware.kill_switch import (
     KillSwitchMiddleware,
@@ -61,7 +68,9 @@ from jpintel_mcp.api.middleware.strict_query import StrictQueryMiddleware
 
 __all__ = [
     "AnonQuotaHeaderMiddleware",
+    "ClientTagMiddleware",
     "CustomerCapMiddleware",
+    "DeprecationWarningMiddleware",
     "KillSwitchMiddleware",
     "OriginEnforcementMiddleware",
     "PerIpEndpointLimitMiddleware",
@@ -73,4 +82,5 @@ __all__ = [
     "_reset_per_ip_endpoint_buckets",
     "_reset_rate_limit_buckets",
     "invalidate_cap_cache",
+    "validate_client_tag",
 ]

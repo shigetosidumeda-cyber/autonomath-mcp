@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<!--
+  site/playground.html — interactive REST API try-it surface.
+
+  Why this page exists (added 2026-04-29):
+    Prospects want to verify the API works before committing — even before
+    issuing an API key. The pricing page sells; the docs explain; this page
+    lets the visitor *prove* the response shape, see the §52 disclaimer
+    法令注記の付与 live, and walk away with a curl one-liner that runs verbatim.
+    Funnel: blog/SEO → playground → /upgrade.html (gentle nudge after 10
+    successful requests) → /pricing.html#api-paid → Stripe Checkout.
+
+  How it works (vanilla JS, zero deps, 100% static — Cloudflare Pages OK):
+    1. Endpoint dropdown lists 10 highest-leverage GET routes (search +
+       lookup across programs / am / invoice_registrants / laws /
+       court-decisions / case-studies / tax_rulesets).
+    2. Param form is rendered from a hard-coded local schema (mirrors
+       /v1/openapi.json). We do *not* fetch the live OpenAPI on page-load
+       because it is 292 KB and would block first paint; the local copy is
+       small (~6 KB inlined) and matches v0.3.0 prod surface verbatim.
+    3. Live URL preview updates on every keystroke (no debounce — pure
+       string concat, no network).
+    4. "Send" button calls fetch() with credentials='omit' + Accept JSON
+       (and Authorization Bearer when the operator pasted a key). 500 ms
+       debounce on rapid double-clicks (prevents quota burn from accidental
+       repeat).
+    5. Response display shows status + duration + JSON body (pretty-printed,
+       client-side syntax highlight via a single regex pass — no Prism / no
+       highlight.js — keeps zero-dep promise) + headers (collapsible).
+    6. X-Anon-Quota-Remaining header drives a "残 N/50" indicator. When
+       N <= 5 we surface a CTA to /pricing.html#api-paid. Page never
+       blocks the request — the quota indicator is a soft nudge, the
+       upstream 429 is the hard fence.
+    7. Successful-request counter (sessionStorage) shows a "気に入ったら
+       API キー発行 →" banner after the 10th success. Dismissable.
+
+  Not on this page (deliberate):
+    * No backend. Everything is client-side fetch + DOM. Static-asset only.
+    * No POST endpoints. Prescreen / batch / device-flow have side effects
+      and need POST bodies — they belong on the homepage demo and /go,
+      not here. Read-only GET keeps the playground safe to share.
+    * No auth wall. We never persist the bearer token (no localStorage,
+      no cookie). Pasted keys live in DOM only and die on tab close.
+    * No tier badges, no plan ladder, no "Free / Pro" gating UI — that
+      would violate the ¥3/req-only constraint in CLAUDE.md.
+
+  CSP note: this page ships a single inline <script> block (the playground
+  controller). _headers already permits 'unsafe-inline' on script-src for
+  vetted page-level scripts (see _headers comment in repo). No remote
+  scripts, no third-party CDN.
+
+  Mobile responsive @ 375 / 768 / 1280 px. Modern browsers only (Chrome /
+  Firefox / Safari / Edge — uses fetch + URLSearchParams + template
+  literals; no IE shim).
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>API Playground — 税務会計AI を今すぐ試す</title>
+<meta name="description" content="ブラウザから直接 https://api.zeimu-kaikei.ai/v1/* を叩ける対話型 playground。匿名 50 req/月 まで無料、API キーなしで起動。10 主要エンドポイント、パラメータ自動補完、curl コピー。">
+
+<meta property="og:title" content="API Playground — 税務会計AI">
+<meta property="og:description" content="登録不要、API キー不要、ブラウザ完結。10 主要エンドポイントを今すぐ試す。匿名 50 req/月 無料。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zeimu-kaikei.ai/playground.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="API Playground — 税務会計AI">
+<meta name="twitter:description" content="登録不要、API キー不要、ブラウザで今すぐ試す。匿名 50 req/月 無料。">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://zeimu-kaikei.ai/playground.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/playground.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/playground.html">
+<!-- Preconnect to API origin: the playground always sends at least one
+     request, so warming the TLS handshake during HTML parse pays off. -->
+<link rel="preconnect" href="https://api.zeimu-kaikei.ai" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260429b">
+
+<script defer src="analytics.js"></script>
+
+<style>
+  /* Page-scoped styles — kept inline to avoid a second style.css fetch.
+     All custom names are prefixed `pg-` to avoid collisions with the
+     site-wide design system in /styles.css. */
+  .pg-page { padding: 40px 0 80px; }
+  .pg-page h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+  .pg-page .pg-lead {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin: 0 0 28px;
+    max-width: 780px;
+    line-height: 1.7;
+  }
+  .pg-page .pg-lead strong { color: var(--text); }
+  .pg-page .pg-lead a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  .pg-banner {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .pg-banner code {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .pg-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .pg-grid { grid-template-columns: 1fr; }
+  }
+
+  .pg-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 20px;
+  }
+  .pg-card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 0 0 14px;
+  }
+
+  .pg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .pg-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .pg-field .pg-hint {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .pg-field input,
+  .pg-field select,
+  .pg-field textarea {
+    font: inherit;
+    font-size: 14px;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    width: 100%;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  .pg-field input:focus-visible,
+  .pg-field select:focus-visible,
+  .pg-field textarea:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+  .pg-field input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    transform: scale(1.1);
+  }
+  .pg-field .pg-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .pg-field .pg-checkbox-row label { font-weight: 400; }
+
+  .pg-url {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 0 0 14px;
+    border: 1px solid var(--code-bg);
+  }
+  .pg-url-method {
+    display: inline-block;
+    background: #16a34a;
+    color: #fff;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 11px;
+    margin-right: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .pg-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 16px 0 0;
+  }
+  .pg-btn {
+    font: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.12s ease;
+  }
+  .pg-btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .pg-btn-primary:hover { background: var(--accent-hover); }
+  .pg-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .pg-btn-secondary {
+    background: #fff;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .pg-btn-secondary:hover { background: var(--bg-alt); }
+  .pg-btn-tertiary {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--border);
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+  .pg-btn-tertiary:hover { background: var(--bg-alt); text-decoration: none; }
+
+  .pg-quota {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .pg-quota-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  .pg-quota[data-state="warn"] { border-color: #d97706; background: #fff8e6; color: #7c2d12; }
+  .pg-quota[data-state="warn"] .pg-quota-num { color: #b45309; }
+  .pg-quota[data-state="over"] { border-color: var(--danger); background: #fff0f0; color: #7f1d1d; }
+  .pg-quota[data-state="over"] .pg-quota-num { color: var(--danger); }
+  .pg-quota a { color: inherit; text-decoration: underline; font-weight: 600; }
+
+  .pg-response {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    padding: 0;
+    overflow: hidden;
+    margin: 24px 0 0;
+  }
+  .pg-response-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-alt);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+  }
+  .pg-status-pill {
+    display: inline-block;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #fff;
+    background: #6b7280;
+    letter-spacing: 0.03em;
+  }
+  .pg-status-pill[data-class="2xx"] { background: #16a34a; }
+  .pg-status-pill[data-class="3xx"] { background: #2563eb; }
+  .pg-status-pill[data-class="4xx"] { background: #d97706; }
+  .pg-status-pill[data-class="5xx"] { background: var(--danger); }
+  .pg-duration { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+  .pg-body {
+    padding: 0;
+    max-height: 480px;
+    overflow: auto;
+  }
+  .pg-body pre {
+    margin: 0;
+    padding: 16px 18px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--code-text);
+    background: var(--code-bg);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .pg-body .json-key { color: #93c5fd; }
+  .pg-body .json-string { color: #86efac; }
+  .pg-body .json-number { color: #fbbf24; }
+  .pg-body .json-bool { color: #f472b6; }
+  .pg-body .json-null { color: #94a3b8; font-style: italic; }
+
+  .pg-headers-toggle {
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    padding: 10px 18px;
+    background: var(--bg-alt);
+    border: 0;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .pg-headers-toggle:hover { background: var(--border); }
+  .pg-headers-list {
+    display: none;
+    padding: 12px 18px 16px;
+    margin: 0;
+    background: var(--bg);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+  .pg-headers-list.is-open { display: block; }
+  .pg-headers-list dt {
+    color: var(--text);
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .pg-headers-list dd { margin: 0 0 4px; word-break: break-all; }
+
+  .pg-export {
+    margin: 24px 0 0;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-alt);
+  }
+  .pg-export h2 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .pg-export-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .pg-nudge {
+    display: none;
+    margin: 20px 0 0;
+    padding: 14px 16px;
+    background: linear-gradient(0deg, rgba(30,58,138,0.06), rgba(30,58,138,0.02));
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+  }
+  .pg-nudge.is-visible { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+  .pg-nudge a {
+    color: #fff;
+    background: var(--accent);
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .pg-nudge a:hover { background: var(--accent-hover); text-decoration: none; }
+  .pg-nudge .pg-nudge-dismiss {
+    border: 0; background: transparent; cursor: pointer;
+    color: var(--text-muted); font-size: 18px; padding: 4px 8px;
+  }
+
+  .pg-disclaimer {
+    margin: 32px 0 0;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    color: var(--text-muted);
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+  .pg-disclaimer strong { color: var(--text); }
+  .pg-disclaimer a { color: var(--accent); }
+
+  /* Dark-mode overrides — site-wide light/dark uses prefers-color-scheme. */
+  @media (prefers-color-scheme: dark) {
+    .pg-card, .pg-response { background: var(--bg-alt); }
+    .pg-field input, .pg-field select, .pg-field textarea { background: var(--bg); }
+    .pg-quota[data-state="warn"] {
+      background: rgba(217,119,6,0.12);
+      border-color: rgba(217,119,6,0.5);
+      color: #fbbf24;
+    }
+    .pg-quota[data-state="over"] {
+      background: rgba(248,81,73,0.12);
+      border-color: rgba(248,81,73,0.4);
+      color: #ffa198;
+    }
+    .pg-banner code { background: var(--bg); }
+  }
+
+  @media (max-width: 768px) {
+    .pg-page { padding: 24px 0 56px; }
+    .pg-page h1 { font-size: 24px; }
+    .pg-page .pg-lead { font-size: 15px; }
+    .pg-card { padding: 16px; }
+    .pg-actions { gap: 8px; }
+    .pg-btn { width: 100%; min-height: 44px; }
+    .pg-export-row .pg-btn { width: auto; flex: 1 1 auto; min-width: 140px; }
+  }
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "税務会計AI API Playground",
+  "description": "登録不要・API キー不要で /v1/* エンドポイントを直接叩ける REST API try-it surface。匿名 50 req/月 無料、curl コピー対応。",
+  "url": "https://zeimu-kaikei.ai/playground.html",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "browserRequirements": "Requires JavaScript. Modern browser (Chrome / Firefox / Safari / Edge).",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "税務会計AI",
+    "url": "https://zeimu-kaikei.ai/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "url": "https://zeimu-kaikei.ai/",
+    "email": "info@bookyou.net"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY",
+    "description": "匿名 50 req/月 per IP まで無料。超過後は ¥3.30/req (税込) 完全従量。"
+  }
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">利用者層</a>
+      <a href="playground.html" aria-current="page">Playground</a>
+      <details class="nav-trust">
+        <summary>信頼</summary>
+        <ul>
+          <li><a href="status.html">Status</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="data-freshness.html">データ鮮度</a></li>
+          <li><a href="transparency.html">透明性</a></li>
+          <li><a href="audit-log.html">変更検出フィード</a></li>
+        </ul>
+      </details>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="pg-page">
+  <div class="container">
+    <h1>API Playground</h1>
+    <p class="pg-lead">
+      ブラウザから直接 <code>https://api.zeimu-kaikei.ai/v1/*</code> を叩いて、
+      レスポンス形状・<strong>§52 開示エンベロープ</strong>・出典 URL を確認できます。
+      <strong>登録不要・API キー不要</strong>。 匿名 <span data-fact="anonymous_quota_per_month">50</span> req/月 (per IP) まで無料、 超過後は API キー発行で ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト (税込) 完全従量。
+      <a href="/docs/api-reference/">API リファレンス</a> · <a href="pricing.html">料金</a> · <a href="/dashboard">ダッシュボード</a>
+    </p>
+
+    <div class="pg-banner" role="note">
+      <strong>本番 API です。</strong> リクエストは即時 <code>api.zeimu-kaikei.ai</code> に届き、 匿名クォータ (50/月) を消費します。 リセットは <strong>JST 月初 00:00</strong>。 残量は下のインジケータで確認できます。
+    </div>
+
+    <div class="pg-quota" id="pg-quota" data-state="ok" aria-live="polite">
+      <span>匿名クォータ</span>
+      <span class="pg-quota-num"><span id="pg-quota-remaining">--</span> / <span data-fact="anonymous_quota_per_month">50</span></span>
+      <span>req (JST 月初 00:00 リセット)</span>
+      <span id="pg-quota-cta" hidden> · <a href="pricing.html#api-paid">上限間近 — API キー発行で解除 →</a></span>
+    </div>
+
+    <div class="pg-grid">
+      <!-- LEFT: endpoint + parameters -->
+      <section class="pg-card" aria-labelledby="pg-form-title">
+        <h2 id="pg-form-title">リクエスト</h2>
+
+        <div class="pg-field">
+          <label for="pg-endpoint">エンドポイント
+            <span class="pg-hint">10 主要 GET routes</span>
+          </label>
+          <select id="pg-endpoint" aria-describedby="pg-endpoint-desc"></select>
+          <p id="pg-endpoint-desc" class="pg-hint" style="margin:6px 0 0;"></p>
+        </div>
+
+        <div id="pg-params" aria-live="polite"></div>
+
+        <div class="pg-field">
+          <label for="pg-bearer">APIキー (任意)
+            <span class="pg-hint">未入力なら匿名 (50 リクエスト/月)。 <code>sk_live_...</code> をペーストすると ¥3.30/リクエスト で送信</span>
+          </label>
+          <input type="password" id="pg-bearer" autocomplete="off" spellcheck="false" placeholder="sk_live_..." />
+        </div>
+      </section>
+
+      <!-- RIGHT: URL preview + send + response -->
+      <section class="pg-card" aria-labelledby="pg-send-title">
+        <h2 id="pg-send-title">送信プレビュー</h2>
+        <div class="pg-url" id="pg-url-preview" aria-live="polite"><span class="pg-url-method">GET</span><span id="pg-url-text">https://api.zeimu-kaikei.ai/v1/programs/search</span></div>
+
+        <div class="pg-actions">
+          <button type="button" class="pg-btn pg-btn-primary" id="pg-send" aria-describedby="pg-send-help">送信 (Send)</button>
+          <button type="button" class="pg-btn pg-btn-secondary" id="pg-reset">パラメータをリセット</button>
+        </div>
+        <p id="pg-send-help" class="pg-hint" style="margin:10px 0 0;">500ms debounce — 連打しても 1 リクエスト のみ消費されます</p>
+      </section>
+    </div>
+
+    <!-- Conversion nudge after 10 successful requests in session -->
+    <aside class="pg-nudge" id="pg-nudge" role="region" aria-label="API キー発行のおすすめ">
+      <span>気に入りましたか? API キーを発行すると ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト で無制限に叩けます。 最低利用なし、解約 1 click。</span>
+      <span>
+        <a href="pricing.html#api-paid" data-cta="playground-nudge">API キー発行 →</a>
+        <button type="button" class="pg-nudge-dismiss" id="pg-nudge-dismiss" aria-label="閉じる">×</button>
+      </span>
+    </aside>
+
+    <!-- Response panel -->
+    <section class="pg-response" id="pg-response" hidden aria-live="polite" aria-labelledby="pg-response-title">
+      <div class="pg-response-head">
+        <span>
+          <span class="pg-status-pill" id="pg-status" data-class="">200 OK</span>
+          <span id="pg-response-title" style="margin-left:8px;">Response</span>
+        </span>
+        <span class="pg-duration" id="pg-duration">-- ms</span>
+      </div>
+      <div class="pg-body">
+        <pre id="pg-body"></pre>
+      </div>
+      <button type="button" class="pg-headers-toggle" id="pg-headers-toggle" aria-expanded="false" aria-controls="pg-headers">レスポンスヘッダー (展開)</button>
+      <dl class="pg-headers-list" id="pg-headers"></dl>
+    </section>
+
+    <!-- Export: copy as curl + open in 3rd-party clients -->
+    <section class="pg-export" aria-labelledby="pg-export-title">
+      <h2 id="pg-export-title">同じリクエストを他で叩く</h2>
+      <div class="pg-export-row">
+        <button type="button" class="pg-btn pg-btn-secondary" id="pg-copy-curl" aria-describedby="pg-curl-help">curl をコピー</button>
+        <a class="pg-btn pg-btn-tertiary" id="pg-open-postman" href="#" target="_blank" rel="noopener">Postman で開く</a>
+        <a class="pg-btn pg-btn-tertiary" id="pg-open-httpie" href="#" target="_blank" rel="noopener">HTTPie web で開く</a>
+        <a class="pg-btn pg-btn-tertiary" href="/docs/api-reference/" target="_blank" rel="noopener">API リファレンス →</a>
+      </div>
+      <p id="pg-curl-help" class="pg-hint" style="margin:10px 0 0;">クリップボードにコピーされたら 5 秒間ボタンに「コピー済み」と表示されます。</p>
+    </section>
+
+    <div class="pg-disclaimer" role="note" aria-labelledby="pg-disclaimer-title">
+      <strong id="pg-disclaimer-title">本サービスは税務助言ではありません</strong> — 税務会計AI は公的機関が公表する税制・補助金・法令情報を検索・整理して提供する <em>情報検索サービス</em> で、 <strong>税理士法 §52</strong> に基づき個別具体的な税務判断・申告書作成代行は行いません。 <strong>弁護士法 §72</strong> に基づき法律事務も行いません。 各エンドポイントの <code>_disclaimer</code> フィールドはエージェントへリレーする際もそのまま透過してください。 詳細は <a href="tos.html">利用規約</a>。
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">税務会計AI</p>
+      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="facts.html">統計の出典</a></p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="playground.html" aria-current="page">Playground</a>
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-copy">
+      &copy; 2026 Bookyou株式会社 ·
+      <strong>本サービスは情報検索であり、税理士法 §52 / 弁護士法 §72 に基づき個別具体的な税務助言・法律事務は提供しません。</strong>
+    </p>
+  </div>
+</footer>
+
+<script>
+/*
+  playground.html — vanilla JS controller.
+
+  Architecture:
+    ENDPOINTS         — local mirror of the 10 priority routes from the
+                        OpenAPI spec. Each entry declares method, path,
+                        path params, query params + widget hint + sane
+                        defaults. We do NOT fetch /v1/openapi.json on
+                        page-load (292 KB; would block first paint).
+    state             — currentEndpoint, currentParams, isInflight,
+                        successCount (sessionStorage), nudgeDismissed.
+    render()          — rebuilds the param form when endpoint changes.
+    buildUrl()        — composes the current query URL from state.
+    send()            — fetch + measure duration + parse JSON +
+                        render response panel + extract quota header +
+                        bump successCount.
+
+  Why no debounce on the URL preview but yes on Send:
+    The URL preview is a pure string transform (no network); rebuilding
+    it on every keystroke is cheap and shows the user exactly what will
+    be sent. The Send button has a 500ms gate to absorb double-clicks
+    that would otherwise burn quota.
+
+  No localStorage persistence of the bearer token — the token only lives
+  in the DOM, intentionally, so a stale tab does not leak a key after
+  the user walks away.
+*/
+'use strict';
+
+(function () {
+  // ----- 1. Local OpenAPI mirror (10 priority endpoints) ------------------
+  // Mirrors /v1/openapi.json paths verbatim (verified against prod
+  // 2026-04-29 dump). Adding params here only — never inventing names
+  // that the API does not accept (validation would 422 and confuse the
+  // visitor). Defaults chosen for "good first impression" (a query that
+  // reliably returns rows and demonstrates the §52 disclaimer 法令注記の付与).
+  const ENDPOINTS = [
+    {
+      id: 'programs.search',
+      method: 'GET',
+      path: '/v1/programs/search',
+      title: '補助金 / 融資 / 税制 / 認定 を横断検索',
+      desc: '10,790 active programs を tier S/A/B/C で。 匿名でも全フィールド返却。',
+      params: [
+        { name: 'q',                type: 'text',   label: 'キーワード',         placeholder: 'IT導入', defaultValue: 'IT導入' },
+        { name: 'tier',             type: 'multi',  label: 'tier (繰返し可)',     options: ['S','A','B','C'], defaultValue: '' },
+        { name: 'prefecture',       type: 'text',   label: '都道府県',           placeholder: '東京都' },
+        { name: 'authority_level',  type: 'enum',   label: '実施主体',           options: ['', 'national', 'prefecture', 'municipality'] },
+        { name: 'amount_min',       type: 'number', label: '金額下限 (円)',      placeholder: '1000000' },
+        { name: 'amount_max',       type: 'number', label: '金額上限 (円)',      placeholder: '50000000' },
+        { name: 'limit',            type: 'number', label: 'limit',              defaultValue: '5' },
+        { name: 'offset',           type: 'number', label: 'offset',             defaultValue: '0' },
+        { name: 'fields',           type: 'enum',   label: 'fields',             options: ['default', 'minimal', 'full'], defaultValue: 'minimal' },
+      ],
+    },
+    {
+      id: 'programs.get',
+      method: 'GET',
+      path: '/v1/programs/{unified_id}',
+      title: '制度 1 件詳細取得',
+      desc: 'unified_id (PRG-xxxxxxxxxx) で確定取得。 出典 URL + fetched_at 付き。',
+      params: [
+        // Default = a real prod unified_id (IT導入補助金) so the visitor's
+        // first GET on this endpoint returns a 200 with primary-source URL,
+        // not a 404 confusion. Verified via curl 2026-04-29.
+        { name: 'unified_id', type: 'text',   label: 'unified_id', isPath: true, required: true, placeholder: 'UNI-71f6029070', defaultValue: 'UNI-71f6029070' },
+        { name: 'fields',     type: 'enum',   label: 'fields',     options: ['default', 'minimal', 'full'], defaultValue: 'default' },
+      ],
+    },
+    {
+      id: 'am.tax_incentives',
+      method: 'GET',
+      path: '/v1/am/tax_incentives',
+      title: '税制特例検索 (特別償却・税額控除・繰越欠損金)',
+      desc: 'autonomath.db am_tax_rule (~285 rows)。 _disclaimer エンベロープあり。',
+      params: [
+        { name: 'query',         type: 'text',   label: 'キーワード',     placeholder: '中小企業 投資', defaultValue: '中小企業' },
+        { name: 'authority',     type: 'enum',   label: '所管庁',         options: ['', '国税庁', '財務省', '経済産業省', '中小企業庁', '農林水産省', '総務省', '国土交通省', '厚生労働省', '自治体'] },
+        { name: 'industry',      type: 'text',   label: '業種',           placeholder: '製造業' },
+        { name: 'target_year',   type: 'number', label: '対象年 (西暦)',  placeholder: '2026' },
+        { name: 'target_entity', type: 'enum',   label: '対象事業者',     options: ['', '中小企業', '小規模事業者', '個人事業主', '大企業', '認定事業者', '青色申告者', '農業法人', '特定事業者等'] },
+        { name: 'limit',         type: 'number', label: 'limit',          defaultValue: '5' },
+        { name: 'offset',        type: 'number', label: 'offset',         defaultValue: '0' },
+      ],
+    },
+    {
+      id: 'am.loans',
+      method: 'GET',
+      path: '/v1/am/loans',
+      title: '融資検索 (公庫 / 商工中金 / 自治体制度融資 — 3 軸保証)',
+      desc: 'am_loan_product。 担保 / 個人保証人 / 第三者保証人 を独立 boolean で。',
+      params: [
+        { name: 'loan_kind',                type: 'enum',     label: '融資種別',          options: ['', 'ippan','trou','seirei','sanko','sogyo','rinsei','saigai','shingiseikyu','kiki','other'] },
+        { name: 'no_collateral',            type: 'checkbox', label: '無担保' },
+        { name: 'no_personal_guarantor',    type: 'checkbox', label: '個人保証人なし' },
+        { name: 'no_third_party_guarantor', type: 'checkbox', label: '第三者保証人なし' },
+        { name: 'min_amount_yen',           type: 'number',   label: '金額下限 (円)' },
+        { name: 'max_amount_yen',           type: 'number',   label: '金額上限 (円)',     placeholder: '30000000' },
+        { name: 'name_query',               type: 'text',     label: '商品名 (部分一致)', placeholder: 'マル経' },
+        { name: 'limit',                    type: 'number',   label: 'limit',             defaultValue: '5' },
+      ],
+    },
+    {
+      id: 'invoice.search',
+      method: 'GET',
+      path: '/v1/invoice_registrants/search',
+      title: '適格請求書発行事業者 検索',
+      desc: 'PDL v1.0 attribution エンベロープあり (再配布 OK)。 13,801 rows delta。',
+      params: [
+        { name: 'q',                  type: 'text',   label: '事業者名 (前方一致)', placeholder: 'トヨタ', defaultValue: 'トヨタ' },
+        { name: 'houjin_bangou',      type: 'text',   label: '法人番号 (13桁)',     placeholder: '1180301018771' },
+        { name: 'kind',               type: 'enum',   label: '区分',                options: ['', 'corporate', 'individual'] },
+        { name: 'prefecture',         type: 'text',   label: '都道府県',            placeholder: '東京都' },
+        { name: 'registered_after',   type: 'date',   label: '登録日 from (YYYY-MM-DD)' },
+        { name: 'registered_before',  type: 'date',   label: '登録日 to (YYYY-MM-DD)' },
+        { name: 'active_only',        type: 'checkbox', label: '取消・期限切れを除外', defaultChecked: true },
+        { name: 'limit',              type: 'number', label: 'limit',               defaultValue: '5' },
+        { name: 'offset',             type: 'number', label: 'offset',              defaultValue: '0' },
+      ],
+    },
+    {
+      id: 'invoice.get',
+      method: 'GET',
+      path: '/v1/invoice_registrants/{invoice_registration_number}',
+      title: '適格事業者 1 件詳細 (T番号 lookup)',
+      desc: 'T + 13 桁の登録番号で exact lookup。 delta 未収録なら 200 + not_in_mirror=true。',
+      params: [
+        // Default = a T-number known to be in the delta mirror (verified 200
+        // via curl 2026-04-29). The full 4M-row monthly bulk lands post-launch;
+        // until then ~13.8k delta rows are queryable. Visitors can paste any
+        // real T-number — out-of-mirror values may 404 today but will resolve
+        // once the monthly bulk ingests.
+        { name: 'invoice_registration_number', type: 'text', label: 'T番号 (T1234567890123)', isPath: true, required: true, placeholder: 'T3810649779313', defaultValue: 'T3810649779313' },
+      ],
+    },
+    {
+      id: 'laws.search',
+      method: 'GET',
+      path: '/v1/laws/search',
+      title: '法令検索 (e-Gov 9,484 メタデータ + 154 全文)',
+      desc: 'CC-BY 4.0 (e-Gov)。 法令本文・改正情報・施行日。',
+      params: [
+        { name: 'q',                       type: 'text',   label: 'キーワード',     placeholder: '消費税', defaultValue: '消費税' },
+        { name: 'law_type',                type: 'enum',   label: '法令種別',       options: ['', 'constitution','act','cabinet_order','imperial_order','ministerial_ordinance','rule','notice','guideline'] },
+        { name: 'ministry',                type: 'text',   label: '所管府省',       placeholder: '財務省' },
+        { name: 'currently_effective_only',type: 'checkbox', label: '現行のみ',     defaultChecked: true },
+        { name: 'include_repealed',        type: 'checkbox', label: '廃止を含める' },
+        { name: 'promulgated_from',        type: 'date',   label: '公布日 from' },
+        { name: 'promulgated_to',          type: 'date',   label: '公布日 to' },
+        { name: 'limit',                   type: 'number', label: 'limit',          defaultValue: '5' },
+        { name: 'offset',                  type: 'number', label: 'offset',         defaultValue: '0' },
+      ],
+    },
+    {
+      id: 'court.search',
+      method: 'GET',
+      path: '/v1/court-decisions/search',
+      title: '判例検索 (判決 / 決定 / 命令 — 2,065 rows)',
+      desc: '最高裁 / 高裁 / 地裁。 関連法令 ID で逆引き可。',
+      params: [
+        { name: 'q',                  type: 'text',   label: 'キーワード',     placeholder: '消費税 仕入控除', defaultValue: '消費税' },
+        { name: 'court_level',        type: 'enum',   label: '審級',           options: ['', 'supreme', 'high', 'district', 'summary', 'family'] },
+        { name: 'decision_type',      type: 'enum',   label: '判決種別',       options: ['', '判決', '決定', '命令'] },
+        { name: 'subject_area',       type: 'text',   label: '分野',           placeholder: '租税' },
+        { name: 'references_law_id',  type: 'text',   label: '関連法令 ID',    placeholder: 'LAW-xxxxxxxxxx' },
+        { name: 'decided_from',       type: 'date',   label: '判決日 from' },
+        { name: 'decided_to',         type: 'date',   label: '判決日 to' },
+        { name: 'limit',              type: 'number', label: 'limit',          defaultValue: '5' },
+        { name: 'offset',             type: 'number', label: 'offset',         defaultValue: '0' },
+      ],
+    },
+    {
+      id: 'cases.search',
+      method: 'GET',
+      path: '/v1/case-studies/search',
+      title: '採択事例検索 (2,286 rows)',
+      desc: '実際に補助金を獲得した法人 / 個人事業主の事例。 法人番号一部付き。',
+      params: [
+        { name: 'q',              type: 'text',   label: 'キーワード',         placeholder: '農業 DX', defaultValue: '農業' },
+        { name: 'prefecture',     type: 'text',   label: '都道府県',           placeholder: '北海道' },
+        { name: 'industry_jsic',  type: 'text',   label: 'JSIC コード prefix', placeholder: 'A' },
+        { name: 'houjin_bangou',  type: 'text',   label: '法人番号 (13桁)',    placeholder: '' },
+        { name: 'program_used',   type: 'text',   label: '使った制度',         placeholder: 'IT導入' },
+        { name: 'min_employees',  type: 'number', label: '従業員下限' },
+        { name: 'max_employees',  type: 'number', label: '従業員上限' },
+        { name: 'limit',          type: 'number', label: 'limit',              defaultValue: '5' },
+        { name: 'offset',         type: 'number', label: 'offset',             defaultValue: '0' },
+      ],
+    },
+    {
+      id: 'tax_rulesets.search',
+      method: 'GET',
+      path: '/v1/tax_rulesets/search',
+      title: '税務判定ルールセット検索 (35 rows)',
+      desc: 'インボイス・電子帳簿保存・特別償却 等の判定ロジック。 _disclaimer 付き。',
+      params: [
+        { name: 'q',             type: 'text', label: 'キーワード',  placeholder: 'インボイス', defaultValue: 'インボイス' },
+        { name: 'tax_category',  type: 'text', label: '税目',        placeholder: 'consumption' },
+        { name: 'ruleset_kind',  type: 'text', label: 'kind',        placeholder: 'registration' },
+        { name: 'effective_on',  type: 'date', label: 'effective_on (YYYY-MM-DD)' },
+        { name: 'limit',         type: 'number', label: 'limit',     defaultValue: '5' },
+        { name: 'offset',        type: 'number', label: 'offset',    defaultValue: '0' },
+      ],
+    },
+  ];
+
+  const API_BASE = 'https://api.zeimu-kaikei.ai';
+  const STORAGE_KEY = 'pg-success-count';
+  const NUDGE_KEY = 'pg-nudge-dismissed';
+  const NUDGE_THRESHOLD = 10;
+  const SEND_DEBOUNCE_MS = 500;
+
+  // ----- 2. State + DOM lookups ------------------------------------------
+  let currentEndpoint = ENDPOINTS[0];
+  let lastSendAt = 0;
+  let inflight = false;
+
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    endpoint: $('pg-endpoint'),
+    endpointDesc: $('pg-endpoint-desc'),
+    params: $('pg-params'),
+    bearer: $('pg-bearer'),
+    urlText: $('pg-url-text'),
+    urlPreview: $('pg-url-preview'),
+    send: $('pg-send'),
+    reset: $('pg-reset'),
+    response: $('pg-response'),
+    status: $('pg-status'),
+    duration: $('pg-duration'),
+    body: $('pg-body'),
+    headersToggle: $('pg-headers-toggle'),
+    headers: $('pg-headers'),
+    quota: $('pg-quota'),
+    quotaRemaining: $('pg-quota-remaining'),
+    quotaCta: $('pg-quota-cta'),
+    nudge: $('pg-nudge'),
+    nudgeDismiss: $('pg-nudge-dismiss'),
+    copyCurl: $('pg-copy-curl'),
+    openPostman: $('pg-open-postman'),
+    openHttpie: $('pg-open-httpie'),
+  };
+
+  // ----- 3. Helpers ------------------------------------------------------
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function safeText(node, value) {
+    // Use textContent rather than innerHTML to avoid any reflected-XSS risk
+    // when echoing a status line or response body the API returned.
+    node.textContent = value == null ? '' : String(value);
+  }
+
+  /**
+   * Render a value as JSON with very small client-side syntax highlight.
+   * Pure regex pass — does NOT eval — handles strings (incl. escaped
+   * quotes), numbers, bool, null, and keys. Cap at 200 KB to avoid
+   * pathological pretty-print on huge responses.
+   */
+  function highlightJson(obj) {
+    let json;
+    try {
+      json = JSON.stringify(obj, null, 2);
+    } catch (_e) {
+      return escapeHtml(String(obj));
+    }
+    if (json.length > 200000) {
+      return escapeHtml(json.slice(0, 200000)) + '\n\n... (truncated at 200 KB — full body in DevTools Network tab)';
+    }
+    json = escapeHtml(json);
+    json = json.replace(
+      /("(\\u[0-9a-fA-F]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(\.\d+)?([eE][+-]?\d+)?)/g,
+      function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          cls = /:$/.test(match) ? 'json-key' : 'json-string';
+        } else if (/true|false/.test(match)) {
+          cls = 'json-bool';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      }
+    );
+    return json;
+  }
+
+  /**
+   * Compose URL from current endpoint + form values.
+   * Returns { url, displayUrl, query } — display strips empty values
+   * because the user gets confused when they see `?q=&tier=` with a lot
+   * of empty pairs.
+   */
+  function buildUrl() {
+    const ep = currentEndpoint;
+    let path = ep.path;
+    const params = new URLSearchParams();
+    const pathSubstitutions = {};
+
+    for (const param of ep.params) {
+      const inputs = els.params.querySelectorAll('[data-name="' + param.name + '"]');
+      if (param.type === 'multi') {
+        // multi-select renders as multiple <select> — read .selectedOptions
+        const sel = inputs[0];
+        if (sel && sel.selectedOptions) {
+          for (const opt of sel.selectedOptions) {
+            if (opt.value) params.append(param.name, opt.value);
+          }
+        }
+        continue;
+      }
+      const el = inputs[0];
+      if (!el) continue;
+      let val;
+      if (param.type === 'checkbox') {
+        val = el.checked ? 'true' : '';
+        // For boolean params we omit "false" — server defaults are stable.
+        if (!el.checked) val = '';
+      } else {
+        val = (el.value || '').trim();
+      }
+      if (param.isPath) {
+        pathSubstitutions[param.name] = val || '';
+      } else if (val !== '') {
+        params.append(param.name, val);
+      }
+    }
+
+    // path-param substitution
+    for (const [k, v] of Object.entries(pathSubstitutions)) {
+      path = path.replace('{' + k + '}', encodeURIComponent(v));
+    }
+
+    const qs = params.toString();
+    const url = API_BASE + path + (qs ? '?' + qs : '');
+    return { url: url, query: qs, path: path };
+  }
+
+  function paramFieldHtml(p) {
+    const label = '<span>' + escapeHtml(p.label || p.name) + (p.required ? ' <span style="color:var(--danger)">*</span>' : '') + '</span>';
+    const baseAttr = 'data-name="' + escapeHtml(p.name) + '" id="pg-p-' + escapeHtml(p.name) + '"';
+    if (p.type === 'enum') {
+      const opts = (p.options || []).map(function (o) {
+        const sel = (o === (p.defaultValue || '')) ? ' selected' : '';
+        const disp = o === '' ? '(なし)' : o;
+        return '<option value="' + escapeHtml(o) + '"' + sel + '>' + escapeHtml(disp) + '</option>';
+      }).join('');
+      return '<div class="pg-field"><label for="pg-p-' + escapeHtml(p.name) + '">' + label + '</label>' +
+             '<select ' + baseAttr + '>' + opts + '</select></div>';
+    }
+    if (p.type === 'multi') {
+      const opts = (p.options || []).map(function (o) {
+        return '<option value="' + escapeHtml(o) + '">' + escapeHtml(o) + '</option>';
+      }).join('');
+      return '<div class="pg-field"><label for="pg-p-' + escapeHtml(p.name) + '">' + label +
+             '<span class="pg-hint">⌘ / Ctrl で複数選択</span></label>' +
+             '<select multiple size="4" ' + baseAttr + '>' + opts + '</select></div>';
+    }
+    if (p.type === 'checkbox') {
+      const checked = p.defaultChecked ? ' checked' : '';
+      return '<div class="pg-field"><div class="pg-checkbox-row">' +
+             '<input type="checkbox" ' + baseAttr + checked + '>' +
+             '<label for="pg-p-' + escapeHtml(p.name) + '">' + escapeHtml(p.label || p.name) + '</label>' +
+             '</div></div>';
+    }
+    let inputType = 'text';
+    if (p.type === 'number') inputType = 'number';
+    if (p.type === 'date') inputType = 'date';
+    const placeholder = p.placeholder ? ' placeholder="' + escapeHtml(p.placeholder) + '"' : '';
+    const def = p.defaultValue ? ' value="' + escapeHtml(p.defaultValue) + '"' : '';
+    return '<div class="pg-field"><label for="pg-p-' + escapeHtml(p.name) + '">' + label + '</label>' +
+           '<input type="' + inputType + '" ' + baseAttr + placeholder + def + '></div>';
+  }
+
+  function renderEndpointSelect() {
+    const html = ENDPOINTS.map(function (ep, i) {
+      return '<option value="' + i + '">' + escapeHtml(ep.method + ' ' + ep.path) + ' — ' + escapeHtml(ep.title) + '</option>';
+    }).join('');
+    els.endpoint.innerHTML = html;
+  }
+
+  function renderParams() {
+    const html = currentEndpoint.params.map(paramFieldHtml).join('');
+    els.params.innerHTML = html;
+    safeText(els.endpointDesc, currentEndpoint.desc || '');
+    // Wire up onchange/oninput → URL preview update.
+    const inputs = els.params.querySelectorAll('input, select');
+    for (const inp of inputs) {
+      inp.addEventListener('input', updateUrlPreview);
+      inp.addEventListener('change', updateUrlPreview);
+    }
+    updateUrlPreview();
+  }
+
+  function updateUrlPreview() {
+    const { url } = buildUrl();
+    safeText(els.urlText, url);
+    // Method pill is always GET in this playground.
+    const methodEl = els.urlPreview.querySelector('.pg-url-method');
+    if (methodEl) safeText(methodEl, currentEndpoint.method);
+    updateExportLinks(url);
+  }
+
+  function updateExportLinks(url) {
+    // Postman: postman://... can hijack the user's app. Use the public web
+    // builder instead — it's URL-agnostic, no install required.
+    els.openPostman.href = 'https://www.postman.com/runner?url=' + encodeURIComponent(url);
+    // HTTPie web — accepts ?url= deep-link.
+    els.openHttpie.href = 'https://httpie.io/app?url=' + encodeURIComponent(url);
+  }
+
+  function buildCurl() {
+    const { url } = buildUrl();
+    const bearer = (els.bearer.value || '').trim();
+    const lines = ["curl -sS \\", "  '" + url.replace(/'/g, "'\\''") + "' \\", "  -H 'Accept: application/json'"];
+    if (bearer) {
+      lines[lines.length - 1] += ' \\';
+      lines.push("  -H 'Authorization: Bearer " + bearer.replace(/'/g, "'\\''") + "'");
+    }
+    return lines.join('\n');
+  }
+
+  // ----- 4. Quota indicator ----------------------------------------------
+  function updateQuota(remainingHeader) {
+    if (remainingHeader == null) return; // no header → keep existing display
+    const n = parseInt(remainingHeader, 10);
+    if (isNaN(n)) return;
+    safeText(els.quotaRemaining, String(Math.max(0, n)));
+    let state = 'ok';
+    if (n <= 0) state = 'over';
+    else if (n <= 5) state = 'warn';
+    els.quota.dataset.state = state;
+    els.quotaCta.hidden = (state === 'ok');
+  }
+
+  // ----- 5. Send -------------------------------------------------------
+  async function send() {
+    const now = Date.now();
+    if (inflight) return;
+    if (now - lastSendAt < SEND_DEBOUNCE_MS) return;
+    lastSendAt = now;
+    inflight = true;
+    els.send.disabled = true;
+    safeText(els.send, '送信中…');
+
+    const { url } = buildUrl();
+    const bearer = (els.bearer.value || '').trim();
+    const headers = { 'Accept': 'application/json' };
+    if (bearer) headers['Authorization'] = 'Bearer ' + bearer;
+
+    const t0 = performance.now();
+    let resp, body, errMsg;
+    try {
+      resp = await fetch(url, {
+        method: 'GET',
+        headers: headers,
+        credentials: 'omit',
+      });
+      const text = await resp.text();
+      try { body = JSON.parse(text); }
+      catch (_e) { body = { _raw: text }; }
+    } catch (e) {
+      errMsg = e && e.message ? e.message : String(e);
+    }
+    const ms = Math.round(performance.now() - t0);
+
+    inflight = false;
+    els.send.disabled = false;
+    safeText(els.send, '送信 (Send)');
+
+    els.response.hidden = false;
+    if (errMsg) {
+      els.status.textContent = 'NETWORK';
+      els.status.dataset.class = '5xx';
+      safeText(els.duration, ms + ' ms');
+      els.body.innerHTML = highlightJson({ error: 'fetch failed', detail: errMsg, hint: 'CORS / DNS / offline. Try again or open DevTools Network tab.' });
+      els.headers.innerHTML = '';
+      return;
+    }
+
+    const statusClass = String(resp.status).charAt(0) + 'xx';
+    safeText(els.status, resp.status + ' ' + (resp.statusText || ''));
+    els.status.dataset.class = statusClass;
+    safeText(els.duration, ms + ' ms');
+    els.body.innerHTML = highlightJson(body);
+
+    // Render response headers (collapsible). fetch() does not expose all
+    // headers due to CORS — only "simple" + explicitly Access-Control-
+    // Expose-Headers'd ones. The X-Anon-Quota-Remaining is exposed by the
+    // server middleware; if it ever stops, we fall back gracefully.
+    const headerEntries = [];
+    if (resp.headers && resp.headers.forEach) {
+      resp.headers.forEach(function (v, k) {
+        headerEntries.push([k, v]);
+      });
+    }
+    headerEntries.sort(function (a, b) { return a[0].localeCompare(b[0]); });
+    els.headers.innerHTML = headerEntries.map(function (kv) {
+      return '<dt>' + escapeHtml(kv[0]) + '</dt><dd>' + escapeHtml(kv[1]) + '</dd>';
+    }).join('') || '<dd>(ヘッダーなし — fetch() の CORS 制約により公開ヘッダー以外は取得できません)</dd>';
+
+    // Quota: try X-Anon-Quota-Remaining (lowercase via fetch() Headers API).
+    const quotaHdr = resp.headers.get('x-anon-quota-remaining') || resp.headers.get('X-Anon-Quota-Remaining');
+    updateQuota(quotaHdr);
+
+    // Bump success counter (2xx only) → maybe show conversion nudge.
+    if (resp.ok) {
+      try {
+        let count = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0', 10) || 0;
+        count += 1;
+        sessionStorage.setItem(STORAGE_KEY, String(count));
+        maybeShowNudge(count);
+      } catch (_e) { /* sessionStorage off → no nudge */ }
+    }
+
+    // Analytics breadcrumb (GA4 dataLayer if present).
+    try {
+      if (window.dataLayer && typeof window.dataLayer.push === 'function') {
+        window.dataLayer.push({
+          event: 'playground_request',
+          endpoint_id: currentEndpoint.id,
+          status: resp.status,
+          duration_ms: ms,
+        });
+      }
+    } catch (_e) { /* analytics best-effort */ }
+  }
+
+  function maybeShowNudge(count) {
+    if (count < NUDGE_THRESHOLD) return;
+    let dismissed = '';
+    try { dismissed = sessionStorage.getItem(NUDGE_KEY) || ''; } catch (_e) {}
+    if (dismissed === '1') return;
+    els.nudge.classList.add('is-visible');
+  }
+
+  function dismissNudge() {
+    els.nudge.classList.remove('is-visible');
+    try { sessionStorage.setItem(NUDGE_KEY, '1'); } catch (_e) {}
+  }
+
+  // ----- 6. Wire-up ------------------------------------------------------
+  function init() {
+    renderEndpointSelect();
+    renderParams();
+
+    els.endpoint.addEventListener('change', function () {
+      currentEndpoint = ENDPOINTS[parseInt(els.endpoint.value, 10) || 0];
+      renderParams();
+    });
+
+    els.send.addEventListener('click', send);
+    els.reset.addEventListener('click', function () {
+      // Re-render with original defaults (lose current values).
+      renderParams();
+      els.bearer.value = '';
+      els.response.hidden = true;
+    });
+
+    els.bearer.addEventListener('input', updateUrlPreview);
+
+    els.headersToggle.addEventListener('click', function () {
+      const open = els.headers.classList.toggle('is-open');
+      els.headersToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      safeText(els.headersToggle, open ? 'レスポンスヘッダー (折りたたむ)' : 'レスポンスヘッダー (展開)');
+    });
+
+    els.copyCurl.addEventListener('click', async function () {
+      const cmd = buildCurl();
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(cmd);
+        } else {
+          // Fallback: textarea + execCommand.
+          const ta = document.createElement('textarea');
+          ta.value = cmd;
+          ta.style.position = 'fixed'; ta.style.top = '-1000px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        const original = els.copyCurl.textContent;
+        safeText(els.copyCurl, 'コピー済み ✓');
+        setTimeout(function () { safeText(els.copyCurl, original); }, 2500);
+      } catch (e) {
+        // Last-resort fallback: prompt() so the user can manually copy.
+        // Some restrictive browsers (Safari iOS) without
+        // navigator.clipboard expose only this path.
+        window.prompt('curl コマンド (手動でコピーしてください):', cmd);
+      }
+    });
+
+    els.nudgeDismiss.addEventListener('click', dismissNudge);
+
+    // If we already have N >= threshold from a prior session this tab,
+    // show the nudge immediately (sessionStorage scope = this tab).
+    try {
+      const count = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0', 10) || 0;
+      maybeShowNudge(count);
+    } catch (_e) {}
+
+    // Submit on ⌘/Ctrl + Enter inside any form field.
+    els.params.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        send();
+      }
+    });
+    els.bearer.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        send();
+      }
+    });
+
+    updateUrlPreview();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -72,7 +72,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
 USER_AGENT = (
     "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-jftc-houdou (contact=ops@autonomath.ai)"
+    "ingest-jftc-houdou (contact=ops@zeimu-kaikei.ai)"
 )
 BASE = "https://www.jftc.go.jp"
 INDEX_URL = f"{BASE}/houdou/pressrelease/index.html"

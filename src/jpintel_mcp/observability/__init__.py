@@ -11,6 +11,7 @@ for the full alert / SLO matrix.
 """
 from __future__ import annotations
 
+from jpintel_mcp.observability.cron_heartbeat import heartbeat
 from jpintel_mcp.observability.sentry import (
     is_sentry_active,
     safe_capture_exception,
@@ -18,6 +19,7 @@ from jpintel_mcp.observability.sentry import (
 )
 
 __all__ = [
+    "heartbeat",
     "is_sentry_active",
     "safe_capture_exception",
     "safe_capture_message",

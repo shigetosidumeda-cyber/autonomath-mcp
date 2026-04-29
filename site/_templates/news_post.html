@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>{{ page_title }}</title>
+<meta name="description" content="{{ meta_description }}">
+<meta name="author" content="Bookyou株式会社">
+<meta name="publisher" content="Bookyou株式会社">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://{{ DOMAIN }}/news/{{ year }}/{{ month }}/{{ day }}/{{ slug }}.html">
+<meta property="og:image" content="https://{{ DOMAIN }}/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="税務会計AI">
+<meta property="article:published_time" content="{{ detected_at_iso }}">
+<meta property="article:author" content="Bookyou株式会社">
+<meta property="article:section" content="{{ category_ja }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page_title }}">
+<meta name="twitter:description" content="{{ meta_description }}">
+<meta name="twitter:image" content="https://{{ DOMAIN }}/assets/og-twitter.png">
+
+<link rel="canonical" href="https://{{ DOMAIN }}/news/{{ year }}/{{ month }}/{{ day }}/{{ slug }}.html">
+<link rel="alternate" hreflang="ja" href="https://{{ DOMAIN }}/news/{{ year }}/{{ month }}/{{ day }}/{{ slug }}.html">
+<link rel="alternate" hreflang="x-default" href="https://{{ DOMAIN }}/news/{{ year }}/{{ month }}/{{ day }}/{{ slug }}.html">
+<link rel="alternate" type="application/rss+xml" title="税務会計AI お知らせ" href="https://{{ DOMAIN }}/rss.xml">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
+
+<script type="application/ld+json">
+{{ json_ld_pretty | safe }}
+</script>
+</head>
+<body>
+<a href="#main" class="skip-link">本文へスキップ</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/docs/">Docs</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/dashboard.html">検索</a>
+      <a href="/news/">お知らせ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="program-page">
+  <div class="container">
+
+    <nav class="breadcrumb" aria-label="パンくず">
+      <a href="/">ホーム</a> &rsaquo;
+      <a href="/news/">お知らせ</a> &rsaquo;
+      <a href="/news/?category={{ category_slug }}">{{ category_ja }}</a> &rsaquo;
+      <span aria-current="page">{{ program_name }}</span>
+    </nav>
+
+    <article>
+      <header class="program-header">
+        <h1>{{ program_name }} に変更 ({{ detected_at_jst_date }})</h1>
+        <p class="byline">
+          <span class="updated">検出日時: {{ detected_at_jst_human }}</span>
+          <span class="sep">/</span>
+          <span class="source">出典: <a href="{{ source_url }}" rel="external nofollow noopener">{{ source_domain }}</a></span>
+          <span class="sep">/</span>
+          <span class="author">Bookyou株式会社 (梅田茂利)</span>
+        </p>
+        <p class="byline-note muted">本変更検出は制度改正検出ログ (追記専用) から自動生成しています。一次資料の現況は必ず公式ページを確認してください。</p>
+      </header>
+
+      <section class="tldr" aria-labelledby="tldr-title">
+        <h2 id="tldr-title">要約</h2>
+        <p>{{ summary_paragraph }}</p>
+        <ul>
+          <li><strong>制度名:</strong> {{ program_name }}</li>
+          <li><strong>区分:</strong> {{ category_ja }}</li>
+          <li><strong>変更件数:</strong> {{ change_count }} 件</li>
+          <li><strong>検出範囲:</strong> {{ detected_at_jst_date }} (JST)</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="changes-title">
+        <h2 id="changes-title">変更内容</h2>
+        <p>以下の {{ change_count }} 件の差分を検出しました。 <code>before</code> は前回観測値、 <code>after</code> は今回観測値です。 値が NULL の場合はその時点で項目が観測されていなかったことを示します。</p>
+        <div class="diff-table-wrap">
+          <table class="diff-table">
+            <thead>
+              <tr>
+                <th scope="col">項目</th>
+                <th scope="col">変更前 (before)</th>
+                <th scope="col">変更後 (after)</th>
+                <th scope="col">出典</th>
+                <th scope="col">検出日時 (JST)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for change in changes %}
+              <tr>
+                <td class="field-name"><code>{{ change.field_name }}</code><br><span class="muted">{{ change.field_label_ja }}</span></td>
+                <td class="field-before">{% if change.prev_value is none %}<span class="muted">(未観測)</span>{% else %}<code>{{ change.prev_value_display }}</code>{% endif %}</td>
+                <td class="field-after">{% if change.new_value is none %}<span class="muted">(項目消失)</span>{% else %}<code>{{ change.new_value_display }}</code>{% endif %}</td>
+                <td class="field-source">{% if change.source_url %}<a href="{{ change.source_url }}" rel="external nofollow noopener">{{ change.source_domain }}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
+                <td class="field-detected">{{ change.detected_at_jst }}</td>
+              </tr>
+              {%- endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-labelledby="api-title">
+        <h2 id="api-title">API で確認</h2>
+        <p>同じ差分を機械可読 (JSON) で取得するには <code>get_amendment_diff</code> を呼び出してください。</p>
+        <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
+  "https://api.{{ DOMAIN }}/v1/am/amendments?entity_id={{ entity_id }}&since={{ since_iso }}"</code></pre>
+        <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_provenance(entity_id="{{ entity_id }}")</code> 経由で同じ差分ログにアクセスできます。</p>
+        <p class="api-cta-line">無料 50 リクエスト/月。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
+      </section>
+
+      <section aria-labelledby="source-title">
+        <h2 id="source-title">出典・一次情報</h2>
+        <p>本変更検出の元データは以下の一次情報に基づきます。最新の公募状況・詳細要件は必ず公式ページをご確認ください。</p>
+        <p><a class="primary-link" rel="external nofollow noopener" href="{{ source_url }}">{{ source_domain }} の公式ページを開く</a></p>
+        <p class="muted">差分検出日時: {{ detected_at_jst_human }}</p>
+      </section>
+
+      <p class="disclaimer">本変更検出は制度改正検出ログ (追記専用) から自動で行われており、 公式発表との差異がある場合は公式情報をご確認ください。 §52 税理士法に基づき、 個別の税務判断は税理士にご相談ください。 本ページは法的助言・税務助言・申請代行を構成するものではありません。</p>
+    </article>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">税務会計AI</p>
+      <p class="footer-tag">日本の制度 API</p>
+      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター 法務・連絡">
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
+      <a href="/industries/" hreflang="ja">業種別</a>
+      <a href="/qa/" hreflang="ja">Q&amp;A</a>
+      <a href="/compare.html" hreflang="ja">比較</a>
+      <a href="/prefectures/" hreflang="ja">都道府県別</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+    <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
+  </div>
+</footer>
+
+</body>
+</html>

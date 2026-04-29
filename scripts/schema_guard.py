@@ -65,7 +65,13 @@ AM_REQUIRED = {
     "am_acceptance_stat",
     "am_application_round",
 }
-AM_FORBIDDEN = {"programs", "api_keys"}
+# Migration 032 (2026-04-25) intentionally merged jpintel.db tables into
+# autonomath.db as the unified primary DB. `api_keys` lives directly at the
+# top-level (not jpi-namespaced) so REST/MCP can read quota/auth from a
+# single connection. The pre-merge "api_keys means a swap happened" rule is
+# stale — only `programs` remains forbidden (jpintel.db keeps that table;
+# autonomath uses `jpi_programs` for the mirrored copy).
+AM_FORBIDDEN = {"programs"}
 
 
 class SchemaGuardError(RuntimeError):

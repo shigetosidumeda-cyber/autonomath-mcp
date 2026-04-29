@@ -84,7 +84,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
 USER_AGENT = (
     "jpintel-mcp-ingest/1.0 "
-    "(+https://autonomath.ai; contact=ops@autonomath.ai)"
+    "(+https://zeimu-kaikei.ai; contact=ops@zeimu-kaikei.ai)"
 )
 PER_REQUEST_DELAY_SEC = 0.6
 HTTP_TIMEOUT_SEC = 60.0

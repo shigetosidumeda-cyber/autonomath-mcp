@@ -1,0 +1,134 @@
+name: Ministry ingest (monthly)
+
+# Monthly ingest of 4 ministry sources (MAFF / MIC / MOJ / MHLW) into jpintel.db.
+# Each ministry uses a curated-seed + URL-probe pattern from scripts/ingest_*.py.
+# The job runs on the Fly machine via flyctl ssh console (same pattern as
+# ingest-monthly.yml) so DB writes land on the production volume.
+#
+# Cadence: 21:30 UTC on the 5th of each month == 06:30 JST 5th. Spaced from
+# ingest-monthly.yml (1st @ 21:00 UTC) and refresh-sources.yml (Tier C 18:17
+# UTC) to avoid SQLite write contention.
+#
+# Required secrets: FLY_API_TOKEN
+# Optional secrets: SLACK_WEBHOOK_INGEST
+
+on:
+  schedule:
+    # 5th of month, 21:50 UTC (06:50 JST 5th). Staggered +20 min vs
+    # precompute-refresh-cron (30 21 *) to avoid Fly ssh contention.
+    - cron: "50 21 5 * *"
+  workflow_dispatch:
+    inputs:
+      ministry:
+        description: "Run only this ministry (maff/mic/moj/mhlw, blank = all)"
+        required: false
+        default: ""
+      dry_run:
+        description: "dry-run (no DB writes)"
+        required: false
+        default: "false"
+
+concurrency:
+  group: ministry-ingest-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    # 4 ministries × ~150-200 URL probes @ 1 req/s = ~30 min worst case.
+    # Cap at 90 min for safety.
+    timeout-minutes: 90
+    env:
+      SENTRY_RELEASE: ${{ github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Determine ministries to run
+        id: scope
+        env:
+          INPUT_MINISTRY: ${{ github.event.inputs.ministry }}
+        run: |
+          set -euo pipefail
+          if [ -n "${INPUT_MINISTRY:-}" ]; then
+            MIN="$INPUT_MINISTRY"
+          else
+            MIN="maff mic moj mhlw"
+          fi
+          echo "ministries=$MIN" >> "$GITHUB_OUTPUT"
+
+      - name: Run ministry ingest scripts on Fly
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          MINISTRIES: ${{ steps.scope.outputs.ministries }}
+        run: |
+          set -euo pipefail
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          set +e
+          fail=0
+          for m in $MINISTRIES; do
+            echo "::group::ingest_$m"
+            flyctl ssh console -a autonomath-api -C \
+              "env SENTRY_RELEASE=${SENTRY_RELEASE} \
+                /app/.venv/bin/python /app/scripts/ingest_${m}.py ${DRY_FLAG}" \
+              | tee "ingest_${m}.out"
+            rc=$?
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::ingest_${m}.py exited $rc"
+              fail=$((fail+1))
+            fi
+            echo "::endgroup::"
+          done
+          echo "fail=$fail" >> "$GITHUB_OUTPUT"
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::$fail ministry/ies failed"
+            exit 1
+          fi
+
+      - name: Upload ingest logs
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: ministry-ingest-${{ github.run_id }}
+          path: ingest_*.out
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Ministries: \`${{ steps.scope.outputs.ministries }}\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nCheck \`docs/incident_runbook.md\` Section I and the \`ingest_*.out\` artifacts.\n"
+          gh issue create \
+            --title "ministry-ingest failed on $(date -u +%Y-%m-%d)" \
+            --label ingest-failure \
+            --label automation \
+            --body "$BODY"
+
+      - name: Slack notify on driver failure
+        if: failure() && env.SLACK_WEBHOOK_INGEST != ''
+        env:
+          SLACK_WEBHOOK_INGEST: ${{ secrets.SLACK_WEBHOOK_INGEST }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST -H 'content-type: application/json' \
+            --data "{\"text\":\":warning: ministry-ingest failure (${{ steps.scope.outputs.ministries }}) — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$SLACK_WEBHOOK_INGEST" || true

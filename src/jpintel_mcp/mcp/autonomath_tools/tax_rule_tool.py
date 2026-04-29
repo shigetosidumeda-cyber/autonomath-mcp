@@ -171,7 +171,7 @@ def get_am_tax_rule(
         ),
     ] = None,
 ) -> dict[str, Any]:
-    """[DISCOVER-TAX-RULE] 税制措置の structured 規則を単一 or 複数返す — DX / 5G / エンジェル等の「rate と cap と根拠条文と適用期限」一発取得。
+    """[DISCOVER-TAX-RULE] Returns structured tax rule rows for a 税制措置 (rate / cap / 根拠条文 / 適用期限) from am_tax_rule. One measure can return multiple rows when both 特別償却 and 税額控除 exist. Output is search-derived; verify primary source (source_url) for filing decisions.
 
     WHAT: am_tax_rule から (tax_measure_entity_id, rule_type) PK の
     structured row を返す。1 つの税制で「特別償却 or 税額控除」が両方

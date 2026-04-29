@@ -414,13 +414,13 @@ if _ENABLED:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[O4-LIFECYCLE] 制度ライフサイクル 8 段階判定 — abolished / superseded / sunset_imminent / sunset_scheduled / amended / active / not_yet / unknown を 1 コールで決定論的に返す。
+        """[O4-LIFECYCLE] Returns schema-level snapshot of program status (abolished / superseded / sunset_imminent / sunset_scheduled / amended / active / not_yet / unknown). Most rows lack historical diffs (eligibility_hash chain partial); use effective_from for filtering.
 
-        WHAT: ``am_amendment_snapshot`` (14,596 行 / effective_from 140
-        行・effective_until 4 行 filled) と ``am_relation``
+        WHAT: ``am_amendment_snapshot`` (14,596 rows / effective_from filled
+        on 140 rows / effective_until filled on 4 rows) と ``am_relation``
         (successor_of=190 / replaces=9) を precedence 順で評価。LLM 推論
         ゼロ、 SQL only。amendment_snapshot 由来の判定は CLAUDE.md gotcha
-        に従い ``confidence='low'`` でhonest-disclose。
+        に従い ``confidence='low'`` で返却。
 
         WHEN:
           - 「事業再構築補助金 は今も使えるか?」(後継制度有無 + 終了予定)

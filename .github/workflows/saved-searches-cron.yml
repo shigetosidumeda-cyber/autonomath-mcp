@@ -1,0 +1,134 @@
+name: saved-searches-cron
+
+# Daily saved-search digest sweep (W3 retention).
+#
+# What this does
+# --------------
+# Replays every customer's saved-search query against the live `programs`
+# table, diffs the matches against `am_amendment_diff` (autonomath.db,
+# migration 075) so we surface only programs that genuinely changed since
+# the last run, and emails a digest via Postmark template
+# `saved_search_digest`. Each delivered email records a row in
+# `usage_events` (endpoint=`saved_searches.digest`) and fires
+# `report_usage_async` so the customer is billed ¥3 for the delivery —
+# matches the project_autonomath_business_model ¥3/req unit price.
+#
+# Idempotent: re-running mid-window is a no-op because each row's
+# `last_run_at` gates the next sweep until the frequency interval
+# elapses (22h for daily, ~6d20h for weekly so JST 06:00 cron does not
+# slip past the next-day boundary on slow GHA scheduling).
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api`. Same secret already used by
+#                   nightly-backup.yml + analytics-cron.yml +
+#                   trial-expire-cron.yml.
+#
+# Failure routing
+# ---------------
+# `run_saved_searches.py` exits non-zero only on hard failure (DB
+# unreadable, etc). Empty runs (scanned=0 / emails_sent=0) exit 0 — the
+# JSON summary line in Fly logs is the operator signal. The Sentry
+# fallback step uses `if: failure()` so it only alerts when flyctl ssh
+# itself failed (machine offline, deploy lock, SSH refused) — inside-
+# the-machine errors emit their own Sentry breadcrumb via
+# safe_capture_message in the script.
+
+on:
+  schedule:
+    # 21:10 UTC == 06:10 JST. Daily sweep that picks up overnight
+    # amendment diffs ingested by the daily ingest workflows. Staggered
+    # +10 min vs kpi-digest-cron (0 21) to avoid Fly machine ssh
+    # contention.
+    - cron: "10 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no email, no Stripe push, no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      frequency:
+        description: "Restrict sweep to one frequency (default: both)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "daily"
+          - "weekly"
+      max_matches:
+        description: "Max matches per digest (A/B knob; default 10)"
+        required: false
+        default: "10"
+
+concurrency:
+  group: saved-searches-cron
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run saved-search digest sweep on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          FREQUENCY: ${{ inputs.frequency || '' }}
+          MAX_MATCHES: ${{ inputs.max_matches || '10' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--max-matches ${MAX_MATCHES}"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          if [ -n "${FREQUENCY}" ]; then
+            FLAGS="${FLAGS} --frequency ${FREQUENCY}"
+          fi
+          # `flyctl ssh console -C "<cmd>"` runs <cmd> non-interactively
+          # in the autonomath-api machine. The python entry uses the
+          # baked-in /app/.venv interpreter so we inherit JPINTEL_DB_PATH
+          # / AUTONOMATH_DB_PATH / POSTMARK_API_TOKEN / STRIPE_SECRET_KEY
+          # / api_key_salt from the Fly secret store.
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/run_saved_searches.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop. Inside-the-machine errors already emit a Sentry breadcrumb when run_saved_searches.py raises, so this is defense-in-depth for the case where flyctl ssh itself fails (machine offline, deploy lock)."
+            exit 0
+          fi
+          # Minimal Sentry "Store" API POST. Mirrors trial-expire-cron.yml.
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=saved-searches-cron/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.saved-searches-cron",
+            "platform": "other",
+            "message": "saved-searches-cron failed: flyctl ssh exited non-zero (machine offline, SSH refused, or deploy lock). Check Fly.io app autonomath-api logs.",
+            "tags": {
+              "workflow": "saved-searches-cron",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

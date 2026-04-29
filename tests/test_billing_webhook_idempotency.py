@@ -152,8 +152,33 @@ def test_duplicate_event_does_not_re_send_welcome_email(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
     """The welcome-email side-effect is the highest-impact dedup target —
-    replaying must not double-mail the customer."""
+    replaying must not double-mail the customer.
+
+    P0 dedup contract: the webhook enqueues to the durable bg_task_queue
+    (api/_bg_task_queue.py) with `dedup_key=f"welcome:{sub_id}"`. The
+    queue's ON CONFLICT(dedup_key) DO NOTHING guarantees at-most-one row
+    even on Stripe webhook redelivery. We assert that contract by:
+      1. patching `jpintel_mcp.email.postmark.get_client` so the worker's
+         lazy import (`from jpintel_mcp.email import get_client`) lands
+         on the counting stub
+      2. submitting the same `invoice.paid` event 3x (Stripe retry
+         simulation)
+      3. draining the queue once and checking exactly 1 send.
+    """
     from jpintel_mcp.api import billing as billing_mod
+    from jpintel_mcp import email as email_pkg
+    from jpintel_mcp.email import postmark as postmark_mod
+
+    # Clear any prior bg_task_queue rows left behind by earlier tests in
+    # the session (seeded_db is session-scoped). Otherwise our drain at
+    # the end picks up unrelated welcome_email rows from other tests and
+    # the count becomes a session-wide running total.
+    purge_conn = sqlite3.connect(seeded_db)
+    try:
+        purge_conn.execute("DELETE FROM bg_task_queue")
+        purge_conn.commit()
+    finally:
+        purge_conn.close()
 
     sent: list[dict] = []
 
@@ -161,7 +186,16 @@ def test_duplicate_event_does_not_re_send_welcome_email(
         def send_welcome(self, **kwargs):
             sent.append(kwargs)
 
+    # Patch every get_client surface — the webhook path
+    # (billing._get_email_client), the package re-export
+    # (jpintel_mcp.email.get_client which the worker handler resolves via
+    # `from jpintel_mcp.email import get_client`), and the underlying
+    # postmark module symbol. Patching only billing's local reference is
+    # insufficient because welcome is deferred to the durable bg_task_queue
+    # whose handler does its own `from jpintel_mcp.email import get_client`.
     monkeypatch.setattr(billing_mod, "_get_email_client", lambda: _CountingClient())
+    monkeypatch.setattr(email_pkg, "get_client", lambda: _CountingClient())
+    monkeypatch.setattr(postmark_mod, "get_client", lambda: _CountingClient())
 
     event = {
         "id": "evt_dedup_email",
@@ -189,6 +223,32 @@ def test_duplicate_event_does_not_re_send_welcome_email(
             headers={"stripe-signature": "t=1,v1=xx"},
         )
         assert r.status_code == 200, r.text
+
+    # Drain the bg_task_queue synchronously: one welcome row should have
+    # been enqueued (with `dedup_key=welcome:sub_dedup_email`) and the
+    # subsequent two webhook deliveries should have been deduped to no-op.
+    from jpintel_mcp.api._bg_task_queue import claim_next, mark_done
+    from jpintel_mcp.api._bg_task_worker import _dispatch_one
+
+    drained = 0
+    # `isolation_level=None` puts sqlite3 in autocommit mode so claim_next's
+    # explicit BEGIN IMMEDIATE doesn't collide with the python sqlite3
+    # driver's implicit transaction wrapping.
+    drain_conn = sqlite3.connect(seeded_db, isolation_level=None)
+    drain_conn.row_factory = sqlite3.Row
+    try:
+        while True:
+            row = claim_next(drain_conn)
+            if row is None:
+                break
+            ok, _err = _dispatch_one(row)
+            if ok:
+                mark_done(drain_conn, int(row["id"]))
+            drained += 1
+            if drained > 10:  # safety
+                break
+    finally:
+        drain_conn.close()
 
     assert len(sent) == 1, f"welcome email should fire once, fired {len(sent)} times"
 

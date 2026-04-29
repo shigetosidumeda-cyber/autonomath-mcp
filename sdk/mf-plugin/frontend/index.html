@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>税務会計AI — マネーフォワード クラウド</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="hd">
+      <div class="hd-title">
+        <strong>税務会計AI</strong>
+        <span class="hd-sub">補助金・税制・法令・判例・インボイス番号 横断検索</span>
+      </div>
+      <div class="hd-tenant" id="tenant-display">読込中...</div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="subsidy" role="tab">補助金</button>
+      <button class="tab" data-tab="tax" role="tab">税制優遇</button>
+      <button class="tab" data-tab="invoice" role="tab">インボイス</button>
+      <button class="tab" data-tab="laws" role="tab">法令</button>
+      <button class="tab" data-tab="court" role="tab">判例</button>
+    </nav>
+
+    <main class="panels">
+      <!-- 補助金 -->
+      <section class="panel is-active" data-panel="subsidy">
+        <form data-form="subsidy">
+          <label>キーワード <input name="keyword" required placeholder="例: 省エネ 設備投資" /></label>
+          <label>都道府県 <input name="prefecture" placeholder="任意 (例: 東京都)" /></label>
+          <button type="submit">検索</button>
+        </form>
+        <div class="results" data-results="subsidy"></div>
+      </section>
+
+      <!-- 税制優遇 -->
+      <section class="panel" data-panel="tax">
+        <form data-form="tax">
+          <label>キーワード <input name="keyword" required placeholder="例: 賃上げ促進" /></label>
+          <label>都道府県 <input name="prefecture" placeholder="任意" /></label>
+          <button type="submit">検索</button>
+        </form>
+        <div class="results" data-results="tax"></div>
+      </section>
+
+      <!-- インボイス番号 -->
+      <section class="panel" data-panel="invoice">
+        <form data-form="invoice">
+          <label>登録番号 (T+13桁)
+            <input name="registration_number" required placeholder="T1234567890123" pattern="T-?\d{13}" />
+          </label>
+          <button type="submit">確認</button>
+        </form>
+        <div class="results" data-results="invoice"></div>
+      </section>
+
+      <!-- 法令 -->
+      <section class="panel" data-panel="laws">
+        <form data-form="laws">
+          <label>キーワード <input name="keyword" required placeholder="例: 電子帳簿保存法 第7条" /></label>
+          <button type="submit">検索</button>
+        </form>
+        <div class="results" data-results="laws"></div>
+      </section>
+
+      <!-- 判例 -->
+      <section class="panel" data-panel="court">
+        <form data-form="court">
+          <label>キーワード <input name="keyword" required placeholder="例: 役員報酬 損金算入" /></label>
+          <button type="submit">検索</button>
+        </form>
+        <div class="results" data-results="court"></div>
+      </section>
+    </main>
+
+    <footer class="ft">
+      <p class="ft-disclaimer">
+        税理士法 §52 — 本サービスは情報提供のみを目的とし、個別の税務相談・申告書作成等の
+        税理士業務には該当しません。最終的な税務判断は貴社の顧問税理士にご確認ください。
+      </p>
+      <p class="ft-meta">
+        提供: <a href="https://bookyou.net/" target="_blank" rel="noopener">Bookyou株式会社</a>
+        (適格請求書発行事業者 T8010001213708) — <a href="https://zeimu-kaikei.ai/privacy" target="_blank" rel="noopener">プライバシーポリシー</a>
+      </p>
+    </footer>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

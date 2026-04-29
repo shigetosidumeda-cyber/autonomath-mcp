@@ -210,7 +210,7 @@ if _ENABLED:
             ),
         ] = 0.0,
     ) -> dict[str, Any]:
-        """[KG] O7 — heterogeneous 1-3 hop knowledge-graph traversal over am_relation. 5-7 tool calls collapsed into 1 SQL walk; pure traversal (no Anthropic API).
+        """[KG] O7 — Returns paths from a 1-3 hop heterogeneous BFS over am_relation (24,004 edges / 15 relation types). Pure SQL traversal (no LLM). Output is graph-derived; edges with confidence < 0.5 (graph_rescue origin) are noisy — verify primary source (source_url) for relationship claims.
 
         WHAT: BFS over ``v_am_relation_all`` (24,004 edges / 15 relation
         types) starting at ``start_entity_id``. Returns the discovered

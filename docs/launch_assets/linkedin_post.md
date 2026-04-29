@@ -41,10 +41,10 @@ What's in it (2026-05-06 launch):
 
 Architecture choices that I think are interesting:
 
-- MCP-native: 72 tools, protocol 2025-06-18, stdio. One Manifest line
+- MCP-native: 89 tools, protocol 2025-06-18, stdio. One Manifest line
   plugs into Claude Desktop / Cursor / ChatGPT / Gemini. No SDK to
   maintain across clients.
-- SQLite FTS5 trigram for Japanese compound-word search; sqlite-vec
+- SQLite 全文検索インデックス (3-gram) for Japanese compound-word search; ベクトル検索
   for the 504k-entity vec layer (gradual activation).
 - Pure metered ¥3/req (~$0.02). No tier SKUs, no seat fees, no annual
   minimums. Anonymous 50 req/month free per IP.
@@ -62,8 +62,8 @@ If you build AI agents that touch Japanese SMBs, accountants, certified
 support orgs, or do DD on Japanese companies, I'd be glad to hear how
 it performs in your workflow.
 
-Press kit: https://autonomath.ai/press/
-Docs: https://autonomath.ai/docs/
+Press kit: https://zeimu-kaikei.ai/press/
+Docs: https://zeimu-kaikei.ai/docs/
 PyPI: https://pypi.org/project/autonomath-mcp/
 
 #MCP #ClaudeDesktop #JapanTech #SaaS #AIagents

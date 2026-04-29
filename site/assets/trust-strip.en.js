@@ -29,7 +29,7 @@
     var base =
       window.AUTONOMATH_API_BASE ||
       window.JPINTEL_API_BASE ||
-      'https://api.autonomath.ai';
+      'https://api.zeimu-kaikei.ai';
     fetch(base + '/v1/meta', { credentials: 'omit' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {

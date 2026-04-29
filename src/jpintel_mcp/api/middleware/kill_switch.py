@@ -172,11 +172,11 @@ class KillSwitchMiddleware(BaseHTTPMiddleware):
             code="service_unavailable",
             user_message=(
                 "サービスが一時的に停止しています。"
-                "https://autonomath.ai/status/ で復旧情報を確認してください。"
+                "https://zeimu-kaikei.ai/status/ で復旧情報を確認してください。"
             ),
             user_message_en=(
                 "Service temporarily disabled. "
-                "See https://autonomath.ai/status/ for updates."
+                "See https://zeimu-kaikei.ai/status/ for updates."
             ),
             request_id=rid,
             details={"retry_after": "see_status_page"},

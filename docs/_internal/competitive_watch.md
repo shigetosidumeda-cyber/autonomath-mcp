@@ -32,7 +32,7 @@
 ### 2.1 仕様概要
 - **実行**: GitHub Actions scheduled (`0 9 * * *` JST 18:00 = `0 9 * * *` UTC) / 手動 `workflow_dispatch`。
 - **対象 artefact**: 上表の URL 群 (pricing / changelog / API doc / RSS / GitHub releases)。
-- **取得方法**: `httpx` + `User-Agent: AutonoMath-competitive-watch/1.0 (+https://autonomath.ai)`、robots.txt 尊重、1 host あたり 1 req/5sec、`If-Modified-Since` + ETag、エラー時 fail-open (他 host は継続)。
+- **取得方法**: `httpx` + `User-Agent: AutonoMath-competitive-watch/1.0 (+https://zeimu-kaikei.ai)`、robots.txt 尊重、1 host あたり 1 req/5sec、`If-Modified-Since` + ETag、エラー時 fail-open (他 host は継続)。
 - **Diff**: 直近スナップショット (`data/competitive_watch/<slug>/YYYY-MM-DD.html`) と前日版を `difflib.unified_diff`、本文は `readability-lxml` で抽出してノイズ除去。
 - **出力**: 差分があれば `research/competitive_log_YYYYMM.md` に追記 (+diff summary + URL + hash)、さらに alert トリガーに該当すれば Slack Incoming Webhook に Post。
 - **GitHub monitor**: `GET https://api.github.com/repos/<owner>/<repo>/releases` と `/commits?since=...` を public で叩く (token 任意)。release/ commit があれば Slack + log 追記。
@@ -127,7 +127,7 @@ Git に commit するのは `research/competitive_log_YYYYMM.md` だけ (HTML sn
 - すでに取得済みのものは redirect 設定までを repo 内 `research/domain_shortlist.md` に追記
 
 ### 6.3 GitHub fork watch
-- 対象: `github.com/AutonoMath/AutonoMath` の全 fork
+- 対象: `github.com/shigetosidumeda-cyber/jpintel-mcp` の全 fork
 - チェック: `GET /repos/.../forks` で各 fork の `LICENSE` raw を取得、hash 比較
 - 異 hash 検出: Slack HIGH。MIT→proprietary 変更 / 著作権表記削除はライセンス違反の可能性 → OSSコミュニティに周知 or 削除要請 (GitHub DMCA 可だが濫用しない)
 

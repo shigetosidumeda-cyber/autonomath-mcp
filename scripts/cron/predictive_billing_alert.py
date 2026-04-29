@@ -49,6 +49,7 @@ from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.mcp.autonomath_tools.cs_features import (  # noqa: E402
     compute_billing_alert,
 )
+from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.billing_alert")
 
@@ -256,11 +257,19 @@ def main(argv: list[str] | None = None) -> int:
         level=getattr(logging, args.log_level.upper(), logging.INFO),
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
-    summary = run(
-        threshold_multiplier=args.threshold,
-        min_floor=args.min_floor,
-        dry_run=args.dry_run,
-    )
+    with heartbeat("predictive_billing_alert") as hb:
+        summary = run(
+            threshold_multiplier=args.threshold,
+            min_floor=args.min_floor,
+            dry_run=args.dry_run,
+        )
+        hb["rows_processed"] = int(summary.get("alerts_emailed", 0) or 0)
+        hb["metadata"] = {
+            "keys_scanned": summary.get("keys_scanned"),
+            "alerts_total": summary.get("alerts_total"),
+            "threshold_multiplier": summary.get("threshold_multiplier"),
+            "dry_run": summary.get("dry_run"),
+        }
     # Print machine-readable summary to stdout for cron capture.
     print(json.dumps(summary, ensure_ascii=False))
     return 0

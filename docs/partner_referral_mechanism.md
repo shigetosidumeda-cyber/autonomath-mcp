@@ -1,6 +1,6 @@
 # Partner Referral Mechanism
 
-> **要約 (summary):** AutonoMath の partnership は **referral_code 1 個** で trace。発生する metered 売上の **10%** を月末締め翌月末日に Stripe Connect Transfer で payout。discount は永久 NG (¥3/req 固定)。referral 0 でも ¥0 払出。
+> **要約 (summary):** 税務会計AI の partnership は **referral_code 1 個** で trace。発生する metered 売上の **10%** を月末締め翌月末日に Stripe Connect Transfer で payout。discount は永久 NG (¥3/req 固定)。referral 0 でも ¥0 払出。
 
 ## なぜ 1 つのメカニズムにまとめるか
 
@@ -14,7 +14,7 @@
 
 | 経路 | 付与方法 |
 |------|--------|
-| **freee Marketplace** | freee OAuth callback で `referral_code=freee-{client_app_id}` を AutonoMath API key の `referral_code` カラムに保存 |
+| **freee Marketplace** | freee OAuth callback で `referral_code=freee-{client_app_id}` を 税務会計AI API key の `referral_code` カラムに保存 |
 | **Money Forward** | MF API integration 時に `referral_code=mf-{tenant_id}` を保存 |
 | **kintone Marketplace plugin** | plugin の query parameter `referral_code=kintone-{kintone_app_id}` を `/v1/programs/search` 等に毎 request 付与 |
 | **SmartHR widget** | iframe URL に `?referral_code=smarthr-{tenant_id}` を埋込、内部で X-API-Key と紐付 |
@@ -62,7 +62,7 @@ CREATE TABLE referral_payouts (
 ```
 charged_jpy   = request_count × ¥3
 share_jpy     = floor(charged_jpy × share_percent / 100)
-                # 端数は AutonoMath に残す (Bookyou 株式会社 計上)
+                # 端数は 税務会計AI に残す (Bookyou 株式会社 計上)
 ```
 
 例: freee 経由 user が月 20,000 req → `charged_jpy = ¥60,000` → `share_jpy = ¥6,000` を freee に払出。
@@ -72,7 +72,7 @@ share_jpy     = floor(charged_jpy × share_percent / 100)
 | step | timing | action |
 |------|--------|--------|
 | **calc** | 月末日 23:59 JST | `referral_payouts` row を作成 (`payout_status = 'pending'`) |
-| **invoice** | 翌月 1 日 09:00 | partner 宛に **AutonoMath が** 適格請求書 (T8010001213708) を発行 (※受領側請求書ではなく、振込通知書として送付) |
+| **invoice** | 翌月 1 日 09:00 | partner 宛に **税務会計AI が** 適格請求書 (T8010001213708) を発行 (※受領側請求書ではなく、振込通知書として送付) |
 | **transfer** | 翌月末日 17:00 | Stripe Connect Transfer or 銀行振込実行、`payout_status = 'transferred'` 更新 |
 | **fail handling** | failed → 14 日 retry | retry 失敗時は info@bookyou.net 宛 Sentry alert |
 
@@ -80,15 +80,15 @@ share_jpy     = floor(charged_jpy × share_percent / 100)
 
 ## utm parameter との互換
 
-- `referral_code` は AutonoMath internal 名
+- `referral_code` は 税務会計AI internal 名
 - 外部マーケ: `utm_source` / `utm_medium` / `utm_campaign` (Google Analytics 互換) も並行受付
 - 優先順位: query parameter `referral_code` > X-API-Key の保存値 > `utm_source` (推測 fallback)
 
 ## 監査と透明性
 
-- partner ダッシュボード (post-launch): `https://autonomath.ai/partners/{partner_code}/dashboard`
+- partner ダッシュボード (post-launch): `https://zeimu-kaikei.ai/partners/{partner_code}/dashboard`
 - 月次 CSV export: 「日付 / API key 末尾 / req 数 / 課金 ¥」のみ (個人特定不可)
-- AutonoMath 側のログは 90 日保持 (privacy policy 6.1)
+- 税務会計AI 側のログは 90 日保持 (privacy policy 6.1)
 - 払出明細の disputes は info@bookyou.net で受付、14 日以内回答
 
 ## NOT DO (永久禁止)

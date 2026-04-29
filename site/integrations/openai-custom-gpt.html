@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>OpenAI Custom GPT で 税務会計AI を使う — 5 分で動く統合ガイド</title>
+<meta name="description" content="ChatGPT の Custom GPT に 税務会計AI の OpenAPI スペックを Import するだけ。/openapi/v1.json から 111 エンドポイントが Custom GPT Actions として呼べる。登録不要 / 50 req/月 無料 (anonymous tier)、必要なら API キーを Bearer 認証で。">
+
+<meta property="og:title" content="OpenAI Custom GPT で 税務会計AI を使う — 5 分統合ガイド">
+<meta property="og:description" content="OpenAPI Import 1 つで 111 エンドポイントが Custom GPT の Actions として呼べる。50 req/月 無料、認証は API キーで Bearer。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OpenAI Custom GPT で 税務会計AI を使う">
+<meta name="twitter:description" content="OpenAPI Import 1 つで Custom GPT に 111 エンドポイント統合。">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+
+<!--
+  Canonical publisher Organization (Task B 2026-04-29 — single
+  @id: https://zeimu-kaikei.ai/#publisher across all pages). All other
+  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
+  the Organization inline. sameAs URLs marked TODO(user-action) are
+  placeholders until the user creates them per
+  docs/runbook/social_profile_setup.md.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "name": "Bookyou株式会社",
+  "legalName": "Bookyou株式会社",
+  "alternateName": "税務会計AI",
+  "url": "https://zeimu-kaikei.ai/",
+  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "email": "info@bookyou.net",
+  "identifier": "T8010001213708",
+  "taxID": "T8010001213708",
+  "foundingDate": "2025-05-12",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressRegion": "東京都",
+    "addressLocality": "文京区",
+    "streetAddress": "小日向 2-22-1"
+  },
+  "founder": {
+    "@type": "Person",
+    "name": "梅田茂利"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "info@bookyou.net",
+    "contactType": "customer support",
+    "availableLanguage": ["ja", "en"]
+  },
+  "sameAs": [
+    "https://www.bookyou.net/",
+    "https://github.com/shigetosidumeda-cyber"
+  ]
+}
+</script>
+
+<script defer src="/analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "OpenAI Custom GPT で 税務会計AI を使う",
+  "description": "ChatGPT の Custom GPT に 税務会計AI OpenAPI スペックを Import して 111 エンドポイントを Actions として呼び出す手順 (5 分)。",
+  "url": "https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html",
+  "inLanguage": "ja",
+  "author": {"@id": "https://zeimu-kaikei.ai/#publisher"},
+  "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"},
+  "proficiencyLevel": "Beginner"
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="wrap">
+    <a href="/" class="logo">税務会計AI</a>
+    <nav aria-label="主要ナビゲーション">
+      <a href="/products.html">Products</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="/integrations/" aria-current="page">Integrations</a>
+      <a href="/dashboard.html">Dashboard</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap" style="max-width:920px;margin:40px auto;padding:0 20px;line-height:1.7;">
+
+<p style="font-size:0.9em;color:#666;margin-bottom:6px;"><a href="/integrations/">Integrations</a> / OpenAI Custom GPT</p>
+<h1 style="margin-bottom:0.2em;">OpenAI Custom GPT で 税務会計AI を使う</h1>
+<p style="color:#444;font-size:1.05em;margin-top:0;">5 分で動く統合ガイド (登録不要 / Free 50 リクエスト/月)</p>
+
+<aside style="border:1px solid #c8e0c8;background:#f3faf3;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
+<strong>所要時間:</strong> 5 分以内。<strong>必要なもの:</strong> ChatGPT Plus / Team / 大規模利用 (Custom GPT 作成権限)。<strong>API キー不要</strong> — anonymous tier 50 リクエスト/月 per IP は認証なしで動きます。本番運用は API キーを Bearer で。
+</aside>
+
+<aside style="border:1px solid #d8d3a8;background:#fafae8;padding:14px 18px;border-radius:8px;margin:14px 0;font-size:0.92em;">
+<strong>仕組み:</strong> Custom GPT は MCP プロトコルを直接話せませんが、<strong>OpenAPI 3.x スペックを Import すると Actions として 111 エンドポイントを呼べます</strong>。MCP の 89 ツールと同じデータソース (補助金 / 法令 / 適格事業者 / 採択事例 / 税制ルール / 行政処分 等) に REST 経由でアクセス。
+</aside>
+
+<h2 id="step1">Step 1 — Custom GPT を新規作成</h2>
+<ol>
+<li>ChatGPT (<a href="https://chatgpt.com/">chatgpt.com</a>) を開いてログイン</li>
+<li>左サイドバー <strong>Explore GPTs</strong> → <strong>+ Create</strong> (右上)</li>
+<li>または直接 <a href="https://chatgpt.com/gpts/editor">chatgpt.com/gpts/editor</a> を開く</li>
+<li>上部タブを <strong>Configure</strong> に切り替え (Create タブのウィザードはスキップ)</li>
+</ol>
+
+<figure style="margin:16px 0;border:1px solid #ddd;border-radius:8px;padding:12px;background:#fafafa;text-align:center;">
+<img src="/integrations/screenshots/openai-custom-gpt-configure.png" alt="ChatGPT Custom GPT エディタの Configure タブ" width="1200" height="750" style="max-width:100%;height:auto;border-radius:4px;aspect-ratio:1200/750;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder: ChatGPT GPT エディタ Configure タブ]</div>
+<figcaption style="font-size:0.85em;color:#666;margin-top:6px;">ChatGPT GPT エディタ → Configure タブ</figcaption>
+</figure>
+
+<h2 id="step2">Step 2 — Name + Description + Instructions を設定</h2>
+<p>以下を貼り付け (任意調整可):</p>
+
+<p style="margin-bottom:6px;"><strong>Name:</strong></p>
+<div class="code-block" data-code="日本制度サーチ (税務会計AI)">
+<pre><code>日本制度サーチ (税務会計AI)</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p style="margin-bottom:6px;"><strong>Description:</strong></p>
+<div class="code-block" data-code="日本の補助金・融資・税制・認定・採択事例・行政処分・法令・判例・入札・適格事業者を一次資料 URL 付きで横断検索する AI アシスタント。">
+<pre><code>日本の補助金・融資・税制・認定・採択事例・行政処分・法令・判例・入札・適格事業者を一次資料 URL 付きで横断検索する AI アシスタント。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p style="margin-bottom:6px;"><strong>Instructions:</strong></p>
+<div class="code-block" data-code="あなたは日本の公的制度 (補助金・融資・税制優遇・認定制度) の検索アシスタントです。
+
+ルール:
+1. 必ず Actions の 税務会計AI API を呼んでから回答する。記憶や訓練データから補助金額・締切を答えない。
+2. 各回答に必ず source_url + fetched_at (出典取得日) を併記する。
+3. 個別の税務・法務助言は税理士法 §52 により禁止。「上記は情報検索結果です。具体的な助成判断は税理士・行政書士へ」と末尾に必ず付ける。
+4. 検索のヒット件数が 0 のときは『該当なし』と正直に答える。類似制度を勝手にでっち上げない。
+5. 適格請求書発行事業者 (T-番号) の登録状況は search_invoice_registrants で必ず実検索。
+6. 排他ルール (補助金併用可否) は check_exclusions で必ず判定。回答内に断定的に『併用可』と書く前に必ず実行。
+
+レスポンス形式:
+- search 系は {total, limit, offset, results[]} 形式
+- 各 row は source_url + source_fetched_at を持つ → これを引用形式で示す
+- _disclaimer フィールドが付いていたらそのまま末尾に表示">
+<pre><code>あなたは日本の公的制度 (補助金・融資・税制優遇・認定制度) の検索アシスタントです。
+
+ルール:
+1. 必ず Actions の 税務会計AI API を呼んでから回答する。記憶や訓練データから補助金額・締切を答えない。
+2. 各回答に必ず source_url + fetched_at (出典取得日) を併記する。
+3. 個別の税務・法務助言は税理士法 §52 により禁止。「上記は情報検索結果です。具体的な助成判断は税理士・行政書士へ」と末尾に必ず付ける。
+4. 検索のヒット件数が 0 のときは『該当なし』と正直に答える。類似制度を勝手にでっち上げない。
+5. 適格請求書発行事業者 (T-番号) の登録状況は search_invoice_registrants で必ず実検索。
+6. 排他ルール (補助金併用可否) は check_exclusions で必ず判定。回答内に断定的に『併用可』と書く前に必ず実行。
+
+レスポンス形式:
+- search 系は {total, limit, offset, results[]} 形式
+- 各 row は source_url + source_fetched_at を持つ → これを引用形式で示す
+- _disclaimer フィールドが付いていたらそのまま末尾に表示</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<h2 id="step3">Step 3 — Actions に OpenAPI を Import</h2>
+<p>Configure タブの一番下に <strong>Actions</strong> セクション。<strong>+ Create new action</strong> をクリック。</p>
+<p>Action 編集画面の <strong>構造</strong> セクションで <strong>Import from URL</strong> をクリックし、以下を貼り付け:</p>
+
+<div class="code-block" data-code="https://api.zeimu-kaikei.ai/v1/openapi.json">
+<pre><code>https://api.zeimu-kaikei.ai/v1/openapi.json</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p style="font-size:0.92em;color:#555;">Import がうまく動かない場合は手動で URL を fetch してテキストを直接 構造 欄に貼り付け (curl: <code>curl -s https://api.zeimu-kaikei.ai/v1/openapi.json &gt; openapi.json</code>)。</p>
+
+<p>Import 成功時、<strong>Available actions</strong> に operation_id 一覧 (search_programs / get_program / search_invoice_registrants / search_laws ... 計 111) が表示されます。</p>
+
+<h2 id="step4">Step 4 — Authentication を設定</h2>
+
+<p><strong>Option A — Anonymous (50 リクエスト/月 per IP, 認証なし)</strong></p>
+<ul>
+<li>Authentication 欄を <strong>None</strong> に設定</li>
+<li>50 リクエスト/月 制限は OpenAI 側 IP に紐づくため、Custom GPT を使うユーザー全員で <strong>1 つの quota を共有</strong>することに注意</li>
+</ul>
+
+<p style="margin-top:12px;"><strong>Option B — APIキー (本番運用、¥3/リクエスト 完全従量)</strong></p>
+<ul>
+<li><a href="/dashboard.html">Dashboard</a> で APIキー (<code>sk_...</code>) を発行</li>
+<li>Authentication → <strong>APIキー</strong> を選択</li>
+<li><strong>Auth Type:</strong> <code>Bearer</code></li>
+<li><strong>APIキー:</strong> <code>sk_xxxxxxxxxxxx</code> をそのまま貼り付け (Bookyou 側で <code>X-API-Key</code> 形式も Bearer 形式も両方受理)</li>
+</ul>
+
+<figure style="margin:16px 0;border:1px solid #ddd;border-radius:8px;padding:12px;background:#fafafa;text-align:center;">
+<img src="/integrations/screenshots/openai-custom-gpt-auth.png" alt="Custom GPT Authentication 画面" width="1200" height="750" style="max-width:100%;height:auto;border-radius:4px;aspect-ratio:1200/750;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder: Custom GPT Authentication 画面]</div>
+<figcaption style="font-size:0.85em;color:#666;margin-top:6px;">Authentication → APIキー → Bearer</figcaption>
+</figure>
+
+<h2 id="step5">Step 5 — Privacy policy を貼って保存</h2>
+<p>OpenAI は Custom GPT の公開時に Privacy policy URL を要求します:</p>
+
+<div class="code-block" data-code="https://zeimu-kaikei.ai/privacy.html">
+<pre><code>https://zeimu-kaikei.ai/privacy.html</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p>右上の <strong>Save</strong> から公開範囲を選択 (Only me / Anyone with link / Public)。<strong>Test</strong> 欄で動作確認すれば完了。</p>
+
+<h2 id="first-prompt">最初のプロンプト</h2>
+<p>Custom GPT のプレビュー or 公開後 GPT を開いて貼り付け:</p>
+
+<div class="code-block" data-code="中小企業向けの省エネ補助金を3件探して。primary source URL もつけて。">
+<pre><code>中小企業向けの省エネ補助金を3件探して。primary source URL もつけて。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p>ChatGPT が <code>search_programs</code> Action を呼ぶ承認ダイアログを出します (初回のみ)。<strong>Always Allow</strong> をクリックすると以後自動で呼びます。</p>
+
+<h3 style="margin-top:18px;">出力サンプル</h3>
+<pre style="background:#f6f6f6;padding:14px;border-radius:6px;font-size:0.88em;overflow-x:auto;line-height:1.5;">[Action] 税務会計AI → search_programs
+  GET /v1/programs/search?keyword=省エネ&target_type=中小企業&limit=3
+  → 200 OK (3 results, 0.41s)
+
+中小企業向け省エネ補助金 3 件:
+
+1. <strong>省エネルギー投資促進支援事業費補助金</strong> (経産省)
+   - 補助率: 1/3 〜 1/2 / 上限 15 億円
+   - 出典: https://www.enecho.meti.go.jp/category/saving_and_new/.../...
+   - 出典取得: 2026-04-22
+
+2. <strong>SHIFT 事業 (脱炭素取り組み支援)</strong> (環境省)
+   - 補助率: 1/3 / 上限 5,000 万円
+   - 出典: https://shift.env.go.jp/.../...
+   - 出典取得: 2026-04-22
+
+3. <strong>省エネルギー設備等導入支援事業 (東京都)</strong>
+   - 補助率: 1/2 / 上限 1,500 万円
+   - 出典: https://www.kankyo.metro.tokyo.lg.jp/.../...
+   - 出典取得: 2026-04-22
+
+※ 上記は情報検索結果です。具体的な助成判断は税理士・行政書士へ。</pre>
+
+<h3 id="more-prompts" style="margin-top:24px;">活きるプロンプト例</h3>
+<ul>
+<li><code>事業再構築補助金とものづくり補助金は同時に申請できる?</code> → <code>check_exclusions</code></li>
+<li><code>法人番号 T8010001213708 の適格請求書発行事業者登録を確認して</code> → <code>search_invoice_registrants</code></li>
+<li><code>製造業×埼玉県 SMB スターターパック (補助金 + 融資 + 採択事例 + 締切)</code> → <code>smb_starter_pack</code></li>
+<li><code>来月締め切りの補助金一覧を東京都で</code> → <code>upcoming_deadlines</code></li>
+</ul>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 style="margin-top:14px;">1. "Could not find a valid URL in servers" エラー</h3>
+<ul>
+<li>OpenAPI スペックの <code>servers[].url</code> は絶対 URL である必要があります。<code>https://api.zeimu-kaikei.ai</code> を使用 (相対パスの <code>/v1</code> は不可)</li>
+<li>Bookyou 提供の <code>/v1/openapi.json</code> は仕様準拠なので Import 失敗時はブラウザキャッシュをクリアしてリトライ</li>
+</ul>
+
+<h3 style="margin-top:14px;">2. Action 呼び出しで 401 Unauthorized</h3>
+<ul>
+<li>APIキー (<code>sk_...</code>) を Bearer で送るとき、頭の <code>Bearer </code> プレフィックスは ChatGPT が自動で付与。<strong>キー本体だけを貼る</strong></li>
+<li>Anonymous tier で動かしているのに 401 が出るときは、ChatGPT 側が前回のキャッシュを送っている。Action を一度削除して再 Import</li>
+</ul>
+
+<h3 style="margin-top:14px;">3. Action 呼び出しで 429 Rate limited</h3>
+<ul>
+<li>Anonymous tier (50 リクエスト/月) は OpenAI 側の単一 IP に紐づき、Custom GPT 利用者全員で共有。多人数公開する GPT は API キーで運用 (¥3/リクエスト)</li>
+<li>JST 月初 00:00 リセット</li>
+</ul>
+
+<h3 style="margin-top:14px;">4. ChatGPT が Action を呼ばずに training data から答えてしまう</h3>
+<ul>
+<li>Instructions 冒頭の "必ず Actions の 税務会計AI API を呼んでから回答する" の文言を強化</li>
+<li>"検索結果なしで答えるな" / "If you cannot call the API, respond '検索失敗' and stop" を追記</li>
+</ul>
+
+<h3 style="margin-top:14px;">5. 日本語パラメータが文字化け / 0 件返る</h3>
+<ul>
+<li>API は UTF-8 + URL-encode を内部で処理。Custom GPT 側は OpenAPI スキーマに従って自動でエンコード</li>
+<li>0 件のときは <code>enum_values</code> エンドポイントで実在する値 (例: <code>target_type</code> の正規語彙) を確認するよう Instructions に追記</li>
+</ul>
+
+<h2 id="next-steps">次のステップ</h2>
+<ul>
+<li><strong><a href="/pricing.html">Pricing</a></strong> — 50 リクエスト/月 を超える本番運用は ¥3/リクエスト 完全従量 (税込 ¥3.30)。tier・最低料金・年契約なし</li>
+<li><strong><a href="/docs/api-reference/">API Reference</a></strong> — 111 REST エンドポイント完全仕様 + パラメータ + レスポンスシェイプ</li>
+<li><strong><a href="https://api.zeimu-kaikei.ai/v1/openapi.json">OpenAPI v1.json</a></strong> — マシンリーダブル仕様 (本ガイドで Import したファイル)</li>
+<li><strong><a href="/integrations/claude-desktop.html">Claude Desktop で使う</a></strong> / <strong><a href="/integrations/cursor.html">Cursor で使う</a></strong> / <strong><a href="/integrations/cline.html">Cline (VS Code) で使う</a></strong> — MCP 直結版 (89 ツール)</li>
+</ul>
+
+<p style="margin-top:40px;font-size:0.85em;color:#666;border-top:1px solid #eee;padding-top:14px;">
+免責: 本 API は情報検索のみを提供します。税理士法 §52 により個別の税務助言は<a href="/advisors.html">税理士</a>にご相談ください。<br>
+発行: <a href="/about.html">Bookyou株式会社</a> (法人番号 T8010001213708)
+</p>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© Bookyou株式会社 — <a href="/tos.html">利用規約</a> · <a href="/privacy.html">プライバシー</a> · <a href="/tokushoho.html">特商法</a></p>
+  </div>
+</footer>
+
+<style>
+  .code-block {position:relative;margin:12px 0;}
+  .code-block pre {background:#f6f6f6;padding:14px 80px 14px 14px;border-radius:6px;font-size:0.9em;overflow-x:auto;margin:0;line-height:1.5;}
+  .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #999;border-radius:4px;padding:8px 12px;font-size:0.95em;cursor:pointer;color:#0a0a0a;font-family:inherit;min-height:32px;}
+  .code-block .copy-btn:hover {background:#f0f0f0;}
+  .code-block .copy-btn.copied {background:#d4f4d4;border-color:#7bc77b;color:#226622;}
+  kbd {background:#eee;border:1px solid #bbb;border-radius:3px;padding:1px 5px;font-size:0.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+</style>
+<script>
+  document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.code-block');
+      var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
+      var done = function(){
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function(){
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
+          document.body.removeChild(ta);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

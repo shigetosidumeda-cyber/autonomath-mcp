@@ -40,6 +40,7 @@ from jpintel_mcp.api.vocab import (
     _normalize_industry_jsic,
     _normalize_prefecture,
 )
+from jpintel_mcp.utils.slug import program_static_url
 
 router = APIRouter(prefix="/v1/programs", tags=["programs"])
 
@@ -171,6 +172,18 @@ class PrescreenMatch(BaseModel):
     prefecture: str | None
     amount_max_man_yen: float | None
     official_url: str | None
+    # Site-relative SEO page path (`/programs/{slug}-{sha1-6}.html`).
+    # Result cards / mailto bodies should link to this — building
+    # `/programs/{unified_id}.html` instead is a 404 (no such file
+    # exists; static pages are slug-named).
+    static_url: str | None = Field(
+        default=None,
+        description=(
+            "Site-relative path to the program's static SEO page on "
+            "zeimu-kaikei.ai. Computed from primary_name + unified_id "
+            "via jpintel_mcp.utils.slug. Use this for deep-links."
+        ),
+    )
     fit_score: int = Field(
         description=(
             "Heuristic positive-match count in v1 (higher = better fit). "
@@ -373,6 +386,7 @@ def _score_row(
         prefecture=row["prefecture"],
         amount_max_man_yen=amount_max,
         official_url=row["official_url"],
+        static_url=program_static_url(row["primary_name"], row["unified_id"]),
         fit_score=score,
         match_reasons=reasons,
         caveats=caveats,
@@ -414,8 +428,64 @@ def run_prescreen(conn: sqlite3.Connection, profile: PrescreenRequest) -> Prescr
 @router.post(
     "/prescreen",
     response_model=PrescreenResponse,
+    summary="Prescreen — rank programs by fit to a business profile",
+    description=(
+        "Profile-oriented match: given a caller's `prefecture` / "
+        "`industry_jsic` / `is_sole_proprietor` / `employee_count` / "
+        "`planned_investment_man_yen` / declared `held_certifications`, "
+        "return ranked candidate programs with per-row `reasons[]` and "
+        "`caveats[]`.\n\n"
+        "**When to use prescreen vs search:** `/v1/programs/search` "
+        "answers 'which programs mention X?' (keyword discovery). "
+        "Prescreen answers 'which programs could *I* plausibly apply to, "
+        "and why?' (fit judgment). LLM agents building 'help this SMB "
+        "find support' flows should prefer prescreen — it cuts the "
+        "keyword-guessing round-trips.\n\n"
+        "**Scope (v1):** prefecture (direct + 全国 fallback), "
+        "target_types (sole_proprietor / corporation, EN+JP aliases), "
+        "amount sufficiency vs `planned_investment_man_yen`, and "
+        "exclusion-rule prerequisite flagging (e.g. 認定新規就農者 "
+        "required but not declared). Ranking: tier (S>A>B>C) → match "
+        "count → amount_max_man_yen desc."
+    ),
     responses={
-        200: {"description": "Ranked prescreen matches with reasons + caveats."},
+        200: {
+            "description": "Ranked prescreen matches with reasons + caveats.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total_considered": 312,
+                        "limit": 20,
+                        "results": [
+                            {
+                                "unified_id": "UNI-2611050f9a",
+                                "primary_name": "小規模事業者持続化補助金",
+                                "tier": "B",
+                                "authority_level": "national",
+                                "prefecture": "全国",
+                                "amount_max_man_yen": 200.0,
+                                "official_url": "https://r3.jizokukahojokin.info/",
+                                "static_url": "/programs/shoukibo-jigyousha-jizokuka-hojokin-2611050f9a.html",
+                                "fit_score": 3,
+                                "match_reasons": [
+                                    "prefecture match: 全国 program covers 東京都",
+                                    "target_types に 個人事業主 相当 (sole_proprietor) を含む",
+                                    "amount_max 200万円 ≥ 予定投資 80万円",
+                                ],
+                                "caveats": [],
+                            }
+                        ],
+                        "profile_echo": {
+                            "prefecture": "東京都",
+                            "industry_jsic": "G",
+                            "is_sole_proprietor": True,
+                            "planned_investment_man_yen": 80,
+                            "declared_certifications": [],
+                        },
+                    }
+                }
+            },
+        },
         400: {"description": "Malformed profile."},
     },
 )

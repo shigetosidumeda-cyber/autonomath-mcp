@@ -1,5 +1,5 @@
 TO: {{customer_email}}
-FROM: support@autonomath.ai
+FROM: support@zeimu-kaikei.ai
 SUBJECT: 【jpintel-mcp】サービス障害に関するご連絡 ({{incident_id}})
 
 {{customer_name}} 様
@@ -14,7 +14,7 @@ SUBJECT: 【jpintel-mcp】サービス障害に関するご連絡 ({{incident_id
    (例: /v1/programs/search を含む API 全体 / 一部 endpoint / 管理画面のみ 等)
  - 現在のステータス: {{current_status}}
    (例: 調査中 / 緩和中 / 復旧確認中 / 復旧済み)
- - ステータスページ: https://autonomath.ai/status
+ - ステータスページ: https://zeimu-kaikei.ai/status
 
 ■ これまでの経緯
 {{timeline_summary}}
@@ -39,5 +39,5 @@ SUBJECT: 【jpintel-mcp】サービス障害に関するご連絡 ({{incident_id
 ---
 jpintel-mcp サポート
 {{operator_name}}
-support@autonomath.ai
-https://autonomath.ai/
+support@zeimu-kaikei.ai
+https://zeimu-kaikei.ai/

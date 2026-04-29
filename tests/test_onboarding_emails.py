@@ -144,18 +144,27 @@ def test_send_day7_value_payload_shape():
 # ---------------------------------------------------------------------------
 
 
-def test_send_day14_skips_when_active():
-    """Day14 must NOT send when usage_count > 0."""
+def test_send_day14_sends_for_active_users():
+    """Day14 redesign 2026-04-29: ALWAYS sends regardless of usage_count.
+
+    Pre-redesign D+14 was an inactive-reminder gated by `usage_count == 0`.
+    The new D+14 is "power-user tips" (MCP / batch / monthly_cap_yen) and
+    is useful for active users — sending it on schedule is now the
+    default. Inactive-customer ask migrated to D+30.
+    """
     captured: list[httpx.Request] = []
-    resp = send_day14_inactive_reminder(
+    send_day14_inactive_reminder(
         to="c@example.com",
         api_key_last4="q000",
         tier="paid",
         usage_count=3,
         client=_client(captured),
     )
-    assert resp == {"skipped": True, "reason": "active"}
-    assert captured == []  # no HTTP call made
+    assert len(captured) == 1
+    body = json.loads(captured[0].content)
+    assert body["TemplateAlias"] == TEMPLATE_DAY14
+    assert body["Tag"] == "onboarding-day14"
+    assert body["TemplateModel"]["usage_count"] == 3
 
 
 def test_send_day14_sends_when_inactive():

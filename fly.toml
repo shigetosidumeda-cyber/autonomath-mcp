@@ -16,14 +16,34 @@ primary_region = "nrt"
 
 # Run migrations on every deploy, before traffic shifts. Must be idempotent.
 # migrate.py reads JPINTEL_DB_PATH from env; it is safe on a fresh volume.
+# Disabled 2026-04-27: 74 migrations × 8.29GB autonomath.db hangs the
+# release_command machine. Re-enabling is risky until migrate.py is split
+# by target_db marker (see TODO in entrypoint.sh §3).
+#
+# Substitute path (added 2026-04-29): jpintel.db migrations still run via
+# `migrate.py` in entrypoint.sh §3 (post-volume-mount, before schema_guard);
+# autonomath.db `target_db: autonomath` migrations auto-discover and self-heal
+# in entrypoint.sh §4 — that's how migration 075 (am_amendment_diff) lands
+# in production. Each boot re-applies idempotent CREATE * IF NOT EXISTS DDL
+# from every scripts/migrations/*.sql whose first line is
+# `-- target_db: autonomath` (rollback companions excluded).
 [deploy]
-  release_command = "python scripts/migrate.py"
-  strategy = "rolling"
+  # release_command = "python scripts/migrate.py"
+  strategy = "immediate"
 
+# Volume sizing (2026-04-29 audit):
+#   - autonomath.db          ~9.3 GB live, +920 MB/month from NTA bulk ingest
+#   - jpintel.db             ~368 MB live, +incremental law full-text loads
+#   - WAL/SHM headroom       ~10% of DB size during writes
+#   - migration scratch      idempotent CREATE * IF NOT EXISTS DDL on every boot
+# At 20 GB the volume saturates in ~11 months of NTA bulk growth alone.
+# 40 GB buys ~33 months of headroom and absorbs an unexpected corpus expansion
+# without an emergency `fly volumes extend` (which requires a machine restart).
+# Fly volumes can be grown but not shrunk; over-provisioning is the safe move.
 [[mounts]]
   source = "jpintel_data"
   destination = "/data"
-  initial_size = "20gb"
+  initial_size = "40gb"
 
 [http_service]
   internal_port = 8080
@@ -39,10 +59,16 @@ primary_region = "nrt"
     soft_limit = 50
     hard_limit = 100
 
+  # Fly silently caps grace_period at 60s (`flyctl config validate` warning).
+  # Cold-boot work (R2 bootstrap, integrity_check on 9.3 GB autonomath.db,
+  # autonomath self-heal migrations + schema_guard) usually finishes inside
+  # 60s once the DB is on the volume. If a fresh-volume bootstrap pushes
+  # past 60s, Fly retries the check before declaring unhealthy — we accept
+  # the brief restart loop on the first deploy.
   [[http_service.checks]]
     interval = "30s"
     timeout = "10s"
-    grace_period = "120s"
+    grace_period = "60s"
     method = "GET"
     path = "/v1/am/health/deep"
 
@@ -50,6 +76,16 @@ primary_region = "nrt"
   port = 9091
   path = "/metrics"
 
+# VM sizing (2026-04-29 audit):
+#   - 2 uvicorn workers × ~600-900 MB resident each (FastAPI + 9.3 GB SQLite
+#     mmap residency)
+#   - WeasyPrint quarterly PDF render spikes (~200-400 MB transient)
+#   - sqlite-vec + FTS5 trigram index page cache benefits from RAM headroom
+#   - Sentry instrumentation + structlog overhead (~50-100 MB)
+# Fly shared CPU has a 2 GB/cpu hard cap, so 2 shared cpus × 2 GB = 4096 MB max.
+# 8192 MB requires `cpu_kind = "performance"` (more expensive, ~2x cost).
+# Sticking with shared 4096 MB for launch; if PDF render or NTA bulk OOMs, escalate
+# to performance-2x (4 cpus / 8 GB ~$30/mo extra) rather than scaling out machines.
 [[vm]]
   cpu_kind = "shared"
   cpus = 2

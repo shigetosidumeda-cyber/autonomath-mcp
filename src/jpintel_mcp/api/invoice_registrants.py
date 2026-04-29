@@ -47,6 +47,7 @@ from fastapi import APIRouter, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api.deps import (
     ApiContextDep,
     DbDep,
@@ -155,17 +156,37 @@ class InvoiceRegistrantOut(BaseModel):
             "Soft reference to houjin_master (no hard FK)."
         ),
     )
-    normalized_name: str = Field(..., description="事業者名 (公表名称)")
-    address_normalized: str | None = Field(
-        default=None, description="所在地 (normalized; may be NULL)"
+    normalized_name: str = Field(
+        ...,
+        description=(
+            "Registered business name (事業者名 / 公表名称) — as published by NTA."
+        ),
     )
-    prefecture: str | None = Field(default=None, description="都道府県")
-    registered_date: str = Field(..., description="登録日 (ISO 8601)")
+    address_normalized: str | None = Field(
+        default=None,
+        description=(
+            "Normalized registered address (所在地). May be NULL when NTA "
+            "withholds it (sole proprietors who declined disclosure)."
+        ),
+    )
+    prefecture: str | None = Field(
+        default=None,
+        description="Prefecture (都道府県) — full-suffix kanji form, e.g. 東京都.",
+    )
+    registered_date: str = Field(
+        ..., description="Registration date / 登録日 (ISO 8601 YYYY-MM-DD)."
+    )
     revoked_date: str | None = Field(
-        default=None, description="取消日 (NULL = 未取消)"
+        default=None,
+        description=(
+            "Revocation date / 取消日 (ISO 8601). NULL = not revoked (未取消)."
+        ),
     )
     expired_date: str | None = Field(
-        default=None, description="失効日 (NULL = 未失効)"
+        default=None,
+        description=(
+            "Expiration date / 失効日 (ISO 8601). NULL = not expired (未失効)."
+        ),
     )
     registrant_kind: RegistrantKind = Field(
         ...,
@@ -242,6 +263,26 @@ def _row_to_registrant(row: sqlite3.Row) -> InvoiceRegistrantOut:
 
 @router.get(
     "/search",
+    summary="Search 適格請求書発行事業者 (NTA invoice registrants)",
+    description=(
+        "Look up registered Japanese 適格請求書発行事業者 (qualified invoice "
+        "issuers under the インボイス制度 / 消費税仕入税額控除 regime) by "
+        "name prefix, 法人番号, prefecture, or registration date window. "
+        "Mirror of NTA's official 適格請求書発行事業者公表サイト bulk "
+        "(13,801 delta rows live; full 4M-row monthly bulk lands "
+        "post-launch).\n\n"
+        "**When to use:** verify whether a counterparty has issued a "
+        "valid T-prefixed invoice number before claiming 仕入税額控除. "
+        "For exact T-number lookup (T + 13 digits), prefer "
+        "`GET /v1/invoice_registrants/{invoice_registration_number}`.\n\n"
+        "**Limits:** `q` requires 2+ chars and is index-eligible LIKE "
+        "(prefix only — not FTS). Bulk dump is intentionally not "
+        "supported; for full snapshots use NTA's official download URL "
+        "in the `attribution.source_url`.\n\n"
+        "**License:** every 2xx body carries a PDL v1.0 `attribution` "
+        "block — 公共データ利用規約 第1.0版 (出典明記 + 編集・加工注記). "
+        "Do NOT strip on relay."
+    ),
     responses={
         200: {
             "description": (
@@ -249,6 +290,47 @@ def _row_to_registrant(row: sqlite3.Row) -> InvoiceRegistrantOut:
                 "`attribution` block — required by 公共データ利用規約 第1.0版."
             ),
             "model": SearchResponse,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total": 1,
+                        "limit": 50,
+                        "offset": 0,
+                        "results": [
+                            {
+                                "invoice_registration_number": "T8010001213708",
+                                "houjin_bangou": "8010001213708",
+                                "normalized_name": "Bookyou株式会社",
+                                "address_normalized": "東京都文京区小日向2-22-1",
+                                "prefecture": "東京都",
+                                "registered_date": "2025-05-12",
+                                "registrant_kind": "corporation",
+                                "trade_name": "税務会計AI",
+                                "revoked_date": None,
+                                "expired_date": None,
+                                "last_updated_nta": "2025-05-13",
+                                "source_url": "https://www.invoice-kohyo.nta.go.jp/regno-search/download",
+                                "source_checksum": "0e5e54184ed778eb2fd797dc7f100b80cb7e892b15134de629d860ae76546398",
+                                "confidence": 0.98,
+                                "fetched_at": "2026-04-25T03:30:00Z",
+                                "updated_at": "2026-04-25T03:30:00Z",
+                            }
+                        ],
+                        "attribution": {
+                            "source": "国税庁適格請求書発行事業者公表サイト（国税庁）",
+                            "source_url": "https://www.invoice-kohyo.nta.go.jp/",
+                            "license": "公共データ利用規約 第1.0版 (PDL v1.0)",
+                            "edited": True,
+                            "notice": (
+                                "本データは国税庁公表データを編集加工したものであり、"
+                                "原データと完全には一致しません。"
+                                "公表データは本API経由ではなく、"
+                                "発行元サイトで最新のものを確認してください。"
+                            ),
+                        },
+                    }
+                }
+            },
         }
     },
 )
@@ -454,6 +536,22 @@ def search_invoice_registrants(
 
 @router.get(
     "/{invoice_registration_number}",
+    summary="Lookup adequate-invoice (適格請求書) registrant by T-number",
+    description=(
+        "Exact lookup by 適格請求書発行事業者登録番号 (`^T\\d{13}$`). Returns "
+        "the registrant's name, address, prefecture, registered_date, "
+        "and revocation/expiry status (NULL = active).\n\n"
+        "**404 semantics:** the 4M-row 適格事業者 population only lands "
+        "in the mirror at the post-launch monthly bulk refresh. A "
+        "launch-week miss frequently means 'your T-number is real, we "
+        "just haven't ingested it yet' — NOT 'this T-number is "
+        "invalid'. The 404 body therefore carries `snapshot_size`, "
+        "`full_population_estimate`, `next_bulk_refresh`, and an "
+        "`alternative` URL pointing at NTA's authoritative lookup so "
+        "the caller can distinguish the two cases.\n\n"
+        "**License:** PDL v1.0 attribution block on every 2xx + 404 "
+        "response (公共データ利用規約 第1.0版 / 出典明記 + 編集・加工注記)."
+    ),
     responses={
         200: {
             "description": (
@@ -461,6 +559,41 @@ def search_invoice_registrants(
                 "`attribution` block — required by 公共データ利用規約 第1.0版."
             ),
             "model": GetResponse,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "result": {
+                            "invoice_registration_number": "T8010001213708",
+                            "houjin_bangou": "8010001213708",
+                            "normalized_name": "Bookyou株式会社",
+                            "address_normalized": "東京都文京区小日向2-22-1",
+                            "prefecture": "東京都",
+                            "registered_date": "2025-05-12",
+                            "registrant_kind": "corporation",
+                            "trade_name": None,
+                            "revoked_date": None,
+                            "expired_date": None,
+                            "last_updated_nta": "2025-05-13",
+                            "source_url": "https://www.invoice-kohyo.nta.go.jp/regno-search/download",
+                            "confidence": 0.98,
+                            "fetched_at": "2026-04-25T03:30:00Z",
+                            "updated_at": "2026-04-25T03:30:00Z",
+                        },
+                        "attribution": {
+                            "source": "国税庁適格請求書発行事業者公表サイト（国税庁）",
+                            "source_url": "https://www.invoice-kohyo.nta.go.jp/",
+                            "license": "公共データ利用規約 第1.0版 (PDL v1.0)",
+                            "edited": True,
+                            "notice": (
+                                "本データは国税庁公表データを編集加工したものであり、"
+                                "原データと完全には一致しません。"
+                                "公表データは本API経由ではなく、"
+                                "発行元サイトで最新のものを確認してください。"
+                            ),
+                        },
+                    }
+                }
+            },
         },
         404: {
             "description": (
@@ -550,9 +683,12 @@ def get_invoice_registrant(
         params={"invoice_registration_number": invoice_registration_number},
     )
 
-    return JSONResponse(
-        content={
-            "result": _row_to_registrant(row).model_dump(),
-            "attribution": _ATTRIBUTION,
-        }
-    )
+    body: dict[str, Any] = {
+        "result": _row_to_registrant(row).model_dump(),
+        "attribution": _ATTRIBUTION,
+    }
+    # Audit trail (会計士 work-paper, added 2026-04-29): top-level snapshot
+    # fields so an auditor citing this T-number in a work-paper can reproduce
+    # the lookup later and detect whether the corpus mutated.
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))

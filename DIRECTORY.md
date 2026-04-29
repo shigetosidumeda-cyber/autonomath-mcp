@@ -21,11 +21,18 @@
 | `overrides/` | MkDocs template override | `partials/footer.html` 等 |
 | `sdk/python/` | Python SDK (PyPI `autonomath`) | `sdk/python/autonomath/` |
 | `sdk/typescript/` | TypeScript SDK (npm `@autonomath/sdk`) | `sdk/typescript/src/` |
+| `sdk/integrations/` | Per-platform integration glue (email / excel / google-sheets / kintone / slack) | `sdk/integrations/*/` |
+| `sdk/freee-plugin/` `sdk/mf-plugin/` | Accounting platform plugins (Fly app + oauth_callback + proxy_endpoints) | — |
+| `scripts/etl/` | One-off ETL utilities | `batch_translate_corpus.py`, `harvest_implicit_relations.py`, `repromote_amount_conditions.py` |
+| `scripts/cron/` | Recurring jobs (backups / digest / NTA bulk / law full-text / etc.) | 37 scripts (see Wave 21-22 changelog in CLAUDE.md) |
+| `monitoring/` | Sentry alert rules + SLA targets + uptime metrics | `sentry_alert_rules.yml`, `sla_targets.md`, `uptime_metrics_endpoint.md` |
+| `badges/` | README-targeted SVG status badges | `api-status.svg`, `mcp-version.svg`, `pypi-version.svg`, `pypi-downloads.svg`, `license-mit.svg` |
+| `analytics/` | JSONL baselines (geo, confidence, npm) | `geo_baseline_*.jsonl`, `npm_daily.jsonl`, `confidence_*.json` |
 | `examples/` | integration sample code | `examples/python/`, `examples/typescript/` |
 | `research/` | **設計 / 研究 / 戦略 docs** (内部思考) | `research/data_expansion_design.md` (9,775+ 行 canonical) |
 | `research/_archive/pre_launch_decisions/` | launch 前 決定済 docs (reference) | `domain_*`, `trademark_jp.md`, `url_integrity_*`, `admin_dashboard_design.md` 等 |
 | `loadtest/` | k6 load test scenarios | — |
-| `.github/` | CI / CD workflows | `.github/workflows/*.yml` |
+| `.github/` | CI / CD workflows | `.github/workflows/*.yml` (41 workflows) |
 
 ## Root-level 重要 files
 

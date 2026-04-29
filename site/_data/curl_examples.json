@@ -1,0 +1,22 @@
+{
+  "_comment": "Homepage curl block source-of-truth. CRO Fix 2 (2026-04-29). Edit here, regenerate site/index.html + site/en/index.html curl blocks if the API surface changes. Each example must work against api.zeimu-kaikei.ai/v1/* anonymously (no key) and stay under the 50/month anonymous quota with one shot.",
+  "primary_ja": {
+    "label": "5 秒で試す (登録不要)",
+    "sub": "anonymous IP で 50 req/月 まで Free。 そのまま貼って OK。",
+    "curl": "curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&limit=3'",
+    "response": "{\n  \"results\": [...],\n  \"total\": 17\n}",
+    "human_query_label": "q=IT導入"
+  },
+  "primary_en": {
+    "label": "Try in 5 seconds (no signup)",
+    "sub": "Anonymous IP gets 50 req/month free. Paste and run.",
+    "curl": "curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&limit=3'",
+    "response": "{\n  \"results\": [...],\n  \"total\": 17\n}",
+    "human_query_label": "q=IT導入 (URL-encoded)"
+  },
+  "mcp_clients": [
+    {"name": "Claude Desktop", "href": "/integrations/claude-desktop.html"},
+    {"name": "Cursor",         "href": "/integrations/cursor.html"},
+    {"name": "Cline",          "href": "/integrations/cline.html"}
+  ]
+}

@@ -1,0 +1,78 @@
+name: Feature request
+description: Propose a new capability or API change
+title: "[feature] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Concrete use cases beat general asks — tell
+        us what you're actually trying to do, and what data or behaviour
+        is missing today.
+
+        Note: pricing, packaging, and brand decisions are out of scope
+        for external feature requests. See `CONTRIBUTING.md`.
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What are you building? What decision or automation does this enable?
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround
+      description: How do you solve this today (other tools, manual steps, scraping, etc.)? "No workaround" is a valid answer.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API / shape
+      description: Sketch the endpoint, MCP tool, params, and response. Pseudo-JSON is fine.
+      render: json
+      placeholder: |
+        GET /v1/programs/search?crop=rice&prefecture=niigata
+        {
+          "results": [...],
+          "total": 42
+        }
+    validations:
+      required: false
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Which surface
+      options:
+        - REST API
+        - MCP tool
+        - Python SDK
+        - TypeScript SDK
+        - Static docs / site
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority (for you)
+      options:
+        - nice-to-have
+        - would pay more for this
+        - blocker (cannot use without it)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Pre-flight
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true

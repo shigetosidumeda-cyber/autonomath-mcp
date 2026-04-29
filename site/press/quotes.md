@@ -19,10 +19,10 @@
 
 ## 2. Persona quote — Dev (個人開発者 / SaaS スタートアップ)
 
-> 「補助金 API を使いたかったが、商用 aggregator は規約上 LLM 投入が grayエリアでした。AutonoMath は MCP に直接刺さって、出典 URL も付くので、Claude / ChatGPT で安心して reasoning 材料に使えます。¥3/req は試作レベルなら無料枠で十分でした。」
+> 「補助金 API を使いたかったが、商用集約サイトは規約上 LLM 投入が grayエリアでした。AutonoMath は MCP に直接刺さって、出典 URL も付くので、Claude / ChatGPT で安心して reasoning 材料に使えます。¥3/req は試作レベルなら無料枠で十分でした。」
 
 **Persona**: 個人 dev / 小規模 SaaS スタートアップ CTO
-**Use**: 開発者向けに使える / aggregator との差分説明
+**Use**: 開発者向けに使える / 集約サイトとの差分説明
 
 ---
 

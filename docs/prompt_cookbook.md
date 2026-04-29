@@ -1,17 +1,18 @@
 # Prompt Cookbook
 
-> 10 ready-to-paste プロンプトを、MCP ツール呼び出しのシーケンスと合わせてドキュメント化。SDK ユーザー (Python / TypeScript) が agent フローを自前コードで再現したいときのレシピ集。
+> 10 個の貼り付け用プロンプトと、それぞれが triggered する MCP ツール呼び出しの想定シーケンス。料金 ¥3/req 一律 (税込 ¥3.30)、anonymous は 50 req/月 まで無料。
 
-Public HTML 版: [/prompts.html](https://autonomath.ai/prompts.html)
+Public HTML 版: [/prompts.html](https://zeimu-kaikei.ai/prompts.html)
 MCP tool リファレンス: [mcp-tools.md](./mcp-tools.md)
 Exclusion 概念: [exclusions.md](./exclusions.md)
+動くサンプル: [examples.md](./examples.md)
 
 Each recipe is structured as:
 
 - **Persona / Hook** — 誰が何を求める場面か
 - **Prompt** — Claude / Cursor / ChatGPT に貼り付ける日本語文
 - **Tool sequence (YAML)** — agent が triggered するであろう MCP tool call
-- **Notes** — データ充足ギャップや注意点
+- **Notes** — データ充足ギャップや注意点。公開保留中の制度 (1,923 行) は検索路から除外、`compat_matrix` の出典裏取りは 9% に留まる。
 
 ---
 
@@ -20,7 +21,7 @@ Each recipe is structured as:
 ### Recipe 1 — Aomori × Apple × New Farmer
 
 - **Persona:** 新規就農者 (青森県でりんご)
-- **Hook:** 「使える制度を 5 分で棚卸し」
+- **Hook:** 国・県・市町村の制度を一括棚卸し
 
 **Prompt:**
 
@@ -400,54 +401,31 @@ Each recipe is structured as:
 
 ---
 
-## Reproducing in SDK
+## Calling from your code
 
-### Python (sync example for Recipe 1)
+専用 SDK は未リリース。HTTP は `curl` / `requests` / `fetch` で直接叩ける形に
+してある。サンプルは [examples.md](./examples.md) と
+[api-reference.md](./api-reference.md) を参照。
 
 ```python
-from jpintel_mcp import MCPClient
+import os, requests
 
-client = MCPClient(api_key="YOUR_KEY")
+BASE = "https://api.zeimu-kaikei.ai"
+HEAD = {"Authorization": f"Bearer {os.environ.get('AUTONOMATH_API_KEY','')}"}
 
-# Step 1: search
-results = client.search_programs(
-    q="りんご 新規就農",
-    prefecture="青森県",
-    tier=["S", "A", "B"],
-    limit=20,
+# Recipe 1 step 1
+r = requests.get(
+    f"{BASE}/v1/programs/search",
+    params={"q": "りんご 新規就農", "prefecture": "青森県",
+            "tier": ["S", "A", "B"], "limit": 20},
+    headers=HEAD, timeout=10,
 )
-
-# Step 2: check exclusions on the standard agri bundle
-hits = client.check_exclusions(
-    program_ids=["keiei-kaishi-shikin", "keiei-hatten-shoki", "seinen-shuno-shikin"]
-)
-
-# Step 3: drill into top hit
-top = results["results"][0]
-detail = client.get_program(top["unified_id"], fields="full")
+results = r.json()
 ```
 
-### TypeScript (same recipe)
-
-```ts
-import { AutonoMathClient } from "@autonomath/sdk";
-
-const client = new AutonoMathClient({ apiKey: process.env.AUTONOMATH_API_KEY });
-
-const results = await client.searchPrograms({
-  q: "りんご 新規就農",
-  prefecture: "青森県",
-  tier: ["S", "A", "B"],
-  limit: 20,
-});
-
-const hits = await client.checkExclusions({
-  programIds: ["keiei-kaishi-shikin", "keiei-hatten-shoki", "seinen-shuno-shikin"],
-});
-
-const top = results.results[0];
-const detail = await client.getProgram(top.unifiedId, { fields: "full" });
-```
+MCP 経由 (Claude Desktop / Cursor) なら、`autonomath-mcp` を stdio で
+spawn して `search_programs` を呼ぶだけ。詳細は
+[mcp-tools.md](./mcp-tools.md) を参照。
 
 ---
 

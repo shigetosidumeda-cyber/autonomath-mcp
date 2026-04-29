@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>税務会計AI — 日次 KPI ダイジェスト ({{date_jst}})</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:680px;margin:24px auto;padding:0 20px;color:#111;line-height:1.6;background:#ffffff;">
+
+<h1 style="font-size:20px;margin:0 0 6px;color:#0b1320;">日次 KPI ダイジェスト</h1>
+<p style="margin:0 0 18px;color:#555;font-size:13px;">{{date_jst}} JST 時点 / generated {{generated_at}}</p>
+
+{{banner_block}}
+
+<!--
+  Summary table — flat layout (mobile-friendly).  All values are
+  pre-rendered server-side in the cron; this template uses simple
+  Mustache-style placeholders so it can be filled by string.replace
+  from the cron without pulling Jinja2 into a launch-blocker dep.
+-->
+
+<h2 style="font-size:15px;margin:16px 0 8px;color:#0b1320;border-bottom:1px solid #e5e7eb;padding-bottom:4px;">本日のサマリ</h2>
+
+<table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">MAU (今月)</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;">{{mau_total}} 件 (匿名 {{mau_anon}} / 課金 {{mau_paid}})</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">MRR (今月)</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;">{{mrr_yen}}</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">MRR W/W Δ {{mrr_wow_pill}}</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;{{mrr_wow_color}}">{{mrr_wow_delta_yen}} ({{mrr_wow_pct}})</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">¥/顧客 平均</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;">{{mrr_per_customer_yen}}</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">Cap 設定 / 到達</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;">{{cap_set}} / {{cap_reached}}</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">Trial 24h 新規 / 30d 転換</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;">{{trial_signups_24h}} / {{trial_to_paid_30d_pct}}</td></tr>
+</table>
+
+<h2 style="font-size:15px;margin:16px 0 8px;color:#0b1320;border-bottom:1px solid #e5e7eb;padding-bottom:4px;">健全性シグナル</h2>
+
+<table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">Churn (7d, 課金キー) {{churn_pill}}</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;{{churn_color}}">{{churn_7d}} 件</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">Past-due Subscriptions {{past_due_pill}}</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;{{past_due_color}}">{{past_due_count}} 件</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">Stripe 未同期 (>1h) {{unsynced_pill}}</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;{{unsynced_color}}">{{unsynced_metered_events}} 件</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">Reconcile drift {{drift_pill}}</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;{{drift_color}}">{{reconcile_drift_pct}}</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">GEO 引用率</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600;font-size:13px;">{{geo_citation_rate_pct}} ({{geo_probes_total}} probes)</td></tr>
+</table>
+
+<h2 style="font-size:15px;margin:16px 0 8px;color:#0b1320;border-bottom:1px solid #e5e7eb;padding-bottom:4px;">外部キャッシュ</h2>
+
+<table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;width:30%;">Sentry</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px;">{{sentry_row}}</td></tr>
+  <tr><td style="padding:7px 0;border-bottom:1px solid #f1f5f9;color:#555;font-size:13px;">Stripe</td>
+      <td style="padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px;">{{stripe_row}}</td></tr>
+</table>
+
+<p style="margin-top:18px;font-size:13px;color:#555;">
+  詳細はオペレーター専用ダッシュボード <a href="https://zeimu-kaikei.ai/admin/kpi.html" style="color:#1e3a8a;">/admin/kpi.html</a> から確認できます (ADMIN_API_KEY 必要)。
+</p>
+
+<hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0 12px;">
+<p style="color:#888;font-size:11px;line-height:1.5;">
+  税務会計AI — 日本の制度情報 API + MCP<br>
+  このメールは運営者宛の内部レポートです (購読解除不可のオペレーター通知)。<br>
+  Bookyou株式会社 (T8010001213708) / 東京都文京区小日向2-22-1 / info@bookyou.net
+</p>
+
+</body>
+</html>

@@ -414,8 +414,15 @@ def test_usage_clamps_days_to_90(client, paid_key):
 # ---------------------------------------------------------------------------
 
 
-def test_billing_portal_free_tier_returns_400(client, seeded_db: Path):
-    # issue a key with no customer_id (free-tier simulation)
+def test_billing_portal_free_tier_returns_404(client, seeded_db: Path):
+    # issue a key with no customer_id (free-tier simulation).
+    # Per the ¥3/req-only business model (project_autonomath_business_model),
+    # there is NO "free → pro upgrade" SKU. A key with no Stripe customer_id
+    # has nothing to manage in the Stripe Customer Portal yet, so the
+    # endpoint returns 404 + status=no_customer rather than the historic
+    # 400/upgrade envelope. (The wording deliberately avoids
+    # "upgrade" / "tier" / "plan" so consumer LLMs don't relay a SKU
+    # promise that doesn't exist.)
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     raw = issue_key(
@@ -427,8 +434,15 @@ def test_billing_portal_free_tier_returns_400(client, seeded_db: Path):
     r = client.post("/v1/session", json={"api_key": raw})
     assert r.status_code == 200
     r = client.post("/v1/me/billing-portal", headers=_csrf_headers(client))
-    assert r.status_code == 400
-    assert "upgrade" in r.json()["detail"].lower()
+    assert r.status_code == 404
+    body = r.json()
+    detail = body.get("detail", body)
+    if isinstance(detail, dict):
+        assert detail.get("status") == "no_customer", detail
+    else:
+        # Defensive: stringified envelope still mentions the no_customer
+        # signal somewhere in the body.
+        assert "no_customer" in str(body) or "未作成" in str(body)
 
 
 def test_billing_portal_happy_path_mocks_stripe(client, paid_key, monkeypatch):

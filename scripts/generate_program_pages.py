@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-program static HTML pages for AutonoMath (autonomath.ai).
+"""Generate per-program static HTML pages for AutonoMath (zeimu-kaikei.ai).
 
 Input:  data/jpintel.db (SQLite programs table)
 Output: site/programs/{slug}.html (one per indexable row; slug = hepburn romaji + sha1-6)
@@ -28,7 +28,7 @@ Usage
     uv run python scripts/generate_program_pages.py \
         --db data/jpintel.db \
         --out site/programs \
-        --domain autonomath.ai \
+        --domain zeimu-kaikei.ai \
         [--limit 3] [--samples-dir site/programs/_samples] [--sample-ids UNI-...,UNI-...]
 
 Exit codes
@@ -51,7 +51,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 
 # JST = UTC+9. Sitemap <lastmod> is dated in JST so the operator timezone
-# matches every other date surfaced on autonomath.ai (consistent with
+# matches every other date surfaced on zeimu-kaikei.ai (consistent with
 # CLAUDE.md "anonymous quota resets at JST midnight" baseline).
 _JST = timezone(timedelta(hours=9))
 
@@ -96,6 +96,11 @@ LOG = logging.getLogger("generate_program_pages")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
+# Acceptance-rate facts live in autonomath.db (am_acceptance_stat). We open a
+# *separate* read-only connection — CLAUDE.md forbids ATTACH / cross-DB JOIN
+# between jpintel.db and autonomath.db. The bulk pre-load below builds an
+# in-memory unified_id → stats map so per-row rendering stays sync.
+DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_TEMPLATE_DIR = REPO_ROOT / "site" / "_templates"
 DEFAULT_OUT = REPO_ROOT / "site" / "programs"
 DEFAULT_SAMPLES = REPO_ROOT / "site" / "programs" / "_samples"
@@ -105,7 +110,7 @@ DEFAULT_STRUCTURED_DIR = REPO_ROOT / "site" / "structured"
 DEFAULT_SITEMAP_STRUCTURED = REPO_ROOT / "site" / "sitemap-structured.xml"
 
 SITEMAP_URL_CAP = 50_000  # sitemap.org spec
-DEFAULT_DOMAIN = "autonomath.ai"
+DEFAULT_DOMAIN = "zeimu-kaikei.ai"
 
 # Bookyou株式会社 facts — operator entity referenced from every page's JSON-LD.
 OPERATOR_NAME = "Bookyou株式会社"
@@ -338,33 +343,20 @@ _KKS = pykakasi.kakasi()
 
 
 def slugify(name: str, unified_id: str) -> str:
-    """Produce `{hepburn-romaji}-{sha1-6}`.
+    """Produce ``{hepburn-romaji}-{sha1-6}``.
 
-    - Hepburn romaji via pykakasi (JA → ASCII-ish)
-    - lowercase + non-[a-z0-9] collapsed to '-'
-    - cap at 60 chars, trim at word boundary
-    - sha1-6 of unified_id as collision-free suffix
+    Thin wrapper around :func:`jpintel_mcp.utils.slug.program_static_slug`
+    so the generator and the API runtime use a single derivation. Kept
+    as a free function for back-compat with the rest of this script and
+    for any downstream tooling importing from here.
     """
-    try:
-        # pykakasi returns a list of dicts; each with "hepburn" key
-        parts = _KKS.convert(name or "")
-        romaji = " ".join(p.get("hepburn", "") for p in parts)
-    except Exception:  # pragma: no cover — defensive
-        romaji = ""
-    romaji = romaji.lower()
-    ascii_only = re.sub(r"[^a-z0-9]+", "-", romaji).strip("-")
+    # Local import keeps the script standalone-friendly: callers running
+    # `python scripts/generate_program_pages.py` from a checkout without
+    # `pip install -e .` still get a clear ImportError pointing at the
+    # missing package, rather than a slug-derivation regression.
+    from jpintel_mcp.utils.slug import program_static_slug
 
-    if len(ascii_only) > 60:
-        truncated = ascii_only[:60]
-        # cut at last hyphen to avoid splitting a romaji token mid-word
-        if "-" in truncated:
-            truncated = truncated.rsplit("-", 1)[0]
-        ascii_only = truncated
-    if not ascii_only:
-        ascii_only = "program"
-
-    suffix = hashlib.sha1(unified_id.encode("utf-8")).hexdigest()[:6]
-    return f"{ascii_only}-{suffix}"
+    return program_static_slug(name, unified_id)
 
 
 # ---------------------------------------------------------------------------
@@ -688,14 +680,17 @@ def _page_title(row: dict[str, Any], target_types: list[str]) -> str:
 # JSON-LD @graph builder
 # ---------------------------------------------------------------------------
 
-ORG_NODE_ID = "#autonomath-org"
+ORG_NODE_ID = "https://zeimu-kaikei.ai/#publisher"
 
 
 def _org_node(domain: str) -> dict[str, Any]:
+    # Single canonical Organization @id across ALL templates (publisher.@id reuses).
+    # Brand "税務会計AI" / "AutonoMath" resolves to same legal entity (Bookyou株式会社).
     return {
         "@type": "Organization",
         "@id": ORG_NODE_ID,
-        "name": "AutonoMath",
+        "name": "税務会計AI",
+        "alternateName": ["AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "legalName": OPERATOR_NAME,
         "taxID": OPERATOR_CORPORATE_NUMBER,
@@ -706,6 +701,20 @@ def _org_node(domain: str) -> dict[str, Any]:
             "email": OPERATOR_EMAIL,
             "contactType": "customer support",
         },
+        # publisher.logo (required for Google rich-results / News).
+        # 600x60 white-background PNG kept under /assets/.
+        "logo": {
+            "@type": "ImageObject",
+            "url": f"https://{domain}/assets/logo.png",
+            "width": 600,
+            "height": 60,
+        },
+        # sameAs — official off-site presence. URLs marked TODO are not yet
+        # established; emit empty array until real URLs land (do NOT publish
+        # placeholder URLs, they would fail Google entity reconciliation).
+        # TODO populate when LinkedIn / GitHub / X (Twitter) / Crunchbase
+        # accounts for Bookyou株式会社 / AutonoMath are live.
+        "sameAs": [],
     }
 
 
@@ -879,6 +888,22 @@ def _service_node(
         else:
             provider["areaServed"] = {"@type": "Country", "name": "日本"}
         node["provider"] = provider
+
+    # GovernmentService / LoanOrCredit / EducationalOccupationalProgram all
+    # benefit from explicit areaServed at the service level (Google rich-results
+    # for GovernmentService treats areaServed as recommended). Authority level
+    # already resolved into the additionalProperty block; mirror it here as a
+    # typed Place.
+    auth_level = (row.get("authority_level") or "").lower()
+    if auth_level in ("national", "country", "central", "中央"):
+        node["areaServed"] = {"@type": "Country", "name": "JP"}
+    elif row.get("prefecture"):
+        node["areaServed"] = {"@type": "AdministrativeArea", "name": row["prefecture"]}
+    elif auth_level in ("prefecture", "都道府県") and row.get("prefecture"):
+        node["areaServed"] = {"@type": "AdministrativeArea", "name": row["prefecture"]}
+    else:
+        # Default to JP if unknown — non-asserting but better than missing.
+        node["areaServed"] = {"@type": "Country", "name": "JP"}
 
     if bucket == "loan":
         # LoanOrCredit canonical fields per https://schema.org/LoanOrCredit
@@ -1092,10 +1117,18 @@ def build_standalone_json_ld(
     # publisher reference must be self-contained (no @id ref outside the file)
     node["publisher"] = {
         "@type": "Organization",
-        "name": "AutonoMath",
+        "@id": ORG_NODE_ID,
+        "name": "税務会計AI",
+        "alternateName": ["AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "legalName": OPERATOR_NAME,
         "taxID": OPERATOR_CORPORATE_NUMBER,
+        "logo": {
+            "@type": "ImageObject",
+            "url": f"https://{domain}/assets/logo.png",
+            "width": 600,
+            "height": 60,
+        },
     }
     # Move @context to top of dict for human-readable output
     out: dict[str, Any] = {"@context": node.pop("@context")}
@@ -1217,6 +1250,115 @@ def _related_programs(
 
 
 # ---------------------------------------------------------------------------
+# Acceptance-rate stats (am_acceptance_stat)
+# ---------------------------------------------------------------------------
+
+
+# `am_acceptance_stat.program_entity_id` is the autonomath canonical id; the
+# format varies (e.g. `program:base:<10-hex>`, `program:saikouchiku:meti:...`,
+# `program:gx:meti-enecho:...`). We bridge to jpintel `programs.unified_id` via
+# the `entity_id_map` view (88 jpi_unified_id → 69 am_canonical_id mappings
+# established by the cross-domain entity resolution job). CLAUDE.md forbids
+# ATTACH / cross-DB JOIN, so we open a *separate* read-only connection.
+
+ACCEPTANCE_STATS_SQL = """
+SELECT
+    s.program_entity_id  AS am_canonical_id,
+    s.round_label,
+    s.application_date,
+    s.applied_count,
+    s.accepted_count,
+    s.acceptance_rate_pct,
+    m.jpi_unified_id     AS jpi_unified_id
+FROM am_acceptance_stat s
+LEFT JOIN entity_id_map m
+       ON m.am_canonical_id = s.program_entity_id
+WHERE s.acceptance_rate_pct IS NOT NULL
+ORDER BY s.program_entity_id, s.application_date DESC, s.round_label DESC
+"""
+
+
+def load_acceptance_stats(db_path: Path) -> dict[str, dict[str, Any]]:
+    """Pre-load all am_acceptance_stat rows into a unified_id-keyed dict.
+
+    Returns mapping: unified_id ('UNI-xxxxxxxxxx') -> {
+        'rounds': int,
+        'min_pct': '16.97',
+        'max_pct': '67.15',
+        'avg_pct': '48.29',
+        'recent': [
+            {'round_label': str, 'application_date': str|None,
+             'applied_count': int|None, 'accepted_count': int|None,
+             'rate_pct': '67.15'},
+            ...   (up to 5 most-recent rounds)
+        ],
+    }
+
+    Bridge order: (1) `entity_id_map` view (canonical), (2) bare-hex fallback
+    where `program:base:<hex>` directly mirrors `UNI-<hex>` for older rows
+    that haven't been re-resolved into the map yet. A missing program is
+    simply absent — the template renders "採択率公表データなし" for it.
+    Returns {} if the DB is missing.
+    """
+    if not db_path.exists():
+        LOG.warning(
+            "autonomath.db not found at %s — acceptance stats disabled "
+            "(template will render '採択率公表データなし' for all programs)",
+            db_path,
+        )
+        return {}
+
+    out: dict[str, dict[str, Any]] = {}
+    # Read-only URI guards against accidental writes (autonomath.db is 8.3 GB
+    # and we never want a stray INSERT here).
+    uri = f"file:{db_path}?mode=ro"
+    conn = sqlite3.connect(uri, uri=True)
+    try:
+        conn.row_factory = sqlite3.Row
+        for row in conn.execute(ACCEPTANCE_STATS_SQL):
+            am_id = row["am_canonical_id"] or ""
+            unified_id = row["jpi_unified_id"]
+            if not unified_id and am_id.startswith("program:base:"):
+                # Fallback: legacy 1:1 hex mirror.
+                unified_id = "UNI-" + am_id[len("program:base:") :]
+            if not unified_id:
+                continue
+            slot = out.setdefault(
+                unified_id,
+                {
+                    "rounds": 0,
+                    "_rates": [],
+                    "recent": [],
+                },
+            )
+            rate = row["acceptance_rate_pct"]
+            slot["rounds"] += 1
+            slot["_rates"].append(float(rate))
+            if len(slot["recent"]) < 5:
+                slot["recent"].append(
+                    {
+                        "round_label": row["round_label"],
+                        "application_date": row["application_date"],
+                        "applied_count": row["applied_count"],
+                        "accepted_count": row["accepted_count"],
+                        "rate_pct": f"{float(rate):.2f}",
+                    }
+                )
+    finally:
+        conn.close()
+
+    # Finalise aggregates and drop the working list.
+    for stats in out.values():
+        rates = stats.pop("_rates")
+        stats["min_pct"] = f"{min(rates):.2f}"
+        stats["max_pct"] = f"{max(rates):.2f}"
+        stats["avg_pct"] = f"{sum(rates) / len(rates):.2f}"
+
+    LOG.info("loaded acceptance stats for %d programs", len(out))
+    return out
+
+
+# ---------------------------------------------------------------------------
 # Render
 # ---------------------------------------------------------------------------
 
@@ -1240,11 +1382,213 @@ def _build_env(template_dir: Path) -> Environment:
     )
 
 
+# ---------------------------------------------------------------------------
+# Program → QA crossref (deterministic mapping; matches QA topic_slug values
+# defined in scripts/generate_geo_citation_pages.py).
+# ---------------------------------------------------------------------------
+
+# Topic slug → (label, list of [(qa_slug, h1)]). 3-5 entries each.
+# Each (qa_slug, h1) corresponds to a real /qa/{topic_slug}/{qa_slug}.html page
+# emitted by generate_geo_citation_pages.py. Keep in sync when QA pages move.
+_QA_TOPICS: dict[str, dict[str, Any]] = {
+    "it-subsidy": {
+        "label": "IT導入補助金",
+        "entries": [
+            ("overview", "IT導入補助金とは何か"),
+            ("application-method", "IT導入補助金の申請方法"),
+            ("schedule", "IT導入補助金の公募スケジュール"),
+            ("invoice-frame", "IT導入補助金 インボイス対応類型"),
+        ],
+    },
+    "monozukuri-subsidy": {
+        "label": "ものづくり補助金",
+        "entries": [
+            ("application-method", "ものづくり補助金の申請方法"),
+            ("acceptance-rate", "ものづくり補助金の採択率"),
+            ("frames", "ものづくり補助金の申請枠"),
+            ("chinage-youken", "ものづくり補助金の賃上げ要件"),
+        ],
+    },
+    "jizokuka-subsidy": {
+        "label": "小規模事業者持続化補助金",
+        "entries": [
+            ("application-method", "持続化補助金の申請方法"),
+            ("frames", "持続化補助金の申請枠"),
+        ],
+    },
+    "restructuring-subsidy": {
+        "label": "事業再構築補助金",
+        "entries": [
+            ("overview", "事業再構築補助金とは何か"),
+            ("frames", "事業再構築補助金の申請枠"),
+        ],
+    },
+    "chinage-tax": {
+        "label": "賃上げ促進税制",
+        "entries": [
+            ("overview", "賃上げ促進税制とは何か"),
+            ("calc", "賃上げ促進税制の控除額計算"),
+        ],
+    },
+    "rd-tax": {
+        "label": "研究開発税制",
+        "entries": [
+            ("overview", "研究開発税制とは何か"),
+        ],
+    },
+    "shotoku-kojo": {
+        "label": "所得拡大促進税制",
+        "entries": [
+            ("overview", "所得拡大促進税制とは何か"),
+        ],
+    },
+    "toushi-tax": {
+        "label": "中小企業投資促進税制",
+        "entries": [
+            ("overview", "中小企業投資促進税制とは何か"),
+        ],
+    },
+    "keieikyoka-tax": {
+        "label": "経営強化税制",
+        "entries": [
+            ("overview", "経営強化税制とは何か"),
+        ],
+    },
+    "invoice": {
+        "label": "インボイス制度",
+        "entries": [
+            ("overview", "インボイス制度とは何か"),
+            ("registration", "インボイス制度の登録手続き"),
+        ],
+    },
+    "dencho": {
+        "label": "電子帳簿保存法",
+        "entries": [
+            ("overview", "電子帳簿保存法とは何か"),
+        ],
+    },
+    "jfc": {
+        "label": "日本政策金融公庫融資",
+        "entries": [
+            ("overview", "日本政策金融公庫の融資制度"),
+        ],
+    },
+    "hojin-tax": {
+        "label": "法人税",
+        "entries": [
+            ("overview", "法人税の基礎"),
+        ],
+    },
+    "shouhi-tax": {
+        "label": "消費税",
+        "entries": [
+            ("overview", "消費税の基礎"),
+        ],
+    },
+    "shoukei": {
+        "label": "事業承継",
+        "entries": [
+            ("overview", "事業承継とは何か"),
+        ],
+    },
+    "gx": {
+        "label": "GX関連",
+        "entries": [
+            ("overview", "GX関連制度の概要"),
+        ],
+    },
+    "law": {
+        "label": "中小企業関連法",
+        "entries": [
+            ("overview", "中小企業関連法の概要"),
+        ],
+    },
+}
+
+
+def _related_qa_for_program(row: dict[str, Any]) -> list[dict[str, str]]:
+    """Pick 3-5 deterministic QA links based on program_kind + primary_name keywords.
+
+    Returns a list of {topic_slug, qa_slug, label, h1, url} dicts. Empty if no
+    confident match — the template tolerates that.
+    """
+    kind = (row.get("program_kind") or "").lower()
+    name = row.get("primary_name") or ""
+
+    # Name-keyword routing first (more specific than program_kind).
+    routes: list[str] = []
+    if "IT導入" in name or "it導入" in name.lower():
+        routes.append("it-subsidy")
+    if "ものづくり" in name:
+        routes.append("monozukuri-subsidy")
+    if "持続化" in name or "小規模事業者" in name:
+        routes.append("jizokuka-subsidy")
+    if "事業再構築" in name or "再構築" in name:
+        routes.append("restructuring-subsidy")
+    if "賃上げ" in name:
+        routes.append("chinage-tax")
+    if "研究開発" in name and "税" in name:
+        routes.append("rd-tax")
+    if "投資促進" in name and "税" in name:
+        routes.append("toushi-tax")
+    if "経営強化" in name and "税" in name:
+        routes.append("keieikyoka-tax")
+    if "インボイス" in name or "適格請求書" in name:
+        routes.append("invoice")
+    if "電子帳簿" in name:
+        routes.append("dencho")
+    if "事業承継" in name:
+        routes.append("shoukei")
+    if "公庫" in name or "JFC" in name.upper():
+        routes.append("jfc")
+    if "GX" in name.upper() or "脱炭素" in name or "省エネ" in name:
+        routes.append("gx")
+
+    # Fallback by kind bucket.
+    if not routes:
+        bucket = _classify_kind(kind)
+        if bucket == "loan":
+            routes.append("jfc")
+        elif kind in ("subsidy", "grant"):
+            # Generic subsidy → most-cited QA topic
+            routes.append("monozukuri-subsidy")
+        elif "tax" in kind or kind in ("tax_credit", "tax_incentive"):
+            routes.append("hojin-tax")
+        elif "certification" in kind or "認定" in name:
+            routes.append("law")
+
+    if not routes:
+        return []
+
+    out: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for topic_slug in routes:
+        topic = _QA_TOPICS.get(topic_slug)
+        if topic is None:
+            continue
+        for qa_slug, h1 in topic["entries"]:
+            key = f"{topic_slug}/{qa_slug}"
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({
+                "topic_slug": topic_slug,
+                "topic_label": topic["label"],
+                "qa_slug": qa_slug,
+                "h1": h1,
+                "url": f"/qa/{topic_slug}/{qa_slug}.html",
+            })
+            if len(out) >= 5:
+                return out
+    return out
+
+
 def render_row(
     row: dict[str, Any],
     ctx: RenderContext,
     domain: str,
     related: list[dict[str, Any]],
+    acceptance_stats: dict[str, Any] | None = None,
 ) -> tuple[str, str, dict[str, Any]]:
     """Return (slug, html, standalone_json_ld_doc)."""
     aliases = _parse_json_list(row.get("aliases_json"))
@@ -1302,6 +1646,8 @@ def render_row(
         source_domain=source_domain,
         source_org=source_org,
         related_programs=related,
+        related_qa=_related_qa_for_program(row),
+        acceptance_stats=acceptance_stats,
         json_ld_pretty=json.dumps(json_ld, ensure_ascii=False, indent=2).replace("</", "<\\/"),
     )
     return slug, html, standalone_jsonld
@@ -1502,6 +1848,7 @@ def generate(
     sitemap_path: Path | None,
     structured_dir: Path | None = None,
     sitemap_structured_path: Path | None = None,
+    autonomath_db_path: Path | None = None,
 ) -> tuple[int, int, int]:
     """Returns (written, skipped, errors).
 
@@ -1523,6 +1870,15 @@ def generate(
 
     env = _build_env(template_dir)
     ctx = RenderContext(env=env)
+
+    # Pre-load acceptance stats from autonomath.db (separate connection — no
+    # ATTACH / cross-DB JOIN per CLAUDE.md). 522 rows / ~70 programs total,
+    # safe to keep entirely in memory.
+    acceptance_map: dict[str, dict[str, Any]] = (
+        load_acceptance_stats(autonomath_db_path)
+        if autonomath_db_path is not None
+        else {}
+    )
 
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
@@ -1546,7 +1902,13 @@ def generate(
             try:
                 tts = _parse_json_list(row_d.get("target_types_json"))
                 related = _related_programs(conn, row_d, tts, limit=8)
-                slug, html, standalone = render_row(row_d, ctx, domain, related)
+                slug, html, standalone = render_row(
+                    row_d,
+                    ctx,
+                    domain,
+                    related,
+                    acceptance_stats=acceptance_map.get(row_d.get("unified_id") or ""),
+                )
                 changed = _write_if_changed(samples_dir / f"{slug}.html", html)
                 if changed:
                     written += 1
@@ -1569,7 +1931,13 @@ def generate(
         try:
             tts = _parse_json_list(row.get("target_types_json"))
             related = _related_programs(conn, row, tts, limit=8)
-            slug, html, standalone = render_row(row, ctx, domain, related)
+            slug, html, standalone = render_row(
+                row,
+                ctx,
+                domain,
+                related,
+                acceptance_stats=acceptance_map.get(row.get("unified_id") or ""),
+            )
             path = out_dir / f"{slug}.html"
             changed = _write_if_changed(path, html)
             if changed:
@@ -1619,6 +1987,15 @@ def generate(
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--db", default=str(DEFAULT_DB), type=Path)
+    p.add_argument(
+        "--autonomath-db",
+        default=str(DEFAULT_AUTONOMATH_DB),
+        type=Path,
+        help=(
+            "path to autonomath.db (am_acceptance_stat lives here); pass empty "
+            "string to disable acceptance-rate enrichment"
+        ),
+    )
     p.add_argument("--out", default=str(DEFAULT_OUT), type=Path)
     p.add_argument("--template-dir", default=str(DEFAULT_TEMPLATE_DIR), type=Path)
     p.add_argument(
@@ -1693,6 +2070,12 @@ def main() -> int:
         if sample_ids:
             sitemap_structured_path = None  # sample mode skips sitemap
 
+    autonomath_db = (
+        args.autonomath_db
+        if (args.autonomath_db and str(args.autonomath_db) != "")
+        else None
+    )
+
     written, skipped, errors = generate(
         db_path=args.db,
         out_dir=args.out,
@@ -1704,6 +2087,7 @@ def main() -> int:
         sitemap_path=sitemap_path,
         structured_dir=structured_dir,
         sitemap_structured_path=sitemap_structured_path,
+        autonomath_db_path=autonomath_db,
     )
     LOG.info("written=%d skipped=%d errors=%d", written, skipped, errors)
     return 0

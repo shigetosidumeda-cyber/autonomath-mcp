@@ -4,47 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>AutonoMath — 日本の公的制度を、5 つのインターフェースで。</title>
-<meta name="description" content="日本の補助金・融資・税制・認定 13,578 件を横断検索する API + MCP + LINE bot + 法令改正アラート + 埋込 Widget。一次資料 100%、排他ルール 181 本、採択事例 2,286。¥3/req metered。">
+<title>税務会計AI — 日本の制度を AI から検索できる REST + MCP API。</title>
+<meta name="description" content="日本の制度 (補助金 11,684 + 法令本文 154 + 法令メタデータ 9,484 + 判例 2,065 + 税制 50 + 適格事業者 13,801 + 採択事例 2,286 + 行政処分 1,185) を検索する REST + MCP API。一次資料 URL 付き。¥3/req 完全従量、 anon 50/月 free。">
 
-<meta property="og:title" content="AutonoMath — 5 つのインターフェース、1 つのバックエンド。">
-<meta property="og:description" content="API/MCP・LINE bot・法令改正アラート・埋込 Widget・士業 affiliate。日本の公的制度 13,578 件を用途別インターフェースで。">
+<meta property="og:title" content="税務会計AI — 5 つのインターフェース、1 つのバックエンド。">
+<meta property="og:description" content="API/MCP・LINE bot・法令改正アラート・埋込 Widget・士業 affiliate。日本の公的制度 14,472 件を用途別インターフェースで。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AutonoMath — 5 つのインターフェース、1 つのバックエンド。">
+<meta name="twitter:title" content="税務会計AI — 5 つのインターフェース、1 つのバックエンド。">
 <meta name="twitter:description" content="API/MCP・LINE bot・法令アラート・Widget・士業 affiliate。日本の制度データを届けたい場所へ。">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/">
+<link rel="canonical" href="https://zeimu-kaikei.ai/">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, Japanese)" href="/llms.txt">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/llms.en.txt">
 <link type="text/plain" rel="author" href="/humans.txt">
-<link rel="alternate" type="application/rss+xml" title="AutonoMath お知らせ" href="/rss.xml">
-<link rel="alternate" type="application/rss+xml" title="AutonoMath Announcements (English)" href="/en/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="税務会計AI お知らせ" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="税務会計AI Announcements (English)" href="/en/rss.xml">
 <!-- Preconnect to the API origin so the prescreen demo's first POST
      (TLS handshake + DNS) overlaps with HTML parse instead of blocking
      LCP. crossorigin is required because /v1/programs/prescreen runs
      under fetch() with credentials='omit' but the browser still treats
      this as a CORS-like preconnect; matching the request mode is what
      keeps the warmed connection reusable. -->
-<link rel="preconnect" href="https://api.autonomath.ai" crossorigin>
+<link rel="preconnect" href="https://api.zeimu-kaikei.ai" crossorigin>
+<!-- Preconnect to fonts.gstatic.com (woff2 binary origin) and fonts.googleapis.com
+     (CSS origin) so Noto Sans JP / Noto Serif JP / JetBrains Mono download in
+     parallel with HTML parse. crossorigin is REQUIRED on gstatic — woff2 uses
+     anonymous CORS; without it the warmed connection is discarded and the font
+     fetches re-handshake. font-display:swap is in the CSS URL so the system-font
+     fallback paints first and webfont swaps in without blocking LCP. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
 
 <script defer src="analytics.js"></script>
 
@@ -52,11 +61,11 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "AutonoMath",
-  "description": "日本の公的制度 (補助金・融資・税制・認定制度) を 5 つのインターフェース (REST + MCP API / LINE bot / 法令改正アラート / 埋込 Widget / 士業 affiliate) で提供。13,578 制度 + 採択事例 2,286 + 融資 108 + 行政処分 1,185、排他ルール 181 本、一次資料 100%。",
+  "name": "税務会計AI",
+  "description": "日本の公的制度 (補助金・融資・税制・認定制度) を 5 つのインターフェース (REST + MCP API / LINE bot / 法令改正アラート / 埋込 Widget / 士業 affiliate) で提供。14,472 制度 + 採択事例 2,286 + 融資 108 + 行政処分 1,185、排他ルール 181 本、一次資料 100%。",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio, LINE, Web, Email)",
-  "url": "https://autonomath.ai/",
+  "url": "https://zeimu-kaikei.ai/",
   "inLanguage": "ja",
   "offers": [
     {"@type": "Offer", "name": "API + MCP", "price": "3", "priceCurrency": "JPY", "description": "¥3/req 税別 (税込 ¥3.30)、匿名 50 req/月 per IP 無料"},
@@ -66,13 +75,59 @@
     {"@type": "Offer", "name": "士業 affiliate", "price": "0", "priceCurrency": "JPY", "description": "利用無料、成約時に advisor が ¥3,000/成約 を支払う"}
   ],
   "featureList": [
-    "13,578 制度 + 2,286 採択事例 + 108 融資 + 1,185 行政処分を横断検索",
+    "14,472 制度 + 2,286 採択事例 + 108 融資 + 1,185 行政処分を横断検索",
     "排他ルール (181 rules: 125 exclude + 17 prerequisite + 15 absolute + 24 other)",
-    "MCP native (72 tools, protocol 2025-06-18 — 39 コア + 33 autonomath)",
-    "FTS5 trigram 日本語検索",
+    "MCP native (89 tools, protocol 2025-06-18 — 39 コア + 50 autonomath)",
+    "日本語の高速全文検索",
     "Tier 分類 S/A/B/C/X",
     "Primary source 99%以上 (source_url + fetched_at; 12件は小規模自治体 CMS 不在のため URL 未取得)",
-    "aggregator (二次情報源) 不採用"
+    "集約サイト (二次情報源) 不採用"
+  ]
+}
+</script>
+
+<!--
+  Canonical publisher Organization (Task B 2026-04-29 — single
+  @id: https://zeimu-kaikei.ai/#publisher across all pages). All other
+  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
+  the Organization inline. sameAs URLs marked TODO(user-action) are
+  placeholders until the user creates them per
+  docs/runbook/social_profile_setup.md.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "name": "Bookyou株式会社",
+  "legalName": "Bookyou株式会社",
+  "alternateName": "税務会計AI",
+  "url": "https://zeimu-kaikei.ai/",
+  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "email": "info@bookyou.net",
+  "identifier": "T8010001213708",
+  "taxID": "T8010001213708",
+  "foundingDate": "2025-05-12",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressRegion": "東京都",
+    "addressLocality": "文京区",
+    "streetAddress": "小日向 2-22-1"
+  },
+  "founder": {
+    "@type": "Person",
+    "name": "梅田茂利"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "info@bookyou.net",
+    "contactType": "customer support",
+    "availableLanguage": ["ja", "en"]
+  },
+  "sameAs": [
+    "https://www.bookyou.net/",
+    "https://github.com/shigetosidumeda-cyber"
   ]
 }
 </script>
@@ -80,39 +135,16 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Bookyou株式会社",
-  "alternateName": "AutonoMath",
-  "url": "https://autonomath.ai/",
-  "logo": "https://autonomath.ai/assets/logo.svg",
-  "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "email": "info@bookyou.net",
-    "contactType": "customer support",
-    "availableLanguage": ["ja", "en"]
-  }
-}
-</script>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "AutonoMath",
+  "name": "税務会計AI",
   "alternateName": "オートノマス",
-  "url": "https://autonomath.ai/",
-  "publisher": {
-    "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://autonomath.ai/about.html"
-  },
+  "url": "https://zeimu-kaikei.ai/",
+  "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"},
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://autonomath.ai/programs/?q={search_term_string}"
+      "urlTemplate": "https://zeimu-kaikei.ai/programs/?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   },
@@ -124,17 +156,11 @@
 {
   "@context": "https://schema.org",
   "@type": "Dataset",
-  "name": "AutonoMath — 日本の制度データセット",
-  "description": "日本の公的制度 13,578 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 の正規化データセット。99%以上の行に一次資料 URL + fetched_at を付与し二次情報源は除外 (12件は自治体 CMS 不在)。排他・前提ルール 181 本付き。",
-  "url": "https://autonomath.ai/",
-  "creator": {
-    "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://autonomath.ai/",
-    "identifier": "T8010001213708",
-    "email": "info@bookyou.net"
-  },
-  "license": "https://autonomath.ai/tos.html",
+  "name": "税務会計AI — 日本の制度データセット",
+  "description": "日本の公的制度 14,472 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 の正規化データセット。99%以上の行に一次資料 URL + fetched_at を付与し二次情報源は除外 (12件は自治体 CMS 不在)。排他・前提ルール 181 本付き。",
+  "url": "https://zeimu-kaikei.ai/",
+  "creator": {"@id": "https://zeimu-kaikei.ai/#publisher"},
+  "license": "https://zeimu-kaikei.ai/tos.html",
   "isAccessibleForFree": true,
   "inLanguage": "ja",
   "spatialCoverage": {
@@ -170,7 +196,7 @@
     {
       "@type": "PropertyValue",
       "name": "MCP tools",
-      "value": 72
+      "value": 69
     }
   ]
 }
@@ -180,18 +206,13 @@
 {
   "@context": "https://schema.org",
   "@type": "WebAPI",
-  "name": "AutonoMath REST + MCP API",
-  "description": "日本の公的制度データの REST + MCP API。72 MCP tools (39 コア + 33 autonomath)、7 REST endpoints、MCP protocol 2025-06-18。",
-  "documentation": "https://autonomath.ai/docs/",
-  "termsOfService": "https://autonomath.ai/tos.html",
-  "provider": {
-    "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://autonomath.ai/",
-    "identifier": "T8010001213708"
-  },
-  "endpointURL": "https://api.autonomath.ai/v1/",
-  "endpointDescription": "https://api.autonomath.ai/v1/openapi.json",
+  "name": "税務会計AI REST + MCP API",
+  "description": "日本の公的制度データの REST + MCP API。89 MCP tools (39 コア + 50 autonomath)、7 REST endpoints、MCP protocol 2025-06-18。",
+  "documentation": "https://zeimu-kaikei.ai/docs/",
+  "termsOfService": "https://zeimu-kaikei.ai/tos.html",
+  "provider": {"@id": "https://zeimu-kaikei.ai/#publisher"},
+  "endpointURL": "https://api.zeimu-kaikei.ai/v1/",
+  "endpointDescription": "https://api.zeimu-kaikei.ai/v1/openapi.json",
   "inLanguage": "ja",
   "isAccessibleForFree": true,
   "offers": {
@@ -209,42 +230,42 @@
   "@graph": [
     {
       "@type": "Product",
-      "name": "AutonoMath API + MCP",
-      "description": "72 MCP tools (39 コア + 33 autonomath) + REST API。AI エージェント / 開発者向け。stdio transport、SDK 不要。",
-      "brand": {"@type": "Brand", "name": "AutonoMath"},
-      "url": "https://autonomath.ai/docs/getting-started/",
+      "name": "税務会計AI API + MCP",
+      "description": "89 MCP ツール (39 コア + 50 autonomath) + REST API。AI / 開発者向け。stdio 接続、SDK 不要。",
+      "brand": {"@type": "Brand", "name": "税務会計AI"},
+      "url": "https://zeimu-kaikei.ai/docs/getting-started/",
       "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/req 税別 (税込 ¥3.30)、匿名 50 req/月 free"}
     },
     {
       "@type": "Product",
-      "name": "AutonoMath LINE bot",
+      "name": "税務会計AI LINE bot",
       "description": "LINE 上で補助金・融資を自然言語検索。SME 経営者 / 士業向け。",
-      "brand": {"@type": "Brand", "name": "AutonoMath"},
-      "url": "https://autonomath.ai/line.html",
+      "brand": {"@type": "Brand", "name": "税務会計AI"},
+      "url": "https://zeimu-kaikei.ai/line.html",
       "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/質問 税別 (税込 ¥3.30)、月 10 件まで無料、完全従量"}
     },
     {
       "@type": "Product",
-      "name": "AutonoMath 法令改正アラート",
+      "name": "税務会計AI 法令改正アラート",
       "description": "インボイス・電帳法等の法令改正を E メールで通知。士業 / 経理担当向け。",
-      "brand": {"@type": "Brand", "name": "AutonoMath"},
-      "url": "https://autonomath.ai/alerts.html",
+      "brand": {"@type": "Brand", "name": "税務会計AI"},
+      "url": "https://zeimu-kaikei.ai/alerts.html",
       "offers": {"@type": "Offer", "price": "500", "priceCurrency": "JPY", "description": "¥500/月 税別 (税込 ¥550)、月次ダイジェスト無料"}
     },
     {
       "@type": "Product",
-      "name": "AutonoMath 埋込 Widget",
+      "name": "税務会計AI 埋込 Widget",
       "description": "自社サイトに 1 行で補助金検索を埋め込み。税理士 HP / 商工会議所 / 士業事務所向け。",
-      "brand": {"@type": "Brand", "name": "AutonoMath"},
-      "url": "https://autonomath.ai/widget.html",
+      "brand": {"@type": "Brand", "name": "税務会計AI"},
+      "url": "https://zeimu-kaikei.ai/widget.html",
       "offers": {"@type": "Offer", "price": "10000", "priceCurrency": "JPY", "description": "¥10,000/月 税別 (税込 ¥11,000)、10,000 req 含む、overage ¥3/req"}
     },
     {
       "@type": "Product",
-      "name": "AutonoMath 士業 affiliate",
+      "name": "税務会計AI 士業 affiliate",
       "description": "認定支援機関 / 税理士 / 社労士 / 中小企業診断士が案件紹介を受ける marketplace。",
-      "brand": {"@type": "Brand", "name": "AutonoMath"},
-      "url": "https://autonomath.ai/advisors.html",
+      "brand": {"@type": "Brand", "name": "税務会計AI"},
+      "url": "https://zeimu-kaikei.ai/advisors.html",
       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY", "description": "利用無料、成約時に advisor が ¥3,000/成約 を支払う"}
     }
   ]
@@ -257,17 +278,26 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="AutonoMath ホーム">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="about.html">About</a>
       <a href="products.html">Products</a>
       <a href="/docs/">Docs</a>
       <a href="pricing.html">Pricing</a>
-      <a href="audiences/">Audiences</a>
-      <a href="prompts.html">Prompts</a>
+      <a href="audiences/">利用者層</a>
+      <a href="playground.html">Playground</a>
+      <details class="nav-trust">
+        <summary>信頼</summary>
+        <ul>
+          <li><a href="status.html">Status</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="data-freshness.html">データ鮮度</a></li>
+          <li><a href="transparency.html">透明性</a></li>
+          <li><a href="audit-log.html">変更検出フィード</a></li>
+        </ul>
+      </details>
       <span class="lang-switch" role="group" aria-label="Language / 言語">
         <a href="/" lang="ja" hreflang="ja" aria-current="page">JP</a>
         <span class="sep" aria-hidden="true">/</span>
@@ -281,16 +311,39 @@
 
   <section class="hero" aria-labelledby="hero-title">
     <div class="container">
-      <h1 id="hero-title">日本の公的制度を、5 つのインターフェースで。</h1>
-      <p class="hero-sub">API + MCP ・ LINE bot ・ 法令改正アラート ・ 埋込 Widget ・ 士業 affiliate。1 つのバックエンド、5 つの届け方。</p>
-      <p class="hero-sub">制度 <span data-fact="total_programs">13,578</span> + 採択事例 <span data-fact="case_studies_total">2,286</span> + 融資 <span data-fact="loan_programs_total">108</span> + 行政処分 <span data-fact="enforcement_cases_total">1,185</span> + 法令 <span data-fact="laws_total">9,484</span> (継続ロード中) + tax_rulesets <span data-fact="tax_rulesets_total">35</span> + 判例 <span data-fact="court_decisions_total">2,065</span> + 入札 <span data-fact="bids_total">362</span> + 適格請求書発行事業者 <span data-fact="invoice_registrants_total">13,801</span> (PDL v1.0 delta) + autonomath entity-fact DB (entities <span data-fact="total_entities">503,930</span> / facts <span data-fact="total_facts">6.12M</span> / relations <span data-fact="total_relations">23,805</span> / aliases <span data-fact="total_aliases">335,605</span>)。排他ルール <span data-fact="exclusion_rules_total">181</span> 本。MCP ネイティブ (<span data-fact="mcp_tools_total">66</span> tools, protocol 2025-06-18)。</p>
-      <p class="hero-tag">Jグランツ は application portal、AutonoMath は discovery + compatibility + compliance + advisor-match の層。使いたい場所に届ける。</p>
+      <!-- CRO Fix 4 (2026-04-29): hero copy sharpened. Old H1 = "日本の制度を
+           AI agent から検索できる REST + MCP API。"; old sub = the 7-dataset
+           count list (now demoted to "データと品質" further down — same
+           numbers, just not the first impression). New H1 + sub aim at
+           value-prop in 1 line each. The §72/§52/§1 disclaimer used to sit
+           directly below the H1 ("we won't help you" before the user even
+           sees value) — relocated to BELOW the curl block (CRO Fix 2) so
+           the visitor hits the working curl first. Footer §52 remains. -->
+      <h1 id="hero-title">日本の補助金・税制・法令を AI から 1 リクエスト ¥3 で叩く。</h1>
+      <p class="hero-sub"><strong><span data-fact="searchable_programs_total">11,684</span> 制度 + 法令 <span data-fact="laws_total">9,484</span> + 判例 <span data-fact="court_decisions_total">2,065</span> + 適格事業者 <span data-fact="invoice_registrants_total">13,801</span></strong> を 1 つの REST + MCP API で。 一次資料 99%以上、 集約サイト不採用、 排他ルール <span data-fact="exclusion_rules_total">181</span> 本で併用失格を機械検出。</p>
+
+      <pre class="code-block" id="hero-curl" aria-label="hero curl example" style="margin:18px 0 14px;font-size:14px;line-height:1.55;"><code>$ curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
+{
+  "results": [{"id": "...", "name": "IT導入補助金 2026", "tier": "S",
+                "source_url": "https://it-shien.smrj.go.jp/...",
+                "fetched_at": "2026-04-29"}, ...],
+  "total": 17
+}</code></pre>
+
       <div class="cta-row">
-        <a class="btn btn-primary" href="#try">30 秒で試す →</a>
-        <a class="btn btn-secondary" href="#audiences">audience 別ピッチ</a>
-        <a class="btn btn-secondary" href="products.html">5 つのインターフェース比較</a>
-        <a class="btn btn-secondary" href="pricing.html">料金を見る</a>
+        <a class="btn btn-primary" href="#trial" data-cta-variant="hero-trial">カードなしで APIキー を取得 →</a>
+        <a class="btn btn-secondary" href="/docs/getting-started/">5 分 クイックスタート</a>
+        <a class="btn btn-secondary" href="#audiences">職種別の使い方</a>
+        <a class="btn btn-secondary" href="pricing.html">料金</a>
       </div>
+      <!-- 5-min promise badge (2026-04-29 onboarding hardening). Makes the
+           "30 秒 → APIキー / 5 分 → 最初のAPI call" promise explicit so
+           evaluators know exactly what to expect before they click. -->
+      <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
+        <span style="display:inline-block;background:#e6f4ea;color:#0f5132;padding:3px 10px;border-radius:12px;font-weight:600;font-size:12px;margin-right:8px;">5 秒</span>匿名 curl で動作確認 (登録不要) ·
+        <span style="display:inline-block;background:#e6f4ea;color:#0f5132;padding:3px 10px;border-radius:12px;font-weight:600;font-size:12px;margin:0 8px;">30 秒</span>email で APIキー (カード不要) ·
+        <span style="display:inline-block;background:#e6f4ea;color:#0f5132;padding:3px 10px;border-radius:12px;font-weight:600;font-size:12px;margin:0 8px;">5 分</span>Claude Desktop / Cursor / Cline / ChatGPT で稼働
+      </p>
       <p class="hero-note">匿名 API <span data-fact="anonymous_quota_per_month">50</span> req/月 per IP 無料、LINE bot 月 10 件まで無料、法令アラート月次ダイジェスト無料。最低金額・契約なし、解約いつでも。運営: Bookyou株式会社 (T8010001213708) · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> · <a href="facts.html">ファクトシート</a> · <a href="glossary.html">用語集</a></p>
       <!-- Discreet trust strip. Plain HTML so it works with JS off; only
            the freshness date is JS-fetched from /v1/meta. No fake counts —
@@ -304,10 +357,98 @@
         · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
         · <a href="stats.html">公開統計</a>
       </p>
+      <!-- Conversion-grade trust strip 2026-04-29. Five discrete tokens
+           that each surface a verifiable third party (国税庁 / 一次資料
+           ban list / Stripe / Cloudflare / 税理士法 §52). Each fact is
+           a single line, no marketing adjectives. -->
+      <ul class="trust-strip-blocks" aria-label="運営・配信の信頼指標">
+        <li><strong>Bookyou株式会社</strong> (T8010001213708) 国税庁公表 法人運営</li>
+        <li>一次資料 99% 以上 (集約サイト 除外リスト)</li>
+        <li>Stripe 課金 (PCI DSS Level 1)</li>
+        <li>Cloudflare 配信 (DDoS / WAF)</li>
+        <li>§52 税理士法 / §72 弁護士法 disclaimer 全レスポンス</li>
+      </ul>
       <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
-        <summary style="cursor:pointer;color:var(--text);">早期アクセス受付中 (匿名 50 req/月 / LINE 月 10 件は本日から無料)</summary>
-        <p style="margin:6px 0 0;">登録不要の Free 枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分 quickstart</a> · <a href="line.html">LINE bot</a>)。¥3/req metered の本番開始は <a href="dashboard.html">Dashboard</a> でカード登録のみ。</p>
+        <summary style="cursor:pointer;color:var(--text);">早期アクセス受付中 (匿名 50 リクエスト/月 / LINE 月 10 件は本日から無料)</summary>
+        <p style="margin:6px 0 0;">登録不要の無料枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a> · <a href="line.html">LINE bot</a>)。¥3/リクエスト 完全従量の本番開始は <a href="dashboard.html">Dashboard</a> でカード登録のみ。</p>
       </details>
+
+      <!--
+        Conversion-pathway audit 2026-04-29: email-only trial form. Captures
+        evaluator emails before they bounce (100% of anon visitors leave no
+        contact info today). 14 days / 200 req hard cap, NO card required —
+        not a "Free tier" SKU; pricing stays ¥3/req metered post-trial.
+        See src/jpintel_mcp/api/signup.py for the full design rationale.
+        ADD-only block; do not modify the rest of the hero / index.html.
+      -->
+      <section id="trial" aria-labelledby="trial-title" style="margin:24px 0 0;padding:18px 20px;background:var(--bg-alt,#f6f7f9);border:1px solid var(--border,#e5e7eb);border-radius:8px;">
+        <h2 id="trial-title" style="font-size:17px;margin:0 0 8px;line-height:1.4;">カードなしで試す (14 日 / 200 リクエスト)</h2>
+        <p style="font-size:13px;color:var(--text-muted,#555);margin:0 0 12px;line-height:1.6;">メールアドレスだけで APIキーを発行します。クレジットカードは不要、想定外の請求は一切発生しません。期限到来後は自動失効します。</p>
+        <form id="trial-signup-form" action="/v1/signup" method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">
+          <label for="trial-email" class="visually-hidden" style="position:absolute;width:1px;height:1px;clip:rect(0 0 0 0);overflow:hidden;">メールアドレス</label>
+          <input id="trial-email" name="email" type="email" required placeholder="you@example.com" autocomplete="email" inputmode="email" style="flex:1 1 240px;min-width:200px;padding:10px 12px;border:1px solid var(--border,#d1d5db);border-radius:6px;font-size:14px;">
+          <button type="submit" class="btn btn-primary" style="padding:10px 20px;font-size:14px;white-space:nowrap;">マジックリンクを送る</button>
+        </form>
+        <p id="trial-signup-result" role="status" aria-live="polite" style="margin:10px 0 0;font-size:13px;color:var(--text-muted,#555);min-height:1em;"></p>
+        <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted,#555);line-height:1.6;">
+          税理士法 §52 / 弁護士法 §72 該当業務はおこないません。詳細は <a href="tos.html">利用規約</a> · <a href="privacy.html">プライバシー</a>。
+        </p>
+        <script>
+          // Progressive enhancement: if JS is enabled, submit via fetch so
+          // the user stays on the homepage. Without JS the plain HTML form
+          // posts to /v1/signup and the API returns JSON (graceful degrade —
+          // shows raw 202 response in the browser, which is honest enough
+          // for the no-JS minority).
+          (function () {
+            'use strict';
+            var form = document.getElementById('trial-signup-form');
+            if (!form || !window.fetch) return;
+            var resultEl = document.getElementById('trial-signup-result');
+            var emailEl = document.getElementById('trial-email');
+            form.addEventListener('submit', function (ev) {
+              ev.preventDefault();
+              if (!emailEl || !emailEl.value) return;
+              if (resultEl) {
+                resultEl.textContent = '送信中…';
+                resultEl.style.color = '';
+              }
+              fetch('/v1/signup', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+                body: JSON.stringify({email: emailEl.value})
+              }).then(function (r) {
+                return r.json().then(function (body) {
+                  return {status: r.status, body: body};
+                });
+              }).then(function (out) {
+                if (!resultEl) return;
+                if (out.status === 202) {
+                  resultEl.textContent = (out.body && out.body.detail) ||
+                    'メールに記載されたリンクをクリックすると API キーが発行されます (24h 有効)。';
+                  resultEl.style.color = '#10b981';
+                  if (emailEl) emailEl.value = '';
+                } else if (out.status === 429) {
+                  var msg = (out.body && out.body.detail && out.body.detail.message) ||
+                    '同一 IP からの登録は 24 時間に 1 件までです。';
+                  resultEl.textContent = msg;
+                  resultEl.style.color = '#f59e0b';
+                } else if (out.status === 422) {
+                  resultEl.textContent = 'メールアドレスの形式を確認してください。';
+                  resultEl.style.color = '#dc2626';
+                } else {
+                  resultEl.textContent = '送信に失敗しました。時間をおいて再度お試しください。';
+                  resultEl.style.color = '#dc2626';
+                }
+              }).catch(function () {
+                if (resultEl) {
+                  resultEl.textContent = '通信エラーが発生しました。もう一度お試しください。';
+                  resultEl.style.color = '#dc2626';
+                }
+              });
+            });
+          })();
+        </script>
+      </section>
     </div>
   </section>
 
@@ -319,25 +460,25 @@
         <article class="card" aria-labelledby="trust-counts">
           <h3 id="trust-counts"><span data-fact="total_entities">503,930</span> entities + <span data-fact="total_facts">6.12M</span> facts</h3>
           <p class="card-lead">9 データセット + entity-fact DB を横断</p>
-          <p>制度 / 採択事例 / 融資 / 行政処分 / 法令 / 判例 / tax_rulesets / 入札 / 適格請求書 を統一スキーマで提供。autonomath.db には 12 record_kinds の entities と facts が入る。FTS5 trigram で日本語を素直に引ける。</p>
+          <p>制度 / 採択事例 / 融資 / 行政処分 / 法令 / 判例 / tax_rulesets / 入札 / 適格請求書 を統一スキーマで提供。autonomath.db には 12 record_kinds の entities と facts が入る。日本語を素直に引ける高速全文検索を備える。</p>
           <ul class="card-list">
-            <li>programs · <span data-fact="total_programs">13,578</span> (検索対象 <span data-fact="searchable_programs_total">10,790</span> = Tier S <span data-fact="tier_s_count">114</span> + A <span data-fact="tier_a_count">1,340</span> + B <span data-fact="tier_b_count">3,292</span> + C <span data-fact="tier_c_count">6,044</span>; quarantine X <span data-fact="quarantined_count">1,923</span> 除外)</li>
+            <li>programs · <span data-fact="total_programs">14,472</span> (検索対象 <span data-fact="searchable_programs_total">11,684</span> = Tier S <span data-fact="tier_s_count">114</span> + A <span data-fact="tier_a_count">1,340</span> + B <span data-fact="tier_b_count">4,186</span> + C <span data-fact="tier_c_count">6,044</span>; quarantine X <span data-fact="quarantined_count">2,788</span> 除外)</li>
             <li>case_studies · <span data-fact="case_studies_total">2,286</span></li>
             <li>loan_programs · <span data-fact="loan_programs_total">108</span> (担保 / 個人保証人 / 第三者保証人 三軸分解)</li>
             <li>enforcement_cases · <span data-fact="enforcement_cases_total">1,185</span></li>
-            <li>laws · <span data-fact="laws_total">9,484</span> (e-Gov CC-BY、継続ロード中)</li>
-            <li>tax_rulesets · <span data-fact="tax_rulesets_total">35</span></li>
+            <li>laws · <span data-fact="laws_fulltext">154</span> 件本文収録 + <span data-fact="laws_total">9,484</span> 件メタデータ (e-Gov CC-BY、本文ロード継続中、 法令名 resolver は 9,484 件全件で稼働)</li>
+            <li>tax_rulesets · <span data-fact="tax_rulesets_total">50</span></li>
             <li>court_decisions · <span data-fact="court_decisions_total">2,065</span></li>
             <li>bids · <span data-fact="bids_total">362</span></li>
             <li>invoice_registrants · <span data-fact="invoice_registrants_total">13,801</span> (PDL v1.0 delta、月次フル取り込みは順次)</li>
-            <li>autonomath.db · <span data-fact="total_entities">503,930</span> entities / <span data-fact="total_facts">6.12M</span> facts / <span data-fact="total_relations">23,805</span> relations / <span data-fact="total_aliases">335,605</span> aliases</li>
+            <li>autonomath.db · <span data-fact="total_entities">503,930</span> entities / <span data-fact="total_facts">6.12M</span> facts / <span data-fact="total_relations">177,381</span> relations / <span data-fact="total_aliases">335,605</span> aliases</li>
           </ul>
         </article>
 
         <article class="card" aria-labelledby="trust-lineage">
           <h3 id="trust-lineage">一次資料 99%以上</h3>
           <p class="card-lead">source_url + fetched_at 99%以上の行に付与</p>
-          <p>経産省・農水省・中小企業庁・日本政策金融公庫・都道府県・市町村の一次資料から収集。aggregator (二次情報源) は除外。法改正で即反映される運用を前提に設計。</p>
+          <p>経産省・農水省・中小企業庁・日本政策金融公庫・都道府県・市町村の一次資料から収集。集約サイト (二次情報源) は除外。法改正で即反映される運用を前提に設計。</p>
           <ul class="card-list">
             <li>noukaweb / hojyokin-portal 等 不採用</li>
             <li>nightly source liveness scan</li>
@@ -363,16 +504,16 @@
   <section class="features" aria-labelledby="pillars-title">
     <div class="container">
       <h2 id="pillars-title" class="section-title">5 つのインターフェース</h2>
-      <p class="demo-lead" style="margin:-16px 0 28px;">同じバックエンド、違う届け方。audience に合わせて選ぶ。</p>
+      <p class="demo-lead" style="margin:-16px 0 28px;">同じバックエンド、違う届け方。利用者層に合わせて選ぶ。</p>
       <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
         <article class="card" aria-labelledby="pillar-api">
           <h3 id="pillar-api"><span aria-hidden="true">🔌</span> API + MCP</h3>
-          <p class="card-lead">AI 開発者 / Enterprise RAG</p>
-          <p><span data-fact="mcp_tools_total">72</span> MCP tools (39 コア + 33 autonomath) を AI エージェントから直接呼び出し。REST も OpenAPI 3.1 準拠。stdio transport、SDK 不要。</p>
+          <p class="card-lead">AI 開発者 / 大規模 RAG 用途</p>
+          <p><span data-fact="mcp_tools_total">89</span> MCP ツール (39 コア + 50 autonomath) を AI から直接呼び出し。REST も OpenAPI 3.1 準拠。stdio 接続、SDK 不要。</p>
           <ul class="card-list">
-            <li>¥<span data-fact="price_per_req">3</span>/req 税別 (税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>)</li>
-            <li>匿名 <span data-fact="anonymous_quota_per_month">50</span> req/月 per IP 無料</li>
+            <li>¥<span data-fact="price_per_req">3</span>/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>)</li>
+            <li>匿名 <span data-fact="anonymous_quota_per_month">50</span> リクエスト/月 (IP 単位) 無料</li>
             <li>Claude Desktop / Cursor / ChatGPT 対応</li>
           </ul>
           <p style="margin:14px 0 0;"><a href="/docs/getting-started/">ドキュメントを読む →</a></p>
@@ -380,7 +521,7 @@
 
         <article class="card" aria-labelledby="pillar-line">
           <h3 id="pillar-line"><span aria-hidden="true">💬</span> LINE bot</h3>
-          <p class="card-lead">SME 経営者 / 士業</p>
+          <p class="card-lead">中小企業経営者 / 士業</p>
           <p>スマホの LINE で 30 秒、補助金を自然言語で発見。友だち追加するだけ、アプリ不要。</p>
           <ul class="card-list">
             <li>¥500/月 税別 (税込 ¥550)</li>
@@ -397,7 +538,7 @@
           <ul class="card-list">
             <li>¥500/月 税別 (税込 ¥550)</li>
             <li>月次ダイジェストは無料</li>
-            <li>real-time 通知は paid</li>
+            <li>即時通知は有償</li>
           </ul>
           <p style="margin:14px 0 0;"><a href="alerts.html">アラートを設定 →</a></p>
         </article>
@@ -405,35 +546,35 @@
         <article class="card" aria-labelledby="pillar-widget">
           <h3 id="pillar-widget"><span aria-hidden="true">🧩</span> 埋込 Widget</h3>
           <p class="card-lead">税理士 HP / 商工会議所 / 士業事務所</p>
-          <p>自社サイトに 1 行 (&lt;script&gt; tag) で補助金検索を追加。来訪者が自社サイト内で相談先を絞れる。</p>
+          <p>自社サイトに 1 行 (&lt;script&gt; タグ) で補助金検索を追加。来訪者が自社サイト内で相談先を絞れる。</p>
           <ul class="card-list">
-            <li>¥10,000/月 (10,000 req 含む)</li>
-            <li>overage ¥3/req</li>
-            <li>Whitelabel ¥30,000/月</li>
+            <li>¥10,000/月 (10,000 リクエスト 含む)</li>
+            <li>超過分 ¥3/リクエスト</li>
+            <li>ホワイトラベル ¥30,000/月</li>
           </ul>
           <p style="margin:14px 0 0;"><a href="widget.html">Widget を埋め込む →</a></p>
         </article>
 
         <article class="card" aria-labelledby="pillar-advisors">
-          <h3 id="pillar-advisors"><span aria-hidden="true">👥</span> 士業 affiliate</h3>
+          <h3 id="pillar-advisors"><span aria-hidden="true">👥</span> 士業紹介</h3>
           <p class="card-lead">認定支援機関 / 税理士 / 社労士 / 診断士</p>
-          <p>AutonoMath 経由の相談者を認定支援機関・士業に繋ぐ marketplace。advisor が成約時にのみ支払う。</p>
+          <p>税務会計AI 経由の相談者を認定支援機関・士業に繋ぐ仕組み。専門家が成約時にのみ支払う。</p>
           <ul class="card-list">
             <li>利用者は無料</li>
-            <li>advisor が ¥3,000/成約 支払い</li>
+            <li>専門家が ¥3,000/成約 支払い</li>
             <li>月額固定なし</li>
           </ul>
-          <p style="margin:14px 0 0;"><a href="advisors.html">Advisor として登録 →</a></p>
+          <p style="margin:14px 0 0;"><a href="advisors.html">専門家として登録 →</a></p>
         </article>
 
         <article class="card" aria-labelledby="pillar-cta" style="background:var(--bg-alt);border-color:var(--accent);">
           <h3 id="pillar-cta">迷ったら</h3>
           <p class="card-lead">比較表と決定木</p>
-          <p>個人 / 法人 / 開発者 / 士業、audience 別に「あなたに合うのは？」を 5 問で診断。典型ユースケース・設定時間も横並びで比較。</p>
+          <p>個人 / 法人 / 開発者 / 士業、利用者層別に「あなたに合うのは？」を 5 問で診断。典型ユースケース・設定時間も横並びで比較。</p>
           <ul class="card-list">
-            <li>5 interfaces 比較表</li>
-            <li>audience 別 decision tree</li>
-            <li>combo 推奨 (MCP + LINE 等)</li>
+            <li>5 つのインターフェースの比較表</li>
+            <li>利用者層別 決定木</li>
+            <li>組合せ推奨 (MCP + LINE 等)</li>
           </ul>
           <p style="margin:14px 0 0;"><a href="products.html">比較ページを見る →</a></p>
         </article>
@@ -444,92 +585,208 @@
 
   <section class="features" aria-labelledby="audiences-title" id="audiences">
     <div class="container">
-      <h2 id="audiences-title" class="section-title">5 つの使い方 — audience 別ピッチ</h2>
-      <p class="demo-lead" style="margin:-16px 0 28px;">それぞれの立場で、AutonoMath はこう使える。</p>
+      <h2 id="audiences-title" class="section-title">8 つの職種で、こう使える</h2>
+      <p class="demo-lead" style="margin:-16px 0 28px;">利用者層 別の専用ページに、 ROI 試算 + サンプル API + 既知の制約を載せています。</p>
       <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
-        <article class="card audience-card" aria-labelledby="aud-tax">
-          <h3 id="aud-tax"><span aria-hidden="true">🧾</span> 税理士</h3>
-          <p class="card-lead audience-context">40 代・5 名事務所・SMB 顧客 80 社</p>
-          <p class="audience-pitch">クライアント企業が「今年の補助金は何か?」と聞いたら、Claude に繋いで API を叩く。月 ¥3,000 前後の従量。毎月の法改正も Email 通知。</p>
+        <article class="card audience-card" aria-labelledby="aud-vc">
+          <h3 id="aud-vc">M&amp;A / VC 専門家</h3>
+          <p class="card-lead audience-context">DD 一括処理 + 法人 watch</p>
+          <p class="audience-pitch">法人番号 1 件 = 行政処分 + 採択 + 適格請求書 + 関連制度を 1 一括処理。 100 社並列 = 500 リクエスト = ¥1,500 で 1 案件 DD 完了。 <code>houjin_watch</code> + Webhook 通知 で 名簿変更を即通知。</p>
           <ul class="card-list">
-            <li>API + MCP (¥<span data-fact="price_per_req">3</span>/req)</li>
-            <li>法令改正アラート (¥<span data-fact="price_alerts_per_month">500</span>/月)</li>
-            <li>月次ダイジェストは無料</li>
+            <li>処分 <span data-fact="enforcement_cases_total">1,185</span> + 採択 <span data-fact="case_studies_total">2,286</span> + 適格 <span data-fact="invoice_registrants_total">13,801</span></li>
+            <li>1 案件 DD = ¥15-50、 50 社 一括処理 = ¥1,500</li>
+            <li>利用量制限なし、 月額固定なし</li>
           </ul>
-          <p style="margin:14px 0 0;"><a href="/audiences/tax-advisor.html">税理士向け詳細 →</a></p>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/vc.html">M&amp;A / VC 向け詳細 →</a></p>
         </article>
 
-        <article class="card audience-card" aria-labelledby="aud-gyosei">
-          <h3 id="aud-gyosei"><span aria-hidden="true">📑</span> 行政書士</h3>
-          <p class="card-lead audience-context">建設業中心・許認可案件メイン</p>
-          <p class="audience-pitch">案件の「使える補助金 + 融資 + 許認可」を 1 call で抽出。期限間近の案件を地域 × 業種で検索。月 50 件まで無料で試す。</p>
+        <article class="card audience-card" aria-labelledby="aud-tax">
+          <h3 id="aud-tax">税理士事務所</h3>
+          <p class="card-lead audience-context">顧問先 80 社 横展開 + 監査資料</p>
+          <p class="audience-pitch">顧問先 1 社 = ¥30-60/月 (10-20 query)。 80 社で月 ¥2,400-4,800。 <code>audit_seal</code> で月次監査 PDF + RSS、 <code>client_profiles</code> で 顧問先別 saved searches を一括 cron。</p>
           <ul class="card-list">
-            <li>API + MCP 1 call で横断</li>
-            <li>匿名 <span data-fact="anonymous_quota_per_month">50</span> req/月 per IP 無料</li>
-            <li>地域 × 業種 × deadline 検索</li>
+            <li>tax_rulesets <span data-fact="tax_rulesets_total">50</span> 件 + 措置法 + 通達リンク</li>
+            <li>顧問先 80 社 = ¥2,400-4,800/月</li>
+            <li>改正アラート (月次無料、 即時 ¥500/月)</li>
           </ul>
-          <p style="margin:14px 0 0;"><a href="/audiences/admin-scrivener.html">行政書士向け詳細 →</a></p>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/tax-advisor.html">税理士向け詳細 →</a></p>
+        </article>
+
+        <article class="card audience-card" aria-labelledby="aud-cpa">
+          <h3 id="aud-cpa">公認会計士</h3>
+          <p class="card-lead audience-context">monthly workpaper + 引用 chain</p>
+          <p class="audience-pitch">監査調書を <code>compose_audit_workpaper</code> で生成、 <code>resolve_citation_chain</code> で 法令 → 通達 → 裁決 まで連結。 50 クライアント月次 = 月 1,000-2,000 リクエスト = ¥3,000-6,000。</p>
+          <ul class="card-list">
+            <li>研究開発税制 + IT導入会計処理 v2</li>
+            <li>裁決 + 通達 引用 chain 自動付与</li>
+            <li>監査調書 PDF テンプレート同梱</li>
+          </ul>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/tax-advisor.html#cpa">公認会計士向け →</a></p>
+        </article>
+
+        <article class="card audience-card" aria-labelledby="aud-fdi">
+          <h3 id="aud-fdi">Foreign FDI / 国際課税</h3>
+          <p class="card-lead audience-context">英訳法令 + 租税条約</p>
+          <p class="audience-pitch">e-Gov 英訳 (<code>law_articles.body_en</code>) + 租税条約 (<code>am_tax_treaty</code>) で 海外子会社・投資ファンドの 日本側コンプラを 1 一括処理。 <code>foreign_capital_eligibility</code> で 外資制限 制度を絞込。</p>
+          <ul class="card-list">
+            <li>e-Gov 英訳 progressive load</li>
+            <li>租税条約 ~80ヵ国 schema、 8 行 hand-curated</li>
+            <li>外資制限 flag 付き 制度フィルタ</li>
+          </ul>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/en/audiences/dev.html">Foreign FDI (EN) →</a></p>
+        </article>
+
+        <article class="card audience-card" aria-labelledby="aud-consultant">
+          <h3 id="aud-consultant">補助金コンサルタント</h3>
+          <p class="card-lead audience-context">200 顧問先 横展開 + 採択後 monitor</p>
+          <p class="audience-pitch">顧問先 200 社 × 月 10 query = <strong>¥6,600/月</strong>。 navit (¥1,000/月、 静的 UI) と違い API/MCP/Slack Webhook 通知 で agent 自動化。 採択後 calendar で <code>program_post_award_calendar</code> 同日 push。</p>
+          <ul class="card-list">
+            <li>1 顧問先 = ¥33/月 (200 社平均)</li>
+            <li>排他ルール <span data-fact="exclusion_rules_total">181</span> で併用失格を機械検出</li>
+            <li>CSV bulk_evaluate + saved searches cron</li>
+          </ul>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/subsidy-consultant.html">補助金コンサル向け →</a></p>
         </article>
 
         <article class="card audience-card" aria-labelledby="aud-smb">
-          <h3 id="aud-smb"><span aria-hidden="true">📱</span> SMB 経営者</h3>
-          <p class="card-lead audience-context">本人 / 妻 / 経理担当の小規模事業</p>
-          <p class="audience-pitch">LINE で「うちの業種の補助金ある?」と聞くだけ。月 10 件まで無料、超えても 1 質問 ¥3。設定なし。</p>
+          <h3 id="aud-smb">中小企業 (LINE)</h3>
+          <p class="card-lead audience-context">スマホ LINE で自然言語</p>
+          <p class="audience-pitch">本人 / 妻 / 経理担当の小規模事業向け LINE bot。 月 10 件まで無料、 11 件目から 1 質問 ¥3。 設定なし、 アプリ不要。 合う認定支援機関に繋ぐ機能つき。</p>
           <ul class="card-list">
-            <li>LINE bot 友だち追加のみ</li>
-            <li>月 10 件まで無料</li>
-            <li>1 質問 ¥<span data-fact="price_per_req">3</span> (税別)</li>
+            <li>友だち追加のみ、 アプリ不要</li>
+            <li>月 10 件まで無料 (公開 2026-05-06)</li>
+            <li>11 件目以降 1 質問 ¥<span data-fact="price_per_req">3</span> (税別)</li>
           </ul>
-          <p style="margin:14px 0 0;"><a href="/audiences/smb.html">SMB 向け詳細 →</a> · <a href="line.html">LINE bot</a></p>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/smb.html">中小企業 向け詳細 →</a></p>
         </article>
 
-        <article class="card audience-card" aria-labelledby="aud-vc">
-          <h3 id="aud-vc"><span aria-hidden="true">📊</span> VC / M&amp;A advisor</h3>
-          <p class="card-lead audience-context">due-diligence パイプラインを持つ投資・買収担当</p>
-          <p class="audience-pitch">法人番号で行政処分歴 5 年 / 採択歴 10 年 / 適格請求書を 1 query で取得。due-diligence パイプラインに組込み。¥3/req metered、enterprise scale OK。</p>
+        <article class="card audience-card" aria-labelledby="aud-shoukou">
+          <h3 id="aud-shoukou">信金・商工会 (organic)</h3>
+          <p class="card-lead audience-context">S/A tier S・A 4,300 件 + 信金 融資</p>
+          <p class="audience-pitch">tier S (114) + tier A (1,340) = <strong>1,454 件の高品質制度</strong>。 信金・商工会の経営相談で「お客様向けに今月使える制度を出す」 を <code>list_open_programs</code> + <code>deadline_calendar</code> で日次運用。</p>
           <ul class="card-list">
-            <li>法人番号で 1 query 横断</li>
-            <li>行政処分 <span data-fact="enforcement_cases_total">1,185</span> / 採択 <span data-fact="case_studies_total">2,286</span> / 適格 <span data-fact="invoice_registrants_total">13,801</span></li>
-            <li>¥<span data-fact="price_per_req">3</span>/req 完全従量、scale 制限なし</li>
+            <li>tier S <span data-fact="tier_s_count">114</span> + A <span data-fact="tier_a_count">1,340</span></li>
+            <li>融資 <span data-fact="loan_programs_total">108</span> 三軸分解</li>
+            <li>勉強会 widget 埋込 (¥10,000/月、 10,000 リクエスト 含む)</li>
           </ul>
-          <p style="margin:14px 0 0;"><a href="/audiences/vc.html">VC / DD 向け詳細 →</a></p>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/admin-scrivener.html">信金・商工会向け →</a></p>
         </article>
 
-        <article class="card audience-card" aria-labelledby="aud-dev">
-          <h3 id="aud-dev"><span aria-hidden="true">🤖</span> AI agent developer</h3>
-          <p class="card-lead audience-context">Claude Desktop / Cursor / 自社 SaaS 組込</p>
-          <p class="audience-pitch">Japanese subsidy / tax / loan の MCP server。72 tools。¥3/req、50 free/月。Claude Desktop / Cursor 即動作。</p>
+        <article class="card audience-card" aria-labelledby="aud-industry">
+          <h3 id="aud-industry">業界パック (建設 / 製造 / 不動産)</h3>
+          <p class="card-lead audience-context">JSIC 業種で fence、 1 リクエスト に集約</p>
+          <p class="audience-pitch"><code>pack_construction</code> / <code>pack_manufacturing</code> / <code>pack_real_estate</code> で 業種特化の 補助金 + 通達 + 裁決事例 を 1 リクエスト ¥3 に集約。 業界誌・士業 専門家 の クライアント提案資料 を 30 秒で。</p>
           <ul class="card-list">
-            <li><span data-fact="mcp_tools_total">72</span> MCP tools (39 コア + 33 autonomath)</li>
-            <li>stdio transport、SDK 不要</li>
-            <li><span data-fact="anonymous_quota_per_month">50</span> req/月 で評価 → ¥<span data-fact="price_per_req">3</span>/req metered</li>
+            <li>建設 36 件 + 製造 71 件 + 不動産 9 件</li>
+            <li>top 10 補助金 + 5 裁決 + 3 通達 / 1 リクエスト</li>
+            <li>§52 / §47条の2 法令注記 自動付与</li>
           </ul>
-          <p style="margin:14px 0 0;"><a href="/audiences/dev.html">Dev 向け詳細 →</a> · <a href="/docs/mcp-tools/">MCP tools 一覧</a></p>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/construction.html">建設</a> · <a href="/audiences/manufacturing.html">製造</a> · <a href="/audiences/real_estate.html">不動産</a></p>
         </article>
 
-        <article class="card audience-card" aria-labelledby="aud-other" style="background:var(--bg-alt);border-color:var(--accent);">
-          <h3 id="aud-other">あなたは?</h3>
-          <p class="card-lead">5 つに当てはまらない場合</p>
-          <p>社労士・診断士・経理 SaaS・商工会議所・自治体担当など、他の audience も decision tree で見つかる。typical use case ・combo 推奨・設定時間が比較できる。</p>
+        <article class="card audience-card" aria-labelledby="aud-dev" style="background:var(--bg-alt);border-color:var(--accent);">
+          <h3 id="aud-dev">AI / 開発者 (横断)</h3>
+          <p class="card-lead audience-context">MCP / REST、 89 tools、 SDK 不要</p>
+          <p class="audience-pitch">上記 8 利用者層 はすべて同じ 1 つの MCP サーバ から呼べます。 stdio + protocol 2025-06-18、 uvx 1 行で起動、 Claude Desktop / Cursor / ChatGPT で即動作。</p>
           <ul class="card-list">
-            <li>5 問の decision tree</li>
-            <li>combo 推奨 (MCP + LINE 等)</li>
-            <li>typical use case 横並び</li>
+            <li><span data-fact="mcp_tools_total">89</span> MCP ツール / 194 routes</li>
+            <li>uvx 1 行 / SDK 不要</li>
+            <li>50 リクエスト/月 で評価 → ¥3/リクエスト 商用</li>
           </ul>
-          <p style="margin:14px 0 0;"><a href="products.html">audience 別比較 →</a></p>
+          <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/dev.html">Developer 向け →</a> · <a href="/docs/mcp-tools/">tools 一覧</a></p>
         </article>
 
       </div>
     </div>
   </section>
 
+  <!-- CRO Fix 2 (2026-04-29): copy-pasteable curl block above the prescreen
+       form. Devs hit the curl first (5-second test, no signup), SMB owners
+       scroll past it to the form below. Source-of-truth lives in
+       site/_data/curl_examples.json — keep this HTML in sync if the API
+       surface changes. The §72/§52/§1 disclaimer (formerly above CTA, "we
+       won't help you" before the user saw value) was relocated to sit just
+       under the curl block, so it shows up only after the visitor has
+       already seen the working API. -->
+  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
+    <div class="container">
+      <h2 id="curl-title" class="section-title">5 秒で試す (登録不要)</h2>
+      <p class="demo-lead" style="margin:-16px 0 16px;">anonymous IP で <span data-fact="anonymous_quota_per_month">50</span> req/月 まで Free。 そのまま貼って OK。</p>
+      <pre class="code-block" id="curl-snippet" aria-label="curl example for /v1/programs/search"><code>$ curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
+{
+  "results": [...],
+  "total": 17
+}</code></pre>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:-6px 0 14px;">
+        <button type="button" id="curl-copy-btn" class="btn btn-secondary" data-copy-target="curl-snippet" aria-live="polite" style="padding:8px 16px;font-size:14px;">COPY</button>
+        <span id="curl-copy-status" class="visually-hidden" aria-live="polite"></span>
+        <small style="font-size:13px;color:var(--text-muted);">クエリは URL-encoded (<code style="background:#fff;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;">q=IT導入</code>)。</small>
+      </div>
+      <p class="demo-note" style="font-size:14px;margin:0 0 14px;">MCP client から使う場合は → <a href="/integrations/claude-desktop.html">Claude Desktop 統合ガイド</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
+      <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">これは検索インデックスです。 法律相談 / 税務相談 / 申請代行は提供しません。 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1 該当行為は対象外。 詳細は <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">利用規約</a>。</p>
+    </div>
+  </section>
+  <script>
+  // CRO Fix 2: vanilla copy-button. No deps, no fetch, no analytics.
+  // Falls back to a textarea selectAll on browsers without
+  // navigator.clipboard. Status text is an aria-live="polite" span so
+  // screen readers announce "コピー完了" without a visible toast.
+  (function() {
+    var btn = document.getElementById('curl-copy-btn');
+    if (!btn) return;
+    var srcEl = document.getElementById(btn.getAttribute('data-copy-target'));
+    var status = document.getElementById('curl-copy-status');
+    btn.addEventListener('click', function() {
+      // The pre/code block contains the literal "$ " prompt we want to
+      // strip before copying so the user can paste straight into a shell.
+      var raw = srcEl ? srcEl.textContent : '';
+      var lines = raw.split(/\r?\n/);
+      // Only strip the leading "$ " from the first non-empty line; the
+      // rest of the block (JSON response) stays so the user sees what
+      // they're pasting matches the docs.
+      for (var i = 0; i < lines.length; i++) {
+        if (lines[i].length > 0) {
+          lines[i] = lines[i].replace(/^\$\s+/, '');
+          break;
+        }
+      }
+      var text = lines.join('\n').trim();
+      var done = function(ok) {
+        var prev = btn.textContent;
+        btn.textContent = ok ? 'コピー完了' : 'コピー失敗';
+        if (status) status.textContent = ok ? 'クリップボードにコピーしました' : 'コピーに失敗しました';
+        setTimeout(function() {
+          btn.textContent = prev || 'COPY';
+          if (status) status.textContent = '';
+        }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() { done(true); }, function() { done(false); });
+      } else {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'absolute';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          done(true);
+        } catch (e) { done(false); }
+      }
+    });
+  })();
+  </script>
+
   <section class="prescreen" aria-labelledby="ps-title" id="try">
     <div class="container">
       <h2 id="ps-title" class="section-title">制度プレスクリーン — 3 つの質問で 上位 5 件を提示</h2>
-      <p class="prescreen-sub">都道府県・事業形態・予定投資額を入れると、AutonoMath の <strong>10,790 制度</strong>から適合度の高い <strong>上位 5 件</strong>を表示します（無料・登録不要・匿名 50 req/月/IP）。<code>/v1/programs/prescreen</code> を 1 回呼ぶだけ。</p>
+      <p class="prescreen-sub">都道府県・事業形態・予定投資額を入れると、税務会計AI の <strong>11,684 制度</strong>から適合度の高い <strong>上位 5 件</strong>を表示します（無料・登録不要・匿名 50 リクエスト/月/IP）。<code>/v1/programs/prescreen</code> を 1 回呼ぶだけ。</p>
       <style>
-        /* Wave 23 prescreen a11y polish — scoped, additive only */
+        /* prescreen a11y polish — scoped, additive only */
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
         .ps-required-mark { color:#c0392b; margin-left:4px; font-weight:bold; }
         .ps-field-help code { background:#f4f6f8; padding:1px 4px; border-radius:3px; font-size:0.95em; }
@@ -537,9 +794,9 @@
       </style>
       <div class="ps-card">
         <noscript>
-          <p class="ps-noscript"><strong>JavaScript が必要です</strong> — このプレスクリーンは fetch API を使うため JS が無効だと動きません。同じ機能は <code>POST https://api.autonomath.ai/v1/programs/prescreen</code> で直接呼び出せます。詳細は <a href="/getting-started.html">Getting Started</a> をご覧ください。</p>
+          <p class="ps-noscript"><strong>JavaScript が必要です</strong> — このプレスクリーンは fetch API を使うため JS が無効だと動きません。同じ機能は <code>POST https://api.zeimu-kaikei.ai/v1/programs/prescreen</code> で直接呼び出せます。詳細は <a href="/getting-started.html">Getting Started</a> をご覧ください。</p>
         </noscript>
-        <form class="ps-form" id="ps-form" data-api-base="https://api.autonomath.ai">
+        <form class="ps-form" id="ps-form" data-api-base="https://api.zeimu-kaikei.ai">
           <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
             <label for="ps-company-url">Company URL (leave blank)</label>
             <input id="ps-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
@@ -576,7 +833,7 @@
           <button class="ps-submit" type="submit" id="ps-submit">上位 5 件を見る</button>
         </form>
         <p class="ps-hint">回答は AI ではなく、制度データベースから規則ベースでマッチングします (prefecture + target_types + amount_fit)。出典 URL は一次資料のみ。送信内容は保存しません。レート制限のため IP ハッシュのみ記録 (JST 月初リセット)。</p>
-        <!-- Live-region split (Wave 17 a11y): announce only the short
+        <!-- Live-region split (a11y): announce only the short
              status summary (e.g. "5 件の制度が見つかりました"), not the
              entire rendered HTML. JAWS / NVDA / VoiceOver previously
              re-announced the full result HTML on each render which was
@@ -598,43 +855,43 @@
         <article class="card" aria-labelledby="vs-llm-cutoff">
           <h3 id="vs-llm-cutoff">学習日が古い (cutoff problem)</h3>
           <p class="card-lead">時間軸が合わない</p>
-          <p>ChatGPT/Claude の学習データは数ヶ月〜1年前で固定。補助金は「公募締切=昨日」のような時間軸で動くため、LLM 単独では「今申請可能か」が分からない。AutonoMath は一次資料の <code>fetched_at</code> を全行に持つ。</p>
+          <p>ChatGPT/Claude の学習データは数ヶ月〜1年前で固定。補助金は「公募締切=昨日」のような時間軸で動くため、AI 単独では「今申請可能か」が分からない。税務会計AI は一次資料の <code>fetched_at</code> を全行に持つ。</p>
         </article>
 
         <article class="card" aria-labelledby="vs-llm-halluc">
           <h3 id="vs-llm-halluc">出典の捏造 (hallucination risk)</h3>
-          <p class="card-lead">誤判定 = 詐欺リスク</p>
-          <p>LLM は「存在しない補助金 ID」や「実在しない URL」を生成する事例が報告されている。¥300〜¥3,000万 の制度誤判定は詐欺リスクに直結。AutonoMath は全 13,578 件に <code>source_url</code> + <code>fetched_at</code> を付与し、二次集約は出典禁止 (景表法対応)。</p>
+          <p class="card-lead">誤判定 = 受給機会の損失</p>
+          <p>AI は「存在しない補助金 ID」や「実在しない URL」を生成する事例が報告されている。¥300〜¥3,000万 の制度誤判定は申請失敗・依頼者トラブルの主因。税務会計AI は全 14,472 件に <code>source_url</code> + <code>fetched_at</code> を付与し、二次集約は出典禁止 (景表法対応)。</p>
         </article>
 
         <article class="card" aria-labelledby="vs-llm-rules">
           <h3 id="vs-llm-rules">構造化されていない (no compatibility check)</h3>
           <p class="card-lead">併用可否は推論で決まらない</p>
-          <p>LLM は「補助金 A と補助金 B は併用可?」「同一事業者の他案件との重複は?」を構造的に判定できない。AutonoMath は 181 の exclusion / prerequisite ルールで併用可否を機械判定する。</p>
+          <p>AI は「補助金 A と補助金 B は併用可?」「同一事業者の他案件との重複は?」を構造的に判定できない。税務会計AI は 181 の exclusion / prerequisite ルールで併用可否を機械判定する。</p>
         </article>
 
       </div>
-      <p class="demo-lead" style="margin:28px 0 0;">つまり: <strong>LLM agent + AutonoMath = 速度 (LLM) × 正確性 (一次資料 + ルール判定)</strong>。AutonoMath は LLM の代替ではなく、LLM が信頼できる出力を出すための事実層。</p>
+      <p class="demo-lead" style="margin:28px 0 0;">つまり: <strong>AI + 税務会計AI = 速度 (AI) × 正確性 (一次資料 + ルール判定)</strong>。税務会計AI は AI の代替ではなく、AI が信頼できる出力を出すための事実層。</p>
     </div>
   </section>
 
   <section class="code-demo" aria-labelledby="why-title">
     <div class="container">
-      <h2 id="why-title" class="section-title">なぜ AutonoMath か</h2>
+      <h2 id="why-title" class="section-title">なぜ 税務会計AI か</h2>
       <div class="cards" style="grid-template-columns:repeat(2,1fr);">
 
         <article class="card">
-          <h3>aggregator を採用しない</h3>
-          <p class="card-lead">詐欺リスク回避</p>
-          <p>noukaweb / 補助金ポータル / biz.stayway などの集約サイトは、「掲載しているのに既に終了している」「上限金額が古い」「存在しない要件を追記している」といった事例が複数報告されており、これを根拠に申請して採択されなかった場合、依頼者から「<strong>詐欺</strong>」と扱われる事業者リスクがあります。</p>
-          <p>AutonoMath は方針として、<code>source_url</code> に集約サイト URL を一切登録しません (<strong>禁止</strong>)。出典は省庁 (METI / MAFF / 中企庁) / 都道府県 / 政府系金融 (JFC / SMRJ / NEDO) / 商工会の一次 URL のみ。13,578 件の 99%+ で一次 URL を保有し、残る 12 件 (小規模自治体) も明示的に「一次 URL 不足」とフラグしています。</p>
+          <h3>集約サイトを採用しない</h3>
+          <p class="card-lead">情報精度の確保</p>
+          <p>noukaweb / 補助金ポータル / biz.stayway などの集約サイトは、「掲載しているのに既に終了している」「上限金額が古い」「存在しない要件を追記している」といった事例が複数報告されており、これを根拠に申請して採択されなかった場合、依頼者から依頼者からの信頼喪失や苦情につながる事業者リスクがあります。</p>
+          <p>税務会計AI は方針として、<code>source_url</code> に集約サイト URL を一切登録しません (<strong>禁止</strong>)。出典は省庁 (METI / MAFF / 中企庁) / 都道府県 / 政府系金融 (JFC / SMRJ / NEDO) / 商工会の一次 URL のみ。14,472 件の 99%+ で一次 URL を保有し、残る 12 件 (小規模自治体) も明示的に「一次 URL 不足」とフラグしています。</p>
           <p>全行が <code>source_url</code> + <code>fetched_at</code> を持つため、「なぜこの補助金がヒットしたか」を顧客 / 監督官庁 / 訴訟相手に客観的に提示できます。これは集約サイトを根拠にした場合には作れない監査ログです。</p>
         </article>
 
         <article class="card">
           <h3>一次資料 100%</h3>
-          <p class="card-lead">法改正で即反映</p>
-          <p>全 programs 行に <code>source_url</code> + <code>fetched_at</code> を付与。出典取得日は透明に開示 (「最終更新」のような誤誘導はしない)。nightly liveness scan で URL が死んでいないかを監視。</p>
+          <p class="card-lead">毎日 cron で出典 URL の生存確認</p>
+          <p>全 programs 行に <code>source_url</code> + <code>fetched_at</code> を付与。出典取得日は透明に開示 (「最終更新」のような誤誘導はしない)。nightly liveness scan で URL が死んでいないかを監視。 法改正の検知は cron で差分走査する仕組みを実装済み (履歴差分の蓄積は初回フル走査後)。</p>
         </article>
 
         <article class="card">
@@ -645,8 +902,8 @@
 
         <article class="card">
           <h3>cross-dataset glue</h3>
-          <p class="card-lead">1 call で制度→法令→判例→処分</p>
-          <p>拡張データセット: 法令 (e-Gov CC-BY、9,484 件・継続ロード中) + 税務 ruleset (インボイス/電帳法、35 件) + 国税庁適格事業者 (PDL v1.0、13,801 件 delta) をライブ提供。判例 / 入札はスキーマ構築済み・データロード準備中。さらに autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) を 33 tools で公開。72 MCP tools に含む <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> で横断的に解決できる。</p>
+          <p class="card-lead">1 リクエスト で制度→法令→判例→処分</p>
+          <p>拡張データセット: 法令 (e-Gov CC-BY、 法令本文 154 件 + 法令メタデータ 9,484 件・本文ロード継続中) + 税務 ruleset (インボイス/電帳法・研究開発税制 等、50 件) + 国税庁適格事業者 (PDL v1.0、13,801 件 delta) をライブ提供。判例 (2,065 件) も live。 さらに autonomath entity-fact DB (503,930 entities / 6.12M facts / 177,381 relations) を 50 tools で公開。89 MCP ツール に含む <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>related_programs</code> で横断的に解決できる。</p>
         </article>
 
       </div>
@@ -661,19 +918,19 @@
         <article class="card" aria-labelledby="who-dev">
           <h3 id="who-dev">開発者 / AI エンジニア</h3>
           <p class="card-lead">推奨: API + MCP</p>
-          <p>エージェント・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio MCP、¥3/req 従量、登録不要の 50 req/月 で評価できる。</p>
+          <p>AI・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/リクエスト 従量、登録不要の 50 リクエスト/月 で評価できる。</p>
         </article>
 
         <article class="card" aria-labelledby="who-sme">
-          <h3 id="who-sme">SME 経営者</h3>
+          <h3 id="who-sme">中小企業経営者</h3>
           <p class="card-lead">推奨: LINE bot + 士業 affiliate</p>
           <p>自社が使える補助金を知りたい、申請まで相談したい。LINE で発見 → 合う認定支援機関/税理士に繋ぐ。月 10 件まで無料、11 件目以降は 1 質問 ¥3 (税込 ¥3.30)、月額固定なし。</p>
         </article>
 
         <article class="card" aria-labelledby="who-shigyo">
           <h3 id="who-shigyo">士業 (税理士 / 社労士 / 診断士)</h3>
-          <p class="card-lead">推奨: 法令改正アラート + 埋込 Widget + advisor 登録</p>
-          <p>法改正を見逃さない、事務所サイトで集客、AutonoMath 経由で案件を受ける。アラート ¥500/月、Widget ¥10,000/月、advisor は成約時のみ支払い。</p>
+          <p class="card-lead">推奨: 法令改正アラート + 埋込 Widget + 専門家 登録</p>
+          <p>法改正を見逃さない、事務所サイトで集客、税務会計AI 経由で案件を受ける。アラート ¥500/月、Widget ¥10,000/月、専門家 は成約時のみ支払い。</p>
         </article>
 
         <article class="card" aria-labelledby="who-biz">
@@ -722,13 +979,13 @@
             <tr>
               <th scope="row">埋込 Widget</th>
               <td>-</td>
-              <td>¥10,000 / 月 (10,000 req 含む)</td>
+              <td>¥10,000 / 月 (10,000 リクエスト 含む)</td>
               <td>¥11,000 / 月</td>
             </tr>
             <tr>
               <th scope="row">士業 affiliate</th>
               <td>利用無料</td>
-              <td>¥3,000 / 成約 (advisor 払い)</td>
+              <td>¥3,000 / 成約 (専門家 払い)</td>
               <td>¥3,300 / 成約</td>
             </tr>
           </tbody>
@@ -738,12 +995,30 @@
     </div>
   </section>
 
+  <section class="features" aria-labelledby="news-title" style="padding-top:48px;padding-bottom:48px;">
+    <div class="container">
+      <h2 id="news-title" class="section-title">News &amp; 更新</h2>
+      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+        <article class="card">
+          <h3>製品の変更履歴 (Changelog)</h3>
+          <p>API / MCP / SDK のバージョンリリースノート。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠、 BREAKING: プレフィックスで互換性破壊を明示。</p>
+          <p style="margin:0;"><a href="changelog.html">変更履歴を見る →</a></p>
+        </article>
+        <article class="card">
+          <h3>制度変更検出フィード (Audit Log)</h3>
+          <p>補助金・税制・認定制度などの eligibility 差分を毎日 cron で検出して公開する append-only フィード。 RSS / JSON 提供、 CC-BY-4.0 (差分メタデータ)。</p>
+          <p style="margin:0;"><a href="audit-log.html">制度変更検出フィードを見る →</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
     </div>
     <nav class="footer-nav" aria-label="フッター">

@@ -65,7 +65,7 @@ except ImportError:
 
 _LOG = logging.getLogger("jpintel.competitive_watch")
 
-USER_AGENT = "jpintel-mcp-competitive-watch/1.0 (+https://autonomath.ai)"
+USER_AGENT = "jpintel-mcp-competitive-watch/1.0 (+https://zeimu-kaikei.ai)"
 PER_HOST_DELAY_SEC = 5.0
 MAX_BYTES = 10 * 1024 * 1024  # 10MB cap
 

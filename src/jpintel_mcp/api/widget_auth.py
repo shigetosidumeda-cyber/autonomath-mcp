@@ -36,6 +36,7 @@ when the widget product launches. Kept isolated so a bug here can't
 brownout the main `/v1/*` surface.
 """
 
+import hmac
 import json
 import logging
 import re
@@ -696,8 +697,8 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
         custom_text={
             "submit": {
                 "message": (
-                    "ご登録により利用規約 (https://autonomath.ai/tos.html) "
-                    "およびプライバシーポリシー (https://autonomath.ai/privacy.html) "
+                    "ご登録により利用規約 (https://zeimu-kaikei.ai/tos.html) "
+                    "およびプライバシーポリシー (https://zeimu-kaikei.ai/privacy.html) "
                     "に同意したものとみなされます。"
                 )
             }
@@ -897,7 +898,14 @@ def widget_usage(
             {"error": "admin_disabled", "detail": "admin endpoints disabled"},
         )
     bearer = (authorization or "").split(None, 1)
-    if len(bearer) != 2 or bearer[0].lower() != "bearer" or bearer[1] != admin_key:
+    # Constant-time admin key compare (avoid leaking matching-prefix length
+    # via response timing). length-mismatch arms short-circuit in compare_digest
+    # but reveal nothing about content.
+    if (
+        len(bearer) != 2
+        or bearer[0].lower() != "bearer"
+        or not hmac.compare_digest(bearer[1].encode("utf-8"), admin_key.encode("utf-8"))
+    ):
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,
             {"error": "admin_auth_failed"},

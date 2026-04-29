@@ -30,7 +30,7 @@ SmartHR 上で人事 / 労務担当が、自社の従業員リストを見なが
 
 ## widget 形式 (HR ダッシュボード embed)
 
-- 配布物: SmartHR App Store 用 `manifest.yaml` + iframe 配信 `https://widget.autonomath.ai/smarthr.html`
+- 配布物: SmartHR App Store 用 `manifest.yaml` + iframe 配信 `https://widget.zeimu-kaikei.ai/smarthr.html`
 - 認証: SmartHR OAuth2 (employee:read / employment:read scope のみ)
 - 表示位置: SmartHR ダッシュボードの「カスタマイズ widget」枠 (人事担当向け管理画面)
 - 配色 / 文字 token: SmartHR デザイントークンに従い、**SmartHR の look & feel に同化**
@@ -49,7 +49,7 @@ oauth:
     - employment:read
 embed:
   type: iframe
-  url: https://widget.autonomath.ai/smarthr.html
+  url: https://widget.zeimu-kaikei.ai/smarthr.html
   height: 480
   responsive: true
 referral:

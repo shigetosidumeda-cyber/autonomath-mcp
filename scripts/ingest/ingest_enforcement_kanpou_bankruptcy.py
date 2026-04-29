@@ -93,7 +93,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
 USER_AGENT = (
     "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-kanpou-bankruptcy (contact=ops@autonomath.ai)"
+    "ingest-kanpou-bankruptcy (contact=ops@zeimu-kaikei.ai)"
 )
 BASE = "https://www.kanpo.go.jp"
 HTTP_TIMEOUT = 60

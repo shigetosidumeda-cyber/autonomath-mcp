@@ -83,17 +83,23 @@ _HEALTHCARE_TOOL_NAMES: list[str] = [
 
 
 def test_healthcare_tools_not_registered_when_disabled() -> None:
-    """Default env (flag unset) keeps the manifest at 71 tools."""
+    """Default env (flag unset) — 6 healthcare stubs are absent.
+
+    The total tool count drifts as new tools land (89 at the time of
+    this test write, after Wave 22 + NTA corpus + 会計士 audit tools);
+    we therefore assert ONLY that none of the healthcare names leak,
+    not a fixed integer.  The post-Wave-22 manifest is the canonical
+    source — see `len(mcp._tool_manager.list_tools())`.
+    """
     snippet = (
         "from jpintel_mcp.mcp import server;"
         "names=set(server.mcp._tool_manager._tools.keys());"
         f"expected={_HEALTHCARE_TOOL_NAMES!r};"
-        "missing=[n for n in expected if n in names];"
-        "print(f'count={len(names)};missing_check={missing}')"
+        "leaked=[n for n in expected if n in names];"
+        "print(f'count={len(names)};leaked={leaked}')"
     )
     out = _run_in_subprocess(snippet, env_flag="")
-    assert "count=71" in out, f"expected 71 tools, got: {out}"
-    assert "missing_check=[]" in out, (
+    assert "leaked=[]" in out, (
         f"healthcare tools leaked into default env: {out}"
     )
 
@@ -104,7 +110,12 @@ def test_healthcare_tools_not_registered_when_disabled() -> None:
 
 
 def test_healthcare_tools_registered_when_enabled() -> None:
-    """AUTONOMATH_HEALTHCARE_ENABLED=1 lifts the manifest to 77 tools."""
+    """AUTONOMATH_HEALTHCARE_ENABLED=1 registers all 6 healthcare stubs.
+
+    We assert presence of each name rather than a fixed total — the
+    canonical default-gate count keeps drifting upward as new tools land
+    (89 at the time of writing post-Wave-22 / NTA / 会計士).
+    """
     snippet = (
         "from jpintel_mcp.mcp import server;"
         "names=set(server.mcp._tool_manager._tools.keys());"
@@ -113,7 +124,6 @@ def test_healthcare_tools_registered_when_enabled() -> None:
         "print(f'count={len(names)};present={present}')"
     )
     out = _run_in_subprocess(snippet, env_flag="1")
-    assert "count=77" in out, f"expected 77 tools, got: {out}"
     for name in _HEALTHCARE_TOOL_NAMES:
         assert f"'{name}'" in out, f"healthcare tool {name!r} not registered: {out}"
 

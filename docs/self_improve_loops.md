@@ -1,4 +1,4 @@
-# AutonoMath — 10 Self-Improvement Loops
+# 税務会計AI — 10 Self-Improvement Loops
 
 **Owner:** 梅田茂利, info@bookyou.net (Bookyou株式会社)
 **Status:** scaffolding (T+30d for real ML wiring); dry-run only at launch.
@@ -52,16 +52,16 @@ Total: ~6 hours of CPU per month — fits inside the Fly.io shared compute budge
 ### Loop C — personalized cache
 - **Inputs:** `query_log` (paid keys, 30 days), `api_keys`.
 - **Output:** `personalized_cache(customer_id, query_hash, payload_json, computed_at)` upserts. TTL 7 days.
-- **Method:** Top-K=20 query histogram per customer with ≥50 prior requests. Pre-execute FTS5; cache.
+- **Method:** Top-K=20 query histogram per customer with ≥50 prior requests. Pre-execute 全文検索; cache.
 
 ### Loop D — forecast accuracy
-- **Inputs:** `am_application_round` (1,256 rows), `forecast_predictions`.
+- **Inputs:** 募集回 schedule (1,256 rows), `forecast_predictions`.
 - **Output:** `forecast_calibration(program_id, coef_json, computed_at)`. Consumed by `subsidy_roadmap_3yr` MCP tool.
 - **Method:** Closed-form Bayesian shrinkage estimator (numpy). No new predictions written; calibration only.
 
 ### Loop E — multi-language alias expansion (V4+)
-- **Inputs:** `query_log` (14 days, all tiers), `am_alias` (335,605 rows).
-- **Output:** `alias_candidates(entity_id, surface, lang, source, score, status)`. Operator promotes to `am_alias` monthly.
+- **Inputs:** `query_log` (14 days, all tiers), 別名・略称 index (335,605 rows).
+- **Output:** `alias_candidates(entity_id, surface, lang, source, score, status)`. Operator promotes to the 別名・略称 index monthly.
 - **Method:** Mine queries with conf<0.5 hitting a single program; e5-small cluster surface forms; lang detect via script heuristic.
 
 ### Loop F — channel ROI
@@ -77,7 +77,7 @@ Total: ~6 hours of CPU per month — fits inside the Fly.io shared compute budge
 ### Loop H — cache warming (Zipf)
 - **Inputs:** `query_log` (24h, all tiers).
 - **Output:** `query_cache(query_hash, payload_json, ttl_until)` for top-200 global queries.
-- **Method:** Daily Zipf head; pre-execute live FTS5; upsert with 24h TTL. Drops P95 from ~30 ms to ~2 ms on warm queries.
+- **Method:** Daily Zipf head; pre-execute live 全文検索; upsert with 24h TTL. Drops P95 from ~30 ms to ~2 ms on warm queries.
 
 ### Loop I — doc freshness re-fetch priority
 - **Inputs:** `programs.source_url` / `source_fetched_at`, `source_change_signals` (HTTP 304 / Last-Modified from nightly liveness scan).

@@ -332,7 +332,7 @@ If the gap is a non-negotiable invariant (e.g., "we must never log raw IP again"
 
 ### 7.3 Public disclosure
 
-If the incident was user-facing (any §3.3 gate tripped, or the leak was visible on a public surface), publish a redacted writeup at `https://autonomath.ai/security/incidents/YYYY-MM-DD-<slug>/`. Use the public-facing tone of `site/security/policy.md` (no internal jargon, no Fly app names, no R2 bucket names — just timeline + impact + remediation).
+If the incident was user-facing (any §3.3 gate tripped, or the leak was visible on a public surface), publish a redacted writeup at `https://zeimu-kaikei.ai/security/incidents/YYYY-MM-DD-<slug>/`. Use the public-facing tone of `site/security/policy.md` (no internal jargon, no Fly app names, no R2 bucket names — just timeline + impact + remediation).
 
 If no §3.3 gate tripped **and** the leak was on a private surface and contained, public disclosure is optional. Default to **disclose anyway** for any incident with email-level PII exposure — silence on real incidents creates a worse trust baseline than honest writeups.
 

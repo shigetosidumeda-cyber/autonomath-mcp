@@ -7,32 +7,40 @@
 </head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:640px;margin:24px auto;padding:0 20px;color:#111;line-height:1.7;">
 
-<h1 style="font-size:22px;margin:0 0 12px;">この1週間、{{usage_count}} 回のクエリ。</h1>
+<h1 style="font-size:22px;margin:0 0 12px;">この 1 週間、{{usage_count}} 回のクエリ。</h1>
 
-<p>キー末尾 <code>{{key_last4}}</code>({{tier}} プラン)で、あなたは <strong>{{usage_count}} 回</strong>のリクエストを送ってくださいました。ありがとうございます。</p>
+<p>キー末尾 <code>{{key_last4}}</code>({{tier}} プラン)で、これまでに <strong>{{usage_count}} 回</strong>のリクエストを送ってくださいました。ありがとうございます。</p>
 
-<p>今日は、まだ試していない方向けに「AutonoMath の2つの効く使い方」をご紹介します。</p>
+<p>そろそろ「自分の使い方をどう測るか」と「思っていたより手数を減らせるか」が気になるタイミングかもしれません。今日はその 2 つだけお送りします。</p>
 
-<h2 style="font-size:17px;margin-top:28px;">1. 排他ルール(exclusions.check)で二重申請リスクを潰す</h2>
-<p>日本の補助金・交付金には「この A と B は同時に受給不可」というルールが無数にあります。AutonoMath には公式ソースから抽出した <strong>exclusion_rules</strong> を載せていて、2つの unified_id を渡すだけで判定できます。</p>
+<h2 style="font-size:17px;margin-top:28px;">1. 自分の利用状況を JSON で取る</h2>
+<p>ダッシュボードに載っている数字は、API でも取れます。日次の呼び出し数を 30 日分まとめて取得する例:</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.autonomath.ai/v1/exclusions/check?a=UNI-xxxx&b=UNI-yyyy"
-# -> { "blocked": true, "kind": "absolute", "source": "..." } </code></pre>
-<p style="color:#555;font-size:14px;">クライアントに「併用不可リスクの自動チェック」を出せるのは、この API の一番の強みです。</p>
+  "https://api.zeimu-kaikei.ai/v1/me/usage?days=30"</code></pre>
+<p style="color:#444;font-size:14px;">返り値: <code>[{"date":"2026-04-22","count":18}, ...]</code>。請求見込みもこの数字 × ¥3.30 で算出できます。ツール別の内訳が欲しい場合は <code>/v1/me/usage_by_tool</code> も使えます。</p>
 
-<h2 style="font-size:17px;margin-top:28px;">2. source_mentions で回答を監査可能にする</h2>
-<p>すべての program レスポンスには <code>source_mentions_json</code> が付いています。「この金額は <em>どの公式文書の</em> 何ページに載っていたのか」を辿れるので、LLM の回答を<strong>監査</strong>にかけるユーザーには必須です。</p>
+<p style="margin:12px 0;"><a href="https://zeimu-kaikei.ai/dashboard.html" style="color:#1e3a8a;">ダッシュボードで見る</a> / <a href="https://zeimu-kaikei.ai/billing/portal" style="color:#1e3a8a;">Stripe ポータル</a></p>
+
+<h2 style="font-size:17px;margin-top:28px;">2. 監査用に <code>source_mentions</code> を辿る</h2>
+<p>すべての program レスポンスには <code>source_mentions_json</code> が付いています。「この金額は<em>どの公式文書の何ページ</em>に載っていたのか」を辿れるので、LLM の回答を<strong>監査</strong>にかけるユーザーには必須です。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  https://api.autonomath.ai/v1/programs/UNI-xxxx \
+  https://api.zeimu-kaikei.ai/v1/programs/UNI-14e57fbf79 \
   | jq '.source_mentions_json'</code></pre>
 
-<p style="margin-top:28px;">他にも使い方を集めた<a href="https://autonomath.ai/examples/" style="color:#1e3a8a;">examples 集</a>をご覧ください。「こんな使い方もある」という発見があるかもしれません。</p>
+<h2 style="font-size:17px;margin-top:28px;">3. 排他ルールで二重申請リスクを潰す</h2>
+<p>2 つの unified_id を渡すと「同時受給可否」を返します。クライアントに「併用不可リスクの自動チェック」を提示できる、この API の核機能の一つです。</p>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+  "https://api.zeimu-kaikei.ai/v1/exclusions/check?a=UNI-xxxx&b=UNI-yyyy"</code></pre>
 
-<p>感想・改善点は、このメールに返信で結構です。</p>
+<p style="margin-top:28px;">他の使い方は <a href="https://zeimu-kaikei.ai/examples/" style="color:#1e3a8a;">examples 集</a>にまとまっています。感想・改善点は、このメールに返信で結構です。</p>
+
+<h2 style="font-size:15px;margin-top:32px;color:#444;">税理士法 §52 / 弁護士法 §72 該当の業務はおこないません</h2>
+<p style="font-size:13px;color:#666;">AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。</p>
 
 <hr style="border:none;border-top:1px solid #eee;margin:32px 0 12px;">
 <p style="color:#888;font-size:12px;">
 AutonoMath — 日本の制度情報 API + MCP<br>
+このメールは AutonoMath の活性化シーケンス (D+7) としてお送りしています。<br>
 お問い合わせ: <a href="mailto:info@bookyou.net" style="color:#888;">info@bookyou.net</a><br>
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1<br>
 配信停止: <a href="{{{pm:unsubscribe}}}" style="color:#888;">ここをクリック</a>

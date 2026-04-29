@@ -1,6 +1,6 @@
 # Self-serve dashboard guide
 
-Customer self-serve dashboard at <https://autonomath.ai/dashboard.html>. The page exposes four bearer-authenticated views on top of the existing cookie-session control plane:
+Customer self-serve dashboard at <https://zeimu-kaikei.ai/dashboard.html>. The page exposes four bearer-authenticated views on top of the existing cookie-session control plane:
 
 | Endpoint | Purpose |
 | --- | --- |
@@ -23,7 +23,7 @@ Anonymous requests get `401 dashboard requires an authenticated API key`. Public
 ## Dashboard summary
 
 ```bash
-curl -s "https://autonomath.ai/v1/me/dashboard?days=30" \
+curl -s "https://zeimu-kaikei.ai/v1/me/dashboard?days=30" \
   -H "Authorization: Bearer $AM_KEY" | jq
 ```
 
@@ -56,7 +56,7 @@ Notes:
 ## Tool usage breakdown
 
 ```bash
-curl -s "https://autonomath.ai/v1/me/usage_by_tool?days=30&limit=10" \
+curl -s "https://zeimu-kaikei.ai/v1/me/usage_by_tool?days=30&limit=10" \
   -H "Authorization: Bearer $AM_KEY"
 ```
 
@@ -65,7 +65,7 @@ Returns the top N endpoints by call count over the requested window. `amount_yen
 ## Billing history
 
 ```bash
-curl -s "https://autonomath.ai/v1/me/billing_history" \
+curl -s "https://zeimu-kaikei.ai/v1/me/billing_history" \
   -H "Authorization: Bearer $AM_KEY"
 ```
 
@@ -76,7 +76,7 @@ The dashboard UI exposes CSV / JSON download buttons that snapshot the current r
 ## Tool recommendation
 
 ```bash
-curl -s "https://autonomath.ai/v1/me/tool_recommendation?intent=設備投資の補助金&limit=5" \
+curl -s "https://zeimu-kaikei.ai/v1/me/tool_recommendation?intent=設備投資の補助金&limit=5" \
   -H "Authorization: Bearer $AM_KEY"
 ```
 
@@ -97,7 +97,7 @@ curl -s "https://autonomath.ai/v1/me/tool_recommendation?intent=設備投資の�
 
 Pure keyword scoring — no LLM call, deterministic for a given intent. When no keyword matches, `fallback_used` flips to `true` and the response carries the catalog tail (programs.search / laws.search / am.tax\_incentives.search) at confidence 0.2 so the caller can render a "browse all" UI instead of "best match".
 
-This mirrors the existing `meta.alternative_intents` field that AutonoMath envelopes attach when a search returns empty/sparse results, but returns concrete REST paths an SDK can call directly.
+This mirrors the existing `meta.alternative_intents` field that 税務会計AI 注記 attach when a search returns empty/sparse results, but returns concrete REST paths an SDK can call directly.
 
 ## Cap management
 
@@ -105,12 +105,12 @@ POST `/v1/me/cap` (実装は `src/jpintel_mcp/api/me.py`) を UI から叩く。
 
 ```bash
 # Set ¥10,000 monthly cap
-curl -X POST "https://autonomath.ai/v1/me/cap" \
+curl -X POST "https://zeimu-kaikei.ai/v1/me/cap" \
   -H "Authorization: Bearer $AM_KEY" -H "Content-Type: application/json" \
   -d '{"monthly_cap_yen": 10000}'
 
 # Remove the cap (uncap)
-curl -X POST "https://autonomath.ai/v1/me/cap" \
+curl -X POST "https://zeimu-kaikei.ai/v1/me/cap" \
   -H "Authorization: Bearer $AM_KEY" -H "Content-Type: application/json" \
   -d '{"monthly_cap_yen": null}'
 ```
@@ -152,7 +152,7 @@ Once month-to-date metered spend reaches the cap, all data-plane requests return
 | Audience | Surface |
 | --- | --- |
 | Dev / Agent | API directly (curl, MCP, Python SDK) — dashboard is optional |
-| SMB / 事業者 | LINE 受付窓口 → guided dialog (see [line.html](https://autonomath.ai/line.html)) |
+| SMB / 事業者 | LINE 受付窓口 → guided dialog (see [line.html](https://zeimu-kaikei.ai/line.html)) |
 | 税理士 / 会計士 | Dashboard `tool_recommendation` for intent triage |
 | 開発代理店 | Dashboard `usage_by_tool` for client billing breakdown |
 | Compliance | Dashboard `billing_history` CSV export for 経理 |

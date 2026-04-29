@@ -17,7 +17,9 @@ import time
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -60,6 +62,23 @@ def _row_to_loan(row: sqlite3.Row) -> LoanProgram:
 @router.get(
     "/search",
     response_model=LoanProgramSearchResponse,
+    summary="Search loan programs (公庫 / 商工中金 / 自治体) — 3-axis risk filter",
+    description=(
+        "Search the 108-row `loan_programs` table by free-text + lender + "
+        "interest-rate + amount + 3-axis risk independently. The three "
+        "guarantor axes were split in migration 013 because '要相談' "
+        "free-text muddles the question 'is 経営者保証 actually waivable?' "
+        "— each axis is now a discrete enum (`required` / `not_required` "
+        "/ `negotiable` / `unknown`).\n\n"
+        "**Risk axes:**\n"
+        "- `collateral_required` — 物的担保 (real-estate / inventory)\n"
+        "- `personal_guarantor_required` — 代表者保証 / 役員保証 / 家族保証\n"
+        "- `third_party_guarantor_required` — 第三者保証\n\n"
+        "**When to use this vs `/v1/am/loans`:** this endpoint is the "
+        "legacy public REST surface (jpintel.db). For richer entity "
+        "provenance + cross-domain joins, prefer `/v1/am/loans` "
+        "(autonomath.db, unified)."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
@@ -265,8 +284,43 @@ def search_loan_programs(
 @router.get(
     "/{loan_id}",
     response_model=LoanProgram,
+    summary="Get a single loan program by integer id",
+    description=(
+        "Look up one loan product by its integer `id` (the autoincrement "
+        "PK on `loan_programs`). Returns full lender / amount band / "
+        "interest rate / 3-axis risk / target conditions / source lineage "
+        "(`official_url`, `fetched_at`, `confidence`).\n\n"
+        "Discovery flow: call `GET /v1/loan-programs/search` first, then "
+        "follow up on each `id` with this endpoint. For unified "
+        "entity-id-based lookups (cross-program), use `/v1/am/loans`."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
+        200: {
+            "description": "Single LoanProgram row.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": 1,
+                        "program_name": "新規開業・スタートアップ支援資金",
+                        "provider": "日本政策金融公庫 国民生活事業",
+                        "loan_type": "special_rate",
+                        "amount_max_yen": 72000000,
+                        "loan_period_years_max": 20,
+                        "grace_period_years_max": 5,
+                        "interest_rate_base_annual": 0.041,
+                        "rate_names": "基準利率,特別利率",
+                        "collateral_required": "negotiable",
+                        "personal_guarantor_required": "negotiable",
+                        "third_party_guarantor_required": "negotiable",
+                        "security_notes": "要相談（担保・保証）",
+                        "official_url": "https://www.jfc.go.jp/n/finance/search/01_sinkikaigyou_m.html",
+                        "fetched_at": "2026-04-23T04:32:55Z",
+                        "confidence": 0.9,
+                    }
+                }
+            },
+        },
         404: {
             "model": ErrorEnvelope,
             "description": "loan program not found — `error.code='no_matching_records'`.",
@@ -277,7 +331,14 @@ def get_loan_program(
     loan_id: int,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> LoanProgram:
+) -> JSONResponse:
+    """Return one loan program with audit-trail snapshot fields.
+
+    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
+    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this row in
+    a work-paper can reproduce the lookup later and detect whether the corpus
+    mutated. See docs/audit_trail.md.
+    """
     row = conn.execute(
         "SELECT * FROM loan_programs WHERE id = ?", (loan_id,)
     ).fetchone()
@@ -287,4 +348,6 @@ def get_loan_program(
         )
 
     log_usage(conn, ctx, "loan_programs.get")
-    return _row_to_loan(row)
+    body = _row_to_loan(row).model_dump(mode="json")
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))

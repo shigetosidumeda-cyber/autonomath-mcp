@@ -323,10 +323,10 @@ def program_abstract_structured(
         ),
     ] = "foreign_employer",
 ) -> dict[str, Any]:
-    """[I18N] R7 — return audience-targeted, closed-vocab Japanese abstract for a single program. Translation is the customer LLM's job; we never call Anthropic API. official_name_ja + legal_id must stay verbatim (i18n_hints.official_name_must_keep_ja=true).
+    """[I18N] R7 — Returns audience-targeted, closed-vocab Japanese abstract for a single program. Translation is the customer LLM's job; we never call Anthropic API. official_name_ja + legal_id must stay verbatim (i18n_hints.official_name_must_keep_ja=true). Output is search-derived; verify primary source (source_urls) for application use.
 
     WHAT: Reshapes ``programs.enriched_json`` into a 5-audience-aware,
-    ISO-style closed-vocab JSON. Returns *only* original Japanese
+    ISO-style closed-vocab JSON. Returns only original Japanese
     strings + finite enums — the customer LLM owns rendering into
     en/vi/id/th/zh-CN/fil.
 

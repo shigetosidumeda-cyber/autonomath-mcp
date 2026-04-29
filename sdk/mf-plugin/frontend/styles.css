@@ -1,0 +1,47 @@
+:root {
+  --c-bg: #ffffff;
+  --c-fg: #1f2937;
+  --c-mute: #6b7280;
+  --c-line: #e5e7eb;
+  --c-accent: #0f6dd1; /* MF ブランド系の落ち着いた青 */
+  --c-disc: #b45309;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--c-bg); color: var(--c-fg); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif; font-size: 14px; }
+body { min-height: 100vh; display: flex; flex-direction: column; }
+
+.hd { padding: 12px 16px; border-bottom: 1px solid var(--c-line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.hd-title strong { font-size: 16px; }
+.hd-sub { display: block; color: var(--c-mute); font-size: 12px; margin-top: 2px; }
+.hd-tenant { color: var(--c-mute); font-size: 12px; max-width: 240px; text-align: right; }
+
+.tabs { display: flex; gap: 4px; padding: 8px 16px 0; border-bottom: 1px solid var(--c-line); flex-wrap: wrap; }
+.tab { background: none; border: 1px solid transparent; border-bottom: none; padding: 8px 12px; cursor: pointer; font: inherit; color: var(--c-mute); border-radius: 6px 6px 0 0; }
+.tab.is-active { color: var(--c-accent); border-color: var(--c-line); background: #fff; font-weight: 600; }
+
+.panels { flex: 1; padding: 16px; }
+.panel { display: none; }
+.panel.is-active { display: block; }
+
+form { display: grid; gap: 8px; max-width: 540px; margin-bottom: 16px; }
+label { display: grid; gap: 4px; font-size: 12px; color: var(--c-mute); }
+input { font: inherit; padding: 8px 10px; border: 1px solid var(--c-line); border-radius: 6px; color: var(--c-fg); }
+input:focus { outline: 2px solid var(--c-accent); outline-offset: 0; }
+button[type=submit] { font: inherit; padding: 9px 16px; background: var(--c-accent); color: #fff; border: none; border-radius: 6px; cursor: pointer; justify-self: start; }
+button[type=submit]:hover { filter: brightness(1.05); }
+
+.results { display: grid; gap: 12px; }
+.r-item { padding: 12px; border: 1px solid var(--c-line); border-radius: 8px; }
+.r-item h3 { margin: 0 0 4px; font-size: 14px; }
+.r-item .r-meta { color: var(--c-mute); font-size: 12px; margin-bottom: 6px; }
+.r-item .r-source { font-size: 12px; }
+.r-item a { color: var(--c-accent); text-decoration: none; }
+.r-item a:hover { text-decoration: underline; }
+.r-empty { color: var(--c-mute); font-size: 12px; padding: 8px 0; }
+.r-error { color: #b91c1c; font-size: 12px; padding: 8px 0; }
+
+.ft { border-top: 1px solid var(--c-line); padding: 10px 16px; font-size: 11px; color: var(--c-mute); }
+.ft-disclaimer { margin: 0 0 4px; color: var(--c-disc); }
+.ft-meta { margin: 0; }
+.ft a { color: var(--c-accent); text-decoration: none; }
+.ft a:hover { text-decoration: underline; }

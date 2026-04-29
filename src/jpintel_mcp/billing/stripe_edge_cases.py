@@ -263,13 +263,23 @@ def _notify_refund_request(
     "/refund_request",
     response_model=RefundResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="顧客発の返金請求受付 (manual review)",
+    summary="Submit a refund request for ¥3/req metered Stripe charges (manual review)",
     description=(
-        "Stripe で課金された ¥3/req メータリング分の返金を顧客が請求する"
-        " ためのエンドポイント。運営側で 14 日以内に手動審査を行います。"
-        " このエンドポイントは受付番号の発行と通知のみで、自動的な返金や"
-        " API キー失効は行いません。既に課金済みの分も審査完了までそのまま"
-        " 残ります。"
+        "Customer-initiated intake for refunds against ¥3/req metered Stripe "
+        "charges. The operator (Bookyou株式会社) reviews each request "
+        "manually within 14 days; this endpoint only records the request and "
+        "fires an operator notification — it does NOT auto-issue the refund "
+        "or revoke the caller's API key. Existing metered charges remain on "
+        "the customer's invoice until the review concludes.\n\n"
+        "**Use this when** a caller disputes a specific billing month or a "
+        "tranche of usage they consider erroneous. For chargeback-style "
+        "disputes, prefer Stripe's issuer-side flow (we mirror those "
+        "events into the audit log automatically).\n\n"
+        "(顧客発の返金請求受付。Stripe で課金された ¥3/req "
+        "メータリング分の返金を顧客が請求するためのエンドポイント。"
+        "運営側で 14 日以内に手動審査を行います。受付番号の発行と通知のみで、"
+        "自動的な返金や API キー失効は行いません。既に課金済みの分も審査完了"
+        "までそのまま残ります。)"
     ),
 )
 def submit_refund_request(payload: RefundRequest, conn: DbDep) -> RefundResponse:

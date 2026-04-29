@@ -44,7 +44,16 @@ def test_make_error_minimal_shape():
     err = body["error"]
     assert err["code"] == "internal_error"
     assert err["user_message"]  # default Japanese copy applied
-    assert err["request_id"] == "unset"
+    # `request_id` is now ALWAYS a freshly-minted ULID (26 Crockford-base32
+    # chars) when the caller doesn't pass one — the prior fallback to the
+    # literal string "unset" gave consumers no correlation handle, see the
+    # docstring of make_error / _mint_request_id. The wire shape is "a
+    # token shaped like _REQUEST_ID_RE", so we assert that property and
+    # explicitly forbid the legacy sentinels "unset" / "unknown" instead
+    # of pinning a single literal value.
+    assert err["request_id"]
+    assert err["request_id"] not in ("unset", "unknown")
+    assert len(err["request_id"]) >= 8
     assert err["documentation"] == f"{DOC_URL}#internal_error"
     assert err["severity"] == "hard"
 
@@ -55,15 +64,18 @@ def test_make_error_unknown_code_coerces_to_internal():
 
 
 def test_make_error_request_id_never_literal_unknown():
-    """J5 bug guard: the literal string 'unknown' must never be
-    emitted by make_error. Pre-fix, the global 500 handler used
+    """J5 bug guard: the literal strings 'unknown' / 'unset' must never
+    be emitted by make_error. Pre-fix, the global 500 handler used
     ``request.headers.get('x-request-id') or 'unknown'`` which leaked
-    'unknown' into prod 5xx bodies for every internally-generated id.
+    'unknown' into prod 5xx bodies for every internally-generated id;
+    the next iteration replaced that with the literal 'unset', which
+    was equally useless as a correlation handle. Both must be absent;
+    the helper now mints a ULID instead.
     """
-    # No request_id supplied -> fall back to literal 'unset', not 'unknown'.
     body = make_error(code="internal_error")
-    assert body["error"]["request_id"] == "unset"
-    assert body["error"]["request_id"] != "unknown"
+    rid = body["error"]["request_id"]
+    assert rid not in ("unknown", "unset"), rid
+    assert len(rid) >= 8
 
 
 def test_make_error_extras_merged():
@@ -228,10 +240,12 @@ def test_documentation_anchors_match_codes():
 # ---------------------------------------------------------------------------
 
 
-def test_safe_request_id_falls_back_to_unset():
-    """When neither request.state.request_id nor x-request-id header
-    are set, safe_request_id must return the literal 'unset' (NEVER
-    'unknown' — that's the J5 string we banned).
+def test_safe_request_id_mints_id_when_no_state_or_header():
+    """When neither ``request.state.request_id`` nor an ``x-request-id``
+    header are set, ``safe_request_id`` must mint a fresh ULID-style id
+    (NEVER the legacy ``"unknown"`` / ``"unset"`` sentinels). The minted
+    id is also stamped onto ``request.state.request_id`` so subsequent
+    callers in the same request see the same value.
     """
     class _FakeReq:
         class state:  # noqa: N801
@@ -246,5 +260,8 @@ def test_safe_request_id_falls_back_to_unset():
     fr = _FakeReq()
     fr.headers = _Headers()
     rid = safe_request_id(fr)
-    assert rid == "unset"
-    assert rid != "unknown"
+    assert rid not in ("unset", "unknown"), rid
+    assert len(rid) >= 8
+    # Subsequent call returns the same id (cached on request.state).
+    rid2 = safe_request_id(fr)
+    assert rid2 == rid

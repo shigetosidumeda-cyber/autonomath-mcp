@@ -59,7 +59,7 @@ operator は以下のいずれかが満たされた瞬間に **§2 lever 1** を
    - 全エンドポイント → 503 + `error.code = "service_unavailable"` + `details.retry_after = "see_status_page"`
    - **allowlist** (常時 200): `/healthz`, `/readyz`, `/v1/am/health/deep`, `/status`, `/status/`, `/robots.txt`
    - 各 503 hit は `audit_log` テーブルに `event_type='kill_switch_block'` で記録 (post-incident 集計用)。
-4. 確認: `curl -sS https://api.autonomath.ai/v1/programs/search | jq '.error.code'` → `"service_unavailable"`。
+4. 確認: `curl -sS https://api.zeimu-kaikei.ai/v1/programs/search | jq '.error.code'` → `"service_unavailable"`。
 5. Status page を `down` に更新 (§4)。
 6. `GET /v1/admin/kill_switch_status` (X-API-Key=ADMIN_API_KEY) で `enabled: true, since_iso: "...", reason: "..."` を確認。
 
@@ -72,9 +72,9 @@ operator は以下のいずれかが満たされた瞬間に **§2 lever 1** を
 **手順**:
 1. `flyctl apps suspend autonomath-api`。Fly が全マシン停止 ~10s。
 2. **アプリ挙動**:
-   - api.autonomath.ai は Fly 502 / unreachable
-   - autonomath.ai (Cloudflare Pages) は静的に動き続ける — ランディング、tos, privacy, /status, /docs (mkdocs static) は配信継続
-   - DNS: `api.autonomath.ai` を Cloudflare Pages の fallback バナーへ flip するなら `docs/_internal/fallback_plan.md` 参照
+   - api.zeimu-kaikei.ai は Fly 502 / unreachable
+   - zeimu-kaikei.ai (Cloudflare Pages) は静的に動き続ける — ランディング、tos, privacy, /status, /docs (mkdocs static) は配信継続
+   - DNS: `api.zeimu-kaikei.ai` を Cloudflare Pages の fallback バナーへ flip するなら `docs/_internal/fallback_plan.md` 参照
 3. Status page を `down (fallback mode)` に更新 (§4)。
 
 **ロールバック**: `flyctl apps resume autonomath-api`。マシン boot ~30-60s。
@@ -96,7 +96,7 @@ operator は以下のいずれかが満たされた瞬間に **§2 lever 1** を
 
 ## 4. Status page coordination
 
-- **Always announce on https://autonomath.ai/status/ before un-killing.** これは brand 5-pillar (透明・誠実) の運用面の核。
+- **Always announce on https://zeimu-kaikei.ai/status/ before un-killing.** これは brand 5-pillar (透明・誠実) の運用面の核。
 - 編集対象: `site/status.html` の `state ok|warn|down` クラス + `Last updated` の `<code>` 内。
 - Cloudflare Pages 自動 redeploy < 30s。
 - 文言テンプレ:
@@ -114,7 +114,7 @@ operator は以下のいずれかが満たされた瞬間に **§2 lever 1** を
 4. **Lever 2 reverse**: `flyctl secrets unset KILL_SWITCH_GLOBAL KILL_SWITCH_REASON -a autonomath-api`。
 5. `GET /v1/admin/kill_switch_status` で `enabled: false` を確認。
 6. **Lever 1 reverse**: Cloudflare WAF custom rule の Action を LOG に戻す (Expression は監査ノート用に残してよい)。
-7. **Smoke test**: `BASE_URL=https://autonomath.ai ./scripts/smoke_test.sh` を流して全 probe green を確認。
+7. **Smoke test**: `BASE_URL=https://zeimu-kaikei.ai ./scripts/smoke_test.sh` を流して全 probe green を確認。
 8. **Status page を `ok` に更新** (`Last updated` を現在時刻に)。
 9. Post-mortem を `research/incidents/<YYYY-MM-DD>-<short-id>.md` に記録 (timeline / root cause / lever sequence / detection time / recovery time)。
 
@@ -131,6 +131,6 @@ operator は以下のいずれかが満たされた瞬間に **§2 lever 1** を
 ## 7. Operational notes
 
 - **`KILL_SWITCH_GLOBAL=1` を入れるたびに `KILL_SWITCH_REASON` も入れる**: post-incident で原因を辿れない事故を 0 にする。
-- **3 lever 全部試して効かないとき**: DNS で api.autonomath.ai を `autonomath.ai/status` に CNAME リダイレクト。これは緊急時のみ。
+- **3 lever 全部試して効かないとき**: DNS で api.zeimu-kaikei.ai を `zeimu-kaikei.ai/status` に CNAME リダイレクト。これは緊急時のみ。
 - **Lever 1 の Cloudflare WAF rule pre-create は launch 前必須** (`launch_dday_matrix.md` checklist 参照)。後付け作成は伝播 30-60s かかり、incident 中の最初の 1 分が遅れる。
 - audit log query で blocked traffic を集計する: `SELECT path, COUNT(*) FROM audit_log WHERE event_type='kill_switch_block' AND ts >= '<since>' GROUP BY path ORDER BY 2 DESC`.

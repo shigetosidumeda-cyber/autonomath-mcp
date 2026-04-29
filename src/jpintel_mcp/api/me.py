@@ -310,6 +310,70 @@ class UsageDay(BaseModel):
     calls: int
 
 
+class UsageByClientTag(BaseModel):
+    """Per-client_tag aggregate row (税理士 顧問先 attribution).
+
+    Migration 085: surfaced by GET /v1/me/usage?group_by=client_tag and
+    GET /v1/me/usage.csv?group_by=client_tag. `client_tag=None` is the
+    catch-all bucket for requests that did not pass X-Client-Tag.
+    """
+
+    client_tag: str | None
+    calls: int
+    yen: int
+
+
+class UsageByChildResponse(BaseModel):
+    """Per-child aggregate row (migration 086 SaaS B2B fan-out).
+
+    Surfaced by GET /v1/me/usage/by-child?period=YYYY-MM. Each row carries
+    the child's id + label + key_hash_prefix + month-to-date metered call
+    count and ¥3-priced subtotal. The parent's own row is included with
+    label='(parent)' so the dashboard can render a complete fan-out summary.
+    """
+
+    id: int | None
+    label: str | None
+    key_hash_prefix: str
+    is_parent: bool
+    calls: int
+    yen: int
+
+
+class ChildKeyIssueRequest(BaseModel):
+    """Body for POST /v1/me/keys/children (migration 086).
+
+    `label` is free-text, ≤64 chars, alphanumeric + spaces + a few
+    punctuation marks (server-validated). Required at issuance — there
+    is no way to issue a child key without a label so the dashboard
+    fan-out summary always has a human identifier to render.
+    """
+
+    label: str = Field(
+        min_length=1,
+        max_length=64,
+        description="Free-text human identifier (e.g. 'prod', 'customer_acme').",
+    )
+
+
+class ChildKeyIssueResponse(BaseModel):
+    """Response for POST /v1/me/keys/children — raw key returned ONCE."""
+
+    api_key: str
+    id: int | None
+    label: str
+    key_hash_prefix: str
+
+
+class ChildKeyListEntry(BaseModel):
+    id: int | None
+    label: str | None
+    key_hash_prefix: str
+    created_at: str | None
+    revoked_at: str | None
+    last_used_at: str | None
+
+
 class RotateKeyResponse(BaseModel):
     api_key: str
     tier: str
@@ -550,12 +614,106 @@ def get_me(me: CurrentMeDep, conn: DbDep) -> MeResponse:
     )
 
 
-@router.get("/v1/me/usage", response_model=list[UsageDay])
+# Pure metered ¥3/req 税別 (memory: project_autonomath_business_model).
+# Mirrors the constant in middleware/customer_cap.py — duplicated here so
+# the per-tag / per-child aggregates can render the same ¥ figure as the
+# cap layer reports. Tax-inclusive value (¥3.30) is added by Stripe at
+# invoice render time, not by this dashboard.
+_USAGE_UNIT_PRICE_YEN: int = 3
+
+
+def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
+    """Return every key_hash in the tree containing `key_hash`.
+
+    Migration 086: the dashboard caller's session is bound to the parent
+    key (children never log in via /v1/session — the only way to act on
+    a child key is to use it directly). For a parent caller we expand
+    to parent + every child. For a child caller we still expand to the
+    full tree (defensive — the child should not normally hold a session
+    anyway, but if they do they should see the same fan-out totals as
+    the parent would).
+    """
+    row = conn.execute(
+        "SELECT id, parent_key_id FROM api_keys WHERE key_hash = ?",
+        (key_hash,),
+    ).fetchone()
+    if row is None:
+        return [key_hash]
+    rk = row.keys() if hasattr(row, "keys") else []
+    own_id = row["id"] if "id" in rk else None
+    parent_key_id = row["parent_key_id"] if "parent_key_id" in rk else None
+    root = parent_key_id if parent_key_id is not None else own_id
+    if root is None:
+        return [key_hash]
+    rows = conn.execute(
+        "SELECT key_hash FROM api_keys "
+        "WHERE id = ? OR parent_key_id = ?",
+        (root, root),
+    ).fetchall()
+    hashes = [
+        r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows
+    ]
+    if key_hash not in hashes:
+        hashes.append(key_hash)
+    return hashes
+
+
+def _aggregate_by_client_tag(
+    conn, tree_hashes: list[str], start_iso: str
+) -> list[UsageByClientTag]:
+    """SUM usage_events grouped by client_tag for the given tree + window.
+
+    Returns rows ordered by descending call count so the dashboard
+    surfaces the highest-spend 顧問先 first. NULL client_tag is included
+    as the catch-all (un-tagged) bucket.
+    """
+    if not tree_hashes:
+        return []
+    placeholders = ",".join("?" * len(tree_hashes))
+    rows = conn.execute(
+        f"""SELECT client_tag, COUNT(*) AS n
+              FROM usage_events
+             WHERE key_hash IN ({placeholders})
+               AND ts >= ?
+          GROUP BY client_tag
+          ORDER BY n DESC""",  # noqa: S608 — placeholders only
+        (*tree_hashes, start_iso),
+    ).fetchall()
+    out: list[UsageByClientTag] = []
+    for r in rows:
+        rk = r.keys() if hasattr(r, "keys") else []
+        tag = r["client_tag"] if "client_tag" in rk else None
+        n = int(r["n"] if "n" in rk else 0)
+        out.append(
+            UsageByClientTag(
+                client_tag=tag,
+                calls=n,
+                yen=n * _USAGE_UNIT_PRICE_YEN,
+            )
+        )
+    return out
+
+
+@router.get("/v1/me/usage")
 def get_me_usage(
     me: CurrentMeDep,
     conn: DbDep,
     days: int = 30,
-) -> list[UsageDay]:
+    group_by: str | None = None,
+) -> list[UsageDay] | list[UsageByClientTag]:
+    """Per-day OR per-client_tag usage aggregate.
+
+    Default (``group_by`` absent) returns the legacy daily series — one
+    row per UTC date with the call count, contiguous (gaps filled with
+    zeros) so dashboards can plot directly. ``days`` clamped 1..90.
+
+    ``group_by=client_tag`` (migration 085) returns one row per distinct
+    ``X-Client-Tag`` value within the same window, sorted by descending
+    call count. ``client_tag=None`` is the catch-all bucket for requests
+    that did not pass the header. Aggregation runs across the full
+    parent/child tree (migration 086) so a parent caller sees totals for
+    all children.
+    """
     if days < 1:
         days = 1
     if days > 90:
@@ -565,6 +723,20 @@ def get_me_usage(
     today = datetime.now(UTC).date()
     start = today - timedelta(days=days - 1)
     start_iso = start.isoformat()
+
+    if group_by == "client_tag":
+        tree_hashes = _resolve_tree_key_hashes(conn, key_hash)
+        return _aggregate_by_client_tag(conn, tree_hashes, start_iso)
+
+    if group_by is not None and group_by != "":
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "invalid_group_by",
+                "allowed": ["client_tag"],
+                "got": group_by,
+            },
+        )
 
     rows = conn.execute(
         """SELECT substr(ts, 1, 10) AS d, COUNT(*) AS n
@@ -582,6 +754,76 @@ def get_me_usage(
         d = (start + timedelta(days=i)).isoformat()
         out.append(UsageDay(date=d, calls=by_date.get(d, 0)))
     return out
+
+
+def _csv_escape(value: object) -> str:
+    """Minimal RFC 4180 escape — quote if comma / quote / newline present."""
+    s = "" if value is None else str(value)
+    if any(ch in s for ch in (",", '"', "\n", "\r")):
+        s = '"' + s.replace('"', '""') + '"'
+    return s
+
+
+@router.get("/v1/me/usage.csv")
+def get_me_usage_csv(
+    me: CurrentMeDep,
+    conn: DbDep,
+    days: int = 30,
+    group_by: str | None = None,
+) -> Response:
+    """CSV export of per-tag aggregate (migration 085).
+
+    Currently only ``group_by=client_tag`` is supported. The format is
+    a stable header + one row per tag, NULL tags rendered as empty.
+    Designed for Excel / Google Sheets ingestion by 税理士 offices that
+    need to forward per-顧問先 line items into their internal billing.
+    """
+    if group_by != "client_tag":
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "invalid_group_by",
+                "allowed": ["client_tag"],
+                "got": group_by,
+                "message": (
+                    "/v1/me/usage.csv currently only supports "
+                    "group_by=client_tag"
+                ),
+            },
+        )
+    if days < 1:
+        days = 1
+    if days > 90:
+        days = 90
+
+    key_hash, _tier = me
+    today = datetime.now(UTC).date()
+    start = today - timedelta(days=days - 1)
+    start_iso = start.isoformat()
+    tree_hashes = _resolve_tree_key_hashes(conn, key_hash)
+    aggregates = _aggregate_by_client_tag(conn, tree_hashes, start_iso)
+
+    lines = ["client_tag,calls,yen_excl_tax"]
+    for row in aggregates:
+        lines.append(
+            ",".join(
+                [
+                    _csv_escape(row.client_tag if row.client_tag else ""),
+                    _csv_escape(row.calls),
+                    _csv_escape(row.yen),
+                ]
+            )
+        )
+    body = "\r\n".join(lines) + "\r\n"
+    filename = f"autonomath_usage_by_client_tag_{today.isoformat()}.csv"
+    return Response(
+        content=body.encode("utf-8"),
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Cache-Control": "no-store",
+        },
+    )
 
 
 # ---------------------------------------------------------------------------

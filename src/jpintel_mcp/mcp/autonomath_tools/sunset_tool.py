@@ -85,7 +85,7 @@ def list_tax_sunset_alerts(
         ),
     ] = 100,
 ) -> dict[str, Any]:
-    """[TIMELINE-TAX] 税制優遇の sunset (effective_until) calendar — N 日以内に切れる措置 + 大綱 cliff buckets を 1 コール。
+    """[TIMELINE-TAX] Returns tax measures whose effective_until falls within the next N days, plus 大綱 cliff date buckets. Output is search-derived from am_tax_rule (57 rows with effective_until); verify primary source (source_url) for sunset confirmation.
 
     WHAT: ``am_tax_rule.effective_until`` が today..today+days_until に入る
     rule を ``am_entities`` (parent measure) と JOIN して返す。同じ

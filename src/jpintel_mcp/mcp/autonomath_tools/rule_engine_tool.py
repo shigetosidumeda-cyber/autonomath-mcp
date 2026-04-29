@@ -6,13 +6,15 @@ surface. Reads from the view ``am_unified_rule`` (migration 064) which UNION
 ALLs:
 
   jpi_exclusion_rules    181 rows (125 exclude / 17 prerequisite / 15 absolute / 24 misc)
-  am_compat_matrix    48,815 rows (compat 21,985 / incompat 3,064 / case 18,917 / unknown 4,849) — DARK INVENTORY
+  am_compat_matrix    48,815 rows (compat 21,985 / incompat 3,064 / case 18,917 / unknown 4,849)
   am_combo_calculator     56 rows (legal stacking patterns)
   am_subsidy_rule         44 rows (per-program rate / cap)
   am_tax_rule            145 rows (per-measure rate / cap / period)
   am_validation_rule       6 rows (generic predicates)
 
-Total: 49,247 rule rows behind one tool.
+Total: 49,247 rule rows behind one tool. The compat_matrix corpus has
+4,849 rows with compat_status='unknown' that have not been manually
+triaged — those rows surface as judgment='unknown' rather than allow/deny.
 
 Precedence (per R9 §3, hard-coded; first DENY wins, but conflict surfaces):
   1. absolute       (exclusion_rules, kind=absolute)
@@ -74,7 +76,7 @@ _PRECEDENCE: tuple[tuple[str, str], ...] = (
     ("compat:incompatible", "deny"),     # rung 4
     ("compat:case_by_case", "review"),   # rung 5
     ("compat:compatible",   "allow"),    # rung 6
-    ("compat:unknown",      "unknown"),  # rung 6.5 (the 4,849-row dark bucket)
+    ("compat:unknown",      "unknown"),  # rung 6.5 (the 4,849-row untriaged bucket)
     ("combo",               "allow"),    # rung 7 — combo presence = legal stacking
     ("subsidy",             "info"),     # rung 8
     ("tax",                 "info"),     # rung 8
@@ -377,7 +379,7 @@ def _rule_engine_check_impl(
             reason = (
                 f"compat_matrix has compat_status='unknown' for this pair "
                 f"({len(unknown_rules)} rows). The 4,849-row unknown bucket "
-                f"is dark inventory pending manual triage."
+                f"is pending manual triage."
             )
         elif info_rules:
             reason = (
@@ -460,7 +462,7 @@ if settings.rule_engine_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[R9-UNIFIED-RULE-ENGINE] One-tool rule evaluation across all 6 corpora (49,247 rows): exclusion + compat_matrix (48,815-row dark inventory) + combo + subsidy + tax + validation.
+        """[R9-UNIFIED-RULE-ENGINE] Returns rule evaluation result + applicable law citations across 6 corpora (49,247 rows): exclusion + compat_matrix (48,815 rows, of which 4,849 are 'unknown' status) + combo + subsidy + tax + validation. Output is search-derived; verify primary source for business decisions.
 
         WHAT: Runs the precedence ladder (absolute → exclude → prerequisite →
         compat:incompatible → compat:case_by_case → compat:compatible → combo →
@@ -472,7 +474,7 @@ if settings.rule_engine_enabled:
         WHEN:
           - 「program A と program B を併給できる?」(pairwise compat)
           - 「この補助金、申請して大丈夫?(他制度との衝突は?)」
-          - 「48,815 row の compat_matrix を活用したい」
+          - Pairwise compat lookup against the compat_matrix corpus.
           - Replace the 5 disjoint legacy tools (check_exclusions /
             combined_compliance_check / get_am_tax_rule / search_certifications /
             list_open_programs) with one call.

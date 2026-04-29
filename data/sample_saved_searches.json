@@ -1,0 +1,130 @@
+{
+  "_meta": {
+    "purpose": "Pre-curated saved_searches seed for the 3 industry packs (Wave 23, 2026-04-29). Loaded on first-run via scripts/cron/seed_industry_saved_searches.py for any new API key that opts in.",
+    "schema_target_table": "saved_searches (migration 079)",
+    "channel_default": "email",
+    "frequency_note": "saved_searches.frequency CHECK constraint allows only 'daily' / 'weekly'. Industry pack digests fire 'weekly' (every Monday 09:00 JST cron) — closest available cadence to monthly. Customers can downgrade to monthly via custom cron later.",
+    "billing": "Each digest delivery = 1 metered ¥3 request through usage_events.endpoint='saved_searches.digest'.",
+    "cohorts": ["construction", "manufacturing", "real_estate"],
+    "total_seed_rows": 9
+  },
+  "saved_searches": [
+    {
+      "cohort": "construction",
+      "name": "DX投資補助金 / 建設業向",
+      "query_json": {
+        "q": "DX 建設",
+        "target_types": ["建設業"],
+        "funding_purpose": ["DX", "デジタル化", "IT導入"],
+        "tier": ["S", "A", "B"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "建設業特化の DX 補助金 (IT 導入補助金 / ものづくり 等) 週次差分通知。"
+    },
+    {
+      "cohort": "construction",
+      "name": "省エネ補助金 / 建設業向 (ZEB / ZEH)",
+      "query_json": {
+        "q": "省エネ 建設",
+        "target_types": ["建設業", "建築事業者"],
+        "funding_purpose": ["省エネ", "脱炭素", "ZEB", "ZEH"],
+        "tier": ["S", "A"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "ZEB / ZEH / 省CO2 関連補助金の週次差分。建築物省エネ法 改正連動の制度を含む。"
+    },
+    {
+      "cohort": "construction",
+      "name": "中小企業 賃上げ促進税制 / 建設業向",
+      "query_json": {
+        "q": "賃上げ 建設",
+        "target_types": ["中小企業", "建設業"],
+        "funding_purpose": ["賃上げ", "雇用", "人材確保"],
+        "program_kind": ["税制優遇", "認定"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "建設産業人材確保対策・賃上げ促進税制 (措置法42-12-5) の週次差分。"
+    },
+    {
+      "cohort": "manufacturing",
+      "name": "ものづくり補助金 / 製造業向",
+      "query_json": {
+        "q": "ものづくり 製造業",
+        "target_types": ["製造業", "中小企業"],
+        "funding_purpose": ["設備投資", "技術開発", "生産性向上"],
+        "tier": ["S", "A"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "ものづくり補助金 (中小企業基盤整備機構) + 各都道府県類似制度の週次差分。"
+    },
+    {
+      "cohort": "manufacturing",
+      "name": "事業再構築補助金 / 製造業向",
+      "query_json": {
+        "q": "事業再構築 製造業",
+        "target_types": ["製造業", "中小企業"],
+        "funding_purpose": ["事業再構築", "業態転換", "新分野展開"],
+        "tier": ["S", "A", "B"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "事業再構築補助金 (経産省) + ポストコロナ業態転換系制度の週次差分。"
+    },
+    {
+      "cohort": "manufacturing",
+      "name": "GX / 脱炭素補助金 / 製造業向",
+      "query_json": {
+        "q": "GX 脱炭素 製造業",
+        "target_types": ["製造業"],
+        "funding_purpose": ["GX", "脱炭素", "省エネ", "カーボンニュートラル"],
+        "tier": ["S", "A"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "GX 経済移行債連動の製造業向け脱炭素・省エネ補助金の週次差分。"
+    },
+    {
+      "cohort": "real_estate",
+      "name": "空き家対策補助金 / 不動産業向",
+      "query_json": {
+        "q": "空き家 不動産",
+        "target_types": ["不動産業", "個人事業主"],
+        "funding_purpose": ["空き家対策", "改修", "解体", "活用"],
+        "tier": ["S", "A", "B"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "市町村レベルの空き家バンク・改修補助金の週次差分。地域別 fan-out。"
+    },
+    {
+      "cohort": "real_estate",
+      "name": "既存住宅流通促進 / 不動産業向",
+      "query_json": {
+        "q": "既存住宅 流通 不動産",
+        "target_types": ["不動産業", "宅建業者"],
+        "funding_purpose": ["流通促進", "インスペクション", "瑕疵担保"],
+        "tier": ["S", "A"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "既存住宅流通・インスペクション・瑕疵担保保険連動制度の週次差分。"
+    },
+    {
+      "cohort": "real_estate",
+      "name": "住宅取得支援 / 不動産業向 (顧客紹介用)",
+      "query_json": {
+        "q": "住宅取得 子育て",
+        "target_types": ["不動産業", "個人"],
+        "funding_purpose": ["住宅取得", "子育て世帯", "移住"],
+        "tier": ["S", "A", "B"]
+      },
+      "frequency": "weekly",
+      "channel_format": "email",
+      "rationale": "不動産業者が顧客 (購入者) に紹介する住宅取得・子育て世帯支援制度の週次差分。"
+    }
+  ]
+}

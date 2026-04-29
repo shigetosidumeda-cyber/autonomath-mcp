@@ -32,7 +32,7 @@ We will not pursue legal action, file a complaint, or otherwise interfere with r
 - Do **not** retain, use, or disclose data accessed during testing
 - Give us a reasonable window (at least 14 days from acknowledgement) to remediate before any public discussion
 
-This safe-harbour statement applies to AutonoMath itself (the API at `api.autonomath.ai`, the static site at `autonomath.ai`, the MCP server distributed as `autonomath-mcp` on PyPI). It does not extend to third-party services we depend on (Stripe, Postmark, Cloudflare, Fly.io) — please report those directly to the vendor. We are happy to coordinate when an issue spans both sides.
+This safe-harbour statement applies to AutonoMath itself (the API at `api.zeimu-kaikei.ai`, the static site at `zeimu-kaikei.ai`, the MCP server distributed as `autonomath-mcp` on PyPI). It does not extend to third-party services we depend on (Stripe, Postmark, Cloudflare, Fly.io) — please report those directly to the vendor. We are happy to coordinate when an issue spans both sides.
 
 ## No bug bounty
 
@@ -44,8 +44,8 @@ If you would prefer not to be credited, say so in your report — the default is
 
 **In scope**
 
-- The hosted REST API at `https://api.autonomath.ai`
-- The static site at `https://autonomath.ai`
+- The hosted REST API at `https://api.zeimu-kaikei.ai`
+- The static site at `https://zeimu-kaikei.ai`
 - The `autonomath-mcp` Python package on PyPI (and its MCP server entry point)
 - Our data ingestion pipeline (`src/jpintel_mcp/ingest/**` in the public repo)
 - Infrastructure we operate directly (Fly.io app, Cloudflare Pages build, GitHub Actions workflows)
@@ -62,7 +62,7 @@ If you would prefer not to be credited, say so in your report — the default is
 
 ## Past incidents
 
-We publish redacted writeups of confirmed incidents at <https://autonomath.ai/security/incidents/>. The list is currently empty.
+We publish redacted writeups of confirmed incidents at <https://zeimu-kaikei.ai/security/incidents/>. The list is currently empty.
 
 ## Contact
 

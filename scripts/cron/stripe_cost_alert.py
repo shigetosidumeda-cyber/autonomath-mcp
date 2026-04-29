@@ -49,7 +49,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
-from jpintel_mcp.observability import safe_capture_message  # noqa: E402
+from jpintel_mcp.observability import heartbeat, safe_capture_message  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.cost_alert")
 
@@ -280,34 +280,46 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
 
-    stripe_jpy = _sum_stripe_fees_mtd(dry_run=args.dry_run)
+    with heartbeat("stripe_cost_alert") as hb:
+        stripe_jpy = _sum_stripe_fees_mtd(dry_run=args.dry_run)
 
-    self_jpy = 0
-    violations: list[str] = []
-    try:
-        with connect() as conn:
-            self_jpy, violations = _sum_self_reported_mtd(conn)
-    except Exception as exc:  # noqa: BLE001 — non-fatal
-        logger.warning("cost_ledger sum failed: %s", exc)
+        self_jpy = 0
+        violations: list[str] = []
+        try:
+            with connect() as conn:
+                self_jpy, violations = _sum_self_reported_mtd(conn)
+        except Exception as exc:  # noqa: BLE001 — non-fatal
+            logger.warning("cost_ledger sum failed: %s", exc)
 
-    total = stripe_jpy + self_jpy
-    pct = (total / args.budget * 100.0) if args.budget else 0.0
+        total = stripe_jpy + self_jpy
+        pct = (total / args.budget * 100.0) if args.budget else 0.0
 
-    now = datetime.now(UTC)
-    breakdown = CostBreakdown(
-        month=now.strftime("%Y-%m"),
-        stripe_fees_jpy=stripe_jpy,
-        self_reported_jpy=self_jpy,
-        total_jpy=total,
-        budget_jpy=args.budget,
-        pct=pct,
-    )
+        now = datetime.now(UTC)
+        breakdown = CostBreakdown(
+            month=now.strftime("%Y-%m"),
+            stripe_fees_jpy=stripe_jpy,
+            self_reported_jpy=self_jpy,
+            total_jpy=total,
+            budget_jpy=args.budget,
+            pct=pct,
+        )
 
-    _emit_alert(breakdown, dry_run=args.dry_run)
+        _emit_alert(breakdown, dry_run=args.dry_run)
 
-    if violations:
-        _emit_violation(violations, dry_run=args.dry_run)
-        return 2  # operator must investigate
+        hb["rows_processed"] = int(total)
+        hb["metadata"] = {
+            "month": breakdown.month,
+            "stripe_fees_jpy": stripe_jpy,
+            "self_reported_jpy": self_jpy,
+            "budget_jpy": args.budget,
+            "pct": pct,
+            "violations": len(violations),
+            "dry_run": bool(args.dry_run),
+        }
+
+        if violations:
+            _emit_violation(violations, dry_run=args.dry_run)
+            return 2  # operator must investigate
 
     return 0
 

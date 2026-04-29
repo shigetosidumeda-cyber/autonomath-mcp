@@ -1,0 +1,357 @@
+# Sentry Alert Rules — AutonoMath / jpintel-mcp
+# =================================================
+#
+# Owner: Bookyou株式会社 / 梅田茂利 / info@bookyou.net
+# Last reviewed: 2026-04-29
+# Status: DRAFT — not applied to Sentry yet. See docs/runbook/sentry_setup.md
+#         for the manual UI procedure to enter these rules.
+#
+# Why YAML and not Sentry-as-code?
+# --------------------------------
+# Sentry's Terraform provider exists but adds a moving part to a solo zero-touch
+# stack. We keep this file as the *source of truth* for review + diff, and the
+# operator clicks through Sentry UI on rare config changes. Round-trip is
+# slower than IaC, but failure surface is smaller (no provider auth, no plan
+# drift, no extra CI step). See feedback_zero_touch_solo + feedback_no_cost_schedule_hr.
+#
+# Severity tiers (per project memory feedback_zero_touch_solo + observability.md):
+#   critical: immediate email to info@bookyou.net + Sentry iOS push (fatal level)
+#   high:     hourly digest email to info@bookyou.net
+#   medium:   daily digest email
+#   low:      weekly digest email
+#
+# Channels:
+#   - Email is the *only* outbound channel. No Slack, Discord, Twilio, PagerDuty.
+#   - Sentry iOS app push is configured to fire on `level:fatal` only — that
+#     map to severity=critical here.
+#
+# Two-gate rule firing constraint:
+#   All rules below assume `environment:production`. The Sentry init in
+#   src/jpintel_mcp/api/main.py:_init_sentry skips init unless JPINTEL_ENV=prod
+#   AND SENTRY_DSN is set, so dev/staging events never reach this project.
+#   The environment filter is *belt-and-braces* defense for any leaked DSN.
+
+project:
+  org: bookyou
+  slug: autonomath-api
+  default_environment: production
+  alert_recipient: info@bookyou.net
+
+# -----------------------------------------------------------------------------
+# Severity → routing config
+# -----------------------------------------------------------------------------
+# These are what we set in Sentry → Settings → Notifications → Alerts.
+# Sentry digest cadences are per-rule, not per-severity, so we encode them
+# below on each rule (`actions[].digest`).
+
+severities:
+  critical:
+    sentry_level: fatal
+    digest_window: immediate
+    push_enabled: true
+  high:
+    sentry_level: error
+    digest_window: 1h
+    push_enabled: false
+  medium:
+    sentry_level: warning
+    digest_window: 24h
+    push_enabled: false
+  low:
+    sentry_level: info
+    digest_window: 7d
+    push_enabled: false
+
+# -----------------------------------------------------------------------------
+# Rules
+# -----------------------------------------------------------------------------
+# Each rule has the fields Sentry's UI exposes:
+#   - name: shows up in alert list
+#   - severity: one of critical/high/medium/low (drives routing)
+#   - environment: usually "production"; non-empty filter disqualifies dev/staging
+#   - condition_type: issue | metric | crash_rate | uptime
+#   - filter: Sentry search query (issue alerts) OR metric/agg shape (metric alerts)
+#   - threshold: numeric trigger value
+#   - window: time window over which threshold is evaluated
+#   - frequency: how often Sentry re-evaluates (= snooze between re-fires)
+#   - what_it_detects: human description
+#   - recommended_threshold_rationale: why these numbers and not others
+#   - actions: where to send the alert
+#
+# Sentry's actual rule editor is more nested than this; the runbook walks
+# through field-by-field which UI control corresponds to each YAML key.
+
+rules:
+
+  # ===== R3 from Stripe audit: webhook handler exception rate ===============
+  - id: webhook_handler_exception_rate
+    name: "[CRITICAL] Stripe/Postmark webhook handler exception rate > 5/hr"
+    severity: critical
+    environment: production
+    condition_type: metric
+    what_it_detects: |
+      Sentry issue events tagged with logger:autonomath.billing.webhook OR
+      logger:autonomath.email.postmark, level:error or above, in production.
+      A single misroute (signing-key drift, schema change, expired secret)
+      can burn through the Stripe retry budget and cause silent revenue loss
+      or unsynced invoices. R3 from Stripe audit: see
+      docs/_internal/breach_notification_sop.md and
+      scripts/cron/webhook_health.py.
+    filter:
+      query: 'logger:[autonomath.billing.webhook,autonomath.email.postmark] level:[error,fatal]'
+      aggregate: count()
+    threshold: 5
+    window: 1h
+    frequency: 5m
+    recommended_threshold_rationale: |
+      Stripe retries up to 3 days with exponential backoff. A rate >5/hr
+      means we are losing more events than the retry budget can cover, AND
+      the signal is past noise floor (1-2/hr is normal for legitimate
+      4xx-on-malformed-payload paths). Below 5 the cron `webhook_health.py`
+      catches the trend in the daily summary; above 5 we want pager.
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: immediate
+      - type: sentry_push
+        level: fatal
+
+  # ===== R2 from Stripe audit: usage_events unsynced ========================
+  - id: stripe_usage_events_unsynced
+    name: "[CRITICAL] Stripe usage_events unsynced count > 100"
+    severity: critical
+    environment: production
+    condition_type: metric
+    what_it_detects: |
+      A custom message tagged `metric:stripe.usage_events.unsynced` emitted
+      by `scripts/cron/stripe_reconcile.py`. The cron reconciles
+      `usage_events` (our DB) ↔ Stripe `subscription_item_usage_record_summaries`
+      and emits the unsynced count as a Sentry message at level=error if >0.
+      R2 from Stripe audit: every unsynced row is a request the customer
+      consumed but Stripe never billed for. Pure revenue leak.
+    filter:
+      query: 'metric:stripe.usage_events.unsynced level:[error,fatal]'
+      aggregate: max(extra.unsynced_count)
+    threshold: 100
+    window: 24h
+    frequency: 1h
+    recommended_threshold_rationale: |
+      Reconciler runs hourly; baseline is 0. A spike >100 over 24h could be
+      a bad webhook key (R3) catching up, an outage, or a logic bug. <100
+      is absorbed by next hour's reconcile; >100 warrants human eyes within
+      an hour because cumulative drift is real money.
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: immediate
+      - type: sentry_push
+        level: fatal
+
+  # ===== R1 from Stripe audit: invoice without T番号 detection ==============
+  - id: invoice_missing_tnumber
+    name: "[CRITICAL] Invoice issued without T番号 (qualified invoice violation)"
+    severity: critical
+    environment: production
+    condition_type: issue
+    what_it_detects: |
+      A capture_message at level=error from src/jpintel_mcp/billing/
+      stripe_edge_cases.py:_assert_invoice_tnumber that fires when a Stripe
+      invoice is finalized without the T8010001213708 registrant number in
+      the issuer block. R1 from Stripe audit: under 適格請求書発行事業者
+      registration (令和7年5月12日, T8010001213708), every invoice MUST
+      carry that T-number; failure exposes us to JCT 仕入控除否認 risk
+      against B2B customers and is a direct compliance issue.
+    filter:
+      query: 'message:"invoice missing tnumber" level:error'
+      aggregate: count()
+    threshold: 1
+    window: 1h
+    frequency: 1m
+    recommended_threshold_rationale: |
+      Threshold = 1, not 5. This is a regulatory check: even one missing
+      T-number is grounds for customer refund + manual re-issue + disclosure
+      to the affected B2B customer. We want pager on the very first event,
+      not a noise floor. 1m frequency = re-evaluate every minute so we don't
+      sit on a multi-invoice batch failure.
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: immediate
+      - type: sentry_push
+        level: fatal
+
+  # ===== High severity: API 5xx rate ========================================
+  - id: api_5xx_rate
+    name: "[HIGH] API 5xx error rate > 1% over 10 min"
+    severity: high
+    environment: production
+    condition_type: metric
+    what_it_detects: |
+      Tagged transaction failure rate. Sentry tracks transactions for FastAPI
+      via the SentryAsgiMiddleware; we filter to status_code >= 500. A 1%
+      breach over 10m typically means a backend dep (DB lock, R2 outage,
+      Stripe API error) is degrading user requests, not a one-off bug.
+    filter:
+      query: 'event.type:transaction transaction.op:http.server'
+      aggregate: failure_rate()
+      condition: 'status_code:>=500'
+    threshold: 0.01  # 1%
+    window: 10m
+    frequency: 5m
+    recommended_threshold_rationale: |
+      SLO is 99.5% availability (docs/observability.md), giving a 0.5%
+      monthly error budget. We alert at 2x SLO target (1%) over 10m so the
+      operator sees real degradation, not single requests. Lower than 1%
+      causes noise (validation errors that 4xx-converted via before_send
+      already filtered, but tail still exists).
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: 1h
+
+  # ===== High: anonymous quota lookup error =================================
+  - id: anon_quota_lookup_error
+    name: "[HIGH] Anonymous quota lookup error rate spike"
+    severity: high
+    environment: production
+    condition_type: metric
+    what_it_detects: |
+      Errors from the anonymous IP-based 50/month quota check. Path:
+      src/jpintel_mcp/api/_anon_ip_limit.py. If quota lookup itself errors,
+      we either fail-open (let everything through → DDoS / cost explosion)
+      or fail-closed (block all anonymous → reputation hit, GEO citation
+      drop). Either way we want eyes on it within an hour.
+    filter:
+      query: 'logger:autonomath.api.anon_quota level:[error,fatal]'
+      aggregate: count()
+    threshold: 10
+    window: 10m
+    frequency: 5m
+    recommended_threshold_rationale: |
+      10/10m = 1/min sustained. Below that, single transient errors are
+      tolerated (Redis blip, a corrupt IP header). Above that, a code path
+      is broken consistently. Sets pager-eligibility correctly: not P0 (the
+      auth path itself is intact), but high enough to force same-day fix.
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: 1h
+
+  # ===== Medium: webhook event count anomaly (sub.created) ==================
+  - id: subscription_created_anomaly
+    name: "[MEDIUM] Stripe sub.created event count > 2σ above 7-day median"
+    severity: medium
+    environment: production
+    condition_type: metric
+    what_it_detects: |
+      A statistical anomaly in customer.subscription.created event volume,
+      computed by scripts/cron/webhook_health.py. A spike could indicate
+      promo abuse, a bot signup wave, or a legitimate viral moment that
+      triggers cost concerns. A drop could indicate the webhook itself is
+      broken (no events arriving). Either direction is informative.
+    filter:
+      query: 'metric:stripe.webhook.sub_created.zscore'
+      aggregate: max(extra.zscore_abs)
+    threshold: 2.0
+    window: 1h
+    frequency: 1h
+    recommended_threshold_rationale: |
+      2σ ≈ 95th percentile under normal-distribution assumption (real
+      distribution is overdispersed Poisson, so 2σ is a conservative cap on
+      the right tail). Below that, daily noise. Above, something happened.
+      Daily digest cadence is fine — this isn't a customer-facing issue,
+      just a heads-up the operator can investigate at leisure.
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: 24h
+
+  # ===== Medium: backup integrity check failure =============================
+  - id: backup_integrity_failure
+    name: "[MEDIUM] Backup integrity check (SHA256 mismatch or missing run)"
+    severity: medium
+    environment: production
+    condition_type: issue
+    what_it_detects: |
+      Two cases bundled:
+        a) scripts/cron/backup_jpintel.py or backup_autonomath.py exits
+           non-zero, capturing exception via safe_capture_exception.
+        b) The "missing run" case: the daily probe in backup script verifies
+           the latest expected hourly/daily backup exists in R2 and has a
+           matching SHA256. If not, capture_message at level=error with
+           tag missing_backup_window=jpintel|autonomath.
+      Both block the disaster_recovery RTO of 30m/2h. R1+R2+R3 all assume
+      backups are restorable.
+    filter:
+      query: 'logger:autonomath.cron.backup level:[error,fatal]'
+      aggregate: count()
+    threshold: 1
+    window: 24h
+    frequency: 1h
+    recommended_threshold_rationale: |
+      Threshold = 1: the cron runs hourly (jpintel) and daily (autonomath);
+      one failure within a 24h window is meaningful because the next-window
+      backup might paper over it but the gap remains. Daily digest cadence
+      avoids paging the operator at 4am for a transient R2 timeout.
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: 24h
+
+  # ===== Low: deprecated endpoint hit =======================================
+  - id: deprecated_endpoint_hit
+    name: "[LOW] Deprecated endpoint hit"
+    severity: low
+    environment: production
+    condition_type: metric
+    what_it_detects: |
+      Any request to a route the operator has marked as deprecated via the
+      `Deprecation` and `Sunset` HTTP headers (RFC 8594/9745). The middleware
+      in src/jpintel_mcp/api/_deprecation_middleware.py emits a structured
+      log event with logger=autonomath.api.deprecation and tag
+      `deprecated_route`. We aggregate via Sentry message events.
+    filter:
+      query: 'logger:autonomath.api.deprecation level:warning'
+      aggregate: count()
+    threshold: 100
+    window: 7d
+    frequency: 24h
+    recommended_threshold_rationale: |
+      Solo ops can't deprecate a route faster than customers migrate. The
+      threshold is "100 hits in 7 days" — meaningful enough to indicate
+      active dependency, low enough to not drown the operator. Weekly
+      digest is the right cadence: deprecation campaigns play out over
+      months, not minutes.
+    actions:
+      - type: email
+        target: info@bookyou.net
+        digest: 7d
+
+# -----------------------------------------------------------------------------
+# Notes / monitoring gaps requiring follow-up code
+# -----------------------------------------------------------------------------
+# Each "metric:..." filter above expects Sentry events tagged with a specific
+# `metric:<name>` field, emitted via safe_capture_message(...) from one of
+# our cron scripts. If a metric is not yet wired, the rule will silently
+# never fire. Mapping:
+#
+#  rule id                          | emitter (must exist or be added)
+#  ---------------------------------+----------------------------------------------
+#  webhook_handler_exception_rate   | OK — auto-captured by Sentry exception handler
+#  stripe_usage_events_unsynced     | scripts/cron/stripe_reconcile.py (exists)
+#  invoice_missing_tnumber          | NEEDS WIRING — add capture_message in
+#                                   |   src/jpintel_mcp/billing/stripe_edge_cases.py
+#                                   |   when invoice template lacks T-number
+#  api_5xx_rate                     | OK — Sentry transactions auto-tagged
+#  anon_quota_lookup_error          | OK — exception path captured by FastAPI handler
+#  subscription_created_anomaly     | NEEDS WIRING — extend
+#                                   |   scripts/cron/webhook_health.py to compute
+#                                   |   z-score against 7d median and emit
+#                                   |   safe_capture_message(metric=...,zscore=...)
+#  backup_integrity_failure         | OK — backup_jpintel.py / backup_autonomath.py
+#                                   |   already use safe_capture_exception
+#  deprecated_endpoint_hit          | NEEDS WIRING — add middleware-level
+#                                   |   safe_capture_message at DEBUG sample rate;
+#                                   |   currently only structlogged.
+#
+# These three "NEEDS WIRING" tasks are listed in the runbook handoff section.

@@ -82,7 +82,12 @@ _REAL_ESTATE_TOOL_NAMES: list[str] = [
 
 
 def test_real_estate_tools_not_registered_when_disabled() -> None:
-    """Default env (flag unset) keeps the manifest at 71 tools."""
+    """Default env (flag unset) — 5 real-estate stubs are absent.
+
+    We assert ONLY no-leak rather than a fixed total — see the matching
+    note in `test_healthcare_tools.py`; canonical default-gate count
+    drifts as new tools land.
+    """
     snippet = (
         "from jpintel_mcp.mcp import server;"
         "names=set(server.mcp._tool_manager._tools.keys());"
@@ -91,7 +96,6 @@ def test_real_estate_tools_not_registered_when_disabled() -> None:
         "print(f'count={len(names)};leaked={leaked}')"
     )
     out = _run_in_subprocess(snippet, env_flag="")
-    assert "count=71" in out, f"expected 71 tools, got: {out}"
     assert "leaked=[]" in out, (
         f"real estate tools leaked into default env: {out}"
     )
@@ -103,7 +107,11 @@ def test_real_estate_tools_not_registered_when_disabled() -> None:
 
 
 def test_real_estate_tools_registered_when_enabled() -> None:
-    """AUTONOMATH_REAL_ESTATE_ENABLED=1 lifts the manifest to 76 tools."""
+    """AUTONOMATH_REAL_ESTATE_ENABLED=1 registers all 5 stubs.
+
+    Presence-only assertion — see matching note in
+    `test_healthcare_tools.py` for the rationale.
+    """
     snippet = (
         "from jpintel_mcp.mcp import server;"
         "names=set(server.mcp._tool_manager._tools.keys());"
@@ -112,7 +120,6 @@ def test_real_estate_tools_registered_when_enabled() -> None:
         "print(f'count={len(names)};present={present}')"
     )
     out = _run_in_subprocess(snippet, env_flag="1")
-    assert "count=76" in out, f"expected 76 tools, got: {out}"
     for name in _REAL_ESTATE_TOOL_NAMES:
         assert f"'{name}'" in out, f"real estate tool {name!r} not registered: {out}"
 

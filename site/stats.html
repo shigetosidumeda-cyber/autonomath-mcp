@@ -4,34 +4,54 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Stats — AutonoMath</title>
-<meta name="description" content="AutonoMath の透明性ダッシュボード。データセット件数 (programs / 採択事例 / 融資 / 行政処分 / 法令 / 税制 / 適格事業者) と source freshness、月間 API 利用量を一次資料件数ベースで公開。">
+<title>Stats — 税務会計AI</title>
+<meta name="description" content="税務会計AI の透明性ダッシュボード。データセット件数 (programs / 採択事例 / 融資 / 行政処分 / 法令 / 税制 / 適格事業者) と source freshness、月間 API 利用量を一次資料件数ベースで公開。">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="Stats — AutonoMath">
+<meta property="og:title" content="Stats — 税務会計AI">
 <meta property="og:description" content="データセット件数・freshness・月間利用量。一次資料 100% を数字で開示。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/stats.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/stats.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stats — AutonoMath">
+<meta name="twitter:title" content="Stats — 税務会計AI">
 <meta name="twitter:description" content="データセット件数・freshness・月間利用量。一次資料 100% を数字で開示。">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/stats.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/stats.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/stats.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/stats.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/stats.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/stats.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/stats.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/stats.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=20260428a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Stats — 税務会計AI",
+  "url": "https://zeimu-kaikei.ai/stats.html",
+  "description": "税務会計AI の透明性ダッシュボード。データセット件数と source freshness、月間 API 利用量。",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "税務会計AI",
+    "url": "https://zeimu-kaikei.ai/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "url": "https://zeimu-kaikei.ai/about.html"
+  }
+}
+</script>
 <style>
   .stats-page { padding: 48px 0 64px; }
   .stats-page h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
@@ -106,9 +126,8 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="AutonoMath ホーム">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/docs/">Docs</a>
@@ -128,12 +147,12 @@
   <div class="container">
 
     <h1>Stats</h1>
-    <p class="sub">AutonoMath の透明性ダッシュボード。データセット件数 / freshness / 月間 API 利用量。1 日 1 回 ライブ集計を更新。</p>
+    <p class="sub">税務会計AI の透明性ダッシュボード。データセット件数 / freshness / 月間 API 利用量。1 日 1 回 ライブ集計を更新。</p>
 
     <!-- Coverage ------------------------------------------------------------ -->
     <section class="stats-section" aria-labelledby="coverage-h">
       <h2 id="coverage-h">Coverage — データセット件数</h2>
-      <p class="desc">jpintel.db の各テーブルの行数。aggregator (二次情報源) は <strong>0 件</strong>、すべて一次資料に紐づいています。</p>
+      <p class="desc">jpintel.db の各テーブルの行数。集約サイト (二次情報源) は <strong>0 件</strong>、すべて一次資料に紐づいています。</p>
       <div class="grid" id="coverage-grid">
         <div class="card"><p class="label">programs (補助金等)</p><p class="value pending">…</p></div>
         <div class="card"><p class="label">case_studies (採択事例)</p><p class="value pending">…</p></div>
@@ -167,7 +186,7 @@
     <!-- Usage --------------------------------------------------------------- -->
     <section class="stats-section" aria-labelledby="usage-h">
       <h2 id="usage-h">Usage — 過去 30 日の API 利用量</h2>
-      <p class="desc">認証済み API key 経由の累積リクエスト数。匿名 (X-API-Key 無し) は集計対象外。グラフは日次、ラインは累積。</p>
+      <p class="desc">認証済み APIキー 経由の累積リクエスト数。匿名 (X-API-Key 無し) は集計対象外。グラフは日次、ラインは累積。</p>
       <div class="usage-chart-wrap">
         <svg id="usage-svg" viewBox="0 0 600 120" preserveAspectRatio="none" role="img" aria-label="過去 30 日の日別 API 利用量">
           <text x="300" y="60" text-anchor="middle" font-size="12" fill="#555">読み込み中…</text>
@@ -200,7 +219,7 @@
 
   // Allow override for cross-origin local dev; defaults to same-origin path
   // so Pages -> Fly proxy works in production.
-  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "autonomath.ai" ? "https://api.autonomath.ai" : "");
+  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "zeimu-kaikei.ai" ? "https://api.zeimu-kaikei.ai" : "");
 
   var COVERAGE_LABELS = [
     ["programs", "programs (補助金等)"],

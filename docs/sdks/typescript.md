@@ -1,14 +1,17 @@
 # TypeScript / JavaScript SDK
 
-Official npm package: [`@autonomath/sdk`](https://www.npmjs.com/package/@autonomath/sdk).
+Package name: `@autonomath/sdk`. **Pre-release — npm publish pending.** Source
+lives in this repo at [`sdk/typescript/`](https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/typescript).
 
 Zero runtime dependencies. Works in Node 20+, Deno, Bun, and modern browsers
 (uses the global `fetch`).
 
 ## Install
 
+Direct from git until the npm publish lands:
+
 ```bash
-npm install @autonomath/sdk
+npm install "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git#subdirectory=sdk/typescript"
 ```
 
 For the optional MCP bridge (spawn the Python `autonomath-mcp` server from Node),
@@ -44,7 +47,7 @@ for (const p of programs.results) {
 ## Authentication
 
 Pass `apiKey` to the constructor; the SDK sends it as `X-API-Key`. Issue keys
-from your [dashboard](https://autonomath.ai/dashboard).
+from your [dashboard](https://zeimu-kaikei.ai/dashboard).
 
 Without an API key, anonymous IPs get 50 requests per month (resets JST 00:00
 on the 1st).
@@ -172,7 +175,7 @@ const open = programs.results
 
 ## MCP usage
 
-The MCP server (72 tools, protocol 2025-06-18) is implemented in Python.
+The MCP server (89 tools, protocol 2025-06-18) is implemented in Python.
 Spawn it from Node for MCP hosts:
 
 ```ts
@@ -208,7 +211,7 @@ See [MCP ツール](../mcp-tools.md) for the full tool list.
 | Option            | Default                       | Notes                                    |
 | ----------------- | ----------------------------- | ---------------------------------------- |
 | `apiKey`          | `undefined`                   | `X-API-Key` header                       |
-| `baseUrl`         | `https://api.autonomath.ai`   | Override for self-host / staging         |
+| `baseUrl`         | `https://api.zeimu-kaikei.ai`   | Override for self-host / staging         |
 | `timeoutMs`       | `30000`                       | Per-request `AbortController`            |
 | `maxRetries`      | `3`                           | 429 / 5xx                                |
 | `fetch`           | global `fetch`                | Inject custom (undici, polyfill, etc.)   |

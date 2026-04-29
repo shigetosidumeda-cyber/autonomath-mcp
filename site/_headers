@@ -1,4 +1,4 @@
-# Cloudflare Pages _headers — autonomath.ai
+# Cloudflare Pages _headers — zeimu-kaikei.ai
 # Reference: https://developers.cloudflare.com/pages/configuration/headers/
 # Generated 2026-04-25 to support /structured/*.jsonld MIME + cache headers.
 
@@ -13,15 +13,18 @@
 # surface is governed by server-side input sanitization (no user input is
 # reflected into HTML on these pages). Future hardening: extract all inline
 # blocks to self-hosted .js files and drop 'unsafe-inline'.
-# `connect-src` allows the API origin (api.autonomath.ai) so dashboard JS
-# can fetch /v1/me/* with credentials. JSON-LD <script type=application/ld+json>
-# is parsed as data, not executed, so it is unaffected by script-src.
+# `connect-src` allows the API origin (api.zeimu-kaikei.ai) so dashboard JS
+# can fetch /v1/me/* with credentials, and pypi.org so /status/index.html can
+# poll the PyPI JSON endpoint for the latest published autonomath-mcp version
+# alongside the /v1/am/health/deep aggregate. JSON-LD
+# <script type=application/ld+json> is parsed as data, not executed, so it is
+# unaffected by script-src.
 # `object-src 'none'` blocks legacy <object>/<embed>/<applet> injection.
 # `frame-src 'none'` makes explicit that we never embed third-party iframes
 # (Stripe checkout is a top-level redirect, not an embedded iframe). This
 # does not affect form-action which already permits checkout/billing.stripe.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.autonomath.ai; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.zeimu-kaikei.ai https://pypi.org; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -86,13 +89,112 @@
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600
 
+# Status page — live health probe, must always re-evaluate.
+# /status/index.html embeds vanilla JS that polls /v1/am/health/deep +
+# PyPI every 30s. If browsers cache the HTML, users see stale "all green"
+# overlays after an outage clears (or worse, stale green during one).
+# max-age=0 forces revalidation on every reload; s-maxage=60 lets the edge
+# absorb crawler bursts. The JS itself controls liveness — a 60s edge cache
+# on the shell only hides newly-published copy edits, not the live status.
+/status/*
+  Cache-Control: public, max-age=0, s-maxage=60, must-revalidate
+  X-Robots-Tag: index, follow
+
+# Trial-key reveal page — never cache.
+# /trial.html receives the raw API key in the URL fragment (#api_key=...)
+# from the magic-link verify redirect. Browsers do not send fragments to
+# the server, so the key never reaches the edge cache; but the SHELL of
+# the page (the JS that reads the fragment and renders it once) must
+# always be fresh. A stale shell could either (a) miss a security copy
+# update or (b) — worse — re-render a fragment from a previous tab if
+# the user navigates back. max-age=0 + must-revalidate forces both the
+# browser and the edge to revalidate on every load. X-Robots-Tag is
+# belt+suspenders to the in-page <meta name="robots" content="noindex">.
+/trial.html
+  Cache-Control: private, no-store, max-age=0, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+
 # Homepage — short cache, longer edge cache for crawlers.
 /index.html
   Cache-Control: public, max-age=300, s-maxage=600
 
+# /playground.html — interactive REST API try-it surface. Ships a single
+# inline <script> block (~6 KB local OpenAPI mirror + fetch controller).
+# The shell rarely changes (param schema is the only churn), but visitors
+# return mid-evaluation and we want copy edits to reach them in minutes,
+# not hours. 5 min browser / 10 min edge mirrors /index.html policy
+# (similar interactive-shell pattern). Robots indexable — playground is
+# part of the funnel.
+/playground.html
+  Cache-Control: public, max-age=300, s-maxage=600
+
+# Trust-signal pages (Wave 31): roadmap, data-freshness, transparency.
+# Public roadmap, live data freshness dashboard, and source citation
+# methodology page. data-freshness.html auto-polls /v1/am/data-freshness
+# every 5 min from the browser, so a slightly fresher edge response is
+# preferable; transparency.html and roadmap.html are static-content. 1h
+# browser / 6h edge SWR matches /news/* — crawler bursts get the cached
+# copy while origin re-checks in the background, content edits propagate
+# within a day. Listed above /*.html so the more specific path wins on
+# Cloudflare's matcher.
+/roadmap.html
+  Cache-Control: public, max-age=3600, stale-while-revalidate=21600
+
+/data-freshness.html
+  Cache-Control: public, max-age=3600, stale-while-revalidate=21600
+
+/transparency.html
+  Cache-Control: public, max-age=3600, stale-while-revalidate=21600
+
+# Top-level static HTML pages (about, pricing, compare, sources, tos, privacy,
+# tokushoho, success, dashboard, glossary, partners, prompts, products,
+# alerts, line, etc). Without an explicit rule, Cloudflare Pages does not
+# edge-cache HTML, so the 2% cache hit rate measured 2026-04-29 was almost
+# entirely bot crawls hitting the same URL pattern. 1h browser / 24h edge
+# is conservative enough that any honest content update reaches users
+# within a day, while still flattening the bandwidth curve at scale.
+/*.html
+  Cache-Control: public, max-age=3600, s-maxage=86400
+
 # Per-program SEO pages — cacheable for a day, SWR a week.
 /programs/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Audience-targeted landing pages + prefecture index pages — same SEO
+# fan-out as /programs/*, mostly read by crawlers, cache aggressively.
+/audiences/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/prefectures/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Geo×program crosspages (~2,350 = 47 都道府県 × top-50 programs).
+# Same caching as /programs/* — these are static SEO derivative pages
+# generated by scripts/generate_geo_program_pages.py.
+/cross/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Per-competitor comparison pages (/compare/{slug}/index.html).
+# Hand-curated SEO + conversion pages (10 alternatives × 13-15 axes each).
+# 1d browser / 7d edge SWR — content updates monthly (or on competitor TOS
+# changes). Generated by scripts/generate_compare_pages.py from
+# docs/compare_matrix.csv.
+/compare/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Citation-targeted Q&A pages (GEO / FAQPage JSON-LD).
+# Generated by scripts/generate_geo_citation_pages.py from a curated catalog
+# of 76 high-volume JP-compliance questions, each backed by ≥1 primary-source
+# citation (METI / NTA / 中小企業庁 / e-Gov / 公庫 / MOF). LLM crawlers
+# (Perplexity / ChatGPT / Claude / Gemini) are the primary audience. Updates
+# happen on quarterly source-verification cycles, so cache aggressively:
+# 1 day browser / 7 days edge SWR (mirrors /programs/* policy).
+/qa/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# English variants of every page sit under /en/. Same caching as parent.
+/en/*
+  Cache-Control: public, max-age=3600, s-maxage=86400
 
 # Fingerprinted static assets — immutable, 1y cache.
 # Note: site/styles.css and site/dashboard.js are *not* fingerprinted —
@@ -108,7 +210,7 @@
 # Self-hosted Noto Sans JP woff2 subsets (mkdocs theme).
 # Path-fingerprinted by sha10 of the upstream gstatic URL → safe to
 # cache 1y immutable. Access-Control-Allow-Origin enables cross-subdomain
-# use (e.g. api.autonomath.ai docs preview).
+# use (e.g. api.zeimu-kaikei.ai docs preview).
 /static/fonts/*
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
@@ -124,3 +226,24 @@
 
 /assets/*.svg
   Cache-Control: public, max-age=2592000
+
+# Industry × program crosspages — same SEO fan-out as /programs/*, mostly
+# read by crawlers, cache aggressively.
+/industries/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Auto-generated news posts (制度変更検出) — fresher than /programs/* on
+# purpose. /news/* is rebuilt weekly from the制度改正検出ログ so the latest
+# real change is the asset that drives the SEO + GEO citation flywheel.
+# 1h browser cache + 6h edge stale-while-revalidate keeps crawlers seeing
+# fresh material on every recheck without thrashing the origin.
+/news/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=21600
+
+# Integrations tutorials (Claude Desktop / Cursor / Cline / OpenAI Custom GPT)
+# — hand-written 5-min step-by-step guides + SDK sample index. Mostly read by
+# evaluator humans + AI crawlers. Cache 1h browser / 24h edge: copy edits to
+# config snippets / version bumps reach users within a day, edge soaks up the
+# burst when a new tutorial drops on Hacker News / X / Zenn.
+/integrations/*
+  Cache-Control: public, max-age=3600, s-maxage=86400

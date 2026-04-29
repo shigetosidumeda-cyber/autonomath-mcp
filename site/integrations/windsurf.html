@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Windsurf で 税務会計AI を使う — 5 分で動く統合ガイド (MCP 89 tools)</title>
+<meta name="description" content="Codeium Windsurf に 税務会計AI MCP サーバを接続する手順。~/.codeium/windsurf/mcp_config.json に JSON 1 行追記で 89 MCP tools (search_programs / search_laws / search_invoice_registrants 等) が Cascade chat から呼べる。stdio + protocol 2025-06-18。登録不要 / 50 req/月 無料。">
+
+<meta property="og:title" content="Windsurf で 税務会計AI を使う — 5 分統合ガイド">
+<meta property="og:description" content="Windsurf Cascade に MCP JSON 1 行で 89 tools 統合。stdio + protocol 2025-06-18、50 req/月 無料。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://zeimu-kaikei.ai/integrations/windsurf.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Windsurf で 税務会計AI を使う">
+<meta name="twitter:description" content="Windsurf Cascade に JSON 1 行で 89 MCP tools 統合。">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://zeimu-kaikei.ai/integrations/windsurf.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "name": "Bookyou株式会社",
+  "legalName": "Bookyou株式会社",
+  "alternateName": "税務会計AI",
+  "url": "https://zeimu-kaikei.ai/",
+  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "email": "info@bookyou.net",
+  "identifier": "T8010001213708",
+  "taxID": "T8010001213708",
+  "foundingDate": "2025-05-12",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressRegion": "東京都",
+    "addressLocality": "文京区",
+    "streetAddress": "小日向 2-22-1"
+  },
+  "founder": {"@type": "Person", "name": "梅田茂利"},
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "info@bookyou.net",
+    "contactType": "customer support",
+    "availableLanguage": ["ja", "en"]
+  },
+  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber"]
+}
+</script>
+
+<script defer src="/analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Windsurf で 税務会計AI を使う",
+  "description": "Codeium Windsurf に AutonoMath MCP サーバ (v0.3.1) を接続して 89 tools を Cascade chat から呼び出す手順 (5 分、stdio + protocol 2025-06-18)。",
+  "url": "https://zeimu-kaikei.ai/integrations/windsurf.html",
+  "inLanguage": "ja",
+  "author": {"@id": "https://zeimu-kaikei.ai/#publisher"},
+  "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"},
+  "proficiencyLevel": "Beginner"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Windsurf に 税務会計AI MCP サーバを追加する",
+  "description": "Codeium Windsurf に autonomath-mcp v0.3.1 を 5 分で接続して 89 MCP tools を Cascade chat から呼び出す手順。",
+  "totalTime": "PT5M",
+  "tool": [
+    {"@type": "HowToTool", "name": "Windsurf 1.0+ (Codeium IDE)"},
+    {"@type": "HowToTool", "name": "Python 3.10+ (pip または uvx)"}
+  ],
+  "step": [
+    {"@type": "HowToStep", "position": 1, "name": "API キー取得 (任意)", "text": "50 req/月 までは認証不要。本番は /signup から発行。", "url": "https://zeimu-kaikei.ai/integrations/windsurf.html#step1"},
+    {"@type": "HowToStep", "position": 2, "name": "autonomath-mcp をインストール", "text": "pip install autonomath-mcp、または uvx autonomath-mcp で ephemeral 起動。", "url": "https://zeimu-kaikei.ai/integrations/windsurf.html#step2"},
+    {"@type": "HowToStep", "position": 3, "name": "mcp_config.json を編集", "text": "Settings → Cascade → MCP Servers から JSON 編集、または ~/.codeium/windsurf/mcp_config.json を直接編集。", "url": "https://zeimu-kaikei.ai/integrations/windsurf.html#step3"},
+    {"@type": "HowToStep", "position": 4, "name": "動作確認 + 期待 response", "text": "Cascade chat で search_programs を呼ぶプロンプトを実行。補助金 3 件 + source_url 付き response。", "url": "https://zeimu-kaikei.ai/integrations/windsurf.html#step4"},
+    {"@type": "HowToStep", "position": 5, "name": "Troubleshoot", "text": "PATH 解決失敗 → 絶対パス指定 / uvx 切替、Cascade Refresh で再起動。", "url": "https://zeimu-kaikei.ai/integrations/windsurf.html#step5"}
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="logo">税務会計AI</a>
+    <nav>
+      <a href="/products.html">Products</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="/integrations/" aria-current="page">Integrations</a>
+      <a href="/dashboard.html">Dashboard</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" style="max-width:920px;margin:40px auto;padding:0 20px;line-height:1.7;">
+
+<p style="font-size:0.9em;color:#666;margin-bottom:6px;"><a href="/integrations/">Integrations</a> / Windsurf</p>
+<h1 style="margin-bottom:0.2em;">Windsurf で 税務会計AI を使う</h1>
+<p style="color:#444;font-size:1.05em;margin-top:0;">5 分で動く統合ガイド (登録不要 / Free 50 req/月)</p>
+
+<aside style="border:1px solid #c8e0c8;background:#f3faf3;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
+<strong>所要時間:</strong> 5 分以内。<strong>必要なもの:</strong> Windsurf 1.0 以降 (Codeium 公式 IDE) + Python 3.10 以降 (<code>pip</code> または <code>uvx</code>)。<strong>API キー不要</strong> — 50 req/月 per IP は匿名で動きます。<strong>stdio 接続、protocol 2025-06-18 対応。</strong>
+</aside>
+
+<aside style="border:1px solid #d8d3a8;background:#fafae8;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:0.92em;">
+<strong>ボリューム:</strong> プログラム <strong>11,684 件 (検索可)</strong> / 全 14,472 件 / 89 MCP tools / autonomath-mcp <strong>v0.3.1</strong>。Windsurf Cascade は MCP の stdio をネイティブサポートするので JSON 1 個で 89 tools を Cascade から直接呼べます。
+</aside>
+
+<h2 id="step1">Step 1 — API キーを取得 (任意)</h2>
+<p>50 req/月 までは認証不要 (anonymous tier、IP 単位、JST 月初 00:00 リセット)。本番運用は <a href="/dashboard.html">Dashboard</a> から API キー (<code>sk_...</code>) を発行 → <strong>Stripe metered で ¥3/req 自動課金</strong> (税込 ¥3.30、最低料金・年契約・tier なし)。signup form は <a href="/">トップページ</a> または <a href="/dashboard.html">Dashboard</a>。</p>
+
+<h2 id="step2">Step 2 — autonomath-mcp をインストール</h2>
+
+<p>Windsurf 内蔵ターミナル (<kbd>Ctrl+`</kbd>) で:</p>
+
+<div class="code-block" data-code="pip install autonomath-mcp">
+<pre><code>pip install autonomath-mcp</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p>または <code>uvx</code> で ephemeral 実行 (PATH 汚染なし、自動アップデート):</p>
+<div class="code-block" data-code="uvx autonomath-mcp">
+<pre><code>uvx autonomath-mcp</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p>動作確認:</p>
+<div class="code-block" data-code="autonomath-mcp --version">
+<pre><code>autonomath-mcp --version
+# → autonomath-mcp 0.3.1</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<h2 id="step3">Step 3 — mcp_config.json を編集</h2>
+
+<p>Windsurf の Cascade は MCP 設定を <code>mcp_config.json</code> から読みます。2 つの編集経路:</p>
+
+<p><strong>経路 A — UI から (推奨):</strong></p>
+<ol>
+<li>Windsurf 右上 <strong>Settings</strong> アイコン → <strong>Cascade</strong> → <strong>MCP Servers</strong> セクション</li>
+<li><strong>+ Add new MCP server</strong> または <strong>Edit raw config</strong> をクリック</li>
+</ol>
+
+<p><strong>経路 B — ファイルを直接編集:</strong></p>
+<table style="width:100%;border-collapse:collapse;margin:14px 0;">
+<thead><tr style="border-bottom:2px solid #ddd;">
+<th style="text-align:left;padding:8px 6px;">OS</th>
+<th style="text-align:left;padding:8px 6px;"><code>mcp_config.json</code></th>
+</tr></thead>
+<tbody>
+<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>macOS</strong></td><td style="padding:6px;"><code>~/.codeium/windsurf/mcp_config.json</code></td></tr>
+<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>Windows</strong></td><td style="padding:6px;"><code>%USERPROFILE%\.codeium\windsurf\mcp_config.json</code></td></tr>
+<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>Linux</strong></td><td style="padding:6px;"><code>~/.codeium/windsurf/mcp_config.json</code></td></tr>
+</tbody>
+</table>
+
+<p>ファイルが無ければ新規作成。中身は以下を貼り付け (既存があれば <code>"zeimu-kaikei"</code> キーだけ追加):</p>
+
+<div class="code-block" data-code='{
+  "mcpServers": {
+    "zeimu-kaikei": {
+      "command": "autonomath-mcp"
+    }
+  }
+}'>
+<pre><code>{
+  "mcpServers": {
+    "zeimu-kaikei": {
+      "command": "autonomath-mcp"
+    }
+  }
+}</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<details style="margin:14px 0;">
+<summary style="cursor:pointer;color:#0066cc;font-weight:600;">API キー入りバージョン (50 req/月 を超える運用)</summary>
+<div class="code-block" data-code='{
+  "mcpServers": {
+    "zeimu-kaikei": {
+      "command": "autonomath-mcp",
+      "env": {
+        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
+      }
+    }
+  }
+}'>
+<pre><code>{
+  "mcpServers": {
+    "zeimu-kaikei": {
+      "command": "autonomath-mcp",
+      "env": {
+        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
+      }
+    }
+  }
+}</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+</details>
+
+<details style="margin:14px 0;">
+<summary style="cursor:pointer;color:#0066cc;font-weight:600;"><code>uvx</code> 版 (PATH 解決の trouble を回避)</summary>
+<div class="code-block" data-code='{
+  "mcpServers": {
+    "zeimu-kaikei": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"]
+    }
+  }
+}'>
+<pre><code>{
+  "mcpServers": {
+    "zeimu-kaikei": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"]
+    }
+  }
+}</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+</details>
+
+<p style="font-size:0.92em;color:#555;">JSON 保存後、Cascade パネルの <strong>Refresh</strong> アイコン (円形矢印) をクリック、または Windsurf を再起動。MCP Servers 一覧に <code>zeimu-kaikei (89 tools)</code> と表示されれば成功。</p>
+
+<h2 id="step4">Step 4 — 動作確認 + 期待される response</h2>
+
+<p>Cascade chat (<kbd>Cmd+L</kbd> / <kbd>Ctrl+L</kbd>) を開いて以下を貼り付け:</p>
+
+<div class="code-block" data-code="search_programs を呼んで prefecture=東京都 + target_type=中小企業 + keyword=省エネ で 3 件取得。primary source URL もつけて。">
+<pre><code>search_programs を呼んで prefecture=東京都 + target_type=中小企業 + keyword=省エネ で 3 件取得。primary source URL もつけて。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p>Cascade が <code>search_programs</code> ツール呼び出しの承認ダイアログを出します (Cascade は read-only ツールも初回承認制)。</p>
+
+<h3 style="margin-top:18px;">期待される response (整形後)</h3>
+<pre style="background:#f6f6f6;padding:14px;border-radius:6px;font-size:0.85em;overflow-x:auto;line-height:1.5;">[Tool] zeimu-kaikei → search_programs
+  args: {"prefecture": "東京都", "target_type": "中小企業", "keyword": "省エネ", "limit": 3}
+  → 200 OK (3 results, 0.34s)
+
+東京都 × 中小企業 × 省エネ 補助金 3 件:
+
+1. <strong>省エネルギー設備等導入支援事業</strong> (東京都環境局)
+   - 補助率: 1/2 / 上限 1,500 万円
+   - 締切: 2026-06-30
+   - 出典: https://www.kankyo.metro.tokyo.lg.jp/.../...
+   - 出典取得: 2026-04-22
+
+2. <strong>地球温暖化対策報告書制度 設備更新支援</strong> (東京都)
+   - 補助率: 1/3 / 上限 800 万円
+   - 出典: https://www.kankyo.metro.tokyo.lg.jp/.../...
+
+3. <strong>(都) 中小企業者向け 省エネ促進税制</strong>
+   - 取得価額の 30% 特別償却
+   - 出典: https://www.zeimu.metro.tokyo.lg.jp/.../...
+
+※ 上記は情報検索結果です。個別の助成判断は税理士法 §52 により税理士・行政書士へ。</pre>
+
+<p style="font-size:0.9em;color:#555;margin-top:10px;">この一連の流れで <strong>1 リクエスト消費</strong> (anonymous tier 50/月)。</p>
+
+<h3 id="more-prompts" style="margin-top:24px;">cohort 別 sample queries</h3>
+<ul>
+<li><strong>M&A:</strong> <code>dd_profile_am で 法人番号 T8010001213708 の DD profile (採択 + 適格請求書 + 行政処分 + 公示送達)</code></li>
+<li><strong>税理士:</strong> <code>smb_starter_pack で 製造業 × 埼玉県 の SMB スターターパック (補助金 + 融資 + 採択事例 + 締切)</code></li>
+<li><strong>補助金 consultant:</strong> <code>check_exclusions で 事業再構築補助金 と ものづくり補助金 の同時申請可否を判定</code></li>
+</ul>
+
+<h2 id="step5">Step 5 — Troubleshoot</h2>
+
+<h3 style="margin-top:14px;">1. MCP Servers 一覧に表示されない / "Failed to start"</h3>
+<ul>
+<li>Cascade パネル → MCP Servers 該当行 → <strong>Show Logs</strong> でスタックトレース確認</li>
+<li>大抵は <code>autonomath-mcp: command not found</code> → <code>which autonomath-mcp</code> 結果を絶対パスで指定</li>
+<li>あるいは <code>"command": "uvx", "args": ["autonomath-mcp"]</code> に切替</li>
+<li>Refresh ボタンで再ロード</li>
+</ul>
+
+<h3 style="margin-top:14px;">2. JSON syntax error</h3>
+<ul>
+<li><code>python -m json.tool ~/.codeium/windsurf/mcp_config.json</code> で valid 確認 (macOS)</li>
+<li>カンマ抜け / 余分なカンマで詰まりがち。VS Code 互換 (<kbd>Ctrl+Shift+P</kbd> → JSON: Validate)</li>
+</ul>
+
+<h3 style="margin-top:14px;">3. Cascade がツールを呼んでくれない</h3>
+<ul>
+<li>プロンプトに <code>zeimu-kaikei MCP の search_programs を使って</code> のように tool 名を明示</li>
+<li>Cascade の Mode が <strong>Write</strong> になっていることを確認 (Read-only モードはツール承認をスキップしない)</li>
+</ul>
+
+<h3 style="margin-top:14px;">4. 50 req/月 の残量を確認</h3>
+<ul>
+<li>Cascade に <code>get_usage_status を呼んで残クォータを教えて</code> と指示。<strong>このツール呼び出し自体はクォータを消費しません</strong> (probe-only)</li>
+<li>JST 月初 00:00 に自動リセット</li>
+</ul>
+
+<h2 id="next-steps">次のステップ</h2>
+<ul>
+<li><strong><a href="/pricing.html">Pricing</a></strong> — 50 req/月 を超える本番運用は ¥3/req metered (税込 ¥3.30)。tier・最低料金・年契約なし</li>
+<li><strong><a href="/docs/api-reference/">API Reference</a></strong> — 89 MCP tools 完全仕様 + パラメータ + レスポンスシェイプ</li>
+<li><strong><a href="/docs/mcp-tools/">MCP ツール一覧</a></strong> — 89 tools 早見表</li>
+<li><strong><a href="/integrations/claude-desktop.html">Claude Desktop</a></strong> / <strong><a href="/integrations/cursor.html">Cursor</a></strong> / <strong><a href="/integrations/cline.html">Cline</a></strong> / <strong><a href="/integrations/continue.html">Continue.dev</a></strong> / <strong><a href="/integrations/gemini.html">Gemini</a></strong></li>
+</ul>
+
+<p style="margin-top:40px;font-size:0.85em;color:#666;border-top:1px solid #eee;padding-top:14px;">
+免責: 本 API は情報検索のみを提供します。税理士法 §52 により個別の税務助言は<a href="/advisors.html">税理士</a>にご相談ください。<br>
+発行: <a href="/about.html">Bookyou株式会社</a> (法人番号 T8010001213708)
+</p>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© Bookyou株式会社 — <a href="/tos.html">利用規約</a> · <a href="/privacy.html">プライバシー</a> · <a href="/tokushoho.html">特商法</a></p>
+  </div>
+</footer>
+
+<style>
+  .code-block {position:relative;margin:12px 0;}
+  .code-block pre {background:#f6f6f6;padding:14px 80px 14px 14px;border-radius:6px;font-size:0.9em;overflow-x:auto;margin:0;line-height:1.5;}
+  .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #ccc;border-radius:4px;padding:4px 10px;font-size:0.82em;cursor:pointer;color:#333;font-family:inherit;}
+  .code-block .copy-btn:hover {background:#f0f0f0;}
+  .code-block .copy-btn.copied {background:#d4f4d4;border-color:#7bc77b;color:#226622;}
+  kbd {background:#eee;border:1px solid #bbb;border-radius:3px;padding:1px 5px;font-size:0.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+</style>
+<script>
+  document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.code-block');
+      var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
+      var done = function(){
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function(){
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
+          document.body.removeChild(ta);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

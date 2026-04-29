@@ -71,6 +71,36 @@ class Settings(BaseSettings):
     r8_versioning_enabled: bool = Field(
         default=True, alias="AUTONOMATH_R8_VERSIONING_ENABLED"
     )
+    # Snapshot tool registration gate (`query_at_snapshot`). Migration 067
+    # was REFERENCED by snapshot_tool but never actually written — the
+    # tool errors with "no such column: valid_from" on every invocation
+    # (smoke test 2026-04-29). Default False so the broken tool stays out
+    # of `tools/list`. Flip to "1" / "true" once migration 067 lands and
+    # adds `valid_from` / `valid_until` to programs / laws / tax_rulesets.
+    autonomath_snapshot_enabled: bool = Field(
+        default=False, alias="AUTONOMATH_SNAPSHOT_ENABLED"
+    )
+    # Reasoning subsystem gate (`intent_of` + `reason_answer`). Both tools
+    # depend on a `reasoning` package (lazy-imported via _reasoning_import)
+    # which is NOT present in the current install — every invocation returns
+    # `subsystem_unavailable` (smoke test 2026-04-29). Default False so the
+    # broken pair stays out of `tools/list`. Flip to "1" / "true" once the
+    # `reasoning` package is bundled into the install (or relocated to a
+    # path on sys.path).
+    autonomath_reasoning_enabled: bool = Field(
+        default=False, alias="AUTONOMATH_REASONING_ENABLED"
+    )
+    # Graph-walk tool gate (`related_programs`). 2026-04-29 rewritten to
+    # read `am_relation` + `am_entities` directly from autonomath.db (same
+    # store ``graph_traverse_tool.py`` already uses). The legacy
+    # ``am_node`` / graph.sqlite path is gone. Default flipped to True so
+    # the tool is registered out of the box; the env var is retained as a
+    # one-flag rollback in case a regression surfaces. Distinct from
+    # `graph_traverse` (which has its own AUTONOMATH_GRAPH_TRAVERSE_ENABLED
+    # gate and walks v_am_relation_all multi-kind).
+    autonomath_graph_enabled: bool = Field(
+        default=True, alias="AUTONOMATH_GRAPH_ENABLED"
+    )
     # R5 prerequisite_chain — surfaces the multi-step certification / 計画
     # / agency-relation prerequisites that gate a target program. Reads
     # from `am_prerequisite_bundle` (795 rows / 135 programs / 1.6%
@@ -83,6 +113,36 @@ class Settings(BaseSettings):
     # analysis_wave18/_r5_prerequisite_chain_2026-04-25.md.
     prerequisite_chain_enabled: bool = Field(
         default=True, alias="AUTONOMATH_PREREQUISITE_CHAIN_ENABLED"
+    )
+    # Migration 103: NTA primary-source corpus tools (find_saiketsu /
+    # cite_tsutatsu / find_shitsugi / find_bunsho_kaitou) reading from
+    # nta_saiketsu / nta_tsutatsu_index / nta_shitsugi / nta_bunsho_kaitou.
+    # Sources: 国税不服審判所 (kfs.go.jp) + 国税庁 (nta.go.jp). All rows are
+    # PUBLIC government documents under government-standard 利用規約 (PDL
+    # v1.0 / ministry standard). Every result envelope carries a 税理士法
+    # §52 _disclaimer declaring the output citation-only retrieval.
+    # Default True; flip to "0" / "false" via env for one-flag rollback.
+    autonomath_nta_corpus_enabled: bool = Field(
+        default=True, alias="AUTONOMATH_NTA_CORPUS_ENABLED"
+    )
+    # Wave 22 composition tools (5 MCP surfaces): match_due_diligence_questions /
+    # prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction /
+    # bundle_application_kit. Pure SQLite + Python, NO LLM, every response carries
+    # `_next_calls` + `corpus_snapshot_id` + `corpus_checksum`; the §52 / §72 / §1
+    # surfaces also emit a `_disclaimer`. Default True. Flip to "0" / "false" via env
+    # for a one-flag rollback (the tool module reads via os.environ.get for fast
+    # short-circuit at import time — this Settings field mirrors the value for
+    # discoverability / typed-access in code paths that already hold a Settings).
+    autonomath_wave22_enabled: bool = Field(
+        default=True, alias="AUTONOMATH_WAVE22_ENABLED"
+    )
+    # Wave 23 industry pack wrappers (3 MCP surfaces): pack_construction (JSIC D) /
+    # pack_manufacturing (JSIC E) / pack_real_estate (JSIC K). Bundle programs +
+    # nta_saiketsu citations + 通達 references in 1 req. NO LLM, single ¥3/req.
+    # Sensitive (§52 / §47条の2): every response carries `_disclaimer` + `_next_calls`.
+    # Default True. Same rollback semantics as wave22 above.
+    autonomath_industry_packs_enabled: bool = Field(
+        default=True, alias="AUTONOMATH_INDUSTRY_PACKS_ENABLED"
     )
     # Prompt-injection guard layered on top of INV-22 (景表法) sanitizer.
     # Strips override directives ("ignore previous instructions",
@@ -166,11 +226,21 @@ class Settings(BaseSettings):
     # whose `Origin` header is set and not on the list with 403 (covers
     # both regular and OPTIONS preflight). Same-origin requests (no
     # `Origin` header) and server-to-server callers (curl, Stripe webhook)
-    # are unaffected. Default whitelists production only — local dev
-    # callers must set JPINTEL_CORS_ORIGINS explicitly (e.g.
-    # `JPINTEL_CORS_ORIGINS="http://localhost:3000,http://localhost:8080"`).
+    # are unaffected. Default whitelists production marketing surfaces +
+    # API host. Apex AND www MUST both be listed — the homepage prescreen,
+    # saved searches, customer webhooks dashboard, and audit log all run
+    # browser-side fetch() against api.zeimu-kaikei.ai and inherit the
+    # rendering origin (apex or www depending on canonical redirect).
+    # Local dev callers must override JPINTEL_CORS_ORIGINS explicitly
+    # (e.g. `JPINTEL_CORS_ORIGINS="http://localhost:3000,http://localhost:8080"`).
     cors_origins: str = Field(
-        default="https://autonomath.ai,https://api.autonomath.ai",
+        default=(
+            "https://zeimu-kaikei.ai,"
+            "https://www.zeimu-kaikei.ai,"
+            "https://api.zeimu-kaikei.ai,"
+            "https://autonomath.ai,"
+            "https://www.autonomath.ai"
+        ),
         alias="JPINTEL_CORS_ORIGINS",
     )
 
@@ -194,6 +264,17 @@ class Settings(BaseSettings):
     )
 
     api_key_salt: str = Field(default="dev-salt", alias="API_KEY_SALT")
+    # HMAC secret for the audit_seal envelope (税理士事務所 bundle, 2026-04-29).
+    # Distinct from api_key_salt on purpose: a leaked api_key_salt only
+    # affects key-lookup integrity, but the audit_seal is the customer-facing
+    # tamper-evident receipt embedded in every metered response — rotating
+    # the audit-seal secret invalidates every previously issued seal, so it
+    # must be kept stable across deploys for the 7-year tax-record retention
+    # window. Default 'dev-audit-seal-salt' is sentinel-only; production sets
+    # AUDIT_SEAL_SECRET on Fly via `fly secrets set`.
+    audit_seal_secret: str = Field(
+        default="dev-audit-seal-salt", alias="AUDIT_SEAL_SECRET"
+    )
     # Hard daily cap for authenticated keys whose `tier="free"`. This is the
     # dunning-demote state (a paid customer whose card is failing) — NOT the
     # public Free tier, which is anonymous and governed by anon_rate_limit
@@ -244,7 +325,7 @@ class Settings(BaseSettings):
     # (no-reply@[DOMAIN]). `reply` is the Reply-To we set so humans answering
     # hit a monitored mailbox (hello@[DOMAIN]).
     postmark_from_transactional: str = Field(
-        default="noreply@autonomath.ai", alias="POSTMARK_FROM_TRANSACTIONAL"
+        default="noreply@zeimu-kaikei.ai", alias="POSTMARK_FROM_TRANSACTIONAL"
     )
     postmark_from_reply: str = Field(
         default="info@bookyou.net", alias="POSTMARK_FROM_REPLY"

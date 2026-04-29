@@ -83,7 +83,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
 USER_AGENT = (
     "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-ppc (contact=ops@autonomath.ai)"
+    "ingest-ppc (contact=ops@zeimu-kaikei.ai)"
 )
 BASE = "https://www.ppc.go.jp"
 HTTP_TIMEOUT = 60

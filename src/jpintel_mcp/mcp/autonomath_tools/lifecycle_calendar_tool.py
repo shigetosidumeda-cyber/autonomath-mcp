@@ -591,7 +591,7 @@ if _ENABLED:
             ),
         ] = "month",
     ) -> dict[str, Any]:
-        """[O4-LIFECYCLE-CALENDAR] tax sunset + program sunset + application close + law cliff を月別/半期別 1 コール merge。
+        """[O4-LIFECYCLE-CALENDAR] Returns merged calendar of tax sunset + program sunset + application close + law cliff events. Output is search-derived from public-source data; verify primary source (source_url) for business decisions.
 
         WHAT: 4 source (am_tax_rule.effective_until / am_amendment_snapshot
         .effective_* (ISO のみ) / am_application_round.application_close_date /

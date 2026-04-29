@@ -35,6 +35,24 @@ _ENVELOPE_ONLY_KEYS = {
     "meta",
 }
 
+# REST-only payload keys not shared with MCP transport. Strip from the
+# REST side before parity comparison with MCP.
+#
+#   corpus_snapshot_id / corpus_checksum
+#       会計士 work-paper reproducibility (2026-04-29). Injected by
+#       `attach_corpus_snapshot()` after the L4 cache fetch so the snapshot
+#       reflects the LIVE corpus state at request time. MCP gets the same
+#       row payload but its envelope does not surface this audit pair.
+#   static_url
+#       /v1/programs/{id} ships a hyperlink to the per-program SEO page
+#       (`site/_templates/program.html`). MCP returns the same row payload
+#       without the static_url because MCP is for AI agents, not browsers.
+_REST_ONLY_KEYS = {
+    "corpus_snapshot_id",
+    "corpus_checksum",
+    "static_url",
+}
+
 
 # ---------------------------------------------------------------------------
 # /v1/programs/search
@@ -231,9 +249,12 @@ def test_mcp_rest_parity_full(client):
     mcp = mcp_get_program("UNI-test-s-1", fields="full")
     # Parity is on the underlying tool fields. MCP wraps the payload with
     # an additive envelope (status, api_version, ...); strip those before
-    # comparing. REST does not get the envelope, so do not strip from REST.
+    # comparing. REST does not get the envelope, but does get REST-only
+    # additions (corpus_snapshot_id / corpus_checksum / static_url) —
+    # strip those from the REST side before comparison.
     mcp_payload_keys = set(mcp.keys()) - _ENVELOPE_ONLY_KEYS
-    assert set(rest.keys()) == mcp_payload_keys
+    rest_payload_keys = set(rest.keys()) - _REST_ONLY_KEYS
+    assert rest_payload_keys == mcp_payload_keys
 
 
 def test_mcp_minimal_same_whitelist(client):

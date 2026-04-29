@@ -5,7 +5,7 @@
 # Canonical trailing-slash for docs
 /docs  /docs/  301
 
-# Legacy /getting-started.html → mkdocs Material doc (Wave 23 cleanup).
+# Legacy /getting-started.html → mkdocs Material doc.
 # Real onboarding lives at /docs/getting-started/. Internal links across
 # site/index.html, prescreen-demo.js, etc. still point at the .html path;
 # this server-side 301 is the primary fallback. site/getting-started.html
@@ -13,9 +13,22 @@
 /getting-started.html  /docs/getting-started/  301
 /getting-started       /docs/getting-started/  301
 
-# NOTE: removed legacy `/programs/UNI-:id → /programs/ 301`. Per-program
-# SEO pages now live at /programs/UNI-xxx.html (10,951 deployed). CF Pages
-# auto-strips .html. If a legacy non-existent UNI-* path is hit, 404.
+# Per-program SEO pages live at /programs/{slug}-{sha1-6}.html (NOT
+# /programs/UNI-xxx.html — UNI ids are unified_id only, the static
+# filenames are derived from primary_name via utils/slug.py). The API
+# now ships a `static_url` field so result cards can link directly to
+# the canonical slug+hash file.
+#
+# The rules below catch legacy inbound traffic that targets the old
+# /programs/UNI-xxxxxxxxxx[.html] pattern (old emails, blog posts, AI
+# agent guess-the-URL) and bounces it to /programs/share.html, which
+# resolves the id via /v1/programs/batch and renders a real card. The
+# `UNI-` literal prefix in the source path means only UNI-shaped legacy
+# requests get rewritten — slug-shaped /programs/{slug}-hash.html static
+# files match an actual file on disk first and CF Pages serves them
+# directly (file-system match wins over _redirects rules).
+/programs/UNI-:uid.html  /programs/share.html?ids=UNI-:uid  302
+/programs/UNI-:uid       /programs/share.html?ids=UNI-:uid  302
 
 # NOTE: pretty URL rewrites removed — CF Pages auto-strips .html
 # extension, so /pricing → site/pricing.html works natively. The
@@ -27,10 +40,14 @@
 # Bare /go works natively via CF .html stripping.
 # S3 friction-removal landing — /go/upgrade?from=429 (linked from anon
 # 429 body + X-Anon-Upgrade-Url header) is the anon → paid conversion
-# entry point. Redirected to /go so users land on the existing Stripe
-# checkout UI without forking the device-flow logic; ?from=429 is
-# preserved by the 302 for funnel attribution.
-/go/upgrade /go  302
+# entry point. Originally pointed at /go, but /go.html is the device-flow
+# activation page that REQUIRES a user_code (e.g. ABCD-1234) — a 429-bouncer
+# arriving from a curl/browser has no code, so they bounced. Now redirected
+# to /upgrade.html which explains the 50 req/月 cap, points at pricing
+# (#api-paid), and offers the device-flow path as a tertiary link for
+# people who got there with a code. Query string is preserved by CF for
+# funnel attribution.
+/go/upgrade /upgrade.html  302
 /go/:code /go  302
 
 # ─────────────────────────────────────────────────────────────────────────
@@ -79,3 +96,19 @@
 # but /dash and /account are common shortcuts users try.
 /dash        /dashboard.html  302
 /account     /dashboard.html  302
+
+# ─────────────────────────────────────────────────────────────────────────
+# Jinja2 source-template leak guard.
+#
+# `site/_templates/*.html` are Jinja2 source files (program.html, qa.html,
+# cross.html, prefecture.html, news_post.html, industry_program.html,
+# prefecture_index.html). They are read by scripts/generate_*_pages.py and
+# rendered into final HTML at /programs/*, /qa/*/*.html, /prefectures/*,
+# /industries/*, /news/*. The raw .html files contain unrendered `{{ var }}`
+# placeholders — if they leaked to the public domain, search engines would
+# index broken markup. This rule marks the path gone (404) so Cloudflare
+# Pages refuses to serve them even if they end up in the deploy artifact.
+# Cloudflare Pages `_redirects` supports 200/301/302/303/307/308/404.
+# We use 404 (resource permanently absent) instead of 410 because CF Pages
+# rejects unknown status codes. /404 itself is the existing /404.html page.
+/_templates/*  /404  404

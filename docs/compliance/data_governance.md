@@ -11,7 +11,7 @@
 
 AutonoMath は、お客様が「受給可能な制度の一次資料に到達する」ための導線を提供します。その価値の源泉は**データ品質の信頼性**にあります。本 policy は以下を目的とします:
 
-1. 誤情報混入の防止 (詐欺リスク回避)
+1. 誤情報混入の防止 (情報精度の確保)
 2. 一次資料への canonical link の維持
 3. 撤回制度の適切な取り扱い
 4. 誤情報発見時の修正 path の明確化
@@ -33,11 +33,11 @@ DB に ingest してよいのは、以下のドメインで公開されている
 | 国の審議会 / 政府統計 | e-Gov, e-Stat | e-gov.go.jp, e-stat.go.jp |
 | EU / 国際機関 (サブセット) | 公式 domain | `*.europa.eu`, `*.oecd.org` (該当する場合) |
 
-### 2.2 禁止ソース (aggregator blocklist)
+### 2.2 禁止ソース (集約サイト blocklist)
 
-以下のソースからの制度情報を canonical として ingest することを**禁止**します。Wave 4-6 の信頼性検証で、一次資料との齟齬・誇張・掲載期限切れの確率が高いと判明しています。
+以下のソースからの制度情報を canonical として ingest することを**禁止**します。一次資料との齟齬・誇張・掲載期限切れの確率が高いと過去の信頼性検証で判明しています。
 
-**禁止 aggregator list**:
+**禁止集約サイトリスト**:
 
 - `noukaweb.com`
 - `hojyokin-portal.jp`
@@ -187,7 +187,7 @@ AutonoMath は以下を**行いません**:
 
 ## 9.3 法廷証拠 reproducibility 保証 (R8 dataset versioning)
 
-AutonoMath の主要 8 table (`programs` / `case_studies` / `loan_programs` / `enforcement_cases` / `laws` / `tax_rulesets` / `court_decisions` / `bids`) と autonomath.db の主要 EAV 2 table (`am_entities` / `am_entity_facts`) は、**bitemporal row-level versioning** を採用しています (migration 067, 2026-04-25)。
+AutonoMath の主要 8 table (`programs` / `case_studies` / `loan_programs` / `enforcement_cases` / `laws` / `tax_rulesets` / `court_decisions` / `bids`) と autonomath.db の主要 EAV 2 構造 (503,930 件の正規化レコード / 612 万件の structured 属性) は、**bitemporal row-level versioning** を採用しています (migration 067, 2026-04-25)。
 
 ### 9.3.1 column 構成
 
@@ -239,10 +239,37 @@ WHERE valid_from <= :as_of_date
 
 ---
 
+## 9.4 License attribution (再配布 license の正本)
+
+AutonoMath が再配布する一次資料は dataset 毎に異なる license を持ちます。各 license と attribution 要件は以下のとおりで、`am_source.license` 列 (migration 049, 99.17% 充足) で row 単位に記録され、`/v1/am/provenance/{entity_id}` および MCP tool `get_provenance` で外部から検証可能です。
+
+| dataset | DB enum (`am_source.license`) | rows | license 表示・attribution 要件 |
+|---|---|---|---|
+| 国税庁 適格請求書発行事業者公表データ | `pdl_v1.0` | 87,251 | Public Data License v1.0。「出典: 国税庁 適格請求書発行事業者公表サイト」+ 編集注記 (取得日時 + 編集の有無)。2026-04-24 NTA TOS 直接確認で API 下流配信 OK 確定。 |
+| 各省庁 / 公庫 / .lg.jp / .go.jp catch-all | `gov_standard_v2.0` | 7,457 | 政府標準利用規約 v2.0 (CC BY 4.0 互換)。各省庁名を「出典」として明示、改変箇所を編集注記。 |
+| 公開判決 / 通達 (JPO・知財高裁・国税庁通達) | `public_domain` | 953 | public domain。出典機関 + 通達番号 / 判決番号を明示。 |
+| 業界団体 / JST 採択事例 / 入札 | `proprietary` | 620 | TOS-restricted。原則「公開ページに掲載された情報のみ収録 + source_url 明示」。**JST については、当社 API 経由のデータは「限定利用」とし、API 利用者による二次商用再配布は認めない**旨を `site/sources.html` § JST 行と利用規約に明記。商用配信再評価は launch 直前に実施 (memory `feedback_data_collection_tos_ignore` 参照)。 |
+| e-Gov 法令 (デジタル庁) + gBizINFO 法人情報 (METI) | `cc_by_4.0` | 186 | Creative Commons Attribution 4.0 International。e-Gov 法令は「法令データは e-Gov の法令データ提供システム (CC BY 4.0)」を明示。gBizINFO は「出典: 経済産業省 gBizINFO」(<https://info.gbiz.go.jp/>) を明示。いずれも改変時は変更点も明示。**gBizINFO のドメイン覆域**: `info.gbiz.go.jp` / `form.gbiz.go.jp` / `gbiz.go.jp` を license 確定 (`scripts/fill_license.py` の rule)。+861,137 corp.* structured 属性は entity-level license rollup で集計。 |
+| その他 (banned URL 等の quarantine) | `unknown` | 805 | 当該 row の license が未確定。**attribution 不能 / 再配布可否不明**として API 出力時に「license unknown — please contact info@bookyou.net before redistribution」を付与し、運営側で再分類する。`/v1/am/provenance/{entity_id}` レスポンスでは `license_summary.unknown` カウントが 1 以上の場合、再配布前に運営確認を要する旨を caller 側で警告すること。 |
+
+`unknown` は migration 049 の自動分類 fallback で `quarantined://banned/*` 系などの URL に対してのみ付与されます。下流再配布時にこれを CC BY 4.0 等の自由 license に誤分類することは明確な license 違反です。
+
+API レスポンス側のフィールド契約:
+
+- REST `GET /v1/am/provenance/{entity_id}`: `am_entity_source × am_source` を 1 コールで返却。各 source に `license` (上記 enum 値) + `license_summary` (entity 単位の license 集計) を付与。
+- REST `GET /v1/am/provenance/fact/{fact_id}`: structured 属性 の source_id から 1 件の出典を返却 (NULL は entity-level fallback)。
+- MCP tool: `get_provenance(entity_id)` / `get_provenance_for_fact(fact_id)` ともに同じ JSON 形を返す。
+
+サイト上の publicly-facing license 一覧は `site/sources.html` (日本語) と `site/en/sources.html` (英語) を canonical とし、両ページの JSON-LD `DataCatalog.dataset[].license` フィールドで machine-readable な license URL を併記しています。
+
+---
+
 ## 10. 更新履歴
 
+- 2026-04-27: §9.4 license 表に gBizINFO (CC BY 4.0) を独立明記、JST proprietary 行に「限定利用 / 二次商用再配布不可」明記、unknown 行に provenance API 警告ガイダンス追加
+- 2026-04-26: §9.4 (License attribution 正本) 追加 — `am_source.license` enum と attribution 要件を明文化
 - 2026-04-25: §9.3 (R8 dataset versioning + 法廷証拠 reproducibility 保証) 追加
-- 2026-04-24: 初版策定 (Wave 15 compliance 策定時、禁止 aggregator list を Wave 4-6 知見から確定)
+- 2026-04-24: 初版策定 (compliance 策定時、禁止集約サイトリストを信頼性検証知見から確定)
 
 ---
 

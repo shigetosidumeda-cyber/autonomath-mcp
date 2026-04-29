@@ -28,7 +28,7 @@ AutonoMath launch: 日本制度を 1 query で AI に聞く
 ## Preheader (preview text)
 
 ```
-本日 launch。10,790 検索可制度 (full table 13,578 incl. tier X) + 72 MCP ツール at default gates + ¥3/req 完全従量。匿名 50 req/月 per IP は無料です。
+本日 launch。10,790 検索可制度 (full table 13,578 incl. 公開保留分) + 72 MCP ツール at default gates + ¥3/req 完全従量。匿名 50 req/月 per IP は無料です。
 ```
 
 ---
@@ -62,10 +62,10 @@ Bookyou株式会社の梅田です。
 匿名 50 req/月 per IP は無料 (JST 月初リセット、API key 不要)。
 
 ▼ 始め方
-1. ドキュメント: https://autonomath.ai/docs/getting-started/
-2. API リファレンス: https://autonomath.ai/docs/api-reference/
+1. ドキュメント: https://zeimu-kaikei.ai/docs/getting-started/
+2. API リファレンス: https://zeimu-kaikei.ai/docs/api-reference/
 3. PyPI: pip install autonomath-mcp
-4. プレスキット: https://autonomath.ai/press/
+4. プレスキット: https://zeimu-kaikei.ai/press/
 
 質問・要望は本メールへの返信または GitHub issues へ。
 電話・対面・営業 cold call は zero-touch 方針のため対応していません。

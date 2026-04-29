@@ -2,7 +2,7 @@
 
 最終更新: 2026-04-23 / Launch target: **2026-05-06**
 
-本書は Stripe live mode を ON にし、DNS を本番 machine へ切り替える前に通す最後のゲートである。各項目に `[ ]` を付け、`what / how / owner` の 3 カラムで進める。`autonomath.ai` は商標リブランド決着後に確定する (`project_jpintel_trademark_intel_risk.md` 参照、現在コード中に `autonomath.ai` がハードコードされているのは全て要置換)。
+本書は Stripe live mode を ON にし、DNS を本番 machine へ切り替える前に通す最後のゲートである。各項目に `[ ]` を付け、`what / how / owner` の 3 カラムで進める。`zeimu-kaikei.ai` は商標リブランド決着後に確定する (`project_jpintel_trademark_intel_risk.md` 参照、現在コード中に `zeimu-kaikei.ai` がハードコードされているのは全て要置換)。
 
 凡例: `you` = 梅田 / `ops` = 同上 operator hat / `lawyer` = 弁護士レビュー / `外注` = 外部委託。
 
@@ -16,7 +16,7 @@
 - [ ] **Tax ID (インボイス T-号)** — 取得後 Settings → Tax → Tax IDs に `jp_trn` で追加。未取得なら国税庁 e-Tax `https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm` から申請、通常 2 週間リード。未取得なら §3 フォールバック参照 / owner: you
 - [ ] **Products & prices — 1 metered price** — `AutonoMath per-request` product 配下に ¥3/req, `tax_behavior=exclusive`, `recurring.usage_type=metered`, `aggregate_usage=sum`, `lookup_key=per_request_v3` で作成。price ID を `STRIPE_PRICE_PER_REQUEST` env に投入 (`config.py`)。旧 3-tier (`plus/pro/business`) Price + legacy `per_request_v1` (¥0.5) / `per_request_v2` (¥1) は archive 済 / owner: you
 - [ ] **Customer Portal** — subscription update / cancel / payment method update / invoice history 全 ON。TOS・Privacy URL を Business info に登録し config ID を `STRIPE_BILLING_PORTAL_CONFIG_ID` へ (`config.py:34`)。Settings → Billing → Customer portal / owner: you
-- [ ] **Webhook endpoint** — `https://autonomath.ai/v1/billing/webhook` に 5 event (`customer.subscription.created` / `invoice.paid` / `invoice.payment_failed` / `customer.subscription.updated` / `customer.subscription.deleted`) を購読。signing secret を `STRIPE_WEBHOOK_SECRET` に投入。`stripe-signature` 検証は `api/billing.py` 実装済 / owner: you
+- [ ] **Webhook endpoint** — `https://zeimu-kaikei.ai/v1/billing/webhook` に 5 event (`customer.subscription.created` / `invoice.paid` / `invoice.payment_failed` / `customer.subscription.updated` / `customer.subscription.deleted`) を購読。signing secret を `STRIPE_WEBHOOK_SECRET` に投入。`stripe-signature` 検証は `api/billing.py` 実装済 / owner: you
 - [ ] **Radar baseline** — CVC / 住所 / 3DS2 既定ルールが有効かを確認、変更しない / owner: you
 - [ ] **Stripe CLI test** — test mode で `stripe listen --forward-to http://localhost:8000/v1/billing/webhook` → 別 shell で `stripe trigger invoice.paid` → `api_keys` に 1 行発行されるか目視 / owner: you
 
@@ -53,7 +53,7 @@
 
 - [ ] **tos.html 8 条 免責** (`tos.html:87-92`) — 現行文言は第 4 項で「消費者 (消契法 2 条 1 項) の場合は 8 条・8 条の 2 に反する限度で適用しない」とガードレール済。文言維持。NG パターン (全部免責) を Grep 残存 0 件で最終確認 / owner: you
 - [ ] **sla.md "best effort"** (`sla.md:58`) — 和文には全部免責表現無し (99.0% target + 除外 6 項目のみ)。消契法 8 条 2 項抵触なし、維持可 / owner: you
-- [ ] **Checkout 前 TOS 同意** — `api/billing.py:65-74` に `consent_collection={"terms_of_service": "required"}` 追加、Dashboard → Settings → Checkout に TOS URL `https://autonomath.ai/tos.html` 登録 / owner: you
+- [ ] **Checkout 前 TOS 同意** — `api/billing.py:65-74` に `consent_collection={"terms_of_service": "required"}` 追加、Dashboard → Settings → Checkout に TOS URL `https://zeimu-kaikei.ai/tos.html` 登録 / owner: you
 - [ ] **pricing.html の導線** — footer に 3 legal リンクあり、checkout ボタン近傍にも 1 回明示 / owner: you
 - [ ] lawyer レビュー (免責条項の実効性) / owner: lawyer
 
@@ -64,17 +64,17 @@
 - [ ] **3rd-party 提供 (17-18 条)** — `privacy.html:76-82` に Stripe / Fly.io / Sentry 記載済。**Cloudflare Pages** (fallback DNS + 静的配信、`fallback_plan.md` 実装あり) を追記 / owner: you
 - [x] **保存期間整合** — 2026-04-23 reconciliation: 顧客面の公約は `privacy.html` 第 6 条「API 利用ログ 90 日」で確定 (既存の `conversion_funnel.md:64, 223` とも一致)。code 側の `usage_events` cleanup cron は W6 `POST_DEPLOY_PLAN_W5_W8.md` でこの 90 日を実装する。旧 spec の "30 日" 記述は本書から削除、privacy.html 90 日が唯一の canonical / owner: you
 - [ ] **28 条 外国移転** — `privacy.html:84-91` 第 4 条の 2 の包括同意 + PPC 一覧リンクはテンプレ適合。相当措置の具体名 (Stripe Japan K.K. 国内 entity、Fly / Sentry / Cloudflare SCC) を 1 行追記推奨 / owner: you + lawyer
-- [ ] **開示・削除請求 SLA** — `privacy.html` 第 7 条の窓口 `hello@autonomath.ai` の応答 SLA (最大 2 週間) を internal runbook に明記 / owner: you
+- [ ] **開示・削除請求 SLA** — `privacy.html` 第 7 条の窓口 `hello@zeimu-kaikei.ai` の応答 SLA (最大 2 週間) を internal runbook に明記 / owner: you
 
 ---
 
 ## 6. DNS / domain / TLS final checks
 
-`autonomath.ai` は商標レビュー待ち (`project_jpintel_trademark_intel_risk.md`)。以下は placeholder、確定値で `.github/workflows/tls-check.yml:27` を置換。all owner: you.
+`zeimu-kaikei.ai` は商標レビュー待ち (`project_jpintel_trademark_intel_risk.md`)。以下は placeholder、確定値で `.github/workflows/tls-check.yml:27` を置換。all owner: you.
 
-- [ ] **Primary CNAME → Fly** — `autonomath.ai` apex を Fly A/AAAA or proxied CNAME、flip 48h 前に TTL 30-60s 短縮
-- [ ] **Backup (Cloudflare Pages)** — `autonomath.ai-fallback.pages.dev` warm 確認、`.github/workflows/pages-preview.yml` Actions グリーン
-- [ ] **MX / SPF / DKIM / DMARC** — `hello@autonomath.ai` 送受信。`dig MX/TXT`、`_dmarc` に `v=DMARC1; p=quarantine`、Gmail / Outlook に test 送信し 3 Pass
+- [ ] **Primary CNAME → Fly** — `zeimu-kaikei.ai` apex を Fly A/AAAA or proxied CNAME、flip 48h 前に TTL 30-60s 短縮
+- [ ] **Backup (Cloudflare Pages)** — `zeimu-kaikei.ai-fallback.pages.dev` warm 確認、`.github/workflows/pages-preview.yml` Actions グリーン
+- [ ] **MX / SPF / DKIM / DMARC** — `hello@zeimu-kaikei.ai` 送受信。`dig MX/TXT`、`_dmarc` に `v=DMARC1; p=quarantine`、Gmail / Outlook に test 送信し 3 Pass
 - [ ] **TLS auto-renew** — `.github/workflows/tls-check.yml` で日次、<10 日 Slack alert。現 `DOMAIN_PLACEHOLDER` のため skip 中。rebrand 後に確定値置換 + `workflow_dispatch` で green 確認
 
 ---
@@ -83,7 +83,7 @@
 
 owner: you, target 全工程 10 min 以内。
 
-- [ ] Dry-run 6 step: (1) `flyctl status` (2) staging で `flyctl scale count 0` で擬似障害 (3) Cloudflare DNS `@` を `autonomath.ai-fallback.pages.dev` CNAME に差し替え (4) `site/status.html` の `active` class を `.state.down` に移動→push→Pages redeploy (5) `curl -I https://autonomath.ai/` で Cloudflare `cf-ray` header 確認 (6) `fallback_plan.md` Recovery § 逆順で復旧
+- [ ] Dry-run 6 step: (1) `flyctl status` (2) staging で `flyctl scale count 0` で擬似障害 (3) Cloudflare DNS `@` を `zeimu-kaikei.ai-fallback.pages.dev` CNAME に差し替え (4) `site/status.html` の `active` class を `.state.down` に移動→push→Pages redeploy (5) `curl -I https://zeimu-kaikei.ai/` で Cloudflare `cf-ray` header 確認 (6) `fallback_plan.md` Recovery § 逆順で復旧
 - [ ] 各 step の所要秒数を `docs/launch_war_room.md` に時刻付きで追記
 - [ ] `flyctl scale count 1` で本番復帰、`status.html` を `.state.ok` に戻す
 
@@ -101,6 +101,6 @@ owner: you, target 全工程 10 min 以内。
 
 ## Top 3 launch blockers (2026-04-23 時点で未解決なら 5/6 に間に合わない)
 
-1. **商標リブランド (DOMAIN 未決定)** — `autonomath.ai` は Intel 著名商標衝突懸念 (`project_jpintel_trademark_intel_risk.md`)。AutonoMath へのリネームを採用済だが、`site/*.html`、`tls-check.yml`、mailto、meta og:url の一括置換が残存する可能性あり。2026-04-23 時点で `autonomath.ai` へ大部分移行済、grep で `autonomath.ai` 参照が残っていないか最終確認。
+1. **商標リブランド (DOMAIN 未決定)** — `zeimu-kaikei.ai` は Intel 著名商標衝突懸念 (`project_jpintel_trademark_intel_risk.md`)。AutonoMath へのリネームを採用済だが、`site/*.html`、`tls-check.yml`、mailto、meta og:url の一括置換が残存する可能性あり。2026-04-23 時点で `zeimu-kaikei.ai` へ大部分移行済、grep で `zeimu-kaikei.ai` 参照が残っていないか最終確認。
 2. **T-号 (適格請求書) 確認** — Bookyou 株式会社 **T8010001213708** (令和7年5月12日登録済) を使用。残タスクは Stripe Dashboard に登録 + `tokushoho.html` / `privacy.html` / invoice footer への記載反映のみ。
 3. **Pivot 後の pricing 整合性** — 2026-04-25 v3 改訂: 3-tier (`plus/pro/business`) → pure metered (¥3/req 税別) へ。`site/pricing.html` / `tokushoho.html` / `docs/pricing.md` 更新済。Stripe 側は `STRIPE_PRICE_PER_REQUEST` (`lookup_key=per_request_v3`, live `price_1TPw8sL3qgB3rEtw4GyG4DHi`, `tax_behavior=exclusive`, metered) 1 本のみ live 登録、旧 Price (`per_request_v1` ¥0.5 / `per_request_v2` ¥1) は archive。

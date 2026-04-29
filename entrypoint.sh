@@ -65,6 +65,22 @@ else
   log "DATA_SEED_VERSION unset or seed missing — using volume DB as-is"
 fi
 
+# 1.6. autonomath_static seed sync (Phase A static taxonomies + example profiles).
+# /seed/autonomath_static/ is baked into image. Copy to /data/autonomath_static/
+# if MANIFEST.md missing or DATA_SEED_VERSION drifts. Idempotent.
+SEED_STATIC="/seed/autonomath_static"
+TARGET_STATIC="/data/autonomath_static"
+if [ -d "$SEED_STATIC" ] && [ -f "$SEED_STATIC/MANIFEST.md" ]; then
+  if [ ! -f "$TARGET_STATIC/MANIFEST.md" ]; then
+    log "autonomath_static missing on volume — copying from /seed"
+    mkdir -p "$TARGET_STATIC"
+    cp -rf "$SEED_STATIC/." "$TARGET_STATIC/"
+    log "autonomath_static copied to $TARGET_STATIC"
+  else
+    log "autonomath_static already present on volume — skipping copy"
+  fi
+fi
+
 # Helper: compute SHA256 of a file (portable across Linux + macOS).
 compute_sha256() {
   local f="$1"
@@ -105,6 +121,10 @@ fi
 
 if [ "$needs_download" -eq 1 ]; then
   log "downloading DB snapshot from R2"
+  # Pre-clean: stale WAL/SHM from the previous DB attach to the new file
+  # at sqlite open time and cause spurious integrity_check failures. Always
+  # remove them when downloading a fresh DB. Idempotent.
+  rm -f "${DB_PATH}-shm" "${DB_PATH}-wal" "${DB_PATH}.partial"
   # Resume-friendly (-C -), follow redirects (-L), hard-fail on HTTP >=400 (-f),
   # retry transient errors. --retry-all-errors is curl >=7.71; harmless if absent.
   curl -fL --retry 5 --retry-delay 10 --retry-all-errors \
@@ -136,8 +156,16 @@ fi
 # 3. Migrations on jpintel.db (idempotent, safe on cold starts).
 # Must run BEFORE schema_guard so guard validates the post-migration schema.
 if [ -f /app/scripts/migrate.py ]; then
-  log "running migrate.py"
+  log "running migrate.py on jpintel.db"
   python /app/scripts/migrate.py
+  # NOTE: Naive `JPINTEL_DB_PATH=$DB_PATH python migrate.py` to also apply
+  # autonomath-targeted migrations CORRUPTS autonomath.db because migrate.py
+  # also runs jpintel-default migrations (creating `programs` / `api_keys`
+  # tables that schema_guard then rejects as FORBIDDEN). For now, rely on
+  # autonomath.db being shipped from R2 with the latest schema baked in
+  # (recreate the snapshot when adding new autonomath-target migrations).
+  # TODO: split migrate.py to filter strictly by target_db marker, or run
+  # specific autonomath migrations explicitly here.
 else
   log "migrate.py absent — skipping"
 fi
@@ -161,6 +189,82 @@ if [ -f /app/scripts/schema_guard.py ]; then
       rm -f "$DB_PATH" "${DB_PATH}-shm" "${DB_PATH}-wal" "${DB_PATH}.partial"
       log "autonomath DB removed; /v1/am/* will return 503 until re-uploaded"
     else
+      # Idempotently apply autonomath-only views/migrations that the R2
+      # snapshot may predate. Each migration's `CREATE VIEW IF NOT EXISTS`
+      # / `CREATE TABLE IF NOT EXISTS` makes this safe to run on every boot.
+      # This is the minimum self-healing step that keeps /v1/am/* alive
+      # after an R2 redownload (which restores schema-as-of-snapshot).
+      #
+      # Discovery rule (replaces the old hard-coded `070` single-file loop
+      # 2026-04-29 to pick up 075 and any future autonomath-target file):
+      #   1. Iterate scripts/migrations/*.sql in numeric (lexical) order.
+      #   2. Include only files whose first line declares
+      #        `-- target_db: autonomath`
+      #      (see migrate.py target_db marker convention). This guards
+      #      against accidentally applying jpintel-default DDL — those
+      #      files would create `programs` / `api_keys` tables that
+      #      schema_guard then rejects as FORBIDDEN on autonomath.db.
+      #   3. Exclude any filename containing `_rollback` — rollback
+      #      companions (e.g. 065_*_rollback.sql) carry the same
+      #      target_db marker but are draft scripts gated on manual
+      #      review, not boot-time idempotent migrations.
+      #   4. Stop on first hard error (existing `head -3` + `|| true`
+      #      pattern keeps noise bounded; schema_guard below catches
+      #      any structural drift the migration failed to repair).
+      # Ensure bookkeeping table exists so we can skip already-applied
+      # migrations on the second-and-subsequent boot. Without this, the
+      # 8 known non-idempotent ALTER TABLE migrations (049/067_autonomath/
+      # 077/078/082/090/092/101) flood boot logs with "duplicate column"
+      # parse errors on every boot. The errors are harmless (later
+      # statements continue) but the noise hides real failures.
+      sqlite3 "$DB_PATH" "CREATE TABLE IF NOT EXISTS schema_migrations(
+          id TEXT PRIMARY KEY,
+          checksum TEXT NOT NULL,
+          applied_at TEXT NOT NULL
+      );" 2>/dev/null || true
+
+      am_mig_applied=0
+      am_mig_skipped=0
+      am_mig_already=0
+      for am_mig in $(ls /app/scripts/migrations/*.sql 2>/dev/null | sort); do
+        case "$am_mig" in
+          *_rollback.sql)
+            log "skipping $am_mig (rollback companion, manual-review only)"
+            am_mig_skipped=$((am_mig_skipped + 1))
+            continue
+            ;;
+        esac
+        if ! head -1 "$am_mig" | grep -q "target_db: autonomath"; then
+          # Not an autonomath-target migration — silently skip
+          # (jpintel.db migrations are handled by migrate.py above).
+          am_mig_skipped=$((am_mig_skipped + 1))
+          continue
+        fi
+        am_mig_id="$(basename "$am_mig")"
+        # Skip if already recorded in schema_migrations bookkeeping.
+        already=$(sqlite3 "$DB_PATH" "SELECT 1 FROM schema_migrations WHERE id='$am_mig_id' LIMIT 1;" 2>/dev/null || echo "")
+        if [ "$already" = "1" ]; then
+          am_mig_already=$((am_mig_already + 1))
+          continue
+        fi
+        log "applying $am_mig to $DB_PATH"
+        if sqlite3 "$DB_PATH" < "$am_mig" 2>&1 | grep -v "^$" | head -3; then
+          # Record successful apply. Use INSERT OR IGNORE so concurrent
+          # boots on the same volume don't crash on the bookkeeping write.
+          now=$(date -u +%FT%TZ)
+          sqlite3 "$DB_PATH" "INSERT OR IGNORE INTO schema_migrations(id,checksum,applied_at) VALUES('$am_mig_id','self_heal','$now');" 2>/dev/null || true
+          am_mig_applied=$((am_mig_applied + 1))
+        else
+          # Even on parse error, later statements may have applied (sqlite3
+          # < file does not abort on first error). Record bookkeeping so
+          # subsequent boots skip this file. Real schema drift is caught by
+          # schema_guard below.
+          now=$(date -u +%FT%TZ)
+          sqlite3 "$DB_PATH" "INSERT OR IGNORE INTO schema_migrations(id,checksum,applied_at) VALUES('$am_mig_id','self_heal_partial','$now');" 2>/dev/null || true
+          am_mig_applied=$((am_mig_applied + 1))
+        fi
+      done
+      log "autonomath self-heal migrations: applied=$am_mig_applied already=$am_mig_already skipped=$am_mig_skipped"
       log "running schema_guard.py on $DB_PATH (autonomath profile)"
       python /app/scripts/schema_guard.py "$DB_PATH" autonomath || {
         log "schema_guard failed for autonomath — moving aside to /data/autonomath.db.failed and continuing"

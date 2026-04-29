@@ -264,9 +264,15 @@ def test_programs_active_v2_three_axis(
     assert resp.status_code == 200, resp.text
     body = resp.json()
 
-    # Lifecycle caveat must be present.
+    # Lifecycle caveat must be present (structured form: dict with
+    # data_quality / row counts / note for AI-agent machine consumption).
     assert "_lifecycle_caveat" in body, body
-    assert "point-in-time" in body["_lifecycle_caveat"]
+    caveat = body["_lifecycle_caveat"]
+    assert isinstance(caveat, dict), caveat
+    assert caveat["data_quality"] == "partial"
+    assert caveat["total_rows"] == 14596
+    assert caveat["rows_with_complete_temporal_data"] == 144
+    assert "point-in-time" in caveat["note"]
 
     # Exactly one program (tokyo_a) survives the close-by filter.
     rows = body["results"]
@@ -297,14 +303,18 @@ def test_programs_active_v2_three_axis(
 def test_amendment_lifecycle_caveat_injected() -> None:
     """The caveat helper is idempotent and surfaces on both amendment-touching paths."""
     from jpintel_mcp.api.autonomath import (
+        _LIFECYCLE_CAVEAT,
         _LIFECYCLE_CAVEAT_TEXT,
         _attach_lifecycle_caveat,
     )
 
-    # Idempotent: empty dict gets caveat.
+    # Idempotent: empty dict gets caveat (structured form).
     body: dict = {}
     out = _attach_lifecycle_caveat(body)
-    assert out["_lifecycle_caveat"] == _LIFECYCLE_CAVEAT_TEXT
+    assert out["_lifecycle_caveat"] == _LIFECYCLE_CAVEAT
+    # Defensive copy: caveat returned should not be the module-level dict
+    # (callers must not mutate the default by reference).
+    assert out["_lifecycle_caveat"] is not _LIFECYCLE_CAVEAT
 
     # Idempotent: pre-set caveat is preserved.
     body2 = {"_lifecycle_caveat": "custom override"}
@@ -315,8 +325,13 @@ def test_amendment_lifecycle_caveat_injected() -> None:
     assert _attach_lifecycle_caveat([1, 2, 3]) == [1, 2, 3]
     assert _attach_lifecycle_caveat("scalar") == "scalar"
 
-    # The helper text mentions the eligibility_hash gotcha so downstream
-    # LLMs can reason about the constraint.
+    # Structured caveat carries the keys AI agents need to program against.
+    assert _LIFECYCLE_CAVEAT["data_quality"] == "partial"
+    assert _LIFECYCLE_CAVEAT["total_rows"] == 14596
+    assert _LIFECYCLE_CAVEAT["rows_with_complete_temporal_data"] == 144
+    assert "eligibility_hash" in _LIFECYCLE_CAVEAT["note"]
+    assert "point-in-time" in _LIFECYCLE_CAVEAT["note"]
+    # Legacy string constant retained for backward-compatible imports.
     assert "eligibility_hash" in _LIFECYCLE_CAVEAT_TEXT
     assert "point-in-time" in _LIFECYCLE_CAVEAT_TEXT
 

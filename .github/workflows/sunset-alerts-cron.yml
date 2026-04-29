@@ -1,0 +1,86 @@
+name: sunset-alerts-cron
+
+# Hourly sunset/amendment fan-out (M14 retention surface).
+#
+# Every hour at :15 (15-min stagger from saved-searches at :00 and
+# morning-briefing at :05) we scan the last 60 minutes of
+# am_amendment_diff for sunset/amended/disappeared rows and fan out to
+# every customer whose client_profiles.last_active_program_ids_json
+# contains the affected entity_id. Each delivered alert bills ¥3.
+#
+# 0-fan-out runs (no customers watch the affected program) DO NOT bill —
+# the row goes ignored, no usage_events insert, no Stripe push.
+
+on:
+  schedule:
+    # 15 past every hour. Picks up the most recent ingest-pipeline output
+    # (typical ingest cadence: hourly :00) with a 15-min buffer for the
+    # diff writer to flush.
+    - cron: "15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no email, no Stripe push)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: sunset-alerts-cron
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run sunset alert sweep on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="--dry-run"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/sunset_alerts.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=sunset-alerts-cron/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.sunset-alerts-cron",
+            "platform": "other",
+            "message": "sunset-alerts-cron failed: flyctl ssh exited non-zero.",
+            "tags": {
+              "workflow": "sunset-alerts-cron",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

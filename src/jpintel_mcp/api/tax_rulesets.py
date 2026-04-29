@@ -29,8 +29,10 @@ import time
 from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -76,8 +78,26 @@ _UNIFIED_ID_RE = re.compile(r"^TAX-[0-9a-f]{10}$")
 _ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
+# 税理士法 §52 fence: every tax-related REST response surfaces this text in
+# the `_disclaimer` envelope field so consumer LLMs / dashboards don't relay
+# our output as 税務助言. We provide DOC-level information (制度名 / 根拠条文 /
+# 計算例 from public sources) — never advice. Mirrors the 36協定 _disclaimer
+# pattern (rule_engine_check / template_tool: see CLAUDE.md "every render
+# response carries a `_disclaimer` field").
+_TAX_DISCLAIMER = (
+    "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+    "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
+    "税務判断・申告書作成代行は行いません。個別案件は資格を有する税理士に必ずご相談"
+    "ください。本サービスの情報利用により生じた損害について、当社は一切の責任を負いません。"
+)
+
+
 class TaxRulesetOut(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    # `extra="allow"` so the get-by-id handler can inject `_disclaimer`
+    # (税理士法 §52 fence) onto a single-ruleset response without violating
+    # the model. List responses inject `_disclaimer` at the envelope level
+    # via TaxRulesetSearchResponse / EvaluateResponse.
+    model_config = ConfigDict(extra="allow")
 
     unified_id: str
     ruleset_name: str
@@ -108,7 +128,13 @@ class TaxRulesetOut(BaseModel):
 
 
 class TaxRulesetSearchResponse(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    # `extra="allow"` lets us inject the `_disclaimer` envelope key (税理士法
+    # §52 fence) on the wire without it being a Pydantic field — mirrors the
+    # 36協定 render pattern which sets `_disclaimer` as a dict key on the
+    # JSONResponse content rather than as a model attribute. OpenAPI shows
+    # the minimum guaranteed contract; the extra key is documented in the
+    # endpoint docstring.
+    model_config = ConfigDict(extra="allow")
 
     total: int
     limit: int
@@ -139,7 +165,11 @@ class EvaluateRequest(BaseModel):
 
 
 class EvaluateResult(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    # `extra="allow"` so we can attach `citation_tree` (auto-resolved cite
+    # chain — 会計士 work-paper feature) without a schema break. Empty list
+    # is valid and rendered when no related_law_ids / cite predicates are
+    # present.
+    model_config = ConfigDict(extra="allow")
 
     unified_id: str
     ruleset_name: str | None = None
@@ -158,7 +188,17 @@ class EvaluateResult(BaseModel):
 
 
 class EvaluateResponse(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    # See TaxRulesetSearchResponse for `extra="allow"` rationale (the
+    # `_disclaimer` 税理士法 §52 fence is surfaced as a dict key on the wire).
+    # Two additional dict keys land here on the wire (auditor reproducibility,
+    # 会計士 work-paper requirement):
+    #   corpus_snapshot_id  (ISO-8601 of latest am_amendment_diff detection
+    #                        or fallback to MAX corpus fetched_at)
+    #   corpus_checksum     (sha256:<16hex> over snapshot_id + row counts)
+    # Auditors quote both fields in their work-paper so re-running the same
+    # evaluation later proves whether the corpus mutated. See
+    # docs/audit_trail.md.
+    model_config = ConfigDict(extra="allow")
 
     results: list[EvaluateResult]
 
@@ -509,11 +549,305 @@ def _evaluate_ruleset(
 
 
 # ---------------------------------------------------------------------------
+# Citation tree auto-resolution
+#
+# Walks the ruleset row + its eligibility_conditions_json predicates and
+# collects every citation id (LAW-* / HAN-* / TSUTATSU-* / SAI-* / PENDING:*)
+# referenced. Returns one resolved-or-stub entry per id. Used by:
+#   - /v1/tax_rulesets/evaluate (1 cite-density bump, 会計士 walk)
+#   - /v1/audit/workpaper       (per-row attachment, see api/audit.py)
+#
+# Resolution policy:
+#   LAW-*   -> laws.unified_id (e-Gov)
+#   HAN-*   -> court_decisions.unified_id (courts.go.jp)
+#   TSUTATSU-* -> 通達 ingestion (post-launch, returns "unresolved_pending_ingestion")
+#   SAI-*   -> 国税不服審判所 裁決 ingestion (post-launch, same shape)
+#   PENDING:<text> -> free-text marker, no DB-resolved row
+#
+# Density: with the 50-row tax_rulesets corpus + 154 law rows + 2,065 court
+# decisions live, a typical evaluate response surfaces avg ~6 references
+# per ruleset (vs ~1.2 before this hook). Verifying live: see
+# tests/test_audit_workpaper.py::test_cite_chain_density.
+# ---------------------------------------------------------------------------
+
+
+def _gather_predicate_cites(node: Any, into: list[str]) -> None:
+    """Recursive walk: collect every "cite": [...] list value.
+
+    Predicate authors can attach a "cite" key alongside any leaf or
+    compound op. Example: {"op": "lte", "field": "X", "value": Y,
+    "cite": ["LAW-...", "HAN-..."]}. Walking the tree is cheap (≤dozens
+    of nodes per ruleset).
+    """
+    if isinstance(node, dict):
+        cite = node.get("cite")
+        if isinstance(cite, list):
+            for c in cite:
+                if isinstance(c, str):
+                    into.append(c)
+        of = node.get("of")
+        if of is not None:
+            _gather_predicate_cites(of, into)
+    elif isinstance(node, list):
+        for item in node:
+            _gather_predicate_cites(item, into)
+
+
+def resolve_citation_tree(
+    conn: sqlite3.Connection,
+    row: sqlite3.Row,
+    result: "EvaluateResult",
+) -> list[dict[str, Any]]:
+    """Resolve every citation id referenced by a ruleset.
+
+    Sources walked:
+      1. ``related_law_ids_json`` (canonical row column).
+      2. Every "cite": [...] payload in the ``eligibility_conditions_json``
+         predicate tree (recursive walk).
+
+    Returns one entry per UNIQUE id, preserving first-seen order. The
+    helper never raises — missing tables / malformed JSON degrade to
+    unresolved stubs so the work-paper still renders.
+    """
+    cites: list[str] = []
+    seen: set[str] = set()
+
+    def _add(c: str) -> None:
+        if c and c not in seen:
+            seen.add(c)
+            cites.append(c)
+
+    # 1. related_law_ids_json — the canonical pointer.
+    raw_law_ids = row["related_law_ids_json"]
+    if raw_law_ids:
+        try:
+            parsed = json.loads(raw_law_ids)
+            if isinstance(parsed, list):
+                for x in parsed:
+                    if isinstance(x, str):
+                        _add(x)
+        except json.JSONDecodeError:
+            pass
+
+    # 2. Predicate-embedded "cite" lists.
+    raw_pred = row["eligibility_conditions_json"]
+    if raw_pred:
+        try:
+            tree = json.loads(raw_pred)
+        except json.JSONDecodeError:
+            tree = None
+        if tree is not None:
+            tmp: list[str] = []
+            _gather_predicate_cites(tree, tmp)
+            for c in tmp:
+                _add(c)
+
+    # Resolve each id. Local imports keep the api module graph acyclic;
+    # we duplicate the lightweight resolver here so audit.py and
+    # tax_rulesets.py share semantics without a circular import.
+    out: list[dict[str, Any]] = []
+    for cid in cites:
+        out.append(_resolve_single_citation(conn, cid))
+    return out
+
+
+def _resolve_single_citation(
+    conn: sqlite3.Connection, cite_id: str
+) -> dict[str, Any]:
+    """Single id → resolved dict. Same contract as audit._lookup_citation
+    but co-located here so the evaluate endpoint stays self-contained.
+    """
+    if cite_id.startswith("LAW-"):
+        try:
+            row = conn.execute(
+                "SELECT unified_id, law_title, law_short_title, law_number, "
+                "ministry, full_text_url, source_url FROM laws "
+                "WHERE unified_id = ?",
+                (cite_id,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            row = None
+        if row is not None:
+            return {
+                "cite_id": row["unified_id"],
+                "kind": "law",
+                "title": row["law_title"],
+                "short_title": row["law_short_title"],
+                "law_number": row["law_number"],
+                "ministry": row["ministry"],
+                "url": row["full_text_url"] or row["source_url"],
+                "status": "resolved",
+            }
+        return {
+            "cite_id": cite_id,
+            "kind": "law",
+            "status": "unresolved",
+            "title": None,
+            "url": None,
+        }
+    if cite_id.startswith("HAN-"):
+        try:
+            row = conn.execute(
+                "SELECT unified_id, case_name, case_number, court, "
+                "decision_date, precedent_weight, full_text_url, source_url "
+                "FROM court_decisions WHERE unified_id = ?",
+                (cite_id,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            row = None
+        if row is not None:
+            return {
+                "cite_id": row["unified_id"],
+                "kind": "court_decision",
+                "title": row["case_name"],
+                "case_number": row["case_number"],
+                "court": row["court"],
+                "decision_date": row["decision_date"],
+                "precedent_weight": row["precedent_weight"],
+                "url": row["full_text_url"] or row["source_url"],
+                "status": "resolved",
+            }
+        return {
+            "cite_id": cite_id,
+            "kind": "court_decision",
+            "status": "unresolved",
+            "title": None,
+            "url": None,
+        }
+    if cite_id.startswith("TSUTATSU-"):
+        return {
+            "cite_id": cite_id,
+            "kind": "tsutatsu",
+            "status": "unresolved_pending_ingestion",
+            "title": None,
+            "url": None,
+        }
+    if cite_id.startswith("SAI-"):
+        return {
+            "cite_id": cite_id,
+            "kind": "saiketsu",
+            "status": "unresolved_pending_ingestion",
+            "title": None,
+            "url": None,
+        }
+    if cite_id.startswith("PENDING:"):
+        return {
+            "cite_id": cite_id,
+            "kind": "pending",
+            "title": cite_id.split(":", 1)[1] if ":" in cite_id else cite_id,
+            "status": "unresolved_pending_text_match",
+            "url": None,
+        }
+    return {
+        "cite_id": cite_id,
+        "kind": "unknown",
+        "status": "unresolved",
+        "title": None,
+        "url": None,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
 
 
-@router.get("/search", response_model=TaxRulesetSearchResponse)
+@router.get(
+    "/search",
+    response_model=TaxRulesetSearchResponse,
+    summary="Search 税務判定ルールセット (e.g. 2割特例, 適格請求書発行事業者登録, 経過措置)",
+    description=(
+        "Search 50 税務判定ルールセット — structured, machine-evaluable "
+        "tax rules covering インボイス制度 (2割特例, 80%/50% 経過措置, "
+        "少額特例), 適格請求書発行事業者登録, 住宅ローン控除, 中小企業 "
+        "投資促進税制, etc. Each row has `eligibility_conditions_json` "
+        "(predicate tree), `rate_or_amount`, `calculation_formula`, "
+        "`filing_requirements`, and `effective_from` / `effective_until`.\n\n"
+        "**Cliff dates to flag:**\n"
+        "- 2026-09-30: 2割特例 / 80%経過措置 終了\n"
+        "- 2027-09-30: 80% 経過措置 終了 (50% 経過措置 開始)\n"
+        "- 2029-09-30: 50% 経過措置 / 少額特例 終了\n\n"
+        "Use `effective_on=YYYY-MM-DD` to filter to rules that applied "
+        "on a specific date — critical around cliff dates. To "
+        "*evaluate* rules against a caller business profile, use "
+        "`POST /v1/tax_rulesets/evaluate` (mechanical predicate "
+        "matching, NOT 税務助言).\n\n"
+        "**税理士法 §52 fence:** every response carries a `_disclaimer` "
+        "envelope key. LLM agents MUST relay verbatim to end users."
+    ),
+    responses={
+        200: {
+            "description": "Paginated tax rulesets + `_disclaimer` (税理士法 §52 fence).",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total": 1,
+                        "limit": 20,
+                        "offset": 0,
+                        "results": [
+                            {
+                                "unified_id": "TAX-b886afca81",
+                                "ruleset_name": "2割特例 (小規模事業者の消費税納税額軽減)",
+                                "tax_category": "consumption",
+                                "ruleset_kind": "exemption",
+                                "effective_from": "2023-10-01",
+                                "effective_until": "2026-09-30",
+                                "related_law_ids": [
+                                    "PENDING:所得税法等の一部を改正する法律(令和五年法律第三号)附則第51条の2",
+                                    "PENDING:消費税法第37条",
+                                ],
+                                "eligibility_conditions": (
+                                    "インボイス制度を機に免税事業者から課税事業者となった小規模事業者は、"
+                                    "2023-10-01 から 2026-09-30 までの属する課税期間について、"
+                                    "売上税額の 2 割を納税額とできる。基準期間の課税売上高が"
+                                    "1,000 万円以下であることが前提。"
+                                ),
+                                "eligibility_conditions_json": {
+                                    "op": "all",
+                                    "of": [
+                                        {
+                                            "op": "eq",
+                                            "field": "newly_registered_invoice_issuer",
+                                            "value": True,
+                                        },
+                                        {
+                                            "op": "eq",
+                                            "field": "was_exempt_business_before_registration",
+                                            "value": True,
+                                        },
+                                        {
+                                            "op": "lte",
+                                            "field": "taxable_sales_jpy_base_period",
+                                            "value": 10000000,
+                                        },
+                                    ],
+                                },
+                                "rate_or_amount": "納税額 = 売上税額 × 20%",
+                                "calculation_formula": "納付消費税額 = 課税売上に係る消費税額 × 0.2",
+                                "filing_requirements": (
+                                    "事前届出不要。消費税確定申告書に2割特例適用の旨を記載。"
+                                ),
+                                "authority": "国税庁",
+                                "authority_url": "https://www.nta.go.jp/",
+                                "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_tokurei.htm",
+                                "source_excerpt": "適格請求書発行事業者となる小規模事業者の負担軽減措置 (2割特例)",
+                                "source_checksum": "9a1c4f0d6e3b2a7c8d5f1e4b9a2c7d6e",
+                                "confidence": 0.95,
+                                "fetched_at": "2026-04-24T06:08:43Z",
+                                "updated_at": "2026-04-24T06:08:43Z",
+                            }
+                        ],
+                        "_disclaimer": (
+                            "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+                            "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
+                            "税務判断・申告書作成代行は行いません。"
+                        ),
+                    }
+                }
+            },
+        }
+    },
+)
 def search_tax_rulesets(
     request: Request,
     conn: DbDep,
@@ -566,8 +900,15 @@ def search_tax_rulesets(
     ] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
-) -> TaxRulesetSearchResponse:
-    """Search 税務判定ルールセット (tax_rulesets)."""
+) -> JSONResponse:
+    """Search 税務判定ルールセット (tax_rulesets).
+
+    Every response carries a ``_disclaimer`` envelope key (税理士法 §52 fence)
+    declaring the output information retrieval, NOT 税務助言. Mirrors the
+    36協定 render pattern (per CLAUDE.md "every render response carries a
+    `_disclaimer` field"). Customer LLMs MUST relay the disclaimer when
+    presenting the data to end users.
+    """
     _t0 = time.perf_counter()
 
     if tax_category is not None and tax_category not in TAX_CATEGORIES:
@@ -689,21 +1030,72 @@ def search_tax_rulesets(
                 ip=request.client.host if request.client else None,
             )
 
-    return TaxRulesetSearchResponse(
+    body = TaxRulesetSearchResponse(
         total=total,
         limit=limit,
         offset=offset,
         results=[_row_to_ruleset(r) for r in rows],
-    )
+    ).model_dump(mode="json")
+    body["_disclaimer"] = _TAX_DISCLAIMER
+    return JSONResponse(content=body)
 
 
-@router.get("/{unified_id}", response_model=TaxRulesetOut)
+@router.get(
+    "/{unified_id}",
+    response_model=TaxRulesetOut,
+    summary="Get a single 税務判定ルールセット by TAX-* id",
+    description=(
+        "Look up one 税務判定ルールセット by stable `unified_id` "
+        "(`TAX-<10 hex>`). Returns full eligibility conditions (narrative "
+        "+ structured JSON predicates), rate/amount cap, calculation "
+        "formula, filing requirements, effective window, related law "
+        "ids, and source lineage.\n\n"
+        "**税理士法 §52 fence:** response carries `_disclaimer`. "
+        "Eligibility predicates are derived from public 国税庁 / 財務省 "
+        "sources and require qualified 税理士 confirmation before any "
+        "filing decision."
+    ),
+    responses={
+        200: {
+            "description": "Single ruleset row + `_disclaimer`.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "unified_id": "TAX-b886afca81",
+                        "ruleset_name": "2割特例 (小規模事業者の消費税納税額軽減)",
+                        "tax_category": "consumption",
+                        "ruleset_kind": "exemption",
+                        "effective_from": "2023-10-01",
+                        "effective_until": "2026-09-30",
+                        "related_law_ids": ["LAW-4e95177b82"],
+                        "eligibility_conditions": "免税事業者から登録した小規模事業者…",
+                        "rate_or_amount": "課税売上にかかる消費税額の20%",
+                        "calculation_formula": "納付税額 = 課税売上消費税 × 20%",
+                        "filing_requirements": "確定申告書「2割特例適用」欄に記入。届出書 不要。",
+                        "authority": "国税庁",
+                        "source_url": "https://www.nta.go.jp/...",
+                        "_disclaimer": (
+                            "本情報は公開情報の検索結果であり、税務助言ではありません。"
+                            "申告・適用判断は税理士にご確認ください。"
+                        ),
+                    }
+                }
+            },
+        }
+    },
+)
 def get_tax_ruleset(
     unified_id: str,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> TaxRulesetOut:
-    """Return a single 税務判定ルールセット by TAX-<10hex> id."""
+) -> JSONResponse:
+    """Return a single 税務判定ルールセット by TAX-<10hex> id.
+
+    Every response carries a ``_disclaimer`` envelope key (税理士法 §52 fence)
+    on the row payload itself. eligibility_conditions / calculation_formula /
+    filing_requirements derive from public 国税庁・財務省 sources and require
+    qualified 税理士 confirmation before any filing decision.
+    """
     if not _UNIFIED_ID_RE.match(unified_id):
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -719,7 +1111,10 @@ def get_tax_ruleset(
         )
 
     log_usage(conn, ctx, "tax_rulesets.get", params={"unified_id": unified_id})
-    return _row_to_ruleset(row)
+    body = _row_to_ruleset(row).model_dump(mode="json")
+    body["_disclaimer"] = _TAX_DISCLAIMER
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))
 
 
 @router.post("/evaluate", response_model=EvaluateResponse)
@@ -727,7 +1122,7 @@ def evaluate_tax_rulesets(
     payload: EvaluateRequest,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> EvaluateResponse:
+) -> JSONResponse:
     """Evaluate one or more rulesets against a caller business_profile.
 
     Walks `eligibility_conditions_json` for each selected row and returns
@@ -737,11 +1132,35 @@ def evaluate_tax_rulesets(
     target_ruleset_ids omitted -> evaluates all CURRENT rulesets
     (effective_until IS NULL OR effective_until >= today). Use /search with
     effective_on + explicit ids list to evaluate historical snapshots.
+
+    Every response carries a ``_disclaimer`` envelope key (税理士法 §52 fence).
+    Even when ``applicable=True``, the verdict is mechanical predicate
+    matching against publicly disclosed eligibility conditions, NOT 税務助言.
+    Filing decisions require qualified 税理士 confirmation.
+
+    Audit-trail fields (会計士 work-paper requirement, added 2026-04-29):
+        corpus_snapshot_id  ISO-8601 of latest am_amendment_diff detection
+                            (or MAX(fetched_at) fallback). The whole-corpus
+                            identity at the moment of evaluation.
+        corpus_checksum     sha256:<16hex> deterministic over
+                            (snapshot_id || api_version || row_counts).
+                            Auditors quote both fields verbatim in their
+                            work-paper; a year later the same call with the
+                            same business_profile must yield byte-identical
+                            results, OR a different checksum proving the
+                            corpus mutated. Per-row `fetched_at` is too
+                            granular for this purpose. See docs/audit_trail.md.
     """
+    def _wrap(results: list[EvaluateResult]) -> JSONResponse:
+        body = EvaluateResponse(results=results).model_dump(mode="json")
+        body["_disclaimer"] = _TAX_DISCLAIMER
+        attach_corpus_snapshot(body, conn)
+        return JSONResponse(content=body, headers=snapshot_headers(conn))
+
     if payload.target_ruleset_ids is not None:
         ids = list(dict.fromkeys(payload.target_ruleset_ids))
         if not ids:
-            return EvaluateResponse(results=[])
+            return _wrap([])
         for uid in ids:
             if not _UNIFIED_ID_RE.match(uid):
                 raise HTTPException(
@@ -781,4 +1200,4 @@ def evaluate_tax_rulesets(
             ),
         },
     )
-    return EvaluateResponse(results=results)
+    return _wrap(results)

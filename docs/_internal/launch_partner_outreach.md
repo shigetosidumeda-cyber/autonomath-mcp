@@ -1,6 +1,6 @@
 # Launch Partner Outreach — 個別アプローチ台帳 (2026-05-06 launch)
 
-> **要約:** `docs/launch_dday_matrix.md` が D-Day の「チャネル別 broadcast」をカバーする一方、本ドキュメントは **specific individual outreach** (記者、OSS/コミュニティ インフルエンサー、B2B パートナー、行政窓口、早期顧客) への 1 対 1 ピッチ台帳。総スロット ≈ 70。**実名はハルシネーション厳禁、placeholder `{name}` のままで出し、ユーザーが launch 前週に一次ソースから実名を埋める**。ブランド / ドメインは rebrand pending (`project_jpintel_trademark_intel_risk`) のため `[BRAND]` / `autonomath.ai` / `[HANDLE]` で固定。
+> **要約:** `docs/launch_dday_matrix.md` が D-Day の「チャネル別 broadcast」をカバーする一方、本ドキュメントは **specific individual outreach** (記者、OSS/コミュニティ インフルエンサー、B2B パートナー、行政窓口、早期顧客) への 1 対 1 ピッチ台帳。総スロット ≈ 70。**実名はハルシネーション厳禁、placeholder `{name}` のままで出し、ユーザーが launch 前週に一次ソースから実名を埋める**。ブランド / ドメインは rebrand pending (`project_jpintel_trademark_intel_risk`) のため `[BRAND]` / `zeimu-kaikei.ai` / `[HANDLE]` で固定。
 >
 > 関連: `docs/launch_dday_matrix.md` (broadcast) / `docs/launch_war_room.md` (ops) / `docs/customer_dev_w5.md` (interview pipeline) / `docs/ab_copy_variants.md` (コピー原本) / `research/competitive_landscape.md` (非競合 partner 候補) / `research/outreach_tracker.csv` (進捗管理 CSV)
 
@@ -176,7 +176,7 @@
 D+3 の 5 月 9 日 (土) 以降、15 分お話しできるタイミングがあれば候補日を頂けるとありがたいです。
 
 梅田 茂利
-autonomath.ai / [HANDLE]
+zeimu-kaikei.ai / [HANDLE]
 ```
 
 ### 6.2 R2 — 記者フォローアップ (D+3、HN traction 後)
@@ -238,7 +238,7 @@ autonomath.ai / [HANDLE]
 launch 週は私も時間が取れます。30 分だけ顔合わせ可能であれば候補日を頂戴できますと幸いです。
 
 梅田 茂利
-autonomath.ai
+zeimu-kaikei.ai
 ```
 
 ### 6.5 G — 行政窓口レター (data-quality-first)
@@ -261,7 +261,7 @@ autonomath.ai
 3. **相互参照**: 貴省のオープンデータポータルで「利用事例」紹介枠がある場合、本 API を掲載いただけると ユーザー 側の一次資料回帰が促進されます
 
 梅田 茂利
-autonomath.ai / 代表メール 公開連絡先 (hello@autonomath.ai)
+zeimu-kaikei.ai / 代表メール 公開連絡先 (hello@zeimu-kaikei.ai)
 ```
 
 **意図**: press coverage ではなく「公開データが使われている」事実報告 → データ品質ループ開通。12-24 ヶ月後の partnership foundation。

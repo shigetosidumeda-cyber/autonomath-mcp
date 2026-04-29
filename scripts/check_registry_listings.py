@@ -137,7 +137,7 @@ REGISTRIES: list[dict[str, Any]] = [
     },
 ]
 
-USER_AGENT = "AutonoMath-RegistryChecker/0.1 (+https://autonomath.ai; info@bookyou.net)"
+USER_AGENT = "AutonoMath-RegistryChecker/0.1 (+https://zeimu-kaikei.ai; info@bookyou.net)"
 TIMEOUT_S = 15
 
 

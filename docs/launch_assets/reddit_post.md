@@ -56,7 +56,7 @@ ChatGPT, Gemini) in a single call.
 - 181 exclusion / prerequisite rules
 - 99%+ rows with source_url + fetched_at lineage
 
-**MCP-native, 72 tools, protocol 2025-06-18:**
+**MCP-native, 89 tools, protocol 2025-06-18:**
 
 - search_programs, prescreen, deadlines, exclusions
 - 7 one-shot discovery tools (smb_starter_pack, subsidy_combo_finder,
@@ -64,7 +64,7 @@ ChatGPT, Gemini) in a single call.
   subsidy_roadmap_3yr)
 - Cross-dataset glue: trace_program_to_law, find_cases_by_law,
   combined_compliance_check
-- 28 autonomath tools backed by entity-fact DB (17 V1 + 4 V4 universal + 7 Phase A absorption)
+- 28 autonomath tools backed by entity-fact DB (17 V1 + 4 metadata tools + 7 static dataset tools)
 
 **Pricing:**
 
@@ -74,21 +74,21 @@ compliance.
 
 **Tech:**
 
-Python + FastAPI + FastMCP + SQLite FTS5 trigram + sqlite-vec, hosted on
+Python + FastAPI + FastMCP + SQLite 全文検索インデックス (3-gram) + ベクトル検索, hosted on
 Fly.io Tokyo. 99%+ primary-source URL coverage; aggregators (noukaweb,
 hojyokin-portal, etc.) banned from source_url for trust reasons.
 
 **Try it:**
 
 - `pip install autonomath-mcp` then add to Claude Desktop config
-- curl https://api.autonomath.ai/v1/programs/search?q=...
+- curl https://api.zeimu-kaikei.ai/v1/programs/search?q=...
 - 50 req/month free, no signup
 
 Repo: https://github.com/[USERNAME]/[REPO]
-Docs: https://autonomath.ai/docs/
+Docs: https://zeimu-kaikei.ai/docs/
 PyPI: https://pypi.org/project/autonomath-mcp/
 
-Happy to discuss FTS5 trigram pitfalls for Japanese, MCP tool design
+Happy to discuss 全文検索インデックス (3-gram) pitfalls for Japanese, MCP tool design
 tradeoffs, the metered-only choice, or solo + zero-touch ops at this
 data scale.
 ```
@@ -141,8 +141,8 @@ Genuinely interested in pushback on:
 2. Will solo + zero-touch break under enterprise procurement requirements?
 3. Is "anonymous 50/month free" enough as the acquisition top-of-funnel?
 
-Site: https://autonomath.ai
-Pricing: https://autonomath.ai/docs/pricing/
+Site: https://zeimu-kaikei.ai
+Pricing: https://zeimu-kaikei.ai/docs/pricing/
 PyPI: https://pypi.org/project/autonomath-mcp/
 
 Reply / DM open for dialog.

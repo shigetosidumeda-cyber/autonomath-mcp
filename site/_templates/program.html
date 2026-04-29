@@ -22,7 +22,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:site_name" content="AutonoMath">
+<meta property="og:site_name" content="税務会計AI">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page_title }}">
@@ -38,7 +38,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {{ json_ld_pretty | safe }}
@@ -49,9 +49,8 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="AutonoMath ホーム">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/docs/">Docs</a>
@@ -157,6 +156,23 @@
         <p>{{ deadline_paragraph }}</p>
       </section>
 
+      <section aria-labelledby="acceptance-title">
+        <h2 id="acceptance-title">採択率</h2>
+        {%- if acceptance_stats and acceptance_stats.rounds %}
+        <p>過去採択率 (n={{ acceptance_stats.rounds }} rounds, {{ acceptance_stats.min_pct }}%–{{ acceptance_stats.max_pct }}%、 平均 {{ acceptance_stats.avg_pct }}%) — 公的機関が公表した round ごとの値の集約です。</p>
+        {%- if acceptance_stats.recent %}
+        <ul class="acceptance-recent">
+          {%- for r in acceptance_stats.recent %}
+          <li><strong>{{ r.round_label }}</strong>: {{ r.rate_pct }}%{% if r.applied_count and r.accepted_count %} ({{ r.accepted_count }} / {{ r.applied_count }} 件){% endif %}{% if r.application_date %} &middot; {{ r.application_date }}{% endif %}</li>
+          {%- endfor %}
+        </ul>
+        {%- endif %}
+        {%- else %}
+        <p class="muted">採択率公表データなし。 本制度については公的機関が round ごとの採択率を公表していないため、 推測値は出しません。</p>
+        {%- endif %}
+        <p class="muted" style="font-size:13px;">採択率公表データは 69 制度 / 10,790 中 (0.64%) のみ。 公募回ごとの公表値を抜粋しています。 採択率は事業計画・申請内容により個別に大きく変動するため、 過去値は今後の採択を保証しません。</p>
+      </section>
+
       <section aria-labelledby="exclusion-title">
         <h2 id="exclusion-title">除外制度・併用可否</h2>
         <p>{{ exclusion_paragraph }}</p>
@@ -177,8 +193,23 @@
         <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
   "https://api.{{ DOMAIN }}/v1/programs/{{ unified_id }}"</code></pre>
         <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_program(unified_id="{{ unified_id }}")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
-        <p class="api-cta-line">無料 50 req/月。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
+        <p class="api-cta-line">無料 50 リクエスト/月。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
       </section>
+
+      {%- if related_qa %}
+      <section aria-labelledby="related-qa-title">
+        <h2 id="related-qa-title">関連 Q&amp;A</h2>
+        <p>本制度のよくある質問・申請手続きの解説は以下の Q&amp;A ページにまとめています。</p>
+        <ul class="related-qa">
+          {%- for q in related_qa %}
+          <li class="related-card">
+            <a href="{{ q.url }}">{{ q.h1 }}</a>
+            <span class="related-kind muted">{{ q.topic_label }}</span>
+          </li>
+          {%- endfor %}
+        </ul>
+      </section>
+      {%- endif %}
 
       {%- if related_programs %}
       <section aria-labelledby="related-title">
@@ -205,17 +236,24 @@
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">日本の制度 API</p>
       <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
     </div>
-    <nav class="footer-nav" aria-label="フッター">
+    <nav class="footer-nav" aria-label="フッター 法務・連絡">
       <a href="/tos.html">利用規約</a>
       <a href="/privacy.html">プライバシー</a>
       <a href="/tokushoho.html">特定商取引法</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
+    <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
+      <a href="/industries/" hreflang="ja">業種別</a>
+      <a href="/qa/" hreflang="ja">Q&amp;A</a>
+      <a href="/compare.html" hreflang="ja">比較</a>
+      <a href="/prefectures/" hreflang="ja">都道府県別</a>
+    </nav>
     <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+    <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
   </div>
 </footer>
 

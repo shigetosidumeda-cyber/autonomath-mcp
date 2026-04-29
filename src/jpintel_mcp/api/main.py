@@ -26,6 +26,7 @@ from structlog.contextvars import bind_contextvars, clear_contextvars
 from jpintel_mcp import __version__
 from jpintel_mcp.api.accounting import router as accounting_router
 from jpintel_mcp.api.admin import router as admin_router
+from jpintel_mcp.api.admin_kpi import router as admin_kpi_router
 from jpintel_mcp.api.advisors import router as advisors_router
 from jpintel_mcp.api.alerts import router as alerts_router
 from jpintel_mcp.api.anon_limit import (
@@ -35,17 +36,27 @@ from jpintel_mcp.api.anon_limit import (
 )
 from jpintel_mcp.api.appi_deletion import router as appi_deletion_router
 from jpintel_mcp.api.appi_disclosure import router as appi_disclosure_router
+from jpintel_mcp.api.audit import router as audit_router
+from jpintel_mcp.api.audit_log import router as audit_log_router
 from jpintel_mcp.api.autonomath import (
     health_router as autonomath_health_router,
     router as autonomath_router,
+)
+from jpintel_mcp.api.ma_dd import (
+    router as ma_dd_router,
+    watches_router as me_watches_router,
 )
 from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
+from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
+from jpintel_mcp.api.client_profiles import router as client_profiles_router
 from jpintel_mcp.api.compliance import router as compliance_router
+from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.confidence import router as confidence_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
+from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
@@ -64,7 +75,9 @@ from jpintel_mcp.api.meta_freshness import router as meta_freshness_router
 from jpintel_mcp.api._error_envelope import make_error, safe_request_id
 from jpintel_mcp.api.middleware import (
     AnonQuotaHeaderMiddleware,
+    ClientTagMiddleware,
     CustomerCapMiddleware,
+    DeprecationWarningMiddleware,
     KillSwitchMiddleware,
     OriginEnforcementMiddleware,
     PerIpEndpointLimitMiddleware,
@@ -74,10 +87,15 @@ from jpintel_mcp.api.middleware import (
 )
 from jpintel_mcp.api.prescreen import router as prescreen_router
 from jpintel_mcp.api.programs import router as programs_router
+from jpintel_mcp.api.saved_searches import router as saved_searches_router
+from jpintel_mcp.api.signup import router as signup_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.stats import router as stats_router
+from jpintel_mcp.api.stats_funnel import router as stats_funnel_router
 from jpintel_mcp.api.subscribers import router as subscribers_router
 from jpintel_mcp.api.tax_rulesets import router as tax_rulesets_router
+from jpintel_mcp.api.transparency import router as transparency_router
+from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.testimonials import (
     admin_router as testimonials_admin_router,
 )
@@ -317,6 +335,38 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
             )
             sys.exit(1)
 
+    # ── Integration-token Fernet key validation ─────────────────────────
+    # `INTEGRATION_TOKEN_SECRET` MUST be a valid Fernet key (32-byte
+    # url-safe base64) — otherwise every Google Sheets / kintone /
+    # Postmark inbound credential read fails with 503 mid-request, which
+    # surfaces to the customer dashboard as "operator misconfigured".
+    # Catch the misconfiguration at boot in prod so the first 503 never
+    # reaches a customer. Dev / test skip this gate (no integrations
+    # exercised on local uvicorn). Supports comma-separated MultiFernet
+    # rotation list — extra keys decrypt legacy ciphertexts only.
+    if os.getenv("JPINTEL_ENV") == "prod":
+        _fkey = os.getenv("INTEGRATION_TOKEN_SECRET", "").strip()
+        if _fkey:
+            try:
+                from cryptography.fernet import Fernet, MultiFernet
+
+                _candidates = [k.strip() for k in _fkey.split(",") if k.strip()]
+                if len(_candidates) == 1:
+                    Fernet(_candidates[0].encode("utf-8"))
+                else:
+                    MultiFernet([
+                        Fernet(k.encode("utf-8")) for k in _candidates
+                    ])
+            except Exception as _exc:  # noqa: BLE001
+                logger.critical(
+                    "FATAL: INTEGRATION_TOKEN_SECRET is set but is not a valid "
+                    "Fernet key (32-byte url-safe base64). Refusing to start. "
+                    "Generate via `python -c 'from cryptography.fernet import "
+                    "Fernet;print(Fernet.generate_key().decode())'`. exc=%s",
+                    type(_exc).__name__,
+                )
+                sys.exit(1)
+
     # ── Aggregator domain integrity assertion ───────────────────────────
     # Hard-fail the boot if any banned aggregator domain shows up in
     # programs.source_url. We never serve traffic on tainted data —
@@ -388,7 +438,90 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="AutonoMath",
         version=__version__,
-        description="AutonoMath — 日本の制度情報 (補助金 / 融資 / 税制 / 共済) API + MCP server. Operated by Bookyou Inc. (T8010001213708).",
+        description=(
+            "AutonoMath is a Japanese public-program intelligence API + MCP "
+            "server. It exposes a single retrieval surface over **10,790 "
+            "補助金 / 融資 / 税制 / 認定** programs (tier S/A/B/C searchable; "
+            "1,923 tier-X rows are quarantined and not returned), **2,286 "
+            "採択事例 (case studies)**, **108 融資 (loan products)** decomposed "
+            "across the three risk axes (担保 / 個人保証人 / 第三者保証人), "
+            "**1,185 行政処分 (enforcement cases)**, **9,484 laws** (e-Gov, "
+            "CC-BY 4.0), **35 税務判定ルールセット (tax rulesets)**, **2,065 "
+            "court decisions (判例)**, **362 bids (入札)**, and **13,801 "
+            "適格請求書発行事業者 (NTA invoice registrants, PDL v1.0)**. Every row "
+            "carries a primary-source URL + fetched_at timestamp.\n\n"
+            "## Who this is for\n\n"
+            "Built for LLM agents (Claude / ChatGPT / Perplexity / Cursor) "
+            "and developers building Japanese-business automation. Use cases:\n"
+            "- discover candidate 補助金 / 助成金 by region + industry + amount\n"
+            "- check whether a 法人番号 is a registered 適格請求書発行事業者\n"
+            "- look up the current 税務判定ルールセット (e.g. 2割特例, "
+            "電子帳簿保存法) and evaluate caller-supplied 事業者プロファイル against it\n"
+            "- pull 採択事例 (real awarded grants) for prior-art research\n"
+            "- check 行政処分 history before extending credit / awarding "
+            "subsidy\n"
+            "- read e-Gov 法令 articles and trace which programs cite them\n\n"
+            "## Information lookup, not professional advice (税理士法 §52)\n\n"
+            "**This API returns information retrieved from public Japanese "
+            "government sources. It is NOT 税務助言 (tax advice), NOT 法律相談 "
+            "(legal advice), and NOT a substitute for 士業 (税理士 / 弁護士 / "
+            "社労士 / 行政書士) consultation.** Every `/v1/am/*` and `/v1/tax_*` "
+            "response carries an explicit `_disclaimer` envelope key making "
+            "this fence machine-readable. LLM agents relaying this data to "
+            "end users MUST surface the disclaimer.\n\n"
+            "## Quickstart\n\n"
+            "Anonymous (no auth, **50 req/月 per IP**, JST 月初 00:00 リセット):\n"
+            "```bash\n"
+            "curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT導入&limit=5'\n"
+            "```\n\n"
+            "Authenticated (¥3/req metered, 税込 ¥3.30, no tier SKUs, no "
+            "minimums) — pass `X-API-Key: sk_...` issued via Stripe Checkout:\n"
+            "```bash\n"
+            "curl -H 'X-API-Key: sk_live_...' "
+            "'https://api.zeimu-kaikei.ai/v1/programs/search?q=DX&prefecture=東京都&tier=S'\n"
+            "```\n\n"
+            "## Pagination + envelopes\n\n"
+            "- All search endpoints share `{total, limit, offset, results[]}` "
+            "shape with `limit<=100` (default 20).\n"
+            "- Search responses returning data sourced from PDL v1.0 (NTA "
+            "invoice registrants) carry an `attribution` block — required by "
+            "the license. Do not strip it.\n"
+            "- `/v1/am/*` and `/v1/tax_rulesets/*` carry `_disclaimer` "
+            "(税理士法 §52 fence) — relay verbatim.\n\n"
+            "## Operator\n\n"
+            "Bookyou株式会社 (法人番号 T8010001213708), 代表 梅田茂利, "
+            "info@bookyou.net. Canonical site: https://zeimu-kaikei.ai. "
+            "MCP package: `pip install autonomath-mcp` (PyPI). "
+            "MCP exposes 69 tools at default gates (39 jpintel + 30 "
+            "autonomath; protocol 2025-06-18).\n\n"
+            "---\n\n"
+            "## 日本語要約 (JP summary)\n\n"
+            "AutonoMath (税務会計AI) は **10,790 件の補助金 / 融資 / 税制 / 認定** "
+            "(tier S/A/B/C のみ検索対象、tier X 1,923 件は品質保留)、**2,286 件の"
+            "採択事例**、**108 件の融資商品** (担保 / 個人保証人 / 第三者保証人 "
+            "三軸分解)、**1,185 件の行政処分**、**9,484 件の法令** (e-Gov / "
+            "CC-BY 4.0)、**35 件の税務判定ルールセット**、**2,065 件の判例**、"
+            "**362 件の入札案件**、**13,801 件の適格請求書発行事業者 (国税庁 / PDL "
+            "v1.0)** を、REST + MCP の単一検索面で公開する API です。各レコードは "
+            "一次情報源 URL と取得時刻 (`source_url` / `fetched_at`) を保持しています。\n\n"
+            "**用途:** LLM エージェント (Claude / ChatGPT / Perplexity / Cursor) と"
+            "日本企業向け業務自動化開発者向け。地域 × 業種 × 金額の補助金候補抽出、"
+            "13 桁 法人番号 → 適格請求書発行事業者 登録確認、税務判定ルール適用判断、"
+            "採択事例の事前研究、行政処分歴の与信前 DD、e-Gov 法令の条文参照、等。\n\n"
+            "**税理士法 §52 fence:** 本 API は公的情報の検索結果を返すサービスで、"
+            "**税務助言・法律相談・士業 (税理士 / 弁護士 / 社労士 / 行政書士) 業務の"
+            "代替ではありません**。`/v1/am/*` および `/v1/tax_*` の各レスポンスは "
+            "`_disclaimer` キーをもち、機械可読な形でこの境界を表明しています。LLM "
+            "エージェントは end user に情報を中継する際、`_disclaimer` を必ず併示"
+            "してください。\n\n"
+            "**料金体系:** 認証なし (匿名) は IP あたり 50 リクエスト / 月 (JST 月初 "
+            "00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。"
+            "tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で "
+            "発行した `X-API-Key: sk_...` を Authorization header に設定してください。\n\n"
+            "**運営者:** Bookyou株式会社 (法人番号 T8010001213708 / 代表 梅田茂利 / "
+            "info@bookyou.net / 東京都文京区小日向2-22-1)。商号: 税務会計AI。"
+            "公式サイト: https://zeimu-kaikei.ai/."
+        ),
         lifespan=_lifespan,
         openapi_url="/v1/openapi.json",
     )
@@ -405,8 +538,15 @@ def create_app() -> FastAPI:
             "Content-Type",
             "X-Request-ID",
             "X-CSRF-Token",
+            "X-Client-Tag",
             "Stripe-Signature",
             "X-Postmark-Webhook-Signature",
+            # IETF Idempotency-Key (draft-ietf-httpapi-idempotency-key-header).
+            # Used by /v1/me/clients/bulk_evaluate (commit=true) and the
+            # kintone integration POST. Without it on the allowlist, browser-
+            # side preflight rejects the header and the dashboard's retry UI
+            # cannot send the dedup token alongside the POST body.
+            "Idempotency-Key",
         ],
         max_age=3600,
     )
@@ -432,6 +572,18 @@ def create_app() -> FastAPI:
     # — see api/response_sanitizer.py docstring).
     app.add_middleware(ResponseSanitizerMiddleware)
     app.add_middleware(_RequestContextMiddleware)
+    # Deprecation observability (2026-04-29): tags hits to routes flagged
+    # `deprecated=True` (OpenAPI canonical) OR responses carrying RFC 8594
+    # `Deprecation` / RFC 9745 `Sunset` headers. Emits to Sentry via
+    # safe_capture_message(metric="api.deprecation.hit", level="warning",
+    # route=<path>) — consumed by the `deprecated_endpoint_hit` rule in
+    # monitoring/sentry_alert_rules.yml (threshold 100/7d, weekly digest).
+    # Sentry-only: short-circuits to no-op when SENTRY_DSN unset (dev/CI).
+    # Added INSIDE _RequestContextMiddleware so request-id binding has
+    # already happened, OUTSIDE rate-limit / cap so a deprecated-hit that
+    # gets 429'd or 503'd does not tag the metric (only successful or
+    # handler-routed responses count toward the deprecation budget).
+    app.add_middleware(DeprecationWarningMiddleware)
     # S3 friction removal (2026-04-25): every anonymous response carries
     # X-Anon-Quota-Remaining + X-Anon-Quota-Reset + X-Anon-Upgrade-Url so
     # an LLM caller (or its human in the loop) sees the upgrade path
@@ -440,6 +592,14 @@ def create_app() -> FastAPI:
     # routes without that dep (e.g. /healthz) silently get no anon
     # headers — same exemption posture as the dep itself.
     app.add_middleware(AnonQuotaHeaderMiddleware)
+    # X-Client-Tag attribution (税理士 顧問先 invoice line-item passthrough).
+    # Stashes a validated tag onto request.state.client_tag (or None) so
+    # log_usage can persist it into usage_events.client_tag (migration 085).
+    # Cheap pass-through middleware — ~22 LOC, no DB read, never blocks.
+    # Added BEFORE CustomerCap so a cap-rejected request can still
+    # forward-attribute its cap-reached telemetry (none today, but the
+    # ordering keeps options open).
+    app.add_middleware(ClientTagMiddleware)
     # P3-W customer self-cap: short-circuit with 503 + cap_reached:true once
     # month-to-date billable spend (¥3/req) reaches the customer's
     # `monthly_cap_yen`. Runs after request-id binding so logged 503s carry
@@ -736,11 +896,30 @@ def create_app() -> FastAPI:
     # AnonIpLimitDep — same posture as /healthz; serves aggregated freshness
     # stats so customers/agents can verify data is fresh enough for purpose.
     app.include_router(meta_freshness_router)
+    # Trust-signal pages backend (/v1/am/data-freshness +
+    # /v1/am/programs/{id}/sources). Same public posture as
+    # meta_freshness_router — these are anti-詐欺 transparency surfaces
+    # that must always answer (uptime monitor / static page polling).
+    # Mounted WITHOUT AnonIpLimitDep so polling the freshness page from
+    # the browser does not burn the 50/月 anonymous quota.
+    app.include_router(transparency_router)
+    # Trust 8-pack (migration 101 — corrections, SLA, cross-source, staleness,
+    # §52 audit rollup). All read endpoints public + unmetered, same posture
+    # as transparency_router. POST /v1/corrections has its own per-day
+    # idempotency dedup so we do NOT wrap the router with AnonIpLimitDep
+    # (a customer reporting a data bug must always be able to do so).
+    # See src/jpintel_mcp/api/trust.py for the surface inventory.
+    app.include_router(trust_router)
     # Public stats endpoints (P5-ι, brand 5-pillar 透明・誠実 / anti-aggregator).
     # /v1/stats/coverage + /v1/stats/freshness + /v1/stats/usage. No auth, no
     # AnonIpLimitDep — same transparency posture as meta_freshness. Cached
     # 5 minutes in-process to absorb landing-page traffic spikes.
     app.include_router(stats_router)
+    # /v1/stats/funnel — operator-only live funnel (admin-key gated, hidden
+    # from openapi). Distinct from /v1/admin/funnel which reads the
+    # precomputed funnel_daily rollup; this one computes off raw tables so
+    # the operator can see numbers before the rollup catches up.
+    app.include_router(stats_funnel_router)
     # P5-attribution: Bayesian Discovery + Use confidence dashboard.
     # /v1/stats/confidence — same transparency posture as the other /stats/*
     # surfaces. 5-min in-memory cache. Per-tool aggregates only (no
@@ -802,6 +981,13 @@ def create_app() -> FastAPI:
     # otherwise burn the per-IP 50/月 anon quota for. Per-route signup
     # spam limiting belongs inside compliance.py (follow-up).
     app.include_router(compliance_router)
+    # Email-only trial signup (POST /v1/signup, GET /v1/signup/verify).
+    # Conversion-pathway audit 2026-04-29 — captures evaluator emails
+    # before they bounce. NOT anon-quota-gated: the signup itself burns
+    # ZERO of the 50/月 anon quota (filling that bucket would create a
+    # perverse incentive to skip signup). Per-IP velocity (1/24h) lives
+    # inside signup.py instead.
+    app.include_router(signup_router)
     app.include_router(me_router)
     # Tier 2 customer dashboard (P5-iota++, dd_v8_08 C/G). Bearer-authenticated
     # read-only summaries (`/v1/me/dashboard`, `/v1/me/usage_by_tool`,
@@ -832,9 +1018,97 @@ def create_app() -> FastAPI:
     # subscription is FREE (no ¥3/req surcharge) — retention feature, not a
     # metered surface. Anonymous callers are 401'd inside the router itself.
     app.include_router(alerts_router)
+    # Customer-side outbound webhooks (¥3/req metered, HMAC required).
+    # Distinct from alerts_router (FREE retention surface). The dispatcher
+    # cron (scripts/cron/dispatch_webhooks.py) emits Stripe usage records
+    # only for HTTP 2xx deliveries; failures + retries do not bill. Auto-
+    # disable after 5 consecutive failures prevents runaway billing if the
+    # customer endpoint goes dark. Migration 080 owns the schema.
+    app.include_router(customer_webhooks_router)
+    # W3 saved-searches + daily/weekly digest. Authenticated-only CRUD on
+    # the calling key's own rows; the cron sweep
+    # (scripts/cron/run_saved_searches.py) reports each delivered digest
+    # via report_usage_async so deliveries are ¥3/req metered. Subscribe
+    # path itself is FREE (it is the customer's own row).
+    app.include_router(saved_searches_router)
+    # Migration 096 — client_profiles registry for 補助金コンサル fan-out.
+    # Authenticated-only CRUD on the calling key's own 顧問先 metadata.
+    # CRUD is FREE; the fan-out path (saved_searches × profile_ids) is
+    # ¥3-metered by the cron sweep (scripts/cron/run_saved_searches.py).
+    # Mounted under /v1/me/client_profiles — no AnonIpLimitDep because
+    # the router gates on require_key (anon → 401).
+    app.include_router(client_profiles_router)
+    # Consultant trigger #1 — CSV bulk eligibility evaluation. Mounted under
+    # /v1/me/clients/bulk_evaluate. Cost-preview path is FREE; commit=true
+    # bills ¥3 × N rows and returns a ZIP of per-client result CSVs.
+    app.include_router(bulk_evaluate_router)
+    # Migration 099 — recurring engagement substrate (M5 email courses).
+    # Mounted under /v1/me/courses, FREE CRUD on the calling key's own
+    # row tree; per-day delivery is ¥3-metered through the cron sweep.
+    app.include_router(courses_router)
+    # Migration 099 — quarterly PDF + Slack webhook + email_course alias.
+    # Mounted under /v1/me/recurring/* (auth required). PDF render is
+    # ¥3-metered per generation (cached afterwards so repeat downloads
+    # are free). Slack webhook test send is FREE (one-shot at bind time).
+    from jpintel_mcp.api.recurring_quarterly import router as recurring_router
+
+    app.include_router(recurring_router)
+    # Workflow integrations 5-pack (migration 105):
+    #   POST /v1/integrations/slack            slash command (¥3/call)
+    #   POST /v1/integrations/slack/webhook    incoming-webhook drop-in
+    #   POST /v1/integrations/sheets           Apps Script callback
+    #   POST /v1/integrations/google/start     OAuth start (FREE)
+    #   GET  /v1/integrations/google/callback  OAuth callback (FREE)
+    #   POST /v1/integrations/email/inbound    Postmark inbound parse (¥3)
+    #   POST /v1/integrations/email/connect    Mark inbound enabled (FREE)
+    #   GET  /v1/integrations/excel            WEBSERVICE cell formula (¥3)
+    #   POST /v1/integrations/kintone          plugin-button callback (¥3)
+    #   POST /v1/integrations/kintone/connect  bind API token (FREE)
+    #   POST /v1/integrations/kintone/sync     daily sync (¥3/call, NOT/row)
+    # CRUD/connect endpoints are FREE; each delivery surface bills exactly
+    # ¥3 (one row in usage_events per call, regardless of result count —
+    # see _bill_one_call). Mounted with AnonIpLimitDep so unauthenticated
+    # probes hit the 50/月 IP cap before the route handler runs.
+    from jpintel_mcp.api.integrations import router as integrations_router
+
+    app.include_router(integrations_router, dependencies=[AnonIpLimitDep])
+    # LINE Messaging API webhook receiver — second product surface for
+    # 中小企業 cohort (CLAUDE.md cohort #6). Deterministic state machine,
+    # NO LLM call, billing inherits the existing programs.search ¥3
+    # event accounting. Mounted WITHOUT AnonIpLimitDep because LINE
+    # delivers from a fixed IP range that would burn the 50/月 IP cap
+    # within minutes; we apply per-line_user quota inside the handler.
+    from jpintel_mcp.api.line_webhook import router as line_webhook_router
+
+    app.include_router(line_webhook_router)
+    # Public audit-log explorer (Z3 — am_amendment_diff read surface).
+    # Mounted BEFORE the autonomath_router with AnonIpLimitDep so the
+    # 50/月 per-IP quota applies. Paid keys (¥3/req) bypass the anon
+    # ceiling and bill normally — same as other /v1/am/* endpoints.
+    app.include_router(audit_log_router, dependencies=[AnonIpLimitDep])
     # Autonomath REST router exposes the 16 am_* tools at /v1/am/*.
     # Same anonymous IP rate-limit dep as other public endpoints.
     app.include_router(autonomath_router, dependencies=[AnonIpLimitDep])
+    # M&A pillar bundle (Wave 22 / 2026-04-29):
+    #   POST /v1/am/dd_batch     — 1..200 法人 batch DD (¥3 per id)
+    #   GET  /v1/am/group_graph  — 2-hop part_of traversal (¥3 per call)
+    #   POST /v1/am/dd_export    — audit-bundle ZIP via signed R2 URL
+    #                              (¥3 × N + ¥30 fixed bundle fee — only
+    #                              non-¥3 SKU in the system).
+    # Same anonymous IP rate-limit dep as other /v1/am/* surfaces; the
+    # write paths self-gate on `ctx.key_hash is None` → 401.
+    app.include_router(ma_dd_router, dependencies=[AnonIpLimitDep])
+    # M&A pillar Pillar 2 — customer-scoped real-time watches at
+    # /v1/me/watches/*. Watches register FREE; ¥3 per HTTP 2xx delivery
+    # via the existing customer_webhooks dispatcher.
+    app.include_router(me_watches_router)
+    # 会計士・監査法人 work-paper bundle at /v1/audit/* (POST workpaper +
+    # POST batch_evaluate + GET snapshot_attestation). Authenticated-only
+    # (audit firms hold paid keys) — handler-level 401 short-circuits
+    # anonymous traffic, but we still mount with AnonIpLimitDep so an
+    # unauthenticated probe burns the public quota and not free
+    # compute.
+    app.include_router(audit_router, dependencies=[AnonIpLimitDep])
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 50/月 anonymous quota.
@@ -850,6 +1124,11 @@ def create_app() -> FastAPI:
     # Admin router is internal-only. Router sets include_in_schema=False so
     # /v1/admin/* is absent from /openapi.json and docs/openapi/v1.json.
     app.include_router(admin_router)
+    # Operator KPI dashboard backend (`/v1/admin/kpi`). Same admin-key gate
+    # + include_in_schema=False posture as the rest of /v1/admin/*. Mirrors
+    # the JSON shape emitted by `scripts/ops_quick_stats.py --json` so the
+    # CLI, the dashboard, and the daily email digest all read one source.
+    app.include_router(admin_kpi_router)
     # Operator moderation for testimonials (approve / unapprove). Same admin-
     # key gate + include_in_schema=False posture as the rest of /v1/admin/*.
     app.include_router(testimonials_admin_router)
@@ -890,7 +1169,7 @@ def create_app() -> FastAPI:
             routes=app.routes,
         )
         schema["servers"] = [
-            {"url": "https://api.autonomath.ai", "description": "Production"},
+            {"url": "https://api.zeimu-kaikei.ai", "description": "Production"},
             {"url": "http://localhost:8080", "description": "Local development"},
         ]
         schema.setdefault("components", {})
@@ -915,7 +1194,7 @@ def create_app() -> FastAPI:
             "name": "AutonoMath Support",
             "email": "info@bookyou.net",
         }
-        schema["info"]["termsOfService"] = "https://autonomath.ai/terms.html"
+        schema["info"]["termsOfService"] = "https://zeimu-kaikei.ai/terms.html"
         schema["info"]["license"] = {
             "name": "Proprietary - see termsOfService",
         }

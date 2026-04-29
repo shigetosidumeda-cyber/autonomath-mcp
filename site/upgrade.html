@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<!--
+  site/upgrade.html — anonymous 429 friction-removal landing.
+
+  Reached by:
+    * `/v1/api/anon_limit.py` 429 body `upgrade_url` field
+    * `X-Anon-Upgrade-Url` response header on every anon 429
+    * `/go/upgrade?from=429` 302 redirect (Cloudflare _redirects line 33)
+
+  Why this page exists (audit 2026-04-29):
+    Previously /go/upgrade 302'd to /go, but /go.html is the MCP device-flow
+    activation page that requires a user_code (e.g. ABCD-1234). A 429-bouncer
+    arriving from curl, the AI Studio playground, a browser tab, or any flow
+    that does NOT carry a freshly-minted device code had no path forward —
+    they bounced. This is the primary anon-to-paid conversion leak in the
+    funnel.
+
+  Page intent:
+    1. Tell the user (in 1 sentence) why they're here (50 req/month exceeded).
+    2. Offer a single primary CTA → pricing.html#api-paid (where the actual
+       device-flow / Stripe Checkout entry sits as the highlighted card).
+    3. Offer a "wait for reset" passive option as the secondary CTA.
+    4. Offer the device-flow path as a tertiary link (for visitors who DO
+       have a user_code — backwards compatible with old `/go/upgrade` callers).
+    5. Footer matches the rest of the site brand (税理士法 §52 disclaimer +
+       Bookyou株式会社 + T8010001213708 + 特商法 link).
+
+  Not on this page:
+    * No "talk to sales" / "schedule a call" / contact-us — solo + zero-touch.
+    * No tier ladder. The only paid surface mentioned is ¥3/req metered.
+    * No email capture. Stripe Checkout will collect the email when needed.
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>匿名上限到達 — 税務会計AI</title>
+<meta name="description" content="匿名 50 req/月 の上限に達しました。API キーを発行すると ¥3.30/req (税込) で再開できます。">
+<meta name="robots" content="noindex,nofollow">
+
+<meta property="og:title" content="匿名上限到達 — 税務会計AI">
+<meta property="og:description" content="API キーを発行すると ¥3.30/req (税込) で再開できます。最低利用期間なし、使わない月は ¥0。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zeimu-kaikei.ai/upgrade.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<link rel="canonical" href="https://zeimu-kaikei.ai/upgrade.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/upgrade.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/upgrade.html">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css?v=20260428a">
+
+<style>
+  .upgrade-page { padding: 56px 0 96px; }
+  .upgrade-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    padding: 32px 32px 28px;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .upgrade-card h1 {
+    font-size: 24px;
+    margin: 0 0 8px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+  }
+  .upgrade-card .lead {
+    color: var(--text);
+    margin: 0 0 20px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .upgrade-card .lead strong {
+    font-weight: 700;
+  }
+  .upgrade-cta {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    border-radius: 10px;
+    border: 0;
+    background: var(--accent, #111);
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    margin: 0 0 10px;
+  }
+  .upgrade-cta:hover { opacity: 0.92; }
+  .upgrade-cta-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 0 0 20px;
+    line-height: 1.6;
+  }
+  .upgrade-secondary {
+    border-top: 1px solid var(--border);
+    margin: 22px 0 0;
+    padding: 18px 0 0;
+  }
+  .upgrade-secondary h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 8px;
+    letter-spacing: 0;
+  }
+  .upgrade-secondary p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin: 0 0 6px;
+  }
+  .upgrade-secondary code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    background: var(--bg-alt);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  .upgrade-tertiary {
+    border-top: 1px solid var(--border);
+    margin: 18px 0 0;
+    padding: 14px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .upgrade-tertiary a { color: var(--text-muted); text-decoration: underline; }
+  .upgrade-disclaimer {
+    background: #fff8e1;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 24px 0 0;
+    font-size: 12px;
+    color: #7c2d12;
+    line-height: 1.6;
+  }
+  .upgrade-disclaimer strong { display: block; margin-bottom: 2px; font-size: 13px; }
+</style>
+
+<script defer src="analytics.js"></script>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="upgrade-page">
+  <div class="container">
+    <div class="upgrade-card" tabindex="-1">
+      <h1>匿名 <span data-fact="anonymous_quota_per_month">50</span> req/月 の上限に達しました</h1>
+      <p class="lead">
+        API キーを発行すると <strong>¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト (税込)</strong> で再開できます。
+        最低利用期間・解約違約金はありません。使わない月は ¥0 です。
+      </p>
+
+      <a class="upgrade-cta" href="pricing.html#api-paid" data-cta="upgrade-primary">
+        ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト で再開する — 料金ページへ
+      </a>
+      <p class="upgrade-cta-sub">
+        Stripe Checkout で Apple Pay / Google Pay / カード決済。<br>
+        適格請求書 (T8010001213708) 自動発行・解約は Customer Portal でカードを外すだけ。
+      </p>
+
+      <div class="upgrade-secondary">
+        <h2>まず触ってみたい方</h2>
+        <p>
+          カード登録なしで <strong>14 日 / 200 リクエスト</strong> のトライアルを試せます。
+          メール認証だけで API キーを発行 — Stripe は介在しません。
+        </p>
+        <p>
+          <a href="/#trial" data-cta="upgrade-trial">カードなしで試す (14日/200 リクエスト) &rarr;</a>
+        </p>
+      </div>
+
+      <div class="upgrade-secondary">
+        <h2>あと 30 日待つ</h2>
+        <p>
+          匿名上限は <strong>JST 月初 00:00 にリセット</strong>されます。
+          翌月になれば同じ IP / フィンガープリントから再び <span data-fact="anonymous_quota_per_month">50</span> req/月 まで無料で利用可能です。
+        </p>
+        <p>
+          残量を確認: <code>GET /v1/usage</code>
+        </p>
+      </div>
+
+      <p class="upgrade-tertiary">
+        MCP device flow をお探しですか? &mdash; 確認コード (例: <code>ABCD-1234</code>) を Claude などのクライアントから受け取った場合は <a href="/go">/go</a> へ。
+      </p>
+
+      <div class="upgrade-disclaimer" role="note" aria-labelledby="upgrade-disclaimer-title">
+        <strong id="upgrade-disclaimer-title">本サービスは税務助言ではありません</strong>
+        税務会計AI は公的機関が公表する税制・補助金・法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な税務判断・申告書作成代行は行いません。弁護士法 §72 に基づき法律事務も行いません。詳細は <a href="tos.html">利用規約</a>。
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">税務会計AI</p>
+      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="pricing.html">Pricing</a>
+      <a href="/docs/">Docs</a>
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script>
+  // upgrade.html — minimal vanilla JS. Records that the visitor arrived here
+  // from a 429 (?from=429) for funnel attribution, then no-ops. Heavy lifting
+  // is on pricing.html (the primary CTA target). CSP-safe inline.
+  (function () {
+    'use strict';
+    try {
+      var q = new URLSearchParams(window.location.search || '');
+      var from = q.get('from');
+      if (from && window.dataLayer && typeof window.dataLayer.push === 'function') {
+        window.dataLayer.push({
+          event: 'upgrade_landing_view',
+          from: from
+        });
+      }
+      // Mirror the from= param onto the primary CTA so pricing.html can
+      // surface the same banner. Preserves audit attribution end-to-end.
+      if (from === '429') {
+        var primary = document.querySelector('[data-cta="upgrade-primary"]');
+        if (primary) {
+          var href = primary.getAttribute('href') || 'pricing.html#api-paid';
+          // Insert ?from=429 before the # fragment.
+          var hashIdx = href.indexOf('#');
+          var base = hashIdx >= 0 ? href.slice(0, hashIdx) : href;
+          var hash = hashIdx >= 0 ? href.slice(hashIdx) : '';
+          var sep = base.indexOf('?') >= 0 ? '&' : '?';
+          primary.setAttribute('href', base + sep + 'from=429' + hash);
+        }
+      }
+    } catch (_e) { /* analytics best-effort */ }
+  })();
+</script>
+
+</body>
+</html>

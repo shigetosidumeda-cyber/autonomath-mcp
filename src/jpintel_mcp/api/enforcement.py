@@ -16,7 +16,9 @@ import time
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -287,7 +289,14 @@ def get_enforcement_case(
     case_id: str,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> EnforcementCase:
+) -> JSONResponse:
+    """Return one enforcement case with audit-trail snapshot fields.
+
+    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
+    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this
+    行政処分 case in a work-paper can reproduce the lookup later and detect
+    whether the corpus mutated. See docs/audit_trail.md.
+    """
     row = conn.execute(
         "SELECT * FROM enforcement_cases WHERE case_id = ?", (case_id,)
     ).fetchone()
@@ -295,4 +304,6 @@ def get_enforcement_case(
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"case not found: {case_id}")
 
     log_usage(conn, ctx, "enforcement.get")
-    return _row_to_case(row)
+    body = _row_to_case(row).model_dump(mode="json")
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))

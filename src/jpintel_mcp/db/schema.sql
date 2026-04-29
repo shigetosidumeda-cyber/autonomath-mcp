@@ -35,6 +35,13 @@ CREATE TABLE IF NOT EXISTS programs (
     source_url TEXT,
     source_fetched_at TEXT,
     source_checksum TEXT,
+    -- HTTP status code from the last `scripts/refresh_sources.py` liveness
+    -- probe (NULL = never probed). Read by migration 074 to classify
+    -- tier-X rows as `dead_official_url` when ≥ 400. Added to the
+    -- canonical schema so a fresh volume gets the column at init_db()
+    -- time; the legacy ALTER in `refresh_sources.py:79` is now a no-op
+    -- on those volumes.
+    source_last_check_status INTEGER,
     updated_at TEXT NOT NULL,
     -- R8 dataset versioning (migration 067). NULL valid_until = current
     -- (live) row; non-NULL marks the row as superseded. Backfilled from
@@ -138,7 +145,47 @@ CREATE TABLE IF NOT EXISTS api_keys (
     -- back to the legacy HMAC-SHA256 path (PRIMARY KEY lookup already
     -- proves possession in that case). NEVER serves as a lookup index;
     -- bcrypt hashes are non-deterministic.
-    key_hash_bcrypt TEXT
+    key_hash_bcrypt TEXT,
+    -- Trial-signup columns (migration 076, conversion-pathway audit
+    -- 2026-04-29). Populated only on tier='trial' rows; NULL on
+    -- 'paid' / 'free' / 'anonymous' keys. trial_email is captured at
+    -- magic-link verify so the cron's expiration mail doesn't need to
+    -- join trial_signups. trial_started_at == created_at for trial rows
+    -- but is duplicated here so the cron index can target a single
+    -- column. trial_expires_at is created_at + 14d. trial_requests_used
+    -- is bumped by the request middleware for tier='trial' rows; when
+    -- it reaches 200 the daily expire_trials cron revokes the key (and
+    -- the per-request middleware can short-circuit immediately on hit).
+    trial_email TEXT,
+    trial_started_at TEXT,
+    trial_expires_at TEXT,
+    trial_requests_used INTEGER NOT NULL DEFAULT 0,
+    -- Parent / child columns (migration 086, SaaS B2B fan-out).
+    -- `id` mirrors SQLite's implicit rowid; populated explicitly at
+    -- issuance time via last_insert_rowid() so the FK below resolves.
+    -- `parent_key_id` is NULL on parent rows; non-NULL on child rows
+    -- where it points at the parent's `id`. `label` is a free-text
+    -- ≤64-char human identifier (`prod`, `customer_a`); NULL on parents,
+    -- required at issuance on children. Server-side rule: a child cannot
+    -- spawn grandchildren (refusal in billing.keys.issue_child_key).
+    -- Stripe-side: children share parent's stripe_subscription_id so
+    -- billing aggregates to the parent — children are invisible to Stripe.
+    id INTEGER,
+    parent_key_id INTEGER REFERENCES api_keys(id),
+    label TEXT,
+    -- Spike-guard opt-in (migration 087, anti-runaway 三点セット D).
+    -- INTEGER N>=1 = enabled (current-hour usage > N * trailing-24h-avg
+    -- → 503 + Retry-After: 3600). NULL / 0 = disabled (default).
+    -- Customer sets via POST /v1/me/spike_guard.
+    spike_threshold_factor INTEGER,
+    -- Last 4 chars of the raw API key, captured at issuance. Surfaced in
+    -- email notices (welcome / rotated / dunning) so customers can match
+    -- the alert against the key fragment shown on success.html. The full
+    -- raw key never leaves the issuance request — only the last 4 chars
+    -- are stored, so leaking this column does NOT compromise the key.
+    -- NULL on legacy rows pre-dating this column; render fallbacks use
+    -- "????" placeholder.
+    key_last4 TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_api_keys_customer ON api_keys(customer_id);
@@ -148,6 +195,24 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_subscription_status
     ON api_keys(stripe_subscription_status)
     WHERE stripe_subscription_status IS NOT NULL
       AND stripe_subscription_status != 'active';
+-- UNIQUE on `id` is required so the inline `parent_key_id REFERENCES
+-- api_keys(id)` clause above resolves on fresh DBs (the table PK is
+-- `key_hash`, so `id` would otherwise be a non-unique INTEGER column
+-- and SQLite would reject the FK at first use). Mirrors the
+-- migration-086 fix.
+--
+-- IMPORTANT: SQLite only treats a NON-partial UNIQUE INDEX as a valid
+-- FK referent. A `WHERE id IS NOT NULL` partial index is rejected at
+-- runtime with "foreign key mismatch — api_keys referencing api_keys".
+-- Multiple-NULL rows remain legal because SQLite treats each NULL as
+-- distinct under the UNIQUE constraint, so backfilling legacy rows is
+-- still safe (they all carry NULL until the first issuance).
+CREATE UNIQUE INDEX IF NOT EXISTS uniq_api_keys_id
+    ON api_keys(id);
+-- Parent->children fan-out lookup (migration 086).
+CREATE INDEX IF NOT EXISTS idx_api_keys_parent_key_id
+    ON api_keys(parent_key_id)
+    WHERE parent_key_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS usage_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -165,6 +230,19 @@ CREATE TABLE IF NOT EXISTS usage_events (
     -- number of rows returned by a search endpoint (NULL for non-search).
     latency_ms INTEGER,
     result_count INTEGER,
+    -- Migration 085: optional caller-supplied attribution tag (X-Client-Tag
+    -- header). Max 32 chars, alphanumeric+hyphen+underscore (validated by
+    -- ClientTagMiddleware). NULL when the caller did not pass the header.
+    -- Used by 税理士 顧問先 invoice line-item passthrough — purely metadata
+    -- for cost allocation, NOT a pricing or cap input.
+    client_tag TEXT,
+    -- Per-request weight for Stripe metered billing. Default 1 = a normal
+    -- single-row endpoint. Multi-row endpoints (batch_get_programs,
+    -- bulk_evaluate, …) write quantity=N so a single audit row carries
+    -- the same total ¥3 × N as N quantity=1 rows would, but with one
+    -- Stripe usage_record + one idempotency key. Mirrors
+    -- `log_usage(quantity=...)`.
+    quantity INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY(key_hash) REFERENCES api_keys(key_hash)
 );
 
@@ -177,6 +255,12 @@ CREATE INDEX IF NOT EXISTS idx_usage_events_stripe_sync
 -- per-endpoint aggregation.
 CREATE INDEX IF NOT EXISTS idx_usage_events_endpoint_created
     ON usage_events(endpoint, ts);
+-- Migration 085: per-tag monthly aggregate for /v1/me/usage?group_by=client_tag.
+-- Partial index keeps the on-disk footprint trivial — only non-NULL tags
+-- materialize an entry.
+CREATE INDEX IF NOT EXISTS idx_usage_events_client_tag
+    ON usage_events(key_hash, client_tag, ts)
+    WHERE client_tag IS NOT NULL;
 
 -- Migration 062: empty-search log. Every 0-result search query is captured
 -- here so the operator can drive ingest prioritization off real demand.
@@ -1436,3 +1520,63 @@ CREATE TABLE IF NOT EXISTS email_unsubscribes (
     unsubscribed_at TEXT NOT NULL DEFAULT (datetime('now')),
     reason TEXT
 );
+
+-- ============================================================================
+-- trial_signups (migration 076, conversion-pathway audit 2026-04-29)
+--   Email-only trial signup. Magic-link verification → time-boxed
+--   tier='trial' api_keys row (14 days, 200 reqs hard cap, no Stripe). The
+--   trial is NOT a Free tier SKU; pricing stays ¥3/req metered post-trial.
+--   See scripts/migrations/076_trial_signup.sql for the full rationale.
+--
+--   api_keys.trial_email / .trial_started_at / .trial_expires_at /
+--   .trial_requests_used columns are added by ALTER TABLE in the migration
+--   file; on a fresh schema.sql boot they are CREATE-d inline below by
+--   re-stating the api_keys table, which is impossible without a CREATE OR
+--   REPLACE. Instead, init_db() runs migrations on top of schema.sql so
+--   the four columns land via the migration file's ALTER TABLE statements
+--   (idempotent — `migrate.py` skips already-applied rows). Tests that
+--   build a fresh DB hit init_db() which runs both the schema and the
+--   migrations, so trial_* columns appear automatically.
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS trial_signups (
+    email TEXT NOT NULL,
+    email_normalized TEXT PRIMARY KEY,
+    token_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    created_ip_hash TEXT,
+    verified_at TEXT,
+    issued_api_key_hash TEXT,
+    FOREIGN KEY(issued_api_key_hash) REFERENCES api_keys(key_hash)
+);
+
+CREATE INDEX IF NOT EXISTS idx_trial_signups_ip_recent
+    ON trial_signups(created_ip_hash, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_trial_signups_verified
+    ON trial_signups(verified_at)
+    WHERE verified_at IS NOT NULL;
+
+-- Cron sweep: WHERE tier='trial' AND revoked_at IS NULL ORDER BY
+-- trial_expires_at. Partial-index keeps scan cost ≈ open-trial count.
+CREATE INDEX IF NOT EXISTS idx_api_keys_trial_expiry
+    ON api_keys(trial_expires_at)
+    WHERE tier = 'trial' AND revoked_at IS NULL;
+
+
+-- ============================================================================
+-- am_idempotency_cache (migration 087, anti-runaway 三点セット)
+-- 24h replay cache for POST endpoints with Idempotency-Key. Mirrors the
+-- migration so a fresh DB created via `init_db(schema.sql)` (e.g. tests
+-- that don't run the migration runner) still has the table and replays
+-- bulk_evaluate / batch endpoints correctly without "idem cache store
+-- failed" warnings.
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS am_idempotency_cache (
+    cache_key       TEXT PRIMARY KEY,
+    response_blob   TEXT NOT NULL,
+    expires_at      TEXT NOT NULL,
+    created_at      TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_am_idempotency_cache_expires
+    ON am_idempotency_cache(expires_at);

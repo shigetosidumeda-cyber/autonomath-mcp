@@ -3,26 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AutonoMath — 1か月たちました。1つだけ質問</title>
+<title>AutonoMath — 1 か月たちました。1 つだけ質問</title>
 </head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:640px;margin:24px auto;padding:0 20px;color:#111;line-height:1.7;">
 
-<h1 style="font-size:22px;margin:0 0 12px;">1か月たちました。1つだけ質問させてください。</h1>
+<h1 style="font-size:22px;margin:0 0 12px;">1 か月たちました。1 つだけ質問させてください。</h1>
 
-<p>キー末尾 <code>{{key_last4}}</code>({{tier}} プラン)を発行してから約30日が経ちました。この1か月、ありがとうございました。</p>
+<p>キー末尾 <code>{{key_last4}}</code>({{tier}} プラン)を発行してから約 30 日が経ちました。この 1 か月、ありがとうございました。</p>
 
 {% if has_used_key %}
-<p>この1か月で <strong>{{usage_count}} 回</strong>お使いいただいています。本当に助かります。</p>
-<p>フィードバックをひとつだけ伺いたいです。</p>
-<h2 style="font-size:18px;margin-top:28px;">AutonoMath を同業の方にすすめる可能性は、0〜10 のうちどのくらいですか?</h2>
-<p style="color:#555;font-size:14px;">(0 = まったく薦めない / 10 = 強く薦める)</p>
-<p>このメールに <strong>数字だけ</strong>で返信していただければ結構です。1文添えていただけると、より嬉しいです — 特に <em>6 以下</em>の場合、「何が足りないか」を1行でも添えてくださると、次の改善につながります。</p>
+<p>この 1 か月で <strong>{{usage_count}} 回</strong>お使いいただいています。本当に助かります。</p>
+
+<h2 style="font-size:18px;margin-top:28px;">Q. AutonoMath を、もっと良くするには何が必要ですか?</h2>
+<p style="color:#444;">スケールも 0-10 もつけません。<strong>このメールにそのまま返信してください</strong>。</p>
+<p style="color:#444;font-size:14px;">例:</p>
+<ul style="color:#444;">
+  <li>「○○の制度を載せてほしい」</li>
+  <li>「○○エンドポイントの返り値に △△ も入れてほしい」</li>
+  <li>「料金は ¥3.30/req で十分やすい / 高い」</li>
+  <li>「ドキュメントの○○が分からなかった」</li>
+  <li>「特に困っていない、このまま続けてくれれば良い」</li>
+</ul>
+<p style="color:#444;">1 行で十分です。読むのは中の人 1 人(梅田)です。</p>
 {% endif %}
+
 {% if not has_used_key %}
-<p>この1か月、まだ一度もリクエストをいただいていません。課金していただきながら使っていない状況は、こちらとしても非常に気がかりです。</p>
-<p>お願いがあります。ひとつだけ教えてください。</p>
-<h2 style="font-size:18px;margin-top:28px;">なぜ使い始められなかったのでしょうか?</h2>
-<p>このメールに直接ご返信ください。以下のような1行でも十分です:</p>
+<p>この 1 か月、まだ一度もリクエストをいただいていません。課金していただきながら使っていない状況は、こちらとしても非常に気がかりです。</p>
+
+<h2 style="font-size:18px;margin-top:28px;">Q. なぜ使い始められなかったのでしょうか?</h2>
+<p>このメールに直接ご返信ください。以下のような 1 行でも十分です:</p>
 <ul style="color:#444;">
   <li>「ドキュメントが分かりにくかった」</li>
   <li>「期待していたデータが無かった(具体名教えてください)」</li>
@@ -30,14 +39,17 @@
   <li>「他の API を使うことにした」</li>
   <li>「試す時間がなかった」</li>
 </ul>
-<p>どれも改善の材料になります。率直な一言が一番助かります。</p>
-<p style="margin-top:20px;">もし「もう必要ない」とお感じであれば、<a href="https://autonomath.ai/billing/portal" style="color:#1e3a8a;">Stripe ポータル</a>からいつでもキャンセルできます。このタイミングで解約された場合、こちらから引き止めメールは送りません。</p>
+<p style="color:#444;">どれも改善の材料になります。率直な一言が一番助かります。</p>
+<p style="margin-top:20px;">もし「もう必要ない」とお感じであれば、<a href="https://zeimu-kaikei.ai/billing/portal" style="color:#1e3a8a;">Stripe ポータル</a>からいつでもキャンセルできます。このタイミングで解約された場合、こちらから引き止めメールは送りません。</p>
 {% endif %}
 
 <h2 style="font-size:17px;margin-top:28px;">このあとの連絡について</h2>
-<p>この後、onboarding シーケンスとしての自動メールは今回が最後です。以降はリリース情報などが月1程度、不定期に届くだけになります(<a href="{{{pm:unsubscribe}}}" style="color:#1e3a8a;">配信停止</a>はいつでも可能)。</p>
+<p>onboarding シーケンスとしての自動メールは今回が最後です。以降はリリース情報などが月 1 程度、不定期に届くだけになります(<a href="{{{pm:unsubscribe}}}" style="color:#1e3a8a;">配信停止</a>はいつでも可能)。</p>
 
 <p style="margin-top:24px;">引き続き、よろしくお願いします。</p>
+
+<h2 style="font-size:15px;margin-top:32px;color:#444;">税理士法 §52 / 弁護士法 §72 該当の業務はおこないません</h2>
+<p style="font-size:13px;color:#666;">AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。</p>
 
 <hr style="border:none;border-top:1px solid #eee;margin:32px 0 12px;">
 <p style="color:#888;font-size:12px;">

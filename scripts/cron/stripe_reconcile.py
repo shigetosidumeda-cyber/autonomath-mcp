@@ -75,7 +75,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
-from jpintel_mcp.observability import safe_capture_message  # noqa: E402
+from jpintel_mcp.observability import heartbeat, safe_capture_message  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.stripe_reconcile")
 
@@ -339,13 +339,22 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
     out_dir = Path(args.out) if args.out else None
-    report = reconcile(
-        window_hours=args.window_hours,
-        threshold=args.threshold,
-        dry_run=args.dry_run,
-        db_path=args.db,
-        output_dir=out_dir,
-    )
+    with heartbeat("stripe_reconcile") as hb:
+        report = reconcile(
+            window_hours=args.window_hours,
+            threshold=args.threshold,
+            dry_run=args.dry_run,
+            db_path=args.db,
+            output_dir=out_dir,
+        )
+        hb["rows_processed"] = int(report.get("subscriptions_checked", 0) or 0)
+        hb["metadata"] = {
+            "expected_total": report.get("expected_total"),
+            "reported_total": report.get("reported_total"),
+            "diff_pct": report.get("diff_pct"),
+            "alert_emitted": report.get("alert_emitted"),
+            "dry_run": bool(args.dry_run),
+        }
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0
 

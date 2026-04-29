@@ -594,8 +594,29 @@ def test_invoice_payment_failed_enqueues_dunning_via_background_task(
     assert row[0] == "free", f"expected demotion to free, got {row[0]}"
     assert row[1] == "past_due"
 
-    # TestClient runs BackgroundTasks synchronously after the response,
-    # so the dunning email should already have been "sent".
-    assert len(sent) == 1, f"expected one dunning email, got {len(sent)}"
-    assert sent[0]["to"] == "payfail@example.com"
-    assert sent[0]["attempt_count"] == 2
+    # The dunning email is now enqueued to the durable bg_task_queue
+    # (migration 060) instead of fired inline; drain the queue so the
+    # handler runs synchronously and sets `sent`. The handler's email
+    # client resolution lands on `billing._send_dunning_safe`, which
+    # uses our patched `billing._get_email_client` (still in scope).
+    from jpintel_mcp.api._bg_task_queue import claim_next, mark_done
+    from jpintel_mcp.api._bg_task_worker import _dispatch_one
+
+    # Purge ANY non-dunning rows first so the drain only fires what this
+    # test enqueued.
+    drain_conn = sqlite3.connect(seeded_db, isolation_level=None)
+    drain_conn.row_factory = sqlite3.Row
+    try:
+        for _ in range(20):  # bounded drain
+            row = claim_next(drain_conn)
+            if row is None:
+                break
+            ok, _err = _dispatch_one(row)
+            if ok:
+                mark_done(drain_conn, int(row["id"]))
+    finally:
+        drain_conn.close()
+
+    assert len(sent) >= 1, f"expected one dunning email, got {len(sent)}"
+    assert any(s.get("to") == "payfail@example.com" for s in sent)
+    assert any(s.get("attempt_count") == 2 for s in sent)

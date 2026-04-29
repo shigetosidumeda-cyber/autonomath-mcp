@@ -4,42 +4,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>法令改正アラート — AutonoMath</title>
+<title>法令改正アラート — 税務会計AI</title>
 <meta name="description" content="インボイス・電子帳簿保存法・補助金・融資・行政処分の変更を、24時間以内にメールで通知。月次ダイジェストは無料、¥500/月でリアルタイム通知。Bookyou株式会社運営。">
 
 <meta property="og:title" content="法令改正アラート — インボイス・電帳法・補助金の変更を見逃さない">
 <meta property="og:description" content="24時間以内にメール通知。月次ダイジェスト無料 / リアルタイム ¥500/月。一次資料の URL 付き。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/alerts.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/alerts.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="法令改正アラート — AutonoMath">
+<meta name="twitter:title" content="法令改正アラート — 税務会計AI">
 <meta name="twitter:description" content="インボイス・電帳法・補助金の変更を24時間以内にメール通知。¥500/月。">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/alerts.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/alerts.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/alerts.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/alerts.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/alerts.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/alerts.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/alerts.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/alerts.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "AutonoMath 法令改正アラート",
+  "name": "税務会計AI 法令改正アラート",
   "description": "インボイス・電子帳簿保存法・補助金・融資・行政処分・税務ルール・判例の変更を E メールで通知するサブスクリプション。月次ダイジェスト無料、リアルタイム通知 ¥500/月 税別。",
-  "brand": {"@type": "Brand", "name": "AutonoMath"},
-  "url": "https://autonomath.ai/alerts.html",
+  "brand": {"@type": "Brand", "name": "税務会計AI"},
+  "url": "https://zeimu-kaikei.ai/alerts.html",
   "offers": [
     {
       "@type": "Offer",
@@ -99,7 +99,7 @@
       "name": "メールに載る情報源は信頼できますか？",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "すべて一次資料 (各省庁・公庫・自治体・e-Gov・国税庁・裁判所 等) の URL を付与しています。aggregator や二次情報源は除外。source_fetched_at で「いつ取得した情報か」も明示します。"
+        "text": "すべて一次資料 (各省庁・公庫・自治体・e-Gov・国税庁・裁判所 等) の URL を付与しています。集約サイトや二次情報源は除外。source_fetched_at で「いつ取得した情報か」も明示します。"
       }
     }
   ]
@@ -112,10 +112,10 @@
   "@type": "Organization",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "AutonoMath",
+  "alternateName": "税務会計AI",
   "identifier": "T8010001213708",
   "email": "info@bookyou.net",
-  "url": "https://autonomath.ai/",
+  "url": "https://zeimu-kaikei.ai/",
   "inLanguage": "ja",
   "address": {
     "@type": "PostalAddress",
@@ -175,6 +175,12 @@
   .preview-card ul.items .s { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin: 2px 0 2px; }
   .preview-card ul.items .u { font-size: 11px; color: var(--text-muted); }
   .preview-card ul.items .u a { color: var(--accent); }
+  /* Mockup-only label: the email preview shows what subscribers receive,
+     but the per-program detail link inside the preview is a placeholder
+     until the live email-sending pipeline ships. Render as plain muted text
+     so the visitor cannot misread it as a working link (Trust Audit fix
+     2026-04-29). */
+  .preview-card ul.items .u .mock-link { color: var(--text-muted); cursor: not-allowed; text-decoration: line-through dotted; text-decoration-thickness: 1px; }
 
   .faq { padding: 48px 0 64px; border-top: 1px solid var(--border); }
   .faq h2 { font-size: 22px; margin: 0 0 20px; }
@@ -198,16 +204,15 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="AutonoMath ホーム">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="about.html">About</a>
       <a href="products.html">Products</a>
       <a href="/docs/">Docs</a>
       <a href="pricing.html">Pricing</a>
-      <a href="audiences/">Audiences</a>
+      <a href="audiences/">利用者層</a>
       <a href="alerts.html" aria-current="page">Alerts</a>
       <span class="lang-switch" role="group" aria-label="Language / 言語">
         <a href="alerts.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
@@ -228,6 +233,11 @@
       すべて一次資料 (省庁・公庫・e-Gov・国税庁・裁判所) の URL 付き。
     </p>
     <p class="tag">月次ダイジェストは無料。リアルタイム通知は ¥500/月 (税別)。契約・解約違約金なし。</p>
+
+    <div role="note" aria-labelledby="alerts-tax-disclaimer-title" style="background:#fff8e1;border:2px solid #f59e0b;padding:16px 18px;border-radius:8px;margin:20px 0;">
+      <h2 id="alerts-tax-disclaimer-title" style="font-size:16px;margin:0 0 8px;color:#7c2d12;">本アラートは税務助言ではありません</h2>
+      <p style="margin:0;font-size:14px;line-height:1.7;">配信内容は公的機関が公表する税制・補助金・法令情報の検索・整理結果であり、 税理士法 §52 に基づき個別具体的な税務判断・申告書作成代行は行いません。 弁護士法 §72 に基づき法律事務も行いません。 個別案件は<strong>資格を有する税理士・弁護士に必ずご相談ください</strong>。 詳細は <a href="tos.html">利用規約</a>。</p>
+    </div>
   </div>
 </section>
 
@@ -320,7 +330,7 @@
 
     <!-- =========================== Email preview =========================== -->
     <aside class="preview-card" aria-labelledby="preview-title">
-      <div class="preview-head">From: AutonoMath &lt;no-reply@autonomath.ai&gt; — Subject: 【AutonoMath】法令改正アラート: 3件の変更があります</div>
+      <div class="preview-head">From: 税務会計AI &lt;no-reply@zeimu-kaikei.ai&gt; — Subject: 【税務会計AI】法令改正アラート: 3件の変更があります</div>
       <div class="preview-body">
         <h3 id="preview-title">3件の変更があります</h3>
         <p class="preview-lead">過去24時間に、あなたのフィルタに合致する制度の変更が検出されました。</p>
@@ -332,7 +342,7 @@
             <div class="s">国税庁 タックスアンサー No.6505 が令和8年9月30日期限の扱いを明確化。</div>
             <div class="u">
               <a href="https://www.nta.go.jp/" rel="noopener">一次資料を開く</a> ・
-              <a href="#" rel="noopener">AutonoMath で詳細を見る</a>
+              <span class="mock-link" aria-disabled="true" title="プレビュー — 実際のメールでは制度詳細ページへの直リンクが入ります">税務会計AI で詳細を見る</span>
             </div>
           </li>
         </ul>
@@ -344,7 +354,7 @@
             <div class="s">補助上限 1億円、補助率 1/2。中小企業庁が 2026-04-15 に公募要領を公表。</div>
             <div class="u">
               <a href="https://www.chusho.meti.go.jp/" rel="noopener">一次資料を開く</a> ・
-              <a href="#" rel="noopener">AutonoMath で詳細を見る</a>
+              <span class="mock-link" aria-disabled="true" title="プレビュー — 実際のメールでは制度詳細ページへの直リンクが入ります">税務会計AI で詳細を見る</span>
             </div>
           </li>
         </ul>
@@ -356,7 +366,7 @@
             <div class="s">会計検査院の指摘により、不適正な支出 ¥4,200万円 の返還が命じられた事例を追加。</div>
             <div class="u">
               <a href="https://www.jbaudit.go.jp/" rel="noopener">一次資料を開く</a> ・
-              <a href="#" rel="noopener">AutonoMath で詳細を見る</a>
+              <span class="mock-link" aria-disabled="true" title="プレビュー — 実際のメールでは制度詳細ページへの直リンクが入ります">税務会計AI で詳細を見る</span>
             </div>
           </li>
         </ul>
@@ -398,14 +408,14 @@
     <details>
       <summary>メールに載る情報源は信頼できますか？</summary>
       <p>
-        すべて一次資料 (各省庁・日本政策金融公庫・自治体・e-Gov・国税庁・裁判所判例 DB 等) の URL を付与しています。aggregator や二次情報源は除外しています。<code>source_fetched_at</code> で「いつ取得した情報か」も明示します。
+        すべて一次資料 (各省庁・日本政策金融公庫・自治体・e-Gov・国税庁・裁判所判例 DB 等) の URL を付与しています。集約サイトや二次情報源は除外しています。<code>source_fetched_at</code> で「いつ取得した情報か」も明示します。
       </p>
     </details>
 
     <details>
-      <summary>無料 (デイリー) と Real-time の切替はどうやりますか？</summary>
+      <summary>無料 (デイリー) と 即時 の切替はどうやりますか？</summary>
       <p>
-        無料 (デイリー) から Real-time への移行は Stripe Checkout で、Real-time から無料へ戻す場合は解約後に再登録します (再登録は同じメールアドレスで可)。配信頻度の違いだけで、上下ランクはありません。
+        無料 (デイリー) から 即時 への移行は Stripe Checkout で、即時 から無料へ戻す場合は解約後に再登録します (再登録は同じメールアドレスで可)。配信頻度の違いだけで、上下ランクはありません。
       </p>
     </details>
   </div>
@@ -416,7 +426,7 @@
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">日本の制度 API</p>
       <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
     </div>
@@ -494,7 +504,7 @@
       var submitBtn = form.querySelector('button[type=submit], input[type=submit]');
       if (submitBtn) submitBtn.disabled = true;
 
-      var apiBase = window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE || "https://api.autonomath.ai";
+      var apiBase = window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE || "https://api.zeimu-kaikei.ai";
       var ctrl = new AbortController();
       var timer = setTimeout(function () { ctrl.abort(); }, 15000);
       fetch(apiBase + "/v1/compliance/subscribe", {

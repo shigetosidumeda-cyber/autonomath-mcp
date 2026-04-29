@@ -37,7 +37,7 @@ kintone.events.on('app.record.detail.show', async (event) => {
     target_employees: record[config.employeesField].value,
     referral_code: 'kintone-' + kintone.app.getId(),  // referral 紐付け
   });
-  const r = await fetch(`https://api.autonomath.ai/v1/programs/search?${params}`, {
+  const r = await fetch(`https://api.zeimu-kaikei.ai/v1/programs/search?${params}`, {
     headers: { 'X-API-Key': config.apiKey }
   });
   const { items } = await r.json();

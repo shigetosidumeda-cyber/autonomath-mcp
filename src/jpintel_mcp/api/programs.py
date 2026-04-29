@@ -10,6 +10,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -32,6 +33,7 @@ from jpintel_mcp.models import (
     SearchResponse,
     Tier,
 )
+from jpintel_mcp.utils.slug import program_static_url
 
 router = APIRouter(prefix="/v1/programs", tags=["programs"])
 
@@ -411,22 +413,122 @@ def _fts_escape(term: str) -> str:
     return term.replace('"', '""')
 
 
+# FTS5 chars that have operator semantics outside a phrase literal. We strip
+# them rather than escape because (a) escape rules differ across FTS5
+# versions / extensions, (b) intent recovery from a punctuation-only token
+# is cleaner if the punctuation is just dropped. Inside a phrase literal,
+# these chars are non-tokenizable and the trigram tokenizer drops them
+# anyway — keeping them adds nothing and risks parser surprises on future
+# SQLite upgrades.
+_FTS_SPECIAL_STRIP = str.maketrans({
+    "*": " ",  # prefix wildcard
+    ":": " ",  # column filter ('col:term')
+    "(": " ",
+    ")": " ",
+    "^": " ",  # initial-token operator
+    "+": " ",  # AND in some FTS5 dialects
+    "&": " ",
+    "|": " ",
+    "{": " ",
+    "}": " ",
+    "[": " ",
+    "]": " ",
+})
+
+# Common punctuation we treat as token separators (both ASCII and 全角
+# Japanese). Anything not matched here AND not matched by _FTS_SPECIAL_STRIP
+# is preserved inside a token (kanji, kana, alphanumeric).
+_RE_PUNCT_SEPARATOR = re.compile(
+    r"[,、。．，;；!?！？/／\\＼\-—–　\s]+"
+)
+
+# User-quoted phrase recognizer. We extract `"..."` substrings (matching
+# the OUTERMOST quote pair greedily but non-nested) before any tokenization
+# so the user's intent ("treat this as one phrase") is preserved verbatim.
+# We accept ASCII straight quotes only; 全角 quotes (`「」` etc.) get NFKC'd
+# upstream to themselves (they don't fold) so the user has to type ASCII
+# quotes explicitly. The pattern is non-greedy so adjacent quoted phrases
+# stay distinct: `"A" "B"` -> [A, B], not [A" "B].
+_RE_USER_QUOTED = re.compile(r'"([^"]*)"')
+
+
+def _tokenize_query(q: str) -> list[tuple[str, bool]]:
+    """Tokenize a user query into (text, is_user_quoted) pairs.
+
+    User-quoted phrases (`"..."`) are extracted first and emitted as
+    single tokens with is_user_quoted=True so the caller can phrase-quote
+    them unconditionally (preserving multi-token user intent like
+    `"中小企業 デジタル化"`).
+
+    The remaining unquoted text is split on whitespace + common punctuation
+    (both ASCII and 全角 Japanese), then FTS5-special chars are stripped
+    from each chunk. Empty fragments are dropped.
+
+    Returns []  for an empty / whitespace-only input.
+    """
+    out: list[tuple[str, bool]] = []
+    cursor = 0
+    for m in _RE_USER_QUOTED.finditer(q):
+        # Process unquoted text BEFORE the quoted phrase.
+        prefix = q[cursor:m.start()]
+        if prefix:
+            for chunk in _RE_PUNCT_SEPARATOR.split(prefix):
+                cleaned = chunk.translate(_FTS_SPECIAL_STRIP).strip()
+                if cleaned:
+                    # Punctuation-stripping may have introduced a space
+                    # (e.g. `(税)` -> ' 税 '). Re-split.
+                    for sub in _RE_PUNCT_SEPARATOR.split(cleaned):
+                        if sub:
+                            out.append((sub, False))
+        # Emit the user-quoted phrase. Strip FTS specials INSIDE the
+        # quote too — `"foo:bar"` is almost certainly a user typo, and
+        # FTS5 column-filter syntax inside a phrase is a parser error.
+        # We deliberately preserve whitespace inside the quote so a
+        # multi-token phrase like `"中小企業 デジタル化"` stays a phrase.
+        inside = m.group(1).translate(_FTS_SPECIAL_STRIP).strip()
+        if inside:
+            out.append((inside, True))
+        cursor = m.end()
+    # Trailing unquoted suffix.
+    suffix = q[cursor:]
+    if suffix:
+        for chunk in _RE_PUNCT_SEPARATOR.split(suffix):
+            cleaned = chunk.translate(_FTS_SPECIAL_STRIP).strip()
+            if cleaned:
+                for sub in _RE_PUNCT_SEPARATOR.split(cleaned):
+                    if sub:
+                        out.append((sub, False))
+    return out
+
+
 def _build_fts_match(raw_query: str) -> str:
     """Compose an FTS5 MATCH expression from a user query.
 
     Rules:
-    - Strip outer whitespace.
-    - If the query is pure-kanji (length >= 2), wrap it in phrase-quote so
-      the tokens must appear contiguously. This defeats the single-kanji
-      overlap false-positive problem on the trigram tokenizer.
-    - If the query has a whole-token KANA_EXPANSIONS match, OR in the
-      expansion alongside the original. Example:
-        のうぎょう -> `のうぎょう OR 農業`
-    - Otherwise quote the whole query as a phrase (safer default — prevents
-      FTS5 from parsing stray punctuation as operators).
+    - NFKC normalize the input (鼎 全角 ASCII / 全角 space) before tokenization.
+    - Extract user-quoted `"..."` phrases first; preserve them as single
+      phrase tokens regardless of internal whitespace. This lets agents
+      pin a multi-word phrase like `"中小企業 デジタル化"` exactly.
+    - Split the rest on whitespace + common punctuation (`, 、 。 ; ! ?`
+      etc.) and strip FTS5-special chars (`* : ( ) ^ + & | { } [ ]`) from
+      each fragment. Punctuation-only fragments are dropped.
+    - Each non-empty token is phrase-quoted in FTS5 syntax (`"token"`).
+      For pure-kanji tokens of length >= 2, the phrase quote is what
+      defeats the trigram single-kanji overlap false-positive (CLAUDE.md
+      gotcha — `税額控除` vs `ふるさと納税`). For mixed-script /
+      ASCII / single-char tokens, the phrase quote is still the safe
+      default — it costs nothing and keeps stray punctuation from being
+      reinterpreted as operators.
+    - If the (single-token, no user-quote) NFKC-stripped query has a
+      KANA_EXPANSIONS entry, OR in the expansions alongside the original.
+    - Multi-token (post-tokenization) queries AND the per-token clauses
+      together. User-quoted phrases participate in the AND on equal footing.
 
-    For multi-word queries (whitespace-separated), we treat each token
-    independently and AND them together.
+    Returns "" for empty / whitespace-only / punctuation-only input;
+    callers must check before passing to FTS5 MATCH.
+
+    Idempotent: same input -> same output (no global state, no clock,
+    no random).
     """
     # NFKC first — normalizes 全角 ASCII ('ＩＴ' -> 'IT'), 全角 space -> half,
     # 半角カナ -> 全角カナ, and a few compatibility codepoints. This one line
@@ -435,32 +537,43 @@ def _build_fts_match(raw_query: str) -> str:
     # 'IT導入補助金'. Safe: NFKC never changes Japanese kanji/kana semantics.
     q = unicodedata.normalize("NFKC", raw_query).strip()
     if not q:
-        return q
+        return ""
 
-    # Multi-token query -> AND of per-token expansions.
-    tokens = q.split()
-    if len(tokens) > 1:
-        parts: list[str] = []
-        for tok in tokens:
-            parts.append(_build_fts_match(tok))
-        return " AND ".join(f"({p})" for p in parts)
+    tokens = _tokenize_query(q)
+    if not tokens:
+        # Punctuation-only query (e.g. q=':' or q='**'). Return empty so
+        # the caller can detect and skip the FTS path entirely. Without
+        # this guard FTS5 would raise on the malformed MATCH expression.
+        return ""
 
-    # Single token path.
-    alts: list[str] = []
-    # Original term — phrase-quoted for safety.
-    if _is_pure_kanji(q) and len(q) >= 2:
-        alts.append(f'"{_fts_escape(q)}"')
-    else:
-        alts.append(f'"{_fts_escape(q)}"')
+    # Single-token path: preserves prior single-term behavior including
+    # KANA_EXPANSIONS OR-injection. We only run KANA_EXPANSIONS for
+    # NON-user-quoted tokens — a user who explicitly wrote `"のうぎょう"`
+    # signaled "exact phrase, no expansion".
+    if len(tokens) == 1:
+        tok, is_quoted = tokens[0]
+        alts: list[str] = [f'"{_fts_escape(tok)}"']
+        if not is_quoted and tok in KANA_EXPANSIONS:
+            for kanji in KANA_EXPANSIONS[tok]:
+                alts.append(f'"{_fts_escape(kanji)}"')
+        if len(alts) == 1:
+            return alts[0]
+        return " OR ".join(alts)
 
-    # Kana expansion: only when the query is entirely a known kana reading.
-    if q in KANA_EXPANSIONS:
-        for kanji in KANA_EXPANSIONS[q]:
-            alts.append(f'"{_fts_escape(kanji)}"')
-
-    if len(alts) == 1:
-        return alts[0]
-    return " OR ".join(alts)
+    # Multi-token path: AND the per-token clauses. Each token is its own
+    # phrase, optionally OR'd with KANA_EXPANSIONS targets when it's a
+    # non-user-quoted recognized reading.
+    parts: list[str] = []
+    for tok, is_quoted in tokens:
+        alts = [f'"{_fts_escape(tok)}"']
+        if not is_quoted and tok in KANA_EXPANSIONS:
+            for kanji in KANA_EXPANSIONS[tok]:
+                alts.append(f'"{_fts_escape(kanji)}"')
+        if len(alts) == 1:
+            parts.append(alts[0])
+        else:
+            parts.append("(" + " OR ".join(alts) + ")")
+    return " AND ".join(f"({p})" if " OR " in p else p for p in parts)
 
 
 # ---------------------------------------------------------------------------
@@ -530,6 +643,11 @@ def _build_program(row: sqlite3.Row) -> Program:
         application_window=application_window,
         next_deadline=_extract_next_deadline(application_window),
         application_url=official_url,
+        # Site-relative path resolved off the same slug rule the static
+        # generator uses (utils/slug.py). Browsers / agents joining this
+        # with `https://zeimu-kaikei.ai` land on the right SEO page
+        # instead of the dead `/programs/{unified_id}.html` pattern.
+        static_url=program_static_url(row["primary_name"], row["unified_id"]),
     )
 
 
@@ -781,6 +899,48 @@ def _row_to_program_detail(row: sqlite3.Row, fields: FieldsLevel) -> dict[str, A
 
 @router.get(
     "/search",
+    summary="Search 補助金 / 助成金 / 融資 / 税制 / 認定 programs",
+    description=(
+        "Discover candidate Japanese public-funding programs by free-text + "
+        "structured filters across **10,790 active rows** (tier S/A/B/C — "
+        "tier X is a quality-gate quarantine, not returned). Backed by FTS5 "
+        "trigram on name/aliases/enriched_json plus exact filters on "
+        "prefecture, authority_level, target_types, funding_purpose, and "
+        "amount band.\n\n"
+        "**When to use this endpoint:** the caller has a topic / region / "
+        "kind in mind ('IT導入', '東京都', '補助金') and wants candidates. "
+        "For *judgment* (does this profile fit?), prefer "
+        "`POST /v1/programs/prescreen`. For exact-id lookup use "
+        "`GET /v1/programs/{unified_id}`. For up-to-50 ids in one call use "
+        "`POST /v1/programs/batch`.\n\n"
+        "**FTS5 query rewriting (automatic — no operator tweaks needed):** "
+        "the handler treats `q` as free text and rewrites it into a safe "
+        "FTS5 MATCH expression before execution.\n"
+        " - 2+ char kanji compounds are auto phrase-quoted "
+        "(`q=税額控除` → `\"税額控除\"`) so the trigram tokens must appear "
+        "contiguously. This defeats the single-kanji overlap "
+        "false-positive (`税額控除` no longer co-ranks `ふるさと納税`-only rows).\n"
+        " - User-quoted phrases are preserved verbatim. "
+        "`q='\"中小企業 デジタル化\"'` searches the whole phrase as one term; "
+        "`q='\"DX\" 製造業'` ANDs DX (phrase) with 製造業 (auto-quoted).\n"
+        " - Whitespace + Japanese/ASCII punctuation (`,` `、` `。` `;` `!` "
+        "etc.) are token separators. FTS5-special chars (`*` `:` `(` `)` "
+        "`^` `+`) are stripped to keep the parser predictable.\n"
+        " - Full-width ASCII / 全角 space NFKC-normalized to half-width "
+        "(`ＩＴ補助金` matches `IT補助金`).\n"
+        " - Hiragana/katakana readings auto-OR'd with their kanji canonical "
+        "form when in the KANA_EXPANSIONS map "
+        "(`q=のうぎょう` matches 農業-only docs). Wrap in quotes "
+        "(`q='\"のうぎょう\"'`) to disable expansion.\n"
+        " - Empty / whitespace / punctuation-only `q` (no other filter) "
+        "returns 0 rows — this is a safety guard against accidental "
+        "corpus dumps. Combine `q=` with `tier=S` etc. to browse by "
+        "structural filter without a free-text term.\n\n"
+        "Use `as_of_date=YYYY-MM-DD` to pin the result set to a historical "
+        "dataset state (R8 dataset versioning) — useful for 申告時点の "
+        "制度状態 audit. Rows are honestly tiered (S/A/B/C); `confidence` "
+        "and `source_fetched_at` are exposed per-row."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
@@ -792,27 +952,44 @@ def _row_to_program_detail(row: sqlite3.Row, fields: FieldsLevel) -> dict[str, A
             "content": {
                 "application/json": {
                     "example": {
-                        "total": 1,
+                        "total": 3,
                         "limit": 20,
                         "offset": 0,
                         "results": [
                             {
-                                "unified_id": "UNI-meti-it-2026",
-                                "primary_name": "IT導入補助金2026",
-                                "tier": "S",
+                                "unified_id": "UNI-185c08e0c1",
+                                "primary_name": "デジタル化・AI導入補助金（旧IT導入補助金）",
+                                "tier": "B",
                                 "authority_level": "national",
-                                "authority_name": "経済産業省",
-                                "prefecture": "全国",
-                                "program_kind": "補助金",
-                                "amount_max_man_yen": 450,
-                                "subsidy_rate": "1/2 〜 3/4",
+                                "authority_name": "国（農水省等）",
+                                "prefecture": None,
+                                "program_kind": "subsidy",
+                                "amount_max_man_yen": 450.0,
+                                "subsidy_rate": 0.5,
                                 "funding_purpose": ["DX", "デジタル化"],
                                 "target_types": ["sme", "sole_proprietor"],
-                                "official_url": "https://www.it-hojo.jp/",
-                                "source_url": "https://www.it-hojo.jp/",
-                                "source_fetched_at": "2026-04-20T05:14:33Z",
-                                "next_deadline": "2026-06-30",
-                            }
+                                "official_url": "https://it-shien.smrj.go.jp/",
+                                "source_url": "https://it-shien.smrj.go.jp/",
+                                "source_fetched_at": "2026-04-22T13:20:57Z",
+                                "next_deadline": None,
+                            },
+                            {
+                                "unified_id": "UNI-2611050f9a",
+                                "primary_name": "小規模事業者持続化補助金",
+                                "tier": "B",
+                                "authority_level": "national",
+                                "authority_name": "日本商工会議所/全国商工会連合会",
+                                "prefecture": None,
+                                "program_kind": "subsidy",
+                                "amount_max_man_yen": 200.0,
+                                "subsidy_rate": None,
+                                "funding_purpose": ["販路開拓", "業務効率化"],
+                                "target_types": ["sole_proprietor", "sme"],
+                                "official_url": None,
+                                "source_url": None,
+                                "source_fetched_at": "2026-04-22T13:20:57Z",
+                                "next_deadline": None,
+                            },
                         ],
                     }
                 }
@@ -824,7 +1001,20 @@ def search_programs(
     request: Request,
     conn: DbDep,
     ctx: ApiContextDep,
-    q: Annotated[str | None, Query(description="free-text search across name/aliases/enriched", max_length=200)] = None,
+    q: Annotated[
+        str | None,
+        Query(
+            description=(
+                "Free-text search across primary_name / aliases / enriched. "
+                "The handler auto phrase-quotes 2+ char kanji compounds to "
+                "defeat trigram single-kanji false matches; user `\"...\"` "
+                "phrases are preserved verbatim; punctuation acts as token "
+                "separator. Empty `q` with no other filter returns 0 (corpus "
+                "dump guard). See endpoint description for full rules."
+            ),
+            max_length=200,
+        ),
+    ] = None,
     tier: Annotated[list[Tier] | None, Query(description="filter tier, repeat for OR")] = None,
     prefecture: Annotated[
         str | None,
@@ -891,6 +1081,21 @@ def search_programs(
             max_length=10,
         ),
     ] = None,
+    format: Annotated[  # noqa: A002 — matches dispatcher param name
+        str,
+        Query(
+            description=(
+                "Output format. Default `json` returns the SearchResponse "
+                "envelope unchanged. Other values dispatch to the 6-pack "
+                "renderer surface (csv / xlsx / md / csv-freee / csv-mf / "
+                "csv-yayoi). `ics` and `docx-application` are intentionally "
+                "rejected here — ICS belongs to deadline-bearing endpoints "
+                "(saved_searches) and DOCX is per-program (get-by-id). One "
+                "¥3 charge per request regardless of format."
+            ),
+            pattern=r"^(json|csv|xlsx|md|csv-freee|csv-mf|csv-yayoi)$",
+        ),
+    ] = "json",
 ) -> JSONResponse:
     # Telemetry: wall-clock latency for /v1/admin/global_usage_by_tool
     # (audit ada8db68240c63c66 P0 — without this we cannot detect FTS5
@@ -996,7 +1201,35 @@ def search_programs(
                 ip=request.client.host if request.client else None,
             )
 
-    return JSONResponse(content=response_body)
+    # Format dispatch — when caller asks for a non-JSON format, hand the
+    # already-built envelope to the format dispatcher. The corpus snapshot
+    # is attached to meta so renderers (DOCX lineage table, ICS X-WR-CALID,
+    # CSV comment row) can embed it for auditor reproducibility. Single
+    # ¥3 charge already counted via log_usage above (no per-row multiply).
+    if format != "json":
+        from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
+        from jpintel_mcp.api._format_dispatch import render
+
+        snapshot_id, checksum = compute_corpus_snapshot(conn)
+        meta_out: dict[str, Any] = {
+            "filename_stem": "autonomath_programs",
+            "endpoint": "programs.search",
+            "total": total,
+            "limit": int(response_body.get("limit", limit)),
+            "offset": int(response_body.get("offset", offset)),
+            "corpus_snapshot_id": snapshot_id,
+            "corpus_checksum": checksum,
+        }
+        resp = render(response_body, format, meta_out)
+        # Mirror the snapshot pair as response headers so downstream
+        # auditors can grep request logs without parsing the body.
+        resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
+        resp.headers["X-Corpus-Checksum"] = checksum
+        return resp  # type: ignore[return-value]
+
+    # Mirror the snapshot pair into headers on the JSON path too — same
+    # auditor log-grep workflow as the format-non-JSON branch.
+    return JSONResponse(content=response_body, headers=snapshot_headers(conn))
 
 
 def _build_search_response(
@@ -1029,9 +1262,54 @@ def _build_search_response(
     join_fts = False
     raw_query: str | None = None  # original user query, for name-LIKE tiebreak
 
-    if q:
+    # Empty-q safety (2026-04-29 FTS rewriter audit): when `q` is provided
+    # as an explicit string but evaluates to empty after normalization
+    # (`q=""`, `q="   "`, `q="**"`, `q=":;"` etc) AND no other filter is
+    # supplied, return empty rather than the entire 10,790-row corpus.
+    # Rationale:
+    #   - The HTTP shape `?q=` (empty value) is almost always a buggy
+    #     client that meant to put a real term, not "give me everything".
+    #     A 10,174-row dump on /search costs ~30ms p95 to serialize and
+    #     burns the user's anon quota at ¥3/req for zero signal.
+    #   - The previously-shipped Bug2 fix (2026-04-26) skipped the LIKE
+    #     `%%` clause but left the WHERE list empty, so every row still
+    #     came back via `1=1`. That's the regression we close here.
+    #   - Existing call shapes (`q=None` omitted, or `q=` with at least
+    #     one structural filter) are preserved: the filter-only path is
+    #     the documented use case for browsing by tier / prefecture /
+    #     authority_level.
+    _has_other_filter = bool(
+        tier or prefecture or authority_level
+        or funding_purpose or target_type
+        or amount_min is not None or amount_max is not None
+    )
+    if q is not None and not q.strip() and not _has_other_filter:
+        # q was explicitly passed as empty/whitespace; no other filter to
+        # narrow the corpus; refuse the implicit full-table scan.
+        return {"total": 0, "limit": limit, "offset": offset, "results": []}
+
+    # Bug2 fix (2026-04-26): treat whitespace-only `q` as no query. Previously
+    # `if q:` was truthy for `q="   "`, then `q_clean=""` produced LIKE `%%`
+    # which matched the entire 10,790-row corpus — both a correctness bug and
+    # a quota-burn vector at ¥3/req. Use stripped-truthiness here, and trust
+    # downstream code to read q_clean (which is set inside this branch only).
+    if q and q.strip():
         q_clean = q.strip()
         raw_query = q_clean
+        # NFKC-normalize for token-splitting decisions: 全角空白 -> 半角空白,
+        # 全角 ASCII -> 半角. Keep q_clean as the original-shape user string
+        # for LIKE matching (the DB content is also NFKC-normalized at ingest,
+        # so byte-equal comparison still works after normalization).
+        q_norm = unicodedata.normalize("NFKC", q_clean)
+        # Use the FTS-side tokenizer so user-quoted phrases (`"DX"`),
+        # punctuation separators (中小企業, 製造業), and FTS5-special
+        # chars are handled the same way the MATCH builder will see them.
+        # Falling back to plain whitespace split would mis-classify a
+        # `"DX"` user-quoted phrase as a 4-char token (including the
+        # quotes) and route it to FTS, which then returns 0 because the
+        # 2-char content has no trigram coverage.
+        _ftokens = _tokenize_query(q_norm)
+        norm_tokens = [t for t, _ in _ftokens]
         # Build the list of candidate search strings: the query itself plus
         # any KANA_EXPANSIONS entries. If *any* candidate is shorter than 3
         # chars, we must use the LIKE path because FTS5 trigram tokenizes
@@ -1042,23 +1320,57 @@ def _build_search_response(
         if q_clean in KANA_EXPANSIONS:
             search_terms.extend(KANA_EXPANSIONS[q_clean])
         shortest = min(len(t) for t in search_terms)
-        if shortest >= 3 and len(search_terms) == 1:
+        # Bug1 fix (2026-04-26): when the user query is multi-token AND any
+        # tokenizer-derived token is <3 chars (e.g. `"IT 導入"`, `"DX 推進"`,
+        # or user-quoted `"DX" 製造業`), the FTS5 trigram path silently
+        # returns 0: `_build_fts_match` emits `"IT" AND "導入"` and FTS5
+        # has no trigram for the 2-char ASCII. Detect that case and route
+        # to the LIKE path instead, which now AND-combines multi-token
+        # queries (see fts_short_token_present below). Regression: if the
+        # LIKE path's enriched_json column isn't populated for a row, that
+        # row won't match — accept this as the cost of rescuing the
+        # 0%-result class. Most paying queries hit primary_name.
+        fts_short_token_present = bool(norm_tokens) and any(
+            len(t) < 3 for t in norm_tokens
+        )
+        # If the tokenizer produced ZERO tokens (e.g. q='**', q=':;', q='[]',
+        # punctuation-only input), there is nothing to feed to FTS5 — passing
+        # an empty MATCH expression raises `fts5: syntax error near ""`.
+        # Force the LIKE fallback so the query degrades gracefully. The LIKE
+        # path will substring-match the literal string, which is harmless on
+        # punctuation-only input (matches 0 in practice).
+        fts_tokens_empty = not bool(norm_tokens)
+        if (
+            shortest >= 3
+            and len(search_terms) == 1
+            and not fts_short_token_present
+            and not fts_tokens_empty
+        ):
             join_fts = True
             params.append(_build_fts_match(q_clean))
-        elif shortest >= 3 and len(search_terms) > 1:
+        elif (
+            shortest >= 3
+            and len(search_terms) > 1
+            and not fts_short_token_present
+            and not fts_tokens_empty
+        ):
             # Multi-term (kana expansion) where all terms are >=3 chars:
             # FTS OR works.
             join_fts = True
             params.append(_build_fts_match(q_clean))
         else:
-            # LIKE-across-all-search-terms fallback. Combine candidate terms
-            # with OR.
+            # LIKE fallback. We have two stacking dimensions:
+            # (1) candidate-term axis (q_clean + KANA expansions) -> OR'd
+            # (2) whitespace-token axis (multi-token user query like
+            #     `"IT 導入"`) -> AND'd. Without the AND, the multi-token
+            #     case becomes substring `%IT 導入%` against rows that
+            #     never actually contain a literal space between the two
+            #     tokens, so it would match 0. (Bug1 fix)
             #
-            # Column coverage depends on script class of the term:
-            # - Japanese / mixed short terms (e.g. 2-char kanji like 税額,
-            #   or kana-expanded 農業) scan primary_name + aliases_json +
-            #   enriched_json so the concept is found even when it only
-            #   appears in the long-form description.
+            # Column coverage depends on script class + length of the term:
+            # - Japanese / mixed terms with len >= 2 scan primary_name +
+            #   aliases_json + enriched_json so the concept is found even
+            #   when it only appears in the long-form description.
             # - Short pure-ASCII terms (len<3, [A-Za-z0-9] only — e.g. IT,
             #   DX, AI) scan primary_name + aliases_json ONLY. Including
             #   enriched_json for 2-char ASCII is a double failure:
@@ -1073,25 +1385,58 @@ def _build_search_response(
             #         contain the byte-pair 'IT'. Restricting to
             #         primary_name + aliases_json surfaces exactly the
             #         acronym-in-name rows agents expect.
+            # - Bug3 fix (2026-04-26): single-character queries (any script,
+            #   e.g. `税`, `補`, `B`) ALSO scan primary_name + aliases_json
+            #   ONLY. The enriched_json scan on a 1-char query matches ~half
+            #   the corpus on background mentions and produces unranked noise
+            #   in the top-5. Restricting to name+aliases keeps single-char
+            #   queries useful (e.g. `税` returns programs whose name begins
+            #   with 税…) without the noise floor.
             #   See docs/performance.md for the perf audit that drove this.
-            like_clauses: list[str] = []
-            for t in search_terms:
-                if len(t) < 3 and _is_pure_ascii_word(t):
+            #
+            # Per-term LIKE column-set decision:
+            def _like_clause_for(term: str) -> tuple[str, list]:
+                if len(term) == 1:
+                    # Bug3: any 1-char query → narrow scan.
+                    return (
+                        "(primary_name LIKE ? OR aliases_json LIKE ?)",
+                        [f"%{term}%", f"%{term}%"],
+                    )
+                if len(term) < 3 and _is_pure_ascii_word(term):
                     # Short pure-ASCII: narrow scan, skip enriched_json.
-                    like_clauses.append(
-                        "(primary_name LIKE ? OR aliases_json LIKE ?)"
+                    return (
+                        "(primary_name LIKE ? OR aliases_json LIKE ?)",
+                        [f"%{term}%", f"%{term}%"],
                     )
-                    like = f"%{t}%"
-                    params.extend([like, like])
+                # Default: full three-column scan.
+                return (
+                    "(primary_name LIKE ? OR aliases_json LIKE ? OR "
+                    " COALESCE(enriched_json,'') LIKE ?)",
+                    [f"%{term}%", f"%{term}%", f"%{term}%"],
+                )
+
+            # Per candidate term (q_clean + kana expansions), build a clause
+            # that AND-combines the multi-token requirement when applicable.
+            # Each candidate term either uses its own multi-token expansion
+            # (only for q_clean's own tokens) or scans as a single string
+            # (kana expansions are single tokens by construction).
+            per_candidate_clauses: list[str] = []
+            for cand in search_terms:
+                if cand == q_clean and len(norm_tokens) > 1:
+                    # Multi-token user query: AND each token's LIKE clause.
+                    sub_clauses: list[str] = []
+                    for tok in norm_tokens:
+                        clause, clause_params = _like_clause_for(tok)
+                        sub_clauses.append(clause)
+                        params.extend(clause_params)
+                    per_candidate_clauses.append(
+                        "(" + " AND ".join(sub_clauses) + ")"
+                    )
                 else:
-                    # Short Japanese / mixed: full three-column scan.
-                    like_clauses.append(
-                        "(primary_name LIKE ? OR aliases_json LIKE ? OR "
-                        " COALESCE(enriched_json,'') LIKE ?)"
-                    )
-                    like = f"%{t}%"
-                    params.extend([like, like, like])
-            where.append("(" + " OR ".join(like_clauses) + ")")
+                    clause, clause_params = _like_clause_for(cand)
+                    per_candidate_clauses.append(clause)
+                    params.extend(clause_params)
+            where.append("(" + " OR ".join(per_candidate_clauses) + ")")
 
     if tier:
         where.append(f"tier IN ({','.join('?' * len(tier))})")
@@ -1350,6 +1695,19 @@ def _build_search_response(
 
 @router.post(
     "/batch",
+    summary="Batch fetch up to 50 programs by unified_id",
+    description=(
+        "Resolve up to 50 `unified_id` values in a single round-trip. "
+        "Output shape matches `GET /v1/programs/{unified_id}` per row, so "
+        "SDK callers can `chunk(ids, 50)` and stitch locally without "
+        "per-id round trips. The 50-cap *is* the pagination — there is no "
+        "page envelope.\n\n"
+        "**Order contract:** `results[i]` corresponds to the i-th "
+        "deduped input id (first occurrence wins). Missing ids go to "
+        "`not_found[]` — this is NOT a 404, partial success is the point. "
+        "Batch hard-codes `fields=full` so anonymous tier callers must "
+        "upgrade (sequential GETs with `fields=default` remain anonymous-OK)."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
@@ -1359,6 +1717,37 @@ def _build_search_response(
                 "this is NOT a 404, because partial success is the point of batch."
             ),
             "model": BatchGetProgramsResponse,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "results": [
+                            {
+                                "unified_id": "UNI-2611050f9a",
+                                "primary_name": "小規模事業者持続化補助金",
+                                "tier": "B",
+                                "authority_level": "national",
+                                "authority_name": "日本商工会議所/全国商工会連合会",
+                                "program_kind": "subsidy",
+                                "amount_max_man_yen": 200.0,
+                                "official_url": "https://r3.jizokukahojokin.info/",
+                                "source_fetched_at": "2026-04-22T13:20:57Z",
+                            },
+                            {
+                                "unified_id": "UNI-185c08e0c1",
+                                "primary_name": "デジタル化・AI導入補助金（旧IT導入補助金）",
+                                "tier": "B",
+                                "authority_level": "national",
+                                "authority_name": "国（農水省等）",
+                                "program_kind": "subsidy",
+                                "amount_max_man_yen": 450.0,
+                                "official_url": "https://it-shien.smrj.go.jp/",
+                                "source_fetched_at": "2026-04-22T13:20:57Z",
+                            },
+                        ],
+                        "not_found": ["UNI-deadbeef00"],
+                    }
+                }
+            },
         },
         422: {
             "model": ErrorEnvelope,
@@ -1448,11 +1837,22 @@ def batch_get_programs(
 
     # Digest material (W7): group by the set of ids requested. Sort so any
     # permutation of the same set hashes identically.
+    #
+    # Billing (CLAUDE.md "¥3/req metered only"): a 50-id batch is N billable
+    # units, NOT 1. The previous TODO(W2) parked this as a "credits ticket"
+    # but the metered Stripe pipeline already accepts a `quantity=N`
+    # usage_record (single audit row + Stripe-aggregated charge) — wiring
+    # quantity=len(unified_ids) here closes the bulk-billing gap without
+    # any new schema. Local usage_events still gets one row (audit), Stripe
+    # gets one record at quantity=N (charge), reconciliation stays clean.
+    n_billable = len(unified_ids)
     log_usage(
         conn,
         ctx,
         "programs.get",
-        params={"batch_ids": sorted(unified_ids)},
+        params={"batch_ids": sorted(unified_ids), "batch_size": n_billable},
+        result_count=len(results),
+        quantity=n_billable,
     )
     return JSONResponse(
         content={"results": results, "not_found": not_found}
@@ -1461,6 +1861,21 @@ def batch_get_programs(
 
 @router.get(
     "/{unified_id}",
+    summary="Get a single program by unified_id (UNI-*)",
+    description=(
+        "Look up one program (補助金 / 融資 / 税制 / 認定) by stable "
+        "`unified_id` (`UNI-<10 hex>`). Returns the full program detail "
+        "including `enriched_json` (eligibility narrative, application "
+        "window, required documents) and lineage (`source_url`, "
+        "`source_fetched_at`, `source_checksum`).\n\n"
+        "**404 semantics:** tier-X (quarantined) rows return 404 — the "
+        "stable slug must never serve a quality-gated row. To pin the "
+        "lookup to a historical dataset state, supply "
+        "`as_of_date=YYYY-MM-DD` (R8 dataset versioning).\n\n"
+        "**Discovery flow:** call `GET /v1/programs/search` first, then "
+        "follow up on each `unified_id` with this endpoint to get the "
+        "narrative + required-documents detail."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
@@ -1473,24 +1888,24 @@ def batch_get_programs(
             "content": {
                 "application/json": {
                     "example": {
-                        "unified_id": "UNI-meti-jizokuka-2026",
+                        "unified_id": "UNI-2611050f9a",
                         "primary_name": "小規模事業者持続化補助金",
-                        "tier": "S",
+                        "tier": "B",
                         "authority_level": "national",
-                        "authority_name": "全国商工会連合会",
-                        "prefecture": "全国",
-                        "program_kind": "補助金",
-                        "amount_max_man_yen": 200,
-                        "subsidy_rate": "2/3",
+                        "authority_name": "日本商工会議所/全国商工会連合会",
+                        "prefecture": None,
+                        "program_kind": "subsidy",
+                        "amount_max_man_yen": 200.0,
+                        "subsidy_rate": None,
                         "funding_purpose": ["販路開拓", "業務効率化"],
                         "target_types": ["sole_proprietor", "sme"],
                         "official_url": "https://r3.jizokukahojokin.info/",
                         "source_url": "https://r3.jizokukahojokin.info/",
-                        "source_fetched_at": "2026-04-20T05:14:33Z",
-                        "next_deadline": "2026-06-12",
+                        "source_fetched_at": "2026-04-22T13:20:57Z",
+                        "next_deadline": None,
                         "enriched": None,
                         "source_mentions": {},
-                        "source_checksum": "sha256:abc123",
+                        "source_checksum": None,
                         "required_documents": ["事業計画書", "経費明細書"],
                     }
                 }
@@ -1530,6 +1945,21 @@ def get_program(
             max_length=10,
         ),
     ] = None,
+    format: Annotated[  # noqa: A002 — matches dispatcher param name
+        str,
+        Query(
+            description=(
+                "Output format. Default `json` returns the ProgramDetail "
+                "envelope unchanged. Other values dispatch to: csv / xlsx "
+                "/ md / docx-application. ICS and accounting CSVs (freee / "
+                "mf / yayoi) are rejected here — ICS belongs to "
+                "deadline-bearing list endpoints, and accounting CSVs are "
+                "list-shaped. One ¥3 charge per request regardless of "
+                "format."
+            ),
+            pattern=r"^(json|csv|xlsx|md|docx-application)$",
+        ),
+    ] = "json",
 ) -> JSONResponse:
     _as_of_iso = _validate_as_of_date(as_of_date)
     # 404 path stays uncached — if a row gets ingested or un-quarantined
@@ -1584,5 +2014,42 @@ def get_program(
         compute=_do_get,
         ttl=_L4_TTL_PROGRAMS_GET,
     )
+    # Audit trail (会計士 reproducibility): attach AFTER the L4 cache fetch so
+    # the snapshot tracks the live corpus state at request time, not whatever
+    # corpus state existed when the cached payload was first computed. The
+    # snapshot helper has its own 5-minute cache, so this is two memoized
+    # SELECTs at most. Mutating `body` in-place is safe because
+    # `_l4_get_or_compute_safe` deep-copies before returning.
+    #
+    # Honor the `fields=minimal` contract: callers who explicitly ask for the
+    # minimum-byte payload do NOT get the audit-trail keys (saves ~80 bytes
+    # per row, matters in mobile/slug-page contexts). Auditors who need the
+    # snapshot pair use `fields=default` or `fields=full`.
+    if isinstance(body, dict) and fields != "minimal":
+        attach_corpus_snapshot(body, conn)
     log_usage(conn, ctx, "programs.get", params={"unified_id": unified_id})
-    return JSONResponse(content=body)
+
+    # Format dispatch — single-row payload routed through the 6-pack
+    # renderer surface. DOCX is the natural unit of work here (one program
+    # → one 申請書 scaffold); CSV/XLSX/MD render a 1-row table for the
+    # auditor's work-paper. Snapshot pair lifted to headers + meta so the
+    # DOCX lineage table + CSV comment row can both quote it.
+    if format != "json":
+        from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
+        from jpintel_mcp.api._format_dispatch import render
+
+        snapshot_id, checksum = compute_corpus_snapshot(conn)
+        meta_out: dict[str, Any] = {
+            "filename_stem": f"autonomath_program_{unified_id}",
+            "endpoint": "programs.get",
+            "corpus_snapshot_id": snapshot_id,
+            "corpus_checksum": checksum,
+        }
+        # Wrap the single row as a list — the dispatcher accepts both
+        # list[Row] and {"results": [...]} envelopes.
+        resp = render([body], format, meta_out)
+        resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
+        resp.headers["X-Corpus-Checksum"] = checksum
+        return resp  # type: ignore[return-value]
+
+    return JSONResponse(content=body, headers=snapshot_headers(conn))

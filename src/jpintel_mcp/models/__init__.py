@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.models.premium_response import (
     AdoptionScore,
@@ -79,6 +79,18 @@ class Program(BaseModel):
             "URL the caller should send an applicant to. Currently aliases "
             "official_url; once enriched 申請方法 extraction stabilises this "
             "will prefer the dedicated apply page when one exists."
+        ),
+    )
+    static_url: str | None = Field(
+        default=None,
+        description=(
+            "Site-relative path to the per-program SEO page on "
+            "zeimu-kaikei.ai (`/programs/{slug}-{sha1-6}.html`). "
+            "Generated from `primary_name` + `unified_id` via "
+            "`jpintel_mcp.utils.slug.program_static_url`. Use this to "
+            "deep-link result cards / share URLs / mailto bodies into "
+            "the static site instead of constructing `/programs/{unified_id}.html` "
+            "(no such file exists; that pattern returns 404)."
         ),
     )
 
@@ -336,6 +348,12 @@ LawRevisionStatus = Literal["current", "superseded", "repealed"]
 
 
 class Law(BaseModel):
+    # `extra="allow"` so the get-by-id handler can inject `corpus_snapshot_id`
+    # + `corpus_checksum` (会計士 work-paper reproducibility, 2026-04-29) onto
+    # the wire payload without violating the model. Search responses ship the
+    # snapshot pair on the LawSearchResponse envelope (see below).
+    model_config = ConfigDict(extra="allow")
+
     unified_id: str = Field(..., description="LAW-<10 lowercase hex>")
     law_number: str
     law_title: str
@@ -404,6 +422,11 @@ PrecedentWeight = Literal["binding", "persuasive", "informational"]
 
 
 class CourtDecision(BaseModel):
+    # `extra="allow"` for the same audit-trail injection rationale as Law:
+    # the get-by-id handler attaches `corpus_snapshot_id` + `corpus_checksum`
+    # so 会計士 work-papers can reproduce the evaluation later.
+    model_config = ConfigDict(extra="allow")
+
     unified_id: str = Field(..., description="HAN-<10 lowercase hex>")
     case_name: str
     case_number: str | None = None

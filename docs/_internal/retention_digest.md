@@ -169,7 +169,7 @@ LIMIT 1;
 | Free-tier opt-in | `subscribers.digest_opted_in` = 1 必須 (UI チェックボックス default OFF) |
 | Paid opt-out | footer link 1-click (HMAC token) |
 | 外部共有 | Postmark にメール本文+メールアドレスを送る以外、第三者共有なし |
-| `privacy.html` 更新 | 「検索トレンドに基づく digest 配信」「送信者: AutonoMath <noreply@autonomath.ai>」「委託先: Postmark (米 Wildbit LLC)」を W6 までに追記 |
+| `privacy.html` 更新 | 「検索トレンドに基づく digest 配信」「送信者: AutonoMath <noreply@zeimu-kaikei.ai>」「委託先: Postmark (米 Wildbit LLC)」を W6 までに追記 |
 | APPI 越境移転 | Postmark = 米国。「越境移転の同意」条項を signup 画面と privacy に明示 |
 
 ---
@@ -253,7 +253,7 @@ jobs:
         env:
           POSTMARK_TOKEN: ${{ secrets.POSTMARK_TOKEN }}
           API_KEY_SALT:   ${{ secrets.API_KEY_SALT }}
-          DIGEST_SENDER:  "AutonoMath <noreply@autonomath.ai>"
+          DIGEST_SENDER:  "AutonoMath <noreply@zeimu-kaikei.ai>"
 ```
 
 `digest` は **DB read-only** で十分だが、`digest_state.last_sent_at` と `digest_log` への書き込みだけ push-back する設計 (別スクリプト or POST endpoint `/v1/internal/digest-log` を作る)。
@@ -325,8 +325,8 @@ AutonoMath からの週次ダイジェスト (現在のプラン: {{user_tier}})
 
 ―――――――――――――――
 ・配信停止: {{unsubscribe_url}}
-・質問: support@autonomath.ai
-・ドキュメント: https://autonomath.ai/docs/
+・質問: support@zeimu-kaikei.ai
+・ドキュメント: https://zeimu-kaikei.ai/docs/
 ```
 
 ### 6B. Fallback (検索履歴なし)

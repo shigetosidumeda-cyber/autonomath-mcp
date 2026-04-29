@@ -8,9 +8,9 @@
 # together from a single `site/` upload).
 
 site_name: AutonoMath
-site_description: AutonoMath — 日本の制度情報 (補助金 / 融資 / 税制 / 認定制度) 10,790件 (検索可・tier S/A/B/C) + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を REST + MCP API で横断検索
+site_description: AutonoMath — 日本の制度情報 (補助金 / 融資 / 税制 / 認定制度) 11,684件 (検索可・tier S/A/B/C) + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を REST + MCP API で横断検索
 site_author: Bookyou 株式会社
-site_url: "https://autonomath.ai/docs/"
+site_url: "https://zeimu-kaikei.ai/docs/"
 copyright: "© 2026 Bookyou 株式会社 (T8010001213708) · info@bookyou.net · AutonoMath"
 
 # Disable the github edit link — we don't want the internal repo structure
@@ -173,6 +173,10 @@ exclude_docs: |
   cs_templates.md
   operator_daily.md
   operator_dashboard_walkthrough.md
+  roadmap.md
+  audit_trail.md
+  launch/
+  runbook/
 
 extra:
   generator: false
@@ -192,6 +196,7 @@ nav:
       - MCP ツール: mcp-tools.md
       - 排他ルール: exclusions.md
       - FAQ: faq.md
+      - 正直な能力と限界: honest_capabilities.md
 
   - API リファレンス:
       - REST API (112 endpoints): api-reference.md
@@ -207,6 +212,7 @@ nav:
       - キャッシュ設計 (L0-L4): cache_architecture.md
       - ダッシュボード: dashboard_guide.md
       - アラート (amendment webhook): alerts_guide.md
+      - Customer Webhooks: webhooks.md
 
   - 運用:
       - SLA: sla.md

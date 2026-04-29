@@ -471,7 +471,7 @@ def track_click(
         ),
     )
 
-    base_url = row["contact_url"] or f"https://autonomath.ai/advisors.html#a{row['id']}"
+    base_url = row["contact_url"] or f"https://zeimu-kaikei.ai/advisors.html#a{row['id']}"
     sep = "&" if "?" in base_url else "?"
     redirect_url = f"{base_url}{sep}ref={token}"
 
@@ -541,7 +541,7 @@ def signup_advisor(
             payload.commission_rate_pct,
             payload.commission_yen_per_intro,
             payload.commission_model,
-            "https://autonomath.ai/advisors-signup.html",
+            "https://zeimu-kaikei.ai/advisors-signup.html",
             now,
             now,
             now,
@@ -601,9 +601,9 @@ def _create_stripe_connect_onboarding(
 
         link = stripe.AccountLink.create(
             account=acct.id,
-            refresh_url="https://autonomath.ai/advisors-signup.html?stripe=refresh",
+            refresh_url="https://zeimu-kaikei.ai/advisors-signup.html?stripe=refresh",
             return_url=(
-                f"https://autonomath.ai/advisors-dashboard.html?acct={acct.id}"
+                f"https://zeimu-kaikei.ai/advisors-dashboard.html?acct={acct.id}"
             ),
             type="account_onboarding",
         )

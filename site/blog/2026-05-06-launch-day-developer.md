@@ -33,7 +33,7 @@ AutonoMath はそこに API 1 本を刺します。
 - `source_url` + `fetched_at` を 99%以上の行に付与 (12件は小規模自治体 CMS 不在のため URL 未取得)
 
 一次資料（農水省・経産省・SMRJ・日本政策金融公庫等）だけを参照し、
-アグリゲーターは一切使いません。
+集約サイトーは一切使いません。
 
 ---
 
@@ -42,7 +42,7 @@ AutonoMath はそこに API 1 本を刺します。
 ### Step 1: 補助金を検索する
 
 ```bash
-curl -s "https://api.autonomath.ai/v1/programs/search?q=設備投資&prefecture=埼玉県&limit=3" \
+curl -s "https://api.zeimu-kaikei.ai/v1/programs/search?q=設備投資&prefecture=埼玉県&limit=3" \
   | python3 -m json.tool
 ```
 
@@ -72,7 +72,7 @@ curl -s "https://api.autonomath.ai/v1/programs/search?q=設備投資&prefecture=
 候補が揃ったら、複数制度の「同時申請不可」を一括チェックします。
 
 ```bash
-curl -s -X POST "https://api.autonomath.ai/v1/exclusions/check" \
+curl -s -X POST "https://api.zeimu-kaikei.ai/v1/exclusions/check" \
   -H "Content-Type: application/json" \
   -d '{
     "unified_ids": [
@@ -109,7 +109,7 @@ curl -s -X POST "https://api.autonomath.ai/v1/exclusions/check" \
 ```bash
 export AM_KEY="am_xxxxxxxxxxxxxxxx"
 
-curl -s "https://api.autonomath.ai/v1/programs/search?q=クラウド&limit=5" \
+curl -s "https://api.zeimu-kaikei.ai/v1/programs/search?q=クラウド&limit=5" \
   -H "X-API-Key: $AM_KEY" \
   | python3 -m json.tool
 ```
@@ -137,7 +137,7 @@ Bookyou株式会社（法人番号 T8010001213708）です。
 
 ```
 FastAPI (REST /v1/*)
- └── SQLite FTS5 (trigram tokenizer)
+ └── SQLite + 日本語の高速全文検索 (3-gram 分割)
       ├── programs         (13,578 件)
       ├── case_studies     (2,286 件)
       ├── loan_programs    (108 件, 三軸担保分解)
@@ -216,7 +216,7 @@ HTTP 429 のレスポンスには次のリセット日時が入ります。
 - ¥3/req 税別（税込 ¥3.30）、匿名 50 req/月 per IP 無料
 - `source_url` + `fetched_at` を 99%以上の行に付与
 
-**AutonoMath: https://autonomath.ai**
+**AutonoMath: https://zeimu-kaikei.ai**
 
 ---
 

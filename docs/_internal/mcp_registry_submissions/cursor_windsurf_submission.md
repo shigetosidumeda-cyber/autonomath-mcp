@@ -26,10 +26,10 @@ https://cursor.directory/plugins (Submit button)
 | Slug | `autonomath-mcp` |
 | Tagline (< 200 chars) | `日本の公的制度 (補助金・融資・税制・認定) 13,578 件 + 採択事例 + 融資三軸分解 + 行政処分 を横断検索する MCP サーバ. 35 排他ルール, protocol 2025-06-18, 12 tools.` |
 | Category | Data / Productivity / Developer Tools |
-| Icon (256×256 PNG) | `https://autonomath.ai/assets/mcp_preview_1.png` |
-| Tile (1200×630) | `https://autonomath.ai/assets/mcp_preview_1.png` |
-| Repo URL | `https://github.com/AutonoMath/autonomath-mcp` |
-| Homepage URL | `https://autonomath.ai/` |
+| Icon (256×256 PNG) | `https://zeimu-kaikei.ai/assets/mcp_preview_1.png` |
+| Tile (1200×630) | `https://zeimu-kaikei.ai/assets/mcp_preview_1.png` |
+| Repo URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| Homepage URL | `https://zeimu-kaikei.ai/` |
 | Author | Bookyou 株式会社 |
 | Contact email | `info@bookyou.net` |
 | License | MIT |
@@ -64,7 +64,7 @@ Windsurf supports MCP natively via `~/.codeium/windsurf/mcp_config.json`. There 
 no public "directory" as of 2026-04. Listing occurs by:
 
 1. Official MCP Registry (task #102) → Windsurf ingests daily
-2. README + install doc on `autonomath.ai/docs/getting-started/`
+2. README + install doc on `zeimu-kaikei.ai/docs/getting-started/`
 3. Community post on Codeium community (see below)
 
 ### User-side config snippet (for README / docs)
@@ -99,7 +99,7 @@ Path: `~/.codeium/windsurf/mcp_config.json` (macOS / Linux); `%USERPROFILE%\.cod
 - [ ] `uvx autonomath-mcp` works on a clean machine (test on spare laptop)
 - [ ] Cursor Directory account created
 - [ ] GitHub repo `AutonoMath/autonomath-mcp` public with README + LICENSE + CHANGELOG
-- [ ] Tile images accessible: `https://autonomath.ai/assets/mcp_preview_{1,2}.png` → 200 OK
+- [ ] Tile images accessible: `https://zeimu-kaikei.ai/assets/mcp_preview_{1,2}.png` → 200 OK
 - [ ] Screenshot of Cursor MCP panel showing 12 tools after `.cursor/mcp.json` install
 
 ## Rollout timing (per machine-speed launch plan)

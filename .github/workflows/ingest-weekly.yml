@@ -8,8 +8,10 @@ name: ingest-weekly
 
 on:
   schedule:
-    # 20:00 UTC Sunday == 05:00 JST Monday. Light-traffic morning.
-    - cron: "0 20 * * 0"
+    # 20:20 UTC Sunday == 05:20 JST Monday. Light-traffic morning.
+    # Staggered +20 min vs billing-health-cron (0 20 *) which also
+    # ssh-es into Fly daily — picks up Sunday's intersection.
+    - cron: "20 20 * * 0"
   workflow_dispatch:
     inputs:
       authority:

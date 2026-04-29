@@ -196,67 +196,309 @@ SENSITIVE_TOOLS: frozenset[str] = frozenset({
     "score_dd_risk",
     "intent_of",
     "reason_answer",
+    # Tax surfaces — 税理士法 §52 fence. zeimu-kaikei.ai brand sits in
+    # 税務会計 territory, so every tax-data tool must declare the output
+    # information retrieval, NOT 税務助言.
+    "search_tax_incentives",
+    "get_am_tax_rule",
+    "list_tax_sunset_alerts",
+    # Wave 21 composition tools — eligibility / portfolio / mock walkthrough
+    # all sit in 税理士法 §52 + 行政書士法 §1 + 弁護士法 §72 territory.
+    "apply_eligibility_chain_am",
+    "find_complementary_programs_am",
+    "simulate_application_am",
+    # Wave 22 composition tools — DD checklist / kessan briefing /
+    # jurisdiction onboarding / application kit. Four of five sit in
+    # 税理士法 §52 / 行政書士法 §1 / 弁護士法 §72 territory.
+    # forecast_program_renewal is intentionally NOT in this set — it is
+    # a statistical forecast about program lifecycle, not regulated.
+    "match_due_diligence_questions",
+    "prepare_kessan_briefing",
+    "cross_check_jurisdiction",
+    "bundle_application_kit",
+    # 会計士 work-paper bundle tools — 公認会計士法 §47条の2 監査調書保存 +
+    # 税理士法 §52 fence. Citation chain auto-resolution sits in the
+    # same sensitive territory because the response cites tax
+    # authorities verbatim.
+    "compose_audit_workpaper",
+    "audit_batch_evaluate",
+    "resolve_citation_chain",
+    # Wave 23 industry pack wrappers (2026-04-29) — bundle programs +
+    # saiketsu citations + 通達 references for 建設 / 製造 / 不動産 cohorts.
+    # 税理士法 §52 + 公認会計士法 §47条の2 fence — the response cites
+    # tax authority decisions and references applicable to business
+    # planning, all of which live in regulated advice territory.
+    "pack_construction",
+    "pack_manufacturing",
+    "pack_real_estate",
 })
 
 _DISCLAIMER_STANDARD: dict[str, str] = {
     "dd_profile_am": (
         "本 response は公開 enforcement / adoption / certification データの "
-        "aggregation です。信用調査・与信・反社チェック目的の利用は推奨しません。"
-        "個別判断は社労士・行政書士・弁護士に確認ください。"
+        "検索 aggregation のみで、信用調査・与信・反社チェック・労務 due diligence "
+        "(社労士法・弁護士法 §72) の代替ではありません。検索結果は heuristic 由来の "
+        "rule や partial provenance を含むため、業務判断には必ず一次資料を直接確認してください。"
     ),
     "regulatory_prep_pack": (
-        "本 response は制度概要の機械的整理です。申請書面の作成・提出は "
-        "行政書士法 §1 に基づく業務範囲、当社は draft scaffold を提供せず "
-        "一次資料 URL のみ surface します。"
+        "本 response は制度概要の検索結果のみで、申請書面の作成・提出は "
+        "行政書士法 §1 に基づく独占業務です。当社は draft scaffold を提供せず "
+        "一次資料 URL のみ surface します。検索結果のみ提供、業務判断は primary source 確認必須。"
     ),
     "combined_compliance_check": (
-        "本 response は公開ルールに基づく機械判定で、法解釈・税務代理 "
-        "(税理士法 §52) ・申請代理 (行政書士法 §1) に該当する業務は提供しません。"
-        "確定判断は社労士・税理士・行政書士・弁護士に確認ください。"
+        "本 response は公開ルールに対する機械的な検索照合で、法律事務 "
+        "(弁護士法 §72) ・税務代理 (税理士法 §52) ・申請代理 (行政書士法 §1) "
+        "・労務判断 (社労士法) のいずれにも該当しません。検索結果のみ提供、"
+        "業務判断は primary source 確認必須、確定判断は士業へ。"
     ),
     "rule_engine_check": (
-        "Rule judgment は公開コーパス (一次資料) に基づく機械評価で、"
+        "Rule judgment は公開コーパス (一次資料) に対する機械的検索照合で、"
         "法律事務 (弁護士法 §72) ・税務代理 (税理士法 §52) ・申請代理 "
-        "(行政書士法 §1) に該当する業務は提供しません。"
-        "個別案件の確定判断は士業へご相談ください。"
+        "(行政書士法 §1) ・労務判断 (社労士法) は提供しません。"
+        "rule の一部は heuristic 由来。検索結果のみ提供、業務判断は primary source 確認必須。"
     ),
     "predict_subsidy_outcome": (
-        "予測値は ECE 監査済の calibrated probability で、95% CI を併記。"
-        "採択を保証するものではありません。"
+        "予測値は過去採択データに基づく統計的 score で、採択を担保するものではありません。"
+        "予測 model の一部は heuristic feature を含み、申請可否判断 (行政書士法 §1) "
+        "の代替ではありません。検索結果のみ提供、業務判断は primary source 確認必須。"
     ),
     "score_dd_risk": (
-        "過去 enforcement / 行政処分の確率 score。与信判断 / 反社チェックの "
-        "代替ではありません。"
+        "過去 enforcement / 行政処分の検索ベース score で、与信判断・反社チェック・"
+        "信用調査 (弁護士法 §72) ・労務 due diligence (社労士法) の代替ではありません。"
+        "score は heuristic 由来の rule を含む。検索結果のみ提供、業務判断は primary source 確認必須。"
     ),
     "intent_of": (
         "本 response は自然言語クエリの 10 intent cluster への決定論的分類で、"
-        "法解釈・申請判断には該当しません。confidence < 0.5 の場合は"
-        "branching か reason_answer に回し、業法 (弁護士法 §72 / 税理士法 §52 / "
-        "行政書士法 §1 / 社労士法) の業務範囲は当社対象外です。"
+        "法解釈・申請判断・税務判断・労務判断には該当しません。"
+        "業法 (弁護士法 §72 / 税理士法 §52 / 行政書士法 §1 / 社労士法) の業務範囲は "
+        "当社対象外、confidence < 0.5 は branching か reason_answer に回してください。"
     ),
     "reason_answer": (
         "本 response は intent 分類 → slot 抽出 → DB bind → answer skeleton の "
         "決定論 pipeline で、申請書面作成は行政書士法 §1、税務判断は税理士法 §52、"
         "労務判断は社労士法、法律相談は弁護士法 §72 の業務範囲。"
-        "skeleton 内 placeholder は LLM が fabricate せず、確定判断は士業へ。"
+        "skeleton は検索結果のみ提供、業務判断は primary source 確認必須、確定判断は士業へ。"
+    ),
+    "search_tax_incentives": (
+        "本 response は am_tax_rule (国税庁・財務省・e-Gov 由来 ~285 行) の "
+        "情報検索のみで、税務助言ではありません。AutonoMath は税理士法 §52 に基づき "
+        "個別具体的な税務判断・申告書作成代行を行いません。検索結果に含まれる "
+        "rate / sunset / authority は公表時点の値であり、申告期限までに改正される "
+        "可能性があります。個別案件は資格を有する税理士に必ずご相談ください。"
+    ),
+    "get_am_tax_rule": (
+        "本 response は単一の税制措置 (am_tax_rule) lookup で、税務助言では "
+        "ありません。root_law / rate / applicability window は公表時点の "
+        "国税庁・財務省・e-Gov 一次資料から抽出した値であり、税理士法 §52 に基づき "
+        "個別具体的な税務判断・申告書作成代行は行いません。申告期限・適用条件の "
+        "個別判断は資格を有する税理士に必ずご相談ください。"
+    ),
+    "list_tax_sunset_alerts": (
+        "本 response は am_tax_rule の sunset_at 集計 (公表時点の措置法廃止予定日) で、"
+        "税務助言ではありません。sunset_at は予定日であり延長・前倒しの可能性が "
+        "あります。税理士法 §52 に基づき個別具体的な税務判断は提供しません。"
+        "個別案件は資格を有する税理士に必ずご相談ください。"
+    ),
+    # --- Wave 22 composition tools ---------------------------------------
+    "match_due_diligence_questions": (
+        "本 response は dd_question_templates (60 行) と houjin / adoption / "
+        "enforcement / invoice corpora の機械的 join による DD 質問 checklist で、"
+        "信用調査・反社チェック (弁護士法 §72) ・労務 due diligence (社労士法) ・"
+        "税務助言 (税理士法 §52) の代替ではありません。質問は情報照会 checklist で、"
+        "確定判断は資格を有する士業に必ずご相談ください。"
+    ),
+    "prepare_kessan_briefing": (
+        "本 response は am_amendment_diff + jpi_tax_rulesets の機械的 aggregation "
+        "による 決算期前後の制度変動 briefing で、税務代理 (税理士法 §52) ・申告書 "
+        "作成代行は提供しません。差分検知は heuristic を含み、決算書面・申告書面の "
+        "作成は資格を有する税理士・公認会計士に必ずご相談ください。"
+    ),
+    "cross_check_jurisdiction": (
+        "本 response は houjin_master + invoice_registrants + adoption_records の "
+        "住所・所在地データの突合せで、税務代理 (税理士法 §52) ・登記申請 "
+        "(司法書士法 §3) ・行政書士業務 (行政書士法 §1) の代替ではありません。"
+        "不一致検出は heuristic で、確定判断は資格を有する士業に必ずご相談ください。"
+    ),
+    "bundle_application_kit": (
+        "本 response は公開公募要領 + 採択事例 + 必要書類リストの assembly で、"
+        "申請書面の作成・提出代行は行政書士法 §1 の独占業務です。当社は scaffold + "
+        "primary source URL のみ surface し、書面作成自体は提供しません。"
+        "最終申請判断は資格を有する行政書士・中小企業診断士・税理士へ。"
+    ),
+    # --- Wave 23 industry pack wrappers ----------------------------------
+    "pack_construction": (
+        "本 response は jpintel programs (建設業 fence) + nta_saiketsu + "
+        "nta_tsutatsu_index の機械的 aggregation で、税務助言 (税理士法 §52) ・"
+        "監査調書 (公認会計士法 §47条の2) ・申請代理 (行政書士法 §1) の代替では "
+        "ありません。業種マッピングは JSIC D + 名称キーワード fence による "
+        "heuristic で、各 program の適合可否は申請要領を一次資料で必ずご確認ください。"
+    ),
+    "pack_manufacturing": (
+        "本 response は jpintel programs (製造業 fence) + nta_saiketsu + "
+        "nta_tsutatsu_index の機械的 aggregation で、税務助言 (税理士法 §52) ・"
+        "監査調書 (公認会計士法 §47条の2) ・申請代理 (行政書士法 §1) の代替では "
+        "ありません。業種マッピングは JSIC E + 名称キーワード fence による "
+        "heuristic で、各 program の適合可否は申請要領を一次資料で必ずご確認ください。"
+    ),
+    "pack_real_estate": (
+        "本 response は jpintel programs (不動産業 fence) + nta_saiketsu + "
+        "nta_tsutatsu_index の機械的 aggregation で、税務助言 (税理士法 §52) ・"
+        "監査調書 (公認会計士法 §47条の2) ・申請代理 (行政書士法 §1) の代替では "
+        "ありません。業種マッピングは JSIC K + 名称キーワード fence による "
+        "heuristic で、各 program の適合可否は申請要領を一次資料で必ずご確認ください。"
+    ),
+    # --- Wave 21 composition tools (canonical disclaimer copies; the tool ----
+    # bodies emit their own inline disclaimer string today, but registering
+    # them here lets `disclaimer_for(name)` answer correctly for any future
+    # caller that walks the SENSITIVE_TOOLS surface.) ------------------------
+    "apply_eligibility_chain_am": (
+        "本 response は am_subsidy_rule + am_compat_matrix + jpi_program 由来の "
+        "適用判定チェーン検索で、申請書類作成・税務代理は提供しません (行政書士法 §1 / "
+        "税理士法 §52)。chain_depth は heuristic 拡張、final 判定は申請要領 + 申告 "
+        "ガイドラインを一次資料で確認し、資格を有する士業へご相談ください。"
+    ),
+    "find_complementary_programs_am": (
+        "本 response は am_compat_matrix の機械的 peer 検索で、ポートフォリオ運用 "
+        "助言・税務助言は提供しません (税理士法 §52 / 行政書士法 §1)。"
+        "compat_status='unknown' rows は heuristic 由来。確定判断は資格を有する "
+        "士業に必ずご相談ください。"
+    ),
+    "simulate_application_am": (
+        "本 response は採択スコア mock で、申請可否担保・申請書面作成代行は提供 "
+        "しません (行政書士法 §1)。score は am_application_round + heuristic "
+        "feature の重み付き平均で、採択を担保しません。確定判断は資格を有する "
+        "行政書士・中小企業診断士へ。"
+    ),
+    # --- 会計士 work-paper bundle tools (compose_audit_workpaper / ----------
+    # audit_batch_evaluate / resolve_citation_chain). Server-side bodies in
+    # mcp/server.py emit inline disclaimers via _KAIKEI_DISCLAIMER; mirroring
+    # them here keeps disclaimer_for(name) symmetric.) -----------------------
+    "compose_audit_workpaper": (
+        "本 response は公開税制・補助金・法令情報の検索結果と機械的予測のみで、"
+        "監査意見・税務判断・申告書作成代行は提供しません (公認会計士法 §47条の2 / "
+        "税理士法 §52)。監査人は本書の内容を自らの責任において検証し、§47条の2 に "
+        "従って監査調書を保存してください。"
+    ),
+    "audit_batch_evaluate": (
+        "本 response は target_ruleset_ids × business_profile の機械的 evaluate "
+        "ループ結果で、監査意見・税務判断・申告書作成代行は提供しません "
+        "(公認会計士法 §47条の2 / 税理士法 §52)。anomaly_flag は heuristic 由来、"
+        "確定判断は資格を有する公認会計士・税理士へ。"
+    ),
+    "resolve_citation_chain": (
+        "本 response は am_law_article + tax_ruleset citations の引用 chain "
+        "解決で、監査意見・税務判断・申告書作成代行は提供しません "
+        "(公認会計士法 §47条の2 / 税理士法 §52)。各引用 row の source_url で "
+        "原典を確認し、確定判断は資格を有する公認会計士・税理士へ。"
     ),
 }
 
 _DISCLAIMER_MINIMAL: dict[str, str] = {
-    "dd_profile_am": "公開データ aggregation。与信・反社判断には利用不可。",
-    "regulatory_prep_pack": "制度概要の機械整理。申請代理は行政書士の業務範囲。",
-    "combined_compliance_check": "公開ルール機械判定。確定判断は士業へ。",
-    "rule_engine_check": "公開コーパス機械評価。確定判断は士業へ。",
-    "predict_subsidy_outcome": "calibrated probability。採択保証ではありません。",
-    "score_dd_risk": "公開処分ベース score。与信判断の代替不可。",
-    "intent_of": "intent 分類のみ。法解釈・申請判断は士業へ。",
-    "reason_answer": "決定論 pipeline 出力。確定判断は士業へ。",
+    "dd_profile_am": (
+        "公開データ検索 aggregation のみ。与信・反社・労務 DD (社労士法・弁護士法 §72) "
+        "の代替不可。一次資料確認必須。"
+    ),
+    "regulatory_prep_pack": (
+        "制度概要の検索のみ。申請代理は行政書士法 §1 の独占業務。一次資料確認必須。"
+    ),
+    "combined_compliance_check": (
+        "公開ルール検索照合のみ。弁護士法 §72 / 税理士法 §52 / 行政書士法 §1 / 社労士法 "
+        "の業務範囲外。確定判断は士業へ。"
+    ),
+    "rule_engine_check": (
+        "公開コーパス検索照合のみ。heuristic rule を含む。"
+        "業法 4 法 (弁護士・税理士・行政書士・社労士) の判断は対象外。"
+    ),
+    "predict_subsidy_outcome": (
+        "統計的 score のみ。採択を担保せず、heuristic 含む。"
+        "申請可否判断 (行政書士法 §1) の代替不可。"
+    ),
+    "score_dd_risk": (
+        "公開処分ベース検索 score。与信・反社 (弁護士法 §72) ・労務 DD (社労士法) "
+        "の代替不可。一次資料確認必須。"
+    ),
+    "intent_of": (
+        "intent 分類のみ。業法 4 法 (弁護士・税理士・行政書士・社労士) の判断は対象外。"
+    ),
+    "reason_answer": (
+        "決定論 pipeline 検索出力のみ。業法 4 法の判断は対象外、確定判断は士業へ。"
+    ),
+    "search_tax_incentives": (
+        "国税庁・財務省 由来の税制措置検索のみ。税務助言ではない (税理士法 §52)。"
+        "rate/sunset 改正可能。個別判断は税理士へ。"
+    ),
+    "get_am_tax_rule": (
+        "単一税制措置 lookup のみ。税務助言ではない (税理士法 §52)。"
+        "個別判断は税理士へ。"
+    ),
+    "list_tax_sunset_alerts": (
+        "措置法廃止予定日の集計のみ。税務助言ではない (税理士法 §52)。"
+        "延長・前倒し可能。個別判断は税理士へ。"
+    ),
+    # --- Wave 22 composition tools ---------------------------------------
+    "match_due_diligence_questions": (
+        "DD 質問 checklist のみ。信用調査・反社・労務 DD (弁護士法 §72 / 社労士法) ・"
+        "税務助言 (税理士法 §52) の代替不可。確定判断は士業へ。"
+    ),
+    "prepare_kessan_briefing": (
+        "決算期前後の制度変動 briefing のみ。税務代理 (税理士法 §52) ・"
+        "申告書作成代行不可。確定判断は税理士・公認会計士へ。"
+    ),
+    "cross_check_jurisdiction": (
+        "登記 / 公表 / 採択 jurisdiction 突合せのみ。税務代理 (税理士法 §52) ・"
+        "登記申請 (司法書士法 §3) ・行政書士業務 (§1) の代替不可。"
+    ),
+    "bundle_application_kit": (
+        "申請 kit scaffold + 一次 URL のみ。書面作成は行政書士法 §1 の独占業務、"
+        "当社は提供しない。最終判断は行政書士へ。"
+    ),
+    # --- Wave 23 industry pack wrappers ----------------------------------
+    "pack_construction": (
+        "建設業 (JSIC D) cohort 検索 aggregation のみ。税務助言 (税理士法 §52) ・"
+        "監査調書 (公認会計士法 §47条の2) の代替不可。一次資料確認必須。"
+    ),
+    "pack_manufacturing": (
+        "製造業 (JSIC E) cohort 検索 aggregation のみ。税務助言 (税理士法 §52) ・"
+        "監査調書 (公認会計士法 §47条の2) の代替不可。一次資料確認必須。"
+    ),
+    "pack_real_estate": (
+        "不動産業 (JSIC K) cohort 検索 aggregation のみ。税務助言 (税理士法 §52) ・"
+        "監査調書 (公認会計士法 §47条の2) の代替不可。一次資料確認必須。"
+    ),
+    # --- Wave 21 composition tools ---------------------------------------
+    "apply_eligibility_chain_am": (
+        "適用判定 chain 検索のみ。申請代理 (行政書士法 §1) ・税務代理 "
+        "(税理士法 §52) の代替不可。一次資料確認必須。"
+    ),
+    "find_complementary_programs_am": (
+        "compat_matrix peer 検索のみ。税務助言 (税理士法 §52) ・申請代理 "
+        "(行政書士法 §1) の代替不可。確定判断は士業へ。"
+    ),
+    "simulate_application_am": (
+        "採択スコア mock のみ。採択を担保せず、heuristic 含む。"
+        "申請可否判断 (行政書士法 §1) の代替不可。"
+    ),
+    # --- 会計士 work-paper bundle tools ----------------------------------
+    "compose_audit_workpaper": (
+        "公開税制 + 補助金検索結果のみ。監査意見・税務判断 "
+        "(公認会計士法 §47条の2 / 税理士法 §52) の代替不可。"
+    ),
+    "audit_batch_evaluate": (
+        "ruleset × profile 機械評価のみ。監査意見・税務判断 "
+        "(公認会計士法 §47条の2 / 税理士法 §52) の代替不可。"
+    ),
+    "resolve_citation_chain": (
+        "引用 chain 解決のみ。監査意見・税務判断 "
+        "(公認会計士法 §47条の2 / 税理士法 §52) の代替不可。"
+    ),
 }
 
 _DISCLAIMER_STRICT_SUFFIX = (
-    " 出力は AI 生成であり、内容の正確性・完全性は保証されません。"
+    " 出力は AI 生成であり、内容の正確性・完全性は担保されません。"
     "業法 (弁護士法 §72 / 税理士法 §52 / 行政書士法 §1 / 社労士法) の "
     "業務範囲に該当する判断は当社サービス対象外です。"
+    "本 API は検索インデックスです。検索結果には heuristic 由来の rule や "
+    "partial provenance を含みます。業務判断には必ず primary source を直接確認してください。"
 )
 
 
@@ -541,8 +783,9 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
             return _conn_holder["conn"]
         _conn_holder["tried"] = True
         try:
-            from jpintel_mcp.config import settings as _s
             import sqlite3 as _sqlite3
+
+            from jpintel_mcp.config import settings as _s
             conn = _sqlite3.connect(str(_s.autonomath_db_path))
             conn.row_factory = _sqlite3.Row
             _conn_holder["conn"] = conn
@@ -783,7 +1026,7 @@ def with_envelope(
                     "message": f"{exc.__class__.__name__}: {exc}"[:120],
                     "severity": severity,
                     "hint": ERROR_CODES[code]["summary"],
-                    "documentation": f"https://autonomath.ai/docs/error_handling#{code}",
+                    "documentation": f"https://zeimu-kaikei.ai/docs/error_handling#{code}",
                 }
                 latency = (time.perf_counter() - t0) * 1000.0
                 return build_envelope(

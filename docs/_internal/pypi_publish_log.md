@@ -50,7 +50,7 @@ Companion log: [`npm_publish_log.md`](./npm_publish_log.md) (TS SDK).
 - migrations 046-049 (annotation, validation, license, jpi_pc_program_health)
 - 4 universal MCP/REST tools (`get_annotations`, `validate`, `get_provenance`, `get_provenance_for_fact`)
 - Phase A: 7 new tools + 8 static taxonomies + 5 example profiles + 36協定 template
-- 36協定 launch gate (`AUTONOMATH_36_KYOTEI_ENABLED=False` default → 72 tools at default gates, 74 if gate flipped)
+- 36協定 launch gate (`AUTONOMATH_36_KYOTEI_ENABLED=False` default → 69 tools at default gates, 71 if gate flipped)
 - entity count 424k → 503k, fact count 5.26M → 6.12M, tool count 59 → 72
 
 **Pre-upload checklist**:

@@ -1,0 +1,43 @@
+# Fly.io app config. Run:
+#   fly launch --no-deploy --copy-config --name zeimu-kaikei-freee-plugin
+#   fly secrets set FREEE_CLIENT_ID=... FREEE_CLIENT_SECRET=... \
+#                   ZEIMU_KAIKEI_API_KEY=zk_live_... \
+#                   SESSION_SECRET=$(openssl rand -hex 32) \
+#                   PLUGIN_BASE_URL=https://freee-plugin.zeimu-kaikei.ai
+#   fly deploy
+
+app = "zeimu-kaikei-freee-plugin"
+primary_region = "hnd"   # Tokyo — same region as api.zeimu-kaikei.ai
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"
+  ZEIMU_KAIKEI_API_BASE = "https://api.zeimu-kaikei.ai"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 100
+    hard_limit = 200
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "10s"
+  method = "GET"
+  path = "/healthz"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
+  cpus = 1

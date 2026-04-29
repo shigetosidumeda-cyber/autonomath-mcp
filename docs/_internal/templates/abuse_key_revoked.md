@@ -1,5 +1,5 @@
 TO: {{customer_email}}
-FROM: support@autonomath.ai
+FROM: support@zeimu-kaikei.ai
 SUBJECT: 【jpintel-mcp】API キー失効のご連絡 (ticket {{ticket_id}})
 
 {{customer_name}} 様
@@ -39,5 +39,5 @@ SUBJECT: 【jpintel-mcp】API キー失効のご連絡 (ticket {{ticket_id}})
 ---
 jpintel-mcp サポート
 {{operator_name}}
-support@autonomath.ai
-https://autonomath.ai/
+support@zeimu-kaikei.ai
+https://zeimu-kaikei.ai/

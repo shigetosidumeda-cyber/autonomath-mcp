@@ -1,0 +1,29 @@
+{
+  "name": "zeimu-kaikei-ai-freee-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "freee app marketplace plugin for 税務会計AI — 補助金・税制・法令・判例・入札・インボイス登録番号の横断検索を freee 会計から呼び出す。",
+  "operator": {
+    "company": "Bookyou株式会社",
+    "houjin_bangou": "T8010001213708",
+    "representative": "梅田茂利",
+    "contact_email": "info@bookyou.net"
+  },
+  "main": "src/server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/oauth_state.test.js test/proxy_logic.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "cookie-parser": "^1.4.7",
+    "helmet": "^8.0.0"
+  },
+  "devDependencies": {}
+}

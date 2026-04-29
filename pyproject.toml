@@ -1,7 +1,7 @@
 [project]
 name = "autonomath-mcp"
-version = "0.3.0"
-description = "AutonoMath — Japanese public-program API + MCP server + npm SDK (72 tools): 13,578 programs + 2,286 case studies + 108 三軸分解 loans + 1,185 enforcement cases + 9,484 laws + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 autonomath entities + 6.12M facts + 23,805 relations + 335,605 aliases, 181 exclusion/prerequisite rules, primary-source lineage. SLA 99.5% monthly uptime."
+version = "0.3.1"
+description = "REST + MCP search over Japanese institutional data: 11,684 searchable subsidies (14,472 total), 154 laws full-text + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 89 MCP tools (protocol 2025-06-18). 3 yen/req metered (3.30 tax-incl), anonymous 50/month per IP free."
 license = { text = "MIT" }
 authors = [
     { name = "Bookyou株式会社", email = "info@bookyou.net" },
@@ -32,6 +32,12 @@ dependencies = [
     "email-validator>=2.0,<3",
     "python-multipart>=0.0.17,<1",
     "httpx>=0.28,<1.0",
+    # Migration 099 — quarterly engagement PDF (`/v1/me/recurring/quarterly/...`).
+    # WeasyPrint renders the Jinja2 quarterly template into a PDF on demand.
+    # Server-only dep (the MCP / SDK clients never import it). Cached to
+    # data/quarterly_pdfs/<api_key_id>_<year>_q<n>.pdf so repeat downloads
+    # are read-from-disk, not re-rendered. v62.0+ stable across macOS+Linux.
+    "weasyprint>=62.0",
     "stripe>=11.3,<13",                  # stripe-python does yearly major bumps
     "orjson>=3.10,<4",
     "structlog>=24.4",
@@ -49,6 +55,20 @@ dependencies = [
     # Cost factor 12 (~100ms/attempt). Verifies new bcrypt-tagged keys; legacy
     # HMAC-SHA256 keys fall through. See src/jpintel_mcp/api/deps.py.
     "bcrypt>=4.2,<6",
+    # 6-pack export format renderers (?format={xlsx,docx-application,ics,md,
+    # csv-freee,csv-mf,csv-yayoi}). All four are pure-Python, MIT/BSD-licensed,
+    # zero-syscall surface, and small enough to keep on the prod wheel rather
+    # than gating behind an optional [formats] extra. Wired through
+    # `src/jpintel_mcp/api/_format_dispatch.py`.
+    "openpyxl>=3.1,<4",                  # xlsx writer (write_only mode)
+    "python-docx>=1.1,<2",               # 申請書 boilerplate / DOCX cover
+    "icalendar>=5.0,<7",                 # RFC 5545 calendar (deadline VEVENT fan-out)
+    # PDF text extraction for the prefecture/city walker (added 2026-04-29
+    # because 茨城県 / 和歌山県 / 福井県 publish program detail rows as PDFs
+    # hosted on the same pref.*.lg.jp domain — those are legitimate primary
+    # sources and require pdfplumber to harvest). Pure Python wheel, no system
+    # deps. Used by `scripts/walk_pref_subsidy_seeds.py`.
+    "pdfplumber>=0.11,<1",
 ]
 
 [project.optional-dependencies]
@@ -94,10 +114,11 @@ jpintel-mcp = "jpintel_mcp.mcp.server:run"
 jpintel-ingest = "jpintel_mcp.ingest.canonical:run"
 
 [project.urls]
-Homepage = "https://autonomath.ai"
-Documentation = "https://autonomath.ai/docs/"
-Repository = "https://github.com/AutonoMath/autonomath-mcp"
-Issues = "https://github.com/AutonoMath/autonomath-mcp/issues"
+Homepage = "https://zeimu-kaikei.ai"
+Documentation = "https://zeimu-kaikei.ai/docs/"
+# TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
+Repository = "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
+Issues = "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues"
 
 [build-system]
 requires = ["hatchling"]

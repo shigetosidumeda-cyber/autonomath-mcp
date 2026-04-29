@@ -19,6 +19,8 @@ venv/
 data/*
 !data/jpintel.db
 !data/unified_registry.json
+!data/autonomath_static
+!data/autonomath_static/**
 /tmp/jpintel-backups/
 # autonomath.db (7.3 GB) + backup snapshots sit at repo root (not under data/).
 # Ship via R2 + AUTONOMATH_DB_SOURCE_URL bootstrap on first boot — never bake

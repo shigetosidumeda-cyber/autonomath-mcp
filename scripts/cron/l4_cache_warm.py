@@ -47,6 +47,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 from jpintel_mcp.cache.l4 import sweep_expired  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
+from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.l4_cache_warm")
 
@@ -221,17 +222,36 @@ def main(argv: list[str] | None = None) -> int:
 
     db_path = args.db if args.db else settings.db_path
 
-    try:
-        run(
-            db_path=db_path,
-            since=since,
-            top_n=int(args.top),
-            soft_cap=int(args.soft_cap),
-            dry_run=bool(args.dry_run),
-        )
-    except Exception as e:
-        logger.exception("l4_warm_failed err=%s", e)
-        return 1
+    with heartbeat("l4_cache_warm") as hb:
+        try:
+            counters = run(
+                db_path=db_path,
+                since=since,
+                top_n=int(args.top),
+                soft_cap=int(args.soft_cap),
+                dry_run=bool(args.dry_run),
+            )
+        except Exception as e:
+            logger.exception("l4_warm_failed err=%s", e)
+            return 1
+        if isinstance(counters, dict):
+            hb["rows_processed"] = int(
+                counters.get("warmed", counters.get("inserted", 0)) or 0
+            )
+            hb["rows_skipped"] = int(
+                counters.get("skipped", counters.get("evicted", 0)) or 0
+            )
+            hb["metadata"] = {
+                k: counters.get(k)
+                for k in ("candidates", "swept", "soft_cap", "dry_run")
+                if k in counters
+            }
+        else:
+            hb["metadata"] = {
+                "top_n": int(args.top),
+                "soft_cap": int(args.soft_cap),
+                "dry_run": bool(args.dry_run),
+            }
     return 0
 
 

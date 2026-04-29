@@ -84,7 +84,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
 USER_AGENT = (
     "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-haken-shokai (contact=ops@autonomath.ai)"
+    "ingest-haken-shokai (contact=ops@zeimu-kaikei.ai)"
 )
 HTTP_TIMEOUT = 60
 RATE_SLEEP = 1.0  # 1 req/sec/host

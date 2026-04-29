@@ -15,7 +15,7 @@
   if (window.AutonoMathFeedback) return;
 
   var API_URL =
-    (window.AUTONOMATH_API_BASE || "https://api.autonomath.ai").replace(/\/+$/, "") +
+    (window.AUTONOMATH_API_BASE || "https://api.zeimu-kaikei.ai").replace(/\/+$/, "") +
     "/v1/feedback";
 
   var STYLE_ID = "am-fb-style";

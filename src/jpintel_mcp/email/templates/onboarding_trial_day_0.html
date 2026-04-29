@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutonoMath — トライアルを開始しました</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:640px;margin:24px auto;padding:0 20px;color:#111;line-height:1.7;">
+
+<h1 style="font-size:22px;margin:0 0 12px;">トライアルを開始しました</h1>
+
+<p>AutonoMath のトライアルにご登録ありがとうございます。<strong>API キー (末尾 {{key_last4}})</strong> は先ほどブラウザで一度だけ表示されました。お手元にコピーをされていない場合は再発行が必要です — 下記サポート宛にご連絡ください。</p>
+
+<h2 style="font-size:17px;margin-top:28px;">トライアル内容</h2>
+<ul style="font-size:14px;color:#333;">
+  <li>有効期間: {{duration_days}} 日間 (失効: <strong>{{expires_at}}</strong>)</li>
+  <li>リクエスト上限: {{request_cap}} 件</li>
+  <li>カード未登録 — 想定外の請求は発生しません</li>
+  <li>69 MCP tools / REST API すべて利用可能</li>
+</ul>
+
+<h2 style="font-size:17px;margin-top:28px;">最初の 3 リクエスト</h2>
+<p>動作確認の curl 例です。<code>YOUR_KEY</code> を先ほど発行されたキーに置き換えてください。</p>
+
+<h3 style="font-size:15px;margin-top:20px;">1. 疎通確認 (/v1/ping)</h3>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+  https://api.zeimu-kaikei.ai/v1/ping</code></pre>
+
+<h3 style="font-size:15px;margin-top:20px;">2. 補助金検索 (/v1/programs/search)</h3>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+  "https://api.zeimu-kaikei.ai/v1/programs/search?prefecture=東京都&target_types=smb&limit=5"</code></pre>
+
+<h3 style="font-size:15px;margin-top:20px;">3. キーワード検索</h3>
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+  "https://api.zeimu-kaikei.ai/v1/programs/search?q=事業再構築&limit=5"</code></pre>
+
+<h2 style="font-size:17px;margin-top:28px;">次に読むもの</h2>
+<ul>
+  <li><a href="https://zeimu-kaikei.ai/docs/getting-started" style="color:#1e3a8a;">Getting Started</a> — 全エンドポイント一覧 + OpenAPI 仕様</li>
+  <li><a href="https://zeimu-kaikei.ai/examples/" style="color:#1e3a8a;">examples 集</a> — MCP / バッチ / 排他ルールチェック</li>
+</ul>
+
+<h2 style="font-size:17px;margin-top:28px;">税理士法 §52 / 弁護士法 §72 該当の業務はおこないません</h2>
+<p style="font-size:13px;color:#666;line-height:1.7;">AutonoMath は日本の制度情報の検索インデックス API です。<strong>税務助言・法律相談・申請代行・社会保険労務士業務はおこないません</strong>。出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は <a href="https://zeimu-kaikei.ai/tos.html" style="color:#1e3a8a;">利用規約</a> をご確認ください。</p>
+
+<p style="margin-top:24px;">トライアルが終わる 3 日前に再度お知らせします。詰まったらいつでもこのメールに返信してください。</p>
+
+<hr style="border:none;border-top:1px solid #eee;margin:32px 0 12px;">
+<p style="color:#888;font-size:12px;">
+AutonoMath — 日本の制度情報 API + MCP<br>
+このメールはトライアル開始の控えとしてお送りしています (取引関連メール)。<br>
+お問い合わせ: <a href="mailto:info@bookyou.net" style="color:#888;">info@bookyou.net</a><br>
+運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
+</p>
+
+</body>
+</html>

@@ -10,7 +10,7 @@ Anthropic Claude Code (development pair)
 /* SITE */
 Last update: 2026-04-26
 Standards: HTML5 / CSS3 / JSON-LD / RFC 9116 (security.txt) / llmstxt.org
-Components: FastAPI / FastMCP / SQLite FTS5 / sqlite-vec
+Components: FastAPI / FastMCP / SQLite (全文検索 + 意味検索)
 Software: Claude Code (Opus 4.7) / VS Code / mkdocs Material
 
 /* OPERATOR */

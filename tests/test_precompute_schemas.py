@@ -159,6 +159,10 @@ PC_TABLES_ALL: dict[str, set[str]] = {**PC_TABLES_C3, **PC_TABLES_D8}
 # assertions below. Keep this set aligned with cron's PC_TABLES_AM.
 PC_TABLES_AM: set[str] = {
     "jpi_pc_program_health",
+    # `am_amendment_diff` (migration 075) — append-only diff log refreshed
+    # by `_refresh_am_amendment_diff` in the cron. The cron's PC_TABLES_AM
+    # short-circuit guarantees the refresher never DELETEs, only inserts.
+    "am_amendment_diff",
 }
 
 # Cron-level expected set: jpintel-shard tables + AM-shard tables. This is

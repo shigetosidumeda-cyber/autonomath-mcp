@@ -1,19 +1,15 @@
-昨日の今日で恐縮ですが、詰まっていないか様子伺いです。
+最初の1リクエストはもう叩けましたか?
 
-昨日 AutonoMath API ({{tier}} プラン / 鍵末尾 {{key_last4}}) をお申し込みいただきました。最初の1リクエストが通ると一気に使い勝手が見えてきますので、今日は「もし止まっていたらこれを試してください」というミニレシピを3つだけお送りします。
+昨日 AutonoMath API ({{tier}} プラン / 鍵末尾 {{key_last4}}) をお申し込みいただきました。経験上、最初の 1 リクエストが通れば一気に流れに乗れるので、今日はクライアントごとの最短セットアップとよくある詰まりどころだけお送りします。
 
 ---
 
-1) まずは絞り込み検索の実例
+使うクライアントを1つ選んでください:
 
-   ファセット (都道府県 + 対象業種) で絞り込みながら制度を取れます。これが一番よく使われる形です。
-
-   curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.autonomath.ai/v1/programs/search?prefecture=東京都&target_types=smb&limit=10"
-
-2) Claude Desktop から MCP 経由で呼ぶ
-
-   LLM クライアントから直接叩きたい場合は、claude_desktop_config.json に以下を追記するだけで、6 つのツール (programs.search / programs.get / exclusions.check ほか) がそのまま使えます。
+A. Claude Desktop / Claude Code
+   MCP 対応 LLM クライアント。claude_desktop_config.json に追記するだけで 69 ツール
+   (programs.search / search_tax_incentives / check_invoice_registrant ほか) が
+   自然言語から呼べます。
 
    {
      "mcpServers": {
@@ -25,25 +21,53 @@
      }
    }
 
-3) 複数制度を1リクエストで取得 (batch)
+   詳細: https://zeimu-kaikei.ai/integrations/claude
 
-   unified_id の配列を POST すれば一回で取れます。アプリの初期化時などに便利です。
+B. Cursor
+   設定 -> MCP -> Add new MCP server に同じ block を追加します。
+   詳細: https://zeimu-kaikei.ai/integrations/cursor
 
-   curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
-     "https://api.autonomath.ai/v1/programs/batch" \
-     -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'
+C. Cline (VS Code)
+   Cline の MCP Servers タブで同じ JSON を貼り付けます。
+   詳細: https://zeimu-kaikei.ai/integrations/cline
+
+D. 直接 curl / SDK
+   MCP を経由せず REST で叩く場合の最小例:
+
+   curl -H "X-API-Key: YOUR_KEY" \
+     "https://api.zeimu-kaikei.ai/v1/programs/search?prefecture=東京都&target_types=smb&limit=10"
 
 ---
 
-よくある質問:
+よくある詰まりどころ:
 
-- 認証ヘッダ: X-API-Key: YOUR_KEY のほか、Authorization: Bearer YOUR_KEY も受け付けます。
-- レート制限: 認証済みキー (Paid) は Stripe 従量課金・上限なし (月次 UTC 0 時基準でメーター集計)。匿名は 50 req/月 per IP・JST 月初 00:00 リセット。超過時は 429 + Retry-After ヘッダを返します。
-- 請求・鍵ローテート: Stripe カスタマーポータル (https://autonomath.ai/billing/portal) からいつでもカード変更・利用停止・鍵の再発行ができます。
+- 401 Unauthorized
+  ヘッダ名は X-API-Key です (Authorization: Bearer YOUR_KEY でも可)。
+  Api-Key や X-Api-Token は通りません。
 
-まだ試していない場合は、/v1/ping で最小疎通確認から始められます。1リクエストだけなら10秒かかりません。
+- 429 Too Many Requests
+  Retry-After ヘッダの秒数を待ってください。Paid キーは月次課金で上限なし、
+  匿名は 50 req/月 (JST 月初リセット) です。
 
-詰まっていれば、このメールに「こう書いたがこう返る」の1行だけでも返信ください。人間が読みます。
+- FTS の単一漢字ノイズ
+  q=税額控除 は「税」だけ含む行も拾います。2文字以上の熟語は
+  q="税額控除" のように引用符で囲ってください。
+
+- MCP が起動しない
+  npx -y @autonomath/mcp は初回 30 秒程度かかります。
+  タイムアウトを 60s に伸ばしてください。
+
+- 環境変数が読まれない
+  Claude Desktop は config.json の env ブロックのみ読みます。
+  シェルの export は無視されます。
+
+それでも止まっていれば、このメールに「こう書いたがこう返る」の1行だけでも返信ください。人間が読みます。
+
+---
+
+税理士法 §52 / 弁護士法 §72 該当の業務はおこないません:
+
+AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
 
 — Bookyou 株式会社 / AutonoMath
 
@@ -52,5 +76,5 @@ AutonoMath — 日本の制度情報 API + MCP
 このメールは AutonoMath の活性化シーケンス (D+1) としてお送りしています。
 お問い合わせ: info@bookyou.net
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
-ライセンス: ご利用は利用規約 (https://autonomath.ai/tos.html) / プライバシーポリシー (https://autonomath.ai/privacy.html) に基づきます。
+ライセンス: ご利用は利用規約 (https://zeimu-kaikei.ai/tos.html) / プライバシーポリシー (https://zeimu-kaikei.ai/privacy.html) に基づきます。
 配信停止: {{unsubscribe_url}}

@@ -4,76 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Confidence — AutonoMath</title>
-<meta name="description" content="AutonoMath P5-attribution Bayesian confidence dashboard. Per-tool Discovery (probability of being found) and Use (probability of being reused within 7 days), reported with 95% credible intervals.">
+<title>Confidence — 税務会計AI</title>
+<meta name="description" content="税務会計AI P5-attribution Bayesian confidence dashboard. Per-tool Discovery (probability of being found) and Use (probability of being reused within 7 days), reported with 95% credible intervals.">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="Confidence — AutonoMath">
+<meta property="og:title" content="Confidence — 税務会計AI">
 <meta property="og:description" content="Per-tool Discovery / Use Bayesian confidence with 95% credible intervals.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/en/confidence.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/en/confidence.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Confidence — AutonoMath">
+<meta name="twitter:title" content="Confidence — 税務会計AI">
 <meta name="twitter:description" content="Per-tool Discovery / Use Bayesian confidence with 95% credible intervals.">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/en/confidence.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/confidence.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/confidence.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/confidence.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/en/confidence.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/confidence.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/confidence.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/confidence.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Confidence — AutonoMath",
-  "description": "P5-attribution Bayesian confidence dashboard for the AutonoMath MCP toolset. Reports per-tool Discovery (probability of being found by AI agents) and Use (probability of being reused within 7 days) with Beta(1,1) prior over a 30-day trailing window, accompanied by 95% credible intervals.",
-  "url": "https://autonomath.ai/en/confidence.html",
+  "name": "Confidence — 税務会計AI",
+  "description": "P5-attribution Bayesian confidence dashboard for the 税務会計AI MCP toolset. Reports per-tool Discovery (probability of being found by AI agents) and Use (probability of being reused within 7 days) with Beta(1,1) prior over a 30-day trailing window, accompanied by 95% credible intervals.",
+  "url": "https://zeimu-kaikei.ai/en/confidence.html",
   "inLanguage": "en",
   "isPartOf": {
     "@type": "WebSite",
-    "name": "AutonoMath",
-    "url": "https://autonomath.ai/en/"
+    "name": "税務会計AI",
+    "url": "https://zeimu-kaikei.ai/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
     "legalName": "Bookyou株式会社",
-    "url": "https://autonomath.ai/",
+    "url": "https://zeimu-kaikei.ai/",
     "vatID": "T8010001213708",
     "email": "info@bookyou.net"
   },
   "mainEntity": {
     "@type": "Dataset",
-    "name": "AutonoMath confidence snapshots",
-    "description": "Daily Bayesian confidence snapshots for the AutonoMath MCP toolset, persisted at /analytics/confidence_<DATE>.json with an index at /analytics/confidence_index.json.",
-    "url": "https://autonomath.ai/en/confidence.html",
-    "license": "https://autonomath.ai/tos.html",
+    "name": "税務会計AI confidence snapshots",
+    "description": "Daily Bayesian confidence snapshots for the 税務会計AI MCP toolset, persisted at /analytics/confidence_<DATE>.json with an index at /analytics/confidence_index.json.",
+    "url": "https://zeimu-kaikei.ai/en/confidence.html",
+    "license": "https://zeimu-kaikei.ai/tos.html",
     "creator": {
       "@type": "Organization",
       "name": "Bookyou Inc.",
-      "url": "https://autonomath.ai/"
+      "url": "https://zeimu-kaikei.ai/"
     },
     "distribution": [
       {
         "@type": "DataDownload",
-        "contentUrl": "https://api.autonomath.ai/v1/stats/confidence",
+        "contentUrl": "https://api.zeimu-kaikei.ai/v1/stats/confidence",
         "encodingFormat": "application/json"
       },
       {
         "@type": "DataDownload",
-        "contentUrl": "https://autonomath.ai/analytics/confidence_index.json",
+        "contentUrl": "https://zeimu-kaikei.ai/analytics/confidence_index.json",
         "encodingFormat": "application/json"
       }
     ]
@@ -176,9 +176,8 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="AutonoMath home">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="index.html" aria-label="税務会計AI home">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="getting-started.html">Docs</a>
@@ -251,7 +250,7 @@
     <!-- Time series --------------------------------------------------------- -->
     <section class="conf-section" aria-labelledby="ts-h">
       <h2 id="ts-h">Trend — daily confidence (from T+0)</h2>
-      <p class="desc">Past snapshots (<code>analytics/confidence_&lt;DATE&gt;.json</code>) joined as a time series. The faint band is the 95% credible interval. The public dashboard reads from a static asset in the AutonoMath public repository.</p>
+      <p class="desc">Past snapshots (<code>analytics/confidence_&lt;DATE&gt;.json</code>) joined as a time series. The faint band is the 95% credible interval. The public dashboard reads from a static asset in the 税務会計AI public repository.</p>
       <div class="ts-chart-wrap">
         <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="Daily Discovery / Use trend">
           <text x="400" y="100" text-anchor="middle" font-size="12" fill="#555">Loading snapshot history…</text>
@@ -280,7 +279,7 @@
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">Japanese public-program API</p>
     </div>
     <nav class="footer-nav" aria-label="Footer">
@@ -288,7 +287,7 @@
       <a href="getting-started.html">Getting started</a>
       <a href="pricing.html">Pricing</a>
       <a href="../tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
     <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

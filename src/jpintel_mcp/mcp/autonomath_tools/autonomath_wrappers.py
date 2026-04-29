@@ -164,7 +164,7 @@ def search_gx_programs_am(
 ) -> dict[str, Any]:
     """DISCOVER (GX/Green): Search Green Transformation subsidies — emissions reduction, renewable energy, EV adoption, ZEB/ZEH (net-zero buildings), carbon credits. Returns curated programs with eligibility summaries.
 
-    [DISCOVER-GX] 脱炭素 / 再エネ / EV / ZEB-ZEH / carbon_credit の curated 補助金を一覧 — theme×company_size で 「うち 中小企業が狙える EV 補助金」 を一発抽出 (am_entities の program:gx:% rows).
+    [DISCOVER-GX] Returns matching GX program records (脱炭素 / 再エネ / EV / ZEB-ZEH / carbon_credit) from the am_entities table (program:gx:% rows), filtered by theme × company_size. Output is search-derived; verify primary source (source_url) for application requirements.
 
     WHAT: am_entities rows with canonical_id matching 'program:gx:%', joined
     with am_application_round for currently_open_rounds[]. eligibility_quick_summary
@@ -256,7 +256,7 @@ def search_loans_am(
         Field(ge=1, le=100, description="Max rows (default 10, max 100)."),
     ] = 10,
 ) -> dict[str, Any]:
-    """[DISCOVER-LOAN] am_loan_product を 3 軸独立 (担保 / 個人保証 / 第三者保証) で 絞って 融資商品を列挙 — 無担保・無保証 の組合せ一発検索, 公庫 / 自治体制度融資を横断.
+    """[DISCOVER-LOAN] Returns matching loan products from am_loan_product, filtered by 3 independent axes (担保 / 個人保証 / 第三者保証). Spans 公庫 / 自治体制度融資 / 商工中金. Output is search-derived; verify primary source (source_url) for the actual lending terms.
 
     WHAT: am_loan_product rows. Each row has 3-axis structured flags:
     collateral_required / personal_guarantor / third_party_guarantor ∈
@@ -327,7 +327,7 @@ def check_enforcement_am(
         Field(description="ISO date or 'today'. Controls active_exclusions window."),
     ] = "today",
 ) -> dict[str, Any]:
-    """[ENFORCEMENT] 法人番号 or 企業名 から am_enforcement_detail を叩いて 「今この会社は補助金排除中か」 を即判定 — 営業前の デューデリ 必須チェック (補助金詐欺 / 二重請求 / 命令違反 の currently_excluded フラグ + 過去 5 年 history).
+    """[ENFORCEMENT] Returns 行政処分 records from am_enforcement_detail for a 法人番号 or 企業名, including currently_excluded flag (active 排除期間 at as_of_date) and 5-year history. Coverage is the 1,185-row corpus only — absence of records does NOT prove a clean record. Verify primary source (source_url) for due-diligence decisions.
 
     WHAT: am_enforcement_detail (structured 行政処分 ledger). Either houjin
     or target_name required. Returns:
@@ -410,7 +410,7 @@ def search_mutual_plans_am(
         Field(ge=1, le=100, description="Max rows (default 10, max 100)."),
     ] = 10,
 ) -> dict[str, Any]:
-    """[DISCOVER-MUTUAL] 共済 / 年金 / 労災 を横断 — 小規模企業共済 / 倒産防止共済 / iDeCo+/DB/DC/労災特別加入 の掛金レンジ × 所得控除タイプ × 事業者区分 で抽出, 掛金月額を入れれば「この予算で入れる制度」を返す.
+    """[DISCOVER-MUTUAL] Returns matching 共済 / 年金 / 労災 records (小規模企業共済 / 倒産防止共済 / iDeCo+ / DB / DC / 労災特別加入 等) from am_insurance_mutual, filtered by plan_kind × premium range × tax_deduction_type × provider. Output is search-derived; verify primary source (source_url) for actual contract terms.
 
     WHAT: am_insurance_mutual structured ledger, joined with am_tax_rule via
     heuristic linking (tax_deduction_type → tax_measure canonical_id). Each
@@ -476,7 +476,7 @@ def get_law_article_am(
         ),
     ],
 ) -> dict[str, Any]:
-    """[LAW-ARTICLE] 法律名+条番号 で am_law_article の 条文本文 を一発取得 — '租税特別措置法 第41条の19' のような 自然表記 を受け付けて canonical 形へ正規化して検索, 改正履歴 (last_amended) と source_url まで返す.
+    """[LAW-ARTICLE] Returns the article text from am_law_article for a (law name, article number) pair. Accepts natural notation like '租税特別措置法 第41条の19' and normalizes to canonical form. Includes last_amended + source_url. Output is search-derived; verify primary source (e-Gov) for legal interpretation.
 
     WHAT: am_law_article structured ledger. Law resolution order:
       1. canonical_id ('law:sozei-tokubetsu')

@@ -1,31 +1,70 @@
-詰まったところ、ありますか?
+玄人向けの 3 つの省力化 Tips
 
-キー末尾 {{key_last4}} ({{tier}} プラン) を発行してから2週間、まだ最初のリクエストをいただいていません。
+キー末尾 {{key_last4}} ({{tier}} プラン) を発行してから 2 週間、{{usage_count}} 回ご利用いただきました。「ループ叩きで雑コーディングしている」段階から「予算と運用が整った」段階に移れる、よく効く 3 つの設定だけお送りします。
 
-セールスのリマインドではありません。なぜ使い始めにつまずいたか、だけ教えてもらえると、今後のドキュメント改善の材料になります。
+---
 
-よくある詰まりどころ:
+1) MCP 経由でループを LLM に押し込む
 
-- ドキュメントが見つけにくい
-  -> https://autonomath.ai/getting-started/ を最短3分で用意しています
+   curl で 1 件ずつ叩いている場合、Claude Desktop / Cursor / Cline から MCP 経由で呼ぶと、
+   自然言語側でクエリ生成と結果の正規化がそのまま噛みます。下の設定を 1 回入れれば、
+   以降は「東京都の中小企業向けで 1000 万円以上の補助金を10件、それぞれ排他ルールも付けて」と
+   書くだけです。
 
-- 欲しいプログラムの unified_id が分からない
-  -> https://autonomath.ai/examples/ に検索パターン例あり
+   {
+     "mcpServers": {
+       "autonomath": {
+         "command": "npx",
+         "args": ["-y", "@autonomath/mcp"],
+         "env": { "AUTONOMATH_API_KEY": "YOUR_KEY" }
+       }
+     }
+   }
 
-- MCP クライアントから呼びたい
-  -> https://autonomath.ai/mcp-tools/
+   クライアント別セットアップ詳細: https://zeimu-kaikei.ai/integrations/
 
-- 特定の制度が DB にない
-  -> このメールに返信で教えてください。可能な範囲で追加します
+2) /programs/batch で N 倍の節約
 
-もしこの API がご期待と違うようであれば、Stripe ポータルから
-いつでもキャンセルできます: https://autonomath.ai/billing/portal
-それでもフィードバックは大歓迎です。
+   取引先の DD / 申請候補のスクリーニングなど、N 件まとめて取りに行くなら
+   1 リクエストにまとめるのが効きます。N 個の get_program を 1 回の POST にできて、
+   課金も 1 回分です。
 
-お返事お待ちしています。
+   curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+     "https://api.zeimu-kaikei.ai/v1/programs/batch" \
+     -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'
+
+   同じく /v1/invoice_registrants/batch (法人番号 N 件) や /v1/am/dd_profile/batch も
+   あります。50 件まで 1 リクエスト・¥3.30 でまとめられます。
+
+3) monthly_cap_yen で予算上限を縛る
+
+   従量課金の不安は「気づいたら ¥10 万」に集中します。鍵単位の月次 ¥ ハード上限を
+   1 行で設定できます (JST 月初 00:00 リセット)。例えば月 ¥3,000 まで:
+
+   curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+     "https://api.zeimu-kaikei.ai/v1/me/cap" \
+     -d '{"monthly_cap_yen": 3000}'
+
+   上限到達後はそのキーが 402 Payment Required を返します。本番アプリでも
+   安心して使えるようになります。解除は {"monthly_cap_yen": null} です。
+
+---
+
+他の運用 Tips:
+- Getting Started: https://zeimu-kaikei.ai/docs/getting-started/
+- examples 集: https://zeimu-kaikei.ai/examples/
+
+ご質問・改善点・「こうしたい」は、このメールに返信ください。人間が読みます。
+
+---
+
+税理士法 §52 / 弁護士法 §72 該当の業務はおこないません:
+
+AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
 
 --
 AutonoMath — 日本の制度情報 API + MCP
+このメールは AutonoMath の活性化シーケンス (D+14) としてお送りしています。
 お問い合わせ: info@bookyou.net
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
 配信停止: {{{pm:unsubscribe}}}

@@ -58,6 +58,7 @@ jobs:
   publish-python:
     name: Publish Python SDK
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     # Run if: python tag pushed, OR manual dispatch with target in {python, both}.
     if: |
       startsWith(github.ref, 'refs/tags/sdk-python-v') ||
@@ -145,6 +146,7 @@ jobs:
   publish-ts:
     name: Publish TypeScript SDK
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: |
       startsWith(github.ref, 'refs/tags/sdk-ts-v') ||
       (github.event_name == 'workflow_dispatch' &&

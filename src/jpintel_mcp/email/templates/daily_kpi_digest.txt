@@ -1,0 +1,34 @@
+税務会計AI — 日次 KPI ダイジェスト ({{date_jst}} JST)
+====================================================
+generated {{generated_at}}
+
+{{banner_block_text}}
+
+# 本日のサマリ
+
+  MAU (今月)             : {{mau_total}} 件 (匿名 {{mau_anon}} / 課金 {{mau_paid}})
+  MRR (今月)             : {{mrr_yen}}
+  MRR W/W Δ              : {{mrr_wow_delta_yen}} ({{mrr_wow_pct}})  {{mrr_wow_sev_text}}
+  ¥/顧客 平均            : {{mrr_per_customer_yen}}
+  Cap 設定 / 到達        : {{cap_set}} / {{cap_reached}}
+  Trial 24h / 30d 転換   : {{trial_signups_24h}} / {{trial_to_paid_30d_pct}}
+
+# 健全性シグナル
+
+  Churn (7d, 課金)       : {{churn_7d}} 件  {{churn_sev_text}}
+  Past-due Subscriptions : {{past_due_count}} 件  {{past_due_sev_text}}
+  Stripe 未同期 (>1h)    : {{unsynced_metered_events}} 件  {{unsynced_sev_text}}
+  Reconcile drift        : {{reconcile_drift_pct}}  {{drift_sev_text}}
+  GEO 引用率             : {{geo_citation_rate_pct}} ({{geo_probes_total}} probes)
+
+# 外部キャッシュ
+
+  Sentry : {{sentry_row}}
+  Stripe : {{stripe_row}}
+
+詳細: https://zeimu-kaikei.ai/admin/kpi.html (ADMIN_API_KEY 必要)
+
+----
+税務会計AI / Bookyou株式会社 (T8010001213708)
+東京都文京区小日向2-22-1 / info@bookyou.net
+このメールは運営者宛の内部レポートです (購読解除不可のオペレーター通知)。

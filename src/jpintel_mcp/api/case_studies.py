@@ -14,11 +14,12 @@ import json
 import re
 import sqlite3
 import time
-import unicodedata
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -26,6 +27,7 @@ from jpintel_mcp.api.deps import (
     log_empty_search,
     log_usage,
 )
+from jpintel_mcp.api.programs import _build_fts_match
 from jpintel_mcp.api.vocab import (
     _normalize_industry_jsic,
     _normalize_prefecture,
@@ -36,11 +38,6 @@ router = APIRouter(prefix="/v1/case-studies", tags=["case-studies"])
 
 
 _RE_PURE_ASCII_WORD = re.compile(r"[A-Za-z0-9]+")
-
-
-def _fts_escape_phrase(term: str) -> str:
-    """Escape a term for FTS5 phrase syntax. Doubles internal double-quotes."""
-    return term.replace('"', '""')
 
 
 def _is_short_ascii(s: str) -> bool:
@@ -55,26 +52,18 @@ def _is_short_ascii(s: str) -> bool:
 def _build_case_studies_fts_match(raw_query: str) -> str:
     """Compose an FTS5 MATCH expression for case_studies_fts.
 
-    Mirrors api/programs.py._build_fts_match's phrase-quote strategy
-    (without the kana-expansion table — case_studies corpus is 2.3k rows
-    and the abbreviation work programs.py does is overkill here).
+    2026-04-29: delegates to ``api.programs._build_fts_match`` — the
+    canonical builder. Previously this file had its own minimal copy
+    that lacked the ``_tokenize_query`` extraction (user-quoted phrase
+    handling, FTS5-special char stripping). Sharing the builder keeps
+    case_studies + programs in lockstep on the trigram-overlap fix
+    (CLAUDE.md "Common gotchas" — 税額控除 vs ふるさと納税).
 
-    - NFKC normalize (rescues 全角 ASCII / 半角カナ paste).
-    - Whitespace splits multi-token query; tokens AND-combined.
-    - Each token is wrapped in FTS5 phrase quotes ("term") so stray
-      punctuation never parses as an operator and pure-kanji queries of
-      length >= 2 require contiguous trigram coverage (defeats the
-      single-kanji overlap false-positive — see CLAUDE.md "Common gotchas").
+    KANA_EXPANSIONS is harmless on the 2.3k case_studies corpus —
+    the OR'd kanji target is just absent from the FTS index for those
+    expansions, costing nothing.
     """
-    q = unicodedata.normalize("NFKC", raw_query).strip()
-    if not q:
-        return q
-    tokens = q.split()
-    if len(tokens) > 1:
-        return " AND ".join(
-            f"({_build_case_studies_fts_match(t)})" for t in tokens
-        )
-    return f'"{_fts_escape_phrase(q)}"'
+    return _build_fts_match(raw_query)
 
 
 def _json_list(raw: Any) -> list[str]:
@@ -131,6 +120,24 @@ def _row_to_case_study(row: sqlite3.Row) -> CaseStudy:
 @router.get(
     "/search",
     response_model=CaseStudySearchResponse,
+    summary="Search 採択事例 (awarded grant case studies)",
+    description=(
+        "Browse 2,286 採択事例 (real awarded grants) — searchable across "
+        "`company_name + case_title + case_summary + source_excerpt` "
+        "via FTS5 trigram + filterable by 都道府県 / industry_jsic / "
+        "法人番号 / `program_used` / 補助金額 band / 従業員数 band.\n\n"
+        "**Use cases:** prior-art research ('which companies received "
+        "ものづくり補助金 in 群馬?'), benchmark sizing ('what's the typical "
+        "amount for 製造業 + 100 employees?'), or co-applicant discovery.\n\n"
+        "**Sparsity caveats:**\n"
+        "- only ~19% of rows carry 法人番号 (427 / 2,286) — most 採択 "
+        "announcements publish 社名 only. Prefer `q=<company_name>` "
+        "for substring search when 法人番号 is unknown.\n"
+        "- only <1% (4 / 2,286) carry an `amount_received_man_yen` value "
+        "— ministries publish 採択 without 交付額. Filtering on "
+        "`min_subsidy_yen` / `max_subsidy_yen` silently drops ~99% of "
+        "matches; avoid unless the user explicitly asked for an amount band."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
@@ -416,8 +423,46 @@ def search_case_studies(
 @router.get(
     "/{case_id}",
     response_model=CaseStudy,
+    summary="Get a single 採択事例 case study by case_id",
+    description=(
+        "Look up one 採択事例 by stable `case_id` (e.g. "
+        "`CS-meti-jizokuka-2024-00123`). Returns full case_title, "
+        "case_summary, programs_used, amount_received (when published), "
+        "outcomes (KPI lift, headcount change), patterns (intervention "
+        "category), and source lineage.\n\n"
+        "Discovery flow: call `GET /v1/case-studies/search` first, then "
+        "follow up on each `case_id` here for the long-form outcome "
+        "narrative."
+    ),
     responses={
         **COMMON_ERROR_RESPONSES,
+        200: {
+            "description": "Single case study row.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "case_id": "CS-meti-jizokuka-2024-00123",
+                        "company_name": "株式会社ヤマダ製作所",
+                        "case_title": "持続化補助金で新規販路開拓に成功",
+                        "case_summary": "EC サイト構築費 200 万円補助で売上 1.4 倍。",
+                        "prefecture": "群馬県",
+                        "industry_jsic": "29",
+                        "houjin_bangou": "1234567890123",
+                        "employee_count": 8,
+                        "programs_used": ["小規模事業者持続化補助金"],
+                        "amount_received_man_yen": 150,
+                        "fiscal_year": 2024,
+                        "outcomes": {"sales_yoy_pct": 40, "new_channels": 2},
+                        "patterns": ["EC構築", "販路開拓"],
+                        "publication_date": "2024-12-15",
+                        "source_url": "https://www.jizokukahojokin.info/case/123",
+                        "source_excerpt": "EC化により…",
+                        "fetched_at": "2026-04-20T05:14:33Z",
+                        "confidence": 0.92,
+                    }
+                }
+            },
+        },
         404: {
             "model": ErrorEnvelope,
             "description": "case study not found — `error.code='no_matching_records'`.",
@@ -428,8 +473,14 @@ def get_case_study(
     case_id: str,
     conn: DbDep,
     ctx: ApiContextDep,
-) -> CaseStudy:
-    """Single case study lookup by `case_id`."""
+) -> JSONResponse:
+    """Single case study lookup by `case_id`.
+
+    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
+    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this 採択事例
+    in a work-paper can reproduce the lookup later and detect whether the
+    corpus mutated. See docs/audit_trail.md.
+    """
     row = conn.execute(
         "SELECT * FROM case_studies WHERE case_id = ?", (case_id,)
     ).fetchone()
@@ -437,4 +488,6 @@ def get_case_study(
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"case study not found: {case_id}")
 
     log_usage(conn, ctx, "case_studies.get")
-    return _row_to_case_study(row)
+    body = _row_to_case_study(row).model_dump(mode="json")
+    attach_corpus_snapshot(body, conn)
+    return JSONResponse(content=body, headers=snapshot_headers(conn))

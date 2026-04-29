@@ -4,52 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Data Sources, Attribution &amp; Licenses — AutonoMath</title>
-<meta name="description" content="AutonoMath ingests Japanese public-program data from 14 primary sources (e-Gov / NTA / METI / MAFF / MLIT / MHLW / Ministry of Environment / 47 prefectures / JFC / JPO / JST). License terms (CC BY 4.0 / PDL v1.0 / Government Standard Terms of Use v1.0 / public domain / proprietary) and required attribution strings disclosed.">
+<title>Data Sources, Attribution &amp; Licenses — 税務会計AI</title>
+<meta name="description" content="税務会計AI ingests Japanese public-program data from 15 primary sources (e-Gov / NTA / METI / MAFF / MLIT / MHLW / Ministry of Environment / 47 prefectures / JFC / JPO / JST). License terms (CC BY 4.0 / PDL v1.0 / Government Standard Terms of Use v2.0 / public domain / proprietary) and required attribution strings disclosed.">
 
-<meta property="og:title" content="Data Sources, Attribution &amp; Licenses — AutonoMath">
-<meta property="og:description" content="Single page disclosing the 14 government / quasi-government data sources backing AutonoMath, with license terms and required attribution. For tax accountants, gyoseishoshi, SaaS developers, and downstream LLM agents.">
+<meta property="og:title" content="Data Sources, Attribution &amp; Licenses — 税務会計AI">
+<meta property="og:description" content="Single page disclosing the 15 government / quasi-government data sources backing 税務会計AI, with license terms and required attribution. For tax accountants, gyoseishoshi, SaaS developers, and downstream LLM agents.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://autonomath.ai/en/sources.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/en/sources.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Data Sources, Attribution &amp; Licenses — AutonoMath">
+<meta name="twitter:title" content="Data Sources, Attribution &amp; Licenses — 税務会計AI">
 <meta name="twitter:description" content="Primary sources only. Aggregator URLs (noukaweb / hojyokin-portal / biz.stayway) are banned from source_url.">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/en/sources.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/sources.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/sources.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/sources.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/en/sources.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/sources.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/sources.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/sources.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "DataCatalog",
-  "name": "AutonoMath data sources, attribution & licenses",
-  "description": "Disclosure of the 14 primary data sources behind AutonoMath's Japanese public-program API: source agency, record count, license terms, and required attribution.",
-  "url": "https://autonomath.ai/en/sources.html",
+  "name": "税務会計AI data sources, attribution & licenses",
+  "description": "Disclosure of the 15 primary data sources behind 税務会計AI's Japanese public-program API: source agency, record count, license terms, and required attribution.",
+  "url": "https://zeimu-kaikei.ai/en/sources.html",
   "inLanguage": "en",
   "isPartOf": {
     "@type": "WebSite",
-    "name": "AutonoMath",
-    "url": "https://autonomath.ai/en/"
+    "name": "税務会計AI",
+    "url": "https://zeimu-kaikei.ai/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
     "legalName": "Bookyou株式会社",
-    "url": "https://autonomath.ai/en/",
+    "url": "https://zeimu-kaikei.ai/en/",
     "email": "info@bookyou.net",
     "vatID": "T8010001213708",
     "address": {
@@ -63,16 +63,17 @@
   "dataset": [
     {"@type": "Dataset", "name": "e-Gov laws (national legislation)", "license": "https://creativecommons.org/licenses/by/4.0/", "creator": {"@type": "Organization", "name": "Digital Agency, Government of Japan (e-Gov)"}},
     {"@type": "Dataset", "name": "NTA Qualified Invoice Issuer registry", "license": "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0", "creator": {"@type": "Organization", "name": "National Tax Agency of Japan"}},
-    {"@type": "Dataset", "name": "METI subsidies and enforcement actions", "creator": {"@type": "Organization", "name": "Ministry of Economy, Trade and Industry (METI)"}},
-    {"@type": "Dataset", "name": "MAFF subsidies and adoption case studies", "creator": {"@type": "Organization", "name": "Ministry of Agriculture, Forestry and Fisheries (MAFF)"}},
-    {"@type": "Dataset", "name": "MLIT enforcement actions", "creator": {"@type": "Organization", "name": "Ministry of Land, Infrastructure, Transport and Tourism (MLIT)"}},
-    {"@type": "Dataset", "name": "MHLW enforcement actions (pharmaceuticals & medical)", "creator": {"@type": "Organization", "name": "Ministry of Health, Labour and Welfare (MHLW)"}},
-    {"@type": "Dataset", "name": "Ministry of Environment industrial-waste enforcement", "creator": {"@type": "Organization", "name": "Ministry of the Environment of Japan"}},
+    {"@type": "Dataset", "name": "METI subsidies and enforcement actions", "license": "https://www.kantei.go.jp/jp/singi/it2/cio/dai58/sankou1.pdf", "creator": {"@type": "Organization", "name": "Ministry of Economy, Trade and Industry (METI)"}},
+    {"@type": "Dataset", "name": "MAFF subsidies and adoption case studies", "license": "https://www.kantei.go.jp/jp/singi/it2/cio/dai58/sankou1.pdf", "creator": {"@type": "Organization", "name": "Ministry of Agriculture, Forestry and Fisheries (MAFF)"}},
+    {"@type": "Dataset", "name": "MLIT enforcement actions", "license": "https://www.kantei.go.jp/jp/singi/it2/cio/dai58/sankou1.pdf", "creator": {"@type": "Organization", "name": "Ministry of Land, Infrastructure, Transport and Tourism (MLIT)"}},
+    {"@type": "Dataset", "name": "MHLW enforcement actions (pharmaceuticals & medical)", "license": "https://www.kantei.go.jp/jp/singi/it2/cio/dai58/sankou1.pdf", "creator": {"@type": "Organization", "name": "Ministry of Health, Labour and Welfare (MHLW)"}},
+    {"@type": "Dataset", "name": "Ministry of Environment industrial-waste enforcement", "license": "https://www.kantei.go.jp/jp/singi/it2/cio/dai58/sankou1.pdf", "creator": {"@type": "Organization", "name": "Ministry of the Environment of Japan"}},
     {"@type": "Dataset", "name": "47 prefectural subsidies and enforcement actions", "creator": {"@type": "Organization", "name": "Each prefectural government"}},
     {"@type": "Dataset", "name": "Japan Finance Corporation (JFC) loan programs", "creator": {"@type": "Organization", "name": "Japan Finance Corporation"}},
     {"@type": "Dataset", "name": "JPO patent decisions / IP High Court rulings", "creator": {"@type": "Organization", "name": "Japan Patent Office and IP High Court"}},
     {"@type": "Dataset", "name": "Public bids (NEXCO / JR / UR / others)", "creator": {"@type": "Organization", "name": "Each contracting agency"}},
-    {"@type": "Dataset", "name": "JST adoption case studies", "creator": {"@type": "Organization", "name": "Japan Science and Technology Agency"}},
+    {"@type": "Dataset", "name": "JST adoption case studies", "license": "https://www.jst.go.jp/pr/intro/yakkan.html", "creator": {"@type": "Organization", "name": "Japan Science and Technology Agency"}},
+    {"@type": "Dataset", "name": "METI gBizINFO corporate database", "license": "https://creativecommons.org/licenses/by/4.0/", "creator": {"@type": "Organization", "name": "Ministry of Economy, Trade and Industry (gBizINFO)"}},
     {"@type": "Dataset", "name": "Public-interest foundation / industry-association subsidies", "creator": {"@type": "Organization", "name": "Each foundation / association"}},
     {"@type": "Dataset", "name": "NTA tax notices (tax_rulesets)", "creator": {"@type": "Organization", "name": "National Tax Agency of Japan"}}
   ]
@@ -103,16 +104,15 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="AutonoMath home">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="index.html" aria-label="税務会計AI home">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="about.html">About</a>
       <a href="getting-started.html">Docs</a>
       <a href="pricing.html">Pricing</a>
       <a href="audiences/">Audiences</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
       <span class="lang-switch" role="group" aria-label="Language / 言語">
         <a href="../sources.html" lang="ja" hreflang="ja">JP</a>
         <span class="sep" aria-hidden="true">/</span>
@@ -126,11 +126,11 @@
   <div class="container">
 
     <h1>Data sources, attribution &amp; licenses</h1>
-    <p class="lead">AutonoMath ingests Japanese public-program data from 14 primary sources. This page discloses the source agency, record count, license terms, and the exact attribution string each source requires &mdash; so tax accountants (税理士), administrative scriveners (行政書士), labor &amp; social security attorneys (社労士), SaaS developers, and downstream LLM agents can perform due diligence and design correct attribution for any further redistribution.</p>
+    <p class="lead">税務会計AI ingests Japanese public-program data from 15 primary sources. This page discloses the source agency, record count, license terms, and the exact attribution string each source requires &mdash; so tax accountants (税理士), administrative scriveners (行政書士), labor &amp; social security attorneys (社労士), SaaS developers, and downstream LLM agents can perform due diligence and design correct attribution for any further redistribution.</p>
 
     <p>Counts in the table below are a snapshot as of <strong>2026-04-26</strong>. Live counts continuously refreshed; see the <a href="facts.html">fact sheet</a> and <a href="changelog.html">changelog</a> for the latest values.</p>
 
-    <h2>14 primary data sources</h2>
+    <h2>15 primary data sources</h2>
     <div class="table-wrap">
     <table>
       <thead>
@@ -144,7 +144,7 @@
       <tbody>
         <tr>
           <td><strong>e-Gov laws</strong> (Digital Agency)</td>
-          <td class="count">9,484 laws</td>
+          <td class="count">154 laws full-text + 9,484 catalog stubs (body-text load incremental)</td>
           <td>CC BY 4.0</td>
           <td>"Legal text from the e-Gov laws data service (CC BY 4.0)". State any modifications.</td>
         </tr>
@@ -156,38 +156,38 @@
         </tr>
         <tr>
           <td><strong>Ministry of Economy, Trade and Industry (METI)</strong> &mdash; subsidies, enforcement</td>
-          <td class="count">part of 10,790 programs / 1,185 enforcements</td>
-          <td>Government Standard Terms of Use v1.0</td>
+          <td class="count">part of 11,684 programs / 1,185 enforcements</td>
+          <td>Government Standard Terms of Use v2.0</td>
           <td>"Source: Ministry of Economy, Trade and Industry"</td>
         </tr>
         <tr>
           <td><strong>Ministry of Agriculture, Forestry and Fisheries (MAFF)</strong> &mdash; subsidies, adoption case studies</td>
-          <td class="count">part of 10,790 programs / 2,286 case_studies</td>
-          <td>Government Standard Terms of Use v1.0</td>
+          <td class="count">part of 11,684 programs / 2,286 case_studies</td>
+          <td>Government Standard Terms of Use v2.0</td>
           <td>"Source: Ministry of Agriculture, Forestry and Fisheries"</td>
         </tr>
         <tr>
           <td><strong>Ministry of Land, Infrastructure, Transport and Tourism (MLIT)</strong> &mdash; enforcement</td>
           <td class="count">part of 1,185 enforcements</td>
-          <td>Government Standard Terms of Use v1.0</td>
+          <td>Government Standard Terms of Use v2.0</td>
           <td>"Source: Ministry of Land, Infrastructure, Transport and Tourism"</td>
         </tr>
         <tr>
           <td><strong>Ministry of Health, Labour and Welfare (MHLW)</strong> &mdash; pharmaceutical &amp; medical enforcement</td>
           <td class="count">part of 1,185 enforcements</td>
-          <td>Government Standard Terms of Use v1.0</td>
+          <td>Government Standard Terms of Use v2.0</td>
           <td>"Source: Ministry of Health, Labour and Welfare"</td>
         </tr>
         <tr>
           <td><strong>Ministry of the Environment</strong> &mdash; industrial-waste enforcement</td>
           <td class="count">part of 1,185 enforcements</td>
-          <td>Government Standard Terms of Use v1.0</td>
+          <td>Government Standard Terms of Use v2.0</td>
           <td>"Source: Ministry of the Environment"</td>
         </tr>
         <tr>
           <td><strong>47 prefectural governments</strong> &mdash; subsidies, enforcement</td>
           <td class="count">part of programs / enforcements</td>
-          <td>Each prefecture's terms of use (most align with Government Standard Terms of Use v1.0)</td>
+          <td>Each prefecture's terms of use (most align with Government Standard Terms of Use v2.0)</td>
           <td>Name each prefecture (e.g. "Source: Tokyo Metropolitan Government", "Source: Osaka Prefecture")</td>
         </tr>
         <tr>
@@ -210,9 +210,15 @@
         </tr>
         <tr>
           <td><strong>Japan Science and Technology Agency (JST)</strong> &mdash; adoption case studies</td>
-          <td class="count">part of case_studies</td>
-          <td>proprietary (TOS-restricted; collected during data-collection phase)</td>
-          <td>"Source: Japan Science and Technology Agency"</td>
+          <td class="count">part of case_studies (~620 rows)</td>
+          <td>proprietary (limited use; no commercial redistribution)</td>
+          <td>"Source: Japan Science and Technology Agency". Downstream redistributors who consume JST data via this API must independently verify the JST <a href="https://www.jst.go.jp/pr/intro/yakkan.html" rel="noopener noreferrer" target="_blank">terms of use</a>. 税務会計AI does not warrant commercial redistribution rights for JST records.</td>
+        </tr>
+        <tr>
+          <td><strong>METI gBizINFO</strong> &mdash; corporate database</td>
+          <td class="count">79,876 corporate_entity / 861,137 corp.* facts</td>
+          <td>CC BY 4.0 (gBizINFO terms of use)</td>
+          <td>"Source: METI gBizINFO (<code>https://info.gbiz.go.jp/</code>)" with disclosure of any modifications. See <a href="https://info.gbiz.go.jp/info/policy.html" rel="noopener noreferrer" target="_blank">gBizINFO terms of use</a>.</td>
         </tr>
         <tr>
           <td><strong>Public-interest foundations / industry associations</strong> &mdash; subsidies</td>
@@ -232,18 +238,19 @@
 
     <h2>Aggregator policy</h2>
     <div class="callout">
-      <p>AutonoMath does <strong>not</strong> use second-tier aggregators such as <strong>noukaweb</strong>, <strong>hojyokin-portal</strong>, or <strong>biz.stayway</strong> in <code>source_url</code>.</p>
+      <p>税務会計AI does <strong>not</strong> use second-tier aggregators such as <strong>noukaweb</strong>, <strong>hojyokin-portal</strong>, or <strong>biz.stayway</strong> in <code>source_url</code>.</p>
     </div>
-    <p>Past incidents proved that citing aggregator pages let stale amounts, expired programs, and fabricated eligibility requirements flow straight into AI agent responses. From the user's perspective, it looks like AutonoMath lied; in the worst case, it leads to incorrect benefit projections or improper applications &mdash; which is fraud risk by another name.</p>
-    <p>So AutonoMath enforces an aggregator ban on <code>source_url</code> in both code (banlist) and operations (manual review). <code>source_url</code> values are restricted to <strong>primary sources</strong> &mdash; ministries, prefectures, Japan Finance Corporation, NTA, e-Gov, etc. Over 99% of rows carry both <code>source_url</code> and <code>fetched_at</code>; the remaining ~12 rows belong to small municipalities that do not run a public CMS.</p>
+    <p>Past incidents proved that citing aggregator pages let stale amounts, expired programs, and fabricated eligibility requirements flow straight into AI agent responses. From the user's perspective, it looks like 税務会計AI lied; in the worst case, it leads to incorrect benefit projections or improper applications &mdash; which is misrepresentation liability by another name.</p>
+    <p>So 税務会計AI enforces an aggregator ban on <code>source_url</code> in both code (除外リスト) and operations (manual review). <code>source_url</code> values are restricted to <strong>primary sources</strong> &mdash; ministries, prefectures, Japan Finance Corporation, NTA, e-Gov, etc. Over 99% of rows carry both <code>source_url</code> and <code>fetched_at</code>; the remaining ~12 rows belong to small municipalities that do not run a public CMS.</p>
 
     <h2>License legend</h2>
     <ul>
       <li><strong>CC BY 4.0</strong> (Creative Commons Attribution 4.0 International) &mdash; redistribution, modification, and commercial use permitted with attribution. e-Gov laws are licensed under CC BY 4.0.</li>
       <li><strong>PDL v1.0</strong> (Public Data License v1.0 for Japanese government data) &mdash; downstream API redistribution permitted with attribution. The NTA Qualified Invoice Issuer registry is under PDL v1.0; on 2026-04-24 we directly verified the terms of use and confirmed downstream redistribution as a paid (¥3/req) API is permitted.</li>
-      <li><strong>Government Standard Terms of Use v1.0</strong> &mdash; the standard public-data terms used by Japanese ministries and local governments. Reproduction, public transmission, translation, transformation, adaptation, and commercial use are all permitted with attribution and disclosure of any modifications.</li>
+      <li><strong>Government Standard Terms of Use v2.0</strong> &mdash; the standard public-data terms used by Japanese ministries and local governments (the 2014 revision aligned with CC BY 4.0). Reproduction, public transmission, translation, transformation, adaptation, and commercial use are all permitted with attribution and disclosure of any modifications. See the <a href="https://www.kantei.go.jp/jp/singi/it2/cio/dai58/sankou1.pdf" rel="noopener noreferrer" target="_blank">official terms PDF</a>.</li>
       <li><strong>public domain</strong> &mdash; not subject to copyright (e.g. published court judgments, NTA notices); free to use with attribution.</li>
-      <li><strong>proprietary (publicly-disclosed information only)</strong> &mdash; the source agency retains copyright, but AutonoMath only ingests information already publicly published, with <code>source_url</code> attribution. Commercial-redistribution licensing will be re-evaluated immediately before launch.</li>
+      <li><strong>proprietary (publicly-disclosed information only)</strong> &mdash; the source agency retains copyright, but 税務会計AI only ingests information already publicly published, with <code>source_url</code> attribution. <strong>For TOS-restricted sources such as JST, data delivered via the 税務会計AI API is licensed for "limited use" only; commercial redistribution by API consumers is not permitted.</strong> Commercial-redistribution licensing will be re-evaluated immediately before launch.</li>
+      <li><strong>license unknown</strong> &mdash; domain extraction failed, or the URL did not match any classification rule (805 rows as of 2026-04-26). API responses surface this as <code>license: "unknown"</code>; please contact <a href="mailto:info@bookyou.net">info@bookyou.net</a> before any redistribution or commercial use of these records.</li>
     </ul>
 
     <h2>Machine-readable attribution</h2>
@@ -256,7 +263,7 @@
     <h2>Contact</h2>
     <p>Questions about this page, requests to add a new data source, or license clarifications: <a href="mailto:info@bookyou.net">info@bookyou.net</a> &mdash; goes directly to the operator, who replies within 48 hours (business days).</p>
     <p>Operated by <strong>Bookyou Inc.</strong> (Bookyou株式会社, corporate number <code>T8010001213708</code>, 2-22-1 Kohinata, Bunkyo-ku, Tokyo), CEO <strong>Shigetoshi Umeda</strong> (梅田茂利). <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Verify the company on the NTA public registry</a>.</p>
-    <p>Related: <a href="about.html">About AutonoMath</a> &middot; <a href="facts.html">Fact sheet</a> &middot; <a href="confidence.html">Quality disclosure</a> &middot; <a href="../tokushoho.html">Japanese legal disclosure (特定商取引法)</a> &middot; <a href="tos.html">Terms of service</a> &middot; <a href="../privacy.html">Privacy policy (JP)</a> &middot; <a href="../sources.html" hreflang="ja">日本語版</a></p>
+    <p>Related: <a href="about.html">About 税務会計AI</a> &middot; <a href="facts.html">Fact sheet</a> &middot; <a href="confidence.html">Quality disclosure</a> &middot; <a href="../tokushoho.html">Japanese legal disclosure (特定商取引法)</a> &middot; <a href="tos.html">Terms of service</a> &middot; <a href="../privacy.html">Privacy policy (JP)</a> &middot; <a href="../sources.html" hreflang="ja">日本語版</a></p>
 
   </div>
 </main>
@@ -275,7 +282,7 @@
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">Japanese public-program API</p>
     </div>
     <nav class="footer-nav" aria-label="Footer">
@@ -284,7 +291,7 @@
       <a href="pricing.html">Pricing</a>
       <a href="sources.html" aria-current="page">Data sources</a>
       <a href="tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
     <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) &middot; CEO Shigetoshi Umeda &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

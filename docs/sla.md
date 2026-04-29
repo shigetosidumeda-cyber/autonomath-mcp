@@ -1,6 +1,6 @@
 # SLA (Service Level Agreement)
 
-> **要約 (summary):** AutonoMath の正式な可用性コミットメント。月次稼働率 **99.5%** を target とし、違反時は metered 構造に整合した service credit (¥3 単位の return / 翌月減額) を提供する。本 SLA は "fair warning" ではなく、利用規約 (terms_of_service.md) と一体の正式条項として位置づける。
+> **要約 (summary):** 税務会計AI の正式な可用性コミットメント。月次稼働率 **99.5%** を target とし、違反時は metered 構造に整合した service credit (¥3 単位の return / 翌月減額) を提供する。本 SLA は "fair warning" ではなく、利用規約 (terms_of_service.md) と一体の正式条項として位置づける。
 
 最終更新: 2026-04-25
 施行日: 2026-05-06 (launch)
@@ -14,14 +14,14 @@
 
 | 対象 | URL | 備考 |
 |---|---|---|
-| **本番 REST API** | `https://api.autonomath.ai/v1/*` | Fly.io nrt (東京) リージョン |
+| **本番 REST API** | `https://api.zeimu-kaikei.ai/v1/*` | Fly.io nrt (東京) リージョン |
 | **本番 MCP server** | `autonomath-mcp` (PyPI 配布、stdio) | クライアントから接続できることが対象 (クライアント側不具合は対象外) |
 
 対象外:
 
-- `https://autonomath.ai/` (marketing / landing page)
-- `https://autonomath.ai/docs/` (docs site)
-- `https://staging.autonomath.ai` (staging 環境)
+- `https://zeimu-kaikei.ai/` (marketing / landing page)
+- `https://zeimu-kaikei.ai/docs/` (docs site)
+- `https://staging.zeimu-kaikei.ai` (staging 環境)
 - 各種 CDN 静的アセット (Cloudflare Pages 上の `site/*`)
 
 ---
@@ -122,7 +122,7 @@
 
 ### 6.1 通知 channel
 
-- **public status page**: `https://status.autonomath.ai` (external monitor 提供、第三者検証可能)
+- **public status page**: `https://status.zeimu-kaikei.ai` (external monitor 提供、第三者検証可能)
 - **登録 email**: P1 (全面停止) 障害時に登録ユーザー全員に email 通知
 - **docs site**: 重大インシデントは `docs/_internal/incident_log.md` (公開予定) に postmortem を掲載
 
@@ -174,7 +174,7 @@ Email: [info@bookyou.net](mailto:info@bookyou.net)
 
 ## English (secondary)
 
-**Target availability:** 99.5% monthly uptime for `api.autonomath.ai`, measured by an external uptime monitor.
+**Target availability:** 99.5% monthly uptime for `api.zeimu-kaikei.ai`, measured by an external uptime monitor.
 
 **Calculation:** `(month_total_hours - downtime_hours) / month_total_hours × 100`. Downtime requires ≥2 consecutive minutes of DOWN signal from a third-party multi-region monitor.
 

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>税務会計AI vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026) — 税務会計AI</title>
+<meta name="description" content="税務会計AI vs 自前スクレイピング — 制度 DB を自分で crawl + 正規化 + MCP 化する場合の 工数 / 失効監視 / dedup / license 管理の比較。買うか作るかの honest 整理。">
+<meta name="robots" content="index,follow">
+
+<meta property="og:title" content="税務会計AI vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026)">
+<meta property="og:description" content="税務会計AI vs 自前スクレイピング — 制度 DB を自分で crawl + 正規化 + MCP 化する場合の 工数 / 失効監視 / dedup / license 管理の比較。買うか作るかの honest 整理。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://zeimu-kaikei.ai/compare/diy-scraping/">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="税務会計AI vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026)">
+<meta name="twitter:description" content="税務会計AI vs 自前スクレイピング — 制度 DB を自分で crawl + 正規化 + MCP 化する場合の 工数 / 失効監視 / dedup / license 管理の比較。買うか作るかの honest 整理。">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+
+<link rel="canonical" href="https://zeimu-kaikei.ai/compare/diy-scraping/">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/diy-scraping/">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/diy-scraping/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "税務会計AI vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026)",
+  "description": "税務会計AI vs 自前スクレイピング — 制度 DB を自分で crawl + 正規化 + MCP 化する場合の 工数 / 失効監視 / dedup / license 管理の比較。買うか作るかの honest 整理。",
+  "url": "https://zeimu-kaikei.ai/compare/diy-scraping/",
+  "datePublished": "2026-04-29",
+  "dateModified": "2026-04-29",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "url": "https://zeimu-kaikei.ai/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "identifier": "T8010001213708",
+    "url": "https://zeimu-kaikei.ai/"
+  },
+  "mainEntityOfPage": "https://zeimu-kaikei.ai/compare/diy-scraping/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bookyou株式会社",
+  "alternateName": "税務会計AI",
+  "url": "https://zeimu-kaikei.ai/",
+  "identifier": "T8010001213708",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressLocality": "文京区",
+    "addressRegion": "東京都"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "info@bookyou.net",
+    "contactType": "customer support"
+  }
+}
+</script>
+
+<style>
+  .compare-page { padding: 48px 0 64px; }
+  .compare-page h1 { font-size: 30px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.3; }
+  .compare-page .lead { font-size: 16px; color: var(--text-muted); margin: 0 0 22px; max-width: 760px; line-height: 1.75; }
+  .compare-page h2 { font-size: 22px; margin: 40px 0 12px; font-weight: 700; }
+  .compare-page h3 { font-size: 17px; margin: 22px 0 8px; font-weight: 700; }
+  .compare-page p, .compare-page ul { max-width: 820px; line-height: 1.75; }
+  .compare-page strong { font-weight: 700; }
+  .compare-page code { background: var(--bg-alt); padding: 1px 6px; border-radius: 4px; font-size: 0.92em; }
+  .compare-disclaimer {
+    background: var(--bg-alt); border-left: 3px solid var(--accent);
+    padding: 14px 18px; border-radius: 8px; font-size: 14px;
+    color: var(--text-muted); margin: 0 0 28px; max-width: 820px; line-height: 1.7;
+  }
+  .compare-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 16px 0 8px; }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; background: var(--bg); }
+  .compare-table th, .compare-table td { border-bottom: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+  .compare-table thead th { background: var(--bg-alt); font-size: 12px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; position: sticky; top: 0; }
+  .compare-table tbody th { font-weight: 600; color: var(--text); width: 18%; background: var(--bg-alt); }
+  .compare-table .col-us { background: rgba(30,58,138,0.03); }
+  .compare-table .compare-note-cell { font-size: 12.5px; color: var(--text-muted); width: 22%; }
+  .compare-table tbody tr:hover td, .compare-table tbody tr:hover th { background: rgba(30,58,138,0.04); }
+  .compare-table tbody tr:last-child th, .compare-table tbody tr:last-child td { border-bottom: 0; }
+  .pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 16px 0 0; }
+  .pick-card { border: 1px solid var(--border); border-radius: 10px; padding: 20px; background: var(--bg); }
+  .pick-card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+  .pick-card .pick-tag { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 10px; }
+  .pick-card ul { font-size: 14px; color: var(--text); margin: 0; padding-left: 20px; line-height: 1.7; }
+  .pick-card.us { border-color: var(--accent); }
+  .compare-migration { border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; background: var(--bg-alt); margin: 16px 0 0; }
+  .compare-migration p { margin: 0 0 12px; font-size: 14.5px; }
+  .compare-migration p:last-child { margin-bottom: 0; }
+  .related-list { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 12px; }
+  .related-list li { background: var(--bg-alt); border-radius: 6px; padding: 6px 12px; font-size: 13.5px; }
+  .related-list a { text-decoration: none; }
+  .footnote { font-size: 13px; color: var(--text-muted); margin: 32px 0 0; max-width: 820px; line-height: 1.7; }
+  @media (max-width: 768px) {
+    .pick-grid { grid-template-columns: 1fr; }
+    .compare-table .compare-note-cell { display: none; }
+  }
+</style>
+
+<script defer src="/analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/about.html">About</a>
+      <a href="/products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/audiences/">Audiences</a>
+      <a href="/compare.html">Compare</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="compare-page">
+  <div class="container">
+
+    <nav aria-label="ぱんくず" style="font-size:13px;color:var(--text-muted);margin:0 0 16px;">
+      <a href="/">ホーム</a>
+      <span aria-hidden="true">/</span>
+      <a href="/compare.html">比較</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">自前スクレイピング (DIY)</span>
+    </nav>
+
+    <h1>税務会計AI vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026)</h1>
+    <p class="lead">「制度 DB は自分で crawl すれば作れるのでは」と検討中の開発者向け。技術的には作れます — 当社もそうしました。ただし、本気で本番品質に持っていく場合の工数 (ソース 1,500+ / 失効監視 / dedup / license 管理 / 政府サイト改修追従)を踏まえると、買う方が早いケースが多いという honest な比較です。</p>
+
+    <div class="compare-disclaimer">
+      <strong>本ページは公開情報をもとに当社が作成しています。</strong>
+      各社価格・機能は <time datetime="2026-04-29">2026-04-29</time> 時点のもので、最新情報は当社 <a href="/pricing.html">料金ページ</a> でご確認ください (自前スクレイピング (DIY) は外部サービスではないため公式参照先はありません)。
+      誤りに気づいた場合は <a href="mailto:info@bookyou.net?subject=compare/diy-scraping%20correction">info@bookyou.net</a> までご連絡いただければ 48 時間以内に修正します。
+    </div>
+
+    <h2>機能・データ範囲・価格の比較表</h2>
+    <p>「公開情報なし」と書いた行は<strong>「機能が無い」と断定するものではありません</strong> — 各社公式サイトに記載が無い、または当社が確認できなかった項目です。</p>
+
+    <div class="compare-wrap">
+<table class="compare-table">
+<thead>
+<tr>
+<th scope="col">比較軸</th>
+<th scope="col" class="col-us">税務会計AI</th>
+<th scope="col">自前スクレイピング (DIY)</th>
+<th scope="col">補足</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1. API access</th>
+<td class="col-us"><strong>REST + MCP を統一インターフェースで提供</strong>。OpenAPI 3.1。</td>
+<td>自分で Web スクレイピング + 正規化 + 重複排除 + 失効監視を実装。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">2. MCP support</th>
+<td class="col-us">89 tools。</td>
+<td>自分で実装する場合は MCP サーバーも自作。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">3. Pricing model</th>
+<td class="col-us">¥3/req 完全従量 (税込 ¥3.30)。</td>
+<td>Cloud + 開発工数 (人件費が支配的)。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">4. JP corporate count</th>
+<td class="col-us">166,969 件 (gBizINFO + 適格請求書 delta 取込済)。</td>
+<td>自分で gBizINFO API + 国税庁 bulk を結合。出典・license 管理を自前で行う必要あり。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">5. Subsidy / 制度 DB</th>
+<td class="col-us">10,790 件 (47 都道府県 + 省庁 + 自治体 1,500+ ソース)。</td>
+<td>1,500+ ソースを個別 crawl + 失効監視。集約サイト (noukaweb 等) は当社で禁止 — 誤情報リスク。</td>
+<td class="compare-note-cell">自前で 1,500+ ソース管理は実務上極めて重い。</td>
+</tr>
+<tr>
+<th scope="row">6. Tax ruleset DB</th>
+<td class="col-us">35 件 (e-Gov + 国税庁通達 + 措置法)。</td>
+<td>e-Gov + 国税庁通達 + 国会会議録 を結合。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">7. Court decisions / 判例</th>
+<td class="col-us">2,065 件 (裁判所公式 + 判例集)。</td>
+<td>裁判所サイト + 法律雑誌の判例索引を結合。OCR が必要な判決も多い。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">8. Invoice registrants / 適格請求書</th>
+<td class="col-us">13,801 件 delta + 月次フル取込予定 (PDL v1.0)。</td>
+<td>国税庁 bulk 月次 DL を自前で取込 — PDL v1.0 で再配布も OK。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">9. Primary source citations</th>
+<td class="col-us">99%+ に source_url + fetched_at (社内規約)。</td>
+<td>自前で出典管理ポリシーを設計・運用。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">10. Liveness monitoring / 失効監視</th>
+<td class="col-us"><strong>毎晩 tier S/A 全件 + 段階的に B/C も巡回</strong>。404 即 公開保留 (二次レビュー待ち)。</td>
+<td>自前で URL 死活監視 + cron + alert + DB 巡回。サイト改修ごとに parser 修正。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">11. Deduplication</th>
+<td class="col-us">重複除去 (公募回 / 都道府県差し替え 等のパターン規則化)。</td>
+<td>自前で名寄せルール設計。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">12. Terms of use</th>
+<td class="col-us">ToS 同意で開始。</td>
+<td>各サイトの ToS を個別確認 (集約サイト除外 等のポリシー判断が必要)。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">13. Free tier</th>
+<td class="col-us">匿名 50 req/月/IP。</td>
+<td>自分の Cloud 費 (実質的な「無料枠」はない)。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">14. Time to first useful response</th>
+<td class="col-us">5 分 (匿名でいきなり叩ける)。</td>
+<td>数週間〜数ヶ月 (1,500+ ソースの crawler を書ききるまで)。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    <h2>当社を選ぶケース</h2>
+    <div class="pick-grid">
+      <div class="pick-card us">
+        <p class="pick-tag">税務会計AI が向いている</p>
+        <ul>
+          <li><strong>5 分で動く</strong>。匿名 50 req/月/IP で即評価、API key 不要。自前 crawler は 1,500+ ソースを書ききるまで数週間〜数ヶ月。</li>
+<li><strong>失効監視 + dedup + license 管理</strong>を当社が運用。毎晩 tier S/A 全件 + 段階的に B/C も巡回し、404 即 quarantine。重複除去ロジック (公募回 / 都道府県差し替え) も内製済。</li>
+<li><strong>89 MCP tools</strong>を Claude / ChatGPT / Cursor から直呼び。自前で MCP サーバーを書く工数も不要。</li>
+        </ul>
+      </div>
+      <div class="pick-card">
+        <p class="pick-tag">自前スクレイピング (DIY) が向いている</p>
+        <ul>
+          <li><strong>完全コントロール</strong>。データ構造・正規化方針・更新頻度を自社要件に合わせて設計可能。当社のスキーマで合わない場合、自前が選択肢。</li>
+<li><strong>原価が下がる</strong>(規模次第)。月数十万 req 規模で長期運用するなら、Cloud + 開発工数の方が従量 ¥3/req より安くなる可能性あり (人件費を除けば)。</li>
+<li><strong>機密性</strong>。第三者 API に query を流したくない (例: クライアント名を含む) ケースでは自前が必要。</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>移行 / 併用ガイド</h2>
+    <div class="compare-migration">
+      <p><strong>買って始め、作るかは後で判断</strong>: まず当社 API で MVP を組んで需要を確かめてから、本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、そのスライスだけ自前で crawl する、というハイブリッド戦略が現実的です。当社の OpenAPI 3.1 spec は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、MCP tool 仕様も <a href="/docs/mcp-tools/">MCP tools</a> で読めるため、後から自前に切り替える際の移植も比較的容易です。</p><p><strong>license の落とし穴</strong>: 自前 crawler の最大の罠は<strong>出典管理</strong>です。集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>source_url</code> にすると古い金額・終了済み制度を孫引きしてしまい、景表法 / 善管注意義務リスクが顕在化します。当社は社内規約で「集約サイト除外、政府機関一次資料のみ」を強制し、全行に <code>source_url</code> + <code>fetched_at</code> + <code>license</code> を持たせています。この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>
+    </div>
+
+    <h2>関連ページ</h2>
+    <ul class="related-list">
+      <li><a href="/compare.html">全比較表 (6 サービス × 13 軸)</a></li>
+      <li><a href="/pricing.html">料金 (¥3/req 完全従量)</a></li>
+      <li><a href="/docs/api-reference/">API リファレンス</a></li>
+      <li><a href="/docs/mcp-tools/">MCP tools (72)</a></li>
+      <li><a href="/sources.html">出典・ライセンス</a></li>
+      <li><a href="/facts.html">数字の検証 SQL</a></li>
+    </ul>
+
+    <p class="footnote">
+      凡例: 「公開情報なし」「公開情報非公表」は、各社公式サイトに記載が確認できなかった、または当社が把握していない項目を指します。
+      機能の不在を断定するものではありません。各社 ToS や新規機能追加によって変わります。
+      また、本ページは特定商取引法 §52 に従い、誇大表現の排除と訂正義務を負います。
+      訂正が必要な場合は <a href="mailto:info@bookyou.net?subject=compare/diy-scraping%20correction">info@bookyou.net</a> 宛にご連絡ください。
+    </p>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    比較は <time datetime="2026-04-29">2026-04-29</time> 時点の各社公開情報に基づきます。
+    自前スクレイピング (DIY) の各サービス名は、運営者の登録商標または商標です。
+    · 運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+    · <a href="/tokushoho.html">特商法表記</a> / <a href="/tos.html">利用規約</a> / <a href="/privacy.html">プライバシー</a>
+    · 修正提案 <a href="mailto:info@bookyou.net?subject=compare/diy-scraping%20correction">info@bookyou.net</a>
+  </p>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">税務会計AI</p>
+      <p class="footer-tag">日本の制度 API</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/tokushoho.html">特定商取引法</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

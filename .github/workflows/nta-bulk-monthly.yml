@@ -1,0 +1,211 @@
+name: nta-bulk-monthly
+
+# Monthly 4M-row full bulk ingest of 国税庁 適格請求書発行事業者
+# (zenken). Runs ON the Fly production machine via flyctl ssh — same
+# pattern as ingest-weekly.yml — so the DB write lands on the Fly volume
+# (canonical jpintel.db at /data/jpintel.db).
+#
+# License: 公共データ利用規約 第1.0版 (PDL v1.0). Commercial + API
+# downstream are PERMITTED provided every surface exposing any
+# invoice_registrants column carries the required attribution
+# (出典明記 + 編集・加工注記 — enforcement point is the API serializer,
+# not this workflow).
+#
+# Cadence:
+#   * 1st of month 03:00 JST (= 18:00 UTC the previous day). NTA's
+#     zenken file is published 「前月末日時点における公表している最新情報」;
+#     the file is consistently up by ~01:00 JST on the 1st.
+#   * The workflow itself is long-running — set the timeout generously
+#     (120 min) because a 4M-row CSV ingest takes 25-40 min wall clock
+#     on Fly shared-cpu-1x with ~30 MB/min sustained write throughput.
+#
+# Storage growth:
+#   13,801 rows = ~2 MB on disk. Linear extrapolation to 4M rows ≈
+#   580 MB table + 340 MB indexes ≈ 920 MB additional. /data volume
+#   is 8.29 GB jpintel/autonomath combined; 9.2 GB post-load.
+#
+# Required secrets:
+#   FLY_API_TOKEN
+# Optional secrets:
+#   SLACK_WEBHOOK_INGEST   notify on driver failure
+
+on:
+  schedule:
+    # 18:30 UTC on the 1st of every month == 03:30 JST 1st of month.
+    # NTA publishes the zenken (full snapshot) on the 1st with the
+    # previous month-end as cutoff — so by 03:30 JST the file is always up.
+    # Staggered +30 min vs health-drill-monthly (0 18 1) to avoid Fly
+    # machine contention; this workflow is a long-running 25-40 min
+    # ingest so we cannot use a shorter offset.
+    - cron: "30 18 1 * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "ingest mode: full (monthly zenken) or delta (sabun)"
+        required: false
+        default: "full"
+      date:
+        description: "YYYY-MM-DD override (default: auto-discover from NTA index)"
+        required: false
+        default: ""
+      limit:
+        description: "cap rows parsed (smoke / CI; blank = all)"
+        required: false
+        default: ""
+      dry_run:
+        description: "If true, parse + validate, no DB writes"
+        required: false
+        default: "false"
+
+concurrency:
+  group: nta-bulk-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    # 4M-row CSV ingest: ~25-40 min on Fly shared-cpu-1x; allow 2x
+    # headroom for cold cache + ANALYZE pass.
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run NTA bulk ingest on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_MODE: ${{ github.event.inputs.mode }}
+          INPUT_DATE: ${{ github.event.inputs.date }}
+          INPUT_LIMIT: ${{ github.event.inputs.limit }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          MODE="${INPUT_MODE:-full}"
+          # Quote-safety: discard "" but allow legitimate values.
+          DATE_FLAG=""
+          if [ -n "${INPUT_DATE:-}" ]; then
+            DATE_FLAG="--date ${INPUT_DATE}"
+          fi
+          LIMIT_FLAG=""
+          if [ -n "${INPUT_LIMIT:-}" ]; then
+            LIMIT_FLAG="--limit ${INPUT_LIMIT}"
+          fi
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          set +e
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/ingest_nta_invoice_bulk.py \
+              --db /data/jpintel.db \
+              --mode ${MODE} \
+              --cache-dir /data/_cache/nta_invoice \
+              --log-file /data/invoice_load_log.jsonl \
+              --batch-size 10000 \
+              ${DATE_FLAG} \
+              ${LIMIT_FLAG} \
+              ${DRY_FLAG}" \
+            | tee invoice_load.out
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # Exit codes:
+          #   0 success
+          #   1 fetch / IO failure
+          #   2 parse-quality gate (NTA schema drift) — surface but don't
+          #     auto-page; data already partially written.
+          #   3 schema missing — paged.
+          #   4 disk gate — paged.
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::ingest_nta_invoice_bulk.py exited $rc"
+            exit 1
+          fi
+
+      - name: Pull invoice_load_log.jsonl off Fly machine
+        if: always()
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          flyctl ssh sftp get /data/invoice_load_log.jsonl -a autonomath-api \
+            || echo "::warning::no /data/invoice_load_log.jsonl yet"
+          if [ -f invoice_load_log.jsonl ]; then
+            mv invoice_load_log.jsonl data/invoice_load_log.jsonl
+          fi
+
+      - name: Detect log diff
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- data/invoice_load_log.jsonl 2>/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open PR with invoice_load_log diff
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        with:
+          commit-message: "chore(invoice-bulk): monthly NTA log $(date -u +%Y-%m-%d)"
+          title: "NTA invoice bulk: $(date -u +%Y-%m-%d)"
+          body: |
+            Auto-generated by `.github/workflows/nta-bulk-monthly.yml`.
+
+            This PR captures the per-run summary appended to
+            `data/invoice_load_log.jsonl` after the Fly volume's `jpintel.db`
+            absorbed the latest 国税庁適格請求書発行事業者 monthly bulk
+            (zenken). The DB itself stays on the Fly volume (~316 MB
+            jpintel.db pre-load, ~1.2 GB post 4M-row absorption — never committed).
+
+            License: 公共データ利用規約 第1.0版 (PDL v1.0). Attribution
+            renderers in `src/jpintel_mcp/api/invoice_registrants.py` are the
+            enforcement point — this PR does not surface row data.
+
+            Marketing copy ("13,801 invoice_registrants" in CLAUDE.md /
+            site copy) should be updated when `rows_after` in the latest
+            log entry crosses a round milestone (e.g. 3.5M, 4M).
+          branch: nta-bulk-monthly/${{ github.run_id }}
+          base: main
+          delete-branch: true
+          labels: |
+            ingest
+            invoice-registrants
+            automation
+          add-paths: |
+            data/invoice_load_log.jsonl
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Loader: \`scripts/cron/ingest_nta_invoice_bulk.py\` (mode=${INPUT_MODE:-full})\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: NTA index 5xx, disk-space gate (volume <2GB free), schema drift (>5% parse rejects), or schema gate (migration 019 not applied to /data/jpintel.db).\n\nRunbook: \`docs/incident_runbook.md\` Section 'NTA bulk failure'.\n"
+          gh issue create \
+            --title "nta-bulk-monthly failed on $(date -u +%Y-%m-%d)" \
+            --label ingest-failure \
+            --label invoice-registrants \
+            --label automation \
+            --body "$BODY"
+
+      - name: Slack notify on driver failure
+        if: failure() && env.SLACK_WEBHOOK_INGEST != ''
+        env:
+          SLACK_WEBHOOK_INGEST: ${{ secrets.SLACK_WEBHOOK_INGEST }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST -H 'content-type: application/json' \
+            --data "{\"text\":\":warning: nta-bulk-monthly driver failure — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$SLACK_WEBHOOK_INGEST" || true

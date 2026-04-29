@@ -408,6 +408,26 @@ def test_webhook_invoice_paid_resyncs_from_stripe(
     )
     assert r.status_code == 200, r.text
 
+    # The live-retrieve refresh is enqueued (kind=stripe_status_refresh)
+    # because firing it inline would deadlock against the webhook's own
+    # BEGIN IMMEDIATE writer. Drain the queue once here so the cached
+    # status flips from past_due → active before we read it back.
+    from jpintel_mcp.api._bg_task_queue import claim_next, mark_done
+    from jpintel_mcp.api._bg_task_worker import _dispatch_one
+
+    drain_conn = sqlite3.connect(seeded_db, isolation_level=None)
+    drain_conn.row_factory = sqlite3.Row
+    try:
+        for _ in range(20):
+            row = claim_next(drain_conn)
+            if row is None:
+                break
+            ok, _err = _dispatch_one(row)
+            if ok:
+                mark_done(drain_conn, int(row["id"]))
+    finally:
+        drain_conn.close()
+
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutonoMath — トライアル鍵を発行しました</title>
+<meta name="description" content="メール認証だけで 14 日 / 200 リクエストのトライアル API キーが発行されます。クレジットカード登録は不要です。">
+<meta name="robots" content="noindex,nofollow">
+<meta property="og:title" content="AutonoMath — トライアル鍵を発行しました">
+<meta property="og:url" content="https://zeimu-kaikei.ai/trial.html">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://zeimu-kaikei.ai/trial.html">
+
+<link rel="stylesheet" href="critical.css">
+<style>
+  /* trial.html — magic-link landing. Mirrors success.html design tokens
+     so the trial reveal flow looks identical to the paid checkout reveal.
+     CSP-safe: no external CSS, no external scripts. */
+  .trial { padding: 48px 0 64px; }
+  .trial-head { margin: 0 0 28px; }
+  .trial-check {
+    display:inline-block;width:48px;height:48px;border-radius:50%;
+    background:#10b981;color:#fff;text-align:center;line-height:48px;
+    font-size:28px;margin:0 0 12px;
+  }
+  .trial-warn {
+    display:inline-block;width:48px;height:48px;border-radius:50%;
+    background:#f59e0b;color:#fff;text-align:center;line-height:48px;
+    font-size:28px;margin:0 0 12px;
+  }
+  .trial-err {
+    display:inline-block;width:48px;height:48px;border-radius:50%;
+    background:#dc2626;color:#fff;text-align:center;line-height:48px;
+    font-size:28px;margin:0 0 12px;
+  }
+  .trial h1 {
+    font-size:30px;margin:0 0 8px;color:var(--text);font-weight:700;
+  }
+  .trial .sub {
+    font-size:15px;color:var(--text-muted,#555);line-height:1.7;margin:0 0 24px;
+  }
+  .state-card {
+    background:var(--bg-alt,#f6f7f9);border:1px solid var(--border,#e5e7eb);
+    border-radius:8px;padding:20px 24px;margin:0 0 16px;
+  }
+  .state-card .label {
+    font-size:13px;color:var(--text-muted,#555);text-transform:uppercase;
+    letter-spacing:0.05em;margin:0 0 8px;
+  }
+  .key-block {
+    background:#111;color:#f7f7f7;padding:16px;border-radius:6px;
+    overflow-x:auto;font-size:14px;font-family:'SF Mono',Menlo,monospace;
+    margin:0 0 12px;word-break:break-all;white-space:pre-wrap;
+  }
+  .code-block {
+    background:#f5f5f5;color:#111;padding:14px;border-radius:6px;
+    overflow-x:auto;font-size:13px;font-family:'SF Mono',Menlo,monospace;
+    margin:0 0 12px;
+  }
+  .key-warning {
+    color:#b91c1c;font-weight:600;font-size:13px;margin:0 0 12px;
+  }
+  .meta-row {
+    display:flex;flex-wrap:wrap;gap:16px;font-size:13px;
+    color:var(--text-muted,#555);margin:12px 0 0;
+  }
+  .btn-row { margin:12px 0 0;display:flex;gap:12px;flex-wrap:wrap; }
+  .btn-ghost {
+    background:transparent;border:1px solid var(--border,#d1d5db);
+    padding:8px 16px;border-radius:6px;font-size:14px;cursor:pointer;
+    color:var(--text);text-decoration:none;
+  }
+  .alert {
+    background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 18px;
+    border-radius:4px;margin:0 0 16px;font-size:14px;line-height:1.6;
+  }
+  .alert.error {
+    background:#fee2e2;border-left-color:#dc2626;
+  }
+  .next-steps {
+    background:var(--bg-alt,#f6f7f9);border-radius:8px;padding:20px 24px;
+    margin:24px 0 0;
+  }
+  .next-steps h2 { font-size:17px;margin:0 0 12px; }
+  .next-steps ol { margin:0;padding-left:20px;line-height:1.9;font-size:14px; }
+  .disclaimer-52 {
+    background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;
+    padding:14px 18px;margin:24px 0 0;font-size:13px;color:#444;line-height:1.7;
+  }
+  @media (max-width:640px) {
+    .trial { padding: 32px 0 48px; }
+    .trial h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="trial">
+    <div class="container" style="max-width:760px;">
+
+      <!-- Loading state (default while we read the URL fragment) -->
+      <div id="state-loading" tabindex="-1">
+        <p class="spinner" role="status" aria-live="polite">トライアル情報を読み込んでいます…</p>
+      </div>
+
+      <!-- Success state — key reveal -->
+      <div id="state-success" tabindex="-1" hidden>
+        <div class="trial-head">
+          <div class="trial-check" aria-hidden="true">&check;</div>
+          <h1>トライアル API キーを発行しました</h1>
+          <p class="sub">下のキーを安全な場所へコピーしてください。この画面を閉じると再表示できません。</p>
+        </div>
+
+        <div class="state-card">
+          <p class="label">Your trial APIキー</p>
+          <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
+          <p class="key-warning" role="alert">このキーは発行時 1 回だけ表示されます。今すぐコピーして保管してください。</p>
+          <div class="btn-row">
+            <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキー をコピー</button>
+          </div>
+          <div class="meta-row" aria-label="trial metadata">
+            <span>有効期間: <strong><span id="meta-duration">14</span> 日</strong></span>
+            <span>リクエスト上限: <strong><span id="meta-cap">200</span> 件</strong></span>
+            <span>失効: <strong id="meta-expires">—</strong></span>
+            <span>カード: <strong>未登録</strong></span>
+          </div>
+        </div>
+
+        <div class="state-card">
+          <p class="label">5 秒で叩く (curl)</p>
+          <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
+          <div class="btn-row">
+            <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; curl をコピー</button>
+          </div>
+        </div>
+
+        <!-- MCP config block (2026-04-29 onboarding hardening). Same trial -->
+        <!-- key substituted into a Claude Desktop / Cursor / Cline-       -->
+        <!-- compatible config so trial users can wire MCP in 1 paste from -->
+        <!-- this page without hopping to /integrations/. Single config    -->
+        <!-- because the standard MCP shape is identical across clients;   -->
+        <!-- per-client deep dives remain linked under "次のステップ".       -->
+        <div class="state-card">
+          <p class="label">Claude Desktop / Cursor / Cline で使う (MCP config)</p>
+          <pre id="mcp-block" class="code-block" aria-label="MCP config">{
+  "mcpServers": {
+    "zeimu-kaikei": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {"ZEIMU_KAIKEI_API_KEY": "am_…"}
+    }
+  }
+}</pre>
+          <div class="btn-row">
+            <button id="copy-mcp-btn" class="btn-ghost" type="button">&#128203; MCP config をコピー</button>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted,#555);margin:8px 0 0;line-height:1.6;">
+            事前に <code>pip install autonomath-mcp</code> または <code>uv tool install autonomath-mcp</code>。
+            設定ファイルの場所は <a href="/integrations/claude-desktop.html">Claude Desktop</a> /
+            <a href="/integrations/cursor.html">Cursor</a> /
+            <a href="/integrations/cline.html">Cline</a> 参照。
+          </p>
+        </div>
+
+        <div class="next-steps">
+          <h2>次のステップ</h2>
+          <ol>
+            <li><a href="/docs/getting-started">Getting Started</a> — Python / Node の最小例、認証、rate limit</li>
+            <li><a href="/integrations/claude-desktop.html">Claude Desktop (MCP) 統合</a> — stdio で 89 tools をエージェントから直呼び</li>
+            <li>残り 3 日で「終了予告メール」を送ります。本番利用 (¥3/リクエスト 完全従量) への切替は <a href="pricing.html">Pricing</a> から</li>
+          </ol>
+        </div>
+
+        <div class="disclaimer-52" role="note">
+          <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
+          AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務は対象外で、出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は <a href="tos.html">利用規約</a> をご確認ください。
+        </div>
+      </div>
+
+      <!-- Error states -->
+      <div id="state-already" tabindex="-1" hidden>
+        <div class="trial-head">
+          <div class="trial-warn" aria-hidden="true">!</div>
+          <h1>このトライアルは既に発行済みです</h1>
+          <p class="sub">同じメールアドレスで既にトライアル API キーが発行されています。お手元のキーをご利用いただくか、有料プランへ切替えてください。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="pricing.html">本番利用に切替 (Pricing)</a>
+          <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20トライアルキー再発行" style="text-decoration:none;">キー再発行を相談</a>
+        </div>
+      </div>
+
+      <div id="state-expired" tabindex="-1" hidden>
+        <div class="trial-head">
+          <div class="trial-warn" aria-hidden="true">!</div>
+          <h1>マジックリンクの有効期限が切れています</h1>
+          <p class="sub">マジックリンクは送信から 24 時間有効です。お手数ですがトップページからもう一度トライアル登録をお願いします。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/?from=trial-expired#trial">もう一度トライアル登録</a>
+        </div>
+      </div>
+
+      <div id="state-invalid" tabindex="-1" hidden>
+        <div class="trial-head">
+          <div class="trial-err" aria-hidden="true">&times;</div>
+          <h1>マジックリンクが無効です</h1>
+          <p class="sub">URL が破損しているか、改ざんされている可能性があります。もう一度トップページからトライアル登録をお試しください。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/?from=trial-invalid#trial">トップページに戻る</a>
+          <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20トライアル%20magic-link%20問題" style="text-decoration:none;">サポートに連絡</a>
+        </div>
+      </div>
+
+      <div id="state-error" tabindex="-1" hidden>
+        <div class="alert error" role="alert">
+          <strong>サーバー側エラーが発生しました。</strong>
+          時間をおいて再試行するか、サポート (<a href="mailto:info@bookyou.net">info@bookyou.net</a>) までご連絡ください。
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/?from=trial-error#trial">もう一度トライアル登録</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">税務会計AI</p>
+      <p class="footer-tag">日本の制度 API</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特定商取引法</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script>
+  // trial.html — vanilla ES2020. CSP-safe (inline, no external).
+  // Reads the magic-link verify response: status from the query string,
+  // raw API key + metadata from the URL fragment (so the key never lands
+  // in our access logs — browsers strip the fragment before sending).
+  (function () {
+    'use strict';
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    function showOnly(id) {
+      var ids = [
+        'state-loading', 'state-success', 'state-already',
+        'state-expired', 'state-invalid', 'state-error'
+      ];
+      for (var i = 0; i < ids.length; i++) {
+        var el = $(ids[i]);
+        if (!el) continue;
+        if (ids[i] === id) { el.removeAttribute('hidden'); }
+        else { el.setAttribute('hidden', ''); }
+      }
+      var t = $(id);
+      if (t && t.focus) { try { t.focus({preventScroll:false}); } catch(_e) {} }
+    }
+
+    function readQuery(name) {
+      try {
+        return new URLSearchParams(window.location.search).get(name) || '';
+      } catch (_e) { return ''; }
+    }
+
+    function readFragment() {
+      // Fragment carries the raw key + expires_at + caps. Strip leading '#'.
+      var raw = (window.location.hash || '').replace(/^#/, '');
+      if (!raw) return {};
+      var out = {};
+      var parts = raw.split('&');
+      for (var i = 0; i < parts.length; i++) {
+        var kv = parts[i].split('=');
+        if (kv.length === 2) {
+          try {
+            out[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]);
+          } catch (_e) {}
+        }
+      }
+      return out;
+    }
+
+    function copyToClipboard(text, btn) {
+      if (!text) return;
+      try {
+        navigator.clipboard.writeText(text).then(function () {
+          if (btn) {
+            var original = btn.textContent;
+            btn.textContent = '✓ コピー済み';
+            setTimeout(function () { btn.textContent = original; }, 2000);
+          }
+        });
+      } catch (_e) {
+        // Fallback to execCommand for old Safari.
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (_e2) {}
+        document.body.removeChild(ta);
+      }
+    }
+
+    function init() {
+      var status = readQuery('status') || 'invalid';
+      if (status === 'already') return showOnly('state-already');
+      if (status === 'expired') return showOnly('state-expired');
+      if (status === 'invalid') return showOnly('state-invalid');
+      if (status === 'error')   return showOnly('state-error');
+
+      // status=ok — read the fragment.
+      var f = readFragment();
+      var key = f.api_key || '';
+      if (!key) return showOnly('state-invalid');
+
+      var expiresAt = f.expires_at || '';
+      var requestCap = f.request_cap || '200';
+      var durationDays = f.duration_days || '14';
+
+      // Render the key and curl example.
+      var keyBlock = $('api-key-block');
+      if (keyBlock) keyBlock.textContent = key;
+
+      var curlBlock = $('curl-block');
+      if (curlBlock) {
+        curlBlock.textContent =
+          'curl -H "X-API-Key: ' + key + '" \\\n' +
+          '  "https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&limit=3"';
+      }
+
+      // Render the MCP config block with the trial key substituted in.
+      var mcpBlock = $('mcp-block');
+      if (mcpBlock) {
+        mcpBlock.textContent =
+          '{\n' +
+          '  "mcpServers": {\n' +
+          '    "zeimu-kaikei": {\n' +
+          '      "command": "uvx",\n' +
+          '      "args": ["autonomath-mcp"],\n' +
+          '      "env": {"ZEIMU_KAIKEI_API_KEY": "' + key + '"}\n' +
+          '    }\n' +
+          '  }\n' +
+          '}';
+      }
+
+      var metaCap = $('meta-cap');
+      if (metaCap) metaCap.textContent = requestCap;
+      var metaDuration = $('meta-duration');
+      if (metaDuration) metaDuration.textContent = durationDays;
+      var metaExpires = $('meta-expires');
+      if (metaExpires) metaExpires.textContent = expiresAt
+        ? expiresAt.replace('T', ' ').replace(/\..*$/, '')
+        : '—';
+
+      // Wire copy buttons.
+      var copyKeyBtn = $('copy-key-btn');
+      if (copyKeyBtn) {
+        copyKeyBtn.addEventListener('click', function () {
+          copyToClipboard(key, copyKeyBtn);
+        });
+      }
+      var copyCurlBtn = $('copy-curl-btn');
+      if (copyCurlBtn) {
+        copyCurlBtn.addEventListener('click', function () {
+          var t = curlBlock ? curlBlock.textContent : '';
+          copyToClipboard(t, copyCurlBtn);
+        });
+      }
+      var copyMcpBtn = $('copy-mcp-btn');
+      if (copyMcpBtn) {
+        copyMcpBtn.addEventListener('click', function () {
+          var t = mcpBlock ? mcpBlock.textContent : '';
+          copyToClipboard(t, copyMcpBtn);
+        });
+      }
+
+      // Strip the fragment so a copy/paste of the page URL afterwards
+      // doesn't carry the key. Best-effort — older browsers might not
+      // support replaceState; in that case the fragment lingers but
+      // is local-only (never crosses the wire).
+      try {
+        var clean = window.location.pathname + window.location.search;
+        history.replaceState(null, '', clean);
+      } catch (_e) { /* ignore */ }
+
+      showOnly('state-success');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+
+</body>
+</html>

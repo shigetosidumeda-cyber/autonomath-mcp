@@ -53,9 +53,18 @@ def test_anon_51st_request_is_429_with_jst_reset(
     (c) The body's resets_at (== reset_at_jst) must parse to a datetime with
         UTC+09:00 offset and be the first day of the next JST calendar month
         at 00:00:00 JST — NOT UTC midnight (which would be +00:00).
+
+    The per-IP-endpoint middleware (`api/middleware/per_ip_endpoint_limit.py`)
+    enforces a separate 30 req/min cap on `/v1/programs/search` that would
+    fire at request #31 before the monthly anon cap exhausts. We reset
+    that bucket on every iteration so the test exercises ONLY the anon
+    monthly limiter.
     """
     _anon_mod()
     from jpintel_mcp.config import settings
+    from jpintel_mcp.api.middleware.per_ip_endpoint_limit import (
+        _reset_per_ip_endpoint_buckets,
+    )
 
     # Use a tiny limit so the test exhausts quickly.
     monkeypatch.setattr(settings, "anon_rate_limit_per_month", _LIMIT)
@@ -64,12 +73,19 @@ def test_anon_51st_request_is_429_with_jst_reset(
 
     # First 50 must succeed.
     for i in range(_LIMIT):
+        # Drop the per-endpoint per-IP bucket so the 30 req/min /v1/programs/search
+        # cap doesn't trip at request #31; this test is about the monthly anon
+        # cap, not the burst limiter.
+        _reset_per_ip_endpoint_buckets()
         r = client.get(
             "/v1/programs/search",
             headers={"x-forwarded-for": ip},
             params={"q": "補助金", "limit": 1},
         )
         assert r.status_code == 200, f"request #{i+1} unexpectedly failed: {r.status_code}"
+    # Final probe: ensure the burst bucket is fresh so the 51st is rejected
+    # by the MONTHLY limiter, not the burst limiter.
+    _reset_per_ip_endpoint_buckets()
 
     # 51st must be rejected.
     r51 = client.get(

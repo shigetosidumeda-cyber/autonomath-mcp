@@ -3,7 +3,7 @@
  * 補助金検索 widget — 税理士事務所・商工会議所・中小企業支援サイト向け
  *
  * Usage (auto-init):
- *   <script src="https://autonomath.ai/widget/autonomath.js"></script>
+ *   <script src="https://zeimu-kaikei.ai/widget/autonomath.js"></script>
  *   <div data-autonomath-widget
  *        data-key="wgt_live_..."
  *        data-filters="industry,prefecture,target"
@@ -43,8 +43,8 @@
   // -------------------------------------------------------------------------
 
   var SCRIPT_VERSION = "1.0.0";
-  var DEFAULT_API_BASE = "https://api.autonomath.ai";
-  var PROGRAM_PAGE_BASE = "https://autonomath.ai/programs/";
+  var DEFAULT_API_BASE = "https://api.zeimu-kaikei.ai";
+  var PROGRAM_PAGE_BASE = "https://zeimu-kaikei.ai/programs/";
 
   // i18n — tiny on purpose; widget is not a full CMS.
   var I18N = {
@@ -319,7 +319,7 @@
     this.footerEl.textContent = "";
     if (this._branding) {
       var link = h("a", {
-        href: "https://autonomath.ai/widget.html",
+        href: "https://zeimu-kaikei.ai/widget.html",
         target: "_blank",
         rel: "noopener"
       }, [t(this.language, "powered_by")]);
@@ -435,7 +435,7 @@
       ]));
       return;
     }
-    // Update branding from widget envelope (server may flip it)
+    // Update branding from widget レスポンス (server may flip it)
     if (data && data.widget && typeof data.widget.branding === "boolean") {
       this._branding = data.widget.branding;
       this._renderFooter();

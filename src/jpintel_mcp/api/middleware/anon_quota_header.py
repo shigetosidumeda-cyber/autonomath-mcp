@@ -1,4 +1,5 @@
-"""Anonymous-quota response headers (S3 friction removal, 2026-04-25).
+"""Anonymous-quota response headers (S3 friction removal, 2026-04-25)
+plus in-response soft-warning body injection (CRO Fix 5a, 2026-04-29).
 
 Every successful anonymous response (no X-API-Key, no Authorization: Bearer)
 carries three response headers so an LLM caller — or its human-in-the-loop —
@@ -26,6 +27,29 @@ otherwise would silently churn at request 51. Authenticated callers
 already know the upgrade URL (they used it once); spamming it on every
 paid response is noise.
 
+CRO Fix 5a — in-response soft-warning (2026-04-29):
+
+When the anonymous caller is in the last 20% of their monthly runway
+(``remaining <= 10``, i.e. >=80% used), we additionally inject
+``_meta.upgrade_hint`` into the JSON response body. Headers alone aren't
+enough: many MCP hosts and curl scripts surface the body to the user but
+swallow response headers. The hint is a single human-readable string and
+sits under ``_meta`` so it never collides with a top-level result key.
+
+Body injection rules:
+
+- 200..399 only (4xx/5xx already carry their own envelopes; the 429
+  refusal envelope from ``anon_limit.py`` is the canonical conversion
+  surface for the hard-stop case).
+- Content-Type must start with ``application/json``.
+- Body must parse as a JSON object (``dict``). Arrays / scalars / NDJSON
+  / streaming responses are skipped — there is no safe place to inject.
+- If the body already carries ``_meta.upgrade_hint``, we do not overwrite
+  (downstream code may want to set its own).
+- Skipped silently (no exception bubbles to the client) on any parse,
+  re-serialize, or content-length update failure — the hint is a soft
+  conversion lever, never a 500 amplifier.
+
 Quota state source:
 
 ``enforce_anon_ip_limit`` (router-level dep, ``api/anon_limit.py``) writes
@@ -43,10 +67,12 @@ amplifier.
 """
 from __future__ import annotations
 
+import json
 import logging
 from typing import TYPE_CHECKING
 
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 
 from jpintel_mcp.api.anon_limit import UPGRADE_URL_BASE
 
@@ -54,9 +80,21 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from fastapi import Request
-    from starlette.responses import Response
 
 _log = logging.getLogger("jpintel.anon_quota_header")
+
+# Fire the soft warning when the caller has burned 80%+ of the monthly
+# bucket, i.e. <= 10 calls left out of the default 50/月. This is hard-
+# coded rather than read from settings: the threshold is a UX choice, not
+# an operational knob, and tying it to the 80% rule keeps the message
+# concrete ("残 X req") regardless of how the operator tunes the cap.
+_SOFT_WARNING_THRESHOLD_REMAINING = 10
+
+# Public landing for the soft-warning conversion path. The hard 429 path
+# already uses ``UPGRADE_URL_FROM_429`` (?from=429); the soft warning
+# uses the bare ``/upgrade`` URL so funnel analytics can distinguish
+# preventive conversions from forced ones.
+_SOFT_UPGRADE_URL = "https://zeimu-kaikei.ai/upgrade"
 
 
 def _is_anonymous(request: Request) -> bool:
@@ -74,8 +112,192 @@ def _is_anonymous(request: Request) -> bool:
     return not (auth and auth.split(None, 1)[0].lower() == "bearer")
 
 
+def _build_upgrade_hint(remaining: int, reset_at: str) -> str:
+    """Build the human-readable soft-warning string.
+
+    Format aligns with the 429 body's ``cta_text_ja`` voice — terse,
+    actionable, includes the concrete remaining count + the JST reset
+    cue + the upgrade URL. ``reset_at`` is accepted for parity with
+    ``X-Anon-Quota-Reset`` but is intentionally not interpolated: the
+    next-month-start phrase ("月初 JST 0:00 reset") is calendar-stable
+    and reads more naturally than an ISO timestamp inline.
+    """
+    del reset_at  # see docstring — kept in signature for symmetry / future use
+    return (
+        f"残 {remaining} req。 Free 50/月、 月初 JST 0:00 reset。 "
+        f"{_SOFT_UPGRADE_URL} で API キー発行で即時再開"
+    )
+
+
+def _looks_streaming(response: Response) -> bool:
+    """Best-effort detection of true SSE / chunked streams.
+
+    Note: ``BaseHTTPMiddleware`` wraps every downstream response as a
+    ``_StreamingResponse`` with a ``body_iterator``, so the presence of
+    that attribute alone does NOT mean the route is genuinely streaming.
+    Real streams declare themselves via ``Content-Type: text/event-stream``
+    or ``Transfer-Encoding: chunked``; bytes-buffered JSON responses
+    (FastAPI ``JSONResponse`` / ``ORJSONResponse``) just happen to be
+    delivered as a one-shot iterator under ``BaseHTTPMiddleware``.
+    """
+    ctype = response.headers.get("content-type", "").lower()
+    if "text/event-stream" in ctype:
+        return True
+    # If the upstream explicitly opted into chunked transfer we leave it
+    # alone — content-length recomputation is unsafe in that mode.
+    return response.headers.get("transfer-encoding", "").lower() == "chunked"
+
+
+async def _drain_body(response: Response) -> bytes | None:
+    """Best-effort drain of a ``BaseHTTPMiddleware`` streaming response.
+
+    BaseHTTPMiddleware always returns a ``_StreamingResponse`` with a
+    ``body_iterator`` (even for one-shot JSON responses). To inject into
+    the body we must consume that iterator and rebuild a fresh
+    ``Response``. Returns the concatenated bytes on success, or ``None``
+    if the response is not a streaming wrapper (in which case the caller
+    falls back to ``getattr(response, 'body', None)``).
+    """
+    body_iter = getattr(response, "body_iterator", None)
+    if body_iter is None:
+        return None
+    chunks: list[bytes] = []
+    async for chunk in body_iter:
+        if isinstance(chunk, str):
+            chunk = chunk.encode("utf-8")
+        chunks.append(chunk)
+    return b"".join(chunks)
+
+
+async def _maybe_inject_upgrade_hint(
+    response: Response,
+    remaining: int,
+    reset_at: str,
+) -> Response:
+    """Inject ``_meta.upgrade_hint`` into the JSON response body.
+
+    Returns the response (possibly a new ``Response`` instance with the
+    rewritten body) on success, or the original ``response`` on any
+    skip / error condition. Never raises.
+
+    Skip conditions (silent):
+      - Status >= 400 (the 429 envelope is the canonical hard-stop surface).
+      - Streaming / SSE / chunked transfer.
+      - Content-Type is not ``application/json`` (Pydantic JSON, FastAPI
+        ``JSONResponse``, and ``ORJSONResponse`` all set this).
+      - Body fails to parse as a JSON object (arrays / scalars / NDJSON
+        skip — there is no safe insertion point).
+      - Body already carries ``_meta.upgrade_hint`` (don't overwrite a
+        downstream-set hint).
+
+    If we drain the body iterator to inspect it but then decide NOT to
+    inject (e.g. the payload is a list), we still must return a fresh
+    ``Response`` carrying those drained bytes — the iterator is
+    one-shot and the original wrapper is now empty. ``_passthrough``
+    handles that rebuild.
+    """
+    try:
+        if response.status_code >= 400:
+            return response
+        if _looks_streaming(response):
+            return response
+
+        ctype = response.headers.get("content-type", "")
+        # Match application/json and application/json; charset=utf-8 etc.
+        # but NOT application/jsonl or application/x-ndjson.
+        ctype_main = ctype.split(";", 1)[0].strip().lower()
+        if ctype_main != "application/json":
+            return response
+
+        # BaseHTTPMiddleware wraps every response in a streaming iterator,
+        # so direct .body access returns None / empty. Drain the iterator
+        # ourselves; if drain returns None, fall back to the (rare)
+        # buffered-body case.
+        body_bytes = await _drain_body(response)
+        if body_bytes is None:
+            body_bytes = getattr(response, "body", None)
+        if not body_bytes:
+            return response
+
+        # Helper: rebuild a passthrough Response when we drained the body
+        # but won't inject. Keeps the wire format identical to what the
+        # caller would have received without this middleware.
+        def _passthrough() -> Response:
+            new_headers = dict(response.headers)
+            new_headers["content-length"] = str(len(body_bytes))
+            return Response(
+                content=body_bytes,
+                status_code=response.status_code,
+                headers=new_headers,
+                media_type=response.media_type,
+            )
+
+        try:
+            payload = json.loads(body_bytes)
+        except (ValueError, TypeError):
+            return _passthrough()
+
+        if not isinstance(payload, dict):
+            # Lists / scalars / null — no safe injection point.
+            return _passthrough()
+
+        existing_meta = payload.get("_meta")
+        if isinstance(existing_meta, dict) and "upgrade_hint" in existing_meta:
+            # A downstream layer already set the hint; do not overwrite.
+            return _passthrough()
+
+        hint = _build_upgrade_hint(remaining=remaining, reset_at=reset_at)
+        if isinstance(existing_meta, dict):
+            # Preserve any other _meta keys the response already carries.
+            new_meta = dict(existing_meta)
+            new_meta["upgrade_hint"] = hint
+        else:
+            # Either missing or a non-dict value (e.g. None, a string).
+            # We only inject when there is no conflicting non-dict value;
+            # if _meta is set to something non-dict we leave it alone to
+            # avoid breaking that contract.
+            if existing_meta is not None:
+                return _passthrough()
+            new_meta = {"upgrade_hint": hint}
+        payload["_meta"] = new_meta
+
+        # Re-serialize. ``ensure_ascii=False`` keeps the Japanese hint
+        # readable on the wire (matches the 429 envelope's encoding).
+        new_body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+
+        # Rebuild a Response with the same status / headers. We MUST
+        # update Content-Length (the original was for the smaller body)
+        # and drop any Content-Encoding the upstream set: re-encoding
+        # here means we ship plain UTF-8 JSON regardless of whether the
+        # upstream had set ``br`` or ``gzip`` (Starlette's compression
+        # middleware, if any, sits OUTSIDE this one and will recompress
+        # if it cares).
+        new_headers = dict(response.headers)
+        new_headers["content-length"] = str(len(new_body))
+        # If a content-encoding was set, our re-serialized body is not
+        # encoded with it — strip the header so the client doesn't try
+        # to decompress plain JSON.
+        new_headers.pop("content-encoding", None)
+        return Response(
+            content=new_body,
+            status_code=response.status_code,
+            headers=new_headers,
+            media_type=response.media_type,
+        )
+    except Exception:  # pragma: no cover — defensive, see module docstring
+        _log.warning(
+            "anon_quota_header: failed to inject upgrade_hint", exc_info=True
+        )
+        return response
+
+
 class AnonQuotaHeaderMiddleware(BaseHTTPMiddleware):
-    """Stamp anon-quota response headers on every anonymous response."""
+    """Stamp anon-quota response headers on every anonymous response.
+
+    Also injects ``_meta.upgrade_hint`` into the JSON body when the
+    caller is in the last 20% of their monthly runway (CRO Fix 5a,
+    2026-04-29). See module docstring for body-injection rules.
+    """
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         response: Response = await call_next(request)
@@ -105,6 +327,14 @@ class AnonQuotaHeaderMiddleware(BaseHTTPMiddleware):
             response.headers.setdefault("X-Anon-Upgrade-Url", UPGRADE_URL_BASE)
         except Exception:  # pragma: no cover — defensive
             _log.warning("anon_quota_header: failed to stamp headers", exc_info=True)
+            return response
+
+        # Soft-warning body injection: only when the caller is at 80%+
+        # consumption. Below the threshold the headers alone are enough.
+        if remaining <= _SOFT_WARNING_THRESHOLD_REMAINING:
+            response = await _maybe_inject_upgrade_hint(
+                response, remaining=remaining, reset_at=reset_at
+            )
 
         return response
 

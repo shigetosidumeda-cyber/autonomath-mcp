@@ -1,0 +1,110 @@
+name: Data quality report (制度情報の誤り報告)
+description: Stale source URL, wrong amount, missing program, retired regulation, or any other data defect
+title: "[data] "
+labels: ["data-quality", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        AutonoMath ingests **only primary sources** (government ministry,
+        prefecture, 公的機関). If you spotted bad data, please report it
+        below. You can also email `info@bookyou.net` directly.
+
+        AutonoMath は一次資料 (政府サイト / 自治体 / 公的機関) のみを参照しています。
+        誤りを発見された場合は以下を埋めて投稿してください。
+
+  - type: input
+    id: program_id
+    attributes:
+      label: Record ID (unified_id / canonical_id / law_id / case_id)
+      description: e.g. `UNI-194743d166`, `agri-maff-keiei-anteika-201`. Visible at the top of `site/programs/<id>.html` and in API `id` fields.
+      placeholder: UNI-194743d166
+    validations:
+      required: true
+
+  - type: dropdown
+    id: dataset
+    attributes:
+      label: Dataset
+      options:
+        - 補助金 / Subsidy program
+        - 融資 / Loan program
+        - 税制 / Tax ruleset
+        - 認定 / Certification
+        - 行政処分 / Enforcement case
+        - 法令 / Law
+        - 判例 / Court decision
+        - 採択事例 / Adoption case
+        - 適格事業者 / Invoice registrant
+        - 入札 / Bid
+        - その他 / Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: error_type
+    attributes:
+      label: Error type (誤りの種類)
+      options:
+        - Stale or dead source URL (一次資料 URL が切れている)
+        - Wrong amount / 補助率 (金額・補助率の誤り)
+        - Wrong period / deadline (期間・締切の誤り)
+        - Wrong eligibility / 対象業種 (対象業種・要件の誤り)
+        - Wrong legal basis / 条文 (法的根拠 (法令名・条文) の誤り)
+        - Wrong exclusion or prerequisite (排他・前提ルールの誤り)
+        - Program already retired (既に廃止されている)
+        - Missing program (掲載漏れ)
+        - Wrong name / title (制度名・名称の誤り)
+        - Other (その他)
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: What is wrong, and what is correct
+      description: Be specific. "Field X says A, the correct value is B."
+      placeholder: |
+        Field `amount_max` says 5,000,000 JPY but the official notice dated 2026-04-01 raised it to 7,000,000 JPY.
+    validations:
+      required: true
+
+  - type: input
+    id: source_url
+    attributes:
+      label: Primary source URL (一次資料 URL)
+      description: |
+        Government ministry / prefecture / 公庫 / 公的機関 official page.
+        Aggregators are **not accepted** (noukaweb / hojyokin-portal /
+        biz.stayway / nikkei.com / wikipedia / prtimes / etc.) — past
+        incidents created consumer-protection (詐欺) risk.
+      placeholder: https://www.maff.go.jp/j/...
+    validations:
+      required: true
+
+  - type: input
+    id: source_date
+    attributes:
+      label: Source document date (掲載日 or 公布日)
+      description: The date printed on the official document (YYYY-MM-DD if available).
+      placeholder: 2026-04-01
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes (任意)
+      description: Anything else useful — screenshots, alternative sources, etc.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Pre-flight
+      options:
+        - label: The URL above is a primary source (not an aggregator)
+          required: true
+        - label: I have checked that this report is not already filed
+          required: true

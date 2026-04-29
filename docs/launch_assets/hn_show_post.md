@@ -33,7 +33,7 @@ Show HN: AutonoMath - Japanese public-program API for AI agents (3 yen/req)
 ## URL field
 
 ```
-https://autonomath.ai
+https://zeimu-kaikei.ai
 ```
 
 Note: HN guideline — point to product page, not GitHub repo. GitHub URL goes
@@ -69,9 +69,9 @@ where Claude / Cursor / ChatGPT can answer "is my company eligible?" with
 primary-source URLs attached.
 
 How:
-MCP-native, 72 tools, protocol 2025-06-18, stdio transport. One Manifest
-line plugs it into Claude Desktop. Backed by SQLite FTS5 trigram (Japanese
-compound-word search) + sqlite-vec for the entity-fact layer. Hosted on
+MCP-native, 89 tools, protocol 2025-06-18, stdio transport. One Manifest
+line plugs it into Claude Desktop. Backed by SQLite 全文検索インデックス (3-gram, Japanese
+compound-word search) + ベクトル検索 for the entity-fact layer. Hosted on
 Fly.io Tokyo. Stripe metered + Stripe Tax for JP invoice compliance.
 
 Pricing:
@@ -86,12 +86,12 @@ cites a primary source.
 Open questions I'd like HN to push on:
 1. Pure-metered viability vs Free/Pro tier expectations
 2. MCP-only distribution vs traditional SDK
-3. FTS5 trigram false positives on single-kanji overlap
+3. 全文検索インデックス (3-gram) の単漢字 false positive
 4. Solo + zero-touch ops at this data scale (can it last?)
 
 Repo: https://github.com/[USERNAME]/[REPO]
 PyPI: https://pypi.org/project/autonomath-mcp/
-Docs: https://autonomath.ai/docs/
+Docs: https://zeimu-kaikei.ai/docs/
 
 Will be here all day to answer.
 ```
@@ -101,7 +101,7 @@ Will be here all day to answer.
 ## Pre-submit checklist (operator)
 
 - [ ] Title 80 chars 以下確認 (HN form 自体が cap)
-- [ ] URL `https://autonomath.ai` 動作確認 (200 / valid TLS)
+- [ ] URL `https://zeimu-kaikei.ai` 動作確認 (200 / valid TLS)
 - [ ] First comment 800-1500 chars 確認 (上記 1,189)
 - [ ] GitHub URL placeholder `[USERNAME]/[REPO]` を実 URL に置換
 - [ ] PyPI page `pypi.org/project/autonomath-mcp/` 動作確認

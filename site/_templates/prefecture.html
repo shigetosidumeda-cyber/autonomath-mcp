@@ -18,7 +18,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:site_name" content="AutonoMath">
+<meta property="og:site_name" content="税務会計AI">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page_title }}">
@@ -32,7 +32,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {{ json_ld_pretty | safe }}
@@ -43,9 +43,8 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="AutonoMath ホーム">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/docs/">Docs</a>
@@ -73,7 +72,7 @@
           <span class="author">Bookyou株式会社 (梅田茂利)</span>
         </p>
         <p class="byline-note muted">
-          {{ pref_ja }}向けの公的支援制度 ({{ programs_count }}件)、採択事例 ({{ cases_count }}件)、政策金融融資 ({{ loans_count }}件)、行政処分公示 ({{ enforcements_count }}件) を AutonoMath が集約。
+          {{ pref_ja }}向けの公的支援制度 ({{ programs_count }}件)、採択事例 ({{ cases_count }}件)、政策金融融資 ({{ loans_count }}件)、行政処分公示 ({{ enforcements_count }}件) を 税務会計AI が集約。
           一次情報は中央省庁・都道府県・日本政策金融公庫等の公式ページに帰属します。
         </p>
       </header>
@@ -87,13 +86,13 @@
           <li><strong>政策金融融資:</strong> 全国対応の融資制度 {{ loans_count }} 件を、担保・個人保証人・第三者保証人の3軸で開示。</li>
           <li><strong>行政処分:</strong> {{ pref_ja }}関連の交付決定取消・補助金返還命令などの公示 {{ enforcements_count }} 件。</li>
         </ul>
-        <p class="muted">本ページは AutonoMath による集約情報であり、申請可否・受給可否を保証するものではありません。最終的な判断は必ず一次情報および有資格者 (税理士・社労士・中小企業診断士) の助言を経て行ってください。</p>
+        <p class="muted">本ページは 税務会計AI による集約情報であり、申請可否・受給可否を保証するものではありません。最終的な判断は必ず一次情報および有資格者 (税理士・社労士・中小企業診断士) の助言を経て行ってください。</p>
       </section>
 
       {% if programs %}
       <section aria-labelledby="programs-title">
         <h2 id="programs-title">{{ pref_ja }}の補助金・助成金 ({{ programs_count }}件)</h2>
-        <p>{{ pref_ja }}で利用可能な補助金・助成金・交付金のうち、AutonoMath が tier S/A 優先で抽出した上位 {{ programs_count }} 件です。各制度の詳細ページでは公募要領・対象者・金額上限・出典の一次資料リンクをご確認いただけます。</p>
+        <p>{{ pref_ja }}で利用可能な補助金・助成金・交付金のうち、税務会計AI が tier S/A 優先で抽出した上位 {{ programs_count }} 件です。各制度の詳細ページでは公募要領・対象者・金額上限・出典の一次資料リンクをご確認いただけます。</p>
         <ol class="program-list">
         {%- for p in programs %}
           <li class="program-card">
@@ -141,7 +140,7 @@
       {% if loans %}
       <section aria-labelledby="loans-title">
         <h2 id="loans-title">{{ pref_ja }}事業者が利用可能な政策金融融資 ({{ loans_count }}件)</h2>
-        <p>日本政策金融公庫・商工中金・地域金融機関等が提供する全国対応の政策金融融資のうち、上位 {{ loans_count }} 件です。AutonoMath では融資条件を「担保」「個人保証人」「第三者保証人」の3軸に分解して掲載しています。</p>
+        <p>日本政策金融公庫・商工中金・地域金融機関等が提供する全国対応の政策金融融資のうち、上位 {{ loans_count }} 件です。税務会計AI では融資条件を「担保」「個人保証人」「第三者保証人」の3軸に分解して掲載しています。</p>
         <ul class="loan-list">
         {%- for l in loans %}
           <li class="loan-card">
@@ -171,7 +170,7 @@
       {% if enforcements %}
       <section aria-labelledby="enforcement-title">
         <h2 id="enforcement-title">{{ pref_ja }}関連の行政処分・補助金返還公示 ({{ enforcements_count }}件)</h2>
-        <p>{{ pref_ja }}に関連する補助金等の交付決定取消・返還命令・是正措置などの公示情報です。出典は中央省庁・地方自治体の公式公示資料に限定しています (アグリゲータ転載は除外)。申請を検討する際は、過去の処分事例を踏まえて要件遵守の重要性を確認してください。</p>
+        <p>{{ pref_ja }}に関連する補助金等の交付決定取消・返還命令・是正措置などの公示情報です。出典は中央省庁・地方自治体の公式公示資料に限定しています (集約サイト転載は除外)。申請を検討する際は、過去の処分事例を踏まえて要件遵守の重要性を確認してください。</p>
         <ul class="enforcement-list">
         {%- for e in enforcements %}
           <li class="enforcement-card">
@@ -202,10 +201,10 @@
 
       <section aria-labelledby="api-title">
         <h2 id="api-title">{{ pref_ja }}データを API / MCP で取得</h2>
-        <p>本ページに掲載した {{ pref_ja }}の制度・採択・融資・処分データは、すべて AutonoMath の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / ChatGPT などの MCP クライアントから即時に呼び出せます。</p>
+        <p>本ページに掲載した {{ pref_ja }}の制度・採択・融資・処分データは、すべて 税務会計AI の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / ChatGPT などの MCP クライアントから即時に呼び出せます。</p>
         <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
   "https://api.{{ DOMAIN }}/v1/programs?prefecture={{ pref_ja | urlencode }}&amp;tier=S,A&amp;limit=20"</code></pre>
-        <p>MCP からは <code>search_programs(prefecture="{{ pref_ja }}", tier=["S","A"], limit=20)</code> で同等の検索が可能です。詳細は <a href="/docs/api-reference">API reference</a> および <a href="/docs/mcp-tools">MCP tools</a> をご参照ください。</p>
+        <p>MCP からは <code>search_programs(prefecture="{{ pref_ja }}", tier=["S","A"], limit=20)</code> で同等の検索が可能です。詳細は <a href="/docs/api-reference">API reference</a> および <a href="/docs/mcp-tools">MCP ツール</a> をご参照ください。</p>
       </section>
 
       <section aria-labelledby="other-prefs-title">
@@ -213,7 +212,7 @@
         <p><a href="/prefectures/">47 都道府県インデックス</a> から他の地域の制度・採択・融資・処分データをご覧いただけます。</p>
       </section>
 
-      <p class="disclaimer">本ページは AutonoMath が一次情報を集約・構造化したプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。制度の最新内容・申請可否・併用可否は所管官公庁・自治体の一次情報および有資格者の助言で必ず確認してください。アグリゲータサイト ({{ banned_aggregators }}) は出典源から除外しています。</p>
+      <p class="disclaimer">本ページは 税務会計AI が一次情報を集約・構造化したプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。制度の最新内容・申請可否・併用可否は所管官公庁・自治体の一次情報および有資格者の助言で必ず確認してください。集約サイト ({{ banned_aggregators }}) は出典源から除外しています。</p>
     </article>
 
   </div>
@@ -222,17 +221,24 @@
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">日本の制度 API</p>
       <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
     </div>
-    <nav class="footer-nav" aria-label="フッター">
+    <nav class="footer-nav" aria-label="フッター 法務・連絡">
       <a href="/tos.html">利用規約</a>
       <a href="/privacy.html">プライバシー</a>
       <a href="/tokushoho.html">特定商取引法</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
+    <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
+      <a href="/industries/" hreflang="ja">業種別</a>
+      <a href="/qa/" hreflang="ja">Q&amp;A</a>
+      <a href="/compare.html" hreflang="ja">比較</a>
+      <a href="/prefectures/" hreflang="ja">都道府県別</a>
+    </nav>
     <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+    <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
   </div>
 </footer>
 

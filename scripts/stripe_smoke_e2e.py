@@ -254,9 +254,9 @@ def step_checkout_url(base: str, price_id: str) -> dict[str, str]:
     r = httpx.post(
         f"{base}/v1/billing/checkout",
         json={
-            "success_url": "https://autonomath.ai/dashboard?session={CHECKOUT_SESSION_ID}",
-            "cancel_url": "https://autonomath.ai/pricing",
-            "customer_email": "smoke+e2e@autonomath.ai",
+            "success_url": "https://zeimu-kaikei.ai/dashboard?session={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://zeimu-kaikei.ai/pricing",
+            "customer_email": "smoke+e2e@zeimu-kaikei.ai",
         },
         timeout=15.0,
     )
@@ -429,7 +429,7 @@ def step_dunning_recover(
             "object": {
                 "subscription": sub_id,
                 "customer": customer_id,
-                "customer_email": "smoke+e2e@autonomath.ai",
+                "customer_email": "smoke+e2e@zeimu-kaikei.ai",
                 "items": {"data": [{"price": {"id": price_id}}]},
             }
         },
@@ -546,7 +546,7 @@ def main() -> int:
 
         # 3) Create a real test subscription via pm_card_visa (bypasses UI)
         cust_id, sub_id = step_create_subscription_for_testclock(
-            price, "smoke+e2e@autonomath.ai"
+            price, "smoke+e2e@zeimu-kaikei.ai"
         )
         _ok(f"Stripe test Subscription created: {sub_id}")
 

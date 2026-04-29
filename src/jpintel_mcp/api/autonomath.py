@@ -56,6 +56,7 @@ from jpintel_mcp.cache.l4 import canonical_cache_key, get_or_compute
 from jpintel_mcp.mcp.autonomath_tools import (
     annotation_tools,
     autonomath_wrappers,
+    industry_packs,
     provenance_tools,
     static_resources,
     tax_rule_tool,
@@ -80,6 +81,18 @@ from jpintel_mcp.templates.saburoku_kyotei import (
 _SABUROKU_DISCLAIMER = (
     "本テンプレートは draft です。労基署提出前に必ず社労士確認を行ってください。"
     "AutonoMath は generation accuracy について保証しません。"
+)
+
+# 税理士法 §52 fence for /v1/am/tax_incentives + /v1/am/tax_rule. Mirrors
+# api/tax_rulesets.py:_TAX_DISCLAIMER. Every tax-related REST response
+# surfaces this in the `_disclaimer` envelope key so consumer LLMs do not
+# relay our output as 税務助言. We provide DOC-level information (制度名 /
+# 根拠条文 / 計算例 from public 国税庁・財務省・e-Gov sources) — never advice.
+_TAX_DISCLAIMER = (
+    "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+    "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
+    "税務判断・申告書作成代行は行いません。個別案件は資格を有する税理士に必ずご相談"
+    "ください。本サービスの情報利用により生じた損害について、当社は一切の責任を負いません。"
 )
 
 # 36協定 REST endpoints are 503-gated when AUTONOMATH_36_KYOTEI_ENABLED is not
@@ -228,18 +241,41 @@ _LIFECYCLE_CAVEAT_TEXT = (
     "amendment_snapshot has uniform eligibility_hash; treat as point-in-time only"
 )
 
+# Structured form for machine consumers (AI agents, dashboards). Keeps the
+# human-readable summary in `note` so a `"point-in-time" in str(caveat)` style
+# check still works, while exposing the underlying counts so callers can
+# program against them. Numbers reflect production state per CLAUDE.md /
+# docs/api-reference.md (14,596 rows total; 144 with non-NULL temporal fields;
+# remaining 82% carry an empty eligibility_hash).
+_LIFECYCLE_CAVEAT: dict[str, Any] = {
+    "data_quality": "partial",
+    "rows_with_complete_temporal_data": 144,
+    "total_rows": 14596,
+    "note": (
+        "82% of am_amendment_snapshot rows have empty eligibility_hash; "
+        "historical diff is partial. Use effective_from for confirmed dates "
+        "only — treat the snapshot as point-in-time, not a real time-series."
+    ),
+}
+
 
 def _attach_lifecycle_caveat(body: Any) -> Any:
     """Inject `_lifecycle_caveat` into the response body if not already set.
 
     Idempotent — re-applying does not overwrite a caller-supplied caveat.
     Soft-fail: returns `body` unchanged if it isn't a dict.
+
+    The caveat value is a structured dict (data_quality / row counts / note)
+    so AI-agent consumers can program against it. The `note` field carries
+    the human-readable summary for log lines and Markdown rendering.
     """
     if not isinstance(body, dict):
         return body
     if "_lifecycle_caveat" in body:
         return body
-    body["_lifecycle_caveat"] = _LIFECYCLE_CAVEAT_TEXT
+    # Return a fresh copy per call so callers cannot mutate the module-level
+    # default by reference.
+    body["_lifecycle_caveat"] = dict(_LIFECYCLE_CAVEAT)
     return body
 
 
@@ -342,7 +378,58 @@ def _l4_get_or_compute_safe(
 # ---------------------------------------------------------------------------
 # 1. search_tax_incentives
 # ---------------------------------------------------------------------------
-@router.get("/tax_incentives", response_model=AMSearchResponse)
+@router.get(
+    "/tax_incentives",
+    response_model=AMSearchResponse,
+    summary="Search 税制特例 (special depreciation, tax credits, NOL carryforward, exemptions)",
+    description=(
+        "FTS + structured filter across **285 税制特例** rows: 特別償却 "
+        "(special depreciation), 税額控除 (tax credit), 繰越欠損金 (NOL "
+        "carryforward), 非課税措置 (tax exemption). Backed by autonomath.db "
+        "`am_entities` (record_kind='tax_measure') with provenance + "
+        "amount conditions joined.\n\n"
+        "**When to use:** caller asks 'what tax incentives apply to "
+        "manufacturing CapEx in 2026?' — pass `target_year=2026` + "
+        "`industry='製造業'` + `target_entity='sme'`. For broader "
+        "consumption-tax / 適格請求書 ruleset queries (2割特例, 経過措置 80%) "
+        "use `GET /v1/tax_rulesets/search` instead.\n\n"
+        "**税理士法 §52 fence:** every response carries a `_disclaimer` "
+        "envelope key declaring the output information retrieval, NOT "
+        "税務助言. LLM agents MUST relay the disclaimer."
+    ),
+    responses={
+        200: {
+            "description": "AMSearchResponse + `_disclaimer` (税理士法 §52 fence).",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total": 1,
+                        "limit": 20,
+                        "offset": 0,
+                        "results": [
+                            {
+                                "entity_id": "tax_measure_chusho_kvestigation_credit_2026",
+                                "name": "中小企業投資促進税制 (税額控除7%)",
+                                "authority": "国税庁",
+                                "tax_kind": "corporate",
+                                "incentive_type": "credit",
+                                "rate": "7%",
+                                "amount_cap_yen": 30000000,
+                                "effective_from": "2025-04-01",
+                                "effective_until": "2027-03-31",
+                                "source_url": "https://www.nta.go.jp/...",
+                            }
+                        ],
+                        "_disclaimer": (
+                            "本情報は公開情報の検索結果であり、税務助言ではありません。"
+                            "申告・適用判断は税理士にご確認ください。"
+                        ),
+                    }
+                }
+            },
+        }
+    },
+)
 def rest_search_tax_incentives(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -355,7 +442,12 @@ def rest_search_tax_incentives(
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> JSONResponse:
-    """税制特例 (特別償却 / 税額控除 / 繰越欠損金 / 非課税措置) search across ~285 rows."""
+    """税制特例 (特別償却 / 税額控除 / 繰越欠損金 / 非課税措置) search across ~285 rows.
+
+    Every response carries a ``_disclaimer`` envelope key (税理士法 §52 fence)
+    declaring the output information retrieval, NOT 税務助言. Mirrors the
+    36協定 render pattern.
+    """
     # L4 cache key — every user-visible param + ctx.tier (poisoning guard).
     # Wraps the FTS scan + envelope build; logging stays outside.
     _l4_params: dict[str, Any] = {
@@ -393,6 +485,11 @@ def rest_search_tax_incentives(
         compute=_do_search,
         ttl=_L4_TTL_AM_TAX_INCENTIVES,
     )
+    # 税理士法 §52 fence — inject after L4 cache so the disclaimer text
+    # is always current, never stale-cached.
+    if isinstance(body, dict):
+        body = dict(body)
+        body["_disclaimer"] = _TAX_DISCLAIMER
     log_usage(conn, ctx, "am.tax_incentives.search")
     return JSONResponse(content=body)
 
@@ -400,7 +497,52 @@ def rest_search_tax_incentives(
 # ---------------------------------------------------------------------------
 # 2. search_certifications
 # ---------------------------------------------------------------------------
-@router.get("/certifications", response_model=AMSearchResponse)
+@router.get(
+    "/certifications",
+    response_model=AMSearchResponse,
+    summary="Search 認定・認証制度 (健康経営, えるぼし, くるみん, 経営革新等支援機関 etc.)",
+    description=(
+        "Look up Japanese business certification programs across 66 "
+        "認定・認証 schemes spanning labor (くるみん, えるぼし, ユース"
+        "エール), management innovation (経営革新, 認定経営革新等支援機関), "
+        "health (健康経営優良法人, 健康経営銘柄), sustainability (SDGs "
+        "認証, ゼブラ企業), and information security (Pマーク, ISMS).\n\n"
+        "**When to use:** caller asks 'which certifications can a 50-person "
+        "manufacturing 株式会社 in 大阪 apply for?' — pass "
+        "`size='medium'` + `industry='製造業'`. Many 補助金 cite these "
+        "認定 as eligibility prerequisites — pair with "
+        "`POST /v1/programs/prescreen` (`held_certifications=[...]`) to "
+        "see which programs the certifications unlock.\n\n"
+        "**Authority enum (`authority`):** 厚生労働省 / 経済産業省 / 内閣府 "
+        "/ 中小企業庁 / 自治体 / その他."
+    ),
+    responses={
+        200: {
+            "description": "AMSearchResponse — paginated certification entities.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total": 1,
+                        "limit": 20,
+                        "offset": 0,
+                        "results": [
+                            {
+                                "entity_id": "cert_kurumin_2026",
+                                "name": "くるみん認定 (子育てサポート企業)",
+                                "authority": "厚生労働省",
+                                "size_target": ["sme", "large"],
+                                "industry_target": ["all"],
+                                "issuance_basis": "次世代育成支援対策推進法",
+                                "validity_years": 2,
+                                "source_url": "https://www.mhlw.go.jp/general/seido/koyou/kurumin/",
+                            }
+                        ],
+                    }
+                }
+            },
+        }
+    },
+)
 def rest_search_certifications(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -607,8 +749,11 @@ def rest_programs_active_at_v2(
 
     Caveat: `am_amendment_snapshot` carries a uniform `eligibility_hash`
     across all (v1, v2) pairs — the table is a point-in-time snapshot,
-    not a real time-series. The response carries `_lifecycle_caveat` so
-    callers do not infer per-version eligibility drift.
+    not a real time-series. The response carries `_lifecycle_caveat` (a
+    structured dict with `data_quality` / `rows_with_complete_temporal_data`
+    / `total_rows` / `note`) so callers do not infer per-version eligibility
+    drift. The same caveat is also emitted on `/v1/am/by_law` and
+    `/v1/am/law_article` responses that surface amendment history.
     """
     as_of_iso = _validate_iso_or_none(as_of, name="as_of")
     open_by_iso = _validate_iso_or_none(application_open_by, name="application_open_by")
@@ -783,16 +928,27 @@ def rest_get_tax_rule(
     rule_type: Annotated[str | None, Query(max_length=60)] = None,
     as_of: Annotated[str | None, Query(max_length=10, description="ISO YYYY-MM-DD (default today)")] = None,
 ) -> JSONResponse:
-    """Single tax measure lookup against am_tax_rule with root_law + rate + applicability window."""
+    """Single tax measure lookup against am_tax_rule with root_law + rate + applicability window.
+
+    Every response carries a ``_disclaimer`` envelope key (税理士法 §52 fence).
+    Even when a single measure matches, the row payload is information
+    retrieval — root_law / rate / applicability window all derive from
+    public 国税庁・財務省 sources and require qualified 税理士 confirmation
+    before any filing decision.
+    """
     result = tax_rule_tool.get_am_tax_rule(
         measure_name_or_id=measure_name_or_id,
         rule_type=rule_type,
         as_of=as_of,
     )
-    log_usage(conn, ctx, "am.tax_rule.get")
-    return JSONResponse(content=_apply_envelope(
+    body = _apply_envelope(
         "get_am_tax_rule", result, query=measure_name_or_id,
-    ))
+    )
+    if isinstance(body, dict):
+        body = dict(body)
+        body["_disclaimer"] = _TAX_DISCLAIMER
+    log_usage(conn, ctx, "am.tax_rule.get")
+    return JSONResponse(content=body)
 
 
 # ---------------------------------------------------------------------------
@@ -823,7 +979,55 @@ def rest_search_gx_programs(
 # ---------------------------------------------------------------------------
 # 13. search_loans_am
 # ---------------------------------------------------------------------------
-@router.get("/loans", response_model=AMLoanSearchResponse)
+@router.get(
+    "/loans",
+    response_model=AMLoanSearchResponse,
+    summary="Search loan products (公庫 / 商工中金 / 自治体制度融資) with 3-axis risk filter",
+    description=(
+        "Loan-product search backed by `am_loan_product` (autonomath.db) "
+        "covering 日本政策金融公庫 (JFC), 商工組合中央金庫, and 自治体制度融資 "
+        "(prefecture / municipal credit guarantee programs). Filter "
+        "independently along three risk axes:\n\n"
+        "- `no_collateral=true` → 物的担保 not required\n"
+        "- `no_personal_guarantor=true` → 代表者保証 / 経営者保証 not required\n"
+        "- `no_third_party_guarantor=true` → 第三者保証 not required\n\n"
+        "Free-text search via `name_query` (3+ char minimum). Lender "
+        "narrowing via `lender_entity_id`. Amount band via "
+        "`min_amount_yen` / `max_amount_yen` (in YEN, not 万円).\n\n"
+        "**Note:** there is also `GET /v1/loan-programs/search` against "
+        "the legacy `loan_programs` table (108 rows, jpintel.db). The "
+        "`/v1/am/loans` route returns the unified autonomath view with "
+        "richer entity provenance. Prefer this for new integrations."
+    ),
+    responses={
+        200: {
+            "description": "AMLoanSearchResponse — ranked loan products.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "total": 1,
+                        "limit": 10,
+                        "results": [
+                            {
+                                "entity_id": "loan_jfc_kokumin_shinki_kaigyou",
+                                "name": "新規開業・スタートアップ支援資金",
+                                "lender": "日本政策金融公庫 国民生活事業",
+                                "loan_kind": "special_rate",
+                                "amount_max_yen": 72000000,
+                                "loan_period_years_max": 20,
+                                "interest_rate_annual": 0.041,
+                                "collateral_required": "negotiable",
+                                "personal_guarantor_required": "negotiable",
+                                "third_party_guarantor_required": "negotiable",
+                                "source_url": "https://www.jfc.go.jp/n/finance/search/01_sinkikaigyou_m.html",
+                            }
+                        ],
+                    }
+                }
+            },
+        }
+    },
+)
 def rest_search_loans(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -858,7 +1062,56 @@ def rest_search_loans(
 # ---------------------------------------------------------------------------
 # 14. check_enforcement_am
 # ---------------------------------------------------------------------------
-@router.get("/enforcement", response_model=AMEnforcementCheckResponse)
+@router.get(
+    "/enforcement",
+    response_model=AMEnforcementCheckResponse,
+    summary="Check 行政処分 / 排除期間 status for a 法人番号 or 事業者名",
+    description=(
+        "Compliance / DD lookup: is this entity currently barred from "
+        "補助金 / 助成金 receipt under 補助金等適正化法 §17 / 入札参加資格 "
+        "停止 / その他 行政処分? Query by 13-digit `houjin_bangou` (preferred — "
+        "exact match) or `target_name` (LIKE match against the published "
+        "対象事業者名). Pass `as_of_date='YYYY-MM-DD'` to check status as "
+        "of a historical date — 排除期間 windows are time-bounded so "
+        "'today' vs '2024-06-01' can give different verdicts.\n\n"
+        "**Backed by:** 1,185 行政処分 cases (会計検査院 + ministry "
+        "公表) + `am_enforcement_detail` (22,258 rows; "
+        "grant_refund / subsidy_exclude / fine breakdown).\n\n"
+        "**Use this BEFORE awarding subsidies, before extending credit, "
+        "before contracting with a vendor.** A clear-status response "
+        "(`is_currently_barred=false`) lists past closed cases for "
+        "reference; an active match returns the disclosed_until "
+        "(排除期間 終了日) so the caller can plan timing."
+    ),
+    responses={
+        200: {
+            "description": "Enforcement status snapshot at `as_of_date`.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "houjin_bangou": "1234567890123",
+                        "target_name_query": None,
+                        "as_of_date": "2026-04-29",
+                        "is_currently_barred": False,
+                        "active_cases": [],
+                        "past_cases": [
+                            {
+                                "case_id": "jbaudit_r03_2021-r03-0046-0_1",
+                                "event_type": "clawback",
+                                "ministry": "内閣府",
+                                "disclosed_date": "2022-11-07",
+                                "disclosed_until": "2027-11-06",
+                                "amount_improper_grant_yen": 89073000,
+                                "legal_basis": "補助金等に係る予算の執行の適正化に関する法律 第17条",
+                                "source_url": "https://report.jbaudit.go.jp/org/r03/2021-r03-0046-0.htm",
+                            }
+                        ],
+                    }
+                }
+            },
+        }
+    },
+)
 def rest_check_enforcement(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -881,7 +1134,26 @@ def rest_check_enforcement(
 # ---------------------------------------------------------------------------
 # 15. search_mutual_plans_am
 # ---------------------------------------------------------------------------
-@router.get("/mutual_plans", response_model=AMLoanSearchResponse)
+@router.get(
+    "/mutual_plans",
+    response_model=AMLoanSearchResponse,
+    summary="Search mutual-aid / pension / workers' comp plans (共済 / 年金 / 労災)",
+    description=(
+        "Cross-search across Japanese mutual-aid (共済), corporate / "
+        "personal pension (年金), and workers' compensation special-membership "
+        "(労災特別加入) plans. Covers 小規模企業共済 (small-enterprise mutual "
+        "aid), iDeCo+ (iDeCo with employer contributions), DB / DC corporate "
+        "pensions, industry-specific pensions, and 労災特別加入 schemes for "
+        "代表者 / 一人親方.\n\n"
+        "Filter by `plan_kind` (retirement_mutual / bankruptcy_mutual / "
+        "dc_pension / db_pension / industry_pension / welfare_insurance / "
+        "health_insurance / other), `premium_monthly_yen` ceiling, "
+        "`tax_deduction_type` (small_enterprise_deduction / idekodc / "
+        "group_retirement / corp_expense / none), or `provider_entity_id`.\n\n"
+        "(共済 / 年金 / 労災 cross-search: 小規模企業共済 / iDeCo+ / "
+        "DB / DC / 労災特別加入 等を横断検索.)"
+    ),
+)
 def rest_search_mutual_plans(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -892,7 +1164,11 @@ def rest_search_mutual_plans(
     name_query: Annotated[str | None, Query(max_length=200)] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 10,
 ) -> JSONResponse:
-    """共済 / 年金 / 労災 cross-search (小規模企業共済 / iDeCo+ / DB / DC / 労災特別加入)."""
+    """Cross-search mutual-aid / pension / workers' compensation plans.
+
+    共済 / 年金 / 労災 cross-search (小規模企業共済 / iDeCo+ / DB / DC /
+    労災特別加入).
+    """
     result = autonomath_wrappers.search_mutual_plans_am(
         plan_kind=plan_kind,
         premium_monthly_yen=premium_monthly_yen,
@@ -1286,3 +1562,71 @@ def rest_deep_health(force: bool = False) -> JSONResponse:
     debugging or post-deploy verification.
     """
     return JSONResponse(content=get_deep_health(force=force))
+
+
+# ---------------------------------------------------------------------------
+# Wave 23 (2026-04-29): Industry packs REST surface — pack_construction /
+# pack_manufacturing / pack_real_estate. Mirror the @mcp.tool decorated
+# variants in mcp/autonomath_tools/industry_packs.py. Audience HTML
+# (site/audiences/{construction,manufacturing,real_estate}.html) embeds
+# example URLs against these paths, so they must route. Single ¥3/req
+# metered (NO LLM inside, pure SQLite assembly).
+# ---------------------------------------------------------------------------
+@router.get("/pack_construction")
+def rest_pack_construction(
+    conn: DbDep,
+    ctx: ApiContextDep,
+    prefecture: Annotated[str | None, Query(max_length=20)] = None,
+    employee_count: Annotated[int | None, Query(ge=0)] = None,
+    revenue_yen: Annotated[int | None, Query(ge=0)] = None,
+) -> JSONResponse:
+    """[INDUSTRY-PACK] 建設業 (JSIC D) cohort: top 10 programs + 5 saiketsu + 3 通達."""
+    result = industry_packs._pack_construction_impl(
+        prefecture=prefecture,
+        employee_count=employee_count,
+        revenue_yen=revenue_yen,
+    )
+    log_usage(conn, ctx, "am.pack_construction")
+    return JSONResponse(content=_apply_envelope(
+        "pack_construction", result, query=prefecture or "",
+    ))
+
+
+@router.get("/pack_manufacturing")
+def rest_pack_manufacturing(
+    conn: DbDep,
+    ctx: ApiContextDep,
+    prefecture: Annotated[str | None, Query(max_length=20)] = None,
+    employee_count: Annotated[int | None, Query(ge=0)] = None,
+    revenue_yen: Annotated[int | None, Query(ge=0)] = None,
+) -> JSONResponse:
+    """[INDUSTRY-PACK] 製造業 (JSIC E) cohort: top 10 programs + 5 saiketsu + 3 通達."""
+    result = industry_packs._pack_manufacturing_impl(
+        prefecture=prefecture,
+        employee_count=employee_count,
+        revenue_yen=revenue_yen,
+    )
+    log_usage(conn, ctx, "am.pack_manufacturing")
+    return JSONResponse(content=_apply_envelope(
+        "pack_manufacturing", result, query=prefecture or "",
+    ))
+
+
+@router.get("/pack_real_estate")
+def rest_pack_real_estate(
+    conn: DbDep,
+    ctx: ApiContextDep,
+    prefecture: Annotated[str | None, Query(max_length=20)] = None,
+    employee_count: Annotated[int | None, Query(ge=0)] = None,
+    revenue_yen: Annotated[int | None, Query(ge=0)] = None,
+) -> JSONResponse:
+    """[INDUSTRY-PACK] 不動産業 (JSIC K) cohort: top 10 programs + 5 saiketsu + 3 通達."""
+    result = industry_packs._pack_real_estate_impl(
+        prefecture=prefecture,
+        employee_count=employee_count,
+        revenue_yen=revenue_yen,
+    )
+    log_usage(conn, ctx, "am.pack_real_estate")
+    return JSONResponse(content=_apply_envelope(
+        "pack_real_estate", result, query=prefecture or "",
+    ))

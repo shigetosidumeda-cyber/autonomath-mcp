@@ -28,7 +28,7 @@
 --   認定支援機関 公表一覧 preferred). Aggregators (noukaweb, hojyokin-portal,
 --   biz.stayway, etc.) remain banned. For self-serve signups the primary
 --   source is the signup form itself — use the canonical form URL
---   (https://autonomath.ai/advisors-signup.html) as source_url.
+--   (https://zeimu-kaikei.ai/advisors-signup.html) as source_url.
 --
 -- PII posture (APPI):
 --   * houjin_bangou (法人番号) is PUBLIC for incorporated entities — not PII.

@@ -3,7 +3,7 @@
 Date: 2026-04-23
 Hardware: Apple Silicon (Darwin arm64), macOS dev box
 API: `.venv/bin/uvicorn jpintel_mcp.api.main:app --port 18080 --workers 1`
-DB: `data/jpintel.db` (SQLite WAL, 5,831 non-excluded programs)
+DB: `data/jpintel.db` (SQLite 書込ログモード, 5,831 non-excluded programs)
 Bench: `scripts/bench_api.py` — median of 3 runs, 20-req warmup per cell
 
 These numbers are directional only. Prod on Fly (Tokyo, single machine) will
@@ -55,14 +55,14 @@ with facet search rules out query-plan cost. The bottleneck is per-request.
 `src/jpintel_mcp/api/deps.py:30` → `get_db()` calls `connect()` on every
 request. `connect()` at `src/jpintel_mcp/db/session.py:27-31` opens a fresh
 sqlite handle and then issues **two `PRAGMA` statements per request**
-(`journal_mode = WAL`, `foreign_keys = ON`). WAL mode is a persistent
+(`journal_mode = WAL`, `foreign_keys = ON`). 書込ログモードは永続化される
 database property — setting it once at `init_db()` would suffice. The
 `foreign_keys` pragma is per-connection, but the foreign-key checks add no
 value on hot read paths.
 
 Compounding factors:
 
-1. **No `PRAGMA busy_timeout`.** Under c=50, readers serialize on the WAL
+1. **No `PRAGMA busy_timeout`.** Under c=50, readers serialize on the書込ログ
    write lock held during transaction commits (e.g. `log_usage` inserts into
    `usage_events` on every request). Default busy timeout is zero → immediate
    contention → threadpool threads sit spinning.
@@ -71,7 +71,7 @@ Compounding factors:
    Starlette threadpool, whose default is 40 workers. At c=50, 10+ requests
    queue behind busy workers and inherit the queue delay.
 3. **Per-request `log_usage` write.** Every request opens a transaction to
-   `INSERT INTO usage_events`, which takes the WAL write lock. At c=50
+   `INSERT INTO usage_events`, which takes the 書込ログ write lock. At c=50
    that's 50 writers contending for one writer slot.
 
 The nearly-identical c=50 curves across search and get_program are the
@@ -80,7 +80,7 @@ fingerprint: it's not the query, it's the setup + writer contention.
 ### Recommended fixes (in order of payoff)
 
 1. **`src/jpintel_mcp/db/session.py:29-31`** — drop per-connection
-   `PRAGMA journal_mode = WAL` (it's persistent, set once in `init_db`).
+   `PRAGMA journal_mode = WAL` (書込ログモードは永続化されるので `init_db` で 1 度設定すれば足りる)。
    Add `PRAGMA busy_timeout = 5000` and `PRAGMA synchronous = NORMAL`
    inside `init_db` or once per connection only. Consider caching a
    thread-local read connection to avoid the `sqlite3.connect()` syscall

@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>AutonoMath for AI agent developers — MCP / REST + Claude Desktop + 72 tools</title>
-<meta name="description" content="AutonoMath for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport, no SDK, runs in Claude Desktop, Cursor, and ChatGPT. 72 MCP tools (39 jpintel + 33 autonomath), protocol 2025-06-18. 50 req/month free to evaluate, then ¥3/req metered.">
+<title>AutonoMath for AI agent developers — MCP / REST + Claude Desktop + 89 tools</title>
+<meta name="description" content="AutonoMath for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport, no SDK, runs in Claude Desktop, Cursor, and ChatGPT. 89 MCP tools at default gates, protocol 2025-06-18. 50 req/month free to evaluate, then ¥3/req metered.">
 
 <meta property="og:title" content="AutonoMath for AI agent developers">
-<meta property="og:description" content="MCP / REST + Claude Desktop ready + 72 tools.">
+<meta property="og:description" content="MCP / REST + Claude Desktop ready + 89 tools.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/en/audiences/dev.html">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/en/audiences/dev.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
@@ -19,13 +19,13 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AutonoMath for AI agent developers">
-<meta name="twitter:description" content="MCP server (72 tools) + REST API. Drop into Claude Desktop.">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:description" content="MCP server (89 tools) + REST API. Drop into Claude Desktop.">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/en/audiences/dev.html">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/audiences/dev.html">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/audiences/dev.html">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/audiences/dev.html">
+<link rel="canonical" href="https://zeimu-kaikei.ai/en/audiences/dev.html">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/audiences/dev.html">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/audiences/dev.html">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/audiences/dev.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -39,9 +39,9 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autonomath.ai/en/"},
-    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://autonomath.ai/en/audiences/"},
-    {"@type": "ListItem", "position": 3, "name": "AI agent developers", "item": "https://autonomath.ai/en/audiences/dev.html"}
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://zeimu-kaikei.ai/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://zeimu-kaikei.ai/en/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "AI agent developers", "item": "https://zeimu-kaikei.ai/en/audiences/dev.html"}
   ]
 }
 </script>
@@ -52,11 +52,11 @@
   "@type": "Service",
   "serviceType": "MCP / REST API for AI agent developers",
   "name": "AutonoMath for AI agent developers",
-  "description": "AutonoMath for AI agent developers. An MCP server over Japanese subsidy / tax / loan / law data. 72 tools, stdio transport, protocol 2025-06-18. Runs in Claude Desktop, Cursor, and ChatGPT.",
+  "description": "AutonoMath for AI agent developers. An MCP server over Japanese subsidy / tax / loan / law data. 89 tools, stdio transport, protocol 2025-06-18. Runs in Claude Desktop, Cursor, and ChatGPT.",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://autonomath.ai/en/",
+    "url": "https://zeimu-kaikei.ai/en/",
     "identifier": "T8010001213708"
   },
   "audience": {
@@ -86,7 +86,7 @@
   "inLanguage": "en",
   "mainEntity": [
     {"@type": "Question", "name": "Is stdio the only MCP transport?", "acceptedAnswer": {"@type": "Answer", "text": "stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API exposes equivalent functionality, so use that if your environment is HTTP-only."}},
-    {"@type": "Question", "name": "What's the breakdown of the 72 tools?", "acceptedAnswer": {"@type": "Answer", "text": "39 jpintel core (programs + case_studies + loan_programs + enforcement + get_usage_status + 7 one-shot discovery tools + expansion: laws / tax_rulesets / court_decisions / bids / invoice_registrants + cross-dataset glue) and 33 autonomath (entity-fact DB: 17 V1 + 4 V4 universal + 5 Phase A + 7 lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine). The 36協定 pair is gated off via AUTONOMATH_36_KYOTEI_ENABLED (would push to 74). Full schemas are at /docs/mcp-tools/."}},
+    {"@type": "Question", "name": "What's the breakdown of the 89 tools?", "acceptedAnswer": {"@type": "Answer", "text": "Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset glue); the entity-fact DB; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are gated off by default. Full schemas are at /docs/mcp-tools/."}},
     {"@type": "Question", "name": "Does this work with Claude Desktop, Cursor, and ChatGPT?", "acceptedAnswer": {"@type": "Answer", "text": "Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API via GPTs Actions. Sample configs are in the quickstart section."}},
     {"@type": "Question", "name": "What are the rate limits?", "acceptedAnswer": {"@type": "Answer", "text": "Anonymous (no key) is 50 req/month per IP, reset at JST first-of-month 00:00. Authenticated (API key) has no hard cap, with UTC monthly accounting. Spikes don't 429. Concurrent connections are effectively unlimited across MCP and HTTP."}},
     {"@type": "Question", "name": "Where's the OpenAPI spec?", "acceptedAnswer": {"@type": "Answer", "text": "/docs/openapi/v1.json publishes an OpenAPI 3.1-compliant spec, auto-generated from FastAPI. Imports cleanly into Stoplight, Postman, Insomnia, etc."}},
@@ -103,13 +103,12 @@
 <header class="site-header" role="banner">
   <div class="container header-inner">
     <a class="brand" href="../index.html" aria-label="AutonoMath home">
-      <span class="brand-mark" aria-hidden="true">AM</span>
       <span class="brand-name">AutonoMath</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="../getting-started.html">Docs</a>
       <a href="../pricing.html">Pricing</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
       <span class="lang-switch" role="group" aria-label="Language / 言語">
         <a href="../../audiences/dev.html" lang="ja" hreflang="ja">JP</a>
         <span class="sep" aria-hidden="true">/</span>
@@ -128,12 +127,12 @@
       </nav>
       <h1 id="hero-title">AutonoMath for AI agent developers</h1>
       <p class="hero-sub">An MCP server for Japanese subsidy / tax / loan / law data. stdio transport, no SDK, drops straight into Claude Desktop, Cursor, and ChatGPT.</p>
-      <p class="hero-tag">72 MCP tools (39 jpintel + 33 autonomath, protocol 2025-06-18). 13,578 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 9,484 laws + 35 tax rulesets + 13,801 invoice registrants + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases). 50 req/mo free to evaluate, ¥3/req commercial.</p>
+      <p class="hero-tag">89 MCP tools at default gates (protocol 2025-06-18). 14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 154 laws full-text + 9,484 law catalog stubs + 35 tax rulesets + 13,801 invoice registrants + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases). 50 req/mo free to evaluate, ¥3/req commercial.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
-        <a class="btn btn-secondary" href="/docs/mcp-tools/">All 72 tools</a>
+        <a class="btn btn-secondary" href="/docs/mcp-tools/">All 89 tools</a>
         <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI</a>
-        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
       </div>
     </div>
   </section>
@@ -144,7 +143,7 @@
       <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
         <article class="card">
-          <h3>MCP native, 72 tools</h3>
+          <h3>MCP native, 89 tools</h3>
           <p class="card-lead">stdio + protocol 2025-06-18</p>
           <p>FastMCP-based, stdio transport, drops into Claude Desktop and Cursor. No SDK; one <code>uvx</code> line to launch. Tool schemas are exposed via <code>list_tools()</code>, and Claude picks autonomously.</p>
         </article>
@@ -206,11 +205,11 @@
 
         <article class="card">
           <h3>curl (anonymous, 50 free/mo)</h3>
-          <pre class="code-block"><code>curl 'https://api.autonomath.ai/v1/programs/search?\
+          <pre class="code-block"><code>curl 'https://api.zeimu-kaikei.ai/v1/programs/search?\
 q=DX&amp;tier=S,A&amp;limit=5'
 
 # OpenAPI spec
-curl https://api.autonomath.ai/v1/openapi.json</code></pre>
+curl https://api.zeimu-kaikei.ai/v1/openapi.json</code></pre>
           <p class="demo-note">No signup. JST first-of-month reset.</p>
         </article>
 
@@ -219,7 +218,7 @@ curl https://api.autonomath.ai/v1/openapi.json</code></pre>
           <pre class="code-block"><code># pip install httpx
 import httpx
 client = httpx.Client(
-  base_url="https://api.autonomath.ai/v1",
+  base_url="https://api.zeimu-kaikei.ai/v1",
   headers={"X-API-Key": "sk_..."}
 )
 r = client.get("/programs/search",
@@ -254,7 +253,7 @@ for p in r.json()["items"]:
 
   <section class="code-demo" aria-labelledby="tools-title">
     <div class="container">
-      <h2 id="tools-title" class="section-title">A sample of the 72 tools</h2>
+      <h2 id="tools-title" class="section-title">A sample of the 89 tools</h2>
       <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
         <article class="card">
@@ -296,7 +295,7 @@ for p in r.json()["items"]:
             <li><code>prerequisite_chain</code></li>
             <li><code>query_at_snapshot</code></li>
           </ul>
-          <p style="margin-top:12px;font-size:13px;"><a href="/docs/mcp-tools/">See all 72 tool schemas &rarr;</a></p>
+          <p style="margin-top:12px;font-size:13px;"><a href="/docs/mcp-tools/">See all 89 tool schemas &rarr;</a></p>
         </article>
 
       </div>
@@ -334,8 +333,8 @@ for p in r.json()["items"]:
       <h2 id="faq-title" class="section-title">FAQ (developer)</h2>
       <h3 style="font-size:16px;margin:18px 0 6px;">Is stdio the only MCP transport?</h3>
       <p>stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API has the same coverage, so use that if your environment is HTTP-only.</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">What's the breakdown of the 72 tools?</h3>
-      <p>39 jpintel core (programs + case_studies + loan_programs + enforcement + get_usage_status + 7 one-shot discovery + expansion: laws / tax_rulesets / court_decisions / bids / invoice_registrants + cross-dataset glue) and 33 autonomath (entity-fact DB: 17 V1 + 4 V4 universal + 5 Phase A + 7 lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine). The 36協定 pair is gated off (AUTONOMATH_36_KYOTEI_ENABLED — would push to 74). Full schemas at /docs/mcp-tools/.</p>
+      <h3 style="font-size:16px;margin:18px 0 6px;">What's the breakdown of the 89 tools?</h3>
+      <p>Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset glue); the entity-fact DB; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are gated off by default. Full schemas at /docs/mcp-tools/.</p>
       <h3 style="font-size:16px;margin:18px 0 6px;">Does this work with Claude Desktop, Cursor, and ChatGPT?</h3>
       <p>Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API through GPTs Actions. Sample configs are in the quickstart.</p>
       <h3 style="font-size:16px;margin:18px 0 6px;">What are the rate limits?</h3>
@@ -356,11 +355,11 @@ for p in r.json()["items"]:
       <h2 id="resources-title" class="section-title">Developer resources</h2>
       <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/"><strong>REST API reference (112 endpoints)</strong></a> &mdash; Full endpoint specs, authentication, rate limits, response schemas. Auto-generated from FastAPI.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (72 tools)</strong></a> &mdash; Functions callable directly from Claude Desktop / Cursor / Continue. Full schemas published, stdio transport.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (89 tools)</strong></a> &mdash; Functions callable directly from Claude Desktop / Cursor / Continue. Full schemas published, stdio transport.</li>
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>Implementation examples (Python + curl + TypeScript)</strong></a> &mdash; Copy-paste samples. Both MCP and REST, error handling included.</li>
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key issuance to first search. Stripe metered billing setup included.</li>
         <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; Direct import into Stoplight, Postman, Insomnia. Source for client SDK auto-generation.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener"><strong>GitHub: AutonoMath/autonomath-mcp</strong></a> &mdash; Issues / discussions / sample server.json manifest. MIT-compatible license.</li>
+        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener"><strong>GitHub: AutonoMath/autonomath-mcp</strong></a> &mdash; Issues / discussions / sample server.json manifest. MIT-compatible license.</li>
         <li style="padding:10px 0;"><a href="https://pypi.org/project/autonomath-mcp/" rel="noopener"><strong>PyPI: autonomath-mcp</strong></a> &mdash; <code>uvx autonomath-mcp</code> launches immediately. Just add to <code>claude_desktop_config.json</code>.</li>
       </ul>
     </div>
@@ -371,9 +370,9 @@ for p in r.json()["items"]:
       <h2 id="cta-title" class="section-title">Get started</h2>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
-        <a class="btn btn-secondary" href="https://github.com/AutonoMath/autonomath-mcp" rel="noopener">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
         <a class="btn btn-secondary" href="mailto:info@bookyou.net?subject=AI%20agent%20developer%20inquiry">info@bookyou.net</a>
-        <a class="btn btn-secondary" href="/docs/mcp-tools/">All 72 tools</a>
+        <a class="btn btn-secondary" href="/docs/mcp-tools/">All 89 tools</a>
       </div>
       <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. (T8010001213708) &middot; Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
     </div>
@@ -404,7 +403,7 @@ for p in r.json()["items"]:
       <a href="../getting-started.html">Getting started</a>
       <a href="../pricing.html">Pricing</a>
       <a href="../tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
     <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

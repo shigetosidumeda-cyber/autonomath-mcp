@@ -10,8 +10,10 @@ name: ingest-monthly
 
 on:
   schedule:
-    # 21:00 UTC 1st of month == 06:00 JST 1st of month.
-    - cron: "0 21 1 * *"
+    # 21:20 UTC 1st of month == 06:20 JST 1st of month. Staggered +20 min
+    # vs kpi-digest-cron (0 21 *) and saved-searches-cron (10 21 *) which
+    # also ssh into Fly daily.
+    - cron: "20 21 1 * *"
   workflow_dispatch:
     inputs:
       authority:

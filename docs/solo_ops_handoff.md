@@ -1,8 +1,8 @@
-# AutonoMath — Solo Ops Handoff
+# 税務会計AI — Solo Ops Handoff
 
 **Audience**: 1-day successor (post-Scenario-10 deadman trigger). Read top-to-bottom, run the 20 procedures as needed, ship the next deploy without help.
 
-**Confidentiality**: Internal-only. Do **not** publish to docs.autonomath.ai. No secret values are written here — only secret *names* and *locations*. Actual values live in 1Password (vault: `bookyou-autonomath-prod`) and Fly Secrets.
+**Confidentiality**: Internal-only. Do **not** publish to docs.zeimu-kaikei.ai. No secret values are written here — only secret *names* and *locations*. Actual values live in 1Password (vault: `bookyou-autonomath-prod`) and Fly Secrets.
 
 最終更新: 2026-04-25 · Operator: 梅田茂利 (info@bookyou.net) · Entity: Bookyou株式会社 (T8010001213708) · Launch: 2026-05-06
 
@@ -28,7 +28,7 @@ python3.13 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 flyctl auth token
 flyctl status --app autonomath-api          # must return non-error
 
-# Cloudflare access (1Password → "Cloudflare API token (autonomath.ai)")
+# Cloudflare access (1Password → "Cloudflare API token (zeimu-kaikei.ai)")
 # Verify via dashboard login, not API — we don't ship tokens to dev boxes.
 
 # Stripe live access (1Password → "Stripe Restricted Key (live, read-only)")
@@ -42,10 +42,10 @@ If any of the above fail, stop and email Bookyou KK 税理士 (§19) — access 
 ## 2. Daily smoke (1 minute)
 
 ```bash
-BASE_URL=https://api.autonomath.ai ./scripts/smoke_test.sh
-curl -s https://api.autonomath.ai/meta | jq '.total_programs, .build_sha, .last_ingest_at'
-curl -sI https://autonomath.ai/                         # Cloudflare Pages 200
-curl -sI https://api.autonomath.ai/healthz              # Fly 200
+BASE_URL=https://api.zeimu-kaikei.ai ./scripts/smoke_test.sh
+curl -s https://api.zeimu-kaikei.ai/meta | jq '.total_programs, .build_sha, .last_ingest_at'
+curl -sI https://zeimu-kaikei.ai/                         # Cloudflare Pages 200
+curl -sI https://api.zeimu-kaikei.ai/healthz              # Fly 200
 ```
 
 All four must return 2xx. If any fail, jump to `docs/_internal/incident_runbook.md`.
@@ -59,7 +59,7 @@ git checkout main && git pull
 ruff check src/ tests/ && .venv/bin/pytest && mypy src/  # quality gates
 flyctl deploy --app autonomath-api --strategy rolling
 flyctl status --app autonomath-api                       # confirm new release
-BASE_URL=https://api.autonomath.ai ./scripts/smoke_test.sh
+BASE_URL=https://api.zeimu-kaikei.ai ./scripts/smoke_test.sh
 ```
 
 If smoke fails: `flyctl releases rollback <prev-id> --app autonomath-api`.
@@ -88,14 +88,14 @@ Run weekly or after any meaningful `programs` table mutation.
 
 ## 7. Stripe webhook health
 
-Stripe dashboard → Developers → Webhooks → endpoint `https://api.autonomath.ai/v1/billing/webhook`. Health = "Receiving events" + "0 failed events past 24h". If failures: see `_internal/incident_runbook.md` §(b).
+Stripe dashboard → Developers → Webhooks → endpoint `https://api.zeimu-kaikei.ai/v1/billing/webhook`. Health = "Receiving events" + "0 failed events past 24h". If failures: see `_internal/incident_runbook.md` §(b).
 
 ## 8. Incident triage flow
 
 1. Sentry alert email arrives → check Sentry dashboard.
 2. Identify scenario id (1-9 in `docs/disaster_recovery.md`).
 3. Run scenario runbook from `_internal/incident_runbook.md`.
-4. Status update on `https://status.autonomath.ai` (Cloudflare Worker, edit via `site/status.html`).
+4. Status update on `https://status.zeimu-kaikei.ai` (Cloudflare Worker, edit via `site/status.html`).
 5. Customer email if customer-affecting > 5 min (§14 templates).
 6. Post-mortem within 24 h (template in `disaster_recovery.md` §4).
 
@@ -147,7 +147,7 @@ Rebuild time: ~6 h on a fast box. Do not run on production during business hours
 ### Outage (customer-facing scenario, > 5 min)
 
 ```
-Subject: [AutonoMath] サービス障害のお知らせ (YYYY-MM-DD)
+Subject: [税務会計AI] サービス障害のお知らせ (YYYY-MM-DD)
 
 ご利用のお客様へ
 
@@ -155,22 +155,22 @@ YYYY-MM-DD HH:MM JST より、API サービスに障害が発生し、HH:MM JST 
 影響時間: <分>。原因: <一行>。対策: <一行>。
 ご請求は障害時間中の利用分を除外して調整いたします (¥3/req metered のため、停止時間中は自動的に課金されません)。
 
-ご迷惑をおかけし申し訳ございません。詳細は https://status.autonomath.ai/postmortem/<id> に掲載いたします。
+ご迷惑をおかけし申し訳ございません。詳細は https://status.zeimu-kaikei.ai/postmortem/<id> に掲載いたします。
 
-— Bookyou株式会社 / AutonoMath / info@bookyou.net
+— Bookyou株式会社 / 税務会計AI / info@bookyou.net
 ```
 
 ### Data issue (incorrect program info reported)
 
 ```
-Subject: [AutonoMath] ご報告いただいた制度情報の修正完了
+Subject: [税務会計AI] ご報告いただいた制度情報の修正完了
 
 <お客様名> 様
 
 ご報告いただいた <制度ID> の <フィールド> の誤りについて、一次資料 (<出典URL>) を再確認のうえ、YYYY-MM-DD に修正を反映いたしました。
 キャッシュ反映まで最大 24h かかる場合があります。再度 API をお試しいただき、なお相違があればこのメールにご返信ください。
 
-— Bookyou株式会社 / AutonoMath / info@bookyou.net
+— Bookyou株式会社 / 税務会計AI / info@bookyou.net
 ```
 
 ### Support (general inquiry, 48h SLA)
@@ -183,9 +183,9 @@ Subject: Re: <original>
 <回答 / 解決手順>
 
 なお、本サービスは solo operator 体制 (zero-touch) のため、深夜・週末の応答は遅延する場合があります。
-緊急障害は https://status.autonomath.ai/ をご確認ください。
+緊急障害は https://status.zeimu-kaikei.ai/ をご確認ください。
 
-— Bookyou株式会社 / AutonoMath / info@bookyou.net
+— Bookyou株式会社 / 税務会計AI / info@bookyou.net
 ```
 
 ## 15. Secret inventory (names only)
@@ -212,7 +212,7 @@ DB backups: `s3://autonomath-backups/` (R2 nrt) + `s3://autonomath-backups-eu/` 
 
 ## 16. Domain / DNS / DNSSEC
 
-- Registrar: Cloudflare Registrar (`autonomath.ai`).
+- Registrar: Cloudflare Registrar (`zeimu-kaikei.ai`).
 - Auto-renew: ON (verify card on file annually in November).
 - DNSSEC: enabled (DS record at registrar). On rotation, re-publish DS — see Cloudflare KB.
 - Defensive registrations (Y2 budget, not yet held): `.com`, `.app`, `.dev`. Acquire only if budget permits.
@@ -235,7 +235,7 @@ DB backups: `s3://autonomath-backups/` (R2 nrt) + `s3://autonomath-backups-eu/` 
 - **プライバシーポリシー (`docs/compliance/privacy_policy.md`)**: 個人情報取扱事業者として要件遵守。GDPR equivalent 対応済 (data subject rights doc)。Updated by: ops, reviewed by lawyer once a year.
 - **利用規約 (`docs/compliance/terms_of_service.md`)**: 改定は 30 日前メール通知必須 (規約自身に明記)。
 - **電子帳簿保存法 (`docs/compliance/electronic_bookkeeping.md`)**: 領収書・請求書を Stripe Invoice + 自社保存 (R2 archive) で 7 年間保管。
-- **Lawyer 連絡先**: <Name>, <firm>, <phone>, <email> — 1Password "AutonoMath 顧問弁護士". 着手金未支払、時間制 spot retainer。月次ではなく事案ベース。
+- **Lawyer 連絡先**: <Name>, <firm>, <phone>, <email> — 1Password "税務会計AI 顧問弁護士". 着手金未支払、時間制 spot retainer。月次ではなく事案ベース。
 
 ## 19. Bookyou KK admin
 
@@ -258,7 +258,7 @@ Did MRR > ¥1M sustained 60 d before incapacity?
     └─ Run scripts/wind_down.py:
         - Refund month-to-date for all active customers
         - Export customer data per data_subject_rights.md
-        - Post 30-day shutdown notice on autonomath.ai
+        - Post 30-day shutdown notice on zeimu-kaikei.ai
         - File 法人解散 with 税理士
 ```
 

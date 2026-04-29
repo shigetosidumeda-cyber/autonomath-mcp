@@ -1,5 +1,5 @@
 TO: {{customer_email}}
-FROM: support@autonomath.ai
+FROM: support@zeimu-kaikei.ai
 SUBJECT: 【jpintel-mcp】データ修正ご指摘に関するご回答 (ticket {{ticket_id}})
 
 {{customer_name}} 様
@@ -35,5 +35,5 @@ SUBJECT: 【jpintel-mcp】データ修正ご指摘に関するご回答 (ticket 
 ---
 jpintel-mcp サポート
 {{operator_name}}
-support@autonomath.ai
-https://autonomath.ai/
+support@zeimu-kaikei.ai
+https://zeimu-kaikei.ai/

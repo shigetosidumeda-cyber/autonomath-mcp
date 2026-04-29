@@ -4,38 +4,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>AutonoMath — Japanese public programs, one API.</title>
-<meta name="description" content="Query 13,578 Japanese subsidies, loans, tax incentives & certifications via one REST + MCP call (72 tools). Anonymous 50 req/month per IP free; ¥3/req metered.">
+<title>税務会計AI — Search Japanese institutional data via REST + MCP API.</title>
+<meta name="description" content="Search Japanese institutional data (11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records) via REST + MCP API. Primary source URL included, ¥3/request fully metered, anon 50/month free.">
 
-<meta property="og:title" content="AutonoMath — Japanese public programs, one API.">
-<meta property="og:description" content="13,578 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (72 tools, 2025-06-18). Primary-source lineage on every row.">
+<meta property="og:title" content="税務会計AI — Japanese public programs, one API.">
+<meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (89 tools, 2025-06-18). Primary-source lineage on every row.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://autonomath.ai/en/">
-<meta property="og:image" content="https://autonomath.ai/assets/og.png">
+<meta property="og:url" content="https://zeimu-kaikei.ai/en/">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AutonoMath — Japanese public programs, one API.">
-<meta name="twitter:description" content="13,578 programs + 2,286 case studies + 108 loans + 1,185 enforcement + laws (9,484 rows, continually loading) + tax rulesets (35 rows) + invoice registrants (13,801 rows live delta-only) + autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations). Exclusion-aware. MCP-native (72 tools = 39 core + 33 autonomath: 17 V1 + 4 V4 universal + 5 Phase A + 7 lifecycle/abstract/prerequisite/graph/snapshot/rule_engine). Court 2,065 + bids 362 rows live.">
-<meta name="twitter:image" content="https://autonomath.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="税務会計AI — Japanese public programs, one API.">
+<meta name="twitter:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + laws (154 full-text + 9,484 catalog stubs, body-text load incremental) + tax rulesets (35 rows) + invoice registrants (13,801 rows live delta-only) + entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations). Exclusion-aware. MCP-native (89 tools, protocol 2025-06-18). Court 2,065 + bids 362 rows live.">
+<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
 
-<link rel="canonical" href="https://autonomath.ai/en/">
-<link rel="alternate" hreflang="ja" href="https://autonomath.ai/">
-<link rel="alternate" hreflang="en" href="https://autonomath.ai/en/">
-<link rel="alternate" hreflang="x-default" href="https://autonomath.ai/">
+<link rel="canonical" href="https://zeimu-kaikei.ai/en/">
+<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/">
+<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/">
+<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/en/llms.txt">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, Japanese)" href="/llms.txt">
 <link type="text/plain" rel="author" href="/humans.txt">
-<link rel="alternate" type="application/rss+xml" title="AutonoMath Announcements" href="/en/rss.xml">
-<link rel="alternate" type="application/rss+xml" title="AutonoMath お知らせ (Japanese)" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="税務会計AI Announcements" href="/en/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="税務会計AI お知らせ (Japanese)" href="/rss.xml">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
 
 <script defer src="../analytics.js"></script>
 
@@ -43,11 +43,11 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "AutonoMath",
-  "description": "REST + MCP API over 13,578 Japanese public programs (subsidies, loans, tax incentives, certifications) + 2,286 case studies (採択事例) + 108 loan programs (three-axis collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + laws (e-Gov, CC-BY; 9,484 rows, continually loading) + tax rulesets (インボイス / 電帳法; 35 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (NTA PDL v1.0; 13,801 rows live delta-only mirror, monthly full bulk pending) + autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance). 181-rule exclusion + prerequisite checker. 99%+ rows: primary-source URL + fetched_at. MCP protocol 2025-06-18, 72 tools at default gates (39 core + 33 autonomath: 17 V1 + 4 V4 universal annotation/validation/provenance + 5 Phase A static/example/health + 7 lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine).",
+  "name": "税務会計AI",
+  "description": "REST + MCP API over 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications) + 2,286 case studies (採択事例) + 108 loan programs (three-axis collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental) + tax rulesets (インボイス / 電帳法; 35 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (NTA PDL v1.0; 13,801 rows live delta-only mirror, monthly full bulk pending) + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance). 181-rule exclusion + prerequisite checker. 99%+ rows: primary-source URL + fetched_at. MCP protocol 2025-06-18, 89 tools at default gates.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio)",
-  "url": "https://autonomath.ai/en/",
+  "url": "https://zeimu-kaikei.ai/en/",
   "inLanguage": "en",
   "offers": [
     {"@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "JPY", "description": "50 calls/month per IP, JST first-of-month reset, no card required"},
@@ -56,8 +56,8 @@
   "featureList": [
     "Cross-source search (programs + case_studies + loan_programs + enforcement_cases, unified schema)",
     "Exclusion + prerequisite rules (181 — 125 exclude + 17 prerequisite + 15 absolute + 24 other)",
-    "MCP-native (72 tools at default gates, protocol 2025-06-18 — 39 core [15 base + 1 quota probe (get_usage_status) + 7 one-shot (smb_starter_pack / subsidy_combo_finder / deadline_calendar / dd_profile_am / similar_cases / regulatory_prep_pack / subsidy_roadmap_3yr) + 16 expansion: laws [9,484 rows] / tax rulesets [35 rows] / invoice registrants [13,801 rows live delta] / court decisions [2,065 rows] / bids [362 rows] + cross-dataset glue] + 33 autonomath [17 V1 entity-fact DB tools (503,930 entities / 6.12M facts / 23,805 relations) + 4 V4 universal (annotations / validate / get_provenance / get_provenance_for_fact) + 5 Phase A (list_static_resources_am / get_static_resource_am / list_example_profiles_am / get_example_profile_am / deep_health_am) + 7 lifecycle/abstract (graph_traverse / unified_lifecycle_calendar / program_lifecycle / program_abstract_structured / prerequisite_chain / rule_engine_check / query_at_snapshot); 36協定 pair gated off — would push to 74])",
-    "FTS5 trigram Japanese search",
+    "MCP-native (89 tools at default gates, protocol 2025-06-18 — across program / case-study / loan / enforcement search, laws + tax rulesets + court decisions + bids + invoice registrants expansion, the entity-fact DB, metadata tools (annotations / validation / provenance), static dataset tools (resources / profiles / health), and DD-support tools (lifecycle / abstract / prerequisite / graph traversal / rule engine / related programs))",
+    "全文検索インデックス (3-gram) Japanese search",
     "Tier classification S/A/B/C/X",
     "Three-axis loan decomposition (collateral / personal guarantor / third-party guarantor)",
     "Primary-source lineage (source_url + fetched_at on 99%+ of rows; 12 rows are small-municipality programs lacking a dedicated CMS page)"
@@ -70,9 +70,9 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Bookyou株式会社",
-  "alternateName": "AutonoMath",
-  "url": "https://autonomath.ai/",
-  "logo": "https://autonomath.ai/assets/logo.svg",
+  "alternateName": "税務会計AI",
+  "url": "https://zeimu-kaikei.ai/",
+  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "contactPoint": {
@@ -88,18 +88,18 @@
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "AutonoMath",
-  "url": "https://autonomath.ai/en/",
+  "name": "税務会計AI",
+  "url": "https://zeimu-kaikei.ai/en/",
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://autonomath.ai/en/about.html"
+    "url": "https://zeimu-kaikei.ai/en/about.html"
   },
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://autonomath.ai/programs/?q={search_term_string}"
+      "urlTemplate": "https://zeimu-kaikei.ai/programs/?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   },
@@ -111,15 +111,15 @@
 {
   "@context": "https://schema.org",
   "@type": "Dataset",
-  "name": "AutonoMath — Japanese Public Programs Dataset",
-  "description": "13,578 subsidies + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 9,484 laws + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
-  "url": "https://autonomath.ai/en/",
+  "name": "税務会計AI — Japanese Public Programs Dataset",
+  "description": "14,472 subsidies + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 154 laws full-text + 9,484 law catalog stubs + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
+  "url": "https://zeimu-kaikei.ai/en/",
   "creator": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "identifier": "T8010001213708",
     "email": "info@bookyou.net",
-    "url": "https://autonomath.ai/"
+    "url": "https://zeimu-kaikei.ai/"
   },
   "license": "Mixed (gov_standard / cc_by_4.0 / pdl_v1.0 / proprietary). See /privacy.html and per-fact provenance.",
   "inLanguage": ["ja", "en"],
@@ -140,7 +140,7 @@
   "distribution": {
     "@type": "DataDownload",
     "encodingFormat": "application/json",
-    "contentUrl": "https://api.autonomath.ai/v1/"
+    "contentUrl": "https://api.zeimu-kaikei.ai/v1/"
   }
 }
 </script>
@@ -149,17 +149,17 @@
 {
   "@context": "https://schema.org",
   "@type": "WebAPI",
-  "name": "AutonoMath REST API",
-  "url": "https://api.autonomath.ai/v1/",
-  "documentation": "https://autonomath.ai/docs/api-reference/",
+  "name": "税務会計AI REST API",
+  "url": "https://api.zeimu-kaikei.ai/v1/",
+  "documentation": "https://zeimu-kaikei.ai/docs/api-reference/",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "identifier": "T8010001213708",
-    "url": "https://autonomath.ai/",
+    "url": "https://zeimu-kaikei.ai/",
     "email": "info@bookyou.net"
   },
-  "termsOfService": "https://autonomath.ai/en/tos.html"
+  "termsOfService": "https://zeimu-kaikei.ai/en/tos.html"
 }
 </script>
 </head>
@@ -169,16 +169,26 @@
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="AutonoMath home">
-      <span class="brand-mark" aria-hidden="true">AM</span>
-      <span class="brand-name">AutonoMath</span>
+    <a class="brand" href="index.html" aria-label="税務会計AI home">
+      <span class="brand-name">税務会計AI</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="about.html">About</a>
       <a href="getting-started.html">Docs</a>
       <a href="pricing.html">Pricing</a>
       <a href="audiences/">Audiences</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+      <a href="../playground.html">Playground</a>
+      <details class="nav-trust">
+        <summary>Trust</summary>
+        <ul>
+          <li><a href="../status.html">Status</a></li>
+          <li><a href="../roadmap.html">Roadmap</a></li>
+          <li><a href="../data-freshness.html">Data Freshness</a></li>
+          <li><a href="../transparency.html">Transparency</a></li>
+          <li><a href="../audit-log.html">Audit Log</a></li>
+        </ul>
+      </details>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
       <span class="lang-switch" role="group" aria-label="Language / 言語">
         <a href="../index.html" lang="ja" hreflang="ja">JP</a>
         <span class="sep" aria-hidden="true">/</span>
@@ -192,9 +202,14 @@
 
   <section class="hero" aria-labelledby="hero-title">
     <div class="container">
-      <h1 id="hero-title">Japanese public programs, one API.</h1>
-      <p class="hero-sub">13,578 programs + 2,286 case studies + 108 loan programs + 1,185 enforcement cases + 9,484 laws + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants (PDL v1.0 delta) + autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases). Exclusion-aware (181 rules). MCP-native (72 tools, protocol 2025-06-18).</p>
-      <p class="hero-tag">jGrants is the application portal; AutonoMath is the discovery + compatibility + track-record layer. Query subsidies, loans, tax incentives, certifications, acceptance records, and enforcement cases directly from an agent — no SDK needed.</p>
+      <!-- CRO Fix 4 (2026-04-29): hero copy sharpened. Old H1 = "Search
+           Japanese institutional data via REST + MCP API."; old sub = the
+           7-dataset count list (now demoted to "Data & quality" lower on
+           the page). The §72/§52/§1 disclaimer used to sit directly below
+           the H1 — relocated to BELOW the curl block (CRO Fix 2) so the
+           visitor hits the working curl first. Footer §52 remains. -->
+      <h1 id="hero-title">Search Japanese subsidies &amp; tax rules with one line of AI.</h1>
+      <p class="hero-sub">¥3.30/req (tax incl.) · 50 req/month free, no signup. Drop into Claude / Cursor / curl and run.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="getting-started.html">Try free (50 req/month per IP, no signup)</a>
         <a class="btn btn-secondary" href="/downloads/autonomath-mcp.mcpb" download aria-label="Download Claude Desktop Extension">Add to Claude Desktop (.mcpb)</a>
@@ -211,18 +226,18 @@
         <article class="card" aria-labelledby="trust-counts">
           <h3 id="trust-counts">503,930 entities + 6.12M facts</h3>
           <p class="card-lead">9 datasets + entity-fact DB, one query surface</p>
-          <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The autonomath.db side carries entities and facts across 12 record kinds. FTS5 trigram lets you query Japanese as written, no romanization required.</p>
+          <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The entity-fact layer carries entities and facts across 12 record kinds. The full-text search index (3-gram) lets you query Japanese as written, no romanization required.</p>
           <ul class="card-list">
-            <li>programs · 13,578 (10,790 searchable = Tier S 114 + A 1,340 + B 3,292 + C 6,044; tier X 1,923 quarantined)</li>
+            <li>programs · 14,472 (11,684 searchable = Tier S 114 + A 1,340 + B 4,186 + C 6,044; 2,788 held back for secondary review)</li>
             <li>case_studies · 2,286</li>
             <li>loan_programs · 108 (collateral / personal-guarantor / third-party-guarantor decomposed)</li>
             <li>enforcement_cases · 1,185</li>
-            <li>laws · 9,484 (e-Gov, CC-BY; continually loading)</li>
+            <li>laws · 154 full-text indexed + 9,484 catalog stubs (e-Gov, CC-BY; body-text load incremental, name resolver covers all 9,484)</li>
             <li>tax_rulesets · 35</li>
             <li>court_decisions · 2,065</li>
             <li>bids · 362</li>
             <li>invoice_registrants · 13,801 (NTA PDL v1.0 delta; full monthly bulk pending)</li>
-            <li>autonomath.db · 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases</li>
+            <li>entity-fact DB · 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases</li>
           </ul>
         </article>
 
@@ -261,7 +276,7 @@
         <article class="card" aria-labelledby="pillar-api">
           <h3 id="pillar-api"><span aria-hidden="true">🔌</span> API + MCP</h3>
           <p class="card-lead">AI developers / enterprise RAG</p>
-          <p>Call 72 MCP tools (39 core + 33 autonomath) directly from an agent. REST is OpenAPI 3.1. stdio transport, no SDK.</p>
+          <p>Call 89 MCP tools directly from an agent. REST is OpenAPI 3.1. stdio transport, no SDK.</p>
           <ul class="card-list">
             <li>¥3/req tax exclusive (¥3.30 tax inclusive)</li>
             <li>Anonymous 50 req/month per IP free</li>
@@ -391,9 +406,9 @@
         <article class="card audience-card" aria-labelledby="aud-dev">
           <h3 id="aud-dev"><span aria-hidden="true">🤖</span> AI agent developers</h3>
           <p class="card-lead audience-context">Claude Desktop / Cursor / your own SaaS integration</p>
-          <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 72 tools. ¥3/req, 50/month free. Works in Claude Desktop and Cursor out of the box.</p>
+          <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 89 tools. ¥3/req, 50/month free. Works in Claude Desktop and Cursor out of the box.</p>
           <ul class="card-list">
-            <li>72 MCP tools (39 core + 33 autonomath)</li>
+            <li>89 MCP tools, protocol 2025-06-18</li>
             <li>stdio transport, no SDK</li>
             <li>50 req/month evaluation, then ¥3/req metered</li>
           </ul>
@@ -416,22 +431,84 @@
     </div>
   </section>
 
-  <section class="code-demo" aria-labelledby="demo-title">
+  <!-- CRO Fix 2 (2026-04-29): copy-pasteable curl block above the prescreen
+       form. The previous block here required "Authorization: Bearer
+       YOUR_API_KEY" — that hid the fact that anon works without one and
+       added an obvious friction step ("get a key first"). Replaced with
+       the no-auth version that runs as-is against api.zeimu-kaikei.ai.
+       Source-of-truth lives in site/_data/curl_examples.json. -->
+  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
     <div class="container">
-      <h2 id="demo-title" class="section-title">Try it now</h2>
-      <p class="demo-lead">Swap in your API key and it runs.</p>
-      <pre class="code-block" aria-label="curl example"><code>curl -H "Authorization: Bearer YOUR_API_KEY" \
-  "https://api.autonomath.ai/v1/programs/search?q=%E8%AA%8D%E5%AE%9A%E6%96%B0%E8%A6%8F%E5%B0%B1%E8%BE%B2%E8%80%85&tier=S&tier=A&limit=5"</code></pre>
-      <p class="demo-note">Returns <code>{total, limit, offset, results[{unified_id, primary_name, tier, amount_max_man_yen, prefecture, official_url, ...}]}</code>, sorted by tier (S to X). Japanese names and descriptions are preserved — do not double-encode.</p>
+      <h2 id="curl-title" class="section-title">Try in 5 seconds (no signup)</h2>
+      <p class="demo-lead" style="margin:-16px 0 16px;">Anonymous IP gets 50 req/month free. Paste and run.</p>
+      <pre class="code-block" id="curl-snippet" aria-label="curl example for /v1/programs/search"><code>$ curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
+{
+  "results": [...],
+  "total": 17
+}</code></pre>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:-6px 0 14px;">
+        <button type="button" id="curl-copy-btn" class="btn btn-secondary" data-copy-target="curl-snippet" aria-live="polite" style="padding:8px 16px;font-size:14px;">COPY</button>
+        <span id="curl-copy-status" class="visually-hidden" aria-live="polite"></span>
+        <small style="font-size:13px;color:var(--text-muted);">Query is URL-encoded (<code style="background:#fff;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;">q=IT導入</code>).</small>
+      </div>
+      <p class="demo-note" style="font-size:14px;margin:0 0 14px;">Using an MCP client? &rarr; <a href="/integrations/claude-desktop.html">Claude Desktop integration guide</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
+      <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">This is a search index. We do not provide legal advice, tax advice, or filing services. Activities reserved under 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1 are out of scope. See <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">Terms</a>.</p>
     </div>
   </section>
+  <script>
+  // CRO Fix 2: vanilla copy-button. No deps, no fetch, no analytics.
+  // Falls back to a hidden textarea + execCommand on browsers without
+  // navigator.clipboard. Status is announced via aria-live="polite".
+  (function() {
+    var btn = document.getElementById('curl-copy-btn');
+    if (!btn) return;
+    var srcEl = document.getElementById(btn.getAttribute('data-copy-target'));
+    var status = document.getElementById('curl-copy-status');
+    btn.addEventListener('click', function() {
+      var raw = srcEl ? srcEl.textContent : '';
+      var lines = raw.split(/\r?\n/);
+      for (var i = 0; i < lines.length; i++) {
+        if (lines[i].length > 0) {
+          lines[i] = lines[i].replace(/^\$\s+/, '');
+          break;
+        }
+      }
+      var text = lines.join('\n').trim();
+      var done = function(ok) {
+        var prev = btn.textContent;
+        btn.textContent = ok ? 'Copied' : 'Copy failed';
+        if (status) status.textContent = ok ? 'Copied to clipboard' : 'Copy failed';
+        setTimeout(function() {
+          btn.textContent = prev || 'COPY';
+          if (status) status.textContent = '';
+        }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() { done(true); }, function() { done(false); });
+      } else {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'absolute';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          done(true);
+        } catch (e) { done(false); }
+      }
+    });
+  })();
+  </script>
 
   <section class="prescreen" aria-labelledby="ps-title" id="try">
     <div class="container">
       <h2 id="ps-title" class="section-title">Subsidy Prescreen — Top 5 in 3 questions</h2>
-      <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>10,790 active programs</strong> ranked by fit. Free, no signup, anonymous (50 reqs/month/IP). One call to <code>/v1/programs/prescreen</code>.</p>
+      <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,684 active programs</strong> ranked by fit. Free, no signup, anonymous (50 reqs/month/IP). One call to <code>/v1/programs/prescreen</code>.</p>
       <style>
-        /* Wave 23 prescreen a11y polish — scoped, additive only */
+        /* prescreen a11y polish — scoped, additive only */
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
         .ps-required-mark { color:#c0392b; margin-left:4px; font-weight:bold; }
         .ps-field-help code { background:#f4f6f8; padding:1px 4px; border-radius:3px; font-size:0.95em; }
@@ -439,9 +516,9 @@
       </style>
       <div class="ps-card">
         <noscript>
-          <p class="ps-noscript"><strong>JavaScript required</strong> — this prescreen uses the fetch API and won't run with JS disabled. The same functionality is available directly via <code>POST https://api.autonomath.ai/v1/programs/prescreen</code>. See <a href="/en/getting-started.html">Getting Started</a> for details.</p>
+          <p class="ps-noscript"><strong>JavaScript required</strong> — this prescreen uses the fetch API and won't run with JS disabled. The same functionality is available directly via <code>POST https://api.zeimu-kaikei.ai/v1/programs/prescreen</code>. See <a href="/en/getting-started.html">Getting Started</a> for details.</p>
         </noscript>
-        <form class="ps-form" id="ps-form" data-api-base="https://api.autonomath.ai">
+        <form class="ps-form" id="ps-form" data-api-base="https://api.zeimu-kaikei.ai">
           <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
             <label for="ps-company-url">Company URL (leave blank)</label>
             <input id="ps-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
@@ -478,7 +555,7 @@
           <button class="ps-submit" type="submit" id="ps-submit">Show top 5</button>
         </form>
         <p class="ps-hint">Matching is rule-based against the program database, not LLM inference (prefecture + target_types + amount_fit). Source URLs are primary only. Submissions are not stored — only an IP hash is logged for rate limiting (resets at JST first-of-month).</p>
-        <!-- Live-region split (Wave 17 a11y): announce only the short
+        <!-- Live-region split (a11y): announce only the short
              status summary, not the entire rendered HTML. JAWS / NVDA /
              VoiceOver previously re-announced the full result HTML on
              each render which was noisy and lost focus. The visible
@@ -499,38 +576,38 @@
         <article class="card" aria-labelledby="vs-llm-cutoff">
           <h3 id="vs-llm-cutoff">Stale training data</h3>
           <p class="card-lead">Calendar mismatch</p>
-          <p>ChatGPT/Claude/Gemini training cutoffs run months-to-a-year stale. Japanese subsidies move on calendar deadlines ("application closed yesterday"); an LLM alone can't tell you what's <em>currently</em> open. AutonoMath ships <code>fetched_at</code> on every row.</p>
+          <p>ChatGPT/Claude/Gemini training cutoffs run months-to-a-year stale. Japanese subsidies move on calendar deadlines ("application closed yesterday"); an LLM alone can't tell you what's <em>currently</em> open. 税務会計AI ships <code>fetched_at</code> on every row.</p>
         </article>
 
         <article class="card" aria-labelledby="vs-llm-halluc">
           <h3 id="vs-llm-halluc">Source fabrication &amp; aggregator drift</h3>
-          <p class="card-lead">Misidentification = fraud liability</p>
-          <p>Aggregator sites (noukaweb, hojyokin-portal, biz.stayway, etc.) are documented to list expired programs as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to "詐欺" (<strong>fraud</strong>) accusations from their own client.</p>
-          <p>AutonoMath <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 13,578 rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
+          <p class="card-lead">Misidentification = misrepresentation liability</p>
+          <p>Aggregator sites (noukaweb, hojyokin-portal, biz.stayway, etc.) are documented to list expired programs as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+          <p>税務会計AI <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
           <p>Every row carries <code>source_url</code> + <code>fetched_at</code>, so you can show your client / regulator / opposing counsel exactly <em>why</em> this program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
         </article>
 
         <article class="card" aria-labelledby="vs-llm-rules">
           <h3 id="vs-llm-rules">No compatibility logic</h3>
           <p class="card-lead">Combination rules can't be inferred</p>
-          <p>LLMs can't structurally answer "can I combine subsidy A with subsidy B?" or "does this conflict with my prior award?". AutonoMath ships 181 exclusion / prerequisite rules for machine-decidable compatibility.</p>
+          <p>LLMs can't structurally answer "can I combine subsidy A with subsidy B?" or "does this conflict with my prior award?". 税務会計AI ships 181 exclusion / prerequisite rules for machine-decidable compatibility.</p>
         </article>
 
       </div>
-      <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>LLM agent + AutonoMath = LLM speed &times; primary-source accuracy</strong>. AutonoMath isn't an LLM replacement — it's the fact layer that makes LLM output trustworthy.</p>
+      <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>LLM agent + 税務会計AI = LLM speed &times; primary-source accuracy</strong>. 税務会計AI isn't an LLM replacement — it's the fact layer that makes LLM output trustworthy.</p>
     </div>
   </section>
 
   <section class="code-demo" aria-labelledby="why-title">
     <div class="container">
-      <h2 id="why-title" class="section-title">Why AutonoMath</h2>
+      <h2 id="why-title" class="section-title">Why 税務会計AI</h2>
       <div class="cards" style="grid-template-columns:repeat(2,1fr);">
 
         <article class="card">
           <h3>No aggregator sources</h3>
-          <p class="card-lead">Fraud-liability avoidance</p>
-          <p>Aggregator sites such as noukaweb, hojyokin-portal, and biz.stayway have been documented to keep expired programs listed as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing on that basis and being rejected exposes the filer to "詐欺" (<strong>fraud</strong>) accusations from their own client.</p>
-          <p>AutonoMath's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 13,578 rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
+          <p class="card-lead">Misrepresentation-liability avoidance</p>
+          <p>Aggregator sites such as noukaweb, hojyokin-portal, and biz.stayway have been documented to keep expired programs listed as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing on that basis and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+          <p>税務会計AI's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
           <p>Because every row carries <code>source_url</code> + <code>fetched_at</code>, you can show your client, the regulator, or opposing counsel exactly <em>why</em> a program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
         </article>
 
@@ -549,7 +626,7 @@
         <article class="card">
           <h3>Cross-dataset glue</h3>
           <p class="card-lead">One call: program → law → court decision → enforcement</p>
-          <p>Expansion datasets are live: laws (e-Gov, CC-BY; 9,484 rows, continually loading) + tax rulesets (invoice law / electronic-bookkeeping law; 35 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus the autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) exposed via 33 tools. The 72-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> for cross-domain resolution.</p>
+          <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 35 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus the autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) exposed via 30 tools. The 69-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> for cross-domain resolution.</p>
         </article>
 
       </div>
@@ -658,7 +735,7 @@
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
+      <p class="footer-brand">税務会計AI</p>
       <p class="footer-tag">Japanese public-program API</p>
     </div>
     <nav class="footer-nav" aria-label="Footer">
@@ -668,7 +745,7 @@
       <a href="changelog.html">Changelog</a>
       <a href="privacy.html">Privacy</a>
       <a href="tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/AutonoMath" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
     <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

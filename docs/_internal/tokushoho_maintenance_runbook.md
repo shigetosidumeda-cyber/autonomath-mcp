@@ -156,7 +156,7 @@ the canonical reference. Especially check for:
 - Missing T-号 from invoice footer
 - Inconsistent 事業者名 spelling (e.g. "Bookyou Inc." vs "Bookyou株式会社"
   — only the 株式会社 form is the legally registered name)
-- Hardcoded domain `autonomath.ai` vs `bookyou.net` mix-ups
+- Hardcoded domain `zeimu-kaikei.ai` vs `bookyou.net` mix-ups
 
 ### Step 3. Verify Stripe Dashboard alignment
 
@@ -179,7 +179,7 @@ fine; the underlying contact must be current.
 
 ```bash
 whois bookyou.net
-whois autonomath.ai
+whois zeimu-kaikei.ai
 ```
 
 If contact has drifted (rare unless 法人 moved), update via registrar
@@ -314,7 +314,7 @@ a one-shot email to all paying customers via Postmark Broadcast:
 新住所: {{ new_address }}
 
 請求書・特商法表示は本日付けで更新済です。
-詳細: https://autonomath.ai/tokushoho
+詳細: https://zeimu-kaikei.ai/tokushoho
 
 引き続きご愛顧のほど、よろしくお願い申し上げます。
 
@@ -538,7 +538,7 @@ deeper audit beyond the 6-month canonical-grep review.
 
 ### Step 1. Read aloud the displayed `tokushoho.html`
 
-Open `https://autonomath.ai/tokushoho.html` in a browser. Read each of
+Open `https://zeimu-kaikei.ai/tokushoho.html` in a browser. Read each of
 the 8 mandatory items aloud. Confirm each is current and accurate.
 Reading aloud (vs scanning) catches stale text the eye glides over.
 

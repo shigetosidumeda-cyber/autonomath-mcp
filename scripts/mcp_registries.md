@@ -7,10 +7,10 @@ Target launch: 2026-05-06. Last audited: 2026-04-24.
 
 | Field | Value |
 |---|---|
-| display_name | AutonoMath — 日本の制度 MCP (66 tools) |
+| display_name | AutonoMath — 日本の制度 MCP (89 tools) |
 | registry_id | `io.github.AutonoMath/autonomath-mcp` |
-| repo | `https://github.com/AutonoMath/autonomath-mcp` |
-| homepage | `https://autonomath.ai` |
+| repo | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| homepage | `https://zeimu-kaikei.ai` |
 | pypi_package | `autonomath-mcp` |
 | install | `uvx autonomath-mcp` / `pip install autonomath-mcp` |
 | protocol | `2025-06-18` |
@@ -29,7 +29,7 @@ AutonoMath: 66-tool MCP (38 core + 28 autonomath entity-fact DB) over Japanese p
 ### Long description (≤500 chars)
 
 ```
-AutonoMath provides structured access to Japanese public-program data via 66 MCP tools (protocol
+AutonoMath provides structured access to Japanese public-program data via 89 MCP tools (protocol
 2025-06-18): 38 core (13,578 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資
 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + laws e-Gov CC-BY 9,484 rows + tax rulesets
 インボイス/電帳法 35 rows + court_decisions 2,065 rows + bids 362 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows delta) + 28 autonomath
@@ -88,7 +88,7 @@ After publish: listing propagates to PulseMCP within ~1 week and to several down
 
 ## 4. Anthropic DXT / Claude Desktop Extension  [MCPB BUNDLE]
 
-- Distribution: `autonomath-mcp.mcpb` bundle at https://autonomath.ai/downloads/autonomath-mcp.mcpb
+- Distribution: `autonomath-mcp.mcpb` bundle at https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb
 - Manifest: `dxt/manifest.json` (already configured)
 - Install: users download and double-click `.mcpb`; Claude Desktop installs automatically
 - No registry submission needed; the DXT format is self-distributing
@@ -113,7 +113,7 @@ After publish: listing propagates to PulseMCP within ~1 week and to several down
 - Method: PR adding one line to `README.md` under `Finance & Fintech`, alphabetical order
 - Entry draft:
   ```
-  - [AutonoMath/autonomath-mcp](https://github.com/AutonoMath/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 38-tool core (+28 autonomath = 66) MCP over 13,578 Japanese public programs, 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only) live. ¥3/req; 50/月 free. `uvx autonomath-mcp`
+  - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/jpintel-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 38-tool core (+28 autonomath = 66) MCP over 13,578 Japanese public programs, 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only) live. ¥3/req; 50/月 free. `uvx autonomath-mcp`
   ```
 - Review: maintainer-gated, usually days
 
@@ -217,7 +217,7 @@ fly secrets list | grep -E "STRIPE_SECRET_KEY|STRIPE_PRICE_PER_REQUEST|SENTRY_DS
 # Verify: Status = "Success", commit SHA matches `git rev-parse HEAD`
 
 # 1g. DNS + TLS
-for host in autonomath.ai api.autonomath.ai docs.autonomath.ai; do
+for host in zeimu-kaikei.ai api.zeimu-kaikei.ai docs.zeimu-kaikei.ai; do
   curl -sSo /dev/null -w "%{http_code} %{ssl_verify_result} $host\n" "https://$host/" || echo "FAIL $host"
 done
 # All must return HTTP 2xx and ssl_verify_result=0
@@ -273,7 +273,7 @@ fly deploy
 fly logs
 
 # Smoke test the live API
-curl -s https://api.autonomath.ai/readyz | python3 -m json.tool
+curl -s https://api.zeimu-kaikei.ai/readyz | python3 -m json.tool
 # Expected: {"status":"ok"}
 ```
 
@@ -286,7 +286,7 @@ curl -s https://api.autonomath.ai/readyz | python3 -m json.tool
 # 1. Open: https://dash.cloudflare.com → Pages → autonomath-mcp → Deployments
 # 2. Confirm the top deployment is "Success" and the commit SHA is current main.
 # 3. Run a spot-check:
-curl -sI https://autonomath.ai/ | head -5
+curl -sI https://zeimu-kaikei.ai/ | head -5
 # Expected: HTTP/2 200, cf-ray header present
 
 # Do NOT continue to Step 4 until this is confirmed green.
@@ -348,14 +348,14 @@ Submit in order; each should take < 10 min.
 
 ```bash
 # Fork punkpeye/awesome-mcp-servers, add one line under Finance & Fintech:
-# - [AutonoMath/autonomath-mcp](https://github.com/AutonoMath/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 —
+# - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/jpintel-mcp) 🐍 ☁️ 🍎 🪟 🐧 —
 #   AutonoMath: 66-tool MCP over 13,578 Japanese public programs, 181 exclusion rules,
 #   3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 50/月 free. `uvx autonomath-mcp`
 
 gh repo fork punkpeye/awesome-mcp-servers --clone
 # Edit README.md, then:
 gh pr create --title "Add AutonoMath: 66-tool Japanese gov-data MCP" \
-  --body "AutonoMath provides structured access to 13,578 Japanese public programs (補助金/融資/税制/認定) via 66 MCP tools (38 core + 28 autonomath entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations). Laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only mirror) live. 99%+ rows: primary-source lineage. 181 exclusion rules, 3-axis loan risk. ¥3/req metered; 50/月 free."
+  --body "AutonoMath provides structured access to 13,578 Japanese public programs (補助金/融資/税制/認定) via 89 MCP tools (38 core + 28 autonomath entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations). Laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only mirror) live. 99%+ rows: primary-source lineage. 181 exclusion rules, 3-axis loan risk. ¥3/req metered; 50/月 free."
 ```
 
 #### Step 9 — Zenn launch article
@@ -373,7 +373,7 @@ gh pr create --title "Add AutonoMath: 66-tool Japanese gov-data MCP" \
 # Post content is in: content/launch/hn_show.md
 # Go to: https://news.ycombinator.com/submit
 # Title must start with "Show HN:"
-# URL: https://autonomath.ai
+# URL: https://zeimu-kaikei.ai
 # Text: copy from hn_show.md (plain text, no markdown)
 # Note the HN item URL immediately — monitor for comments
 ```
@@ -415,7 +415,7 @@ fly ssh console --app autonomath-mcp -C "tail -f /app/logs/structured.jsonl | gr
 
 # Terminal 3: Health check loop (every 5 min)
 while true; do
-  curl -sS https://api.autonomath.ai/readyz && echo " OK $(date)" || echo "FAIL $(date)"
+  curl -sS https://api.zeimu-kaikei.ai/readyz && echo " OK $(date)" || echo "FAIL $(date)"
   sleep 300
 done
 ```
@@ -442,4 +442,4 @@ The following items cannot be automated and require manual preparation:
 4. **Smithery API key** — check https://dashboard.smithery.ai before launch. If auto-index has not picked up the repo, you may need a key to trigger a manual crawl.
 5. **`autonomath-mcp.mcpb` bundle** — regenerate the bundle close to launch (within 48 h) so it reflects the final tool list and version: `bash scripts/build_mcpb.sh`.
 6. **Zenn slug** — confirm `content/zenn/launch_day_1_developer.md` has a stable slug set in front-matter. Zenn does not let you change the slug post-publish.
-7. **DNS TTLs** — lower `autonomath.ai`, `api.autonomath.ai`, and `docs.autonomath.ai` TTLs to 60 s at T-24 h so any last-minute DNS change propagates fast. Restore to 3600 at T+6 h.
+7. **DNS TTLs** — lower `zeimu-kaikei.ai`, `api.zeimu-kaikei.ai`, and `docs.zeimu-kaikei.ai` TTLs to 60 s at T-24 h so any last-minute DNS change propagates fast. Restore to 3600 at T+6 h.

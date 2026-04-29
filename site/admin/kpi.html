@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1320">
+<title>Operator KPI — 税務会計AI</title>
+<meta name="description" content="Operator-only KPI dashboard. Admin key required.">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<link rel="canonical" href="https://zeimu-kaikei.ai/admin/kpi.html">
+<style>
+  :root{
+    --bg:#0b1320; --panel:#121b2d; --line:#1e2a44; --text:#e6ecf6;
+    --muted:#94a3b8; --accent:#6aa6ff;
+    --ok:#4ade80; --warn:#facc15; --crit:#f87171;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;
+    line-height:1.55;}
+  header{padding:18px 20px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  header h1{font-size:18px;margin:0;font-weight:600;}
+  header .meta{color:var(--muted);font-size:13px;}
+  main{padding:18px 20px;max-width:1280px;margin:0 auto;}
+  .auth{padding:18px 20px;border:1px dashed var(--line);border-radius:10px;
+    margin-bottom:18px;background:var(--panel);}
+  .auth label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px;}
+  .auth input{width:100%;max-width:480px;padding:10px 12px;font-size:14px;
+    border:1px solid var(--line);background:#0d1626;color:var(--text);border-radius:6px;}
+  .auth button{margin-top:10px;padding:10px 14px;font-size:14px;border:0;
+    background:var(--accent);color:#0b1320;border-radius:6px;cursor:pointer;font-weight:600;}
+  .auth small{display:block;color:var(--muted);margin-top:8px;font-size:12px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:6px;}
+  .card .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.05em;}
+  .card .value{font-size:22px;font-weight:600;}
+  .card .sub{color:var(--muted);font-size:12px;}
+  .card.ok{border-left:4px solid var(--ok);}
+  .card.warn{border-left:4px solid var(--warn);}
+  .card.critical{border-left:4px solid var(--crit);}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;
+    font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;}
+  .pill.ok{background:rgba(74,222,128,0.15);color:var(--ok);}
+  .pill.warn{background:rgba(250,204,21,0.15);color:var(--warn);}
+  .pill.critical{background:rgba(248,113,113,0.15);color:var(--crit);}
+  section{margin-top:24px;}
+  section h2{font-size:14px;color:var(--muted);text-transform:uppercase;
+    letter-spacing:0.06em;margin:0 0 10px;font-weight:600;}
+  .chart{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;}
+  table.kv{width:100%;border-collapse:collapse;}
+  table.kv td{padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  table.kv td.k{color:var(--muted);width:55%;}
+  table.kv td.v{text-align:right;}
+  .row-banner{margin:14px 0;padding:10px 14px;border-radius:8px;font-size:13px;}
+  .row-banner.warn{background:rgba(250,204,21,0.10);color:var(--warn);
+    border:1px solid rgba(250,204,21,0.35);}
+  .row-banner.critical{background:rgba(248,113,113,0.12);color:var(--crit);
+    border:1px solid rgba(248,113,113,0.45);}
+  .err{color:var(--crit);font-size:13px;margin-top:8px;}
+  footer{padding:18px 20px;color:var(--muted);font-size:12px;
+    border-top:1px solid var(--line);margin-top:32px;}
+  @media (max-width:600px){
+    header h1{font-size:16px;}
+    .card .value{font-size:18px;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Operator KPI — 税務会計AI</h1>
+  <div class="meta" id="meta">読み込み中…</div>
+</header>
+
+<main>
+
+<div class="auth" id="auth">
+  <label for="key">ADMIN_API_KEY</label>
+  <input type="password" id="key" placeholder="X-API-Key" autocomplete="off">
+  <button id="loadBtn">読み込み</button>
+  <small>ローカルブラウザ <code>sessionStorage</code> に保管します。<br>
+    URL は <code>/admin/</code> 配下で <code>robots.txt</code> Disallow 済み。</small>
+  <div id="errBox" class="err" hidden></div>
+</div>
+
+<div id="banner"></div>
+
+<div id="content" hidden>
+
+  <section>
+    <h2>本日のサマリ</h2>
+    <div class="grid" id="summary"></div>
+  </section>
+
+  <section>
+    <h2>収益推移 (週次)</h2>
+    <div class="chart"><canvas id="mrrChart" height="120"></canvas></div>
+  </section>
+
+  <section>
+    <h2>外部キャッシュ</h2>
+    <div class="chart">
+      <table class="kv">
+        <tr><td class="k">Sentry</td><td class="v" id="sentryRow">—</td></tr>
+        <tr><td class="k">Stripe</td><td class="v" id="stripeRow">—</td></tr>
+        <tr><td class="k">Reconcile source</td><td class="v" id="reconcileSrc">—</td></tr>
+        <tr><td class="k">GEO source</td><td class="v" id="geoSrc">—</td></tr>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+</main>
+
+<footer>
+  Operator-only — 公開禁止 / robots.txt Disallow.<br>
+  Bookyou株式会社 (T8010001213708) / info@bookyou.net
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+        crossorigin="anonymous"></script>
+<script>
+(() => {
+  const KEY_STORAGE = 'autonomath_admin_key';
+  const ENDPOINT = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? `${location.protocol}//${location.hostname}:8080/v1/admin/kpi`
+    : 'https://api.zeimu-kaikei.ai/v1/admin/kpi';
+
+  const $ = (id) => document.getElementById(id);
+  const fmtYen = (n) => {
+    if (n === null || n === undefined) return '—';
+    const sign = n < 0 ? '-' : '';
+    return `${sign}¥${Math.abs(n).toLocaleString('ja-JP')}`;
+  };
+  const fmtPct = (n, digits=1) => (n === null || n === undefined) ? '—' : `${n.toFixed(digits)}%`;
+  const sevClass = (sev) => sev === 'critical' ? 'critical' : sev === 'warn' ? 'warn' : 'ok';
+
+  // -------------------------------------------------------------------------
+  // Card render — value + optional severity pill
+  // -------------------------------------------------------------------------
+  function card(label, value, sub, severity) {
+    const cls = severity ? sevClass(severity) : '';
+    const pill = severity && severity !== 'ok'
+      ? `<span class="pill ${cls}">${severity}</span>` : '';
+    return `<div class="card ${cls}">
+      <div class="label">${label} ${pill}</div>
+      <div class="value">${value}</div>
+      ${sub ? `<div class="sub">${sub}</div>` : ''}
+    </div>`;
+  }
+
+  // -------------------------------------------------------------------------
+  // Render summary cards from KPI payload
+  // -------------------------------------------------------------------------
+  function renderSummary(d) {
+    const sev = d.severity || {};
+    const wowSign = d.mrr_wow_pct >= 0 ? '+' : '';
+    const cards = [
+      card('MAU (月次)', d.mau_total,
+           `匿名 ${d.mau_anon} / 課金 ${d.mau_paid}`),
+      card('MRR (今月)', fmtYen(d.mrr_yen),
+           `1顧客あたり ${fmtYen(d.mrr_per_customer_yen)}`),
+      card('MRR W/W Δ', `${wowSign}${fmtPct(d.mrr_wow_pct)}`,
+           `${fmtYen(d.mrr_wow_delta_yen)} (今週 ${fmtYen(d.mrr_wow_this_week_yen)})`,
+           sev.mrr_wow_pct),
+      card('Cap 設定', `${d.cap_set} 件`,
+           `Cap 到達 ${d.cap_reached}`),
+      card('Trial 24h', `${d.trial_signups_24h} 件`,
+           `30日コホート→課金 ${fmtPct(d.trial_to_paid_30d_pct)}`),
+      card('Churn 7d', `${d.churn_7d} 件`,
+           `課金キー解約`, sev.churn_7d),
+      card('Past-due', `${d.past_due_count} 件`,
+           `未払いサブスク`, sev.past_due_count),
+      card('Stripe 未同期 (>1h)',
+           `${d.unsynced_metered_events} 件`,
+           `課金漏れシグナル`, sev.unsynced_metered_events),
+      card('Reconcile drift',
+           d.reconcile_drift_pct === null ? '—'
+             : `${(d.reconcile_drift_pct * 100).toFixed(3)}%`,
+           d.reconcile_source_file || '(未生成)',
+           sev.reconcile_drift_pct),
+      card('GEO 引用率',
+           d.geo_citation_rate_pct === null ? '—' : fmtPct(d.geo_citation_rate_pct),
+           `${d.geo_probes_total} probes`),
+    ];
+    $('summary').innerHTML = cards.join('');
+  }
+
+  // -------------------------------------------------------------------------
+  // Banner — surface critical / warn rollup at the top
+  // -------------------------------------------------------------------------
+  function renderBanner(d) {
+    const sev = d.severity || {};
+    const crits = Object.keys(sev).filter(k => sev[k] === 'critical');
+    const warns = Object.keys(sev).filter(k => sev[k] === 'warn');
+    if (crits.length) {
+      $('banner').innerHTML =
+        `<div class="row-banner critical">!! CRITICAL: ${crits.join(', ')}</div>`;
+    } else if (warns.length) {
+      $('banner').innerHTML =
+        `<div class="row-banner warn">! WARN: ${warns.join(', ')}</div>`;
+    } else {
+      $('banner').innerHTML = '';
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // MRR chart — 2-bar W/W comparison (kept simple; we only have two
+  // 7d windows from the KPI endpoint).
+  // -------------------------------------------------------------------------
+  let chartInstance = null;
+  function renderChart(d) {
+    const ctx = $('mrrChart').getContext('2d');
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['先週 (7d)', '今週 (7d)'],
+        datasets: [{
+          label: 'MRR (¥)',
+          data: [d.mrr_wow_last_week_yen, d.mrr_wow_this_week_yen],
+          backgroundColor: ['rgba(148,163,184,0.4)', 'rgba(106,166,255,0.7)'],
+          borderColor: ['rgba(148,163,184,0.9)', 'rgba(106,166,255,1)'],
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { color: '#94a3b8',
+               callback: v => `¥${v.toLocaleString('ja-JP')}` } },
+          x: { ticks: { color: '#94a3b8' } }
+        }
+      }
+    });
+  }
+
+  function renderExternal(d) {
+    $('sentryRow').textContent = d.sentry_row || '—';
+    $('stripeRow').textContent = d.stripe_row || '—';
+    $('reconcileSrc').textContent = d.reconcile_source_file || '(未生成)';
+    $('geoSrc').textContent = d.geo_source_file || '(未生成)';
+  }
+
+  function setMeta(d) {
+    $('meta').textContent = `${d.date_jst} JST / generated ${d.generated_at}`;
+  }
+
+  async function load(adminKey) {
+    $('errBox').hidden = true;
+    try {
+      const r = await fetch(ENDPOINT, {
+        headers: { 'X-API-Key': adminKey, 'Accept': 'application/json' },
+        credentials: 'omit',
+      });
+      if (r.status === 401 || r.status === 503) {
+        const body = await r.text();
+        $('errBox').hidden = false;
+        $('errBox').textContent = `${r.status}: ${body.slice(0, 200)}`;
+        return;
+      }
+      if (!r.ok) {
+        $('errBox').hidden = false;
+        $('errBox').textContent = `HTTP ${r.status}`;
+        return;
+      }
+      const d = await r.json();
+      $('content').hidden = false;
+      setMeta(d);
+      renderBanner(d);
+      renderSummary(d);
+      renderChart(d);
+      renderExternal(d);
+    } catch (e) {
+      $('errBox').hidden = false;
+      $('errBox').textContent = `network error: ${e.message}`;
+    }
+  }
+
+  $('loadBtn').addEventListener('click', () => {
+    const k = $('key').value.trim();
+    if (!k) {
+      $('errBox').hidden = false;
+      $('errBox').textContent = 'admin key を入力してください';
+      return;
+    }
+    sessionStorage.setItem(KEY_STORAGE, k);
+    load(k);
+  });
+
+  // Auto-load if a key is in sessionStorage. We never persist to
+  // localStorage — closing the browser drops the key.
+  const stored = sessionStorage.getItem(KEY_STORAGE);
+  if (stored) {
+    $('key').value = stored;
+    load(stored);
+  }
+})();
+</script>
+</body>
+</html>

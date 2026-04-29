@@ -43,20 +43,21 @@ from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
+from jpintel_mcp.config import settings
 from jpintel_mcp.mcp._http_fallback import (  # === S3 HTTP FALLBACK ===
     detect_fallback_mode_autonomath,
     http_call,
     remote_only_error,
 )
 from jpintel_mcp.mcp.server import (
-    _enforce_limit_cap,
     _READ_ONLY,
+    _enforce_limit_cap,
     _resolve_shaped_fields,
     mcp,
 )
+
 from .db import (
     connect_autonomath,
-    connect_graph,
     execute_with_retry,
 )
 from .error_envelope import make_error
@@ -135,12 +136,23 @@ def _safe_json_loads(s: str | None) -> dict[str, Any]:
 
 
 def _fts_escape(q: str) -> str:
-    """Escape a free-text query for FTS5 MATCH. Quote + strip double-quotes
-    so arbitrary Japanese strings are safe. We keep the 3+ char
-    recommendation from the docstrings (FTS5 trigram) but fall back to
-    LIKE when shorter strings arrive."""
-    q = (q or "").strip().replace('"', '')
-    return q
+    """[DEPRECATED 2026-04-29] Legacy quote-stripper. Kept as a no-arg
+    shim because external callers may still import it; new code MUST
+    use ``_build_fts_match`` (re-exported below) for any FTS5 MATCH
+    expression. The legacy stripper let single-kanji trigram overlap
+    (e.g. ``税額控除`` vs ``ふるさと納税``) leak through — see CLAUDE.md
+    "Common gotchas" / api/programs.py header for the fix rationale.
+    """
+    return (q or "").strip().replace('"', '')
+
+
+# Canonical FTS5 query rewriter — defeats the trigram single-kanji
+# overlap false-positive (CLAUDE.md gotcha) by phrase-quoting every
+# token, NFKC normalizing 全角 ASCII / 半角カナ paste, and OR-injecting
+# the kana-expansion table for the common 30-ish readings. This is the
+# same builder ``api/programs.py`` uses; importing keeps the two
+# surfaces in lockstep so a fix in one place benefits both REST + MCP.
+from jpintel_mcp.api.programs import _build_fts_match  # noqa: E402
 
 
 def _like_escape(q: str) -> str:
@@ -279,7 +291,7 @@ def _safe_tool(func):
 
     Every ``@mcp.tool`` body can raise ``sqlite3.OperationalError`` via
     ``execute_with_retry`` (locked/busy) or ``FileNotFoundError`` via
-    ``connect_autonomath`` / ``connect_graph`` (db missing). Without this
+    ``connect_autonomath`` (db missing). Without this
     wrapper those propagate as raw Python exceptions to the MCP
     transport; the customer LLM sees a stack-trace string with no
     ``error.code``. We convert them to the canonical envelope.
@@ -527,7 +539,7 @@ def search_tax_incentives(
 
     Returns rulesets with eligibility, applicable years, citation to NTA / 国税通達 / 措置法.
 
-    [DISCOVER-TAX] 税制特例 (特別償却 / 税額控除 / 繰越欠損金 / 非課税措置) を 271 件の構造化データから横断検索する — 法人税 / 所得税 / 地方税 / 消費税 を 1 call で串刺し、LLM による 租税特別措置法 PDF 脚注パースを構造的に排除.
+    [DISCOVER-TAX] Returns matching tax_measure records from the am_entities table with primary source URL. ~271 structured rows across 法人税 / 所得税 / 地方税 / 消費税. ¥3/req metered.
     Search Japanese tax incentives across 法人税 / 所得税 / 地方税 / 消費税 with structured amount_or_rate, root_law, application_period, prerequisite_certification.
 
     WHAT: ~271 structured records in `am_entities` where record_kind='tax_measure'
@@ -707,12 +719,27 @@ def search_tax_incentives(
     where_sql = " AND ".join(where)
 
     if use_fts:
-        # FTS5 trigram search over primary_name + raw_json.
+        # FTS5 trigram search over primary_name + raw_json. Use the
+        # canonical phrase-quoting builder so kanji compounds like
+        # 「税額控除」 don't false-match 「ふるさと納税」 via single-kanji
+        # trigram overlap (CLAUDE.md gotcha). If the rewriter returns
+        # empty (punctuation-only / stripped), fall back to LIKE.
+        fts_query = _build_fts_match(q)
+        if not fts_query:
+            esc = _like_escape(q)
+            where.append(
+                "(e.primary_name LIKE ? ESCAPE '\\' "
+                "OR e.raw_json LIKE ? ESCAPE '\\')"
+            )
+            params.extend([f"%{esc}%", f"%{esc}%"])
+            where_sql = " AND ".join(where)
+            use_fts = False
+
+    if use_fts:
         base_from = (
             "am_entities e "
             "JOIN am_entities_fts f ON f.canonical_id = e.canonical_id"
         )
-        fts_query = f'"{q}"'
         params_fts = [fts_query, *params]
 
         total_sql = (
@@ -941,7 +968,7 @@ def search_certifications(
 
     Returns certifications with issuing authority, eligibility, validity period.
 
-    [CERT] 認定・認証制度 53 件 (健康経営優良法人 / えるぼし / くるみん / SDGs 未来都市 / 経営革新計画 / 経営力向上計画 等) を検索し、取得後に unlock される 補助金 / 税制 を row ごとに事前結合して返す — 「認定を取るとどのお金が使えるようになるか」が 1 call で判る.
+    [CERT] Returns matching certification records (~53 rows: 健康経営優良法人 / えるぼし / くるみん / SDGs 未来都市 / 経営革新計画 / 経営力向上計画 等) with pre-joined linked_subsidies + linked_tax_incentives + benefits_after_certification. Output is search-derived; verify primary source for application requirements.
     Search Japanese business certifications with pre-joined linked_subsidies + linked_tax_incentives + benefits_after_certification.
 
     WHAT: ~53 records in `am_entities` where record_kind='certification'
@@ -1062,11 +1089,25 @@ def search_certifications(
     where_sql = " AND ".join(where)
 
     if use_fts:
+        # Phrase-quote via the canonical FTS5 rewriter (see search_tax_incentives
+        # for rationale — defeats trigram single-kanji overlap). Empty rewrite
+        # output means fall back to LIKE.
+        fts_query = _build_fts_match(q)
+        if not fts_query:
+            esc = _like_escape(q)
+            where.append(
+                "(e.primary_name LIKE ? ESCAPE '\\' "
+                "OR e.raw_json LIKE ? ESCAPE '\\')"
+            )
+            params.extend([f"%{esc}%", f"%{esc}%"])
+            where_sql = " AND ".join(where)
+            use_fts = False
+
+    if use_fts:
         base_from = (
             "am_entities e "
             "JOIN am_entities_fts f ON f.canonical_id = e.canonical_id"
         )
-        fts_query = f'"{q}"'
         params_fts = [fts_query, *params]
 
         (total,) = conn.execute(
@@ -1245,7 +1286,7 @@ def list_open_programs(
         Field(description="Max rows. Clamped to [1, 100]. Default 20.", ge=1, le=100),
     ] = 20,
 ) -> dict[str, Any]:
-    """[TIMELINE] 指定日 (default=今日 JST) に **公募期間中** の 補助金 / 助成金 を列挙し、`days_until_close` を server-side で pre-compute する — 締切が近い順に並ぶので 「今すぐ動くべき案件」が 1 call で見える.
+    """[TIMELINE] Returns programs whose application window covers the given date (default=今日 JST), sorted by days-until-close ascending. Output is search-derived; verify primary source (source_url) for the actual deadline before submission.
     List programs whose application window covers a given date, sorted by days-until-close ascending.
 
     WHAT: `am_entities` where record_kind='program', filtered by JSON
@@ -1607,7 +1648,7 @@ def enum_values_am(
         Field(description="Enum field to enumerate. Closed-set: 'authority', 'tier', 'industry' (JSIC 大分類), 'funding_purpose', 'target_type', 'region' (47 都道府県), 'tax_category', 'program_kind', 'loan_type', 'event_type', 'ministry', 'certification_authority'."),
     ],
 ) -> dict[str, Any]:
-    """[UTILITY] 他 tool の絞り込み引数に渡せる enum 値 (target_type / authority_level / funding_purpose / prefecture / program_kind 等) の **実在一覧 + 件数** を live DB から返す — typo 起因の 0 hit や 制度 ID ミスマッチ (= 詐欺リスク) を事前に防ぐ.
+    """[UTILITY] Returns the canonical enum values + row counts for filter arguments used by other tools (target_type / authority_level / funding_purpose / prefecture / program_kind 等), so callers can avoid typos that cause 0-hit searches.
     Probe canonical enum values with live row-count, so downstream search_* filters never silently drop matches from typos.
 
     WHAT: Live aggregation over `am_entities.raw_json` (no materialized view; each
@@ -1777,7 +1818,7 @@ def search_by_law(
         Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.", ge=0),
     ] = 0,
 ) -> dict[str, Any]:
-    """[DISCOVER-LAW] 法令名 (canonical or 口語) を与えると、その法令に紐づく 補助金 / 税制 / 融資 / 認定 / 法令行を 4 kind 横断で列挙する — `am_alias` + `am_law.short_name` のエイリアス展開で 「大店立地法」 のような 口語名でも届く.
+    """[DISCOVER-LAW] Returns programs / tax_measures / certifications / law rows linked to a given law name (canonical or colloquial). Uses `am_alias` + `am_law.short_name` for alias resolution. Output is search-derived; verify primary source (source_url) for legal interpretation.
     Cross-kind enumeration of programs / tax_measures / certifications / law entries grounded in a single 法令.
 
     WHAT: Joins across `am_entities` (record_kind IN program / tax_measure /
@@ -1988,7 +2029,7 @@ def active_programs_at(
         Field(description="Max rows. Clamped to [1, 100]. Default 20.", ge=1, le=100),
     ] = 20,
 ) -> dict[str, Any]:
-    """[TIMELINE] 任意の ISO 日付 pivot で **effective window (施行〜廃止) が及ぶ** 制度 + 税制を列挙する — `list_open_programs` が 募集窓口 を、本 tool は 制度の **存在期間** を見る. 歴史的 "XX年時点で有効だった制度" を答える 唯一 の tool.
+    """[TIMELINE] 任意の ISO 日付 pivot で **effective window (施行〜廃止) が及ぶ** 制度 + 税制を列挙する — `list_open_programs` が 募集窓口 を、本 tool は 制度の **存在期間** を見る (歴史的 "XX年時点で有効だった制度" の効力期間 lookup 用途).
     Return programs and tax_measures whose effectivity window (not application window) spans a given ISO date, with on_date_status hints (active / about_to_close / just_started).
 
     WHAT: `am_entities` where record_kind IN ('program', 'tax_measure'),
@@ -2221,45 +2262,60 @@ _RELATION_GRAPH_MAP: dict[str, list[str]] = {
 
 
 def _resolve_seed_in_graph(seed_id: str) -> str | None:
-    """Given an external id (canonical_id from am_entities, or raw
-    'program:xxx' / 'law:xxx' / 'cert:xxx'), try to find the matching
-    graph node. Returns node_id or None."""
-    gconn = connect_graph()
-    # direct hit
-    row = gconn.execute(
-        "SELECT node_id FROM am_node WHERE node_id = ?", [seed_id]
-    ).fetchone()
-    if row:
-        return row["node_id"]
-    # try by display name match (seed is often a business-friendly id)
-    row = gconn.execute(
-        "SELECT node_id FROM am_node WHERE display_name = ? LIMIT 1", [seed_id]
-    ).fetchone()
-    if row:
-        return row["node_id"]
-    # fall back: if seed looks like autonomath canonical_id, find primary_name, then graph
+    """Resolve a user-supplied seed id to an ``am_entities.canonical_id``.
+
+    Rewritten 2026-04-29: previously queried ``am_node`` from
+    ``graph.sqlite`` which no longer exists. Now reads ``am_entities``
+    in autonomath.db directly (same store ``graph_traverse_tool.py``
+    uses successfully).
+
+    Resolution order:
+      1. exact ``canonical_id`` hit
+      2. exact ``primary_name`` hit (caller passed a display name)
+      3. alias hit via ``am_alias.alias_text``
+      4. loose ``primary_name LIKE %seed%`` (last-resort, ranked by
+         confidence DESC so the highest-tier match wins)
+
+    Returns ``None`` when no candidate exists. The caller surfaces a
+    ``seed_not_found`` envelope with retry hints.
+    """
     aconn = connect_autonomath()
-    e = aconn.execute(
-        "SELECT primary_name FROM am_entities WHERE canonical_id = ?", [seed_id]
+    # 1. direct canonical_id
+    row = aconn.execute(
+        "SELECT canonical_id FROM am_entities WHERE canonical_id = ?", [seed_id]
     ).fetchone()
-    if e:
-        name = e["primary_name"]
-        row = gconn.execute(
-            "SELECT node_id FROM am_node WHERE display_name = ? LIMIT 1", [name]
+    if row:
+        return row["canonical_id"]
+    # 2. exact primary_name
+    row = aconn.execute(
+        "SELECT canonical_id FROM am_entities WHERE primary_name = ? "
+        "ORDER BY confidence DESC LIMIT 1",
+        [seed_id],
+    ).fetchone()
+    if row:
+        return row["canonical_id"]
+    # 3. alias hit (am_alias may not exist on minimal builds — guard).
+    try:
+        row = aconn.execute(
+            "SELECT canonical_id FROM am_alias WHERE alias_text = ? LIMIT 1",
+            [seed_id],
         ).fetchone()
         if row:
-            return row["node_id"]
-        # loose LIKE match
-        row = gconn.execute(
-            "SELECT node_id FROM am_node WHERE display_name LIKE ? LIMIT 1",
-            [f"%{name}%"],
-        ).fetchone()
-        if row:
-            return row["node_id"]
+            return row["canonical_id"]
+    except sqlite3.OperationalError:
+        pass
+    # 4. loose primary_name LIKE
+    esc = _like_escape(seed_id)
+    row = aconn.execute(
+        "SELECT canonical_id FROM am_entities WHERE primary_name LIKE ? ESCAPE '\\' "
+        "ORDER BY confidence DESC LIMIT 1",
+        [f"%{esc}%"],
+    ).fetchone()
+    if row:
+        return row["canonical_id"]
     return None
 
 
-@mcp.tool(annotations=_READ_ONLY)
 @_safe_tool
 def related_programs(
     program_id: Annotated[
@@ -2291,7 +2347,7 @@ def related_programs(
         ),
     ] = 100,
 ) -> dict[str, Any]:
-    """[DISCOVER-GRAPH] 制度 (program / tax / cert) 1 個を seed にして、prerequisite / compatible / incompatible / successor / predecessor / similar の 6 軸で関係する制度を 1-2 hop たどる — 18,489 edges / 13K node 有向グラフの実走査、PDF 脚注パースで出す LLM hallucination を構造的に排除.
+    """[DISCOVER-GRAPH] Returns related programs along 6 relation axes (prerequisite / compatible / incompatible / successor / predecessor / similar), 1-2 hops from a seed program / tax / cert. Walks am_relation (18,489 edges / ~13K nodes). Output is search-derived; verify primary source for compatibility decisions.
     Graph walk over am_relation (18,489 edges) seeded on one program/tax/cert, returning up to 6 relation axes and 2-hop neighbors.
 
     WHAT: `graph.sqlite::am_relation` — 18,489 directed edges across ~13K nodes.
@@ -2411,24 +2467,28 @@ def related_programs(
         result["error"] = err["error"]
         return result
 
-    gconn = connect_graph()
-    seed_row = gconn.execute(
-        "SELECT node_id, kind, display_name FROM am_node WHERE node_id=?",
+    aconn = connect_autonomath()
+    seed_row = aconn.execute(
+        "SELECT canonical_id, record_kind, primary_name FROM am_entities "
+        "WHERE canonical_id=?",
         [node_id],
     ).fetchone()
     if seed_row:
-        result["seed_id"] = seed_row["node_id"]
-        result["seed_kind"] = seed_row["kind"]
-        result["seed_name"] = seed_row["display_name"]
+        result["seed_id"] = seed_row["canonical_id"]
+        result["seed_kind"] = seed_row["record_kind"]
+        result["seed_name"] = seed_row["primary_name"]
 
-    # Build a union of relation SQL fragments.
+    # BFS over am_relation in autonomath.db (24,004 edges in v_am_relation_all
+    # / 23,805 in am_relation; we walk am_relation directly since the
+    # facts-origin rows duplicate via the view UNION). Cycle suppression
+    # via seen_edges tuple (s, t, relation_type).
     neighbor_ids: set[str] = set()
     total_edges = 0
     seen_edges: set[tuple[str, str, str]] = set()
 
     frontier = {node_id}
     edge_cap_hit = False
-    for hop in range(depth):
+    for _hop in range(depth):
         next_frontier: set[str] = set()
         if not frontier or edge_cap_hit:
             break
@@ -2439,111 +2499,77 @@ def related_programs(
             for grt in graph_rts:
                 if edge_cap_hit:
                     break
-                # For 'successor' we want: neighbor replaces seed -> successor of seed is neighbor
-                # am_relation is directed (source replaces target): A replaces B => A is the successor of B.
+                # Direction:
+                #   - successor: A replaces B  =>  successor of B is A.
+                #     We want neighbors of seed=B, so look up edges where
+                #     target_entity_id IN frontier (and source becomes
+                #     the new neighbor).
+                #   - predecessor: A replaces B  =>  predecessor of A is B.
+                #     Forward walk: source IN frontier, target is neighbor.
+                #   - all other types: forward walk source -> target.
+                placeholders = ",".join("?" for _ in frontier)
                 if rt == "successor":
-                    # find edges where target=current seed (seed is replaced by source)
-                    placeholders = ",".join("?" for _ in frontier)
                     sql = (
-                        f"SELECT source_id AS s, target_id AS t, relation_type, "
-                        f"confidence, notes FROM am_relation "
-                        f"WHERE relation_type=? AND target_id IN ({placeholders})"
+                        f"SELECT source_entity_id AS s, target_entity_id AS t, "
+                        f"relation_type, confidence, evidence_fact_ids "
+                        f"FROM am_relation "
+                        f"WHERE relation_type=? "
+                        f"AND target_entity_id IN ({placeholders}) "
+                        f"AND target_entity_id IS NOT NULL"
                     )
-                    rows = gconn.execute(sql, [grt, *frontier]).fetchall()
-                    for row in rows:
-                        key = (row["s"], row["t"], row["relation_type"])
-                        if key in seen_edges:
-                            continue
-                        seen_edges.add(key)
-                        result["relations"].setdefault(rt, []).append(
-                            {
-                                "from_id": row["t"],  # seed side
-                                "to_id": row["s"],
-                                "relation_type": rt,
-                                "confidence": row["confidence"],
-                                "evidence": row["notes"],
-                            }
-                        )
-                        neighbor_ids.add(row["s"])
-                        next_frontier.add(row["s"])
-                        total_edges += 1
-                        if total_edges >= max_edges:
-                            edge_cap_hit = True
-                            break
-                elif rt == "predecessor":
-                    placeholders = ",".join("?" for _ in frontier)
-                    sql = (
-                        f"SELECT source_id AS s, target_id AS t, relation_type, "
-                        f"confidence, notes FROM am_relation "
-                        f"WHERE relation_type=? AND source_id IN ({placeholders})"
-                    )
-                    rows = gconn.execute(sql, [grt, *frontier]).fetchall()
-                    for row in rows:
-                        key = (row["s"], row["t"], row["relation_type"])
-                        if key in seen_edges:
-                            continue
-                        seen_edges.add(key)
-                        result["relations"].setdefault(rt, []).append(
-                            {
-                                "from_id": row["s"],
-                                "to_id": row["t"],
-                                "relation_type": rt,
-                                "confidence": row["confidence"],
-                                "evidence": row["notes"],
-                            }
-                        )
-                        neighbor_ids.add(row["t"])
-                        next_frontier.add(row["t"])
-                        total_edges += 1
-                        if total_edges >= max_edges:
-                            edge_cap_hit = True
-                            break
                 else:
-                    # forward walk: seed -> neighbor
-                    placeholders = ",".join("?" for _ in frontier)
                     sql = (
-                        f"SELECT source_id AS s, target_id AS t, relation_type, "
-                        f"confidence, notes FROM am_relation "
-                        f"WHERE relation_type=? AND source_id IN ({placeholders})"
+                        f"SELECT source_entity_id AS s, target_entity_id AS t, "
+                        f"relation_type, confidence, evidence_fact_ids "
+                        f"FROM am_relation "
+                        f"WHERE relation_type=? "
+                        f"AND source_entity_id IN ({placeholders}) "
+                        f"AND target_entity_id IS NOT NULL"
                     )
-                    rows = gconn.execute(sql, [grt, *frontier]).fetchall()
-                    for row in rows:
-                        key = (row["s"], row["t"], row["relation_type"])
-                        if key in seen_edges:
-                            continue
-                        seen_edges.add(key)
-                        result["relations"].setdefault(rt, []).append(
-                            {
-                                "from_id": row["s"],
-                                "to_id": row["t"],
-                                "relation_type": rt,
-                                "confidence": row["confidence"],
-                                "evidence": row["notes"],
-                            }
-                        )
-                        neighbor_ids.add(row["t"])
-                        next_frontier.add(row["t"])
-                        total_edges += 1
-                        if total_edges >= max_edges:
-                            edge_cap_hit = True
-                            break
+                rows = aconn.execute(sql, [grt, *frontier]).fetchall()
+                for row in rows:
+                    key = (row["s"], row["t"], row["relation_type"])
+                    if key in seen_edges:
+                        continue
+                    seen_edges.add(key)
+                    if rt == "successor":
+                        # Flip orientation so the response always points
+                        # away from the seed (from_id = seed-side).
+                        from_id, to_id = row["t"], row["s"]
+                    else:
+                        from_id, to_id = row["s"], row["t"]
+                    result["relations"].setdefault(rt, []).append(
+                        {
+                            "from_id": from_id,
+                            "to_id": to_id,
+                            "relation_type": rt,
+                            "confidence": row["confidence"],
+                            "evidence": row["evidence_fact_ids"],
+                        }
+                    )
+                    neighbor_ids.add(to_id)
+                    next_frontier.add(to_id)
+                    total_edges += 1
+                    if total_edges >= max_edges:
+                        edge_cap_hit = True
+                        break
         frontier = next_frontier
     result["edge_cap_hit"] = edge_cap_hit
     result["max_edges"] = max_edges
 
-    # Attach node metadata
+    # Attach node metadata for the neighbor frontier.
     if neighbor_ids:
         placeholders = ",".join("?" for _ in neighbor_ids)
-        node_rows = gconn.execute(
-            f"SELECT node_id, kind, display_name FROM am_node "
-            f"WHERE node_id IN ({placeholders})",
+        node_rows = aconn.execute(
+            f"SELECT canonical_id, record_kind, primary_name FROM am_entities "
+            f"WHERE canonical_id IN ({placeholders})",
             list(neighbor_ids),
         ).fetchall()
         result["nodes"] = [
             {
-                "id": r["node_id"],
-                "kind": r["kind"],
-                "primary_name": r["display_name"],
+                "id": r["canonical_id"],
+                "kind": r["record_kind"],
+                "primary_name": r["primary_name"],
             }
             for r in node_rows
         ]
@@ -2680,7 +2706,7 @@ def search_acceptance_stats_am(
         Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.", ge=0),
     ] = 0,
 ) -> dict[str, Any]:
-    """[EVIDENCE] 補助金の採択実績 (応募件数 / 採択件数 / 採択率 / 予算額) を 年度 × 第 N 次 粒度で時系列検索する — 「このお金は倍率が何倍か / 予算いくらか」競争性 判断用の one-call quant データ, 省庁サイトの PDF 散在を解消.
+    """[EVIDENCE] Returns adoption statistics (応募件数 / 採択件数 / 採択率 / 予算額) per (program × fiscal_year × round). Aggregated from METI / MAFF published sources. Output is search-derived; verify primary source for figures cited in business decisions.
     Search adoption statistics (applications / acceptances / acceptance rate / budget) per program × fiscal_year × round.
 
     WHAT: `am_entities` rows where `source_topic IN
@@ -2908,7 +2934,15 @@ def _reasoning_import():
     return _match_mod, _qt_mod
 
 
-@mcp.tool(annotations=_READ_ONLY)
+# TODO(2026-04-29): intent_of is currently broken — _reasoning_import()
+# fails with ModuleNotFoundError because the `reasoning` package is not
+# present in the install (smoke test 2026-04-29 returns
+# `subsystem_unavailable` on every invocation). Gated behind
+# AUTONOMATH_REASONING_ENABLED (default False) so the broken tool stays
+# out of `tools/list`. Same gate also covers `reason_answer` below
+# (shared `_reasoning_import()` failure mode). To re-enable: bundle the
+# `reasoning` package into the install (or place it on a sys.path the
+# package can resolve from `Path(__file__).resolve().parent.parent`).
 @_safe_tool
 def intent_of(
     query: Annotated[
@@ -2922,7 +2956,7 @@ def intent_of(
         ),
     ],
 ) -> dict[str, Any]:
-    """[INTENT-CLASSIFY] 自然言語クエリを 10 intent cluster (i01_filter / i02_deadline / i03_successor / i04_tax_sunset / i05_cert_howto / i06_compat / i07_adoption / i08_peer_compare / i09_succession / i10_wage_dx_gx) に決定論的に振り分け、confidence と全スコアを audit trail として返す — `reason_answer` の前段 smoke-check.
+    """[INTENT-CLASSIFY] Returns classification of a JP natural-language query into one of 10 intent clusters (i01_filter / i02_deadline / i03_successor / i04_tax_sunset / i05_cert_howto / i06_compat / i07_adoption / i08_peer_compare / i09_succession / i10_wage_dx_gx) using a keyword scorer, with confidence + all_scores. Pre-step for `reason_answer`.
     Deterministic keyword-scorer classification of a JP natural-language query into 1 of 10 canonical intent clusters.
 
     WHAT: `reasoning.match.classify_intent()` の public surface.
@@ -3026,7 +3060,11 @@ def intent_of(
     }
 
 
-@mcp.tool(annotations=_READ_ONLY)
+# TODO(2026-04-29): reason_answer is currently broken — same root cause
+# as `intent_of` above (`_reasoning_import()` ModuleNotFoundError). Gated
+# behind AUTONOMATH_REASONING_ENABLED (default False) so the broken tool
+# stays out of `tools/list`. Re-enabled together with intent_of once the
+# `reasoning` package lands.
 @_safe_tool
 def reason_answer(
     query: Annotated[
@@ -3049,7 +3087,7 @@ def reason_answer(
         ),
     ] = None,
 ) -> dict[str, Any]:
-    """[REASON-ANSWER] 1 call で intent 分類 + slot 抽出 + DB bind + skeleton レンダ の Layer 7 全パイプラインを実行、検証可能な値 (URL / 日付 / 金額 / 制度名 / 先行制度) が全部埋まった answer_skeleton + missing_data を返す — 顧客 LLM は自然文へ polish するだけで済み、ハルシ surface が構造的に最小化される.
+    """[REASON-ANSWER] Runs intent classification + slot extraction + DB bind + skeleton render in one call. Returns an answer_skeleton with verifiable values (URL / 日付 / 金額 / 制度名 / 先行制度) bound from DB, plus a missing_data list of slots that could not be filled. Customer LLM polishes the skeleton text; missing_data tokens must not be fabricated.
     One-shot pipeline: classify_intent → extract_slots → load_tree → bind_precomputed + bind_iXX (live DB) → render_skeleton, returning a fact-complete skeleton plus explicit missing_data list.
 
     WHAT: pipeline = `query → classify_intent → extract_slots → load_tree →
@@ -3281,6 +3319,30 @@ def reason_answer(
         "persona_hint": persona,
         "retry_with": retry_with,
     }
+
+
+# ---------------------------------------------------------------------------
+# Conditional MCP tool registration for currently-broken tools.
+# `intent_of` + `reason_answer` are gated by AUTONOMATH_REASONING_ENABLED
+# (reasoning package not installed). They keep their @_safe_tool wrap
+# (defined above) so the function objects stay importable for tests; only
+# the @mcp.tool registration is suppressed when the gate is False.
+#
+# `related_programs` was historically gated behind AUTONOMATH_GRAPH_ENABLED
+# because the prior implementation queried a non-existent ``am_node`` table
+# in graph.sqlite. 2026-04-29: rewritten to read am_relation + am_entities
+# in autonomath.db directly (same pattern as graph_traverse_tool.py). The
+# gate default flipped to True in config.py so the fixed tool is registered
+# out of the box; flip ``AUTONOMATH_GRAPH_ENABLED=0`` to suppress
+# registration if a regression surfaces.
+# ---------------------------------------------------------------------------
+
+if settings.autonomath_graph_enabled:
+    related_programs = mcp.tool(annotations=_READ_ONLY)(related_programs)
+
+if settings.autonomath_reasoning_enabled:
+    intent_of = mcp.tool(annotations=_READ_ONLY)(intent_of)
+    reason_answer = mcp.tool(annotations=_READ_ONLY)(reason_answer)
 
 
 # ---------------------------------------------------------------------------

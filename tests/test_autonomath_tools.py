@@ -539,15 +539,38 @@ def test_active_programs_at_empty_date_returns_missing_required_arg():
 
 
 def test_related_programs_happy_dense_seed():
-    """J-Startup is one of the densest seeds in graph.sqlite (~28 edges)."""
+    """IT2026 (program:04_program_documents:000016:IT2026_b030eaea36) is the
+    densest hub in autonomath.db's am_relation table — ~1,800 outgoing edges
+    total, which exercises the fan-out cap + edge_cap_hit semantics.
+
+    2026-04-29: rewrote off the dead graph.sqlite::am_node path; seeds are
+    now canonical_ids from am_entities directly (display-name fallback
+    works too — see test_related_programs_resolves_by_display_name).
+    """
     res = related_programs(
-        program_id="program:J-Startup",
+        program_id="program:04_program_documents:000016:IT2026_b030eaea36",
+        relation_types=["incompatible"],
         depth=1,
         max_edges=50,
     )
     assert res["seed_kind"] == "program"
+    assert res["seed_name"] == "IT導入補助金 2026"
     assert "relations" in res
-    # At least one relation axis fired.
+    # IT2026 has 4 incompatible edges seeded in the corpus.
+    assert res["total_edges"] >= 1
+
+
+def test_related_programs_resolves_by_display_name():
+    """Seed resolution falls back to primary_name exact match when the
+    caller passes a display string instead of a canonical_id."""
+    res = related_programs(
+        program_id="IT導入補助金 2026",
+        relation_types=["incompatible"],
+        depth=1,
+        max_edges=10,
+    )
+    assert res["seed_kind"] == "program"
+    assert res["seed_id"].endswith("IT2026_b030eaea36")
     assert res["total_edges"] >= 1
 
 

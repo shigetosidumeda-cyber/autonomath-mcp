@@ -55,6 +55,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 from jpintel_mcp.api.alerts import SEVERITY_RANK  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
+from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.amendment_alert")
 
@@ -525,7 +526,18 @@ def main(argv: list[str] | None = None) -> int:
         level=getattr(logging, args.log_level.upper(), logging.INFO),
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
-    summary = run(since_iso=args.since, dry_run=args.dry_run)
+    with heartbeat("amendment_alert") as hb:
+        summary = run(since_iso=args.since, dry_run=args.dry_run)
+        if isinstance(summary, dict):
+            hb["rows_processed"] = int(
+                summary.get("alerts_sent", summary.get("emails_sent", 0)) or 0
+            )
+            hb["rows_skipped"] = int(summary.get("skipped", 0) or 0)
+            hb["metadata"] = {
+                k: summary.get(k)
+                for k in ("scanned", "amendments", "errors", "dry_run")
+                if k in summary
+            }
     print(json.dumps(summary, ensure_ascii=False))
     return 0
 

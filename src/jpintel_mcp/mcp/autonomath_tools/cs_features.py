@@ -363,11 +363,11 @@ def user_message_for_error(
 # Values are conservative; clients honor retry_after as a minimum sleep.
 _RETRY_HINTS: dict[str, tuple[int, str | None]] = {
     "db_locked": (3, None),
-    "db_unavailable": (60, "https://autonomath.ai/v1/programs"),
+    "db_unavailable": (60, "https://zeimu-kaikei.ai/v1/programs"),
     "subsystem_unavailable": (10, None),
     "internal": (15, None),
     "rate_limit_exceeded": (60, None),
-    "monthly_cap_reached": (0, "https://autonomath.ai/dashboard/billing"),
+    "monthly_cap_reached": (0, "https://zeimu-kaikei.ai/dashboard/billing"),
 }
 
 
@@ -400,7 +400,7 @@ def enhance_error_with_retry(
         out.setdefault("retry_after", 30)
         out.setdefault(
             "alternate_endpoint",
-            "https://autonomath.ai/v1/programs",
+            "https://zeimu-kaikei.ai/v1/programs",
         )
     elif http_status == 429:
         out.setdefault("retry_after", 60)

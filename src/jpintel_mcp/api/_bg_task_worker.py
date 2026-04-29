@@ -165,6 +165,101 @@ def _handle_dunning_email(payload: dict[str, Any]) -> None:
             pass
 
 
+def _handle_welcome_email_trial(payload: dict[str, Any]) -> None:
+    """Send the post-activation welcome for a tier='trial' magic-link signup.
+
+    Distinct from `_handle_welcome_email` (paid tier, carries
+    Stripe-issued raw-key reveal pointer): the trial welcome carries the
+    14-day expiry deadline + 200-request cap so the evaluator knows
+    exactly what they have. Raw key is NOT in the body — it was already
+    revealed once on /trial.html via the URL fragment, same posture as
+    success.html for paid keys.
+
+    Payload contract: {"to", "key_last4", "expires_at",
+                       "duration_days", "request_cap"}.
+    """
+    to = payload.get("to")
+    if not to:
+        return
+    from jpintel_mcp.email.postmark import STREAM_TRANSACTIONAL, get_client
+
+    get_client()._send(
+        to=to,
+        template_alias="onboarding-trial-day-0",
+        template_model={
+            "key_last4": payload.get("key_last4") or "????",
+            "expires_at": payload.get("expires_at") or "",
+            "duration_days": int(payload.get("duration_days") or 14),
+            "request_cap": int(payload.get("request_cap") or 200),
+        },
+        message_stream=STREAM_TRANSACTIONAL,
+        tag="onboarding-trial-day-0",
+    )
+
+
+def _handle_trial_day11_warning(payload: dict[str, Any]) -> None:
+    """Day-11 (3-day-warning) nudge for trial keys nearing expiration.
+
+    Fires from the durable queue's `run_at` so a process restart between
+    issuance and day-11 cannot drop the reminder. The day-30
+    "feedback-on-non-conversion" mail is intentionally NOT a separate
+    handler — it's an A/B-able touch best driven by the existing
+    email_schedule cron once the operator decides on copy.
+
+    Payload contract: {"to", "key_last4", "expires_at", "checkout_url"}.
+    """
+    to = payload.get("to")
+    if not to:
+        return
+    from jpintel_mcp.email.postmark import STREAM_TRANSACTIONAL, get_client
+
+    get_client()._send(
+        to=to,
+        template_alias="onboarding-trial-day-11",
+        template_model={
+            "key_last4": payload.get("key_last4") or "????",
+            "expires_at": payload.get("expires_at") or "",
+            "checkout_url": payload.get("checkout_url") or "",
+        },
+        message_stream=STREAM_TRANSACTIONAL,
+        tag="onboarding-trial-day-11",
+    )
+
+
+def _handle_trial_expired_email(payload: dict[str, Any]) -> None:
+    """Day-14 (or cap-exhaustion) end-of-trial email.
+
+    Enqueued by ``scripts/cron/expire_trials.py`` after a tier='trial'
+    key is revoked because either ``trial_expires_at <= now()`` or
+    ``trial_requests_used >= 200``. Bug 2 from the 2026-04-29 funnel
+    audit: the cron was already enqueueing rows of this kind, but no
+    handler was registered, so the bg worker returned ``unknown kind:
+    trial_expired_email`` and the email never sent — leaving evaluators
+    with a generic 401 and no recovery path.
+
+    Payload contract: {"to", "key_last4", "cause", "checkout_url"}.
+    ``cause`` is "expired" (14d deadline) or "cap" (200-req cap). The
+    Postmark template renders different copy for each so the user knows
+    which gate fired.
+    """
+    to = payload.get("to")
+    if not to:
+        return
+    from jpintel_mcp.email.postmark import STREAM_TRANSACTIONAL, get_client
+
+    get_client()._send(
+        to=to,
+        template_alias="onboarding-trial-expired",
+        template_model={
+            "key_last4": payload.get("key_last4") or "????",
+            "cause": payload.get("cause") or "expired",
+            "checkout_url": payload.get("checkout_url") or "",
+        },
+        message_stream=STREAM_TRANSACTIONAL,
+        tag="onboarding-trial-expired",
+    )
+
+
 def _handle_stripe_usage_sync(payload: dict[str, Any]) -> None:
     """Reconcile a usage_events row that was inserted before Stripe sync.
 
@@ -188,13 +283,51 @@ def _handle_stripe_usage_sync(payload: dict[str, Any]) -> None:
     )
 
 
+def _handle_webhook_disabled_email(payload: dict[str, Any]) -> None:
+    """Notify the customer that a customer_webhook just auto-disabled.
+
+    Payload: {"to", "webhook_id", "url_host", "reason"}.
+
+    Falls back to the generic ``_send`` template path so the operator can
+    register a Postmark template alias 'webhook-disabled' without code
+    changes. If Postmark is not configured (dev/test) the call no-ops.
+    """
+    to = payload.get("to")
+    if not to:
+        return
+    try:
+        from jpintel_mcp.email.postmark import STREAM_TRANSACTIONAL, get_client
+    except Exception:  # pragma: no cover — email module optional
+        return
+    try:
+        get_client()._send(
+            to=to,
+            template_alias="webhook-disabled",
+            template_model={
+                "webhook_id": payload.get("webhook_id"),
+                "url_host": payload.get("url_host") or "?",
+                "reason": payload.get("reason") or "5 consecutive failures",
+            },
+            message_stream=STREAM_TRANSACTIONAL,
+            tag="webhook-disabled",
+        )
+    except Exception:
+        # Same posture as other email handlers: never raise into the
+        # worker. Sentry already captures via the worker's outer wrap.
+        raise
+
+
 # Single source of truth for kind → handler.
 _HANDLERS = {
     "welcome_email": _handle_welcome_email,
+    "welcome_email_trial": _handle_welcome_email_trial,
+    "trial_day11_warning": _handle_trial_day11_warning,
+    "trial_expired_email": _handle_trial_expired_email,
     "key_rotated_email": _handle_key_rotated_email,
     "stripe_status_refresh": _handle_stripe_status_refresh,
     "dunning_email": _handle_dunning_email,
     "stripe_usage_sync": _handle_stripe_usage_sync,
+    "webhook_disabled_email": _handle_webhook_disabled_email,
 }
 
 

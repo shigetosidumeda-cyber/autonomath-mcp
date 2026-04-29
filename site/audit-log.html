@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>制度変更検出フィード (Audit Log) — 税務会計AI</title>
+<meta name="description" content="日本の公的制度データの差分を毎日 cron で検出。検出のみで個別判断は行いません。RSS / JSON 両対応、CC-BY-4.0 (差分メタデータ)。">
+
+<meta property="og:title" content="制度変更検出フィード (Audit Log) — 税務会計AI">
+<meta property="og:description" content="補助金・融資・税制・認定制度の eligibility 変更を毎日検出。一次資料 URL とハッシュ付きで公開。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://zeimu-kaikei.ai/audit-log.html">
+<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="制度変更検出フィード (Audit Log) — 税務会計AI">
+<meta name="twitter:description" content="制度データの差分を毎日 cron で検出、一次資料 URL 付き公開。">
+
+<link rel="canonical" href="https://zeimu-kaikei.ai/audit-log.html">
+<link rel="alternate" type="application/rss+xml" title="税務会計AI 変更履歴 RSS" href="https://zeimu-kaikei.ai/audit-log.rss">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css?v=20260428a">
+
+<!--
+  Schema.org Dataset entry — declares this page (and the JSON endpoint
+  it pulls from) as a CC-BY-4.0 differential-metadata dataset. The
+  underlying source rows themselves are public-government data; only the
+  *diff record* (prev_hash → new_hash + detected_at + the canonicalized
+  prev_value/new_value pair) is the new editorial work that we license
+  under CC-BY-4.0. Knowledge Graph consumers reading this should attach
+  this Dataset to creator @id https://zeimu-kaikei.ai/#publisher.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "税務会計AI 変更履歴",
+  "alternateName": "AutonoMath Amendment Diff Log",
+  "description": "日本の補助金・融資・税制・認定制度を含む公的制度データの eligibility 変更を毎日 cron で検出した差分メタデータの公開ログ。各行は entity_id / field_name / prev_hash / new_hash / detected_at / source_url を含む append-only 記録。検出のみで個別判断は行いません。",
+  "url": "https://zeimu-kaikei.ai/audit-log.html",
+  "sameAs": "https://api.zeimu-kaikei.ai/v1/am/audit-log",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "temporalCoverage": "2026-04-28/..",
+  "creator": {
+    "@id": "https://zeimu-kaikei.ai/#publisher"
+  },
+  "publisher": {
+    "@id": "https://zeimu-kaikei.ai/#publisher"
+  },
+  "spatialCoverage": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://api.zeimu-kaikei.ai/v1/am/audit-log"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/rss+xml",
+      "contentUrl": "https://zeimu-kaikei.ai/audit-log.rss"
+    }
+  ]
+}
+</script>
+
+<!--
+  Single-source publisher Organization with @id consolidation
+  (Task B 2026-04-29). All site pages should reference this @id rather
+  than redefining the Org inline. sameAs URLs marked TODO(user-action)
+  are placeholders until the user creates the social profiles per
+  docs/runbook/social_profile_setup.md.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "name": "Bookyou株式会社",
+  "legalName": "Bookyou株式会社",
+  "alternateName": "税務会計AI",
+  "url": "https://zeimu-kaikei.ai/",
+  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "email": "info@bookyou.net",
+  "identifier": "T8010001213708",
+  "taxID": "T8010001213708",
+  "foundingDate": "2025-05-12",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressRegion": "東京都",
+    "addressLocality": "文京区",
+    "streetAddress": "小日向 2-22-1"
+  },
+  "founder": {
+    "@type": "Person",
+    "name": "梅田茂利"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "info@bookyou.net",
+    "contactType": "customer support",
+    "availableLanguage": ["ja", "en"]
+  },
+  "sameAs": [
+    "https://www.bookyou.net/",
+    "https://github.com/shigetosidumeda-cyber"
+  ]
+}
+</script>
+
+<style>
+  .auditlog-page { padding: 36px 0 64px; }
+  .auditlog-page h1 { font-size: 28px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .auditlog-page .lead { font-size: 16px; color: var(--text-muted); margin: 0 0 20px; max-width: 760px; line-height: 1.7; }
+  .auditlog-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 16px 0 24px; padding: 14px 16px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; }
+  .auditlog-controls label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; }
+  .auditlog-controls input { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; min-width: 170px; }
+  .auditlog-controls button { padding: 8px 16px; background: var(--accent, #1f6feb); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; }
+  .auditlog-controls button:hover { filter: brightness(1.07); }
+  .auditlog-controls .rss-link { font-size: 13px; padding: 8px 14px; background: #f97316; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
+  .auditlog-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+  .auditlog-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .auditlog-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
+  .auditlog-table th, .auditlog-table td { border-bottom: 1px solid var(--border); padding: 9px 12px; text-align: left; vertical-align: top; }
+  .auditlog-table th { background: var(--bg-alt); font-weight: 700; white-space: nowrap; position: sticky; top: 0; }
+  .auditlog-table td.value-cell { max-width: 280px; overflow-wrap: break-word; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 12px; }
+  .auditlog-table td.field-cell { white-space: nowrap; font-weight: 600; }
+  .auditlog-table .ja-label { color: var(--text-muted); font-size: 11px; font-weight: 400; }
+  .auditlog-table a { color: var(--accent, #1f6feb); text-decoration: none; }
+  .auditlog-table a:hover { text-decoration: underline; }
+  .auditlog-empty { padding: 32px; text-align: center; color: var(--text-muted); }
+  .auditlog-status { padding: 12px 14px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; margin: 12px 0; font-size: 13px; display: none; }
+  .auditlog-status.error { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+  .auditlog-status.show { display: block; }
+  .auditlog-disclaimer { background: #fff8e1; border: 2px solid #f59e0b; padding: 14px 16px; border-radius: 8px; margin: 20px 0; font-size: 13px; line-height: 1.7; }
+  .auditlog-disclaimer h2 { font-size: 14px; margin: 0 0 6px; color: #7c2d12; }
+  .auditlog-pager { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
+  .auditlog-pager button { padding: 9px 16px; background: white; border: 1px solid var(--border); border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .auditlog-pager button:disabled { opacity: 0.4; cursor: not-allowed; }
+</style>
+
+<script defer src="analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="税務会計AI ホーム">
+      <span class="brand-name">税務会計AI</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">About</a>
+      <a href="products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="audiences/">利用者層</a>
+      <a href="playground.html">Playground</a>
+      <details class="nav-trust" open>
+        <summary>信頼</summary>
+        <ul>
+          <li><a href="status.html">Status</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="data-freshness.html">データ鮮度</a></li>
+          <li><a href="transparency.html">透明性</a></li>
+          <li><a href="audit-log.html" aria-current="page">変更検出フィード</a></li>
+        </ul>
+      </details>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="auditlog-page">
+  <div class="container">
+    <h1>制度変更検出フィード (Audit Log)</h1>
+    <p class="lead">公的機関データの差分を毎日 cron で検出。<strong>検出のみで個別判断は行いません。</strong> 各行は <code>entity_id</code> / <code>field_name</code> / <code>prev_hash</code> / <code>new_hash</code> / <code>detected_at</code> / <code>source_url</code> を含む append-only 記録です。差分メタデータは CC-BY-4.0、原典は各 <code>source_url</code> の公的機関ライセンスに従います。</p>
+
+    <div class="auditlog-disclaimer" role="note" aria-labelledby="auditlog-tax-disclaimer-title">
+      <h2 id="auditlog-tax-disclaimer-title">本サービスは税務助言ではありません</h2>
+      税務会計AI は公的機関が公表する制度・税制・法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な税務判断・申告書作成代行は行いません。弁護士法 §72 に基づき法律事務も行いません。個別案件は<strong>資格を有する税理士・弁護士に必ずご相談ください</strong>。詳細は <a href="tos.html">利用規約</a> をご確認ください。
+    </div>
+
+    <div class="auditlog-controls" role="search" aria-label="変更履歴フィルタ">
+      <label>since (UTC)
+        <input type="date" id="al-since" aria-label="検出開始日 YYYY-MM-DD">
+      </label>
+      <label>entity_id
+        <input type="text" id="al-entity" placeholder="program_xxx_2026" aria-label="entity_id 完全一致" maxlength="200">
+      </label>
+      <label>limit
+        <input type="number" id="al-limit" min="1" max="100" value="50" aria-label="1ページ最大件数 (1-100)">
+      </label>
+      <button type="button" id="al-apply">適用</button>
+      <a class="rss-link" href="/audit-log.rss" rel="alternate" type="application/rss+xml" aria-label="変更履歴 RSS フィードを購読">RSS 購読</a>
+    </div>
+
+    <div class="auditlog-meta" id="al-meta" aria-live="polite"></div>
+    <div class="auditlog-status" id="al-status" role="status"></div>
+
+    <div class="auditlog-table-wrap">
+      <table class="auditlog-table" aria-label="変更履歴">
+        <thead>
+          <tr>
+            <th scope="col">detected_at (UTC)</th>
+            <th scope="col">entity_id</th>
+            <th scope="col">field</th>
+            <th scope="col">prev_value</th>
+            <th scope="col">new_value</th>
+            <th scope="col">source</th>
+          </tr>
+        </thead>
+        <tbody id="al-tbody">
+          <tr><td colspan="6" class="auditlog-empty">読み込み中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="auditlog-pager">
+      <button type="button" id="al-prev" disabled>前のページ</button>
+      <button type="button" id="al-next" disabled>次のページ</button>
+    </div>
+
+    <h2 style="font-size:18px;margin:36px 0 8px;">使い方 (API + RSS)</h2>
+    <p style="max-width:760px;line-height:1.7;font-size:14px;">同じデータは <code>GET https://api.zeimu-kaikei.ai/v1/am/audit-log</code> で JSON 取得、<a href="/audit-log.rss">/audit-log.rss</a> で RSS 取得できます。匿名 50 リクエスト/月 per IP まで無料、認証付きキーは ¥3/リクエスト 税別 (税込 ¥3.30) で従量課金。</p>
+    <pre style="background:var(--bg-alt);padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;"><code>curl 'https://api.zeimu-kaikei.ai/v1/am/audit-log?since=2026-04-01&amp;limit=50'
+
+# 認証付き (¥3/req, 税込 ¥3.30)
+curl -H 'X-API-Key: sk_live_...' \
+     'https://api.zeimu-kaikei.ai/v1/am/audit-log?entity_id=program_xxx_2026'</code></pre>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+  // Live audit-log fetcher. Pure vanilla JS, no framework. Cursor-based
+  // pagination — we keep a stack of cursors so "前のページ" can roll back.
+  var API = 'https://api.zeimu-kaikei.ai/v1/am/audit-log';
+  // Local dev fallback — when running under file:// or localhost, point
+  // at the local API. Adjust by setting window.AUDIT_LOG_API before
+  // including this script if needed.
+  if (window.AUDIT_LOG_API) { API = window.AUDIT_LOG_API; }
+  var $tbody = document.getElementById('al-tbody');
+  var $meta = document.getElementById('al-meta');
+  var $status = document.getElementById('al-status');
+  var $prev = document.getElementById('al-prev');
+  var $next = document.getElementById('al-next');
+  var cursorStack = [];   // each entry = the cursor for that page
+  var nextCursor = null;
+
+  function setStatus(msg, isError) {
+    if (!msg) { $status.classList.remove('show'); return; }
+    $status.textContent = msg;
+    $status.classList.add('show');
+    $status.classList.toggle('error', !!isError);
+  }
+
+  function escapeHTML(s) {
+    if (s === null || s === undefined) { return ''; }
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function truncate(s, n) {
+    if (s === null || s === undefined) { return '<span style="color:#9ca3af;">null</span>'; }
+    var t = String(s);
+    return t.length > n ? escapeHTML(t.slice(0, n)) + '…' : escapeHTML(t);
+  }
+
+  function renderRows(rows) {
+    if (!rows || !rows.length) {
+      $tbody.innerHTML = '<tr><td colspan="6" class="auditlog-empty">該当する差分はありません (cron 検出 0 件、または期間外)。</td></tr>';
+      return;
+    }
+    var html = '';
+    rows.forEach(function(r) {
+      var fieldLabel = escapeHTML(r.field_name);
+      if (r.field_name_ja) { fieldLabel += '<br><span class="ja-label">' + escapeHTML(r.field_name_ja) + '</span>'; }
+      html += '<tr>'
+        + '<td>' + escapeHTML(r.detected_at) + '</td>'
+        + '<td>' + escapeHTML(r.entity_id) + '</td>'
+        + '<td class="field-cell">' + fieldLabel + '</td>'
+        + '<td class="value-cell">' + truncate(r.prev_value, 80) + '</td>'
+        + '<td class="value-cell">' + truncate(r.new_value, 80) + '</td>'
+        + '<td>' + (r.source_url ? '<a href="' + escapeHTML(r.source_url) + '" target="_blank" rel="noopener nofollow">出典</a>' : '<span style="color:#9ca3af;">—</span>') + '</td>'
+        + '</tr>';
+    });
+    $tbody.innerHTML = html;
+  }
+
+  function fetchPage(cursor) {
+    var params = new URLSearchParams();
+    var since = document.getElementById('al-since').value;
+    var entity = document.getElementById('al-entity').value.trim();
+    var limit = parseInt(document.getElementById('al-limit').value, 10) || 50;
+    if (limit < 1) { limit = 1; } if (limit > 100) { limit = 100; }
+    if (since) { params.set('since', since); }
+    if (entity) { params.set('entity_id', entity); }
+    params.set('limit', String(limit));
+    if (cursor) { params.set('cursor', cursor); }
+    setStatus('読み込み中…');
+    $tbody.innerHTML = '<tr><td colspan="6" class="auditlog-empty">読み込み中…</td></tr>';
+    fetch(API + '?' + params.toString(), {
+      headers: { 'Accept': 'application/json' },
+      credentials: 'omit',
+    }).then(function(r) {
+      if (!r.ok) {
+        return r.text().then(function(body) {
+          throw new Error(r.status + ' ' + r.statusText + ': ' + body.slice(0, 200));
+        });
+      }
+      return r.json();
+    }).then(function(data) {
+      setStatus(null);
+      renderRows(data.results || []);
+      nextCursor = data.next_cursor || null;
+      $next.disabled = !nextCursor;
+      $prev.disabled = cursorStack.length === 0;
+      $meta.textContent = '取得 ' + (data.results || []).length + ' 件 (limit=' + (data.limit || limit) + ')'
+        + (since ? ' · since=' + since : '')
+        + (entity ? ' · entity_id=' + entity : '')
+        + ' · ' + (data._meta && data._meta.honest_note ? data._meta.honest_note : '');
+    }).catch(function(err) {
+      setStatus('読み込みに失敗しました: ' + err.message, true);
+      $tbody.innerHTML = '<tr><td colspan="6" class="auditlog-empty">エラー</td></tr>';
+    });
+  }
+
+  document.getElementById('al-apply').addEventListener('click', function() {
+    cursorStack = [];
+    fetchPage(null);
+  });
+  $next.addEventListener('click', function() {
+    if (!nextCursor) { return; }
+    cursorStack.push(nextCursor);
+    fetchPage(nextCursor);
+  });
+  $prev.addEventListener('click', function() {
+    cursorStack.pop();
+    var prev = cursorStack[cursorStack.length - 1] || null;
+    fetchPage(prev);
+  });
+
+  // Initial load.
+  fetchPage(null);
+})();
+</script>
+
+</body>
+</html>

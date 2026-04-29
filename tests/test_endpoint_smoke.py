@@ -379,40 +379,41 @@ def test_enforcement_cases_search_smoke(client):
 
 
 def test_me_tool_recommendation_unauth(client):
-    """/me endpoints require auth; smoke that the route exists by
-    asserting 401 / 422 rather than route_not_found."""
+    """/me endpoints require auth — must NOT return 200 to anonymous.
+    Smoke contract: assert auth-rejected (401/403) or schema-rejected (422),
+    never 200 (auth bypass) or 5xx (broken handler)."""
     r = client.get("/v1/me/tool_recommendation", params={"intent": "search"})
-    assert r.status_code in (200, 401, 422, 403), r.status_code
+    assert r.status_code in (401, 403, 422), r.status_code
 
 
 def test_me_dashboard_unauth(client):
     r = client.get("/v1/me/dashboard")
-    assert r.status_code in (200, 401, 403), r.status_code
+    assert r.status_code in (401, 403), r.status_code
 
 
 def test_me_billing_history_unauth(client):
     r = client.get("/v1/me/billing_history")
-    assert r.status_code in (200, 401, 403), r.status_code
+    assert r.status_code in (401, 403), r.status_code
 
 
 def test_me_usage_by_tool_unauth(client):
     r = client.get("/v1/me/usage_by_tool")
-    assert r.status_code in (200, 401, 403), r.status_code
+    assert r.status_code in (401, 403), r.status_code
 
 
 def test_me_alerts_subscribe_unauth(client):
     r = client.post("/v1/me/alerts/subscribe", json={})
-    assert r.status_code in (200, 401, 403, 422), r.status_code
+    assert r.status_code in (401, 403, 422), r.status_code
 
 
 def test_me_cap_unauth(client):
     r = client.post("/v1/me/cap", json={})
-    assert r.status_code in (200, 401, 403, 422), r.status_code
+    assert r.status_code in (401, 403, 422), r.status_code
 
 
 def test_me_testimonials_post_unauth(client):
     r = client.post("/v1/me/testimonials", json={})
-    assert r.status_code in (200, 401, 403, 422), r.status_code
+    assert r.status_code in (401, 403, 422), r.status_code
 
 
 # ---------------------------------------------------------------------------

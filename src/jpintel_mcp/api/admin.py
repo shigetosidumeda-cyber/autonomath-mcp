@@ -23,6 +23,7 @@ All SQL is hand-written and parameterised; no ORM.
 """
 from __future__ import annotations
 
+import hmac
 import logging
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Annotated
@@ -62,7 +63,14 @@ def require_admin(
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE, "admin endpoints disabled"
         )
-    if not x_api_key or x_api_key != configured:
+    # Constant-time comparison: a naive `x_api_key != configured` leaks the
+    # length of the matching prefix via response timing. hmac.compare_digest
+    # short-circuits in O(min(len(a), len(b))) time only on length mismatch
+    # (no information about content), and is constant-time within equal-length
+    # strings.
+    if not x_api_key or not hmac.compare_digest(
+        x_api_key.encode("utf-8"), configured.encode("utf-8")
+    ):
         client_ip = request.client.host if request.client else "unknown"
         _log.warning(
             "admin_auth_failed",
@@ -137,6 +145,44 @@ class TopErrorsResponse(BaseModel):
     hours: int
     limit: int
     errors: list[TopError]
+    note: str | None = None
+
+
+class CronRunRow(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    cron_name: str
+    started_at: str
+    finished_at: str | None = None
+    status: str
+    rows_processed: int | None = None
+    rows_skipped: int | None = None
+    error_message: str | None = None
+    metadata_json: str | None = None
+    workflow_run_id: str | None = None
+    git_sha: str | None = None
+
+
+class CronStatusCounts(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    cron_name: str
+    ok: int = 0
+    error: int = 0
+    partial: int = 0
+    dry_run: int = 0
+    running: int = 0
+    last_started_at: str | None = None
+    last_status: str | None = None
+
+
+class CronRunsResponse(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    since: str
+    limit_per_cron: int
+    runs: list[CronRunRow]
+    status_counts: list[CronStatusCounts]
     note: str | None = None
 
 
@@ -361,6 +407,149 @@ def get_top_errors(
     ]
 
     return TopErrorsResponse(hours=hours, limit=limit, errors=errors)
+
+
+# ---------------------------------------------------------------------------
+# Cron heartbeat read-side (migration 102 — `cron_runs` populated by
+# `scripts/cron/*.py` via `jpintel_mcp.observability.heartbeat`).
+# ---------------------------------------------------------------------------
+
+
+@router.get("/cron_runs", response_model=CronRunsResponse)
+def get_cron_runs(
+    _auth: AdminAuthDep,
+    conn: DbDep,
+    since: str | None = None,
+    limit_per_cron: int = 5,
+) -> CronRunsResponse:
+    """Recent cron heartbeats + per-cron status rollup.
+
+    Args:
+        since: ISO 8601 cutoff (default: now - 24h). Anything earlier is
+            excluded from both ``runs`` and ``status_counts``.
+        limit_per_cron: cap rows per cron_name returned in ``runs`` (default 5,
+            max 50). The ``status_counts`` rollup is unaffected by this cap.
+
+    Returns 200 with empty lists if migration 102 hasn't been applied yet
+    (table missing). The cron writer auto-creates the table on first
+    write, so this null-safe path is mainly for fresh test DBs.
+    """
+    if limit_per_cron < 1:
+        limit_per_cron = 1
+    if limit_per_cron > 50:
+        limit_per_cron = 50
+
+    if since is None:
+        since_dt = datetime.now(UTC) - timedelta(hours=24)
+        since_iso = since_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+    else:
+        # Validate but return as-is so downstream can compare lexicographic
+        # ISO 8601 against stored values (which the cron writer also emits
+        # in seconds-resolution Z form).
+        try:
+            datetime.fromisoformat(since.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "since must be ISO 8601 (e.g. 2026-04-29T00:00:00Z)",
+            ) from exc
+        since_iso = since
+
+    if not _table_exists(conn, "cron_runs"):
+        return CronRunsResponse(
+            since=since_iso,
+            limit_per_cron=limit_per_cron,
+            runs=[],
+            status_counts=[],
+            note="cron_runs table missing (migration 102 not yet applied)",
+        )
+
+    # Per-cron status rollup. ``status`` enum is ('ok','error','partial',
+    # 'dry_run','running') per migration 102 — we sum each bucket.
+    status_rows = conn.execute(
+        """SELECT cron_name,
+                  SUM(CASE WHEN status='ok'      THEN 1 ELSE 0 END) AS ok,
+                  SUM(CASE WHEN status='error'   THEN 1 ELSE 0 END) AS err,
+                  SUM(CASE WHEN status='partial' THEN 1 ELSE 0 END) AS partial,
+                  SUM(CASE WHEN status='dry_run' THEN 1 ELSE 0 END) AS dry_run,
+                  SUM(CASE WHEN status='running' THEN 1 ELSE 0 END) AS running,
+                  MAX(started_at) AS last_started_at
+             FROM cron_runs
+            WHERE started_at >= ?
+         GROUP BY cron_name
+         ORDER BY cron_name ASC""",
+        (since_iso,),
+    ).fetchall()
+
+    counts: list[CronStatusCounts] = []
+    for r in status_rows:
+        # Latest status for each cron (single extra small query per row).
+        # The rollup is bounded by the number of distinct cron_names —
+        # presently ~30, so N+1 is fine.
+        last = conn.execute(
+            """SELECT status FROM cron_runs
+                WHERE cron_name = ? AND started_at >= ?
+             ORDER BY started_at DESC LIMIT 1""",
+            (r["cron_name"], since_iso),
+        ).fetchone()
+        counts.append(
+            CronStatusCounts(
+                cron_name=r["cron_name"],
+                ok=r["ok"] or 0,
+                error=r["err"] or 0,
+                partial=r["partial"] or 0,
+                dry_run=r["dry_run"] or 0,
+                running=r["running"] or 0,
+                last_started_at=r["last_started_at"],
+                last_status=last["status"] if last is not None else None,
+            )
+        )
+
+    # Per-cron last-N rows. Using a window function so the cap is enforced
+    # in SQL rather than client-side; SQLite ≥ 3.25 supports row_number().
+    rows = conn.execute(
+        """WITH ranked AS (
+              SELECT cron_name, started_at, finished_at, status,
+                     rows_processed, rows_skipped, error_message,
+                     metadata_json, workflow_run_id, git_sha,
+                     ROW_NUMBER() OVER (
+                         PARTITION BY cron_name
+                         ORDER BY started_at DESC
+                     ) AS rn
+                FROM cron_runs
+               WHERE started_at >= ?
+           )
+           SELECT cron_name, started_at, finished_at, status,
+                  rows_processed, rows_skipped, error_message,
+                  metadata_json, workflow_run_id, git_sha
+             FROM ranked
+            WHERE rn <= ?
+         ORDER BY cron_name ASC, started_at DESC""",
+        (since_iso, limit_per_cron),
+    ).fetchall()
+
+    runs = [
+        CronRunRow(
+            cron_name=r["cron_name"],
+            started_at=r["started_at"],
+            finished_at=r["finished_at"],
+            status=r["status"],
+            rows_processed=r["rows_processed"],
+            rows_skipped=r["rows_skipped"],
+            error_message=r["error_message"],
+            metadata_json=r["metadata_json"],
+            workflow_run_id=r["workflow_run_id"],
+            git_sha=r["git_sha"],
+        )
+        for r in rows
+    ]
+
+    return CronRunsResponse(
+        since=since_iso,
+        limit_per_cron=limit_per_cron,
+        runs=runs,
+        status_counts=counts,
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# AutonoMath — Hiring Decision Gate
+# 税務会計AI — Hiring Decision Gate
 
 Internal P5-quarterly decision document. Solo operator (梅田茂利, info@bookyou.net), Bookyou株式会社.
 
@@ -62,7 +62,7 @@ Self-assessment is private to the operator. If 3+ check-marks: trigger fires reg
 ### 2.4 Cache hit rate (T+730d gate)
 
 - **Source**: `request_log.cache_hit` boolean column, weekly rollup.
-- **Definition**: % of paid requests served from `pre_compute_cache` without a fresh `am_entities` query. Target by Y2: > 75% (path to 80% Zipf ceiling).
+- **Definition**: % of paid requests served from `pre_compute_cache` without a fresh primary 正規化レコード query. Target by Y2: > 75% (path to 80% Zipf ceiling).
 
 ### 2.5 Operator hours (Y3 gate)
 

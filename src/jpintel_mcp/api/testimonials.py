@@ -27,6 +27,7 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 from typing import Annotated, Literal
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -65,6 +66,39 @@ admin_router = APIRouter(
 
 _AUDIENCES = ("税理士", "行政書士", "SMB", "VC", "Dev")
 AudienceLiteral = Literal["税理士", "行政書士", "SMB", "VC", "Dev"]
+
+
+def _validate_linkedin_url(url: str | None) -> str | None:
+    """Allow only https URLs to LinkedIn-shaped hosts.
+
+    The public testimonials.html page renders this URL as ``<a href="...">``,
+    so a `javascript:` / `data:` scheme would yield XSS-on-click even after
+    operator approval. We harden in depth: scheme must be https, host must
+    end with the ``.linkedin.com`` apex (or be the apex itself). Empty or
+    None passes through unchanged.
+    """
+    if url is None or not url.strip():
+        return None
+    candidate = url.strip()
+    try:
+        parsed = urlparse(candidate)
+    except ValueError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"linkedin_url is not a valid URL: {exc}",
+        ) from exc
+    if parsed.scheme.lower() != "https":
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "linkedin_url must use https://",
+        )
+    host = (parsed.hostname or "").lower()
+    if not (host == "linkedin.com" or host.endswith(".linkedin.com")):
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "linkedin_url must point to *.linkedin.com",
+        )
+    return candidate
 
 
 # ---------------------------------------------------------------------------
@@ -134,6 +168,11 @@ def submit_testimonial(
             f"audience must be one of {_AUDIENCES}",
         )
 
+    # Reject non-https + non-linkedin.com URLs at submission time so a
+    # `javascript:` payload never enters the moderation queue (the public
+    # testimonials.html page renders this verbatim as ``<a href=...>``).
+    linkedin_url = _validate_linkedin_url(payload.linkedin_url)
+
     cur = conn.execute(
         """INSERT INTO testimonials(
                api_key_hash, audience, text, name, organization,
@@ -145,7 +184,7 @@ def submit_testimonial(
             payload.text,
             payload.name,
             payload.organization,
-            payload.linkedin_url,
+            linkedin_url,
             None,  # pending moderation
             datetime.now(UTC).isoformat(),
         ),
@@ -189,6 +228,19 @@ def delete_my_testimonial(
 # ---------------------------------------------------------------------------
 
 
+def _safe_linkedin_for_render(url: str | None) -> str | None:
+    """Belt-and-suspenders: even on the public list response we re-validate
+    the stored ``linkedin_url`` so any pre-fix row carrying a non-https or
+    non-linkedin.com URL is dropped (rendered as None) instead of being
+    surfaced into the HTML <a href> on testimonials.html."""
+    if url is None or not url.strip():
+        return None
+    try:
+        return _validate_linkedin_url(url)
+    except HTTPException:
+        return None
+
+
 @public_router.get("", response_model=TestimonialListResponse)
 def list_testimonials(conn: DbDep) -> TestimonialListResponse:
     rows = conn.execute(
@@ -208,7 +260,7 @@ def list_testimonials(conn: DbDep) -> TestimonialListResponse:
                 text=r["text"],
                 name=r["name"],
                 organization=r["organization"],
-                linkedin_url=r["linkedin_url"],
+                linkedin_url=_safe_linkedin_for_render(r["linkedin_url"]),
                 approved_at=r["approved_at"],
             )
             for r in rows

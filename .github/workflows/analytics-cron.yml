@@ -1,0 +1,76 @@
+name: analytics-cron
+
+# Daily acquisition / funnel rollup. Runs the three append-only collectors
+# (Cloudflare web analytics, PyPI downloads, npm downloads) at 03:00 JST
+# and commits the JSONL deltas back to main so the operator-only
+# /dashboard/analytics.html dashboard has a versioned history.
+#
+# Required GitHub repository secrets:
+#   CF_API_TOKEN   Cloudflare token, scope = "Account.Account Analytics:Read"
+#                  Create at: https://dash.cloudflare.com/profile/api-tokens
+#                  (template "Read Analytics", zone = zeimu-kaikei.ai)
+#   CF_ZONE_ID     Cloudflare zone ID for zeimu-kaikei.ai
+#                  Find at: Cloudflare → zeimu-kaikei.ai → Overview → API
+#
+# The commit step uses the default GITHUB_TOKEN (no separate PAT) — that's
+# enough write access for `actions/checkout` + `git push origin HEAD:main`
+# when `permissions.contents: write` is set below. If branch protection
+# requires PR review, this push fails — flip to PR-mode in that case.
+
+on:
+  schedule:
+    # 18:00 UTC == 03:00 JST. Same off-peak window as nightly-backup.
+    - cron: "0 18 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: analytics-cron
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install httpx
+        run: pip install "httpx>=0.28,<1.0"
+
+      - name: Run Cloudflare analytics export
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+        run: python scripts/cron/cf_analytics_export.py
+
+      - name: Run PyPI downloads tracker
+        run: python scripts/cron/pypi_downloads.py
+
+      - name: Run npm downloads tracker
+        run: python scripts/cron/npm_downloads.py
+
+      - name: Commit + push JSONL deltas
+        run: |
+          set -euo pipefail
+          git config user.name "autonomath-analytics-bot"
+          git config user.email "info@bookyou.net"
+          # Force-add the JSONL files even though analytics/ is gitignored —
+          # the .gitignore explicitly negates these three filenames, but
+          # `-f` is a belt+suspenders against future .gitignore rewording.
+          git add -f analytics/cf_daily.jsonl analytics/pypi_daily.jsonl analytics/npm_daily.jsonl 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No analytics deltas to commit."
+            exit 0
+          fi
+          DATE=$(date -u +"%Y-%m-%d")
+          git commit -m "chore(analytics): daily rollup ${DATE}"
+          git push origin HEAD:main
