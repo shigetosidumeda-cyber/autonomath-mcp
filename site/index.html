@@ -207,7 +207,7 @@
   "@context": "https://schema.org",
   "@type": "WebAPI",
   "name": "税務会計AI REST + MCP API",
-  "description": "日本の公的制度データの REST + MCP API。89 MCP tools (39 コア + 50 autonomath)、7 REST endpoints、MCP protocol 2025-06-18。",
+  "description": "日本の公的制度データの REST + MCP API。89 MCP ツール (39 コア + 50 autonomath)、7 REST API 経路、MCP プロトコル 2025-06-18。",
   "documentation": "https://zeimu-kaikei.ai/docs/",
   "termsOfService": "https://zeimu-kaikei.ai/tos.html",
   "provider": {"@id": "https://zeimu-kaikei.ai/#publisher"},
@@ -319,8 +319,8 @@
            directly below the H1 ("we won't help you" before the user even
            sees value) — relocated to BELOW the curl block (CRO Fix 2) so
            the visitor hits the working curl first. Footer §52 remains. -->
-      <h1 id="hero-title">日本の補助金・税制・法令を AI から 1 リクエスト ¥3 で叩く。</h1>
-      <p class="hero-sub"><strong><span data-fact="searchable_programs_total">11,684</span> 制度 + 法令 <span data-fact="laws_total">9,484</span> + 判例 <span data-fact="court_decisions_total">2,065</span> + 適格事業者 <span data-fact="invoice_registrants_total">13,801</span></strong> を 1 つの REST + MCP API で。 一次資料 99%以上、 集約サイト不採用、 排他ルール <span data-fact="exclusion_rules_total">181</span> 本で併用失格を機械検出。</p>
+      <h1 id="hero-title">日本の補助金・税制・法令を、AI から 1 リクエスト ¥3 で。</h1>
+      <p class="hero-sub"><strong>制度 <span data-fact="searchable_programs_total">11,684</span> ・法令 <span data-fact="laws_total">9,484</span> ・判例 <span data-fact="court_decisions_total">2,065</span> ・適格事業者 <span data-fact="invoice_registrants_total">13,801</span></strong> を REST + MCP API 一本で。一次資料 99% 以上、集約サイトは不採用、排他ルール <span data-fact="exclusion_rules_total">181</span> 本で併用失格を自動検出。</p>
 
       <pre class="code-block" id="hero-curl" aria-label="hero curl example" style="margin:18px 0 14px;font-size:14px;line-height:1.55;"><code>$ curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
 {
@@ -383,7 +383,7 @@
       -->
       <section id="trial" aria-labelledby="trial-title" style="margin:24px 0 0;padding:18px 20px;background:var(--bg-alt,#f6f7f9);border:1px solid var(--border,#e5e7eb);border-radius:8px;">
         <h2 id="trial-title" style="font-size:17px;margin:0 0 8px;line-height:1.4;">カードなしで試す (14 日 / 200 リクエスト)</h2>
-        <p style="font-size:13px;color:var(--text-muted,#555);margin:0 0 12px;line-height:1.6;">メールアドレスだけで APIキーを発行します。クレジットカードは不要、想定外の請求は一切発生しません。期限到来後は自動失効します。</p>
+        <p style="font-size:13px;color:var(--text-muted,#555);margin:0 0 12px;line-height:1.6;">メールアドレスだけで API キーを発行。カード登録不要、想定外の請求なし。期限到来で自動失効します。</p>
         <form id="trial-signup-form" action="/v1/signup" method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">
           <label for="trial-email" class="visually-hidden" style="position:absolute;width:1px;height:1px;clip:rect(0 0 0 0);overflow:hidden;">メールアドレス</label>
           <input id="trial-email" name="email" type="email" required placeholder="you@example.com" autocomplete="email" inputmode="email" style="flex:1 1 240px;min-width:200px;padding:10px 12px;border:1px solid var(--border,#d1d5db);border-radius:6px;font-size:14px;">
@@ -460,7 +460,7 @@
         <article class="card" aria-labelledby="trust-counts">
           <h3 id="trust-counts"><span data-fact="total_entities">503,930</span> entities + <span data-fact="total_facts">6.12M</span> facts</h3>
           <p class="card-lead">9 データセット + entity-fact DB を横断</p>
-          <p>制度 / 採択事例 / 融資 / 行政処分 / 法令 / 判例 / tax_rulesets / 入札 / 適格請求書 を統一スキーマで提供。autonomath.db には 12 record_kinds の entities と facts が入る。日本語を素直に引ける高速全文検索を備える。</p>
+          <p>制度・採択事例・融資・行政処分・法令・判例・tax_rulesets・入札・適格請求書を統一スキーマで提供。autonomath.db は 12 種類の record_kind を収録。日本語の高速全文検索を備えます。</p>
           <ul class="card-list">
             <li>programs · <span data-fact="total_programs">14,472</span> (検索対象 <span data-fact="searchable_programs_total">11,684</span> = Tier S <span data-fact="tier_s_count">114</span> + A <span data-fact="tier_a_count">1,340</span> + B <span data-fact="tier_b_count">4,186</span> + C <span data-fact="tier_c_count">6,044</span>; quarantine X <span data-fact="quarantined_count">2,788</span> 除外)</li>
             <li>case_studies · <span data-fact="case_studies_total">2,286</span></li>
@@ -477,8 +477,8 @@
 
         <article class="card" aria-labelledby="trust-lineage">
           <h3 id="trust-lineage">一次資料 99%以上</h3>
-          <p class="card-lead">source_url + fetched_at 99%以上の行に付与</p>
-          <p>経産省・農水省・中小企業庁・日本政策金融公庫・都道府県・市町村の一次資料から収集。集約サイト (二次情報源) は除外。法改正で即反映される運用を前提に設計。</p>
+          <p class="card-lead">source_url + fetched_at を 99%以上の行に付与</p>
+          <p>経産省・農水省・中小企業庁・日本政策金融公庫・都道府県・市町村の一次資料から収集。集約サイト (二次情報源) は除外。法改正に即反映する運用前提で設計しています。</p>
           <ul class="card-list">
             <li>noukaweb / hojyokin-portal 等 不採用</li>
             <li>nightly source liveness scan</li>
@@ -488,8 +488,8 @@
 
         <article class="card" aria-labelledby="trust-rules">
           <h3 id="trust-rules">排他ルール <span data-fact="exclusion_rules_total">181</span> 本</h3>
-          <p class="card-lead">Tier S/A/B/C/X 品質ラベル</p>
-          <p>併用不可・前提条件・相互排他を構造化。program_ids を投げれば衝突が返る。AI 任せの「それっぽい」推論を挟まず、ルールで検出する。</p>
+          <p class="card-lead">Tier S/A/B/C/X の品質ラベル付き</p>
+          <p>併用不可・前提条件・相互排他を構造化。program_ids を投げると衝突が返ります。AI の「それっぽい」推論ではなく、ルールで判定します。</p>
           <ul class="card-list">
             <li>125 exclude + 17 prerequisite</li>
             <li>15 absolute + 24 other</li>
@@ -603,11 +603,11 @@
 
         <article class="card audience-card" aria-labelledby="aud-tax">
           <h3 id="aud-tax">税理士事務所</h3>
-          <p class="card-lead audience-context">顧問先 80 社 横展開 + 監査資料</p>
-          <p class="audience-pitch">顧問先 1 社 = ¥30-60/月 (10-20 query)。 80 社で月 ¥2,400-4,800。 <code>audit_seal</code> で月次監査 PDF + RSS、 <code>client_profiles</code> で 顧問先別 saved searches を一括 cron。</p>
+          <p class="card-lead audience-context">顧問先一括処理 + 監査資料</p>
+          <p class="audience-pitch">顧問先 1 社あたり月 ¥30-60 (10-20 query) で従量。 <code>audit_seal</code> で月次監査 PDF + RSS、 <code>client_profiles</code> で顧問先別の保存検索を一括処理。</p>
           <ul class="card-list">
             <li>tax_rulesets <span data-fact="tax_rulesets_total">50</span> 件 + 措置法 + 通達リンク</li>
-            <li>顧問先 80 社 = ¥2,400-4,800/月</li>
+            <li>顧問先 1 社あたり月 ¥30-60 (顧問先数に応じてスケール)</li>
             <li>改正アラート (月次無料、 即時 ¥500/月)</li>
           </ul>
           <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/tax-advisor.html">税理士向け詳細 →</a></p>
@@ -675,7 +675,7 @@
 
         <article class="card audience-card" aria-labelledby="aud-industry">
           <h3 id="aud-industry">業界パック (建設 / 製造 / 不動産)</h3>
-          <p class="card-lead audience-context">JSIC 業種で fence、 1 リクエスト に集約</p>
+          <p class="card-lead audience-context">JSIC 業種で絞り込み、 1 リクエスト に集約</p>
           <p class="audience-pitch"><code>pack_construction</code> / <code>pack_manufacturing</code> / <code>pack_real_estate</code> で 業種特化の 補助金 + 通達 + 裁決事例 を 1 リクエスト ¥3 に集約。 業界誌・士業 専門家 の クライアント提案資料 を 30 秒で。</p>
           <ul class="card-list">
             <li>建設 36 件 + 製造 71 件 + 不動産 9 件</li>

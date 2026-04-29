@@ -701,6 +701,45 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html"/>
   </url>
   <!--
+    MCP-native AI agent integrations (2026-04-29): chatgpt /
+    gemini / continue / windsurf added. claude-desktop / cursor /
+    cline already present above. ChatGPT page is a clean alias for
+    the existing openai-custom-gpt.html (kept both for inbound URL
+    stability). All 4 new pages carry HowTo + TechArticle JSON-LD.
+  -->
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/chatgpt.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/chatgpt.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/chatgpt.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/gemini.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/gemini.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/gemini.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/continue.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/continue.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/continue.html"/>
+  </url>
+  <url>
+    <loc>https://zeimu-kaikei.ai/integrations/windsurf.html</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/windsurf.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/windsurf.html"/>
+  </url>
+  <!--
     Trust-signal trio (2026-04-29): public roadmap, live data
     freshness dashboard, and source citation transparency. All three
     expose internal state externally for credibility (anti-aggregator

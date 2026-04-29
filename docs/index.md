@@ -45,13 +45,13 @@
 
 5 つの audience に合わせて、interface を選んで届ける。
 
-- **税理士** (5 名事務所・SMB 顧客 80 社) — Claude に繋いで API を叩く。月 ¥1,000 前後の従量。法改正は Email 通知。
+- **税理士** — Claude に繋いで API を叩く。月数千円程度の従量課金。法改正は Email 通知。
 - **行政書士** (建設業中心) — 案件の「使える補助金 + 融資 + 許認可」を 1 call で抽出。月 50 件まで無料で試す。
 - **SMB 経営者** (本人 / 妻 / 経理) — LINE で「うちの業種の補助金ある?」と聞くだけ。月 10 件まで無料、超えても 1 質問 ¥3。
 - **VC / M&A advisor** — 法人番号で行政処分歴 5 年 / 採択歴 10 年 / 適格請求書を 1 query で取得。due-diligence データ取込に組込み。¥3/req metered。
 - **AI agent developer** — 89 MCP tools at default gates (39 jpintel + 50 autonomath; 合成 tools + DD/監査 tools + 業種特化 tools `pack_construction` / `pack_manufacturing` / `pack_real_estate` for 1-req cohort bundles)。¥3/req、50 req/月 free。Claude Desktop / Cursor 即動作。
 
-詳しい audience 別ピッチは [zeimu-kaikei.ai/#audiences](https://zeimu-kaikei.ai/#audiences) に。
+詳しい利用者層別の使い方は [zeimu-kaikei.ai/#audiences](https://zeimu-kaikei.ai/#audiences) に。
 
 ## Jグランツ との違い (Position vs Jグランツ)
 

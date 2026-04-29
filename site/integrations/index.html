@@ -116,43 +116,124 @@
 
 <main id="main" class="wrap" style="max-width:980px;margin:40px auto;padding:0 20px;line-height:1.7;">
 
-<h1 style="margin-bottom:0.2em;">Integrations</h1>
-<p style="color:#666;font-size:1.05em;margin-top:0;">最小限のサンプルコードと公式クライアント。<strong>zero dependencies, paste and run.</strong></p>
+<h1 style="margin-bottom:0.2em;">Integrations — MCP-native AI agent 統合 + SDK</h1>
+<p style="color:#444;font-size:1.1em;margin-top:0;">我々の API は <strong>89 MCP tools として AI agent から直接呼べます</strong>。Claude Desktop / Cursor / Cline / Continue.dev / Windsurf / Gemini CLI 全部 stdio 接続、protocol 2025-06-18 対応。<br>ChatGPT GPTs は OpenAPI Action 経由。autonomath-mcp <strong>v0.3.1</strong> / pip install 1 行 + JSON 1 行で動きます。</p>
 
-<aside style="border:1px solid #e5d6a8;background:#fffbe8;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
+<aside style="border:1px solid #c8e0c8;background:#f3faf3;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
+<strong>5 分の約束:</strong> 6 つの AI agent (Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini) は MCP stdio をネイティブサポート。<code>pip install autonomath-mcp</code> + JSON / YAML 1 行 → restart でハンマー / Cascade / Continue Chat 配下に <strong>89 tools</strong> がそのまま並びます。<br>
+<strong>volume:</strong> プログラム 11,684 件 (検索可) / 全 14,472 件 / 9,484 法令 / 13,801 適格事業者 / 2,065 判例 / 50 税制ルールセット。<br>
+<strong>Billing:</strong> 50 req/月 per IP は登録不要・認証不要 (匿名 anonymous tier)。本番運用は API キーで <strong>¥3/req metered Stripe (税込 ¥3.30)</strong> 完全従量、tier・最低料金・年契約なし、signup 後 Stripe が自動課金。
+</aside>
+
+<aside style="border:1px solid #e5d6a8;background:#fffbe8;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:0.92em;">
 <strong>注:</strong> 本 API は情報検索のみを提供します。税理士法 §52 により、個別の税務助言は<a href="/advisors.html">税理士</a>にご相談ください。
 </aside>
 
-<h2 id="ai-clients" style="margin-top:30px;">AI クライアント統合 (5 分で動く)</h2>
-<p>MCP サーバ または OpenAPI Actions として直接 AI ツールから 税務会計AI を呼べる、ステップバイステップ統合ガイド。<strong>登録不要 / 50 リクエスト/月 無料</strong>。</p>
+<h2 id="ai-clients" style="margin-top:30px;">AI agent 統合 — 6 つの MCP-native + 1 つの OpenAPI Action</h2>
+<p>各ガイドは <strong>5 分以内に動作確認</strong>: Step 1=API キー (任意) → Step 2=install → Step 3=config → Step 4=動作確認クエリ → Step 5=troubleshoot。</p>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0;">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:18px 0;">
 
 <a href="/integrations/claude-desktop.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#0066cc;">Claude Desktop</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Anthropic 公式デスクトップアプリに 89 MCP ツールを追加。<code>pip install</code> + JSON 1 行。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">所要 3 分</p>
+<h3 style="margin:0 0 8px;color:#1a472a;">Claude Desktop</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Anthropic 公式デスクトップアプリ。<code>claude_desktop_config.json</code> に MCP 1 行追記で 89 tools がハンマーアイコンに展開。stdio + 2025-06-18。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 3 分</p>
 </a>
 
 <a href="/integrations/cursor.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#0066cc;">Cursor</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Cursor IDE の MCP Servers タブから設定。<code>uvx</code> または <code>.mcpb</code> URL で 89 ツール。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">所要 4 分</p>
+<h3 style="margin:0 0 8px;color:#1a472a;">Cursor</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Cursor IDE Settings → Features → MCP Servers から JSON 追加。<code>uvx</code> または <code>.mcpb</code> URL で 89 tools。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 4 分</p>
 </a>
 
 <a href="/integrations/cline.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#0066cc;">Cline (VS Code)</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">VS Code 拡張 Cline / Roo Code に MCP サーバ追加。read-only ツールは auto-approve 可。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">所要 5 分</p>
+<h3 style="margin:0 0 8px;color:#1a472a;">Cline (VS Code)</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">VS Code 拡張 Cline / Roo Code に MCP サーバ追加。read-only ツールは <code>autoApprove</code> で承認スキップ可。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 5 分</p>
+</a>
+
+<a href="/integrations/continue.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
+<h3 style="margin:0 0 8px;color:#1a472a;">Continue.dev</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">VS Code / JetBrains 両対応の Continue 拡張。<code>~/.continue/config.yaml</code> に <code>mcpServers</code> YAML 1 行で 89 tools。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 5 分</p>
+</a>
+
+<a href="/integrations/windsurf.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
+<h3 style="margin:0 0 8px;color:#1a472a;">Windsurf</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Codeium Windsurf の Cascade に <code>mcp_config.json</code> 1 行追加。Settings UI または直接編集どちらでも 89 tools。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 5 分</p>
+</a>
+
+<a href="/integrations/gemini.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
+<h3 style="margin:0 0 8px;color:#1a472a;">Gemini (CLI / Extensions)</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Google Gemini CLI は MCP stdio ネイティブ対応 (<code>~/.gemini/settings.json</code>)。Extensions は OpenAPI Tool 経由。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio + OpenAPI · 所要 5 分</p>
+</a>
+
+<a href="/integrations/chatgpt.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
+<h3 style="margin:0 0 8px;color:#1a472a;">ChatGPT (GPTs Action)</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">ChatGPT GPTs は MCP 未対応のため OpenAPI Action 経由。<code>/v1/openapi.json</code> を Import → 111 endpoint が Action として動作。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">OpenAPI Action · 所要 5 分</p>
 </a>
 
 <a href="/integrations/openai-custom-gpt.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#0066cc;">OpenAI Custom GPT</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">ChatGPT Custom GPT に <code>/v1/openapi.json</code> を Import。111 エンドポイントが Actions として動作。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">所要 5 分</p>
+<h3 style="margin:0 0 8px;color:#1a472a;">OpenAI Custom GPT (旧)</h3>
+<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">ChatGPT Custom GPT 詳細ガイド (旧 URL)。新しい <a href="/integrations/chatgpt.html" style="color:#1a472a;">/integrations/chatgpt.html</a> も同内容で読めます。</p>
+<p style="margin:8px 0 0;font-size:0.82em;color:#888;">OpenAPI Action · 所要 5 分</p>
 </a>
 
 </div>
+
+<p style="margin:12px 0;font-size:0.95em;color:#444;"><strong>共通:</strong> <a href="/docs/mcp-tools/">全 89 MCP tools 一覧 (早見表)</a> · <a href="https://api.zeimu-kaikei.ai/v1/openapi.json"><code>/v1/openapi.json</code></a> · <a href="https://pypi.org/project/autonomath-mcp/">PyPI: autonomath-mcp v0.3.1</a></p>
+
+<h2 id="cohort-queries" style="margin-top:30px;">cohort 別 sample queries</h2>
+<p>各 AI agent の chat に貼り付けると <strong>1 回のツール呼び出しで複合 response</strong> が返ります。anonymous tier では 1 query = 1 req 消費。</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:18px 0;">
+
+<div style="border:1px solid #ddd;border-radius:8px;padding:18px;background:#fff;">
+<h3 style="margin:0 0 10px;color:#1a472a;">M&A — DD profile</h3>
+<p style="font-size:0.9em;color:#555;margin:0 0 8px;">買収先候補の法人番号から、採択履歴・適格請求書登録・行政処分・公示送達までを 1 ツールで集約 (cohort #1)。</p>
+<div class="code-block" data-code="dd_profile_am で 法人番号 T8010001213708 の DD profile を取得。採択履歴 + 適格請求書 + 行政処分 + 公示送達 + houjin_watch を全部含めて。">
+<pre style="font-size:0.82em;line-height:1.45;"><code>dd_profile_am で 法人番号 T8010001213708
+の DD profile を取得。採択履歴 +
+適格請求書 + 行政処分 + 公示送達 +
+houjin_watch を全部含めて。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+<p style="font-size:0.82em;color:#888;margin:6px 0 0;">tool: <code>dd_profile_am</code> · 1 req</p>
+</div>
+
+<div style="border:1px solid #ddd;border-radius:8px;padding:18px;background:#fff;">
+<h3 style="margin:0 0 10px;color:#1a472a;">税理士 — 顧問先パック</h3>
+<p style="font-size:0.9em;color:#555;margin:0 0 8px;">業種 × 都道府県を渡すと SMB スターターパック (補助金 + 融資 + 採択事例 + 締切) が一括で返る (cohort #2)。</p>
+<div class="code-block" data-code="smb_starter_pack で 製造業 × 埼玉県 の SMB スターターパック (補助金 + 融資 + 採択事例 + 来月締切) を取得。source_url + fetched_at 付きで。">
+<pre style="font-size:0.82em;line-height:1.45;"><code>smb_starter_pack で 製造業 × 埼玉県
+の SMB スターターパック (補助金 +
+融資 + 採択事例 + 来月締切) を取得。
+source_url + fetched_at 付きで。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+<p style="font-size:0.82em;color:#888;margin:6px 0 0;">tool: <code>smb_starter_pack</code> · 1 req</p>
+</div>
+
+<div style="border:1px solid #ddd;border-radius:8px;padding:18px;background:#fff;">
+<h3 style="margin:0 0 10px;color:#1a472a;">補助金 consultant — 排他判定</h3>
+<p style="font-size:0.9em;color:#555;margin:0 0 8px;">補助金併用可否は exclusion_rules (181 件) で実検索 (cohort #5)。直前検索で見つけた 2 制度を一発判定。</p>
+<div class="code-block" data-code="search_programs prefecture=東京都 で 中小企業向けの省エネ補助金 3 件 → そのうち先頭 2 つを check_exclusions で同時申請可否判定。判定結果 + 引用 source_url 全部表示。">
+<pre style="font-size:0.82em;line-height:1.45;"><code>search_programs prefecture=東京都 で
+中小企業向けの省エネ補助金 3 件 →
+そのうち先頭 2 つを check_exclusions
+で同時申請可否判定。判定結果 +
+引用 source_url 全部表示。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+<p style="font-size:0.82em;color:#888;margin:6px 0 0;">tools: <code>search_programs</code> + <code>check_exclusions</code> · 2 req</p>
+</div>
+
+</div>
+
+<p style="margin-top:8px;font-size:0.9em;color:#555;">他のサンプル query は <a href="/docs/mcp-tools/">MCP tools 早見表</a> を参照。8 cohorts 全部 (M&A / 税理士 / 会計士 / Foreign FDI / 補助金 consultant / 中小企業 LINE / 信金商工会 organic / Industry packs) について 1-2 query を載せています。</p>
 
 <h2 id="quickstart" style="margin-top:30px;">5 言語のサンプル (zero deps)</h2>
 <p>すべて <code>ZEIMU_KAIKEI_API_KEY</code> 環境変数を読みます。未設定なら anonymous tier (50 リクエスト/月 per IP, JST 月初リセット) で動作します。</p>
@@ -294,6 +375,41 @@ autonomath-mcp</pre>
     <p>© Bookyou株式会社 — <a href="/tos.html">利用規約</a> · <a href="/privacy.html">プライバシー</a> · <a href="/tokushoho.html">特商法</a></p>
   </div>
 </footer>
+
+<style>
+  .code-block {position:relative;margin:12px 0;}
+  .code-block pre {background:#f6f6f6;color:#1c1917;padding:14px 80px 14px 14px;border-radius:6px;overflow-x:auto;margin:0;line-height:1.5;border:1px solid #e7e5e4;}
+  .code-block pre code {color:inherit;}
+  .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #ccc;border-radius:4px;padding:4px 10px;font-size:0.82em;cursor:pointer;color:#333;font-family:inherit;}
+  .code-block .copy-btn:hover {background:#f0f0f0;}
+  .code-block .copy-btn.copied {background:#d4f4d4;border-color:#7bc77b;color:#226622;}
+</style>
+<script>
+  document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.code-block');
+      var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
+      var done = function(){
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function(){
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
+          document.body.removeChild(ta);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+</script>
 
 </body>
 </html>

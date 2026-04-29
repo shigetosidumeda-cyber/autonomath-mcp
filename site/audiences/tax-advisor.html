@@ -9,7 +9,7 @@
 <meta name="description" content="税理士事務所向け 税務会計AI 活用ガイド。法人税 措置法 検索、税制特例 (DX 投資促進・賃上げ促進)、電帳法・インボイス 改正アラート、確定申告期の Widget 集客。¥3/req metered + 法令アラート ¥500/月。">
 
 <meta property="og:title" content="税理士向け 税務会計AI — 措置法・税制特例・確定申告 PR">
-<meta property="og:description" content="顧問先からの「使える特例は?」に Claude + 税務会計AI で 30 秒回答。税制 ruleset 35 件 + 措置法 + 通達リンク。">
+<meta property="og:description" content="顧問先からの「使える特例は?」に Claude + 税務会計AI で 30 秒回答。税制 ruleset 50 件 + 措置法 + 通達リンク。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://zeimu-kaikei.ai/audiences/tax-advisor.html">
 <meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
@@ -90,7 +90,7 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "顧問先 80 社 (法人 60 / 個人 20) でどれくらいの req 数になりますか?", "acceptedAnswer": {"@type": "Answer", "text": "想定では 1 社あたり月 5-10 件の問合せ → 月 400-800 req → ¥1,200-¥2,400 (税別)。3 月の確定申告期は跳ね上がるため、¥3-5,000/月 を上限目安に。"}},
+    {"@type": "Question", "name": "顧問先 1 社あたりの req 数はどのくらいですか?", "acceptedAnswer": {"@type": "Answer", "text": "1 社あたり月 5-10 件の問合せ → 月 5-10 リクエスト → ¥15-¥30 (税別) が目安。顧問先数に応じてスケールします (例: 顧問先数 × ¥15-¥30)。3 月の確定申告期は跳ね上がるため、¥3-5,000/月 を上限目安に。"}},
     {"@type": "Question", "name": "扱える税法はどこまで?", "acceptedAnswer": {"@type": "Answer", "text": "tax_rulesets は 2026-04 時点 35 件 (インボイス・電帳法等中心) で継続拡張中。 laws テーブルは 法令本文 154 件 + 法令メタデータ 9,484 件 (本文ロード継続中、 法令名 resolver は 9,484 件全件で稼働、 全文検索可能なのは 154 件)。詳細は API リファレンス参照。"}},
     {"@type": "Question", "name": "通達・質疑応答事例まで参照できますか?", "acceptedAnswer": {"@type": "Answer", "text": "現時点 で参照可能なのは法令本文 (e-Gov CC-BY) と税務 ruleset (国税庁原典)。通達・質疑応答事例は schema 構築済み・データロード準備中。"}},
     {"@type": "Question", "name": "改正アラートはどの程度詳細ですか?", "acceptedAnswer": {"@type": "Answer", "text": "法令名・改正条項・施行日・関連制度 ID を email + RSS で配信。月次ダイジェスト無料、real-time 通知 ¥500/月。本文は要約のみ、原典 URL は必ず付与する。"}},
@@ -134,8 +134,8 @@
       <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
         <a href="../index.html">ホーム</a> &raquo; <a href="index.html">利用者層 別</a> &raquo; <span aria-current="page">税理士向け</span>
       </nav>
-      <h1 id="hero-title">税理士事務所 向け — 顧問先 80 社を月 ¥2,400-4,800 で支援。</h1>
-      <p class="hero-sub">顧問先 1 社 = 月 5-10 query × ¥3 = ¥30/月。 80 社で月 ¥2,400-4,800、 確定申告期 (3 月) で ¥3-5,000 上限が目安。 措置法 + tax_rulesets 50 + 通達引用を 1 リクエスト で。</p>
+      <h1 id="hero-title">税理士事務所 向け — 顧問先 1 社あたり月 ¥15-¥30 で支援。</h1>
+      <p class="hero-sub">顧問先 1 社 = 月 5-10 query × ¥3 = ¥15-¥30/月。 顧問先数に応じてスケール、 確定申告期 (3 月) は ¥3-5,000/月 上限が目安。 措置法 + tax_rulesets 50 + 通達引用を 1 リクエスト で。</p>
 
       <pre class="code-block" aria-label="hero example for tax advisor" style="margin:16px 0 14px;font-size:14px;line-height:1.55;"><code># 顧問先からの「今年使える特例は?」を 30 秒で
 $ curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=賃上げ促進税制&amp;tier=S,A&amp;limit=5'
