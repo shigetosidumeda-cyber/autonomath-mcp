@@ -2,6 +2,13 @@
 # Syntax: <from> <to> <status>  (200=rewrite, 301=permanent, 302=temp)
 # See https://developers.cloudflare.com/pages/configuration/redirects/
 
+# /changelog removed 2026-04-30 (per user request)
+/changelog          /  301
+/changelog.html     /  301
+/changelog/*        /  301
+/en/changelog       /en/  301
+/en/changelog.html  /en/  301
+
 # Canonical trailing-slash for docs
 /docs  /docs/  301
 
