@@ -1,0 +1,427 @@
+{
+  "run_id": "20260430",
+  "created_at": "2026-04-30T20:13:38+09:00",
+  "max_agents_requested": 32,
+  "agents_allocated": 32,
+  "previous_run": null,
+  "hard_constraints": [
+    "Do not call any LLM API or hosted model API. Use regex, rules, difflib, sqlite, pdfplumber, csv/json tooling only.",
+    "Do not use aggregator sites as evidence: noukaweb, hojyokin-portal, biz.stayway, or similar portals are discovery hints only.",
+    "Respect robots.txt, crawl-delay, rate limits, and public-source terms.",
+    "Do not propose tier SKUs, subscription tiers, or changes to the ¥3/request metered model.",
+    "Do not write to src/, scripts/, .github/, docs/_internal/, fly.toml, server.json, smithery.yaml, or deployment files.",
+    "Write job definitions and run logs only under research/loops/.",
+    "Write research outputs only to analysis_wave18/, data/snapshots/, or data/structured_facts/.",
+    "Do not estimate work-hours or calendar schedules. Return evidence and next concrete questions only."
+  ],
+  "work_orders": [
+    {
+      "agent_index": 1,
+      "lane": "url_liveness",
+      "shard": 1,
+      "work_order_path": "research/loops/runs/20260430/work_orders/01_url_liveness_shard01.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard01.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 2,
+      "lane": "consultant_firms",
+      "shard": 1,
+      "work_order_path": "research/loops/runs/20260430/work_orders/02_consultant_firms_shard01.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard01.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 3,
+      "lane": "pdf_structure",
+      "shard": 1,
+      "work_order_path": "research/loops/runs/20260430/work_orders/03_pdf_structure_shard01.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard01.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 4,
+      "lane": "am_diff_design",
+      "shard": 1,
+      "work_order_path": "research/loops/runs/20260430/work_orders/04_am_diff_design_shard01.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard01.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard01.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 5,
+      "lane": "url_liveness",
+      "shard": 2,
+      "work_order_path": "research/loops/runs/20260430/work_orders/05_url_liveness_shard02.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard02.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 6,
+      "lane": "consultant_firms",
+      "shard": 2,
+      "work_order_path": "research/loops/runs/20260430/work_orders/06_consultant_firms_shard02.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard02.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 7,
+      "lane": "pdf_structure",
+      "shard": 2,
+      "work_order_path": "research/loops/runs/20260430/work_orders/07_pdf_structure_shard02.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard02.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 8,
+      "lane": "am_diff_design",
+      "shard": 2,
+      "work_order_path": "research/loops/runs/20260430/work_orders/08_am_diff_design_shard02.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard02.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard02.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 9,
+      "lane": "url_liveness",
+      "shard": 3,
+      "work_order_path": "research/loops/runs/20260430/work_orders/09_url_liveness_shard03.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard03.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 10,
+      "lane": "consultant_firms",
+      "shard": 3,
+      "work_order_path": "research/loops/runs/20260430/work_orders/10_consultant_firms_shard03.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard03.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 11,
+      "lane": "pdf_structure",
+      "shard": 3,
+      "work_order_path": "research/loops/runs/20260430/work_orders/11_pdf_structure_shard03.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard03.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 12,
+      "lane": "am_diff_design",
+      "shard": 3,
+      "work_order_path": "research/loops/runs/20260430/work_orders/12_am_diff_design_shard03.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard03.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard03.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 13,
+      "lane": "url_liveness",
+      "shard": 4,
+      "work_order_path": "research/loops/runs/20260430/work_orders/13_url_liveness_shard04.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard04.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 14,
+      "lane": "consultant_firms",
+      "shard": 4,
+      "work_order_path": "research/loops/runs/20260430/work_orders/14_consultant_firms_shard04.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard04.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 15,
+      "lane": "pdf_structure",
+      "shard": 4,
+      "work_order_path": "research/loops/runs/20260430/work_orders/15_pdf_structure_shard04.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard04.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 16,
+      "lane": "am_diff_design",
+      "shard": 4,
+      "work_order_path": "research/loops/runs/20260430/work_orders/16_am_diff_design_shard04.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard04.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard04.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 17,
+      "lane": "url_liveness",
+      "shard": 5,
+      "work_order_path": "research/loops/runs/20260430/work_orders/17_url_liveness_shard05.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard05.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 18,
+      "lane": "consultant_firms",
+      "shard": 5,
+      "work_order_path": "research/loops/runs/20260430/work_orders/18_consultant_firms_shard05.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard05.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 19,
+      "lane": "pdf_structure",
+      "shard": 5,
+      "work_order_path": "research/loops/runs/20260430/work_orders/19_pdf_structure_shard05.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard05.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 20,
+      "lane": "am_diff_design",
+      "shard": 5,
+      "work_order_path": "research/loops/runs/20260430/work_orders/20_am_diff_design_shard05.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard05.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard05.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 21,
+      "lane": "url_liveness",
+      "shard": 6,
+      "work_order_path": "research/loops/runs/20260430/work_orders/21_url_liveness_shard06.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard06.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 22,
+      "lane": "consultant_firms",
+      "shard": 6,
+      "work_order_path": "research/loops/runs/20260430/work_orders/22_consultant_firms_shard06.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard06.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 23,
+      "lane": "pdf_structure",
+      "shard": 6,
+      "work_order_path": "research/loops/runs/20260430/work_orders/23_pdf_structure_shard06.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard06.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 24,
+      "lane": "am_diff_design",
+      "shard": 6,
+      "work_order_path": "research/loops/runs/20260430/work_orders/24_am_diff_design_shard06.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard06.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard06.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 25,
+      "lane": "url_liveness",
+      "shard": 7,
+      "work_order_path": "research/loops/runs/20260430/work_orders/25_url_liveness_shard07.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard07.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 26,
+      "lane": "consultant_firms",
+      "shard": 7,
+      "work_order_path": "research/loops/runs/20260430/work_orders/26_consultant_firms_shard07.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard07.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 27,
+      "lane": "pdf_structure",
+      "shard": 7,
+      "work_order_path": "research/loops/runs/20260430/work_orders/27_pdf_structure_shard07.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard07.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 28,
+      "lane": "am_diff_design",
+      "shard": 7,
+      "work_order_path": "research/loops/runs/20260430/work_orders/28_am_diff_design_shard07.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard07.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard07.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 29,
+      "lane": "url_liveness",
+      "shard": 8,
+      "work_order_path": "research/loops/runs/20260430/work_orders/29_url_liveness_shard08.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/url_liveness_shard08.json",
+        "analysis_wave18/url_liveness_2026-04-30.json"
+      ]
+    },
+    {
+      "agent_index": 30,
+      "lane": "consultant_firms",
+      "shard": 8,
+      "work_order_path": "research/loops/runs/20260430/work_orders/30_consultant_firms_shard08.md",
+      "expected_outputs": [
+        "analysis_wave18/loops/20260430/consultant_firms_shard08.csv",
+        "analysis_wave18/consultant_firms_2026-04-30.csv"
+      ]
+    },
+    {
+      "agent_index": 31,
+      "lane": "pdf_structure",
+      "shard": 8,
+      "work_order_path": "research/loops/runs/20260430/work_orders/31_pdf_structure_shard08.md",
+      "expected_outputs": [
+        "data/structured_facts/research_20260430/pdf_structure_shard08.json",
+        "analysis_wave18/pdf_extraction_research_2026-04-30.md"
+      ]
+    },
+    {
+      "agent_index": 32,
+      "lane": "am_diff_design",
+      "shard": 8,
+      "work_order_path": "research/loops/runs/20260430/work_orders/32_am_diff_design_shard08.md",
+      "expected_outputs": [
+        "data/snapshots/am_diff_20260430_shard08.json",
+        "analysis_wave18/loops/20260430/am_diff_design_shard08.md",
+        "analysis_wave18/am_diff_design_2026-04-30.md"
+      ]
+    }
+  ],
+  "expected_outputs": [
+    "analysis_wave18/loops/20260430/url_liveness_shard01.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard01.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard01.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard01.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard01.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/loops/20260430/url_liveness_shard02.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard02.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard02.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard02.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard02.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/loops/20260430/url_liveness_shard03.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard03.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard03.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard03.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard03.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/loops/20260430/url_liveness_shard04.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard04.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard04.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard04.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard04.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/loops/20260430/url_liveness_shard05.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard05.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard05.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard05.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard05.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/loops/20260430/url_liveness_shard06.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard06.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard06.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard06.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard06.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/loops/20260430/url_liveness_shard07.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard07.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard07.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard07.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard07.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/loops/20260430/url_liveness_shard08.json",
+    "analysis_wave18/url_liveness_2026-04-30.json",
+    "analysis_wave18/loops/20260430/consultant_firms_shard08.csv",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "data/structured_facts/research_20260430/pdf_structure_shard08.json",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "data/snapshots/am_diff_20260430_shard08.json",
+    "analysis_wave18/loops/20260430/am_diff_design_shard08.md",
+    "analysis_wave18/am_diff_design_2026-04-30.md"
+  ],
+  "final_outputs": [
+    "analysis_wave18/am_diff_design_2026-04-30.md",
+    "analysis_wave18/consultant_firms_2026-04-30.csv",
+    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+    "analysis_wave18/url_liveness_2026-04-30.json"
+  ]
+}
