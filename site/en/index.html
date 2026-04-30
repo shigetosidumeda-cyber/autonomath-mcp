@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite — Japanese public programs, one API.">
-<meta name="twitter:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + laws (154 full-text + 9,484 catalog stubs, body-text load incremental) + tax rulesets (35 rows) + invoice registrants (13,801 rows live delta-only) + entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations). Exclusion-aware. MCP-native (93 tools, protocol 2025-06-18). Court 2,065 + bids 362 rows live.">
+<meta name="twitter:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + laws (154 full-text + 9,484 catalog stubs, body-text load incremental) + tax rulesets (50 rows) + invoice registrants (13,801 rows live delta-only) + entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations). Exclusion-aware. MCP-native (93 tools, protocol 2025-06-18). Court 2,065 + bids 362 rows live.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/">
@@ -45,7 +45,7 @@
   "@type": "SoftwareApplication",
   "name": "jpcite",
   "alternateName": "税務会計AI",
-  "description": "REST + MCP API over 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications) + 2,286 case studies (採択事例) + 108 loan programs (three-axis collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental) + tax rulesets (インボイス / 電帳法; 35 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (NTA PDL v1.0; 13,801 rows live delta-only mirror, monthly full bulk pending) + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance). 181-rule exclusion + prerequisite checker. 99%+ rows: primary-source URL + fetched_at. MCP protocol 2025-06-18, 93 tools at default gates.",
+  "description": "REST + MCP API over 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications) + 2,286 case studies (採択事例) + 108 loan programs (three-axis collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental) + tax rulesets (インボイス / 電帳法; 50 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (NTA PDL v1.0; 13,801 rows live delta-only mirror, monthly full bulk pending) + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance). 181-rule exclusion + prerequisite checker. 99%+ rows: primary-source URL + fetched_at. MCP protocol 2025-06-18, 93 tools at default gates.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio)",
   "url": "https://jpcite.com/en/",
@@ -172,8 +172,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite home">
- <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
- <span class="brand-name">jpcite</span>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="about.html">About</a>
@@ -617,7 +616,7 @@
  <article class="card">
  <h3>Primary source, end to end</h3>
  <p class="card-lead">Amendments propagate immediately</p>
- <p>Every program row carries <code>source_url</code> + <code>fetched_at</code>. The fetch date is shown verbatim — never relabeled as "last updated" (which would falsely imply we re-verified currency). Nightly liveness scans flag dead URLs.</p>
+ <p>99%+ of returned rows carry <code>source_url</code> + <code>fetched_at</code>. The fetch date is shown verbatim — never relabeled as "last updated" (which would falsely imply we re-verified currency). Nightly liveness scans flag dead URLs.</p>
  </article>
 
  <article class="card">
@@ -629,7 +628,7 @@
  <article class="card">
  <h3>Cross-dataset glue</h3>
  <p class="card-lead">One call: program → law → court decision → enforcement</p>
- <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 35 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus the autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) exposed via 30 tools. The 69-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> for cross-domain resolution.</p>
+ <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 50 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus the autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) exposed via 30 tools. The 93-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> for cross-domain resolution.</p>
  </article>
 
  </div>
