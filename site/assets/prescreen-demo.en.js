@@ -1,6 +1,6 @@
 // Prescreen demo widget (EN copy) — posts profile to /v1/programs/prescreen and
 // renders the top matches. Anonymous calls hit the per-IP free quota
-// (50 req/month, JST first-of-month reset) — no API key needed.
+// (3 req/day, JST next-day 00:00 reset) — no API key needed.
 //
 // API base is read from the <form data-api-base> attribute on the
 // landing <form>. To point at a local API during development,
@@ -329,7 +329,7 @@
       });
       if (resp.status === 429) {
         showRichError(
-          'Anonymous limit reached (50 req/month per IP). <a href="/dashboard.html">Issue an API key</a> (Free 50 req/month; overage ¥3/req, ¥3.30 tax incl.).'
+          'Anonymous limit reached (3 req/day per IP). <a href="/dashboard.html">Issue an API key</a> (Free 3 req/day; overage ¥3/req, ¥3.30 tax incl.).'
         );
         return;
       }
@@ -380,7 +380,7 @@
       // Highest-intent moment after rendering matches → ask for the next step.
       var ctaHtml =
         '<div class="ps-cta">' +
-        '<a class="btn btn-primary" href="/dashboard.html">Get more with an API key (Free 50 req/month)</a>' +
+        '<a class="btn btn-primary" href="/dashboard.html">Get more with an API key (Free 3 req/day)</a>' +
         '<a class="btn btn-secondary" href="/en/getting-started.html">Connect via MCP</a>' +
         "</div>";
       // SMB owner → tax advisor reseller handoff: surface mailto + print-to-PDF

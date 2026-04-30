@@ -44,6 +44,10 @@
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600
 
+/docs/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
 # RSS 2.0 announcements feed (release notes, dataset ingests, migrations).
 # Served as application/rss+xml per RSS 2.0 spec; UTF-8 charset declared
 # explicitly so Cloudflare's content-type sniffer does not downgrade to

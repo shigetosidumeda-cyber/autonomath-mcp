@@ -1,6 +1,6 @@
 # jpcite (formerly 税務会計AI / zeimu-kaikei.ai) — English index
 
-> jpcite (formerly known as jpcite, previously hosted at zeimu-kaikei.ai). Service name: AutonoMath. Cross-search REST + MCP API for Japanese public programs: **11,684 searchable programs** (subsidies / loans / tax measures / certifications; tier S=114 / A=1,340 / B=4,186 / C=6,044 — full table 14,472 incl. tier X 2,788 quarantine) + 2,286 adoption case studies + 108 loan products (collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases, 181 exclusion/prerequisite rules, primary-source URL + fetched_at on 99%+ of rows. MCP-native (**89 tools**, protocol 2025-06-18). ¥3 per request metered (¥3.30 tax-inclusive), anonymous 3 req/day per IP free (JST next-day reset).
+> jpcite (formerly known as 税務会計AI, previously hosted at zeimu-kaikei.ai). Service name: AutonoMath. Cross-search REST + MCP API for Japanese public programs: **11,684 searchable programs** (subsidies / loans / tax measures / certifications; tier S=114 / A=1,340 / B=4,186 / C=6,044 — full table 14,472 incl. 2,788 held back for secondary review) + 2,286 adoption case studies + 108 loan products (collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases, 181 exclusion/prerequisite rules, primary-source URL + fetched_at on 99%+ of rows. MCP-native (**93 tools**, protocol 2025-06-18). ¥3 per request metered (¥3.30 tax-inclusive), anonymous 3 req/day per IP free (JST next-day reset).
 
 This file follows the emerging llms.txt convention (https://llmstxt.org/) —
 a curated, plaintext index of canonical documents for LLM indexers.
@@ -23,7 +23,7 @@ Bookyou Inc. (Japanese corporate number T8010001213708) — Representative: Shig
 - [Overview](https://jpcite.com/docs/)
 - [Getting started (5-minute quickstart)](https://jpcite.com/docs/getting-started/): install, API key, curl/Python/Node, Claude Desktop MCP config
 - [API reference (REST)](https://jpcite.com/docs/api-reference/)
-- [MCP tools (89)](https://jpcite.com/docs/mcp-tools/):  core +  stdio tools, MCP protocol 2025-06-18
+- [MCP tools (93)](https://jpcite.com/docs/mcp-tools/):  core +  stdio tools, MCP protocol 2025-06-18
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Error handling](https://jpcite.com/docs/error_handling/)
 - [Exclusion rules](https://jpcite.com/docs/exclusions/)
@@ -44,8 +44,8 @@ Real natural-language prompts that resolve to a single tool call. Each maps dete
 ## MCP server
 
 - PyPI package: `autonomath-mcp` — `pip install autonomath-mcp`
-- Console script: `autonomath-mcp` (FastMCP stdio, 89 tools at default gates)
-- Repo: https://github.com/AutonoMath
+- Console script: `autonomath-mcp` (FastMCP stdio, 93 tools at default gates)
+- Repo: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 
 ## Data licenses
 
@@ -61,8 +61,17 @@ Real natural-language prompts that resolve to a single tool call. Each maps dete
 - [Sitemap index](https://jpcite.com/sitemap-index.xml)
 - [Docs sitemap](https://jpcite.com/docs/sitemap.xml)
 - [Programs sitemap](https://jpcite.com/sitemap-programs.xml)
+- [Q&A sitemap](https://jpcite.com/sitemap-qa.xml): 79 citation-targeted FAQPage pages across 24 topics
 - Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on each `/programs/{id}.html`
+- Per-Q&A JSON-LD (schema.org Article + FAQPage + BreadcrumbList) is embedded inline on each `/qa/{topic}/{slug}.html`
 - Landing pages (index / pricing / docs root / audiences) carry SoftwareApplication + Dataset + WebAPI + Service + Audience + Organization with stable `@id: https://jpcite.com/#publisher` for cross-page entity resolution.
+
+## Q&A (citation-targeted)
+
+- [Q&A index](https://jpcite.com/qa/) — 79 Japanese FAQ pages for LLM citation.
+- [ChatGPT / Claude vs jpcite](https://jpcite.com/qa/llm-evidence/chatgpt-vs-jpcite.html) — jpcite as evidence layer, not answer generator.
+- [Source verification workflow](https://jpcite.com/qa/llm-evidence/source-verification.html) — how agents attach source_url + fetched_at.
+- [What can jpcite MCP do?](https://jpcite.com/qa/mcp/what-can-jpcite-mcp-do.html) — 93 tools via MCP stdio.
 
 ## Optional
 

@@ -104,13 +104,13 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="../index.html" aria-label="jpcite home">
- <svg class="brand-mark-svg" viewBox="0 0 256 256" width="28" height="28" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:8px;color:currentColor;"><circle cx="56" cy="200" r="32" fill="currentColor"/><path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z" fill="currentColor"/></svg>
+ <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
  <span class="brand-name">jpcite</span>
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/admin-scrivener.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -129,7 +129,7 @@
  </nav>
  <h1 id="hero-title">jpcite for administrative scriveners (gyoseishoshi)</h1>
  <p class="hero-sub">Subsidies + loans + permits + enforcement history in one query. Cut proposal time on construction, eldercare, freight, and waste-disposal cases to five minutes.</p>
- <p class="hero-tag">For permit-driven practices, search across 13,578 related subsidies, 108 loans, and 1,185 enforcement cases. Filter by region &times; industry &times; deadline; the 181 exclusion rules catch stacking failures up front. 50 anonymous req/month to test-drive.</p>
+ <p class="hero-tag">For permit-driven practices, search across 14,472 related subsidies, 108 loans, and 1,185 enforcement cases. Filter by region &times; industry &times; deadline; the 181 exclusion rules catch stacking failures up front. 50 anonymous req/month to test-drive.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -249,7 +249,7 @@ print(r.json["conflicts"])</code></pre>
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">Administrative-scrivener pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 50 req/month anonymous and free.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 3 req/daynth anonymous and free.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">Recommended interface pricing for administrative scriveners</caption>
@@ -262,7 +262,7 @@ print(r.json["conflicts"])</code></pre>
  </tr>
  </thead>
  <tbody>
- <tr><th scope="row">API + MCP</th><td>50 req/mo per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
  <tr><th scope="row">Professional-advisor affiliate (optional)</th><td>Free signup</td><td>¥3,000 / closed intro</td><td>¥3,300 / closed intro</td></tr>
  <tr><th scope="row">Embedded widget — Standard (optional)</th><td>-</td><td>¥10,000 / mo (10,000 req included)</td><td>¥11,000 / mo</td></tr>
  <tr><th scope="row">Embedded widget — Whitelabel (optional)</th><td>-</td><td>¥30,000 / mo (30,000 req included, no logo)</td><td>¥33,000 / mo</td></tr>
@@ -303,7 +303,7 @@ print(r.json["conflicts"])</code></pre>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/req fully metered)</strong></a> &mdash; About 10-20 req per case; 30 cases/month = ¥900-1,800 (tax excl.). Zero monthly minimums.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../widget.html"><strong>Embed on your firm site (widget)</strong></a> &mdash; Drop the prescreen on your firm LP to capture inquiries. One-line script tag, white-label OK.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction. Profile by region &times; industry &times; specialty.</li>
- <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 50 req/month covers 5-10 clients per month at zero cost.</li>
+ <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 3 req/daynth covers 5-10 clients per month at zero cost.</li>
  </ul>
  </div>
  </section>
@@ -322,11 +322,11 @@ print(r.json["conflicts"])</code></pre>
  <div class="container">
  <h2 id="cta-title" class="section-title">Get started</h2>
  <div class="cta-row">
- <a class="btn btn-primary" href="../dashboard.html">Try it free (50 req/mo)</a>
+ <a class="btn btn-primary" href="../dashboard.html">Try it free (3 req/day)</a>
  <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
  <a class="btn btn-secondary" href="../index.html#demo">Try the 30-second prescreen</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
- <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
+ <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" rel="noopener">GitHub</a>
  </div>
  <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
  </div>
@@ -349,7 +349,7 @@ print(r.json["conflicts"])</code></pre>
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
  <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

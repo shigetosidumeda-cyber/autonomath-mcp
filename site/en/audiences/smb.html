@@ -96,7 +96,7 @@
     {"@type": "Question", "name": "Do I need to sign up?", "acceptedAnswer": {"@type": "Answer", "text": "Add the LINE bot as a friend — that's it. No app, no email registration. The first 10 questions per month don't even require a card."}},
     {"@type": "Question", "name": "What kinds of questions can I ask?", "acceptedAnswer": {"@type": "Answer", "text": "Natural-language phrases work: \"subsidies for restaurants in Tokyo\", \"tax incentives for IT in manufacturing\", \"grants for retailers with 5 employees\". Including prefecture and industry improves accuracy."}},
     {"@type": "Question", "name": "Am I billed from question 11?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Question 11 onward is ¥3 per question (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement. Counter resets at JST first-of-month 00:00."}},
-    {"@type": "Question", "name": "Are answers AI-generated?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite returns matching programs from its database (13,578 programs) using rules — no creative writing, no embellishment. Source URLs are always attached."}},
+    {"@type": "Question", "name": "Are answers AI-generated?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite returns matching programs from its database (14,472 programs) using rules — no creative writing, no embellishment. Source URLs are always attached."}},
     {"@type": "Question", "name": "Who do I talk to about actually filing?", "acceptedAnswer": {"@type": "Answer", "text": "Tap \"I'd like to consult\" in LINE and we send a list of certified support organizations, tax advisors, and administrative scriveners that match your region and industry. You contract with the advisor directly (the advisor sets the price)."}},
     {"@type": "Question", "name": "How do I cancel?", "acceptedAnswer": {"@type": "Answer", "text": "Send \"cancel\" in LINE, or remove the card from your Stripe portal. No termination fees, and you can resume anytime."}},
     {"@type": "Question", "name": "Does this work for sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Both incorporated SMBs and sole proprietors are supported. Filter target_types=sole_proprietor and you'll see income-tax filing programs and the small-business sustainability subsidy first."}}
@@ -111,13 +111,13 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="../index.html" aria-label="jpcite home">
- <svg class="brand-mark-svg" viewBox="0 0 256 256" width="28" height="28" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:8px;color:currentColor;"><circle cx="56" cy="200" r="32" fill="currentColor"/><path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z" fill="currentColor"/></svg>
+ <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
  <span class="brand-name">jpcite</span>
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/smb.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -136,7 +136,7 @@
  </nav>
  <h1 id="hero-title">jpcite for SMB owners</h1>
  <p class="hero-sub">Ask the LINE bot "are there any subsidies for my industry?" — no setup, no app, 10 free questions per month. <strong>The LINE bot launches 2026-05-06</strong> (waitlist open; we'll email when it's live).</p>
- <p class="hero-tag">Designed for owner-operated small businesses (the owner, a spouse, a bookkeeper). Add the LINE bot and search 13,578 subsidies and 108 loans in plain language. Question 11 onward is ¥3. An optional connector routes you to a matched certified support organization, tax advisor, or administrative scrivener. If you'd rather not wait, the <a href="../pricing.html">API + MCP (¥3/req)</a> is already available.</p>
+ <p class="hero-tag">Designed for owner-operated small businesses (the owner, a spouse, a bookkeeper). Add the LINE bot and search 14,472 subsidies and 108 loans in plain language. Question 11 onward is ¥3. An optional connector routes you to a matched certified support organization, tax advisor, or administrative scrivener. If you'd rather not wait, the <a href="../pricing.html">API + MCP (¥3/req)</a> is already available.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="../index.html#demo">Try the 30-second prescreen</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -313,7 +313,7 @@ Source: jpcite (Bookyou株式会社, corporate number )</pre>
  <h3 style="font-size:16px;margin:18px 0 6px;">Am I billed from question 11?</h3>
  <p>Yes. Question 11 onward is ¥3 per question (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement. Counter resets at JST first-of-month 00:00.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Are answers AI-generated?</h3>
- <p>jpcite returns matching programs from its database (13,578 programs) using rules — no creative writing, no embellishment. Source URLs are always attached.</p>
+ <p>jpcite returns matching programs from its database (14,472 programs) using rules — no creative writing, no embellishment. Source URLs are always attached.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Who do I talk to about actually filing?</h3>
  <p>Tap "I'd like to consult" in LINE and we send a list of certified support organizations, tax advisors, and administrative scriveners that match your region and industry. Direct contracting with the advisor (the advisor sets the price).</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How do I cancel?</h3>
@@ -345,7 +345,7 @@ Source: jpcite (Bookyou株式会社, corporate number )</pre>
  <h2 id="cta-title" class="section-title">Get started</h2>
  <div class="cta-row">
  <a class="btn btn-primary" href="../index.html#demo">Try the 30-second prescreen</a>
- <a class="btn btn-secondary" href="../dashboard.html">Get an API key (Free 50 req/mo)</a>
+ <a class="btn btn-secondary" href="../dashboard.html">Get an API key (Free 3 req/day)</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
  </div>
  <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
@@ -369,7 +369,7 @@ Source: jpcite (Bookyou株式会社, corporate number )</pre>
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
  <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

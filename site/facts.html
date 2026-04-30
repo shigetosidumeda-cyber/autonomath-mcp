@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Canonical fact-sheet for 税務会計AI.
+  Canonical fact-sheet for jpcite.
   Each <dt id="fact-XXX"> is a stable citation hook. Other surfaces wrap the
   same number in <span data-fact="XXX"> so that a future drift detector can
   diff page values against this sheet (and ultimately against /v1/meta).
@@ -50,7 +50,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite ファクトシート",
-  "description": "税務会計AI が公表する統計 (制度件数・レコード数・属性データ・料金) の正本一覧。各値は /v1/meta API を一次出典とし、JST 更新日を明記。",
+  "description": "jpcite が公表する統計 (制度件数・レコード数・属性データ・料金) の正本一覧。各値は /v1/meta API を一次出典とし、JST 更新日を明記。",
   "url": "https://jpcite.com/facts.html",
   "creator": {
     "@type": "Organization",
@@ -69,7 +69,7 @@
   "isAccessibleForFree": true,
   "inLanguage": "ja",
   "datePublished": "2026-04-26",
-  "dateModified": "2026-04-26",
+  "dateModified": "2026-04-30",
   "spatialCoverage": {
     "@type": "Country",
     "name": "日本"
@@ -122,7 +122,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite ホーム">
- <svg class="brand-mark-svg" viewBox="0 0 256 256" width="28" height="28" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:8px;color:currentColor;"><circle cx="56" cy="200" r="32" fill="currentColor"/><path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z" fill="currentColor"/></svg>
+ <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
  <span class="brand-name">jpcite</span>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
@@ -156,7 +156,7 @@
  <p class="lead">jpcite のサイト・ドキュメント・営業資料に登場する数値の正本です。各値は <code>/v1/meta</code> API を一次出典とし、更新日 (JST) を明記しています。サイト内の各数字は <code>&lt;span data-fact=&quot;ID&quot;&gt;</code> でマークアップされ、本ページの <code>&lt;dt id=&quot;fact-ID&quot;&gt;</code> に 1:1 で対応します。</p>
 
  <p style="margin:0 0 24px;color:var(--text-muted);font-size:14px;">
- 最終更新: <time datetime="2026-04-26">2026-04-26 JST</time> ·
+ 最終更新: <time datetime="2026-04-30">2026-04-30 JST</time> ·
  一次出典: <a href="https://api.jpcite.com/v1/meta" rel="external"><code>GET /v1/meta</code></a> ·
  ライセンス: <a href="tos.html">利用規約</a> 準拠 (各データセットの元ライセンスは出典欄を参照)
  </p>
@@ -343,10 +343,10 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-mcp_tools_total" style="font-weight:600;font-size:18px;">MCP 機能数: 89</dt>
+ <dt id="fact-mcp_tools_total" style="font-weight:600;font-size:18px;">MCP 機能数: 93</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 既定で 89 機能 (制度横断検索 + 採択事例 + 法令 + 行政処分 + 適格請求書 + 業種パック等)。MCP の標準プロトコルに準拠。<br>
- 出典: 実行時の機能一覧 · 更新 2026-04-29 JST · v0.3.1
+ 既定で 93 機能 (制度横断検索 + 採択事例 + 法令 + 行政処分 + 適格請求書 + 業種パック等)。MCP の標準プロトコルに準拠。<br>
+ 出典: 実行時の機能一覧 · 更新 2026-04-29 JST · v0.3.2
  </dd>
  </div>
 
@@ -440,7 +440,7 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
  <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>

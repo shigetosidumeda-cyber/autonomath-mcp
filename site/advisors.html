@@ -95,7 +95,7 @@
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "jpcite 士業 Affiliate Program",
-  "description": "AI agent integration platform for tax accountants, certified administrative scriveners, labor consultants, SME consultants, and lawyers. Connects Japanese SMEs with qualified advisors via specialty + region matching, with disclosed ranking criteria (景表法対応).",
+  "description": "AI agent integration platform for tax accountants, certified administrative scriveners, labor consultants, SME consultants, and lawyers. Connects Japanese SMEs with qualified advisors via specialty + region matching, with disclosed ranking criteria (ランキング根拠を明示).",
   "url": "https://jpcite.com/advisors.html",
   "serviceType": "AI agent integration for tax and administrative advisory",
   "category": "Professional services referral marketplace",
@@ -150,7 +150,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite ホーム">
- <svg class="brand-mark-svg" viewBox="0 0 256 256" width="28" height="28" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:8px;color:currentColor;"><circle cx="56" cy="200" r="32" fill="currentColor"/><path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z" fill="currentColor"/></svg>
+ <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
  <span class="brand-name">jpcite</span>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
@@ -219,14 +219,14 @@
  <li><strong>登録</strong> — 下のフォームで事務所名・法人番号 (13 桁)・専門分野・成約単価を送信。</li>
  <li><strong>法人番号 確認</strong> — 国税庁 適格請求書事業者 13,801 社の公開データと照合。</li>
  <li><strong>Stripe 振込先登録 (簡易版)</strong> — 振込先口座を登録。jpcite は Stripe 経由で支払いを中継します。</li>
- <li><strong>公開</strong> — 検索結果に表示開始。ランキングは「専門性一致 → 実績数 → ID 昇順」の順 (広告料金による改変なし、景表法対応)。</li>
+ <li><strong>公開</strong> — 検索結果に表示開始。ランキングは「専門性一致 → 実績数 → ID 昇順」の順 (広告料金による改変なし、ランキング根拠を明示)。</li>
  <li><strong>成約報告</strong> — 受任が決まったら <code>/v1/advisors/report-conversion</code> に referral_token と受任額を送信。</li>
  <li><strong>月末支払い</strong> — 前月の成約分を、翌月 末日に Stripe 振込で自動送金。</li>
  </ol>
  </section>
 
  <section aria-labelledby="ranking-title" style="margin-top:56px;">
- <h2 id="ranking-title" class="section-title" id="ranking">ランキング開示 (景表法対応)</h2>
+ <h2 id="ranking-title" class="section-title" id="ranking">ランキング開示 (ランキング根拠を明示)</h2>
  <p>検索結果は、以下の基準で順位付けされます。<strong>広告料金によるランキング操作は一切ありません。</strong></p>
  <ol style="max-width:720px;line-height:1.8;">
  <li><strong>専門分野 (specialty) の一致度</strong> — 中小企業 のクエリから抽出した制度カテゴリと 専門家 の登録専門分野の重複数。</li>
@@ -371,7 +371,7 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
  <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>

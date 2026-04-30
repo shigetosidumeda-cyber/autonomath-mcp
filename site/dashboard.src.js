@@ -43,7 +43,7 @@
   // cap. The 100/day floor below is *only* surfaced when a Stripe
   // subscription enters dunning recovery (past_due / unpaid / incomplete) —
   // it is not a tier and there is no "free plan" at the authenticated layer.
-  // Anonymous IP-based 50/month behavior lives in the anon_rate_limit
+  // Anonymous IP-based 3/day behavior lives in the anon_rate_limit
   // middleware and never reaches this dashboard view.
   // Mirror of .env.example: RATE_LIMIT_FREE_PER_DAY=100.
   const DUNNING_DEMOTE_DAILY = 100;

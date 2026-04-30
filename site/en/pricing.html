@@ -2,7 +2,7 @@
 <!--
   EN mirror of /pricing.html (2026-04-29 ¥3/req simplicity exploit).
   - API + MCP only. ¥3/req tax exclusive (¥3.30 tax inclusive).
-  - 50 req/month per IP anonymous (JST first-of-month 00:00 reset).
+  - 3 req/day per IP anonymous (JST next-day 00:00 reset).
   - No tier SKU, no seat fee, no fixed monthly, no cancellation fee.
   - 100% organic acquisition; no paid CTA, no reseller, no commission.
   - Operator: Bookyou株式会社 (T8010001213708, Stripe Tax invoicing).
@@ -14,10 +14,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Pricing — ¥3/req, that's it — jpcite</title>
-<meta name="description" content="jpcite pricing — ¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly, no contracts, no cancellation fee. 50 req/month per IP free. Stripe billing + qualified Japanese invoice (T8010001213708).">
+<meta name="description" content="jpcite pricing — ¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly, no contracts, no cancellation fee. 3 req/day per IP free. Stripe billing + qualified Japanese invoice (T8010001213708).">
 
 <meta property="og:title" content="Pricing — ¥3/req, that's it — jpcite">
-<meta property="og:description" content="¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly, no cancellation fee. 50 req/month per IP free.">
+<meta property="og:description" content="¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly, no cancellation fee. 3 req/day per IP free.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/pricing.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -41,7 +41,7 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Pricing — ¥3/req, that's it — jpcite",
-  "description": "jpcite API + MCP pricing: ¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly. 50 req/month per IP free.",
+  "description": "jpcite API + MCP pricing: ¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly. 3 req/day per IP free.",
   "inLanguage": "en",
   "url": "https://jpcite.com/en/pricing.html",
   "isPartOf": {
@@ -68,7 +68,7 @@
     {
       "@type": "Offer",
       "name": "jpcite API + MCP — fully metered",
-      "description": "REST + MCP. ¥3 per request tax exclusive (¥3.30 tax inclusive, 10% JCT added at invoice). 50 req/month per IP anonymous monthly allowance with JST first-of-month 00:00 reset, no signup. No minimum term, no cancellation fee.",
+      "description": "REST + MCP. ¥3 per request tax exclusive (¥3.30 tax inclusive, 10% JCT added at invoice). 3 req/day per IP anonymous daily allowance with JST next-day 00:00 reset, no signup. No minimum term, no cancellation fee.",
       "url": "https://jpcite.com/en/pricing.html#api-paid",
       "category": "API access",
       "availability": "https://schema.org/InStock",
@@ -87,12 +87,12 @@
       },
       "includesObject": {
         "@type": "TypeAndQuantityNode",
-        "amountOfThisGood": 50,
+        "amountOfThisGood": 3,
         "unitCode": "E50",
-        "unitText": "free requests per IP per month",
+        "unitText": "free requests per IP per day",
         "typeOfGood": {
           "@type": "Service",
-          "name": "Anonymous monthly allowance (50 req/month per IP)"
+          "name": "Anonymous daily allowance (3 req/day per IP)"
         }
       },
       "eligibleCustomerType": [
@@ -115,18 +115,18 @@
     },
     {
       "@type": "Offer",
-      "name": "API anonymous monthly allowance",
+      "name": "API anonymous daily allowance",
       "price": "0",
       "priceCurrency": "JPY",
-      "description": "50 req/month per IP free; resets at JST first-of-month 00:00.",
+      "description": "3 req/day per IP free; resets at JST next-day 00:00.",
       "url": "https://jpcite.com/en/pricing.html#api-free",
       "category": "API access",
       "availability": "https://schema.org/InStock",
       "inLanguage": "en",
       "eligibleQuantity": {
         "@type": "QuantitativeValue",
-        "value": 50,
-        "unitText": "requests/month"
+        "value": 3,
+        "unitText": "requests/day"
       },
       "eligibleRegion": {
         "@type": "Country",
@@ -164,13 +164,13 @@
   "mainEntity": [
     {"@type": "Question", "name": "Are there tiers?", "acceptedAnswer": {"@type": "Answer", "text": "No. ¥3/req fully metered only — no Free / Starter / Pro / Enterprise. Every customer pays the same unit rate."}},
     {"@type": "Question", "name": "Volume discount for high usage?", "acceptedAnswer": {"@type": "Answer", "text": "No. Whether you do 100 req/month or 1,000,000 req/month, the price is ¥3/req (¥3.30 tax inclusive). No sales negotiation, no custom quotes — the public price applies to every customer."}},
-    {"@type": "Question", "name": "Is signup required?", "acceptedAnswer": {"@type": "Answer", "text": "No. The first 50 req/month per IP are usable without signup (resets at JST first-of-month 00:00). Beyond 50, issue an API key + register a card in Stripe."}},
-    {"@type": "Question", "name": "Cancellation procedure?", "acceptedAnswer": {"@type": "Answer", "text": "Just delete the API key in the dashboard, or remove the card in Stripe Customer Portal. No cancellation fee, no notice period, no retention call. The account reverts to the anonymous 50 req/month allowance immediately."}},
+    {"@type": "Question", "name": "Is signup required?", "acceptedAnswer": {"@type": "Answer", "text": "No. The first 3 req/day per IP are usable without signup (resets at JST next-day 00:00). After the anonymous allowance, issue an API key + register a card in Stripe."}},
+    {"@type": "Question", "name": "Cancellation procedure?", "acceptedAnswer": {"@type": "Answer", "text": "Just delete the API key in the dashboard, or remove the card in Stripe Customer Portal. No cancellation fee, no notice period, no retention call. The account reverts to the anonymous 3 req/day allowance immediately."}},
     {"@type": "Question", "name": "Stripe auto-billing? Qualified Japanese invoice?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. End-of-month metered usage is auto-charged to the registered card on day 1 of the following month. Stripe Tax issues a qualified Japanese invoice (registration number T8010001213708, Bookyou株式会社) that meets the input-tax-credit requirements."}},
     {"@type": "Question", "name": "Corporations and sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Both. Same ¥3/req for taxable / tax-exempt entities, corporations, and sole proprietors. Every invoice carries the registration number T8010001213708 — taxable entities can claim the input-tax credit."}},
-    {"@type": "Question", "name": "Can I set a monthly spend cap?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set monthly_cap_yen from the dashboard (or POST /v1/me/cap). Once hit, the API returns 503 with cap_reached until the JST first-of-month 00:00 reset. Default is uncapped."}},
+    {"@type": "Question", "name": "Can I set a monthly spend cap?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set monthly_cap_yen from the dashboard (or POST /v1/me/cap). Once hit, the API returns 503 with cap_reached until the next JST monthly billing cycle. Default is uncapped."}},
     {"@type": "Question", "name": "How is 1 request defined?", "acceptedAnswer": {"@type": "Answer", "text": "1 HTTP or 1 MCP tool call = 1 req. A response with 100 hits still counts as 1 req. /v1/healthz and /v1/me/* meta endpoints are uncounted."}},
-    {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications; 11,684 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition, 1,185 enforcement actions, 154 statutes full-text + 9,484 catalog stubs, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Every row carries a primary-source URL + fetched_at; aggregators are banned."}}
+    {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications; 11,684 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition, 1,185 enforcement actions, 154 statutes full-text + 9,484 catalog stubs, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned."}}
   ]
 }
 </script>
@@ -190,7 +190,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite home">
- <svg class="brand-mark-svg" viewBox="0 0 256 256" width="28" height="28" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:8px;color:currentColor;"><circle cx="56" cy="200" r="32" fill="currentColor"/><path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z" fill="currentColor"/></svg>
+ <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
  <span class="brand-name">jpcite</span>
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
@@ -198,7 +198,7 @@
  <a href="getting-started.html">Docs</a>
  <a href="pricing.html" aria-current="page">Pricing</a>
  <a href="audiences/">Audiences</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../pricing.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -257,7 +257,7 @@
  </div>
 
  <div class="hero-cta" style="display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px;">
- <a class="btn btn-primary" href="#api-paid" data-cta-variant="hero-issue-key" style="font-size:17px;padding:14px 24px;">Issue API key (free 50 req/month tier)</a>
+ <a class="btn btn-primary" href="#api-paid" data-cta-variant="hero-issue-key" style="font-size:17px;padding:14px 24px;">Issue API key (free 3 req/day tier)</a>
  <a class="btn btn-secondary" href="getting-started.html" data-cta-variant="hero-playground" style="font-size:17px;padding:14px 24px;">Try in REST playground</a>
  </div>
 
@@ -388,14 +388,14 @@
     -->
  <section aria-labelledby="api-title" style="margin-top:56px;">
  <h2 id="api-title" class="section-title">API + MCP</h2>
- <p style="margin:-12px 0 24px;color:var(--text-muted);max-width:660px;">For AI developers and enterprise RAG. 89 MCP tools plus REST. The 50 req/month per IP anonymous monthly allowance is usable without signup or card.</p>
+ <p style="margin:-12px 0 24px;color:var(--text-muted);max-width:660px;">For AI developers and enterprise RAG. 93 MCP tools plus REST. The 3 req/day per IP anonymous daily allowance is usable without signup or card.</p>
  <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
 
  <article class="price-card" aria-labelledby="api-free">
  <h2 id="api-free">Anonymous</h2>
  <p class="tier-desc">Evaluation / personal trials</p>
  <p class="price">¥0</p>
- <p class="price-unit"><span data-fact="anonymous_quota_per_month">50</span> req / month per IP (resets at JST first-of-month 00:00)</p>
+ <p class="price-unit"><span data-fact="anonymous_quota_per_month">3</span> req / day per IP (resets at JST next-day 00:00)</p>
  <ul class="feats">
  <li>No card, no signup — start instantly via device flow</li>
  <li>All fields readable (fields=default)</li>
@@ -412,7 +412,7 @@
  <p class="price-unit">¥<span data-fact="price_per_req">3</span>.00 tax exclusive + 10% JCT, Stripe metered</p>
  <ul class="feats">
  <li><strong>No throughput throttling</strong> — never returns 429 mid-spike; the same ¥3/req rate holds up to 1M req/month.</li>
- <li><strong>Self-set monthly spend cap.</strong> Set <code>monthly_cap_yen</code> in the Customer Portal or via <code>POST /v1/me/cap</code>. Once hit, the API returns 503 with <code>cap_reached</code> until JST first-of-month 00:00 reset. Default = uncapped.</li>
+ <li><strong>Self-set monthly spend cap.</strong> Set <code>monthly_cap_yen</code> in the Customer Portal or via <code>POST /v1/me/cap</code>. Once hit, the API returns 503 with <code>cap_reached</code> until the next JST monthly billing cycle. Default = uncapped.</li>
  <li>fields=full (enriched + source_mentions + lineage)</li>
  <li>Months with 0 req cost ¥0</li>
  <li>Qualified Japanese invoice auto-issued by Stripe</li>
@@ -424,7 +424,7 @@
  <li><strong>¥<span data-fact="price_per_req_inc_tax">3.30</span> tax inclusive</strong> per request (¥<span data-fact="price_per_req">3</span> tax exclusive + 10% JCT).</li>
  <li><strong>1 request = 1 HTTP / MCP tool call.</strong> A response with 100 hits still counts as 1 req. <code>/v1/healthz</code> and <code>/v1/me/*</code> are uncounted.</li>
  <li>Usage from JST 00:00 on day 1 to 23:59 on the last day of the month is auto-charged on day 1 of the following month.</li>
- <li>No minimum term, no cancellation fee. Removing the card returns the account to the anonymous <span data-fact="anonymous_quota_per_month">50</span> req/month allowance immediately.</li>
+ <li>No minimum term, no cancellation fee. Removing the card returns the account to the anonymous <span data-fact="anonymous_quota_per_month">3</span> req/day allowance immediately.</li>
  <li>Information service only; no document drafting, no legal advice, no tax advice.</li>
  </ul>
  </details>
@@ -475,7 +475,7 @@
           catch (e) { return; }
           var from = (params.get('from') || '').toLowerCase();
           if (from === '429') {
-            titleEl.textContent = 'Anonymous monthly allowance reached';
+            titleEl.textContent = 'Anonymous daily allowance reached';
             bodyEl.innerHTML = 'Issue an API key to resume immediately (¥0/month base, ¥3.30/req metered). Use the <strong>Issue API key</strong> button below.';
             banner.hidden = false;
           } else if (from === 'trial') {
@@ -582,7 +582,7 @@
  <article class="card">
  <h3>Cancel anytime</h3>
  <p class="card-lead">No minimum, no cancellation fee</p>
- <p>Self-cancel from Stripe Customer Portal. The API reverts to the 50 req/month per IP anonymous monthly allowance. No notice period, no retention call, no fee.</p>
+ <p>Self-cancel from Stripe Customer Portal. The API reverts to the 3 req/day per IP anonymous daily allowance. No notice period, no retention call, no fee.</p>
  </article>
  <article class="card">
  <h3>Statutory disclosures</h3>
@@ -611,11 +611,11 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Is signup required?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">No. The first 50 req/month per IP are free without signup (resets at JST first-of-month 00:00). Beyond 50, issue an API key + register a card in Stripe.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">No. The first 3 req/day per IP are free without signup (resets at JST next-day 00:00). After the anonymous allowance, issue an API key + register a card in Stripe.</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Cancellation procedure?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Just delete the API key in the dashboard, or remove the card in Stripe Customer Portal. No cancellation fee, no notice period, no retention call. Reverts to anonymous 50 req/month immediately.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Just delete the API key in the dashboard, or remove the card in Stripe Customer Portal. No cancellation fee, no notice period, no retention call. Reverts to anonymous 3 req/day immediately.</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Stripe auto-billing? Qualified Japanese invoice?</summary>
@@ -627,7 +627,7 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Can I set a monthly spend cap?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Yes. Set <code>monthly_cap_yen</code> from the dashboard (or <code>POST /v1/me/cap</code>). Once hit, the API returns 503 with <code>cap_reached</code> until the JST first-of-month 00:00 reset. Default is uncapped.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Yes. Set <code>monthly_cap_yen</code> from the dashboard (or <code>POST /v1/me/cap</code>). Once hit, the API returns 503 with <code>cap_reached</code> until the next JST monthly billing cycle. Default is uncapped.</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">How is 1 request defined?</summary>
@@ -635,7 +635,7 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Data coverage?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">As of April 2026: <span data-fact="total_programs">14,472</span> Japanese public programs (<span data-fact="searchable_programs_total">11,684</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs (three-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, 154 statutes full-text + 9,484 catalog stubs, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Every row carries a primary-source URL + fetched_at; aggregators are banned. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">As of April 2026: <span data-fact="total_programs">14,472</span> Japanese public programs (<span data-fact="searchable_programs_total">11,684</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs (three-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, 154 statutes full-text + 9,484 catalog stubs, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
  </details>
  </div>
  </section>
@@ -646,7 +646,7 @@
  <section aria-labelledby="bottom-cta-title" style="margin-top:56px;padding:32px 24px;border:1px solid var(--accent);border-radius:12px;background:var(--accent-soft,#ecfdf5);">
  <h2 id="bottom-cta-title" class="section-title" style="margin:0 0 12px;">30 seconds to API key, 5 minutes to first call, no fixed monthly</h2>
  <p style="margin:0 0 18px;color:var(--text);font-size:16px;line-height:1.7;max-width:680px;">
- ¥3/req (¥3.30 tax incl.) fully metered. First 50 req/month per IP free. Months you do not use cost ¥0. To cancel, delete the API key in the dashboard — no fee.
+ ¥3/req (¥3.30 tax incl.) fully metered. First 3 req/day per IP free. Months you do not use cost ¥0. To cancel, delete the API key in the dashboard — no fee.
  </p>
  <div style="display:flex;flex-wrap:wrap;gap:12px;">
  <a class="btn btn-primary" href="#api-paid" data-cta-variant="bottom-issue-key" style="font-size:16px;padding:13px 22px;">Issue API key</a>
@@ -672,7 +672,7 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
  <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

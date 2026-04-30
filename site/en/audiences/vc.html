@@ -103,13 +103,13 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="../index.html" aria-label="jpcite home">
- <svg class="brand-mark-svg" viewBox="0 0 256 256" width="28" height="28" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:8px;color:currentColor;"><circle cx="56" cy="200" r="32" fill="currentColor"/><path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z" fill="currentColor"/></svg>
+ <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
  <span class="brand-name">jpcite</span>
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/vc.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -128,7 +128,7 @@
  </nav>
  <h1 id="hero-title">jpcite for VC / M&amp;A advisors</h1>
  <p class="hero-sub">By corporate number, pull 5 years of enforcement, 10 years of adoption history, and qualified-invoice registration in a single cross-source query. Drop into your DD pipeline.</p>
- <p class="hero-tag">Submit the corporate number of an investment or acquisition target and pull from enforcement (1,185), case_studies (2,286), invoice_registrants (13,801), and programs (13,578) in one call. ¥3/req fully metered, no scale limit, Stripe metered billing reconciled monthly.</p>
+ <p class="hero-tag">Submit the corporate number of an investment or acquisition target and pull from enforcement (1,185), case_studies (2,286), invoice_registrants (13,801), and programs (14,472) in one call. ¥3/req fully metered, no scale limit, Stripe metered billing reconciled monthly.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -317,11 +317,11 @@ asyncio.run(main)</code></pre>
  <div class="container">
  <h2 id="resources-title" class="section-title">VC / M&amp;A advisor resources</h2>
  <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../facts.html"><strong>Facts sheet (data coverage)</strong></a> &mdash; Exact breakdowns: 13,578 programs + 2,286 adoptions + 1,185 enforcement cases + 13,801 qualified invoice registrants. Use as the source footnote in IC memos.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../facts.html"><strong>Facts sheet (data coverage)</strong></a> &mdash; Exact breakdowns: 14,472 programs + 2,286 adoptions + 1,185 enforcement cases + 13,801 qualified invoice registrants. Use as the source footnote in IC memos.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="dev.html"><strong>AI agent developer page</strong></a> &mdash; The MCP / REST integration guide for in-house DD bots. Two patterns: drop into Claude Desktop directly, or pipe REST into in-house RAG.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>Batch DD examples (Python + curl + TypeScript)</strong></a> &mdash; Code for running a 50-target seed-round DD in one batch. Error handling and retries included.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; Pull related subsidies and adoption history for any corporate number. Pagination and filters for batch workloads.</li>
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (89 tools)</strong></a> &mdash; <code>dd_profile_am</code> + <code>check_enforcement_am</code> + <code>search_acceptance_stats_am</code> and more, ready to plug into your DD pipeline.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (93 tools)</strong></a> &mdash; <code>dd_profile_am</code> + <code>check_enforcement_am</code> + <code>search_acceptance_stats_am</code> and more, ready to plug into your DD pipeline.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; Source for client SDK auto-generation when integrating into in-house DD tools. Stoplight / Postman / Insomnia compatible.</li>
  <li style="padding:10px 0;"><a href="../pricing.html"><strong>Enterprise-scale pricing</strong></a> &mdash; ¥3/req at any scale, no seat fees. 100-target batch DD = ¥1,500 per run; 5,000 req/month = ¥15,000. Stripe metered billing.</li>
  </ul>
@@ -332,11 +332,11 @@ asyncio.run(main)</code></pre>
  <div class="container">
  <h2 id="cta-title" class="section-title">Get started</h2>
  <div class="cta-row">
- <a class="btn btn-primary" href="../dashboard.html">Get an API key (Free 50 req/mo)</a>
+ <a class="btn btn-primary" href="../dashboard.html">Get an API key (Free 3 req/day)</a>
  <a class="btn btn-secondary" href="../getting-started.html">Get started</a>
  <a class="btn btn-secondary" href="/docs/openapi/v1.json">OpenAPI v1 (JSON)</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
- <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
+ <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" rel="noopener">GitHub</a>
  </div>
  <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
  </div>
@@ -359,7 +359,7 @@ asyncio.run(main)</code></pre>
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
  <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

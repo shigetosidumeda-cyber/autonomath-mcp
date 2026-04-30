@@ -9,7 +9,7 @@
 <meta name="description" content="A tax-advisor (zeirishi) playbook for jpcite. Search the Special Measures Act, surface tax incentives (DX investment promotion, wage-increase promotion), receive law-revision alerts (e-bookkeeping / invoice system), and add a filing-season widget to your firm site. ¥3/req metered + ¥3/notification law-revision alerts.">
 
 <meta property="og:title" content="jpcite for tax advisors — Special Measures Act + tax incentives + filing-season PR">
-<meta property="og:description" content="Answer 'which special measures apply this year?' in 30 seconds with Claude + jpcite. 35 tax_rulesets + Special Measures Act + circular cross-links.">
+<meta property="og:description" content="Answer 'which special measures apply this year?' in 30 seconds with Claude + jpcite. 50 tax_rulesets + Special Measures Act + circular cross-links.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/audiences/tax-advisor.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -110,13 +110,13 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="../index.html" aria-label="jpcite home">
- <svg class="brand-mark-svg" viewBox="0 0 256 256" width="28" height="28" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:8px;color:currentColor;"><circle cx="56" cy="200" r="32" fill="currentColor"/><path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z" fill="currentColor"/></svg>
+ <svg class="brand-mark-svg" viewBox="0 0 100 100" width="36" height="36" aria-hidden="true" style="display:inline-block;vertical-align:middle;margin-right:10px;color:currentColor;"><path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z" fill="currentColor"/><circle cx="22" cy="78" r="14" fill="currentColor"/></svg>
  <span class="brand-name">jpcite</span>
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/tax-advisor.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -135,7 +135,7 @@
  </nav>
  <h1 id="hero-title">jpcite for tax advisors (zeirishi)</h1>
  <p class="hero-sub">Special Measures Act search + tax incentives + e-bookkeeping / invoice-system revision alerts. Stand up an in-firm RAG for 80 client engagements in 30 minutes.</p>
- <p class="hero-tag">Sized for a 5-person firm with ~80 SMB clients. Wire the MCP server into Claude Desktop or your in-house RAG and search across 35 tax rulesets, 154 laws full-text + 9,484 law catalog stubs, and 13,578 programs. Revision alerts keep e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law changes from slipping past you.</p>
+ <p class="hero-tag">Sized for a 5-person firm with ~80 SMB clients. Wire the MCP server into Claude Desktop or your in-house RAG and search across 50 tax rulesets, 154 laws full-text + 9,484 law catalog stubs, and 14,472 programs. Revision alerts keep e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law changes from slipping past you.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -261,7 +261,7 @@ for row in r2.json["items"]:
  }
  }
 }</code></pre>
- <p class="demo-note">All 89 tools are callable from Claude. <code>search_tax_incentives</code> et al.</p>
+ <p class="demo-note">All 93 tools are callable from Claude. <code>search_tax_incentives</code> et al.</p>
  </article>
 
  </div>
@@ -284,7 +284,7 @@ for row in r2.json["items"]:
  </tr>
  </thead>
  <tbody>
- <tr><th scope="row">API + MCP</th><td>50 req/mo per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
  <tr><th scope="row">Law-revision alerts</th><td>Monthly digest</td><td>¥500 / mo (real-time)</td><td>¥550 / mo</td></tr>
  <tr><th scope="row">Embedded widget — Standard (optional)</th><td>-</td><td>¥10,000 / mo (10,000 req included)</td><td>¥11,000 / mo</td></tr>
  <tr><th scope="row">Embedded widget — Whitelabel (optional)</th><td>-</td><td>¥30,000 / mo (30,000 req included, no logo)</td><td>¥33,000 / mo</td></tr>
@@ -326,7 +326,7 @@ for row in r2.json["items"]:
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#laws"><strong>REST API: /v1/laws/search (154 full-text + 9,484 catalog stubs, body-text load incremental)</strong></a> &mdash; e-Gov CC-BY statute search. Full-text search covers 154 currently; the rest serve as a name / 法令番号 / e-Gov-link resolver.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../alerts.html"><strong>Subscribe to revision alerts</strong></a> &mdash; Statute name, revised article, effective date by email + RSS. Monthly digest free; real-time ¥3/notification. Summaries with primary-source URLs.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction.</li>
- <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 50 req/month covers 5-10 clients per month at zero cost.</li>
+ <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 3 req/daynth covers 5-10 clients per month at zero cost.</li>
  </ul>
  </div>
  </section>
@@ -336,10 +336,10 @@ for row in r2.json["items"]:
  <h2 id="cta-title" class="section-title">Get started</h2>
  <div class="cta-row">
  <a class="btn btn-primary" href="../index.html#demo">Try the tax-incentive prescreen (30s)</a>
- <a class="btn btn-secondary" href="../dashboard.html">Get an API key (Free 50 req/mo)</a>
+ <a class="btn btn-secondary" href="../dashboard.html">Get an API key (Free 3 req/day)</a>
  <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
- <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
+ <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" rel="noopener">GitHub</a>
  </div>
  <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
  </div>
@@ -362,7 +362,7 @@ for row in r2.json["items"]:
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
  <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

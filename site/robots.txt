@@ -119,8 +119,16 @@ User-agent: *
 Allow: /
 Allow: /en/
 Allow: /status/
+Allow: /llms.txt
+Allow: /llms.en.txt
+Allow: /llms-full.txt
+Allow: /llms-full.en.txt
+Allow: /facts.html
+Allow: /en/facts.html
+Allow: /openapi/v1.json
 Allow: /v1/openapi.json
 Allow: /v1/healthz
+Allow: /.well-known/security.txt
 Disallow: /admin/
 Disallow: /_internal/
 Disallow: /structured/
@@ -136,8 +144,9 @@ Crawl-delay: 1
 # Sitemaps
 # Primary: sitemap-index.xml references all shards
 # (sitemap.xml + sitemap-programs.xml + sitemap-prefectures.xml +
-#  sitemap-audiences.xml + sitemap-industries.xml + sitemap-qa.xml +
-#  sitemap-pages.xml). 2026-04-29: industries / qa / pages added inline as
+#  sitemap-audiences.xml + sitemap-cross.xml + sitemap-industries.xml +
+#  sitemap-qa.xml + sitemap-pages.xml + docs/sitemap.xml).
+# 2026-04-29: industries / qa / pages added inline as
 # fallback for crawlers that ignore index files (matches the 8 shards
 # referenced from sitemap-index.xml; see docs/runbook/search_console_setup.md §1).
 # Note: sitemap-structured.xml is excluded from the index — site/structured/
@@ -148,6 +157,8 @@ Sitemap: https://jpcite.com/sitemap.xml
 Sitemap: https://jpcite.com/sitemap-programs.xml
 Sitemap: https://jpcite.com/sitemap-prefectures.xml
 Sitemap: https://jpcite.com/sitemap-audiences.xml
+Sitemap: https://jpcite.com/sitemap-cross.xml
 Sitemap: https://jpcite.com/sitemap-industries.xml
 Sitemap: https://jpcite.com/sitemap-qa.xml
 Sitemap: https://jpcite.com/sitemap-pages.xml
+Sitemap: https://jpcite.com/docs/sitemap.xml

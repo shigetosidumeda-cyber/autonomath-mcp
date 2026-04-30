@@ -1,5 +1,5 @@
 {
-  "_comment": "Homepage curl block source-of-truth. CRO Fix 2 (2026-04-29). Edit here, regenerate site/index.html + site/en/index.html curl blocks if the API surface changes. Each example must work against api.jpcite.com/v1/* anonymously (no key) and stay under the 50/month anonymous quota with one shot.",
+  "_comment": "Homepage curl block source-of-truth. CRO Fix 2 (2026-04-29). Edit here, regenerate site/index.html + site/en/index.html curl blocks if the API surface changes. Each example must work against api.jpcite.com/v1/* anonymously (no key) and stay under the 3/day anonymous quota with one shot.",
   "primary_ja": {
     "label": "5 秒で試す (登録不要)",
     "sub": "anonymous IP で 3 req/日 まで Free。 そのまま貼って OK。",

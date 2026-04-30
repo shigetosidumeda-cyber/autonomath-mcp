@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  jpcite mark — 2026-04-30 official brand mark.
+  jpcite mark — 2026-04-30 v3 (matches user-supplied bitmap proportions).
   Source: /Users/shigetoumeda/Desktop/jpcitelogo.png + jpcitelogo2.png.
-  Re-vectorized for crisp scaling. Two shapes:
-    (1) dot — citation marker, lower-left (filled circle)
-    (2) page — document body with a triangular folded-corner notch at upper-right
-  Single colour (#fafafa) so it inherits CSS color in light/dark.
-  ViewBox 256x256 — square for favicon / app-icon use.
+  Measured directly from the bitmap (page 63x56 px in 82-px-wide mark).
+
+  Two shapes:
+    (1) Dot — citation marker, lower-left (filled circle, r=14)
+    (2) Page — document with triangular folded-corner notch at upper-right
+              (61w × 50h, slightly wider than tall, rounded corners r=6)
 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="jpcite">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="jpcite">
   <title>jpcite</title>
-  <!-- Dot: citation marker, lower-left -->
-  <circle cx="56" cy="200" r="32" fill="#fafafa"/>
-  <!-- Page: rounded rectangle with triangular fold cut at upper-right.
-       Path walks: top-left corner (rounded) → top edge to fold start → diagonal
-       fold cut → right edge → rounded bottom-right → bottom edge → rounded
-       bottom-left → left edge → close. -->
-  <path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z"
+  <!-- Page: rounded body with triangular fold cut at upper-right.
+       Body x=29..90, y=10..60. Rounded corners r=6. Fold from (75,10) to (90,25). -->
+  <path d="M 35 10 L 75 10 L 90 25 L 90 54 Q 90 60 84 60 L 35 60 Q 29 60 29 54 L 29 16 Q 29 10 35 10 Z"
         fill="#fafafa"/>
+  <!-- Dot: lower-left citation marker, overlapping the page's bottom-left area -->
+  <circle cx="22" cy="78" r="14" fill="#fafafa"/>
 </svg>
