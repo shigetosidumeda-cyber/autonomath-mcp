@@ -163,7 +163,7 @@ def _send_day_n_now(
                 "course_title": title,
                 "day": day_n,
                 "total_days": length,
-                "manage_url": "https://zeimu-kaikei.ai/dashboard.html#courses",
+                "manage_url": "https://jpcite.com/dashboard.html#courses",
                 "disclaimer": (
                     "本メールは公開情報に基づく教育コンテンツです。"
                     "税理士法 §52 / 弁護士法 §72 該当の助言・代行はおこないません。"

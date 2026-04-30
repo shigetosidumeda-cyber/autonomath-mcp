@@ -35,5 +35,5 @@ OAuth 認可リクエストには毎回ランダムな `state` (24 byte / Base64
 
 ## redirect_uri 固定
 
-production: `https://freee-plugin.zeimu-kaikei.ai/oauth/callback` のみ登録。
+production: `https://freee-plugin.jpcite.com/oauth/callback` のみ登録。
 ローカル開発時は freee 側で別 client_id を発行する運用とし、production の client_id では urn:ietf:wg:oauth:2.0:oob は使用しません。

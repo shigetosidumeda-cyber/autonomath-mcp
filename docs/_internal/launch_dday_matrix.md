@@ -1,6 +1,6 @@
 # D-Day Execution Matrix — 2026-05-06 (Wed) JST
 
-> **要約:** launch 当日 (2026-05-06 水) の分単位スケジュール + チャネル別 A/B コピー + 計測 + クライシス対応 + stretch 目標。`docs/launch_war_room.md` の運用面と `docs/launch_content.md` / `docs/ab_copy_variants.md` のコピー素材を 1 本に畳んだ実行表。ドメイン / ブランド名は rebrand pending (`project_jpintel_trademark_intel_risk`) のため `zeimu-kaikei.ai` / `[BRAND]` / `[HANDLE]` placeholder で固定する。実名の投入は launch 48h 前に replace-all。
+> **要約:** launch 当日 (2026-05-06 水) の分単位スケジュール + チャネル別 A/B コピー + 計測 + クライシス対応 + stretch 目標。`docs/launch_war_room.md` の運用面と `docs/launch_content.md` / `docs/ab_copy_variants.md` のコピー素材を 1 本に畳んだ実行表。ドメイン / ブランド名は rebrand pending (`project_jpintel_trademark_intel_risk`) のため `jpcite.com` / `[BRAND]` / `[HANDLE]` placeholder で固定する。実名の投入は launch 48h 前に replace-all。
 >
 > 原則: 単独オペレーション (梅田 1 名)。並列ボットなし。全ツイート・HN 投稿は自分の手で enter。
 
@@ -37,11 +37,11 @@
 
 | 時刻 | ゲート | アクション | 成功判定 |
 |------|-------|-----------|---------|
-| **07:00** | smoke | `BASE_URL=https://zeimu-kaikei.ai ./scripts/smoke_test.sh` + `python tests/mcp_smoke.py` + `curl -s https://zeimu-kaikei.ai/meta \| jq .total_programs` | 全 probe green / `total_programs >= 6658` / Sentry 過去 12h で P0=0 |
+| **07:00** | smoke | `BASE_URL=https://jpcite.com ./scripts/smoke_test.sh` + `python tests/mcp_smoke.py` + `curl -s https://jpcite.com/meta \| jq .total_programs` | 全 probe green / `total_programs >= 6658` / Sentry 過去 12h で P0=0 |
 | 07:10 | kill switch | Cloudflare WAF Custom rule **`autonomath-emergency-deny`** が Action=LOG / Expression=`(false)` で **pre-create 済み** であることを確認 (`docs/_internal/launch_kill_switch.md` §2 Lever 1)。`flyctl secrets list -a autonomath-api` で `KILL_SWITCH_GLOBAL` が未設定 (off) であることを確認 | rule 存在 + LOG mode / secret 未設定。incident 時に 1 click で BLOCK へ flip 可能な状態 |
 | 07:20 | infra | Fly metrics / Sentry / Stripe webhooks / Cloudflare Analytics / UptimeRobot を 5 tab pin, 2nd screen へ | 全 dashboard リロードでエラーなし |
 | 07:30 | status | `site/status.html` の `Last updated` を今朝にして commit | Pages redeploy < 30s |
-| **08:00** | Zenn 公開 | 長文 (`docs/launch_content.md` Zenn 版) を **scheduled publish**。朝通勤タイミングに当てる | Zenn 記事 URL 確定、記事内 canonical は `zeimu-kaikei.ai/articles/launch-announce` |
+| **08:00** | Zenn 公開 | 長文 (`docs/launch_content.md` Zenn 版) を **scheduled publish**。朝通勤タイミングに当てる | Zenn 記事 URL 確定、記事内 canonical は `jpcite.com/articles/launch-announce` |
 | 08:45 | pre-X | X thread 1/8-8/8 の本文を `drafts/` から最終確認、タイポ検索 (「補助金」「排他」「一次資料」) | draft 8 本準備完 |
 | **09:00** | X 投下 | thread 1/8 を post、以降 30-60 秒間隔で 2/8-8/8。最終 tweet に Zenn 記事 URL + GitHub URL | thread 成立、RT/いいね の初期 pulse を監視 |
 | 09:15 | @mention | Thread 最終 tweet で 1 名だけ柔らかく @ (不特定多数への bomb ではなく、自然な紹介) | @ は最大 2 名まで (`tone check` §6) |
@@ -56,7 +56,7 @@
 | **17:00** | Discord / Slack | MCP 系コミュニティに告知 (「要 invite 確認」マーク、§4 を参照)。一社一 post、クロスポスト禁止 | 3 箇所まで、全て明示的な self-promo 可否確認後に post |
 | 18:00 | dinner + breath | 1h 強制離脱。端末閉じる | exhaustion によるテキスト事故防止 |
 | **19:00** | Reddit | `r/programming` にタイトル + 1 段落 + GitHub link。LocalLLaMA は MCP の fit を投稿前に自問 (MCP は local-LLM より Claude Desktop 主体、無理筋なら skip) | 投稿 or 静かに skip、どちらも acceptable |
-| 20:00 | HN pre-flight | HN draft 最終確認 (`docs/launch_assets/hn_show_post.md`)。title 80 chars 以下、URL `https://zeimu-kaikei.ai` 200、GitHub placeholder 置換済、first comment 800-1500 chars。`https://news.ycombinator.com/showhn.html` 再読 | 22:30 投下前の最終 sanity check |
+| 20:00 | HN pre-flight | HN draft 最終確認 (`docs/launch_assets/hn_show_post.md`)。title 80 chars 以下、URL `https://jpcite.com` 200、GitHub placeholder 置換済、first comment 800-1500 chars。`https://news.ycombinator.com/showhn.html` 再読 | 22:30 投下前の最終 sanity check |
 | **21:00-22:00** | partial post-mortem | 数値を集計 (unique visitors / POST /v1/billing/checkout / keys issued / 5xx / 429 / p95) + 今日の surprise 3 本を `research/retro/d+0_pre_hn.md` に書く | HN 投下前の baseline retro。P0 があれば quick-fix |
 | **22:30** | **HN 投下 (LEAD)** | "Show HN: AutonoMath – ..." を `https://news.ycombinator.com/submit` に投下。**(09:30 ET = HN morning peak window)** | HN item id を控える、score 3 以上で front page bucket に入ったと判定 |
 | 22:45 | HN body | 自分で first comment を投下 (2 段落、ボディ補足 + 技術 Q&A 受付文)。X thread に reply で `Also on HN: [URL]` (1 回のみ) | 他者 Q&A を埋没防止 |
@@ -151,8 +151,8 @@
 
 手順 (所要 4-7 min):
 
-1. **確認** — ローカル DNS 問題を除外 (`dig zeimu-kaikei.ai @1.1.1.1` 他 resolver)
-2. **DNS flip** — Cloudflare dashboard → `zeimu-kaikei.ai` → DNS → apex レコードを CNAME `[BRAND]-fallback.pages.dev` に編集 (proxied, TTL 300)
+1. **確認** — ローカル DNS 問題を除外 (`dig jpcite.com @1.1.1.1` 他 resolver)
+2. **DNS flip** — Cloudflare dashboard → `jpcite.com` → DNS → apex レコードを CNAME `[BRAND]-fallback.pages.dev` に編集 (proxied, TTL 300)
 3. **status.html 更新** — `site/status.html` の `active` class を `.state.ok` → `.state.down` に移す、commit + push → Pages auto-deploy
 4. **HN / X thread に 1 行状態告知** — 「temporary fallback, API endpoints are 503, landing is static」
 5. **復旧** — Fly `status=started + health passing` を確認後、DNS を Fly A/AAAA に戻し、status.html を `.ok` に戻す
@@ -206,7 +206,7 @@
 - **候補媒体 (ジャンル / URL)**: TECHPLAY (イベント・技術記事連携), ITmedia (政府 DX / SaaS 取材), 日経 xTECH (regtech / 公共 DX), Publickey (インフラ/SaaS 個人運営, dev 層リーチ), ThinkIT (国内 SaaS 紹介)
 - **reporter 名**: **要調査 / 要 実名確認**。launch 週より前に `research/press_contacts.md` を作成して「政府 DX」「補助金」「regtech」「MCP」のビート担当を特定する。本 doc 時点では実名ハルシネーションを避けるため空欄。
 
-**アプローチ禁止**: cold DM でリプライ乞食。**やること**は、Zenn 記事末尾と GitHub README 下部に「取材・寄稿歓迎、hello@zeimu-kaikei.ai」を 1 行、それだけ。
+**アプローチ禁止**: cold DM でリプライ乞食。**やること**は、Zenn 記事末尾と GitHub README 下部に「取材・寄稿歓迎、hello@jpcite.com」を 1 行、それだけ。
 
 ### 5.2 Partnership DM from "not competitor" side
 

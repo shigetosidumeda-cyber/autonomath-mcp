@@ -9,9 +9,10 @@
   per-program GovernmentService / LoanOrCredit approach (generated
   separately at site/structured/*.jsonld, not inlined here).
 
-  DOMAIN placeholder: the `{% raw %}...{% endraw %}` block emits the
-  literal string `{{DOMAIN}}` so the deploy pipeline (or `envsubst`) can
-  do the one-shot substitution post-rebrand.
+  Domain: resolved at build time via `config.extra.domain` (the `extra`
+  block in mkdocs.yml). The legacy `{{DOMAIN}}` envsubst placeholder
+  leaked literal text in rendered JSON-LD; do NOT reintroduce it. To
+  swap domains post-launch, edit `extra.domain` in mkdocs.yml.
 
   Count invariants (must match landing page + pricing + server.json):
     - programs           11,684  (searchable; full table incl. 公開保留 = 14,472)
@@ -28,8 +29,9 @@
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app",
-      "name": "AutonoMath",
+      "@id": "{{ config.extra.domain }}/docs/#app",
+      "name": "jpcite",
+      "alternateName": "税務会計AI",
       "applicationCategory": "DeveloperApplication",
       "applicationSubCategory": "API",
       "operatingSystem": "any",
@@ -51,28 +53,28 @@
     },
     {
       "@type": "WebSite",
-      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#site",
-      "name": "AutonoMath docs",
-      "url": "{% raw %}{{DOMAIN}}{% endraw %}/docs/",
+      "@id": "{{ config.extra.domain }}/docs/#site",
+      "name": "jpcite ドキュメント",
+      "url": "{{ config.extra.domain }}/docs/",
       "inLanguage": "ja",
-      "publisher": {"@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app"},
+      "publisher": {"@id": "{{ config.extra.domain }}/docs/#app"},
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "{% raw %}{{DOMAIN}}{% endraw %}/docs/?q={search_term_string}"
+          "urlTemplate": "{{ config.extra.domain }}/docs/?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       }
     },
     {
       "@type": "Dataset",
-      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#dataset",
-      "name": "AutonoMath — 日本の制度データセット",
-      "alternateName": "AutonoMath Japanese Public-Program Dataset",
+      "@id": "{{ config.extra.domain }}/docs/#dataset",
+      "name": "jpcite — 日本の制度データセット",
+      "alternateName": "jpcite 日本の公的制度データセット",
       "description": "日本の公的制度 (補助金・助成金・融資・税制優遇・認定) 11,684 件 + 採択事例 2,286 + 融資 108 (担保・個人保証人・第三者保証人の三軸分解) + 行政処分 1,185 件 の正規化データセット。経済産業省・農林水産省・中小企業庁・日本政策金融公庫・都道府県・市町村の一次資料から収集、集約サイト除外。全件 source_url + fetched_at を付与、181 本の排他・前提ルールつき。法令データ (e-Gov CC-BY) を継続的にロード中。データセットは継続的に拡張中。",
-      "url": "{% raw %}{{DOMAIN}}{% endraw %}/docs/",
-      "sameAs": ["{% raw %}{{DOMAIN}}{% endraw %}/", "https://pypi.org/project/autonomath-mcp/"],
+      "url": "{{ config.extra.domain }}/docs/",
+      "sameAs": ["{{ config.extra.domain }}/", "https://pypi.org/project/autonomath-mcp/"],
       "keywords": [
         "補助金", "助成金", "融資", "税制優遇", "認定制度", "行政処分", "採択事例",
         "subsidy", "grant", "loan", "tax incentive", "certification", "Japan", "public programs",
@@ -81,12 +83,12 @@
       "creator": {
         "@type": "Organization",
         "name": "Bookyou株式会社",
-        "url": "{% raw %}{{DOMAIN}}{% endraw %}/",
+        "url": "{{ config.extra.domain }}/",
         "identifier": "T8010001213708",
         "email": "info@bookyou.net"
       },
-      "publisher": {"@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app"},
-      "license": "{% raw %}{{DOMAIN}}{% endraw %}/tos.html",
+      "publisher": {"@id": "{{ config.extra.domain }}/docs/#app"},
+      "license": "{{ config.extra.domain }}/tos.html",
       "isAccessibleForFree": true,
       "conditionsOfAccess": "匿名 50 req/月 per IP 無料 (JST 月初リセット)、それ以上は ¥3/req 税別 (税込 ¥3.30) 従量課金。",
       "inLanguage": "ja",
@@ -117,12 +119,12 @@
     },
     {
       "@type": "WebAPI",
-      "@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#webapi",
-      "name": "AutonoMath REST + MCP API",
+      "@id": "{{ config.extra.domain }}/docs/#webapi",
+      "name": "jpcite REST + MCP API",
       "description": "日本の公的制度データを AI エージェント / 開発者向けに 1 API で提供。89 MCP tools at default gates — 39 jpintel (15 基本: search / get / batch × programs + case_studies + loan_programs + enforcement_cases, exclusions, meta + 7 one-shot: smb_starter_pack / subsidy_combo_finder / deadline_calendar / dd_profile_am / similar_cases / regulatory_prep_pack / subsidy_roadmap_3yr + 拡張: 法令 [9,484 行・継続ロード中] / 税務ruleset [50 行 live] / 適格事業者 [PDL v1.0, 13,801 行 delta] / 判例 [2,065 行 live] / 入札 [362 行 live] + cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check) + 50 autonomath (V1: entity-fact DB across tax measures / certifications / laws / authorities / loans / mutual insurance / list_tax_sunset_alerts + メタデータ tools 4: annotations / validate / provenance entity / provenance fact + 静的データセット tools + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine + deep_health_am — 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases) + 多数の REST endpoints。MCP protocol 2025-06-18, stdio transport。",
-      "documentation": "{% raw %}{{DOMAIN}}{% endraw %}/docs/",
-      "termsOfService": "{% raw %}{{DOMAIN}}{% endraw %}/tos.html",
-      "provider": {"@id": "{% raw %}{{DOMAIN}}{% endraw %}/docs/#app"},
+      "documentation": "{{ config.extra.domain }}/docs/",
+      "termsOfService": "{{ config.extra.domain }}/tos.html",
+      "provider": {"@id": "{{ config.extra.domain }}/docs/#app"},
       "endpointURL": "https://api.autonomath.ai/v1/",
       "endpointDescription": "https://api.autonomath.ai/v1/openapi.json",
       "inLanguage": "ja",

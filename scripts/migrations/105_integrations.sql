@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS integration_accounts (
     -- Fernet-encrypted JSON blob with provider-specific fields:
     --   google_sheets: {"refresh_token":"...","access_token":"...","expires_at":"ISO8601","scope":"..."}
     --   kintone:       {"domain":"acme.cybozu.com","app_id":42,"api_token":"..."}
-    --   postmark_inbound: {"reply_from":"query@parse.zeimu-kaikei.ai"} (no
+    --   postmark_inbound: {"reply_from":"query@parse.jpcite.com"} (no
     --                     secret — row is a presence-flag for routing)
     encrypted_blob  BLOB NOT NULL,
     -- Plaintext provider-side identity for at-a-glance triage (NOT a

@@ -5,29 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
-<title>Dashboard — 税務会計AI</title>
-<meta name="description" content="税務会計AI user dashboard. Manage API keys, monitor usage, set monthly spend caps, view billing history, and configure law-revision alert subscriptions. Sign-in required.">
+<title>Dashboard — jpcite</title>
+<meta name="description" content="jpcite user dashboard. Manage API keys, monitor usage, set monthly spend caps, view billing history, and configure law-revision alert subscriptions. Sign-in required.">
 <meta name="robots" content="noindex,nofollow">
 
-<meta property="og:title" content="Dashboard — 税務会計AI">
-<meta property="og:description" content="税務会計AI user dashboard (sign-in required).">
+<meta property="og:title" content="Dashboard — jpcite">
+<meta property="og:description" content="jpcite user dashboard (sign-in required).">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/en/dashboard.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta property="og:url" content="https://jpcite.com/en/dashboard.html">
+<meta property="og:image" content="https://jpcite.com/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dashboard — 税務会計AI">
-<meta name="twitter:description" content="税務会計AI user dashboard (sign-in required).">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta name="twitter:title" content="Dashboard — jpcite">
+<meta name="twitter:description" content="jpcite user dashboard (sign-in required).">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-square.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/en/dashboard.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/dashboard.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/dashboard.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/dashboard.html">
+<link rel="canonical" href="https://jpcite.com/en/dashboard.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/dashboard.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/dashboard.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -39,8 +39,8 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://zeimu-kaikei.ai/en/"},
-    {"@type": "ListItem", "position": 2, "name": "Dashboard", "item": "https://zeimu-kaikei.ai/en/dashboard.html"}
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Dashboard", "item": "https://jpcite.com/en/dashboard.html"}
   ]
 }
 </script>
@@ -49,28 +49,26 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "税務会計AI user dashboard",
-  "url": "https://zeimu-kaikei.ai/en/dashboard.html",
+  "name": "jpcite user dashboard",
+  "url": "https://jpcite.com/en/dashboard.html",
   "inLanguage": "en",
   "isPartOf": {
     "@type": "WebSite",
-    "name": "税務会計AI",
-    "url": "https://zeimu-kaikei.ai/"
+    "name": "jpcite",
+    "alternateName": "税務会計AI",
+    "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://zeimu-kaikei.ai/en/",
+    "url": "https://jpcite.com/en/",
     "identifier": "T8010001213708"
   }
 }
 </script>
 
 <!-- dashboard.js wires this page to /v1/session + /v1/me/*. Pure ES2020, no
-     build step. Relative URLs = same-origin. If the dashboard is served from
-     a different host than the API, set window.AUTONOMATH_API_BASE
-     (legacy alias: window.JPINTEL_API_BASE) before loading dashboard.js
-     and ensure CORS + allow_credentials on the API. -->
+     build step. Relative URLs = same-origin. -->
 <script defer src="../dashboard.js"></script>
 <script defer src="../dashboard_v2.js"></script>
 <style>
@@ -165,376 +163,368 @@
 <a class="skip-link" href="#main">Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="税務会計AI home">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-      <a href="getting-started.html">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="audiences/">Audiences</a>
-      <a href="dashboard.html" aria-current="page">Dashboard</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="../dashboard.html" lang="ja" hreflang="ja">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="dashboard.html" lang="en" hreflang="en" aria-current="page">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="index.html" aria-label="jpcite home">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="Primary navigation">
+ <a href="about.html">About</a>
+ <a href="products.html">Products</a>
+ <a href="getting-started.html">Docs</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="audiences/">Audiences</a>
+ <a href="dashboard.html" aria-current="page">Dashboard</a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="../dashboard.html" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="dashboard.html" lang="en" hreflang="en" aria-current="page">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
-  <section class="dash">
-    <div class="container">
+ <section class="dash">
+ <div class="container">
 
-      <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
-        <a href="index.html">Home</a> &raquo; <span aria-current="page">Dashboard</span>
-      </nav>
+ <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+ <a href="index.html">Home</a> &raquo; <span aria-current="page">Dashboard</span>
+ </nav>
 
-      <!-- Dunning banner (past_due / unpaid / canceled) -->
-      <div id="dash-dunning-banner" role="alert" hidden
-           style="display:none;margin:0 0 18px;padding:16px;border-radius:8px;border:1px solid #b91c1c;background:#fff0f0;color:#7f1d1d;font-size:14px;line-height:1.55;">
-        <span id="dash-dunning-msg" style="display:block;margin:0 0 10px;font-weight:600;"></span>
-        <a id="dash-dunning-portal" href="#" role="button"
-           style="display:inline-block;padding:12px 18px;border-radius:6px;background:#b91c1c;color:#fff;font-weight:600;text-decoration:none;font-size:13px;min-height:44px;">Open Stripe portal</a>
-      </div>
+ <!-- Dunning banner (past_due / unpaid / canceled) -->
+ <div id="dash-dunning-banner" role="alert" hidden
+ style="display:none;margin:0 0 18px;padding:16px;border-radius:8px;border:1px solid #b91c1c;background:#fff0f0;color:#7f1d1d;font-size:14px;line-height:1.55;">
+ <span id="dash-dunning-msg" style="display:block;margin:0 0 10px;font-weight:600;"></span>
+ <a id="dash-dunning-portal" href="#" role="button"
+ style="display:inline-block;padding:12px 18px;border-radius:6px;background:#b91c1c;color:#fff;font-weight:600;text-decoration:none;font-size:13px;min-height:44px;">Open Stripe portal</a>
+ </div>
 
-      <!-- One-time new-key reveal -->
-      <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
-           style="display:none;">
-        <p style="margin:0 0 10px;font-weight:700;font-size:14px;">This is your API key. Copy it now — it will not be shown again.</p>
-        <code id="dash-newkey-value" class="newkey-value"></code>
-        <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">Copy key</button>
-        <button type="button" id="dash-newkey-dismiss" class="btn-ghost">Dismiss</button>
-      </div>
+ <!-- One-time new-key reveal -->
+ <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
+ style="display:none;">
+ <p style="margin:0 0 10px;font-weight:700;font-size:14px;">This is your API key. Copy it now — it will not be shown again.</p>
+ <code id="dash-newkey-value" class="newkey-value"></code>
+ <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">Copy key</button>
+ <button type="button" id="dash-newkey-dismiss" class="btn-ghost">Dismiss</button>
+ </div>
 
-      <h1>Dashboard</h1>
-      <p class="sub">signed in as <code>—</code></p>
+ <h1>Dashboard</h1>
+ <p class="sub">signed in as <code>—</code></p>
 
-      <nav class="dash-nav" aria-label="Dashboard">
-        <a href="dashboard.html" class="active" aria-current="page">Overview</a>
-        <a href="#api-key-section" title="Jump to API key section">API key</a>
-        <a href="#billing-section" title="Jump to billing section">Billing</a>
-        <a href="#dash2-billing-history" title="Stripe-synced invoice list, CSV/JSON download">Invoices</a>
-        <button type="button" class="link-button">Log out</button>
-      </nav>
+ <nav class="dash-nav" aria-label="Dashboard">
+ <a href="dashboard.html" class="active" aria-current="page">Overview</a>
+ <a href="#api-key-section" title="Jump to API key section">API key</a>
+ <a href="#billing-section" title="Jump to billing section">Billing</a>
+ <a href="#dash2-billing-history" title="Stripe-synced invoice list, CSV/JSON download">Invoices</a>
+ <button type="button" class="link-button">Log out</button>
+ </nav>
 
-      <!-- ============================================================== -->
-      <!-- Paying-customer onboarding banner.                              -->
-      <!-- Shown to anonymous / first-time visitors. Routes to Stripe      -->
-      <!-- Checkout via /v1/billing/start_checkout (issues an API key on   -->
-      <!-- successful payment). Once the user has an active subscription,  -->
-      <!-- dashboard.js hides this block and shows the live billing card.  -->
-      <!-- ============================================================== -->
+ <!-- ============================================================== -->
+ <!-- Paying-customer onboarding banner.                              -->
+ <!-- Shown to anonymous / first-time visitors. Routes to Stripe      -->
+ <!-- Checkout via /v1/billing/start_checkout (issues an API key on   -->
+ <!-- successful payment). Once the user has an active subscription,  -->
+ <!-- dashboard.js hides this block and shows the live billing card.  -->
+ <!-- ============================================================== -->
 
-      <section id="checkout-banner" class="checkout-banner" aria-labelledby="checkout-title">
-        <div>
-          <h2 id="checkout-title">Start using the metered API</h2>
-          <p>
-            Pay-as-you-go at ¥3/req tax exclusive (¥3.30 incl.). No tier, no
-            seat fee, no minimum. Stripe Checkout issues your API key on
-            successful payment.
-          </p>
-        </div>
-        <a class="btn" href="/v1/billing/start_checkout?lang=en&amp;return=https%3A%2F%2Fzeimu-kaikei.ai%2Fen%2Fsuccess.html" id="dash-checkout-cta" role="button">Continue to Stripe Checkout &rarr;</a>
-      </section>
+ <section id="checkout-banner" class="checkout-banner" aria-labelledby="checkout-title">
+ <div>
+ <h2 id="checkout-title">Start using the metered API</h2>
+ <p>
+ Pay-as-you-go at ¥3/req tax exclusive (¥3.30 incl.). No tier, no
+ seat fee, no minimum. Stripe Checkout issues your API key on
+ successful payment.
+ </p>
+ </div>
+ <a class="btn" href="/v1/billing/start_checkout?lang=en&amp;return=https%3A%2F%2Fjpcite.com%2Fen%2Fsuccess.html" id="dash-checkout-cta" role="button">Continue to Stripe Checkout &rarr;</a>
+ </section>
 
-      <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
-        <p id="quota-counter-label" class="stat-label">This month's quota (anonymous)</p>
-        <p class="quota-counter-headline">
-          <span class="quota-counter-value">0</span>
-          <span class="unit"> / <span class="quota-counter-limit">—</span> calls this month</span>
-          <span class="quota-counter-pct"></span>
-        </p>
-        <div class="quota-counter-bar"
-             role="progressbar"
-             aria-label="Monthly API call quota (resets JST first-of-month 00:00)"
-             aria-valuenow="0"
-             aria-valuemin="0"
-             aria-valuemax="100">
-          <div class="quota-counter-fill"></div>
-        </div>
-        <p class="quota-counter-note">resets at 00:00 JST on the 1st of each month</p>
-      </section>
+ <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
+ <p id="quota-counter-label" class="stat-label">This month's quota (anonymous)</p>
+ <p class="quota-counter-headline">
+ <span class="quota-counter-value">0</span>
+ <span class="unit"> / <span class="quota-counter-limit">—</span> calls this month</span>
+ <span class="quota-counter-pct"></span>
+ </p>
+ <div class="quota-counter-bar"
+ role="progressbar"
+ aria-label="Monthly API call quota (resets JST first-of-month 00:00)"
+ aria-valuenow="0"
+ aria-valuemin="0"
+ aria-valuemax="100">
+ <div class="quota-counter-fill"></div>
+ </div>
+ <p class="quota-counter-note">resets at 00:00 JST on the 1st of each month</p>
+ </section>
 
-      <p id="dash-period-end" class="stat-note" hidden
-         style="display:none;margin:0 0 16px;font-weight:600;color:var(--text);">
-        Current billing period ends <span id="dash-period-end-date">—</span>
-      </p>
+ <p id="dash-period-end" class="stat-note" hidden
+ style="display:none;margin:0 0 16px;font-weight:600;color:var(--text);">
+ Current billing period ends <span id="dash-period-end-date">—</span>
+ </p>
 
-      <div class="stat-grid">
-        <div class="stat-card">
-          <p class="stat-label">This month</p>
-          <p class="stat-value">— <span class="unit">calls</span></p>
-          <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
-          <p class="stat-note">Loading… Usage is metered ¥3/req (¥3.30 incl.). No monthly cap.</p>
-        </div>
-        <div class="stat-card">
-          <p class="stat-label">Last 7 days</p>
-          <p class="stat-value">— <span class="unit">calls</span></p>
-          <p class="stat-note">Loading… Reflects your usage.</p>
-        </div>
-      </div>
+ <div class="stat-grid">
+ <div class="stat-card">
+ <p class="stat-label">This month</p>
+ <p class="stat-value">— <span class="unit">calls</span></p>
+ <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
+ <p class="stat-note">Loading… Usage is metered ¥3/req (¥3.30 incl.). No monthly cap.</p>
+ </div>
+ <div class="stat-card">
+ <p class="stat-label">Last 7 days</p>
+ <p class="stat-value">— <span class="unit">calls</span></p>
+ <p class="stat-note">Loading… Reflects your usage.</p>
+ </div>
+ </div>
 
-      <div class="chart-card">
-        <div class="chart-title">
-          <span>Last 30 days</span>
-          <span class="muted" id="dash-chart-peak">Loading…</span>
-        </div>
-        <svg class="chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="30-day daily call chart">
-          <!-- Bars are populated by dashboard.js from /v1/me/usage. -->
-        </svg>
-        <p class="chart-axis"><span id="dash-chart-start">—</span><span id="dash-chart-end">—</span></p>
-        <p id="dash-projection" class="stat-note" style="margin:14px 0 0;font-weight:600;color:var(--text);"></p>
-      </div>
+ <div class="chart-card">
+ <div class="chart-title">
+ <span>Last 30 days</span>
+ <span class="muted" id="dash-chart-peak">Loading…</span>
+ </div>
+ <svg class="chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="30-day daily call chart">
+ <!-- Bars are populated by dashboard.js from /v1/me/usage. -->
+ </svg>
+ <p class="chart-axis"><span id="dash-chart-start">—</span><span id="dash-chart-end">—</span></p>
+ <p id="dash-projection" class="stat-note" style="margin:14px 0 0;font-weight:600;color:var(--text);"></p>
+ </div>
 
-      <div class="keybox" id="api-key-section">
-        <p class="label">Your API key</p>
-        <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
-        <p class="hash-prefix">hash prefix: ————————</p>
-        <button class="btn-danger" id="dash-rotate-btn" type="button">Rotate key</button>
-        <button class="btn-ghost" id="dash-copy-btn" type="button">Copy prefix</button>
-        <p class="stat-note" style="margin-top:12px">Rotation invalidates the old key immediately. Update your clients before rotating.</p>
-      </div>
+ <div class="keybox" id="api-key-section">
+ <p class="label">Your API key</p>
+ <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
+ <p class="hash-prefix">hash prefix: ————————</p>
+ <button class="btn-danger" id="dash-rotate-btn" type="button">Rotate key</button>
+ <button class="btn-ghost" id="dash-copy-btn" type="button">Copy prefix</button>
+ <p class="stat-note" style="margin-top:12px">Rotation invalidates the old key immediately. Update your clients before rotating.</p>
+ </div>
 
-      <div class="stat-card" id="billing-section" style="margin:0 0 16px">
-        <p class="stat-label">Billing</p>
-        <p class="stat-value" style="font-size:20px" data-billing-headline>Loading…</p>
-        <p class="stat-note" style="margin:8px 0 14px">Pay-as-you-go: ¥3/req tax exclusive (¥3.30 incl.). No fixed monthly fee, no minimum, no tier. Qualified invoices download from the Stripe Customer Portal.</p>
-        <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button" style="min-height:44px;display:inline-flex;align-items:center;">Open Stripe Customer Portal &rarr;</a>
-        <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
-          When you no longer need the service, <strong>cancel the subscription</strong> via the Stripe Customer Portal.
-          API access remains valid through the end of the current month, with usage that month billed at ¥3/req.
-        </p>
-      </div>
+ <div class="stat-card" id="billing-section" style="margin:0 0 16px">
+ <p class="stat-label">Billing</p>
+ <p class="stat-value" style="font-size:20px" data-billing-headline>Loading…</p>
+ <p class="stat-note" style="margin:8px 0 14px">Pay-as-you-go: ¥3/req tax exclusive (¥3.30 incl.). No fixed monthly fee, no minimum, no tier. Qualified invoices download from the Stripe Customer Portal.</p>
+ <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button" style="min-height:44px;display:inline-flex;align-items:center;">Open Stripe Customer Portal &rarr;</a>
+ <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
+ When you no longer need the service, <strong>cancel the subscription</strong> via the Stripe Customer Portal.
+ API access remains valid through the end of the current month, with usage that month billed at ¥3/req.
+ </p>
+ </div>
 
-      <!-- ============================================================== -->
-      <!-- Bearer-authenticated views (paste-key flow).                    -->
-      <!-- dashboard_v2.js reads localStorage.am_api_key.                  -->
-      <!-- ============================================================== -->
+ <!-- ============================================================== -->
+ <!-- Bearer-authenticated views (paste-key flow).                    -->
+ <!-- dashboard_v2.js reads localStorage.am_api_key.                  -->
+ <!-- ============================================================== -->
 
-      <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
-        <p class="stat-label">Usage details (paste API key)</p>
-        <p class="stat-note" style="margin:0 0 12px;">
-          Paste your API key. It is stored in browser localStorage and sent to
-          /v1/me/dashboard as a Bearer token. For server-side cookie sessions,
-          use the <code>Sign in</code> flow instead.
-        </p>
-        <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
-          <label for="dash2-key-input" class="visually-hidden">API key</label>
-          <input id="dash2-key-input" type="password" inputmode="text"
-                 placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                 style="flex:1;min-width:240px;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;min-height:44px;">
-          <button type="submit" class="btn btn-primary" style="min-height:44px;">Load dashboard</button>
-          <button type="button" id="dash2-key-clear" class="btn-ghost">Clear</button>
-        </form>
-        <p id="dash2-key-status" class="stat-note" style="margin:8px 0 0;color:var(--text-muted);"></p>
-      </section>
+ <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
+ <p class="stat-label">Usage details (paste API key)</p>
+ <p class="stat-note" style="margin:0 0 12px;">
+ Paste your API key. It is stored in browser localStorage and sent to
+ /v1/me/dashboard as a Bearer token. For server-side cookie sessions,
+ use the <code>Sign in</code> flow instead.
+ </p>
+ <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
+ <label for="dash2-key-input" class="visually-hidden">API key</label>
+ <input id="dash2-key-input" type="password" inputmode="text"
+ placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ style="flex:1;min-width:240px;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;min-height:44px;">
+ <button type="submit" class="btn btn-primary" style="min-height:44px;">Load dashboard</button>
+ <button type="button" id="dash2-key-clear" class="btn-ghost">Clear</button>
+ </form>
+ <p id="dash2-key-status" class="stat-note" style="margin:8px 0 0;color:var(--text-muted);"></p>
+ </section>
 
-      <section id="dash2-summary" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">30-day usage (Bearer)</p>
-        <p class="stat-value" id="dash2-summary-headline">— calls / ¥— spent</p>
-        <div class="quota-bar" aria-hidden="true"><div class="quota-fill" id="dash2-cap-fill" style="width:0%"></div></div>
-        <p class="stat-note" id="dash2-summary-note">Set a monthly spend cap. The API returns 503 with cap_reached:true once you hit it.</p>
-        <svg id="dash2-spark" class="chart-svg" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="30-day sparkline" style="margin-top:14px;height:60px"></svg>
-        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;">
-          <label for="dash2-cap-input" class="stat-note" style="margin:0;">Monthly cap (¥)</label>
-          <input id="dash2-cap-input" type="number" min="0" step="100"
-                 placeholder="e.g. 10000"
-                 style="width:140px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
-          <button type="button" id="dash2-cap-save" class="btn-ghost">Save cap</button>
-          <button type="button" id="dash2-cap-clear" class="btn-ghost">Remove cap</button>
-        </div>
-      </section>
+ <section id="dash2-summary" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">30-day usage (Bearer)</p>
+ <p class="stat-value" id="dash2-summary-headline">— calls / ¥— spent</p>
+ <div class="quota-bar" aria-hidden="true"><div class="quota-fill" id="dash2-cap-fill" style="width:0%"></div></div>
+ <p class="stat-note" id="dash2-summary-note">Set a monthly spend cap. The API returns 503 with cap_reached:true once you hit it.</p>
+ <svg id="dash2-spark" class="chart-svg" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="30-day sparkline" style="margin-top:14px;height:60px"></svg>
+ <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;">
+ <label for="dash2-cap-input" class="stat-note" style="margin:0;">Monthly cap (¥)</label>
+ <input id="dash2-cap-input" type="number" min="0" step="100"
+ placeholder="e.g. 10000"
+ style="width:140px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
+ <button type="button" id="dash2-cap-save" class="btn-ghost">Save cap</button>
+ <button type="button" id="dash2-cap-clear" class="btn-ghost">Remove cap</button>
+ </div>
+ </section>
 
-      <section id="dash2-tool-usage" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">Tool usage — top 10 (last 30 days)</p>
-        <table id="dash2-tool-table" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">Endpoint</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">Calls</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">¥ Amount</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">Avg latency</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-tool-tbody"></tbody>
-        </table>
-      </section>
+ <section id="dash2-tool-usage" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">Tool usage — top 10 (last 30 days)</p>
+ <table id="dash2-tool-table" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">Endpoint</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">Calls</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">¥ Amount</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">Avg latency</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-tool-tbody"></tbody>
+ </table>
+ </section>
 
-      <section id="dash2-billing-history" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">Billing history (Stripe)</p>
-        <p class="stat-note" id="dash2-billing-note" style="margin:0 0 8px;">Synced from the Stripe Customer Portal (5-minute cache).</p>
-        <table id="dash2-billing-table" style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">Period</th>
-              <th scope="col" style="padding:6px 4px;">Status</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">¥ Paid</th>
-              <th scope="col" style="padding:6px 4px;">Invoice</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-billing-tbody"></tbody>
-        </table>
-        <div style="margin-top:10px;display:flex;gap:8px;">
-          <button type="button" id="dash2-billing-csv" class="btn-ghost">Download CSV</button>
-          <button type="button" id="dash2-billing-json" class="btn-ghost">Download JSON</button>
-        </div>
-      </section>
+ <section id="dash2-billing-history" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">Billing history (Stripe)</p>
+ <p class="stat-note" id="dash2-billing-note" style="margin:0 0 8px;">Synced from the Stripe Customer Portal (5-minute cache).</p>
+ <table id="dash2-billing-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">Period</th>
+ <th scope="col" style="padding:6px 4px;">Status</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">¥ Paid</th>
+ <th scope="col" style="padding:6px 4px;">Invoice</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-billing-tbody"></tbody>
+ </table>
+ <div style="margin-top:10px;display:flex;gap:8px;">
+ <button type="button" id="dash2-billing-csv" class="btn-ghost">Download CSV</button>
+ <button type="button" id="dash2-billing-json" class="btn-ghost">Download JSON</button>
+ </div>
+ </section>
 
-      <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">Tool recommendation (intent &rarr; endpoint)</p>
-        <p class="stat-note" style="margin:0 0 10px;">
-          Dev-facing: turn a natural-language intent into one or more
-          <code>/v1/*</code> endpoint candidates. SMB-style chat is routed to
-          the <a href="../line.html">LINE bot</a>.
-        </p>
-        <form id="dash2-rec-form" style="display:flex;gap:8px;flex-wrap:wrap;">
-          <label for="dash2-rec-intent" class="visually-hidden">Intent</label>
-          <input id="dash2-rec-intent" type="text"
-                 placeholder="e.g. capital-investment subsidies, tax credits"
-                 style="flex:1;min-width:240px;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-height:44px;">
-          <button type="submit" class="btn btn-primary">Recommend</button>
-        </form>
-        <ol id="dash2-rec-list" style="margin:12px 0 0;padding:0 0 0 18px;font-size:13px;color:var(--text);"></ol>
-      </section>
+ <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">Tool recommendation (intent &rarr; endpoint)</p>
+ <p class="stat-note" style="margin:0 0 10px;">
+ Dev-facing: turn a natural-language intent into one or more
+ <code>/v1/*</code> endpoint candidates. SMB-style chat is routed to
+ the <a href="../line.html">LINE bot</a>.
+ </p>
+ <form id="dash2-rec-form" style="display:flex;gap:8px;flex-wrap:wrap;">
+ <label for="dash2-rec-intent" class="visually-hidden">Intent</label>
+ <input id="dash2-rec-intent" type="text"
+ placeholder="e.g. capital-investment subsidies, tax credits"
+ style="flex:1;min-width:240px;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-height:44px;">
+ <button type="submit" class="btn btn-primary">Recommend</button>
+ </form>
+ <ol id="dash2-rec-list" style="margin:12px 0 0;padding:0 0 0 18px;font-size:13px;color:var(--text);"></ol>
+ </section>
 
-      <!-- ============================================================== -->
-      <!-- Amendment-alert subscriptions (free for all users).             -->
-      <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (Bearer auth).     -->
-      <!-- ============================================================== -->
+ <!-- ============================================================== -->
+ <!-- Amendment-alert subscriptions (free for all users).             -->
+ <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (Bearer auth).     -->
+ <!-- ============================================================== -->
 
-      <section id="dash2-alerts" class="stat-card" style="margin:0 0 16px;display:none;">
-        <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;color:var(--text);">Law-revision &amp; new-program alerts (free for all customers)</h2>
-        <p class="stat-note" style="margin:0 0 12px;">
-          Proactive Webhook (HTTPS only) or Email notifications on law revisions, new
-          programs, and enforcement actions. Subscriptions are <strong>free</strong>
-          (no add-on charge on top of ¥3/req; available with or without a paid plan).
-          <code>filter_type</code>: <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
-          <code>industry_jsic</code> / <code>all</code>. <code>min_severity</code>:
-          <code>critical</code> (program ended / eligibility changed) /
-          <code>important</code> (amount or scope changed) /
-          <code>info</code> (re-fetch, etc.). See the
-          <a href="/docs/alerts_guide/">alerts guide</a> for details.
-        </p>
+ <section id="dash2-alerts" class="stat-card" style="margin:0 0 16px;display:none;">
+ <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;color:var(--text);">Law-revision &amp; new-program alerts (free for all customers)</h2>
+ <p class="stat-note" style="margin:0 0 12px;">
+ Proactive Webhook (HTTPS only) or Email notifications on law revisions, new
+ programs, and enforcement actions. Subscriptions are <strong>free</strong>
+ (no add-on charge on top of ¥3/req; available with or without a paid plan).
+ <code>filter_type</code>: <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
+ <code>industry_jsic</code> / <code>all</code>. <code>min_severity</code>:
+ <code>critical</code> (program ended / eligibility changed) /
+ <code>important</code> (amount or scope changed) /
+ <code>info</code> (re-fetch, etc.). See the
+ <a href="/docs/alerts_guide/">alerts guide</a> for details.
+ </p>
 
-        <p id="dash2-alerts-banner" role="status" aria-live="polite"
-           style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
+ <p id="dash2-alerts-banner" role="status" aria-live="polite"
+ style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
 
-        <h3 style="font-size:13px;font-weight:600;margin:14px 0 8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Active subscriptions</h3>
-        <table id="dash2-alerts-table" style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">id</th>
-              <th scope="col" style="padding:6px 4px;">filter_type</th>
-              <th scope="col" style="padding:6px 4px;">filter_value</th>
-              <th scope="col" style="padding:6px 4px;">severity</th>
-              <th scope="col" style="padding:6px 4px;">webhook_url</th>
-              <th scope="col" style="padding:6px 4px;">email</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">Delete</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-alerts-tbody"></tbody>
-        </table>
+ <h3 style="font-size:13px;font-weight:600;margin:14px 0 8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Active subscriptions</h3>
+ <table id="dash2-alerts-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">id</th>
+ <th scope="col" style="padding:6px 4px;">filter_type</th>
+ <th scope="col" style="padding:6px 4px;">filter_value</th>
+ <th scope="col" style="padding:6px 4px;">severity</th>
+ <th scope="col" style="padding:6px 4px;">webhook_url</th>
+ <th scope="col" style="padding:6px 4px;">email</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">Delete</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-alerts-tbody"></tbody>
+ </table>
 
-        <h3 style="font-size:13px;font-weight:600;margin:22px 0 8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">New subscription</h3>
-        <form id="dash2-alerts-form" autocomplete="off">
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-            <label for="dash2-alerts-company-url">Company URL (leave blank)</label>
-            <input id="dash2-alerts-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
-          </div>
-          <div>
-            <label for="dash2-alerts-filter-type" class="stat-note" style="margin:0 0 4px;display:block;">filter_type <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-            <select id="dash2-alerts-filter-type" required aria-required="true"
-                    style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);min-height:44px;">
-              <option value="tool">tool</option>
-              <option value="law_id" selected>law_id</option>
-              <option value="program_id">program_id</option>
-              <option value="industry_jsic">industry_jsic</option>
-              <option value="all">all</option>
-            </select>
-          </div>
-          <div>
-            <label for="dash2-alerts-filter-value" class="stat-note" style="margin:0 0 4px;display:block;">filter_value</label>
-            <input id="dash2-alerts-filter-value" type="text"
-                   placeholder="e.g. law_345AC0000000050"
-                   style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
-          </div>
-          <div>
-            <label for="dash2-alerts-severity" class="stat-note" style="margin:0 0 4px;display:block;">min_severity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-            <select id="dash2-alerts-severity" required aria-required="true"
-                    style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);min-height:44px;">
-              <option value="critical">critical (program ended / eligibility)</option>
-              <option value="important" selected>important (amount / scope)</option>
-              <option value="info">info (cosmetic incl.)</option>
-            </select>
-          </div>
-          <div>
-            <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">webhook_url (https only, optional)</label>
-            <input id="dash2-alerts-webhook" type="url"
-                   placeholder="https://hooks.example.com/autonomath"
-                   pattern="https://.*"
-                   style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
-          </div>
-          <div>
-            <label for="dash2-alerts-email" class="stat-note" style="margin:0 0 4px;display:block;">email (optional)</label>
-            <input id="dash2-alerts-email" type="email"
-                   placeholder="ops@example.com"
-                   style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-height:44px;">
-          </div>
-          <div>
-            <button type="submit" id="dash2-alerts-submit" class="btn btn-primary"
-                    style="width:100%;padding:12px 14px;min-height:44px;">Add</button>
-          </div>
-        </form>
-        <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
-          At least one of webhook_url or email is required.
-          Internal IPs (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) are rejected at registration.
-        </p>
-      </section>
+ <h3 style="font-size:13px;font-weight:600;margin:22px 0 8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">New subscription</h3>
+ <form id="dash2-alerts-form" autocomplete="off">
+ <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+ <label for="dash2-alerts-company-url">Company URL (leave blank)</label>
+ <input id="dash2-alerts-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+ </div>
+ <div>
+ <label for="dash2-alerts-filter-type" class="stat-note" style="margin:0 0 4px;display:block;">filter_type <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <select id="dash2-alerts-filter-type" required aria-required="true"
+ style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);min-height:44px;">
+ <option value="tool">tool</option>
+ <option value="law_id" selected>law_id</option>
+ <option value="program_id">program_id</option>
+ <option value="industry_jsic">industry_jsic</option>
+ <option value="all">all</option>
+ </select>
+ </div>
+ <div>
+ <label for="dash2-alerts-filter-value" class="stat-note" style="margin:0 0 4px;display:block;">filter_value</label>
+ <input id="dash2-alerts-filter-value" type="text"
+ placeholder="e.g. law_345AC0000000050"
+ style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
+ </div>
+ <div>
+ <label for="dash2-alerts-severity" class="stat-note" style="margin:0 0 4px;display:block;">min_severity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <select id="dash2-alerts-severity" required aria-required="true"
+ style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);min-height:44px;">
+ <option value="critical">critical (program ended / eligibility)</option>
+ <option value="important" selected>important (amount / scope)</option>
+ <option value="info">info (cosmetic incl.)</option>
+ </select>
+ </div>
+ <div>
+ <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">webhook_url (https only, optional)</label>
+ <input id="dash2-alerts-webhook" type="url"
+ placeholder="https://hooks.example.com/autonomath"
+ pattern="https://.*"
+ style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
+ </div>
+ <div>
+ <label for="dash2-alerts-email" class="stat-note" style="margin:0 0 4px;display:block;">email (optional)</label>
+ <input id="dash2-alerts-email" type="email"
+ placeholder="ops@example.com"
+ style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-height:44px;">
+ </div>
+ <div>
+ <button type="submit" id="dash2-alerts-submit" class="btn btn-primary"
+ style="width:100%;padding:12px 14px;min-height:44px;">Add</button>
+ </div>
+ </form>
+ <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
+ At least one of webhook_url or email is required.
+ Internal IPs (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) are rejected at registration.
+ </p>
+ </section>
 
-      <div class="actions-row">
-        <a href="getting-started.html">Docs</a>
-        <a href="mailto:info@bookyou.net">Contact support</a>
-        <a href="../tos.html">Terms</a>
-        <a href="privacy.html">Privacy</a>
-      </div>
+ <div class="actions-row">
+ <a href="getting-started.html">Docs</a>
+ <a href="mailto:info@bookyou.net">Contact support</a>
+ <a href="../tos.html">Terms</a>
+ <a href="privacy.html">Privacy</a>
+ </div>
 
-    </div>
-  </section>
+ </div>
+ </section>
 </main>
 
 <div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
-    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
-    <a href="/en/tos.html">Terms</a> |
-    <a href="/en/privacy.html">Privacy</a> |
-    <a href="/docs/api-reference/">OpenAPI</a> |
-    Data last refreshed: <time data-trust-fresh datetime="2026-04-25">Apr 25, 2026</time>
-  </p>
 </div>
 
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">Japanese public-program API</p>
-    </div>
-    <nav class="footer-nav" aria-label="Footer">
-      <a href="about.html">About</a>
-      <a href="getting-started.html">Getting started</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="../tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Getting started</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="../tokushoho.html">Legal (JP)</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
 </footer>
 
 <script src="/assets/feedback-widget.js" defer></script>

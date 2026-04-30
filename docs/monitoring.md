@@ -1,4 +1,4 @@
-# 税務会計AI — Monitoring & Alerting Runbook
+# jpcite — Monitoring & Alerting Runbook
 
 Internal ops reference. Solo operator (梅田茂利, info@bookyou.net). Zero-touch, no dashboards to watch 24/7.
 
@@ -297,7 +297,7 @@ Live DB at drill time: 12,038 programs rows. All 7 backups were readable and str
 
 ### Fly.io region outage (Tokyo / nrt)
 
-**Honest assessment:** 税務会計AI runs single-region (nrt), single machine (`min_machines_running = 1`). There is **no hot failover**. During a Fly.io nrt outage:
+**Honest assessment:** jpcite runs single-region (nrt), single machine (`min_machines_running = 1`). There is **no hot failover**. During a Fly.io nrt outage:
 
 - The API (`/v1/*`, `/meta`, MCP server) is **unavailable**.
 - Cloudflare Pages static site (landing, pricing, docs) remains up and returns **HTTP 503** from a static `status.json` for API routes.

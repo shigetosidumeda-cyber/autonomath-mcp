@@ -169,7 +169,7 @@ ingest は **authority 単位で独立**。1 省庁の 404 / 500 / layout 変更
   一致禁止なら skip + `skip_reason=robots`。
 - **1 req/sec/host**、連続 60 req で 15s 追加クールダウン。gov 系で
   robots.txt が無いホストも同レートを適用。
-- User-Agent = `jpintel-mcp-ingest/1.0 (+https://zeimu-kaikei.ai; contact=ops@zeimu-kaikei.ai)`
+- User-Agent = `jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)`
   (rebrand 未確定。§constraints)。
 - PDF は 10 MB 上限、HTML も 2 MB で打ち切って "not-a-page" 扱い。
 - 共通ユーティリティは `scripts/lib/http.py`。

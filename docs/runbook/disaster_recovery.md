@@ -5,7 +5,7 @@
 **Related**: `docs/disaster_recovery.md` (public-facing scenario matrix), `docs/_internal/dr_backup_runbook.md` (legacy R2 setup notes)
 
 This is the actionable, single-operator playbook for recovering the two SQLite
-databases of the AutonoMath / 税務会計AI service. It supersedes the prior
+databases of the AutonoMath / jpcite service. It supersedes the prior
 runbook for the new tiered-backup pipeline (`scripts/cron/backup_*.py`).
 
 ## 1. What we back up
@@ -74,7 +74,7 @@ python /app/scripts/restore_db.py --db autonomath --yes  # only if also corrupt
 flyctl scale count 1 --app autonomath-api
 
 # 5. Smoke.
-curl -fsS https://api.zeimu-kaikei.ai/v1/am/health/deep | jq .
+curl -fsS https://api.jpcite.com/v1/am/health/deep | jq .
 ```
 
 **Reversibility**: The pre-restore snapshot is at
@@ -110,9 +110,9 @@ flyctl ssh console --app autonomath-api -C "python /app/scripts/restore_db.py --
 flyctl ssh console --app autonomath-api -C "python /app/scripts/restore_db.py --db autonomath --yes"
 
 # 4. Verify.
-curl -fsS https://api.zeimu-kaikei.ai/v1/am/health/deep | jq .
+curl -fsS https://api.jpcite.com/v1/am/health/deep | jq .
 
-# 5. Reattach DNS at Cloudflare (api.zeimu-kaikei.ai -> Fly IP).
+# 5. Reattach DNS at Cloudflare (api.jpcite.com -> Fly IP).
 ```
 
 ### 3.3 R2 bucket compromise / accidental deletion

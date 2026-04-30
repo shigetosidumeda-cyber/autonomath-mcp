@@ -150,7 +150,7 @@ TRIAL_REQUEST_CAP = 200
 # Public landing page that 429-ing trial keys are pointed at. Same string
 # the day-11 nudge + day-14 expired email use, so a user who hits the cap
 # and a user who runs out the clock see the same destination.
-TRIAL_UPGRADE_URL = "https://zeimu-kaikei.ai/pricing.html?from=trial#api-paid"
+TRIAL_UPGRADE_URL = "https://jpcite.com/pricing.html?from=trial#api-paid"
 
 
 def _day_bucket(ts: datetime | None = None) -> str:

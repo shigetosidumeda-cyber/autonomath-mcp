@@ -3,7 +3,7 @@
 **期間**: 2026-04-25 → 2026-11-11 (T+200d、実働 4 週)
 **対象 cohort**: 不動産 開発 (デベロッパー) / 賃貸管理 (PM 業者) /
 不動産 M&A (仲介業者) / 建築設計事務所 / 不動産 SaaS 開発者
-**Path**: 税務会計AI コア (¥3/req metered) を **不動産・建築・登記**
+**Path**: jpcite コア (¥3/req metered) を **不動産・建築・登記**
 領域へ拡張する第 5 波 (V3 Healthcare の B5 pattern を踏襲)。
 **判定基準**: launch 直後 30d で 50+ paid request / day を 1 件以上の
 cohort 顧客から確認できれば **継続**、未達なら sunset。
@@ -13,7 +13,7 @@ cohort 顧客から確認できれば **継続**、未達なら sunset。
 
 ## なぜ Real Estate V5 か
 
-- 税務会計AI は 2026-05-06 に農業 + SMB 制度 13,578 件で launch、
+- jpcite は 2026-05-06 に農業 + SMB 制度 13,578 件で launch、
   2026-08-04 に Healthcare V3 を加える計画 (V3 = B5 pattern の先行例)。
   Real Estate V5 は同じ pattern (schema migration 先行 + ingest plan) を
   4 週圧縮で実行する第 5 波。
@@ -31,7 +31,7 @@ cohort 顧客から確認できれば **継続**、未達なら sunset。
   営業 / DPA / Slack Connect / onboarding call 等の人的介在機能は提案禁止。
 - **Anthropic API は呼ばない** (memory: `feedback_autonomath_no_api_use`)。
   推論は顧客側、当方は API/MCP/静的 docs のみ。
-- **brand**: 税務会計AI / 運営は Bookyou株式会社 (T8010001213708)。
+- **brand**: jpcite / 運営は Bookyou株式会社 (T8010001213708)。
   jpintel ブランドはユーザー面に出さない。
 - **データ衛生**: `source_url` には一次情報 (国交省 / e-Gov / 法務省 /
   自治体 / 都市計画情報) のみ。集約サイト (suumo / homes / athome /

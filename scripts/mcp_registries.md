@@ -10,7 +10,7 @@ Target launch: 2026-05-06. Last audited: 2026-04-24.
 | display_name | AutonoMath — 日本の制度 MCP (89 tools) |
 | registry_id | `io.github.AutonoMath/autonomath-mcp` |
 | repo | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
-| homepage | `https://zeimu-kaikei.ai` |
+| homepage | `https://jpcite.com` |
 | pypi_package | `autonomath-mcp` |
 | install | `uvx autonomath-mcp` / `pip install autonomath-mcp` |
 | protocol | `2025-06-18` |
@@ -88,7 +88,7 @@ After publish: listing propagates to PulseMCP within ~1 week and to several down
 
 ## 4. Anthropic DXT / Claude Desktop Extension  [MCPB BUNDLE]
 
-- Distribution: `autonomath-mcp.mcpb` bundle at https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb
+- Distribution: `autonomath-mcp.mcpb` bundle at https://jpcite.com/downloads/autonomath-mcp.mcpb
 - Manifest: `dxt/manifest.json` (already configured)
 - Install: users download and double-click `.mcpb`; Claude Desktop installs automatically
 - No registry submission needed; the DXT format is self-distributing
@@ -217,7 +217,7 @@ fly secrets list | grep -E "STRIPE_SECRET_KEY|STRIPE_PRICE_PER_REQUEST|SENTRY_DS
 # Verify: Status = "Success", commit SHA matches `git rev-parse HEAD`
 
 # 1g. DNS + TLS
-for host in zeimu-kaikei.ai api.zeimu-kaikei.ai docs.zeimu-kaikei.ai; do
+for host in jpcite.com api.jpcite.com docs.jpcite.com; do
   curl -sSo /dev/null -w "%{http_code} %{ssl_verify_result} $host\n" "https://$host/" || echo "FAIL $host"
 done
 # All must return HTTP 2xx and ssl_verify_result=0
@@ -273,7 +273,7 @@ fly deploy
 fly logs
 
 # Smoke test the live API
-curl -s https://api.zeimu-kaikei.ai/readyz | python3 -m json.tool
+curl -s https://api.jpcite.com/readyz | python3 -m json.tool
 # Expected: {"status":"ok"}
 ```
 
@@ -286,7 +286,7 @@ curl -s https://api.zeimu-kaikei.ai/readyz | python3 -m json.tool
 # 1. Open: https://dash.cloudflare.com → Pages → autonomath-mcp → Deployments
 # 2. Confirm the top deployment is "Success" and the commit SHA is current main.
 # 3. Run a spot-check:
-curl -sI https://zeimu-kaikei.ai/ | head -5
+curl -sI https://jpcite.com/ | head -5
 # Expected: HTTP/2 200, cf-ray header present
 
 # Do NOT continue to Step 4 until this is confirmed green.
@@ -373,7 +373,7 @@ gh pr create --title "Add AutonoMath: 66-tool Japanese gov-data MCP" \
 # Post content is in: content/launch/hn_show.md
 # Go to: https://news.ycombinator.com/submit
 # Title must start with "Show HN:"
-# URL: https://zeimu-kaikei.ai
+# URL: https://jpcite.com
 # Text: copy from hn_show.md (plain text, no markdown)
 # Note the HN item URL immediately — monitor for comments
 ```
@@ -415,7 +415,7 @@ fly ssh console --app autonomath-mcp -C "tail -f /app/logs/structured.jsonl | gr
 
 # Terminal 3: Health check loop (every 5 min)
 while true; do
-  curl -sS https://api.zeimu-kaikei.ai/readyz && echo " OK $(date)" || echo "FAIL $(date)"
+  curl -sS https://api.jpcite.com/readyz && echo " OK $(date)" || echo "FAIL $(date)"
   sleep 300
 done
 ```
@@ -442,4 +442,4 @@ The following items cannot be automated and require manual preparation:
 4. **Smithery API key** — check https://dashboard.smithery.ai before launch. If auto-index has not picked up the repo, you may need a key to trigger a manual crawl.
 5. **`autonomath-mcp.mcpb` bundle** — regenerate the bundle close to launch (within 48 h) so it reflects the final tool list and version: `bash scripts/build_mcpb.sh`.
 6. **Zenn slug** — confirm `content/zenn/launch_day_1_developer.md` has a stable slug set in front-matter. Zenn does not let you change the slug post-publish.
-7. **DNS TTLs** — lower `zeimu-kaikei.ai`, `api.zeimu-kaikei.ai`, and `docs.zeimu-kaikei.ai` TTLs to 60 s at T-24 h so any last-minute DNS change propagates fast. Restore to 3600 at T+6 h.
+7. **DNS TTLs** — lower `jpcite.com`, `api.jpcite.com`, and `docs.jpcite.com` TTLs to 60 s at T-24 h so any last-minute DNS change propagates fast. Restore to 3600 at T+6 h.

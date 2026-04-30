@@ -4,300 +4,153 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>変更履歴 (Changelog) — 税務会計AI</title>
-<meta name="description" content="税務会計AI REST API + MCP サーバー + 公式 SDK (Python / TypeScript) の公開変更履歴。Keep a Changelog 1.1.0 / Semantic Versioning 2.0.0 準拠。最新は v0.3.0 (2026-04-25)。">
+<title>変更履歴 — jpcite</title>
+<meta name="description" content="jpcite の主な変更履歴。 API・ MCP・ SDK の利用者向けアップデート。">
 
-<meta property="og:title" content="変更履歴 (Changelog) — 税務会計AI">
-<meta property="og:description" content="REST + MCP + SDK の公開変更履歴。最新 v0.3.0 (拡張データセット + 認定支援機関データセット 取り込み)。">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://zeimu-kaikei.ai/changelog.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:title" content="変更履歴 — jpcite">
+<meta property="og:description" content="API・ MCP・ SDK の利用者向けアップデート。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/changelog.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="変更履歴 (Changelog) — 税務会計AI">
-<meta name="twitter:description" content="REST + MCP + SDK の公開変更履歴。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="変更履歴 — jpcite">
+<meta name="twitter:description" content="API・ MCP・ SDK の利用者向けアップデート。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/changelog.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/changelog.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/changelog.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/changelog.html">
+<link rel="canonical" href="https://jpcite.com/changelog.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/changelog.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/changelog.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/changelog.html">
+<link rel="alternate" type="application/rss+xml" title="jpcite 変更履歴 RSS" href="https://jpcite.com/audit-log.rss">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
+
+<style>
+  .changelog-page { padding: 48px 0 64px; }
+  .changelog-page h1 { font-size: 32px; margin: 0 0 12px; font-weight: 800; letter-spacing: -0.01em; }
+  .changelog-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 32px; max-width: 720px; }
+  .changelog-page article { border-top: 1px solid var(--border); padding: 28px 0; max-width: 720px; }
+  .changelog-page article:first-of-type { border-top: 0; padding-top: 0; }
+  .changelog-page .ver-date { font-size: 13px; color: var(--text-muted); margin: 0 0 6px; font-family: var(--font-mono); }
+  .changelog-page article h2 { font-size: 20px; font-weight: 700; margin: 0 0 14px; }
+  .changelog-page ul { margin: 0; padding-left: 20px; }
+  .changelog-page li { margin: 0 0 6px; line-height: 1.7; }
+  @media (max-width: 480px) {
+    .changelog-page h1 { font-size: clamp(24px, 7vw, 32px); }
+    .changelog-page article h2 { font-size: 18px; }
+  }
+</style>
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "税務会計AI 変更履歴",
-  "description": "税務会計AI REST API + MCP サーバー + 公式 SDK (Python / TypeScript) の公開変更履歴。",
-  "url": "https://zeimu-kaikei.ai/changelog.html",
+  "@type": "WebPage",
+  "name": "変更履歴 — 税務会計AI",
+  "url": "https://jpcite.com/changelog.html",
   "inLanguage": "ja",
-  "datePublished": "2026-04-26",
-  "dateModified": "2026-04-26",
-  "author": {
-    "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://zeimu-kaikei.ai/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://zeimu-kaikei.ai/"
-  },
-  "mainEntity": {
-    "@type": "ItemList",
-    "name": "税務会計AI バージョン一覧",
-    "itemListOrder": "https://schema.org/ItemListOrderDescending",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "v0.3.0 (2026-04-25) — 拡張データセット + 認定支援機関データセット 取り込み" },
-      { "@type": "ListItem", "position": 2, "name": "v0.2.0 (2026-04-25) — AutonoMath canonical DB landing" },
-      { "@type": "ListItem", "position": 3, "name": "v0.1.0 (planned 2026-05-06) — 初回公開" }
-    ]
-  }
+  "isPartOf": {"@type": "WebSite", "name": "jpcite", "url": "https://jpcite.com/"}
 }
 </script>
-
-<style>
-  .changelog-page { padding: 48px 0 64px; }
-  .changelog-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
-  .changelog-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 32px; max-width: 760px; line-height: 1.7; }
-  .changelog-page .meta-row { font-size: 14px; color: var(--text-muted); margin: 0 0 32px; max-width: 760px; line-height: 1.8; }
-  .changelog-page .meta-row code { font-size: 13px; }
-  .changelog-page article { max-width: 760px; padding: 24px 0; border-top: 1px solid var(--border); }
-  .changelog-page article:first-of-type { border-top: 2px solid var(--text); }
-  .changelog-page article h2 { font-size: 22px; margin: 0 0 4px; font-weight: 700; }
-  .changelog-page article h2 .ver-tag { display: inline-block; padding: 2px 8px; margin-right: 8px; border-radius: 4px; background: var(--bg-alt); font-family: ui-monospace, SFMono-Regular, monospace; font-size: 16px; font-weight: 600; }
-  .changelog-page article h2 .ver-latest { background: #1f6feb; color: #fff; }
-  .changelog-page article .ver-date { font-size: 14px; color: var(--text-muted); margin: 0 0 16px; }
-  .changelog-page article h3 { font-size: 15px; margin: 18px 0 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
-  .changelog-page article h3.added { color: #1a7f37; }
-  .changelog-page article h3.changed { color: #9a6700; }
-  .changelog-page article h3.fixed { color: #6f42c1; }
-  .changelog-page article h3.deprecated { color: #8250df; }
-  .changelog-page article h3.removed { color: #cf222e; }
-  .changelog-page article h3.security { color: #cf222e; }
-  .changelog-page article ul { margin: 4px 0 12px 20px; padding: 0; line-height: 1.75; }
-  .changelog-page article ul li { margin: 4px 0; }
-  .changelog-page article p { line-height: 1.7; margin: 8px 0; }
-  .changelog-page article code { background: var(--bg-alt); padding: 1px 5px; border-radius: 3px; font-size: 0.92em; }
-  .changelog-page .sub-section { margin: 12px 0 12px 8px; padding: 8px 0 8px 12px; border-left: 3px solid var(--border); }
-  .changelog-page .sub-section h4 { font-size: 14px; margin: 0 0 4px; font-weight: 600; }
-  .changelog-page .source-link { font-size: 13px; color: var(--text-muted); margin: 32px 0 0; max-width: 760px; }
-</style>
 
 <script defer src="analytics.js"></script>
 </head>
 <body>
 
-<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+<a class="skip-link" href="#main">メインコンテンツへスキップ</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="audiences/">利用者層</a>
-      <a href="prompts.html">Prompts</a>
-      <details class="nav-trust">
-        <summary>Trust</summary>
-        <ul>
-          <li><a href="/status/">Status</a></li>
-          <li><a href="roadmap.html">Roadmap</a></li>
-          <li><a href="data-freshness.html">Data Freshness</a></li>
-          <li><a href="transparency.html">Transparency</a></li>
-          <li><a href="audit-log.html">Audit Log</a></li>
-        </ul>
-      </details>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="changelog.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="en/changelog.html" lang="en" hreflang="en">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="index.html" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust" open>
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html" aria-current="page">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/changelog.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/changelog.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="changelog-page">
-  <div class="container">
+ <div class="container">
 
-    <h1>変更履歴 (Changelog)</h1>
-    <p class="lead">税務会計AI REST API (<code>https://api.zeimu-kaikei.ai/v1/*</code>)、MCP サーバー (stdio, FastMCP, protocol <code>2025-06-18</code>)、公式 SDK (Python <code>autonomath</code> / TypeScript <code>@autonomath/sdk</code>) の公開バージョン変更履歴。</p>
-    <p style="margin:-12px 0 24px;font-size:14px;color:var(--text-muted);"><strong>注:</strong> このページは <em>製品側</em> の変更履歴 (API / MCP / SDK)。制度データ自体の差分 (補助金・税制ルール変更など) は <a href="audit-log.html">制度変更検出フィード (audit-log) →</a> で日次 cron が公開しています。</p>
+ <h1>変更履歴</h1>
+ <p class="lead">jpcite の主なアップデート。 製品レベルの変更だけを記載します。</p>
+ <p style="margin:-12px 0 24px;font-size:14px;color:var(--text-muted);">制度データ自体の差分は <a href="audit-log.html">制度変更検出フィード</a> をご参照ください。</p>
 
-    <p class="meta-row">
-      フォーマット: <a href="https://keepachangelog.com/ja/1.1.0/" rel="noopener">Keep a Changelog 1.1.0</a> ·
-      バージョニング: <a href="https://semver.org/lang/ja/" rel="noopener">Semantic Versioning 2.0.0</a> ·
-      <strong>0.x 期間中は minor アップグレードでも互換性破壊が起きる場合があり、その場合は <code>BREAKING:</code> プレフィックスで明示します。</strong>
-      1.0.0 GA は 2026-09 以降を予定。
-    </p>
+ <article>
+ <p class="ver-date">2026-04</p>
+ <h2>横断検索の機能拡充</h2>
+ <ul>
+ <li>制度・採択事例・融資・行政処分・法令・判例・税制を 1 つの API で横断検索。</li>
+ <li>MCP プロトコル <code>2025-06-18</code> 対応。 Claude Desktop / Cursor から直接呼び出し可能。</li>
+ <li>API レスポンスに 出典 URL と 取得時刻を全件付与。</li>
+ <li>カタカナ・ひらがな の表記揺れを自動展開 (例: モノづくり / ものづくり、 インボイス / 適格請求書)。</li>
+ <li>都道府県名 の入力誤りは無音 0 件返却ではなく、 警告を返すよう改善。</li>
+ </ul>
+ </article>
 
-    <article>
-      <h2><span class="ver-tag ver-latest">v0.3.0</span>拡張データセット + 認定支援機関データセット 取り込み</h2>
-      <p class="ver-date">2026-04-25 リリース</p>
+ <article>
+ <p class="ver-date">2026-04</p>
+ <h2>料金モデルの単純化</h2>
+ <ul>
+ <li>¥3 / リクエスト (税込 ¥3.30) の完全従量制に統一。 月額固定なし、 契約期間なし、 解約手数料なし。</li>
+ <li>匿名 (登録不要) で 月 50 リクエストまで無料。 JST 月初 00:00 リセット。</li>
+ <li>適格請求書 (T8010001213708) の自動発行を Stripe 経由で対応。</li>
+ </ul>
+ </article>
 
-      <h3 class="added">Added</h3>
-      <ul>
-        <li><strong>MCP ツール +11 本</strong> (55 → 66): メタデータ tools 4 本 (<code>get_annotations</code> / <code>validate</code> / <code>get_provenance</code> / <code>get_provenance_for_fact</code>) と 静的データセット tools 7 本 (<code>list_static_resources_am</code> / <code>get_static_resource_am</code> / <code>list_example_profiles_am</code> / <code>get_example_profile_am</code> / <code>render_36_kyotei_am</code> / <code>get_36_kyotei_metadata_am</code> / <code>deep_health_am</code>)。</li>
-        <li><strong>REST エンドポイント +7 本</strong> 追加 (<code>/v1/am/*</code>): annotations / validate / provenance (entity + fact)、static resources、example profiles、saburoku_kyotei テンプレート、<code>/v1/am/health/deep</code> (専用 <code>health_router</code> に配置、<code>AnonIpLimitDep</code> バイパス)。</li>
-        <li><strong>autonomath.db 統合</strong>: jpintel.db (316 MB) と物理マージ (migration 032)、計 8.29 GB の単一プライマリ DB に。78 mirrored <code>jpi_*</code> テーブル + 6,339 jpi↔am マッピング (<code>entity_id_map</code>) + 横断 view (<code>v_program_full</code>, <code>v_houjin_360</code>, <code>v_readiness_input</code>)。</li>
-        <li><strong>静的タクソノミ 8 本 + 例示 profile 5 本</strong> (<code>data/autonomath_static/</code>) と 4 ユーティリティモジュール (<code>wareki.py</code> / <code>jp_money.py</code> / <code>jp_constants.py</code> / <code>templates/saburoku_kyotei.py</code>)。</li>
-        <li><strong>新モデルモジュール</strong> <code>models/premium_response.py</code>: <code>PremiumResponse</code> / <code>ProvenanceBadge</code> / <code>AdoptionScore</code> / <code>AuditLogEntry</code>。<code>response_model</code> アノテーションを 32 エンドポイントに付与。</li>
-        <li><strong>取り込みデータ</strong>: examiner_feedback 9,933 行 → 16,474 annotations、gbiz 79,876 corporate_entity 行 + 861,137 corp.* facts (21 新フィールド)、case_studies 1,901 NEW、license バルク埋め (NTA → pdl_v1.0 87k / gov_standard 7k / public_domain 953 / e-Gov → cc_by_4.0 186)。</li>
-        <li><strong>マイグレーション</strong> 046–051 適用 (annotation + validation + 制度ヘルススコア集計テーブル + license/source_id/feedback 列 + Tier=X quarantine fix + exclusion_rules unified_id keys)。</li>
-        <li><strong>共通エラー応答形式</strong>のグローバルハンドラ + <code>strict_query</code> ミドルウェア (87% silent drop 修正) + <code>charge.refunded</code> Webhook 通知 通知 ハンドラ。</li>
-      </ul>
-
-      <h3 class="changed">Changed</h3>
-      <ul>
-        <li><strong>ツール総数</strong>: 55 → 66 (default gates、<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> / <code>HEALTHCARE_ENABLED=false</code> / <code>REAL_ESTATE_ENABLED=false</code>)。</li>
-        <li><strong>autonomath.db 行数</strong>: 正規化レコード 416,375 → 503,930、structured 属性 5.26M → 6.12M、別名・略称 index 335,605、法令条文 index 0 → 28,048、行政処分詳細 records 0 → 22,258、採択記録 199,944 → 201,845。</li>
-        <li><code>exclusion_rules</code>: name-keyed → unified_id keyed (dual-key で旧キーも併存)。</li>
-        <li><code>autonomath_router</code> を <code>api/main.py:557</code> でマウント。<code>/v1/am/*</code> が live (旧 <code>0.2.0</code> 時点では未マウント)。</li>
-        <li><strong>マニフェスト</strong> <code>pyproject.toml</code> / <code>server.json</code> / <code>mcp-server.json</code> / <code>dxt/manifest.json</code> / <code>smithery.yaml</code> を <code>0.3.0</code> に同期。</li>
-      </ul>
-
-      <h3 class="fixed">Fixed</h3>
-      <ul>
-        <li>L 系列修正: P0-1 models shadow / P0-2 応答形式の wiring / P0-3 exclusion_rules dual-key / P0-4 strict_query / P0-6 get_meta dynamic / P0-7 request_id / P0-10 Tier=X。</li>
-      </ul>
-
-      <div class="sub-section">
-        <h4>36協定 ローンチゲート</h4>
-        <p><code>render_36_kyotei_am</code> + <code>get_36_kyotei_metadata_am</code> は <code>AUTONOMATH_36_KYOTEI_ENABLED</code> (デフォルト <code>false</code>) でゲート。36協定は労基法 §36 + 社労士法に紐づく規制業務であり、誤生成は法的責任とブランド毀損につながるため、社労士監修の体制と利用者向けディスクレーマー整備が完了するまで <code>mcp.list_tools()</code> から非表示。enable しても全レスポンスに <code>_disclaimer</code> フィールドが付与され、出力は社労士確認必須のドラフト扱いとなります。</p>
-      </div>
-    </article>
-
-    <article>
-      <h2><span class="ver-tag">v0.2.0</span>AutonoMath canonical DB landing</h2>
-      <p class="ver-date">2026-04-25 リリース</p>
-
-      <h3 class="added">Added</h3>
-      <ul>
-        <li><strong><code>autonomath.db</code></strong> 7.3 GB (read-only) を companion SQLite として追加。EAV スキーマ: 正規化レコード 416,375 件、structured 属性 5.26M 件、関係性 link 23,805 件 (15 canonical relation types)、別名・略称 index 335,605 件、+ 14 のサポートテーブル (所管庁 / 地域 / 税制 / 補助金ルール / 募集回 / 融資 / 共済 / 行政処分詳細 / 制度時系列 snapshot / 業種 / 対象 profile / peer cache / 法令 / タグ)。日本語の高速全文検索 (3-gram 分割 + Unicode 形態素の二重インデックス) + 6 段の意味検索インデックス。</li>
-        <li><strong>autonomath MCP ツール 16 本</strong> 追加 (31 → 47): <code>search_tax_incentives</code>, <code>search_certifications</code>, <code>list_open_programs</code>, <code>enum_values_am</code>, <code>search_by_law</code>, <code>active_programs_at</code>, <code>related_programs</code>, <code>search_acceptance_stats_am</code>, <code>intent_of</code>, <code>reason_answer</code>, <code>get_am_tax_rule</code>, <code>search_gx_programs_am</code>, <code>search_loans_am</code>, <code>check_enforcement_am</code>, <code>search_mutual_plans_am</code>, <code>get_law_article_am</code>。</li>
-        <li><strong>1 ショット discovery ツール群</strong>: <code>smb_starter_pack</code>, <code>subsidy_combo_finder</code>, <code>deadline_calendar</code>, <code>dd_profile_am</code> (5 コール デューデリ を 1 コールに集約)、<code>similar_cases</code> (case_id / 自由記述 → 採択事例 10 件、weighted Jaccard)、<code>regulatory_prep_pack</code>, <code>subsidy_roadmap_3yr</code>, <code>list_tax_sunset_alerts</code>。</li>
-        <li><strong>都道府県 typo 検出ゲート</strong> を 8 検索ツールに導入。Unknown prefecture は silent 0 件 fallback ではなく <code>input_warnings</code> エンベロープを返す。</li>
-        <li><strong>カタカナ↔ひらがな展開</strong> 50+ ペア (<code>モノづくり</code>↔<code>ものづくり</code>、<code>DX</code>↔<code>デジタルトランスフォーメーション</code>、<code>インボイス</code>↔<code>適格請求書</code> 等)。</li>
-        <li><strong>JP ローカライズ</strong> 429 (<code>detail</code> + <code>detail_en</code>) と 422 (<code>msg_ja</code> + <code>detail_summary_ja</code>) エラー本文。</li>
-        <li>新 REST: <code>/v1/meta</code>, <code>/v1/openapi.json</code> (旧パス <code>/meta</code> / <code>/openapi.json</code> は 308 redirect で互換維持)。</li>
-        <li>静的サイト: <code>site/404.html</code> (ブランド 404)、<code>site/programs/index.html</code>、<code>site/_redirects</code>、<code>site/rss.xml</code>、<code>scripts/refresh_sources.py</code> (3-strike quarantine 付き)、<code>.github/workflows/refresh-sources.yml</code>。</li>
-      </ul>
-
-      <h3 class="changed">Changed</h3>
-      <ul>
-        <li><strong>MCP ツール docstring</strong> 全 13 本を Anthropic mcp-builder パターンに沿って書き直し: 1 文の目的 + 具体スコープ数値 + 2-3 件の自然な日本語例示クエリ。否定表現 (「X には使わないでください」) は除去 (2026 ArXiv 2602.14878 に基づく)。</li>
-        <li><code>server.json</code> description: 6,658 programs → multi-source framing (11,547 programs + 2,286 採択事例 + 108 三軸分解融資 + 1,185 行政処分 + 181 exclusion/prerequisite rules) + 一次資料系統。</li>
-        <li>MCP サーバー <code>serverInfo.version</code> が <code>0.1.0</code> (autonomath-mcp) を返すように修正 (旧: MCP SDK のバージョン)。</li>
-        <li>制度ページテンプレート: 「最終更新」→「出典取得」 + ディスクレーマー (景表法 / 消費者契約法 honesty)。<code>target_types</code> enum 値 (<code>corporation</code>, <code>sole_proprietor</code>) を JA ラベル (法人, 個人事業主) で表示。<code>MonetaryGrant.funder</code> JSON-LD は <code>GovernmentOrganization</code> + 実際の所管庁。</li>
-        <li>Stripe checkout: <code>consent_collection.terms_of_service=required</code> を撤去 (live mode で 500)。<code>custom_text.submit.message</code> に ToS + Privacy リンクを記載。</li>
-        <li>Stripe Webhook 通知 通知: <code>invoice.payment_failed</code> でクォータ降格、<code>invoice.paid</code> で再昇格。</li>
-        <li>ダッシュボード: <code>tier-badge</code> / 「無料枠」マークアップを撤去。¥3/リクエスト (税込 ¥3.30) 完全従量 model 表記に。クォータリセット表記を「月初 00:00 JST (認証済み: 00:00 UTC)」に修正。</li>
-        <li>信頼フッター (<code>運営: Bookyou株式会社 (T8010001213708) · info@bookyou.net</code>) を全公開ページに展開。</li>
-      </ul>
-
-      <h3 class="fixed">Fixed</h3>
-      <ul>
-        <li>集約サイト系 5 件 + MAFF <code>g_biki</code> 死亡ページ 298 件 + 偽 <code>12345.pdf</code> プレースホルダ 8 件 + 裸 MAFF section root 198 件 = 計 509 行を公開保留 (二次レビュー待ち)。</li>
-        <li>古い HTML プログラムページ 360 件削除、sitemap を 4,817 entries で再構築。</li>
-        <li>FTS 検索: <code>ORDER BY rank</code> パスでも品質ラベル優先度を尊重。公開保留行が検索結果に漏れない (新規 509 + 既存 432)。2 文字以上の漢字クエリは phrase-match (<code>税額控除</code> が <code>ふるさと納税</code> を返さない)。トップ 50 共通語のかなクエリ展開 (<code>のうぎょう</code> → <code>農業</code>)。LIKE フォールバック (q&lt;3) は <code>aliases_json</code> + <code>enriched_text</code> も検索。プライマリ名で GROUP BY 重複排除。</li>
-        <li><code>pricing.html</code> 有料 CTA を <code>POST /v1/billing/checkout</code> に修正 (旧: 壊れた GET で 405)。連絡 email を <code>info@bookyou.net</code> に (旧: 死亡 <code>hello@zeimu-kaikei.ai</code>)。</li>
-        <li><code>index.html</code> hero タグを「AutonoMath」に (旧: 残った「jpintel」文字列)。</li>
-        <li><code>status.html</code>: 完全フッター追加 (以前は <code>&lt;/body&gt;</code> 直前にフッター無し)。</li>
-        <li><code>server.py</code> モジュール docstring: バイナリ名を <code>autonomath-mcp</code> に (旧: 「AutonoMath」)。</li>
-      </ul>
-
-      <h3 class="deprecated">Deferred (v0.3.x 以降)</h3>
-      <ul>
-        <li><code>/v1/am/*</code> REST マウント (router ファイルは disk 上、<code>include_router</code> 未追加 ← 0.3.0 で解消)。</li>
-        <li><code>reason_answer</code> embedding-powered semantic search (<code>sentence-transformers</code> + ベクトル検索 deps が <code>pyproject.toml</code> 未 pin)。</li>
-        <li>Learning 中継処理 と proactive push tools (Phase D / E)。</li>
-      </ul>
-    </article>
-
-    <article>
-      <h2><span class="ver-tag">v0.1.0</span>初回公開予定</h2>
-      <p class="ver-date">2026-05-06 (planned)</p>
-
-      <p>autonomath-mcp API + MCP サーバー + Python / TypeScript SDK の 3 アーティファクトを同一バージョンで初回バンドル公開。以降、SDK は独立リリース。</p>
-
-      <h3 class="added">Added (REST API <code>https://api.zeimu-kaikei.ai</code>, <code>/v1/*</code>)</h3>
-      <ul>
-        <li><code>GET /v1/programs/search</code> — 構造化 + 全文検索 (<code>tier</code>, <code>prefecture</code>, <code>authority_level</code>, <code>funding_purpose</code>, <code>target_type</code>, <code>amount_min/max</code>, <code>include_excluded</code>, <code>limit</code>, <code>offset</code>, <code>fields</code>)。</li>
-        <li><code>GET /v1/programs/{unified_id}</code> — 詳細 + enriched A–J ブロック + <code>source_mentions</code> 系統。</li>
-        <li><code>POST /v1/programs/batch</code> — 一括取得 (最大 100 件)。</li>
-        <li><code>GET /v1/exclusions/rules</code>, <code>POST /v1/exclusions/check</code> — 排他ルールカタログ + 候補プログラム集合に対する評価。</li>
-        <li><code>POST /v1/feedback</code>, Stripe billing flow (<code>/v1/billing/checkout</code> / <code>/portal</code> / <code>/keys/from-checkout</code> / <code>/webhook</code>), <code>GET /v1/meta</code>, <code>GET /healthz</code>, <code>GET /v1/ping</code>。</li>
-      </ul>
-
-      <h3 class="added">Added (MCP サーバ, stdio, FastMCP, protocol <code>2025-06-18</code>)</h3>
-      <ul>
-        <li>6 ツール公開: <code>search_programs</code>, <code>get_program</code>, <code>batch_get_programs</code>, <code>list_exclusion_rules</code>, <code>check_exclusions</code>, <code>get_meta</code>。ツール形状は REST レスポンスを 1:1 で反映。</li>
-      </ul>
-
-      <h3 class="added">Added (公式 SDK)</h3>
-      <ul>
-        <li><strong>Python <code>autonomath</code></strong> (PyPI): <code>Client</code> + <code>AsyncClient</code>、Pydantic 型モデル、型付き例外階層 (<code>JpintelError</code>, <code>AuthError</code>, <code>NotFoundError</code>, <code>RateLimitError</code>, <code>ServerError</code>)、429/5xx 自動リトライ + <code>Retry-After</code>。Python 3.11+。</li>
-        <li><strong>TypeScript <code>@autonomath/sdk</code></strong> (npm): platform <code>fetch</code> ベースで zero-runtime-deps、ESM + CJS 両対応 + <code>.d.ts</code> 同梱。429 / 5xx 指数バックオフ。Node 18+, Deno, Bun, browsers。</li>
-      </ul>
-
-      <h3 class="changed">Notes</h3>
-      <ul>
-        <li><strong>レート制限</strong>: 匿名 50 リクエスト/月 per IP (IPv4 /32, IPv6 /64)、JST 月初 00:00 リセット。認証済みは <code>¥3/req 税別</code> (税込 ¥3.30) Stripe usage billing (<code>lookup_key = per_request_v2</code>)。</li>
-        <li><strong>SLA</strong>: ベータ期間 99.0% monthly uptime (fair-warning、サービスクレジット無し)。v0.3.0 wave で 99.5% に引き上げ済み。</li>
-        <li><strong>カバレッジ免責</strong>: 補助金 / 融資 / 税制カタログは網羅ではない。tier 分布はローンチ時点で農業 + 製造業に寄り。「無い = 存在しない」と扱わないこと。</li>
-      </ul>
-    </article>
-
-    <h2 style="margin-top:48px;font-size:18px;">SDK 個別変更履歴</h2>
-    <p>本ページは API + MCP + SDK を統合した変更履歴です。SDK の細粒度バージョン (<code>@autonomath/sdk@0.3.2</code> / <code>@autonomath/sdk@0.3.1</code> / <code>autonomath-python@0.2.0</code> 等) は npm / PyPI のリリースページを参照してください。</p>
-
-    <p class="source-link">
-      ソース: 本ページは GitHub リポジトリ <code>CHANGELOG.md</code> および <code>sdk/typescript/CHANGELOG.md</code> / <code>sdk/python/CHANGELOG.md</code> の主要エントリを公開ユーザー向けに要約したものです。<br>
-      互換性破壊の判定基準は <code>docs/versioning.md</code> を参照。
-    </p>
-
-  </div>
+ </div>
 </main>
 
-<div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-    · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> / <a href="privacy.html">プライバシー</a>
-    · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
-    · 変更履歴最終更新 <time datetime="2026-04-26">2026-04-26</time>
-  </p>
-</div>
-
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="changelog.html">変更履歴</a>
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特定商取引法</a>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (公開準備中)" rel="noopener">GitHub</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、 5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script src="/assets/trust-strip.js" defer></script>

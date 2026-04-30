@@ -187,7 +187,7 @@ AutonoMath は以下を**行いません**:
 
 ## 9.3 法廷証拠 reproducibility 保証 (R8 dataset versioning)
 
-AutonoMath の主要 8 table (`programs` / `case_studies` / `loan_programs` / `enforcement_cases` / `laws` / `tax_rulesets` / `court_decisions` / `bids`) と autonomath.db の主要 EAV 2 構造 (503,930 件の正規化レコード / 612 万件の structured 属性) は、**bitemporal row-level versioning** を採用しています (migration 067, 2026-04-25)。
+AutonoMath の主要 8 table (`programs` / `case_studies` / `loan_programs` / `enforcement_cases` / `laws` / `tax_rulesets` / `court_decisions` / `bids`) と autonomath.db の主要 EAV 2 構造 (503,930 件の正規化レコード / 612 万件の structured 属性) は、**bitemporal row-level versioning** を採用しています。
 
 ### 9.3.1 column 構成
 
@@ -241,18 +241,18 @@ WHERE valid_from <= :as_of_date
 
 ## 9.4 License attribution (再配布 license の正本)
 
-AutonoMath が再配布する一次資料は dataset 毎に異なる license を持ちます。各 license と attribution 要件は以下のとおりで、`am_source.license` 列 (migration 049, 99.17% 充足) で row 単位に記録され、`/v1/am/provenance/{entity_id}` および MCP tool `get_provenance` で外部から検証可能です。
+AutonoMath が再配布する一次資料は dataset 毎に異なる license を持ちます。各 license と attribution 要件は以下のとおりで、`am_source.license` 列 (充足率 99.17%) で row 単位に記録され、`/v1/am/provenance/{entity_id}` および MCP tool `get_provenance` で外部から検証可能です。
 
 | dataset | DB enum (`am_source.license`) | rows | license 表示・attribution 要件 |
 |---|---|---|---|
-| 国税庁 適格請求書発行事業者公表データ | `pdl_v1.0` | 87,251 | Public Data License v1.0。「出典: 国税庁 適格請求書発行事業者公表サイト」+ 編集注記 (取得日時 + 編集の有無)。2026-04-24 NTA TOS 直接確認で API 下流配信 OK 確定。 |
+| 国税庁 適格請求書発行事業者公表データ | `pdl_v1.0` | 87,251 | Public Data License v1.0。「出典: 国税庁 適格請求書発行事業者公表サイト」+ 編集注記 (更新日時 + 編集の有無)。2026-04-24 NTA TOS 直接確認で API 下流配信 OK 確定。 |
 | 各省庁 / 公庫 / .lg.jp / .go.jp catch-all | `gov_standard_v2.0` | 7,457 | 政府標準利用規約 v2.0 (CC BY 4.0 互換)。各省庁名を「出典」として明示、改変箇所を編集注記。 |
 | 公開判決 / 通達 (JPO・知財高裁・国税庁通達) | `public_domain` | 953 | public domain。出典機関 + 通達番号 / 判決番号を明示。 |
 | 業界団体 / JST 採択事例 / 入札 | `proprietary` | 620 | TOS-restricted。原則「公開ページに掲載された情報のみ収録 + source_url 明示」。**JST については、当社 API 経由のデータは「限定利用」とし、API 利用者による二次商用再配布は認めない**旨を `site/sources.html` § JST 行と利用規約に明記。商用配信再評価は launch 直前に実施 (memory `feedback_data_collection_tos_ignore` 参照)。 |
 | e-Gov 法令 (デジタル庁) + gBizINFO 法人情報 (METI) | `cc_by_4.0` | 186 | Creative Commons Attribution 4.0 International。e-Gov 法令は「法令データは e-Gov の法令データ提供システム (CC BY 4.0)」を明示。gBizINFO は「出典: 経済産業省 gBizINFO」(<https://info.gbiz.go.jp/>) を明示。いずれも改変時は変更点も明示。**gBizINFO のドメイン覆域**: `info.gbiz.go.jp` / `form.gbiz.go.jp` / `gbiz.go.jp` を license 確定 (`scripts/fill_license.py` の rule)。+861,137 corp.* structured 属性は entity-level license rollup で集計。 |
 | その他 (banned URL 等の quarantine) | `unknown` | 805 | 当該 row の license が未確定。**attribution 不能 / 再配布可否不明**として API 出力時に「license unknown — please contact info@bookyou.net before redistribution」を付与し、運営側で再分類する。`/v1/am/provenance/{entity_id}` レスポンスでは `license_summary.unknown` カウントが 1 以上の場合、再配布前に運営確認を要する旨を caller 側で警告すること。 |
 
-`unknown` は migration 049 の自動分類 fallback で `quarantined://banned/*` 系などの URL に対してのみ付与されます。下流再配布時にこれを CC BY 4.0 等の自由 license に誤分類することは明確な license 違反です。
+`unknown` は license 自動分類 fallback で `quarantined://banned/*` 系などの URL に対してのみ付与されます。下流再配布時にこれを CC BY 4.0 等の自由 license に誤分類することは明確な license 違反です。
 
 API レスポンス側のフィールド契約:
 
@@ -277,7 +277,7 @@ API レスポンス側のフィールド契約:
 
 **Bookyou株式会社**
 〒112-0006 東京都文京区小日向2-22-1
-法人番号: T8010001213708
+適格請求書発行事業者番号: T8010001213708
 Email: `info@bookyou.net`
 
 以上

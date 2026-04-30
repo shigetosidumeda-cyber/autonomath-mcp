@@ -1,4 +1,4 @@
-# 税務会計AI — Post-Launch Improvement Loop
+# jpcite — Post-Launch Improvement Loop
 
 **Owner:** 梅田茂利, info@bookyou.net (Bookyou株式会社)
 **Constraint set:** Solo + zero-touch ops, 100% organic acquisition, ¥3/req metered only, no paid tooling beyond GitHub + email + Stripe + Fly + CF.
@@ -237,7 +237,7 @@ File: `site/blog/YYYY-MM-DD-week-N.md`
 
 ```markdown
 ---
-title: "Week N — 税務会計AI 改善ログ"
+title: "Week N — jpcite 改善ログ"
 date: YYYY-MM-DD
 ---
 
@@ -255,7 +255,7 @@ date: YYYY-MM-DD
 - 上位未解決シグナル ≤ 3件
 
 ---
-*税務会計AI は ¥3/リクエスト従量課金の日本語公的制度データベースAPI。[ドキュメント →](https://zeimu-kaikei.ai/docs)*
+*jpcite は ¥3/リクエスト従量課金の日本語公的制度データベースAPI。[ドキュメント →](https://jpcite.com/docs)*
 ```
 
 This generates indexed public changelogs that LLMs and search engines can cite — the GEO/SEO compounding effect.

@@ -6,7 +6,7 @@
 
 ## Body
 
-Built and launched 税務会計AI — a custom MCP server giving Claude direct access to Japanese institutional data: 10,790 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 35 tax rulesets, and historical adoption cases. Every row has a primary-source URL.
+Built and launched jpcite — a custom MCP server giving Claude direct access to Japanese institutional data: 10,790 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 35 tax rulesets, and historical adoption cases. Every row has a primary-source URL.
 
 **Why this is useful for Claude users**: Claude is great at reasoning over Japanese text but it doesn't have grounded access to the live institutional dataset. Without a tool layer, you get plausible-sounding subsidy names that don't exist or hallucinated tax rulings. The MCP server gives Claude actual rows from primary sources so it can cite e-Gov / METI / 公庫 URLs directly.
 
@@ -61,7 +61,7 @@ Now Claude Code can pull subsidy / law / court-decision data while you're coding
 - **Provenance** — `get_provenance`, `get_provenance_for_fact` (every fact has a source ID)
 - **Rule engine** — `rule_engine_check`, `prerequisite_chain` (eligibility logic)
 
-When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.zeimu-kaikei.ai`. First 50 req/month per IP are free anonymous. No signup.
+When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.jpcite.com`. First 50 req/month per IP are free anonymous. No signup.
 
 ## Pricing
 
@@ -74,11 +74,11 @@ This is information lookup, not tax / legal advice (税理士法 §52, 弁護士
 ## Try it
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=AI&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=AI&prefecture=東京都"
 ```
 
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
-- Site: https://zeimu-kaikei.ai
+- Site: https://jpcite.com
 
 Solo project (Bookyou株式会社). Happy to help debug a Claude Desktop / Claude Code setup in the thread.

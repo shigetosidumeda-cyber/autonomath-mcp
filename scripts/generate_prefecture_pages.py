@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate 47 prefecture-level SEO landing pages for AutonoMath (zeimu-kaikei.ai).
+"""Generate 47 prefecture-level SEO landing pages for AutonoMath (jpcite.com).
 
 Targets long-tail organic queries like:
     "<都道府県名> 補助金"
@@ -92,7 +92,7 @@ DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_TEMPLATE_DIR = REPO_ROOT / "site" / "_templates"
 DEFAULT_OUT = REPO_ROOT / "site" / "prefectures"
 DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-prefectures.xml"
-DEFAULT_DOMAIN = "zeimu-kaikei.ai"
+DEFAULT_DOMAIN = "jpcite.com"
 
 PROGRAMS_PER_PAGE = 20
 CASES_PER_PAGE = 10
@@ -422,9 +422,9 @@ def _org_node(domain: str) -> dict[str, Any]:
     # Canonical Organization @id, unified across all template generators.
     return {
         "@type": "Organization",
-        "@id": "https://zeimu-kaikei.ai/#publisher",
-        "name": "税務会計AI",
-        "alternateName": ["AutonoMath", "Bookyou株式会社"],
+        "@id": "https://jpcite.com/#publisher",
+        "name": "jpcite",
+        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "legalName": OPERATOR_NAME,
         "taxID": OPERATOR_CORPORATE_NUMBER,

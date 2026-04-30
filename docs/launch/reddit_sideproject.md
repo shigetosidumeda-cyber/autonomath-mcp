@@ -6,7 +6,7 @@
 
 ## Body
 
-After about a year of nights and weekends, I launched 税務会計AI today. It's a search API + MCP server over Japanese institutional data — 10,790 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, plus tax rulesets and enforcement records. Every row has a primary-source URL.
+After about a year of nights and weekends, I launched jpcite today. It's a search API + MCP server over Japanese institutional data — 10,790 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, plus tax rulesets and enforcement records. Every row has a primary-source URL.
 
 **The 1-year build journey, condensed**:
 
@@ -23,12 +23,12 @@ After about a year of nights and weekends, I launched 税務会計AI today. It's
 **Try it**:
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
 Returns JSON with primary-source URLs. No key needed for first 50/month.
 
-- Site: https://zeimu-kaikei.ai
+- Site: https://jpcite.com
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 

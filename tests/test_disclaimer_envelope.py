@@ -7,7 +7,7 @@ Covers
    combined_compliance_check, rule_engine_check, predict_subsidy_outcome,
    score_dd_risk, intent_of, reason_answer, search_tax_incentives,
    get_am_tax_rule, list_tax_sunset_alerts}. Tax tools were promoted on
-   2026-04-29 (税理士法 §52 fence — zeimu-kaikei.ai brand sits in 税務会計
+   2026-04-29 (税理士法 §52 fence — jpcite.com brand sits in 税務会計
    territory; every tax surface MUST decline 税務助言).
 
 2. `disclaimer_level="minimal"` shortens the disclaimer (less than the
@@ -65,7 +65,7 @@ def test_sensitive_tools_carry_disclaimer():
     Set includes the original 6 (DD / compliance / scoring) plus intent_of /
     reason_answer (added 2026-04-25) plus tax tools search_tax_incentives /
     get_am_tax_rule / list_tax_sunset_alerts (added 2026-04-29 for 税理士法
-    §52 fence — zeimu-kaikei.ai brand).
+    §52 fence — jpcite.com brand).
     """
     _envelope_merge = _import_envelope_merge()
     _, _, sensitive = _import_build_envelope()

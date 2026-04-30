@@ -51,13 +51,13 @@ https://github.com/shigetosidumeda-cyber/jpintel-mcp
 ### Homepage URL
 
 ```
-https://zeimu-kaikei.ai
+https://jpcite.com
 ```
 
 ### Documentation URL
 
 ```
-https://zeimu-kaikei.ai/docs/
+https://jpcite.com/docs/
 ```
 
 ### Install command

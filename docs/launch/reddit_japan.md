@@ -8,7 +8,7 @@
 
 Posting because this might be useful for r/japan readers running businesses or freelancing here.
 
-I built 税務会計AI — a search API over Japanese institutional public data:
+I built jpcite — a search API over Japanese institutional public data:
 
 - 10,790 subsidy programs across all 47 prefectures (national + local)
 - 9,484 laws from e-Gov (CC-BY)
@@ -26,12 +26,12 @@ You can hit it from a script, from Claude / ChatGPT via MCP, or just curl it man
 Quick demo — try this in a terminal:
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=IT&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=IT&prefecture=東京都"
 ```
 
 Returns programs in Tokyo matching "IT" with primary-source URLs.
 
-- Site: https://zeimu-kaikei.ai
+- Site: https://jpcite.com
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 
 Solo project (just me, Bookyou株式会社). No support team — it's all self-service. AMA if you've ever banged your head trying to find subsidy info and want me to look something up.

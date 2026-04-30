@@ -51,7 +51,7 @@ _DEFAULT_DB = Path(
     os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
 )
 _DEFAULT_OUT = _REPO_ROOT / "site" / "audit-log.rss.new"
-_DEFAULT_DOMAIN = "zeimu-kaikei.ai"
+_DEFAULT_DOMAIN = "jpcite.com"
 _UTC = UTC
 
 _MAX_ITEMS = 50
@@ -171,7 +171,7 @@ def _render_rss(rows: list[dict], *, domain: str) -> str:
         'xmlns:cc="http://web.resource.org/cc/">'
     )
     lines.append("<channel>")
-    lines.append("  <title>税務会計AI 変更履歴 (am_amendment_diff)</title>")
+    lines.append("  <title>jpcite 変更履歴 (am_amendment_diff)</title>")
     lines.append(f"  <link>{_xml_escape(page_url)}</link>")
     lines.append(
         f'  <atom:link href="{_xml_escape(feed_url)}" rel="self" type="application/rss+xml" />'

@@ -62,8 +62,8 @@ If you build AI agents that touch Japanese SMBs, accountants, certified
 support orgs, or do DD on Japanese companies, I'd be glad to hear how
 it performs in your workflow.
 
-Press kit: https://zeimu-kaikei.ai/press/
-Docs: https://zeimu-kaikei.ai/docs/
+Press kit: https://jpcite.com/press/
+Docs: https://jpcite.com/docs/
 PyPI: https://pypi.org/project/autonomath-mcp/
 
 #MCP #ClaudeDesktop #JapanTech #SaaS #AIagents

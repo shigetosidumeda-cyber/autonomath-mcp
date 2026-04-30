@@ -70,7 +70,7 @@ service impact: zero (overlap window prevents drop).
 
 1. https://dashboard.stripe.com → Developers → Webhooks
 2. Filter to **Live mode** (toggle top-left).
-3. Locate endpoint `https://api.zeimu-kaikei.ai/v1/billing/webhook`.
+3. Locate endpoint `https://api.jpcite.com/v1/billing/webhook`.
 4. Confirm 5 events subscribed:
    - `customer.subscription.created`
    - `invoice.paid`
@@ -321,7 +321,7 @@ shown is for the new URL. The old secret continues working for the old
 URL until the old endpoint is deleted.
 
 Check Stripe Dashboard for multiple endpoints with similar names. There
-should be exactly one Live endpoint at `https://api.zeimu-kaikei.ai/v1/billing/webhook`.
+should be exactly one Live endpoint at `https://api.jpcite.com/v1/billing/webhook`.
 Delete duplicates.
 
 ---

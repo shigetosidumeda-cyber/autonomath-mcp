@@ -123,7 +123,7 @@
   function _resultPlainBlock(r, index) {
     var lines = [];
     lines.push((index + 1) + ". " + (r.primary_name || r.unified_id));
-    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://zeimu-kaikei.ai";
+    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://jpcite.com";
     var path = (typeof r.static_url === "string" && r.static_url) ? r.static_url : "/programs/";
     lines.push("   URL: " + origin + path);
     if (r.amount_max_man_yen != null) {
@@ -149,7 +149,7 @@
   // mail body footer.
   function _mailtoBody(results) {
     var n = results.length;
-    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://zeimu-kaikei.ai";
+    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://jpcite.com";
     var blocks = results.map(function (r, i) { return _resultPlainBlock(r, i); }).join("\n\n");
     return [
       "Hello,",
@@ -200,7 +200,7 @@
   function _buildShareUrl() {
     if (!lastResults || !lastResults.length) return null;
     var ids = lastResults.map(function (r) { return r.unified_id; }).filter(Boolean);
-    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://zeimu-kaikei.ai";
+    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://jpcite.com";
     var url = origin + "/programs/share.html?ids=" + encodeURIComponent(ids.join(","));
     if (url.length > 1800) {
       url = url.slice(0, 1800);

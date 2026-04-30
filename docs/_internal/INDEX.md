@@ -10,7 +10,7 @@ Authoritative ground truth (defer to CLAUDE.md if drift):
 - **Manifest version**: v0.3.0 (`pyproject.toml` / `server.json` / `mcp-server.json` / `dxt/manifest.json` / `smithery.yaml`). v0.2.0 references in old logs are historical.
 - **Programs**: 11,547 searchable (tier S/A/B/C) / 13,578 total rows (incl. tier X quarantine).
 - **Pricing**: ¥3/req metered (税込 ¥3.30) + 無料 50/月 anonymous IP quota. **No "Free tier"/"Starter"/"Pro" SKUs exist** for AutonoMath. ("Free tier" mentions of Grafana Cloud / Cloudflare / Fly.io are about *vendor* tiers and remain valid.)
-- **Operator**: Bookyou株式会社 (法人番号 T8010001213708), 代表 梅田茂利, info@bookyou.net.
+- **Operator**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708), 代表 梅田茂利, info@bookyou.net.
 
 ---
 

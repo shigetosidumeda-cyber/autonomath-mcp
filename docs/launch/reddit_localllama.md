@@ -6,7 +6,7 @@
 
 ## Body
 
-If you're building agents that need to reason about Japanese institutional data (subsidies, laws, court decisions, tax rulesets), you can now plug in 税務会計AI as an MCP server.
+If you're building agents that need to reason about Japanese institutional data (subsidies, laws, court decisions, tax rulesets), you can now plug in jpcite as an MCP server.
 
 **Coverage** (every row has a primary-source URL — no aggregators):
 
@@ -37,7 +37,7 @@ If you're building agents that need to reason about Japanese institutional data 
 }
 ```
 
-When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.zeimu-kaikei.ai`. The first 50 req/month per IP are free anonymous, no signup. Past that it's ¥3/req metered. If you want full local DB performance, clone the repo.
+When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.jpcite.com`. The first 50 req/month per IP are free anonymous, no signup. Past that it's ¥3/req metered. If you want full local DB performance, clone the repo.
 
 **Local-only path**: clone the repo, pull the DB tarball, run `autonomath-mcp` against the local SQLite. No network calls. The README has the steps.
 
@@ -48,11 +48,11 @@ When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto
 Quick smoke-test from a terminal:
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=AI&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=AI&prefecture=東京都"
 ```
 
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
-- Site: https://zeimu-kaikei.ai
+- Site: https://jpcite.com
 
 Solo built (Bookyou株式会社). No VC, no team. Self-service. Happy to answer MCP-integration questions or help debug a local setup in this thread.

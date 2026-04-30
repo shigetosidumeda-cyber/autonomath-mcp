@@ -42,7 +42,7 @@ AutonoMath はそこに API 1 本を刺します。
 ### Step 1: 補助金を検索する
 
 ```bash
-curl -s "https://api.zeimu-kaikei.ai/v1/programs/search?q=設備投資&prefecture=埼玉県&limit=3" \
+curl -s "https://api.jpcite.com/v1/programs/search?q=設備投資&prefecture=埼玉県&limit=3" \
   | python3 -m json.tool
 ```
 
@@ -72,7 +72,7 @@ curl -s "https://api.zeimu-kaikei.ai/v1/programs/search?q=設備投資&prefectur
 候補が揃ったら、複数制度の「同時申請不可」を一括チェックします。
 
 ```bash
-curl -s -X POST "https://api.zeimu-kaikei.ai/v1/exclusions/check" \
+curl -s -X POST "https://api.jpcite.com/v1/exclusions/check" \
   -H "Content-Type: application/json" \
   -d '{
     "unified_ids": [
@@ -109,7 +109,7 @@ curl -s -X POST "https://api.zeimu-kaikei.ai/v1/exclusions/check" \
 ```bash
 export AM_KEY="am_xxxxxxxxxxxxxxxx"
 
-curl -s "https://api.zeimu-kaikei.ai/v1/programs/search?q=クラウド&limit=5" \
+curl -s "https://api.jpcite.com/v1/programs/search?q=クラウド&limit=5" \
   -H "X-API-Key: $AM_KEY" \
   | python3 -m json.tool
 ```
@@ -128,7 +128,7 @@ Claude や GPT に「うちの会社で使える補助金は?」と聞くと、
 これは LLM の性能の問題ではなく、**信頼できるデータが LLM の外にないことの問題**です。
 
 AutonoMath を運営しているのは、東京の小さなソフトウェア会社
-Bookyou株式会社（法人番号 T8010001213708）です。
+Bookyou株式会社（適格請求書発行事業者番号 T8010001213708）です。
 ソロ運用・ゼロタッチ前提で設計しています。
 
 ---
@@ -216,7 +216,7 @@ HTTP 429 のレスポンスには次のリセット日時が入ります。
 - ¥3/req 税別（税込 ¥3.30）、匿名 50 req/月 per IP 無料
 - `source_url` + `fetched_at` を 99%以上の行に付与
 
-**AutonoMath: https://zeimu-kaikei.ai**
+**AutonoMath: https://jpcite.com**
 
 ---
 

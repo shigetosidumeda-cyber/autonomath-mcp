@@ -18,7 +18,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:site_name" content="税務会計AI">
+<meta property="og:site_name" content="jpcite">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page_title }}">
@@ -42,158 +42,175 @@
 <a href="#main" class="skip-link">本文へスキップ</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/docs/">Docs</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/dashboard.html">検索</a>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="..//docs/">ドキュメント</a>
+ <a href="../pricing.html">料金</a>
+ <a href="../audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="../status.html">稼働状況</a></li>
+ <li><a href="../data-freshness.html">データ鮮度</a></li>
+ <li><a href="../transparency.html">透明性</a></li>
+ <li><a href="../sources.html">出典</a></li>
+ <li><a href="../changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/_templates/industry_program.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/_templates/industry_program.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="industry-program-page">
-  <div class="container">
+ <div class="container">
 
-    <nav class="breadcrumb" aria-label="パンくず">
-      <a href="/">ホーム</a> &rsaquo;
-      <a href="/industries/">業種別</a> &rsaquo;
-      <a href="/industries/{{ jsic_code }}/">{{ jsic_name_ja }}</a> &rsaquo;
-      <span aria-current="page">{{ primary_name }}</span>
-    </nav>
+ <nav class="breadcrumb" aria-label="パンくず">
+ <a href="/">ホーム</a> &rsaquo;
+ <a href="/industries/">業種別</a> &rsaquo;
+ <a href="/industries/{{ jsic_code }}/">{{ jsic_name_ja }}</a> &rsaquo;
+ <span aria-current="page">{{ primary_name }}</span>
+ </nav>
 
-    <article>
-      <header class="industry-program-header">
-        <h1>{{ jsic_name_ja }}における{{ primary_name }}の活用方法 | 採択事例 | 税務会計AI</h1>
-        <p class="byline">
-          <span class="updated">出典取得: {{ fetched_at_ja }}</span>
-          <span class="sep">/</span>
-          <span class="source">出典: <a href="{{ source_url }}" rel="external nofollow noopener">{{ source_domain }}</a></span>
-          <span class="sep">/</span>
-          <span class="author">Bookyou株式会社 (梅田茂利)</span>
-        </p>
-        <p class="byline-note muted">業種コード <code>{{ jsic_code }}</code> ({{ jsic_name_ja }}) における {{ primary_name }} の機械可読データを 税務会計AI が集約。一次情報は出典欄の公式ページに帰属します。</p>
-      </header>
+ <article>
+ <header class="industry-program-header">
+ <h1>{{ jsic_name_ja }}における{{ primary_name }}の活用方法 | 採択事例 | jpcite</h1>
+ <p class="byline">
+ <span class="updated">出典取得: {{ fetched_at_ja }}</span>
+ <span class="sep">/</span>
+ <span class="source">出典: <a href="{{ source_url }}" rel="external nofollow noopener">{{ source_domain }}</a></span>
+ <span class="sep">/</span>
+ <span class="author">Bookyou株式会社 (梅田茂利)</span>
+ </p>
+ <p class="byline-note muted">業種コード <code>{{ jsic_code }}</code> ({{ jsic_name_ja }}) における {{ primary_name }} の機械可読データを jpcite が集約。一次情報は出典欄の公式ページに帰属します。</p>
+ </header>
 
-      <section class="tldr" aria-labelledby="tldr-title">
-        <h2 id="tldr-title">TL;DR</h2>
-        <p>{{ tldr_paragraph }}</p>
-      </section>
+ <section class="tldr" aria-labelledby="tldr-title">
+ <h2 id="tldr-title">TL;DR</h2>
+ <p>{{ tldr_paragraph }}</p>
+ </section>
 
-      <dl class="program-meta">
-        <dt>業種</dt>
-        <dd>{{ jsic_name_ja }} (JSIC <code>{{ jsic_code }}</code>)</dd>
-        <dt>制度名</dt>
-        <dd><a href="/programs/{{ program_slug_full }}">{{ primary_name }}</a></dd>
-        {%- if tier %}
-        <dt>Tier</dt>
-        <dd><span class="tier tier-{{ tier|lower }}">{{ tier }}</span></dd>
-        {%- endif %}
-        <dt>制度区分</dt>
-        <dd>{{ kind_ja }}</dd>
-        {%- if resolved_agency %}
-        <dt>提供主体</dt>
-        <dd>{{ resolved_agency }}{% if prefecture %} ({{ prefecture }}){% endif %}</dd>
-        {%- endif %}
-        {%- if amount_line %}
-        <dt>支援金額</dt>
-        <dd>{{ amount_line }}</dd>
-        {%- endif %}
-        {%- if subsidy_rate_line %}
-        <dt>補助率</dt>
-        <dd>{{ subsidy_rate_line }}</dd>
-        {%- endif %}
-        {%- if target_types_ja %}
-        <dt>対象者</dt>
-        <dd>{{ target_types_ja | join('、') }}</dd>
-        {%- endif %}
-      </dl>
+ <dl class="program-meta">
+ <dt>業種</dt>
+ <dd>{{ jsic_name_ja }} (JSIC <code>{{ jsic_code }}</code>)</dd>
+ <dt>制度名</dt>
+ <dd><a href="/programs/{{ program_slug_full }}">{{ primary_name }}</a></dd>
+ {%- if tier %}
+ <dt>Tier</dt>
+ <dd><span class="tier tier-{{ tier|lower }}">{{ tier }}</span></dd>
+ {%- endif %}
+ <dt>制度区分</dt>
+ <dd>{{ kind_ja }}</dd>
+ {%- if resolved_agency %}
+ <dt>提供主体</dt>
+ <dd>{{ resolved_agency }}{% if prefecture %} ({{ prefecture }}){% endif %}</dd>
+ {%- endif %}
+ {%- if amount_line %}
+ <dt>支援金額</dt>
+ <dd>{{ amount_line }}</dd>
+ {%- endif %}
+ {%- if subsidy_rate_line %}
+ <dt>補助率</dt>
+ <dd>{{ subsidy_rate_line }}</dd>
+ {%- endif %}
+ {%- if target_types_ja %}
+ <dt>対象者</dt>
+ <dd>{{ target_types_ja | join('、') }}</dd>
+ {%- endif %}
+ </dl>
 
-      <section aria-labelledby="match-title">
-        <h2 id="match-title">{{ jsic_name_ja }}における本制度の位置付け</h2>
-        <p>{{ industry_match_paragraph }}</p>
-      </section>
+ <section aria-labelledby="match-title">
+ <h2 id="match-title">{{ jsic_name_ja }}における本制度の位置付け</h2>
+ <p>{{ industry_match_paragraph }}</p>
+ </section>
 
-      <section aria-labelledby="qa-title">
-        <h2 id="qa-title">{{ jsic_name_ja }}事業者から多い質問</h2>
-        <dl class="qa-list">
-          {%- for qa in qa_pairs %}
-          <dt>Q. {{ qa.q }}</dt>
-          <dd>A. {{ qa.a }}</dd>
-          {%- endfor %}
-        </dl>
-      </section>
+ <section aria-labelledby="qa-title">
+ <h2 id="qa-title">{{ jsic_name_ja }}事業者から多い質問</h2>
+ <dl class="qa-list">
+ {%- for qa in qa_pairs %}
+ <dt>Q. {{ qa.q }}</dt>
+ <dd>A. {{ qa.a }}</dd>
+ {%- endfor %}
+ </dl>
+ </section>
 
-      <section aria-labelledby="source-title">
-        <h2 id="source-title">出典・一次情報</h2>
-        <p>本ページの内容は以下の一次情報に基づきます。最新の公募状況・詳細要件は必ず公式ページをご確認ください。</p>
-        <p><a class="primary-link" rel="external nofollow noopener" href="{{ source_url }}">{{ source_org or source_domain }} の公式ページを開く</a></p>
-        {%- if fetched_at %}
-        <p class="muted">データ取得日: {{ fetched_at }}</p>
-        {%- endif %}
-      </section>
+ <section aria-labelledby="source-title">
+ <h2 id="source-title">出典・一次情報</h2>
+ <p>本ページの内容は以下の一次情報に基づきます。最新の公募状況・詳細要件は必ず公式ページをご確認ください。</p>
+ <p><a class="primary-link" rel="external nofollow noopener" href="{{ source_url }}">{{ source_org or source_domain }} の公式ページを開く</a></p>
+ {%- if fetched_at %}
+ <p class="muted">データ更新日: {{ fetched_at }}</p>
+ {%- endif %}
+ </section>
 
-      {%- if sibling_jsic %}
-      <section aria-labelledby="sibling-title">
-        <h2 id="sibling-title">近い業種で同じ制度を使えるか</h2>
-        <ul class="sibling-list">
-          {%- for s in sibling_jsic %}
-          <li><a href="/industries/{{ s.code }}/{{ program_slug }}/">{{ s.name_ja }} における {{ primary_name }}</a></li>
-          {%- endfor %}
-        </ul>
-      </section>
-      {%- endif %}
+ {%- if sibling_jsic %}
+ <section aria-labelledby="sibling-title">
+ <h2 id="sibling-title">近い業種で同じ制度を使えるか</h2>
+ <ul class="sibling-list">
+ {%- for s in sibling_jsic %}
+ <li><a href="/industries/{{ s.code }}/{{ program_slug }}/">{{ s.name_ja }} における {{ primary_name }}</a></li>
+ {%- endfor %}
+ </ul>
+ </section>
+ {%- endif %}
 
-      {%- if other_programs %}
-      <section aria-labelledby="other-title">
-        <h2 id="other-title">{{ jsic_name_ja }}向けの他の制度</h2>
-        <ul class="other-list">
-          {%- for o in other_programs %}
-          <li><a href="/industries/{{ jsic_code }}/{{ o.slug }}/">{{ o.name }}</a> <span class="muted">- {{ o.kind_ja }}</span></li>
-          {%- endfor %}
-        </ul>
-      </section>
-      {%- endif %}
+ {%- if other_programs %}
+ <section aria-labelledby="other-title">
+ <h2 id="other-title">{{ jsic_name_ja }}向けの他の制度</h2>
+ <ul class="other-list">
+ {%- for o in other_programs %}
+ <li><a href="/industries/{{ jsic_code }}/{{ o.slug }}/">{{ o.name }}</a> <span class="muted">- {{ o.kind_ja }}</span></li>
+ {%- endfor %}
+ </ul>
+ </section>
+ {%- endif %}
 
-      <section aria-labelledby="api-title">
-        <h2 id="api-title">API / MCP で取得</h2>
-        <p>本制度の機械可読データは REST / MCP の両方で取得できます。</p>
-        <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
-  "https://api.{{ DOMAIN }}/v1/programs/{{ unified_id }}"</code></pre>
-        <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_program(unified_id="{{ unified_id }}")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
-        <p class="api-cta-line">無料 50 リクエスト/月。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
-      </section>
+ <section aria-labelledby="api-title">
+ <h2 id="api-title">API / MCP で取得</h2>
+ <p>本制度の機械可読データは REST / MCP の両方で取得できます。</p>
+ <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
+ "https://api.{{ DOMAIN }}/v1/programs/{{ unified_id }}"</code></pre>
+ <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_program(unified_id="{{ unified_id }}")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
+ <p class="api-cta-line">無料 50 リクエスト/月。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
+ </section>
 
-      <p class="disclaimer">本ページは自動生成された業種×制度クロスリファレンスのプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。業種コード ({{ jsic_code }}) と本制度の適合性は、税務会計AI のルールベース推定であり、申請可否を保証するものではありません。制度の最新内容は所管官公庁・自治体の一次情報を必ずご確認ください。</p>
-    </article>
+ <p class="disclaimer">本ページは自動生成された業種×制度クロスリファレンスのプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。業種コード ({{ jsic_code }}) と本制度の適合性は、jpcite のルールベース推定であり、申請可否を保証するものではありません。制度の最新内容は所管官公庁・自治体の一次情報を必ずご確認ください。</p>
+ </article>
 
-  </div>
+ </div>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター 法務・連絡">
-      <a href="/tos.html">利用規約</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
-      <a href="/industries/" hreflang="ja">業種別</a>
-      <a href="/qa/" hreflang="ja">Q&amp;A</a>
-      <a href="/compare.html" hreflang="ja">比較</a>
-      <a href="/prefectures/" hreflang="ja">都道府県別</a>
-    </nav>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-    <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の制度 API</p>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター 法務・連絡">
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特定商取引法</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
+ <a href="/industries/" hreflang="ja">業種別</a>
+ <a href="/qa/" hreflang="ja">Q&amp;A</a>
+ <a href="/compare.html" hreflang="ja">比較</a>
+ <a href="/prefectures/" hreflang="ja">都道府県別</a>
+ </nav>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
+ </div>
 </footer>
 
 </body>

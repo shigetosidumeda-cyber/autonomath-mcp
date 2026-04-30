@@ -4,30 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>製造業向け 税務会計AI — JSIC E ものづくり + 通達 + 裁決事例 (¥3/リクエスト)</title>
-<meta name="description" content="製造業 (JSIC E) 向け 税務会計AI。ものづくり・設備投資・省エネ・GX・事業再構築・IT導入関連の補助金 + 法基通 + 国税不服審判所 裁決事例 (法人税・所得税) を 1 API で。pack_manufacturing MCP tool で 1 req に集約、¥3/req metered。">
+<title>製造業向け jpcite — ものづくり 補助金 + 通達 + 裁決事例 (¥3/リクエスト)</title>
+<meta name="description" content="製造業向け jpcite。ものづくり・設備投資・省エネ・GX・事業再構築・IT導入関連の補助金 + 法人税基本通達 + 国税不服審判所 裁決事例 (法人税・所得税) を 1 API で。製造業 業種別パック (`pack_manufacturing`) で 1 リクエストに集約、¥3/リクエスト 従量。">
 
-<meta property="og:title" content="製造業向け 税務会計AI — JSIC E ものづくり + 通達 + 裁決事例">
-<meta property="og:description" content="製造業特化 cohort pack。1 req で top 10 補助金 + 法基通 + 裁決事例。¥3/req、Free 50 req/月。">
+<meta property="og:title" content="製造業向け jpcite — ものづくり 補助金 + 通達 + 裁決事例">
+<meta property="og:description" content="製造業特化 業種別パック。1 リクエストで主要 10 補助金 + 法人税基本通達 + 裁決事例。¥3/リクエスト、無料 50 リクエスト/月。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/audiences/manufacturing.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/audiences/manufacturing.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:site_name" content="税務会計AI">
+<meta property="og:site_name" content="jpcite">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="製造業向け 税務会計AI — JSIC E">
-<meta name="twitter:description" content="製造業 cohort pack: 1 req で 10 補助金 + 通達 + 裁決事例。¥3/req metered。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="製造業向け jpcite">
+<meta name="twitter:description" content="製造業 業種別パック: 1 リクエストで 10 補助金 + 通達 + 裁決事例。¥3/リクエスト 従量。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/audiences/manufacturing.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/audiences/manufacturing.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/audiences/manufacturing.html">
+<link rel="canonical" href="https://jpcite.com/audiences/manufacturing.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/audiences/manufacturing.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/audiences/manufacturing.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=20260428a">
 
@@ -36,9 +39,9 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://zeimu-kaikei.ai/"},
-    {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://zeimu-kaikei.ai/audiences/"},
-    {"@type": "ListItem", "position": 3, "name": "製造業向け", "item": "https://zeimu-kaikei.ai/audiences/manufacturing.html"}
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://jpcite.com/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "製造業向け", "item": "https://jpcite.com/audiences/manufacturing.html"}
   ]
 }
 </script>
@@ -48,12 +51,12 @@
   "@context": "https://schema.org",
   "@type": "Service",
   "serviceType": "製造業向け 補助金・通達・裁決事例 API",
-  "name": "税務会計AI for 製造業 (JSIC E)",
-  "description": "製造業 (JSIC E) 特化 cohort pack。ものづくり・設備投資・省エネ・GX・事業再構築・IT導入関連の補助金 + 法基通 + 国税不服審判所 裁決事例を 1 req に集約。¥3/req metered。",
+  "name": "jpcite for 製造業",
+  "description": "製造業特化 業種別パック。ものづくり・設備投資・省エネ・GX・事業再構築・IT導入関連の補助金 + 法人税基本通達 + 国税不服審判所 裁決事例を 1 リクエストに集約。¥3/リクエスト 従量。",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://zeimu-kaikei.ai/",
+    "url": "https://jpcite.com/",
     "identifier": "T8010001213708"
   },
   "audience": {
@@ -72,226 +75,91 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="../index.html" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="../products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="../pricing.html">Pricing</a>
-      <a href="../dashboard.html">ダッシュボードへ</a>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="../index.html" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../pricing.html">料金</a>
+ <a href="../audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="../status.html">稼働状況</a></li>
+ <li><a href="../data-freshness.html">データ鮮度</a></li>
+ <li><a href="../transparency.html">透明性</a></li>
+ <li><a href="../sources.html">出典</a></li>
+ <li><a href="../changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/audiences/manufacturing.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/audiences/manufacturing.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
 
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="container">
-      <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
-        <a href="../index.html">ホーム</a> &raquo; <a href="index.html">利用者層 別</a> &raquo; <span aria-current="page">製造業向け</span>
-      </nav>
-      <h1 id="hero-title">製造業 (JSIC E) 向け — 1 リクエスト ¥3 で 補助金 71 件 + 通達 + 裁決を集約。</h1>
-      <p class="hero-sub">ものづくり・設備投資・省エネ・GX・脱炭素・事業再構築・IT導入・DX 関連の 補助金 71 件 + 法基通 + 国税不服審判所 裁決事例 (法人税・所得税) を <strong><code>pack_manufacturing</code></strong> で 1 リクエスト ¥3 に集約。 経産省・NEDO・SII の S tier 大型予算を上位返却。</p>
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/audiences/">利用者層</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">製造業向け</span>
+ </nav>
+ <h1 id="hero-title">製造業向け</h1>
+ <p class="hero-sub">ものづくり・設備投資・省エネ・GX・脱炭素・事業再構築・IT 導入関連の補助金 + 通達 + 裁決事例を 1 リクエストで取得。</p>
+ </div>
+ </section>
 
-      <pre class="code-block" aria-label="hero example for manufacturing" style="margin:16px 0 14px;font-size:14px;line-height:1.55;"><code># 愛知県 製造業 50人 で 補助金 + 通達 + 裁決 を 1 req ¥3
-$ curl -H "X-API-Key: sk_..." \
-    'https://api.zeimu-kaikei.ai/v1/am/pack_manufacturing?prefecture=愛知県&amp;employee_count=50'
-# 戻り: top 10 (事業再構築・省エネ・GX 優先) + 5 裁決 + 3 通達</code></pre>
-
-      <div class="cta-row">
-        <a class="btn btn-primary" href="../dashboard.html" data-cta-variant="manufacturing-issue">APIキーを発行 → (¥3.30/リクエスト)</a>
-        <a class="btn btn-secondary" href="/docs/mcp-tools/#pack_manufacturing">pack_manufacturing tool 仕様</a>
-        <a class="btn btn-secondary" href="/industries/E/">JSIC E 制度一覧 (71 件)</a>
-        <a class="btn btn-secondary" href="../pricing.html">料金</a>
-      </div>
-      <p class="trust-strip" style="margin:16px 0 0;font-size:13px;color:var(--text-muted);line-height:1.7;">
-        運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-        &middot; <a href="../tokushoho.html">特商法表記</a> / <a href="../tos.html">利用規約</a> / <a href="../privacy.html">プライバシー</a>
-        &middot; <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
-        &middot; 一次資料 99%+ (集約サイト 除外リスト)
-        &middot; データ最終取り込み <time data-trust-fresh datetime="2026-04-29">2026-04-29</time>
-      </p>
-    </div>
-  </section>
-
-  <section class="features" aria-labelledby="why-title">
-    <div class="container">
-      <h2 id="why-title" class="section-title">なぜ 製造業 利用者層 pack か</h2>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
-
-        <article class="card" style="min-width:0;">
-          <h3>1 リクエスト で全部</h3>
-          <p class="card-lead">補助金 + 通達 + 裁決事例</p>
-          <p>従来は <code>search_programs</code> + <code>find_saiketsu</code> + <code>cite_tsutatsu</code> を別々に呼ぶ必要があった。<code>pack_manufacturing</code> は 1 リクエスト に集約し、課金も 1 件 (¥3 税別)。</p>
-        </article>
-
-        <article class="card" style="min-width:0;">
-          <h3>製造業 fence 自動適用</h3>
-          <p class="card-lead">JSIC E + 名称キーワード</p>
-          <p>「ものづくり・製造・設備投資・省エネ・GX・脱炭素・事業再構築・IT導入・DX・工場・生産・技術開発」のキーワード fence を自動適用。</p>
-        </article>
-
-        <article class="card" style="min-width:0;">
-          <h3>S tier 制度を最優先</h3>
-          <p class="card-lead">経産省 / NEDO / SII 大型予算</p>
-          <p>S tier の事業再構築・省エネ補助金 (工場・事業場型) ・ZEH-M / ZEB / DX推進事業を上位返却。各 source_url は SII / 経産省 / NEDO 公式。</p>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="code-demo" aria-labelledby="programs-title">
-    <div class="container">
-      <h2 id="programs-title" class="section-title">代表 8 制度 (JSIC E 71 件中、tier S/A 抜粋)</h2>
-      <p class="demo-lead" style="margin:-16px 0 18px;">クリックで一次資料 (省庁公式) を開く。<code>pack_manufacturing</code> はこのリストの top 10 を自動返却。</p>
-      <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);">
-          <strong>中小企業等 事業再構築促進基金</strong> &mdash; 経産省 (tier S) &middot;
-          <a href="https://jigyou-saikouchiku.go.jp" rel="noopener" target="_blank">事業再構築 公式</a>
-        </li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);">
-          <strong>令和7年度補正予算 省エネ・非化石転換補助金 (工場・事業場型)</strong> &mdash; SII (tier S) &middot;
-          <a href="https://sii.or.jp/koujou07r/" rel="noopener" target="_blank">SII 公式</a>
-        </li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);">
-          <strong>令和7年度補正予算 省エネ・非化石転換補助金 (設備単位型)</strong> &mdash; SII (tier S) &middot;
-          <a href="https://sii.or.jp/setsubi07r/" rel="noopener" target="_blank">SII 公式</a>
-        </li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);">
-          <strong>令和7年度補正 地域エネルギー利用最適化・省エネルギー診断拡充事業</strong> &mdash; SII (tier S) &middot;
-          <a href="https://sii.or.jp/shindan07r/" rel="noopener" target="_blank">SII 公式</a>
-        </li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);">
-          <strong>東京都ゼロエミッション化省エネ設備導入支援事業</strong> &mdash; 東京都 (tier S) &middot;
-          <a href="https://www.tokyo-co2down.jp/subsidy/zeroemi-shoene" rel="noopener" target="_blank">東京都 公式</a>
-        </li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);">
-          <strong>カーボンリサイクル・火力発電の脱炭素化技術等国際協力事業</strong> &mdash; NEDO (tier S) &middot;
-          <a href="https://www.nedo.go.jp/koubo/EV2_100318.html" rel="noopener" target="_blank">NEDO 公式</a>
-        </li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);">
-          <strong>DX推進・事業者支援</strong> &mdash; 埼玉県 (tier A) &middot;
-          <a href="https://www.pref.saitama.lg.jp/a0803/dx_jigyousyashien/dx_index.html" rel="noopener" target="_blank">埼玉県 公式</a>
-        </li>
-        <li style="padding:10px 0;">
-          <strong>ものづくり・商業・サービス生産性向上促進補助金 (ものづくり補助金)</strong> &mdash; 中小企業基盤整備機構 (tier A) &middot;
-          <a href="https://portal.monodukuri-hojo.jp/" rel="noopener" target="_blank">ものづくり補助金 公式</a>
-        </li>
-      </ul>
-      <p class="demo-note" style="margin-top:16px;">残り 63 件を含む完全リストは <a href="/industries/E/">JSIC E 制度一覧</a> 参照。pack call には自動で top 10 が含まれます。</p>
-    </div>
-  </section>
-
-  <section class="code-demo" aria-labelledby="examples-title" id="examples">
-    <div class="container">
-      <h2 id="examples-title" class="section-title">3 つの代表クエリ</h2>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
-
-        <article class="card" style="min-width:0;">
-          <h3>1. 「愛知県 製造業 50人 補助金」</h3>
-          <pre class="code-block" style="min-width:0;max-width:100%;"><code># MCP (Claude Desktop / Cursor)
-pack_manufacturing(
-  prefecture="愛知県",
-  employee_count=50,
-  revenue_yen=500_000_000
-)
-
-# REST
-curl -H "X-API-Key: sk_..." \
-  "https://api.zeimu-kaikei.ai/v1/am/pack_manufacturing?prefecture=愛知県&employee_count=50"</code></pre>
-          <p class="demo-note">1 リクエスト ¥3。top 10 補助金 + 5 裁決事例 + 3 通達。</p>
-        </article>
-
-        <article class="card" style="min-width:0;">
-          <h3>2. 「ものづくり + 事業再構築」</h3>
-          <pre class="code-block" style="min-width:0;max-width:100%;"><code># 検索系で深掘り
-search_programs(
-  q="事業再構築 製造業",
-  industry_jsic="E",
-  tier=["S","A"],
-  limit=20
-)</code></pre>
-          <p class="demo-note">pack 後に <code>_next_calls</code> hint で詳細クエリへ。</p>
-        </article>
-
-        <article class="card" style="min-width:0;">
-          <h3>3. 「研究開発税制 法人税」</h3>
-          <pre class="code-block" style="min-width:0;max-width:100%;"><code># 国税不服審判所 直接検索
-find_saiketsu(
-  query="研究開発 税額控除",
-  tax_type="法人税"
-)</code></pre>
-          <p class="demo-note">pack に含まれない裁決事例を補完。</p>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <section class="features" aria-labelledby="quickstart-title" id="quickstart">
-    <div class="container">
-      <h2 id="quickstart-title" class="section-title">5 分で開始</h2>
-      <ol style="font-size:15px;line-height:1.85;padding-left:22px;margin:0 0 22px;">
-        <li><a href="../dashboard.html"><strong>API キー発行</strong></a> &mdash; メアド登録のみ、カード登録は 50 リクエスト/月 free を超えてから。</li>
-        <li>Claude Desktop / Cursor 設定: <code>uvx autonomath-mcp</code>。詳細は <a href="dev.html">developer 向け</a>。</li>
-        <li>「<code>pack_manufacturing</code>」を呼ぶ &mdash; pref / 従業員数 / 年商を渡すだけで top 10 補助金 + 通達 + 裁決事例。</li>
-        <li>結果の <code>_next_calls</code> に従って <code>search_programs</code> / <code>find_saiketsu</code> へ深掘り。</li>
-      </ol>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="../dashboard.html">API キー発行</a>
-        <a class="btn btn-secondary" href="../pricing.html">料金詳細</a>
-        <a class="btn btn-secondary" href="/docs/mcp-tools/">全 89 tools 一覧</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="features" id="disclaimer-section" aria-labelledby="disclaimer-title">
-    <div class="container">
-      <h2 id="disclaimer-title" class="section-title" style="font-size:18px;">免責事項 (税理士法 §52 / 公認会計士法 §47条の2)</h2>
-      <p style="font-size:14px;line-height:1.8;color:var(--text-muted);">
-        本ページおよび <code>pack_manufacturing</code> tool の出力は、jpintel programs (製造業 fence) + nta_saiketsu + nta_tsutatsu_index 一次資料の機械的 aggregation です。
-        <strong>税務助言 (税理士法 §52) ・監査調書 (公認会計士法 §47条の2) ・申請代理 (行政書士法 §1) ・経営判断 (中小企業診断士の経営助言) の代替ではありません。</strong>
-        業種マッピングは JSIC E + 名称キーワード fence による heuristic で、各 program の適合可否は申請要領を一次資料 (<code>source_url</code>) で必ずご確認ください。
-        裁決事例・通達は公表時点の解釈であり、改正により現在の取扱が変更されている可能性があります。最終判断は資格を有する税理士・公認会計士・行政書士へご相談ください。
-      </p>
-    </div>
-  </section>
-
-  <section class="features" aria-labelledby="related-title" style="background:var(--bg-alt);">
-    <div class="container">
-      <h2 id="related-title" class="section-title">関連 利用者層</h2>
-      <p>業種特化 利用者層 pack は他 2 系統あります:</p>
-      <ul style="font-size:15px;line-height:1.85;">
-        <li><a href="construction.html"><strong>建設業向け</strong></a> &mdash; 建設 / 建築 / 住宅 / 耐震 / 改修 (JSIC D、36 制度)</li>
-        <li><a href="real_estate.html"><strong>不動産業向け</strong></a> &mdash; 空き家対策 / 既存住宅流通 / 賃貸改修 (JSIC K、9 制度)</li>
-        <li><a href="index.html">利用者層 全体を比較</a></li>
-      </ul>
-    </div>
-  </section>
+ <section class="features">
+ <div class="container">
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li>都道府県・従業員数・年商で関連補助金を抽出</li>
+ <li>事業再構築・省エネ・GX 優先で上位返却</li>
+ <li>法人税基本通達・国税不服審判所 裁決事例 (法人税・所得税) を併記</li>
+ <li>各制度・各裁決事例・各通達に出典 URL 付き</li>
+ <li>1 リクエスト ¥3 (税込 ¥3.30) 完全従量、月 50 リクエスト まで無料</li>
+ </ul>
+ <div class="cta-row" style="margin-top:24px;">
+ <a class="btn btn-primary" href="../dashboard.html">API キー発行 &rarr;</a>
+ <a class="btn btn-secondary" href="../pricing.html">料金</a>
+ </div>
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0 0;">
+ 本サービスは情報検索です。個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1)。
+ </p>
+ </div>
+ </section>
 
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API + MCP &middot; ¥3/リクエスト</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="../products.html">Products</a>
-      <a href="../pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="../tos.html">利用規約</a>
-      <a href="../privacy.html">プライバシー</a>
-      <a href="../tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) &middot; 代表取締役 梅田茂利</p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a>
+ <a href="../changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 </body>

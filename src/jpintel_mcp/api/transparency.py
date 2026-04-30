@@ -15,7 +15,7 @@ site/data-freshness.html and site/transparency.html:
       compose the row, plus per-URL license + first_seen + last_verified.
 
 Both endpoints are intentionally CORS-open (Access-Control-Allow-Origin: *)
-because the static pages live on zeimu-kaikei.ai and call api.zeimu-kaikei.ai
+because the static pages live on jpcite.com and call api.jpcite.com
 from JS. The handlers issue zero writes, hold no state, and return ASCII-
 clean JSON. A 30-second in-process cache absorbs landing-page bursts.
 

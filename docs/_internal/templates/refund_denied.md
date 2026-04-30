@@ -1,5 +1,5 @@
 TO: {{customer_email}}
-FROM: support@zeimu-kaikei.ai
+FROM: support@jpcite.com
 SUBJECT: 【jpintel-mcp】返金申請に関するご回答 (ticket {{ticket_id}})
 
 {{customer_name}} 様
@@ -19,12 +19,12 @@ SUBJECT: 【jpintel-mcp】返金申請に関するご回答 (ticket {{ticket_id}
 
 ご契約プランに対し、著しく高い利用量または契約趣旨に反する利用形態が
 確認されたため、返金を見送らせていただく方針でございます。
-詳細につきましては利用規約 (https://zeimu-kaikei.ai/tos.html) をあわせてご確認ください。
+詳細につきましては利用規約 (https://jpcite.com/tos.html) をあわせてご確認ください。
 
 なお、事実関係に相違がございましたら、具体的な利用状況や背景を添えて
 本メールにご返信ください。改めて精査のうえ再回答申し上げます。
 また、ご契約内容 (プラン変更 / 解約) につきましては Stripe カスタマーポータル
-(https://zeimu-kaikei.ai/billing/portal) よりいつでもご自身で変更いただけます。
+(https://jpcite.com/billing/portal) よりいつでもご自身で変更いただけます。
 
 ご期待に沿えない回答となり大変申し訳ございません。
 引き続きどうぞよろしくお願い申し上げます。
@@ -32,5 +32,5 @@ SUBJECT: 【jpintel-mcp】返金申請に関するご回答 (ticket {{ticket_id}
 ---
 jpintel-mcp サポート
 {{operator_name}}
-support@zeimu-kaikei.ai
-https://zeimu-kaikei.ai/
+support@jpcite.com
+https://jpcite.com/

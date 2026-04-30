@@ -27,8 +27,8 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 | Tagline (≤200 chars) | `Japanese public-program MCP — 11,547 searchable / 13,578 total programs (補助金/融資/税制/認定) + 採択事例 + 融資三軸 + 行政処分 + 法令/税/インボイス, 181 exclusion rules. ¥3/req, 50/月 free.` |
 | Long description (≤500) | See `/Users/shigetoumeda/jpintel-mcp/scripts/mcp_registries_submission.json` → `server.description_long` |
 | Repo URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
-| Homepage | `https://zeimu-kaikei.ai` |
-| Docs URL | `https://zeimu-kaikei.ai/docs/` |
+| Homepage | `https://jpcite.com` |
+| Docs URL | `https://jpcite.com/docs/` |
 | Install command | `uvx autonomath-mcp` |
 | Alt install | `pip install autonomath-mcp && autonomath-mcp` |
 | License | MIT |
@@ -151,7 +151,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 
 ### F7 status: DRAFT PR RAISED 2026-04-25
 
-- Fork: `https://github.com/shigetosidumeda-cyber/awesome-mcp-servers`
+- Fork: `https://github.com/shigetosidumeda-cyber/jpintel-mcp/awesome-mcp-servers`
 - Branch: `add-autonomath-mcp`
 - PR URL: `https://github.com/punkpeye/awesome-mcp-servers/pull/5371`
 - Mode: **draft** (operator must mark ready)
@@ -186,10 +186,10 @@ are listed verbatim with the URL, required field list, and the canonical reply t
    - Slug: `autonomath-mcp`
    - Tagline (<200): use tagline above
    - Category: pick the **two** closest from Cursor's enum (typically `Data` + `Productivity` or `Developer Tools`)
-   - Icon (256×256 PNG): `https://zeimu-kaikei.ai/assets/mcp_preview_1.png` (already 1200×630 — note any resize requirement)
-   - Tile (1200×630): `https://zeimu-kaikei.ai/assets/mcp_preview_1.png`
+   - Icon (256×256 PNG): `https://jpcite.com/assets/mcp_preview_1.png` (already 1200×630 — note any resize requirement)
+   - Tile (1200×630): `https://jpcite.com/assets/mcp_preview_1.png`
    - Repo URL: `https://github.com/shigetosidumeda-cyber/jpintel-mcp`
-   - Homepage: `https://zeimu-kaikei.ai`
+   - Homepage: `https://jpcite.com`
    - Author: `Bookyou株式会社`
    - Contact: `info@bookyou.net`
    - License: `MIT`

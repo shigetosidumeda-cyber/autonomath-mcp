@@ -196,7 +196,7 @@ SENSITIVE_TOOLS: frozenset[str] = frozenset({
     "score_dd_risk",
     "intent_of",
     "reason_answer",
-    # Tax surfaces — 税理士法 §52 fence. zeimu-kaikei.ai brand sits in
+    # Tax surfaces — 税理士法 §52 fence. jpcite.com brand sits in
     # 税務会計 territory, so every tax-data tool must declare the output
     # information retrieval, NOT 税務助言.
     "search_tax_incentives",
@@ -1026,7 +1026,7 @@ def with_envelope(
                     "message": f"{exc.__class__.__name__}: {exc}"[:120],
                     "severity": severity,
                     "hint": ERROR_CODES[code]["summary"],
-                    "documentation": f"https://zeimu-kaikei.ai/docs/error_handling#{code}",
+                    "documentation": f"https://jpcite.com/docs/error_handling#{code}",
                 }
                 latency = (time.perf_counter() - t0) * 1000.0
                 return build_envelope(

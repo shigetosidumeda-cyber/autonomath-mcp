@@ -37,7 +37,7 @@ kintone.events.on('app.record.detail.show', async (event) => {
     target_employees: record[config.employeesField].value,
     referral_code: 'kintone-' + kintone.app.getId(),  // referral 紐付け
   });
-  const r = await fetch(`https://api.zeimu-kaikei.ai/v1/programs/search?${params}`, {
+  const r = await fetch(`https://api.jpcite.com/v1/programs/search?${params}`, {
     headers: { 'X-API-Key': config.apiKey }
   });
   const { items } = await r.json();
@@ -64,7 +64,7 @@ Partner: Cybozu, Inc. — kintone Marketplace 開発者プログラム
 URL (申請): https://kintone-sol.cybozu.co.jp/
 URL (developer): https://developer.cybozu.io/hc/ja
 
-会社名: Bookyou 株式会社 (法人番号 T8010001213708)
+会社名: Bookyou 株式会社 (適格請求書発行事業者番号 T8010001213708)
 代表者: 梅田茂利
 連絡先: info@bookyou.net
 plugin 名: AutonoMath — 補助金 / 税制候補 inline 表示

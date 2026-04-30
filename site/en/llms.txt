@@ -1,13 +1,13 @@
-# AutonoMath (English index)
+# jpcite (formerly 税務会計AI / zeimu-kaikei.ai) — English index
 
-> Cross-search REST + MCP API for Japanese public programs: 10,790 active subsidies / loans / tax measures / certifications (tier S/A/B/C searchable; an additional 1,923 rows held back for secondary review and excluded from public search) + 2,286 adoption case studies + 108 loan products (collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases, 181 exclusion/prerequisite rules, primary-source URL + fetched_at on 99%+ of rows. MCP-native (89 tools, protocol 2025-06-18). ¥3 per request metered (¥3.30 tax-inclusive), anonymous 50 req/month per IP free (JST first-of-month reset).
+> jpcite (formerly known as 税務会計AI, previously hosted at zeimu-kaikei.ai). Service name: AutonoMath. Cross-search REST + MCP API for Japanese public programs: 10,790 active subsidies / loans / tax measures / certifications (tier S/A/B/C searchable; an additional 1,923 rows held back for secondary review and excluded from public search) + 2,286 adoption case studies + 108 loan products (collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases, 181 exclusion/prerequisite rules, primary-source URL + fetched_at on 99%+ of rows. MCP-native (89 tools, protocol 2025-06-18). ¥3 per request metered (¥3.30 tax-inclusive), anonymous 50 req/month per IP free (JST first-of-month reset).
 
 This file follows the emerging llms.txt convention (https://llmstxt.org/) —
 a curated, plaintext index of canonical documents for LLM indexers.
-The Japanese-language sibling lives at https://zeimu-kaikei.ai/llms.txt.
-A flat-root mirror of this English index is at https://zeimu-kaikei.ai/llms.en.txt.
-Concatenated full docs: https://zeimu-kaikei.ai/llms-full.en.txt
-Canonical domain: https://zeimu-kaikei.ai (Bookyou Inc. / corporate number T8010001213708 / info@bookyou.net).
+The Japanese-language sibling lives at https://jpcite.com/llms.txt.
+A flat-root mirror of this English index is at https://jpcite.com/llms.en.txt.
+Concatenated full docs: https://jpcite.com/llms-full.en.txt
+Canonical domain: https://jpcite.com (Bookyou Inc. / corporate number T8010001213708 / info@bookyou.net).
 
 Program names, law titles, and case-study fields are kept verbatim in
 Japanese. They are legal entity names; machine-translating them would
@@ -21,27 +21,27 @@ Bookyou Inc. (Japanese corporate number T8010001213708) — Representative: Shig
 
 ## Docs
 
-- [Overview](https://zeimu-kaikei.ai/docs/)
-- [Getting started (5-minute quickstart)](https://zeimu-kaikei.ai/docs/getting-started/): install, API key, curl/Python/Node, Claude Desktop MCP config
-- [API reference (REST)](https://zeimu-kaikei.ai/docs/api-reference/)
-- [MCP tools (69)](https://zeimu-kaikei.ai/docs/mcp-tools/): 39 jpintel + 50 autonomath stdio tools
-- [Examples (Python + curl)](https://zeimu-kaikei.ai/docs/examples/)
-- [Error handling](https://zeimu-kaikei.ai/docs/error_handling/)
-- [Exclusion rules](https://zeimu-kaikei.ai/docs/exclusions/)
-- [FAQ](https://zeimu-kaikei.ai/docs/faq/)
-- [Pricing (¥3 per request metered)](https://zeimu-kaikei.ai/docs/pricing/)
-- [SLA](https://zeimu-kaikei.ai/docs/sla/)
+- [Overview](https://jpcite.com/docs/)
+- [Getting started (5-minute quickstart)](https://jpcite.com/docs/getting-started/): install, API key, curl/Python/Node, Claude Desktop MCP config
+- [API reference (REST)](https://jpcite.com/docs/api-reference/)
+- [MCP tools (69)](https://jpcite.com/docs/mcp-tools/):  stdio tools
+- [Examples (Python + curl)](https://jpcite.com/docs/examples/)
+- [Error handling](https://jpcite.com/docs/error_handling/)
+- [Exclusion rules](https://jpcite.com/docs/exclusions/)
+- [FAQ](https://jpcite.com/docs/faq/)
+- [Pricing (¥3 per request metered)](https://jpcite.com/docs/pricing/)
+- [SLA](https://jpcite.com/docs/sla/)
 
 ## Examples
 
-- [Examples (Python + curl)](https://zeimu-kaikei.ai/docs/examples/)
-- [Try the prescreen widget](https://zeimu-kaikei.ai/en/index.html#try)
+- [Examples (Python + curl)](https://jpcite.com/docs/examples/)
+- [Try the prescreen widget](https://jpcite.com/en/index.html#try)
 
 ## MCP server
 
 - PyPI package: `autonomath-mcp` — `pip install autonomath-mcp`
 - Console script: `autonomath-mcp` (FastMCP stdio, 89 tools at default gates)
-- Repo: https://github.com/shigetosidumeda-cyber/jpintel-mcp
+- Repo: https://github.com/AutonoMath
 
 ## Data licenses
 
@@ -50,19 +50,19 @@ Bookyou Inc. (Japanese corporate number T8010001213708) — Representative: Shig
 - gBizINFO corporate metadata: Japan Government Standard Terms of Use
 - Public-domain rows (gazette etc): public domain
 - Each row carries an explicit license via `am_source.license` (99.997% coverage)
-- Full terms: https://zeimu-kaikei.ai/en/tos.html
+- Full terms: https://jpcite.com/en/tos.html
 
 ## Structured data
 
-- [Sitemap index](https://zeimu-kaikei.ai/sitemap-index.xml)
-- [Docs sitemap](https://zeimu-kaikei.ai/docs/sitemap.xml)
-- [Programs sitemap](https://zeimu-kaikei.ai/sitemap-programs.xml)
+- [Sitemap index](https://jpcite.com/sitemap-index.xml)
+- [Docs sitemap](https://jpcite.com/docs/sitemap.xml)
+- [Programs sitemap](https://jpcite.com/sitemap-programs.xml)
 - Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on each `/programs/{id}.html`
 
 ## Optional
 
-- [About](https://zeimu-kaikei.ai/en/about.html)
-- [Pricing page (HTML)](https://zeimu-kaikei.ai/en/pricing.html)
-- [Terms of service](https://zeimu-kaikei.ai/en/tos.html)
-- [Privacy policy](https://zeimu-kaikei.ai/en/privacy.html)
-- [Security disclosure (RFC 9116)](https://zeimu-kaikei.ai/.well-known/security.txt)
+- [About](https://jpcite.com/en/about.html)
+- [Pricing page (HTML)](https://jpcite.com/en/pricing.html)
+- [Terms of service](https://jpcite.com/en/tos.html)
+- [Privacy policy](https://jpcite.com/en/privacy.html)
+- [Security disclosure (RFC 9116)](https://jpcite.com/.well-known/security.txt)

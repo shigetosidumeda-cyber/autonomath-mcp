@@ -30,7 +30,7 @@ _DEFAULT_DB = Path(
     os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
 )
 _DEFAULT_OUT = _REPO_ROOT / "site" / "corrections.xml.new"
-_DOMAIN = "zeimu-kaikei.ai"
+_DOMAIN = "jpcite.com"
 
 
 def _build(db_path: Path) -> str:
@@ -90,7 +90,7 @@ def _build(db_path: Path) -> str:
         '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" '
         'xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
         "<channel>\n"
-        "  <title>税務会計AI Corrections (correction_log)</title>\n"
+        "  <title>jpcite Corrections (correction_log)</title>\n"
         f"  <link>https://{_DOMAIN}/corrections.xml</link>\n"
         f'  <atom:link href="https://{_DOMAIN}/corrections.xml" '
         'rel="self" type="application/rss+xml" />\n'

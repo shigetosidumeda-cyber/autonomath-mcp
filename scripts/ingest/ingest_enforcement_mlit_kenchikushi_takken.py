@@ -115,7 +115,7 @@ _LOG = logging.getLogger("autonomath.ingest.mlit_kenchikushi_takken")
 MLIT_SEARCH_URL = "https://www.mlit.go.jp/nega-inf/cgi-bin/search.cgi"
 USER_AGENT = (
     "jpintel-mcp-ingest/1.0 "
-    "(+https://zeimu-kaikei.ai; contact=ops@zeimu-kaikei.ai)"
+    "(+https://jpcite.com; contact=ops@jpcite.com)"
 )
 
 PER_REQUEST_DELAY_SEC = 0.7

@@ -46,7 +46,7 @@ from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.morning_briefing")
 
-_PUBLIC_ORIGIN = "https://zeimu-kaikei.ai"
+_PUBLIC_ORIGIN = "https://jpcite.com"
 
 
 def _new_programs_24h(
@@ -282,7 +282,7 @@ def run(*, dry_run: bool = False) -> dict[str, Any]:
                 "amendments": amendments,
                 "manage_url": f"{_PUBLIC_ORIGIN}/dashboard.html",
                 "disclaimer": (
-                    "本通知は税務会計AIによる公開情報の検索結果です。"
+                    "本通知はjpciteによる公開情報の検索結果です。"
                     "個別具体的な税務助言・法律判断は税理士法 §52 / 弁護士法 §72 に基づき"
                     "資格者にご確認ください。"
                 ),

@@ -6,7 +6,7 @@
 
 ## Body
 
-Posting here because r/japanfinance has a lot of small-business owners and 個人事業主 who've struggled with finding subsidy / tax-incentive info in Japan. I just launched 税務会計AI — a search API over Japanese institutional public data that I built specifically to fix that accessibility problem.
+Posting here because r/japanfinance has a lot of small-business owners and 個人事業主 who've struggled with finding subsidy / tax-incentive info in Japan. I just launched jpcite — a search API over Japanese institutional public data that I built specifically to fix that accessibility problem.
 
 ## What it covers
 
@@ -48,15 +48,15 @@ For most people doing preliminary research on a single business, 50 req/month is
 Try this in a terminal — no signup needed:
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=飲食&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=飲食&prefecture=東京都"
 ```
 
 Returns subsidies in Tokyo for restaurants/food businesses with primary-source URLs.
 
 ## Links
 
-- Site: https://zeimu-kaikei.ai
-- Pricing: https://zeimu-kaikei.ai/docs/pricing/
+- Site: https://jpcite.com
+- Pricing: https://jpcite.com/docs/pricing/
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 

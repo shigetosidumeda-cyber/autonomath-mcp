@@ -47,7 +47,7 @@ for (const p of programs.results) {
 ## Authentication
 
 Pass `apiKey` to the constructor; the SDK sends it as `X-API-Key`. Issue keys
-from your [dashboard](https://zeimu-kaikei.ai/dashboard).
+from your [dashboard](https://jpcite.com/dashboard).
 
 Without an API key, anonymous IPs get 50 requests per month (resets JST 00:00
 on the 1st).
@@ -58,7 +58,7 @@ on the 1st).
 | ------------------------------- | -------------------------------------- | ---------------------------------- |
 | `am.healthz()`                  | `GET /healthz`                         | Free liveness check                |
 | `am.meta()`                     | `GET /meta`                            | Catalog totals                     |
-| `am.searchPrograms(params)`     | `GET /v1/programs/search`              | 13,578 補助金/助成金/認定        |
+| `am.searchPrograms(params)`     | `GET /v1/programs/search`              | 11,684 補助金/助成金/認定        |
 | `am.getProgram(id)`             | `GET /v1/programs/{id}`                | Full enriched detail               |
 | `am.searchLoans(params)`        | `GET /v1/loans/search`                 | 三軸 collateral/guarantor 分解   |
 | `am.getLoan(id)`                | `GET /v1/loans/{id}`                   |                                    |
@@ -211,7 +211,7 @@ See [MCP ツール](../mcp-tools.md) for the full tool list.
 | Option            | Default                       | Notes                                    |
 | ----------------- | ----------------------------- | ---------------------------------------- |
 | `apiKey`          | `undefined`                   | `X-API-Key` header                       |
-| `baseUrl`         | `https://api.zeimu-kaikei.ai`   | Override for self-host / staging         |
+| `baseUrl`         | `https://api.jpcite.com`   | Override for self-host / staging         |
 | `timeoutMs`       | `30000`                       | Per-request `AbortController`            |
 | `maxRetries`      | `3`                           | 429 / 5xx                                |
 | `fetch`           | global `fetch`                | Inject custom (undici, polyfill, etc.)   |
@@ -226,5 +226,5 @@ ESM build: 18 KB unminified, ~4 KB gzipped. Zero dependencies.
 `@autonomath/sdk` follows the AutonoMath API version. `0.2.x` → API v1,
 MCP protocol 2025-06-18.
 
-See also: [Python SDK](https://pypi.org/project/autonomath/) ·
+See also: [Python SDK](https://pypi.org/project/autonomath-mcp/) ·
 [REST API リファレンス](../api-reference.md) · [料金](../pricing.md)

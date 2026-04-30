@@ -21,24 +21,24 @@ directory verifies `pip show` / `uvx` resolves before listing goes live.
 | Long description | 下記テンプレ参照 |
 | Category | Data / Government / Japan (primary: **Data**) |
 | Publisher display name | `Bookyou 株式会社 (AutonoMath)` |
-| Publisher website | `https://zeimu-kaikei.ai/` |
+| Publisher website | `https://jpcite.com/` |
 | Publisher contact email | `info@bookyou.net` |
 | Public GitHub URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
-| Homepage URL | `https://zeimu-kaikei.ai/` |
-| Docs URL | `https://zeimu-kaikei.ai/docs/` |
-| Privacy policy URL | `https://zeimu-kaikei.ai/privacy.html` |
-| Terms of service URL | `https://zeimu-kaikei.ai/tos.html` |
-| 特商法表示 URL | `https://zeimu-kaikei.ai/tokushoho.html` |
+| Homepage URL | `https://jpcite.com/` |
+| Docs URL | `https://jpcite.com/docs/` |
+| Privacy policy URL | `https://jpcite.com/privacy.html` |
+| Terms of service URL | `https://jpcite.com/tos.html` |
+| 特商法表示 URL | `https://jpcite.com/tokushoho.html` |
 | Invoice-registration number | `T8010001213708` |
 | License | MIT |
 | Supported clients | Claude Desktop (primary), Cursor, ChatGPT (MCP), Gemini |
 | MCP protocol version | `2025-06-18` |
 | Install command | `uvx autonomath-mcp` |
 | Pricing model | Free tier 50 req/month per IP (JST first-of-month reset), ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered beyond |
-| Icon (256×256 PNG) | `https://zeimu-kaikei.ai/assets/mcp_preview_1.png` (fallback: favicon) |
-| Tile image (1200×630) | `https://zeimu-kaikei.ai/assets/mcp_preview_1.png` |
-| Wide tile (1600×900) | `https://zeimu-kaikei.ai/assets/mcp_preview_2.png` |
-| .mcpb bundle | `https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb` (2,296 bytes) |
+| Icon (256×256 PNG) | `https://jpcite.com/assets/mcp_preview_1.png` (fallback: favicon) |
+| Tile image (1200×630) | `https://jpcite.com/assets/mcp_preview_1.png` |
+| Wide tile (1600×900) | `https://jpcite.com/assets/mcp_preview_2.png` |
+| .mcpb bundle | `https://jpcite.com/downloads/autonomath-mcp.mcpb` (2,296 bytes) |
 | Data-collection disclosure | No PII; only server-side request logs (IP hash, latency, status) |
 | Age rating | General |
 
@@ -99,8 +99,8 @@ tax-inclusive) metered thereafter. Self-serve — no sales, no tiers.
 - [ ] `uvx autonomath-mcp --version` が別マシンで動くことを確認
 - [ ] GitHub repo `AutonoMath/autonomath-mcp` が public (LICENSE / README / CHANGELOG 揃う)
 - [ ] `/downloads/autonomath-mcp.mcpb` が Cloudflare Pages で HTTP 200
-- [ ] `https://zeimu-kaikei.ai/privacy.html` / `/tos.html` / `/tokushoho.html` が reachable
-- [ ] `https://api.zeimu-kaikei.ai/v1/meta` が 200 で新しい件数を返す
+- [ ] `https://jpcite.com/privacy.html` / `/tos.html` / `/tokushoho.html` が reachable
+- [ ] `https://api.jpcite.com/v1/meta` が 200 で新しい件数を返す
 - [ ] Claude Desktop で .mcpb を double-click → 12 tools 認識 (スクリーンショット取得)
 - [ ] 上記スクリーンショットを form の動作確認欄に添付
 

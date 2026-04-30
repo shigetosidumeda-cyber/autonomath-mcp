@@ -25,7 +25,7 @@ LINE_STRIPE_PRICE_ID
 
 LINE_BOT_SUCCESS_URL / LINE_BOT_CANCEL_URL
     Where Stripe Checkout returns the user. Defaults land on
-    zeimu-kaikei.ai/line.html.
+    jpcite.com/line.html.
 
 LINE_OA_FRIEND_URL
     The https://lin.ee/XXXX URL shown on the landing page + QR. Must be
@@ -50,11 +50,11 @@ class LineSettings(BaseSettings):
     stripe_price_id: str = Field(default="", alias="LINE_STRIPE_PRICE_ID")
 
     success_url: str = Field(
-        default="https://zeimu-kaikei.ai/line.html?checkout=success",
+        default="https://jpcite.com/line.html?checkout=success",
         alias="LINE_BOT_SUCCESS_URL",
     )
     cancel_url: str = Field(
-        default="https://zeimu-kaikei.ai/line.html?checkout=cancel",
+        default="https://jpcite.com/line.html?checkout=cancel",
         alias="LINE_BOT_CANCEL_URL",
     )
 

@@ -4,40 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Gemini (Extensions / CLI) で 税務会計AI を使う — 5 分で動く統合ガイド</title>
-<meta name="description" content="Google Gemini Extensions または Gemini CLI に 税務会計AI MCP サーバを接続する手順。Gemini CLI は MCP stdio をネイティブサポート、Extensions は OpenAPI Action 経由。11,684 件の補助金 + 89 MCP tools (search_programs / search_laws / search_invoice_registrants 等)。登録不要 / 50 req/月 無料。">
+<title>Gemini CLI と連携する — jpcite</title>
+<meta name="description" content="Gemini CLI の MCP 設定に 1 行追記すれば、jpcite のツールが利用できます。">
 
-<meta property="og:title" content="Gemini で 税務会計AI を使う — 5 分統合ガイド">
-<meta property="og:description" content="Gemini CLI (MCP stdio) または Extensions (OpenAPI) で 11,684 件の補助金 + 89 tools。50 req/月 無料、stdio + protocol 2025-06-18。">
+<meta property="og:title" content="Gemini CLI と連携する — jpcite">
+<meta property="og:description" content="Gemini CLI の MCP 設定に 1 行追記すれば、jpcite のツールが利用できます。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://zeimu-kaikei.ai/integrations/gemini.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://jpcite.com/integrations/gemini.html">
 <meta property="og:locale" content="ja_JP">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Gemini で 税務会計AI を使う">
-<meta name="twitter:description" content="Gemini CLI / Extensions で 89 MCP tools 統合。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
-
-<link rel="canonical" href="https://zeimu-kaikei.ai/integrations/gemini.html">
+<link rel="canonical" href="https://jpcite.com/integrations/gemini.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/styles.css?v=20260429a">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "taxID": "T8010001213708",
@@ -56,7 +49,7 @@
     "contactType": "customer support",
     "availableLanguage": ["ja", "en"]
   },
-  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber"]
+  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber/jpintel-mcp"]
 }
 </script>
 
@@ -66,274 +59,116 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "Gemini (Extensions / CLI) で 税務会計AI を使う",
-  "description": "Google Gemini Extensions または Gemini CLI に 税務会計AI MCP サーバを接続して 89 tools を呼び出す手順 (5 分)。",
-  "url": "https://zeimu-kaikei.ai/integrations/gemini.html",
+  "headline": "Gemini CLI と連携する",
+  "url": "https://jpcite.com/integrations/gemini.html",
   "inLanguage": "ja",
-  "author": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "proficiencyLevel": "Beginner"
-}
-</script>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  "name": "Gemini に 税務会計AI MCP サーバを追加する",
-  "description": "Google Gemini CLI (MCP stdio ネイティブ対応) に autonomath-mcp v0.3.1 を 5 分で接続して 89 MCP tools を呼び出す手順。",
-  "totalTime": "PT5M",
-  "tool": [
-    {"@type": "HowToTool", "name": "Gemini CLI (npm i -g @google/gemini-cli)"},
-    {"@type": "HowToTool", "name": "Python 3.10+ (pip または uvx)"}
-  ],
-  "step": [
-    {"@type": "HowToStep", "position": 1, "name": "API キー取得 (任意)", "text": "50 req/月 までは認証不要。本番は /signup から発行。", "url": "https://zeimu-kaikei.ai/integrations/gemini.html#step1"},
-    {"@type": "HowToStep", "position": 2, "name": "autonomath-mcp + Gemini CLI をインストール", "text": "pip install autonomath-mcp と npm i -g @google/gemini-cli。", "url": "https://zeimu-kaikei.ai/integrations/gemini.html#step2"},
-    {"@type": "HowToStep", "position": 3, "name": "~/.gemini/settings.json を編集", "text": "mcpServers.zeimu-kaikei = {command: 'autonomath-mcp'} を追記。", "url": "https://zeimu-kaikei.ai/integrations/gemini.html#step3"},
-    {"@type": "HowToStep", "position": 4, "name": "動作確認 + 期待 response", "text": "gemini に search_programs 呼び出しプロンプトを送る。補助金 3 件 + source_url 付き response。", "url": "https://zeimu-kaikei.ai/integrations/gemini.html#step4"},
-    {"@type": "HowToStep", "position": 5, "name": "Troubleshoot", "text": "PATH 解決失敗 → 絶対パス指定 / uvx に切替。", "url": "https://zeimu-kaikei.ai/integrations/gemini.html#step5"}
-  ]
+  "author": {"@id": "https://jpcite.com/#publisher"},
+  "publisher": {"@id": "https://jpcite.com/#publisher"}
 }
 </script>
 </head>
 <body>
 
 <header class="site-header">
-  <div class="wrap">
-    <a href="/" class="logo">税務会計AI</a>
-    <nav>
-      <a href="/products.html">Products</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="/integrations/" aria-current="page">Integrations</a>
-      <a href="/dashboard.html">Dashboard</a>
+ <div class="wrap">
+ <a href="/" class="logo">jpcite</a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="../about.html">運営について</a>
+      <a href="../products.html">プロダクト</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="../pricing.html">料金</a>
+      <a href="../audiences/">利用者層</a>
+      <details class="nav-trust">
+        <summary>信頼</summary>
+        <ul>
+          <li><a href="../status.html">稼働状況</a></li>
+          <li><a href="../data-freshness.html">データ鮮度</a></li>
+          <li><a href="../transparency.html">透明性</a></li>
+          <li><a href="../sources.html">出典</a></li>
+          <li><a href="../changelog.html">変更履歴</a></li>
+        </ul>
+      </details>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/integrations/gemini.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/integrations/gemini.html" lang="en" hreflang="en">EN</a>
+      </span>
     </nav>
-  </div>
+ </div>
 </header>
 
 <main class="wrap" style="max-width:920px;margin:40px auto;padding:0 20px;line-height:1.7;">
 
-<p style="font-size:0.9em;color:#666;margin-bottom:6px;"><a href="/integrations/">Integrations</a> / Gemini</p>
-<h1 style="margin-bottom:0.2em;">Gemini で 税務会計AI を使う</h1>
-<p style="color:#444;font-size:1.05em;margin-top:0;">5 分で動く統合ガイド (登録不要 / Free 50 req/月)</p>
+<nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+<a href="/">ホーム</a> <span aria-hidden="true">›</span>
+<a href="/integrations/">連携</a> <span aria-hidden="true">›</span>
+<span aria-current="page">Gemini</span>
+</nav>
+<h1 style="margin-bottom:0.2em;">Gemini CLI と連携する</h1>
 
-<aside style="border:1px solid #c8e0c8;background:#f3faf3;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
-<strong>所要時間:</strong> 5 分以内。<strong>必要なもの:</strong> Gemini CLI (Node 18+) または Gemini Extensions (Workspace) + Python 3.10 以降。<strong>API キー不要</strong> — 50 req/月 per IP は匿名で動きます。<strong>stdio 接続、protocol 2025-06-18 対応。</strong>
-</aside>
-
-<aside style="border:1px solid #d8d3a8;background:#fafae8;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:0.92em;">
-<strong>2 つの経路:</strong>
-<ul style="margin:6px 0 0;padding-left:20px;">
-<li><strong>Gemini CLI</strong> (推奨): MCP stdio ネイティブサポート。<code>~/.gemini/settings.json</code> に JSON 1 行で 89 tools フル接続。本ページの主経路。</li>
-<li><strong>Gemini Extensions</strong> (Workspace): MCP は未対応のため OpenAPI を OpenAPI Tool として登録。REST 経由で同じデータソース (11,684 件のプログラム + 9,484 法令 + 13,801 適格事業者) にアクセス。</li>
-</ul>
-</aside>
-
-<h2 id="step1">Step 1 — API キーを取得 (任意)</h2>
-<p>50 req/月 までは認証不要 (anonymous tier、IP 単位、JST 月初 00:00 リセット)。本番運用は <a href="/dashboard.html">Dashboard</a> から API キー (<code>sk_...</code>) を発行 → <strong>Stripe metered で ¥3/req 自動課金</strong> (税込 ¥3.30、最低料金・年契約・tier なし)。signup form は <a href="/">トップページ</a> または <a href="/dashboard.html">Dashboard</a> から。</p>
-
-<h2 id="step2">Step 2 — autonomath-mcp + Gemini CLI をインストール</h2>
-
-<p><strong>autonomath-mcp:</strong></p>
-<div class="code-block" data-code="pip install autonomath-mcp">
-<pre><code>pip install autonomath-mcp</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p>または <code>uvx</code> ephemeral 実行 (PATH 汚染なし、自動アップデート):</p>
+<h2 id="install">インストール</h2>
 <div class="code-block" data-code="uvx autonomath-mcp">
 <pre><code>uvx autonomath-mcp</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
-<p><strong>Gemini CLI:</strong></p>
-<div class="code-block" data-code="npm install -g @google/gemini-cli">
-<pre><code>npm install -g @google/gemini-cli</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p>動作確認:</p>
-<div class="code-block" data-code="autonomath-mcp --version
-gemini --version">
-<pre><code>autonomath-mcp --version
-# → autonomath-mcp 0.3.1
-gemini --version
-# → @google/gemini-cli x.y.z</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<h2 id="step3">Step 3 — ~/.gemini/settings.json を編集</h2>
-
-<p>OS ごとの設定ファイルパス:</p>
-<table style="width:100%;border-collapse:collapse;margin:14px 0;">
-<thead><tr style="border-bottom:2px solid #ddd;">
-<th style="text-align:left;padding:8px 6px;">OS</th>
-<th style="text-align:left;padding:8px 6px;"><code>settings.json</code></th>
-</tr></thead>
-<tbody>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>macOS / Linux</strong></td><td style="padding:6px;"><code>~/.gemini/settings.json</code></td></tr>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>Windows</strong></td><td style="padding:6px;"><code>%USERPROFILE%\.gemini\settings.json</code></td></tr>
-</tbody>
-</table>
-
-<p>ファイルが無ければ新規作成:</p>
+<h2 id="config">設定ファイル</h2>
+<p><code>~/.gemini/settings.json</code> に以下を追記します。</p>
 
 <div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp"
-    }
-  }
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"]
+ }
+ }
 }'>
 <pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp"
-    }
-  }
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"]
+ }
+ }
 }</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
-<details style="margin:14px 0;">
-<summary style="cursor:pointer;color:#0066cc;font-weight:600;">API キー入りバージョン (50 req/月 を超える運用)</summary>
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "env": {
-        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
-      }
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "env": {
-        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
-      }
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-</details>
+<p style="font-size:0.92em;color:#555;">本番運用は <code>"env": {"AUTONOMATH_API_KEY": "sk_..."}</code> を追加します。</p>
 
-<details style="margin:14px 0;">
-<summary style="cursor:pointer;color:#0066cc;font-weight:600;"><code>uvx</code> 版 (PATH 解決の trouble を回避)</summary>
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"]
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"]
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-</details>
+<h2 id="verify">動作確認</h2>
+<p>新しいターミナルで <code>gemini</code> を起動し、ツールが認識されれば接続完了です。</p>
 
-<h2 id="step4">Step 4 — 動作確認 + 期待される response</h2>
-
-<p>新しいターミナルで <code>gemini</code> を起動して以下を貼り付け:</p>
-
-<div class="code-block" data-code="search_programs を呼んで prefecture=東京都 + target_type=中小企業 + keyword=省エネ で 3 件取得。primary source URL もつけて。">
-<pre><code>search_programs を呼んで prefecture=東京都 + target_type=中小企業 + keyword=省エネ で 3 件取得。primary source URL もつけて。</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p>Gemini CLI が <code>zeimu-kaikei</code> MCP サーバを起動 (stdio)、<code>search_programs</code> ツール呼び出し、JSON レスポンスを整形して返します。</p>
-
-<h3 style="margin-top:18px;">期待される response (整形後)</h3>
-<pre style="background:#f6f6f6;padding:14px;border-radius:6px;font-size:0.85em;overflow-x:auto;line-height:1.5;">[MCP] zeimu-kaikei → search_programs
-  args: {"prefecture": "東京都", "target_type": "中小企業", "keyword": "省エネ", "limit": 3}
-  → 200 OK (3 results, 0.34s)
-
-東京都 × 中小企業 × 省エネ 補助金 3 件:
-
-1. <strong>省エネルギー設備等導入支援事業</strong> (東京都環境局)
-   - 補助率: 1/2 / 上限 1,500 万円
-   - 締切: 2026-06-30
-   - 出典: https://www.kankyo.metro.tokyo.lg.jp/.../...
-   - 出典取得: 2026-04-22
-
-2. <strong>地球温暖化対策報告書制度 設備更新支援</strong> (東京都)
-   - 補助率: 1/3 / 上限 800 万円
-   - 出典: https://www.kankyo.metro.tokyo.lg.jp/.../...
-
-3. <strong>(都) 中小企業者向け 省エネ促進税制</strong>
-   - 取得価額の 30% 特別償却
-   - 出典: https://www.zeimu.metro.tokyo.lg.jp/.../...
-
-※ 上記は情報検索結果です。個別の助成判断は税理士法 §52 により税理士・行政書士へ。</pre>
-
-<p style="font-size:0.9em;color:#555;margin-top:10px;">この一連の流れで <strong>1 リクエスト消費</strong> (anonymous tier 50/月)。</p>
-
-<h3 id="more-prompts" style="margin-top:24px;">cohort 別 sample queries</h3>
+<h2 id="next">次のステップ</h2>
 <ul>
-<li><strong>M&A:</strong> <code>dd_profile_am で 法人番号 T8010001213708 の DD profile を取得 (採択 + 適格請求書 + 行政処分)</code></li>
-<li><strong>税理士:</strong> <code>smb_starter_pack で 製造業 × 埼玉県 の SMB スターターパック (補助金 + 融資 + 採択事例 + 締切)</code></li>
-<li><strong>補助金 consultant:</strong> <code>check_exclusions で 事業再構築補助金 と ものづくり補助金 の同時申請可否を判定</code></li>
+<li><a href="/pricing.html">料金</a></li>
+<li><a href="/docs/">ドキュメント</a></li>
+<li><a href="/integrations/">他の連携ガイド</a></li>
 </ul>
-
-<h3 id="extensions" style="margin-top:24px;">Gemini Extensions (Workspace) の場合</h3>
-<p>Gemini Extensions は MCP を直接話せないため、OpenAPI を Extensions Tool として登録します:</p>
-<ul>
-<li><a href="https://aistudio.google.com/" rel="noopener">aistudio.google.com</a> → Build → Extension</li>
-<li>OpenAPI URL: <code>https://api.zeimu-kaikei.ai/v1/openapi.json</code></li>
-<li>Authentication: API Key (header <code>X-API-Key</code>) または None (anonymous)</li>
-</ul>
-
-<h2 id="step5">Step 5 — Troubleshoot</h2>
-
-<h3 style="margin-top:14px;">1. <code>command not found: autonomath-mcp</code></h3>
-<ul>
-<li><code>which autonomath-mcp</code> でフルパス取得 → <code>"command": "/Users/you/.local/bin/autonomath-mcp"</code> のように絶対パスで指定</li>
-<li>あるいは <code>"command": "uvx", "args": ["autonomath-mcp"]</code> に切り替え</li>
-</ul>
-
-<h3 style="margin-top:14px;">2. Gemini CLI が MCP サーバを起動しない</h3>
-<ul>
-<li><code>gemini --debug</code> で起動ログ確認 (stderr に Python トレースバックが出れば pip 再インストール)</li>
-<li>JSON が valid か: <code>python -m json.tool ~/.gemini/settings.json</code></li>
-</ul>
-
-<h3 style="margin-top:14px;">3. 50 req/月 の残量を確認</h3>
-<ul>
-<li>Gemini に <code>get_usage_status を呼んで残クォータを教えて</code> と指示。<strong>このツール呼び出し自体はクォータを消費しません</strong> (probe-only)</li>
-<li>JST 月初 00:00 に自動リセット</li>
-</ul>
-
-<h2 id="next-steps">次のステップ</h2>
-<ul>
-<li><strong><a href="/pricing.html">Pricing</a></strong> — 50 req/月 を超える本番運用は ¥3/req metered (税込 ¥3.30)。tier・最低料金・年契約なし</li>
-<li><strong><a href="/docs/api-reference/">API Reference</a></strong> — 89 MCP tools 完全仕様 + パラメータ + レスポンスシェイプ</li>
-<li><strong><a href="/docs/mcp-tools/">MCP ツール一覧</a></strong> — 89 tools 早見表</li>
-<li><strong><a href="/integrations/claude-desktop.html">Claude Desktop</a></strong> / <strong><a href="/integrations/cursor.html">Cursor</a></strong> / <strong><a href="/integrations/cline.html">Cline</a></strong> / <strong><a href="/integrations/continue.html">Continue.dev</a></strong> / <strong><a href="/integrations/windsurf.html">Windsurf</a></strong></li>
-</ul>
-
-<p style="margin-top:40px;font-size:0.85em;color:#666;border-top:1px solid #eee;padding-top:14px;">
-免責: 本 API は情報検索のみを提供します。税理士法 §52 により個別の税務助言は<a href="/advisors.html">税理士</a>にご相談ください。<br>
-発行: <a href="/about.html">Bookyou株式会社</a> (法人番号 T8010001213708)
-</p>
 
 </main>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>© Bookyou株式会社 — <a href="/tos.html">利用規約</a> · <a href="/privacy.html">プライバシー</a> · <a href="/tokushoho.html">特商法</a></p>
-  </div>
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a>
+ <a href="../changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <style>
@@ -343,29 +178,28 @@ gemini --version
   .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #ccc;border-radius:4px;padding:4px 10px;font-size:0.82em;cursor:pointer;color:#333;font-family:inherit;}
   .code-block .copy-btn:hover {background:#f0f0f0;}
   .code-block .copy-btn.copied {background:#d4f4d4;border-color:#7bc77b;color:#226622;}
-  kbd {background:#eee;border:1px solid #bbb;border-radius:3px;padding:1px 5px;font-size:0.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
 </style>
 <script>
   document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', function{
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
-      var done = function(){
+      var done = function{
         btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        setTimeout(function{ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function(){
+        navigator.clipboard.writeText(text).then(done, function{
           var ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta); ta.select();
-          try { document.execCommand('copy'); done(); } catch(e) {}
+          ta.value = text; document.body.appendChild(ta); ta.select;
+          try { document.execCommand('copy'); done; } catch(e) {}
           document.body.removeChild(ta);
         });
       } else {
         var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); done(); } catch(e) {}
+        ta.value = text; document.body.appendChild(ta); ta.select;
+        try { document.execCommand('copy'); done; } catch(e) {}
         document.body.removeChild(ta);
       }
     });

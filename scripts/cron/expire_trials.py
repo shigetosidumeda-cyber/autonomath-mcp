@@ -246,7 +246,7 @@ def expire_due_trials(
                             # fragment positions the user at the paid
                             # API card directly.
                             "checkout_url": (
-                                "https://zeimu-kaikei.ai/"
+                                "https://jpcite.com/"
                                 "pricing.html?from=trial#api-paid"
                             ),
                         },

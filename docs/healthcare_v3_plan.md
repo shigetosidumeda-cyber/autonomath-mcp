@@ -2,14 +2,14 @@
 
 **期間**: 2026-04-25 → 2026-08-04 (T+90d)
 **対象 cohort**: 医療法人 (3-5k 法人) / 介護施設 (50k+) / 薬局 (60k+) / 訪問介護
-**Path**: 税務会計AI コア (¥3/req metered) を医療・介護・薬局領域へ拡張する第3波。
+**Path**: jpcite コア (¥3/req metered) を医療・介護・薬局領域へ拡張する第3波。
 **判定基準**: launch 直後 30d で 50+ paid request / day 流入を 1 件以上の cohort 顧客から確認できれば **継続**、未達なら sunset。
 
 ---
 
 ## なぜ Healthcare V3 か
 
-- 税務会計AI は 2026-05-06 に農業 + SMB 制度 13,578 件で launch する。
+- jpcite は 2026-05-06 に農業 + SMB 制度 13,578 件で launch する。
   Healthcare はその cohort 拡張 — `programs` テーブルへ無理に詰め込まず、
   **専用テーブル 2 本** (`medical_institutions` / `care_subsidies`) を別建てする。
 - ターゲット 3 cohort は **薬機法 / 医療法 / 介護保険法** という 3 本の
@@ -24,7 +24,7 @@
   営業 / DPA / Slack Connect / onboarding call 等の人的介在機能は提案禁止。
 - **Anthropic API は呼ばない** (memory: `feedback_autonomath_no_api_use`)。
   推論は顧客側、当方は API/MCP/静的 docs のみ。
-- **brand**: 税務会計AI / 運営は Bookyou株式会社 (T8010001213708)。
+- **brand**: jpcite / 運営は Bookyou株式会社 (T8010001213708)。
   jpintel ブランドはユーザー面に出さない。
 - **データ衛生**: `source_url` には一次情報 (厚労省 / PMDA / 自治体 / e-Gov)
   のみ。集約サイト (medley / care-net / 医療系 SEO サイト) は ban list。

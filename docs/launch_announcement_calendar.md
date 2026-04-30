@@ -68,8 +68,8 @@
 - [ ] PyPI ページ確認: https://pypi.org/project/autonomath-mcp/
 - [ ] `uvx autonomath-mcp` をクリーン環境で動作確認
 - [ ] MCP registry に publish (smithery, glama, mcp.so, etc., `scripts/mcp_registries.md` 参照)
-- [ ] Cloudflare Pages production deploy 確認 (zeimu-kaikei.ai)
-- [ ] Fly.io production deploy 確認 (api.zeimu-kaikei.ai)
+- [ ] Cloudflare Pages production deploy 確認 (jpcite.com)
+- [ ] Fly.io production deploy 確認 (api.jpcite.com)
 - [ ] Stripe metered live mode 動作確認 (¥3 single test charge)
 
 **所要**: 4-5h
@@ -91,7 +91,7 @@
 ### 10:00 JST — 購読者 email
 
 - [ ] subscribers (`subscribers` table の opted-in 全員) へ launch announcement send (operator 用 mailer)
-- [ ] 件名: `[税務会計AI] 本日 launch — 日本の公的制度を AI agent から 1 query で`
+- [ ] 件名: `[jpcite] 本日 launch — 日本の公的制度を AI agent から 1 query で`
 
 ### 20:00 JST (= 07:00 ET) — Hacker News Show HN
 
@@ -157,7 +157,7 @@
 **Tasks**:
 
 - [ ] `site/stats.html` の dashboard を update (launch 後 7 日間の req 数 / 一意 IP 数 / unique tools used / paid req 数 / 売上)
-- [ ] `docs/blog/` に「税務会計AI launch 後 7 日のメトリクス」blog 記事を新規作成
+- [ ] `docs/blog/` に「jpcite launch 後 7 日のメトリクス」blog 記事を新規作成
 - [ ] 数値 transparency: req 数・売上は実績ベース (推測値・誇張禁止)
 - [ ] 失敗・課題も併記 (memory `feedback_action_bias`: 即修正前提)
 - [ ] X で thread 投稿 (memory: 完全 transparent dashboard)

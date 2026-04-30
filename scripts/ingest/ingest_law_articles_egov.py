@@ -41,7 +41,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
 BASE_URL = "https://laws.e-gov.go.jp/api/2"
-USER_AGENT = "AutonoMath/0.1.0 (+https://zeimu-kaikei.ai)"
+USER_AGENT = "AutonoMath/0.1.0 (+https://jpcite.com)"
 HTTP_TIMEOUT = 180
 MAX_RETRIES = 3
 

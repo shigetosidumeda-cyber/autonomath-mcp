@@ -1,16 +1,14 @@
-# Hallucination Guard Methodology
+# Hallucination Guard
 
-## Purpose
+LLM が生成した回答に紛れる **高頻度な制度誤解** を、API 出力の前段で検出するためのフィルタ。
 
-`hallucination_guard` flags high-frequency 補助金 / 税制 / 融資 / 認定 /
-行政処分 / 法令 misconceptions in LLM-generated answers before they reach
-the user. We never call an LLM ourselves (see `feedback_autonomath_no_api_use`);
-this guard is the cheapest way to keep downstream Claude / Cursor / GPT
-outputs honest when they cite our data.
+## 目的
 
-## Data structure
+`hallucination_guard` は補助金 / 税制 / 融資 / 認定 / 行政処分 / 法令 の典型的な誤解 phrase を検出し、`correction` と `law_basis` を一緒に surface する。LLM 推論は API 側では行わない (推論は顧客側 LLM)。
 
-Source of truth: `data/hallucination_guard.yaml` (launch v1 = **60 entries**).
+## データ構造
+
+`data/hallucination_guard.yaml` (v1 = **60 entries**)。
 
 ```yaml
 entries:
@@ -22,33 +20,20 @@ entries:
     vertical: 税制         # 補助金 | 税制 | 融資 | 認定 | 行政処分 | 法令
 ```
 
-Grid: **5 audience × 6 vertical × 2 phrase = 60**. Every cell holds exactly
-two phrases — broad coverage, no single-cell overfit pre-launch.
+Grid = 5 audience × 6 vertical × 2 phrase = 60 entries。
 
-## Runtime
+## ランタイム
 
-`src/jpintel_mcp/self_improve/loop_a_hallucination_guard.py` exposes:
+`src/jpintel_mcp/self_improve/loop_a_hallucination_guard.py`:
 
-- `match(text) -> list[dict]` — substring scan; pure, no DB / network.
-- `summarize() -> dict` — counts by severity / audience / vertical.
-- `run(dry_run)` — weekly orchestrator entry. **Never writes the DB at
-  launch**; real candidate writes are gated to T+30d.
+- `match(text) -> list[dict]` — substring scan、pure (DB / network 不使用)
+- `summarize() -> dict` — severity / audience / vertical 別カウント
 
-## Self-improve expansion (60 → 1,500+)
+## 拡張 (60 → 1,500+)
 
-Loop A runs weekly post-launch:
+cron による継続拡張は内部運用 (詳細非公開)。candidate は all `*_candidates` テーブル経由で人手 review してから昇格する。
 
-1. Pull 7-day `customer_feedback` (wrong_answer / made_up_program) +
-   low-confidence rows from `query_log_v2`.
-2. Embed with **local e5-small** (no LLM API).
-3. DBSCAN (eps 0.18, min 3). Medoid → candidate phrase.
-4. Append to `hallucination_guard_candidates` with `status='pending_review'`.
-5. Operator promotes manually. Target: 1,500+ rows within 6 months.
+## 関連
 
-## Operator manual-add
-
-1. Append to `data/hallucination_guard.yaml`. Required fields and enum
-   values must match the schema; the loader silently drops malformed rows.
-2. Run `pytest tests/test_hallucination_guard.py` — the schema test catches
-   missing fields and bad enums.
-3. Commit. `lru_cache` means API workers need a restart to pick up changes.
+- [confidence_methodology.md](./confidence_methodology.md) — Bayesian Discovery / Use
+- [honest_capabilities.md](./honest_capabilities.md) — 何を保証するか / しないか

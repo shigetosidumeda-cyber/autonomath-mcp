@@ -16,7 +16,7 @@ Same-origin requests (no ``Origin`` header) and server-to-server callers
 not include the ``Origin`` header.
 
 Whitelist comes from ``settings.cors_origins`` (comma-separated). Default
-includes apex + www + api for ``zeimu-kaikei.ai`` and ``autonomath.ai``
+includes apex + www + api for ``jpcite.com`` and ``autonomath.ai``
 (see ``config.py`` for the canonical list). Apex AND www must both be
 listed — Cloudflare Pages serves the marketing site at apex by default,
 but `www` is also accessible and any browser request from there must

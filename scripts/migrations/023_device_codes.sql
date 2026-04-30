@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS device_codes (
     last_polled_at TEXT,                                -- ISO 8601 UTC; NULL until first poll
     activated_at TEXT,                                  -- ISO 8601 UTC; NULL until activated
     linked_api_key_id TEXT,                             -- FK to api_keys(key_hash)
-    verification_uri TEXT NOT NULL,                     -- e.g. https://zeimu-kaikei.ai/go
-    verification_uri_complete TEXT NOT NULL,            -- e.g. https://zeimu-kaikei.ai/go/ABCD-1234
+    verification_uri TEXT NOT NULL,                     -- e.g. https://jpcite.com/go
+    verification_uri_complete TEXT NOT NULL,            -- e.g. https://jpcite.com/go/ABCD-1234
     stripe_checkout_session_id TEXT,                    -- cs_... set on /complete
     stripe_customer_id TEXT,                            -- cus_... set on /complete
     raw_pickup TEXT,                                    -- one-time raw api_key handoff

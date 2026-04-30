@@ -1,6 +1,6 @@
 # Long-Term Strategy
 
-**Audience**: 税務会計AI operator (Bookyou株式会社, BDFL solo). Quarterly review document.
+**Audience**: jpcite operator (Bookyou株式会社, BDFL solo). Quarterly review document.
 **Status**: Y0 launch is 2026-05-06. This file covers Y1-Y5 (2026-05 → 2031-05).
 **Pricing baseline**: ¥3/req tax-excluded (税込 ¥3.30), 50 req/月 anonymous free per IP, 100% organic acquisition, solo + zero-touch ops. No tier SKUs, no seat fees, no annual minimums. See `pricing.md`.
 
@@ -12,7 +12,7 @@ This document encodes the BDFL solo + zero-touch + organic-only constraints from
 
 | Scenario | Probability | Y5 ARR (FY2031 run-rate) | Trigger conditions |
 |---|---:|---:|---|
-| **Best** | 30% | ¥750M – ¥1.5B | V2 (Healthcare) + V3 (Real Estate) + V4 (English-language surface) all deliver ≥ 80% of Y1 SMB curve; ≥ 1 partner integration (freee / Money Forward / kintone / SmartHR / Claude Desktop) drives 30%+ traffic; "Japanese subsidy" as a search query becomes synonymous with 税務会計AI in agent tool selection. |
+| **Best** | 30% | ¥750M – ¥1.5B | V2 (Healthcare) + V3 (Real Estate) + V4 (English-language surface) all deliver ≥ 80% of Y1 SMB curve; ≥ 1 partner integration (freee / Money Forward / kintone / SmartHR / Claude Desktop) drives 30%+ traffic; "Japanese subsidy" as a search query becomes synonymous with jpcite in agent tool selection. |
 | **Base** | 50% | ¥150M – ¥450M | V1 (subsidy + agri) holds; V2 launches but at 30-50% of V1 curve; organic SEO + GEO compounds without paid amplification; 1-2 vertical extensions max within 5 years. |
 | **Downside** | 20% | ¥30M – ¥60M | V1 plateaus at SMB-only adoption; 競合の集約サイト (gBizINFO, jGrants direct, biz.stayway) regain share; we lose distribution to a freee/Money Forward integrated competitor; tax cliff dates (2026-09 invoice 2割特例 expire) create a one-shot demand spike followed by erosion. |
 
@@ -94,7 +94,7 @@ The 5x5 matrix (5 verticals × 5 surfaces) requires:
 | V4 English-language surface | T+150d | 6-12m | Y2 |
 | V5 Korean / Chinese surfaces | Y2-Y3 deferred | 6-12m each | Y3-Y4 |
 
-Surface variants (5): REST API, MCP stdio, LINE bot, embedded widget, 士業 affiliate. Each is wired today and can multiply into V2-V5 schemas at marginal cost (schema migrations 013+).
+Surface variants (5): REST API, MCP stdio, LINE bot, embedded widget, 士業 案件紹介. Each is wired today and can multiply into V2-V5 schemas at marginal cost (schema migrations 013+).
 
 **Note**: V2-V5 are not Y1 commitments. They appear here so a Y2 review can decide go/no-go with a written baseline.
 
@@ -125,7 +125,7 @@ Each gate has a quantitative tripwire. If we miss the **lower** bound for two co
 
 ### Y4 (2029-05 → 2030-05): "exit-option year"
 - ARR target: **¥450M – ¥900M** (lower-bound trip: ¥300M)
-- Series A / acqui-hire / IPO candidacy review. By Y4 the differentiation factors (time depth ≥ 60k snapshots, curation ≥ 5,000 rows, ≥ 20 case studies, regulatory DB mature, ≥ 3 verticals live) **may** make 税務会計AI an interesting acqui-hire candidate for a tax / accounting platform (freee, Money Forward) or an enterprise RAG vendor — provided the operator brand has compounded honestly over 4+ years. None of these factors are durable on their own; the bundle plus brand may be.
+- Series A / acqui-hire / IPO candidacy review. By Y4 the differentiation factors (time depth ≥ 60k snapshots, curation ≥ 5,000 rows, ≥ 20 case studies, regulatory DB mature, ≥ 3 verticals live) **may** make jpcite an interesting acqui-hire candidate for a tax / accounting platform (freee, Money Forward) or an enterprise RAG vendor — provided the operator brand has compounded honestly over 4+ years. None of these factors are durable on their own; the bundle plus brand may be.
 - Decision: Sell at Y4 (lock-in 5y outcome) vs. continue to Y5 maturity.
 
 ### Y5 (2030-05 → 2031-05): "maturity"

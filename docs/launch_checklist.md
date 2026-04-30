@@ -1,4 +1,4 @@
-# 税務会計AI — Launch Checklist (operator-only)
+# jpcite — Launch Checklist (operator-only)
 
 > **operator-only**: launch 直前 11 日 → launch 当日 → 30 日後までの daily checklist。`mkdocs.yml::exclude_docs` で公開除外。
 >
@@ -28,11 +28,11 @@
 
 ```bash
 # 1. ヘルス
-curl -sI https://api.zeimu-kaikei.ai/healthz
-curl -sI https://zeimu-kaikei.ai/
+curl -sI https://api.jpcite.com/healthz
+curl -sI https://jpcite.com/
 
 # 2. ツール数 (production)
-curl -s https://api.zeimu-kaikei.ai/meta | jq '.total_programs, .build_sha, .last_ingest_at'
+curl -s https://api.jpcite.com/meta | jq '.total_programs, .build_sha, .last_ingest_at'
 
 # 3. Sentry 新規 issue (web UI 30 秒チェック)
 #    bookyou / autonomath-api project → Issues → new (last 24h)
@@ -96,7 +96,7 @@ L0 Storage 4 項目 (integrity / FK 0 / 3 indexes / cache schema) が **全て P
 
 ### Tasks
 
-- [ ] `.venv/bin/autonomath-mcp` 起動 → `tools/list` で 89 tools 出力確認 (39 jpintel + 35 autonomath at default gates)
+- [ ] `.venv/bin/autonomath-mcp` 起動 → `tools/list` で 89 tools 出力確認  + 35 autonomath at default gates)
 - [ ] `/v1/am/*` 16 endpoint の OpenAPI export を確認 (まだ main.py で mount されていない場合は launch ブロッカーに昇格)
 - [ ] envelope v2 (`token_estimate` + `confidence` + `source_attribution` + `cache_hint`) が全 tool に wired
 - [ ] 5 critical invariants Tier 1 (INV-04 / INV-21 / INV-22 / INV-23 / INV-25) active 確認
@@ -131,16 +131,16 @@ L0 Infra 7 項目が **全て PASS**。
 
 ## T-7d (2026-04-29 火) — Compliance layer + smoke test live
 
-**目的**: docs.zeimu-kaikei.ai/compliance/* / 特商法 / pepper / honesty + 10 keyword block / INV-21/22/23 wired。Production smoke 初回。
+**目的**: docs.jpcite.com/compliance/* / 特商法 / pepper / honesty + 10 keyword block / INV-21/22/23 wired。Production smoke 初回。
 
 ### Tasks
 
-- [ ] `docs.zeimu-kaikei.ai/compliance/` 配下 7 ページが live (privacy / ToS / disclaimer / governance / DSR / electronic_bookkeeping / INDEX)
-- [ ] 特商法ページ (`site/tokushoho.html`) の 8 必須項目埋め済 + 法人番号 T8010001213708 表示
+- [ ] `docs.jpcite.com/compliance/` 配下 7 ページが live (privacy / ToS / disclaimer / governance / DSR / electronic_bookkeeping / INDEX)
+- [ ] 特商法ページ (`site/tokushoho.html`) の 8 必須項目埋め済 + 適格請求書発行事業者番号 T8010001213708 表示
 - [ ] `API_KEY_PEPPER` Fly secret 設定済 (`flyctl secrets list --app autonomath-api`)
 - [ ] honesty + 10 keyword block (INV-22) regex が tax/medical/legal disclaimer 規制語をブロック
 - [ ] INV-21 / INV-22 / INV-23 が `src/jpintel_mcp/api/middleware/` に wired
-- [ ] **Production smoke 初回**: `BASE_URL=https://api.zeimu-kaikei.ai ./scripts/smoke_test.sh` PASS
+- [ ] **Production smoke 初回**: `BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh` PASS
 
 ### 中間確認
 
@@ -249,12 +249,12 @@ GitHub 公開 + 13 secret 全件揃い。
 - [ ] **AM**: `git checkout main && git pull && ruff && pytest && mypy` 全 PASS
 - [ ] **AM**: `mkdocs build --strict` PASS
 - [ ] **AM**: `flyctl deploy --app autonomath-api --strategy rolling` (staging tag 付き)
-- [ ] **AM**: production smoke `BASE_URL=https://api.zeimu-kaikei.ai ./scripts/smoke_test.sh` PASS
+- [ ] **AM**: production smoke `BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh` PASS
 - [ ] **AM**: Stripe live ¥3 e2e (`scripts/stripe_smoke_e2e.py`) PASS
 - [ ] **PM**: `python -m build && twine upload dist/*` (PYPI_TOKEN)
 - [ ] **PM**: `pip install autonomath-mcp` をクリーン venv で動作確認
 - [ ] **PM**: `mcp publish server.json` で Anthropic + 11 registry へ submission
-- [ ] **PM**: Cloudflare Pages production deploy 確認 (zeimu-kaikei.ai)
+- [ ] **PM**: Cloudflare Pages production deploy 確認 (jpcite.com)
 - [ ] **PM**: 翌日 launch 投稿の本文 (HN / X / LinkedIn / Zenn / 購読者 mail) を最終 review
 - [ ] **PM**: `go_no_go_gate.md` 全 25 項目を最終 PASS/FAIL 判定 → **Go / No-Go 決定**
 

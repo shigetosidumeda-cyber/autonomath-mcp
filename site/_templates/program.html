@@ -22,7 +22,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:site_name" content="税務会計AI">
+<meta property="og:site_name" content="jpcite">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page_title }}">
@@ -48,213 +48,230 @@
 <a href="#main" class="skip-link">本文へスキップ</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/docs/">Docs</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/dashboard.html">検索</a>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="..//docs/">ドキュメント</a>
+ <a href="../pricing.html">料金</a>
+ <a href="../audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="../status.html">稼働状況</a></li>
+ <li><a href="../data-freshness.html">データ鮮度</a></li>
+ <li><a href="../transparency.html">透明性</a></li>
+ <li><a href="../sources.html">出典</a></li>
+ <li><a href="../changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/_templates/program.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/_templates/program.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="program-page">
-  <div class="container">
+ <div class="container">
 
-    <nav class="breadcrumb" aria-label="パンくず">
-      <a href="/">ホーム</a> &rsaquo;
-      <a href="/programs/">制度一覧</a> &rsaquo;
-      {%- if prefecture and prefecture_slug %}
-      <a href="/prefectures/{{ prefecture_slug }}.html">{{ prefecture }}</a> &rsaquo;
-      {%- endif %}
-      <a href="/programs/?kind={{ program_kind | urlencode }}">{{ kind_ja }}</a> &rsaquo;
-      <span aria-current="page">{{ primary_name }}</span>
-    </nav>
+ <nav class="breadcrumb" aria-label="パンくず">
+ <a href="/">ホーム</a> &rsaquo;
+ <a href="/programs/">制度一覧</a> &rsaquo;
+ {%- if prefecture and prefecture_slug %}
+ <a href="/prefectures/{{ prefecture_slug }}.html">{{ prefecture }}</a> &rsaquo;
+ {%- endif %}
+ <a href="/programs/?kind={{ program_kind | urlencode }}">{{ kind_ja }}</a> &rsaquo;
+ <span aria-current="page">{{ primary_name }}</span>
+ </nav>
 
-    <article>
-      <header class="program-header">
-        <h1>{{ primary_name }}</h1>
-        {%- if aliases %}
-        <p class="aliases">別称: {{ aliases | join('、') }}</p>
-        {%- endif %}
-        <p class="byline">
-          <span class="updated">出典取得: {{ fetched_at_ja }}</span>
-          <span class="sep">/</span>
-          <span class="source">出典: <a href="{{ source_url }}" rel="external nofollow noopener">{{ source_domain }}</a></span>
-          <span class="sep">/</span>
-          <span class="author">Bookyou株式会社 (梅田茂利)</span>
-        </p>
-        <p class="byline-note muted">※出典の一次資料は頻繁に改訂されます。最新情報は公式ページをご確認ください。</p>
-      </header>
+ <article>
+ <header class="program-header">
+ <h1>{{ primary_name }}</h1>
+ {%- if aliases %}
+ <p class="aliases">別称: {{ aliases | join('、') }}</p>
+ {%- endif %}
+ <p class="byline">
+ <span class="updated">出典取得: {{ fetched_at_ja }}</span>
+ <span class="sep">/</span>
+ <span class="source">出典: <a href="{{ source_url }}" rel="external nofollow noopener">{{ source_domain }}</a></span>
+ <span class="sep">/</span>
+ <span class="author">Bookyou株式会社 (梅田茂利)</span>
+ </p>
+ <p class="byline-note muted">※出典の一次資料は頻繁に改訂されます。最新情報は公式ページをご確認ください。</p>
+ </header>
 
-      <section class="tldr" aria-labelledby="tldr-title">
-        <h2 id="tldr-title">TL;DR</h2>
-        <ul>
-          <li><strong>何が:</strong> {{ tldr_what }}</li>
-          <li><strong>誰に:</strong> {{ tldr_who }}</li>
-          <li><strong>いくら:</strong> {{ tldr_how_much }}</li>
-          <li><strong>いつまで:</strong> {{ tldr_when }}</li>
-        </ul>
-      </section>
+ <section class="tldr" aria-labelledby="tldr-title">
+ <h2 id="tldr-title">TL;DR</h2>
+ <ul>
+ <li><strong>何が:</strong> {{ tldr_what }}</li>
+ <li><strong>誰に:</strong> {{ tldr_who }}</li>
+ <li><strong>いくら:</strong> {{ tldr_how_much }}</li>
+ <li><strong>いつまで:</strong> {{ tldr_when }}</li>
+ </ul>
+ </section>
 
-      <dl class="program-meta">
-        {%- if tier %}
-        <dt>Tier</dt>
-        <dd><span class="tier tier-{{ tier|lower }}">{{ tier }}</span></dd>
-        {%- endif %}
-        <dt>制度区分</dt>
-        <dd>{{ kind_ja }}</dd>
-        {%- if resolved_agency %}
-        <dt>提供主体</dt>
-        <dd>{{ resolved_agency }}{% if prefecture %} ({% if prefecture_slug %}<a href="/prefectures/{{ prefecture_slug }}.html">{{ prefecture }}</a>{% else %}{{ prefecture }}{% endif %}){% endif %}</dd>
-        {%- elif prefecture %}
-        <dt>地域</dt>
-        <dd>{% if prefecture_slug %}<a href="/prefectures/{{ prefecture_slug }}.html">{{ prefecture }}</a>{% else %}{{ prefecture }}{% endif %}</dd>
-        {%- endif %}
-        {%- if amount_line %}
-        <dt>支援金額</dt>
-        <dd>{{ amount_line }}</dd>
-        {%- endif %}
-        {%- if subsidy_rate_line %}
-        <dt>補助率</dt>
-        <dd>{{ subsidy_rate_line }}</dd>
-        {%- endif %}
-        {%- if target_types_ja %}
-        <dt>対象者</dt>
-        <dd>{{ target_types_ja | join('、') }}</dd>
-        {%- endif %}
-        {%- if funding_purposes %}
-        <dt>用途</dt>
-        <dd>{{ funding_purposes | join('、') }}</dd>
-        {%- endif %}
-      </dl>
+ <dl class="program-meta">
+ {%- if tier %}
+ <dt>Tier</dt>
+ <dd><span class="tier tier-{{ tier|lower }}">{{ tier }}</span></dd>
+ {%- endif %}
+ <dt>制度区分</dt>
+ <dd>{{ kind_ja }}</dd>
+ {%- if resolved_agency %}
+ <dt>提供主体</dt>
+ <dd>{{ resolved_agency }}{% if prefecture %} ({% if prefecture_slug %}<a href="/prefectures/{{ prefecture_slug }}.html">{{ prefecture }}</a>{% else %}{{ prefecture }}{% endif %}){% endif %}</dd>
+ {%- elif prefecture %}
+ <dt>地域</dt>
+ <dd>{% if prefecture_slug %}<a href="/prefectures/{{ prefecture_slug }}.html">{{ prefecture }}</a>{% else %}{{ prefecture }}{% endif %}</dd>
+ {%- endif %}
+ {%- if amount_line %}
+ <dt>支援金額</dt>
+ <dd>{{ amount_line }}</dd>
+ {%- endif %}
+ {%- if subsidy_rate_line %}
+ <dt>補助率</dt>
+ <dd>{{ subsidy_rate_line }}</dd>
+ {%- endif %}
+ {%- if target_types_ja %}
+ <dt>対象者</dt>
+ <dd>{{ target_types_ja | join('、') }}</dd>
+ {%- endif %}
+ {%- if funding_purposes %}
+ <dt>用途</dt>
+ <dd>{{ funding_purposes | join('、') }}</dd>
+ {%- endif %}
+ </dl>
 
-      <section aria-labelledby="summary-title">
-        <h2 id="summary-title">概要</h2>
-        <p>{{ summary_paragraph }}</p>
-      </section>
+ <section aria-labelledby="summary-title">
+ <h2 id="summary-title">概要</h2>
+ <p>{{ summary_paragraph }}</p>
+ </section>
 
-      <section aria-labelledby="eligibility-title">
-        <h2 id="eligibility-title">対象・要件</h2>
-        {%- if resolved_agency %}
-        <p>本制度は {{ resolved_agency }} が運営する{{ kind_ja }}であり、対象者は「{{ target_types_text }}」とされています。採択・受給の可否は、公募要領・募集要項に記載された個別要件 (事業計画、期間、他の支援との併用可否、地理要件など) をすべて満たすことが前提です。</p>
-        {%- else %}
-        <p>本制度は公的機関が運営する{{ kind_ja }}であり、対象者は「{{ target_types_text }}」とされています。採択・受給の可否は、公募要領・募集要項に記載された個別要件 (事業計画、期間、他の支援との併用可否、地理要件など) をすべて満たすことが前提です。</p>
-        {%- endif %}
-        <p>最終的な適用可否は必ず一次情報および有資格者 (税理士・社労士・中小企業診断士等) の助言により判断してください。</p>
-      </section>
+ <section aria-labelledby="eligibility-title">
+ <h2 id="eligibility-title">対象・要件</h2>
+ {%- if resolved_agency %}
+ <p>本制度は {{ resolved_agency }} が運営する{{ kind_ja }}であり、対象者は「{{ target_types_text }}」とされています。採択・受給の可否は、公募要領・募集要項に記載された個別要件 (事業計画、期間、他の支援との併用可否、地理要件など) をすべて満たすことが前提です。</p>
+ {%- else %}
+ <p>本制度は公的機関が運営する{{ kind_ja }}であり、対象者は「{{ target_types_text }}」とされています。採択・受給の可否は、公募要領・募集要項に記載された個別要件 (事業計画、期間、他の支援との併用可否、地理要件など) をすべて満たすことが前提です。</p>
+ {%- endif %}
+ <p>最終的な適用可否は必ず一次情報および有資格者 (税理士・社労士・中小企業診断士等) の助言により判断してください。</p>
+ </section>
 
-      <section aria-labelledby="amount-title">
-        <h2 id="amount-title">金額・補助率</h2>
-        <p>{{ amount_paragraph }}</p>
-      </section>
+ <section aria-labelledby="amount-title">
+ <h2 id="amount-title">金額・補助率</h2>
+ <p>{{ amount_paragraph }}</p>
+ </section>
 
-      <section aria-labelledby="deadline-title">
-        <h2 id="deadline-title">締切・公募時期</h2>
-        <p>{{ deadline_paragraph }}</p>
-      </section>
+ <section aria-labelledby="deadline-title">
+ <h2 id="deadline-title">締切・公募時期</h2>
+ <p>{{ deadline_paragraph }}</p>
+ </section>
 
-      <section aria-labelledby="acceptance-title">
-        <h2 id="acceptance-title">採択率</h2>
-        {%- if acceptance_stats and acceptance_stats.rounds %}
-        <p>過去採択率 (n={{ acceptance_stats.rounds }} rounds, {{ acceptance_stats.min_pct }}%–{{ acceptance_stats.max_pct }}%、 平均 {{ acceptance_stats.avg_pct }}%) — 公的機関が公表した round ごとの値の集約です。</p>
-        {%- if acceptance_stats.recent %}
-        <ul class="acceptance-recent">
-          {%- for r in acceptance_stats.recent %}
-          <li><strong>{{ r.round_label }}</strong>: {{ r.rate_pct }}%{% if r.applied_count and r.accepted_count %} ({{ r.accepted_count }} / {{ r.applied_count }} 件){% endif %}{% if r.application_date %} &middot; {{ r.application_date }}{% endif %}</li>
-          {%- endfor %}
-        </ul>
-        {%- endif %}
-        {%- else %}
-        <p class="muted">採択率公表データなし。 本制度については公的機関が round ごとの採択率を公表していないため、 推測値は出しません。</p>
-        {%- endif %}
-        <p class="muted" style="font-size:13px;">採択率公表データは 69 制度 / 10,790 中 (0.64%) のみ。 公募回ごとの公表値を抜粋しています。 採択率は事業計画・申請内容により個別に大きく変動するため、 過去値は今後の採択を保証しません。</p>
-      </section>
+ <section aria-labelledby="acceptance-title">
+ <h2 id="acceptance-title">採択率</h2>
+ {%- if acceptance_stats and acceptance_stats.rounds %}
+ <p>過去採択率 (n={{ acceptance_stats.rounds }} rounds, {{ acceptance_stats.min_pct }}%–{{ acceptance_stats.max_pct }}%、 平均 {{ acceptance_stats.avg_pct }}%) — 公的機関が公表した round ごとの値の集約です。</p>
+ {%- if acceptance_stats.recent %}
+ <ul class="acceptance-recent">
+ {%- for r in acceptance_stats.recent %}
+ <li><strong>{{ r.round_label }}</strong>: {{ r.rate_pct }}%{% if r.applied_count and r.accepted_count %} ({{ r.accepted_count }} / {{ r.applied_count }} 件){% endif %}{% if r.application_date %} &middot; {{ r.application_date }}{% endif %}</li>
+ {%- endfor %}
+ </ul>
+ {%- endif %}
+ {%- else %}
+ <p class="muted">採択率公表データなし。 本制度については公的機関が round ごとの採択率を公表していないため、 推測値は出しません。</p>
+ {%- endif %}
+ <p class="muted" style="font-size:13px;">採択率公表データは 69 制度 / 10,790 中 (0.64%) のみ。 公募回ごとの公表値を抜粋しています。 採択率は事業計画・申請内容により個別に大きく変動するため、 過去値は今後の採択を保証しません。</p>
+ </section>
 
-      <section aria-labelledby="exclusion-title">
-        <h2 id="exclusion-title">除外制度・併用可否</h2>
-        <p>{{ exclusion_paragraph }}</p>
-      </section>
+ <section aria-labelledby="exclusion-title">
+ <h2 id="exclusion-title">除外制度・併用可否</h2>
+ <p>{{ exclusion_paragraph }}</p>
+ </section>
 
-      <section aria-labelledby="source-title">
-        <h2 id="source-title">出典・一次情報</h2>
-        <p>本ページの内容は以下の一次情報に基づきます。最新の公募状況・詳細要件は必ず公式ページをご確認ください。</p>
-        <p><a class="primary-link" rel="external nofollow noopener" href="{{ source_url }}">{{ source_org or source_domain }} の公式ページを開く</a></p>
-        {%- if fetched_at %}
-        <p class="muted">データ取得日: {{ fetched_at }}</p>
-        {%- endif %}
-      </section>
+ <section aria-labelledby="source-title">
+ <h2 id="source-title">出典・一次情報</h2>
+ <p>本ページの内容は以下の一次情報に基づきます。最新の公募状況・詳細要件は必ず公式ページをご確認ください。</p>
+ <p><a class="primary-link" rel="external nofollow noopener" href="{{ source_url }}">{{ source_org or source_domain }} の公式ページを開く</a></p>
+ {%- if fetched_at %}
+ <p class="muted">データ更新日: {{ fetched_at }}</p>
+ {%- endif %}
+ </section>
 
-      <section aria-labelledby="api-title">
-        <h2 id="api-title">API で取得</h2>
-        <p>本制度の機械可読データは REST / MCP の両方で取得できます。</p>
-        <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
-  "https://api.{{ DOMAIN }}/v1/programs/{{ unified_id }}"</code></pre>
-        <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_program(unified_id="{{ unified_id }}")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
-        <p class="api-cta-line">無料 50 リクエスト/月。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
-      </section>
+ <section aria-labelledby="api-title">
+ <h2 id="api-title">API で取得</h2>
+ <p>本制度の機械可読データは REST / MCP の両方で取得できます。</p>
+ <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
+ "https://api.{{ DOMAIN }}/v1/programs/{{ unified_id }}"</code></pre>
+ <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_program(unified_id="{{ unified_id }}")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
+ <p class="api-cta-line">無料 50 リクエスト/月。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
+ </section>
 
-      {%- if related_qa %}
-      <section aria-labelledby="related-qa-title">
-        <h2 id="related-qa-title">関連 Q&amp;A</h2>
-        <p>本制度のよくある質問・申請手続きの解説は以下の Q&amp;A ページにまとめています。</p>
-        <ul class="related-qa">
-          {%- for q in related_qa %}
-          <li class="related-card">
-            <a href="{{ q.url }}">{{ q.h1 }}</a>
-            <span class="related-kind muted">{{ q.topic_label }}</span>
-          </li>
-          {%- endfor %}
-        </ul>
-      </section>
-      {%- endif %}
+ {%- if related_qa %}
+ <section aria-labelledby="related-qa-title">
+ <h2 id="related-qa-title">関連 Q&amp;A</h2>
+ <p>本制度のよくある質問・申請手続きの解説は以下の Q&amp;A ページにまとめています。</p>
+ <ul class="related-qa">
+ {%- for q in related_qa %}
+ <li class="related-card">
+ <a href="{{ q.url }}">{{ q.h1 }}</a>
+ <span class="related-kind muted">{{ q.topic_label }}</span>
+ </li>
+ {%- endfor %}
+ </ul>
+ </section>
+ {%- endif %}
 
-      {%- if related_programs %}
-      <section aria-labelledby="related-title">
-        <h2 id="related-title">関連制度</h2>
-        <ul class="related-programs">
-          {%- for rp in related_programs %}
-          <li class="related-card">
-            <a href="/programs/{{ rp.slug }}">{{ rp.name }} - {{ rp.kind_ja }}</a>
-            {%- if rp.amount_line %}
-            <span class="related-amount">{{ rp.amount_line }}</span>
-            {%- endif %}
-          </li>
-          {%- endfor %}
-        </ul>
-      </section>
-      {%- endif %}
+ {%- if related_programs %}
+ <section aria-labelledby="related-title">
+ <h2 id="related-title">関連制度</h2>
+ <ul class="related-programs">
+ {%- for rp in related_programs %}
+ <li class="related-card">
+ <a href="/programs/{{ rp.slug }}">{{ rp.name }} - {{ rp.kind_ja }}</a>
+ {%- if rp.amount_line %}
+ <span class="related-amount">{{ rp.amount_line }}</span>
+ {%- endif %}
+ </li>
+ {%- endfor %}
+ </ul>
+ </section>
+ {%- endif %}
 
-      <p class="disclaimer">本ページは自動生成された制度データのプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。制度の最新内容は所管官公庁・自治体の一次情報を必ず確認してください。</p>
-    </article>
+ <p class="disclaimer">本ページは自動生成された制度データのプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。制度の最新内容は所管官公庁・自治体の一次情報を必ず確認してください。</p>
+ </article>
 
-  </div>
+ </div>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター 法務・連絡">
-      <a href="/tos.html">利用規約</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
-      <a href="/industries/" hreflang="ja">業種別</a>
-      <a href="/qa/" hreflang="ja">Q&amp;A</a>
-      <a href="/compare.html" hreflang="ja">比較</a>
-      <a href="/prefectures/" hreflang="ja">都道府県別</a>
-    </nav>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-    <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の制度 API</p>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター 法務・連絡">
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特定商取引法</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
+ <a href="/industries/" hreflang="ja">業種別</a>
+ <a href="/qa/" hreflang="ja">Q&amp;A</a>
+ <a href="/compare.html" hreflang="ja">比較</a>
+ <a href="/prefectures/" hreflang="ja">都道府県別</a>
+ </nav>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
+ </div>
 </footer>
 
 </body>

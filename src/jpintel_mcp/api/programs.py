@@ -645,7 +645,7 @@ def _build_program(row: sqlite3.Row) -> Program:
         application_url=official_url,
         # Site-relative path resolved off the same slug rule the static
         # generator uses (utils/slug.py). Browsers / agents joining this
-        # with `https://zeimu-kaikei.ai` land on the right SEO page
+        # with `https://jpcite.com` land on the right SEO page
         # instead of the dead `/programs/{unified_id}.html` pattern.
         static_url=program_static_url(row["primary_name"], row["unified_id"]),
     )

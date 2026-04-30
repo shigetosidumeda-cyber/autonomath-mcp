@@ -2,39 +2,36 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "税務会計AI Error Handling (20 closed-enum error codes)",
-  "description": "税務会計AI API/MCP の 20 種類 closed-enum error code 一覧と envelope shape、リトライ可否、各 code の発生条件と対処方法。",
+  "headline": "jpcite Error Handling (20 closed-enum error codes)",
+  "description": "jpcite API/MCP の 20 種類 closed-enum error code 一覧と envelope shape、リトライ可否、各 code の発生条件と対処方法。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-26",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://zeimu-kaikei.ai/about.html"
+    "url": "https://jpcite.com/about.html"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://zeimu-kaikei.ai/og/default.png"
+      "url": "https://jpcite.com/og/default.png"
     }
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://zeimu-kaikei.ai/docs/error_handling/"
+    "@id": "https://jpcite.com/docs/error_handling/"
   }
 }
 </script>
 
 # Error handling
 
-税務会計AI API/MCP は **20 種類の closed-enum error code** を返します。
-すべての error response は同じ envelope shape で、 `error.code` は機械可読な
-列挙値です。 LLM client / SDK / 行政書士向け bot は `code` で機械的に
-分岐できます。
+REST API + MCP は **20 種類の closed-enum error code** を返す。すべての error response は同じ envelope、`error.code` は機械可読な列挙値。
 
-## Error envelope shape
+## Error envelope
 
 ```json
 {
@@ -44,7 +41,7 @@
     "user_message_en": "End-user English message",
     "request_id": "01KQ3XQ77RR7J8XWZ8C0YR2JN2",
     "severity": "hard | soft",
-    "documentation": "https://zeimu-kaikei.ai/docs/error_handling#<code>",
+    "documentation": "https://jpcite.com/docs/error_handling#<code>",
     "path": "/v1/programs/search",
     "method": "GET"
   }
@@ -131,7 +128,7 @@
 #### `route_not_found`
 - HTTP: 404
 - endpoint path 未定義。 typo / 旧 SDK の v1.0 path と新 v0.3 path の不一致。
-- 復旧: `https://api.zeimu-kaikei.ai/v1/openapi.json` で path 一覧確認。
+- 復旧: `https://api.jpcite.com/v1/openapi.json` で path 一覧確認。
 
 #### `method_not_allowed`
 - HTTP: 405
@@ -195,10 +192,10 @@
     "user_message_en": "Anonymous monthly limit (50 req) reached. Get an API key to continue.",
     "request_id": "01KQ3XQ77RR7J8XWZ8C0YR2JN2",
     "severity": "hard",
-    "documentation": "https://zeimu-kaikei.ai/docs/error_handling#rate_limit_exceeded",
+    "documentation": "https://jpcite.com/docs/error_handling#rate_limit_exceeded",
     "path": "/v1/programs/search",
     "method": "GET",
-    "upgrade_url": "https://zeimu-kaikei.ai/upgrade.html?from=429",
+    "upgrade_url": "https://jpcite.com/upgrade.html?from=429",
     "cta_text_ja": "API key を発行して制限を解除",
     "cta_text_en": "Get an API key to remove the limit"
   }
@@ -209,7 +206,7 @@ response headers:
 ```
 X-Anon-Quota-Remaining: 0
 X-Anon-Quota-Reset: 2026-05-01T00:00:00+09:00
-X-Anon-Upgrade-Url: https://zeimu-kaikei.ai/upgrade.html?from=429
+X-Anon-Upgrade-Url: https://jpcite.com/upgrade.html?from=429
 Retry-After: <seconds-until-month-reset>
 ```
 

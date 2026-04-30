@@ -35,7 +35,7 @@ Idempotency:
 Constraints:
   * No Anthropic / claude / SDK calls. Pure SQLite + httpx + stdlib.
   * HMAC required (X-Zeimu-Signature: hmac-sha256={hex}).
-  * User-Agent: zeimu-kaikei-webhook/1.0.
+  * User-Agent: jpcite-webhook/1.0.
   * RFC1918 / loopback host rebind defence: re-validates the URL at fire time.
 
 Usage:
@@ -384,7 +384,7 @@ def _deliver_one(
     sig = compute_signature(secret, body)
     headers = {
         "Content-Type": "application/json; charset=utf-8",
-        "User-Agent": "zeimu-kaikei-webhook/1.0",
+        "User-Agent": "jpcite-webhook/1.0",
         "X-Zeimu-Signature": sig,
         "X-Zeimu-Event": event_type,
     }

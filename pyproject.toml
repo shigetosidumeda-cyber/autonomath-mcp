@@ -114,8 +114,8 @@ jpintel-mcp = "jpintel_mcp.mcp.server:run"
 jpintel-ingest = "jpintel_mcp.ingest.canonical:run"
 
 [project.urls]
-Homepage = "https://zeimu-kaikei.ai"
-Documentation = "https://zeimu-kaikei.ai/docs/"
+Homepage = "https://jpcite.com"
+Documentation = "https://jpcite.com/docs/"
 # TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
 Repository = "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
 Issues = "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues"

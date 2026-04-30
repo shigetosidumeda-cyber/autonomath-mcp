@@ -334,7 +334,7 @@ def test_test_delivery_signs_payload_with_hmac(
         secret.encode(), sent_body, hashlib.sha256
     ).hexdigest()
     assert sent_headers["X-Zeimu-Signature"] == expected_sig
-    assert sent_headers["User-Agent"] == "zeimu-kaikei-webhook/1.0"
+    assert sent_headers["User-Agent"] == "jpcite-webhook/1.0"
     payload = json.loads(sent_body.decode())
     assert payload["event_type"] == "test.ping"
 
@@ -465,7 +465,7 @@ def test_dispatch_delivers_signs_and_dedups(seeded_db, webhook_key, monkeypatch)
         secret.encode(), sent_body, hashlib.sha256
     ).hexdigest()
     assert sent_headers["X-Zeimu-Signature"] == expected
-    assert sent_headers["User-Agent"] == "zeimu-kaikei-webhook/1.0"
+    assert sent_headers["User-Agent"] == "jpcite-webhook/1.0"
     assert sent_headers["X-Zeimu-Event"] == "program.created"
     payload = json.loads(sent_body.decode())
     assert payload["event_type"] == "program.created"

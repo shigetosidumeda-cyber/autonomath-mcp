@@ -2,7 +2,17 @@
   "name": "zeimu-kaikei-ai-freee-plugin",
   "version": "0.1.0",
   "private": true,
-  "description": "freee app marketplace plugin for 税務会計AI — 補助金・税制・法令・判例・入札・インボイス登録番号の横断検索を freee 会計から呼び出す。",
+  "description": "freee app marketplace plugin for jpcite — 補助金・税制・法令・判例・入札・インボイス登録番号の横断検索を freee 会計から呼び出す。",
+  "homepage": "https://jpcite.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git",
+    "directory": "sdk/freee-plugin/marketplace"
+  },
+  "bugs": {
+    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues",
+    "email": "info@bookyou.net"
+  },
   "operator": {
     "company": "Bookyou株式会社",
     "houjin_bangou": "T8010001213708",

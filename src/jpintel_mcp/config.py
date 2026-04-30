@@ -229,12 +229,15 @@ class Settings(BaseSettings):
     # are unaffected. Default whitelists production marketing surfaces +
     # API host. Apex AND www MUST both be listed — the homepage prescreen,
     # saved searches, customer webhooks dashboard, and audit log all run
-    # browser-side fetch() against api.zeimu-kaikei.ai and inherit the
+    # browser-side fetch() against api.jpcite.com and inherit the
     # rendering origin (apex or www depending on canonical redirect).
     # Local dev callers must override JPINTEL_CORS_ORIGINS explicitly
     # (e.g. `JPINTEL_CORS_ORIGINS="http://localhost:3000,http://localhost:8080"`).
     cors_origins: str = Field(
         default=(
+            "https://jpcite.com,"
+            "https://www.jpcite.com,"
+            "https://api.jpcite.com,"
             "https://zeimu-kaikei.ai,"
             "https://www.zeimu-kaikei.ai,"
             "https://api.zeimu-kaikei.ai,"
@@ -325,7 +328,7 @@ class Settings(BaseSettings):
     # (no-reply@[DOMAIN]). `reply` is the Reply-To we set so humans answering
     # hit a monitored mailbox (hello@[DOMAIN]).
     postmark_from_transactional: str = Field(
-        default="noreply@zeimu-kaikei.ai", alias="POSTMARK_FROM_TRANSACTIONAL"
+        default="noreply@jpcite.com", alias="POSTMARK_FROM_TRANSACTIONAL"
     )
     postmark_from_reply: str = Field(
         default="info@bookyou.net", alias="POSTMARK_FROM_REPLY"

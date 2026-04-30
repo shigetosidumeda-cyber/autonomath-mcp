@@ -64,7 +64,7 @@ def test_200_anon_response_carries_quota_headers(
     # anon caller doesn't have, so non-429 anon callers also land on
     # /upgrade.html (per /go/upgrade fix). The 429 envelope adds ?from=429
     # to the same URL for funnel-source attribution.
-    assert "zeimu-kaikei.ai/upgrade.html" in upgrade
+    assert "jpcite.com/upgrade.html" in upgrade
 
 
 def test_429_body_includes_upgrade_url_and_bilingual_cta(
@@ -96,7 +96,7 @@ def test_429_body_includes_upgrade_url_and_bilingual_cta(
     # /upgrade.html landing — NOT /go (which is the device-flow page that
     # requires a user_code). See site/upgrade.html docstring.
     assert "upgrade_url" in body, f"missing upgrade_url; body keys={list(body)}"
-    assert body["upgrade_url"].startswith("https://zeimu-kaikei.ai/upgrade.html")
+    assert body["upgrade_url"].startswith("https://jpcite.com/upgrade.html")
     assert "from=429" in body["upgrade_url"]
 
     assert body.get("cta_text_ja"), "missing cta_text_ja"
@@ -113,7 +113,7 @@ def test_429_body_includes_upgrade_url_and_bilingual_cta(
     # Headers on 429 (parallel to the body).
     assert r.headers.get("X-Anon-Quota-Remaining") == "0"
     assert r.headers.get("X-Anon-Upgrade-Url", "").startswith(
-        "https://zeimu-kaikei.ai/upgrade.html"
+        "https://jpcite.com/upgrade.html"
     )
     assert r.headers.get("X-Anon-Quota-Reset", "").startswith(("20", "21"))
     assert r.headers.get("Retry-After") is not None
@@ -212,7 +212,7 @@ def test_soft_warning_body_injection_at_80pct(
         f"call 2 missing upgrade_hint string; _meta={body2['_meta']}"
     )
     assert "残 10 req" in hint2, f"hint missing remaining count; hint={hint2!r}"
-    assert "zeimu-kaikei.ai/upgrade" in hint2, (
+    assert "jpcite.com/upgrade" in hint2, (
         f"hint missing upgrade URL; hint={hint2!r}"
     )
     assert "JST" in hint2 and "reset" in hint2, (

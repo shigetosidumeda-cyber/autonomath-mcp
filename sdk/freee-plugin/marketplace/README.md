@@ -1,18 +1,21 @@
-# 税務会計AI — freee 会計 marketplace plugin
+# jpcite (旧 税務会計AI) — freee 会計 marketplace plugin
 
-freee アプリストア向けの 公開 (public) アプリ実装。`zeimu-kaikei.ai` の REST API
+> **Brand**: 本サービスは 2026-04-30 に `税務会計AI` から **jpcite** へ改名されました。
+> alternateName として `税務会計AI` は残しますが、URL / API base は jpcite.com 系に統一されます。
+
+freee アプリストア向けの 公開 (public) アプリ実装。`jpcite.com` の REST API
 をプロキシし、freee 会計のユーザーが補助金・税制優遇・インボイス登録番号を
 freee 画面内のポップアップから検索できるようにする。
 
 ```
 freee 会計 (https://app.secure.freee.co.jp)
-        │ <iframe src="https://freee-plugin.zeimu-kaikei.ai/static/index.html">
+        │ <iframe src="https://freee-plugin.jpcite.com/static/index.html">
         ▼
 このプラグイン (Fly.io HND, Node 20)
         │ OAuth2 (read scope) → 事業所名 + 法人番号 を session に保管
         │ X-API-Key: zk_live_... (Bookyou 所有のサービスキー)
         ▼
-api.zeimu-kaikei.ai (¥3.30/req metered subscription)
+api.jpcite.com (¥3.30/req metered subscription)
 ```
 
 ## 構成
@@ -55,13 +58,13 @@ npm test
 ## デプロイ (Fly.io)
 
 ```bash
-fly launch --no-deploy --copy-config --name zeimu-kaikei-freee-plugin
+fly launch --no-deploy --copy-config --name jpcite-freee-plugin
 fly secrets set \
   FREEE_CLIENT_ID=...                               \
   FREEE_CLIENT_SECRET=...                           \
   ZEIMU_KAIKEI_API_KEY=zk_live_...                  \
   SESSION_SECRET=$(openssl rand -hex 32)            \
-  PLUGIN_BASE_URL=https://freee-plugin.zeimu-kaikei.ai
+  PLUGIN_BASE_URL=https://freee-plugin.jpcite.com
 fly deploy
 ```
 

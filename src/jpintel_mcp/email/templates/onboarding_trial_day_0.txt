@@ -20,30 +20,30 @@ YOUR_KEY を先ほど発行されたキーに置き換えてください。
 1) 疎通確認 (/v1/ping)
 
    curl -H "X-API-Key: YOUR_KEY" \
-     https://api.zeimu-kaikei.ai/v1/ping
+     https://api.jpcite.com/v1/ping
 
 2) 補助金検索 (/v1/programs/search)
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/programs/search?prefecture=東京都&target_types=smb&limit=5"
+     "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_types=smb&limit=5"
 
 3) キーワード検索
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/programs/search?q=事業再構築&limit=5"
+     "https://api.jpcite.com/v1/programs/search?q=事業再構築&limit=5"
 
 ---
 
 次に読むもの:
 
-- Getting Started: https://zeimu-kaikei.ai/docs/getting-started
-- examples 集: https://zeimu-kaikei.ai/examples/
+- Getting Started: https://jpcite.com/docs/getting-started
+- examples 集: https://jpcite.com/examples/
 
 ---
 
 税理士法 §52 / 弁護士法 §72 該当の業務はおこないません:
 
-AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は https://zeimu-kaikei.ai/tos.html をご確認ください。
+AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は https://jpcite.com/tos.html をご確認ください。
 
 トライアルが終わる 3 日前に再度お知らせします。詰まったらいつでもこのメールに返信してください。
 

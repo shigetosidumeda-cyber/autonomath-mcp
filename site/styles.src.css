@@ -974,6 +974,12 @@ pre code { word-break: normal; }
   .hero { padding: 48px 0 40px; }
   .hero h1 { font-size: 32px; }
   .hero-sub { font-size: 17px; }
+  /* Round 3 (2026-04-30) mobile audit: products.html / pricing-page H1
+     was a hard 36px under the .pricing-page rule, with no <768/<480
+     override. Long titles like "プロダクト — 5 つのインターフェース" can
+     push the container width on iPhone SE. Clamp shrinks to 22-28px in
+     the mobile range. */
+  .pricing-page h1 { font-size: clamp(22px, 7vw, 36px); }
   .features,
   .code-demo,
   .newsletter,

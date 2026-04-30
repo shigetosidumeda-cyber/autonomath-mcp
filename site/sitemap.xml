@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Static page sitemap for jpintel-mcp site/ surface.
-  Generated: 2026-04-23 — replace https://zeimu-kaikei.ai at deploy time
+  Generated: 2026-04-23 — replace https://jpcite.com at deploy time
   (see docs/seo_technical_audit.md and project_jpintel_trademark_intel_risk).
   Updated 2026-04-25: legal pages (privacy/tos/tokushoho) added per audit
   a30f4c848bdd242a6 — tokushoho is a Japanese e-commerce legal requirement
@@ -50,75 +50,75 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://zeimu-kaikei.ai/</loc>
+    <loc>https://jpcite.com/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/</loc>
+    <loc>https://jpcite.com/en/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/pricing.html</loc>
+    <loc>https://jpcite.com/pricing.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/pricing.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/pricing.html</loc>
+    <loc>https://jpcite.com/en/pricing.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/pricing.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/pricing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/pricing.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/getting-started.html</loc>
+    <loc>https://jpcite.com/en/getting-started.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/getting-started.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/getting-started.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/docs/getting-started/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/playground.html</loc>
+    <loc>https://jpcite.com/playground.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/playground.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/playground.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/playground.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/playground.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/about.html</loc>
+    <loc>https://jpcite.com/about.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/about.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/about.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/about.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/about.html</loc>
+    <loc>https://jpcite.com/en/about.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/about.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/about.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/about.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/about.html"/>
   </url>
   <!--
     llms.txt + llms-full.txt entries: AI-friendly site map per llmstxt.org.
@@ -127,452 +127,434 @@
     the convention. Served as text/markdown (see _headers).
   -->
   <url>
-    <loc>https://zeimu-kaikei.ai/llms.txt</loc>
+    <loc>https://jpcite.com/llms.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/llms.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/llms.txt"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/llms.en.txt</loc>
+    <loc>https://jpcite.com/llms.en.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/llms.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/llms.txt"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/llms.txt</loc>
+    <loc>https://jpcite.com/en/llms.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/llms.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/llms.txt"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/llms-full.txt</loc>
+    <loc>https://jpcite.com/llms-full.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms-full.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms-full.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/llms-full.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/llms-full.txt"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/llms-full.en.txt</loc>
+    <loc>https://jpcite.com/llms-full.en.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/llms-full.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/llms-full.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms-full.txt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/llms-full.en.txt"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/llms-full.txt"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/humans.txt</loc>
+    <loc>https://jpcite.com/humans.txt</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/docs/</loc>
+    <loc>https://jpcite.com/docs/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/docs/getting-started</loc>
+    <loc>https://jpcite.com/docs/getting-started</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/getting-started.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/docs/getting-started/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/getting-started.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/docs/getting-started/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/docs/api-reference</loc>
+    <loc>https://jpcite.com/docs/api-reference</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/docs/mcp-tools</loc>
+    <loc>https://jpcite.com/docs/mcp-tools</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/docs/exclusions</loc>
+    <loc>https://jpcite.com/docs/exclusions</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/docs/faq</loc>
+    <loc>https://jpcite.com/docs/faq</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/privacy.html</loc>
+    <loc>https://jpcite.com/privacy.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/privacy.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/privacy.html</loc>
+    <loc>https://jpcite.com/en/privacy.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/privacy.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/tos.html</loc>
+    <loc>https://jpcite.com/tos.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/tos.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/tos.html</loc>
+    <loc>https://jpcite.com/en/tos.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/tos.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/tos.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/tokushoho.html</loc>
+    <loc>https://jpcite.com/tokushoho.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/facts.html</loc>
+    <loc>https://jpcite.com/facts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/facts.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/glossary.html</loc>
+    <loc>https://jpcite.com/glossary.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/glossary.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/glossary.html</loc>
+    <loc>https://jpcite.com/en/glossary.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/glossary.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/glossary.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/glossary.html"/>
   </url>
 
   <!-- Audience landing pages (JP + EN) live in sitemap-audiences.xml — the canonical shard with hreflang annotations. Not duplicated here. -->
 
   <!-- JP-only marketing surface (no EN mirror): press, partners, products, line, prompts, alerts, widget, testimonials, stats, confidence, advisors. -->
   <url>
-    <loc>https://zeimu-kaikei.ai/products.html</loc>
+    <loc>https://jpcite.com/products.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/products.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/products.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/products.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/products.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/products.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/products.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/products.html</loc>
+    <loc>https://jpcite.com/en/products.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/products.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/products.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/products.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/products.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/products.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/products.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/programs/</loc>
+    <loc>https://jpcite.com/programs/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/press/</loc>
+    <loc>https://jpcite.com/press/</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/partners.html</loc>
+    <loc>https://jpcite.com/partners.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/partners.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/partners.html</loc>
+    <loc>https://jpcite.com/en/partners.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/partners.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/partners.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/widget.html</loc>
+    <loc>https://jpcite.com/widget.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/widget.html</loc>
+    <loc>https://jpcite.com/en/widget.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/widget.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/line.html</loc>
+    <loc>https://jpcite.com/line.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/line.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/line.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/line.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/line.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/line.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/line.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/prompts.html</loc>
+    <loc>https://jpcite.com/alerts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/alerts.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/prompts.html</loc>
+    <loc>https://jpcite.com/en/alerts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/prompts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/prompts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/alerts.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/alerts.html</loc>
-    <lastmod>2026-04-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/alerts.html"/>
-  </url>
-  <url>
-    <loc>https://zeimu-kaikei.ai/en/alerts.html</loc>
+    <loc>https://jpcite.com/testimonials.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/alerts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/alerts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/testimonials.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/testimonials.html</loc>
-    <lastmod>2026-04-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/testimonials.html"/>
-  </url>
-  <url>
-    <loc>https://zeimu-kaikei.ai/en/testimonials.html</loc>
+    <loc>https://jpcite.com/en/testimonials.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/testimonials.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/testimonials.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/testimonials.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/stats.html</loc>
+    <loc>https://jpcite.com/stats.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/stats.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/stats.html</loc>
+    <loc>https://jpcite.com/en/stats.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/stats.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/stats.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/stats.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/status.html</loc>
+    <loc>https://jpcite.com/en/status.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/status.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/status.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/status.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/status.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/status.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/status.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/go.html</loc>
+    <loc>https://jpcite.com/en/go.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/go"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/go.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/go"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/go"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/go.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/go"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/confidence.html</loc>
+    <loc>https://jpcite.com/confidence.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/confidence.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/confidence.html</loc>
+    <loc>https://jpcite.com/en/confidence.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/confidence.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/confidence.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/confidence.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/advisors.html</loc>
+    <loc>https://jpcite.com/advisors.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/advisors.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/line.html</loc>
+    <loc>https://jpcite.com/en/line.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/line.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/line.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/line.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/line.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/line.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/line.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/advisors.html</loc>
+    <loc>https://jpcite.com/en/advisors.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/advisors.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/advisors.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/advisors.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/facts.html</loc>
+    <loc>https://jpcite.com/en/facts.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/facts.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/facts.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/facts.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/changelog.html</loc>
+    <loc>https://jpcite.com/changelog.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/changelog.html"/>
   </url>
   <url>
     <!-- Live status page: trust signal for prospects evaluating reliability.
          Distinct from /status.html (the static fallback served when DNS
          is flipped to the Pages mirror during an incident). The /status/
          directory page polls /v1/am/health/deep + PyPI from the browser
-         every 30s. Index,follow so it can rank for "zeimu-kaikei status"
+         every 30s. Index,follow so it can rank for "jpcite status"
          queries. Added 2026-04-29. -->
-    <loc>https://zeimu-kaikei.ai/status/</loc>
+    <loc>https://jpcite.com/status/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/changelog.html</loc>
+    <loc>https://jpcite.com/en/changelog.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/changelog.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/changelog.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/changelog.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/sources.html</loc>
+    <loc>https://jpcite.com/sources.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/sources.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/sources.html</loc>
+    <loc>https://jpcite.com/en/sources.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/sources.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/sources.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/sources.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare.html</loc>
+    <loc>https://jpcite.com/compare.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/compare.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/en/compare.html</loc>
+    <loc>https://jpcite.com/en/compare.html</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/compare.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/compare.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare.html"/>
   </url>
   <!--
     Per-competitor /compare/{slug}/ landing pages — 2026-04-29 launch.
@@ -581,124 +563,124 @@
     docs/compare_matrix.csv. JP-only at launch (no /en/ siblings yet).
   -->
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/tdb/</loc>
+    <loc>https://jpcite.com/compare/tdb/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/tdb/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/tdb/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/tdb/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/tdb/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/tsr/</loc>
+    <loc>https://jpcite.com/compare/tsr/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/tsr/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/tsr/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/tsr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/tsr/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/gbizinfo/</loc>
+    <loc>https://jpcite.com/compare/gbizinfo/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/gbizinfo/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/gbizinfo/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/gbizinfo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/gbizinfo/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/jgrants/</loc>
+    <loc>https://jpcite.com/compare/jgrants/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/jgrants/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/jgrants/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/jgrants/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/jgrants/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/mirasapo/</loc>
+    <loc>https://jpcite.com/compare/mirasapo/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/mirasapo/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/mirasapo/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/mirasapo/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/mirasapo/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/moneyforward/</loc>
+    <loc>https://jpcite.com/compare/moneyforward/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/moneyforward/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/moneyforward/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/moneyforward/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/moneyforward/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/freee/</loc>
+    <loc>https://jpcite.com/compare/freee/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/freee/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/freee/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/freee/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/freee/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/navit/</loc>
+    <loc>https://jpcite.com/compare/navit/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/navit/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/navit/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/navit/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/navit/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/nta-invoice/</loc>
+    <loc>https://jpcite.com/compare/nta-invoice/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/nta-invoice/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/nta-invoice/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/nta-invoice/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/nta-invoice/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/compare/diy-scraping/</loc>
+    <loc>https://jpcite.com/compare/diy-scraping/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/compare/diy-scraping/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/compare/diy-scraping/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/diy-scraping/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/diy-scraping/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/</loc>
+    <loc>https://jpcite.com/integrations/</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/claude-desktop.html</loc>
+    <loc>https://jpcite.com/integrations/claude-desktop.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/claude-desktop.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/claude-desktop.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/claude-desktop.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/claude-desktop.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/cursor.html</loc>
+    <loc>https://jpcite.com/integrations/cursor.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/cursor.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/cursor.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/cursor.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/cursor.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/cline.html</loc>
+    <loc>https://jpcite.com/integrations/cline.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/cline.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/cline.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/cline.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/cline.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html</loc>
+    <loc>https://jpcite.com/integrations/openai-custom-gpt.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/openai-custom-gpt.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/openai-custom-gpt.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/openai-custom-gpt.html"/>
   </url>
   <!--
     MCP-native AI agent integrations (2026-04-29): chatgpt /
@@ -708,36 +690,36 @@
     stability). All 4 new pages carry HowTo + TechArticle JSON-LD.
   -->
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/chatgpt.html</loc>
+    <loc>https://jpcite.com/integrations/chatgpt.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/chatgpt.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/chatgpt.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/chatgpt.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/chatgpt.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/gemini.html</loc>
+    <loc>https://jpcite.com/integrations/gemini.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/gemini.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/gemini.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/gemini.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/gemini.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/continue.html</loc>
+    <loc>https://jpcite.com/integrations/continue.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/continue.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/continue.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/continue.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/continue.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/integrations/windsurf.html</loc>
+    <loc>https://jpcite.com/integrations/windsurf.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/integrations/windsurf.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/integrations/windsurf.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/integrations/windsurf.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/integrations/windsurf.html"/>
   </url>
   <!--
     Trust-signal trio (2026-04-29): public roadmap, live data
@@ -746,27 +728,19 @@
     differentiator). JP-only at launch (no /en/ siblings yet).
   -->
   <url>
-    <loc>https://zeimu-kaikei.ai/roadmap.html</loc>
-    <lastmod>2026-04-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/roadmap.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/roadmap.html"/>
-  </url>
-  <url>
-    <loc>https://zeimu-kaikei.ai/data-freshness.html</loc>
+    <loc>https://jpcite.com/data-freshness.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/data-freshness.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/data-freshness.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/data-freshness.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/data-freshness.html"/>
   </url>
   <url>
-    <loc>https://zeimu-kaikei.ai/transparency.html</loc>
+    <loc>https://jpcite.com/transparency.html</loc>
     <lastmod>2026-04-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/transparency.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/transparency.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/transparency.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/transparency.html"/>
   </url>
 </urlset>

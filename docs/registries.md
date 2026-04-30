@@ -1,12 +1,12 @@
-# 税務会計AI — Registry & Distribution Surface
+# jpcite — Registry & Distribution Surface
 
 > **Operator**: Bookyou株式会社 (T8010001213708) / info@bookyou.net
-> **Product**: 税務会計AI (PyPI: `autonomath-mcp` / npm: `@autonomath/sdk`)
+> **Product**: jpcite (PyPI: `autonomath-mcp` / npm: `@autonomath/sdk`)
 > **Launch target**: 2026-05-06
 > **Last audited**: 2026-04-25
 
 This document is the **single source of truth** for every public registry / marketplace
-where 税務会計AI is published. Detailed runbook for the MCP-server-specific registries
+where jpcite is published. Detailed runbook for the MCP-server-specific registries
 (submission ordering, manual-form fields, rollback) lives in
 `scripts/mcp_registries.md`. This file is the higher-level audience-facing list.
 
@@ -55,7 +55,7 @@ where 税務会計AI is published. Detailed runbook for the MCP-server-specific 
 
 ## 4. DXT — Anthropic Claude Desktop Extension
 
-- **URL**: distribution via direct download <https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb>
+- **URL**: distribution via direct download <https://jpcite.com/downloads/autonomath-mcp.mcpb>
 - **Manifest**: `dxt/manifest.json`
 - **Bundle**: `autonomath-mcp.mcpb` (zip with manifest + Python entry shim)
 - **Build**: `bash scripts/build_mcpb.sh`
@@ -150,7 +150,7 @@ If any of the above five (Continue.dev, Goose, Zed, Cody) ship a marketplace pos
 | PyPI (#1) | `PYPI_TOKEN` | <https://pypi.org/manage/account/token/> (scope: `autonomath-mcp`) |
 | npm (#2) | `NPM_TOKEN` | <https://www.npmjs.com/settings/~/tokens> (Automation, publish scope) |
 | MCP Registry (#3) | `MCP_REGISTRY_TOKEN` | GitHub PAT, `repo:read` on `AutonoMath/autonomath-mcp` |
-| DXT (#4) | none | self-distributed `.mcpb` at <https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb> |
+| DXT (#4) | none | self-distributed `.mcpb` at <https://jpcite.com/downloads/autonomath-mcp.mcpb> |
 | Smithery (#5) | none | dashboard claim only |
 | Glama (#6) | none | auto-indexed |
 | Cline (#7) | GitHub | any contributor |

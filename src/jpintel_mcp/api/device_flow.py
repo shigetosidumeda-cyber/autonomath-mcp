@@ -28,7 +28,7 @@ Security:
     - /complete verifies the Stripe session server-side, then marks
       activated. Client never reports "I paid" unilaterally.
     - Origin check on /complete: must come from the configured site host
-      (zeimu-kaikei.ai) — CSRF mitigation.
+      (jpcite.com) — CSRF mitigation.
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ _USER_CODE_LENGTH = 8  # 8 chars + one dash → "ABCD-1234"
 
 # Host for verification URIs. Uses the canonical site host; overridable via
 # env if deployed under a different domain.
-_SITE_BASE = "https://zeimu-kaikei.ai"
+_SITE_BASE = "https://jpcite.com"
 
 # Grant type value required by RFC 8628.
 _GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code"
@@ -82,8 +82,8 @@ _GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code"
 # Allowed Origin hosts for /complete (CSRF mitigation).
 _ALLOWED_COMPLETE_ORIGINS = frozenset(
     {
-        "https://zeimu-kaikei.ai",
-        "https://www.zeimu-kaikei.ai",
+        "https://jpcite.com",
+        "https://www.jpcite.com",
     }
 )
 

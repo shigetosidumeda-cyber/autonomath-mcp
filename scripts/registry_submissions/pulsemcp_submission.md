@@ -32,13 +32,13 @@ https://github.com/shigetosidumeda-cyber/jpintel-mcp
 ### Homepage / website URL
 
 ```
-https://zeimu-kaikei.ai
+https://jpcite.com
 ```
 
 ### Documentation URL
 
 ```
-https://zeimu-kaikei.ai/docs/
+https://jpcite.com/docs/
 ```
 
 ### Short description (1 sentence; PulseMCP renders this in the listing card)

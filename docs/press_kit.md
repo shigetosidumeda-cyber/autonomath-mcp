@@ -1,14 +1,14 @@
-# 税務会計AI プレスキット / Press Kit
+# jpcite プレスキット / Press Kit
 
 更新日 / Updated: 2026-04-25
 Launch: 2026-05-06
-Operator: Bookyou株式会社 (法人番号 T8010001213708)
+Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)
 Press contact: [info@bookyou.net](mailto:info@bookyou.net)
 
 このページは記者・媒体・パートナー向けの自由利用 (organic earned coverage)
 プレス資料です。引用・転載は出典明記のうえ自由に行えます。
 追加資料 (高解像度ロゴ・スクリーンショット pack・追加 quote) のリクエストは
-上記メールへ件名「税務会計AI press kit」でご連絡ください。
+上記メールへ件名「jpcite press kit」でご連絡ください。
 
 ---
 
@@ -27,13 +27,13 @@ Press contact: [info@bookyou.net](mailto:info@bookyou.net)
 
 ## Boilerplate (300字)
 
-税務会計AI は、日本の公的制度データ — 補助金・融資・税制優遇・認定制度・法令・行政処分・税務ruleset・適格事業者 — を AI エージェントから 1 API で呼び出せる REST + MCP サーバーです。経産省・農水省・中小企業庁・日本政策金融公庫など一次情報源から 10,790 検索可制度 (tier S/A/B/C; 登録総数 13,578) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 法令本文 154 + 法令メタデータ 9,484 + 13,801 適格事業者を正規化し、Tier 分類・181 排他ルール・全文検索インデックス (3-gram) ・出典 URL リネージ (snapshot ベース、リアルタイム同期ではありません) を提供します。Claude Desktop / ChatGPT / Cursor / Gemini が stdio で直接呼び出せ、SDK 不要。料金は完全従量 ¥3/req 税別、匿名 50 req/月 per IP 無料。運営は Bookyou株式会社 (代表 梅田茂利)。Launch: 2026-05-06。
+jpcite は、日本の公的制度データ — 補助金・融資・税制優遇・認定制度・法令・行政処分・税務ruleset・適格事業者 — を AI エージェントから 1 API で呼び出せる REST + MCP サーバーです。経産省・農水省・中小企業庁・日本政策金融公庫など一次情報源から 10,790 検索可制度 (tier S/A/B/C; 登録総数 13,578) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 法令本文 154 + 法令メタデータ 9,484 + 13,801 適格事業者を正規化し、Tier 分類・181 排他ルール・全文検索インデックス (3-gram) ・出典 URL リネージ (snapshot ベース、リアルタイム同期ではありません) を提供します。Claude Desktop / ChatGPT / Cursor / Gemini が stdio で直接呼び出せ、SDK 不要。料金は完全従量 ¥3/req 税別、匿名 50 req/月 per IP 無料。運営は Bookyou株式会社 (代表 梅田茂利)。Launch: 2026-05-06。
 
 ---
 
 ## Boilerplate (1,000字)
 
-税務会計AI は、日本の公的制度に関するあらゆるデータ — 補助金・融資・税制優遇・認定制度・法令・行政処分・税務ruleset・適格事業者・採択事例 — を、AI エージェントが 1 つの API で横断検索できる REST + MCP サーバーです。経済産業省・農林水産省・中小企業庁・日本政策金融公庫・総務省・国税庁・e-Gov 法令データ提供システムなど、一次情報源 (primary source) のみから機械可読データを構築しています。
+jpcite は、日本の公的制度に関するあらゆるデータ — 補助金・融資・税制優遇・認定制度・法令・行政処分・税務ruleset・適格事業者・採択事例 — を、AI エージェントが 1 つの API で横断検索できる REST + MCP サーバーです。経済産業省・農林水産省・中小企業庁・日本政策金融公庫・総務省・国税庁・e-Gov 法令データ提供システムなど、一次情報源 (primary source) のみから機械可読データを構築しています。
 
 **収録データ (2026-04-25 時点)**:
 
@@ -44,24 +44,24 @@ Press contact: [info@bookyou.net](mailto:info@bookyou.net)
 - 法令 (e-Gov, CC-BY): 法令本文 154 件 + 法令メタデータ 9,484 件 (本文ロード継続中、 法令名 resolver は 9,484 件全件で稼働、 全文検索可能なのは 154 件)
 - 税務 ruleset (インボイス + 電帳法): 35 件
 - 適格事業者 (国税庁 PDL v1.0): 13,801 件 (delta-only ライブミラー、月次フルバルク準備中)
-- entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases
+- entity-fact DB: 503,930 entities + 6.12M facts + 177,381 relations + 335,605 aliases
 - 法令条文 index: 28,048 件 / 行政処分 詳細 records: 22,258 件
 - 排他ルール: 181 本 (35 hand-seeded + 146 一次資料 auto-extracted)
 - 出典 URL (`source_url` + `fetched_at`): 99% 以上の行に付与
 
 **特徴**:
 
-- **MCP ネイティブ**: 69 ツール (39 jpintel + 30 autonomath at default gates)、protocol 2025-06-18 準拠、stdio transport、SDK 不要
+- **MCP ネイティブ**: 69 ツール  + 30 autonomath at default gates)、protocol 2025-06-18 準拠、stdio transport、SDK 不要
 - **AI agent first**: Claude Desktop / ChatGPT / Cursor / Gemini が直接接続可能
 - **横断検索 glue**: `trace_program_to_law` (制度→根拠法令)、`find_cases_by_law` (法令→判例)、`combined_compliance_check` (制度+処分+適格事業者を一括チェック)
 - **日本語特化**: 全文検索インデックス (3-gram 分割) による複合語検索、Hepburn slug 自動生成
 - **税制対応**: Stripe Tax + 国内インボイス制度 (適格請求書発行事業者) 対応
 
-**Jグランツとの違い**: Jグランツが申請ポータルであるのに対し、税務会計AI は「発見 + 併用可否判定 + 実績確認 + 根拠法トレース + 判例・入札・適格事業者横断 + entity-fact lookup」の層を担います。データ収集と申請の橋渡しを AI エージェントに任せる新しい工法です。
+**Jグランツとの違い**: Jグランツが申請ポータルであるのに対し、jpcite は「発見 + 併用可否判定 + 実績確認 + 根拠法トレース + 判例・入札・適格事業者横断 + entity-fact lookup」の層を担います。データ収集と申請の橋渡しを AI エージェントに任せる新しい工法です。
 
 **料金**: ¥3/req 税別 (税込 ¥3.30) の完全従量制。tier SKU・seat 課金・年間最低額なし。匿名 50 req/月 per IP は無料 (JST 月初リセット)。
 
-**運営**: Bookyou株式会社 (法人番号 T8010001213708、代表 梅田茂利)、Fly.io 東京 (nrt) リージョンでホスティング。Solo + zero-touch 運営、100% organic acquisition。
+**運営**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708、代表 梅田茂利)、Fly.io 東京 (nrt) リージョンでホスティング。Solo + zero-touch 運営、100% organic acquisition。
 
 Launch: 2026-05-06。Press contact: info@bookyou.net
 
@@ -71,9 +71,9 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 
 | 項目 | 値 |
 |---|---|
-| 製品名 | 税務会計AI |
+| 製品名 | jpcite |
 | PyPI パッケージ | `autonomath-mcp` |
-| ドメイン | https://zeimu-kaikei.ai |
+| ドメイン | https://jpcite.com |
 | 運営法人名 | Bookyou株式会社 |
 | 法人番号 | T8010001213708 |
 | 設立日 | 2024-XX-XX (登記) |
@@ -92,10 +92,10 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 | 法令件数 | 本文 154 件 + メタデータ 9,484 件 (e-Gov, CC-BY、 本文ロード継続中) |
 | 税務 ruleset 件数 | 35 (インボイス + 電帳法) |
 | 適格事業者件数 | 13,801 (PDL v1.0 ライブミラー、delta-only) |
-| entity-fact 件数 | 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases |
+| entity-fact 件数 | 503,930 entities + 6.12M facts + 177,381 relations + 335,605 aliases |
 | 法令条文 index / 行政処分 詳細 records | 28,048 / 22,258 |
 | 排他ルール件数 | 181 (35 hand-seeded + 146 auto-extracted) |
-| MCP ツール数 | 69 (39 jpintel + 30 autonomath at default gates、36協定+healthcare+real_estate gated off) |
+| MCP ツール数 | 69  + 30 autonomath at default gates、36協定+healthcare+real_estate gated off) |
 | MCP プロトコル | 2025-06-18 |
 | ホスティング | Fly.io Tokyo (nrt) |
 | 静的サイト | Cloudflare Pages |
@@ -113,17 +113,17 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 
 ### 1. Operator (Bookyou株式会社 代表、梅田茂利)
 
-> 「日本の制度データは政府サイトに散らばっていて、一次資料を 1 件 1 件辿るのは現実的ではありませんでした。AI エージェントが 1 query で横断アクセスできれば、補助金・融資・税制の判断時間を大幅に短縮できます。税務会計AI はそのための最小単位です。完全従量 ¥3/req にしたのは、tier や seat の意思決定が AI エージェントの workflow を阻害するから。zero-touch で solo 運営できる範囲だけ作りました。」
+> 「日本の制度データは政府サイトに散らばっていて、一次資料を 1 件 1 件辿るのは現実的ではありませんでした。AI エージェントが 1 query で横断アクセスできれば、補助金・融資・税制の判断時間を大幅に短縮できます。jpcite はそのための最小単位です。完全従量 ¥3/req にしたのは、tier や seat の意思決定が AI エージェントの workflow を阻害するから。zero-touch で solo 運営できる範囲だけ作りました。」
 
 ### 2. Persona — Dev (個人開発者 / SaaS スタートアップ) (想定発言 / sample)
 
-> 「補助金 API を使いたかったが、商用集約サイトは規約上 LLM 投入が gray エリアになりがちでした。税務会計AI は MCP に直接刺さり、出典 URL と取得日時 (snapshot) が付くので、Claude / ChatGPT で reasoning 材料として扱いやすい。¥3/req は試作レベルなら無料枠で十分でした。」
+> 「補助金 API を使いたかったが、商用集約サイトは規約上 LLM 投入が gray エリアになりがちでした。jpcite は MCP に直接刺さり、出典 URL と更新日時 (snapshot) が付くので、Claude / ChatGPT で reasoning 材料として扱いやすい。¥3/req は試作レベルなら無料枠で十分でした。」
 >
 > ※ 想定発言。
 
 ### 3. Persona — 税理士 / 認定支援機関 (想定発言 / sample)
 
-> 「クライアントから『使える補助金は?』と聞かれた時、要綱を都度確認するコストが大きい。税務会計AI で発見 → 排他ルール確認 → 採択事例まで一気通貫で見えるのは、士業の意思決定 layer に直接効きます。法令への参照 (snapshot ベース) も付くので、出典確認の手間が減ります。」
+> 「クライアントから『使える補助金は?』と聞かれた時、要綱を都度確認するコストが大きい。jpcite で発見 → 排他ルール確認 → 採択事例まで一気通貫で見えるのは、士業の意思決定 layer に直接効きます。法令への参照 (snapshot ベース) も付くので、出典確認の手間が減ります。」
 >
 > ※ 上記は想定ユースケースに基づく sample であり、税務・法的助言ではありません。実際の制度判断は士業の方ご自身による一次資料確認が前提です。
 
@@ -131,11 +131,11 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 
 > 「適格事業者 (インボイス) の参照、現行制度 snapshot の確認、補助金の候補リストアップを、別々のサイトを行き来せずに 1 つの AI チャットで初動できるのが助かる。Claude Desktop に繋ぐだけで使える設定は社内で共有できる範囲でした。最終判断は一次資料と顧問 (税理士・社労士等) の確認が前提です。」
 >
-> ※ 想定発言。税務会計AI は snapshot ベースのデータ提供であり、リアルタイムの法令改正追跡や法的助言は提供しません。
+> ※ 想定発言。jpcite は snapshot ベースのデータ提供であり、リアルタイムの法令改正追跡や法的助言は提供しません。
 
 ### 5. Persona — VC / アナリスト (想定発言 / sample)
 
-> 「採択事例 2,286 件 + 行政処分 1,185 件 + 適格事業者 13,801 件 + entity-fact 503,930 件を横断 query できるのは DD の初動に組み込みやすい。Tier 分類と出典 URL + 取得日時 (snapshot) が付いているので、AI agent に投げても fact の trail が残る。」
+> 「採択事例 2,286 件 + 行政処分 1,185 件 + 適格事業者 13,801 件 + entity-fact 503,930 件を横断 query できるのは DD の初動に組み込みやすい。Tier 分類と出典 URL + 更新日時 (snapshot) が付いているので、AI agent に投げても fact の trail が残る。」
 >
 > ※ 想定発言。投資判断・DD は別途一次資料確認が前提です。
 
@@ -153,15 +153,15 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 
 ### Audience 2: 税理士 / 認定支援機関 / 行政書士
 
-**Use case**: クライアント面談中に 税務会計AI LINE bot に「製造業 / 従業員 30 / 設備投資 / 関東」と打って候補制度をリストアップ。LINE で完結するので顧客の前で開ける。
+**Use case**: クライアント面談中に jpcite LINE bot に「製造業 / 従業員 30 / 設備投資 / 関東」と打って候補制度をリストアップ。LINE で完結するので顧客の前で開ける。
 
 **Quote (想定発言)**: 「面談中に検索 → 排他ルール確認 → snapshot 時点の申請期限まで初動できるのは、士業の参照工程を短縮します (最終判断は一次資料確認が前提)。」(persona: 税理士 / sample)
 
 ### Audience 3: SMB (中小企業) 経営者 / 経理担当
 
-**Use case**: ChatGPT に「うちの会社で使える補助金は?」と聞くと、税務会計AI MCP 経由で一次資料 URL 付きの制度のみを Tier 順に提示。集約サイト由来の hallucination を抑制。
+**Use case**: ChatGPT に「うちの会社で使える補助金は?」と聞くと、jpcite MCP 経由で一次資料 URL 付きの制度のみを Tier 順に提示。集約サイト由来の hallucination を抑制。
 
-**Quote (想定発言)**: 「『一次資料 URL + 取得日時』が前提なのが大きい。集約サイトでは何が信用できるか分からなかった。」(persona: 経理担当 / sample)
+**Quote (想定発言)**: 「『一次資料 URL + 更新日時』が前提なのが大きい。集約サイトでは何が信用できるか分からなかった。」(persona: 経理担当 / sample)
 
 ### Audience 4: VC / アナリスト / 企業 DD
 
@@ -183,12 +183,12 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 
 | アセット | URL (placeholder) | 形式 |
 |---|---|---|
-| ロゴ pack (zip) | https://zeimu-kaikei.ai/press/logos.zip | SVG / PNG (1x, 2x, 3x) |
-| Brand mark | https://zeimu-kaikei.ai/press/assets/mark.svg | SVG |
-| Wordmark | https://zeimu-kaikei.ai/press/assets/wordmark.svg | SVG |
-| Favicon | https://zeimu-kaikei.ai/favicon.ico | ICO |
-| OGP 画像 | https://zeimu-kaikei.ai/assets/og.png | PNG 1200x630 |
-| スクリーンショット pack | https://zeimu-kaikei.ai/press/screenshots.md | PNG |
+| ロゴ pack (zip) | https://jpcite.com/press/logos.zip | SVG / PNG (1x, 2x, 3x) |
+| Brand mark | https://jpcite.com/press/assets/mark.svg | SVG |
+| Wordmark | https://jpcite.com/press/assets/wordmark.svg | SVG |
+| Favicon | https://jpcite.com/favicon.ico | ICO |
+| OGP 画像 | https://jpcite.com/assets/og.png | PNG 1200x630 |
+| スクリーンショット pack | https://jpcite.com/press/screenshots.md | PNG |
 
 **ロゴ利用規約 (launch 後正式版で確定)**:
 
@@ -211,7 +211,7 @@ press / earned media / partnership 一次窓口:
 法人:
 
 - 商号: Bookyou株式会社
-- 法人番号: T8010001213708
+- 適格請求書発行事業者番号: T8010001213708
 - 所在地: 東京都文京区小日向2-22-1
 - 代表者: 梅田茂利
 
@@ -223,12 +223,12 @@ press / earned media / partnership 一次窓口:
 
 | Bundle | URL (placeholder) |
 |---|---|
-| Press kit ZIP (この資料 + ロゴ + screenshots) | https://zeimu-kaikei.ai/press/autonomath-press-kit.zip |
-| Logos pack (SVG/PNG) | https://zeimu-kaikei.ai/press/logos.zip |
-| OGP 画像 pack | https://zeimu-kaikei.ai/press/og-pack.zip |
-| Fact sheet PDF | https://zeimu-kaikei.ai/press/fact-sheet.pdf |
+| Press kit ZIP (この資料 + ロゴ + screenshots) | https://jpcite.com/press/autonomath-press-kit.zip |
+| Logos pack (SVG/PNG) | https://jpcite.com/press/logos.zip |
+| OGP 画像 pack | https://jpcite.com/press/og-pack.zip |
+| Fact sheet PDF | https://jpcite.com/press/fact-sheet.pdf |
 
-launch 前は本ページ + `https://zeimu-kaikei.ai/press/about.md` + `https://zeimu-kaikei.ai/press/founders.md` + `https://zeimu-kaikei.ai/press/screenshots.md` を一次資料としてご利用ください。
+launch 前は本ページ + `https://jpcite.com/press/about.md` + `https://jpcite.com/press/founders.md` + `https://jpcite.com/press/screenshots.md` を一次資料としてご利用ください。
 
 ---
 

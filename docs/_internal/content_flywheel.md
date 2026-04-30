@@ -113,7 +113,7 @@ H2: FAQ (600-800字)
 H2: API で引く (400-600字)
   - curl 1 発で同じ結果が出ることを示す
     curl -H "x-api-key: $KEY" \
-      "https://api.zeimu-kaikei.ai/v1/programs/search?prefecture=青森県&funding_purpose=設備投資&tier=S&tier=A"
+      "https://api.jpcite.com/v1/programs/search?prefecture=青森県&funding_purpose=設備投資&tier=S&tier=A"
   - レスポンス JSON の要約
   - Python / TypeScript SDK での同等コード (1 記事につき 1 言語でよい)
 

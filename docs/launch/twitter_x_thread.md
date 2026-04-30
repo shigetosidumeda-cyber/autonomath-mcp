@@ -7,7 +7,7 @@
 
 ## Tweet 1/6 — what
 
-Just shipped 税務会計AI: a search API + MCP server over Japanese institutional data.
+Just shipped jpcite: a search API + MCP server over Japanese institutional data.
 
 10,790 subsidies / 9,484 laws / 2,065 court decisions / 13,801 invoice registrants / 35 tax rulesets — every row has a primary-source URL.
 
@@ -49,7 +49,7 @@ No tiers. No minimums. No subscription. No annual contracts.
 
 Why? Solo + zero-touch ops. AI-agent traffic is bursty. No sales team to negotiate Enterprise SKUs. Pure metering matches actual cost shape.
 
-https://zeimu-kaikei.ai/docs/pricing/
+https://jpcite.com/docs/pricing/
 
 ---
 
@@ -58,7 +58,7 @@ https://zeimu-kaikei.ai/docs/pricing/
 Free anonymous demo, no key needed:
 
 ```
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
 Returns Tokyo agri subsidies with primary-source URLs.
@@ -71,7 +71,7 @@ Honest framing: it's information lookup, not tax advice (税理士法 §52). Ver
 
 If you're building agents that touch Japanese regulation, I'd love feedback.
 
-🌐 https://zeimu-kaikei.ai
+🌐 https://jpcite.com
 📦 https://pypi.org/project/autonomath-mcp/
 🐙 https://github.com/shigetosidumeda-cyber/jpintel-mcp
 

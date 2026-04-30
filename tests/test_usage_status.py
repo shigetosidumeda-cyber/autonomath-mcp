@@ -51,12 +51,13 @@ def test_rest_anonymous_usage_returns_50_limit_and_jst_reset(
     # JST month-start ISO ends with +09:00 offset.
     assert body["reset_at"].endswith("+09:00"), body["reset_at"]
     # Upgrade landing surfaced for free-tier callers. The brand was renamed
-    # autonomath.ai → zeimu-kaikei.ai during the v0.3.x rebrand; both
-    # apex variants are accepted so a future re-rebrand survives without
-    # silently dropping the assertion.
+    # autonomath.ai → zeimu-kaikei.ai → jpcite.com across rebrand passes;
+    # all three apex variants are accepted so a future re-rebrand survives
+    # without silently dropping the assertion.
     upgrade_url = body["upgrade_url"]
     assert (
-        upgrade_url.startswith("https://zeimu-kaikei.ai/")
+        upgrade_url.startswith("https://jpcite.com/")
+        or upgrade_url.startswith("https://zeimu-kaikei.ai/")
         or upgrade_url.startswith("https://autonomath.ai/")
     ), f"unexpected upgrade_url={upgrade_url!r}"
 

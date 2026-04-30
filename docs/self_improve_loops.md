@@ -1,4 +1,4 @@
-# 税務会計AI — 10 Self-Improvement Loops
+# jpcite — 10 Self-Improvement Loops
 
 **Owner:** 梅田茂利, info@bookyou.net (Bookyou株式会社)
 **Status:** scaffolding (T+30d for real ML wiring); dry-run only at launch.

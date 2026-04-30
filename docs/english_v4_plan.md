@@ -1,6 +1,6 @@
 # English V4 Launch Plan (P6-E, dd_v8_03)
 
-Target slot: **T+150d** post 税務会計AI launch (2026-05-06 + 150 = 2026-10-03).
+Target slot: **T+150d** post jpcite launch (2026-05-06 + 150 = 2026-10-03).
 Implementation budget: **10 working days** spread across the slot.
 Owner: B6 subagent (this file is the spec, not the rollout log).
 

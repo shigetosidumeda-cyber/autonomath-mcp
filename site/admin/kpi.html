@@ -7,7 +7,7 @@
 <title>Operator KPI — 税務会計AI</title>
 <meta name="description" content="Operator-only KPI dashboard. Admin key required.">
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
-<link rel="canonical" href="https://zeimu-kaikei.ai/admin/kpi.html">
+<link rel="canonical" href="https://jpcite.com/admin/kpi.html">
 <style>
   :root{
     --bg:#0b1320; --panel:#121b2d; --line:#1e2a44; --text:#e6ecf6;
@@ -70,54 +70,54 @@
 </head>
 <body>
 <header>
-  <h1>Operator KPI — 税務会計AI</h1>
-  <div class="meta" id="meta">読み込み中…</div>
+ <h1>Operator KPI — 税務会計AI</h1>
+ <div class="meta" id="meta">読み込み中…</div>
 </header>
 
 <main>
 
 <div class="auth" id="auth">
-  <label for="key">ADMIN_API_KEY</label>
-  <input type="password" id="key" placeholder="X-API-Key" autocomplete="off">
-  <button id="loadBtn">読み込み</button>
-  <small>ローカルブラウザ <code>sessionStorage</code> に保管します。<br>
-    URL は <code>/admin/</code> 配下で <code>robots.txt</code> Disallow 済み。</small>
-  <div id="errBox" class="err" hidden></div>
+ <label for="key">ADMIN_API_KEY</label>
+ <input type="password" id="key" placeholder="X-API-Key" autocomplete="off">
+ <button id="loadBtn">読み込み</button>
+ <small>ローカルブラウザ <code>sessionStorage</code> に保管します。<br>
+ URL は <code>/admin/</code> 配下で <code>robots.txt</code> Disallow 済み。</small>
+ <div id="errBox" class="err" hidden></div>
 </div>
 
 <div id="banner"></div>
 
 <div id="content" hidden>
 
-  <section>
-    <h2>本日のサマリ</h2>
-    <div class="grid" id="summary"></div>
-  </section>
+ <section>
+ <h2>本日のサマリ</h2>
+ <div class="grid" id="summary"></div>
+ </section>
 
-  <section>
-    <h2>収益推移 (週次)</h2>
-    <div class="chart"><canvas id="mrrChart" height="120"></canvas></div>
-  </section>
+ <section>
+ <h2>収益推移 (週次)</h2>
+ <div class="chart"><canvas id="mrrChart" height="120"></canvas></div>
+ </section>
 
-  <section>
-    <h2>外部キャッシュ</h2>
-    <div class="chart">
-      <table class="kv">
-        <tr><td class="k">Sentry</td><td class="v" id="sentryRow">—</td></tr>
-        <tr><td class="k">Stripe</td><td class="v" id="stripeRow">—</td></tr>
-        <tr><td class="k">Reconcile source</td><td class="v" id="reconcileSrc">—</td></tr>
-        <tr><td class="k">GEO source</td><td class="v" id="geoSrc">—</td></tr>
-      </table>
-    </div>
-  </section>
+ <section>
+ <h2>外部キャッシュ</h2>
+ <div class="chart">
+ <table class="kv">
+ <tr><td class="k">Sentry</td><td class="v" id="sentryRow">—</td></tr>
+ <tr><td class="k">Stripe</td><td class="v" id="stripeRow">—</td></tr>
+ <tr><td class="k">Reconcile source</td><td class="v" id="reconcileSrc">—</td></tr>
+ <tr><td class="k">GEO source</td><td class="v" id="geoSrc">—</td></tr>
+ </table>
+ </div>
+ </section>
 
 </div>
 
 </main>
 
 <footer>
-  Operator-only — 公開禁止 / robots.txt Disallow.<br>
-  Bookyou株式会社 (T8010001213708) / info@bookyou.net
+ Operator-only — 公開禁止 / robots.txt Disallow.<br>
+ Bookyou株式会社 / info@bookyou.net
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
@@ -128,7 +128,7 @@
   const KEY_STORAGE = 'autonomath_admin_key';
   const ENDPOINT = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? `${location.protocol}//${location.hostname}:8080/v1/admin/kpi`
-    : 'https://api.zeimu-kaikei.ai/v1/admin/kpi';
+    : 'https://api.jpcite.com/v1/admin/kpi';
 
   const $ = (id) => document.getElementById(id);
   const fmtYen = (n) => {

@@ -30,7 +30,7 @@ SmartHR 上で人事 / 労務担当が、自社の従業員リストを見なが
 
 ## widget 形式 (HR ダッシュボード embed)
 
-- 配布物: SmartHR App Store 用 `manifest.yaml` + iframe 配信 `https://widget.zeimu-kaikei.ai/smarthr.html`
+- 配布物: SmartHR App Store 用 `manifest.yaml` + iframe 配信 `https://widget.jpcite.com/smarthr.html`
 - 認証: SmartHR OAuth2 (employee:read / employment:read scope のみ)
 - 表示位置: SmartHR ダッシュボードの「カスタマイズ widget」枠 (人事担当向け管理画面)
 - 配色 / 文字 token: SmartHR デザイントークンに従い、**SmartHR の look & feel に同化**
@@ -49,7 +49,7 @@ oauth:
     - employment:read
 embed:
   type: iframe
-  url: https://widget.zeimu-kaikei.ai/smarthr.html
+  url: https://widget.jpcite.com/smarthr.html
   height: 480
   responsive: true
 referral:
@@ -75,7 +75,7 @@ Partner: 株式会社 SmartHR — App Store / Tech Partner Program
 URL (申請): https://smarthr.jp/partner/
 URL (Developer): https://developer.smarthr.jp/
 
-会社名: Bookyou 株式会社 (法人番号 T8010001213708)
+会社名: Bookyou 株式会社 (適格請求書発行事業者番号 T8010001213708)
 代表者: 梅田茂利
 連絡先: info@bookyou.net
 連携形式: SmartHR App Store widget (iframe embed)

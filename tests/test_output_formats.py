@@ -91,7 +91,7 @@ def test_format_csv_round_trip() -> None:
     # Row 0 — §52 disclaimer comment.
     assert lines[0].startswith("# 税理士法 §52"), lines[0]
     # Row 1 — brand + license rollup comment.
-    assert lines[1].startswith("# 税務会計AI / Bookyou株式会社"), lines[1]
+    assert lines[1].startswith("# jpcite / Bookyou株式会社"), lines[1]
 
     # Parse data section with stdlib csv (skip the 2 comment rows).
     reader = csv.DictReader(io.StringIO("\n".join(lines[2:])))

@@ -74,7 +74,7 @@ DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 
 BASE_URL = "https://laws.e-gov.go.jp/api/2"
 PERMALINK_TEMPLATE = "https://laws.e-gov.go.jp/law/{law_id}"
-USER_AGENT = "AutonoMath/0.1.0 (+https://zeimu-kaikei.ai)"
+USER_AGENT = "AutonoMath/0.1.0 (+https://jpcite.com)"
 RATE_LIMIT_SEC = 1.0
 HTTP_TIMEOUT = 30
 MAX_RETRIES = 3

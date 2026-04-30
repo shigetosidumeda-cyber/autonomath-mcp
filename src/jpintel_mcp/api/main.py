@@ -78,6 +78,7 @@ from jpintel_mcp.api.middleware import (
     ClientTagMiddleware,
     CustomerCapMiddleware,
     DeprecationWarningMiddleware,
+    HostDeprecationMiddleware,
     KillSwitchMiddleware,
     OriginEnforcementMiddleware,
     PerIpEndpointLimitMiddleware,
@@ -472,13 +473,13 @@ def create_app() -> FastAPI:
             "## Quickstart\n\n"
             "Anonymous (no auth, **50 req/月 per IP**, JST 月初 00:00 リセット):\n"
             "```bash\n"
-            "curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT導入&limit=5'\n"
+            "curl 'https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5'\n"
             "```\n\n"
             "Authenticated (¥3/req metered, 税込 ¥3.30, no tier SKUs, no "
             "minimums) — pass `X-API-Key: sk_...` issued via Stripe Checkout:\n"
             "```bash\n"
             "curl -H 'X-API-Key: sk_live_...' "
-            "'https://api.zeimu-kaikei.ai/v1/programs/search?q=DX&prefecture=東京都&tier=S'\n"
+            "'https://api.jpcite.com/v1/programs/search?q=DX&prefecture=東京都&tier=S'\n"
             "```\n\n"
             "## Pagination + envelopes\n\n"
             "- All search endpoints share `{total, limit, offset, results[]}` "
@@ -489,8 +490,8 @@ def create_app() -> FastAPI:
             "- `/v1/am/*` and `/v1/tax_rulesets/*` carry `_disclaimer` "
             "(税理士法 §52 fence) — relay verbatim.\n\n"
             "## Operator\n\n"
-            "Bookyou株式会社 (法人番号 T8010001213708), 代表 梅田茂利, "
-            "info@bookyou.net. Canonical site: https://zeimu-kaikei.ai. "
+            "Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708), 代表 梅田茂利, "
+            "info@bookyou.net. Canonical site: https://jpcite.com. "
             "MCP package: `pip install autonomath-mcp` (PyPI). "
             "MCP exposes 69 tools at default gates (39 jpintel + 30 "
             "autonomath; protocol 2025-06-18).\n\n"
@@ -518,9 +519,9 @@ def create_app() -> FastAPI:
             "00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。"
             "tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で "
             "発行した `X-API-Key: sk_...` を Authorization header に設定してください。\n\n"
-            "**運営者:** Bookyou株式会社 (法人番号 T8010001213708 / 代表 梅田茂利 / "
+            "**運営者:** Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708 / 代表 梅田茂利 / "
             "info@bookyou.net / 東京都文京区小日向2-22-1)。商号: 税務会計AI。"
-            "公式サイト: https://zeimu-kaikei.ai/."
+            "公式サイト: https://jpcite.com/."
         ),
         lifespan=_lifespan,
         openapi_url="/v1/openapi.json",
@@ -566,6 +567,17 @@ def create_app() -> FastAPI:
     # hstspreload.org), tracked in
     # docs/_internal/autonomath_com_dns_runbook.md.
     app.add_middleware(SecurityHeadersMiddleware)
+    # Legacy host deprecation (api.zeimu-kaikei.ai → api.jpcite.com).
+    # Stamps RFC 8594 `Deprecation: true` + RFC 9745 `Sunset: <date>` +
+    # RFC 8288 `Link: <successor>; rel="successor-version"` on every
+    # response served via the legacy hostname. Both hostnames continue
+    # to point at the same Fly app indefinitely; the headers are a
+    # client-side migration hint, not a hard cutover. Body and status
+    # code are untouched. Added near SecurityHeadersMiddleware (also a
+    # pure response-header stamper) so it sees the final response after
+    # router + downstream middleware have produced it. See
+    # `docs/_internal/api_domain_migration.md` for the migration plan.
+    app.add_middleware(HostDeprecationMiddleware)
     # INV-22: 景表法 keyword block on JSON responses. Runs INSIDE security
     # headers so the sanitized body is what receives `x-content-sanitized`
     # and CSP. False-positive budget < 1% (negation contexts whitelisted
@@ -1169,7 +1181,7 @@ def create_app() -> FastAPI:
             routes=app.routes,
         )
         schema["servers"] = [
-            {"url": "https://api.zeimu-kaikei.ai", "description": "Production"},
+            {"url": "https://api.jpcite.com", "description": "Production"},
             {"url": "http://localhost:8080", "description": "Local development"},
         ]
         schema.setdefault("components", {})
@@ -1194,7 +1206,7 @@ def create_app() -> FastAPI:
             "name": "AutonoMath Support",
             "email": "info@bookyou.net",
         }
-        schema["info"]["termsOfService"] = "https://zeimu-kaikei.ai/terms.html"
+        schema["info"]["termsOfService"] = "https://jpcite.com/terms.html"
         schema["info"]["license"] = {
             "name": "Proprietary - see termsOfService",
         }

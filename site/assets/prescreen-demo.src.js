@@ -117,7 +117,7 @@
   function _resultPlainBlock(r, index) {
     var lines = [];
     lines.push((index + 1) + ". " + (r.primary_name || r.unified_id));
-    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://zeimu-kaikei.ai";
+    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://jpcite.com";
     var path = (typeof r.static_url === "string" && r.static_url) ? r.static_url : "/programs/";
     lines.push("   URL: " + origin + path);
     if (r.amount_max_man_yen != null) {
@@ -142,7 +142,7 @@
   // にこの注記を必ず添える。
   function _mailtoBody(results) {
     var n = results.length;
-    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://zeimu-kaikei.ai";
+    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://jpcite.com";
     var blocks = results.map(function (r, i) { return _resultPlainBlock(r, i); }).join("\n\n");
     return [
       "お疲れ様です。",
@@ -157,7 +157,7 @@
       "本一覧は 税務会計AI が一次資料に基づいて検索した候補です。",
       "具体的な申請可否・税務処理は資格を有する税理士・行政書士の判断によります。",
       "",
-      "出典: 税務会計AI (Bookyou株式会社 法人番号 T8010001213708)",
+      "出典: 税務会計AI (Bookyou株式会社 適格請求書発行事業者番号 T8010001213708)",
       origin + "/",
     ].join("\n");
   }
@@ -192,7 +192,7 @@
   function _buildShareUrl() {
     if (!lastResults || !lastResults.length) return null;
     var ids = lastResults.map(function (r) { return r.unified_id; }).filter(Boolean);
-    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://zeimu-kaikei.ai";
+    var origin = (typeof window !== "undefined" && window.location && window.location.origin) || "https://jpcite.com";
     var url = origin + "/programs/share.html?ids=" + encodeURIComponent(ids.join(","));
     if (url.length > 1800) {
       url = url.slice(0, 1800);

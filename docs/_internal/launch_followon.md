@@ -2,7 +2,7 @@
 
 > **要約:** 2026-05-06 launch 後、静寂期を作らないための段階投入計画 (D+1 / D+3 / D+7 / D+14 / D+21 / D+28)。全体は 4 週間 1,000h の中の「コンテンツ + 顧客接点」ラインで、**製品改善は別ライン** (`docs/POST_DEPLOY_PLAN_W5_W8.md`)。本 doc は「どのタイミングで何を出すか」だけを扱う。
 >
-> ドメイン / ブランド名は rebrand pending のため `zeimu-kaikei.ai` / `[BRAND]` で統一。content 本体はここで書かない (outline のみ、pillar 記事は `docs/content_flywheel.md` agent が担当)。
+> ドメイン / ブランド名は rebrand pending のため `jpcite.com` / `[BRAND]` で統一。content 本体はここで書かない (outline のみ、pillar 記事は `docs/content_flywheel.md` agent が担当)。
 
 関連: `docs/launch_dday_matrix.md` (当日) / `docs/customer_dev_w5.md` (interview 手順) / `docs/content_flywheel.md` (pillar) / `docs/retention_digest.md` (W7 digest) / `docs/POST_DEPLOY_PLAN_W5_W8.md` (W5-W8 backlog).
 
@@ -208,7 +208,7 @@ H2: 次の 30 日でやること
   - W9-W12 計画 (POST_DEPLOY_PLAN_W5_W8 の fork 判定後)
 
 H2: 質問・提案の窓口
-  - hello@zeimu-kaikei.ai、Zenn コメント、X DM
+  - hello@jpcite.com、Zenn コメント、X DM
 ```
 
 **tone**: 日本の dev / indie コミュニティは transparency を reward する。盛り上げ用数字は逆効果、**小さくても正直** が信頼の通貨。

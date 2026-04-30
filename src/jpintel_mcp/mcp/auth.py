@@ -52,7 +52,7 @@ KEY_NAME = "api_key"
 
 # REST API base URL. Override via env for local dev / staging.
 # Trailing slash stripped in _api() so path concatenation is consistent.
-_DEFAULT_API_BASE = "https://api.zeimu-kaikei.ai"
+_DEFAULT_API_BASE = "https://api.jpcite.com"
 
 
 def _api_base() -> str:

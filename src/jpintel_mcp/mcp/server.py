@@ -692,7 +692,7 @@ def _count_results(result: Any) -> int:
 # When ``uvx autonomath-mcp`` ships the wheel without ``data/`` (excluded in
 # pyproject.toml), the local ``data/jpintel.db`` is empty and every tool
 # returns 0 rows. ``_fallback_call()`` checks the cached fallback flag and,
-# if active, routes the request to ``api.zeimu-kaikei.ai`` via the helper in
+# if active, routes the request to ``api.jpcite.com`` via the helper in
 # ``jpintel_mcp.mcp._http_fallback``. Returns ``None`` when the local DB is
 # fine, so the call site continues with the existing SQL path. Tools that
 # don't have a REST equivalent (dd_profile_am / rule_engine_check) get a
@@ -2148,7 +2148,7 @@ def get_usage_status(
             "used": 0,  # unknown
             "reset_at": _jst_next_month_iso(),
             "reset_timezone": "JST",
-            "upgrade_url": "https://zeimu-kaikei.ai/go",
+            "upgrade_url": "https://jpcite.com/go",
             "note": (
                 "Anonymous tier は IP+fingerprint 単位で "
                 f"{settings.anon_rate_limit_per_month} req/月 (JST 月初 00:00 リセット)。"
@@ -2176,7 +2176,7 @@ def get_usage_status(
                 "used": 0,
                 "reset_at": _utc_next_month_iso(),
                 "reset_timezone": "UTC",
-                "upgrade_url": "https://zeimu-kaikei.ai/go",
+                "upgrade_url": "https://jpcite.com/go",
                 "note": (
                     "Provided api_key did not match any issued key. "
                     "Was it rotated? POST /v1/me/rotate-key issues a fresh key once."
@@ -2195,7 +2195,7 @@ def get_usage_status(
                 "used": 0,
                 "reset_at": _utc_next_month_iso(),
                 "reset_timezone": "UTC",
-                "upgrade_url": "https://zeimu-kaikei.ai/go",
+                "upgrade_url": "https://jpcite.com/go",
                 "note": (
                     "API key has been revoked. Issue a new one via the dashboard "
                     "(POST /v1/me/rotate-key) or sign in again."
@@ -2251,7 +2251,7 @@ def get_usage_status(
             "used": used_int,
             "reset_at": tomorrow.isoformat(),
             "reset_timezone": "UTC",
-            "upgrade_url": "https://zeimu-kaikei.ai/go",
+            "upgrade_url": "https://jpcite.com/go",
             "note": (
                 f"Free (dunning-demote) tier — daily cap {daily_limit} req。"
                 "UTC 翌日 00:00 リセット。請求情報を更新すると paid tier に復帰。"
@@ -9145,7 +9145,7 @@ def run() -> None:
     # Cache the fallback decision once. ``detect_fallback_mode()`` returns
     # True iff the local ``data/jpintel.db`` is empty / missing — typical
     # of a ``uvx autonomath-mcp`` install where the wheel ships without
-    # data/. When True, the 10 wired tools route to ``api.zeimu-kaikei.ai``
+    # data/. When True, the 10 wired tools route to ``api.jpcite.com``
     # transparently; the remaining tools surface ``remote_only`` envelopes.
     # Logs the decision so operators see it in stdio handshake noise.
     _fallback = detect_fallback_mode()

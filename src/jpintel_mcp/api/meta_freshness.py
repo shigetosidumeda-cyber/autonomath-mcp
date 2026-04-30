@@ -1,6 +1,6 @@
 """GET /v1/meta/freshness — public data freshness endpoint.
 
-Backs freshness.zeimu-kaikei.ai. No auth. Aggregates `_meta.fetched_at` from
+Backs freshness.jpcite.com. No auth. Aggregates `_meta.fetched_at` from
 the enriched canonical files, keyed by unified_id (active entities only).
 
 Anti-詐欺 signal: users can see which programs are stale (> 180 d) and

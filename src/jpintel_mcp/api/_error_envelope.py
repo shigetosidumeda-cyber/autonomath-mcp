@@ -28,7 +28,7 @@ shape:
         "user_message": "<plain-Japanese, ≤200 chars>",
         "user_message_en": "<English, optional>",
         "request_id": "<always a real 16-hex token; minted when missing>",
-        "documentation": "https://zeimu-kaikei.ai/docs/...",
+        "documentation": "https://jpcite.com/docs/...",
         ... (per-code extras: retry_after, retry_with, field_errors)
       }
     }
@@ -108,7 +108,7 @@ def _mint_request_id() -> str:
 
 #: Public documentation anchor base. Each code uses
 #: ``f"{DOC_URL}#{code}"`` to point at its specific section.
-DOC_URL = "https://zeimu-kaikei.ai/docs/error_handling"
+DOC_URL = "https://jpcite.com/docs/error_handling"
 
 #: Closed-enum mapping of error codes to default user copy + severity.
 #: The ``user_message`` field is shown verbatim to end users / agent
@@ -197,10 +197,10 @@ ERROR_CODES: dict[str, dict[str, str]] = {
     "auth_required": {
         "severity": "hard",
         "user_message_ja": (
-            "API キーが必要です。https://zeimu-kaikei.ai/dashboard で発行し、X-API-Key ヘッダで送信してください。"
+            "API キーが必要です。https://jpcite.com/dashboard で発行し、X-API-Key ヘッダで送信してください。"
         ),
         "user_message_en": (
-            "API key required. Issue one at https://zeimu-kaikei.ai/dashboard and send it via the X-API-Key header."
+            "API key required. Issue one at https://jpcite.com/dashboard and send it via the X-API-Key header."
         ),
     },
     "auth_invalid": {
@@ -234,10 +234,10 @@ ERROR_CODES: dict[str, dict[str, str]] = {
     "route_not_found": {
         "severity": "hard",
         "user_message_ja": (
-            "指定パスは存在しません。https://api.zeimu-kaikei.ai/v1/openapi.json で有効なパス一覧を確認してください。"
+            "指定パスは存在しません。https://api.jpcite.com/v1/openapi.json で有効なパス一覧を確認してください。"
         ),
         "user_message_en": (
-            "Route not found. List valid paths at https://api.zeimu-kaikei.ai/v1/openapi.json."
+            "Route not found. List valid paths at https://api.jpcite.com/v1/openapi.json."
         ),
     },
     "method_not_allowed": {

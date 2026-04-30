@@ -46,7 +46,7 @@ Run these in order. Estimated total: 30-45 min.
 ### Step 1. Verify health probe is green
 
 ```bash
-curl -sS https://api.zeimu-kaikei.ai/v1/am/health/deep | jq '.overall.status'
+curl -sS https://api.jpcite.com/v1/am/health/deep | jq '.overall.status'
 # expected: "healthy"
 ```
 
@@ -109,7 +109,7 @@ Edit `site/status.html`:
 Commit + push. Cloudflare Pages auto-deploys in 30-60s. Verify:
 
 ```bash
-curl -sS https://zeimu-kaikei.ai/status.html | grep -o 'status-degraded'
+curl -sS https://jpcite.com/status.html | grep -o 'status-degraded'
 ```
 
 ### Step 7. Set Postmark / Gmail auto-responder
@@ -130,7 +130,7 @@ Body (Japanese, brief):
 付けて再送信いただけますと、復帰後最優先で対応いたします。
 
 なお、API・MCP サーバーは通常稼働しております。
-ステータス: https://zeimu-kaikei.ai/status.html
+ステータス: https://jpcite.com/status.html
 
 Bookyou 株式会社
 ```
@@ -257,7 +257,7 @@ touch time: 2-3 minutes.
 ### 4.1 Single-glance health check
 
 ```
-https://zeimu-kaikei.ai/status.html
+https://jpcite.com/status.html
 ```
 
 If banner shows red / unreachable, escalate to §6.
@@ -331,7 +331,7 @@ Edit `site/status.html` back to `status-ok` 通常稼働中. Commit + push.
 Wait for Cloudflare Pages deploy (~60s). Verify:
 
 ```bash
-curl -sS https://zeimu-kaikei.ai/status.html | grep -o 'status-ok'
+curl -sS https://jpcite.com/status.html | grep -o 'status-ok'
 ```
 
 ### Step 2. Disable auto-responder
@@ -343,7 +343,7 @@ auto-response.
 ### Step 3. Verify health probe is still green
 
 ```bash
-curl -sS https://api.zeimu-kaikei.ai/v1/am/health/deep | jq
+curl -sS https://api.jpcite.com/v1/am/health/deep | jq
 ```
 
 Drill into any `degraded` check before opening backlog.
@@ -408,7 +408,7 @@ Commit + push.
 ### Step 9. Run a single end-to-end smoke test
 
 ```bash
-BASE_URL=https://api.zeimu-kaikei.ai ./scripts/smoke_test.sh
+BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh
 ```
 
 All checks must pass. Investigate any failure before declaring resume

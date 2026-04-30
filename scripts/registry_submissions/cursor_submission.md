@@ -45,13 +45,13 @@ https://github.com/shigetosidumeda-cyber/jpintel-mcp
 ### Homepage URL
 
 ```
-https://zeimu-kaikei.ai
+https://jpcite.com
 ```
 
 ### Documentation URL
 
 ```
-https://zeimu-kaikei.ai/docs/
+https://jpcite.com/docs/
 ```
 
 ### Tagline (~80 chars)
@@ -165,13 +165,13 @@ info@bookyou.net
 ### Privacy policy URL
 
 ```
-https://zeimu-kaikei.ai/privacy
+https://jpcite.com/privacy
 ```
 
 ### Terms of Service URL
 
 ```
-https://zeimu-kaikei.ai/tos
+https://jpcite.com/tos
 ```
 
 ### Screenshots (Cursor often asks for 1–3)

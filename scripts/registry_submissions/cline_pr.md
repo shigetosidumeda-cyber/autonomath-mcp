@@ -36,7 +36,7 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
   "displayName": "AutonoMath — 日本の制度 MCP",
   "description": "Search Japanese institutional data: 10,790 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 89 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on 99%+ rows.",
   "repository": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
-  "homepage": "https://zeimu-kaikei.ai",
+  "homepage": "https://jpcite.com",
   "license": "MIT",
   "language": "Python",
   "runtime": "python>=3.11",
@@ -175,7 +175,7 @@ Search results are extracted at the time of fetch; rates / sunset dates / author
 
 ## Operator
 
-- **Bookyou株式会社** (法人番号 T8010001213708)
+- **Bookyou株式会社** (適格請求書発行事業者番号 T8010001213708)
 - 代表 梅田茂利
 - info@bookyou.net
 - 適格請求書発行事業者 (qualified invoice issuer)
@@ -184,7 +184,7 @@ Search results are extracted at the time of fetch; rates / sunset dates / author
 
 - Source: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
-- Homepage: https://zeimu-kaikei.ai
+- Homepage: https://jpcite.com
 
 ## Checklist
 

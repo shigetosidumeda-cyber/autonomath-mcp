@@ -1,19 +1,22 @@
-# 税務会計AI — マネーフォワード クラウド アプリポータル plugin
+# jpcite (旧 税務会計AI) — マネーフォワード クラウド アプリポータル plugin
+
+> **Brand**: 本サービスは 2026-04-30 に `税務会計AI` から **jpcite** へ改名されました。
+> alternateName として `税務会計AI` は残しますが、URL / API base は jpcite.com 系に統一されます。
 
 マネーフォワード クラウド (MF Cloud) のアプリポータル / アプリストア向け
-公開アプリ実装。`zeimu-kaikei.ai` の REST API をプロキシし、MF クラウドの
+公開アプリ実装。`jpcite.com` の REST API をプロキシし、MF クラウドの
 ユーザー (会計 / 請求書 / 給与 / 経費 / 人事労務) が補助金・税制優遇・法令・
 判例・インボイス登録番号を MF 画面内のポップアップから検索できるようにする。
 
 ```
 MF クラウド (https://*.biz.moneyforward.com)
-        │ <iframe src="https://mf-plugin.zeimu-kaikei.ai/static/index.html">
+        │ <iframe src="https://mf-plugin.jpcite.com/static/index.html">
         ▼
 このプラグイン (Fly.io HND, Python 3.11 + FastAPI)
         │ OAuth2 (mfc/ac/data.read scope) → 事業者名 + tenant_uid を session
         │ X-API-Key: zk_live_... (Bookyou 所有のサービスキー)
         ▼
-api.zeimu-kaikei.ai (¥3.30/req metered subscription)
+api.jpcite.com (¥3.30/req metered subscription)
 ```
 
 ## アーキテクチャ要点
@@ -22,7 +25,7 @@ api.zeimu-kaikei.ai (¥3.30/req metered subscription)
   tenant_uid と事業者名のみ保持し、個人を特定する情報は持たない。
 - **scope は最小限**: `mfc/ac/data.read` (会計) のみ。書込み権限は要求しない。
   検索クエリの都道府県フィルタ用に基本情報を 1 回読むだけ。
-- **¥3/req fully metered**: plugin 自体は無料で利用可能。課金は zeimu-kaikei.ai
+- **¥3/req fully metered**: plugin 自体は無料で利用可能。課金は jpcite.com
   API 側で 1 req = ¥3.30 (税込) の従量で発生し、Bookyou 株式会社が Stripe 経由で
   適格請求書として発行。MF の利用者に直接課金は行わない (Bookyou の
   marketplace_app_subscription に対して計上)。
@@ -68,19 +71,19 @@ cp .env.example .env  # 値を埋める
 .venv/bin/python -m pytest tests/ -x
 ```
 
-ネットワーク呼び出しは `httpx.MockTransport` で全モック化。実 MF / 実 zeimu-kaikei
+ネットワーク呼び出しは `httpx.MockTransport` で全モック化。実 MF / 実 jpcite
 は叩かない。
 
 ## デプロイ (Fly.io)
 
 ```bash
-fly launch --no-deploy --copy-config --name zeimu-kaikei-mf-plugin
+fly launch --no-deploy --copy-config --name jpcite-mf-plugin
 fly secrets set \
   MF_CLIENT_ID=...                                  \
   MF_CLIENT_SECRET=...                              \
   ZEIMU_KAIKEI_API_KEY=zk_live_...                  \
   SESSION_SECRET=$(openssl rand -hex 32)            \
-  PLUGIN_BASE_URL=https://mf-plugin.zeimu-kaikei.ai
+  PLUGIN_BASE_URL=https://mf-plugin.jpcite.com
 fly deploy
 ```
 

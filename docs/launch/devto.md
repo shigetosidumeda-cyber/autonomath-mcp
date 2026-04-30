@@ -10,10 +10,10 @@
 
 ## TL;DR
 
-I shipped 税務会計AI (`autonomath-mcp` on PyPI) — a REST + MCP search API over 10,790 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 35 tax rulesets, and 2,286 adoption cases. Every row has a primary-source URL. Pricing is ¥3 per request metered with 50/month free anonymously. No subscription tiers. No signup for the free path.
+I shipped jpcite (`autonomath-mcp` on PyPI) — a REST + MCP search API over 10,790 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 35 tax rulesets, and 2,286 adoption cases. Every row has a primary-source URL. Pricing is ¥3 per request metered with 50/month free anonymously. No subscription tiers. No signup for the free path.
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
 That's it. Read on if you want the architecture, the data hygiene story, the MCP integration, and why I think tier-based SaaS pricing is the wrong shape for AI-agent traffic.
@@ -87,7 +87,7 @@ Everything under `/v1/*`:
 - `/v1/exclusions/*` — eligibility rules
 - `/v1/am/*` — annotations, validation, provenance, static resources, example profiles
 
-OpenAPI lives at `https://api.zeimu-kaikei.ai/openapi.json`.
+OpenAPI lives at `https://api.jpcite.com/openapi.json`.
 
 ### MCP surface
 
@@ -106,7 +106,7 @@ OpenAPI lives at `https://api.zeimu-kaikei.ai/openapi.json`.
 
 Restart Claude Desktop. Ask 「農業に使える東京都の補助金を教えて」. Claude calls `search_programs`, gets back rows with primary-source URLs, and cites them.
 
-The wheel on PyPI doesn't ship the DB (8.29 GB is too big for a wheel). Instead it auto-detects empty local DB and HTTP-falls-back to `api.zeimu-kaikei.ai`. The first 50 req/month per IP are free, no signup. Past that, ¥3/req metered with an API key.
+The wheel on PyPI doesn't ship the DB (8.29 GB is too big for a wheel). Instead it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. The first 50 req/month per IP are free, no signup. Past that, ¥3/req metered with an API key.
 
 If you want full local-mode MCP, clone the repo, fetch the DB tarball, run `autonomath-mcp` against the local file. No network.
 
@@ -154,7 +154,7 @@ The free tier is intentional and aggressive: **50 req/month per IP, no signup**.
 
 ```bash
 # This works, no key needed
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=AI&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=AI&prefecture=東京都"
 ```
 
 ---
@@ -183,7 +183,7 @@ Things I'm working on:
 The free anonymous path works without any account:
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
 Sample response:
@@ -206,11 +206,11 @@ Sample response:
 
 For Claude Desktop / Claude Code MCP, see the README.
 
-- Site: https://zeimu-kaikei.ai
+- Site: https://jpcite.com
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
-- Pricing: https://zeimu-kaikei.ai/docs/pricing/
-- OpenAPI: https://api.zeimu-kaikei.ai/openapi.json
+- Pricing: https://jpcite.com/docs/pricing/
+- OpenAPI: https://api.jpcite.com/openapi.json
 
 Solo project under Bookyou株式会社 (T8010001213708). No VC, no team. Public docs and GitHub issues only.
 

@@ -21,7 +21,7 @@ Developers Console / official-account-manager.
 
 In the channel "Messaging API" tab:
 
-1. **Webhook URL:** `https://api.zeimu-kaikei.ai/v1/integrations/line/webhook`
+1. **Webhook URL:** `https://api.jpcite.com/v1/integrations/line/webhook`
 2. **Use webhook:** ON
 3. **Verify** — the Console tries a `POST` to the URL. Expected response:
    `200 OK` with `{"status":"ok","processed":"0","skipped":"0"}` because
@@ -58,7 +58,7 @@ Recommended layout — 4 areas, full-width:
 |------|-------|--------|
 | Top-left  | 制度を探す  | message: "建設業" (kicks off the flow on step 1) |
 | Top-right | 使い方     | message: "ヘルプ" |
-| Bottom-left | サイト    | URI: `https://zeimu-kaikei.ai/` |
+| Bottom-left | サイト    | URI: `https://jpcite.com/` |
 | Bottom-right | お問合せ | URI: `mailto:info@bookyou.net` |
 
 Image template: 2500x1686 px; PNG; brand color #1f6feb. The image asset
@@ -110,7 +110,7 @@ operator action.
 Optional health probe (e.g. UptimeRobot):
 
 ```
-GET https://api.zeimu-kaikei.ai/healthz
+GET https://api.jpcite.com/healthz
 ```
 
 The webhook is intentionally NOT mounted on the public health surface;
@@ -118,7 +118,7 @@ its 503-on-missing-secret is the only externally visible health
 indicator. A quick smoke test:
 
 ```
-curl -i -X POST https://api.zeimu-kaikei.ai/v1/integrations/line/webhook \
+curl -i -X POST https://api.jpcite.com/v1/integrations/line/webhook \
   -H "Content-Type: application/json" \
   -d '{"destination":"verify","events":[]}'
 ```

@@ -63,7 +63,7 @@ def get_static_resource(resource_id: str) -> dict[str, object]:
         "id": resource_id,
         "data": _load_json(path),
         "license": "Proprietary — Bookyou株式会社 internal compilation. Free to redistribute via jpintel-mcp.",
-        "source_origin": "AutonoMath knowledge base (zeimu-kaikei.ai)",
+        "source_origin": "AutonoMath knowledge base (jpcite.com)",
     }
 
 def list_example_profiles() -> list[dict[str, object]]:

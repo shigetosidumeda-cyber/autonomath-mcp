@@ -28,12 +28,12 @@ Usage
     python scripts/cron/index_now_ping.py --dry-run      # plan only, no POST
     python scripts/cron/index_now_ping.py --force        # ignore prev snapshot, push all
     python scripts/cron/index_now_ping.py --limit 100    # cap submission batch size
-    python scripts/cron/index_now_ping.py --site site --domain zeimu-kaikei.ai
+    python scripts/cron/index_now_ping.py --site site --domain jpcite.com
 
 Required env (production cron)
 ------------------------------
     INDEXNOW_KEY    32+ char URL-safe token. Must match site/<KEY>.txt.
-    INDEXNOW_HOST   Domain without scheme. Default: zeimu-kaikei.ai.
+    INDEXNOW_HOST   Domain without scheme. Default: jpcite.com.
 
 Exit codes
 ----------
@@ -64,7 +64,7 @@ from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 DEFAULT_SITE_DIR = REPO_ROOT / "site"
 DEFAULT_ANALYTICS_DIR = REPO_ROOT / "analytics"
-DEFAULT_DOMAIN = "zeimu-kaikei.ai"
+DEFAULT_DOMAIN = "jpcite.com"
 
 # Sitemap shards we ping IndexNow for. We deliberately exclude
 # sitemap-structured.xml (10k+ JSON-LD shards that aren't user-facing
@@ -84,7 +84,7 @@ SHARD_BASENAMES = (
 BATCH_LIMIT = 10_000
 
 INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow"
-USER_AGENT = "zeimu-kaikei.ai-indexnow-cron/1.0 (+https://zeimu-kaikei.ai)"
+USER_AGENT = "jpcite.com-indexnow-cron/1.0 (+https://jpcite.com)"
 HTTP_TIMEOUT = 30.0
 
 # Sitemap XML namespace per sitemaps.org spec.
@@ -236,7 +236,7 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument(
         "--domain",
         default=os.environ.get("INDEXNOW_HOST", DEFAULT_DOMAIN),
-        help="Domain without scheme (default: env INDEXNOW_HOST or zeimu-kaikei.ai).",
+        help="Domain without scheme (default: env INDEXNOW_HOST or jpcite.com).",
     )
     p.add_argument(
         "--key",

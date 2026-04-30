@@ -10,7 +10,7 @@
     - Cloudflare visitors / page views (analytics/cf_daily.jsonl)
     - PyPI downloads          (analytics/pypi_daily.jsonl)
     - npm downloads           (analytics/npm_daily.jsonl)
-    - /v1/stats/funnel        (live, admin-key gated)
+    - /v1/stats/funnel        (live, admin-key required)
 
   Two data paths supported:
     A) Static export: drop the JSONL files into site/dashboard/_data/ at
@@ -54,7 +54,7 @@
 <div class="card">
   <div style="margin-bottom: 8px;">
     <input id="apiKey" type="password" placeholder="ADMIN_API_KEY (paste, never stored)">
-    <input id="apiBase" type="text" placeholder="https://api.zeimu-kaikei.ai" value="https://api.zeimu-kaikei.ai">
+    <input id="apiBase" type="text" placeholder="https://api.jpcite.com" value="https://api.jpcite.com">
     <button onclick="loadAll()">Load</button>
     <span id="status" class="sub"></span>
   </div>

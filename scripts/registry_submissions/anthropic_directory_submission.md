@@ -11,7 +11,7 @@
 
 - [ ] Public repo `github.com/shigetosidumeda-cyber/jpintel-mcp` is live
 - [ ] PyPI package `autonomath-mcp` v0.3.1 is published
-- [ ] DXT bundle `autonomath-mcp.mcpb` is downloadable from `https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb`
+- [ ] DXT bundle `autonomath-mcp.mcpb` is downloadable from `https://jpcite.com/downloads/autonomath-mcp.mcpb`
 - [ ] Verify the form's current field names against the live page before pasting (Anthropic updates the form periodically)
 
 ---
@@ -59,13 +59,13 @@ https://github.com/shigetosidumeda-cyber/jpintel-mcp
 ### Homepage URL
 
 ```
-https://zeimu-kaikei.ai
+https://jpcite.com
 ```
 
 ### Documentation URL
 
 ```
-https://zeimu-kaikei.ai/docs/
+https://jpcite.com/docs/
 ```
 
 ### License
@@ -140,16 +140,16 @@ Pay-per-request: ¥3 per request (税込 ¥3.30, fully metered via Stripe). Anon
 - API receives only the request payload (search query, filters, IDs).
 - No PII collection beyond billing email if the user upgrades to a metered API key.
 - No third-party tracking pixels or analytics SDKs in the API surface.
-- Privacy policy: https://zeimu-kaikei.ai/privacy
-- Terms of Service: https://zeimu-kaikei.ai/tos
-- 特定商取引法 disclosure: https://zeimu-kaikei.ai/tokushoho
+- Privacy policy: https://jpcite.com/privacy
+- Terms of Service: https://jpcite.com/tos
+- 特定商取引法 disclosure: https://jpcite.com/tokushoho
 ```
 
 ### Operator / publisher
 
 ```
 Bookyou株式会社
-法人番号: T8010001213708
+適格請求書発行事業者番号: T8010001213708
 適格請求書発行事業者番号: T8010001213708
 代表: 梅田茂利
 連絡先: info@bookyou.net

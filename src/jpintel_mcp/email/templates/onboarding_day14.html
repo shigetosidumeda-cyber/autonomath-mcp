@@ -22,23 +22,23 @@
     }
   }
 }</code></pre>
-<p style="margin:6px 0;"><a href="https://zeimu-kaikei.ai/integrations/" style="color:#1e3a8a;">クライアント別セットアップ詳細</a></p>
+<p style="margin:6px 0;"><a href="https://jpcite.com/integrations/" style="color:#1e3a8a;">クライアント別セットアップ詳細</a></p>
 
 <h2 style="font-size:17px;margin-top:28px;">2. <code>/programs/batch</code> で N 倍の節約</h2>
 <p>取引先の DD / 申請候補のスクリーニングなど、<strong>N 件まとめて取りに行くなら 1 リクエストにまとめる</strong>のが効きます。N 個の <code>get_program</code> を 1 回の POST にできて、課金も 1 回分です。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
-  "https://api.zeimu-kaikei.ai/v1/programs/batch" \
+  "https://api.jpcite.com/v1/programs/batch" \
   -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'</code></pre>
 <p style="color:#444;font-size:14px;">同じく <code>/v1/invoice_registrants/batch</code> (法人番号 N 件) や <code>/v1/am/dd_profile/batch</code> もあります。50 件まで 1 リクエスト・¥3.30 でまとめられます。</p>
 
 <h2 style="font-size:17px;margin-top:28px;">3. <code>monthly_cap_yen</code> で予算上限を縛る</h2>
 <p>従量課金の不安は <strong>「気づいたら ¥10 万」</strong>に集中します。鍵単位の月次 ¥ ハード上限を 1 行で設定できます(JST 月初 00:00 リセット)。例えば月 ¥3,000 まで:</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
-  "https://api.zeimu-kaikei.ai/v1/me/cap" \
+  "https://api.jpcite.com/v1/me/cap" \
   -d '{"monthly_cap_yen": 3000}'</code></pre>
 <p style="color:#444;font-size:14px;">上限到達後はそのキーが <code>402 Payment Required</code> を返します。本番アプリでも安心して使えるようになります。解除は <code>{"monthly_cap_yen": null}</code> です。</p>
 
-<p style="margin-top:28px;">他の運用 Tips は <a href="https://zeimu-kaikei.ai/docs/getting-started/" style="color:#1e3a8a;">Getting Started</a> と <a href="https://zeimu-kaikei.ai/examples/" style="color:#1e3a8a;">examples 集</a>にまとめてあります。</p>
+<p style="margin-top:28px;">他の運用 Tips は <a href="https://jpcite.com/docs/getting-started/" style="color:#1e3a8a;">Getting Started</a> と <a href="https://jpcite.com/examples/" style="color:#1e3a8a;">examples 集</a>にまとめてあります。</p>
 
 <p>ご質問・改善点・「こうしたい」は、このメールに返信ください。人間が読みます。</p>
 

@@ -1,5 +1,5 @@
 TO: {{customer_email}}
-FROM: support@zeimu-kaikei.ai
+FROM: support@jpcite.com
 SUBJECT: 【jpintel-mcp】日割り返金のご案内 (ticket {{ticket_id}})
 
 {{customer_name}} 様
@@ -31,5 +31,5 @@ Stripe 側で自動更新されない設定に変更済みです。
 ---
 jpintel-mcp サポート
 {{operator_name}}
-support@zeimu-kaikei.ai
-https://zeimu-kaikei.ai/
+support@jpcite.com
+https://jpcite.com/

@@ -14,8 +14,8 @@ Drafted submission packets for the 7 MCP registries that require manual action (
 | Version | 0.3.1 |
 | PyPI package | `autonomath-mcp` |
 | Repo (pending creation) | https://github.com/shigetosidumeda-cyber/jpintel-mcp |
-| Homepage | https://zeimu-kaikei.ai |
-| Docs | https://zeimu-kaikei.ai/docs/ |
+| Homepage | https://jpcite.com |
+| Docs | https://jpcite.com/docs/ |
 | License | MIT |
 | Language / runtime | Python >= 3.11 |
 | MCP protocol | 2025-06-18 |
@@ -85,7 +85,7 @@ After submit, watch wall-clock for review responses runs from 1 day (MCP Hunt) t
 3. **MCP Official Registry entry live**: `mcp publish server.json` completed; PulseMCP / Glama auto-ingest will start propagating within ~24 h.
 4. **README.md authoritative numbers**: matches the canonical facts above (89 tools, 154 laws full-text, 9,484 stubs, 4,300 sourced compat pairs, ¥3.30/req metered).
 5. **Disclaimer text matches the fence above** in README, /tos, /privacy, /tokushoho, /legal.
-6. **DXT bundle live**: `https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb` returns 200.
+6. **DXT bundle live**: `https://jpcite.com/downloads/autonomath-mcp.mcpb` returns 200.
 7. **Logos exist**:
    - `site/static/icons/autonomath-icon-512.png` (square 512)
    - `site/static/og/autonomath-og-1200x630.png` (OG card)
@@ -113,7 +113,7 @@ Example:
 - **PyPI** — `python -m build && twine upload dist/*` (auto-publish; not manual)
 - **npm** — `@autonomath/sdk` will publish via `npm publish` (auto)
 - **MCP Official Registry** — `mcp publish server.json` (auto via CLI; see `scripts/mcp_registries.md`)
-- **DXT / Claude Desktop Extension** — `.mcpb` is self-distributing from `zeimu-kaikei.ai/downloads/`
+- **DXT / Claude Desktop Extension** — `.mcpb` is self-distributing from `jpcite.com/downloads/`
 - **Smithery** — auto-indexes the public repo via `smithery.yaml`
 - **Glama** — auto-indexes the public repo (no submit form)
 - **Awesome MCP Servers (punkpeye)** — handled separately as a one-line PR (`scripts/mcp_registries.md` § 8); not in this pack to keep this scope to "manual web/email submissions only"

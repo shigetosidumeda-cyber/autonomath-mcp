@@ -26,12 +26,12 @@
 |---|---|
 | 製品名 | AutonoMath |
 | PyPI パッケージ | `autonomath-mcp` |
-| ドメイン | https://zeimu-kaikei.ai |
+| ドメイン | https://jpcite.com |
 | ステータス | Launch 2026-05-06 |
 | 提供形態 | REST API + MCP server (stdio) |
 | MCP プロトコル | 2025-06-18 |
-| MCP ツール総数 | 69 (39 jpintel + 30 autonomath, `list_tax_sunset_alerts` 含む at default gates; 3 broken-tool gates off pending fix) |
-| REST endpoints | `/v1/*` (FastAPI) |
+| MCP ツール総数 | 69  + 30 autonomath, `list_tax_sunset_alerts` 含む at default gates; 3 broken-tool gates off pending fix) |
+| REST API 経路 | `/v1/*` (FastAPI) |
 
 ## Coverage (2026-04-25 時点)
 
@@ -74,7 +74,7 @@
 | API ホスティング | Fly.io Tokyo (nrt) リージョン |
 | 静的サイト | Cloudflare Pages |
 | データベース | SQLite + 日本語の高速全文検索 (jpintel.db 188 MB + autonomath.db 7.36 GB) |
-| OpenAPI | https://api.zeimu-kaikei.ai/v1/openapi.json |
+| OpenAPI | https://api.jpcite.com/v1/openapi.json |
 | MCP registry | mcp registry, smithery, glama, etc. |
 
 ## Launch milestones

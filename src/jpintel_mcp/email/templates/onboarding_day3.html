@@ -21,32 +21,32 @@
 <h2 style="font-size:17px;margin-top:28px;">1. <code>search_programs</code> — 制度の入口</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">10,790 件の補助金 / 融資 / 税制 / 認定を、都道府県・対象業種・予算上限などで絞り込みます。何から始めるか迷ったらこれです。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.zeimu-kaikei.ai/v1/programs/search?prefecture=東京都&target_types=smb&amount_min_man_yen=100&limit=10"</code></pre>
+  "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_types=smb&amount_min_man_yen=100&limit=10"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">2. <code>search_tax_incentives</code> — 税制措置の専用検索</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">国税庁・財務省 由来の税制措置 (賃上げ促進税制 / 中小企業経営強化税制 / 事業承継税制 ほか) を横断検索します。出力は税務助言ではなく公開ルール検索です(税理士法 §52)。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.zeimu-kaikei.ai/v1/am/tax_incentives/search?q=賃上げ&limit=5"</code></pre>
+  "https://api.jpcite.com/v1/am/tax_incentives/search?q=賃上げ&limit=5"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">3. <code>check_invoice_registrant</code> — 適格事業者番号の照合</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">法人番号 (T+13 桁) を渡すと、国税庁 適格請求書発行事業者公表サイト 由来の登録状況・氏名・本店所在地を返します。経費精算 / 仕訳の自動化に。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.zeimu-kaikei.ai/v1/invoice_registrants/T8010001213708"</code></pre>
+  "https://api.jpcite.com/v1/invoice_registrants/T8010001213708"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">4. <code>dd_profile_am</code> — 取引先 360° プロファイル</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">法人番号 1 つから、補助金採択 / 行政処分 / 適格請求書発行登録 / 業歴を 1 リクエストでまとめて取得します。デューデリジェンスの 1 次スクリーニングに。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.zeimu-kaikei.ai/v1/am/dd_profile/T8010001213708"</code></pre>
+  "https://api.jpcite.com/v1/am/dd_profile/T8010001213708"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">5. <code>regulatory_prep_pack</code> — 申請前の自動チェック</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">unified_id を渡すと、その制度に対する排他ルール・前提認定・直近の改正点をまとめて返します。「この補助金、今この会社で出して大丈夫?」を 1 リクエストで。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.zeimu-kaikei.ai/v1/am/regulatory_prep_pack?unified_id=UNI-14e57fbf79"</code></pre>
+  "https://api.jpcite.com/v1/am/regulatory_prep_pack?unified_id=UNI-14e57fbf79"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">MCP クライアント経由</h2>
-<p>Claude / Cursor / Cline からは、上の 5 つも含めて 69 ツールがそのまま自然言語で呼べます。設定は <a href="https://zeimu-kaikei.ai/integrations/" style="color:#1e3a8a;">/integrations/</a> をご覧ください。</p>
+<p>Claude / Cursor / Cline からは、上の 5 つも含めて 69 ツールがそのまま自然言語で呼べます。設定は <a href="https://jpcite.com/integrations/" style="color:#1e3a8a;">/integrations/</a> をご覧ください。</p>
 
-<p style="margin-top:24px;">他にも使い方を集めた <a href="https://zeimu-kaikei.ai/examples/" style="color:#1e3a8a;">examples 集</a>(全 69 ツール一覧 + 用途別レシピ)があります。</p>
+<p style="margin-top:24px;">他にも使い方を集めた <a href="https://jpcite.com/examples/" style="color:#1e3a8a;">examples 集</a>(全 69 ツール一覧 + 用途別レシピ)があります。</p>
 
 <p>詰まったら、このメールにそのまま返信してください。人間が読みます。</p>
 

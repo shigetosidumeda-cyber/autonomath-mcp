@@ -8,44 +8,23 @@
      We poll the JSON via fetch (below) for the metrics, but the meta
      refresh is the safety net for stale browser tabs. -->
 <meta http-equiv="refresh" content="300">
-<title>SLA — 税務会計AI</title>
-<meta name="description" content="税務会計AI API の稼働率 (uptime) と p95 レイテンシ — 7日ローリング window. Bookyou株式会社 (T8010001213708).">
+<title>SLA — jpcite</title>
+<meta name="description" content="jpcite API の稼働率 (uptime) と p95 レイテンシ — 7日ローリング window. Bookyou株式会社 (T8010001213708).">
 <meta name="robots" content="noindex, follow">
-<link rel="canonical" href="https://zeimu-kaikei.ai/sla.html">
+<link rel="canonical" href="https://jpcite.com/sla.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=20260430a">
 <style>
-  :root {
-    --accent: #1e3a8a;
-    --text: #111111;
-    --text-muted: #555555;
-    --border: #e5e5e5;
-    --bg: #ffffff;
-    --bg-alt: #f7f7f8;
-    --ok: #15803d;
-    --warn: #b45309;
-    --down: #b91c1c;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
-      "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
-      "Meiryo", sans-serif;
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text);
-    background: var(--bg);
-    -webkit-font-smoothing: antialiased;
-  }
-  .container {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 48px 20px 64px;
-  }
-  h1 { font-size: 1.6em; margin: 0 0 .25em; }
-  h2 { font-size: 1.15em; margin: 1.6em 0 .4em; color: var(--accent); }
-  p, li { color: var(--text); }
-  .muted { color: var(--text-muted); font-size: .92em; }
+  /* sla.html — page-specific components only. Global tokens / typography
+     come from /styles.css. Status colors mapped to canonical CSS vars
+     (--success / --warning / --danger). */
+  .sla-page { padding: 48px 0 64px; }
+  .sla-page h1 { font-size: 1.6em; margin: 0 0 .25em; }
+  .sla-page h2 { font-size: 1.15em; margin: 1.6em 0 .4em; color: var(--accent); }
+  .sla-page .muted { color: var(--text-muted); font-size: .92em; }
   .metric {
     display: flex;
     flex-direction: column;
@@ -58,65 +37,122 @@
   }
   .metric .label { color: var(--text-muted); font-size: .85em; }
   .metric .value { font-size: 1.7em; font-weight: 600; }
-  .ok { color: var(--ok); }
-  .warn { color: var(--warn); }
-  .down { color: var(--down); }
+  .ok { color: var(--success); }
+  .warn { color: var(--warning); }
+  .down { color: var(--danger); }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 540px) { .grid { grid-template-columns: 1fr; } }
-  table { border-collapse: collapse; width: 100%; margin-top: .6em; }
-  th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: .94em; }
-  code { font-family: "SF Mono", Menlo, monospace; font-size: .9em; background: var(--bg-alt); padding: 2px 5px; border-radius: 3px; }
-  footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: .88em; }
+  .sla-page table { border-collapse: collapse; width: 100%; margin-top: .6em; }
+  .sla-page th, .sla-page td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: .94em; }
+  .sla-page code { font-family: var(--font-mono); font-size: .9em; background: var(--bg-alt); padding: 2px 5px; border-radius: 3px; }
+  .sla-foot { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: .88em; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>SLA / 稼働状況</h1>
-  <p class="muted">税務会計AI API の稼働率と p95 レイテンシ。7日ローリングwindow、auto-refresh 5分。
-  Operator: Bookyou株式会社 (法人番号 T8010001213708)。</p>
 
-  <h2>現在の指標</h2>
-  <div class="grid">
-    <div class="metric">
-      <span class="label">Uptime (7d rolling)</span>
-      <span class="value" id="uptime-value">—</span>
-      <span class="muted" id="uptime-detail">読込中…</span>
-    </div>
-    <div class="metric">
-      <span class="label">p95 latency (7d)</span>
-      <span class="value" id="p95-value">—</span>
-      <span class="muted" id="p95-detail">読込中…</span>
-    </div>
-  </div>
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
-  <h2>SLA Target (公開)</h2>
-  <table>
-    <tr><th>指標</th><th>目標値</th><th>計測ウィンドウ</th></tr>
-    <tr><td>Uptime</td><td>99.0% 以上</td><td>7日ローリング</td></tr>
-    <tr><td>p95 latency</td><td>&lt; 1500 ms</td><td>1時間ローリング</td></tr>
-    <tr><td>5xx エラー率</td><td>&lt; 0.5%</td><td>1時間ローリング</td></tr>
-  </table>
-  <p class="muted">内部 SLO は 99.5% で運用。詳細は <code>monitoring/sla_targets.md</code>。
-  プラットフォーム障害（Cloudflare / Fly 公開ステータス記載分）と 48h 前事前告知メンテは breach 計算から除外します。</p>
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/sla.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/sla.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
 
-  <h2>API API 経路</h2>
-  <p>このページは <code>GET /v1/health/sla</code> を polling しています。</p>
-  <pre><code>$ curl https://api.zeimu-kaikei.ai/v1/health/sla?window=7d</code></pre>
+<main id="main" class="sla-page">
+<div class="container" style="max-width:720px;">
+ <h1>SLA / 稼働状況</h1>
+ <p class="muted">jpcite API の稼働率と p95 レイテンシ。7日ローリングwindow、auto-refresh 5分。
+ Operator: Bookyou株式会社。</p>
 
-  <h2>関連リンク</h2>
-  <ul>
-    <li><a href="/status.html">Status (自由記述)</a></li>
-    <li><a href="/data-freshness.html">データ鮮度 (per-dataset)</a></li>
-    <li><a href="/audit-log.html">改正検出ログ</a> / <a href="/audit-log.rss">RSS</a></li>
-    <li><a href="/v1/corrections/feed">Corrections RSS</a> (CC-BY-4.0 メタデータ)</li>
-  </ul>
+ <h2>現在の指標</h2>
+ <div class="grid">
+ <div class="metric">
+ <span class="label">Uptime (7d rolling)</span>
+ <span class="value" id="uptime-value">—</span>
+ <span class="muted" id="uptime-detail">読込中…</span>
+ </div>
+ <div class="metric">
+ <span class="label">p95 latency (7d)</span>
+ <span class="value" id="p95-value">—</span>
+ <span class="muted" id="p95-detail">読込中…</span>
+ </div>
+ </div>
 
-  <footer>
-    Generated client-side from <code>/v1/health/sla</code>. Last fetch:
-    <span id="last-fetch">—</span>.
-    <br>(C) 2026 Bookyou株式会社. CC-BY-4.0 メタデータ.
-  </footer>
+ <h2>SLA Target (公開)</h2>
+ <table>
+ <tr><th>指標</th><th>目標値</th><th>計測ウィンドウ</th></tr>
+ <tr><td>Uptime</td><td>99.0% 以上</td><td>7日ローリング</td></tr>
+ <tr><td>p95 latency</td><td>&lt; 1500 ms</td><td>1時間ローリング</td></tr>
+ <tr><td>5xx エラー率</td><td>&lt; 0.5%</td><td>1時間ローリング</td></tr>
+ </table>
+ <p class="muted">内部 SLO は 99.5% で運用。詳細は <code>monitoring/sla_targets.md</code>。
+ プラットフォーム障害（Cloudflare / Fly 公開ステータス記載分）と 48h 前事前告知メンテは breach 計算から除外します。</p>
+
+ <h2>API API 経路</h2>
+ <p>このページは <code>GET /v1/health/sla</code> を polling しています。</p>
+ <pre><code>$ curl https://api.jpcite.com/v1/health/sla?window=7d</code></pre>
+
+ <h2>関連リンク</h2>
+ <ul>
+ <li><a href="/status.html">Status (自由記述)</a></li>
+ <li><a href="/data-freshness.html">データ鮮度 (per-dataset)</a></li>
+ <li><a href="/audit-log.html">改正検出ログ</a> / <a href="/audit-log.rss">RSS</a></li>
+ <li><a href="/v1/corrections/feed">Corrections RSS</a> (CC-BY-4.0 メタデータ)</li>
+ </ul>
+
+ <p class="sla-foot">
+ Generated client-side from <code>/v1/health/sla</code>. Last fetch:
+ <span id="last-fetch">—</span>.
+ </p>
 </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
 
 <script>
   // Vanilla JS — no framework. Polls /v1/health/sla every 5 min.
@@ -127,7 +163,7 @@
   }
   function fmtMs(n) {
     if (n === null || n === undefined) return "n/a";
-    return Number(n).toLocaleString() + " ms";
+    return Number(n).toLocaleString + " ms";
   }
   function classify(uptime, p95) {
     var u = (uptime === null || uptime === undefined) ? null
@@ -138,7 +174,7 @@
   }
   async function refresh() {
     try {
-      var base = "https://api.zeimu-kaikei.ai";
+      var base = "https://api.jpcite.com";
       // Same-origin fallback for local dev / when api subdomain is down.
       if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
         base = "";

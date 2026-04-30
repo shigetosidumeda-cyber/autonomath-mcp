@@ -229,7 +229,7 @@ def _notify_operator_and_requester(
             f"  受付日時: {received_at}\n\n"
             "原則として30日以内に、ご本人確認のうえ対応結果をご連絡いたします。"
             "ご不明点は info@bookyou.net までご返信ください。\n\n"
-            "Bookyou株式会社 (法人番号 T8010001213708)\n"
+            "Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)\n"
             "東京都文京区小日向2-22-1\n"
         )
 

@@ -92,7 +92,7 @@
 > 2. `source_fetched_at`: 一次資料を取得した時刻
 > 3. `source_url`: 一次資料 URL (再取得可能)
 >
-> `valid_until` (NULL = 現役 / 非 NULL = 後継 row へ移行済み) と組み合わせ、append-only update により**訂正削除の履歴**を完全に保持します。任意の過去日付に対し `query_at_snapshot(query, as_of_date)` で当時の DB 状態を再現でき、税務調査・監査時の **法廷証拠** として提示可能です (migration 067)。
+> `valid_until` (NULL = 現役 / 非 NULL = 後継 row へ移行済み) と組み合わせ、append-only update により**訂正削除の履歴**を完全に保持します。任意の過去日付に対し `query_at_snapshot(query, as_of_date)` で当時の DB 状態を再現でき、税務調査・監査時の **法廷証拠** として提示可能です。
 
 > **訂正削除防止事務処理規程** (別途保管):
 >
@@ -136,7 +136,7 @@ CSV 検索は Excel / spreadsheet / `grep` で対応。
 ### 2.5 backup
 
 - 自動 backup: クラウド (Google Drive / Dropbox 等) に暗号化で日次同期
-- 物理 backup: 外付け SSD に月次 snapshot、自宅金庫保管
+- 物理 backup: 外付け SSD に月次のスナップショット、自宅金庫保管
 - 保存先 divergence: 主保存 (Mac 内) + backup1 (クラウド) + backup2 (外付け SSD) の 3-2-1 原則
 
 ---

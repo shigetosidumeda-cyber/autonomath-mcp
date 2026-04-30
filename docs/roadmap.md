@@ -16,13 +16,13 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 
 過去 30 日に実装・公開したもの。
 
-- **ブランド改名 (jpintel → 税務会計AI / AutonoMath)** — Intel との著名商標衝突
+- **ブランド改名 (jpintel → jpcite / AutonoMath)** — Intel との著名商標衝突
   リスクを回避するため、user-facing 全面でリネーム。法人は Bookyou株式会社のまま。
 - **¥3/req 完全従量モデル確定** — tier SKU / 階層プラン / 無料枠 SKU 等を完全廃止。
   匿名 50 req/月 per IP のみ無料。pricing UI から階層的な表記を削除。
 - **freee 助成金AI 比較ページ追加** — `/compare/freee/` 含む 10 競合との honest
   comparison。13-15 軸の matrix + "when to choose us / them" を全 page に。
-- **MCP 89 tools 公開 (default gates 74)** — 39 jpintel + 35 autonomath
+- **MCP 89 tools 公開 (default gates 74)** —  + 35 autonomath
   (V1 + メタデータ tools + 静的データセット tools + lifecycle/abstract/prerequisite/graph/rule_engine + 合成 tools 5)。
   protocol 2025-06-18 準拠、broken 3 tools は env-flag gated off。
 - **OpenAPI 3.1 全 endpoint description 完成** — 111 paths すべてに summary +
@@ -90,7 +90,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
   acquisition (SEO / GEO / 直接の引用) で集客。
 - **営業電話 / コールド outreach** — 飛び込み営業・cold email・cold DM はゼロ。
   inbound 経由のみ対応。
-- **複数ドメイン展開** — `zeimu-kaikei.ai` 1 ドメインに集約。`autonomath.ai`
+- **複数ドメイン展開** — `jpcite.com` 1 ドメインに集約。`autonomath.ai`
   等のサブブランドを別ドメインで増やすことはしない (内部識別子は維持)。
 - **SaaS UI / ダッシュボード SaaS** — 価値は API / MCP / 静的 docs 経由で配信。
   polished SaaS UI ビルドは AI agents 単独では難しく、その方向の機能拡張は
@@ -102,19 +102,19 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 - **電話サポート / Slack Connect / 専用 onboarding call** — 全て self-service。
   解決しない場合のみ `info@bookyou.net` 1 系統。
 - **多媒体 EC 広告運用 SaaS への pivot** — AutoNoMath EC は別線、当 product
-  (税務会計AI) と混在させない。
+  (jpcite) と混在させない。
 - **特許出願 (A/B/C/D/E)** — 2026-04-13 に 5 特許全撤退決定済み。新たな
   特許出願は今後もしない方針。
 - **商標登録** — Intel との著名商標衝突は rename で回避。商標出願の工数 /
   費用は取らない (2026-04-23 確定方針)。
 - **農業 managed service / ブルーベリー栽培事業との結合** — それらは別線
-  (内部 project)。当 product (税務会計AI) と混在させない。
+  (内部 project)。当 product (jpcite) と混在させない。
 
 ---
 
 ## §52 / §72 / §1 の範囲
 
-税務会計AI は **検索インデックス + 構造化データ API** であり、税理士法 §52
+jpcite は **検索インデックス + 構造化データ API** であり、税理士法 §52
 (税理士業務)、弁護士法 §72 (法律事務)、行政書士法 §1 (行政書士業務) に該当
 する業務はおこないません。個別の税務相談・法律相談・申請代行が必要な場合は、
 適切な士業 (税理士 / 弁護士 / 行政書士 / 社労士 / 中小企業診断士) にご相談
@@ -124,4 +124,4 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 ---
 
 運営: [Bookyou株式会社](https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708)
-(法人番号 T8010001213708)・代表 梅田茂利・[info@bookyou.net](mailto:info@bookyou.net)
+(適格請求書発行事業者番号 T8010001213708)・代表 梅田茂利・[info@bookyou.net](mailto:info@bookyou.net)

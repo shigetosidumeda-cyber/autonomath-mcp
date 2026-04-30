@@ -88,5 +88,5 @@ rollback scenarios.
 
 ## Placeholders
 
-`autonomath-mcp`, `zeimu-kaikei.ai`, `shigetoumeda`, `autonomath-mcp`, `Bookyou 株式会社` — rewritten
+`autonomath-mcp`, `jpcite.com`, `shigetoumeda`, `autonomath-mcp`, `Bookyou 株式会社` — rewritten
 by `scripts/rebrand_mcp_entries.sh`.

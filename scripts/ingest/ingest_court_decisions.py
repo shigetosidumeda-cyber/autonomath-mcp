@@ -177,7 +177,7 @@ BANNED_SOURCE_HOSTS: tuple[str, ...] = (
 )
 
 USER_AGENT = (
-    "AutonoMath/0.1.0 (+https://zeimu-kaikei.ai) research crawler"
+    "AutonoMath/0.1.0 (+https://jpcite.com) research crawler"
 )
 # Per-host delay: stricter than §5 (1req/s) because SPA navigation fires
 # additional XHR under the hood. 2 seconds still completes a full walk of

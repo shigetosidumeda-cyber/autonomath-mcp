@@ -48,7 +48,7 @@ Partner program: freee Partner Program / Marketplace API Partner
 URL (申請): https://corp.freee.co.jp/partnership/
 URL (Marketplace 開発者): https://developer.freee.co.jp/
 
-会社名: Bookyou 株式会社 (法人番号 T8010001213708)
+会社名: Bookyou 株式会社 (適格請求書発行事業者番号 T8010001213708)
 代表者: 梅田茂利
 連絡先: info@bookyou.net
 製品名: AutonoMath

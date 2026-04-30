@@ -46,7 +46,7 @@ Constraints honoured (memory):
 - READ-ONLY on Stripe — payload is sourced from local DB + JSON files,
   no Stripe HTTP API call (``feedback_autonomath_no_api_use``).
 - Email-only outbound (``feedback_zero_touch_solo``).
-- Brand: ``税務会計AI``.
+- Brand: ``jpcite``.
 """
 from __future__ import annotations
 
@@ -283,7 +283,7 @@ def render_subject(payload: dict[str, Any]) -> str:
     date = payload.get("date_jst", "")
     paid = payload.get("mau_paid", 0)
     mrr = payload.get("mrr_yen", 0)
-    return f"{tag} 税務会計AI 日次KPI {date} (paid {paid} / MRR ¥{mrr:,})"
+    return f"{tag} jpcite 日次KPI {date} (paid {paid} / MRR ¥{mrr:,})"
 
 
 # ---------------------------------------------------------------------------

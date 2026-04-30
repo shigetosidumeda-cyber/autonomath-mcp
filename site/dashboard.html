@@ -4,35 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Dashboard — 税務会計AI</title>
-<meta name="description" content="税務会計AI のユーザーダッシュボード。API キー、利用量、課金を管理。">
+<title>ダッシュボード — jpcite</title>
+<meta name="description" content="jpcite のユーザーダッシュボード。API キー、利用量、課金を管理。">
 <meta name="robots" content="noindex,nofollow">
 
-<meta property="og:title" content="Dashboard — 税務会計AI">
-<meta property="og:description" content="税務会計AI のユーザーダッシュボード (ログイン必須)。">
+<meta property="og:title" content="ダッシュボード — jpcite">
+<meta property="og:description" content="jpcite のユーザーダッシュボード (ログイン必須)。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/dashboard.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta property="og:url" content="https://jpcite.com/dashboard.html">
+<meta property="og:image" content="https://jpcite.com/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dashboard — 税務会計AI">
-<meta name="twitter:description" content="税務会計AI のユーザーダッシュボード (ログイン必須)。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta name="twitter:title" content="ダッシュボード — jpcite">
+<meta name="twitter:description" content="jpcite のユーザーダッシュボード (ログイン必須)。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-square.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/dashboard.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/dashboard.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/dashboard.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/dashboard.html">
+<link rel="canonical" href="https://jpcite.com/dashboard.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/dashboard.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/dashboard.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard.html">
 <!-- Preconnect to the API origin so the cookie-session + Bearer-flow
      dashboards (dashboard.js + dashboard_v2.js) can fire /v1/me +
      /v1/me/dashboard the moment the JS parses, rather than waiting
      for the per-request DNS + TLS handshake. crossorigin matches the
-     fetch() mode used by both files. -->
-<link rel="preconnect" href="https://api.zeimu-kaikei.ai" crossorigin>
+     fetch mode used by both files. -->
+<link rel="preconnect" href="https://api.jpcite.com" crossorigin>
 <!-- Preconnect to fonts.gstatic.com / fonts.googleapis.com so the webfonts
      download in parallel with HTML parse instead of waiting for styles.css
      to be fetched + parsed. font-display:swap (URL param) keeps text painting
@@ -49,7 +49,7 @@
 <noscript><link rel="stylesheet" href="/styles.css?v=20260428a">
 <!--
   Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://zeimu-kaikei.ai/#publisher across all pages). All other
+  @id: https://jpcite.com/#publisher across all pages). All other
   JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
   the Organization inline. sameAs URLs marked TODO(user-action) are
   placeholders until the user creates them per
@@ -59,12 +59,12 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "taxID": "T8010001213708",
@@ -88,17 +88,14 @@
   },
   "sameAs": [
     "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber"
+    "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
   ]
 }
 </script>
 
 </noscript>
 <!-- dashboard.js wires this page to /v1/session + /v1/me/*. Pure ES2020, no
-     build step. Relative URLs = same-origin. If the dashboard is ever served
-     from a different host than the API, set window.AUTONOMATH_API_BASE
-     (legacy alias: window.JPINTEL_API_BASE) before loading dashboard.js
-     (and ensure CORS + allow_credentials on the API). -->
+     build step. Relative URLs = same-origin. -->
 <script defer src="dashboard.js"></script>
 <!-- dashboard_v2.js adds Bearer-authenticated views (paste-key flow) on top
      of the cookie-session dashboard above. Reads localStorage.am_api_key
@@ -157,6 +154,18 @@
     .dash { padding: 32px 0 48px; }
     .stat-grid { grid-template-columns: 1fr; }
     .dash-nav { gap: 8px; font-size: 13px; flex-wrap: wrap; }
+    /* Mobile table overflow defense — every dashboard table has 4-7
+       columns at 13px font, which exceeds 375px iPhone SE width.
+       `display:block; overflow-x:auto` lets the table scroll horizontally
+       inside its parent without breaking the page layout. WCAG 1.4.10
+       reflow-compliant: content stays accessible via touch-scroll. */
+    .dash table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+    .dash table thead, .dash table tbody { display: table; width: 100%; }
   }
   @media (max-width: 480px) {
     .dash-nav { gap: 6px; font-size: 12px; }
@@ -171,160 +180,158 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="audiences/">利用者層</a>
-      <a href="playground.html">Playground</a>
-      <a href="dashboard.html" aria-current="page">Dashboard</a>
-      <details class="nav-trust">
-        <summary>信頼</summary>
-        <ul>
-          <li><a href="status.html">Status</a></li>
-          <li><a href="roadmap.html">Roadmap</a></li>
-          <li><a href="data-freshness.html">データ鮮度</a></li>
-          <li><a href="transparency.html">透明性</a></li>
-          <li><a href="audit-log.html">変更検出フィード</a></li>
-        </ul>
-      </details>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="dashboard.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="en/dashboard.html" lang="en" hreflang="en">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/dashboard.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/dashboard.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
-  <section class="dash">
-    <div class="container">
+ <section class="dash">
+ <div class="container">
 
-      <!-- Dunning banner. Shown when /v1/me.subscription_status is
+ <!-- Dunning banner. Shown when /v1/me.subscription_status is
            past_due / unpaid / canceled. Hidden by default; dashboard.js fills
            in copy + button.href and toggles display. role="alert" so screen
            readers announce it on first render. Hex colors hoisted into
            .dunning-banner CSS class so dark-mode @media can override
            (#7f1d1d on #0d1117 = 1.6:1 fail). -->
-      <div id="dash-dunning-banner" class="dunning-banner" role="alert" hidden
-           style="display:none;">
-        <span id="dash-dunning-msg" class="dunning-banner-msg"></span>
-        <a id="dash-dunning-portal" class="dunning-banner-action" href="#" role="button">Stripe ポータルへ</a>
-      </div>
+ <div id="dash-dunning-banner" class="dunning-banner" role="alert" hidden
+ style="display:none;">
+ <span id="dash-dunning-msg" class="dunning-banner-msg"></span>
+ <a id="dash-dunning-portal" class="dunning-banner-action" href="#" role="button">Stripe ポータルへ</a>
+ </div>
 
-      <!-- New-key reveal box. Shown one-time on first dashboard
+ <!-- New-key reveal box. Shown one-time on first dashboard
            load after key creation (sessionStorage `am_first_key` bridge).
            Hidden by default; dashboard.js populates and reveals if conditions
            match, then clears sessionStorage so refresh hides it. -->
-      <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
-           style="display:none;">
-        <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの APIキー です。今すぐコピーしてください — 次回以降は表示されません。</p>
-        <code id="dash-newkey-value" class="newkey-value"></code>
-        <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">Copy key</button>
-        <button type="button" id="dash-newkey-dismiss" class="btn-ghost">表示を閉じる</button>
-      </div>
+ <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
+ style="display:none;">
+ <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの APIキー です。今すぐコピーしてください — 次回以降は表示されません。</p>
+ <code id="dash-newkey-value" class="newkey-value"></code>
+ <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">キーをコピー</button>
+ <button type="button" id="dash-newkey-dismiss" class="btn-ghost">表示を閉じる</button>
+ </div>
 
-      <!-- ============================================================== -->
-      <!-- Quick start panel (2026-04-29 onboarding hardening).              -->
-      <!-- Always visible. Shows curl + 4 MCP client config snippets that    -->
-      <!-- substitute the user's actual API key (from localStorage.am_api_key-->
-      <!-- or the just-issued key in dash-newkey-value). Falls back to the   -->
-      <!-- placeholder "am_xxx..." when no key is available (anonymous       -->
-      <!-- evaluation mode). Goal: reduce signup → first-API-call time from  -->
-      <!-- ~5 min to ~30 sec by removing the hop to /docs/getting-started/   -->
-      <!-- and the per-client /integrations/* page. Per-client deep-dive     -->
-      <!-- pages remain linked.                                              -->
-      <!-- ============================================================== -->
-      <section id="quickstart" aria-labelledby="quickstart-title" class="stat-card"
-               style="margin:0 0 24px;padding:22px 24px;border:1px solid var(--accent,#0066cc);background:#f6fbff;">
-        <h2 id="quickstart-title" style="font-size:18px;margin:0 0 6px;font-weight:700;">
-          <span aria-hidden="true">⚡ </span>5 分で最初の API call
-        </h2>
-        <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">
-          下のいずれか 1 つを選んでコピペするだけ。あなたの APIキー (もしくは匿名 50 リクエスト/月) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
-        </p>
-        <div role="tablist" aria-label="Quick start client" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:0 0 14px;">
-          <button type="button" role="tab" id="qs-tab-curl" aria-selected="true" aria-controls="qs-panel-curl"
-                  class="qs-tab qs-tab-active" data-qs-target="curl">curl (5 sec)</button>
-          <button type="button" role="tab" id="qs-tab-claude" aria-selected="false" aria-controls="qs-panel-claude"
-                  class="qs-tab" data-qs-target="claude">Claude Desktop</button>
-          <button type="button" role="tab" id="qs-tab-cursor" aria-selected="false" aria-controls="qs-panel-cursor"
-                  class="qs-tab" data-qs-target="cursor">Cursor</button>
-          <button type="button" role="tab" id="qs-tab-cline" aria-selected="false" aria-controls="qs-panel-cline"
-                  class="qs-tab" data-qs-target="cline">Cline</button>
-          <button type="button" role="tab" id="qs-tab-chatgpt" aria-selected="false" aria-controls="qs-panel-chatgpt"
-                  class="qs-tab" data-qs-target="chatgpt">ChatGPT</button>
-        </div>
+ <!-- ============================================================== -->
+ <!-- Quick start panel (2026-04-29 onboarding hardening).              -->
+ <!-- Always visible. Shows curl + 4 MCP client config snippets that    -->
+ <!-- substitute the user's actual API key (from localStorage.am_api_key-->
+ <!-- or the just-issued key in dash-newkey-value). Falls back to the   -->
+ <!-- placeholder "am_xxx..." when no key is available (anonymous       -->
+ <!-- evaluation mode). Goal: reduce signup → first-API-call time from  -->
+ <!-- ~5 min to ~30 sec by removing the hop to /docs/getting-started/   -->
+ <!-- and the per-client /integrations/* page. Per-client deep-dive     -->
+ <!-- pages remain linked.                                              -->
+ <!-- ============================================================== -->
+ <section id="quickstart" aria-labelledby="quickstart-title" class="stat-card"
+ style="margin:0 0 24px;padding:22px 24px;border:1px solid var(--accent,#0066cc);background:var(--accent-soft,#f6fbff);">
+ <h2 id="quickstart-title" style="font-size:18px;margin:0 0 6px;font-weight:700;">
+ <span aria-hidden="true">⚡ </span>5 分で最初の API 呼び出し
+ </h2>
+ <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">
+ 下のいずれか 1 つを選んでコピペするだけ。あなたの APIキー (もしくは匿名 50 リクエスト/月) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
+ </p>
+ <div role="tablist" aria-label="Quick start client" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:0 0 14px;">
+ <button type="button" role="tab" id="qs-tab-curl" aria-selected="true" aria-controls="qs-panel-curl"
+ class="qs-tab qs-tab-active" data-qs-target="curl">curl (5 sec)</button>
+ <button type="button" role="tab" id="qs-tab-claude" aria-selected="false" aria-controls="qs-panel-claude"
+ class="qs-tab" data-qs-target="claude">Claude Desktop</button>
+ <button type="button" role="tab" id="qs-tab-cursor" aria-selected="false" aria-controls="qs-panel-cursor"
+ class="qs-tab" data-qs-target="cursor">Cursor</button>
+ <button type="button" role="tab" id="qs-tab-cline" aria-selected="false" aria-controls="qs-panel-cline"
+ class="qs-tab" data-qs-target="cline">Cline</button>
+ <button type="button" role="tab" id="qs-tab-chatgpt" aria-selected="false" aria-controls="qs-panel-chatgpt"
+ class="qs-tab" data-qs-target="chatgpt">ChatGPT</button>
+ </div>
 
-        <div role="tabpanel" id="qs-panel-curl" aria-labelledby="qs-tab-curl" class="qs-panel">
-          <pre id="qs-curl-snippet" class="qs-code" aria-label="curl quick-start"><code>curl -H "X-API-Key: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>" \
-  "https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3"</code></pre>
-          <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-curl-snippet">Copy</button>
-          <p class="qs-note">APIキー を省くと匿名 50 リクエスト/月 per IP (JST 月初リセット) で動作。</p>
-        </div>
+ <div role="tabpanel" id="qs-panel-curl" aria-labelledby="qs-tab-curl" class="qs-panel">
+ <pre id="qs-curl-snippet" class="qs-code" aria-label="curl quick-start"><code>curl -H "X-API-Key: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>" \
+ "https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3"</code></pre>
+ <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-curl-snippet">コピー</button>
+ <p class="qs-note">APIキー を省くと匿名 50 リクエスト/月 per IP (JST 月初リセット) で動作。</p>
+ </div>
 
-        <div role="tabpanel" id="qs-panel-claude" aria-labelledby="qs-tab-claude" class="qs-panel" hidden>
-          <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ターミナルで <code>pip install autonomath-mcp</code> · <strong>2.</strong> 下を <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) に貼り付け · <strong>3.</strong> Claude Desktop 再起動。</p>
-          <pre id="qs-claude-snippet" class="qs-code" aria-label="Claude Desktop config"><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "env": {"ZEIMU_KAIKEI_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
-    }
-  }
+ <div role="tabpanel" id="qs-panel-claude" aria-labelledby="qs-tab-claude" class="qs-panel" hidden>
+ <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ターミナルで <code>pip install autonomath-mcp</code> · <strong>2.</strong> 下を <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) に貼り付け · <strong>3.</strong> Claude Desktop 再起動。</p>
+ <pre id="qs-claude-snippet" class="qs-code" aria-label="Claude Desktop config"><code>{
+ "mcpServers": {
+ "jpcite": {
+ "command": "autonomath-mcp",
+ "env": {"AUTONOMATH_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
+ }
+ }
 }</code></pre>
-          <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-claude-snippet">Copy</button>
-          <p class="qs-note"><a href="/integrations/claude-desktop.html">Claude Desktop 統合ガイド (5 分)</a></p>
-        </div>
+ <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-claude-snippet">コピー</button>
+ <p class="qs-note"><a href="/integrations/claude-desktop.html">Claude Desktop 統合ガイド (5 分)</a></p>
+ </div>
 
-        <div role="tabpanel" id="qs-panel-cursor" aria-labelledby="qs-tab-cursor" class="qs-panel" hidden>
-          <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> Cursor → Settings → MCP → Add new server · <strong>2.</strong> 下の JSON を貼り付け · <strong>3.</strong> Save。</p>
-          <pre id="qs-cursor-snippet" class="qs-code" aria-label="Cursor MCP config"><code>{
-  "name": "zeimu-kaikei",
-  "command": "uvx",
-  "args": ["autonomath-mcp"],
-  "env": {"ZEIMU_KAIKEI_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
+ <div role="tabpanel" id="qs-panel-cursor" aria-labelledby="qs-tab-cursor" class="qs-panel" hidden>
+ <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> Cursor → Settings → MCP → Add new server · <strong>2.</strong> 下の JSON を貼り付け · <strong>3.</strong> Save。</p>
+ <pre id="qs-cursor-snippet" class="qs-code" aria-label="Cursor MCP config"><code>{
+ "name": "jpcite",
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
+ "env": {"AUTONOMATH_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
 }</code></pre>
-          <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cursor-snippet">Copy</button>
-          <p class="qs-note"><a href="/integrations/cursor.html">Cursor 統合ガイド (4 分)</a></p>
-        </div>
+ <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cursor-snippet">コピー</button>
+ <p class="qs-note"><a href="/integrations/cursor.html">Cursor 統合ガイド (4 分)</a></p>
+ </div>
 
-        <div role="tabpanel" id="qs-panel-cline" aria-labelledby="qs-tab-cline" class="qs-panel" hidden>
-          <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> VS Code → Cline → MCP Servers → Edit MCP Settings · <strong>2.</strong> 下を貼り付け · <strong>3.</strong> Save。</p>
-          <pre id="qs-cline-snippet" class="qs-code" aria-label="Cline MCP config"><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"],
-      "env": {"ZEIMU_KAIKEI_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
-      "autoApprove": ["search_programs", "get_program", "search_laws"]
-    }
-  }
+ <div role="tabpanel" id="qs-panel-cline" aria-labelledby="qs-tab-cline" class="qs-panel" hidden>
+ <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> VS Code → Cline → MCP Servers → Edit MCP Settings · <strong>2.</strong> 下を貼り付け · <strong>3.</strong> Save。</p>
+ <pre id="qs-cline-snippet" class="qs-code" aria-label="Cline MCP config"><code>{
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
+ "env": {"AUTONOMATH_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
+ "autoApprove": ["search_programs", "get_program", "search_laws"]
+ }
+ }
 }</code></pre>
-          <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cline-snippet">Copy</button>
-          <p class="qs-note"><a href="/integrations/cline.html">Cline 統合ガイド (5 分)</a></p>
-        </div>
+ <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cline-snippet">コピー</button>
+ <p class="qs-note"><a href="/integrations/cline.html">Cline 統合ガイド (5 分)</a></p>
+ </div>
 
-        <div role="tabpanel" id="qs-panel-chatgpt" aria-labelledby="qs-tab-chatgpt" class="qs-panel" hidden>
-          <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ChatGPT (Plus/Team/大規模利用) → My GPTs → Create · <strong>2.</strong> Configure → Actions → Import OpenAPI · <strong>3.</strong> 下の URL を貼り付け · <strong>4.</strong> Authentication → APIキー → 下の値。</p>
-          <pre id="qs-chatgpt-snippet" class="qs-code" aria-label="ChatGPT Custom GPT config"><code># OpenAPI URL
-https://api.zeimu-kaikei.ai/openapi.json
+ <div role="tabpanel" id="qs-panel-chatgpt" aria-labelledby="qs-tab-chatgpt" class="qs-panel" hidden>
+ <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ChatGPT (Plus/Team/大規模利用) → My GPTs → Create · <strong>2.</strong> Configure → Actions → Import OpenAPI · <strong>3.</strong> 下の URL を貼り付け · <strong>4.</strong> Authentication → APIキー → 下の値。</p>
+ <pre id="qs-chatgpt-snippet" class="qs-code" aria-label="ChatGPT Custom GPT config"><code># OpenAPI URL
+https://api.jpcite.com/openapi.json
 
 # Authentication
 Type: API Key
 Header name: X-API-Key
 Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span></code></pre>
-          <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-chatgpt-snippet">Copy</button>
-          <p class="qs-note"><a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT 統合ガイド (5 分)</a></p>
-        </div>
-      </section>
-      <style>
+ <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-chatgpt-snippet">コピー</button>
+ <p class="qs-note"><a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT 統合ガイド (5 分)</a></p>
+ </div>
+ </section>
+ <style>
         .qs-tab { background:transparent;border:none;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px; }
         .qs-tab.qs-tab-active { color:var(--accent,#0066cc);border-bottom-color:var(--accent,#0066cc); }
         .qs-tab:hover { color:var(--text); }
@@ -337,11 +344,11 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           .qs-tab { padding:12px 16px;min-height:44px; }
         }
       </style>
-      <script>
+ <script>
         // Quick-start panel: tab switching + key substitution + copy buttons.
         // Pure ES2020, no deps. CSP-safe (sits inline alongside the panel
         // HTML so a future move to nonce-based CSP can hash it).
-        (function () {
+        (function() {
           'use strict';
           var QS_PLACEHOLDER = 'am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
           var KEY_RE = /^am_[A-Za-z0-9]{16,}$/;
@@ -349,7 +356,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           // Tab switching.
           var tabs = document.querySelectorAll('.qs-tab');
           tabs.forEach(function (tab) {
-            tab.addEventListener('click', function () {
+            tab.addEventListener('click', function() {
               var target = tab.getAttribute('data-qs-target');
               tabs.forEach(function (t) {
                 var active = t === tab;
@@ -381,13 +388,13 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             return null;
           }
           function applyKey() {
-            var key = readKey();
+            var key = readKey;
             var slots = document.querySelectorAll('.qs-key-slot');
             slots.forEach(function (s) {
               s.textContent = key || QS_PLACEHOLDER;
             });
           }
-          applyKey();
+          applyKey;
           // Re-apply when storage events fire (cross-tab) and after dash2.js
           // wires up (give it a couple of ticks).
           window.addEventListener('storage', applyKey);
@@ -397,17 +404,17 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           // Copy buttons (scoped to qs-* — avoids clashing with other copy
           // buttons elsewhere on the page).
           document.querySelectorAll('.qs-copy').forEach(function (btn) {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function() {
               var src = document.getElementById(btn.getAttribute('data-copy-target'));
               if (!src) return;
               var text = src.textContent;
               var prev = btn.textContent;
               var done = function (ok) {
                 btn.textContent = ok ? 'Copied' : 'Copy failed';
-                setTimeout(function () { btn.textContent = prev || 'Copy'; }, 1800);
+                setTimeout(function() { btn.textContent = prev || 'Copy'; }, 1800);
               };
               if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+                navigator.clipboard.writeText(text).then(function() { done(true); }, function() { done(false); });
               } else {
                 try {
                   var ta = document.createElement('textarea');
@@ -416,7 +423,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
                   ta.style.position = 'absolute';
                   ta.style.left = '-9999px';
                   document.body.appendChild(ta);
-                  ta.select();
+                  ta.select;
                   document.execCommand('copy');
                   document.body.removeChild(ta);
                   done(true);
@@ -424,305 +431,293 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               }
             });
           });
-        })();
+        });
       </script>
 
-      <h1>Dashboard</h1>
-      <p class="sub">signed in as <code>—</code></p>
-      <!-- Trust strip — discreet single line so logged-in users keep
+ <h1>ダッシュボード</h1>
+ <p class="sub">ログイン中: <code>—</code></p>
+ <!-- Trust strip — discreet single line so logged-in users keep
            verifiable provider info above the fold. Not behind auth. -->
-      <p class="trust-strip" style="margin:0 0 18px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-        運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-        · <a href="tokushoho.html">特商法表記</a>
-        · <a href="tos.html">利用規約</a>
-        · <a href="privacy.html">プライバシー</a>
-        · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
-        · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
-      </p>
-
-      <!-- §52 / §72 disclaimer — surfaced on the highest-trust authenticated
+<!-- §52 / §72 disclaimer — surfaced on the highest-trust authenticated
            surface so paid users see the士業業法 boundary every time they
            open the dashboard. Same yellow/amber callout as tos.html.
-           Trust Audit hardening (2026-04-29). -->
-      <div role="note" aria-labelledby="dash-tax-disclaimer-title" style="background:#fff8e1;border:2px solid #f59e0b;padding:18px 20px;border-radius:8px;margin:0 0 24px;">
-        <h2 id="dash-tax-disclaimer-title" style="font-size:16px;margin:0 0 10px;color:#7c2d12;font-weight:700;">税理士法 §52 / 弁護士法 §72 に関する重要なお知らせ</h2>
-        <p style="margin:0 0 6px;font-size:14px;line-height:1.7;">本サービスは公的機関が公表する税制・補助金・法令情報を検索・整理して提供するサービスであり、<strong>税務助言・法律助言ではありません</strong>。</p>
-        <p style="margin:0 0 6px;font-size:14px;line-height:1.7;">税理士法 §52 に基づき、個別具体的な税務判断・申告書作成代行は行いません。弁護士法 §72 に基づき、個別具体的な法律相談・法律事務も行いません。</p>
-        <p style="margin:0;font-size:14px;line-height:1.7;">個別案件は<strong>資格を有する税理士・弁護士に必ずご相談ください</strong>。本サービスの情報利用により生じた損害について、当社は一切の責任を負いません。詳細は<a href="tos.html#article-5" rel="noopener">利用規約 第5条</a>をご確認ください。</p>
-      </div>
+           Trust Audit hardening (2026-04-29). Body text + heading colors
+           pinned so the box stays legible in dark mode (the box bg is
+           intentionally light-yellow for the §52 callout convention; without
+           a pinned dark text color, system dark-mode flips body to white
+           on light yellow → invisible). -->
+ <nav class="dash-nav" aria-label="ダッシュボード">
+ <a href="dashboard.html" class="active" aria-current="page">概要</a>
+ <a href="#api-key-section" title="同一ページ内の APIキー ブロックへ">APIキー</a>
+ <a href="#billing-section" title="同一ページ内の請求ブロックへ">請求</a>
+ <a href="#dash2-billing-history" title="請求書一覧 (Stripe 同期、CSV/JSON ダウンロード)">請求書</a>
+ <button type="button" class="link-button">ログアウト</button>
+ </nav>
 
-      <nav class="dash-nav" aria-label="Dashboard">
-        <a href="dashboard.html" class="active" aria-current="page">Overview</a>
-        <a href="#api-key-section" title="同一ページ内の APIキー ブロックへ">APIキー</a>
-        <a href="#billing-section" title="同一ページ内の Billing ブロックへ">Billing</a>
-        <a href="#dash2-billing-history" title="請求書一覧 (Stripe 同期、CSV/JSON ダウンロード)">Invoices</a>
-        <button type="button" class="link-button">Log out</button>
-      </nav>
+ <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
+ <p id="quota-counter-label" class="stat-label">今月の使用量 (匿名)</p>
+ <p class="quota-counter-headline">
+ <span class="quota-counter-value">0</span>
+ <span class="unit"> / <span class="quota-counter-limit">—</span> リクエスト 今月</span>
+ <span class="quota-counter-pct"></span>
+ </p>
+ <div class="quota-counter-bar"
+ role="progressbar"
+ aria-label="月次 API 呼び出し上限 (JST 月初 00:00 リセット)"
+ aria-valuenow="0"
+ aria-valuemin="0"
+ aria-valuemax="100">
+ <div class="quota-counter-fill"></div>
+ </div>
+ <p class="quota-counter-note">月初 00:00 JST にリセット</p>
+ </section>
 
-      <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
-        <p id="quota-counter-label" class="stat-label">This month's quota (anonymous)</p>
-        <p class="quota-counter-headline">
-          <span class="quota-counter-value">0</span>
-          <span class="unit"> / <span class="quota-counter-limit">—</span> calls this month</span>
-          <span class="quota-counter-pct"></span>
-        </p>
-        <div class="quota-counter-bar"
-             role="progressbar"
-             aria-label="Monthly API call quota (resets JST first-of-month 00:00)"
-             aria-valuenow="0"
-             aria-valuemin="0"
-             aria-valuemax="100">
-          <div class="quota-counter-fill"></div>
-        </div>
-        <p class="quota-counter-note">reset at 月初 00:00 JST</p>
-      </section>
-
-      <!-- Current Stripe billing period end. Filled by dashboard.src.js
+ <!-- Current Stripe billing period end. Filled by dashboard.src.js
            (cookie session via /v1/me.subscription_current_period_end) and by
            dashboard_v2.src.js (Bearer via /v1/me/dashboard.current_period_end).
            Hidden until at least one path populates a date so anonymous /
            pre-billing users do not see an empty placeholder. -->
-      <p id="dash-period-end" class="stat-note" hidden
-         style="display:none;margin:0 0 16px;font-weight:600;color:var(--text);">
-        今月の請求期間: <span id="dash-period-end-date">—</span> まで
-      </p>
+ <p id="dash-period-end" class="stat-note" hidden
+ style="display:none;margin:0 0 16px;font-weight:600;color:var(--text);">
+ 今月の請求期間: <span id="dash-period-end-date">—</span> まで
+ </p>
 
-      <div class="stat-grid">
-        <div class="stat-card">
-          <p class="stat-label">This month</p>
-          <p class="stat-value">— <span class="unit">calls</span></p>
-          <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
-          <p class="stat-note">読み込み中… ご利用は 完全従量 ¥3/リクエスト (税込 ¥3.30)、月次の上限はありません。</p>
-        </div>
-        <div class="stat-card">
-          <p class="stat-label">Last 7 days</p>
-          <p class="stat-value">— <span class="unit">calls</span></p>
-          <p class="stat-note">読み込み中… ご利用に応じて表示されます。</p>
-        </div>
-      </div>
+ <div class="stat-grid">
+ <div class="stat-card">
+ <p class="stat-label">今月</p>
+ <p class="stat-value">— <span class="unit">リクエスト</span></p>
+ <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
+ <p class="stat-note">読み込み中… ご利用は 完全従量 ¥3/リクエスト (税込 ¥3.30)、月次の上限はありません。</p>
+ </div>
+ <div class="stat-card">
+ <p class="stat-label">過去 7 日</p>
+ <p class="stat-value">— <span class="unit">リクエスト</span></p>
+ <p class="stat-note">読み込み中… ご利用に応じて表示されます。</p>
+ </div>
+ </div>
 
-      <div class="chart-card">
-        <div class="chart-title">
-          <span>Last 30 days</span>
-          <span class="muted" id="dash-chart-peak">読み込み中…</span>
-        </div>
-        <svg class="chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="30-day daily call chart">
-          <!-- Bars are populated by dashboard.js from /v1/me/usage. The SVG
+ <div class="chart-card">
+ <div class="chart-title">
+ <span>過去 30 日</span>
+ <span class="muted" id="dash-chart-peak">読み込み中…</span>
+ </div>
+ <svg class="chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="30 日 日次 呼び出し グラフ">
+ <!-- Bars are populated by dashboard.js from /v1/me/usage. The SVG
                renders empty until JS hydrates so first-time users see an
                accurate "no usage yet" state instead of demo fixtures. -->
-        </svg>
-        <p class="chart-axis"><span id="dash-chart-start">—</span><span id="dash-chart-end">—</span></p>
-        <!-- Monthly projection line. dashboard.js extrapolates
+ </svg>
+ <p class="chart-axis"><span id="dash-chart-start">—</span><span id="dash-chart-end">—</span></p>
+ <!-- Monthly projection line. dashboard.js extrapolates
              month-to-date usage to month-end (linear) and shows ¥cost at
              ¥3/req. Hidden on day 1-2 of the month (insufficient data). -->
-        <p id="dash-projection" class="stat-note" style="margin:14px 0 0;font-weight:600;color:var(--text);"></p>
-      </div>
+ <p id="dash-projection" class="stat-note" style="margin:14px 0 0;font-weight:600;color:var(--text);"></p>
+ </div>
 
-      <div class="keybox" id="api-key-section">
-        <p class="label">Your APIキー</p>
-        <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
-        <p class="hash-prefix">hash prefix: ————————</p>
-        <button class="btn-danger" id="dash-rotate-btn" type="button">Rotate key</button>
-        <button class="btn-ghost" id="dash-copy-btn" type="button">Copy prefix</button>
-        <p class="stat-note" style="margin-top:12px">Rotation invalidates the old key immediately. Update your clients before rotating.</p>
-      </div>
+ <div class="keybox" id="api-key-section">
+ <p class="label">あなたの APIキー</p>
+ <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
+ <p class="hash-prefix">ハッシュ前置: ————————</p>
+ <button class="btn-danger" id="dash-rotate-btn" type="button">キーを再発行</button>
+ <button class="btn-ghost" id="dash-copy-btn" type="button">前置をコピー</button>
+ <p class="stat-note" style="margin-top:12px">再発行すると古いキーは即時無効化されます。再発行前にクライアント側を更新してください。</p>
+ </div>
 
-      <div class="stat-card" id="billing-section" style="margin:0 0 16px">
-        <p class="stat-label">Billing</p>
-        <p class="stat-value" style="font-size:20px" data-billing-headline>読み込み中…</p>
-        <p class="stat-note" style="margin:8px 0 14px">ご利用は 完全従量 ¥3/リクエスト (税別 / 税込 ¥3.30) の従量課金です。月額固定費・最低利用料・tier はありません。請求書 (適格請求書) は Stripe ポータルからダウンロードできます。</p>
-        <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button">Stripe ポータルを開く &rarr;</a>
-        <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
-          ご不要になられましたら、Stripe ポータルから <strong>サブスクリプションをキャンセル</strong> できます。
-          キャンセル後も当月末までは API アクセス可能で、当月分のみ ¥3/リクエスト 従量請求が発生します。
-        </p>
-      </div>
+ <div class="stat-card" id="billing-section" style="margin:0 0 16px">
+ <p class="stat-label">請求</p>
+ <p class="stat-value" style="font-size:20px" data-billing-headline>読み込み中…</p>
+ <p class="stat-note" style="margin:8px 0 14px">ご利用は ¥3/リクエスト (税別 / 税込 ¥3.30) の従量課金です。請求書 (適格請求書) は Stripe ポータルからダウンロードできます。</p>
+ <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button">Stripe ポータルを開く &rarr;</a>
+ <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
+ ご不要になられましたら、Stripe ポータルから <strong>サブスクリプションをキャンセル</strong> できます。
+ キャンセル後も当月末までは API アクセス可能で、当月分のみ ¥3/リクエスト 従量請求が発生します。
+ </p>
+ </div>
 
-      <!-- ============================================================== -->
-      <!-- Self-serve dashboard sections wired via Bearer auth.            -->
-      <!-- dashboard_v2.js reads localStorage.am_api_key and pulls from    -->
-      <!-- /v1/me/* (no cookie session needed). Hidden until a key is      -->
-      <!-- pasted below; legacy cookie-session flow above is unaffected.   -->
-      <!-- ============================================================== -->
+ <!-- ============================================================== -->
+ <!-- Self-serve dashboard sections wired via Bearer auth.            -->
+ <!-- dashboard_v2.js reads localStorage.am_api_key and pulls from    -->
+ <!-- /v1/me/* (no cookie session needed). Hidden until a key is      -->
+ <!-- pasted below; legacy cookie-session flow above is unaffected.   -->
+ <!-- ============================================================== -->
 
-      <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
-        <p class="stat-label">Usage details (paste APIキー)</p>
-        <p class="stat-note" style="margin:0 0 12px;">
-          APIキー を貼り付けてください。ブラウザの localStorage に保存され、
-          /v1/me/dashboard へ Bearer header として送信されます。サーバ側保存
-          (cookie session) は別フロー <code>Sign in</code> を使ってください。
-        </p>
-        <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
-          <label for="dash2-key-input" class="visually-hidden">APIキー</label>
-          <input id="dash2-key-input" type="password" inputmode="text"
-                 placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                 style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;">
-          <button type="submit" class="btn btn-primary">Load dashboard</button>
-          <button type="button" id="dash2-key-clear" class="btn-ghost">Clear</button>
-        </form>
-        <p id="dash2-key-status" class="stat-note" style="margin:8px 0 0;color:var(--text-muted);"></p>
-      </section>
+ <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
+ <p class="stat-label">利用詳細 (APIキーを貼り付け)</p>
+ <p class="stat-note" style="margin:0 0 12px;">
+ APIキー を貼り付けてください。ブラウザの localStorage に保存され、
+ /v1/me/dashboard へ Bearer ヘッダとして送信されます。サーバ側保存
+ (cookie セッション) は別フロー <code>サインイン</code> を使ってください。
+ </p>
+ <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
+ <label for="dash2-key-input" class="visually-hidden">APIキー</label>
+ <input id="dash2-key-input" type="password" inputmode="text"
+ placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;">
+ <button type="submit" class="btn btn-primary">ダッシュボードを表示</button>
+ <button type="button" id="dash2-key-clear" class="btn-ghost">クリア</button>
+ </form>
+ <p id="dash2-key-status" class="stat-note" style="margin:8px 0 0;color:var(--text-muted);"></p>
+ </section>
 
-      <section id="dash2-summary" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">30-day usage (Bearer)</p>
-        <p class="stat-value" id="dash2-summary-headline">— calls / ¥— spent</p>
-        <div class="quota-bar" aria-hidden="true"><div class="quota-fill" id="dash2-cap-fill" style="width:0%"></div></div>
-        <p class="stat-note" id="dash2-summary-note">月内予算 (cap) を設定すると、使い切った時点で 503 + cap_reached:true で停止します。</p>
-        <svg id="dash2-spark" class="chart-svg" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="30-day sparkline" style="margin-top:14px;height:60px"></svg>
-        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;">
-          <label for="dash2-cap-input" class="stat-note" style="margin:0;">月次予算 (¥)</label>
-          <input id="dash2-cap-input" type="number" min="0" step="100"
-                 placeholder="例: 10000"
-                 style="width:140px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
-          <button type="button" id="dash2-cap-save" class="btn-ghost">Save cap</button>
-          <button type="button" id="dash2-cap-clear" class="btn-ghost">Remove cap</button>
-        </div>
-      </section>
+ <section id="dash2-summary" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">過去 30 日 利用量 (Bearer)</p>
+ <p class="stat-value" id="dash2-summary-headline">— リクエスト / ¥— 支払い</p>
+ <div class="quota-bar" aria-hidden="true"><div class="quota-fill" id="dash2-cap-fill" style="width:0%"></div></div>
+ <p class="stat-note" id="dash2-summary-note">月内予算 (上限) を設定すると、使い切った時点で 503 + cap_reached:true で停止します。</p>
+ <svg id="dash2-spark" class="chart-svg" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="30 日 推移" style="margin-top:14px;height:60px"></svg>
+ <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;">
+ <label for="dash2-cap-input" class="stat-note" style="margin:0;">月次予算 (¥)</label>
+ <input id="dash2-cap-input" type="number" min="0" step="100"
+ placeholder="例: 10000"
+ style="width:140px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+ <button type="button" id="dash2-cap-save" class="btn-ghost">上限を保存</button>
+ <button type="button" id="dash2-cap-clear" class="btn-ghost">上限を解除</button>
+ </div>
+ </section>
 
-      <section id="dash2-tool-usage" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">Tool usage — top 10 (last 30 days)</p>
-        <table id="dash2-tool-table" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">API 経路</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">Calls</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">¥ Amount</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">Avg latency</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-tool-tbody"></tbody>
-        </table>
-      </section>
+ <section id="dash2-tool-usage" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">ツール利用量 — 上位 10 件 (過去 30 日)</p>
+ <table id="dash2-tool-table" style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">API 経路</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">呼び出し</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">¥ 金額</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">平均応答時間</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-tool-tbody"></tbody>
+ </table>
+ </section>
 
-      <section id="dash2-billing-history" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">Billing history (Stripe)</p>
-        <p class="stat-note" id="dash2-billing-note" style="margin:0 0 8px;">Stripe Customer Portal と同期 (5 分キャッシュ)。</p>
-        <table id="dash2-billing-table" style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">期間</th>
-              <th scope="col" style="padding:6px 4px;">Status</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">¥ Paid</th>
-              <th scope="col" style="padding:6px 4px;">Invoice</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-billing-tbody"></tbody>
-        </table>
-        <div style="margin-top:10px;display:flex;gap:8px;">
-          <button type="button" id="dash2-billing-csv" class="btn-ghost">Download CSV</button>
-          <button type="button" id="dash2-billing-json" class="btn-ghost">Download JSON</button>
-        </div>
-      </section>
+ <section id="dash2-billing-history" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">請求履歴 (Stripe)</p>
+ <p class="stat-note" id="dash2-billing-note" style="margin:0 0 8px;">Stripe の顧客ページ と同期 (5 分キャッシュ)。</p>
+ <table id="dash2-billing-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">期間</th>
+ <th scope="col" style="padding:6px 4px;">状況</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">¥ 支払額</th>
+ <th scope="col" style="padding:6px 4px;">請求書</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-billing-tbody"></tbody>
+ </table>
+ <div style="margin-top:10px;display:flex;gap:8px;">
+ <button type="button" id="dash2-billing-csv" class="btn-ghost">CSV ダウンロード</button>
+ <button type="button" id="dash2-billing-json" class="btn-ghost">JSON ダウンロード</button>
+ </div>
+ </section>
 
-      <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">
-        <p class="stat-label">Tool recommendation (intent → API 経路)</p>
-        <p class="stat-note" style="margin:0 0 10px;">
-          Dev: 自然文の意図から /v1/* エンドポイント候補を返します。
-          中小企業 は <a href="line.html">LINE 受付窓口</a> へ転送される対話 UI を想定。
-        </p>
-        <form id="dash2-rec-form" style="display:flex;gap:8px;flex-wrap:wrap;">
-          <label for="dash2-rec-intent" class="visually-hidden">Intent</label>
-          <input id="dash2-rec-intent" type="text"
-                 placeholder="例: 設備投資の補助金、税額控除"
-                 style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
-          <button type="submit" class="btn btn-primary">Recommend</button>
-        </form>
-        <ol id="dash2-rec-list" style="margin:12px 0 0;padding:0 0 0 18px;font-size:13px;color:var(--text);"></ol>
-      </section>
+ <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">
+ <p class="stat-label">ツール推奨 (意図 → API 経路)</p>
+ <p class="stat-note" style="margin:0 0 10px;">
+ 開発者向け: 自然文の意図から /v1/* エンドポイント候補を返します。
+ 中小企業 は <a href="line.html">LINE 受付窓口</a> へ転送される対話 UI を想定。
+ </p>
+ <form id="dash2-rec-form" style="display:flex;gap:8px;flex-wrap:wrap;">
+ <label for="dash2-rec-intent" class="visually-hidden">意図</label>
+ <input id="dash2-rec-intent" type="text"
+ placeholder="例: 設備投資の補助金、税額控除"
+ style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+ <button type="submit" class="btn btn-primary">推奨を見る</button>
+ </form>
+ <ol id="dash2-rec-list" style="margin:12px 0 0;padding:0 0 0 18px;font-size:13px;color:var(--text);"></ol>
+ </section>
 
-      <!-- ============================================================== -->
-      <!-- Amendment-alert subscriptions (法令改正・制度新設・行政処分).      -->
-      <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (Bearer auth).     -->
-      <!-- Subscriptions are free — fan-out cost is absorbed as retention. -->
-      <!-- ============================================================== -->
+ <!-- ============================================================== -->
+ <!-- Amendment-alert subscriptions (法令改正・制度新設・行政処分).      -->
+ <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (Bearer auth).     -->
+ <!-- Subscriptions are free — fan-out cost is absorbed as retention. -->
+ <!-- ============================================================== -->
 
-      <section id="dash2-alerts" class="stat-card" style="margin:0 0 16px;display:none;">
-        <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート (全ご利用者に無料)</h2>
-        <p class="stat-note" style="margin:0 0 12px;">
-          法令改正・制度新設・行政処分などの差分を Webhook 通知 (HTTPS のみ) または Email で
-          proactive 通知します。Subscription は<strong>無料</strong> (¥3/リクエスト に追加課金なし、有料プラン契約の有無を問いません)。
-          <code>filter_type</code> は <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
-          <code>industry_jsic</code> / <code>all</code> から選択、<code>min_severity</code> は
-          <code>critical</code> (制度終了・eligibility 変更) / <code>important</code> (金額・対象変更) /
-          <code>info</code> (出典再取得など) の 3 段階。詳しくは <a href="/docs/alerts_guide/">alerts guide</a>。
-        </p>
+ <section id="dash2-alerts" class="stat-card" style="margin:0 0 16px;display:none;">
+ <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート (全ご利用者に無料)</h2>
+ <p class="stat-note" style="margin:0 0 12px;">
+ 法令改正・制度新設・行政処分などの差分を Webhook 通知 (HTTPS のみ) または メール で
+ 先回り通知します。購読登録は<strong>無料</strong> (¥3/リクエスト に追加課金なし、有料プラン契約の有無を問いません)。
+ <code>filter_type</code> は <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
+ <code>industry_jsic</code> / <code>all</code> から選択、<code>min_severity</code> は
+ <code>critical</code> (制度終了・適用条件 変更) / <code>important</code> (金額・対象変更) /
+ <code>info</code> (出典再取得など) の 3 段階。詳しくは <a href="/docs/alerts_guide/">アラートガイド</a>。
+ </p>
 
-        <p id="dash2-alerts-banner" role="status" aria-live="polite"
-           style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
+ <p id="dash2-alerts-banner" role="status" aria-live="polite"
+ style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
 
-        <h3 class="dash-subsection-title">登録中の subscription (active)</h3>
-        <table id="dash2-alerts-table" style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">id</th>
-              <th scope="col" style="padding:6px 4px;">filter_type</th>
-              <th scope="col" style="padding:6px 4px;">filter_value</th>
-              <th scope="col" style="padding:6px 4px;">severity</th>
-              <th scope="col" style="padding:6px 4px;">Webhook 通知_url</th>
-              <th scope="col" style="padding:6px 4px;">email</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">削除</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-alerts-tbody"></tbody>
-        </table>
+ <h3 class="dash-subsection-title">登録中の購読 (有効)</h3>
+ <table id="dash2-alerts-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">id</th>
+ <th scope="col" style="padding:6px 4px;">filter_type</th>
+ <th scope="col" style="padding:6px 4px;">filter_value</th>
+ <th scope="col" style="padding:6px 4px;">severity</th>
+ <th scope="col" style="padding:6px 4px;">Webhook 通知_url</th>
+ <th scope="col" style="padding:6px 4px;">email</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">削除</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-alerts-tbody"></tbody>
+ </table>
 
-        <h3 class="dash-subsection-title is-spaced">新規登録</h3>
-        <form id="dash2-alerts-form" autocomplete="off">
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-            <label for="dash2-alerts-company-url">Company URL (leave blank)</label>
-            <input id="dash2-alerts-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
-          </div>
-          <div>
-            <label for="dash2-alerts-filter-type" class="stat-note" style="margin:0 0 4px;display:block;">filter_type <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-            <select id="dash2-alerts-filter-type" required aria-required="true"
-                    style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
-              <option value="tool">tool</option>
-              <option value="law_id" selected>law_id</option>
-              <option value="program_id">program_id</option>
-              <option value="industry_jsic">industry_jsic</option>
-              <option value="all">all (全件)</option>
-            </select>
-          </div>
-          <div>
-            <label for="dash2-alerts-filter-value" class="stat-note" style="margin:0 0 4px;display:block;">filter_value</label>
-            <input id="dash2-alerts-filter-value" type="text"
-                   placeholder="例: law_345AC0000000050"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
-          </div>
-          <div>
-            <label for="dash2-alerts-severity" class="stat-note" style="margin:0 0 4px;display:block;">min_severity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-            <select id="dash2-alerts-severity" required aria-required="true"
-                    style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
-              <option value="critical">critical (制度終了・eligibility)</option>
-              <option value="important" selected>important (金額・対象)</option>
-              <option value="info">info (cosmetic 含む全て)</option>
-            </select>
-          </div>
-          <div>
-            <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">Webhook 通知_url (https のみ、optional)</label>
-            <input id="dash2-alerts-webhook" type="url"
-                   placeholder="https://hooks.example.com/autonomath"
-                   pattern="https://.*"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
-          </div>
-          <div>
-            <label for="dash2-alerts-email" class="stat-note" style="margin:0 0 4px;display:block;">email (optional)</label>
-            <input id="dash2-alerts-email" type="email"
-                   placeholder="ops@example.com"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
-          </div>
-          <div>
-            <button type="submit" id="dash2-alerts-submit" class="btn btn-primary"
-                    style="width:100%;padding:10px 14px;">登録</button>
-          </div>
-        </form>
-        <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
-          少なくとも Webhook 通知_url か email のどちらか 1 つが必須。
-          内部 IP (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) は登録時に reject されます。
-        </p>
-      </section>
+ <h3 class="dash-subsection-title is-spaced">新規登録</h3>
+ <form id="dash2-alerts-form" autocomplete="off">
+ <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+ <label for="dash2-alerts-company-url">Company URL (leave blank)</label>
+ <input id="dash2-alerts-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+ </div>
+ <div>
+ <label for="dash2-alerts-filter-type" class="stat-note" style="margin:0 0 4px;display:block;">filter_type <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <select id="dash2-alerts-filter-type" required aria-required="true"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
+ <option value="tool">tool</option>
+ <option value="law_id" selected>law_id</option>
+ <option value="program_id">program_id</option>
+ <option value="industry_jsic">industry_jsic</option>
+ <option value="all">all (全件)</option>
+ </select>
+ </div>
+ <div>
+ <label for="dash2-alerts-filter-value" class="stat-note" style="margin:0 0 4px;display:block;">filter_value</label>
+ <input id="dash2-alerts-filter-value" type="text"
+ placeholder="例: law_345AC0000000050"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+ </div>
+ <div>
+ <label for="dash2-alerts-severity" class="stat-note" style="margin:0 0 4px;display:block;">min_severity <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <select id="dash2-alerts-severity" required aria-required="true"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
+ <option value="critical">critical (制度終了・適用条件)</option>
+ <option value="important" selected>important (金額・対象)</option>
+ <option value="info">info (体裁修正含む全て)</option>
+ </select>
+ </div>
+ <div>
+ <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">Webhook 通知_url (https のみ、任意)</label>
+ <input id="dash2-alerts-webhook" type="url"
+ placeholder="https://hooks.example.com/autonomath"
+ pattern="https://.*"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+ </div>
+ <div>
+ <label for="dash2-alerts-email" class="stat-note" style="margin:0 0 4px;display:block;">メール (任意)</label>
+ <input id="dash2-alerts-email" type="email"
+ placeholder="ops@example.com"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+ </div>
+ <div>
+ <button type="submit" id="dash2-alerts-submit" class="btn btn-primary"
+ style="width:100%;padding:10px 14px;">登録</button>
+ </div>
+ </form>
+ <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
+ 少なくとも Webhook 通知_url か メール のどちらか 1 つが必須。
+ 内部 IP (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) は登録時に拒否されます。
+ </p>
+ </section>
 
-      <!--
+ <!--
         W3 Saved Searches + Daily Digest. Self-contained vanilla JS at the
         bottom of this section (no dependency on dashboard_v2.js / external
         libs). Section is hidden by default; the inline script unhides it
@@ -730,101 +725,101 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
         records ¥3 metered usage on the server side — see
         scripts/cron/run_saved_searches.py.
       -->
-      <section id="saved-searches" class="stat-card" style="margin:0 0 16px;display:none;">
-        <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>保存条件 + 自動配信ダイジェスト</h2>
-        <p class="stat-note" style="margin:0 0 12px;">
-          検索条件 (q / 都道府県 / 対象事業者 / 金額帯など) を保存しておくと、
-          毎日 06:00 JST に最新の制度差分を自動スキャンし、
-          新着があった場合のみ <strong>ダイジェストメール</strong> を配信します。
-          各配信は <strong>¥3 (税込 ¥3.30) の従量課金</strong> です (登録自体は無料)。
-          <strong>税理士法 §52 / 弁護士法 §72</strong> 該当の業務はおこないません — 配信内容は
-          公開情報の検索結果であり、税務助言・法律判断は資格者にご確認ください。
-        </p>
+ <section id="saved-searches" class="stat-card" style="margin:0 0 16px;display:none;">
+ <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>保存条件 + 自動配信ダイジェスト</h2>
+ <p class="stat-note" style="margin:0 0 12px;">
+ 検索条件 (q / 都道府県 / 対象事業者 / 金額帯など) を保存しておくと、
+ 毎日 06:00 JST に最新の制度差分を自動スキャンし、
+ 新着があった場合のみ <strong>ダイジェストメール</strong> を配信します。
+ 各配信は <strong>¥3 (税込 ¥3.30) の従量課金</strong> です (登録自体は無料)。
+ <strong>税理士法 §52 / 弁護士法 §72</strong> 該当の業務はおこないません — 配信内容は
+ 公開情報の検索結果であり、税務助言・法律判断は資格者にご確認ください。
+ </p>
 
-        <p id="saved-searches-banner" role="status" aria-live="polite"
-           style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
+ <p id="saved-searches-banner" role="status" aria-live="polite"
+ style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
 
-        <h3 class="dash-subsection-title">登録中の保存条件</h3>
-        <table id="saved-searches-table" style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">id</th>
-              <th scope="col" style="padding:6px 4px;">name</th>
-              <th scope="col" style="padding:6px 4px;">頻度</th>
-              <th scope="col" style="padding:6px 4px;">配信先</th>
-              <th scope="col" style="padding:6px 4px;">最終配信</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">削除</th>
-            </tr>
-          </thead>
-          <tbody id="saved-searches-tbody"></tbody>
-        </table>
-        <p id="saved-searches-empty" class="stat-note" style="display:none;margin:8px 0 0;color:var(--text-muted);">
-          まだ保存条件はありません。下のフォームから登録してください。
-        </p>
+ <h3 class="dash-subsection-title">登録中の保存条件</h3>
+ <table id="saved-searches-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">id</th>
+ <th scope="col" style="padding:6px 4px;">name</th>
+ <th scope="col" style="padding:6px 4px;">頻度</th>
+ <th scope="col" style="padding:6px 4px;">配信先</th>
+ <th scope="col" style="padding:6px 4px;">最終配信</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">削除</th>
+ </tr>
+ </thead>
+ <tbody id="saved-searches-tbody"></tbody>
+ </table>
+ <p id="saved-searches-empty" class="stat-note" style="display:none;margin:8px 0 0;color:var(--text-muted);">
+ まだ保存条件はありません。下のフォームから登録してください。
+ </p>
 
-        <h3 class="dash-subsection-title is-spaced">新規登録</h3>
-        <form id="saved-searches-form" autocomplete="off">
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-            <label for="saved-searches-company-url">Company URL (leave blank)</label>
-            <input id="saved-searches-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
-          </div>
-          <div>
-            <label for="saved-searches-name" class="stat-note" style="margin:0 0 4px;display:block;">名前 (社内識別用) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-            <input id="saved-searches-name" type="text" required aria-required="true"
-                   maxlength="128"
-                   placeholder="例: 東京都の DX 補助金"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
-          </div>
-          <div>
-            <label for="saved-searches-q" class="stat-note" style="margin:0 0 4px;display:block;">q (フリーテキスト)</label>
-            <input id="saved-searches-q" type="text" maxlength="200"
-                   placeholder="例: DX 補助 設備"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
-          </div>
-          <div>
-            <label for="saved-searches-prefecture" class="stat-note" style="margin:0 0 4px;display:block;">都道府県</label>
-            <input id="saved-searches-prefecture" type="text" maxlength="20"
-                   placeholder="例: 東京都 / 全国"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
-          </div>
-          <div>
-            <label for="saved-searches-target-types" class="stat-note" style="margin:0 0 4px;display:block;">対象事業者 (カンマ区切り)</label>
-            <input id="saved-searches-target-types" type="text" maxlength="128"
-                   placeholder="例: sme,sole_proprietor"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
-          </div>
-          <div>
-            <label for="saved-searches-amount-max" class="stat-note" style="margin:0 0 4px;display:block;">amount_max (円)</label>
-            <input id="saved-searches-amount-max" type="number" min="0"
-                   placeholder="例: 50000000"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
-          </div>
-          <div>
-            <label for="saved-searches-frequency" class="stat-note" style="margin:0 0 4px;display:block;">頻度 <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-            <select id="saved-searches-frequency" required aria-required="true"
-                    style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
-              <option value="daily" selected>daily (毎朝 06:00 JST)</option>
-              <option value="weekly">weekly (週次)</option>
-            </select>
-          </div>
-          <div>
-            <label for="saved-searches-email" class="stat-note" style="margin:0 0 4px;display:block;">配信先 email <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-            <input id="saved-searches-email" type="email" required aria-required="true"
-                   placeholder="ops@example.com"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
-          </div>
-          <div>
-            <button type="submit" id="saved-searches-submit" class="btn btn-primary"
-                    style="width:100%;padding:10px 14px;">保存条件を登録</button>
-          </div>
-        </form>
-        <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
-          q / 都道府県 / 対象事業者 / amount_max のいずれか最低 1 つが必須。
-          配信は ¥3/リクエスト の従量課金、登録は最大 50 件/key。
-        </p>
-      </section>
+ <h3 class="dash-subsection-title is-spaced">新規登録</h3>
+ <form id="saved-searches-form" autocomplete="off">
+ <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+ <label for="saved-searches-company-url">Company URL (leave blank)</label>
+ <input id="saved-searches-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+ </div>
+ <div>
+ <label for="saved-searches-name" class="stat-note" style="margin:0 0 4px;display:block;">名前 (社内識別用) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <input id="saved-searches-name" type="text" required aria-required="true"
+ maxlength="128"
+ placeholder="例: 東京都の DX 補助金"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+ </div>
+ <div>
+ <label for="saved-searches-q" class="stat-note" style="margin:0 0 4px;display:block;">q (フリーテキスト)</label>
+ <input id="saved-searches-q" type="text" maxlength="200"
+ placeholder="例: DX 補助 設備"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+ </div>
+ <div>
+ <label for="saved-searches-prefecture" class="stat-note" style="margin:0 0 4px;display:block;">都道府県</label>
+ <input id="saved-searches-prefecture" type="text" maxlength="20"
+ placeholder="例: 東京都 / 全国"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+ </div>
+ <div>
+ <label for="saved-searches-target-types" class="stat-note" style="margin:0 0 4px;display:block;">対象事業者 (カンマ区切り)</label>
+ <input id="saved-searches-target-types" type="text" maxlength="128"
+ placeholder="例: sme,sole_proprietor"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+ </div>
+ <div>
+ <label for="saved-searches-amount-max" class="stat-note" style="margin:0 0 4px;display:block;">amount_max (円)</label>
+ <input id="saved-searches-amount-max" type="number" min="0"
+ placeholder="例: 50000000"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+ </div>
+ <div>
+ <label for="saved-searches-frequency" class="stat-note" style="margin:0 0 4px;display:block;">頻度 <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <select id="saved-searches-frequency" required aria-required="true"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--bg);color:var(--text);">
+ <option value="daily" selected>毎日 (毎朝 06:00 JST)</option>
+ <option value="weekly">週次</option>
+ </select>
+ </div>
+ <div>
+ <label for="saved-searches-email" class="stat-note" style="margin:0 0 4px;display:block;">配信先 email <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <input id="saved-searches-email" type="email" required aria-required="true"
+ placeholder="ops@example.com"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+ </div>
+ <div>
+ <button type="submit" id="saved-searches-submit" class="btn btn-primary"
+ style="width:100%;padding:10px 14px;">保存条件を登録</button>
+ </div>
+ </form>
+ <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
+ q / 都道府県 / 対象事業者 / amount_max のいずれか最低 1 つが必須。
+ 配信は ¥3/リクエスト の従量課金、登録は最大 50 件/key。
+ </p>
+ </section>
 
-      <script>
+ <script>
         // -----------------------------------------------------------------
         // Saved Searches inline controller (vanilla ES2020, no deps).
         //
@@ -834,17 +829,17 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
         // these calls; X-CSRF-Token from the am_csrf cookie is echoed on
         // POST/DELETE per the double-submit pattern in api/me.py.
         // -----------------------------------------------------------------
-        (function () {
+        (function() {
           'use strict';
-          var API_BASE = (function () {
+          var API_BASE = (function() {
             try {
               var origin = window.location.origin || '';
-              if (origin.indexOf('zeimu-kaikei.ai') !== -1) {
-                return 'https://api.zeimu-kaikei.ai';
+              if (origin.indexOf('jpcite.com') !== -1) {
+                return 'https://api.jpcite.com';
               }
               return origin;
             } catch (_e) { return ''; }
-          })();
+          });
           var SECTION = document.getElementById('saved-searches');
           var TBODY = document.getElementById('saved-searches-tbody');
           var EMPTY = document.getElementById('saved-searches-empty');
@@ -1000,12 +995,12 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             try {
               await fetchJSON('/v1/me/saved_searches', {
                 method: 'POST',
-                headers: csrfHeaders(),
+                headers: csrfHeaders,
                 body: { name: name, query: query, frequency: frequency, notify_email: email },
               });
               setBanner('保存条件を登録しました。', false);
-              FORM.reset();
-              await load();
+              FORM.reset;
+              await load;
             } catch (err) {
               setBanner('登録に失敗しました: ' + (err && err.message ? err.message : ''), true);
             }
@@ -1019,10 +1014,10 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             try {
               await fetchJSON('/v1/me/saved_searches/' + encodeURIComponent(id), {
                 method: 'DELETE',
-                headers: csrfHeaders(),
+                headers: csrfHeaders,
               });
               setBanner('削除しました (id=' + id + ')。', false);
-              await load();
+              await load;
             } catch (err) {
               setBanner('削除に失敗しました: ' + (err && err.message ? err.message : ''), true);
             }
@@ -1035,151 +1030,151 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           } else {
             document.addEventListener('DOMContentLoaded', load);
           }
-        })();
+        });
       </script>
 
-      <!-- ============================================================== -->
-      <!-- Customer-side outbound webhooks (¥3/req metered, 署名検証 required). -->
-      <!-- Wired to /v1/me/webhooks/* via the inline script at the end of   -->
-      <!-- this section (parity with the saved-searches block above —       -->
-      <!-- self-contained vanilla JS, no dashboard_v2.js dependency).       -->
-      <!-- 5 連続失敗で auto-disable + email、 secret は登録時 1 回のみ表示。 -->
-      <!-- See docs/webhooks.md for the full event-type catalog + 署名検証   -->
-      <!-- verification examples (Python / Node / Go).                     -->
-      <!-- ============================================================== -->
+ <!-- ============================================================== -->
+ <!-- Customer-side outbound webhooks (¥3/req metered, 署名検証 required). -->
+ <!-- Wired to /v1/me/webhooks/* via the inline script at the end of   -->
+ <!-- this section (parity with the saved-searches block above —       -->
+ <!-- self-contained vanilla JS, no dashboard_v2.js dependency).       -->
+ <!-- 5 連続失敗で auto-disable + email、 secret は登録時 1 回のみ表示。 -->
+ <!-- See docs/webhooks.md for the full event-type catalog + 署名検証   -->
+ <!-- verification examples (Python / Node / Go).                     -->
+ <!-- ============================================================== -->
 
-      <section id="dash2-webhooks" class="stat-card" style="margin:0 0 16px;display:none;">
-        <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知 通知 (¥3/リクエスト 課金)</h2>
-        <p class="stat-note" style="margin:0 0 12px;">
-          自社の HTTPS エンドポイントに、 <code>program.created</code> / <code>program.amended</code> /
-          <code>enforcement.added</code> / <code>tax_ruleset.amended</code> /
-          <code>invoice_registrant.matched</code> の各イベントを 署名検証 (SHA256) 付きで POST します。
-          <strong>1 回成功配信 = ¥3/リクエスト 課金</strong> (Stripe usage records、 失敗・retry は無料)。
-          5 連続失敗で自動 disable (runaway billing 防止)。 詳細は
-          <a href="/docs/webhooks/">Webhook 通知 通知 docs</a>。
-        </p>
-        <p class="stat-note" style="margin:0 0 12px;color:var(--text-muted);font-size:12px;">
-          本サービスは公開情報の集約 API であり、 税務助言・法律相談ではありません (§52)。
-          配信される 送信内容 は政府一次資料と公開データに基づく機械集約結果です。
-        </p>
+ <section id="dash2-webhooks" class="stat-card" style="margin:0 0 16px;display:none;">
+ <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知 (¥3/リクエスト 課金)</h2>
+ <p class="stat-note" style="margin:0 0 12px;">
+ 自社の HTTPS エンドポイントに、 <code>program.created</code> / <code>program.amended</code> /
+ <code>enforcement.added</code> / <code>tax_ruleset.amended</code> /
+ <code>invoice_registrant.matched</code> の各イベントを 署名検証 (SHA256) 付きで POST します。
+ <strong>1 回成功配信 = ¥3/リクエスト 課金</strong> (Stripe usage records、 失敗・retry は無料)。
+ 5 連続失敗で自動 disable (runaway billing 防止)。 詳細は
+ <a href="/docs/webhooks/">Webhook 通知 docs</a>。
+ </p>
+ <p class="stat-note" style="margin:0 0 12px;color:var(--text-muted);font-size:12px;">
+ 本サービスは公開情報の集約 API であり、 税務助言・法律相談ではありません (§52)。
+ 配信される 送信内容 は政府一次資料と公開データに基づく機械集約結果です。
+ </p>
 
-        <p id="dash2-webhooks-banner" role="status" aria-live="polite"
-           style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
+ <p id="dash2-webhooks-banner" role="status" aria-live="polite"
+ style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
 
-        <!-- Secret reveal (one-time, post-register) -->
-        <div id="dash2-webhooks-secret-reveal"
-             style="display:none;margin:0 0 16px;padding:12px;border:1px solid var(--danger);border-radius:6px;background:#fffbf0;">
-          <p style="margin:0 0 8px;font-weight:600;color:var(--danger);">
-            ⚠ 署名 Secret は今回限りの表示です
-          </p>
-          <p class="stat-note" style="margin:0 0 8px;">
-            このページを離れると 2 度と取得できません。 受信側システムの secret manager に
-            すぐにコピーしてください。 紛失した場合は Webhook 通知 通知 を削除して再登録してください。
-          </p>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <code id="dash2-webhooks-secret-value"
-                  style="flex:1;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;word-break:break-all;"></code>
-            <button type="button" id="dash2-webhooks-secret-copy" class="btn-ghost"
-                    style="padding:6px 12px;font-size:12px;">コピー</button>
-            <button type="button" id="dash2-webhooks-secret-dismiss" class="btn-ghost"
-                    style="padding:6px 12px;font-size:12px;">隠す</button>
-          </div>
-        </div>
+ <!-- Secret reveal (one-time, post-register) -->
+ <div id="dash2-webhooks-secret-reveal"
+ style="display:none;margin:0 0 16px;padding:12px;border:1px solid var(--danger);border-radius:6px;background:var(--bg-alt);">
+ <p style="margin:0 0 8px;font-weight:600;color:var(--danger);">
+ ⚠ 署名 Secret は今回限りの表示です
+ </p>
+ <p class="stat-note" style="margin:0 0 8px;">
+ このページを離れると 2 度と取得できません。 受信側システムの secret manager に
+ すぐにコピーしてください。 紛失した場合は Webhook 通知 を削除して再登録してください。
+ </p>
+ <div style="display:flex;gap:8px;align-items:center;">
+ <code id="dash2-webhooks-secret-value"
+ style="flex:1;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;word-break:break-all;"></code>
+ <button type="button" id="dash2-webhooks-secret-copy" class="btn-ghost"
+ style="padding:6px 12px;font-size:12px;">コピー</button>
+ <button type="button" id="dash2-webhooks-secret-dismiss" class="btn-ghost"
+ style="padding:6px 12px;font-size:12px;">隠す</button>
+ </div>
+ </div>
 
-        <h3 class="dash-subsection-title">登録中の Webhook 通知 通知</h3>
-        <table id="dash2-webhooks-table" style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">id</th>
-              <th scope="col" style="padding:6px 4px;">URL</th>
-              <th scope="col" style="padding:6px 4px;">events</th>
-              <th scope="col" style="padding:6px 4px;">status</th>
-              <th scope="col" style="padding:6px 4px;">failures</th>
-              <th scope="col" style="padding:6px 4px;">last delivery</th>
-              <th scope="col" style="padding:6px 4px;text-align:right;">操作</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-webhooks-tbody"></tbody>
-        </table>
+ <h3 class="dash-subsection-title">登録中の Webhook 通知</h3>
+ <table id="dash2-webhooks-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">id</th>
+ <th scope="col" style="padding:6px 4px;">URL</th>
+ <th scope="col" style="padding:6px 4px;">events</th>
+ <th scope="col" style="padding:6px 4px;">status</th>
+ <th scope="col" style="padding:6px 4px;">failures</th>
+ <th scope="col" style="padding:6px 4px;">last delivery</th>
+ <th scope="col" style="padding:6px 4px;text-align:right;">操作</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-webhooks-tbody"></tbody>
+ </table>
 
-        <h3 class="dash-subsection-title is-spaced">新規登録</h3>
-        <form id="dash2-webhooks-form" autocomplete="off">
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-            <label for="dash2-webhooks-honeypot">URL (leave blank)</label>
-            <input id="dash2-webhooks-honeypot" name="company_url" type="text" tabindex="-1" autocomplete="off">
-          </div>
-          <div>
-            <label for="dash2-webhooks-url" class="stat-note" style="margin:0 0 4px;display:block;">
-              Webhook 通知 通知 URL <span aria-hidden="true" style="color:var(--danger)">*</span>
-            </label>
-            <input id="dash2-webhooks-url" type="url" required pattern="https://.*"
-                   placeholder="https://hooks.example.com/zeimu-kaikei"
-                   style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
-          </div>
-          <fieldset style="margin:12px 0 0;padding:0;border:0;">
-            <legend class="stat-note" style="margin:0 0 6px;">
-              event_types <span aria-hidden="true" style="color:var(--danger)">*</span> (1 つ以上選択)
-            </legend>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:13px;">
-              <label style="display:inline-flex;gap:6px;align-items:center;">
-                <input type="checkbox" name="event_types" value="program.created" checked>
-                program.created
-              </label>
-              <label style="display:inline-flex;gap:6px;align-items:center;">
-                <input type="checkbox" name="event_types" value="program.amended" checked>
-                program.amended
-              </label>
-              <label style="display:inline-flex;gap:6px;align-items:center;">
-                <input type="checkbox" name="event_types" value="enforcement.added">
-                enforcement.added
-              </label>
-              <label style="display:inline-flex;gap:6px;align-items:center;">
-                <input type="checkbox" name="event_types" value="tax_ruleset.amended">
-                tax_ruleset.amended
-              </label>
-              <label style="display:inline-flex;gap:6px;align-items:center;">
-                <input type="checkbox" name="event_types" value="invoice_registrant.matched">
-                invoice_registrant.matched
-              </label>
-            </div>
-          </fieldset>
-          <div style="margin:12px 0 0;">
-            <button type="submit" id="dash2-webhooks-submit" class="btn btn-primary"
-                    style="width:100%;padding:10px 14px;">登録 (署名 secret を発行)</button>
-          </div>
-        </form>
-        <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
-          1 APIキー につき active 10 件まで。 https のみ、 internal IP (RFC1918 / loopback) は reject。
-          登録後は「テスト」ボタンで API 経路 の死活確認を推奨。
-        </p>
+ <h3 class="dash-subsection-title is-spaced">新規登録</h3>
+ <form id="dash2-webhooks-form" autocomplete="off">
+ <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+ <label for="dash2-webhooks-honeypot">URL (leave blank)</label>
+ <input id="dash2-webhooks-honeypot" name="company_url" type="text" tabindex="-1" autocomplete="off">
+ </div>
+ <div>
+ <label for="dash2-webhooks-url" class="stat-note" style="margin:0 0 4px;display:block;">
+ Webhook 通知 URL <span aria-hidden="true" style="color:var(--danger)">*</span>
+ </label>
+ <input id="dash2-webhooks-url" type="url" required pattern="https://.*"
+ placeholder="https://hooks.example.com/jpcite"
+ style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
+ </div>
+ <fieldset style="margin:12px 0 0;padding:0;border:0;">
+ <legend class="stat-note" style="margin:0 0 6px;">
+ event_types <span aria-hidden="true" style="color:var(--danger)">*</span> (1 つ以上選択)
+ </legend>
+ <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:13px;">
+ <label style="display:inline-flex;gap:6px;align-items:center;">
+ <input type="checkbox" name="event_types" value="program.created" checked>
+ program.created
+ </label>
+ <label style="display:inline-flex;gap:6px;align-items:center;">
+ <input type="checkbox" name="event_types" value="program.amended" checked>
+ program.amended
+ </label>
+ <label style="display:inline-flex;gap:6px;align-items:center;">
+ <input type="checkbox" name="event_types" value="enforcement.added">
+ enforcement.added
+ </label>
+ <label style="display:inline-flex;gap:6px;align-items:center;">
+ <input type="checkbox" name="event_types" value="tax_ruleset.amended">
+ tax_ruleset.amended
+ </label>
+ <label style="display:inline-flex;gap:6px;align-items:center;">
+ <input type="checkbox" name="event_types" value="invoice_registrant.matched">
+ invoice_registrant.matched
+ </label>
+ </div>
+ </fieldset>
+ <div style="margin:12px 0 0;">
+ <button type="submit" id="dash2-webhooks-submit" class="btn btn-primary"
+ style="width:100%;padding:10px 14px;">登録 (署名 secret を発行)</button>
+ </div>
+ </form>
+ <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
+ 1 APIキー につき active 10 件まで。 https のみ、 internal IP (RFC1918 / loopback) は reject。
+ 登録後は「テスト」ボタンで API 経路 の死活確認を推奨。
+ </p>
 
-        <h3 class="dash-subsection-title is-spaced">直近の配信ログ (last 10)</h3>
-        <p class="stat-note" id="dash2-webhooks-deliveries-hint"
-           style="margin:0 0 8px;color:var(--text-muted);font-size:12px;">
-          上のテーブルから Webhook 通知 通知 を選んで「ログ」をクリック。
-        </p>
-        <table id="dash2-webhooks-deliveries-table"
-               style="width:100%;border-collapse:collapse;font-size:13px;display:none;">
-          <thead>
-            <tr style="text-align:left;border-bottom:1px solid var(--border);">
-              <th scope="col" style="padding:6px 4px;">created_at</th>
-              <th scope="col" style="padding:6px 4px;">event_type</th>
-              <th scope="col" style="padding:6px 4px;">event_id</th>
-              <th scope="col" style="padding:6px 4px;">status</th>
-              <th scope="col" style="padding:6px 4px;">attempts</th>
-              <th scope="col" style="padding:6px 4px;">error</th>
-            </tr>
-          </thead>
-          <tbody id="dash2-webhooks-deliveries-tbody"></tbody>
-        </table>
-      </section>
+ <h3 class="dash-subsection-title is-spaced">直近の配信ログ (last 10)</h3>
+ <p class="stat-note" id="dash2-webhooks-deliveries-hint"
+ style="margin:0 0 8px;color:var(--text-muted);font-size:12px;">
+ 上のテーブルから Webhook 通知 を選んで「ログ」をクリック。
+ </p>
+ <table id="dash2-webhooks-deliveries-table"
+ style="width:100%;border-collapse:collapse;font-size:13px;display:none;">
+ <thead>
+ <tr style="text-align:left;border-bottom:1px solid var(--border);">
+ <th scope="col" style="padding:6px 4px;">created_at</th>
+ <th scope="col" style="padding:6px 4px;">event_type</th>
+ <th scope="col" style="padding:6px 4px;">event_id</th>
+ <th scope="col" style="padding:6px 4px;">status</th>
+ <th scope="col" style="padding:6px 4px;">attempts</th>
+ <th scope="col" style="padding:6px 4px;">error</th>
+ </tr>
+ </thead>
+ <tbody id="dash2-webhooks-deliveries-tbody"></tbody>
+ </table>
+ </section>
 
-      <!-- Inline wiring for #dash2-webhooks. Self-contained — same posture
+ <!-- Inline wiring for #dash2-webhooks. Self-contained — same posture
            as the saved-searches block above. Reads localStorage.am_api_key
            (set by dashboard_v2.js paste-key flow). On 401, the section
            stays hidden and we leave the cookie-flow rendering alone. -->
-      <script>
-        (function () {
+ <script>
+        (function() {
           var ROOT = document.getElementById('dash2-webhooks');
           if (!ROOT) return;
           var BANNER = document.getElementById('dash2-webhooks-banner');
@@ -1193,11 +1188,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           var DLV_TBODY = document.getElementById('dash2-webhooks-deliveries-tbody');
           var DLV_HINT = document.getElementById('dash2-webhooks-deliveries-hint');
 
-          var API_BASE = (
-            window.AUTONOMATH_API_BASE ||
-            window.JPINTEL_API_BASE ||
-            ''
-          ).replace(/\/$/, '');
+          var API_BASE = (window.AUTONOMATH_API_BASE || '').replace(/\/$/, '');
 
           function getKey() {
             try { return localStorage.getItem('am_api_key') || ''; } catch (_e) { return ''; }
@@ -1215,7 +1206,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             BANNER.style.color = isError ? 'var(--danger)' : 'var(--text)';
             BANNER.style.borderColor = isError ? 'var(--danger)' : 'var(--border)';
             if (!isError && msg) {
-              setTimeout(function () {
+              setTimeout(function() {
                 if (BANNER.textContent === msg) BANNER.style.display = 'none';
               }, 4000);
             }
@@ -1226,7 +1217,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               { 'Content-Type': 'application/json' },
               opts.headers || {}
             );
-            var key = getKey();
+            var key = getKey;
             if (key) headers['X-API-Key'] = key;
             var r = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
             var text = await r.text();
@@ -1247,7 +1238,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           }
 
           async function load() {
-            if (!getKey()) return; // hidden until paste-key flow set the key
+            if (!getKey) return; // hidden until paste-key flow set the key
             try {
               var rows = await fetchJSON('/v1/me/webhooks');
               ROOT.style.display = '';
@@ -1260,8 +1251,8 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               }
               TBODY.innerHTML = rows.map(function (w) {
                 var statusBadge = w.status === 'active'
-                  ? '<span style="color:#0a0;">active</span>'
-                  : '<span style="color:var(--danger);">disabled</span>';
+                  ? '<span style="color:#0a0;">稼働中</span>'
+                  : '<span style="color:var(--danger);">停止中</span>';
                 var failuresColor = (w.failure_count || 0) >= 3 ? 'var(--danger)' : 'var(--text-muted)';
                 return (
                   '<tr style="border-bottom:1px solid var(--border);">' +
@@ -1296,7 +1287,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           }
 
           if (REVEAL_COPY) {
-            REVEAL_COPY.addEventListener('click', function () {
+            REVEAL_COPY.addEventListener('click', function() {
               try {
                 navigator.clipboard.writeText(REVEAL_VAL.textContent || '');
                 setBanner('Secret をクリップボードにコピーしました。', false);
@@ -1306,7 +1297,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             });
           }
           if (REVEAL_DISMISS) {
-            REVEAL_DISMISS.addEventListener('click', function () {
+            REVEAL_DISMISS.addEventListener('click', function() {
               REVEAL.style.display = 'none';
               REVEAL_VAL.textContent = '';
             });
@@ -1331,8 +1322,8 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
                   showSecret(data.secret_hmac);
                 }
                 setBanner('webhook を登録しました (id=' + (data && data.id) + ')。', false);
-                FORM.reset();
-                await load();
+                FORM.reset;
+                await load;
               } catch (err) {
                 setBanner('登録に失敗しました: ' + (err && err.message ? err.message : ''), true);
               }
@@ -1350,7 +1341,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
                 try {
                   await fetchJSON('/v1/me/webhooks/' + encodeURIComponent(wid), { method: 'DELETE' });
                   setBanner('削除しました (id=' + wid + ')。', false);
-                  await load();
+                  await load;
                 } catch (err) {
                   setBanner('削除に失敗しました: ' + (err && err.message ? err.message : ''), true);
                 }
@@ -1404,35 +1395,39 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           } else {
             document.addEventListener('DOMContentLoaded', load);
           }
-        })();
+        });
       </script>
 
-      <div class="actions-row">
-        <a href="/docs/">Docs</a>
-        <a href="mailto:info@bookyou.net">Contact support</a>
-        <a href="tos.html">Terms</a>
-        <a href="privacy.html">Privacy</a>
-      </div>
+ <div class="actions-row">
+ <a href="/docs/">Docs</a>
+ <a href="mailto:info@bookyou.net">Contact support</a>
+ <a href="tos.html">Terms</a>
+ <a href="privacy.html">Privacy</a>
+ </div>
 
-    </div>
-  </section>
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0;border-top:1px solid var(--border);padding-top:16px;">
+本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
+</p>
+
+ </div>
+ </section>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の制度 API</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特定商取引法</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">(T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script src="/assets/feedback-widget.js" defer></script>

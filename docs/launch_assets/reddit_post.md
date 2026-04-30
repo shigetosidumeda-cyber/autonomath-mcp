@@ -81,11 +81,11 @@ hojyokin-portal, etc.) banned from source_url for trust reasons.
 **Try it:**
 
 - `pip install autonomath-mcp` then add to Claude Desktop config
-- curl https://api.zeimu-kaikei.ai/v1/programs/search?q=...
+- curl https://api.jpcite.com/v1/programs/search?q=...
 - 50 req/month free, no signup
 
 Repo: https://github.com/[USERNAME]/[REPO]
-Docs: https://zeimu-kaikei.ai/docs/
+Docs: https://jpcite.com/docs/
 PyPI: https://pypi.org/project/autonomath-mcp/
 
 Happy to discuss 全文検索インデックス (3-gram) pitfalls for Japanese, MCP tool design
@@ -141,8 +141,8 @@ Genuinely interested in pushback on:
 2. Will solo + zero-touch break under enterprise procurement requirements?
 3. Is "anonymous 50/month free" enough as the acquisition top-of-funnel?
 
-Site: https://zeimu-kaikei.ai
-Pricing: https://zeimu-kaikei.ai/docs/pricing/
+Site: https://jpcite.com
+Pricing: https://jpcite.com/docs/pricing/
 PyPI: https://pypi.org/project/autonomath-mcp/
 
 Reply / DM open for dialog.

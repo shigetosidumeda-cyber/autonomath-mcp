@@ -4,33 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>支払い完了 — 税務会計AI</title>
+<title>支払い完了 — jpcite</title>
 <meta name="description" content="Stripe 決済完了後の API キー発行ページ。">
 <meta name="robots" content="noindex,nofollow">
 
-<meta property="og:title" content="支払い完了 — 税務会計AI">
+<meta property="og:title" content="支払い完了 — jpcite">
 <meta property="og:description" content="Stripe 決済後に API キーを発行します。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/success.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta property="og:url" content="https://jpcite.com/success.html">
+<meta property="og:image" content="https://jpcite.com/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="支払い完了 — 税務会計AI">
+<meta name="twitter:title" content="支払い完了 — jpcite">
 <meta name="twitter:description" content="Stripe 決済後に API キーを発行します。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-square.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/success.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/success.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/success.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/success.html">
+<link rel="canonical" href="https://jpcite.com/success.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/success.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/success.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/success.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 <style>
   /* success.html — post-checkout key reveal. Matches dashboard design tokens. */
@@ -208,7 +211,7 @@
   }
   @keyframes succ-spin { to { transform: rotate(360deg); } }
 
-  /* Focus ring only for keyboard users — the programmatic .focus() after a
+  /* Focus ring only for keyboard users — the programmatic .focus after a
      state transition should not draw an outline for mouse/touch users.
      :focus-visible already handles this; we just need to suppress the
      browser's default :focus on tabindex=-1 containers. */
@@ -236,159 +239,176 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="dashboard.html">Dashboard</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="/success.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="/en/success.html" lang="en" hreflang="en">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/success.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/success.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
-  <section class="success">
-    <div class="container" style="max-width:760px;">
+ <section class="success">
+ <div class="container" style="max-width:760px;">
 
-      <!-- Loading state (default) -->
-      <div id="state-loading" tabindex="-1">
-        <p class="spinner" role="status" aria-live="polite">API キーを発行しています…</p>
-      </div>
+ <!-- Loading state (default) -->
+ <div id="state-loading" tabindex="-1">
+ <p class="spinner" role="status" aria-live="polite">API キーを発行しています…</p>
+ </div>
 
-      <!-- Success state -->
-      <div id="state-success" tabindex="-1" hidden>
-        <div class="success-head">
-          <div class="success-check" aria-hidden="true">&check;</div>
-          <h1>支払い完了 &mdash; API キーを発行しました</h1>
-          <p class="sub">下の key を安全な場所へコピーしてください。この画面を閉じると再表示できません。</p>
-        </div>
+ <!-- Success state -->
+ <div id="state-success" tabindex="-1" hidden>
+ <div class="success-head">
+ <div class="success-check" aria-hidden="true">&check;</div>
+ <h1>支払い完了 &mdash; API キーを発行しました</h1>
+ <p class="sub">下の key を安全な場所へコピーしてください。この画面を閉じると再表示できません。</p>
+ </div>
 
-        <div class="state-card">
-          <p class="label">Your APIキー</p>
-          <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
-          <p class="key-warning" role="alert">この key は発行時 1 回だけ表示されます。今すぐコピーして保管してください。</p>
-          <div class="btn-row">
-            <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキー をコピー</button>
-          </div>
-          <div class="meta-row" aria-label="metadata">
-            <span>plan: <strong>完全従量 ¥3/リクエスト (税込 ¥3.30)</strong></span>
-            <span>customer_id: <strong id="meta-customer">—</strong></span>
-          </div>
-        </div>
+ <div class="state-card">
+ <p class="label">Your APIキー</p>
+ <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
+ <p class="key-warning" role="alert">この key は発行時 1 回だけ表示されます。今すぐコピーして保管してください。</p>
+ <div class="btn-row">
+ <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキー をコピー</button>
+ </div>
+ <div class="meta-row" aria-label="metadata">
+ <span>plan: <strong>完全従量 ¥3/リクエスト (税込 ¥3.30)</strong></span>
+ <span>customer_id: <strong id="meta-customer">—</strong></span>
+ </div>
+ </div>
 
-        <div class="state-card">
-          <p class="label">5 秒で叩く (curl)</p>
-          <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
-          <div class="btn-row">
-            <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; curl をコピー</button>
-          </div>
-        </div>
+ <div class="state-card">
+ <p class="label">5 秒で叩く (curl)</p>
+ <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
+ <div class="btn-row">
+ <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; curl をコピー</button>
+ </div>
+ </div>
 
-        <div class="next-steps">
-          <h2>次のステップ</h2>
-          <ol>
-            <li><a href="/docs/getting-started">Getting Started</a> &mdash; Python / Node の最小例、認証、rate limit</li>
-            <li><a href="dashboard.html">Dashboard</a> &mdash; 利用量、key rotate、billing portal</li>
-            <li><a href="/docs/getting-started#6-mcp-claude-desktop-設定">Claude Desktop (MCP) 設定</a> &mdash; stdio で 89 tools (39 jpintel + 50 autonomath: 認定支援機関データセット + メタデータ tools + 静的データセット tools + lifecycle/abstract/prerequisite/graph/rule_engine/related_programs) をエージェントから直呼び</li>
-          </ol>
-        </div>
+ <div class="next-steps">
+ <h2>次のステップ</h2>
+ <ol>
+ <li><a href="/docs/getting-started">Getting Started</a> &mdash; Python / Node の最小例、認証、rate limit</li>
+ <li><a href="dashboard.html">Dashboard</a> &mdash; 利用量、key rotate、billing portal</li>
+ <li><a href="/docs/getting-started/#6-mcp-claude-desktop">Claude Desktop (MCP) 設定</a> &mdash; stdio で 89 tools : 認定支援機関データセット + メタデータ tools + 静的データセット tools + lifecycle/abstract/prerequisite/graph/rule_engine/related_programs) をエージェントから直呼び</li>
+ </ol>
+ </div>
 
-        <div class="next-steps" style="margin-top:18px;">
-          <h2>アカウント管理・解約</h2>
-          <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">完全セルフサーブです。最低利用期間・解約違約金はありません。Stripe Customer Portal からサブスクリプションをキャンセルすると以後の課金は停止し、匿名 50 リクエスト/月 per IP の利用に戻ります。</p>
-          <div class="btn-row">
-            <a class="btn btn-secondary" href="dashboard.html" style="text-decoration:none;">Dashboard を開く (Stripe ポータル / 解約)</a>
-            <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20削除請求" style="text-decoration:none;">アカウント削除請求</a>
-          </div>
-          <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
-            <strong>セキュリティのご推奨:</strong> Stripe Customer Portal で 2 要素認証 (2FA) を有効化し、API キーは環境変数 (<code>AUTONOMATH_API_KEY</code>) で管理することを強く推奨します。鍵の流出に気付いた場合は Dashboard から即時ローテーションしてください。
-          </p>
-        </div>
-      </div>
+ <div class="next-steps" style="margin-top:18px;">
+ <h2>アカウント管理・解約</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">完全セルフサーブです。最低利用期間・解約違約金はありません。Stripe Customer Portal からサブスクリプションをキャンセルすると以後の課金は停止し、匿名 50 リクエスト/月 per IP の利用に戻ります。</p>
+ <div class="btn-row">
+ <a class="btn btn-secondary" href="dashboard.html" style="text-decoration:none;">Dashboard を開く (Stripe ポータル / 解約)</a>
+ <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20削除請求" style="text-decoration:none;">アカウント削除請求</a>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
+ <strong>セキュリティのご推奨:</strong> Stripe Customer Portal で 2 要素認証 (2FA) を有効化し、API キーは環境変数 (<code>AUTONOMATH_API_KEY</code>) で管理することを強く推奨します。鍵の流出に気付いた場合は Dashboard から即時ローテーションしてください。
+ </p>
+ </div>
+ </div>
 
-      <!-- Error states -->
-      <div id="state-error-unpaid" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>決済が確定していません</strong>
-          Stripe 側で支払いの反映を待っている可能性があります。数秒おいて再試行してください。
-        </div>
-        <div class="btn-row">
-          <button id="retry-btn" class="btn btn-primary" type="button">再試行</button>
-          <a class="btn btn-secondary" href="pricing.html">Pricing に戻る</a>
-        </div>
-      </div>
+ <!-- Error states -->
+ <div id="state-error-unpaid" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>決済が確定していません</strong>
+ Stripe 側で支払いの反映を待っている可能性があります。数秒おいて再試行してください。
+ </div>
+ <div class="btn-row">
+ <button id="retry-btn" class="btn btn-primary" type="button">再試行</button>
+ <a class="btn btn-secondary" href="pricing.html">Pricing に戻る</a>
+ </div>
+ </div>
 
-      <div id="state-error-conflict" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>APIキー は既に発行済みです</strong>
-          このサブスクリプションでは既に 1 つ発行されています。Dashboard から key をローテーションすると、新しい key を再発行できます。
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="dashboard.html">Dashboard を開く</a>
-          <a class="btn btn-secondary" href="/docs/getting-started">Getting Started</a>
-        </div>
-      </div>
+ <div id="state-error-conflict" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>APIキー は既に発行済みです</strong>
+ このサブスクリプションでは既に 1 つ発行されています。Dashboard から key をローテーションすると、新しい key を再発行できます。
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="dashboard.html">Dashboard を開く</a>
+ <a class="btn btn-secondary" href="/docs/getting-started">Getting Started</a>
+ </div>
+ </div>
 
-      <div id="state-error-network" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>通信エラーが発生しました</strong>
-          <span id="err-detail">時間をおいて再試行するか、サポートへご連絡ください。</span>
-        </div>
-        <div class="btn-row">
-          <button id="retry-btn-network" class="btn btn-primary" type="button">再試行</button>
-          <a class="btn btn-secondary" href="tokushoho.html">サポートに連絡</a>
-        </div>
-      </div>
+ <div id="state-error-network" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>通信エラーが発生しました</strong>
+ <span id="err-detail">時間をおいて再試行するか、サポートへご連絡ください。</span>
+ </div>
+ <div class="btn-row">
+ <button id="retry-btn-network" class="btn btn-primary" type="button">再試行</button>
+ <a class="btn btn-secondary" href="tokushoho.html">サポートに連絡</a>
+ </div>
+ </div>
 
-      <div id="state-error-missing" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>session_id が URL に見つかりません</strong>
-          このページは Stripe 決済完了後に <code>?session_id=cs_…</code> 付きでアクセスするページです。直接開かれた場合は Pricing から再契約してください。
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="pricing.html">Pricing に戻る</a>
-          <a class="btn btn-secondary" href="dashboard.html">既に契約済みの方は Dashboard</a>
-        </div>
-      </div>
+ <div id="state-error-missing" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>session_id が URL に見つかりません</strong>
+ このページは Stripe 決済完了後に <code>?session_id=cs_…</code> 付きでアクセスするページです。直接開かれた場合は Pricing から再契約してください。
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="pricing.html">Pricing に戻る</a>
+ <a class="btn btn-secondary" href="dashboard.html">既に契約済みの方は Dashboard</a>
+ </div>
+ </div>
 
-    </div>
-  </section>
+ </div>
+ </section>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>
   // success.html — vanilla ES2020. CSP-safe (inline, no external).
   // Posts the Stripe session_id to /v1/billing/keys/from-checkout and
   // reveals the one-time API key. Pre-auth (no cookie); same-origin by
-  // default, override via window.AUTONOMATH_API_BASE (legacy alias:
-  // window.JPINTEL_API_BASE) if split host.
-  (function () {
+  // default, override via window.AUTONOMATH_API_BASE if split host.
+  (function() {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || '';
+    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || '';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -446,7 +466,7 @@
       // Endpoint exists: /v1/programs/search (see api-reference.md).
       // Header name: X-API-Key (same as getting-started.md §3).
       return 'curl -H "X-API-Key: ' + apiKey + '" \\\n' +
-             '  "https://api.zeimu-kaikei.ai/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
+             '  "https://api.jpcite.com/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
     }
 
     async function copyText(text, btn, labelCopied, labelOrig) {
@@ -461,13 +481,13 @@
           ta.style.position = 'absolute';
           ta.style.left = '-9999px';
           document.body.appendChild(ta);
-          ta.select();
+          ta.select;
           try { document.execCommand('copy'); } finally { document.body.removeChild(ta); }
         }
         if (btn) {
           btn.classList.add('copied');
           btn.textContent = labelCopied;
-          setTimeout(function () {
+          setTimeout(function() {
             btn.classList.remove('copied');
             btn.textContent = labelOrig;
           }, 1600);
@@ -505,7 +525,7 @@
       var copyKeyBtn = $('copy-key-btn');
       if (copyKeyBtn) {
         var labelKey = copyKeyBtn.textContent;
-        copyKeyBtn.onclick = function () {
+        copyKeyBtn.onclick = function() {
           copyText(rawKey, copyKeyBtn, 'コピーしました', labelKey);
         };
       }
@@ -513,7 +533,7 @@
       var copyCurlBtn = $('copy-curl-btn');
       if (copyCurlBtn) {
         var labelCurl = copyCurlBtn.textContent;
-        copyCurlBtn.onclick = function () {
+        copyCurlBtn.onclick = function() {
           copyText(curl, copyCurlBtn, 'コピーしました', labelCurl);
         };
       }
@@ -522,13 +542,13 @@
     }
 
     async function issueKey() {
-      var sid = getSessionId();
+      var sid = getSessionId;
       if (!sid) { showOnly('state-error-missing'); return; }
 
       showOnly('state-loading');
 
       var ctrl = new AbortController();
-      var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+      var timer = setTimeout(function() { ctrl.abort(); }, 15000);
 
       try {
         var resp = await fetch(api('/v1/billing/keys/from-checkout'), {
@@ -590,15 +610,15 @@
     }
 
     function boot() {
-      bind();
-      issueKey();
+      bind;
+      issueKey;
     }
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', boot);
     } else {
-      boot();
+      boot;
     }
-  })();
+  });
 </script>
 
 </body>

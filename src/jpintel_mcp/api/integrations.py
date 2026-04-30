@@ -107,7 +107,7 @@ SECTION_52_FOOTER_SHORT = (
 BRAND_LINE = "税務会計AI / 運営: Bookyou株式会社 (T8010001213708)"
 
 # Subject parser for Postmark inbound: extract API key from plus-addressing
-# (``query+am_xxx@zeimu-kaikei.ai``). Anchored, conservative — anything that
+# (``query+am_xxx@jpcite.com``). Anchored, conservative — anything that
 # does not match is rejected.
 _PLUS_ADDR_RE = re.compile(r"^[^+@\s]+\+(am_[A-Za-z0-9_-]{16,80})@", re.IGNORECASE)
 
@@ -513,7 +513,7 @@ async def sheets_callback(
     "/email/inbound",
     summary="Postmark inbound email webhook",
     description=(
-        "Customers email `query+am_xxx@zeimu-kaikei.ai`. Postmark POSTs "
+        "Customers email `query+am_xxx@jpcite.com`. Postmark POSTs "
         "the parsed email JSON to this endpoint. The plus-address tail "
         "carries the API key (`am_xxx`); the subject carries the query "
         "string. We reply via Postmark's outbound API with HTML + plain "
@@ -826,7 +826,7 @@ async def kintone_callback(
 # Manual operator setup required (docs/_internal/integrations_setup.md):
 #   * GOOGLE_OAUTH_CLIENT_ID  / GOOGLE_OAUTH_CLIENT_SECRET env vars
 #   * Google Cloud project with Sheets API enabled, Authorized redirect
-#     URI = https://api.zeimu-kaikei.ai/v1/integrations/google/callback
+#     URI = https://api.jpcite.com/v1/integrations/google/callback
 #
 # Per project memory ("Solo + zero-touch"): we cannot human-approve OAuth
 # requests. The customer self-completes via Google's consent screen; on
@@ -842,7 +842,7 @@ _GOOGLE_SCOPES = (
 
 def _google_oauth_redirect_uri() -> str:
     base = os.environ.get(
-        "JPINTEL_API_BASE_URL", "https://api.zeimu-kaikei.ai"
+        "JPINTEL_API_BASE_URL", "https://api.jpcite.com"
     ).rstrip("/")
     return f"{base}/v1/integrations/google/callback"
 
@@ -998,7 +998,7 @@ async def google_oauth_callback(
     db.commit()
     # Redirect into the dashboard's connectors panel.
     dashboard = os.environ.get(
-        "JPINTEL_DASHBOARD_URL", "https://zeimu-kaikei.ai/dashboard.html"
+        "JPINTEL_DASHBOARD_URL", "https://jpcite.com/dashboard.html"
     )
     return RedirectResponse(
         url=f"{dashboard}#integrations=google_sheets_ok", status_code=302
@@ -1282,7 +1282,7 @@ class EmailConnectRequest(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     reply_from: str = Field(
-        default="query@parse.zeimu-kaikei.ai", min_length=4, max_length=128
+        default="query@parse.jpcite.com", min_length=4, max_length=128
     )
 
 

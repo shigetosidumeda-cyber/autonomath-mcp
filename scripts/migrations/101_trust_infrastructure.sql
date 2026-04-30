@@ -14,7 +14,7 @@
 -- migrations/049_provenance_strengthen.sql for the established posture).
 --
 -- All five surfaces reference the operator entity:
---   Bookyou株式会社 (法人番号 T8010001213708)
+--   Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)
 -- and stay within the §52 disclaimer fence (this file adds NO copy that
 -- would constitute 助言 / advice; everything is descriptive metadata or
 -- machine-readable status).

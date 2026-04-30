@@ -5778,7 +5778,7 @@
                 "type": "null"
               }
             ],
-            "description": "Site-relative path to the program's static SEO page on zeimu-kaikei.ai. Computed from primary_name + unified_id via jpintel_mcp.utils.slug. Use this for deep-links.",
+            "description": "Site-relative path to the program's static SEO page on jpcite.com. Computed from primary_name + unified_id via jpintel_mcp.utils.slug. Use this for deep-links.",
             "title": "Static Url"
           },
           "tier": {
@@ -6223,7 +6223,7 @@
                 "type": "null"
               }
             ],
-            "description": "Site-relative path to the per-program SEO page on zeimu-kaikei.ai (`/programs/{slug}-{sha1-6}.html`). Generated from `primary_name` + `unified_id` via `jpintel_mcp.utils.slug.program_static_url`. Use this to deep-link result cards / share URLs / mailto bodies into the static site instead of constructing `/programs/{unified_id}.html` (no such file exists; that pattern returns 404).",
+            "description": "Site-relative path to the per-program SEO page on jpcite.com (`/programs/{slug}-{sha1-6}.html`). Generated from `primary_name` + `unified_id` via `jpintel_mcp.utils.slug.program_static_url`. Use this to deep-link result cards / share URLs / mailto bodies into the static site instead of constructing `/programs/{unified_id}.html` (no such file exists; that pattern returns 404).",
             "title": "Static Url"
           },
           "subsidy_rate": {
@@ -6579,7 +6579,7 @@
                 "type": "null"
               }
             ],
-            "description": "Site-relative path to the per-program SEO page on zeimu-kaikei.ai (`/programs/{slug}-{sha1-6}.html`). Generated from `primary_name` + `unified_id` via `jpintel_mcp.utils.slug.program_static_url`. Use this to deep-link result cards / share URLs / mailto bodies into the static site instead of constructing `/programs/{unified_id}.html` (no such file exists; that pattern returns 404).",
+            "description": "Site-relative path to the per-program SEO page on jpcite.com (`/programs/{slug}-{sha1-6}.html`). Generated from `primary_name` + `unified_id` via `jpintel_mcp.utils.slug.program_static_url`. Use this to deep-link result cards / share URLs / mailto bodies into the static site instead of constructing `/programs/{unified_id}.html` (no such file exists; that pattern returns 404).",
             "title": "Static Url"
           },
           "subsidy_rate": {
@@ -8607,7 +8607,7 @@
       "jpintel_mcp__api__compliance__CheckoutRequest": {
         "properties": {
           "cancel_url": {
-            "default": "https://zeimu-kaikei.ai/alerts.html?status=canceled",
+            "default": "https://jpcite.com/alerts.html?status=canceled",
             "title": "Cancel Url",
             "type": "string"
           },
@@ -8616,7 +8616,7 @@
             "type": "integer"
           },
           "success_url": {
-            "default": "https://zeimu-kaikei.ai/alerts.html?status=ok",
+            "default": "https://jpcite.com/alerts.html?status=ok",
             "title": "Success Url",
             "type": "string"
           }
@@ -8942,11 +8942,11 @@
       "email": "info@bookyou.net",
       "name": "AutonoMath Support"
     },
-    "description": "AutonoMath is a Japanese public-program intelligence API + MCP server. It exposes a single retrieval surface over **10,790 補助金 / 融資 / 税制 / 認定** programs (tier S/A/B/C searchable; 1,923 rows are on public-hold pending secondary review and not returned), **2,286 採択事例 (case studies)**, **108 融資 (loan products)** decomposed across the three risk axes (担保 / 個人保証人 / 第三者保証人), **1,185 行政処分 (enforcement cases)**, **9,484 laws** (e-Gov, CC-BY 4.0), **35 税務判定ルールセット (tax rulesets)**, **2,065 court decisions (判例)**, **362 bids (入札)**, and **13,801 適格請求書発行事業者 (NTA invoice registrants, PDL v1.0)**. Every row carries a primary-source URL + fetched_at timestamp.\n\n## Who this is for\n\nBuilt for LLM agents (Claude / ChatGPT / Perplexity / Cursor) and developers building Japanese-business automation. Use cases:\n- discover candidate 補助金 / 助成金 by region + industry + amount\n- check whether a 法人番号 is a registered 適格請求書発行事業者\n- look up the current 税務判定ルールセット (e.g. 2割特例, 電子帳簿保存法) and evaluate caller-supplied 事業者プロファイル against it\n- pull 採択事例 (real awarded grants) for prior-art research\n- check 行政処分 history before extending credit / awarding subsidy\n- read e-Gov 法令 articles and trace which programs cite them\n\n## Information lookup, not professional advice (税理士法 §52)\n\n**This API returns information retrieved from public Japanese government sources. It is NOT 税務助言 (tax advice), NOT 法律相談 (legal advice), and NOT a substitute for 士業 (税理士 / 弁護士 / 社労士 / 行政書士) consultation.** Every `/v1/am/*` and `/v1/tax_*` response carries an explicit `_disclaimer` envelope key making this fence machine-readable. LLM agents relaying this data to end users MUST surface the disclaimer.\n\n## Quickstart\n\nAnonymous (no auth, **50 req/月 per IP**, JST 月初 00:00 リセット):\n```bash\ncurl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT導入&limit=5'\n```\n\nAuthenticated (¥3/req metered, 税込 ¥3.30, no tier SKUs, no minimums) — pass `X-API-Key: sk_...` issued via Stripe Checkout:\n```bash\ncurl -H 'X-API-Key: sk_live_...' 'https://api.zeimu-kaikei.ai/v1/programs/search?q=DX&prefecture=東京都&tier=S'\n```\n\n## Pagination + envelopes\n\n- All search endpoints share `{total, limit, offset, results[]}` shape with `limit<=100` (default 20).\n- Search responses returning data sourced from PDL v1.0 (NTA invoice registrants) carry an `attribution` block — required by the license. Do not strip it.\n- `/v1/am/*` and `/v1/tax_rulesets/*` carry `_disclaimer` (税理士法 §52 fence) — relay verbatim.\n\n## Operator\n\nBookyou株式会社 (法人番号 T8010001213708), 代表 梅田茂利, info@bookyou.net. Canonical site: https://zeimu-kaikei.ai. MCP package: `pip install autonomath-mcp` (PyPI). MCP exposes 89 tools at default gates (39 jpintel + 30 autonomath; protocol 2025-06-18).\n\n---\n\n## 日本語要約 (JP summary)\n\nAutonoMath (税務会計AI) は **10,790 件の補助金 / 融資 / 税制 / 認定** (tier S/A/B/C のみ検索対象、公開保留 1,923 件は二次レビュー待ち)、**2,286 件の採択事例**、**108 件の融資商品** (担保 / 個人保証人 / 第三者保証人 三軸分解)、**1,185 件の行政処分**、**9,484 件の法令** (e-Gov / CC-BY 4.0)、**35 件の税務判定ルールセット**、**2,065 件の判例**、**362 件の入札案件**、**13,801 件の適格請求書発行事業者 (国税庁 / PDL v1.0)** を、REST + MCP の単一検索面で公開する API です。各レコードは 一次情報源 URL と取得時刻 (`source_url` / `fetched_at`) を保持しています。\n\n**用途:** LLM エージェント (Claude / ChatGPT / Perplexity / Cursor) と日本企業向け業務自動化開発者向け。地域 × 業種 × 金額の補助金候補抽出、13 桁 法人番号 → 適格請求書発行事業者 登録確認、税務判定ルール適用判断、採択事例の事前研究、行政処分歴の与信前 DD、e-Gov 法令の条文参照、等。\n\n**税理士法 §52 fence:** 本 API は公的情報の検索結果を返すサービスで、**税務助言・法律相談・士業 (税理士 / 弁護士 / 社労士 / 行政書士) 業務の代替ではありません**。`/v1/am/*` および `/v1/tax_*` の各レスポンスは `_disclaimer` キーをもち、機械可読な形でこの境界を表明しています。LLM エージェントは end user に情報を中継する際、`_disclaimer` を必ず併示してください。\n\n**料金体系:** 認証なし (匿名) は IP あたり 50 リクエスト / 月 (JST 月初 00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で 発行した `X-API-Key: sk_...` を Authorization header に設定してください。\n\n**運営者:** Bookyou株式会社 (法人番号 T8010001213708 / 代表 梅田茂利 / info@bookyou.net / 東京都文京区小日向2-22-1)。商号: 税務会計AI。公式サイト: https://zeimu-kaikei.ai/.",
+    "description": "AutonoMath is a Japanese public-program intelligence API + MCP server. It exposes a single retrieval surface over **10,790 補助金 / 融資 / 税制 / 認定** programs (tier S/A/B/C searchable; 1,923 rows are on public-hold pending secondary review and not returned), **2,286 採択事例 (case studies)**, **108 融資 (loan products)** decomposed across the three risk axes (担保 / 個人保証人 / 第三者保証人), **1,185 行政処分 (enforcement cases)**, **9,484 laws** (e-Gov, CC-BY 4.0), **35 税務判定ルールセット (tax rulesets)**, **2,065 court decisions (判例)**, **362 bids (入札)**, and **13,801 適格請求書発行事業者 (NTA invoice registrants, PDL v1.0)**. Every row carries a primary-source URL + fetched_at timestamp.\n\n## Who this is for\n\nBuilt for LLM agents (Claude / ChatGPT / Perplexity / Cursor) and developers building Japanese-business automation. Use cases:\n- discover candidate 補助金 / 助成金 by region + industry + amount\n- check whether a 法人番号 is a registered 適格請求書発行事業者\n- look up the current 税務判定ルールセット (e.g. 2割特例, 電子帳簿保存法) and evaluate caller-supplied 事業者プロファイル against it\n- pull 採択事例 (real awarded grants) for prior-art research\n- check 行政処分 history before extending credit / awarding subsidy\n- read e-Gov 法令 articles and trace which programs cite them\n\n## Information lookup, not professional advice (税理士法 §52)\n\n**This API returns information retrieved from public Japanese government sources. It is NOT 税務助言 (tax advice), NOT 法律相談 (legal advice), and NOT a substitute for 士業 (税理士 / 弁護士 / 社労士 / 行政書士) consultation.** Every `/v1/am/*` and `/v1/tax_*` response carries an explicit `_disclaimer` envelope key making this fence machine-readable. LLM agents relaying this data to end users MUST surface the disclaimer.\n\n## Quickstart\n\nAnonymous (no auth, **50 req/月 per IP**, JST 月初 00:00 リセット):\n```bash\ncurl 'https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5'\n```\n\nAuthenticated (¥3/req metered, 税込 ¥3.30, no tier SKUs, no minimums) — pass `X-API-Key: sk_...` issued via Stripe Checkout:\n```bash\ncurl -H 'X-API-Key: sk_live_...' 'https://api.jpcite.com/v1/programs/search?q=DX&prefecture=東京都&tier=S'\n```\n\n## Pagination + envelopes\n\n- All search endpoints share `{total, limit, offset, results[]}` shape with `limit<=100` (default 20).\n- Search responses returning data sourced from PDL v1.0 (NTA invoice registrants) carry an `attribution` block — required by the license. Do not strip it.\n- `/v1/am/*` and `/v1/tax_rulesets/*` carry `_disclaimer` (税理士法 §52 fence) — relay verbatim.\n\n## Operator\n\nBookyou株式会社 (適格請求書発行事業者番号 T8010001213708), 代表 梅田茂利, info@bookyou.net. Canonical site: https://jpcite.com. MCP package: `pip install autonomath-mcp` (PyPI). MCP exposes 89 tools at default gates  + 30 autonomath; protocol 2025-06-18).\n\n---\n\n## 日本語要約 (JP summary)\n\nAutonoMath (jpcite) は **10,790 件の補助金 / 融資 / 税制 / 認定** (tier S/A/B/C のみ検索対象、公開保留 1,923 件は二次レビュー待ち)、**2,286 件の採択事例**、**108 件の融資商品** (担保 / 個人保証人 / 第三者保証人 三軸分解)、**1,185 件の行政処分**、**9,484 件の法令** (e-Gov / CC-BY 4.0)、**35 件の税務判定ルールセット**、**2,065 件の判例**、**362 件の入札案件**、**13,801 件の適格請求書発行事業者 (国税庁 / PDL v1.0)** を、REST + MCP の単一検索面で公開する API です。各レコードは 一次情報源 URL と取得時刻 (`source_url` / `fetched_at`) を保持しています。\n\n**用途:** LLM エージェント (Claude / ChatGPT / Perplexity / Cursor) と日本企業向け業務自動化開発者向け。地域 × 業種 × 金額の補助金候補抽出、13 桁 法人番号 → 適格請求書発行事業者 登録確認、税務判定ルール適用判断、採択事例の事前研究、行政処分歴の与信前 DD、e-Gov 法令の条文参照、等。\n\n**税理士法 §52 fence:** 本 API は公的情報の検索結果を返すサービスで、**税務助言・法律相談・士業 (税理士 / 弁護士 / 社労士 / 行政書士) 業務の代替ではありません**。`/v1/am/*` および `/v1/tax_*` の各レスポンスは `_disclaimer` キーをもち、機械可読な形でこの境界を表明しています。LLM エージェントは end user に情報を中継する際、`_disclaimer` を必ず併示してください。\n\n**料金体系:** 認証なし (匿名) は IP あたり 50 リクエスト / 月 (JST 月初 00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で 発行した `X-API-Key: sk_...` を Authorization header に設定してください。\n\n**運営者:** Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708 / 代表 梅田茂利 / info@bookyou.net / 東京都文京区小日向2-22-1)。商号: jpcite。公式サイト: https://jpcite.com/.",
     "license": {
       "name": "Proprietary - see termsOfService"
     },
-    "termsOfService": "https://zeimu-kaikei.ai/terms.html",
+    "termsOfService": "https://jpcite.com/terms.html",
     "title": "AutonoMath",
     "version": "0.3.1"
   },
@@ -9306,7 +9306,7 @@
     },
     "/v1/advisors/verify-houjin/{advisor_id}": {
       "post": {
-        "description": "Confirm the advisor's 法人番号 exists in invoice_registrants (migration 019).\n\nProvisional verification: sets advisors.verified_at to the current\ntimestamp when the 法人番号 is found. Full verification still waits\non Stripe Connect webhook reporting capabilities.transfers=active —\nquery_matching_advisors() filters on verified_at alone today, so this\nprovisional gate is the public-visibility switch.\n\nFor 認定支援機関 rows seeded from the 中小企業庁 public list,\nseed_advisors.py sets verified_at directly and this endpoint is a\nno-op idempotent success.",
+        "description": "Confirm the advisor's 法人番号 exists in invoice_registrants (migration 019).\n\nProvisional verification: sets advisors.verified_at to the current\ntimestamp when the 法人番号 is found. Full verification still waits\non Stripe Connect webhook reporting capabilities.transfers=active —\nquery_matching_advisors filters on verified_at alone today, so this\nprovisional gate is the public-visibility switch.\n\nFor 認定支援機関 rows seeded from the 中小企業庁 public list,\nseed_advisors.py sets verified_at directly and this endpoint is a\nno-op idempotent success.",
         "operationId": "verify_houjin_v1_advisors_verify_houjin__advisor_id__post",
         "parameters": [
           {
@@ -9828,7 +9828,7 @@
     },
     "/v1/am/audit-log": {
       "get": {
-        "description": "**Public read** of the append-only `am_amendment_diff` table — the real per-field change log populated daily by `scripts/cron/refresh_amendment_diff.py` (migration 075). Anyone can verify what changed on which entity at which `detected_at`, against which `source_url`, byte-for-byte.\n\n**Pagination:** cursor-based. The first page request omits `cursor`; the response carries `next_cursor` (or null when exhausted). Pass `next_cursor` verbatim as `?cursor=...` for the next page. Cursor is opaque base64 — do not parse.\n\n**Filters:**\n- `since=YYYY-MM-DD` — UTC date floor on `detected_at`.\n- `entity_id` — exact match on `am_entities.canonical_id`.\n\n**Billing:** anonymous callers hit the 50/月 per-IP quota (JST 月初 リセット). Paid keys are metered ¥3/req 税別 (税込 ¥3.30) and bypass the anonymous ceiling.\n\n**Honesty:** AutonoMath detects field-level diffs from public government sources via daily cron. **検出のみで個別判断は行いません。** Subscribe to `https://zeimu-kaikei.ai/audit-log.rss` for an RSS feed of the same data.",
+        "description": "**Public read** of the append-only `am_amendment_diff` table — the real per-field change log populated daily by `scripts/cron/refresh_amendment_diff.py` (migration 075). Anyone can verify what changed on which entity at which `detected_at`, against which `source_url`, byte-for-byte.\n\n**Pagination:** cursor-based. The first page request omits `cursor`; the response carries `next_cursor` (or null when exhausted). Pass `next_cursor` verbatim as `?cursor=...` for the next page. Cursor is opaque base64 — do not parse.\n\n**Filters:**\n- `since=YYYY-MM-DD` — UTC date floor on `detected_at`.\n- `entity_id` — exact match on `am_entities.canonical_id`.\n\n**Billing:** anonymous callers hit the 50/月 per-IP quota (JST 月初 リセット). Paid keys are metered ¥3/req 税別 (税込 ¥3.30) and bypass the anonymous ceiling.\n\n**Honesty:** AutonoMath detects field-level diffs from public government sources via daily cron. **検出のみで個別判断は行いません。** Subscribe to `https://jpcite.com/audit-log.rss` for an RSS feed of the same data.",
         "operationId": "rest_audit_log_v1_am_audit_log_get",
         "parameters": [
           {
@@ -14187,7 +14187,7 @@
     },
     "/v1/compliance/verify/{verification_token}": {
       "get": {
-        "description": "Mark a subscriber as verified. Renders a minimal HTML page.\n\nA valid token flips `verified_at = now()` and clears\n`verification_token`. Idempotent — a second click shows the same\nsuccess page (we look up by email after the clear, so the row is\nstill findable by unsubscribe_token but not by verification_token).\n\nFor paid subscribers, the page nudges the user to the Stripe checkout\npage (link to `/alerts.html#checkout`).",
+        "description": "Mark a subscriber as verified. Renders a minimal HTML page.\n\nA valid token flips `verified_at = now` and clears\n`verification_token`. Idempotent — a second click shows the same\nsuccess page (we look up by email after the clear, so the row is\nstill findable by unsubscribe_token but not by verification_token).\n\nFor paid subscribers, the page nudges the user to the Stripe checkout\npage (link to `/alerts.html#checkout`).",
         "operationId": "verify_v1_compliance_verify__verification_token__get",
         "parameters": [
           {
@@ -15980,7 +15980,7 @@
                       "registrant_kind": "corporation",
                       "source_checksum": "0e5e54184ed778eb2fd797dc7f100b80cb7e892b15134de629d860ae76546398",
                       "source_url": "https://www.invoice-kohyo.nta.go.jp/regno-search/download",
-                      "trade_name": "税務会計AI",
+                      "trade_name": "jpcite",
                       "updated_at": "2026-04-25T03:30:00Z"
                     }
                   ],
@@ -21222,7 +21222,7 @@
     },
     "/v1/widget/stripe-webhook": {
       "post": {
-        "description": "Handle widget-product Stripe events.\n\nKey lifecycle events:\n  checkout.session.completed        -> provision widget_keys row\n  customer.subscription.deleted     -> disabled_at = now()\n  invoice.payment_failed            -> disabled_at = now() (widget is\n    not dunning-tolerant like the main API — a widget on a public\n    site stays disabled through dunning rather than billing overage\n    nobody will ever pay for).",
+        "description": "Handle widget-product Stripe events.\n\nKey lifecycle events:\n  checkout.session.completed        -> provision widget_keys row\n  customer.subscription.deleted     -> disabled_at = now\n  invoice.payment_failed            -> disabled_at = now (widget is\n    not dunning-tolerant like the main API — a widget on a public\n    site stays disabled through dunning rather than billing overage\n    nobody will ever pay for).",
         "operationId": "widget_stripe_webhook_v1_widget_stripe_webhook_post",
         "parameters": [
           {
@@ -21340,7 +21340,7 @@
   "servers": [
     {
       "description": "Production",
-      "url": "https://api.zeimu-kaikei.ai"
+      "url": "https://api.jpcite.com"
     },
     {
       "description": "Local development",

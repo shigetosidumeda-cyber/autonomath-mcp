@@ -2,7 +2,7 @@
 """Generate /compare/{slug}/index.html pages from docs/compare_matrix.csv.
 
 The matrix is hand-curated — this generator just renders the HTML.
-Each page documents 税務会計AI vs one alternative JP institutional-data source.
+Each page documents jpcite vs one alternative JP institutional-data source.
 
 HONESTY RULES:
 - Do NOT denigrate competitors.
@@ -34,7 +34,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 MATRIX_CSV = REPO_ROOT / "docs" / "compare_matrix.csv"
 OUTPUT_ROOT = REPO_ROOT / "site" / "compare"
 PUBLISHED = "2026-04-29"
-SITE_BASE = "https://zeimu-kaikei.ai"
+SITE_BASE = "https://jpcite.com"
 
 
 # Per-page narrative copy. CSV holds the matrix; this dict holds positioning.
@@ -50,13 +50,13 @@ PAGES: "OrderedDict[str, dict]" = OrderedDict()
 PAGES["tdb"] = {
     "title_competitor": "帝国データバンク (TDB)",
     "meta_description": (
-        "税務会計AI と帝国データバンクの中立比較 (2026)。API/MCP・価格・データ範囲・"
+        "jpcite と帝国データバンクの中立比較 (2026)。API/MCP・価格・データ範囲・"
         "信用調査評点の有無を 15 軸で並べた honest comparison。両者の住み分けと併用ガイド付き。"
     ),
     "intro": (
         "信用調査・与信判断の文脈で帝国データバンク (TDB) を検討中の方向け。"
         "両社はそもそも提供スコープが大きく違います — TDB は<strong>信用調査・評点・経営者経歴</strong>、"
-        "税務会計AI は<strong>制度 (補助金/融資/税制/認定) + 法令 + 判例 + 行政処分 + 適格請求書発行事業者の機械可読 API/MCP</strong>。"
+        "jpcite は<strong>制度 (補助金/融資/税制/認定) + 法令 + 判例 + 行政処分 + 適格請求書発行事業者の機械可読 API/MCP</strong>。"
         "「どちらか」ではなく「目的別に併用」が一般的な落としどころです。"
     ),
     "us_strengths": [
@@ -72,10 +72,10 @@ PAGES["tdb"] = {
     "migration": (
         "<p><strong>典型的な併用パターン</strong>: 取引先の与信判断は TDB のレポートを取り寄せ、"
         "その上で「この業者は当社の補助金原資 (例: 業務改善助成金) と排他関係にある制度を受給していないか」"
-        "「同業者の行政処分履歴は」を税務会計AI の API/MCP で機械的にクロスチェックする運用です。"
+        "「同業者の行政処分履歴は」をjpcite の API/MCP で機械的にクロスチェックする運用です。"
         "TDB のレポート → 法人番号 (T...) → 当社 <code>/v1/programs/by_houjin?houjin_bangou=T...</code> や "
         "<code>/v1/enforcement/search</code> へ流し込めば 1 分で双方が連結します。</p>"
-        "<p><strong>移行ではなく補完</strong>: 税務会計AI は信用調査評点を提供しないため、"
+        "<p><strong>移行ではなく補完</strong>: jpcite は信用調査評点を提供しないため、"
         "TDB を完全に置き換えることはできません。"
         "逆に TDB は制度 DB を提供しないため、補助金・融資・税制の自動探索用途は当社が独立で必要になります。"
         "両者は競合ではなく、与信フェーズと制度フェーズで別役割を担うのが現実的な落としどころです。</p>"
@@ -85,12 +85,12 @@ PAGES["tdb"] = {
 PAGES["tsr"] = {
     "title_competitor": "東京商工リサーチ (TSR)",
     "meta_description": (
-        "税務会計AI と東京商工リサーチの中立比較 (2026)。信用調査評点と制度 DB は別役割。"
+        "jpcite と東京商工リサーチの中立比較 (2026)。信用調査評点と制度 DB は別役割。"
         "API/MCP・価格・データ範囲を 15 軸で honest に並べ、併用ガイドも掲載。"
     ),
     "intro": (
         "東京商工リサーチ (TSR) を信用調査用途で検討中の方向け。"
-        "TSR は<strong>取材ベースの信用調査・評点</strong>、税務会計AI は<strong>制度 DB の機械可読 API/MCP</strong>"
+        "TSR は<strong>取材ベースの信用調査・評点</strong>、jpcite は<strong>制度 DB の機械可読 API/MCP</strong>"
         "という、提供スコープがほぼ重ならない 2 サービスです。"
         "目的が「与信判断」なら TSR、「補助金・税制・法令の自動探索」なら当社、両方なら併用、が素直な選び方になります。"
     ),
@@ -119,12 +119,12 @@ PAGES["tsr"] = {
 PAGES["gbizinfo"] = {
     "title_competitor": "gBizINFO (METI 公式)",
     "meta_description": (
-        "税務会計AI と gBizINFO (METI 公式) の中立比較 (2026)。gBizINFO は無料で良質な"
+        "jpcite と gBizINFO (METI 公式) の中立比較 (2026)。gBizINFO は無料で良質な"
         "法人 API、当社は制度 DB の MCP/REST。両者の役割分担と併用方法を解説。"
     ),
     "intro": (
         "gBizINFO は METI が運営する<strong>無料・公式</strong>の法人情報 API で、"
-        "税務会計AI も内部で取込・利用しています (corporate_entity の主要源)。"
+        "jpcite も内部で取込・利用しています (corporate_entity の主要源)。"
         "「法人台帳」用途なら gBizINFO で十分なケースが多く、"
         "当社が必要になるのは<strong>制度 (補助金/融資/税制) との連結</strong>"
         "<strong>判例 / 行政処分 / 適格請求書発行事業者を含めた横断検索</strong>、"
@@ -162,12 +162,12 @@ PAGES["gbizinfo"] = {
 PAGES["jgrants"] = {
     "title_competitor": "jGrants (中小企業庁公式申請ポータル)",
     "meta_description": (
-        "税務会計AI と jGrants 公式の中立比較 (2026)。jGrants は申請ポータル、当社は検索 + 適合判定 API/MCP。"
+        "jpcite と jGrants 公式の中立比較 (2026)。jGrants は申請ポータル、当社は検索 + 適合判定 API/MCP。"
         "役割が違うため住み分けと併用が前提。jGrants 側に API は無い (2026-04 時点)。"
     ),
     "intro": (
         "jGrants は中小企業庁が運営する<strong>補助金の電子申請ポータル</strong>です。"
-        "税務会計AI とはそもそも目的が違い、jGrants は「申請」、当社は「検索・適合判定・MCP 経由 AI Agent 連携」。"
+        "jpcite とはそもそも目的が違い、jGrants は「申請」、当社は「検索・適合判定・MCP 経由 AI Agent 連携」。"
         "「申請を電子化する」なら jGrants、「申請前の探索を自動化する」なら当社、両方使うのが標準的です。"
     ),
     "us_strengths": [
@@ -199,12 +199,12 @@ PAGES["jgrants"] = {
 PAGES["mirasapo"] = {
     "title_competitor": "ミラサポplus (中小企業庁公式)",
     "meta_description": (
-        "税務会計AI とミラサポ plus の中立比較 (2026)。ミラサポは「読み物 + 専門家紹介」、"
+        "jpcite とミラサポ plus の中立比較 (2026)。ミラサポは「読み物 + 専門家紹介」、"
         "当社は機械可読 API/MCP。役割の住み分けと併用ガイド付き。"
     ),
     "intro": (
         "ミラサポ plus は中小企業庁の<strong>事業者向け制度ポータル + 専門家紹介プラットフォーム</strong>。"
-        "税務会計AI は同じ制度情報を<strong>機械可読 API/MCP</strong>で配信する基盤層に近い役割で、"
+        "jpcite は同じ制度情報を<strong>機械可読 API/MCP</strong>で配信する基盤層に近い役割で、"
         "両者の競合関係は実は薄く、用途が違います。"
     ),
     "us_strengths": [
@@ -235,12 +235,12 @@ PAGES["mirasapo"] = {
 PAGES["moneyforward"] = {
     "title_competitor": "マネーフォワード ビジネスID",
     "meta_description": (
-        "税務会計AI とマネーフォワード ビジネス ID の中立比較 (2026)。会計 SaaS と制度 DB API は"
+        "jpcite とマネーフォワード ビジネス ID の中立比較 (2026)。会計 SaaS と制度 DB API は"
         "そもそも別領域。スコープの違いと併用ガイドを honest に整理。"
     ),
     "intro": (
         "マネーフォワード (MF) は<strong>会計・経費・人事の SaaS 集約プラットフォーム</strong>、"
-        "税務会計AI は<strong>制度 DB / 法令 / 判例 / 行政処分 / 適格請求書の機械可読 API/MCP</strong>。"
+        "jpcite は<strong>制度 DB / 法令 / 判例 / 行政処分 / 適格請求書の機械可読 API/MCP</strong>。"
         "提供スコープがほぼ重ならず、競合ではなく併用が前提です。"
         "「自社の会計を回したい」なら MF、「制度・法令を AI Agent から自動探索したい」なら当社。"
     ),
@@ -272,12 +272,12 @@ PAGES["moneyforward"] = {
 PAGES["freee"] = {
     "title_competitor": "freee 助成金AI",
     "meta_description": (
-        "税務会計AI と freee 助成金AI の中立比較 (2026)。freee 助成金 AI は freee 顧客向け、"
+        "jpcite と freee 助成金AI の中立比較 (2026)。freee 助成金 AI は freee 顧客向け、"
         "当社は誰でも使える従量 API/MCP。スコープと制約の honest 整理。"
     ),
     "intro": (
         "freee 助成金 AI は<strong>freee 会計・人事の顧客</strong>向けに提供される助成金検索 + 適合判定機能。"
-        "税務会計AI は<strong>誰でも使える従量 API/MCP</strong>で、freee アカウント不要。"
+        "jpcite は<strong>誰でも使える従量 API/MCP</strong>で、freee アカウント不要。"
         "「freee を使っていて他は使う気がない」なら freee の方が連携が深く、"
         "「freee 以外の会計を使っている / そもそも会計 SaaS と切り離したい」「LLM Agent から呼びたい」なら当社。"
     ),
@@ -310,7 +310,7 @@ PAGES["freee"] = {
 PAGES["navit"] = {
     "title_competitor": "ナビット 補助金検索pro",
     "meta_description": (
-        "税務会計AI とナビット (補助金検索 pro) の中立比較 (2026)。両者とも有償 SaaS だが、"
+        "jpcite とナビット (補助金検索 pro) の中立比較 (2026)。両者とも有償 SaaS だが、"
         "当社は API/MCP + 従量、ナビットは Web UI + Seat 課金。役割の違いを honest に整理。"
     ),
     "intro": (
@@ -348,7 +348,7 @@ PAGES["navit"] = {
 PAGES["nta-invoice"] = {
     "title_competitor": "国税庁 適格請求書発行事業者公表サイト",
     "meta_description": (
-        "税務会計AI と国税庁 適格請求書発行事業者公表サイトの中立比較 (2026)。"
+        "jpcite と国税庁 適格請求書発行事業者公表サイトの中立比較 (2026)。"
         "国税庁公表サイトは登録番号のみ、当社は制度 + 法人 + 適格請求書を横断する API/MCP。役割の違いを整理。"
     ),
     "intro": (
@@ -387,7 +387,7 @@ PAGES["nta-invoice"] = {
 PAGES["diy-scraping"] = {
     "title_competitor": "自前スクレイピング (DIY)",
     "meta_description": (
-        "税務会計AI vs 自前スクレイピング — 制度 DB を自分で crawl + 正規化 + MCP 化する場合の "
+        "jpcite vs 自前スクレイピング — 制度 DB を自分で crawl + 正規化 + MCP 化する場合の "
         "工数 / 失効監視 / dedup / license 管理の比較。買うか作るかの honest 整理。"
     ),
     "intro": (
@@ -449,7 +449,7 @@ def render_matrix_html(rows: list[dict], competitor_label: str) -> str:
     parts.append("<thead>")
     parts.append("<tr>")
     parts.append('<th scope="col">比較軸</th>')
-    parts.append('<th scope="col" class="col-us">税務会計AI</th>')
+    parts.append('<th scope="col" class="col-us">jpcite</th>')
     parts.append(f'<th scope="col">{html.escape(competitor_label)}</th>')
     parts.append('<th scope="col">補足</th>')
     parts.append("</tr>")
@@ -476,7 +476,7 @@ def render_jsonld(slug: str, page: dict) -> str:
     """Render JSON-LD: Article + Organization."""
     title_competitor = page["title_competitor"]
     headline = (
-        f"税務会計AI vs {title_competitor}: 機能・価格・データ範囲の比較 (2026)"
+        f"jpcite vs {title_competitor}: 機能・価格・データ範囲の比較 (2026)"
     )
     url = f"{SITE_BASE}/compare/{slug}/"
     article_ld = {
@@ -506,7 +506,7 @@ def render_jsonld(slug: str, page: dict) -> str:
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Bookyou株式会社",
-        "alternateName": "税務会計AI",
+        "alternateName": ["jpcite", "税務会計AI"],
         "url": f"{SITE_BASE}/",
         "identifier": "T8010001213708",
         "address": {
@@ -533,7 +533,7 @@ def render_jsonld(slug: str, page: dict) -> str:
 
 def render_page(slug: str, page: dict, rows: list[dict]) -> str:
     title_competitor = page["title_competitor"]
-    headline = f"税務会計AI vs {title_competitor}: 機能・価格・データ範囲の比較 (2026)"
+    headline = f"jpcite vs {title_competitor}: 機能・価格・データ範囲の比較 (2026)"
     url = f"{SITE_BASE}/compare/{slug}/"
     matrix_html = render_matrix_html(rows, title_competitor)
     jsonld = render_jsonld(slug, page)
@@ -554,7 +554,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>{html.escape(headline)} — 税務会計AI</title>
+<title>{html.escape(headline)} — jpcite</title>
 <meta name="description" content="{html.escape(page['meta_description'])}">
 <meta name="robots" content="index,follow">
 
@@ -633,8 +633,8 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+      <span class="brand-name">jpcite</span>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/about.html">About</a>
@@ -675,7 +675,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
     <h2>当社を選ぶケース</h2>
     <div class="pick-grid">
       <div class="pick-card us">
-        <p class="pick-tag">税務会計AI が向いている</p>
+        <p class="pick-tag">jpcite が向いている</p>
         <ul>
           {us_bullets}
         </ul>
@@ -726,7 +726,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
+      <p class="footer-brand">jpcite</p>
       <p class="footer-tag">日本の制度 API</p>
     </div>
     <nav class="footer-nav" aria-label="フッター">

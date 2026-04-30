@@ -26,7 +26,7 @@ generated {{generated_at}}
   Sentry : {{sentry_row}}
   Stripe : {{stripe_row}}
 
-詳細: https://zeimu-kaikei.ai/admin/kpi.html (ADMIN_API_KEY 必要)
+詳細: https://jpcite.com/admin/kpi.html (ADMIN_API_KEY 必要)
 
 ----
 税務会計AI / Bookyou株式会社 (T8010001213708)

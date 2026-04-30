@@ -21,7 +21,7 @@
      }
    }
 
-   クライアント別セットアップ詳細: https://zeimu-kaikei.ai/integrations/
+   クライアント別セットアップ詳細: https://jpcite.com/integrations/
 
 2) /programs/batch で N 倍の節約
 
@@ -30,7 +30,7 @@
    課金も 1 回分です。
 
    curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
-     "https://api.zeimu-kaikei.ai/v1/programs/batch" \
+     "https://api.jpcite.com/v1/programs/batch" \
      -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'
 
    同じく /v1/invoice_registrants/batch (法人番号 N 件) や /v1/am/dd_profile/batch も
@@ -42,7 +42,7 @@
    1 行で設定できます (JST 月初 00:00 リセット)。例えば月 ¥3,000 まで:
 
    curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
-     "https://api.zeimu-kaikei.ai/v1/me/cap" \
+     "https://api.jpcite.com/v1/me/cap" \
      -d '{"monthly_cap_yen": 3000}'
 
    上限到達後はそのキーが 402 Payment Required を返します。本番アプリでも
@@ -51,8 +51,8 @@
 ---
 
 他の運用 Tips:
-- Getting Started: https://zeimu-kaikei.ai/docs/getting-started/
-- examples 集: https://zeimu-kaikei.ai/examples/
+- Getting Started: https://jpcite.com/docs/getting-started/
+- examples 集: https://jpcite.com/examples/
 
 ご質問・改善点・「こうしたい」は、このメールに返信ください。人間が読みます。
 

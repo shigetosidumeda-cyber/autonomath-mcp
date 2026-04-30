@@ -77,7 +77,7 @@ def program_static_url(
 
     With ``domain=None`` (default), returns a site-relative path
     (``/programs/{slug}.html``) suitable for use in API responses where
-    the consumer joins with their own host. Pass ``domain="zeimu-kaikei.ai"``
+    the consumer joins with their own host. Pass ``domain="jpcite.com"``
     (or similar) to produce an absolute URL.
     """
     slug = program_static_slug(primary_name, unified_id)

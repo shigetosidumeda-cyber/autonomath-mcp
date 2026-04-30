@@ -4,48 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Integrations — MCP-native AI agent 統合 (89 tools) + SDK — 税務会計AI</title>
-<meta name="description" content="税務会計AI は MCP (Model Context Protocol) ネイティブ。Claude Desktop / Cursor / Cline / Continue.dev / Windsurf / Gemini CLI に stdio で直接接続して 89 MCP tools (search_programs / search_laws / search_invoice_registrants / dd_profile_am / smb_starter_pack / pack_construction 他) を呼び出し。ChatGPT GPTs は OpenAPI Action 経由。protocol 2025-06-18、autonomath-mcp v0.3.1。11,684 件の補助金 + 9,484 法令 + 13,801 適格事業者。登録不要 / 50 req/月 無料、本番は ¥3/req metered Stripe。">
+<title>連携ガイド — jpcite</title>
+<meta name="description" content="jpcite を Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini / ChatGPT から利用するガイド。">
 
-<meta property="og:title" content="Integrations — MCP-native (89 tools) + SDK — 税務会計AI">
-<meta property="og:description" content="Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini に stdio で 89 MCP tools 直結。ChatGPT は OpenAPI Action。autonomath-mcp v0.3.1、protocol 2025-06-18。">
+<meta property="og:title" content="連携ガイド — jpcite">
+<meta property="og:description" content="jpcite を Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini / ChatGPT から利用するガイド。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/integrations/">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://jpcite.com/integrations/">
 <meta property="og:locale" content="ja_JP">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Integrations — MCP 89 tools + SDK — 税務会計AI">
-<meta name="twitter:description" content="6 つの AI agent に stdio で 89 MCP tools 直結。autonomath-mcp v0.3.1。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
-
-<link rel="canonical" href="https://zeimu-kaikei.ai/integrations/">
+<link rel="canonical" href="https://jpcite.com/integrations/">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/styles.css?v=20260429a">
 
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://zeimu-kaikei.ai/#publisher across all pages). All other
-  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
-  the Organization inline. sameAs URLs marked TODO(user-action) are
-  placeholders until the user creates them per
-  docs/runbook/social_profile_setup.md.
--->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "taxID": "T8010001213708",
@@ -57,20 +42,14 @@
     "addressLocality": "文京区",
     "streetAddress": "小日向 2-22-1"
   },
-  "founder": {
-    "@type": "Person",
-    "name": "梅田茂利"
-  },
+  "founder": {"@type": "Person", "name": "梅田茂利"},
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "info@bookyou.net",
     "contactType": "customer support",
     "availableLanguage": ["ja", "en"]
   },
-  "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber"
-  ]
+  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber/jpintel-mcp"]
 }
 </script>
 
@@ -80,19 +59,18 @@
 {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "税務会計AI Integrations — MCP-native (89 tools) + SDK",
-  "description": "Claude Desktop / Cursor / Cline / Continue.dev / Windsurf / Gemini CLI に stdio で 89 MCP tools 直結。ChatGPT GPTs は OpenAPI Action 経由。autonomath-mcp v0.3.1、protocol 2025-06-18。",
-  "url": "https://zeimu-kaikei.ai/integrations/",
+  "name": "連携ガイド",
+  "url": "https://jpcite.com/integrations/",
   "inLanguage": "ja",
-  "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"},
+  "publisher": {"@id": "https://jpcite.com/#publisher"},
   "hasPart": [
-    {"@type": "TechArticle", "name": "Claude Desktop", "url": "https://zeimu-kaikei.ai/integrations/claude-desktop.html"},
-    {"@type": "TechArticle", "name": "Cursor", "url": "https://zeimu-kaikei.ai/integrations/cursor.html"},
-    {"@type": "TechArticle", "name": "Cline (VS Code)", "url": "https://zeimu-kaikei.ai/integrations/cline.html"},
-    {"@type": "TechArticle", "name": "Continue.dev", "url": "https://zeimu-kaikei.ai/integrations/continue.html"},
-    {"@type": "TechArticle", "name": "Windsurf", "url": "https://zeimu-kaikei.ai/integrations/windsurf.html"},
-    {"@type": "TechArticle", "name": "Gemini", "url": "https://zeimu-kaikei.ai/integrations/gemini.html"},
-    {"@type": "TechArticle", "name": "ChatGPT (GPTs Action)", "url": "https://zeimu-kaikei.ai/integrations/chatgpt.html"}
+    {"@type": "TechArticle", "name": "Claude Desktop", "url": "https://jpcite.com/integrations/claude-desktop.html"},
+    {"@type": "TechArticle", "name": "Cursor", "url": "https://jpcite.com/integrations/cursor.html"},
+    {"@type": "TechArticle", "name": "Cline", "url": "https://jpcite.com/integrations/cline.html"},
+    {"@type": "TechArticle", "name": "Continue.dev", "url": "https://jpcite.com/integrations/continue.html"},
+    {"@type": "TechArticle", "name": "Windsurf", "url": "https://jpcite.com/integrations/windsurf.html"},
+    {"@type": "TechArticle", "name": "Gemini", "url": "https://jpcite.com/integrations/gemini.html"},
+    {"@type": "TechArticle", "name": "ChatGPT", "url": "https://jpcite.com/integrations/chatgpt.html"}
   ]
 }
 </script>
@@ -102,278 +80,91 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="wrap">
-    <a href="/" class="logo">税務会計AI</a>
-    <nav aria-label="主要ナビゲーション">
-      <a href="/products.html">Products</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="/integrations/" aria-current="page">Integrations</a>
-      <a href="/dashboard.html">Dashboard</a>
+ <div class="wrap">
+ <a href="/" class="logo">jpcite</a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="../about.html">運営について</a>
+      <a href="../products.html">プロダクト</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="../pricing.html">料金</a>
+      <a href="../audiences/">利用者層</a>
+      <details class="nav-trust">
+        <summary>信頼</summary>
+        <ul>
+          <li><a href="../status.html">稼働状況</a></li>
+          <li><a href="../data-freshness.html">データ鮮度</a></li>
+          <li><a href="../transparency.html">透明性</a></li>
+          <li><a href="../sources.html">出典</a></li>
+          <li><a href="../changelog.html">変更履歴</a></li>
+        </ul>
+      </details>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/integrations/" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/integrations/" lang="en" hreflang="en">EN</a>
+      </span>
     </nav>
-  </div>
+ </div>
 </header>
 
 <main id="main" class="wrap" style="max-width:980px;margin:40px auto;padding:0 20px;line-height:1.7;">
 
-<h1 style="margin-bottom:0.2em;">Integrations — MCP-native AI agent 統合 + SDK</h1>
-<p style="color:#444;font-size:1.1em;margin-top:0;">我々の API は <strong>89 MCP tools として AI agent から直接呼べます</strong>。Claude Desktop / Cursor / Cline / Continue.dev / Windsurf / Gemini CLI 全部 stdio 接続、protocol 2025-06-18 対応。<br>ChatGPT GPTs は OpenAPI Action 経由。autonomath-mcp <strong>v0.3.1</strong> / pip install 1 行 + JSON 1 行で動きます。</p>
+<h1 style="margin-bottom:0.2em;">連携ガイド</h1>
+<p style="color:#444;margin-top:0;">MCP 対応クライアント (Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini) と OpenAPI 連携 (ChatGPT)。</p>
 
-<aside style="border:1px solid #c8e0c8;background:#f3faf3;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
-<strong>5 分の約束:</strong> 6 つの AI agent (Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini) は MCP stdio をネイティブサポート。<code>pip install autonomath-mcp</code> + JSON / YAML 1 行 → restart でハンマー / Cascade / Continue Chat 配下に <strong>89 tools</strong> がそのまま並びます。<br>
-<strong>volume:</strong> プログラム 11,684 件 (検索可) / 全 14,472 件 / 9,484 法令 / 13,801 適格事業者 / 2,065 判例 / 50 税制ルールセット。<br>
-<strong>Billing:</strong> 50 req/月 per IP は登録不要・認証不要 (匿名 anonymous tier)。本番運用は API キーで <strong>¥3/req metered Stripe (税込 ¥3.30)</strong> 完全従量、tier・最低料金・年契約なし、signup 後 Stripe が自動課金。
-</aside>
-
-<aside style="border:1px solid #e5d6a8;background:#fffbe8;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:0.92em;">
-<strong>注:</strong> 本 API は情報検索のみを提供します。税理士法 §52 により、個別の税務助言は<a href="/advisors.html">税理士</a>にご相談ください。
-</aside>
-
-<h2 id="ai-clients" style="margin-top:30px;">AI agent 統合 — 6 つの MCP-native + 1 つの OpenAPI Action</h2>
-<p>各ガイドは <strong>5 分以内に動作確認</strong>: Step 1=API キー (任意) → Step 2=install → Step 3=config → Step 4=動作確認クエリ → Step 5=troubleshoot。</p>
-
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:18px 0;">
-
-<a href="/integrations/claude-desktop.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">Claude Desktop</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Anthropic 公式デスクトップアプリ。<code>claude_desktop_config.json</code> に MCP 1 行追記で 89 tools がハンマーアイコンに展開。stdio + 2025-06-18。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 3 分</p>
-</a>
-
-<a href="/integrations/cursor.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">Cursor</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Cursor IDE Settings → Features → MCP Servers から JSON 追加。<code>uvx</code> または <code>.mcpb</code> URL で 89 tools。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 4 分</p>
-</a>
-
-<a href="/integrations/cline.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">Cline (VS Code)</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">VS Code 拡張 Cline / Roo Code に MCP サーバ追加。read-only ツールは <code>autoApprove</code> で承認スキップ可。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 5 分</p>
-</a>
-
-<a href="/integrations/continue.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">Continue.dev</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">VS Code / JetBrains 両対応の Continue 拡張。<code>~/.continue/config.yaml</code> に <code>mcpServers</code> YAML 1 行で 89 tools。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 5 分</p>
-</a>
-
-<a href="/integrations/windsurf.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">Windsurf</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Codeium Windsurf の Cascade に <code>mcp_config.json</code> 1 行追加。Settings UI または直接編集どちらでも 89 tools。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio · 所要 5 分</p>
-</a>
-
-<a href="/integrations/gemini.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">Gemini (CLI / Extensions)</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">Google Gemini CLI は MCP stdio ネイティブ対応 (<code>~/.gemini/settings.json</code>)。Extensions は OpenAPI Tool 経由。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">MCP stdio + OpenAPI · 所要 5 分</p>
-</a>
-
-<a href="/integrations/chatgpt.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">ChatGPT (GPTs Action)</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">ChatGPT GPTs は MCP 未対応のため OpenAPI Action 経由。<code>/v1/openapi.json</code> を Import → 111 endpoint が Action として動作。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">OpenAPI Action · 所要 5 分</p>
-</a>
-
-<a href="/integrations/openai-custom-gpt.html" style="display:block;border:1px solid #ddd;border-radius:8px;padding:18px;text-decoration:none;color:inherit;background:#fff;">
-<h3 style="margin:0 0 8px;color:#1a472a;">OpenAI Custom GPT (旧)</h3>
-<p style="margin:0;font-size:0.92em;color:#555;line-height:1.5;">ChatGPT Custom GPT 詳細ガイド (旧 URL)。新しい <a href="/integrations/chatgpt.html" style="color:#1a472a;">/integrations/chatgpt.html</a> も同内容で読めます。</p>
-<p style="margin:8px 0 0;font-size:0.82em;color:#888;">OpenAPI Action · 所要 5 分</p>
-</a>
-
-</div>
-
-<p style="margin:12px 0;font-size:0.95em;color:#444;"><strong>共通:</strong> <a href="/docs/mcp-tools/">全 89 MCP tools 一覧 (早見表)</a> · <a href="https://api.zeimu-kaikei.ai/v1/openapi.json"><code>/v1/openapi.json</code></a> · <a href="https://pypi.org/project/autonomath-mcp/">PyPI: autonomath-mcp v0.3.1</a></p>
-
-<h2 id="cohort-queries" style="margin-top:30px;">cohort 別 sample queries</h2>
-<p>各 AI agent の chat に貼り付けると <strong>1 回のツール呼び出しで複合 response</strong> が返ります。anonymous tier では 1 query = 1 req 消費。</p>
-
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:18px 0;">
-
-<div style="border:1px solid #ddd;border-radius:8px;padding:18px;background:#fff;">
-<h3 style="margin:0 0 10px;color:#1a472a;">M&A — DD profile</h3>
-<p style="font-size:0.9em;color:#555;margin:0 0 8px;">買収先候補の法人番号から、採択履歴・適格請求書登録・行政処分・公示送達までを 1 ツールで集約 (cohort #1)。</p>
-<div class="code-block" data-code="dd_profile_am で 法人番号 T8010001213708 の DD profile を取得。採択履歴 + 適格請求書 + 行政処分 + 公示送達 + houjin_watch を全部含めて。">
-<pre style="font-size:0.82em;line-height:1.45;"><code>dd_profile_am で 法人番号 T8010001213708
-の DD profile を取得。採択履歴 +
-適格請求書 + 行政処分 + 公示送達 +
-houjin_watch を全部含めて。</code></pre>
+<h2 id="install">インストール</h2>
+<div class="code-block" data-code="uvx autonomath-mcp">
+<pre><code>uvx autonomath-mcp</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
-<p style="font-size:0.82em;color:#888;margin:6px 0 0;">tool: <code>dd_profile_am</code> · 1 req</p>
-</div>
 
-<div style="border:1px solid #ddd;border-radius:8px;padding:18px;background:#fff;">
-<h3 style="margin:0 0 10px;color:#1a472a;">税理士 — 顧問先パック</h3>
-<p style="font-size:0.9em;color:#555;margin:0 0 8px;">業種 × 都道府県を渡すと SMB スターターパック (補助金 + 融資 + 採択事例 + 締切) が一括で返る (cohort #2)。</p>
-<div class="code-block" data-code="smb_starter_pack で 製造業 × 埼玉県 の SMB スターターパック (補助金 + 融資 + 採択事例 + 来月締切) を取得。source_url + fetched_at 付きで。">
-<pre style="font-size:0.82em;line-height:1.45;"><code>smb_starter_pack で 製造業 × 埼玉県
-の SMB スターターパック (補助金 +
-融資 + 採択事例 + 来月締切) を取得。
-source_url + fetched_at 付きで。</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-<p style="font-size:0.82em;color:#888;margin:6px 0 0;">tool: <code>smb_starter_pack</code> · 1 req</p>
-</div>
-
-<div style="border:1px solid #ddd;border-radius:8px;padding:18px;background:#fff;">
-<h3 style="margin:0 0 10px;color:#1a472a;">補助金 consultant — 排他判定</h3>
-<p style="font-size:0.9em;color:#555;margin:0 0 8px;">補助金併用可否は exclusion_rules (181 件) で実検索 (cohort #5)。直前検索で見つけた 2 制度を一発判定。</p>
-<div class="code-block" data-code="search_programs prefecture=東京都 で 中小企業向けの省エネ補助金 3 件 → そのうち先頭 2 つを check_exclusions で同時申請可否判定。判定結果 + 引用 source_url 全部表示。">
-<pre style="font-size:0.82em;line-height:1.45;"><code>search_programs prefecture=東京都 で
-中小企業向けの省エネ補助金 3 件 →
-そのうち先頭 2 つを check_exclusions
-で同時申請可否判定。判定結果 +
-引用 source_url 全部表示。</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-<p style="font-size:0.82em;color:#888;margin:6px 0 0;">tools: <code>search_programs</code> + <code>check_exclusions</code> · 2 req</p>
-</div>
-
-</div>
-
-<p style="margin-top:8px;font-size:0.9em;color:#555;">他のサンプル query は <a href="/docs/mcp-tools/">MCP tools 早見表</a> を参照。8 cohorts 全部 (M&A / 税理士 / 会計士 / Foreign FDI / 補助金 consultant / 中小企業 LINE / 信金商工会 organic / Industry packs) について 1-2 query を載せています。</p>
-
-<h2 id="quickstart" style="margin-top:30px;">5 言語のサンプル (zero deps)</h2>
-<p>すべて <code>ZEIMU_KAIKEI_API_KEY</code> 環境変数を読みます。未設定なら anonymous tier (50 リクエスト/月 per IP, JST 月初リセット) で動作します。</p>
-
-<div style="overflow-x:auto;">
-<table style="width:100%;border-collapse:collapse;margin:16px 0;">
-<thead>
-<tr style="border-bottom:2px solid #ddd;">
-<th style="text-align:left;padding:8px 6px;">Language</th>
-<th style="text-align:left;padding:8px 6px;">Sample</th>
-<th style="text-align:left;padding:8px 6px;">Run</th>
-<th style="text-align:left;padding:8px 6px;">Deps</th>
-</tr>
-</thead>
-<tbody>
-<tr style="border-bottom:1px solid #eee;">
-<td style="padding:8px 6px;"><strong>JavaScript / Node 18+</strong></td>
-<td style="padding:8px 6px;">
-<a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/javascript/quickstart.js"><code>quickstart.js</code></a><br>
-<a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/javascript/search-and-filter.js"><code>search-and-filter.js</code></a>
-</td>
-<td style="padding:8px 6px;"><code>node quickstart.js</code></td>
-<td style="padding:8px 6px;">none (built-in fetch)</td>
-</tr>
-<tr style="border-bottom:1px solid #eee;">
-<td style="padding:8px 6px;"><strong>Go 1.21+</strong></td>
-<td style="padding:8px 6px;">
-<a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/go/quickstart.go"><code>quickstart.go</code></a><br>
-<a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/go/search-and-filter.go"><code>search-and-filter.go</code></a>
-</td>
-<td style="padding:8px 6px;"><code>go run quickstart.go</code></td>
-<td style="padding:8px 6px;">stdlib only</td>
-</tr>
-<tr style="border-bottom:1px solid #eee;">
-<td style="padding:8px 6px;"><strong>Ruby 3.0+</strong></td>
-<td style="padding:8px 6px;"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/ruby/quickstart.rb"><code>quickstart.rb</code></a></td>
-<td style="padding:8px 6px;"><code>ruby quickstart.rb</code></td>
-<td style="padding:8px 6px;">stdlib only (Net::HTTP)</td>
-</tr>
-<tr style="border-bottom:1px solid #eee;">
-<td style="padding:8px 6px;"><strong>PHP 8.0+</strong></td>
-<td style="padding:8px 6px;"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/php/quickstart.php"><code>quickstart.php</code></a></td>
-<td style="padding:8px 6px;"><code>php quickstart.php</code></td>
-<td style="padding:8px 6px;">cURL extension only</td>
-</tr>
-<tr style="border-bottom:1px solid #eee;">
-<td style="padding:8px 6px;"><strong>curl / bash</strong></td>
-<td style="padding:8px 6px;"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/curl/quickstart.sh"><code>quickstart.sh</code></a></td>
-<td style="padding:8px 6px;"><code>bash quickstart.sh</code></td>
-<td style="padding:8px 6px;"><code>curl</code> + (optional) <code>jq</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<p>Index of all samples + 説明: <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/sdk/samples/README.md">sdk/samples/README.md</a>.</p>
-
-<h2 id="official-sdks">公式 SDK (typed clients)</h2>
-<p>サンプルでは物足りない、retry policy / typed responses / MCP spawn が欲しい場合:</p>
-
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:16px 0;">
-
-<div style="border:1px solid #ddd;border-radius:8px;padding:18px;">
-<h3 style="margin-top:0;">Python</h3>
-<p><strong>Package:</strong> <a href="https://pypi.org/project/autonomath-mcp/"><code>autonomath-mcp</code></a></p>
-<pre style="background:#f6f6f6;padding:10px;border-radius:6px;font-size:0.9em;overflow-x:auto;">pip install autonomath-mcp</pre>
-<p style="font-size:0.92em;color:#555;">REST client (sync + async) + MCP サーバ in one package. httpx + Pydantic models.</p>
-<p style="font-size:0.85em;"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/python">→ source</a></p>
-</div>
-
-<div style="border:1px solid #ddd;border-radius:8px;padding:18px;">
-<h3 style="margin-top:0;">TypeScript / Node</h3>
-<p><strong>Package:</strong> <a href="https://www.npmjs.com/package/@autonomath/sdk"><code>@autonomath/sdk</code></a></p>
-<pre style="background:#f6f6f6;padding:10px;border-radius:6px;font-size:0.9em;overflow-x:auto;">npm install @autonomath/sdk</pre>
-<p style="font-size:0.92em;color:#555;">Typed REST client + MCP child-process spawn helper. Zero runtime deps.</p>
-<p style="font-size:0.85em;"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/typescript">→ source</a></p>
-</div>
-
-<div style="border:1px solid #ddd;border-radius:8px;padding:18px;">
-<h3 style="margin-top:0;">freee アプリ</h3>
-<p><strong>Status:</strong> 開発中 (β)</p>
-<p style="font-size:0.92em;color:#555;">freee 会計上で 補助金 / 税制 を直接検索する公式プラグイン。</p>
-<p style="font-size:0.85em;"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/freee-plugin">→ source</a></p>
-</div>
-
-<div style="border:1px solid #ddd;border-radius:8px;padding:18px;">
-<h3 style="margin-top:0;">MCP (Claude Desktop / Cursor / Cline)</h3>
-<p><strong>Server name:</strong> <code>autonomath-mcp</code></p>
-<pre style="background:#f6f6f6;padding:10px;border-radius:6px;font-size:0.9em;overflow-x:auto;">pip install autonomath-mcp
-autonomath-mcp</pre>
-<p style="font-size:0.92em;color:#555;">89 ツールを Claude Desktop / Cursor / Cline からそのまま呼び出し。</p>
-<p style="font-size:0.85em;"><a href="/integrations/claude-desktop.html">→ Claude Desktop ガイド</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
-</div>
-
-</div>
-
-<h2 id="api-base">API ベース URL + 認証</h2>
+<h2 id="clients">クライアント別ガイド</h2>
 <ul>
-<li><strong>Base URL:</strong> <code>https://api.zeimu-kaikei.ai/v1</code></li>
-<li><strong>OpenAPI:</strong> <a href="https://api.zeimu-kaikei.ai/v1/openapi.json"><code>/v1/openapi.json</code></a></li>
-<li><strong>Auth:</strong> <code>X-API-Key: sk_...</code> ヘッダー (Bearer も受理)</li>
-<li><strong>Anonymous:</strong> 50 リクエスト/月 per IP, JST 月初 00:00 リセット (no key required)</li>
-<li><strong>Authenticated:</strong> ¥3 / req 完全従量 (税込 ¥3.30) / <a href="/pricing.html">Pricing</a></li>
+<li><a href="/integrations/claude-desktop.html">Claude Desktop</a></li>
+<li><a href="/integrations/cursor.html">Cursor</a></li>
+<li><a href="/integrations/cline.html">Cline (VS Code)</a></li>
+<li><a href="/integrations/continue.html">Continue.dev</a></li>
+<li><a href="/integrations/windsurf.html">Windsurf</a></li>
+<li><a href="/integrations/gemini.html">Gemini CLI</a></li>
+<li><a href="/integrations/chatgpt.html">ChatGPT GPTs</a></li>
 </ul>
 
-<h2 id="errors">エラー処理 (全サンプル共通)</h2>
-<table style="width:100%;border-collapse:collapse;margin:16px 0;">
-<thead><tr style="border-bottom:2px solid #ddd;">
-<th style="text-align:left;padding:8px 6px;">HTTP</th>
-<th style="text-align:left;padding:8px 6px;">意味</th>
-<th style="text-align:left;padding:8px 6px;">対処</th>
-</tr></thead>
-<tbody>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><code>401</code></td><td style="padding:6px;">Auth 失敗</td><td style="padding:6px;"><code>ZEIMU_KAIKEI_API_KEY</code> を確認</td></tr>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><code>403</code></td><td style="padding:6px;">Key 失効 / quota 枯渇</td><td style="padding:6px;"><a href="/dashboard.html">Dashboard</a> で確認</td></tr>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><code>429</code></td><td style="padding:6px;">Rate limit</td><td style="padding:6px;"><code>Retry-After</code> 秒待機 (サンプルは自動リトライ)</td></tr>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><code>5xx</code></td><td style="padding:6px;">Server error</td><td style="padding:6px;">指数バックオフで再試行 (サンプルは 0.5s/1s/2s)</td></tr>
-</tbody>
-</table>
-
-<h2 id="repo">ソースコード</h2>
-<p>すべてのサンプルは GitHub でホストされています:</p>
+<h2 id="api">API ベース URL</h2>
 <ul>
-<li><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp">github.com/shigetosidumeda-cyber/jpintel-mcp</a> — 本体リポジトリ</li>
-<li><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/samples">sdk/samples/</a> — 5 言語のサンプル</li>
-<li><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/python">sdk/python/</a> — Python パッケージ</li>
-<li><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/typescript">sdk/typescript/</a> — TypeScript パッケージ</li>
+<li>ベース URL: <code>https://api.jpcite.com/v1</code></li>
+<li>OpenAPI: <a href="https://api.jpcite.com/v1/openapi.json"><code>/v1/openapi.json</code></a></li>
+<li>認証: <code>X-API-Key: sk_...</code> または Bearer 形式</li>
 </ul>
 
-<p style="margin-top:40px;font-size:0.85em;color:#666;border-top:1px solid #eee;padding-top:14px;">
-免責: サンプルは情報検索のみを行います。税理士法 §52 により個別税務助言は税理士へ。<br>
-発行: <a href="/about.html">Bookyou株式会社</a> (法人番号 T8010001213708)
-</p>
+<h2 id="next">次のステップ</h2>
+<ul>
+<li><a href="/pricing.html">料金</a></li>
+<li><a href="/docs/">ドキュメント</a></li>
+</ul>
 
 </main>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>© Bookyou株式会社 — <a href="/tos.html">利用規約</a> · <a href="/privacy.html">プライバシー</a> · <a href="/tokushoho.html">特商法</a></p>
-  </div>
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a>
+ <a href="../changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <style>
@@ -386,25 +177,25 @@ autonomath-mcp</pre>
 </style>
 <script>
   document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', function{
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
-      var done = function(){
+      var done = function{
         btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        setTimeout(function{ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function(){
+        navigator.clipboard.writeText(text).then(done, function{
           var ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta); ta.select();
-          try { document.execCommand('copy'); done(); } catch(e) {}
+          ta.value = text; document.body.appendChild(ta); ta.select;
+          try { document.execCommand('copy'); done; } catch(e) {}
           document.body.removeChild(ta);
         });
       } else {
         var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); done(); } catch(e) {}
+        ta.value = text; document.body.appendChild(ta); ta.select;
+        try { document.execCommand('copy'); done; } catch(e) {}
         document.body.removeChild(ta);
       }
     });

@@ -19,8 +19,7 @@
     if (!document.querySelector('[data-trust-fresh]')) return;
     var base =
       window.AUTONOMATH_API_BASE ||
-      window.JPINTEL_API_BASE ||
-      'https://api.zeimu-kaikei.ai';
+      'https://api.jpcite.com';
     fetch(base + '/v1/meta', { credentials: 'omit' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {

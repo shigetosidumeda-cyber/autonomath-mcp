@@ -347,7 +347,7 @@ def compute_predicted_cost(
         "**§52 fence**: when the stack touches tax-relevant tools "
         "(`evaluate_tax_ruleset`, `search_tax_incentives`, etc.) the response "
         "carries a `disclaimer` field. LLM agents MUST relay it.\n\n"
-        "**Operator**: Bookyou株式会社 (法人番号 T8010001213708). "
+        "**Operator**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708). "
         "Brand: 税務会計AI."
     ),
 )

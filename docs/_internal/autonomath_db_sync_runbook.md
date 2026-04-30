@@ -82,8 +82,8 @@ flyctl ssh console -a autonomath-api -C \
 REST `/v1/am/*` endpoints are **not mounted yet** (see `src/jpintel_mcp/api/main.py` — single-line activation deferred per CLAUDE.md). Smoke against MCP tools or direct sqlite. Once mounted:
 
 ```bash
-curl https://api.zeimu-kaikei.ai/v1/am/tax_incentives?q=設備投資&limit=2
-curl https://api.zeimu-kaikei.ai/v1/am/by_law?law=租税特別措置法&limit=2
+curl https://api.jpcite.com/v1/am/tax_incentives?q=設備投資&limit=2
+curl https://api.jpcite.com/v1/am/by_law?law=租税特別措置法&limit=2
 ```
 
 Expect 200 + non-empty `items[]`.

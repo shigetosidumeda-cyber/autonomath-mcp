@@ -170,7 +170,7 @@ Post-launch babysit window. Numbers go public; surprises = credibility.
 
 These cannot be delegated:
 
-- [ ] Pick a domain. Candidates: zeimu-kaikei.ai, jpintel.jp, jpintel.ai, jp-intel.com
+- [ ] Pick a domain. Candidates: jpcite.com, jpintel.jp, jpintel.ai, jp-intel.com
 - [ ] 弁理士 30min 無料相談 (商標 Intel-name risk)
 - [ ] Stripe: create live account, verify business, enable Tax, get T-号
 - [ ] Open Stripe Customer Portal config in dashboard (30 settings)

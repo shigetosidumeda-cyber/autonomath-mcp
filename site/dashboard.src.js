@@ -10,7 +10,7 @@
   // ------------------------------------------------------------------
   // config
   // ------------------------------------------------------------------
-  const API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'zeimu-kaikei.ai' ? 'https://api.zeimu-kaikei.ai' : '');
+  const API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'jpcite.com' ? 'https://api.jpcite.com' : '');
   const api = (p) => API_BASE.replace(/\/$/, '') + p;
 
   // CSRF double-submit cookie pattern. On /v1/session sign-in

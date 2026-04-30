@@ -1,4 +1,4 @@
-# robots.txt for zeimu-kaikei.ai
+# robots.txt for jpcite.com
 # 2026-04-23 / see docs/seo_technical_audit.md §6
 # Policy: allow search + LLM crawlers (organic acquisition only);
 # block SEO-spammer backlink crawlers.
@@ -143,11 +143,11 @@ Crawl-delay: 1
 # Note: sitemap-structured.xml is excluded from the index — site/structured/
 # exceeds Cloudflare Pages 20k file limit and will be re-hosted on R2 post-launch.
 # ------------------------------------------------------------------
-Sitemap: https://zeimu-kaikei.ai/sitemap-index.xml
-Sitemap: https://zeimu-kaikei.ai/sitemap.xml
-Sitemap: https://zeimu-kaikei.ai/sitemap-programs.xml
-Sitemap: https://zeimu-kaikei.ai/sitemap-prefectures.xml
-Sitemap: https://zeimu-kaikei.ai/sitemap-audiences.xml
-Sitemap: https://zeimu-kaikei.ai/sitemap-industries.xml
-Sitemap: https://zeimu-kaikei.ai/sitemap-qa.xml
-Sitemap: https://zeimu-kaikei.ai/sitemap-pages.xml
+Sitemap: https://jpcite.com/sitemap-index.xml
+Sitemap: https://jpcite.com/sitemap.xml
+Sitemap: https://jpcite.com/sitemap-programs.xml
+Sitemap: https://jpcite.com/sitemap-prefectures.xml
+Sitemap: https://jpcite.com/sitemap-audiences.xml
+Sitemap: https://jpcite.com/sitemap-industries.xml
+Sitemap: https://jpcite.com/sitemap-qa.xml
+Sitemap: https://jpcite.com/sitemap-pages.xml

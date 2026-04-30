@@ -24,7 +24,7 @@ AI エージェントが 1 query で呼び出せる REST + MCP API です。
 
 solo 開発、¥3/req 完全従量、匿名 50 req/月 per IP 無料。
 
-https://zeimu-kaikei.ai
+https://jpcite.com
 
 #AutonoMath #MCP #AI
 ```
@@ -115,7 +115,7 @@ aggregator (noukaweb / hojyokin-portal 等) は source_url から完全 ban。
 ```
 7/ 使い始めは 3 通り。
 
-1. curl https://api.zeimu-kaikei.ai/v1/programs/search?q=...
+1. curl https://api.jpcite.com/v1/programs/search?q=...
 2. Claude Desktop: claude_desktop_config.json に
    { "command":"uvx", "args":["autonomath-mcp"] }
 3. pip install autonomath-mcp

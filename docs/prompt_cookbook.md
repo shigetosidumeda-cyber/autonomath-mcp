@@ -1,18 +1,18 @@
 # Prompt Cookbook
 
-> 10 個の貼り付け用プロンプトと、それぞれが triggered する MCP ツール呼び出しの想定シーケンス。料金 ¥3/req 一律 (税込 ¥3.30)、anonymous は 50 req/月 まで無料。
+10 個の貼り付け用プロンプトと、各 prompt が triggered する MCP ツール呼び出しシーケンス。
 
-Public HTML 版: [/prompts.html](https://zeimu-kaikei.ai/prompts.html)
-MCP tool リファレンス: [mcp-tools.md](./mcp-tools.md)
-Exclusion 概念: [exclusions.md](./exclusions.md)
-動くサンプル: [examples.md](./examples.md)
+- 公開 HTML 版: [/prompts.html](https://jpcite.com/prompts.html)
+- ツール一覧: [mcp-tools.md](./mcp-tools.md)
+- 排他ルール: [exclusions.md](./exclusions.md)
+- 動くサンプル: [examples.md](./examples.md)
 
-Each recipe is structured as:
+各レシピの構造:
 
 - **Persona / Hook** — 誰が何を求める場面か
 - **Prompt** — Claude / Cursor / ChatGPT に貼り付ける日本語文
-- **Tool sequence (YAML)** — agent が triggered するであろう MCP tool call
-- **Notes** — データ充足ギャップや注意点。公開保留中の制度 (1,923 行) は検索路から除外、`compat_matrix` の出典裏取りは 9% に留まる。
+- **Tool sequence (YAML)** — agent が triggered する MCP 呼び出し
+- **Notes** — データ充足ギャップや注意点
 
 ---
 
@@ -46,7 +46,7 @@ Each recipe is structured as:
 - tool: check_exclusions
   args:
     program_ids:
-      - keiei-kaishi-shikin
+      - UNI-71f6029070
       - keiei-hatten-shoki
       - seinen-shuno-shikin
 - tool: get_program
@@ -123,7 +123,7 @@ Each recipe is structured as:
 - tool: check_exclusions
   args:
     program_ids:
-      - keiei-kaishi-shikin
+      - UNI-71f6029070
       - seinen-shuno-shikin
       - 認定新規就農者
 - tool: get_program
@@ -353,7 +353,7 @@ Each recipe is structured as:
 - tool: check_exclusions
   args:
     program_ids:
-      - keiei-kaishi-shikin
+      - UNI-71f6029070
       - keiei-hatten-shoki      # 初期投資促進タイプ
       - keiei-hatten-sedai      # 世代交代タイプ
       - seinen-shuno-shikin
@@ -363,7 +363,7 @@ Each recipe is structured as:
   args: {}
 - tool: get_program
   args:
-    unified_id: keiei-kaishi-shikin
+    unified_id: UNI-71f6029070
     fields: full
 ```
 
@@ -386,12 +386,12 @@ Each recipe is structured as:
 - tool: batch_get_programs
   args:
     unified_ids:
-      - keiei-kaishi-shikin
+      - UNI-71f6029070
       - koyo-shuno-shikin
 - tool: check_exclusions
   args:
     program_ids:
-      - keiei-kaishi-shikin
+      - UNI-71f6029070
       - koyo-shuno-shikin
 - tool: list_exclusion_rules
   args: {}
@@ -410,8 +410,8 @@ Each recipe is structured as:
 ```python
 import os, requests
 
-BASE = "https://api.zeimu-kaikei.ai"
-HEAD = {"Authorization": f"Bearer {os.environ.get('AUTONOMATH_API_KEY','')}"}
+BASE = "https://api.jpcite.com"
+HEAD = {"X-API-Key": os.environ.get('AUTONOMATH_API_KEY','')}"}
 
 # Recipe 1 step 1
 r = requests.get(

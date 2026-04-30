@@ -1,4 +1,4 @@
-# 税務会計AI — Security Posture (operator-only)
+# jpcite — Security Posture (operator-only)
 
 This document is **excluded from the public docs site** via
 `mkdocs.yml::exclude_docs`. Public-facing copy lives in `SECURITY.md`
@@ -10,7 +10,7 @@ future contractor doing a security review. Last updated 2026-04-25.
 
 ## 1. Threat model
 
-税務会計AI is a thin REST + MCP wrapper over a SQLite corpus of public
+jpcite is a thin REST + MCP wrapper over a SQLite corpus of public
 program data. There is no PII at rest — the only customer-private fields
 are `api_keys.key_hash` (HMAC, salted) and `customers.email`. The
 realistic threat surface is therefore narrow:

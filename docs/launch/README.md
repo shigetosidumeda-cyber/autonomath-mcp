@@ -1,6 +1,6 @@
 # Launch posts — drafts only
 
-12 draft launch posts for 税務会計AI (autonomath-mcp v0.3.0). Operator-only directory; not published.
+12 draft launch posts for jpcite (autonomath-mcp v0.3.0). Operator-only directory; not published.
 
 ## File index
 
@@ -27,8 +27,8 @@ The HN sweet spot is **Tuesday-Thursday, 06:30-09:30 PT (= 22:30-01:30 JST)**. A
 
 ### Day 0 (HN day — Tue/Wed/Thu)
 
-1. **T-30min** — Pre-launch check (see checklist below). Confirm zeimu-kaikei.ai is up, demo curl returns 200, Stripe metering live.
-2. **T-0** — Submit `hn.md` to https://news.ycombinator.com/submit. Title goes in Title field, URL field is `https://zeimu-kaikei.ai`, "first comment" goes in the first comment slot **immediately after** submission.
+1. **T-30min** — Pre-launch check (see checklist below). Confirm jpcite.com is up, demo curl returns 200, Stripe metering live.
+2. **T-0** — Submit `hn.md` to https://news.ycombinator.com/submit. Title goes in Title field, URL field is `https://jpcite.com`, "first comment" goes in the first comment slot **immediately after** submission.
 3. **T+5min** — Post `twitter_x_thread.md` from founder X account. Quote-tweet the HN URL once it's live.
 4. **T+15min** — Post `lobsters.md` to lobste.rs (lobste.rs traffic peaks alongside HN, do them together).
 5. **T+30min** — Post `reddit_programming.md` to r/programming.
@@ -62,13 +62,13 @@ Run through these **30 minutes before the HN submission**. If any fail, abort an
 
 ### Live infrastructure
 
-- [ ] `curl -sS -o /dev/null -w "%{http_code}\n" https://zeimu-kaikei.ai/` returns `200`
-- [ ] `curl -sS -o /dev/null -w "%{http_code}\n" https://api.zeimu-kaikei.ai/healthz` returns `200`
+- [ ] `curl -sS -o /dev/null -w "%{http_code}\n" https://jpcite.com/` returns `200`
+- [ ] `curl -sS -o /dev/null -w "%{http_code}\n" https://api.jpcite.com/healthz` returns `200`
 - [ ] Demo curl returns valid JSON with `total > 0`:
   ```bash
-  curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+  curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
   ```
-- [ ] `https://api.zeimu-kaikei.ai/openapi.json` returns valid OpenAPI v3 spec
+- [ ] `https://api.jpcite.com/openapi.json` returns valid OpenAPI v3 spec
 - [ ] Stripe webhook live + test charge of ¥3 succeeds (use test API key)
 - [ ] Anonymous 50/月 rate limit verified — 51st request returns `429` with reset hint
 - [ ] HTTP fallback working: `uvx autonomath-mcp` from a clean machine boots into HTTP mode and answers a search
@@ -76,8 +76,8 @@ Run through these **30 minutes before the HN submission**. If any fail, abort an
 ### Content polish
 
 - [ ] GitHub README first paragraph matches the value-prop in `hn.md` (no contradiction in counts)
-- [ ] `https://zeimu-kaikei.ai/docs/pricing/` clearly states "¥3/req, 50/月 free anonymously, no tiers"
-- [ ] `https://zeimu-kaikei.ai/about.html` shows Bookyou株式会社 + T8010001213708 + 梅田茂利 (legal display compliance)
+- [ ] `https://jpcite.com/docs/pricing/` clearly states "¥3/req, 50/月 free anonymously, no tiers"
+- [ ] `https://jpcite.com/about.html` shows Bookyou株式会社 + T8010001213708 + 梅田茂利 (legal display compliance)
 - [ ] Disclaimer page (`/compliance/landing_disclaimer/`) lists 税理士法 §52, 弁護士法 §72, 行政書士法 §1
 - [ ] PyPI page for `autonomath-mcp` shows `0.3.0` as latest (not `0.2.0`)
 - [ ] GitHub repo description matches the launch tagline
@@ -99,7 +99,7 @@ All public posts cite these numbers — verify any one of them on the live API m
 
 ### Operator readiness
 
-- [ ] Founder X account ready, profile link points to zeimu-kaikei.ai
+- [ ] Founder X account ready, profile link points to jpcite.com
 - [ ] HN account has karma > 0 (Show HN posts from 0-karma accounts get auto-flagged)
 - [ ] Reddit account on each target subreddit has at least the minimum karma the sub requires (some require 100+)
 - [ ] info@bookyou.net is monitored — first 4 hours after HN post will see inbound emails

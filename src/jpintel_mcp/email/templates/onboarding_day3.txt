@@ -17,7 +17,7 @@
    何から始めるか迷ったらこれです。
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/programs/search?prefecture=東京都&target_types=smb&amount_min_man_yen=100&limit=10"
+     "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_types=smb&amount_min_man_yen=100&limit=10"
 
 2) search_tax_incentives — 税制措置の専用検索
 
@@ -25,7 +25,7 @@
    横断検索します。出力は税務助言ではなく公開ルール検索です (税理士法 §52)。
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/am/tax_incentives/search?q=賃上げ&limit=5"
+     "https://api.jpcite.com/v1/am/tax_incentives/search?q=賃上げ&limit=5"
 
 3) check_invoice_registrant — 適格事業者番号の照合
 
@@ -33,7 +33,7 @@
    登録状況・氏名・本店所在地を返します。経費精算 / 仕訳の自動化に。
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/invoice_registrants/T8010001213708"
+     "https://api.jpcite.com/v1/invoice_registrants/T8010001213708"
 
 4) dd_profile_am — 取引先 360° プロファイル
 
@@ -41,7 +41,7 @@
    1 リクエストでまとめて取得します。デューデリジェンスの 1 次スクリーニングに。
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/am/dd_profile/T8010001213708"
+     "https://api.jpcite.com/v1/am/dd_profile/T8010001213708"
 
 5) regulatory_prep_pack — 申請前の自動チェック
 
@@ -49,17 +49,17 @@
    まとめて返します。「この補助金、今この会社で出して大丈夫?」を 1 リクエストで。
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/am/regulatory_prep_pack?unified_id=UNI-14e57fbf79"
+     "https://api.jpcite.com/v1/am/regulatory_prep_pack?unified_id=UNI-14e57fbf79"
 
 ---
 
 MCP クライアント経由:
 
 Claude / Cursor / Cline からは、上の 5 つも含めて 69 ツールがそのまま自然言語で呼べます。
-設定: https://zeimu-kaikei.ai/integrations/
+設定: https://jpcite.com/integrations/
 
 他にも使い方を集めた examples 集 (全 69 ツール一覧 + 用途別レシピ):
-https://zeimu-kaikei.ai/examples/
+https://jpcite.com/examples/
 
 詰まったら、このメールにそのまま返信してください。人間が読みます。
 

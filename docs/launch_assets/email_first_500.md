@@ -62,10 +62,10 @@ Bookyou株式会社の梅田です。
 匿名 50 req/月 per IP は無料 (JST 月初リセット、API key 不要)。
 
 ▼ 始め方
-1. ドキュメント: https://zeimu-kaikei.ai/docs/getting-started/
-2. API リファレンス: https://zeimu-kaikei.ai/docs/api-reference/
+1. ドキュメント: https://jpcite.com/docs/getting-started/
+2. API リファレンス: https://jpcite.com/docs/api-reference/
 3. PyPI: pip install autonomath-mcp
-4. プレスキット: https://zeimu-kaikei.ai/press/
+4. プレスキット: https://jpcite.com/press/
 
 質問・要望は本メールへの返信または GitHub issues へ。
 電話・対面・営業 cold call は zero-touch 方針のため対応していません。

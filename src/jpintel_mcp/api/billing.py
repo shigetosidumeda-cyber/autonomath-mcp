@@ -130,7 +130,7 @@ def _send_dunning_safe(
                 ).strftime("%Y-%m-%d %H:%M JST")
             except Exception:
                 next_retry_at = ""
-        portal_url = "https://zeimu-kaikei.ai/billing/portal"
+        portal_url = "https://jpcite.com/billing/portal"
         _get_email_client().send_dunning(
             to=to,
             attempt_count=attempt_count,
@@ -555,7 +555,7 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
     # 表示する (2026-04-23 修正). 以前の ToS-required consent flag は Stripe
     # Dashboard 側 ToS URL 未設定だと live mode で 500 になるため撤去した
     # (research/data_expansion_design.md:243). リンク先 HTML は
-    # https://zeimu-kaikei.ai/tos.html + /privacy.html.
+    # https://jpcite.com/tos.html + /privacy.html.
     session = s.checkout.Session.create(
         mode="subscription",
         line_items=[{"price": price_id}],
@@ -567,8 +567,8 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
         custom_text={
             "submit": {
                 "message": (
-                    "ご登録により利用規約 (https://zeimu-kaikei.ai/tos.html) "
-                    "およびプライバシーポリシー (https://zeimu-kaikei.ai/privacy.html) "
+                    "ご登録により利用規約 (https://jpcite.com/tos.html) "
+                    "およびプライバシーポリシー (https://jpcite.com/privacy.html) "
                     "に同意したものとみなされます。"
                 )
             }

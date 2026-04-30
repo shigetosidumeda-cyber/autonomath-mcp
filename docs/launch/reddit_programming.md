@@ -6,7 +6,7 @@
 
 ## Body
 
-I shipped 税務会計AI today. It's a search API + MCP server over Japanese institutional data — 10,790 subsidy programs, 9,484 laws (e-Gov CC-BY), 2,065 court decisions, 13,801 invoice registrants, 35 tax rulesets, plus 1,185 enforcement records and 2,286 historical adoption cases. Every row points to a primary-source URL (ministry / prefecture / 国税庁 / 日本政策金融公庫). Aggregator sites are banned from the source field.
+I shipped jpcite today. It's a search API + MCP server over Japanese institutional data — 10,790 subsidy programs, 9,484 laws (e-Gov CC-BY), 2,065 court decisions, 13,801 invoice registrants, 35 tax rulesets, plus 1,185 enforcement records and 2,286 historical adoption cases. Every row points to a primary-source URL (ministry / prefecture / 国税庁 / 日本政策金融公庫). Aggregator sites are banned from the source field.
 
 The existing access surface for this data is genuinely bad — government portals are old, search is keyword-AND only, URLs rot, and aggregator sites pollute SERPs. I wanted a clean machine-readable layer for LLM agents doing due diligence on Japanese SMBs.
 
@@ -25,12 +25,12 @@ The existing access surface for this data is genuinely bad — government portal
 Demo curl (works without an API key for the first 50 req/month):
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
 Returns JSON with `program_id`, `name`, `amount_yen_max`, `deadline`, `source_url`, `tier`.
 
-- Site: https://zeimu-kaikei.ai
+- Site: https://jpcite.com
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 

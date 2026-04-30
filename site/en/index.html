@@ -4,33 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>税務会計AI — Search Japanese institutional data via REST + MCP API.</title>
+<title>jpcite — Search Japanese institutional data via REST + MCP API.</title>
 <meta name="description" content="Search Japanese institutional data (11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records) via REST + MCP API. Primary source URL included, ¥3/request fully metered, anon 50/month free.">
 
-<meta property="og:title" content="税務会計AI — Japanese public programs, one API.">
+<meta property="og:title" content="jpcite — Japanese public programs, one API.">
 <meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (89 tools, 2025-06-18). Primary-source lineage on every row.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/en/">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/en/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="税務会計AI — Japanese public programs, one API.">
+<meta name="twitter:title" content="jpcite — Japanese public programs, one API.">
 <meta name="twitter:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + laws (154 full-text + 9,484 catalog stubs, body-text load incremental) + tax rulesets (35 rows) + invoice registrants (13,801 rows live delta-only) + entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations). Exclusion-aware. MCP-native (89 tools, protocol 2025-06-18). Court 2,065 + bids 362 rows live.">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/en/">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/">
+<link rel="canonical" href="https://jpcite.com/en/">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/en/llms.txt">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, Japanese)" href="/llms.txt">
 <link type="text/plain" rel="author" href="/humans.txt">
-<link rel="alternate" type="application/rss+xml" title="税務会計AI Announcements" href="/en/rss.xml">
-<link rel="alternate" type="application/rss+xml" title="税務会計AI お知らせ (Japanese)" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="jpcite Announcements" href="/en/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="jpcite お知らせ (Japanese)" href="/rss.xml">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -43,11 +43,12 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "税務会計AI",
+  "name": "jpcite",
+  "alternateName": "税務会計AI",
   "description": "REST + MCP API over 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications) + 2,286 case studies (採択事例) + 108 loan programs (three-axis collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental) + tax rulesets (インボイス / 電帳法; 35 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (NTA PDL v1.0; 13,801 rows live delta-only mirror, monthly full bulk pending) + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance). 181-rule exclusion + prerequisite checker. 99%+ rows: primary-source URL + fetched_at. MCP protocol 2025-06-18, 89 tools at default gates.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio)",
-  "url": "https://zeimu-kaikei.ai/en/",
+  "url": "https://jpcite.com/en/",
   "inLanguage": "en",
   "offers": [
     {"@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "JPY", "description": "50 calls/month per IP, JST first-of-month reset, no card required"},
@@ -70,9 +71,9 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "contactPoint": {
@@ -88,18 +89,19 @@
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/en/",
+  "name": "jpcite",
+  "alternateName": "税務会計AI",
+  "url": "https://jpcite.com/en/",
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://zeimu-kaikei.ai/en/about.html"
+    "url": "https://jpcite.com/en/about.html"
   },
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://zeimu-kaikei.ai/programs/?q={search_term_string}"
+      "urlTemplate": "https://jpcite.com/programs/?q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   },
@@ -111,21 +113,21 @@
 {
   "@context": "https://schema.org",
   "@type": "Dataset",
-  "name": "税務会計AI — Japanese Public Programs Dataset",
+  "name": "jpcite — Japanese Public Programs Dataset",
   "description": "14,472 subsidies + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 154 laws full-text + 9,484 law catalog stubs + 35 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
-  "url": "https://zeimu-kaikei.ai/en/",
+  "url": "https://jpcite.com/en/",
   "creator": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "identifier": "T8010001213708",
     "email": "info@bookyou.net",
-    "url": "https://zeimu-kaikei.ai/"
+    "url": "https://jpcite.com/"
   },
   "license": "Mixed (gov_standard / cc_by_4.0 / pdl_v1.0 / proprietary). See /privacy.html and per-fact provenance.",
   "inLanguage": ["ja", "en"],
   "spatialCoverage": {"@type": "Country", "name": "Japan"},
   "variableMeasured": [
-    {"@type": "PropertyValue", "name": "subsidies", "value": 13578},
+    {"@type": "PropertyValue", "name": "subsidies", "value": 11684},
     {"@type": "PropertyValue", "name": "adoption case studies", "value": 2286},
     {"@type": "PropertyValue", "name": "loan programs", "value": 108},
     {"@type": "PropertyValue", "name": "enforcement records", "value": 1185},
@@ -140,7 +142,7 @@
   "distribution": {
     "@type": "DataDownload",
     "encodingFormat": "application/json",
-    "contentUrl": "https://api.zeimu-kaikei.ai/v1/"
+    "contentUrl": "https://api.jpcite.com/v1/"
   }
 }
 </script>
@@ -149,17 +151,17 @@
 {
   "@context": "https://schema.org",
   "@type": "WebAPI",
-  "name": "税務会計AI REST API",
-  "url": "https://api.zeimu-kaikei.ai/v1/",
-  "documentation": "https://zeimu-kaikei.ai/docs/api-reference/",
+  "name": "jpcite REST API",
+  "url": "https://api.jpcite.com/v1/",
+  "documentation": "https://jpcite.com/docs/api-reference/",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "identifier": "T8010001213708",
-    "url": "https://zeimu-kaikei.ai/",
+    "url": "https://jpcite.com/",
     "email": "info@bookyou.net"
   },
-  "termsOfService": "https://zeimu-kaikei.ai/en/tos.html"
+  "termsOfService": "https://jpcite.com/en/tos.html"
 }
 </script>
 </head>
@@ -168,294 +170,294 @@
 <a class="skip-link" href="#main">Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="税務会計AI home">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="about.html">About</a>
-      <a href="getting-started.html">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="audiences/">Audiences</a>
-      <a href="../playground.html">Playground</a>
-      <details class="nav-trust">
-        <summary>Trust</summary>
-        <ul>
-          <li><a href="../status.html">Status</a></li>
-          <li><a href="../roadmap.html">Roadmap</a></li>
-          <li><a href="../data-freshness.html">Data Freshness</a></li>
-          <li><a href="../transparency.html">Transparency</a></li>
-          <li><a href="../audit-log.html">Audit Log</a></li>
-        </ul>
-      </details>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="../index.html" lang="ja" hreflang="ja">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="index.html" lang="en" hreflang="en" aria-current="page">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="index.html" aria-label="jpcite home">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="Primary navigation">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Docs</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="audiences/">Audiences</a>
+ <a href="../playground.html">Playground</a>
+ <details class="nav-trust">
+ <summary>Trust</summary>
+ <ul>
+ <li><a href="../status.html">Status</a></li>
+ <li><a href="../roadmap.html">Roadmap</a></li>
+ <li><a href="../data-freshness.html">Data Freshness</a></li>
+ <li><a href="../transparency.html">Transparency</a></li>
+ <li><a href="../audit-log.html">Audit Log</a></li>
+ </ul>
+ </details>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="../index.html" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="index.html" lang="en" hreflang="en" aria-current="page">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
 
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="container">
-      <!-- CRO Fix 4 (2026-04-29): hero copy sharpened. Old H1 = "Search
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <!-- CRO Fix 4 (2026-04-29): hero copy sharpened. Old H1 = "Search
            Japanese institutional data via REST + MCP API."; old sub = the
            7-dataset count list (now demoted to "Data & quality" lower on
            the page). The §72/§52/§1 disclaimer used to sit directly below
            the H1 — relocated to BELOW the curl block (CRO Fix 2) so the
            visitor hits the working curl first. Footer §52 remains. -->
-      <h1 id="hero-title">Search Japanese subsidies &amp; tax rules with one line of AI.</h1>
-      <p class="hero-sub">¥3.30/req (tax incl.) · 50 req/month free, no signup. Drop into Claude / Cursor / curl and run.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="getting-started.html">Try free (50 req/month per IP, no signup)</a>
-        <a class="btn btn-secondary" href="/downloads/autonomath-mcp.mcpb" download aria-label="Download Claude Desktop Extension">Add to Claude Desktop (.mcpb)</a>
-      </div>
-      <p class="hero-note">Anonymous 50 req/month per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> first-of-month reset); ¥3/req tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on 99%+ of rows.</p>
-    </div>
-  </section>
+ <h1 id="hero-title">Search Japanese subsidies &amp; tax rules with one line of AI.</h1>
+ <p class="hero-sub">¥3.30/req (tax incl.) · 50 req/month free, no signup. Drop into Claude / Cursor / curl and run.</p>
+ <div class="cta-row">
+ <a class="btn btn-primary" href="getting-started.html">Try free (50 req/month per IP, no signup)</a>
+ <a class="btn btn-secondary" href="/downloads/autonomath-mcp.mcpb" download aria-label="Download Claude Desktop Extension">Add to Claude Desktop (.mcpb)</a>
+ </div>
+ <p class="hero-note">Anonymous 50 req/month per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> first-of-month reset); ¥3/req tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on 99%+ of rows.</p>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="trust-title" style="padding-top:48px;padding-bottom:48px;">
-    <div class="container">
-      <h2 id="trust-title" class="section-title">Data &amp; quality</h2>
-      <div class="cards">
+ <section class="features" aria-labelledby="trust-title" style="padding-top:48px;padding-bottom:48px;">
+ <div class="container">
+ <h2 id="trust-title" class="section-title">Data &amp; quality</h2>
+ <div class="cards">
 
-        <article class="card" aria-labelledby="trust-counts">
-          <h3 id="trust-counts">503,930 entities + 6.12M facts</h3>
-          <p class="card-lead">9 datasets + entity-fact DB, one query surface</p>
-          <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The entity-fact layer carries entities and facts across 12 record kinds. The full-text search index (3-gram) lets you query Japanese as written, no romanization required.</p>
-          <ul class="card-list">
-            <li>programs · 14,472 (11,684 searchable = Tier S 114 + A 1,340 + B 4,186 + C 6,044; 2,788 held back for secondary review)</li>
-            <li>case_studies · 2,286</li>
-            <li>loan_programs · 108 (collateral / personal-guarantor / third-party-guarantor decomposed)</li>
-            <li>enforcement_cases · 1,185</li>
-            <li>laws · 154 full-text indexed + 9,484 catalog stubs (e-Gov, CC-BY; body-text load incremental, name resolver covers all 9,484)</li>
-            <li>tax_rulesets · 35</li>
-            <li>court_decisions · 2,065</li>
-            <li>bids · 362</li>
-            <li>invoice_registrants · 13,801 (NTA PDL v1.0 delta; full monthly bulk pending)</li>
-            <li>entity-fact DB · 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases</li>
-          </ul>
-        </article>
+ <article class="card" aria-labelledby="trust-counts">
+ <h3 id="trust-counts">503,930 entities + 6.12M facts</h3>
+ <p class="card-lead">9 datasets + entity-fact DB, one query surface</p>
+ <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The entity-fact layer carries entities and facts across 12 record kinds. The full-text search index (3-gram) lets you query Japanese as written, no romanization required.</p>
+ <ul class="card-list">
+ <li>programs · 14,472 (11,684 searchable = Tier S 114 + A 1,340 + B 4,186 + C 6,044; 2,788 held back for secondary review)</li>
+ <li>case_studies · 2,286</li>
+ <li>loan_programs · 108 (collateral / personal-guarantor / third-party-guarantor decomposed)</li>
+ <li>enforcement_cases · 1,185</li>
+ <li>laws · 154 full-text indexed + 9,484 catalog stubs (e-Gov, CC-BY; body-text load incremental, name resolver covers all 9,484)</li>
+ <li>tax_rulesets · 35</li>
+ <li>court_decisions · 2,065</li>
+ <li>bids · 362</li>
+ <li>invoice_registrants · 13,801 (NTA PDL v1.0 delta; full monthly bulk pending)</li>
+ <li>entity-fact DB · 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases</li>
+ </ul>
+ </article>
 
-        <article class="card" aria-labelledby="trust-lineage">
-          <h3 id="trust-lineage">99%+ primary source</h3>
-          <p class="card-lead">source_url + fetched_at on 99%+ of rows</p>
-          <p>Sourced directly from METI, MAFF, the SME Agency, Japan Finance Corporation, prefectures, and municipalities. Aggregator sites are excluded by policy. Designed so amendments propagate through immediately.</p>
-          <ul class="card-list">
-            <li>noukaweb / hojyokin-portal etc. excluded</li>
-            <li>Nightly source-URL liveness scan</li>
-            <li>Lineage column required on every row</li>
-          </ul>
-        </article>
+ <article class="card" aria-labelledby="trust-lineage">
+ <h3 id="trust-lineage">99%+ primary source</h3>
+ <p class="card-lead">source_url + fetched_at on 99%+ of rows</p>
+ <p>Sourced directly from METI, MAFF, the SME Agency, Japan Finance Corporation, prefectures, and municipalities. Aggregator sites are excluded by policy. Designed so amendments propagate through immediately.</p>
+ <ul class="card-list">
+ <li>noukaweb / hojyokin-portal etc. excluded</li>
+ <li>Nightly source-URL liveness scan</li>
+ <li>Lineage column required on every row</li>
+ </ul>
+ </article>
 
-        <article class="card" aria-labelledby="trust-rules">
-          <h3 id="trust-rules">181 exclusion rules</h3>
-          <p class="card-lead">Tier S/A/B/C/X quality labels</p>
-          <p>Co-use conflicts, prerequisites, and mutual exclusivity are encoded as structured rules. Post a list of program_ids, get back the conflicts. No "plausible-sounding" LLM inference — actual rules.</p>
-          <ul class="card-list">
-            <li>125 exclude + 17 prerequisite</li>
-            <li>15 absolute + 24 other</li>
-            <li>Tier S/A/B/C = data-completeness ranks; X = quarantine</li>
-          </ul>
-        </article>
+ <article class="card" aria-labelledby="trust-rules">
+ <h3 id="trust-rules">181 exclusion rules</h3>
+ <p class="card-lead">Tier S/A/B/C/X quality labels</p>
+ <p>Co-use conflicts, prerequisites, and mutual exclusivity are encoded as structured rules. Post a list of program_ids, get back the conflicts. No "plausible-sounding" LLM inference — actual rules.</p>
+ <ul class="card-list">
+ <li>125 exclude + 17 prerequisite</li>
+ <li>15 absolute + 24 other</li>
+ <li>Tier S/A/B/C = data-completeness ranks; X = quarantine</li>
+ </ul>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="pillars-title">
-    <div class="container">
-      <h2 id="pillars-title" class="section-title">Five interfaces</h2>
-      <p class="demo-lead" style="margin:-16px 0 28px;">One backend, five ways to deliver it. Pick what fits the audience.</p>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+ <section class="features" aria-labelledby="pillars-title">
+ <div class="container">
+ <h2 id="pillars-title" class="section-title">Five interfaces</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">One backend, five ways to deliver it. Pick what fits the audience.</p>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
-        <article class="card" aria-labelledby="pillar-api">
-          <h3 id="pillar-api"><span aria-hidden="true">🔌</span> API + MCP</h3>
-          <p class="card-lead">AI developers / enterprise RAG</p>
-          <p>Call 89 MCP tools directly from an agent. REST is OpenAPI 3.1. stdio transport, no SDK.</p>
-          <ul class="card-list">
-            <li>¥3/req tax exclusive (¥3.30 tax inclusive)</li>
-            <li>Anonymous 50 req/month per IP free</li>
-            <li>Claude Desktop / Cursor / ChatGPT compatible</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="getting-started.html">Read the docs &rarr;</a></p>
-        </article>
+ <article class="card" aria-labelledby="pillar-api">
+ <h3 id="pillar-api"><span aria-hidden="true">🔌</span> API + MCP</h3>
+ <p class="card-lead">AI developers / enterprise RAG</p>
+ <p>Call 89 MCP tools directly from an agent. REST is OpenAPI 3.1. stdio transport, no SDK.</p>
+ <ul class="card-list">
+ <li>¥3/req tax exclusive (¥3.30 tax inclusive)</li>
+ <li>Anonymous 50 req/month per IP free</li>
+ <li>Claude Desktop / Cursor / ChatGPT compatible</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="getting-started.html">Read the docs &rarr;</a></p>
+ </article>
 
-        <article class="card" aria-labelledby="pillar-line">
-          <h3 id="pillar-line"><span aria-hidden="true">💬</span> LINE bot</h3>
-          <p class="card-lead">SMB owners / professional advisors</p>
-          <p>Discover subsidies in 30 seconds, in plain Japanese, on the LINE app you already have. Add as a friend, no app install.</p>
-          <ul class="card-list">
-            <li>¥500/month tax exclusive (¥550 tax inclusive)</li>
-            <li>Up to 10 questions/month free</li>
-            <li>Apple Pay / Google Pay supported</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="line.html">Use the LINE bot &rarr;</a></p>
-        </article>
+ <article class="card" aria-labelledby="pillar-line">
+ <h3 id="pillar-line"><span aria-hidden="true">💬</span> LINE bot</h3>
+ <p class="card-lead">SMB owners / professional advisors</p>
+ <p>Discover subsidies in 30 seconds, in plain Japanese, on the LINE app you already have. Add as a friend, no app install.</p>
+ <ul class="card-list">
+ <li>¥3/notification tax exclusive (¥550 tax inclusive)</li>
+ <li>Up to 10 questions/month free</li>
+ <li>Apple Pay / Google Pay supported</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="line.html">Use the LINE bot &rarr;</a></p>
+ </article>
 
-        <article class="card" aria-labelledby="pillar-alerts">
-          <h3 id="pillar-alerts"><span aria-hidden="true">📧</span> Law-amendment alerts</h3>
-          <p class="card-lead">Tax / labor / compliance professionals</p>
-          <p>Email notifications on amendments to invoice law, electronic-bookkeeping law, labor standards, and other tracked domains. Catch changes before deadlines bite.</p>
-          <ul class="card-list">
-            <li>¥500/month tax exclusive (¥550 tax inclusive)</li>
-            <li>Monthly digest is free</li>
-            <li>Real-time notifications are paid</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="alerts.html">Configure alerts &rarr;</a></p>
-        </article>
+ <article class="card" aria-labelledby="pillar-alerts">
+ <h3 id="pillar-alerts"><span aria-hidden="true">📧</span> Law-amendment alerts</h3>
+ <p class="card-lead">Tax / labor / compliance professionals</p>
+ <p>Email notifications on amendments to invoice law, electronic-bookkeeping law, labor standards, and other tracked domains. Catch changes before deadlines bite.</p>
+ <ul class="card-list">
+ <li>¥3/notification tax exclusive (¥550 tax inclusive)</li>
+ <li>Monthly digest is free</li>
+ <li>Real-time notifications are paid</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="alerts.html">Configure alerts &rarr;</a></p>
+ </article>
 
-        <article class="card" aria-labelledby="pillar-widget">
-          <h3 id="pillar-widget"><span aria-hidden="true">🧩</span> Embeddable widget</h3>
-          <p class="card-lead">Tax-firm sites / chambers of commerce / advisory offices</p>
-          <p>Add subsidy search to your own site with a single &lt;script&gt; tag. Visitors narrow down candidates without leaving your page.</p>
-          <ul class="card-list">
-            <li>¥10,000/month (10,000 req included)</li>
-            <li>Overage ¥3/req</li>
-            <li>White-label ¥30,000/month</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="widget.html">Embed the widget &rarr;</a></p>
-        </article>
+ <article class="card" aria-labelledby="pillar-widget">
+ <h3 id="pillar-widget"><span aria-hidden="true">🧩</span> Embeddable widget</h3>
+ <p class="card-lead">Tax-firm sites / chambers of commerce / advisory offices</p>
+ <p>Add subsidy search to your own site with a single &lt;script&gt; tag. Visitors narrow down candidates without leaving your page.</p>
+ <ul class="card-list">
+ <li>¥3/search metered (10,000 req included)</li>
+ <li>Overage ¥3/req</li>
+ <li>White-label ¥3/search metered</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="widget.html">Embed the widget &rarr;</a></p>
+ </article>
 
-        <article class="card" aria-labelledby="pillar-advisors">
-          <h3 id="pillar-advisors"><span aria-hidden="true">👥</span> Advisor affiliate</h3>
-          <p class="card-lead">Certified support orgs / tax / labor / SMB consultants</p>
-          <p>Marketplace that routes inbound inquiries to certified support institutions and licensed advisors. Advisors pay only on successful engagements.</p>
-          <ul class="card-list">
-            <li>Free for end users</li>
-            <li>Advisor pays ¥3,000 per signed engagement</li>
-            <li>No monthly fixed fee</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="advisors.html">Register as an advisor &rarr;</a></p>
-        </article>
+ <article class="card" aria-labelledby="pillar-advisors">
+ <h3 id="pillar-advisors"><span aria-hidden="true">👥</span> Advisor affiliate</h3>
+ <p class="card-lead">Certified support orgs / tax / labor / SMB consultants</p>
+ <p>Marketplace that routes inbound inquiries to certified support institutions and licensed advisors. Advisors pay only on successful engagements.</p>
+ <ul class="card-list">
+ <li>Free for end users</li>
+ <li>Advisor pays ¥3,000 per signed engagement</li>
+ <li>No monthly fixed fee</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="advisors.html">Register as an advisor &rarr;</a></p>
+ </article>
 
-        <article class="card" aria-labelledby="pillar-cta" style="background:var(--bg-alt);border-color:var(--accent);">
-          <h3 id="pillar-cta">Not sure which fits?</h3>
-          <p class="card-lead">Comparison table + decision tree</p>
-          <p>Individual / corporate / developer / advisor — a 5-question decision tree picks the right interface for you. Typical use cases and setup time line up side by side.</p>
-          <ul class="card-list">
-            <li>Five-interface comparison table</li>
-            <li>Decision tree per audience</li>
-            <li>Combo recommendations (e.g. MCP + LINE)</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="../products.html">See the comparison &rarr;</a></p>
-        </article>
+ <article class="card" aria-labelledby="pillar-cta" style="background:var(--bg-alt);border-color:var(--accent);">
+ <h3 id="pillar-cta">Not sure which fits?</h3>
+ <p class="card-lead">Comparison table + decision tree</p>
+ <p>Individual / corporate / developer / advisor — a 5-question decision tree picks the right interface for you. Typical use cases and setup time line up side by side.</p>
+ <ul class="card-list">
+ <li>Five-interface comparison table</li>
+ <li>Decision tree per audience</li>
+ <li>Combo recommendations (e.g. MCP + LINE)</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="../products.html">See the comparison &rarr;</a></p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="audiences-title" id="audiences" style="background:var(--bg-alt);">
-    <div class="container">
-      <h2 id="audiences-title" class="section-title">Five ways to use it — pitch by audience</h2>
-      <p class="demo-lead" style="margin:-16px 0 28px;">Same backend, different framing for each role.</p>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+ <section class="features" aria-labelledby="audiences-title" id="audiences" style="background:var(--bg-alt);">
+ <div class="container">
+ <h2 id="audiences-title" class="section-title">Five ways to use it — pitch by audience</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">Same backend, different framing for each role.</p>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
-        <article class="card audience-card" aria-labelledby="aud-tax">
-          <h3 id="aud-tax"><span aria-hidden="true">🧾</span> Tax advisors (zeirishi)</h3>
-          <p class="card-lead audience-context">Mid-size firm, ~80 SMB clients</p>
-          <p class="audience-pitch">When a client asks "which subsidies apply to us this year?", point Claude at the API. About ¥3,000/month metered. Email digest of monthly amendments included.</p>
-          <ul class="card-list">
-            <li>API + MCP (¥3/req)</li>
-            <li>Law-amendment alerts (¥500/month)</li>
-            <li>Monthly digest is free</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="audiences/tax-advisor.html">Tax advisor details &rarr;</a></p>
-        </article>
+ <article class="card audience-card" aria-labelledby="aud-tax">
+ <h3 id="aud-tax"><span aria-hidden="true">🧾</span> Tax advisors (zeirishi)</h3>
+ <p class="card-lead audience-context">Mid-size firm, ~80 SMB clients</p>
+ <p class="audience-pitch">When a client asks "which subsidies apply to us this year?", point Claude at the API. About ¥3,000/month metered. Email digest of monthly amendments included.</p>
+ <ul class="card-list">
+ <li>API + MCP (¥3/req)</li>
+ <li>Law-amendment alerts (¥3/notification)</li>
+ <li>Monthly digest is free</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="audiences/tax-advisor.html">Tax advisor details &rarr;</a></p>
+ </article>
 
-        <article class="card audience-card" aria-labelledby="aud-gyosei">
-          <h3 id="aud-gyosei"><span aria-hidden="true">📑</span> Administrative scriveners (gyoseishoshi)</h3>
-          <p class="card-lead audience-context">Construction-focused, permit-heavy caseload</p>
-          <p class="audience-pitch">Pull "applicable subsidies + loans + permits" for a case in one call. Filter by region × industry × deadline. Try the first 50/month free.</p>
-          <ul class="card-list">
-            <li>API + MCP — one call, cross-source</li>
-            <li>Anonymous 50 req/month per IP free</li>
-            <li>Region × industry × deadline search</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="audiences/admin-scrivener.html">Admin scrivener details &rarr;</a></p>
-        </article>
+ <article class="card audience-card" aria-labelledby="aud-gyosei">
+ <h3 id="aud-gyosei"><span aria-hidden="true">📑</span> Administrative scriveners (gyoseishoshi)</h3>
+ <p class="card-lead audience-context">Construction-focused, permit-heavy caseload</p>
+ <p class="audience-pitch">Pull "applicable subsidies + loans + permits" for a case in one call. Filter by region × industry × deadline. Try the first 50/month free.</p>
+ <ul class="card-list">
+ <li>API + MCP — one call, cross-source</li>
+ <li>Anonymous 50 req/month per IP free</li>
+ <li>Region × industry × deadline search</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="audiences/admin-scrivener.html">Admin scrivener details &rarr;</a></p>
+ </article>
 
-        <article class="card audience-card" aria-labelledby="aud-smb">
-          <h3 id="aud-smb"><span aria-hidden="true">📱</span> SMB owners</h3>
-          <p class="card-lead audience-context">Small business — owner, spouse, one bookkeeper</p>
-          <p class="audience-pitch">Just ask on LINE: "are there subsidies for my industry?" Up to 10 questions/month free, ¥3 per question after that. Zero setup.</p>
-          <ul class="card-list">
-            <li>LINE bot — add as friend, that's it</li>
-            <li>Up to 10 questions/month free</li>
-            <li>¥3 per question (tax exclusive) after</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="audiences/smb.html">SMB details &rarr;</a> · <a href="line.html">LINE bot</a></p>
-        </article>
+ <article class="card audience-card" aria-labelledby="aud-smb">
+ <h3 id="aud-smb"><span aria-hidden="true">📱</span> SMB owners</h3>
+ <p class="card-lead audience-context">Small business — owner, spouse, one bookkeeper</p>
+ <p class="audience-pitch">Just ask on LINE: "are there subsidies for my industry?" Up to 10 questions/month free, ¥3 per question after that. Zero setup.</p>
+ <ul class="card-list">
+ <li>LINE bot — add as friend, that's it</li>
+ <li>Up to 10 questions/month free</li>
+ <li>¥3 per question (tax exclusive) after</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="audiences/smb.html">SMB details &rarr;</a> · <a href="line.html">LINE bot</a></p>
+ </article>
 
-        <article class="card audience-card" aria-labelledby="aud-vc">
-          <h3 id="aud-vc"><span aria-hidden="true">📊</span> VC / M&amp;A advisors</h3>
-          <p class="card-lead audience-context">Investors / acquirers running a DD pipeline</p>
-          <p class="audience-pitch">From a corporate number, fetch 5 years of enforcement history, 10 years of adoption history, and invoice-registrant status in one query. Drop straight into your DD pipeline. ¥3/req metered, no scale ceiling.</p>
-          <ul class="card-list">
-            <li>One query keyed on corporate number</li>
-            <li>Enforcement 1,185 / adoptions 2,286 / invoice 13,801</li>
-            <li>¥3/req fully metered, no scale limits</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="audiences/vc.html">VC / DD details &rarr;</a></p>
-        </article>
+ <article class="card audience-card" aria-labelledby="aud-vc">
+ <h3 id="aud-vc"><span aria-hidden="true">📊</span> VC / M&amp;A advisors</h3>
+ <p class="card-lead audience-context">Investors / acquirers running a DD pipeline</p>
+ <p class="audience-pitch">From a corporate number, fetch 5 years of enforcement history, 10 years of adoption history, and invoice-registrant status in one query. Drop straight into your DD pipeline. ¥3/req metered, no scale ceiling.</p>
+ <ul class="card-list">
+ <li>One query keyed on corporate number</li>
+ <li>Enforcement 1,185 / adoptions 2,286 / invoice 13,801</li>
+ <li>¥3/req fully metered, no scale limits</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="audiences/vc.html">VC / DD details &rarr;</a></p>
+ </article>
 
-        <article class="card audience-card" aria-labelledby="aud-dev">
-          <h3 id="aud-dev"><span aria-hidden="true">🤖</span> AI agent developers</h3>
-          <p class="card-lead audience-context">Claude Desktop / Cursor / your own SaaS integration</p>
-          <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 89 tools. ¥3/req, 50/month free. Works in Claude Desktop and Cursor out of the box.</p>
-          <ul class="card-list">
-            <li>89 MCP tools, protocol 2025-06-18</li>
-            <li>stdio transport, no SDK</li>
-            <li>50 req/month evaluation, then ¥3/req metered</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="audiences/dev.html">Developer details &rarr;</a> · <a href="../docs/mcp-tools/">MCP tool list</a></p>
-        </article>
+ <article class="card audience-card" aria-labelledby="aud-dev">
+ <h3 id="aud-dev"><span aria-hidden="true">🤖</span> AI agent developers</h3>
+ <p class="card-lead audience-context">Claude Desktop / Cursor / your own SaaS integration</p>
+ <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 89 tools. ¥3/req, 50/month free. Works in Claude Desktop and Cursor out of the box.</p>
+ <ul class="card-list">
+ <li>89 MCP tools, protocol 2025-06-18</li>
+ <li>stdio transport, no SDK</li>
+ <li>50 req/month evaluation, then ¥3/req metered</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="audiences/dev.html">Developer details &rarr;</a> · <a href="../docs/mcp-tools/">MCP tool list</a></p>
+ </article>
 
-        <article class="card audience-card" aria-labelledby="aud-other" style="background:var(--bg-alt);border-color:var(--accent);">
-          <h3 id="aud-other">Not on this list?</h3>
-          <p class="card-lead">If none of the five fit</p>
-          <p>Labor consultants, SMB consultants, accounting SaaS, chambers of commerce, municipal officers — the decision tree finds them too. Compare typical use cases, combo recommendations, and setup time side by side.</p>
-          <ul class="card-list">
-            <li>5-question decision tree</li>
-            <li>Combo recommendations (MCP + LINE etc.)</li>
-            <li>Typical use cases lined up</li>
-          </ul>
-          <p style="margin:14px 0 0;"><a href="../products.html">Audience comparison &rarr;</a></p>
-        </article>
+ <article class="card audience-card" aria-labelledby="aud-other" style="background:var(--bg-alt);border-color:var(--accent);">
+ <h3 id="aud-other">Not on this list?</h3>
+ <p class="card-lead">If none of the five fit</p>
+ <p>Labor consultants, SMB consultants, accounting SaaS, chambers of commerce, municipal officers — the decision tree finds them too. Compare typical use cases, combo recommendations, and setup time side by side.</p>
+ <ul class="card-list">
+ <li>5-question decision tree</li>
+ <li>Combo recommendations (MCP + LINE etc.)</li>
+ <li>Typical use cases lined up</li>
+ </ul>
+ <p style="margin:14px 0 0;"><a href="../products.html">Audience comparison &rarr;</a></p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <!-- CRO Fix 2 (2026-04-29): copy-pasteable curl block above the prescreen
+ <!-- CRO Fix 2 (2026-04-29): copy-pasteable curl block above the prescreen
        form. The previous block here required "Authorization: Bearer
        YOUR_API_KEY" — that hid the fact that anon works without one and
        added an obvious friction step ("get a key first"). Replaced with
-       the no-auth version that runs as-is against api.zeimu-kaikei.ai.
+       the no-auth version that runs as-is against api.jpcite.com.
        Source-of-truth lives in site/_data/curl_examples.json. -->
-  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
-    <div class="container">
-      <h2 id="curl-title" class="section-title">Try in 5 seconds (no signup)</h2>
-      <p class="demo-lead" style="margin:-16px 0 16px;">Anonymous IP gets 50 req/month free. Paste and run.</p>
-      <pre class="code-block" id="curl-snippet" aria-label="curl example for /v1/programs/search"><code>$ curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
+ <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
+ <div class="container">
+ <h2 id="curl-title" class="section-title">Try in 5 seconds (no signup)</h2>
+ <p class="demo-lead" style="margin:-16px 0 16px;">Anonymous IP gets 50 req/month free. Paste and run.</p>
+ <pre class="code-block" id="curl-snippet" aria-label="curl example for /v1/programs/search"><code>$ curl 'https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
 {
-  "results": [...],
-  "total": 17
+ "results": [...],
+ "total": 17
 }</code></pre>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:-6px 0 14px;">
-        <button type="button" id="curl-copy-btn" class="btn btn-secondary" data-copy-target="curl-snippet" aria-live="polite" style="padding:8px 16px;font-size:14px;">COPY</button>
-        <span id="curl-copy-status" class="visually-hidden" aria-live="polite"></span>
-        <small style="font-size:13px;color:var(--text-muted);">Query is URL-encoded (<code style="background:#fff;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;">q=IT導入</code>).</small>
-      </div>
-      <p class="demo-note" style="font-size:14px;margin:0 0 14px;">Using an MCP client? &rarr; <a href="/integrations/claude-desktop.html">Claude Desktop integration guide</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
-      <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">This is a search index. We do not provide legal advice, tax advice, or filing services. Activities reserved under 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1 are out of scope. See <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">Terms</a>.</p>
-    </div>
-  </section>
-  <script>
+ <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:-6px 0 14px;">
+ <button type="button" id="curl-copy-btn" class="btn btn-secondary" data-copy-target="curl-snippet" aria-live="polite" style="padding:8px 16px;font-size:14px;">COPY</button>
+ <span id="curl-copy-status" class="visually-hidden" aria-live="polite"></span>
+ <small style="font-size:13px;color:var(--text-muted);">Query is URL-encoded (<code style="background:#fff;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;color:#0a0a0a;">q=IT導入</code>).</small>
+ </div>
+ <p class="demo-note" style="font-size:14px;margin:0 0 14px;">Using an MCP client? &rarr; <a href="/integrations/claude-desktop.html">Claude Desktop integration guide</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
+ <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">This is a search index. We do not provide legal advice, tax advice, or filing services. Activities reserved under 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1 are out of scope. See <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">Terms</a>.</p>
+ </div>
+ </section>
+ <script>
   // CRO Fix 2: vanilla copy-button. No deps, no fetch, no analytics.
   // Falls back to a hidden textarea + execCommand on browsers without
   // navigator.clipboard. Status is announced via aria-live="polite".
@@ -493,264 +495,256 @@
           ta.style.position = 'absolute';
           ta.style.left = '-9999px';
           document.body.appendChild(ta);
-          ta.select();
+          ta.select;
           document.execCommand('copy');
           document.body.removeChild(ta);
           done(true);
         } catch (e) { done(false); }
       }
     });
-  })();
+  });
   </script>
 
-  <section class="prescreen" aria-labelledby="ps-title" id="try">
-    <div class="container">
-      <h2 id="ps-title" class="section-title">Subsidy Prescreen — Top 5 in 3 questions</h2>
-      <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,684 active programs</strong> ranked by fit. Free, no signup, anonymous (50 reqs/month/IP). One call to <code>/v1/programs/prescreen</code>.</p>
-      <style>
+ <section class="prescreen" aria-labelledby="ps-title" id="try">
+ <div class="container">
+ <h2 id="ps-title" class="section-title">Subsidy Prescreen — Top 5 in 3 questions</h2>
+ <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,684 active programs</strong> ranked by fit. Free, no signup, anonymous (50 reqs/month/IP). One call to <code>/v1/programs/prescreen</code>.</p>
+ <style>
         /* prescreen a11y polish — scoped, additive only */
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
         .ps-required-mark { color:#c0392b; margin-left:4px; font-weight:bold; }
         .ps-field-help code { background:#f4f6f8; padding:1px 4px; border-radius:3px; font-size:0.95em; }
         .ps-noscript { background:#fff5e6; border:1px solid #ffb454; border-radius:6px; padding:12px 16px; margin-bottom:16px; color:#7a4a00; }
       </style>
-      <div class="ps-card">
-        <noscript>
-          <p class="ps-noscript"><strong>JavaScript required</strong> — this prescreen uses the fetch API and won't run with JS disabled. The same functionality is available directly via <code>POST https://api.zeimu-kaikei.ai/v1/programs/prescreen</code>. See <a href="/en/getting-started.html">Getting Started</a> for details.</p>
-        </noscript>
-        <form class="ps-form" id="ps-form" data-api-base="https://api.zeimu-kaikei.ai">
-          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-            <label for="ps-company-url">Company URL (leave blank)</label>
-            <input id="ps-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
-          </div>
-          <div class="ps-field">
-            <label for="ps-prefecture">Prefecture<span class="ps-required-mark" aria-hidden="true">*</span></label>
-            <select id="ps-prefecture" name="prefecture" required aria-required="true" aria-describedby="ps-prefecture-help">
-              <option value="全国">Nationwide (no prefecture filter)</option>
-              <option value="北海道">Hokkaido</option><option value="青森県">Aomori</option><option value="岩手県">Iwate</option><option value="宮城県">Miyagi</option><option value="秋田県">Akita</option><option value="山形県">Yamagata</option><option value="福島県">Fukushima</option>
-              <option value="茨城県">Ibaraki</option><option value="栃木県">Tochigi</option><option value="群馬県">Gunma</option><option value="埼玉県">Saitama</option><option value="千葉県">Chiba</option><option value="東京都" selected>Tokyo</option><option value="神奈川県">Kanagawa</option>
-              <option value="新潟県">Niigata</option><option value="富山県">Toyama</option><option value="石川県">Ishikawa</option><option value="福井県">Fukui</option><option value="山梨県">Yamanashi</option><option value="長野県">Nagano</option>
-              <option value="岐阜県">Gifu</option><option value="静岡県">Shizuoka</option><option value="愛知県">Aichi</option><option value="三重県">Mie</option>
-              <option value="滋賀県">Shiga</option><option value="京都府">Kyoto</option><option value="大阪府">Osaka</option><option value="兵庫県">Hyogo</option><option value="奈良県">Nara</option><option value="和歌山県">Wakayama</option>
-              <option value="鳥取県">Tottori</option><option value="島根県">Shimane</option><option value="岡山県">Okayama</option><option value="広島県">Hiroshima</option><option value="山口県">Yamaguchi</option>
-              <option value="徳島県">Tokushima</option><option value="香川県">Kagawa</option><option value="愛媛県">Ehime</option><option value="高知県">Kochi</option>
-              <option value="福岡県">Fukuoka</option><option value="佐賀県">Saga</option><option value="長崎県">Nagasaki</option><option value="熊本県">Kumamoto</option><option value="大分県">Oita</option><option value="宮崎県">Miyazaki</option><option value="鹿児島県">Kagoshima</option><option value="沖縄県">Okinawa</option>
-            </select>
-            <small id="ps-prefecture-help" class="ps-field-help">Picking "Nationwide" drops the regional filter and searches every program. Picking a specific prefecture matches its prefecture-only programs <em>plus</em> all nationwide programs.</small>
-          </div>
-          <div class="ps-field">
-            <label for="ps-form-type">Business form</label>
-            <select id="ps-form-type" name="form_type" aria-describedby="ps-form-type-help">
-              <option value="">Unspecified</option>
-              <option value="false" selected>Corporation (法人)</option>
-              <option value="true">Sole proprietor (個人事業主)</option>
-            </select>
-            <small id="ps-form-type-help" class="ps-field-help">"Unspecified" matches only programs accepting both forms. Picking "Corporation" or "Sole proprietor" returns form-specific programs <em>plus</em> shared ones.</small>
-          </div>
-          <div class="ps-field">
-            <label for="ps-investment">Planned investment (万 yen, 1万 = ¥10,000)</label>
-            <input id="ps-investment" name="planned_investment_man_yen" type="number" min="0" max="1000000" step="100" placeholder="e.g. 800" inputmode="numeric" aria-describedby="ps-investment-help" />
-            <small id="ps-investment-help" class="ps-field-help">Planned investment for equipment, IT systems etc., in <code>万円</code> units (optional). Example: <code>800</code> = 8,000,000 yen. Programs with ceilings near your amount are ranked higher.</small>
-          </div>
-          <button class="ps-submit" type="submit" id="ps-submit">Show top 5</button>
-        </form>
-        <p class="ps-hint">Matching is rule-based against the program database, not LLM inference (prefecture + target_types + amount_fit). Source URLs are primary only. Submissions are not stored — only an IP hash is logged for rate limiting (resets at JST first-of-month).</p>
-        <!-- Live-region split (a11y): announce only the short
+ <div class="ps-card">
+ <noscript>
+ <p class="ps-noscript"><strong>JavaScript required</strong> — this prescreen uses the fetch API and won't run with JS disabled. The same functionality is available directly via <code>POST https://api.jpcite.com/v1/programs/prescreen</code>. See <a href="/en/getting-started.html">Getting Started</a> for details.</p>
+ </noscript>
+ <form class="ps-form" id="ps-form" data-api-base="https://api.jpcite.com">
+ <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+ <label for="ps-company-url">Company URL (leave blank)</label>
+ <input id="ps-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+ </div>
+ <div class="ps-field">
+ <label for="ps-prefecture">Prefecture<span class="ps-required-mark" aria-hidden="true">*</span></label>
+ <select id="ps-prefecture" name="prefecture" required aria-required="true" aria-describedby="ps-prefecture-help">
+ <option value="全国">Nationwide (no prefecture filter)</option>
+ <option value="北海道">Hokkaido</option><option value="青森県">Aomori</option><option value="岩手県">Iwate</option><option value="宮城県">Miyagi</option><option value="秋田県">Akita</option><option value="山形県">Yamagata</option><option value="福島県">Fukushima</option>
+ <option value="茨城県">Ibaraki</option><option value="栃木県">Tochigi</option><option value="群馬県">Gunma</option><option value="埼玉県">Saitama</option><option value="千葉県">Chiba</option><option value="東京都" selected>Tokyo</option><option value="神奈川県">Kanagawa</option>
+ <option value="新潟県">Niigata</option><option value="富山県">Toyama</option><option value="石川県">Ishikawa</option><option value="福井県">Fukui</option><option value="山梨県">Yamanashi</option><option value="長野県">Nagano</option>
+ <option value="岐阜県">Gifu</option><option value="静岡県">Shizuoka</option><option value="愛知県">Aichi</option><option value="三重県">Mie</option>
+ <option value="滋賀県">Shiga</option><option value="京都府">Kyoto</option><option value="大阪府">Osaka</option><option value="兵庫県">Hyogo</option><option value="奈良県">Nara</option><option value="和歌山県">Wakayama</option>
+ <option value="鳥取県">Tottori</option><option value="島根県">Shimane</option><option value="岡山県">Okayama</option><option value="広島県">Hiroshima</option><option value="山口県">Yamaguchi</option>
+ <option value="徳島県">Tokushima</option><option value="香川県">Kagawa</option><option value="愛媛県">Ehime</option><option value="高知県">Kochi</option>
+ <option value="福岡県">Fukuoka</option><option value="佐賀県">Saga</option><option value="長崎県">Nagasaki</option><option value="熊本県">Kumamoto</option><option value="大分県">Oita</option><option value="宮崎県">Miyazaki</option><option value="鹿児島県">Kagoshima</option><option value="沖縄県">Okinawa</option>
+ </select>
+ <small id="ps-prefecture-help" class="ps-field-help">Picking "Nationwide" drops the regional filter and searches every program. Picking a specific prefecture matches its prefecture-only programs <em>plus</em> all nationwide programs.</small>
+ </div>
+ <div class="ps-field">
+ <label for="ps-form-type">Business form</label>
+ <select id="ps-form-type" name="form_type" aria-describedby="ps-form-type-help">
+ <option value="">Unspecified</option>
+ <option value="false" selected>Corporation (法人)</option>
+ <option value="true">Sole proprietor (個人事業主)</option>
+ </select>
+ <small id="ps-form-type-help" class="ps-field-help">"Unspecified" matches only programs accepting both forms. Picking "Corporation" or "Sole proprietor" returns form-specific programs <em>plus</em> shared ones.</small>
+ </div>
+ <div class="ps-field">
+ <label for="ps-investment">Planned investment (万 yen, 1万 = ¥10,000)</label>
+ <input id="ps-investment" name="planned_investment_man_yen" type="number" min="0" max="1000000" step="100" placeholder="e.g. 800" inputmode="numeric" aria-describedby="ps-investment-help" />
+ <small id="ps-investment-help" class="ps-field-help">Planned investment for equipment, IT systems etc., in <code>万円</code> units (optional). Example: <code>800</code> = 8,000,000 yen. Programs with ceilings near your amount are ranked higher.</small>
+ </div>
+ <button class="ps-submit" type="submit" id="ps-submit">Show top 5</button>
+ </form>
+ <p class="ps-hint">Matching is rule-based against the program database, not LLM inference (prefecture + target_types + amount_fit). Source URLs are primary only. Submissions are not stored — only an IP hash is logged for rate limiting (resets at JST first-of-month).</p>
+ <!-- Live-region split (a11y): announce only the short
              status summary, not the entire rendered HTML. JAWS / NVDA /
              VoiceOver previously re-announced the full result HTML on
              each render which was noisy and lost focus. The visible
              card list lives in a non-live region; prescreen-demo.en.js
              writes a short summary into #ps-status-live for AT. -->
-        <p id="ps-status-live" role="status" aria-live="polite" aria-atomic="true" class="visually-hidden"></p>
-        <div class="ps-results" id="ps-results" aria-live="polite" aria-atomic="false" aria-busy="false"></div>
-      </div>
-    </div>
-  </section>
+ <p id="ps-status-live" role="status" aria-live="polite" aria-atomic="true" class="visually-hidden"></p>
+ <div class="ps-results" id="ps-results" aria-live="polite" aria-atomic="false" aria-busy="false"></div>
+ </div>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="vs-llm-title" id="vs-llm">
-    <div class="container">
-      <h2 id="vs-llm-title" class="section-title">Why not just ask ChatGPT?</h2>
-      <p class="demo-lead" style="margin:-16px 0 28px;">Short answer: no. Three structural reasons LLMs alone can't deliver fact-grade Japanese-program judgments.</p>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+ <section class="features" aria-labelledby="vs-llm-title" id="vs-llm">
+ <div class="container">
+ <h2 id="vs-llm-title" class="section-title">Why not just ask ChatGPT?</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">Short answer: no. Three structural reasons LLMs alone can't deliver fact-grade Japanese-program judgments.</p>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
-        <article class="card" aria-labelledby="vs-llm-cutoff">
-          <h3 id="vs-llm-cutoff">Stale training data</h3>
-          <p class="card-lead">Calendar mismatch</p>
-          <p>ChatGPT/Claude/Gemini training cutoffs run months-to-a-year stale. Japanese subsidies move on calendar deadlines ("application closed yesterday"); an LLM alone can't tell you what's <em>currently</em> open. 税務会計AI ships <code>fetched_at</code> on every row.</p>
-        </article>
+ <article class="card" aria-labelledby="vs-llm-cutoff">
+ <h3 id="vs-llm-cutoff">Stale training data</h3>
+ <p class="card-lead">Calendar mismatch</p>
+ <p>ChatGPT/Claude/Gemini training cutoffs run months-to-a-year stale. Japanese subsidies move on calendar deadlines ("application closed yesterday"); an LLM alone can't tell you what's <em>currently</em> open. jpcite ships <code>fetched_at</code> on every row.</p>
+ </article>
 
-        <article class="card" aria-labelledby="vs-llm-halluc">
-          <h3 id="vs-llm-halluc">Source fabrication &amp; aggregator drift</h3>
-          <p class="card-lead">Misidentification = misrepresentation liability</p>
-          <p>Aggregator sites (noukaweb, hojyokin-portal, biz.stayway, etc.) are documented to list expired programs as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
-          <p>税務会計AI <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
-          <p>Every row carries <code>source_url</code> + <code>fetched_at</code>, so you can show your client / regulator / opposing counsel exactly <em>why</em> this program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
-        </article>
+ <article class="card" aria-labelledby="vs-llm-halluc">
+ <h3 id="vs-llm-halluc">Source fabrication &amp; aggregator drift</h3>
+ <p class="card-lead">Misidentification = misrepresentation liability</p>
+ <p>Aggregator sites (noukaweb, hojyokin-portal, biz.stayway, etc.) are documented to list expired programs as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+ <p>jpcite <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
+ <p>Every row carries <code>source_url</code> + <code>fetched_at</code>, so you can show your client / regulator / opposing counsel exactly <em>why</em> this program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
+ </article>
 
-        <article class="card" aria-labelledby="vs-llm-rules">
-          <h3 id="vs-llm-rules">No compatibility logic</h3>
-          <p class="card-lead">Combination rules can't be inferred</p>
-          <p>LLMs can't structurally answer "can I combine subsidy A with subsidy B?" or "does this conflict with my prior award?". 税務会計AI ships 181 exclusion / prerequisite rules for machine-decidable compatibility.</p>
-        </article>
+ <article class="card" aria-labelledby="vs-llm-rules">
+ <h3 id="vs-llm-rules">No compatibility logic</h3>
+ <p class="card-lead">Combination rules can't be inferred</p>
+ <p>LLMs can't structurally answer "can I combine subsidy A with subsidy B?" or "does this conflict with my prior award?". jpcite ships 181 exclusion / prerequisite rules for machine-decidable compatibility.</p>
+ </article>
 
-      </div>
-      <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>LLM agent + 税務会計AI = LLM speed &times; primary-source accuracy</strong>. 税務会計AI isn't an LLM replacement — it's the fact layer that makes LLM output trustworthy.</p>
-    </div>
-  </section>
+ </div>
+ <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>LLM agent + jpcite = LLM speed &times; primary-source accuracy</strong>. jpcite isn't an LLM replacement — it's the fact layer that makes LLM output trustworthy.</p>
+ </div>
+ </section>
 
-  <section class="code-demo" aria-labelledby="why-title">
-    <div class="container">
-      <h2 id="why-title" class="section-title">Why 税務会計AI</h2>
-      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+ <section class="code-demo" aria-labelledby="why-title">
+ <div class="container">
+ <h2 id="why-title" class="section-title">Why jpcite</h2>
+ <div class="cards" style="grid-template-columns:repeat(2,1fr);">
 
-        <article class="card">
-          <h3>No aggregator sources</h3>
-          <p class="card-lead">Misrepresentation-liability avoidance</p>
-          <p>Aggregator sites such as noukaweb, hojyokin-portal, and biz.stayway have been documented to keep expired programs listed as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing on that basis and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
-          <p>税務会計AI's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
-          <p>Because every row carries <code>source_url</code> + <code>fetched_at</code>, you can show your client, the regulator, or opposing counsel exactly <em>why</em> a program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
-        </article>
+ <article class="card">
+ <h3>No aggregator sources</h3>
+ <p class="card-lead">Misrepresentation-liability avoidance</p>
+ <p>Aggregator sites such as noukaweb, hojyokin-portal, and biz.stayway have been documented to keep expired programs listed as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing on that basis and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+ <p>jpcite's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
+ <p>Because every row carries <code>source_url</code> + <code>fetched_at</code>, you can show your client, the regulator, or opposing counsel exactly <em>why</em> a program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
+ </article>
 
-        <article class="card">
-          <h3>Primary source, end to end</h3>
-          <p class="card-lead">Amendments propagate immediately</p>
-          <p>Every program row carries <code>source_url</code> + <code>fetched_at</code>. The fetch date is shown verbatim — never relabeled as "last updated" (which would falsely imply we re-verified currency). Nightly liveness scans flag dead URLs.</p>
-        </article>
+ <article class="card">
+ <h3>Primary source, end to end</h3>
+ <p class="card-lead">Amendments propagate immediately</p>
+ <p>Every program row carries <code>source_url</code> + <code>fetched_at</code>. The fetch date is shown verbatim — never relabeled as "last updated" (which would falsely imply we re-verified currency). Nightly liveness scans flag dead URLs.</p>
+ </article>
 
-        <article class="card">
-          <h3>Exclusion logic is in the data, not the prompt</h3>
-          <p class="card-lead">Catch ineligible combinations up front</p>
-          <p>181 exclusion / prerequisite / absolute rules, structured. The "agent merrily files two incompatible subsidies, both get rejected months later" failure mode is detected the moment you pass program_ids in.</p>
-        </article>
+ <article class="card">
+ <h3>Exclusion logic is in the data, not the prompt</h3>
+ <p class="card-lead">Catch ineligible combinations up front</p>
+ <p>181 exclusion / prerequisite / absolute rules, structured. The "agent merrily files two incompatible subsidies, both get rejected months later" failure mode is detected the moment you pass program_ids in.</p>
+ </article>
 
-        <article class="card">
-          <h3>Cross-dataset glue</h3>
-          <p class="card-lead">One call: program → law → court decision → enforcement</p>
-          <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 35 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus the autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) exposed via 30 tools. The 69-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> for cross-domain resolution.</p>
-        </article>
+ <article class="card">
+ <h3>Cross-dataset glue</h3>
+ <p class="card-lead">One call: program → law → court decision → enforcement</p>
+ <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 35 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus the autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) exposed via 30 tools. The 69-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> for cross-domain resolution.</p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="who-title">
-    <div class="container">
-      <h2 id="who-title" class="section-title">Who is it for</h2>
-      <div class="cards">
+ <section class="features" aria-labelledby="who-title">
+ <div class="container">
+ <h2 id="who-title" class="section-title">Who is it for</h2>
+ <div class="cards">
 
-        <article class="card" aria-labelledby="who-dev">
-          <h3 id="who-dev">Developers / AI engineers</h3>
-          <p class="card-lead">Recommended: API + MCP</p>
-          <p>For embedding into agents, RAG pipelines, or your own SaaS. OpenAPI 3.1, stdio MCP, ¥3/req metered, anonymous 50 req/month for evaluation with no signup.</p>
-        </article>
+ <article class="card" aria-labelledby="who-dev">
+ <h3 id="who-dev">Developers / AI engineers</h3>
+ <p class="card-lead">Recommended: API + MCP</p>
+ <p>For embedding into agents, RAG pipelines, or your own SaaS. OpenAPI 3.1, stdio MCP, ¥3/req metered, anonymous 50 req/month for evaluation with no signup.</p>
+ </article>
 
-        <article class="card" aria-labelledby="who-sme">
-          <h3 id="who-sme">SMB owners</h3>
-          <p class="card-lead">Recommended: LINE bot + advisor affiliate</p>
-          <p>Want to know what your business is eligible for, and to be routed to someone who can file it. Discover via LINE, get matched with a certified support institution or licensed tax advisor. The first 10 questions/month are free; ¥3/question (¥3.30 tax incl.) thereafter — no fixed monthly fee.</p>
-        </article>
+ <article class="card" aria-labelledby="who-sme">
+ <h3 id="who-sme">SMB owners</h3>
+ <p class="card-lead">Recommended: LINE bot + advisor affiliate</p>
+ <p>Want to know what your business is eligible for, and to be routed to someone who can file it. Discover via LINE, get matched with a certified support institution or licensed tax advisor. The first 10 questions/month are free; ¥3/question (¥3.30 tax incl.) thereafter — no fixed monthly fee.</p>
+ </article>
 
-        <article class="card" aria-labelledby="who-shigyo">
-          <h3 id="who-shigyo">Professional advisors (tax / labor / SMB consultants)</h3>
-          <p class="card-lead">Recommended: alerts + embeddable widget + advisor registration</p>
-          <p>Don't miss amendments, generate inbound on your own site, accept routed cases. Alerts ¥500/month, widget ¥10,000/month, advisor billing only on signed engagements.</p>
-        </article>
+ <article class="card" aria-labelledby="who-shigyo">
+ <h3 id="who-shigyo">Professional advisors (tax / labor / SMB consultants)</h3>
+ <p class="card-lead">Recommended: alerts + embeddable widget + advisor registration</p>
+ <p>Don't miss amendments, generate inbound on your own site, accept routed cases. Alerts ¥3/notification, widget ¥3/search metered, advisor billing only on signed engagements.</p>
+ </article>
 
-        <article class="card" aria-labelledby="who-biz">
-          <h3 id="who-biz">Corporate (compliance / accounting)</h3>
-          <p class="card-lead">Recommended: alerts + API for internal RAG</p>
-          <p>Stay current on invoice law, electronic-bookkeeping law, and Premiums &amp; Misrepresentation Act amendments. Alerts surface the change; the API serves the detail to internal tooling.</p>
-        </article>
+ <article class="card" aria-labelledby="who-biz">
+ <h3 id="who-biz">Corporate (compliance / accounting)</h3>
+ <p class="card-lead">Recommended: alerts + API for internal RAG</p>
+ <p>Stay current on invoice law, electronic-bookkeeping law, and Premiums &amp; Misrepresentation Act amendments. Alerts surface the change; the API serves the detail to internal tooling.</p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="pricing-preview" aria-labelledby="pricing-summary-title">
-    <div class="container">
-      <h2 id="pricing-summary-title" class="section-title">Pricing summary</h2>
-      <div class="table-wrap">
-        <table class="pricing-table">
-          <caption class="visually-hidden">Pricing summary for the five interfaces.</caption>
-          <thead>
-            <tr>
-              <th scope="col">Interface</th>
-              <th scope="col">Free tier</th>
-              <th scope="col">Paid</th>
-              <th scope="col">Tax inclusive</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">API + MCP</th>
-              <td>50 req/month per IP</td>
-              <td>¥3 / req (tax excl.)</td>
-              <td>¥3.30 / req</td>
-            </tr>
-            <tr>
-              <th scope="row">LINE bot</th>
-              <td>10 questions/month</td>
-              <td>¥3 / question (tax excl.)</td>
-              <td>¥3.30 / question</td>
-            </tr>
-            <tr>
-              <th scope="row">Law-amendment alerts</th>
-              <td>Monthly digest</td>
-              <td>¥500 / month (tax excl.)</td>
-              <td>¥550 / month</td>
-            </tr>
-            <tr>
-              <th scope="row">Embeddable widget</th>
-              <td>—</td>
-              <td>¥10,000 / month (10,000 req included)</td>
-              <td>¥11,000 / month</td>
-            </tr>
-            <tr>
-              <th scope="row">Advisor affiliate</th>
-              <td>Free for end users</td>
-              <td>¥3,000 / signed engagement (advisor pays)</td>
-              <td>¥3,300 / engagement</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="pricing-note"><a href="pricing.html">Full pricing details &rarr;</a> · Auto-issued tax invoice (T8010001213708), Stripe Tax handled, cancel anytime. Billing is JPY; 10% JCT added at invoice; your card network handles FX.</p>
-    </div>
-  </section>
+ <section class="pricing-preview" aria-labelledby="pricing-summary-title">
+ <div class="container">
+ <h2 id="pricing-summary-title" class="section-title">Pricing summary</h2>
+ <div class="table-wrap">
+ <table class="pricing-table">
+ <caption class="visually-hidden">Pricing summary for the five interfaces.</caption>
+ <thead>
+ <tr>
+ <th scope="col">Interface</th>
+ <th scope="col">Free tier</th>
+ <th scope="col">Paid</th>
+ <th scope="col">Tax inclusive</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <th scope="row">API + MCP</th>
+ <td>50 req/month per IP</td>
+ <td>¥3 / req (tax excl.)</td>
+ <td>¥3.30 / req</td>
+ </tr>
+ <tr>
+ <th scope="row">LINE bot</th>
+ <td>10 questions/month</td>
+ <td>¥3 / question (tax excl.)</td>
+ <td>¥3.30 / question</td>
+ </tr>
+ <tr>
+ <th scope="row">Law-amendment alerts</th>
+ <td>Monthly digest</td>
+ <td>¥500 / month (tax excl.)</td>
+ <td>¥550 / month</td>
+ </tr>
+ <tr>
+ <th scope="row">Embeddable widget</th>
+ <td>—</td>
+ <td>¥10,000 / month (10,000 req included)</td>
+ <td>¥11,000 / month</td>
+ </tr>
+ <tr>
+ <th scope="row">Advisor affiliate</th>
+ <td>Free for end users</td>
+ <td>¥3,000 / signed engagement (paid by professional)</td>
+ <td>¥3,300 / engagement</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p class="pricing-note"><a href="pricing.html">Full pricing details &rarr;</a> · Auto-issued tax invoice , Stripe Tax handled, cancel anytime. Billing is JPY; 10% JCT added at invoice; your card network handles FX.</p>
+ </div>
+ </section>
 
 </main>
 
 <div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
-    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
-    <a href="/en/tos.html">Terms</a> |
-    <a href="/en/privacy.html">Privacy</a> |
-    <a href="/docs/api-reference/">OpenAPI</a> |
-    Data last refreshed: <time data-trust-fresh datetime="2026-04-25">Apr 25, 2026</time>
-  </p>
 </div>
 
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">Japanese public-program API</p>
-    </div>
-    <nav class="footer-nav" aria-label="Footer">
-      <a href="about.html">About</a>
-      <a href="getting-started.html">Getting started</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="changelog.html">Changelog</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Getting started</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="changelog.html">Changelog</a>
+ <a href="privacy.html">Privacy</a>
+ <a href="tokushoho.html">Legal (JP)</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
 </footer>
 
 <script src="/assets/prescreen-demo.en.js" defer></script>

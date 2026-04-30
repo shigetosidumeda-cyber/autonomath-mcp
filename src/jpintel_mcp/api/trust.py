@@ -365,7 +365,7 @@ async def submit_correction(
 # 4. Corrections RSS feed  /  GET /v1/corrections/feed
 # ---------------------------------------------------------------------------
 
-_RSS_DOMAIN = "zeimu-kaikei.ai"
+_RSS_DOMAIN = "jpcite.com"
 
 
 @router.get(

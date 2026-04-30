@@ -207,7 +207,7 @@ sqlite3 data/jpintel.db "SELECT count(*) FROM exclusion_rules WHERE rule_id NOT 
 # ≥ 50 で green
 
 # criteria b
-curl -s "http://localhost:8000/v1/adoption/find_similar?unified_id=UNI-keiei-kaishi-shikin&limit=20" | jq '.results | length'
+curl -s "http://localhost:8000/v1/adoption/find_similar?unified_id=UNI-UNI-71f6029070&limit=20" | jq '.results | length'
 curl -s "http://localhost:8000/meta" | jq '.adoption_total'
 # length ≥ 20, adoption_total ≥ 10000 で green
 

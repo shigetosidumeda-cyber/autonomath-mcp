@@ -1,0 +1,11 @@
+{
+  "茨城県": {
+    "attempted": 24,
+    "fetch_failed": 0,
+    "inserted": 0,
+    "parsed": 24,
+    "robots_blocked": 0,
+    "skipped": 24,
+    "unparseable": 0
+  }
+}

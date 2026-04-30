@@ -39,15 +39,16 @@ _REPO = Path(__file__).resolve().parent.parent
 _SITE_AUDIENCES = _REPO / "site" / "audiences"
 
 # Match calls like:
-#   curl 'https://api.zeimu-kaikei.ai/v1/programs/search?q=...'
-#   curl "https://api.zeimu-kaikei.ai/v1/exclusions/check"
-#   httpx.get("https://api.zeimu-kaikei.ai/v1/...")
-#   httpx.post("https://api.zeimu-kaikei.ai/v1/...", json=...)
+#   curl 'https://api.jpcite.com/v1/programs/search?q=...'
+#   curl "https://api.jpcite.com/v1/exclusions/check"
+#   httpx.get("https://api.jpcite.com/v1/...")
+#   httpx.post("https://api.jpcite.com/v1/...", json=...)
 #
-# Both the live brand (`zeimu-kaikei.ai`) and the legacy brand
-# (`autonomath.ai`) are accepted so the tests survive copy-rebrand
-# work in either direction without dropping examples on the floor.
-_API_HOST_RE = r"api\.(?:zeimu-kaikei|autonomath)\.ai"
+# The live brand (`jpcite.com`) and the legacy brands
+# (`zeimu-kaikei.ai`, `autonomath.ai`) are all accepted so the tests
+# survive copy-rebrand work in either direction without dropping
+# examples on the floor.
+_API_HOST_RE = r"api\.(?:jpcite\.com|zeimu-kaikei\.ai|autonomath\.ai)"
 _CURL_URL_RE = re.compile(
     rf"https?://{_API_HOST_RE}(/[A-Za-z0-9_/{{}}.-]+(?:\?[^\s'\"`]*)?)"
 )
@@ -65,7 +66,8 @@ def _normalise_url(raw: str) -> str:
     Audience HTML often wraps long URLs across visual lines via a literal
     backslash + newline. The browser collapses that on render but our
     regex needs to do the same before we hand it to TestClient. Strips
-    either the live brand (`zeimu-kaikei.ai`) or legacy (`autonomath.ai`).
+    either the live brand (`jpcite.com`) or legacy brands
+    (`zeimu-kaikei.ai`, `autonomath.ai`).
     """
     # Drop scheme + host (live or legacy brand)
     path = re.sub(rf"^https?://{_API_HOST_RE}", "", raw)

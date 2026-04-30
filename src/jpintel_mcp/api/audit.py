@@ -145,7 +145,7 @@ _BRAND = {
     "operator_legal_name": "Bookyou株式会社",
     "houjin_bangou": "T8010001213708",
     "operator_email": "info@bookyou.net",
-    "operator_url": "https://zeimu-kaikei.ai",
+    "operator_url": "https://jpcite.com",
 }
 
 
@@ -1460,7 +1460,7 @@ def _signed_url_for(token: str, fmt: str) -> str:
     base = (
         getattr(settings, "public_api_base_url", None)
         or getattr(settings, "api_base_url", None)
-        or "https://api.zeimu-kaikei.ai"
+        or "https://api.jpcite.com"
     )
     base = base.rstrip("/")
     qs = urllib.parse.urlencode({"fmt": fmt})

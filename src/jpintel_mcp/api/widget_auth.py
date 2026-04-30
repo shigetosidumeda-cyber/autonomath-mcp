@@ -697,8 +697,8 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
         custom_text={
             "submit": {
                 "message": (
-                    "ご登録により利用規約 (https://zeimu-kaikei.ai/tos.html) "
-                    "およびプライバシーポリシー (https://zeimu-kaikei.ai/privacy.html) "
+                    "ご登録により利用規約 (https://jpcite.com/tos.html) "
+                    "およびプライバシーポリシー (https://jpcite.com/privacy.html) "
                     "に同意したものとみなされます。"
                 )
             }

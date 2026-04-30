@@ -1,6 +1,6 @@
 # Landing Page 景表法 Disclaimer Blocks
 
-**対象**: zeimu-kaikei.ai (本番 landing page / 各 product page)
+**対象**: jpcite.com (本番 landing page / 各 product page)
 **規制対象法**: 不当景品類及び不当表示防止法 (景品表示法、景表法)、消費者契約法
 **最終改訂日**: 2026-04-24
 **事業者**: Bookyou株式会社 (T8010001213708)
@@ -9,7 +9,7 @@
 
 ## 0. 使い方
 
-この文書は、zeimu-kaikei.ai 本番 site で **そのまま再利用できる reusable block** を集めたものです。各 section の HTML / Markdown をコピーして landing page / docs に配置してください。
+この文書は、jpcite.com 本番 site で **そのまま再利用できる reusable block** を集めたものです。各 section の HTML / Markdown をコピーして landing page / docs に配置してください。
 
 **重要**: landing page 公開前に、本文書の `blocks/` セクションを全 page に反映することを推奨します。
 
@@ -75,7 +75,7 @@
 ```markdown
 **お客様への依頼**: AutonoMath の response を自社 app / 顧客提案 / report 等で再利用する際は、以下の disclaimer を末尾に付与することを強く推奨します。
 
-> 本情報は AutonoMath DB (https://zeimu-kaikei.ai) に基づく参考情報です。制度内容は頻繁に改訂されるため、最新の受給要件・申請締切は各制度の所管窓口にご確認ください。受給可否は審査結果次第であり、本情報は受給を保証するものではありません。
+> 本情報は AutonoMath DB (https://jpcite.com) に基づく参考情報です。制度内容は頻繁に改訂されるため、最新の受給要件・申請締切は各制度の所管窓口にご確認ください。受給可否は審査結果次第であり、本情報は受給を保証するものではありません。
 ```
 
 ### Block C: pricing page の disclaimer
@@ -91,7 +91,7 @@
 ```markdown
 ---
 
-**AutonoMath** is operated by Bookyou株式会社 (法人番号: T8010001213708)
+**AutonoMath** is operated by Bookyou株式会社 (適格請求書発行事業者番号: T8010001213708)
 〒112-0006 東京都文京区小日向2-22-1
 Email: info@bookyou.net
 
@@ -140,7 +140,7 @@ OK:
 
 ## 3. 各 page 別 checklist
 
-### 3.1 Top page (zeimu-kaikei.ai)
+### 3.1 Top page (jpcite.com)
 
 - [ ] Block A (hero 直下 disclaimer) 配置
 - [ ] 「必ず」「100%」「絶対」 等の NG 表現 grep = 0 件

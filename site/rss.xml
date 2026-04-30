@@ -2,8 +2,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
   <title>AutonoMath お知らせ</title>
-  <link>https://zeimu-kaikei.ai/</link>
-  <atom:link href="https://zeimu-kaikei.ai/rss.xml" rel="self" type="application/rss+xml" />
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss.xml" rel="self" type="application/rss+xml" />
   <description>AutonoMath (Bookyou株式会社) のリリース・データ取り込み・主要マイグレーションのお知らせ。日本の補助金・融資・税制・認定・法令・判例・入札・適格事業者を統合した REST API / MCP サーバ。</description>
   <language>ja</language>
   <copyright>(C) 2026 Bookyou株式会社</copyright>
@@ -12,15 +12,15 @@
 
   <item>
     <title>v0.3.0 リリース — 拡張データセット + 認定支援機関データセット 取り込み完了 (8.29 GB 統合 DB)</title>
-    <link>https://zeimu-kaikei.ai/facts.html#changelog-title</link>
-    <description>2026-04-25 に v0.3.0 を出荷。MCP ツール 55 → 69 (39 jpintel + 30 autonomath、デフォルト gate)、エンティティ 424,054 → 503,930、ファクト 5.26M → 6.12M。pyproject.toml / server.json / mcp-server.json / dxt/manifest.json / smithery.yaml をすべて v0.3.0 にバンプ。</description>
+    <link>https://jpcite.com/facts.html#changelog-title</link>
+    <description>2026-04-25 に v0.3.0 を出荷。MCP ツール 55 → 69  + 30 autonomath、デフォルト gate)、エンティティ 424,054 → 503,930、ファクト 5.26M → 6.12M。pyproject.toml / server.json / mcp-server.json / dxt/manifest.json / smithery.yaml をすべて v0.3.0 にバンプ。</description>
     <guid isPermaLink="false">autonomath:release:v0.3.0:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 12:00:00 +0000</pubDate>
   </item>
 
   <item>
     <title>メタデータ tools 追加 — annotations / validate / provenance の 4 ツール公開</title>
-    <link>https://zeimu-kaikei.ai/facts.html#changelog-title</link>
+    <link>https://jpcite.com/facts.html#changelog-title</link>
     <description>migrations 046–049 適用。examiner_feedback 16,474 アノテーション + gbiz 79,876 法人 (corporate_entity 87,093 → 166,969) を統合。汎用ツール 4 種 (get_annotations / validate / get_provenance / get_provenance_for_fact) を REST + MCP 両方で公開。</description>
     <guid isPermaLink="false">autonomath:absorption:v4:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 09:00:00 +0000</pubDate>
@@ -28,7 +28,7 @@
 
   <item>
     <title>静的データセット tools 追加 — 静的タクソノミ 8 種 + 36協定テンプレート</title>
-    <link>https://zeimu-kaikei.ai/facts.html#changelog-title</link>
+    <link>https://jpcite.com/facts.html#changelog-title</link>
     <description>新規 7 ツール追加 (list_static_resources_am / get_static_resource_am / list_example_profiles_am / get_example_profile_am / render_36_kyotei_am / get_36_kyotei_metadata_am / deep_health_am)。サンプルプロファイル 5 件と 36協定テンプレートを実装、render_36_kyotei_am は社労士監修待ち launch gate 配下。</description>
     <guid isPermaLink="false">autonomath:absorption:phase-a:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 07:00:00 +0000</pubDate>
@@ -36,7 +36,7 @@
 
   <item>
     <title>統合 DB マイグレーション — autonomath.db を主 DB に</title>
-    <link>https://zeimu-kaikei.ai/facts.html#changelog-title</link>
+    <link>https://jpcite.com/facts.html#changelog-title</link>
     <description>migration 032 で jpintel.db のテーブル群を autonomath.db (8.29 GB) へ jpi_* 接頭辞付きで物理マージ。78 ミラーテーブル + クロスドメイン view (entity_id_map / v_program_full / v_houjin_360 / v_readiness_input) を新設。data/autonomath.db は 0-byte placeholder、本番コードはリポジトリ root を読む。</description>
     <guid isPermaLink="false">autonomath:migration:032-unify-dbs:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 05:00:00 +0000</pubDate>
@@ -44,7 +44,7 @@
 
   <item>
     <title>適格事業者データ追加 (PDL v1.0 delta、13,801 件)</title>
-    <link>https://zeimu-kaikei.ai/facts.html#changelog-title</link>
+    <link>https://jpcite.com/facts.html#changelog-title</link>
     <description>国税庁適格請求書発行事業者公表サイトの PDL v1.0 delta を invoice_registrants に取り込み (13,801 件、出典明記 + 編集注記付き)。月次フルバルク 4M 行は launch 後に追加予定。¥3/req API 下流提供は PDL v1.0 で許諾済み。</description>
     <guid isPermaLink="false">autonomath:dataset:invoice-registrants-pdl:2026-04-24</guid>
     <pubDate>Fri, 24 Apr 2026 12:00:00 +0000</pubDate>

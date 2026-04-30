@@ -8,10 +8,10 @@
 <title>AutonoMath Embed Widget — Demo</title>
 <meta name="description" content="Standalone demo of the AutonoMath subsidy-search widget. Light, dark, compact, and programmatic embed examples — all rendered with the same production JS.">
 <meta name="robots" content="noindex">
-<link rel="canonical" href="https://zeimu-kaikei.ai/en/widget/demo.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/widget/demo.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/widget/demo.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/widget/demo.html">
+<link rel="canonical" href="https://jpcite.com/en/widget/demo.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/widget/demo.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget/demo.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget/demo.html">
 <style>
   :root {
     color-scheme: light dark;
@@ -103,8 +103,8 @@
 <meta property="og:title" content="AutonoMath Embed Widget — Demo">
 <meta property="og:description" content="Standalone demo of the AutonoMath subsidy-search widget. Light, dark, compact, and programmatic embed examples — all rendered with the same production JS.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/en/widget/demo.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/en/widget/demo.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
@@ -113,97 +113,97 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AutonoMath Embed Widget — Demo">
 <meta name="twitter:description" content="Standalone demo of the AutonoMath subsidy-search widget. Light, dark, compact, and programmatic embed examples — all rendered with the same production JS.">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 </head>
 <body>
 <div class="wrap">
-  <p class="lang-switch">
-    <a href="../../widget/demo.html" lang="ja" hreflang="ja">JP</a>
-    /
-    <a href="demo.html" lang="en" hreflang="en" aria-current="page">EN</a>
-  </p>
-  <nav class="crumb" aria-label="Breadcrumb">
-    <a href="../index.html">Home</a> &raquo; <a href="../widget.html">Widget</a> &raquo; <span aria-current="page">Demo</span>
-  </nav>
-  <h1>AutonoMath Embed Widget — Demo</h1>
-  <p class="lead">
-    This page renders the widget across themes and configurations. To use it
-    in production, sign up on the
-    <a href="../widget.html">Widget product page</a> and embed the
-    <code>wgt_live_...</code> key on your origin-allowlisted site.
-  </p>
+ <p class="lang-switch">
+ <a href="../../widget/demo.html" lang="ja" hreflang="ja">JP</a>
+ /
+ <a href="demo.html" lang="en" hreflang="en" aria-current="page">EN</a>
+ </p>
+ <nav class="crumb" aria-label="Breadcrumb">
+ <a href="../index.html">Home</a> &raquo; <a href="../widget.html">Widget</a> &raquo; <span aria-current="page">Demo</span>
+ </nav>
+ <h1>AutonoMath Embed Widget — Demo</h1>
+ <p class="lead">
+ This page renders the widget across themes and configurations. To use it
+ in production, sign up on the
+ <a href="../widget.html">Widget product page</a> and embed the
+ <code>wgt_live_...</code> key on your origin-allowlisted site.
+ </p>
 
-  <h2>Light theme (default, English UI)</h2>
-  <div class="panel">
-    <div data-autonomath-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="light"
-         data-language="en"
-         data-filters="prefecture,industry,target"
-         data-limit="5"></div>
-    <p class="note">
-      The widget above runs against a demo key. Real API requests are rejected
-      by the origin allowlist. With a production key on an allowlisted origin,
-      live results render.
-    </p>
-  </div>
+ <h2>Light theme (default, English UI)</h2>
+ <div class="panel">
+ <div data-autonomath-widget
+ data-key="wgt_live_00000000000000000000000000000000"
+ data-theme="light"
+ data-language="en"
+ data-filters="prefecture,industry,target"
+ data-limit="5"></div>
+ <p class="note">
+ The widget above runs against a demo key. Real API requests are rejected
+ by the origin allowlist. With a production key on an allowlisted origin,
+ live results render.
+ </p>
+ </div>
 
-  <h2>Dark theme (English UI)</h2>
-  <div class="panel dark">
-    <div data-autonomath-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="dark"
-         data-language="en"
-         data-filters="prefecture,industry,target"
-         data-limit="5"></div>
-  </div>
+ <h2>Dark theme (English UI)</h2>
+ <div class="panel dark">
+ <div data-autonomath-widget
+ data-key="wgt_live_00000000000000000000000000000000"
+ data-theme="dark"
+ data-language="en"
+ data-filters="prefecture,industry,target"
+ data-limit="5"></div>
+ </div>
 
-  <h2>Prefecture filter only (compact)</h2>
-  <div class="panel">
-    <div data-autonomath-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="light"
-         data-language="en"
-         data-filters="prefecture"
-         data-limit="3"></div>
-  </div>
+ <h2>Prefecture filter only (compact)</h2>
+ <div class="panel">
+ <div data-autonomath-widget
+ data-key="wgt_live_00000000000000000000000000000000"
+ data-theme="light"
+ data-language="en"
+ data-filters="prefecture"
+ data-limit="3"></div>
+ </div>
 
-  <h2>Japanese UI (language=ja)</h2>
-  <div class="panel">
-    <div data-autonomath-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="light"
-         data-language="ja"
-         data-filters="prefecture,industry,target"
-         data-limit="5"></div>
-  </div>
+ <h2>Japanese UI (language=ja)</h2>
+ <div class="panel">
+ <div data-autonomath-widget
+ data-key="wgt_live_00000000000000000000000000000000"
+ data-theme="light"
+ data-language="ja"
+ data-filters="prefecture,industry,target"
+ data-limit="5"></div>
+ </div>
 
-  <h2>Programmatic (JS API)</h2>
-  <div class="panel">
-    <div id="programmatic-target"></div>
-  </div>
+ <h2>Programmatic (JS API)</h2>
+ <div class="panel">
+ <div id="programmatic-target"></div>
+ </div>
 
-  <pre><code>new Autonomath.Widget({
-  container: '#programmatic-target',
-  key: 'wgt_live_00000000000000000000000000000000',
-  filters: ['industry', 'prefecture'],
-  theme: 'light',
-  language: 'en',
-  limit: 5,
-  onResult: function (p) { console.log('matched:', p.unified_id); }
+ <pre><code>new Autonomath.Widget({
+ container: '#programmatic-target',
+ key: 'wgt_live_00000000000000000000000000000000',
+ filters: ['industry', 'prefecture'],
+ theme: 'light',
+ language: 'en',
+ limit: 5,
+ onResult: function (p) { console.log('matched:', p.unified_id); }
 });</code></pre>
 
-  <h2>Embed snippet (two lines)</h2>
-  <pre><code>&lt;script src="https://zeimu-kaikei.ai/widget/autonomath.js"&gt;&lt;/script&gt;
+ <h2>Embed snippet (two lines)</h2>
+ <pre><code>&lt;script src="https://jpcite.com/widget/autonomath.js"&gt;&lt;/script&gt;
 &lt;div data-autonomath-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</code></pre>
 
-  <p class="note">
-    A single snippet produces the search UI, results list, primary-source
-    links, and (on the Business plan) the "powered by AutonoMath" footer.
-    See <a href="../widget.html">the Widget product page</a> for plans and
-    pricing. Operated by Bookyou Inc. (T8010001213708) ·
-    <a href="mailto:info@bookyou.net">info@bookyou.net</a>.
-  </p>
+ <p class="note">
+ A single snippet produces the search UI, results list, primary-source
+ links, and (on the Business plan) the "powered by AutonoMath" footer.
+ See <a href="../widget.html">the Widget product page</a> for plans and
+ pricing. Operated by Bookyou Inc. ·
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>.
+ </p>
 </div>
 
 <script src="../../widget/autonomath.js"></script>

@@ -94,7 +94,7 @@ _SOFT_WARNING_THRESHOLD_REMAINING = 10
 # already uses ``UPGRADE_URL_FROM_429`` (?from=429); the soft warning
 # uses the bare ``/upgrade`` URL so funnel analytics can distinguish
 # preventive conversions from forced ones.
-_SOFT_UPGRADE_URL = "https://zeimu-kaikei.ai/upgrade"
+_SOFT_UPGRADE_URL = "https://jpcite.com/upgrade"
 
 
 def _is_anonymous(request: Request) -> bool:

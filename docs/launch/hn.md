@@ -1,7 +1,7 @@
 # Hacker News — Show HN
 
-**Submit URL field**: `https://zeimu-kaikei.ai`
-**Title (73 chars)**: `Show HN: 税務会計AI – Japanese tax & subsidy data API for LLM agents (¥3/req)`
+**Submit URL field**: `https://jpcite.com`
+**Title (73 chars)**: `Show HN: jpcite – Japanese tax & subsidy data API for LLM agents (¥3/req)`
 
 ASCII fallback if HN strips the kanji:
 `Show HN: AutonoMath - Japanese tax/subsidy data API for LLM agents (3 yen/req)`
@@ -10,7 +10,7 @@ ASCII fallback if HN strips the kanji:
 
 ## First comment (text post body)
 
-Hi HN. I've been building 税務会計AI (autonomath-mcp on PyPI) for about a year — a search API + MCP server over Japanese institutional data: 10,790 subsidy programs, 9,484 e-Gov laws, 2,065 court decisions, 13,801 invoice registrants, 35 tax rulesets, 1,185 enforcement records, 2,286 採択事例. Every row carries a primary-source URL (ministry / prefecture / 公庫 / 国税庁) — aggregators are explicitly banned from the source field.
+Hi HN. I've been building jpcite (autonomath-mcp on PyPI) for about a year — a search API + MCP server over Japanese institutional data: 10,790 subsidy programs, 9,484 e-Gov laws, 2,065 court decisions, 13,801 invoice registrants, 35 tax rulesets, 1,185 enforcement records, 2,286 採択事例. Every row carries a primary-source URL (ministry / prefecture / 公庫 / 国税庁) — aggregators are explicitly banned from the source field.
 
 I built it because the existing surface for accessing this data is awful. The portals are PHP-era, search is keyword-AND only, half the URLs 404 within 18 months, and aggregator sites SEO-spam the rest. For an LLM agent doing due diligence on a Japanese SMB, there was no clean machine-readable layer. So I made one.
 
@@ -23,13 +23,13 @@ Honest positioning — this is **information lookup, not advice**. It's not a �
 Try it (no key needed for the first 50/month):
 
 ```
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
-Returns JSON with primary-source URLs. OpenAPI: `https://api.zeimu-kaikei.ai/openapi.json`.
+Returns JSON with primary-source URLs. OpenAPI: `https://api.jpcite.com/openapi.json`.
 
 Repo: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 PyPI: https://pypi.org/project/autonomath-mcp/
-Pricing: https://zeimu-kaikei.ai/docs/pricing/
+Pricing: https://jpcite.com/docs/pricing/
 
 I'm one person (Bookyou株式会社, T8010001213708). No VC, no support team. Happy to answer architecture / data-pipeline / pricing questions in this thread.

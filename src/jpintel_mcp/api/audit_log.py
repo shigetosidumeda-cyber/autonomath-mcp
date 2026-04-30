@@ -123,7 +123,7 @@ def _decode_cursor(cursor: str) -> tuple[str, int]:
         "(税込 ¥3.30) and bypass the anonymous ceiling.\n\n"
         "**Honesty:** AutonoMath detects field-level diffs from public "
         "government sources via daily cron. **検出のみで個別判断は行いません。** "
-        "Subscribe to `https://zeimu-kaikei.ai/audit-log.rss` for an RSS "
+        "Subscribe to `https://jpcite.com/audit-log.rss` for an RSS "
         "feed of the same data."
     ),
     responses={
@@ -283,7 +283,7 @@ def rest_audit_log(
                 "公的機関データの差分を毎日 cron で検出。"
                 "検出のみで個別判断は行いません。"
             ),
-            "rss": "https://zeimu-kaikei.ai/audit-log.rss",
+            "rss": "https://jpcite.com/audit-log.rss",
             "license_metadata": "CC-BY-4.0 (差分メタデータ)",
             "creator": "Bookyou株式会社 (T8010001213708)",
         },

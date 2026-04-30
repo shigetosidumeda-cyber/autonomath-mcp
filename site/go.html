@@ -30,28 +30,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>有効化 — 税務会計AI</title>
-<meta name="description" content="税務会計AI MCP の自動認証ページ。Apple Pay / Google Pay / カードで ¥3/req 従量課金を有効化します。">
+<title>有効化 — jpcite</title>
+<meta name="description" content="jpcite MCP の自動認証ページ。Apple Pay / Google Pay / カードで ¥3/req 従量課金を有効化します。">
 <meta name="robots" content="noindex,nofollow">
 
-<meta property="og:title" content="有効化 — 税務会計AI">
+<meta property="og:title" content="有効化 — jpcite">
 <meta property="og:description" content="MCP の自動認証ページ。設定ファイルの編集は不要です。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/go">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta property="og:url" content="https://jpcite.com/go">
+<meta property="og:image" content="https://jpcite.com/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/go">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/go">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/go.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/go">
+<link rel="canonical" href="https://jpcite.com/go">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/go">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/go.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/go">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <style>
@@ -211,139 +214,158 @@
   }
 </style>
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 </head>
 <body>
 
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="go" lang="ja" hreflang="ja" aria-current="page">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="en/go.html" lang="en" hreflang="en">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/go.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/go.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="go-page">
-  <div class="container">
+ <div class="container">
 
-    <div id="state-form" class="go-card" tabindex="-1">
-      <h1>MCP を有効化</h1>
-      <p class="lead">
-        Claude など MCP クライアントから 税務会計AI を使い続けるために、
-        カードを登録します。<strong>設定ファイルの編集は不要です。</strong>
-        支払い後、自動的にキーが MCP サーバーへ渡ります。
-      </p>
+ <div id="state-form" class="go-card" tabindex="-1">
+ <h1>MCP を有効化</h1>
+ <p class="lead">
+ Claude など MCP クライアントから jpcite を使い続けるために、
+ カードを登録します。<strong>設定ファイルの編集は不要です。</strong>
+ 支払い後、自動的にキーが MCP サーバーへ渡ります。
+ </p>
 
-      <form id="go-form" novalidate>
-        <div class="field">
-          <label for="user_code">確認コード</label>
-          <div class="recovery-box" id="recovery-box" aria-hidden="true">ABCD-1234</div>
-          <input
-            id="user_code"
-            name="user_code"
-            type="text"
-            autocomplete="off"
-            spellcheck="false"
-            inputmode="latin"
-            maxlength="9"
-            placeholder="ABCD-1234">
-          <p class="hint">URL (/go/ABCD-1234) からアクセスした場合は自動入力済みです。</p>
-        </div>
+ <form id="go-form" novalidate>
+ <div class="field">
+ <label for="user_code">確認コード</label>
+ <div class="recovery-box" id="recovery-box" aria-hidden="true">ABCD-1234</div>
+ <input
+ id="user_code"
+ name="user_code"
+ type="text"
+ autocomplete="off"
+ spellcheck="false"
+ inputmode="latin"
+ maxlength="9"
+ placeholder="ABCD-1234">
+ <p class="hint">URL (/go/ABCD-1234) からアクセスした場合は自動入力済みです。</p>
+ </div>
 
-        <div class="field">
-          <label for="email">メールアドレス <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-          <input id="email" name="email" type="email" autocomplete="email" required aria-required="true" placeholder="you@example.com">
-          <p class="hint">Stripe のレシート・適格請求書の送付先です。</p>
-        </div>
+ <div class="field">
+ <label for="email">メールアドレス <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <input id="email" name="email" type="email" autocomplete="email" required aria-required="true" placeholder="you@example.com">
+ <p class="hint">Stripe のレシート・適格請求書の送付先です。</p>
+ </div>
 
-        <label class="consent" for="consent">
-          <input id="consent" type="checkbox">
-          <span>
-            <a href="tos.html" rel="noopener">利用規約</a> ・
-            <a href="privacy.html" rel="noopener">プライバシーポリシー</a> ・
-            <a href="tokushoho.html" rel="noopener">特定商取引法に基づく表記</a>
-            を読み、同意したうえで決済に進みます。
-          </span>
-        </label>
+ <label class="consent" for="consent">
+ <input id="consent" type="checkbox">
+ <span>
+ <a href="tos.html" rel="noopener">利用規約</a> ・
+ <a href="privacy.html" rel="noopener">プライバシーポリシー</a> ・
+ <a href="tokushoho.html" rel="noopener">特定商取引法に基づく表記</a>
+ を読み、同意したうえで決済に進みます。
+ </span>
+ </label>
 
-        <button id="cta" class="cta-btn" type="submit" disabled>
-          ¥3/リクエスト で有効化 — Apple Pay / Google Pay 対応
-        </button>
-        <p class="cta-sub">税別 ¥3/リクエスト (税込 ¥3.30)。使わない月は ¥0。最低利用期間なし。</p>
+ <button id="cta" class="cta-btn" type="submit" disabled>
+ ¥3/リクエスト で有効化 — Apple Pay / Google Pay 対応
+ </button>
+ <p class="cta-sub">税別 ¥3/リクエスト (税込 ¥3.30)。使わない月は ¥0。</p>
 
-        <p id="form-error" class="alert" role="alert" hidden></p>
-      </form>
-    </div>
+ <p id="form-error" class="alert" role="alert" hidden></p>
+ </form>
+ </div>
 
-    <div id="state-processing" class="go-card" tabindex="-1" hidden>
-      <h1>有効化を処理中…</h1>
-      <p class="lead">Stripe の決済を確認しています。このまま数秒お待ちください。</p>
-      <p class="spinner" role="status" aria-live="polite">処理中… / Processing…</p>
-    </div>
+ <div id="state-processing" class="go-card" tabindex="-1" hidden>
+ <h1>有効化を処理中…</h1>
+ <p class="lead">Stripe の決済を確認しています。このまま数秒お待ちください。</p>
+ <p class="spinner" role="status" aria-live="polite">処理中… / Processing…</p>
+ </div>
 
-    <div id="state-done" class="go-card" tabindex="-1" hidden>
-      <div class="ok" role="status" aria-live="polite">
-        <span class="check" aria-hidden="true">&check;</span>
-        有効化完了 &mdash; Claude に戻ってください
-      </div>
-      <p class="lead">
-        MCP サーバーは自動的に新しい資格情報を受け取ります。
-        <strong>Claude で同じ質問をもう一度送る</strong>だけで課金モード (¥3/リクエスト) に切り替わります。
-        設定ファイルの編集・再起動は不要です。
-      </p>
-      <p class="cta-sub">
-        使用量の確認やカード変更は <a href="dashboard.html">Dashboard</a> から。
-        解約は Stripe Customer Portal でカードを外すだけです (即時 Free 50 リクエスト/月 に戻ります)。
-      </p>
-    </div>
+ <div id="state-done" class="go-card" tabindex="-1" hidden>
+ <div class="ok" role="status" aria-live="polite">
+ <span class="check" aria-hidden="true">&check;</span>
+ 有効化完了 &mdash; Claude に戻ってください
+ </div>
+ <p class="lead">
+ MCP サーバーは自動的に新しい資格情報を受け取ります。
+ <strong>Claude で同じ質問をもう一度送る</strong>だけで課金モード (¥3/リクエスト) に切り替わります。
+ 設定ファイルの編集・再起動は不要です。
+ </p>
+ <p class="cta-sub">
+ 使用量の確認やカード変更は <a href="dashboard.html">Dashboard</a> から。
+ 解約は Stripe Customer Portal でカードを外すだけです (即時 Free 50 リクエスト/月 に戻ります)。
+ </p>
+ </div>
 
-    <div id="state-error" class="go-card" tabindex="-1" hidden>
-      <div class="alert" role="alert">
-        <strong>エラーが発生しました</strong>
-        <span id="err-detail">時間をおいて再試行するか、<a href="mailto:info@bookyou.net">info@bookyou.net</a> までお知らせください。</span>
-      </div>
-      <button id="retry-btn" class="cta-btn" type="button">再試行 / Retry</button>
-    </div>
+ <div id="state-error" class="go-card" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>エラーが発生しました</strong>
+ <span id="err-detail">時間をおいて再試行するか、<a href="mailto:info@bookyou.net">info@bookyou.net</a> までお知らせください。</span>
+ </div>
+ <button id="retry-btn" class="cta-btn" type="button">再試行 / Retry</button>
+ </div>
 
-  </div>
+ </div>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>
   // go.html — vanilla ES2020. CSP-safe (inline script, no external).
   // Device flow activation: user_code from URL → email + consent →
   // Stripe Checkout → on redirect with session_id, POST /v1/device/complete.
-  (function () {
+  (function() {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || '';
+    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || '';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -354,7 +376,7 @@
 
     function normalizeUserCode(raw) {
       if (!raw) return '';
-      var v = String(raw).toUpperCase().replace(/[^A-HJ-NP-Z2-9\-]/g, '');
+      var v = String(raw).toUpperCase.replace(/[^A-HJ-NP-Z2-9\-]/g, '');
       // Accept 8 chars (no dash) → insert dash.
       if (/^[A-HJ-NP-Z2-9]{8}$/.test(v)) {
         return v.slice(0, 4) + '-' + v.slice(4);
@@ -409,7 +431,7 @@
     // --- Form wiring ------------------------------------------------------
 
     function initForm() {
-      var code = getCodeFromLocation();
+      var code = getCodeFromLocation;
       var input = $('user_code');
       var box = $('recovery-box');
       if (code && input) {
@@ -434,15 +456,15 @@
       var emailEl = $('email');
       if (emailEl) emailEl.addEventListener('input', syncCta);
       if (input && !input.hasAttribute('readonly')) {
-        input.addEventListener('input', function () {
+        input.addEventListener('input', function() {
           // Re-uppercase / insert dash as the user types.
           var v = normalizeUserCode(input.value);
           if (v !== input.value) input.value = v;
           if (box) box.textContent = v || '—';
-          syncCta();
+          syncCta;
         });
       }
-      syncCta();
+      syncCta;
 
       var form = $('go-form');
       if (form) form.addEventListener('submit', function (ev) {
@@ -512,8 +534,8 @@
     // --- /v1/device/complete (post-Stripe redirect) ----------------------
 
     function completeAfterCheckout() {
-      var sid = getSessionIdFromLocation();
-      var code = getCodeFromLocation();
+      var sid = getSessionIdFromLocation;
+      var code = getCodeFromLocation;
       if (!sid || !code) return false;
 
       showOnly('state-processing');
@@ -556,17 +578,17 @@
         }
       } catch (_e) { /* noop */ }
 
-      initForm();
+      initForm;
       var retry = $('retry-btn');
-      if (retry) retry.addEventListener('click', function () {
+      if (retry) retry.addEventListener('click', function() {
         showOnly('state-form');
       });
 
       // If we came back from Stripe with a session_id, jump straight to
-      // /complete. initForm() has already wired the form in case the user
+      // /complete. initForm has already wired the form in case the user
       // navigates back to it.
-      if (getSessionIdFromLocation()) {
-        completeAfterCheckout();
+      if (getSessionIdFromLocation) {
+        completeAfterCheckout;
       } else {
         showOnly('state-form');
       }
@@ -575,9 +597,9 @@
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', boot);
     } else {
-      boot();
+      boot;
     }
-  })();
+  });
 </script>
 
 </body>

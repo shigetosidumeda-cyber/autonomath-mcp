@@ -1,5 +1,5 @@
 TO: {{customer_email}}
-FROM: support@zeimu-kaikei.ai
+FROM: support@jpcite.com
 SUBJECT: 【jpintel-mcp】API キー失効のご連絡 (ticket {{ticket_id}})
 
 {{customer_name}} 様
@@ -39,5 +39,5 @@ SUBJECT: 【jpintel-mcp】API キー失効のご連絡 (ticket {{ticket_id}})
 ---
 jpintel-mcp サポート
 {{operator_name}}
-support@zeimu-kaikei.ai
-https://zeimu-kaikei.ai/
+support@jpcite.com
+https://jpcite.com/

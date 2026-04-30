@@ -35,7 +35,7 @@ Q: なぜ使い始められなかったのでしょうか?
 どれも改善の材料になります。率直な一言が一番助かります。
 
 もし「もう必要ない」とお感じであれば、Stripe ポータルからいつでもキャンセルできます:
-https://zeimu-kaikei.ai/billing/portal
+https://jpcite.com/billing/portal
 
 このタイミングで解約された場合、こちらから引き止めメールは送りません。
 {% endif %}

@@ -83,13 +83,18 @@ def test_kill_switch_on_returns_503_envelope_on_search(
     assert body["error"]["code"] == "service_unavailable"
     # Per spec: details.retry_after = "see_status_page".
     assert body["error"]["details"]["retry_after"] == "see_status_page"
-    # User-facing message points at the public status page. Both legacy
-    # (autonomath.ai) and current (zeimu-kaikei.ai) brands accepted —
-    # the brand was renamed during the v0.3.x rebrand and either is
-    # acceptable until the legacy domain retires.
+    # User-facing message points at the public status page. The current
+    # brand is jpcite.com; legacy brands (autonomath.ai, zeimu-kaikei.ai)
+    # also accepted — the brand was renamed across multiple rebrand
+    # passes and any of the three is acceptable until the legacy
+    # domains retire.
     msg = body["error"]["user_message"]
     assert "/status" in msg, msg
-    assert ("autonomath.ai" in msg) or ("zeimu-kaikei.ai" in msg), msg
+    assert (
+        ("autonomath.ai" in msg)
+        or ("zeimu-kaikei.ai" in msg)
+        or ("jpcite.com" in msg)
+    ), msg
 
 
 def test_kill_switch_on_healthz_still_200(

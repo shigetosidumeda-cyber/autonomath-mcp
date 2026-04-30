@@ -63,7 +63,7 @@ not plan to).
 ## Test plan
 - [ ] FastMCP server boots on stdio
 - [ ] `search_programs` returns correct shape with fields=minimal|default|full
-- [ ] `check_exclusions` triggers on keiei-kaishi-shikin ∩ koyo-shuno-shikin
+- [ ] `check_exclusions` triggers on UNI-71f6029070 ∩ koyo-shuno-shikin
 - [ ] Protocol version negotiation: 2024-11-05 / 2025-03-26 / 2025-06-18
 
 ## Notes
@@ -75,7 +75,7 @@ Built on FastMCP SDK >=1.2. Protocol 2025-06-18 is the declared floor.
 | Placeholder | Source |
 |---|---|
 | `autonomath-mcp` | PyPI package name after rebrand |
-| `zeimu-kaikei.ai` | Production landing page domain after rebrand |
+| `jpcite.com` | Production landing page domain after rebrand |
 | `shigetoumeda` | GitHub org/user after rebrand |
 | `autonomath-mcp` | GitHub repo slug after rebrand |
 | `Bookyou 株式会社` | Publisher display name |

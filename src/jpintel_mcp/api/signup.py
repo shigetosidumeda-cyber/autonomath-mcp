@@ -89,7 +89,7 @@ PER_IP_LIMIT = 1
 # the API; the redirect carries the key in the URL fragment (#api_key=...)
 # so it never reaches our access logs (browsers don't send fragments to
 # the server).
-TRIAL_LANDING_URL = "https://zeimu-kaikei.ai/trial.html"
+TRIAL_LANDING_URL = "https://jpcite.com/trial.html"
 # Shown in 409 response when the address has already used its lifetime
 # trial — points at the existing paid-tier checkout path. Bug 3 fix
 # (2026-04-29 funnel audit): previously pointed at /dashboard.html which
@@ -97,7 +97,7 @@ TRIAL_LANDING_URL = "https://zeimu-kaikei.ai/trial.html"
 # /pricing.html is anonymous-accessible and the ?from=trial query lets
 # the trial-attribution banner fire on landing; the #api-paid hash
 # positions the user at the paid-API card directly.
-PAID_CHECKOUT_URL = "https://zeimu-kaikei.ai/pricing.html?from=trial#api-paid"
+PAID_CHECKOUT_URL = "https://jpcite.com/pricing.html?from=trial#api-paid"
 
 
 # ---------------------------------------------------------------------------
@@ -626,7 +626,7 @@ def verify_signup(
 def _api_origin(request: Request) -> str:
     """Best-effort canonical API origin for the magic-link URL.
 
-    In prod we live at https://api.zeimu-kaikei.ai; in dev / tests we
+    In prod we live at https://api.jpcite.com; in dev / tests we
     fall back to whatever the request scheme + host says. We do NOT
     pull from cors_origins because that's a list of *callers*, not our
     own host.

@@ -50,7 +50,7 @@ checkpoint stalls on the writer lock.
    commit — verify post-launch billing curve first.
 4. Privacy guardrail. Sole-proprietor rows are personal data under
    NTA's own consent model. We have to publish a privacy / takedown
-   path on `zeimu-kaikei.ai` **before** the full mirror lands; that work
+   path on `jpcite.com` **before** the full mirror lands; that work
    is launch-week-blocked because of the freeze.
 
 ## T+30d ingest procedure
@@ -102,7 +102,7 @@ fly ssh console -C "sqlite3 /data/jpintel.db \"\
     WHERE invoice_registration_number='T8010001213708';\""
 
 # 8. Hit the live endpoint as a final check
-curl -sS https://api.zeimu-kaikei.ai/v1/invoice_registrants/T8010001213708 | jq .
+curl -sS https://api.jpcite.com/v1/invoice_registrants/T8010001213708 | jq .
 ```
 
 ### Post-flight
@@ -143,7 +143,7 @@ curl -sS https://api.zeimu-kaikei.ai/v1/invoice_registrants/T8010001213708 | jq 
 
 ## Open issues to revisit before T+30d
 
-- [ ] Privacy / takedown landing page on zeimu-kaikei.ai for
+- [ ] Privacy / takedown landing page on jpcite.com for
       sole-proprietor rows under NTA's consent model.
 - [ ] Fly volume extension PR (currently 3GB, needs ≥6GB headroom).
 - [ ] Decide whether the `am_entities` mirror in `autonomath.db` (currently

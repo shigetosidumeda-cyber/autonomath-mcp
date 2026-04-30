@@ -180,7 +180,7 @@ class PrescreenMatch(BaseModel):
         default=None,
         description=(
             "Site-relative path to the program's static SEO page on "
-            "zeimu-kaikei.ai. Computed from primary_name + unified_id "
+            "jpcite.com. Computed from primary_name + unified_id "
             "via jpintel_mcp.utils.slug. Use this for deep-links."
         ),
     )

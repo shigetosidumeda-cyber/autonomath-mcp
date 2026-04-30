@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate prefecture × program SEO crosspages for AutonoMath (zeimu-kaikei.ai).
+"""Generate prefecture × program SEO crosspages for AutonoMath (jpcite.com).
 
 Generates 47 都道府県 × top-N programs (default 50) static HTML pages, plus a
 matching sitemap. Honest copy: each page declares the actual relevance —
@@ -23,7 +23,7 @@ Usage:
     uv run python scripts/generate_geo_program_pages.py \
         --db data/jpintel.db \
         --out site/cross \
-        --domain zeimu-kaikei.ai \
+        --domain jpcite.com \
         --top 50
 
 Sample mode (writes 5 sample pages — 1 prefecture × 5 programs by default):
@@ -73,7 +73,7 @@ DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_TEMPLATE_DIR = REPO_ROOT / "site" / "_templates"
 DEFAULT_OUT = REPO_ROOT / "site" / "cross"
 DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-cross.xml"
-DEFAULT_DOMAIN = "zeimu-kaikei.ai"
+DEFAULT_DOMAIN = "jpcite.com"
 DEFAULT_TOP_N = 50
 
 _JST = timezone(timedelta(hours=9))
@@ -460,7 +460,7 @@ def _truncate(text: str, limit: int) -> str:
 
 
 def page_title(pref_ja: str, name: str) -> str:
-    raw = f"{pref_ja} {name} | 申請方法・採択事例 | 税務会計AI"
+    raw = f"{pref_ja} {name} | 申請方法・採択事例 | jpcite"
     return _truncate(raw, 60)
 
 

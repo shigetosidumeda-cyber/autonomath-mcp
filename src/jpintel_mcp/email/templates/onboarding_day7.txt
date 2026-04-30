@@ -11,14 +11,14 @@
    ダッシュボードに載っている数字は、API でも取れます。日次の呼び出し数を 30 日分まとめて取得する例:
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/me/usage?days=30"
+     "https://api.jpcite.com/v1/me/usage?days=30"
 
    返り値: [{"date":"2026-04-22","count":18}, ...]
    請求見込みもこの数字 × ¥3.30 で算出できます。
    ツール別の内訳が欲しい場合は /v1/me/usage_by_tool も使えます。
 
-   ダッシュボード: https://zeimu-kaikei.ai/dashboard.html
-   Stripe ポータル: https://zeimu-kaikei.ai/billing/portal
+   ダッシュボード: https://jpcite.com/dashboard.html
+   Stripe ポータル: https://jpcite.com/billing/portal
 
 2) 監査用に source_mentions を辿る
 
@@ -27,7 +27,7 @@
    LLM の回答を監査にかけるユーザーには必須です。
 
    curl -H "X-API-Key: YOUR_KEY" \
-     https://api.zeimu-kaikei.ai/v1/programs/UNI-14e57fbf79 \
+     https://api.jpcite.com/v1/programs/UNI-14e57fbf79 \
      | jq '.source_mentions_json'
 
 3) 排他ルールで二重申請リスクを潰す
@@ -36,11 +36,11 @@
    「併用不可リスクの自動チェック」を提示できる、この API の核機能の一つです。
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/exclusions/check?a=UNI-xxxx&b=UNI-yyyy"
+     "https://api.jpcite.com/v1/exclusions/check?a=UNI-xxxx&b=UNI-yyyy"
 
 ---
 
-他の使い方: https://zeimu-kaikei.ai/examples/
+他の使い方: https://jpcite.com/examples/
 
 感想・改善点は、このメールに返信で結構です。
 

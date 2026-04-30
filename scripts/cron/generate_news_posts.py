@@ -5,7 +5,7 @@ Reads append-only `am_amendment_diff` rows detected in the past 7 days,
 groups them by `entity_id`, and emits one customer-facing news post per
 program with detected changes. Drives the recurring SEO + GEO citation
 flywheel: every fresh change in a real public-program corpus becomes a
-crawlable, citable URL on zeimu-kaikei.ai.
+crawlable, citable URL on jpcite.com.
 
 Honesty constraints (non-negotiable)
 ------------------------------------
@@ -36,7 +36,7 @@ Usage
     python scripts/cron/generate_news_posts.py --window 14    # 14-day window (catch-up)
     python scripts/cron/generate_news_posts.py --dry-run      # plan only, no write
     python scripts/cron/generate_news_posts.py --since 2026-04-22T00:00:00Z
-    python scripts/cron/generate_news_posts.py --output site/news --domain zeimu-kaikei.ai
+    python scripts/cron/generate_news_posts.py --output site/news --domain jpcite.com
 
 Exit codes
 ----------
@@ -92,7 +92,7 @@ logger = logging.getLogger("autonomath.cron.generate_news_posts")
 # ---------------------------------------------------------------------------
 
 # JST = UTC+9. We stamp dates in JST throughout to match every other
-# date surfaced on zeimu-kaikei.ai (CLAUDE.md baseline).
+# date surfaced on jpcite.com (CLAUDE.md baseline).
 _JST = timezone(timedelta(hours=9))
 _UTC = timezone.utc
 
@@ -469,14 +469,14 @@ def _build_news_post_context(
                 "articleSection": category_ja,
                 "author": {
                     "@type": "Organization",
-                    "@id": "https://zeimu-kaikei.ai/#publisher",
+                    "@id": "https://jpcite.com/#publisher",
                     "name": "Bookyou株式会社",
                     "url": f"https://{domain}/about.html",
                 },
                 "publisher": {
                     "@type": "Organization",
-                    "@id": "https://zeimu-kaikei.ai/#publisher",
-                    "name": "税務会計AI",
+                    "@id": "https://jpcite.com/#publisher",
+                    "name": "jpcite",
                     "alternateName": ["AutonoMath", "Bookyou株式会社"],
                     "url": f"https://{domain}/",
                     "logo": {
@@ -903,8 +903,8 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         "--domain",
         type=str,
-        default="zeimu-kaikei.ai",
-        help="Canonical domain for URLs (default: zeimu-kaikei.ai)",
+        default="jpcite.com",
+        help="Canonical domain for URLs (default: jpcite.com)",
     )
     p.add_argument(
         "--dry-run",

@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Payment complete — 税務会計AI</title>
+<title>Payment complete — jpcite</title>
 <meta name="description" content="API key issuance page after Stripe checkout.">
 <meta name="robots" content="noindex,nofollow">
 
-<meta property="og:title" content="Payment complete — 税務会計AI">
+<meta property="og:title" content="Payment complete — jpcite">
 <meta property="og:description" content="Issues your API key after Stripe checkout.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/en/success.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta property="og:url" content="https://jpcite.com/en/success.html">
+<meta property="og:image" content="https://jpcite.com/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Payment complete — 税務会計AI">
+<meta name="twitter:title" content="Payment complete — jpcite">
 <meta name="twitter:description" content="Issues your API key after Stripe checkout.">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-square.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-square.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/en/success.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/success.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/success.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/success.html">
+<link rel="canonical" href="https://jpcite.com/en/success.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/success.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/success.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/success.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -235,159 +235,158 @@
 <a class="skip-link" href="#main">Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="税務会計AI home">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="../docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="../dashboard.html">Dashboard</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="/success.html" lang="ja" hreflang="ja">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="/en/success.html" lang="en" hreflang="en" aria-current="page">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="index.html" aria-label="jpcite home">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="Primary navigation">
+ <a href="../docs/">Docs</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="../dashboard.html">Dashboard</a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/success.html" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/success.html" lang="en" hreflang="en" aria-current="page">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
-  <section class="success">
-    <div class="container" style="max-width:760px;">
+ <section class="success">
+ <div class="container" style="max-width:760px;">
 
-      <!-- Loading state (default) -->
-      <div id="state-loading" tabindex="-1">
-        <p class="spinner" role="status" aria-live="polite">Issuing your API key&hellip;</p>
-      </div>
+ <!-- Loading state (default) -->
+ <div id="state-loading" tabindex="-1">
+ <p class="spinner" role="status" aria-live="polite">Issuing your API key&hellip;</p>
+ </div>
 
-      <!-- Success state -->
-      <div id="state-success" tabindex="-1" hidden>
-        <div class="success-head">
-          <div class="success-check" aria-hidden="true">&check;</div>
-          <h1>Payment complete &mdash; your API key has been issued</h1>
-          <p class="sub">Copy the key below to a safe place. It cannot be displayed again once you close this page.</p>
-        </div>
+ <!-- Success state -->
+ <div id="state-success" tabindex="-1" hidden>
+ <div class="success-head">
+ <div class="success-check" aria-hidden="true">&check;</div>
+ <h1>Payment complete &mdash; your API key has been issued</h1>
+ <p class="sub">Copy the key below to a safe place. It cannot be displayed again once you close this page.</p>
+ </div>
 
-        <div class="state-card">
-          <p class="label">Your API key</p>
-          <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
-          <p class="key-warning" role="alert">This key is shown only once at issuance. Copy it now and store it somewhere safe.</p>
-          <div class="btn-row">
-            <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; Copy API key</button>
-          </div>
-          <div class="meta-row" aria-label="metadata">
-            <span>tier: <strong id="meta-tier">—</strong></span>
-            <span>customer_id: <strong id="meta-customer">—</strong></span>
-          </div>
-        </div>
+ <div class="state-card">
+ <p class="label">Your API key</p>
+ <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
+ <p class="key-warning" role="alert">This key is shown only once at issuance. Copy it now and store it somewhere safe.</p>
+ <div class="btn-row">
+ <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; Copy API key</button>
+ </div>
+ <div class="meta-row" aria-label="metadata">
+ <span>tier: <strong id="meta-tier">—</strong></span>
+ <span>customer_id: <strong id="meta-customer">—</strong></span>
+ </div>
+ </div>
 
-        <div class="state-card">
-          <p class="label">Try it in 5 seconds (curl)</p>
-          <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
-          <div class="btn-row">
-            <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; Copy curl</button>
-          </div>
-        </div>
+ <div class="state-card">
+ <p class="label">Try it in 5 seconds (curl)</p>
+ <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
+ <div class="btn-row">
+ <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; Copy curl</button>
+ </div>
+ </div>
 
-        <div class="next-steps">
-          <h2>Next steps</h2>
-          <ol>
-            <li><a href="getting-started.html">Getting started</a> &mdash; Python / Node minimal examples, authentication, rate limits</li>
-            <li><a href="../dashboard.html">Dashboard</a> &mdash; usage, key rotation, billing portal</li>
-            <li><a href="getting-started.html#6-mcp-claude-desktop">Claude Desktop (MCP) setup</a> &mdash; call all 89 tools directly from your agent over stdio</li>
-          </ol>
-        </div>
+ <div class="next-steps">
+ <h2>Next steps</h2>
+ <ol>
+ <li><a href="getting-started.html">Getting started</a> &mdash; Python / Node minimal examples, authentication, rate limits</li>
+ <li><a href="../dashboard.html">Dashboard</a> &mdash; usage, key rotation, billing portal</li>
+ <li><a href="getting-started.html#6-mcp-claude-desktop">Claude Desktop (MCP) setup</a> &mdash; call all 89 tools directly from your agent over stdio</li>
+ </ol>
+ </div>
 
-        <div class="next-steps" style="margin-top:18px;">
-          <h2>Account management &amp; cancellation</h2>
-          <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">Fully self-serve. No minimum term, no cancellation fees. Remove your card from the Customer Portal and you immediately revert to Free (50 req/month per IP); no further charges are made.</p>
-          <div class="btn-row">
-            <a class="btn btn-secondary" href="../dashboard.html" style="text-decoration:none;">Open Customer Portal (card / cancel)</a>
-            <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20Account%20deletion%20request" style="text-decoration:none;">Account deletion request</a>
-          </div>
-          <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
-            <strong>Security tips:</strong> Enable two-factor authentication (2FA) in the Stripe Customer Portal, and store your API key as an environment variable (<code>AUTONOMATH_API_KEY</code>). If you suspect the key has leaked, rotate it immediately from the Dashboard.
-          </p>
-        </div>
-      </div>
+ <div class="next-steps" style="margin-top:18px;">
+ <h2>Account management &amp; cancellation</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">Fully self-serve. No minimum term, no cancellation fees. Remove your card from the Customer Portal and you immediately revert to Free (50 req/month per IP); no further charges are made.</p>
+ <div class="btn-row">
+ <a class="btn btn-secondary" href="../dashboard.html" style="text-decoration:none;">Open Customer Portal (card / cancel)</a>
+ <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20Account%20deletion%20request" style="text-decoration:none;">Account deletion request</a>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
+ <strong>Security tips:</strong> Enable two-factor authentication (2FA) in the Stripe Customer Portal, and store your API key as an environment variable (<code>AUTONOMATH_API_KEY</code>). If you suspect the key has leaked, rotate it immediately from the Dashboard.
+ </p>
+ </div>
+ </div>
 
-      <!-- Error states -->
-      <div id="state-error-unpaid" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>Payment is not yet confirmed</strong>
-          Stripe may still be propagating the charge. Wait a few seconds and retry.
-        </div>
-        <div class="btn-row">
-          <button id="retry-btn" class="btn btn-primary" type="button">Retry</button>
-          <a class="btn btn-secondary" href="pricing.html">Back to Pricing</a>
-        </div>
-      </div>
+ <!-- Error states -->
+ <div id="state-error-unpaid" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>Payment is not yet confirmed</strong>
+ Stripe may still be propagating the charge. Wait a few seconds and retry.
+ </div>
+ <div class="btn-row">
+ <button id="retry-btn" class="btn btn-primary" type="button">Retry</button>
+ <a class="btn btn-secondary" href="pricing.html">Back to Pricing</a>
+ </div>
+ </div>
 
-      <div id="state-error-conflict" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>An API key has already been issued</strong>
-          One key has already been issued for this subscription. Rotate it from the Dashboard to issue a new one.
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="../dashboard.html">Open Dashboard</a>
-          <a class="btn btn-secondary" href="getting-started.html">Getting started</a>
-        </div>
-      </div>
+ <div id="state-error-conflict" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>An API key has already been issued</strong>
+ One key has already been issued for this subscription. Rotate it from the Dashboard to issue a new one.
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="../dashboard.html">Open Dashboard</a>
+ <a class="btn btn-secondary" href="getting-started.html">Getting started</a>
+ </div>
+ </div>
 
-      <div id="state-error-network" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>A network error occurred</strong>
-          <span id="err-detail">Please wait a moment and retry, or contact support.</span>
-        </div>
-        <div class="btn-row">
-          <button id="retry-btn-network" class="btn btn-primary" type="button">Retry</button>
-          <a class="btn btn-secondary" href="tokushoho.html">Contact support</a>
-        </div>
-      </div>
+ <div id="state-error-network" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>A network error occurred</strong>
+ <span id="err-detail">Please wait a moment and retry, or contact support.</span>
+ </div>
+ <div class="btn-row">
+ <button id="retry-btn-network" class="btn btn-primary" type="button">Retry</button>
+ <a class="btn btn-secondary" href="tokushoho.html">Contact support</a>
+ </div>
+ </div>
 
-      <div id="state-error-missing" tabindex="-1" hidden>
-        <div class="alert" role="alert">
-          <strong>session_id is missing from the URL</strong>
-          This page is meant to be reached after Stripe checkout, with <code>?session_id=cs_…</code> appended. If you opened it directly, please re-subscribe from the Pricing page.
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="pricing.html">Back to Pricing</a>
-          <a class="btn btn-secondary" href="../dashboard.html">Already subscribed? Open Dashboard</a>
-        </div>
-      </div>
+ <div id="state-error-missing" tabindex="-1" hidden>
+ <div class="alert" role="alert">
+ <strong>session_id is missing from the URL</strong>
+ This page is meant to be reached after Stripe checkout, with <code>?session_id=cs_…</code> appended. If you opened it directly, please re-subscribe from the Pricing page.
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="pricing.html">Back to Pricing</a>
+ <a class="btn btn-secondary" href="../dashboard.html">Already subscribed? Open Dashboard</a>
+ </div>
+ </div>
 
-    </div>
-  </section>
+ </div>
+ </section>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">Japanese public-program API</p>
-    </div>
-    <nav class="footer-nav" aria-label="Footer">
-      <a href="tos.html">Terms</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="tokushoho.html">Legal (JP)</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="tos.html">Terms</a>
+ <a href="privacy.html">Privacy</a>
+ <a href="tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
 </footer>
 
 <script>
   // success.html — vanilla ES2020. CSP-safe (inline, no external).
   // Posts the Stripe session_id to /v1/billing/keys/from-checkout and
   // reveals the one-time API key. Pre-auth (no cookie); same-origin by
-  // default, override via window.AUTONOMATH_API_BASE (legacy alias:
-  // window.JPINTEL_API_BASE) if split host.
+  // default, override via window.AUTONOMATH_API_BASE if split host.
   (function () {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || '';
+    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || '';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -445,7 +444,7 @@
       // Endpoint exists: /v1/programs/search (see api-reference.md).
       // Header name: X-API-Key (same as getting-started.md §3).
       return 'curl -H "X-API-Key: ' + apiKey + '" \\\n' +
-             '  "https://api.zeimu-kaikei.ai/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
+             '  "https://api.jpcite.com/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
     }
 
     async function copyText(text, btn, labelCopied, labelOrig) {

@@ -6,8 +6,8 @@ Runs daily (03:00 JST via .github/workflows/analytics-cron.yml).
 Required env:
   CF_API_TOKEN  Cloudflare API token, scope = "Account.Account Analytics:Read"
                 (https://dash.cloudflare.com/profile/api-tokens — create token,
-                template "Read Analytics", set zone = zeimu-kaikei.ai).
-  CF_ZONE_ID    Zone ID for zeimu-kaikei.ai (Cloudflare → Overview → API).
+                template "Read Analytics", set zone = jpcite.com).
+  CF_ZONE_ID    Zone ID for jpcite.com (Cloudflare → Overview → API).
 
 Output: 1 JSONL row per UTC day with shape:
   {"date":"2026-04-28","metric":"summary","unique_visitors":N,

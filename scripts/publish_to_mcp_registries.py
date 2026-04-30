@@ -245,7 +245,7 @@ def submit_dxt(repo: Path, dry_run: bool = False) -> SubResult:
             "self-distributing; no programmatic submission. Anthropic External "
             "Plugins Directory (separate, manual review) is form-based."
         ),
-        url="https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb",
+        url="https://jpcite.com/downloads/autonomath-mcp.mcpb",
         manual_step=(
             "Optional: open https://clau.de/plugin-directory-submission and "
             "fill the form using docs/_internal/mcp_registry_submissions/anthropic_external_plugins.md "

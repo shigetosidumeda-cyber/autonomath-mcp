@@ -58,7 +58,7 @@ The LINE Developers Console (Messaging API channel) requires four
 operator-side actions that cannot ship as code:
 
   1. Create the channel (Messaging API).
-  2. Set the webhook URL to ``https://api.zeimu-kaikei.ai/v1/integrations/line/webhook``.
+  2. Set the webhook URL to ``https://api.jpcite.com/v1/integrations/line/webhook``.
   3. Disable the auto-reply / greeting messages (we own all replies).
   4. Configure the rich-menu via official-account-manager (`docs/_internal/
      line_bot_operator_setup.md` documents the 4-area menu layout).

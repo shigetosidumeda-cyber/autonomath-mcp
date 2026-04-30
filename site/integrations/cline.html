@@ -4,48 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Cline (VS Code) で 税務会計AI を使う — 5 分で動く統合ガイド</title>
-<meta name="description" content="VS Code 拡張 Cline (旧 Claude Dev) に 税務会計AI MCP サーバを追加する手順。MCP Servers タブから JSON 1 行追加で 89 ツール (補助金 / 法令 / 適格事業者 / prescreen 他) が Cline チャットから呼べる。登録不要 / 50 req/月 無料。">
+<title>Cline (VS Code) と連携する — jpcite</title>
+<meta name="description" content="VS Code 拡張 Cline の MCP 設定に 1 行追記すれば、jpcite のツールが利用できます。">
 
-<meta property="og:title" content="Cline (VS Code) で 税務会計AI を使う — 5 分統合ガイド">
-<meta property="og:description" content="Cline VS Code 拡張に JSON 1 行で 89 MCP ツール統合。50 req/月 無料、認証不要。">
+<meta property="og:title" content="Cline (VS Code) と連携する — jpcite">
+<meta property="og:description" content="VS Code 拡張 Cline の MCP 設定に 1 行追記すれば、jpcite のツールが利用できます。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://zeimu-kaikei.ai/integrations/cline.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://jpcite.com/integrations/cline.html">
 <meta property="og:locale" content="ja_JP">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Cline (VS Code) で 税務会計AI を使う">
-<meta name="twitter:description" content="VS Code Cline に 5 分で 89 MCP ツール統合。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
-
-<link rel="canonical" href="https://zeimu-kaikei.ai/integrations/cline.html">
+<link rel="canonical" href="https://jpcite.com/integrations/cline.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/styles.css?v=20260429a">
 
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://zeimu-kaikei.ai/#publisher across all pages). All other
-  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
-  the Organization inline. sameAs URLs marked TODO(user-action) are
-  placeholders until the user creates them per
-  docs/runbook/social_profile_setup.md.
--->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "taxID": "T8010001213708",
@@ -57,20 +42,14 @@
     "addressLocality": "文京区",
     "streetAddress": "小日向 2-22-1"
   },
-  "founder": {
-    "@type": "Person",
-    "name": "梅田茂利"
-  },
+  "founder": {"@type": "Person", "name": "梅田茂利"},
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "info@bookyou.net",
     "contactType": "customer support",
     "availableLanguage": ["ja", "en"]
   },
-  "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber"
-  ]
+  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber/jpintel-mcp"]
 }
 </script>
 
@@ -80,13 +59,11 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "Cline (VS Code) で 税務会計AI を使う",
-  "description": "VS Code 拡張 Cline に AutonoMath MCP サーバを追加して 89 ツールを呼び出す手順 (5 分)。",
-  "url": "https://zeimu-kaikei.ai/integrations/cline.html",
+  "headline": "Cline (VS Code) と連携する",
+  "url": "https://jpcite.com/integrations/cline.html",
   "inLanguage": "ja",
-  "author": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "proficiencyLevel": "Beginner"
+  "author": {"@id": "https://jpcite.com/#publisher"},
+  "publisher": {"@id": "https://jpcite.com/#publisher"}
 }
 </script>
 </head>
@@ -95,254 +72,114 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="wrap">
-    <a href="/" class="logo">税務会計AI</a>
-    <nav aria-label="主要ナビゲーション">
-      <a href="/products.html">Products</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="/integrations/" aria-current="page">Integrations</a>
-      <a href="/dashboard.html">Dashboard</a>
+ <div class="wrap">
+ <a href="/" class="logo">jpcite</a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="../about.html">運営について</a>
+      <a href="../products.html">プロダクト</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="../pricing.html">料金</a>
+      <a href="../audiences/">利用者層</a>
+      <details class="nav-trust">
+        <summary>信頼</summary>
+        <ul>
+          <li><a href="../status.html">稼働状況</a></li>
+          <li><a href="../data-freshness.html">データ鮮度</a></li>
+          <li><a href="../transparency.html">透明性</a></li>
+          <li><a href="../sources.html">出典</a></li>
+          <li><a href="../changelog.html">変更履歴</a></li>
+        </ul>
+      </details>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/integrations/cline.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/integrations/cline.html" lang="en" hreflang="en">EN</a>
+      </span>
     </nav>
-  </div>
+ </div>
 </header>
 
 <main id="main" class="wrap" style="max-width:920px;margin:40px auto;padding:0 20px;line-height:1.7;">
 
-<p style="font-size:0.9em;color:#666;margin-bottom:6px;"><a href="/integrations/">Integrations</a> / Cline (VS Code)</p>
-<h1 style="margin-bottom:0.2em;">Cline (VS Code) で 税務会計AI を使う</h1>
-<p style="color:#444;font-size:1.05em;margin-top:0;">5 分で動く統合ガイド (登録不要 / Free 50 リクエスト/月)</p>
+<nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+<a href="/">ホーム</a> <span aria-hidden="true">›</span>
+<a href="/integrations/">連携</a> <span aria-hidden="true">›</span>
+<span aria-current="page">Cline (VS Code)</span>
+</nav>
+<h1 style="margin-bottom:0.2em;">Cline (VS Code) と連携する</h1>
 
-<aside style="border:1px solid #c8e0c8;background:#f3faf3;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
-<strong>所要時間:</strong> 5 分以内。<strong>必要なもの:</strong> VS Code 1.85 以降 + Cline 拡張 (または Roo Code) + Python 3.10 以降 (<code>pip</code> または <code>uvx</code>)。<strong>API キー不要</strong> — 50 リクエスト/月 per IP は匿名で動きます。
-</aside>
-
-<h2 id="step1">Step 1 — Cline 拡張をインストール</h2>
-<p>VS Code を起動し、Extensions タブ (<kbd>Cmd+Shift+X</kbd> / <kbd>Ctrl+Shift+X</kbd>) で <code>Cline</code> を検索:</p>
-<ul>
-<li>正式パッケージ ID: <code>saoudrizwan.claude-dev</code> (publisher: Cline)</li>
-<li>類似の <code>RooVeterinaryInc.roo-cline</code> (Roo Code) も同じ MCP 設定形式で動作</li>
-</ul>
-<p><strong>Install</strong> をクリック。インストール後、左サイドバーに Cline ロボットアイコンが追加されます。</p>
-
-<h2 id="step2">Step 2 — autonomath-mcp をインストール</h2>
-<p>VS Code 内蔵ターミナル (<kbd>Ctrl+`</kbd>) で:</p>
-
-<div class="code-block" data-code="pip install autonomath-mcp">
-<pre><code>pip install autonomath-mcp</code></pre>
+<h2 id="install">インストール</h2>
+<div class="code-block" data-code="uvx autonomath-mcp">
+<pre><code>uvx autonomath-mcp</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
-<p>動作確認:</p>
+<h2 id="config">設定ファイル</h2>
+<p>VS Code で Cline 拡張をインストール後、Cline ペインの MCP Servers タブから <code>cline_mcp_settings.json</code> を開いて以下を追記します。</p>
 
-<div class="code-block" data-code="autonomath-mcp --version">
-<pre><code>autonomath-mcp --version
-# → autonomath-mcp 0.3.1</code></pre>
+<div class="code-block" data-code='{
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
+ "disabled": false,
+ "autoApprove": []
+ }
+ }
+}'>
+<pre><code>{
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
+ "disabled": false,
+ "autoApprove": []
+ }
+ }
+}</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
-<h2 id="step3">Step 3 — Cline の MCP Servers タブを開く</h2>
-<ol>
-<li>左サイドバー Cline アイコンをクリック</li>
-<li>Cline ペインの上部メニューから <strong>MCP Servers</strong> タブ (サーバアイコン)</li>
-<li><strong>Configure MCP Servers</strong> をクリック → <code>cline_mcp_settings.json</code> が VS Code で開きます</li>
-</ol>
+<p style="font-size:0.92em;color:#555;">本番運用は <code>"env": {"AUTONOMATH_API_KEY": "sk_..."}</code> を追加します。</p>
+
+<h2 id="verify">動作確認</h2>
+<p>保存後、MCP Servers タブの <code>jpcite</code> 行に緑のドットが付けば接続完了です。</p>
 
 <figure style="margin:16px 0;border:1px solid #ddd;border-radius:8px;padding:12px;background:#fafafa;text-align:center;">
-<img src="/integrations/screenshots/cline-mcp-settings.png" alt="Cline 拡張の MCP Servers タブ" width="1200" height="750" style="max-width:100%;height:auto;border-radius:4px;aspect-ratio:1200/750;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder: VS Code 左サイドバー Cline → MCP Servers タブ]</div>
-<figcaption style="font-size:0.85em;color:#666;margin-top:6px;">VS Code 左サイドバー Cline → MCP Servers → Configure</figcaption>
+<img src="/integrations/screenshots/cline-mcp-settings.png" alt="Cline MCP Servers タブ" width="1200" height="750" style="max-width:100%;height:auto;border-radius:4px;aspect-ratio:1200/750;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder]</div>
 </figure>
 
-<p>設定ファイルの実体パス (参考):</p>
-<table style="width:100%;border-collapse:collapse;margin:12px 0;">
-<thead><tr style="border-bottom:2px solid #ddd;">
-<th style="text-align:left;padding:8px 6px;">OS</th>
-<th style="text-align:left;padding:8px 6px;"><code>cline_mcp_settings.json</code></th>
-</tr></thead>
-<tbody>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>macOS</strong></td><td style="padding:6px;"><code>~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json</code></td></tr>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>Windows</strong></td><td style="padding:6px;"><code>%APPDATA%\Code\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json</code></td></tr>
-<tr style="border-bottom:1px solid #eee;"><td style="padding:6px;"><strong>Linux</strong></td><td style="padding:6px;"><code>~/.config/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json</code></td></tr>
-</tbody>
-</table>
-
-<h2 id="step4">Step 4 — JSON 設定を貼り付け</h2>
-<p>開いた <code>cline_mcp_settings.json</code> に以下を追記 (既存の <code>mcpServers</code> オブジェクトがあれば <code>"zeimu-kaikei"</code> キーだけ追加):</p>
-
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p style="font-size:0.92em;color:#555;"><strong><code>autoApprove</code> について:</strong> Cline は MCP ツール呼び出しごとに承認ダイアログを出します。<code>autoApprove</code> にツール名を列挙すると承認スキップ。<strong>read-only ツールだけを auto-approve するのが安全</strong> (例: <code>["search_programs", "get_program", "search_laws", "get_meta", "enum_values", "get_usage_status"]</code>)。書き込み系は将来追加されないため自動承認しても安全ですが、初回は手動承認推奨。</p>
-
-<details style="margin:14px 0;">
-<summary style="cursor:pointer;color:#0066cc;font-weight:600;">API キー入りバージョン (50 リクエスト/月 を超える運用)</summary>
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "disabled": false,
-      "autoApprove": [],
-      "env": {
-        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
-      }
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "disabled": false,
-      "autoApprove": [],
-      "env": {
-        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
-      }
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-<p style="font-size:0.9em;color:#555;margin-top:8px;">API キーは <a href="/dashboard.html">Dashboard</a> で発行 (¥3/リクエスト 完全従量, 税込 ¥3.30)。</p>
-</details>
-
-<details style="margin:14px 0;">
-<summary style="cursor:pointer;color:#0066cc;font-weight:600;"><code>uvx</code> 版 (PATH 解決のトラブルを回避)</summary>
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"],
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"],
-      "disabled": false,
-      "autoApprove": []
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-</details>
-
-<h2 id="step5">Step 5 — 設定を保存して試す</h2>
-<p>JSON を保存 (<kbd>Cmd+S</kbd> / <kbd>Ctrl+S</kbd>)。Cline が自動で MCP サーバを再起動し、MCP Servers タブの <code>zeimu-kaikei</code> 行に緑のドット + <code>89 tools</code> 表示。</p>
-
-<p>Cline チャットを開いて貼り付け:</p>
-
-<div class="code-block" data-code="zeimu-kaikei MCPで、中小企業向けの省エネ補助金を3件探して。primary source URL もつけて。">
-<pre><code>zeimu-kaikei MCPで、中小企業向けの省エネ補助金を3件探して。primary source URL もつけて。</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p>Cline が <code>search_programs</code> ツール呼び出しの承認ダイアログを出します。<strong>Approve</strong> をクリックすると JSON レスポンス (補助金 3 件 + <code>source_url</code>) が表示され、Cline がそれを整形して返答。</p>
-
-<h3 style="margin-top:18px;">出力サンプル</h3>
-<pre style="background:#f6f6f6;padding:14px;border-radius:6px;font-size:0.88em;overflow-x:auto;line-height:1.5;">[Tool] zeimu-kaikei → search_programs
-  args: {"keyword": "省エネ", "target_type": "中小企業", "limit": 3}
-  → 200 OK (3 results, 0.34s)
-
-中小企業向け省エネ補助金 3 件:
-
-1. <strong>省エネルギー投資促進支援事業費補助金</strong> (経産省)
-   - 補助率: 1/3 〜 1/2 / 上限 15 億円
-   - 出典: https://www.enecho.meti.go.jp/category/saving_and_new/.../...
-
-2. <strong>SHIFT 事業 (脱炭素取り組み支援)</strong> (環境省)
-   - 補助率: 1/3 / 上限 5,000 万円
-   - 出典: https://shift.env.go.jp/.../...
-
-3. <strong>省エネルギー設備等導入支援事業 (東京都)</strong>
-   - 補助率: 1/2 / 上限 1,500 万円
-   - 出典: https://www.kankyo.metro.tokyo.lg.jp/.../...
-
-※ 上記は情報検索結果です。個別の助成判断は税理士法 §52 により税理士・行政書士へ。</pre>
-
-<h3 id="more-prompts" style="margin-top:24px;">Cline で活きるプロンプト</h3>
+<h2 id="next">次のステップ</h2>
 <ul>
-<li><code>このプロジェクトの README を読んで、対象の事業に合う補助金を prescreen_programs で評価</code> — Cline が現在ファイルを読んで profile 化</li>
-<li><code>請求書 CSV の取引先 法人番号 を全件 search_invoice_registrants で検証して登録切れを抽出</code> — Cline がループで MCP 呼び出し</li>
-<li><code>事業再構築 + ものづくり 同時申請可否を check_exclusions で判定</code></li>
-<li><code>製造業×埼玉県 SMB スターターパック (補助金 + 融資 + 採択事例 + 締切)</code> → <code>smb_starter_pack</code></li>
+<li><a href="/pricing.html">料金</a></li>
+<li><a href="/docs/">ドキュメント</a></li>
+<li><a href="/integrations/">他の連携ガイド</a></li>
 </ul>
-
-<h2 id="troubleshooting">Troubleshooting</h2>
-
-<h3 style="margin-top:14px;">1. MCP Servers タブにサーバが表示されない</h3>
-<ul>
-<li>JSON が valid か確認: <code>python -m json.tool ~/Library/Application\ Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json</code></li>
-<li>余分なカンマ / クォート抜けで詰まりがち</li>
-<li>VS Code を再起動 (<strong>Developer: Reload Window</strong> コマンド)</li>
-</ul>
-
-<h3 style="margin-top:14px;">2. 赤いドット ("Failed to start")</h3>
-<ul>
-<li>Cline ペインの <strong>MCP Servers → 該当行 → Show Logs</strong> でスタックトレース確認</li>
-<li>大抵は <code>autonomath-mcp: command not found</code> → <code>which autonomath-mcp</code> 結果を絶対パスで指定</li>
-<li>あるいは <code>"command": "uvx", "args": ["autonomath-mcp"]</code> に変更</li>
-</ul>
-
-<h3 style="margin-top:14px;">3. ツール呼び出しの承認ダイアログが煩わしい</h3>
-<ul>
-<li><code>autoApprove</code> に頻用 read-only ツールを列挙: <code>["search_programs", "get_program", "search_laws", "search_invoice_registrants", "get_meta", "enum_values", "get_usage_status"]</code></li>
-<li>本 API は読み取り専用 (書き込み系ツールなし) なので副作用なし</li>
-</ul>
-
-<h3 style="margin-top:14px;">4. Windows: 日本語レスポンスの文字化け</h3>
-<ul>
-<li><code>"env": {"PYTHONIOENCODING": "utf-8"}</code> を追加</li>
-</ul>
-
-<h3 style="margin-top:14px;">5. 50 リクエスト/月 の残量を確認</h3>
-<ul>
-<li>Cline に <code>get_usage_status を呼んで残クォータを教えて</code> — このツール呼び出し自体はクォータを消費しません (probe-only)</li>
-<li>JST 月初 00:00 に自動リセット</li>
-</ul>
-
-<h2 id="next-steps">次のステップ</h2>
-<ul>
-<li><strong><a href="/pricing.html">Pricing</a></strong> — 50 リクエスト/月 を超える本番運用は ¥3/リクエスト 完全従量 (税込 ¥3.30)。tier・最低料金・年契約なし</li>
-<li><strong><a href="/docs/api-reference/">API Reference</a></strong> — 89 ツール完全仕様 + パラメータ + レスポンスシェイプ</li>
-<li><strong><a href="/docs/mcp-tools/">MCP ツール一覧</a></strong> — どのツールがどのデータセットを叩くか早見表</li>
-<li><strong><a href="/integrations/claude-desktop.html">Claude Desktop で使う</a></strong> / <strong><a href="/integrations/cursor.html">Cursor で使う</a></strong> / <strong><a href="/integrations/openai-custom-gpt.html">OpenAI Custom GPT で使う</a></strong></li>
-</ul>
-
-<p style="margin-top:40px;font-size:0.85em;color:#666;border-top:1px solid #eee;padding-top:14px;">
-免責: 本 API は情報検索のみを提供します。税理士法 §52 により個別の税務助言は<a href="/advisors.html">税理士</a>にご相談ください。<br>
-発行: <a href="/about.html">Bookyou株式会社</a> (法人番号 T8010001213708)
-</p>
 
 </main>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>© Bookyou株式会社 — <a href="/tos.html">利用規約</a> · <a href="/privacy.html">プライバシー</a> · <a href="/tokushoho.html">特商法</a></p>
-  </div>
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a>
+ <a href="../changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <style>
@@ -352,29 +189,28 @@
   .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #999;border-radius:4px;padding:8px 12px;font-size:0.95em;cursor:pointer;color:#0a0a0a;font-family:inherit;min-height:32px;}
   .code-block .copy-btn:hover {background:#f0f0f0;}
   .code-block .copy-btn.copied {background:#d4f4d4;border-color:#7bc77b;color:#226622;}
-  kbd {background:#eee;border:1px solid #bbb;border-radius:3px;padding:1px 5px;font-size:0.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
 </style>
 <script>
   document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', function{
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
-      var done = function(){
+      var done = function{
         btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        setTimeout(function{ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function(){
+        navigator.clipboard.writeText(text).then(done, function{
           var ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta); ta.select();
-          try { document.execCommand('copy'); done(); } catch(e) {}
+          ta.value = text; document.body.appendChild(ta); ta.select;
+          try { document.execCommand('copy'); done; } catch(e) {}
           document.body.removeChild(ta);
         });
       } else {
         var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); done(); } catch(e) {}
+        ta.value = text; document.body.appendChild(ta); ta.select;
+        try { document.execCommand('copy'); done; } catch(e) {}
         document.body.removeChild(ta);
       }
     });

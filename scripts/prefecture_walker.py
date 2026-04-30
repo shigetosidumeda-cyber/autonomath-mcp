@@ -56,7 +56,7 @@ OVERRIDES_PATH = OUTPUT_DIR / "prefecture_overrides.json"
 FAILURES_PATH = OUTPUT_DIR / "prefecture_walker_failures.jsonl"
 MUNI_CACHE_PATH = OUTPUT_DIR / "muni_to_prefecture.json"
 
-USER_AGENT = "jpintel-mcp-walker/0.1 (https://zeimu-kaikei.ai)"
+USER_AGENT = "jpintel-mcp-walker/0.1 (https://jpcite.com)"
 MUNI_DATA_URL = "https://geolonia.github.io/japanese-addresses/api/ja.json"
 
 MAX_CONCURRENT_FETCHES = 20

@@ -30,9 +30,9 @@ script lives in the Fly side, not the GitHub side.
 | `R2_BUCKET` | nightly-backup, weekly-backup-autonomath | yes | Target bucket (e.g. `autonomath-backups`). |
 | `CF_API_TOKEN` | analytics-cron, pages-preview | yes (analytics) / yes (pages) | Scope = "Account.Account Analytics:Read" for analytics; Pages deploy scope for pages-preview. |
 | `CF_ACCOUNT_ID` | pages-preview | yes | Cloudflare account id. |
-| `CF_ZONE_ID` | analytics-cron | yes | Zone id for `zeimu-kaikei.ai`. |
+| `CF_ZONE_ID` | analytics-cron | yes | Zone id for `jpcite.com`. |
 | `CF_PAGES_DEPLOY_HOOK` | pages-regenerate | yes | Cloudflare Pages deploy hook URL. |
-| `INDEXNOW_HOST` | index-now-cron | yes | The host being pinged (e.g. `zeimu-kaikei.ai`). |
+| `INDEXNOW_HOST` | index-now-cron | yes | The host being pinged (e.g. `jpcite.com`). |
 | `INDEXNOW_KEY` | index-now-cron | yes | IndexNow key file token. |
 | `SENTRY_DSN` | 14 cron workflows (every cron with Sentry alerting) | optional | Workflows fail-open if missing. |
 | `SLACK_WEBHOOK_INGEST` | 7 ingest workflows | optional | Driver-failure alerts. |

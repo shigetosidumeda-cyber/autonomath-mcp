@@ -2,7 +2,7 @@
 
 **Owner**: 梅田茂利 (info@bookyou.net) -- solo zero-touch
 **Last reviewed**: 2026-04-29
-**Domain**: `zeimu-kaikei.ai`
+**Domain**: `jpcite.com`
 **Related**: `docs/seo_strategy.md`, `docs/_internal/seo_technical_audit.md`, `monitoring/seo_metrics.md`
 
 The site has ~13k indexable URLs across 9 sitemap shards. Without webmaster
@@ -59,14 +59,14 @@ surfaces, no programmatic access required for v1.
 INDEXNOW_KEY             <output of `python -c "import secrets; print(secrets.token_urlsafe(32))"`>
                          Pre-generated: xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4
                          (replace with your own; this one is committed to docs)
-INDEXNOW_HOST            zeimu-kaikei.ai
+INDEXNOW_HOST            jpcite.com
 ```
 
 Optional (advanced -- only if you later want programmatic Search Console
 API access; v1 does NOT require these):
 
 ```
-GOOGLE_SEARCH_CONSOLE_PROPERTY    sc-domain:zeimu-kaikei.ai
+GOOGLE_SEARCH_CONSOLE_PROPERTY    sc-domain:jpcite.com
 GSC_SERVICE_ACCOUNT_JSON          <base64 of service-account JSON>
 ```
 
@@ -86,23 +86,23 @@ require 4-5 separate verifications. Pick **Domain**.
    you intend to use long-term (Bookyou株式会社 ops account, NOT a
    personal account that might be deleted).
 2. Click **Add property** → **Domain**.
-3. Enter `zeimu-kaikei.ai` (no scheme, no path, no `www`).
+3. Enter `jpcite.com` (no scheme, no path, no `www`).
 4. Google shows a TXT record like:
 
    ```
-   Name:   @          (or zeimu-kaikei.ai depending on DNS provider UI)
+   Name:   @          (or jpcite.com depending on DNS provider UI)
    Type:   TXT
    Value:  google-site-verification=<RANDOM-44-CHAR-STRING>
    TTL:    3600
    ```
 
-5. **OPERATOR ACTION**: log into Cloudflare DNS for `zeimu-kaikei.ai`.
-   (Cloudflare → zeimu-kaikei.ai → DNS → Records → Add record.)
+5. **OPERATOR ACTION**: log into Cloudflare DNS for `jpcite.com`.
+   (Cloudflare → jpcite.com → DNS → Records → Add record.)
    Add the TXT record verbatim. Save.
 6. Wait 1-5 min for DNS propagation. Verify with:
 
    ```bash
-   dig +short TXT zeimu-kaikei.ai | grep google-site-verification
+   dig +short TXT jpcite.com | grep google-site-verification
    ```
 
 7. Back in Search Console, click **Verify**. Should succeed instantly.
@@ -111,7 +111,7 @@ require 4-5 separate verifications. Pick **Domain**.
 
 1. In Search Console left nav: **Sitemaps**.
 2. Enter `sitemap-index.xml` (full URL is auto-prefixed:
-   `https://zeimu-kaikei.ai/sitemap-index.xml`).
+   `https://jpcite.com/sitemap-index.xml`).
 3. Click **Submit**. Status should flip to **Success** within 24 h, then
    show URL counts per shard over the following 1-7 days.
 
@@ -123,18 +123,18 @@ days). This forces Google to crawl them within 24 h instead of waiting
 for sitemap-driven discovery.
 
 ```
-https://zeimu-kaikei.ai/
-https://zeimu-kaikei.ai/about.html
-https://zeimu-kaikei.ai/pricing.html
-https://zeimu-kaikei.ai/compare.html
-https://zeimu-kaikei.ai/docs/
-https://zeimu-kaikei.ai/prefectures/
-https://zeimu-kaikei.ai/programs/
-https://zeimu-kaikei.ai/qa/
-https://zeimu-kaikei.ai/news/
-https://zeimu-kaikei.ai/audiences/
-https://zeimu-kaikei.ai/en/
-https://zeimu-kaikei.ai/en/about.html
+https://jpcite.com/
+https://jpcite.com/about.html
+https://jpcite.com/pricing.html
+https://jpcite.com/compare.html
+https://jpcite.com/docs/
+https://jpcite.com/prefectures/
+https://jpcite.com/programs/
+https://jpcite.com/qa/
+https://jpcite.com/news/
+https://jpcite.com/audiences/
+https://jpcite.com/en/
+https://jpcite.com/en/about.html
 ```
 
 After these 12 are indexed, internal linking + sitemap shards do the rest
@@ -173,7 +173,7 @@ Google:
    TTL:    3600
    ```
 
-3. Wait + verify with `dig +short TXT zeimu-kaikei.ai`.
+3. Wait + verify with `dig +short TXT jpcite.com`.
 4. Click **Verify** in Bing.
 
 Alternative (HTML file) only if you cannot edit DNS: place
@@ -183,13 +183,13 @@ constraints, so prefer DNS.
 ### 4.3 Submit sitemap
 
 1. **Sitemaps** in left nav.
-2. Submit `https://zeimu-kaikei.ai/sitemap-index.xml`.
+2. Submit `https://jpcite.com/sitemap-index.xml`.
 
 ### 4.4 IndexNow registration (gives the key away)
 
 Bing is the host of IndexNow API (`api.indexnow.org` and
 `bing.com/indexnow`). Once your IndexNow key file is uploaded to
-`https://zeimu-kaikei.ai/<INDEXNOW_KEY>.txt` (see §7), Bing auto-discovers
+`https://jpcite.com/<INDEXNOW_KEY>.txt` (see §7), Bing auto-discovers
 it and you get a green "IndexNow enabled" badge. No manual step needed.
 
 ---
@@ -203,7 +203,7 @@ and surfaces hreflang issues that Google + Bing miss.
 
 1. Open <https://webmaster.yandex.com>. Sign in with Google or create a
    Yandex account.
-2. **Add site** → enter `https://zeimu-kaikei.ai`.
+2. **Add site** → enter `https://jpcite.com`.
 3. Pick **DNS verification** method.
 4. **OPERATOR ACTION**: Cloudflare DNS → add TXT record:
 
@@ -267,7 +267,7 @@ containing exactly the key string (one line, no trailing whitespace), and
 deploy. The file must be reachable at:
 
 ```
-https://zeimu-kaikei.ai/xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4.txt
+https://jpcite.com/xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4.txt
 ```
 
 Bing + Yandex fetch this file on first IndexNow submission to prove you
@@ -343,7 +343,7 @@ These are the only steps that block faster indexing. **Do them now.**
 
 ```
 gh secret set INDEXNOW_KEY  --body 'xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4'
-gh secret set INDEXNOW_HOST --body 'zeimu-kaikei.ai'
+gh secret set INDEXNOW_HOST --body 'jpcite.com'
 ```
 
 (Or via GitHub UI if `gh` is not authenticated.)
@@ -389,7 +389,7 @@ git push
 Verify with:
 
 ```bash
-curl -fsS https://zeimu-kaikei.ai/xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4.txt
+curl -fsS https://jpcite.com/xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4.txt
 # expects exactly: xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4
 ```
 
@@ -414,14 +414,14 @@ Run this after the 5 P0 actions complete:
 ```bash
 # 1. DNS verification persisted
 for prefix in google-site-verification yandex-verification; do
-  dig +short TXT zeimu-kaikei.ai | grep "$prefix" || echo "MISSING: $prefix"
+  dig +short TXT jpcite.com | grep "$prefix" || echo "MISSING: $prefix"
 done
 
 # 2. Sitemap index reachable + parseable
-curl -fsS https://zeimu-kaikei.ai/sitemap-index.xml | head -5
+curl -fsS https://jpcite.com/sitemap-index.xml | head -5
 
 # 3. IndexNow key file deployed
-curl -fsS https://zeimu-kaikei.ai/xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4.txt
+curl -fsS https://jpcite.com/xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4.txt
 
 # 4. Trigger IndexNow cron once manually
 .venv/bin/python scripts/cron/index_now_ping.py --dry-run

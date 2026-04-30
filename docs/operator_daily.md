@@ -1,6 +1,6 @@
-# 税務会計AI — Operator Daily Runbook
+# jpcite — Operator Daily Runbook
 
-**Audience**: 梅田茂利 (info@bookyou.net) — solo operator, 税務会計AI / Bookyou株式会社 (T8010001213708).
+**Audience**: 梅田茂利 (info@bookyou.net) — solo operator, jpcite / Bookyou株式会社 (T8010001213708).
 **Scope**: T+0 (launch 2026-05-06) 〜 T+90d operator routine. Replaces ad-hoc check-ins with a fixed cadence so the 6h/week cap (memory `feedback_zero_touch_solo`) is enforced without missing customer-affecting signals.
 **Status**: operator-only. Excluded from `mkdocs build` (`exclude_docs` in `mkdocs.yml`). No secret values written here — only env var names.
 

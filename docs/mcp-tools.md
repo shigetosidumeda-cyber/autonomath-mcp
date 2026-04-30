@@ -2,54 +2,45 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "税務会計AI MCP Tools (89 tools)",
-  "description": "税務会計AI は MCP (Model Context Protocol) サーバーとして 89 ツール (39 コア + 50 autonomath at default gates) を公開する。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出せる。",
+  "headline": "jpcite MCP Tools (89 tools)",
+  "description": "jpcite は MCP (Model Context Protocol) サーバーとして 89 ツールを公開する。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出せる。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-26",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://zeimu-kaikei.ai/about.html"
+    "url": "https://jpcite.com/about.html"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://zeimu-kaikei.ai/og/default.png"
+      "url": "https://jpcite.com/og/default.png"
     }
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://zeimu-kaikei.ai/docs/mcp-tools/"
+    "@id": "https://jpcite.com/docs/mcp-tools/"
   }
 }
 </script>
 
 # MCP Tools
 
-> **要約 (summary):** 税務会計AI は MCP (Model Context Protocol) サーバーとして **89 ツール (39 コア + 50 autonomath)** を default gates で公開する。39 コアは制度 / 採択事例 / 融資 / 行政処分 の 4 データセットに対する search/get、排他判定、バッチ取得、メタ情報、canonical filter 値を事前列挙する `enum_values`、クォータ probe `get_usage_status`、申請者プロフィールから一発判定する `prescreen_programs`、締切カレンダー `upcoming_deadlines`、さらに 5-7 call chain を 1 call に畳む 7 つの one-shot 合成ツール (`smb_starter_pack` / `subsidy_combo_finder` / `deadline_calendar` / `dd_profile_am` / `similar_cases` / `regulatory_prep_pack` / `subsidy_roadmap_3yr`) に加え、拡張データセット: 法令 (e-Gov CC-BY, 法令本文 154 件 + 法令メタデータ 9,484 件・本文ロード継続中) / 税務ruleset (35 件 live) / 適格事業者 (PDL v1.0, 13,801 件 delta) / 判例・入札 と cross-dataset glue ツールを含む。50 autonomath は entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance) を `search_tax_incentives` / `search_certifications` / `search_by_law` / `list_tax_sunset_alerts` 等で公開、加えてメタデータ tools 4 (`get_annotations` / `validate` / `get_provenance` / `get_provenance_for_fact`)、静的データセット tools 5 (`list_static_resources_am` / `get_static_resource_am` / `list_example_profiles_am` / `get_example_profile_am` / `deep_health_am`)、lifecycle / graph / rule_engine / abstract / prerequisite (`unified_lifecycle_calendar` / `program_lifecycle` / `prerequisite_chain` / `graph_traverse` / `rule_engine_check` / `program_abstract_structured` / `related_programs`) を含む (`AUTONOMATH_ENABLED=false` で無効化可能、`render_36_kyotei_am` 系は `AUTONOMATH_36_KYOTEI_ENABLED=true` で別途 opt-in、enable で 91 tools。`query_at_snapshot` / `intent_of` / `reason_answer` は env-flag gated off pending fix)。Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini から直接呼び出せる。
+jpcite は **89 ツール at default gates** を MCP server として公開する。**Protocol:** MCP 2025-06-18 (FastMCP SDK)、Transport: stdio JSON-RPC。
 
-**Protocol:** MCP 2025-06-18 (FastMCP SDK, Python `mcp` package). Transport: stdio JSON-RPC.
+ツール構成:
 
-## Audience-別 tool 索引
+- **コア (39)** — 制度 / 採択事例 / 融資 / 行政処分 の 4 データセットに対する search/get、排他判定、バッチ取得、メタ情報、`enum_values`、`get_usage_status`、`prescreen_programs`、`upcoming_deadlines`、7 つの one-shot 合成 (`smb_starter_pack` / `subsidy_combo_finder` / `deadline_calendar` / `dd_profile_am` / `similar_cases` / `regulatory_prep_pack` / `subsidy_roadmap_3yr`)、拡張データセット (法令 / 税務ruleset / 適格事業者 / 判例 / 入札) と cross-dataset glue
+- **エンティティ系 (50)** — entity-fact DB (503,930 entities / 6.12M facts / 177,381 relations / 335,605 aliases) を `search_tax_incentives` / `search_certifications` / `search_by_law` / `list_tax_sunset_alerts` 等で公開、メタデータ 4 (`get_annotations` / `validate` / `get_provenance` / `get_provenance_for_fact`)、静的 5 (`list_static_resources_am` / `get_static_resource_am` / `list_example_profiles_am` / `get_example_profile_am` / `deep_health_am`)、lifecycle / graph / rule_engine / abstract / prerequisite
 
-実務ロール別に「最初に見る tool」を一覧化。AI agent / LLM client が profile から tool を絞り込みする際の 1 hop ガイド。詳細は各 tool 章を参照 (`#tool-name` でジャンプ可)。
-
-| audience | 主要 tool | jump-to |
-|---|---|---|
-| 税理士 / 認定支援機関 | `search_tax_incentives` / `get_am_tax_rule` / `search_by_law` / `list_tax_sunset_alerts` / `search_certifications` / `search_acceptance_stats_am` | [#税理士-認定支援機関-向け](#税理士--認定支援機関-向け) |
-| 行政書士 (建設業) | `search_programs` / `check_exclusions` / `search_loans_am` / `search_certifications` / `get_law_article_am` | [#行政書士-建設業-向け](#行政書士-建設業-向け) |
-| SMB 経営者 (LINE bot) | `smb_starter_pack` / `deadline_calendar` / `subsidy_combo_finder` / `list_open_programs` | [#smb-経営者向け](#smb-経営者向け) |
-| VC / M&A advisor | `dd_profile_am` / `check_enforcement_am` / `search_acceptance_stats_am` / `similar_cases` | [#vc--ma-advisor-向け](#vc--ma-advisor-向け) |
-| AI agent developer | (全 89 tools) / `enum_values_am` / `validate` / `get_provenance` / `graph_traverse` / `get_usage_status` | [#ai-agent-developer-向け](#ai-agent-developer-向け) |
-
-audience 別の章は本ファイル末尾「Audience 別ガイド」に展開。
+クライアント: Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini。
 
 ## 前提 (Setup)
 
-インストール・クライアント設定は [getting-started.md](./getting-started.md#6-mcp-claude-desktop-設定) を参照。
+インストール・クライアント設定は [getting-started.md](./getting-started.md#6-mcp-claude-desktop) を参照。
 
 MCP server は stdio 転送で動作する。`autonomath-mcp` バイナリ (`pip install autonomath-mcp` または `uvx autonomath-mcp`) または `python -m jpintel_mcp.mcp.server` で起動可能。
 
@@ -155,7 +146,7 @@ await client.call_tool("search_programs", {
 
 ```json
 {
-  "unified_id": "keiei-kaishi-shikin",
+  "unified_id": "UNI-71f6029070",
   "primary_name": "経営開始資金",
   "tier": "S",
   "enriched": {
@@ -173,7 +164,7 @@ await client.call_tool("search_programs", {
 }
 ```
 
-`source_url` / `source_fetched_at` / `source_checksum` は migration 001 前の旧 DB 行では `null` になる (移行後は必ず埋まる)。
+`source_url` / `source_fetched_at` / `source_checksum` は初期スキーマより前にロードされた一部の旧行で `null` の可能性がありますが、現行行はすべて埋まっています。
 
 **Claude が呼ぶタイミング:**
 
@@ -188,10 +179,10 @@ await client.call_tool("search_programs", {
 
 ```python
 await client.call_tool("get_program", {
-    "unified_id": "keiei-kaishi-shikin",
+    "unified_id": "UNI-71f6029070",
     "fields": "full",
 })
-# → {"unified_id": "keiei-kaishi-shikin", "primary_name": "経営開始資金",
+# → {"unified_id": "UNI-71f6029070", "primary_name": "経営開始資金",
 #    "tier": "S", "enriched": {"A_basics": {...}, ...},
 #    "source_mentions": [{"url": "https://www.maff.go.jp/...", ...}],
 #    "source_url": "https://www.maff.go.jp/...", "source_fetched_at": "2026-04-22T..."}
@@ -215,7 +206,7 @@ await client.call_tool("get_program", {
 {
   "results": [
     {
-      "unified_id": "keiei-kaishi-shikin",
+      "unified_id": "UNI-71f6029070",
       "primary_name": "経営開始資金",
       "tier": "S",
       "enriched": {"A_basics": {"...": "..."}},
@@ -249,7 +240,7 @@ await client.call_tool("get_program", {
 - `ValueError: unified_ids cap is 50, got N` — 50 件超
 - 個別 ID の解決失敗は**例外にしない** (`not_found` に入る)
 
-**Rate limit:** 現状は batch 全体で 1 リクエスト扱い (TODO: 将来 N 件 × N 単位の credits 会計に移行予定。`src/jpintel_mcp/api/programs.py` の `batch_get_programs` docstring 参照)。
+**Rate limit:** 現状は batch 全体で 1 リクエスト扱い。今後の予定: N 件 × N 単位への課金切り替えを検討中。実施時は事前に変更履歴で告知します。
 
 ---
 
@@ -267,7 +258,7 @@ await client.call_tool("get_program", {
     "rule_id": "agri-001",
     "kind": "mutex",
     "severity": "absolute",
-    "program_a": "keiei-kaishi-shikin",
+    "program_a": "UNI-71f6029070",
     "program_b": "koyo-shuno-shikin",
     "program_b_group": [],
     "description": "同時受給不可",
@@ -301,13 +292,13 @@ await client.call_tool("get_program", {
 
 ```json
 {
-  "program_ids": ["keiei-kaishi-shikin", "koyo-shuno-shikin"],
+  "program_ids": ["UNI-71f6029070", "koyo-shuno-shikin"],
   "hits": [
     {
       "rule_id": "agri-001",
       "kind": "mutex",
       "severity": "absolute",
-      "programs_involved": ["keiei-kaishi-shikin", "koyo-shuno-shikin"],
+      "programs_involved": ["UNI-71f6029070", "koyo-shuno-shikin"],
       "description": "同時受給不可",
       "source_urls": ["https://..."]
     }
@@ -698,9 +689,9 @@ await client.call_tool("regulatory_prep_pack", {
 
 ---
 
-## Autonomath ツール (28 件、`AUTONOMATH_ENABLED=true` で有効)
+## Autonomath ツール (28 件)
 
-`autonomath.db` (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases) を expose する 28 tools。entity-fact EAV schema 上で「税優遇 / 認定 / 法令 / 採択統計 / 融資 / 共済 / 行政処分」を横断検索。V1 17 + メタデータ tools 4 + 静的データセット tools 7 (本ツール群は環境変数 `AUTONOMATH_ENABLED=false` で全無効化可能)。
+`autonomath.db` (503,930 entities / 6.12M facts / 177,381 relations / 335,605 aliases) を expose する 28 tools。entity-fact EAV schema 上で「税優遇 / 認定 / 法令 / 採択統計 / 融資 / 共済 / 行政処分」を横断検索。V1 17 + メタデータ tools 4 + 静的データセット tools 7。
 
 ### `search_tax_incentives`
 
@@ -909,7 +900,7 @@ await client.call_tool("search_loans_am", {
 
 ### `get_law_article_am`
 
-**目的**: am_law_article 1 件 (法令 ID + 条番号) の本文 + 関連改正履歴を取得。28,048 条文収録。
+**目的**: am_law_article 1 件 (法令 ID + 条番号) の本文 + 関連改正履歴を取得。28,201 条文収録。
 **引数**: `law_id` (str, required) / `article` (str, required)
 **戻り値**: `DetailResponse[LawArticle]`
 **呼ぶタイミング**: 行政書士 / 税理士が条文の現行 wording を確認する時。
@@ -1025,13 +1016,13 @@ await client.call_tool("get_provenance_for_fact", {
 
 ### Lifecycle / Graph / Snapshot / Quota (8 件)
 
-`unified_lifecycle_calendar` / `program_lifecycle` / `prerequisite_chain` / `graph_traverse` / `query_at_snapshot` / `rule_engine_check` / `program_abstract_structured` の 7 つは複合検索の合成ツール、`get_usage_status` は META 系のクォータ probe。すべて `AUTONOMATH_ENABLED=1` 既定で有効 (`get_usage_status` は jpintel 側、それ以外は autonomath 側)。 lifecycle / snapshot 系 (`program_lifecycle` / `query_at_snapshot` / `unified_lifecycle_calendar`) は `am_amendment_snapshot` を参照するため、 改正の日付別追跡には利用できない (各 tool 章の限界注記を参照)。
+`unified_lifecycle_calendar` / `program_lifecycle` / `prerequisite_chain` / `graph_traverse` / `query_at_snapshot` / `rule_engine_check` / `program_abstract_structured` の 7 つは複合検索の合成ツール、`get_usage_status` は META 系のクォータ probe。 lifecycle / snapshot 系 (`program_lifecycle` / `query_at_snapshot` / `unified_lifecycle_calendar`) は `am_amendment_snapshot` を参照するため、 改正の日付別追跡には利用できない (各 tool 章の限界注記を参照)。
 
 #### `get_usage_status`
 
 **目的**: META — 1 リクエストを消費せずに API クォータ残量を確認する probe。`anonymous` / `paid` / `free` の tier 別に `limit` / `remaining` / `used` / `reset_at` / `reset_timezone` を返す。
 **引数**: `api_key` (str, optional, 省略=anonymous)
-**戻り値**: `{"tier": "anonymous", "limit": 50, "remaining": ..., "used": ..., "reset_at": "2026-05-01T00:00:00+09:00", "reset_timezone": "JST", "upgrade_url": "https://zeimu-kaikei.ai/pricing.html", "note": "..."}`
+**戻り値**: `{"tier": "anonymous", "limit": 50, "remaining": ..., "used": ..., "reset_at": "2026-05-01T00:00:00+09:00", "reset_timezone": "JST", "upgrade_url": "https://jpcite.com/pricing.html", "note": "..."}`
 **呼ぶタイミング**: agent が長い batch (例: 60 件 search) を流す前に消費可能数を見積もる時。MCP stdio 経由ではクライアント IP が無いため anonymous 残数は ceiling のみ。`api_key` を渡せば月次の正確な used 数を返す。
 **EMPTY 時の挙動**: paid tier は `limit` / `remaining` が `null` (metered, no cap) になる。
 **Audience**: Dev / AI agent developer
@@ -1186,7 +1177,7 @@ await client.call_tool("query_at_snapshot", {
 #### `rule_engine_check`
 
 **目的**: 1 件の制度 / 認定 / 税制について exclusion / prerequisite / absolute / その他のルールを評価し pass/fail/defer 判定。`alongside_programs` を渡せば併用判定 (`check_exclusions` の単体版 + 出典付き)。
-**引数**: `program_id` (str, required, `program:…` / `certification:…` / `loan:…` / `tax_measure_…` / `keiei-kaishi-shikin` 等の human-name token) / `applicant_profile` (object, optional, 将来の predicate 評価用、現状は filter なし) / `alongside_programs` (str[], optional, 同時申請する他制度 ID)
+**引数**: `program_id` (str, required, `program:…` / `certification:…` / `loan:…` / `tax_measure_…` / `UNI-71f6029070` 等の human-name token) / `applicant_profile` (object, optional, 将来の predicate 評価用、現状は filter なし) / `alongside_programs` (str[], optional, 同時申請する他制度 ID)
 **戻り値**: `{"program_id": "...", "verdict": "pass" | "fail" | "defer", "rules_evaluated": [{"rule_id": "...", "kind": "exclude" | "prerequisite" | "absolute", "verdict": "...", "evidence": {"source_url": "...", "source_notes": "..."}}], "coverage_pct": 0.74}`
 **呼ぶタイミング**: 1 件の制度について「いま申請したら失格になる組み合わせは？」を出典付きで返したい時。`check_exclusions` よりも審査寄り (verdict 単一化 + coverage_pct 付き)。
 **EMPTY 時の挙動**: program_id に rule 0 件 → `verdict: "pass"` + `rules_evaluated: []` + `meta.note: "no_rules_registered"`。
@@ -1194,10 +1185,10 @@ await client.call_tool("query_at_snapshot", {
 
 ```python
 await client.call_tool("rule_engine_check", {
-    "program_id": "keiei-kaishi-shikin",
+    "program_id": "UNI-71f6029070",
     "alongside_programs": ["koyo-shuno-shikin"],
 })
-# → {"program_id": "keiei-kaishi-shikin", "verdict": "fail", "coverage_pct": 0.85,
+# → {"program_id": "UNI-71f6029070", "verdict": "fail", "coverage_pct": 0.85,
 #    "rules_evaluated": [
 #      {"rule_id": "agri-001", "kind": "exclude", "verdict": "fail",
 #       "evidence": {"source_url": "https://www.maff.go.jp/...",
@@ -1304,55 +1295,6 @@ await client.call_tool("list_static_resources_am", {})
 **呼ぶタイミング**: ops が deploy 後 / ingest 後の health check 時。
 **EMPTY 時の挙動**: いずれかの check が fail → `status: "degraded"` + `checks[i].ok=false` (200 で返す。500 にしない、operator が degraded を可視化するため)。
 **Audience**: Dev / Ops
-
----
-
-## Audience 別ガイド
-
-### 税理士 / 認定支援機関 向け
-
-主要 5 tool: `search_tax_incentives` / `get_am_tax_rule` / `search_by_law` / `list_tax_sunset_alerts` / `search_certifications`。代表 chain:
-
-1. `list_tax_sunset_alerts(horizon_days=180)` で半年以内の cliff を全取得 → 顧問先通知の素材化
-2. `search_tax_incentives(industry_jsic="<顧客業種>", effective_at="2026-04-01")` で現行使える優遇を抽出
-3. `search_by_law(law_id="...", article="42-6")` で根拠法から派生制度を横断
-4. `search_acceptance_stats_am(program_id="...")` で採択率を提案精度判断材料に
-
-### 行政書士 (建設業) 向け
-
-主要 5 tool: `search_programs` / `check_exclusions` / `search_loans_am` / `search_certifications` / `get_law_article_am`。代表 chain:
-
-1. `search_certifications(target_type=["建設業"])` で必要認定を列挙
-2. `search_programs(prefecture="...", target_type=["建設業"])` で補助金 candidate
-3. `check_exclusions(program_ids=[...])` で併用可否
-4. `search_loans_am(industry_jsic="D-...", collateral_required=false)` で資金調達 plan B
-
-### SMB 経営者向け
-
-主要 4 tool (LINE bot 想定): `smb_starter_pack` / `deadline_calendar` / `subsidy_combo_finder` / `list_open_programs`。代表 1-shot:
-
-1. `smb_starter_pack(prefecture="東京都", industry_jsic="...", employees=15)` で入口 bundle
-2. `deadline_calendar(horizon_days=90)` で締切を月別 bucket に
-3. `subsidy_combo_finder(planned_investment_man_yen=500)` で補助金 + 融資 + 税制 combo
-
-### VC / M&A advisor 向け
-
-主要 4 tool: `dd_profile_am` / `check_enforcement_am` / `search_acceptance_stats_am` / `similar_cases`。代表 chain:
-
-1. `dd_profile_am(houjin_bangou="...")` で対象法人 dossier
-2. `check_enforcement_am(houjin_bangou="...")` で処分歴 cross check
-3. `search_acceptance_stats_am(program_id="...")` で投資判断の根拠データ
-4. `get_provenance(entity_id="...")` で出典 chain を確認
-
-### AI agent developer 向け
-
-全 89 tools 利用可。導線設計のキー tool: `enum_values_am` (引数の正規化先列挙) / `validate` (入力 sanity check) / `get_provenance` (出典 chain) / `graph_traverse` (異種 entity 横断) / `get_usage_status` (batch 前のクォータ probe)。
-
-- 起動時: `enum_values_am(field="record_kind")` で agent の system prompt に注入
-- 受信時: `intent_of(query=...)` で routing
-- 検索後: `reason_answer(question=..., candidate_ids=[...])` で根拠生成
-- レスポンス前: `validate(payload=...)` で sanity check
-- 監査時: `get_provenance(entity_id=...)` で出典 chain
 
 ---
 

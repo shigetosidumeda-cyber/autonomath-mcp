@@ -144,9 +144,9 @@ AutonoMath — 法令改正アラート
 運営: Bookyou 株式会社 (T8010001213708)
 所在地: 東京都文京区小日向2-22-1
 問い合わせ: info@bookyou.net
-特商法表記: https://zeimu-kaikei.ai/tokushoho.html
-利用規約: https://zeimu-kaikei.ai/tos.html
-プライバシーポリシー: https://zeimu-kaikei.ai/privacy.html
+特商法表記: https://jpcite.com/tokushoho.html
+利用規約: https://jpcite.com/tos.html
+プライバシーポリシー: https://jpcite.com/privacy.html
 """
 
 _FOOTER_HTML = """\
@@ -160,9 +160,9 @@ _FOOTER_HTML = """\
   運営: Bookyou 株式会社 (T8010001213708)<br>
   所在地: 東京都文京区小日向2-22-1<br>
   問い合わせ: <a href="mailto:info@bookyou.net" style="color:#1e3a8a">info@bookyou.net</a><br>
-  <a href="https://zeimu-kaikei.ai/tokushoho.html" style="color:#1e3a8a">特商法表記</a> ・
-  <a href="https://zeimu-kaikei.ai/tos.html" style="color:#1e3a8a">利用規約</a> ・
-  <a href="https://zeimu-kaikei.ai/privacy.html" style="color:#1e3a8a">プライバシーポリシー</a>
+  <a href="https://jpcite.com/tokushoho.html" style="color:#1e3a8a">特商法表記</a> ・
+  <a href="https://jpcite.com/tos.html" style="color:#1e3a8a">利用規約</a> ・
+  <a href="https://jpcite.com/privacy.html" style="color:#1e3a8a">プライバシーポリシー</a>
 </p>
 """
 
@@ -289,7 +289,7 @@ def _unsubscribe_url(token: str) -> str:
     links in the email body cannot accidentally unsubscribe users — a
     Gmail / Outlook "show images" fetch must NOT end the subscription).
     """
-    return f"https://zeimu-kaikei.ai/alerts-unsubscribe.html?token={token}"
+    return f"https://jpcite.com/alerts-unsubscribe.html?token={token}"
 
 
 def _group_by_area(changes: list[Change]) -> dict[str, list[Change]]:
@@ -378,7 +378,7 @@ def compose_alert_email(
         )
         closing = (
             "24時間以内の変更を個別に通知する ¥500/月 プランへは、"
-            "https://zeimu-kaikei.ai/alerts.html からアップグレードできます。"
+            "https://jpcite.com/alerts.html からアップグレードできます。"
         )
     else:
         subject = _SUBJECT_REALTIME.format(n=n)
@@ -386,7 +386,7 @@ def compose_alert_email(
         lead = "過去24時間に、あなたのフィルタに合致する制度の変更が検出されました。"
         closing = (
             "本通知は ¥500/月 プランで配信しています。"
-            "配信頻度・対象の変更は https://zeimu-kaikei.ai/alerts.html から可能です。"
+            "配信頻度・対象の変更は https://jpcite.com/alerts.html から可能です。"
         )
 
     # Area labels localized for the template.

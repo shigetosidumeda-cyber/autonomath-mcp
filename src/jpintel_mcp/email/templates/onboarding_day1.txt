@@ -21,21 +21,21 @@ A. Claude Desktop / Claude Code
      }
    }
 
-   詳細: https://zeimu-kaikei.ai/integrations/claude
+   詳細: https://jpcite.com/integrations/claude
 
 B. Cursor
    設定 -> MCP -> Add new MCP server に同じ block を追加します。
-   詳細: https://zeimu-kaikei.ai/integrations/cursor
+   詳細: https://jpcite.com/integrations/cursor
 
 C. Cline (VS Code)
    Cline の MCP Servers タブで同じ JSON を貼り付けます。
-   詳細: https://zeimu-kaikei.ai/integrations/cline
+   詳細: https://jpcite.com/integrations/cline
 
 D. 直接 curl / SDK
    MCP を経由せず REST で叩く場合の最小例:
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.zeimu-kaikei.ai/v1/programs/search?prefecture=東京都&target_types=smb&limit=10"
+     "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_types=smb&limit=10"
 
 ---
 
@@ -76,5 +76,5 @@ AutonoMath — 日本の制度情報 API + MCP
 このメールは AutonoMath の活性化シーケンス (D+1) としてお送りしています。
 お問い合わせ: info@bookyou.net
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
-ライセンス: ご利用は利用規約 (https://zeimu-kaikei.ai/tos.html) / プライバシーポリシー (https://zeimu-kaikei.ai/privacy.html) に基づきます。
+ライセンス: ご利用は利用規約 (https://jpcite.com/tos.html) / プライバシーポリシー (https://jpcite.com/privacy.html) に基づきます。
 配信停止: {{unsubscribe_url}}

@@ -7,10 +7,10 @@
 # Output: site/docs/  (nested so Cloudflare Pages can serve landing + docs
 # together from a single `site/` upload).
 
-site_name: AutonoMath
+site_name: 税務会計AI
 site_description: AutonoMath — 日本の制度情報 (補助金 / 融資 / 税制 / 認定制度) 11,684件 (検索可・tier S/A/B/C) + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を REST + MCP API で横断検索
 site_author: Bookyou 株式会社
-site_url: "https://zeimu-kaikei.ai/docs/"
+site_url: "https://jpcite.com/docs/"
 copyright: "© 2026 Bookyou 株式会社 (T8010001213708) · info@bookyou.net · AutonoMath"
 
 # Disable the github edit link — we don't want the internal repo structure
@@ -35,14 +35,14 @@ theme:
     code: JetBrains Mono
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-7
         name: ダークモードに切り替え
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/brightness-4
         name: ライトモードに切り替え
@@ -177,9 +177,33 @@ exclude_docs: |
   audit_trail.md
   launch/
   runbook/
+  # Operator-only / pre-launch-internal pages — moved out of public nav
+  # (2026-04-29 customer-doc cleanup). These contain hiring criteria, ARR
+  # projections, distribution strategy, internal eval gates, vertical launch
+  # plans — none of which are relevant to API consumers.
+  long_term_strategy.md
+  registries.md
+  seo_strategy.md
+  invariant_runbook.md
+  self_improve_loops.md
+  per_tool_precision.md
+  partner_referral_mechanism.md
+  partnerships/
+  press_kit.md
+  healthcare_v3_plan.md
+  healthcare_v3_cohort_personas.md
+  english_v4_plan.md
+  i18n_style_guide.md
+  real_estate_v5_plan.md
+  real_estate_v5_cohort_personas.md
 
 extra:
   generator: false
+  # Used by overrides/partials/index_jsonld.html for absolute URLs in
+  # JSON-LD structured data (Schema.org @id / url / sameAs etc.). The
+  # placeholder approach was a deploy-time envsubst hack; mkdocs already
+  # has a perfectly fine extras dict, use it.
+  domain: "https://jpcite.com"
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/
@@ -193,59 +217,28 @@ nav:
   - 入門:
       - はじめに: getting-started.md
       - 料金: pricing.md
-      - MCP ツール: mcp-tools.md
-      - 排他ルール: exclusions.md
       - FAQ: faq.md
       - 正直な能力と限界: honest_capabilities.md
 
-  - API リファレンス:
-      - REST API (112 endpoints): api-reference.md
-      - エラーハンドリング (20 codes): error_handling.md
+  - API:
+      - REST: api-reference.md
+      - エラー: error_handling.md
+      - MCP ツール: mcp-tools.md
+      - 排他ルール: exclusions.md
 
-  - SDK:
-      - TypeScript / JavaScript: sdks/typescript.md
-
-  - 開発者向け:
-      - サンプル集: examples.md
+  - 開発者:
+      - サンプル: examples.md
       - Prompt Cookbook: prompt_cookbook.md
-      - Per-Tool 精度表: per_tool_precision.md
-      - キャッシュ設計 (L0-L4): cache_architecture.md
+      - キャッシュ動作: cache_architecture.md
       - ダッシュボード: dashboard_guide.md
-      - アラート (amendment webhook): alerts_guide.md
-      - Customer Webhooks: webhooks.md
+      - アラート: alerts_guide.md
+      - Webhook: webhooks.md
+      - SDK (TypeScript): sdks/typescript.md
 
-  - 運用:
+  - 信頼:
       - SLA: sla.md
-      - 長期戦略 (Y1-Y5): long_term_strategy.md
-      - 配布レジストリ (12 surfaces): registries.md
-      - Confidence (P5-attribution): confidence_methodology.md
-      - SEO 戦略: seo_strategy.md
-      - Invariant Runbook: invariant_runbook.md
-      - 自己改善 Loop: self_improve_loops.md
-      - Hallucination Guard 方針: hallucination_guard_methodology.md
-
-  - パートナー:
-      - Referral 仕組み: partner_referral_mechanism.md
-      - freee 会計: partnerships/freee.md
-      - Money Forward: partnerships/money_forward.md
-      - kintone (Cybozu): partnerships/kintone.md
-      - SmartHR: partnerships/smarthr.md
-      - Anthropic Directory: partnerships/anthropic_directory.md
-
-  - プレス:
-      - プレスキット: press_kit.md
-
-  - Healthcare V3:
-      - 6週ローンチ計画: healthcare_v3_plan.md
-      - Cohort Personas: healthcare_v3_cohort_personas.md
-
-  - English V4:
-      - 10日ローンチ計画: english_v4_plan.md
-      - i18n スタイルガイド: i18n_style_guide.md
-
-  - Real Estate V5:
-      - 4週ローンチ計画: real_estate_v5_plan.md
-      - Cohort Personas: real_estate_v5_cohort_personas.md
+      - Confidence: confidence_methodology.md
+      - Hallucination 対策: hallucination_guard_methodology.md
 
   - コンプライアンス:
       - 概要: compliance/INDEX.md

@@ -5,5 +5,5 @@
 Contact: mailto:info@bookyou.net
 Expires: 2027-04-26T00:00:00Z
 Preferred-Languages: ja, en
-Canonical: https://zeimu-kaikei.ai/.well-known/security.txt
-Policy: https://zeimu-kaikei.ai/privacy.html
+Canonical: https://jpcite.com/.well-known/security.txt
+Policy: https://jpcite.com/privacy.html

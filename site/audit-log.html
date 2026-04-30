@@ -4,57 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>制度変更検出フィード (Audit Log) — 税務会計AI</title>
-<meta name="description" content="日本の公的制度データの差分を毎日 cron で検出。検出のみで個別判断は行いません。RSS / JSON 両対応、CC-BY-4.0 (差分メタデータ)。">
+<title>変更履歴 — jpcite</title>
+<meta name="description" content="補助金・融資・税制・認定制度の変更を一次資料 URL 付きで公開。RSS / JSON 対応。">
 
-<meta property="og:title" content="制度変更検出フィード (Audit Log) — 税務会計AI">
-<meta property="og:description" content="補助金・融資・税制・認定制度の eligibility 変更を毎日検出。一次資料 URL とハッシュ付きで公開。">
+<meta property="og:title" content="変更履歴 — jpcite">
+<meta property="og:description" content="補助金・融資・税制・認定制度の変更を一次資料 URL 付きで公開。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://zeimu-kaikei.ai/audit-log.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/audit-log.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="制度変更検出フィード (Audit Log) — 税務会計AI">
-<meta name="twitter:description" content="制度データの差分を毎日 cron で検出、一次資料 URL 付き公開。">
+<meta name="twitter:title" content="変更履歴 — jpcite">
+<meta name="twitter:description" content="制度の変更を一次資料 URL 付きで公開。">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/audit-log.html">
-<link rel="alternate" type="application/rss+xml" title="税務会計AI 変更履歴 RSS" href="https://zeimu-kaikei.ai/audit-log.rss">
+<link rel="canonical" href="https://jpcite.com/audit-log.html">
+<link rel="alternate" type="application/rss+xml" title="jpcite 変更履歴 RSS" href="https://jpcite.com/audit-log.rss">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
-<!--
-  Schema.org Dataset entry — declares this page (and the JSON endpoint
-  it pulls from) as a CC-BY-4.0 differential-metadata dataset. The
-  underlying source rows themselves are public-government data; only the
-  *diff record* (prev_hash → new_hash + detected_at + the canonicalized
-  prev_value/new_value pair) is the new editorial work that we license
-  under CC-BY-4.0. Knowledge Graph consumers reading this should attach
-  this Dataset to creator @id https://zeimu-kaikei.ai/#publisher.
--->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Dataset",
-  "name": "税務会計AI 変更履歴",
-  "alternateName": "AutonoMath Amendment Diff Log",
-  "description": "日本の補助金・融資・税制・認定制度を含む公的制度データの eligibility 変更を毎日 cron で検出した差分メタデータの公開ログ。各行は entity_id / field_name / prev_hash / new_hash / detected_at / source_url を含む append-only 記録。検出のみで個別判断は行いません。",
-  "url": "https://zeimu-kaikei.ai/audit-log.html",
-  "sameAs": "https://api.zeimu-kaikei.ai/v1/am/audit-log",
+  "name": "jpcite 変更履歴",
+  "description": "公的制度の変更履歴。出典 URL 付き。",
+  "url": "https://jpcite.com/audit-log.html",
+  "sameAs": "https://api.jpcite.com/v1/am/audit-log",
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "isAccessibleForFree": true,
   "inLanguage": "ja",
   "temporalCoverage": "2026-04-28/..",
   "creator": {
-    "@id": "https://zeimu-kaikei.ai/#publisher"
+    "@id": "https://jpcite.com/#publisher"
   },
   "publisher": {
-    "@id": "https://zeimu-kaikei.ai/#publisher"
+    "@id": "https://jpcite.com/#publisher"
   },
   "spatialCoverage": {
     "@type": "Country",
@@ -64,34 +57,27 @@
     {
       "@type": "DataDownload",
       "encodingFormat": "application/json",
-      "contentUrl": "https://api.zeimu-kaikei.ai/v1/am/audit-log"
+      "contentUrl": "https://api.jpcite.com/v1/am/audit-log"
     },
     {
       "@type": "DataDownload",
       "encodingFormat": "application/rss+xml",
-      "contentUrl": "https://zeimu-kaikei.ai/audit-log.rss"
+      "contentUrl": "https://jpcite.com/audit-log.rss"
     }
   ]
 }
 </script>
 
-<!--
-  Single-source publisher Organization with @id consolidation
-  (Task B 2026-04-29). All site pages should reference this @id rather
-  than redefining the Org inline. sameAs URLs marked TODO(user-action)
-  are placeholders until the user creates the social profiles per
-  docs/runbook/social_profile_setup.md.
--->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "taxID": "T8010001213708",
@@ -115,7 +101,7 @@
   },
   "sameAs": [
     "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber"
+    "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
   ]
 }
 </script>
@@ -158,108 +144,110 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="audiences/">利用者層</a>
-      <a href="playground.html">Playground</a>
-      <details class="nav-trust" open>
-        <summary>信頼</summary>
-        <ul>
-          <li><a href="status.html">Status</a></li>
-          <li><a href="roadmap.html">Roadmap</a></li>
-          <li><a href="data-freshness.html">データ鮮度</a></li>
-          <li><a href="transparency.html">透明性</a></li>
-          <li><a href="audit-log.html" aria-current="page">変更検出フィード</a></li>
-        </ul>
-      </details>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust" open>
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/audit-log.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/audit-log.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="auditlog-page">
-  <div class="container">
-    <h1>制度変更検出フィード (Audit Log)</h1>
-    <p class="lead">公的機関データの差分を毎日 cron で検出。<strong>検出のみで個別判断は行いません。</strong> 各行は <code>entity_id</code> / <code>field_name</code> / <code>prev_hash</code> / <code>new_hash</code> / <code>detected_at</code> / <code>source_url</code> を含む append-only 記録です。差分メタデータは CC-BY-4.0、原典は各 <code>source_url</code> の公的機関ライセンスに従います。</p>
+ <div class="container">
+ <h1>変更履歴</h1>
+ <p class="lead">公的制度の変更を一次資料 URL 付きで公開しています。</p>
 
-    <div class="auditlog-disclaimer" role="note" aria-labelledby="auditlog-tax-disclaimer-title">
-      <h2 id="auditlog-tax-disclaimer-title">本サービスは税務助言ではありません</h2>
-      税務会計AI は公的機関が公表する制度・税制・法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な税務判断・申告書作成代行は行いません。弁護士法 §72 に基づき法律事務も行いません。個別案件は<strong>資格を有する税理士・弁護士に必ずご相談ください</strong>。詳細は <a href="tos.html">利用規約</a> をご確認ください。
-    </div>
+ <div class="auditlog-controls" role="search" aria-label="変更履歴フィルタ">
+ <label>検出開始日 (UTC)
+ <input type="date" id="al-since" aria-label="検出開始日 YYYY-MM-DD">
+ </label>
+ <label>対象 ID
+ <input type="text" id="al-entity" placeholder="program_xxx_2026" aria-label="対象 ID の完全一致" maxlength="200">
+ </label>
+ <label>表示件数
+ <input type="number" id="al-limit" min="1" max="100" value="50" aria-label="1ページ最大件数 (1-100)">
+ </label>
+ <button type="button" id="al-apply">適用</button>
+ <a class="rss-link" href="/audit-log.rss" rel="alternate" type="application/rss+xml" aria-label="変更履歴 RSS フィードを購読">RSS 購読</a>
+ </div>
 
-    <div class="auditlog-controls" role="search" aria-label="変更履歴フィルタ">
-      <label>since (UTC)
-        <input type="date" id="al-since" aria-label="検出開始日 YYYY-MM-DD">
-      </label>
-      <label>entity_id
-        <input type="text" id="al-entity" placeholder="program_xxx_2026" aria-label="entity_id 完全一致" maxlength="200">
-      </label>
-      <label>limit
-        <input type="number" id="al-limit" min="1" max="100" value="50" aria-label="1ページ最大件数 (1-100)">
-      </label>
-      <button type="button" id="al-apply">適用</button>
-      <a class="rss-link" href="/audit-log.rss" rel="alternate" type="application/rss+xml" aria-label="変更履歴 RSS フィードを購読">RSS 購読</a>
-    </div>
+ <div class="auditlog-meta" id="al-meta" aria-live="polite"></div>
+ <div class="auditlog-status" id="al-status" role="status"></div>
 
-    <div class="auditlog-meta" id="al-meta" aria-live="polite"></div>
-    <div class="auditlog-status" id="al-status" role="status"></div>
+ <div class="auditlog-table-wrap">
+ <table class="auditlog-table" aria-label="変更履歴">
+ <thead>
+ <tr>
+ <th scope="col">検出日時 (UTC)</th>
+ <th scope="col">対象 ID</th>
+ <th scope="col">項目</th>
+ <th scope="col">変更前</th>
+ <th scope="col">変更後</th>
+ <th scope="col">出典</th>
+ </tr>
+ </thead>
+ <tbody id="al-tbody">
+ <tr><td colspan="6" class="auditlog-empty">読み込み中…</td></tr>
+ </tbody>
+ </table>
+ </div>
 
-    <div class="auditlog-table-wrap">
-      <table class="auditlog-table" aria-label="変更履歴">
-        <thead>
-          <tr>
-            <th scope="col">detected_at (UTC)</th>
-            <th scope="col">entity_id</th>
-            <th scope="col">field</th>
-            <th scope="col">prev_value</th>
-            <th scope="col">new_value</th>
-            <th scope="col">source</th>
-          </tr>
-        </thead>
-        <tbody id="al-tbody">
-          <tr><td colspan="6" class="auditlog-empty">読み込み中…</td></tr>
-        </tbody>
-      </table>
-    </div>
+ <div class="auditlog-pager">
+ <button type="button" id="al-prev" disabled>前のページ</button>
+ <button type="button" id="al-next" disabled>次のページ</button>
+ </div>
 
-    <div class="auditlog-pager">
-      <button type="button" id="al-prev" disabled>前のページ</button>
-      <button type="button" id="al-next" disabled>次のページ</button>
-    </div>
-
-    <h2 style="font-size:18px;margin:36px 0 8px;">使い方 (API + RSS)</h2>
-    <p style="max-width:760px;line-height:1.7;font-size:14px;">同じデータは <code>GET https://api.zeimu-kaikei.ai/v1/am/audit-log</code> で JSON 取得、<a href="/audit-log.rss">/audit-log.rss</a> で RSS 取得できます。匿名 50 リクエスト/月 per IP まで無料、認証付きキーは ¥3/リクエスト 税別 (税込 ¥3.30) で従量課金。</p>
-    <pre style="background:var(--bg-alt);padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:12px;line-height:1.5;"><code>curl 'https://api.zeimu-kaikei.ai/v1/am/audit-log?since=2026-04-01&amp;limit=50'
-
-# 認証付き (¥3/req, 税込 ¥3.30)
-curl -H 'X-API-Key: sk_live_...' \
-     'https://api.zeimu-kaikei.ai/v1/am/audit-log?entity_id=program_xxx_2026'</code></pre>
-
-  </div>
+ </div>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>
 (function() {
   'use strict';
-  // Live audit-log fetcher. Pure vanilla JS, no framework. Cursor-based
-  // pagination — we keep a stack of cursors so "前のページ" can roll back.
-  var API = 'https://api.zeimu-kaikei.ai/v1/am/audit-log';
-  // Local dev fallback — when running under file:// or localhost, point
-  // at the local API. Adjust by setting window.AUDIT_LOG_API before
-  // including this script if needed.
+  var API = 'https://api.jpcite.com/v1/am/audit-log';
   if (window.AUDIT_LOG_API) { API = window.AUDIT_LOG_API; }
   var $tbody = document.getElementById('al-tbody');
   var $meta = document.getElementById('al-meta');
@@ -291,7 +279,7 @@ curl -H 'X-API-Key: sk_live_...' \
 
   function renderRows(rows) {
     if (!rows || !rows.length) {
-      $tbody.innerHTML = '<tr><td colspan="6" class="auditlog-empty">該当する差分はありません (cron 検出 0 件、または期間外)。</td></tr>';
+      $tbody.innerHTML = '<tr><td colspan="6" class="auditlog-empty">該当する変更はありません。</td></tr>';
       return;
     }
     var html = '';
@@ -340,8 +328,7 @@ curl -H 'X-API-Key: sk_live_...' \
       $prev.disabled = cursorStack.length === 0;
       $meta.textContent = '取得 ' + (data.results || []).length + ' 件 (limit=' + (data.limit || limit) + ')'
         + (since ? ' · since=' + since : '')
-        + (entity ? ' · entity_id=' + entity : '')
-        + ' · ' + (data._meta && data._meta.honest_note ? data._meta.honest_note : '');
+        + (entity ? ' · entity_id=' + entity : '');
     }).catch(function(err) {
       setStatus('読み込みに失敗しました: ' + err.message, true);
       $tbody.innerHTML = '<tr><td colspan="6" class="auditlog-empty">エラー</td></tr>';

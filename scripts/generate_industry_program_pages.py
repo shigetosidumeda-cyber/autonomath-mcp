@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate industry × program SEO crosspages for AutonoMath (zeimu-kaikei.ai).
+"""Generate industry × program SEO crosspages for AutonoMath (jpcite.com).
 
 This script complements /programs/{slug} (per-program) and /prefectures/{slug}.html
 (per-prefecture) by creating a NEW orthogonal SEO axis: /industries/{jsic}/{slug}/
@@ -73,7 +73,7 @@ DEFAULT_OUT = REPO_ROOT / "site" / "industries"
 DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-industries.xml"
 DEFAULT_SITEMAP_INDEX = REPO_ROOT / "site" / "sitemap-index.xml"
 DEFAULT_HEADERS = REPO_ROOT / "site" / "_headers"
-DEFAULT_DOMAIN = "zeimu-kaikei.ai"
+DEFAULT_DOMAIN = "jpcite.com"
 
 _JST = timezone(timedelta(hours=9))
 
@@ -649,7 +649,7 @@ ORDER BY
 # JSON-LD
 # ---------------------------------------------------------------------------
 
-ORG_NODE_ID = "https://zeimu-kaikei.ai/#publisher"
+ORG_NODE_ID = "https://jpcite.com/#publisher"
 
 
 def _org_node(domain: str) -> dict[str, Any]:
@@ -659,8 +659,8 @@ def _org_node(domain: str) -> dict[str, Any]:
     return {
         "@type": "Organization",
         "@id": ORG_NODE_ID,
-        "name": "税務会計AI",
-        "alternateName": ["AutonoMath", "Bookyou株式会社"],
+        "name": "jpcite",
+        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "legalName": OPERATOR_NAME,
         "taxID": OPERATOR_CORPORATE_NUMBER,
@@ -836,7 +836,7 @@ def _tldr_paragraph(
     amt = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen"))
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "公募要領を参照"
 
-    parts = [f"業種コード {jsic_code} ({jsic_name_ja}) における {name} の機械可読データを 税務会計AI が集約しました。"]
+    parts = [f"業種コード {jsic_code} ({jsic_name_ja}) における {name} の機械可読データを jpcite が集約しました。"]
     if amt:
         amt_phrase = f"最大支援金額は{amt}です。"
     else:
@@ -978,7 +978,7 @@ def _meta_description(
 
 def _page_title(row: dict[str, Any], jsic_name_ja: str) -> str:
     name = row["primary_name"]
-    raw = f"{jsic_name_ja}における{name}の活用方法 | 採択事例 | 税務会計AI"
+    raw = f"{jsic_name_ja}における{name}の活用方法 | 採択事例 | jpcite"
     return _truncate(raw, 70)
 
 

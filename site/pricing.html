@@ -1,67 +1,53 @@
 <!DOCTYPE html>
-<!--
-  Pricing model (2026-04-29 改訂, ¥3/req simplicity を maximum exploit):
-    - API + MCP: ¥3/req 税別 (税込 ¥3.30) 完全従量
-    - 匿名 50 req/月 per IP は登録不要、JST 月初 00:00 リセット
-    - tier SKU なし、 seat fee なし、 月額固定なし、 解約手数料なし
-    - 100% organic、 paid acquisition なし、 reseller / commission なし
-    - Stripe Tax + 適格請求書 (T8010001213708)
--->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>料金 — ¥3/req それだけ — 税務会計AI</title>
-<meta name="description" content="税務会計AI 料金 — ¥3/req 完全従量 (税込 ¥3.30)。月額固定なし、契約期間なし、解約手数料なし。匿名 50 req/月 無料。Stripe 自動課金 + 適格請求書 (T8010001213708)。">
+<title>料金 — ¥3/req それだけ — jpcite</title>
+<meta name="description" content="jpcite 料金 — ¥3/req 完全従量 (税込 ¥3.30)。月額固定なし、契約期間なし、解約手数料なし。匿名 50 req/月 無料。Stripe 自動課金 + 適格請求書 (T8010001213708)。">
 
-<meta property="og:title" content="料金 — ¥3/req それだけ — 税務会計AI">
+<meta property="og:title" content="料金 — ¥3/req それだけ — jpcite">
 <meta property="og:description" content="¥3/req 完全従量 (税込 ¥3.30)。tier なし、 月額なし、 解約手数料なし。匿名 50 req/月 無料。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/pricing.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/pricing.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="料金 — ¥3/req それだけ — 税務会計AI">
+<meta name="twitter:title" content="料金 — ¥3/req それだけ — jpcite">
 <meta name="twitter:description" content="¥3/req 完全従量。 tier も月額固定もなし。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/pricing.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/pricing.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/pricing.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/pricing.html">
-<!-- Preconnect to the API origin — Stripe checkout + portal links
-     trigger /v1/checkout/create-session and /v1/me/billing-portal
-     POSTs from this page; warming the TLS connection cuts ~150 ms
-     off the click-to-redirect path on cold visits. crossorigin
-     matches the fetch() mode in dashboard.js / Stripe glue. -->
-<link rel="preconnect" href="https://api.zeimu-kaikei.ai" crossorigin>
+<link rel="canonical" href="https://jpcite.com/pricing.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/pricing.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/pricing.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/pricing.html">
+<link rel="preconnect" href="https://api.jpcite.com" crossorigin>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/styles.css?v=20260429a">
 
 <script defer src="analytics.js"></script>
 
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://zeimu-kaikei.ai/#publisher across all pages).
--->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "taxID": "T8010001213708",
@@ -85,7 +71,7 @@
   },
   "sameAs": [
     "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber"
+    "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
   ]
 }
 </script>
@@ -96,15 +82,16 @@
   "@type": "WebPage",
   "name": "料金 — ¥3/req それだけ — 税務会計AI",
   "description": "税務会計AI の API + MCP 料金: ¥3/req 完全従量 (税込 ¥3.30)、 匿名 50 req/月 無料。 月額固定なし、 契約期間なし、 解約手数料なし。",
-  "url": "https://zeimu-kaikei.ai/pricing.html",
+  "url": "https://jpcite.com/pricing.html",
   "inLanguage": "ja",
   "isPartOf": {
     "@type": "WebSite",
-    "name": "税務会計AI",
-    "url": "https://zeimu-kaikei.ai/",
-    "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"}
+    "name": "jpcite",
+    "alternateName": "税務会計AI",
+    "url": "https://jpcite.com/",
+    "publisher": {"@id": "https://jpcite.com/#publisher"}
   },
-  "primaryImageOfPage": {"@type": "ImageObject", "url": "https://zeimu-kaikei.ai/assets/og.png"}
+  "primaryImageOfPage": {"@type": "ImageObject", "url": "https://jpcite.com/assets/og.png"}
 }
 </script>
 
@@ -112,9 +99,9 @@
 {
   "@context": "https://schema.org",
   "@type": "Offer",
-  "name": "税務会計AI API + MCP — 完全従量",
+  "name": "jpcite API + MCP — 完全従量",
   "description": "REST + MCP API。¥3/req 税別 (税込 ¥3.30)。匿名 50 req/月 per IP は登録不要で無料 (JST 月初 00:00 リセット)。最低利用期間・解約違約金なし。",
-  "url": "https://zeimu-kaikei.ai/pricing.html#api-paid",
+  "url": "https://jpcite.com/pricing.html#api-paid",
   "category": "API access",
   "availability": "https://schema.org/InStock",
   "businessFunction": "https://schema.org/Sell",
@@ -152,8 +139,8 @@
     "https://schema.org/Enterprise"
   ],
   "eligibleRegion": {"@type": "Country", "name": "Japan"},
-  "seller": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "termsOfService": "https://zeimu-kaikei.ai/tos.html"
+  "seller": {"@id": "https://jpcite.com/#publisher"},
+  "termsOfService": "https://jpcite.com/tos.html"
 }
 </script>
 
@@ -165,7 +152,7 @@
   "price": "0",
   "priceCurrency": "JPY",
   "description": "匿名 50 req/月 per IP 無料 (JST 月初 00:00 リセット)",
-  "url": "https://zeimu-kaikei.ai/pricing.html#api-free",
+  "url": "https://jpcite.com/pricing.html#api-free",
   "category": "API access",
   "availability": "https://schema.org/InStock",
   "inLanguage": "ja",
@@ -175,8 +162,8 @@
     "unitText": "requests/month"
   },
   "eligibleRegion": {"@type": "Country", "name": "Japan"},
-  "seller": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "termsOfService": "https://zeimu-kaikei.ai/tos.html"
+  "seller": {"@id": "https://jpcite.com/#publisher"},
+  "termsOfService": "https://jpcite.com/tos.html"
 }
 </script>
 
@@ -185,15 +172,11 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "tier はないんですか?", "acceptedAnswer": {"@type": "Answer", "text": "ありません。¥3/req 完全従量のみ。Free / Starter / Pro / Enterprise といった階層は一切設けていません。 全顧客に同じ単価。"}},
-    {"@type": "Question", "name": "大量に使うとディスカウントはありますか?", "acceptedAnswer": {"@type": "Answer", "text": "ありません。 月 100 req でも 100 万 req でも ¥3/req (税込 ¥3.30)。 営業交渉や個別見積もしません。 公開単価が全顧客に一律適用されます。"}},
-    {"@type": "Question", "name": "signup は必須ですか?", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。 匿名 50 req/月 per IP までは登録なしで使えます (JST 月初 00:00 リセット)。 50 req を超える場合のみ API キー発行 + Stripe カード登録が必要です。"}},
-    {"@type": "Question", "name": "解約手続きは?", "acceptedAnswer": {"@type": "Answer", "text": "Stripe Customer Portal で API キーを削除するか、 カードを外すだけ。 違約金 / 解約手数料 / 通知期間 / 引止め電話 一切ありません。 即時に匿名 50 req/月 の無料枠に戻ります。"}},
-    {"@type": "Question", "name": "Stripe で自動課金されますか? 適格請求書はもらえますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 月末締めで翌月 1 日に登録カードへ自動請求。 適格請求書 (登録番号 T8010001213708 / Bookyou株式会社) を Stripe Tax が自動発行し、 仕入税額控除の要件を満たします。"}},
-    {"@type": "Question", "name": "法人 / 個人事業主 どちらでも使えますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 課税事業者 / 免税事業者 / 法人 / 個人事業主 いずれも同じ ¥3/req。 適格請求書は全顧客に発行 (T8010001213708)、 仕入税額控除を取りたい課税事業者にも対応済み。"}},
-    {"@type": "Question", "name": "予算上限を設定できますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 dashboard で月額 cap を任意の円額で設定可能 (POST /v1/me/cap 経由でも可)。 設定額に達した瞬間 503 + cap_reached で自動停止し、 JST 月初 00:00 にリセットします。 デフォルトは無制限。"}},
-    {"@type": "Question", "name": "1 リクエストの定義は?", "acceptedAnswer": {"@type": "Answer", "text": "1 HTTP もしくは 1 MCP tool 呼び出し = 1 req。 結果が 100 件返っても 1 req カウント。 /v1/healthz・/v1/me/* 等のメタ系は無料カウント外。"}},
-    {"@type": "Question", "name": "データ提供範囲は?", "acceptedAnswer": {"@type": "Answer", "text": "2026-04 時点で補助金・融資・税制・認定制度 14,472 件 (検索対象 11,684)、採択事例 2,286、融資 108 (担保・個人保証人・第三者保証人の三軸分解)、行政処分 1,185、法令 154 全文 + 9,484 catalog stub、判例 2,065、入札 362、適格事業者 13,801、税務ruleset 50。 全件一次資料 URL + fetched_at 付き。 すべての数値はファクトシートに出典付きで掲載。"}}
+    {"@type": "Question", "name": "階層プランはないんですか?", "acceptedAnswer": {"@type": "Answer", "text": "ありません。 ¥3/リクエスト 完全従量のみ。 全顧客に同じ単価。"}},
+    {"@type": "Question", "name": "適格請求書 (インボイス) はもらえますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 月初に自動発行し、 ダッシュボードからダウンロードできます。 Bookyou株式会社 の 適格請求書発行事業者番号 T8010001213708 が記載されます。"}},
+    {"@type": "Question", "name": "解約手続きは?", "acceptedAnswer": {"@type": "Answer", "text": "ダッシュボードで API キーを削除、 または登録カードを外すだけ。 違約金・解約手数料 一切ありません。"}},
+    {"@type": "Question", "name": "返金はありますか?", "acceptedAnswer": {"@type": "Answer", "text": "従量課金のためすでに呼び出した分の返金はありません。 サービス障害による誤課金は info@bookyou.net で全額返金します。"}},
+    {"@type": "Question", "name": "予算上限を設定できますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 ダッシュボードで月額上限を任意の円額で設定可能。 設定額に達した瞬間に自動停止し、 JST 月初 00:00 にリセットします。 デフォルトは無制限。"}}
   ]
 }
 </script>
@@ -203,309 +186,148 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html" aria-current="page">Pricing</a>
-      <a href="audiences/">Audiences</a>
-      <a href="playground.html">Playground</a>
-      <details class="nav-trust">
-        <summary>信頼</summary>
-        <ul>
-          <li><a href="status.html">Status</a></li>
-          <li><a href="roadmap.html">Roadmap</a></li>
-          <li><a href="data-freshness.html">データ鮮度</a></li>
-          <li><a href="transparency.html">透明性</a></li>
-          <li><a href="audit-log.html">変更検出フィード</a></li>
-        </ul>
-      </details>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="pricing.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="en/pricing.html" lang="en" hreflang="en">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="index.html" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html" aria-current="page">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/pricing.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/pricing.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="pricing-page">
-  <div class="container">
-    <!--
-      Micro-CRO 2026-04-29: contextual entry banner. Shown only when the
-      visitor arrives from /pricing.html?from=429 (匿名上限ヒット) or
-      ?from=trial (trial 期限切れ後の Stripe 経由再開). No tier SKU is
-      introduced — the banner just routes back to the same ¥3.30/req CTA.
-    -->
-    <aside id="from-banner" hidden role="status" aria-live="polite" style="margin:0 0 18px;padding:14px 18px;border-radius:8px;border:1px solid #d97706;background:#fff8e6;color:#7c2d12;font-size:14px;line-height:1.6;">
-      <strong id="from-banner-title" style="display:block;font-size:14px;margin:0 0 4px;"></strong>
-      <span id="from-banner-body"></span>
-    </aside>
+ <div class="container">
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">料金</span>
+ </nav>
+ <aside id="from-banner" hidden role="status" aria-live="polite" style="margin:0 0 18px;padding:14px 18px;border-radius:8px;border:1px solid #d97706;background:#fff8e6;color:#7c2d12;font-size:14px;line-height:1.6;">
+ <strong id="from-banner-title" style="display:block;font-size:14px;margin:0 0 4px;"></strong>
+ <span id="from-banner-body"></span>
+ </aside>
 
-    <!--
-      Hero (above-fold). ¥3/req を maximum exploit。
-      H1 一行で価格、 sub で「無いもの」を 4 つ列挙、 3-row 計算表で
-      「¥3 × N」の自明性を視覚化、 primary CTA は API キー発行のみ。
-    -->
-    <section class="pricing-hero" style="padding:32px 0 8px;">
-      <h1 style="font-size:56px;line-height:1.1;margin:0 0 16px;letter-spacing:-0.02em;">¥3/req — それだけ</h1>
-      <p style="font-size:20px;line-height:1.6;margin:0 0 24px;color:var(--text);max-width:720px;">
-        税込 ¥3.30。 <strong>月額固定なし</strong>。 <strong>契約期間なし</strong>。 <strong>解約手数料なし</strong>。
-      </p>
+ <section class="pricing-hero" style="padding:32px 0 8px;">
+ <h1 style="font-size:clamp(36px,9vw,56px);line-height:1.1;margin:0 0 16px;letter-spacing:-0.02em;">¥3/req — それだけ</h1>
+ <p style="font-size:20px;line-height:1.6;margin:0 0 24px;color:var(--text);max-width:720px;">
+ 税込 ¥3.30、 完全従量。 匿名 50 req/月 無料、 月初 00:00 JST リセット。
+ </p>
 
-      <div class="hero-calc" style="margin:0 0 28px;border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;max-width:560px;">
-        <table style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;">
-          <thead>
-            <tr style="background:var(--bg-alt,#fafaf9);">
-              <th scope="col" style="text-align:left;padding:12px 18px;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border,#e5e7eb);">月の利用量</th>
-              <th scope="col" style="text-align:right;padding:12px 18px;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border,#e5e7eb);">請求額 (税込)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row" style="text-align:left;padding:14px 18px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">月 100 req</th>
-              <td style="text-align:right;padding:14px 18px;font-weight:600;font-size:17px;border-bottom:1px solid var(--border,#e5e7eb);">¥330</td>
-            </tr>
-            <tr>
-              <th scope="row" style="text-align:left;padding:14px 18px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">月 1,000 req</th>
-              <td style="text-align:right;padding:14px 18px;font-weight:600;font-size:17px;border-bottom:1px solid var(--border,#e5e7eb);">¥3,300</td>
-            </tr>
-            <tr>
-              <th scope="row" style="text-align:left;padding:14px 18px;font-weight:500;">月 10,000 req</th>
-              <td style="text-align:right;padding:14px 18px;font-weight:600;font-size:17px;">¥33,000</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+ <div class="hero-calc" style="margin:0 0 28px;border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;max-width:560px;">
+ <table style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;">
+ <thead>
+ <tr style="background:var(--bg-alt,#fafaf9);">
+ <th scope="col" style="text-align:left;padding:12px 18px;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border,#e5e7eb);">月の利用量</th>
+ <th scope="col" style="text-align:right;padding:12px 18px;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border,#e5e7eb);">請求額 (税込)</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <th scope="row" style="text-align:left;padding:14px 18px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">月 100 req</th>
+ <td style="text-align:right;padding:14px 18px;font-weight:600;font-size:17px;border-bottom:1px solid var(--border,#e5e7eb);">¥330</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:14px 18px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">月 1,000 req</th>
+ <td style="text-align:right;padding:14px 18px;font-weight:600;font-size:17px;border-bottom:1px solid var(--border,#e5e7eb);">¥3,300</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:14px 18px;font-weight:500;">月 10,000 req</th>
+ <td style="text-align:right;padding:14px 18px;font-weight:600;font-size:17px;">¥33,000</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
 
-      <div class="hero-cta" style="display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px;">
-        <a class="btn btn-primary" href="#api-paid" data-cta-variant="hero-issue-key" style="font-size:17px;padding:14px 24px;">API key 即発行 (無料 50 req/月から)</a>
-        <a class="btn btn-secondary" href="playground.html" data-cta-variant="hero-playground" style="font-size:17px;padding:14px 24px;">REST playground で試す</a>
-      </div>
+ <div class="hero-cta" style="display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px;">
+ <a class="btn btn-primary" href="#api-paid" data-cta-variant="hero-issue-key" style="font-size:17px;padding:14px 24px;">API キー 即発行 (無料 50 リクエスト/月から)</a>
+ <a class="btn btn-secondary" href="playground.html" data-cta-variant="hero-playground" style="font-size:17px;padding:14px 24px;">REST お試し画面で実行</a>
+ </div>
 
-      <!-- Trust strip — same composition as index.html so cross-page recall is consistent. -->
-      <p class="trust-strip" style="margin:24px 0 14px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-        運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-        · <a href="tokushoho.html">特商法表記</a>
-        · <a href="tos.html">利用規約</a>
-        · <a href="privacy.html">プライバシー</a>
-        · 適格請求書 Stripe 自動発行
-        · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
-        · <a href="stats.html">公開統計</a>
-      </p>
-      <ul class="trust-strip-blocks" style="display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 28px;font-size:12px;line-height:1.5;">
-        <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">Bookyou株式会社 (T8010001213708) — 法人運営</li>
-        <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">Stripe 課金 (PCI DSS Level 1)</li>
-        <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">Cloudflare 配信 (DDoS / WAF)</li>
-        <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">§52 税理士法 disclaimer 全レスポンス配備</li>
-      </ul>
-    </section>
+ </section>
 
-    <!--
-      Why ¥3 works. Justification + trust。 数字 4 本 (一次資料率 / 制度数
-      / ツール数 / 適格事業者) で「この単価で出せる量と質」を提示。
-    -->
-    <section aria-labelledby="why-title" style="margin-top:32px;">
-      <h2 id="why-title" class="section-title">¥3 で何が手に入るか</h2>
-      <div class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:8px 0 18px;">
-        <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
-          <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);">99%</p>
-          <p style="margin:6px 0 0;font-weight:600;">一次資料 (政府機関 / 自治体 / 公庫)</p>
-          <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">noukaweb / hojokin-portal 等のアグリゲータは <strong>banned</strong>。 ministry / prefecture / 政策金融公庫 直リンクのみ。</p>
-        </article>
-        <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
-          <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);"><span data-fact="total_programs">14,472</span></p>
-          <p style="margin:6px 0 0;font-weight:600;">補助金・融資・税制・認定制度</p>
-          <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">+ 採択事例 <span data-fact="case_studies_total">2,286</span> + 行政処分 <span data-fact="enforcement_cases_total">1,185</span> + 適格事業者 13,801 + 法令 9,484。</p>
-        </article>
-        <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
-          <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);">89</p>
-          <p style="margin:6px 0 0;font-weight:600;">MCP ツール</p>
-          <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">39 jpintel + 50 autonomath、 全て同一 ¥3/req。 industry pack / composition tool / due diligence tool まで定額。</p>
-        </article>
-        <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
-          <p style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);">T8010001213708</p>
-          <p style="margin:6px 0 0;font-weight:600;">適格事業者 (Bookyou株式会社)</p>
-          <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">仕入税額控除を取りたい課税事業者にも対応。 全 invoice に登録番号印字、 Stripe Tax が自動発行。</p>
-        </article>
-      </div>
-      <p style="margin:8px 0 0;color:var(--text-muted);font-size:14px;line-height:1.7;max-width:760px;">
-        集約サイト (アグリゲータ) を <strong>使わない</strong> 方針なので、 14,472 制度を ministry / 自治体から自前で crawl する必要があります。 そのコストは我々が負担し、 顧客には ¥3/req only で提供します。
-      </p>
-    </section>
+ <section aria-labelledby="compare-title" style="margin-top:48px;">
+ <h2 id="compare-title" class="section-title">他の選択肢との比較</h2>
+ <div class="table-wrap" style="overflow-x:auto;">
+ <table class="pricing-table" style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-alt,#fafaf9);border-bottom:2px solid var(--border,#e5e7eb);">
+ <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;">選択肢</th>
+ <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;">月額</th>
+ <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;">1 req コスト</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="background:rgba(26,71,42,0.04);border-left:3px solid var(--accent);">
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:700;color:var(--accent);">jpcite</th>
+ <td style="padding:12px 14px;"><strong>¥0</strong> (固定なし)</td>
+ <td style="padding:12px 14px;"><strong>¥3.30</strong> (税込)</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border,#e5e7eb);">
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;">J-Grants Plus 系 SaaS</th>
+ <td style="padding:12px 14px;">¥10,000〜30,000</td>
+ <td style="padding:12px 14px;">非公開</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border,#e5e7eb);">
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;">補助金ポータル系アグリゲータ</th>
+ <td style="padding:12px 14px;">¥5,000〜20,000</td>
+ <td style="padding:12px 14px;">非公開</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;">商用 DB</th>
+ <td style="padding:12px 14px;">個別見積</td>
+ <td style="padding:12px 14px;">非公開</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </section>
 
-    <!--
-      Pricing comparison table. 縦軸 5 種、 横軸 8 列。 単価劣勢を消す
-      ためのもの ではなく、 「我々は公開単価」「他社は非公開 / 自前」
-      という購買理由を可視化する。
-    -->
-    <section aria-labelledby="compare-title" style="margin-top:48px;">
-      <h2 id="compare-title" class="section-title">他の選択肢との比較</h2>
-      <p style="margin:-12px 0 18px;color:var(--text-muted);max-width:680px;">2026-04 時点の公開情報。 各社の現行料金は公式ページをご確認ください。</p>
-      <div class="table-wrap" style="overflow-x:auto;">
-        <table class="pricing-table" style="width:100%;border-collapse:collapse;font-size:14px;">
-          <thead>
-            <tr style="background:var(--bg-alt,#fafaf9);border-bottom:2px solid var(--border,#e5e7eb);">
-              <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;">選択肢</th>
-              <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;">月額</th>
-              <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;">1 req コスト</th>
-              <th scope="col" style="text-align:center;padding:12px 14px;font-weight:600;">API</th>
-              <th scope="col" style="text-align:center;padding:12px 14px;font-weight:600;">MCP</th>
-              <th scope="col" style="text-align:center;padding:12px 14px;font-weight:600;">一次資料</th>
-              <th scope="col" style="text-align:center;padding:12px 14px;font-weight:600;">source_url</th>
-              <th scope="col" style="text-align:center;padding:12px 14px;font-weight:600;">適格事業者</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="background:rgba(26,71,42,0.04);border-left:3px solid var(--accent);">
-              <th scope="row" style="text-align:left;padding:12px 14px;font-weight:700;color:var(--accent);">税務会計AI</th>
-              <td style="padding:12px 14px;"><strong>¥0</strong> (固定なし)</td>
-              <td style="padding:12px 14px;"><strong>¥3.30</strong> (税込)</td>
-              <td style="text-align:center;padding:12px 14px;font-weight:700;color:var(--accent);">○</td>
-              <td style="text-align:center;padding:12px 14px;font-weight:700;color:var(--accent);">○</td>
-              <td style="text-align:center;padding:12px 14px;font-weight:700;color:var(--accent);">99%</td>
-              <td style="text-align:center;padding:12px 14px;font-weight:700;color:var(--accent);">○ 全件</td>
-              <td style="text-align:center;padding:12px 14px;font-weight:700;color:var(--accent);">○</td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--border,#e5e7eb);">
-              <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;">J-Grants Plus 系 SaaS</th>
-              <td style="padding:12px 14px;">¥10,000〜30,000</td>
-              <td style="padding:12px 14px;">非公開 (含み)</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">×</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">×</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">部分</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">部分</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">—</td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--border,#e5e7eb);">
-              <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;">補助金ポータル系アグリゲータ</th>
-              <td style="padding:12px 14px;">¥5,000〜20,000</td>
-              <td style="padding:12px 14px;">非公開 (含み)</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">×</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">×</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">×</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">×</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">—</td>
-            </tr>
-            <tr style="border-bottom:1px solid var(--border,#e5e7eb);">
-              <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;">商用 DB (帝国データバンク 等)</th>
-              <td style="padding:12px 14px;">非公開 (個別見積)</td>
-              <td style="padding:12px 14px;">非公開</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">△ 契約後</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">×</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">部分</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">部分</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">○</td>
-            </tr>
-            <tr>
-              <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;">自前スクレイピング</th>
-              <td style="padding:12px 14px;">維持工数 (月 数十時間)</td>
-              <td style="padding:12px 14px;">人件費換算</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">自社</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">自社</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">○</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">自社</td>
-              <td style="text-align:center;padding:12px 14px;color:var(--text-muted);">—</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="margin-top:14px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-        我々は <strong>tier も seat fee も持たず</strong>、 月 33 req (¥110) を超えれば aggregator 系の月額固定を下回ります。 月 10,000 req 使っても ¥33,000 — 個別見積 / 営業折衝なし。
-      </p>
-    </section>
+ <section style="margin-top:56px;">
+ <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
 
-    <!--
-      API + MCP main card. Stripe checkout を保持。 consent checkbox →
-      ボタン有効化 → /v1/billing/checkout POST → redirect。
-    -->
-    <section aria-labelledby="api-title" style="margin-top:56px;">
-      <h2 id="api-title" class="section-title">API + MCP</h2>
-      <p style="margin:-12px 0 24px;color:var(--text-muted);max-width:660px;">AI 開発者 / Enterprise RAG 向け。 89 MCP tools (39 コア + 50 autonomath) + REST。 匿名 50 req/月 per IP は登録不要で使える。</p>
-      <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
+ <article class="price-card" aria-labelledby="api-free">
+ <h2 id="api-free">匿名</h2>
+ <p class="price">¥0</p>
+ <p class="price-unit">50 req / 月、 JST 月初 00:00 リセット</p>
+ <a class="btn btn-secondary" href="/docs/getting-started/">始める</a>
+ </article>
 
-        <article class="price-card" aria-labelledby="api-free">
-          <h2 id="api-free">匿名</h2>
-          <p class="tier-desc">試用 / 個人検証</p>
-          <p class="price">¥0</p>
-          <p class="price-unit"><span data-fact="anonymous_quota_per_month">50</span> req / 月 per IP (JST 月初 00:00 リセット)</p>
-          <ul class="feats">
-            <li>カード登録不要、device flow で即開始</li>
-            <li>全フィールド参照可 (fields=default)</li>
-            <li>MCP / REST 両対応</li>
-            <li>業務運用は従量を推奨</li>
-          </ul>
-          <a class="btn btn-secondary" href="/docs/getting-started/">始める</a>
-        </article>
+ <article class="price-card highlight" aria-labelledby="api-paid">
+ <h2 id="api-paid">従量</h2>
+ <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ req (税込)</small></p>
+ <p class="price-unit">月額固定なし、 解約手数料なし、 使わない月は ¥0</p>
+ <label for="checkout-consent" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:13px;color:var(--text);line-height:1.5;cursor:pointer;">
+ <input type="checkbox" id="checkout-consent" style="margin-top:3px;flex-shrink:0;">
+ <span><a href="tos.html" rel="noopener">利用規約</a> ・ <a href="privacy.html" rel="noopener">プライバシー</a> ・ <a href="tokushoho.html" rel="noopener">特商法表記</a> に同意したうえで決済に進みます。</span>
+ </label>
+ <button class="btn btn-primary" type="button" id="checkout-btn" disabled aria-describedby="checkout-disabled-hint" data-cta-variant="api-key-issue">API キーを発行 → (¥3.30/req 従量)</button>
+ <p id="checkout-disabled-hint" style="font-size:12px;color:var(--text-muted);margin:6px 0 0;">上記にご同意いただくとボタンが有効になります。</p>
+ <p id="checkout-status" class="newsletter-status" role="status" aria-live="polite"></p>
+ </article>
 
-        <article class="price-card highlight" aria-labelledby="api-paid">
-          <h2 id="api-paid">従量</h2>
-          <p class="tier-desc">商用 / 大規模 RAG / エージェント</p>
-          <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ req (税込)</small></p>
-          <p class="price-unit">税別 ¥<span data-fact="price_per_req">3</span>.00 + 消費税 10%、Stripe 従量</p>
-          <ul class="feats">
-            <li><strong>スループット制限なし</strong> — スパイク時も 429 を返さず ¥3/req のまま 100万 req/月 まで一律。</li>
-            <li><strong>月額予算上限を自分で設定可能</strong> — Customer Portal または <code>POST /v1/me/cap</code> で <code>monthly_cap_yen</code> を設定。 月初〜上限到達まで通常稼働、 到達した瞬間 503 + <code>cap_reached</code>、JST 月初 00:00 にリセット。 デフォルトは無制限。</li>
-            <li>fields=full (enriched + source_mentions + lineage)</li>
-            <li>使わない月は請求 ¥0</li>
-            <li>適格請求書 (T8010001213708) Stripe 自動発行</li>
-            <li>解約は Stripe Customer Portal からカードを外すだけ</li>
-          </ul>
-          <details style="margin:12px 0 14px;font-size:13px;color:var(--text-muted);">
-            <summary style="cursor:pointer;font-weight:600;color:var(--text);">ご契約前にご確認ください</summary>
-            <ul style="margin:10px 0 4px 18px;padding:0;line-height:1.7;">
-              <li>1 リクエストあたり <strong>税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span></strong> (税抜 ¥<span data-fact="price_per_req">3</span> + 消費税 10%)。</li>
-              <li><strong>1 リクエスト = 1 HTTP / MCP tool 呼び出し。</strong>結果が 100 件返っても 1 req カウント。<code>/v1/healthz</code>・<code>/v1/me/*</code> 等のメタ系は無料カウント外。</li>
-              <li>毎月 1 日 00:00 〜 月末日 23:59 (JST) の利用量に基づき、翌月 1 日以降に登録カードへ自動請求。</li>
-              <li>最低利用期間・解約違約金なし。Customer Portal からカードを外せば即時 Free (<span data-fact="anonymous_quota_per_month">50</span> req/月) に戻る。</li>
-              <li>本サービスは情報提供に限定し、書類作成代行・法的助言・税務助言は行いません。</li>
-            </ul>
-          </details>
-          <label for="checkout-consent" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:13px;color:var(--text);line-height:1.5;cursor:pointer;">
-            <input type="checkbox" id="checkout-consent" style="margin-top:3px;flex-shrink:0;">
-            <span><a href="tos.html" rel="noopener">利用規約</a> ・ <a href="privacy.html" rel="noopener">プライバシー</a> ・ <a href="tokushoho.html" rel="noopener">特商法表記</a> に同意したうえで決済に進みます。</span>
-          </label>
-          <button class="btn btn-primary" type="button" id="checkout-btn" disabled aria-describedby="checkout-disabled-hint" data-cta-variant="api-key-issue">API キーを発行 → (¥3.30/req metered)</button>
-          <p id="checkout-disabled-hint" style="font-size:12px;color:var(--text-muted);margin:6px 0 0;">上記にご同意いただくとボタンが有効になります。</p>
-          <p id="checkout-status" class="newsletter-status" role="status" aria-live="polite"></p>
-        </article>
-
-      </div>
-      <div class="calc" style="margin-top:24px;padding:16px 20px;border:1px solid var(--border,#e5e7eb);border-radius:12px;max-width:480px;">
-        <h3 style="margin:0 0 12px;font-size:16px;">月額試算</h3>
-        <label for="reqInput" style="display:block;font-size:14px;margin-bottom:6px;">月の質問数:</label>
-        <input id="reqInput" type="number" value="100" min="0" style="width:140px;padding:6px 10px;font-size:14px;border:1px solid var(--border,#d1d5db);border-radius:6px;">
-        <p style="margin:12px 0 0;font-size:14px;">料金: <strong id="costOut">¥165</strong> / 月 (税抜 ¥<span id="netOut">150</span>)</p>
-      </div>
-      <script>
-        (function () {
-          var r = document.getElementById('reqInput');
-          var c = document.getElementById('costOut');
-          var n = document.getElementById('netOut');
-          if (!r || !c || !n) return;
-          function recompute() {
-            var num = Math.max(0, parseInt(r.value || '0', 10));
-            var paid = Math.max(0, num - 50);
-            var net = paid * 3;
-            var tax = Math.round(net * 0.1);
-            var total = net + tax;
-            c.textContent = '¥' + total.toLocaleString();
-            n.textContent = net.toLocaleString();
-          }
-          r.addEventListener('input', recompute);
-          recompute();
-        })();
-      </script>
-      <script>
-        // ?from=429 / ?from=trial entry-banner. Pure read-only DOM: parses
-        // location.search, fills the aside that we render hidden by default,
-        // and scrolls it into view. No side-effects, no fetch, no analytics
-        // — kept inline so it runs before the heavier checkout listener.
-        (function () {
+ </div>
+ <p style="margin-top:24px;font-size:14px;"><a href="/calculator.html">月額をシミュレーションする →</a></p>
+ <script>
+        (function() {
           var banner = document.getElementById('from-banner');
           var titleEl = document.getElementById('from-banner-title');
           var bodyEl = document.getElementById('from-banner-body');
@@ -518,31 +340,27 @@
             titleEl.textContent = '匿名上限に達しました';
             bodyEl.innerHTML = 'API キーを発行すれば即時再開できます (月 ¥0 から、 使った分だけ ¥3.30/req)。 下の <strong>API キーを発行</strong> ボタンへどうぞ。';
             banner.hidden = false;
-          } else if (from === 'trial') {
-            titleEl.textContent = '14 日トライアルが終了しました';
-            bodyEl.innerHTML = 'お試しいただきありがとうございます。 続けてお使いいただく場合は <strong>API キーを発行</strong> ボタンから ¥3.30/req metered に切替できます (使わない月は ¥0)。';
-            banner.hidden = false;
           } else if (params.get('cancelled') === '1') {
             titleEl.textContent = 'チェックアウトを中止しました';
             bodyEl.textContent = 'いつでも再開できます。 ご質問は info@bookyou.net まで。';
             banner.hidden = false;
           }
-        })();
+        });
       </script>
-      <script>
-        (function () {
+ <script>
+        (function() {
           var btn = document.getElementById('checkout-btn');
           var status = document.getElementById('checkout-status');
           var consent = document.getElementById('checkout-consent');
           var hint = document.getElementById('checkout-disabled-hint');
           if (!btn || !status) return;
           if (consent) {
-            consent.addEventListener('change', function () {
+            consent.addEventListener('change', function() {
               btn.disabled = !consent.checked;
               if (hint) hint.style.display = consent.checked ? 'none' : '';
             });
           }
-          btn.addEventListener('click', async function () {
+          btn.addEventListener('click', async function() {
             if (consent && !consent.checked) {
               status.className = 'newsletter-status err';
               status.textContent = '規約等へのご同意をご確認ください';
@@ -552,14 +370,14 @@
             status.textContent = '送信中…';
             btn.disabled = true;
             var ctrl = new AbortController();
-            var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+            var timer = setTimeout(function() { ctrl.abort(); }, 15000);
             try {
               var r = await fetch('/v1/billing/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
-                  success_url: 'https://zeimu-kaikei.ai/success.html?session_id={CHECKOUT_SESSION_ID}',
-                  cancel_url: 'https://zeimu-kaikei.ai/pricing.html?cancelled=1'
+                  success_url: 'https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}',
+                  cancel_url: 'https://jpcite.com/pricing.html?cancelled=1'
                 }),
                 signal: ctrl.signal
               });
@@ -591,137 +409,67 @@
               clearTimeout(timer);
             }
           });
-        })();
+        });
       </script>
-    </section>
+ </section>
 
-    <!--
-      "When NOT to use us" 2026-04-29. Disqualifying mismatch upfront
-      reduces churn + 詐欺 risk. Each item points the visitor to the
-      correct alternative (税理士 / 一次資料 / 政府統計) — we never
-      claim coverage we don't have.
-    -->
-    <section aria-labelledby="not-for-title" style="margin-top:56px;padding:20px 22px;border:1px solid var(--border,#e5e7eb);border-radius:10px;background:var(--bg-alt,#f7f7f8);">
-      <h2 id="not-for-title" class="section-title" style="font-size:22px;margin:0 0 14px;">こんな用途には向きません</h2>
-      <p style="margin:0 0 14px;color:var(--text-muted);line-height:1.7;">税務会計AI は <strong>情報提供</strong> に限定したサービスです。 以下に該当する場合は別の選択肢をご利用ください。</p>
-      <ul style="margin:0 0 0 20px;padding:0;line-height:1.9;color:var(--text);font-size:15px;">
-        <li><strong>税務代理 / 税務助言 / 申告代行が必要な方</strong> — 税理士法 §52 により当社は実施できません。 <a href="advisors.html">税理士・社労士の検索</a> から登録 advisor へご相談ください。</li>
-        <li><strong>リアルタイム法令更新が必要な方</strong> — cron ベースで取り込み、 最大 24 時間の遅延が発生します。 即時の改正反映が必要な業務には e-Gov / 官報を直接ご参照ください。</li>
-        <li><strong>採択率の保証を求める方</strong> — 公的機関が公表する採択率をそのまま表示しており、 当社は採択を予測 / 保証しません。 申請の最終判断は申請者ご自身の責任となります。</li>
-        <li><strong>個別見積 / 契約書ベースの取引が必要な方</strong> — 完全セルフサーブのみ。 公開料金が全ユーザーに一律適用されます。</li>
-      </ul>
-    </section>
+ <section aria-labelledby="faq-title" style="margin-top:56px;">
+ <h2 id="faq-title" class="section-title">よくある質問</h2>
+ <div class="faq-accordion" style="display:flex;flex-direction:column;gap:8px;margin:0 0 28px;">
+ <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);" open>
+ <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">階層プランはないんですか?</summary>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ありません。 ¥3/リクエスト 完全従量のみ。 全顧客に同じ単価。</p>
+ </details>
+ <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
+ <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">適格請求書 (インボイス) はもらえますか?</summary>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">はい。 月初に自動発行し、 ダッシュボードからダウンロードできます。 Bookyou株式会社 の 適格請求書発行事業者番号 <code>T8010001213708</code> が記載されます。</p>
+ </details>
+ <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
+ <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">解約手続きは?</summary>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ダッシュボードで API キーを削除、 または登録カードを外すだけ。 違約金・解約手数料 一切ありません。</p>
+ </details>
+ <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
+ <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">返金はありますか?</summary>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">従量課金のためすでに呼び出した分の返金はありません。 サービス障害による誤課金は <a href="mailto:info@bookyou.net">info@bookyou.net</a> で全額返金します。</p>
+ </details>
+ <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
+ <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">予算上限を設定できますか?</summary>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">はい。 ダッシュボードで月額上限を任意の円額で設定可能。 設定額に達した瞬間に自動停止し、 JST 月初 00:00 にリセットします。 デフォルトは無制限。</p>
+ </details>
+ </div>
+ </section>
 
-    <section aria-labelledby="common-title" style="margin-top:56px;">
-      <h2 id="common-title" class="section-title">全顧客共通</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>インボイス制度対応</h3>
-          <p class="card-lead">T8010001213708</p>
-          <p>Bookyou株式会社の適格請求書を Stripe Tax が自動発行。req 数 × 単価 + 消費税 10% を明細化。 外税表示。</p>
-        </article>
-        <article class="card">
-          <h3>解約いつでも</h3>
-          <p class="card-lead">最低金額・違約金なし</p>
-          <p>Stripe Customer Portal から即時解約。 API は匿名 50 req/月 の無料枠に戻ります。 通知期間 / 引止め電話 / 違約金 一切なし。</p>
-        </article>
-        <article class="card">
-          <h3>特商法記載 / 領収書自動</h3>
-          <p class="card-lead">景表法 / 消費者契約法 準拠</p>
-          <p>特商法表記・TOS・プライバシー・不良品対応窓口を整備。 領収書は Stripe が自動発行、 決済後ダッシュボードから DL 可。</p>
-        </article>
-      </div>
-    </section>
-
-    <!--
-      FAQ accordion 2026-04-29. ¥3/req simplicity を 9 つの想定質問で
-      封じ込める。 tier 質問 / 大量割引 / signup / 解約 / 課金 / 業態 +
-      bonus 3 (予算上限 / req 定義 / データ提供範囲)。
-    -->
-    <section aria-labelledby="faq-title" style="margin-top:56px;">
-      <h2 id="faq-title" class="section-title">よくある質問</h2>
-      <div class="faq-accordion" style="display:flex;flex-direction:column;gap:8px;margin:0 0 28px;">
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);" open>
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">tier はないんですか?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ありません。 ¥3/req 完全従量のみ。 Free / Starter / Pro / Enterprise といった階層は一切設けていません。 全顧客に同じ単価。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">大量に使うとディスカウント?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ありません。 月 100 req でも 100 万 req でも全顧客 ¥3/req (税込 ¥3.30)。 営業交渉や個別見積もしません。 公開単価が全顧客に一律適用されます。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">signup 必須ですか?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">いいえ。 IP-based で 50 req/月 まで anonymous OK。 50 req を超える場合のみ API キー発行 + Stripe カード登録が必要です (JST 月初 00:00 リセット)。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">解約手続き?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ダッシュボードで API key 削除のみ、 違約金なし。 Stripe Customer Portal からカードを外せば即時匿名 50 req/月 の無料枠に戻ります。 通知期間 / 引止め電話 / 解約手数料 一切ありません。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Stripe 自動課金?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">はい、 月末締めで翌月 1 日に登録カードへ自動請求。 適格請求書発行 (T8010001213708 / Bookyou株式会社) を Stripe Tax が自動発行し、 仕入税額控除の要件を満たします。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">法人 / 個人事業主 どちらも?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">はい、 課税事業者 / 免税事業者 / 法人 / 個人事業主 いずれも同じ ¥3/req。 適格請求書は全顧客に発行 (T8010001213708)、 仕入税額控除を取りたい課税事業者にも対応済み。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">予算上限を設定できる?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">はい、 dashboard で月額 cap を任意の円額で設定可能 (<code>POST /v1/me/cap</code> 経由でも可)。 設定額を超えると即座に 503 + <code>cap_reached</code> で自動停止し、 JST 月初 00:00 にリセットします。 デフォルトは無制限。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">1 リクエストの定義は?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">1 HTTP もしくは 1 MCP tool 呼び出し = 1 req。 結果が 100 件返っても 1 req カウント。 <code>/v1/healthz</code>・<code>/v1/me/*</code> 等のメタ系は無料カウント外。</p>
-        </details>
-        <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
-          <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">データ提供範囲は?</summary>
-          <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">2026-04 時点で補助金・融資・税制・認定制度 <span data-fact="total_programs">14,472</span> 件 (検索対象 <span data-fact="searchable_programs_total">11,684</span>)、採択事例 <span data-fact="case_studies_total">2,286</span>、融資 <span data-fact="loan_programs_total">108</span> (担保・個人保証人・第三者保証人の三軸分解)、行政処分 <span data-fact="enforcement_cases_total">1,185</span>、 法令 154 全文 + 9,484 catalog stub、 判例 2,065、 入札 362、 適格事業者 13,801、 税務ruleset 50。 全件一次資料 URL + fetched_at 付き。 すべての数値は <a href="facts.html">ファクトシート</a> に出典付きで掲載。</p>
-        </details>
-      </div>
-    </section>
-
-    <!--
-      Bottom CTA. 3 行で再度確認 — 30秒 / 5分 / ¥0 。
-    -->
-    <section aria-labelledby="bottom-cta-title" style="margin-top:56px;padding:32px 24px;border:1px solid var(--accent);border-radius:12px;background:var(--accent-soft,#ecfdf5);">
-      <h2 id="bottom-cta-title" class="section-title" style="margin:0 0 12px;">30 秒で API key、 5 分で最初の API call、 月額固定なし</h2>
-      <p style="margin:0 0 18px;color:var(--text);font-size:16px;line-height:1.7;max-width:680px;">
-        ¥3/req (税込 ¥3.30) 完全従量。 月初 50 req は無料。 使わない月は ¥0。 解約は dashboard で API key を削除するだけ、 違約金なし。
-      </p>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;">
-        <a class="btn btn-primary" href="#api-paid" data-cta-variant="bottom-issue-key" style="font-size:16px;padding:13px 22px;">API key を発行</a>
-        <a class="btn btn-secondary" href="playground.html" data-cta-variant="bottom-playground" style="font-size:16px;padding:13px 22px;">REST playground で試す</a>
-      </div>
-    </section>
-
-  </div>
+ </div>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の公的制度を、 ¥3/req で。</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="products.html">Products</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="facts.html">統計の出典 (ファクトシート)</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script src="/assets/feedback-widget.js" defer></script>
 <script defer>
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.AutonoMathFeedback) {
-    window.AutonoMathFeedback.mount('body', { position: 'bottom-right' });
+document.addEventListener('DOMContentLoaded',  => {
+  if (window.税務会計AIFeedback) {
+    window.税務会計AIFeedback.mount('body', { position: 'bottom-right' });
   }
 });
 </script>

@@ -8,7 +8,7 @@
 >
 > Validate before send (memory `feedback_validate_before_apply`):
 > - 数値 13,578 / 66 / ¥3 を必ず確認
-> - URL 動作確認 (https://zeimu-kaikei.ai, /docs/, GitHub, PyPI)
+> - URL 動作確認 (https://jpcite.com, /docs/, GitHub, PyPI)
 > - 過剰強調 (必ず / 絶対 / 保証 / 業界初) 削除済み (INV-22)
 
 ---
@@ -24,7 +24,7 @@ one call.
 
 Built solo. Metered ¥3/req. 50/month free per IP.
 
-https://zeimu-kaikei.ai
+https://jpcite.com
 
 #MCP #ClaudeDesktop
 ```
@@ -105,7 +105,7 @@ source_url — past industry incidents created 詐欺 risk.
 ```
 7/ How to start (3 paths):
 
-1. curl https://api.zeimu-kaikei.ai/v1/programs/search?q=...
+1. curl https://api.jpcite.com/v1/programs/search?q=...
 2. Claude Desktop: add `{"command":"uvx","args":["autonomath-mcp"]}` to
    claude_desktop_config.json
 3. pip install autonomath-mcp
@@ -127,7 +127,7 @@ Anonymous 50 req/month free per IP. JST monthly reset.
 
 GitHub: https://github.com/[USERNAME]/[REPO]
 PyPI: pypi.org/project/autonomath-mcp/
-Docs: zeimu-kaikei.ai/docs/
+Docs: jpcite.com/docs/
 
 Reply / DM open.
 ```

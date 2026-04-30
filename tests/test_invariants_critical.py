@@ -261,20 +261,35 @@ def test_inv_tier_x_excluded_from_generate_program_pages_query():
         pytest.skip(f"generator not present at {script_path}")
     src = script_path.read_text(encoding="utf-8")
 
-    # Every "FROM programs" stanza in the file must be paired with a
-    # tier IN ('S','A','B','C') predicate within the surrounding ~800 chars,
-    # UNLESS the WHERE clause is a single-row PK lookup by unified_id.
+    # Every "FROM programs" stanza in the file must be paired with a tier
+    # whitelist predicate within the surrounding ~800 chars, UNLESS the WHERE
+    # clause is a single-row PK lookup by unified_id.
+    #
+    # Acceptable forms:
+    #   1. ``tier IN ('S','A','B','C')`` — legacy literal, preserved on
+    #      paths that don't take a runtime --tiers filter.
+    #   2. ``tier IN ({tier_in})`` — INDEXABLE_SQL_TEMPLATE; runtime callers
+    #      build {tier_in} from a whitelist that explicitly excludes X
+    #      (see _iter_rows safe_tiers list — only S/A/B/C accepted).
+    #   3. ``tier IN ('S','A')`` — frozen S+A subset (post-2026-04-29
+    #      AI-feel reduction). Still excludes X, still safe.
     from_blocks = [
         m.start() for m in re.finditer(r"\bFROM\s+programs\b", src, re.IGNORECASE)
     ]
     assert from_blocks, "expected at least one FROM programs in generator"
+    accepted_predicates = (
+        "tier IN ('S','A','B','C')",
+        "tier IN ({tier_in})",
+        "tier IN ('S','A')",
+    )
     for offset in from_blocks:
         # Look ahead up to 800 chars (covers the longest WHERE in the file).
         window = src[offset : offset + 800]
         # Exempt: single-row PK lookup — caller already enforced tier upstream.
         if re.search(r"WHERE\s+unified_id\s*=\s*\?", window, re.IGNORECASE):
             continue
-        assert "tier IN ('S','A','B','C')" in window, (
-            f"FROM programs at offset {offset} not paired with tier IN filter; "
+        assert any(p in window for p in accepted_predicates), (
+            f"FROM programs at offset {offset} not paired with a tier whitelist "
+            f"(must include one of {accepted_predicates}); "
             f"window head: {window[:200]!r}"
         )

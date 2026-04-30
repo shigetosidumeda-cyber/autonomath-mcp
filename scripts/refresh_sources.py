@@ -46,7 +46,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_DB = os.path.join(REPO_ROOT, "data", "jpintel.db")
 DEFAULT_REPORT = os.path.join(REPO_ROOT, "data", "refresh_sources_report.json")
 
-USER_AGENT = "AutonoMath-LivenessBot/0.1 (+https://zeimu-kaikei.ai/bot)"
+USER_AGENT = "AutonoMath-LivenessBot/0.1 (+https://jpcite.com/bot)"
 REQUEST_TIMEOUT = 15.0
 MAX_REDIRECTS = 5
 QUARANTINE_THRESHOLD = 3

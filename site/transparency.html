@@ -4,26 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>出典の透明性 — 税務会計AI</title>
-<meta name="description" content="税務会計AI の各レコード (programs / laws / court_decisions 等) がどの一次資料から組成されたかを cite chain で開示。am_entity_source × am_source JOIN を /v1/am/programs/{id}/sources で公開。集約サイト排除方針と帝国DB / 東商リサーチ等との差別化軸も明示。">
+<title>出典の透明性 — jpcite</title>
+<meta name="description" content="jpcite の各レコードは一次資料 (省庁・自治体・公的金融機関) を出典としています。出典 URL は API レスポンスに機械可読で含まれます。">
 
-<meta property="og:title" content="出典の透明性 — 税務会計AI">
-<meta property="og:description" content="cite chain を 1 record 単位で公開。集約サイト不採用、99%+ rows に primary URL + fetched_at。帝国DB / 東商リサーチとの差別化軸を honest に。">
+<meta property="og:title" content="出典の透明性 — jpcite">
+<meta property="og:description" content="一次資料のみを出典として採用。出典 URL は API レスポンスに含まれます。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://zeimu-kaikei.ai/transparency.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/transparency.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="出典の透明性 — 税務会計AI">
-<meta name="twitter:description" content="cite chain は API 経由で機械可読。集約サイト排除運用 (除外リスト + ToS + コードガード)。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="出典の透明性 — jpcite">
+<meta name="twitter:description" content="一次資料のみを出典として採用。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/transparency.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/transparency.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/transparency.html">
+<link rel="canonical" href="https://jpcite.com/transparency.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/transparency.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/transparency.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -38,27 +38,27 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "出典の透明性 — 税務会計AI",
-  "description": "税務会計AI の各レコードがどの一次資料から組成されたかの cite chain 開示ページ。集約サイト排除と一次資料 99%+ の運用方針を明示。",
+  "description": "税務会計AI の各レコードは一次資料を出典として収録しています。出典 URL は API レスポンスに含まれます。",
   "datePublished": "2026-04-29",
   "dateModified": "2026-04-29",
   "inLanguage": "ja",
-  "url": "https://zeimu-kaikei.ai/transparency.html",
+  "url": "https://jpcite.com/transparency.html",
   "author": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "identifier": "T8010001213708",
-    "url": "https://zeimu-kaikei.ai/",
+    "url": "https://jpcite.com/",
     "email": "info@bookyou.net"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
     "identifier": "T8010001213708",
-    "url": "https://zeimu-kaikei.ai/"
+    "url": "https://jpcite.com/"
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://zeimu-kaikei.ai/transparency.html"
+    "@id": "https://jpcite.com/transparency.html"
   }
 }
 </script>
@@ -68,74 +68,9 @@
   .transparency-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
   .transparency-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 24px; max-width: 760px; }
   .transparency-page h2 { font-size: 22px; margin: 36px 0 12px; font-weight: 700; }
-  .transparency-page h3 { font-size: 17px; margin: 24px 0 10px; font-weight: 600; }
   .transparency-page p { max-width: 760px; line-height: 1.75; }
   .transparency-page ul { max-width: 760px; line-height: 1.85; padding-left: 22px; }
   .transparency-page ul li { margin: 6px 0; }
-  .transparency-page table { width: 100%; max-width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
-  .transparency-page table th, .transparency-page table td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
-  .transparency-page table th { background: var(--bg-alt); font-weight: 600; }
-  .transparency-page .table-wrap { overflow-x: auto; max-width: 760px; }
-  .transparency-page .cite-chain {
-    background: var(--bg-alt);
-    border: 1px solid var(--border);
-    border-left: 4px solid #1e3a8a;
-    padding: 16px 20px;
-    margin: 16px 0;
-    border-radius: 4px;
-    max-width: 760px;
-  }
-  .transparency-page .cite-step {
-    padding: 8px 0;
-    border-bottom: 1px dashed var(--border);
-  }
-  .transparency-page .cite-step:last-child { border-bottom: none; }
-  .transparency-page .cite-step .step-num {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #1e3a8a;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: center;
-    line-height: 24px;
-    margin-right: 8px;
-  }
-  .transparency-page .cite-step .step-label { font-weight: 600; font-size: 14px; }
-  .transparency-page .cite-step .step-desc { font-size: 14px; color: var(--text-muted); margin: 4px 0 0 32px; line-height: 1.6; }
-  .transparency-page .cite-step code { font-size: 12px; }
-  .transparency-page pre.code-block {
-    background: #0f172a;
-    color: #e2e8f0;
-    padding: 14px 16px;
-    border-radius: 6px;
-    overflow-x: auto;
-    font-size: 13px;
-    line-height: 1.6;
-    max-width: 760px;
-    margin: 12px 0;
-  }
-  .transparency-page pre.code-block code { color: inherit; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace; }
-  .transparency-page .ban-callout {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-left: 4px solid #b91c1c;
-    padding: 14px 18px;
-    margin: 16px 0;
-    border-radius: 4px;
-    max-width: 760px;
-  }
-  .transparency-page .differentiation-callout {
-    background: #eef2ff;
-    border: 1px solid #c7d2fe;
-    border-left: 4px solid #4338ca;
-    padding: 14px 18px;
-    margin: 16px 0;
-    border-radius: 4px;
-    max-width: 760px;
-  }
 </style>
 
 <script defer src="/analytics.js"></script>
@@ -145,244 +80,80 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/about.html">About</a>
-      <a href="/products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/audiences/">利用者層</a>
-      <a href="/prompts.html">Prompts</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="/transparency.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust" open>
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/transparency.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/transparency.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="transparency-page">
-  <div class="container">
+ <div class="container">
 
-    <h1>出典の透明性</h1>
-    <p class="lead">税務会計AI が収録する 1 つ 1 つのレコード (制度・法令・判例・行政処分・適格事業者) が「<strong>どの一次資料</strong>を、<strong>いつ取得</strong>して、<strong>どのライセンス</strong>で組成されたか」を、API 経由で機械可読に開示します。AI / 士業 / DD 担当が自分で出典を追えるようにすることが、集約サイトとの本質的な差別化軸です。</p>
+ <h1>出典の透明性</h1>
+ <p class="lead">収録している各データ (制度・法令・判例・行政処分・適格請求書発行事業者) について、出典 URL・更新日・ライセンスを開示しています。</p>
 
-    <!-- Above-fold trust strip 2026-04-29. Mirrors About / Sources for
-         cross-page consistency. Emphasizes 一次資料 99%+ + 集約サイト
-         除外リスト as transparency page's core promise; numbers stay in
-         sync with CLAUDE.md. -->
-    <ul class="trust-stats" aria-label="出典透明性の主要指標">
-      <li><span class="num">99%+</span><span class="lbl">一次資料 source_url 付与</span></li>
-      <li><span class="num">15</span><span class="lbl">系統 一次データソース</span></li>
-      <li><span class="num">11,684</span><span class="lbl">検索対象 制度</span></li>
-      <li><span class="num">9,484</span><span class="lbl">法令 (本文 154)</span></li>
-      <li><span class="num">2,065</span><span class="lbl">判例</span></li>
-      <li><span class="num">1,185</span><span class="lbl">行政処分</span></li>
-      <li><span class="num">0</span><span class="lbl">集約サイト出典 (除外リスト)</span></li>
-    </ul>
-    <p class="trust-strip" style="margin:0 0 28px;">
-      運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-      · 集約サイト除外list (noukaweb / hojyokin-portal / biz.stayway 等不採用)
-      · <a href="sources.html">15 系統データソース一覧</a>
-      · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
-      · データ最終取り込み <time data-trust-fresh datetime="2026-04-26">2026-04-26</time>
-    </p>
+ <h2>このデータを信用してよいか</h2>
+ <ul>
+ <li>出典は<strong>一次資料のみ</strong> (省庁・自治体・公的金融機関・e-Gov・国税庁)。二次情報源 (集約サイト) は採用していません。</li>
+ <li>各レコードに<strong>出典 URL</strong>・<strong>更新日</strong>・<strong>ライセンス</strong>を付与し、API レスポンスに機械可読で含めています。</li>
+ <li>原典との齟齬・リンク切れに気付いた場合は、<a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。一次資料と再突合します。</li>
+ <li>適格請求書発行事業者データの削除請求 (公表終了済み等) も同窓口で受け付けます。詳細は <a href="privacy.html">プライバシーポリシー</a>。</li>
+ </ul>
 
-    <h2>cite chain の組成方法</h2>
-    <p>1 つの <code>programs</code> 行は、複数の一次資料を順序付けた cite chain として保持されます。例えば「ものづくり補助金」(<code>UNI-PROG-monozukuri-...</code>) の cite chain は次のように構成されます:</p>
+ <h2>関連ページ</h2>
+ <p><a href="sources.html">データソース一覧</a> · <a href="data-freshness.html">データ鮮度</a> · <a href="changelog.html">変更履歴</a></p>
 
-    <div class="cite-chain" aria-label="cite chain example: ものづくり補助金">
-      <div class="cite-step">
-        <span class="step-num" aria-hidden="true">1</span>
-        <span class="step-label">中小企業庁 (発出機関)</span>
-        <p class="step-desc">経済産業省の外局である中小企業庁を発出機関として記録。<code>am_authority</code> table に entity 化。<br><code>role=primary_source</code></p>
-      </div>
-      <div class="cite-step">
-        <span class="step-num" aria-hidden="true">2</span>
-        <span class="step-label">公募要領 PDF (一次資料)</span>
-        <p class="step-desc">中小企業庁公開の公募要領 PDF (例: <code>https://www.chusho.meti.go.jp/keiei/...</code>)。<br><code>am_source.is_pdf=1</code> · <code>license=gov_standard_v2.0</code> · <code>fetched_at=2026-04-15</code></p>
-      </div>
-      <div class="cite-step">
-        <span class="step-num" aria-hidden="true">3</span>
-        <span class="step-label">事務局公式サイト (申請窓口)</span>
-        <p class="step-desc">中小企業庁が指定する事務局の公開ページを併記 (申請窓口情報)。<br><code>role=application_url</code> · <code>license=gov_standard_v2.0</code></p>
-      </div>
-      <div class="cite-step">
-        <span class="step-num" aria-hidden="true">4</span>
-        <span class="step-label">採択事例 (LINK・参考)</span>
-        <p class="step-desc">関連する採択事例を関係性 link edge で結ぶ。<br><code>role=reference</code></p>
-      </div>
-    </div>
-
-    <p>cite chain の各 step は、<code>am_entity_source</code> (entity ↔ source の many-to-many 結合) と <code>am_source</code> (URL・取得日時・ライセンス・PDF flag を保持) の JOIN で組成されます。検索結果や MCP ツール 戻り値の <code>source_url</code> は、この chain の primary step の URL です。</p>
-
-    <h2>API 経由で cite chain を取得する</h2>
-    <p>個別レコードの cite chain は <code>GET /v1/am/programs/{program_id}/sources</code> で取得できます。public API 経路・auth 不要。</p>
-
-    <pre class="code-block"><code>$ curl 'https://api.zeimu-kaikei.ai/v1/am/programs/UNI-PROG-monozukuri-xxx/sources'
-{
-  "program_id": "UNI-PROG-monozukuri-xxx",
-  "entity_id": "AM-prog-...",
-  "name": "ものづくり・商業・サービス生産性向上促進補助金",
-  "sources": [
-    {
-      "source_url": "https://www.chusho.meti.go.jp/keiei/...",
-      "source_type": "primary",
-      "domain": "chusho.meti.go.jp",
-      "license": "gov_standard_v2.0",
-      "is_pdf": true,
-      "first_seen": "2026-03-12",
-      "last_verified": "2026-04-25",
-      "role": "primary_source",
-      "source_field": "official_url"
-    },
-    ...
-  ],
-  "generated_at": "2026-04-29T01:23:45Z"
-}</code></pre>
-
-    <p>個別 record の出典が古い・リンク切れ・原典齟齬を発見された場合は、<a href="mailto:info@bookyou.net">info@bookyou.net</a> まで連絡ください。dispute (利用者からの指摘) として一次資料と再突合し、48 時間以内 (営業日) に判断します。</p>
-
-    <h2>集約サイト (二次情報サイト) を採用しない方針</h2>
-    <div class="ban-callout">
-      <p style="margin:0;font-weight:600;color:#991b1b;">税務会計AI は <code>noukaweb</code> / <code>hojyokin-portal</code> / <code>biz.stayway</code> 等の二次情報サイトを <code>source_url</code> に採用しません。</p>
-      <p style="margin:8px 0 0;font-size:13px;">これは利用規約レベル (CLAUDE.md データ衛生規定) ではなく、コード側の 除外リスト でも強制されています。</p>
-    </div>
-    <p>過去に二次情報サイトを出典とすると、原典との乖離 (古い金額・既に終了した制度・存在しない要件) をそのまま AI に渡してしまう事故がありました。利用者から見れば「税務会計AI が嘘をついた」になり、最悪の場合は受給見込み違いや不適切申請につながり、<strong>これは重大な誤情報リスク</strong>です。</p>
-    <p>そのため当社は、<code>source_url</code> に集約系の URL を入れない方針を以下の 3 層で固めています:</p>
-    <ul>
-      <li><strong>規定層</strong> — <code>CLAUDE.md</code> "Data hygiene" 節で明文化、コードレビュー基準。</li>
-      <li><strong>コード層</strong> — 除外リスト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>scripts/ingest/*</code> でフィルタ。</li>
-      <li><strong>運用層</strong> — nightly source liveness scan で URL の生存確認、集約サイトの domain が混入していないか検査。</li>
-    </ul>
-    <p>結果: 全 13,578 programs 行のうち 99%+ が一次資料 URL + <code>fetched_at</code> を保持し、残る 12 件 (CMS 不在の小規模自治体) も明示的に「一次 URL 不足」とフラグしています。<a href="sources.html">15 系統のデータソース一覧</a> を参照。</p>
-
-    <h2>差別化軸: 帝国DB / 東商リサーチとの違い</h2>
-    <div class="differentiation-callout">
-      <p style="margin:0;"><strong>出典 URL は全て公開、 一次資料に直接 link する。</strong></p>
-      <p style="margin:8px 0 0;font-size:13px;">大手信用調査会社は内部評点 (信用評点・信頼度ランク) を商品の中心に据え、出典は社内 confidential。当社は逆方向で、評点ではなく <strong>原典 URL そのもの</strong>を商品の中心に据えています。</p>
-    </div>
-
-    <div class="table-wrap">
-    <table aria-describedby="diff-caption">
-      <caption id="diff-caption" class="visually-hidden">帝国DB / 東商リサーチ / 集約サイト / 税務会計AI の出典開示ポリシー比較</caption>
-      <thead>
-        <tr>
-          <th>項目</th>
-          <th>帝国DB / 東商リサーチ</th>
-          <th>集約サイト (noukaweb 等)</th>
-          <th>税務会計AI</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>商品の中心</td>
-          <td>独自評点 (信用評点・信頼度ランク)</td>
-          <td>収集ボリュームと SEO</td>
-          <td>原典 URL + 構造化メタデータ</td>
-        </tr>
-        <tr>
-          <td>出典 URL の公開</td>
-          <td>非公開 (社内 confidential)</td>
-          <td>原典 URL なし or 自社中継 URL</td>
-          <td><strong>全件公開</strong> (<code>am_source.source_url</code>)</td>
-        </tr>
-        <tr>
-          <td>取得日時の公開</td>
-          <td>非公開</td>
-          <td>非公開 or 不正確</td>
-          <td><strong>全件公開</strong> (<code>fetched_at</code> + <code>last_verified</code>)</td>
-        </tr>
-        <tr>
-          <td>ライセンスの公開</td>
-          <td>独自データのため適用されず</td>
-          <td>明示なし</td>
-          <td><strong>全件公開</strong> (<code>am_source.license</code>、6 値)</td>
-        </tr>
-        <tr>
-          <td>cite chain の機械可読</td>
-          <td>非対応</td>
-          <td>非対応</td>
-          <td><code>GET /v1/am/programs/{id}/sources</code> JSON</td>
-        </tr>
-        <tr>
-          <td>集約サイト採用</td>
-          <td>(サービス領域が異なる)</td>
-          <td>採用しているケースあり</td>
-          <td><strong>採用しない (除外リスト + コード強制)</strong></td>
-        </tr>
-        <tr>
-          <td>価格モデル</td>
-          <td>会員制 + 個別見積</td>
-          <td>無料 (アフィリエイト)</td>
-          <td>¥3/リクエスト 完全従量、匿名 50/月 free</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-
-    <p>この方向性は当社の使命に直結しています: <strong>「ChatGPT / Claude が日本の制度を語るとき、出典を捏造せずに語れる」</strong>状態にすること。AI が API を叩いた時点で原典 URL に直接 link できる、というのは「評点を AI に見せる」とは目指す姿が違います。</p>
-
-    <h2>適用される全データセット</h2>
-    <p>cite chain は 9 データセット全てに同じ枠組みで適用されます:</p>
-    <ul>
-      <li><code>programs</code> (10,790 検索可) — 公募要領 PDF + 事務局サイト</li>
-      <li><code>case_studies</code> (2,286) — 各省庁 / JST 公開採択結果</li>
-      <li><code>loan_programs</code> (108) — 公庫 / 民間金融の公開ページ</li>
-      <li><code>enforcement_cases</code> (1,185) — 各省庁公表の処分公報</li>
-      <li><code>laws</code> (本文 154 + メタ 9,484) — e-Gov 法令データ提供システム (CC BY 4.0)</li>
-      <li><code>court_decisions</code> (2,065) — 知財高裁 / 公開判決</li>
-      <li><code>bids</code> (362) — NEXCO / JR / UR / 各発注機関</li>
-      <li><code>invoice_registrants</code> (13,801 delta) — 国税庁適格請求書発行事業者公表 (PDL v1.0)</li>
-      <li><code>tax_rulesets</code> (35) — 国税庁通達</li>
-    </ul>
-    <p>各データセットの行数と最終取得日は <a href="data-freshness.html">データ鮮度ダッシュボード</a> で live 確認できます。</p>
-
-    <h2>削除請求 (Right to Be Forgotten)</h2>
-    <p>適格請求書発行事業者公表データ等で「公表終了済みなのに掲載されている」「個人事業主として 屋号公表を取り下げた」等の削除請求は、<a href="mailto:info@bookyou.net">info@bookyou.net</a> 宛に法人番号 / 登録番号 / 屋号などを添えて連絡してください。原則 48 時間以内 (営業日) に削除または非表示処理を行います。詳細は <a href="privacy.html">プライバシーポリシー</a>。</p>
-
-    <h2>関連ページ</h2>
-    <p><a href="sources.html">データソース一覧 (15 系統 + ライセンス)</a> · <a href="data-freshness.html">データ鮮度ダッシュボード</a> · <a href="roadmap.html">公開開発予定</a> · <a href="confidence.html">confidence (品質開示)</a> · <a href="facts.html">ファクトシート</a> · <a href="changelog.html">変更履歴</a></p>
-
-  </div>
+ </div>
 </main>
 
 <div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-    · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> / <a href="privacy.html">プライバシー</a>
-    · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
-  </p>
 </div>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">出典の透明性 — cite chain は API 経由で機械可読</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="products.html">Products</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="changelog.html">変更履歴</a>
-      <a href="sources.html">データソース</a>
-      <a href="data-freshness.html">データ鮮度</a>
-      <a href="roadmap.html">開発予定</a>
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特商法表記</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · 東京都文京区小日向 2-22-1 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p style="margin:12px 0 0;font-size:12px;line-height:1.7;color:var(--text-muted);">税務会計AI は検索インデックス + 構造化データ API であり、税理士法 §52 (税理士業務)、弁護士法 §72 (法律事務)、行政書士法 §1 (行政書士業務) に該当する業務はおこないません。個別相談は適切な士業へ。</p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
-
-<script src="/assets/trust-strip.js" defer></script>
 
 </body>
 </html>

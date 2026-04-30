@@ -1,4 +1,4 @@
-# 税務会計AI — Hiring Decision Gate
+# jpcite — Hiring Decision Gate
 
 Internal P5-quarterly decision document. Solo operator (梅田茂利, info@bookyou.net), Bookyou株式会社.
 

@@ -85,7 +85,7 @@ class Program(BaseModel):
         default=None,
         description=(
             "Site-relative path to the per-program SEO page on "
-            "zeimu-kaikei.ai (`/programs/{slug}-{sha1-6}.html`). "
+            "jpcite.com (`/programs/{slug}-{sha1-6}.html`). "
             "Generated from `primary_name` + `unified_id` via "
             "`jpintel_mcp.utils.slug.program_static_url`. Use this to "
             "deep-link result cards / share URLs / mailto bodies into "

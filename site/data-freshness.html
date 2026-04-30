@@ -4,27 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>データ鮮度ダッシュボード — 税務会計AI</title>
-<meta name="description" content="税務会計AI が収録する 9 データセット (programs / case_studies / loan_programs / enforcement_cases / laws / court_decisions / bids / invoice_registrants / tax_rulesets) の現在行数と最終取得日時を、API から live で表示。30 日経過で yellow、90 日経過で red。集約サイト排除・一次資料 99%+ の運用方針の透明性のため。">
+<title>データ鮮度 — jpcite</title>
+<meta name="description" content="jpcite のデータが新しいかどうかを 1 ページで確認できます。出典 URL と取得時刻を全件付与。">
 
-<meta property="og:title" content="データ鮮度ダッシュボード — 税務会計AI">
-<meta property="og:description" content="9 データセット × 行数 / 最終取得日 / ライセンス / 出典機関 を 1 ページで開示。30/90 日 stale フラグ付き。">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://zeimu-kaikei.ai/data-freshness.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="ja_JP">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="データ鮮度ダッシュボード — 税務会計AI">
-<meta name="twitter:description" content="9 データセット × 行数 / 最終取得日 / ライセンス / 出典機関 を live 開示。stale 判定は server-side。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
-
-<link rel="canonical" href="https://zeimu-kaikei.ai/data-freshness.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/data-freshness.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/data-freshness.html">
-<link rel="preconnect" href="https://api.zeimu-kaikei.ai" crossorigin>
+<link rel="canonical" href="https://jpcite.com/data-freshness.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/data-freshness.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/data-freshness.html">
+<link rel="preconnect" href="https://api.jpcite.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -34,102 +20,35 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="/styles.css?v=20260429b">
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Dataset",
-  "name": "税務会計AI 全データセット鮮度スナップショット",
-  "description": "税務会計AI が収録する 9 データセット (programs / case_studies / loan_programs / enforcement_cases / laws / court_decisions / bids / invoice_registrants / tax_rulesets) の現在行数・最終取得日時・ライセンス・出典機関を /v1/am/data-freshness から live 取得して表示する公開ダッシュボード。",
-  "url": "https://zeimu-kaikei.ai/data-freshness.html",
-  "inLanguage": "ja",
-  "creator": {
-    "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
-    "url": "https://zeimu-kaikei.ai/",
-    "email": "info@bookyou.net"
-  },
-  "license": "https://zeimu-kaikei.ai/tos.html",
-  "isAccessibleForFree": true,
-  "distribution": [
-    {
-      "@type": "DataDownload",
-      "encodingFormat": "application/json",
-      "contentUrl": "https://api.zeimu-kaikei.ai/v1/am/data-freshness"
-    }
-  ]
-}
-</script>
-
 <style>
   .freshness-page { padding: 48px 0 64px; }
   .freshness-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
-  .freshness-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 24px; max-width: 760px; }
-  .freshness-page h2 { font-size: 20px; margin: 36px 0 12px; font-weight: 700; }
-  .freshness-page p { max-width: 760px; line-height: 1.75; }
-  .freshness-page table { width: 100%; max-width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
-  .freshness-page table th, .freshness-page table td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: middle; }
-  .freshness-page table th { background: var(--bg-alt); font-weight: 600; }
-  .freshness-page table td.count { white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right; }
-  .freshness-page table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .freshness-page table code { font-size: 13px; }
-  .freshness-page .table-wrap { overflow-x: auto; }
-  .freshness-page .stale-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 999px;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-  }
-  .freshness-page .stale-fresh    { background: #dcfce7; color: #166534; }
-  .freshness-page .stale-30d      { background: #fef9c3; color: #854d0e; }
-  .freshness-page .stale-90d      { background: #fee2e2; color: #991b1b; }
-  .freshness-page .stale-unknown  { background: #f3f4f6; color: #4b5563; }
-  .freshness-page .meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    font-size: 13px;
-    color: var(--text-muted);
-    margin: 0 0 28px;
-    max-width: 760px;
-  }
-  .freshness-page .status-line {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg-alt);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-  .freshness-page .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #6b7280;
-    animation: pulse 2s infinite;
-  }
-  .freshness-page .status-dot.live { background: #22c55e; }
-  .freshness-page .status-dot.error { background: #ef4444; animation: none; }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .freshness-page .legend {
+  .freshness-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 24px; max-width: 640px; }
+  .freshness-page .summary {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin: 8px 0 16px;
+    margin: 24px 0;
+  }
+  .freshness-page .summary-card {
+    flex: 1 1 200px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--bg-alt);
+  }
+  .freshness-page .summary-card .label {
     font-size: 13px;
     color: var(--text-muted);
+    margin: 0 0 6px;
   }
-  .freshness-page .legend-item { display: inline-flex; align-items: center; gap: 6px; }
-  .freshness-page .placeholder { padding: 24px; text-align: center; color: var(--text-muted); }
+  .freshness-page .summary-card .value {
+    font-size: 28px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin: 0;
+  }
+  .freshness-page .trust { font-size: 14px; color: var(--text-muted); margin-top: 24px; }
 </style>
 
 <script defer src="/analytics.js"></script>
@@ -139,170 +58,92 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/about.html">About</a>
-      <a href="/products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/audiences/">利用者層</a>
-      <a href="/prompts.html">Prompts</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="/data-freshness.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust" open>
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/data-freshness.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/data-freshness.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main" class="freshness-page">
-  <div class="container">
+ <div class="container">
 
-    <h1>データ鮮度ダッシュボード</h1>
-    <p class="lead">税務会計AI が収録する 9 データセットの「行数」と「最終取得日時」を <code>GET /v1/am/data-freshness</code> から live で取得して表示します。最終取得から 30 日経過で yellow、90 日経過で red をマークします。</p>
+ <h1>データ鮮度</h1>
+ <p class="lead">いま参照できるデータがどれくらい新しいかを表示します。</p>
 
-    <div class="meta-row">
-      <span class="status-line">
-        <span class="status-dot" id="status-dot" aria-hidden="true"></span>
-        <span id="status-text">読み込み中…</span>
-      </span>
-      <span>API: <code>GET <a href="https://api.zeimu-kaikei.ai/v1/am/data-freshness" rel="noopener" target="_blank">api.zeimu-kaikei.ai/v1/am/data-freshness</a></code></span>
-      <span>5 分毎に自動更新</span>
-    </div>
+ <div class="summary" id="summary">
+ <div class="summary-card">
+ <p class="label">新しい (30 日以内)</p>
+ <p class="value" id="pct-fresh">—</p>
+ </div>
+ <div class="summary-card">
+ <p class="label">やや古い (30〜180 日)</p>
+ <p class="value" id="pct-mid">—</p>
+ </div>
+ <div class="summary-card">
+ <p class="label">古い (180 日超)</p>
+ <p class="value" id="pct-old">—</p>
+ </div>
+ </div>
 
-    <div class="legend">
-      <span class="legend-item"><span class="stale-badge stale-fresh">FRESH</span> ≤ 30 日</span>
-      <span class="legend-item"><span class="stale-badge stale-30d">STALE 30D</span> &gt; 30 日</span>
-      <span class="legend-item"><span class="stale-badge stale-90d">STALE 90D</span> &gt; 90 日</span>
-      <span class="legend-item"><span class="stale-badge stale-unknown">UNKNOWN</span> 取得日不明</span>
-    </div>
+ <p class="trust">出典 URL と取得時刻を全件付与。</p>
 
-    <div class="table-wrap">
-    <table aria-describedby="freshness-caption">
-      <caption id="freshness-caption" class="visually-hidden">9 データセットの行数 / 最終取得日 / ライセンス / 出典機関 / 鮮度フラグ</caption>
-      <thead>
-        <tr>
-          <th scope="col">データセット</th>
-          <th scope="col">行数</th>
-          <th scope="col">最終取得日</th>
-          <th scope="col">経過日数</th>
-          <th scope="col">鮮度</th>
-          <th scope="col">ライセンス</th>
-          <th scope="col">出典機関</th>
-        </tr>
-      </thead>
-      <tbody id="freshness-rows">
-        <tr><td colspan="7" class="placeholder">/v1/am/data-freshness を読み込み中…</td></tr>
-      </tbody>
-    </table>
-    </div>
-
-    <p style="margin-top:24px;font-size:13px;color:var(--text-muted);" id="generated-at"></p>
-
-    <h2>このページの位置づけ</h2>
-    <p>「最新のデータかどうか」をエンドユーザが自分で確認できる状態に保つことが、集約サイト (二次情報サイト) との差別化軸の中心です。当社は <a href="sources.html">15 系統の一次資料</a> から収集しており、99%+ の行に <code>source_url</code> + <code>fetched_at</code> を付与しています。本ページはその <code>fetched_at</code> をデータセット粒度で集約した live ビューです。個別レコードの cite chain は <a href="transparency.html">出典の透明性</a> を参照してください。</p>
-
-    <p>API レスポンスは ASCII-clean JSON で、polling 用に CORS open + 30 秒キャッシュです。<code>staleness</code> フィールドは <code>fresh</code> / <code>stale_30d</code> / <code>stale_90d</code> / <code>unknown</code> の 4 値で、判定は server-side で実施 (browser に business rule を ship しない方針)。</p>
-
-    <h2>30 日 / 90 日の閾値</h2>
-    <p>補助金・法令・適格事業者公表のように、原典側が頻繁に更新されるデータでは「最終取得から N 日経過」が信頼の代理指標になります。当社の運用基準:</p>
-    <ul>
-      <li><strong>≤ 30 日 (FRESH)</strong> — 最新 cron の取り込み圏内。原則これを維持する。</li>
-      <li><strong>&gt; 30 日 (STALE 30D)</strong> — 取り込み 処理経路 に問題がある可能性。優先的に再走査対象。</li>
-      <li><strong>&gt; 90 日 (STALE 90D)</strong> — 原典との齟齬が起こりうる範囲。利用前に各データセットの <code>fetched_at</code> をご確認ください。</li>
-      <li><strong>UNKNOWN</strong> — 構造 構築済みだが取り込み未完了、または fetched_at が NULL。</li>
-    </ul>
-
-    <h2>関連ページ</h2>
-    <p><a href="sources.html">データソース・出典・ライセンス一覧</a> · <a href="transparency.html">出典の透明性</a> · <a href="roadmap.html">公開開発予定</a> · <a href="changelog.html">変更履歴</a> · <a href="status/">稼働状況</a> · <a href="facts.html">ファクトシート</a></p>
-
-  </div>
+ </div>
 </main>
 
 <script>
-  // Vanilla JS — fetch /v1/am/data-freshness on load and poll every 5 min.
-  // No framework, no analytics tracking, no cookies. Reads the public CORS
-  // endpoint (no auth needed). Per-cell DOM update so a transient 5xx
-  // doesn't blank the table — we keep the previous render until a fresh
-  // payload arrives.
-  (function () {
+  (function() {
     'use strict';
-    var API = 'https://api.zeimu-kaikei.ai/v1/am/data-freshness';
+    var API = 'https://api.jpcite.com/v1/meta/freshness';
     var POLL_MS = 5 * 60 * 1000;
 
-    var STALENESS_LABEL = {
-      fresh: { cls: 'stale-fresh', text: 'FRESH' },
-      stale_30d: { cls: 'stale-30d', text: 'STALE 30D' },
-      stale_90d: { cls: 'stale-90d', text: 'STALE 90D' },
-      unknown: { cls: 'stale-unknown', text: 'UNKNOWN' }
-    };
-
-    function escapeHtml(s) {
-      if (s === null || s === undefined) return '';
-      return String(s).replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
-    }
-
-    function fmtNum(n) {
+    function fmtPct(n) {
       if (typeof n !== 'number' || isNaN(n)) return '—';
-      return n.toLocaleString('ja-JP');
-    }
-
-    function setStatus(state, text) {
-      var dot = document.getElementById('status-dot');
-      var label = document.getElementById('status-text');
-      if (!dot || !label) return;
-      dot.classList.remove('live', 'error');
-      if (state === 'live') dot.classList.add('live');
-      if (state === 'error') dot.classList.add('error');
-      label.textContent = text;
+      return Math.round(n) + '%';
     }
 
     function render(doc) {
-      var tbody = document.getElementById('freshness-rows');
-      var ts = document.getElementById('generated-at');
-      if (!tbody) return;
-      var rows = (doc && doc.datasets) || [];
-      if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="placeholder">' +
-          escapeHtml((doc && doc.note) || 'データがありません') + '</td></tr>';
-      } else {
-        var html = rows.map(function (r) {
-          var label = STALENESS_LABEL[r.staleness] || STALENESS_LABEL.unknown;
-          return '<tr>' +
-            '<td><code>' + escapeHtml(r.name) + '</code></td>' +
-            '<td class="count">' + fmtNum(r.row_count) + '</td>' +
-            '<td class="date">' + escapeHtml(r.last_fetched_at || '—') + '</td>' +
-            '<td class="count">' + (typeof r.days_ago === 'number' ? r.days_ago + ' 日' : '—') + '</td>' +
-            '<td><span class="stale-badge ' + label.cls + '">' + label.text + '</span></td>' +
-            '<td>' + escapeHtml(r.license || '—') + '</td>' +
-            '<td>' + escapeHtml(r.source || '—') + '</td>' +
-            '</tr>';
-        }).join('');
-        tbody.innerHTML = html;
-      }
-      if (ts && doc && doc.generated_at) {
-        ts.textContent = '最終応答 (server-side): ' + doc.generated_at;
-      }
+      var fresh = (doc && typeof doc.pct_within_30d === 'number') ? doc.pct_within_30d : null;
+      var old = (doc && typeof doc.pct_over_180d === 'number') ? doc.pct_over_180d : null;
+      var mid = (fresh !== null && old !== null) ? Math.max(0, 100 - fresh - old) : null;
+      var elFresh = document.getElementById('pct-fresh');
+      var elMid = document.getElementById('pct-mid');
+      var elOld = document.getElementById('pct-old');
+      if (elFresh) elFresh.textContent = fmtPct(fresh);
+      if (elMid) elMid.textContent = fmtPct(mid);
+      if (elOld) elOld.textContent = fmtPct(old);
     }
 
     function fetchOnce() {
-      setStatus('loading', '読み込み中…');
       fetch(API, { method: 'GET', headers: { 'Accept': 'application/json' } })
         .then(function (r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.json();
         })
-        .then(function (doc) {
-          render(doc);
-          setStatus('live', 'live (' + new Date().toLocaleTimeString('ja-JP') + ' 取得)');
-        })
-        .catch(function (err) {
-          setStatus('error', 'エラー: ' + err.message);
-        });
+        .then(render)
+        .catch(function () { /* keep last render */ });
     }
 
     fetchOnce();
@@ -310,37 +151,27 @@
   })();
 </script>
 
-<div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-    · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> / <a href="privacy.html">プライバシー</a>
-    · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
-  </p>
-</div>
-
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">データ鮮度ダッシュボード — 9 データセット live</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="products.html">Products</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="changelog.html">変更履歴</a>
-      <a href="sources.html">データソース</a>
-      <a href="roadmap.html">開発予定</a>
-      <a href="transparency.html">出典の透明性</a>
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特商法表記</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · 東京都文京区小日向 2-22-1 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p style="margin:12px 0 0;font-size:12px;line-height:1.7;color:var(--text-muted);">税務会計AI は検索インデックス + 構造化データ API であり、税理士法 §52 (税理士業務)、弁護士法 §72 (法律事務)、行政書士法 §1 (行政書士業務) に該当する業務はおこないません。個別相談は適切な士業へ。</p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script src="/assets/trust-strip.js" defer></script>

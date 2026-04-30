@@ -4,33 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Confidence — 税務会計AI</title>
-<meta name="description" content="税務会計AI の P5-attribution Bayesian confidence ダッシュボード。tool 単位の Discovery (見つけられる確率) と Use (実 action に変わる確率) を 95% credible interval 付きで公開。">
+<title>Confidence — jpcite</title>
+<meta name="description" content="jpcite の信頼度ダッシュボード。ツール単位の発見確率と 7 日以内の再利用確率を 95% 区間付きで公開。">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="Confidence — 税務会計AI">
-<meta property="og:description" content="tool 単位の Discovery / Use Bayesian confidence。95% credible interval。">
+<meta property="og:title" content="Confidence — jpcite">
+<meta property="og:description" content="ツール単位の発見確率と再利用確率。95% 区間付き。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/confidence.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/confidence.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Confidence — 税務会計AI">
-<meta name="twitter:description" content="tool 単位の Discovery / Use Bayesian confidence。95% credible interval。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="Confidence — jpcite">
+<meta name="twitter:description" content="ツール単位の発見確率と再利用確率。95% 区間付き。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/confidence.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/confidence.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/confidence.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/confidence.html">
+<link rel="canonical" href="https://jpcite.com/confidence.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/confidence.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/confidence.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/confidence.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
@@ -38,42 +41,43 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Confidence — 税務会計AI",
-  "description": "税務会計AI MCP toolset の P5-attribution Bayesian confidence ダッシュボード。tool 単位の Discovery (発見される確率) と Use (7日以内の再利用確率) を Beta(1,1) prior + 30 日 trailing window + 95% credible interval で公開。",
-  "url": "https://zeimu-kaikei.ai/confidence.html",
+  "description": "税務会計AI MCP ツールセットの信頼度ダッシュボード。ツール単位の発見確率と 7 日以内の再利用確率を、過去 30 日のデータで集計し、95% 区間を付けて公開。",
+  "url": "https://jpcite.com/confidence.html",
   "inLanguage": "ja",
   "isPartOf": {
     "@type": "WebSite",
-    "name": "税務会計AI",
-    "url": "https://zeimu-kaikei.ai/"
+    "name": "jpcite",
+    "alternateName": "税務会計AI",
+    "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "alternateName": "税務会計AI",
-    "url": "https://zeimu-kaikei.ai/",
+    "alternateName": ["税務会計AI", "jpcite"],
+    "url": "https://jpcite.com/",
     "identifier": "T8010001213708",
     "email": "info@bookyou.net"
   },
   "mainEntity": {
     "@type": "Dataset",
-    "name": "税務会計AI confidence snapshots",
-    "description": "税務会計AI MCP toolset の Bayesian confidence 日次スナップショット。/analytics/confidence_<DATE>.json と /analytics/confidence_index.json で配信。",
-    "url": "https://zeimu-kaikei.ai/confidence.html",
-    "license": "https://zeimu-kaikei.ai/tos.html",
+    "name": "jpcite 信頼度 日次スナップショット",
+    "description": "税務会計AI MCP ツールセットの信頼度 日次スナップショット。/analytics/confidence_<DATE>.json と /analytics/confidence_index.json で配信。",
+    "url": "https://jpcite.com/confidence.html",
+    "license": "https://jpcite.com/tos.html",
     "creator": {
       "@type": "Organization",
       "name": "Bookyou株式会社",
-      "url": "https://zeimu-kaikei.ai/"
+      "url": "https://jpcite.com/"
     },
     "distribution": [
       {
         "@type": "DataDownload",
-        "contentUrl": "https://api.zeimu-kaikei.ai/v1/stats/confidence",
+        "contentUrl": "https://api.jpcite.com/v1/stats/confidence",
         "encodingFormat": "application/json"
       },
       {
         "@type": "DataDownload",
-        "contentUrl": "https://zeimu-kaikei.ai/analytics/confidence_index.json",
+        "contentUrl": "https://jpcite.com/analytics/confidence_index.json",
         "encodingFormat": "application/json"
       }
     ]
@@ -175,115 +179,143 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="stats.html">Stats</a>
-      <a href="confidence.html" aria-current="page">Confidence</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="confidence.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="/en/confidence.html" lang="en" hreflang="en">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/confidence.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/confidence.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
 <section class="conf-page">
-  <div class="container">
+ <div class="container">
 
-    <h1>Confidence</h1>
-    <p class="sub">P5-attribution Bayesian confidence ダッシュボード。tool 単位の <strong>Discovery</strong> (見つけられる確率) と <strong>Use</strong> (7 日以内に再利用される確率) を Beta(1,1) 事前分布 + 30 日 trailing window で推定し、95% credible interval を併記しています。</p>
+ <h1>Confidence</h1>
+ <p class="sub">信頼度ダッシュボード。ツール単位の <strong>発見確率</strong> (見つけられる確率) と <strong>再利用確率</strong> (7 日以内に再利用される確率) を、過去 30 日のデータで集計し、95% 区間を併記しています。</p>
 
-    <!-- Headline ------------------------------------------------------------ -->
-    <section class="conf-section" aria-labelledby="headline-h">
-      <h2 id="headline-h">Headline — 全体 Discovery / Use</h2>
-      <p class="desc">trial 数で重み付けした集約値。目標は T+90d までに Discovery 90% / Use 80%、Y1 までに 95% / 92%。</p>
-      <div class="headline-grid" id="headline-grid">
-        <div class="headline" id="hd-disc">
-          <p class="label">Discovery (weighted)</p>
-          <p class="value">…</p>
-          <p class="target">目標 T+90d 90% / Y1 95%</p>
-        </div>
-        <div class="headline" id="hd-use">
-          <p class="label">Use (weighted)</p>
-          <p class="value">…</p>
-          <p class="target">目標 T+90d 80% / Y1 92%</p>
-        </div>
-        <div class="headline" id="hd-trials">
-          <p class="label">Trials (30 日)</p>
-          <p class="value">…</p>
-          <p class="target">posterior の信頼幅は trial 数に依存</p>
-        </div>
-      </div>
-      <p class="err" id="headline-err" hidden></p>
-    </section>
+ <!-- Headline ------------------------------------------------------------ -->
+ <section class="conf-section" aria-labelledby="headline-h">
+ <h2 id="headline-h">サマリ — 全体 発見確率 / 再利用確率</h2>
+ <p class="desc">試行回数で重み付けした集約値。発見確率は「見つけられる確率」、再利用確率は「7 日以内に再利用される確率」。</p>
+ <div class="headline-grid" id="headline-grid">
+ <div class="headline" id="hd-disc">
+ <p class="label">発見確率 (集約)</p>
+ <p class="value">…</p>
+ <p class="target">95% 区間を併記</p>
+ </div>
+ <div class="headline" id="hd-use">
+ <p class="label">再利用確率 (集約)</p>
+ <p class="value">…</p>
+ <p class="target">95% 区間を併記</p>
+ </div>
+ <div class="headline" id="hd-trials">
+ <p class="label">試行回数 (過去 30 日)</p>
+ <p class="value">…</p>
+ <p class="target">区間幅は試行回数に依存</p>
+ </div>
+ </div>
+ <p class="err" id="headline-err" hidden></p>
+ </section>
 
-    <!-- Per-tool table ------------------------------------------------------ -->
-    <section class="conf-section" aria-labelledby="per-tool-h">
-      <h2 id="per-tool-h">Per-tool — tool 単位の Discovery / Use</h2>
-      <p class="desc">各 tool の posterior mean と 95% credible interval。trials が小さい tool は CI が広くなります (= 不確実性が大きい)。</p>
-      <table class="conf" aria-describedby="per-tool-h">
-        <thead>
-          <tr>
-            <th scope="col">Tool</th>
-            <th scope="col" class="num">Discovery</th>
-            <th scope="col" class="num">95% CI</th>
-            <th scope="col" class="num">D hits / trials</th>
-            <th scope="col" class="num">Use</th>
-            <th scope="col" class="num">95% CI</th>
-            <th scope="col" class="num">U hits / trials</th>
-          </tr>
-        </thead>
-        <tbody id="per-tool-body">
-          <tr><td colspan="7" class="muted">読み込み中…</td></tr>
-        </tbody>
-      </table>
-      <p class="err" id="per-tool-err" hidden></p>
-    </section>
+ <!-- Per-tool table ------------------------------------------------------ -->
+ <section class="conf-section" aria-labelledby="per-tool-h">
+ <h2 id="per-tool-h">ツール別 — ツールごとの 発見確率 / 再利用確率</h2>
+ <p class="desc">各ツールの推定値と 95% 区間。試行回数が少ないツールは区間が広くなります (= 不確実性が大きい)。</p>
+ <table class="conf" aria-describedby="per-tool-h">
+ <thead>
+ <tr>
+ <th scope="col">ツール</th>
+ <th scope="col" class="num">発見確率</th>
+ <th scope="col" class="num">95% 区間</th>
+ <th scope="col" class="num">発見 / 試行</th>
+ <th scope="col" class="num">再利用確率</th>
+ <th scope="col" class="num">95% 区間</th>
+ <th scope="col" class="num">再利用 / 試行</th>
+ </tr>
+ </thead>
+ <tbody id="per-tool-body">
+ <tr><td colspan="7" class="muted">読み込み中…</td></tr>
+ </tbody>
+ </table>
+ <p class="err" id="per-tool-err" hidden></p>
+ </section>
 
-    <!-- Time series --------------------------------------------------------- -->
-    <section class="conf-section" aria-labelledby="ts-h">
-      <h2 id="ts-h">Trend — 日次 confidence (T+0 から)</h2>
-      <p class="desc">過去のスナップショット (<code>analytics/confidence_&lt;DATE&gt;.json</code>) を時系列で結んだもの。薄色の帯は 95% credible interval。 公開ダッシュボードでは 税務会計AI 公開リポジトリの static asset から読み込みます。</p>
-      <div class="ts-chart-wrap">
-        <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="Discovery / Use の日次推移">
-          <text x="400" y="100" text-anchor="middle" font-size="12" fill="#555">スナップショット履歴を読み込み中…</text>
-        </svg>
-        <div class="legend">
-          <span><span class="swatch" style="background:#1e3a8a"></span>Discovery</span>
-          <span><span class="swatch" style="background:#7c3aed"></span>Use</span>
-          <span><span class="swatch" style="background:#1e3a8a;opacity:0.18"></span>Discovery 95% CI</span>
-          <span><span class="swatch" style="background:#7c3aed;opacity:0.18"></span>Use 95% CI</span>
-        </div>
-      </div>
-      <p class="err" id="ts-err" hidden></p>
-    </section>
+ <!-- Time series --------------------------------------------------------- -->
+ <section class="conf-section" aria-labelledby="ts-h">
+ <h2 id="ts-h">推移 — 日次 信頼度 (T+0 から)</h2>
+ <p class="desc">過去のスナップショット (<code>analytics/confidence_&lt;DATE&gt;.json</code>) を時系列で結んだもの。薄色の帯は 95% 区間。 公開ダッシュボードでは jpcite 公開リポジトリの static asset から読み込みます。</p>
+ <div class="ts-chart-wrap">
+ <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="発見確率 / 再利用確率 の日次推移">
+ <text x="400" y="100" text-anchor="middle" font-size="12" fill="#555">スナップショット履歴を読み込み中…</text>
+ </svg>
+ <div class="legend">
+ <span><span class="swatch" style="background:#1e3a8a"></span>発見確率</span>
+ <span><span class="swatch" style="background:#7c3aed"></span>再利用確率</span>
+ <span><span class="swatch" style="background:#1e3a8a;opacity:0.18"></span>発見確率 95% 区間</span>
+ <span><span class="swatch" style="background:#7c3aed;opacity:0.18"></span>再利用確率 95% 区間</span>
+ </div>
+ </div>
+ <p class="err" id="ts-err" hidden></p>
+ </section>
 
-    <p class="updated-at">
-      Cadence: 1 日 1 回 cron スナップショット (<code>scripts/cron/confidence_update.py</code>) + 5 分間メモリキャッシュ。
-      Source: <code>GET /v1/stats/confidence</code> (live) · <code>/analytics/confidence_index.json</code> (history)。
-      Methodology: <a href="/docs/confidence_methodology/">confidence_methodology.md</a>。
-      最終生成: <code id="generated-at">—</code>
-    </p>
+ <p class="updated-at">
+ Cadence: 1 日 1 回 cron スナップショット (<code>scripts/cron/confidence_update.py</code>) + 5 分間メモリキャッシュ。
+ Source: <code>GET /v1/stats/confidence</code> (live) · <code>/analytics/confidence_index.json</code> (history)。
+ Methodology: <a href="/docs/confidence_methodology/">confidence_methodology.md</a>。
+ 最終生成: <code id="generated-at">—</code>
+ </p>
 
-  </div>
+ </div>
 </section>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container">
-    <p class="copy">© 2026 Bookyou株式会社 — 法人番号 T8010001213708</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>
-(function () {
+(function() {
   "use strict";
 
   var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || "";
@@ -481,17 +513,17 @@
         var snaps = idx.snapshots || [];
         renderTimeSeries(snaps);
       })
-      .catch(function () {
+      .catch(function() {
         // History index not yet published — leave the empty-state text.
         renderTimeSeries([]);
       });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function() {
     loadLive();
     loadHistory();
   });
-})();
+});
 </script>
 
 </body>

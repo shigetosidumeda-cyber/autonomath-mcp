@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Status — 税務会計AI</title>
-<meta name="description" content="税務会計AI の稼働状況 / Current operational status of the 税務会計AI API.">
+<title>稼働状況 — jpcite</title>
+<meta name="description" content="jpcite の稼働状況 / Current operational status of the jpcite API.">
 <meta name="robots" content="noindex, follow">
-<link rel="canonical" href="https://zeimu-kaikei.ai/status">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/status.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/status.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/status.html">
+<link rel="canonical" href="https://jpcite.com/status">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/status.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -195,20 +195,20 @@
     }
   }
 </style>
-<meta property="og:title" content="Status — 税務会計AI">
-<meta property="og:description" content="税務会計AI の稼働状況 / Current operational status of the 税務会計AI API.">
+<meta property="og:title" content="稼働状況 — jpcite">
+<meta property="og:description" content="jpcite の稼働状況 / Current operational status of the jpcite API.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/status">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/status">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Status — 税務会計AI">
-<meta name="twitter:description" content="税務会計AI の稼働状況 / Current operational status of the 税務会計AI API.">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="稼働状況 — jpcite">
+<meta name="twitter:description" content="jpcite の稼働状況 / Current operational status of the jpcite API.">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 </head>
 <body>
 
@@ -216,24 +216,24 @@
 
 <main id="main" class="container">
 
-  <div class="top-bar">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span>税務会計AI</span>
-    </a>
-    <span class="lang-switch" role="group" aria-label="Language / 言語">
-      <a href="status.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-      <span class="sep" aria-hidden="true">/</span>
-      <a href="en/status.html" lang="en" hreflang="en">EN</a>
-    </span>
-  </div>
+ <div class="top-bar">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span>jpcite</span>
+ </a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="status.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="en/status.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </div>
 
-  <h1>稼働状況 / Status</h1>
-  <p class="lead">
-    API (api.zeimu-kaikei.ai) とランディング (zeimu-kaikei.ai) の現在のステータス。<br>
-    Current status of the API and landing site.
-  </p>
+ <h1>稼働状況 / Status</h1>
+ <p class="lead">
+ API (api.jpcite.com) とランディング (jpcite.com) の現在のステータス。<br>
+ Current status of the API and landing site.
+ </p>
 
-  <!--
+ <!--
     To change state on incident:
       1. Remove "active" from the current state.
       2. Add "active" to the new state (ok / warn / down).
@@ -242,71 +242,79 @@
     Default = ok.
   -->
 
-  <section class="state ok active" aria-label="operational">
-    <span class="dot" aria-hidden="true">🟢</span>
-    <div>
-      <h2>運用中 / Operational</h2>
-      <p>全システム正常稼働中。API、ランディング、決済すべて利用可能。<br>
-         All systems operational — API, landing, and billing are up.</p>
-    </div>
-  </section>
+ <section class="state ok active" aria-label="operational">
+ <span class="dot" aria-hidden="true">🟢</span>
+ <div>
+ <h2>運用中 / Operational</h2>
+ <p>全システム正常稼働中。API、ランディング、決済すべて利用可能。<br>
+ All systems operational — API, landing, and billing are up.</p>
+ </div>
+ </section>
 
-  <section class="state warn" aria-label="degraded">
-    <span class="dot" aria-hidden="true">🟡</span>
-    <div>
-      <h2>限定運用 / Degraded</h2>
-      <p>一部機能の遅延または障害あり。詳細は本ページの更新をご確認ください。<br>
-         Partial outage or elevated latency. Check the note below for details.</p>
-    </div>
-  </section>
+ <section class="state warn" aria-label="degraded">
+ <span class="dot" aria-hidden="true">🟡</span>
+ <div>
+ <h2>限定運用 / Degraded</h2>
+ <p>一部機能の遅延または障害あり。詳細は本ページの更新をご確認ください。<br>
+ Partial outage or elevated latency. Check the note below for details.</p>
+ </div>
+ </section>
 
-  <section class="state down" aria-label="down">
-    <span class="dot" aria-hidden="true">🔴</span>
-    <div>
-      <h2>停止中 / Down (fallback mode)</h2>
-      <p>API は現在停止しています。本ページは静的フォールバックから配信されています。<br>
-         The API is currently down. This page is served from the static fallback mirror.</p>
-    </div>
-  </section>
+ <section class="state down" aria-label="down">
+ <span class="dot" aria-hidden="true">🔴</span>
+ <div>
+ <h2>停止中 / Down (代替手段モード)</h2>
+ <p>API は現在停止しています。本ページは静的フォールバックから配信されています。<br>
+ The API is currently down. This page is served from the static fallback mirror.</p>
+ </div>
+ </section>
 
-  <p class="updated">
-    最終更新 / Last updated:
-    <code>2026-04-23 (launch rehearsal — default state)</code>
-  </p>
+ <p class="updated">
+ 最終更新 / Last updated:
+ <code>2026-04-23 (公開リハーサル — 既定状態)</code>
+ </p>
 
-  <p class="fallback-note">
-    本ページが表示されている場合、ランディングはフォールバック経由で提供されている可能性があります。
-    API (<code>api.zeimu-kaikei.ai</code>) の復旧後、DNS を通常系へ戻します。
-    <br>
-    If you are seeing this page, the landing may be served from the Cloudflare Pages
-    fallback. DNS will revert to Fly once the API is healthy.
-  </p>
+ <p class="fallback-note">
+ 本ページが表示されている場合、ランディングはフォールバック経由で提供されている可能性があります。
+ API (<code>api.jpcite.com</code>) の復旧後、DNS を通常系へ戻します。
+ <br>
+ If you are seeing this page, the landing may be served from the Cloudflare Pages
+ fallback. DNS will revert to Fly once the API is healthy.
+ </p>
 
-  <p class="fallback-note">
-    透明性のため記載しています。インシデント発生時、過負荷や悪用パターンを検知した場合に API アクセスを一時的に停止することがあります。停止・復旧の状況は本ページで 5 分以内に更新します。
-    <br>
-    For transparency: during an incident or abuse pattern, we may temporarily pause API access. Status updates here within 5 minutes.
-  </p>
+ <p class="fallback-note">
+ 透明性のため記載しています。インシデント発生時、過負荷や悪用パターンを検知した場合に API アクセスを一時的に停止することがあります。停止・復旧の状況は本ページで 5 分以内に更新します。
+ <br>
+ For transparency: during an incident or abuse pattern, we may temporarily pause API access. Status updates here within 5 minutes.
+ </p>
 
-  <p class="links">
-    <a href="/">← ホームへ戻る / Back to home</a>
-  </p>
+ <p class="links">
+ <a href="/">← ホームへ戻る / Back to home</a>
+ </p>
 
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="footer-inner">
-    <p class="footer-brand">税務会計AI</p>
-    <p class="footer-tag">日本の制度 API</p>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="/tos.html">利用規約</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 </body>

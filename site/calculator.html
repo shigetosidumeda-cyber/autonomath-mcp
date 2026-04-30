@@ -17,32 +17,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>ROI 試算 — 税務会計AI</title>
-<meta name="description" content="税務会計AI ROI calculator。顧問先数 / 月次 review 件数 / 削減時間 / 平均報酬を入力すると、月額 API コスト (¥3/req 税別、税込 ¥3.30) と時間削減 / 機会発見 expected value を即座に試算。Pure JS、LLM 呼び出しなし。">
+<title>ROI 試算 — jpcite</title>
+<meta name="description" content="jpcite ROI 試算。顧問先数 / 月次 確認 件数 / 削減時間 / 平均報酬を入力すると、月額 API コスト (¥3/リクエスト 税別、税込 ¥3.30) と時間削減 / 機会発見の期待値を即座に試算。Pure JS、LLM 呼び出しなし。">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="ROI 試算 — 税務会計AI">
-<meta property="og:description" content="顧問先数 × 月次 review × 削減時間 × 平均報酬で API ¥3/req の payback を即試算。">
+<meta property="og:title" content="ROI 試算 — jpcite">
+<meta property="og:description" content="顧問先数 × 月次 確認 × 削減時間 × 平均報酬で API ¥3/リクエスト の回収期間を即試算。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/calculator.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/calculator.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ROI 試算 — 税務会計AI">
-<meta name="twitter:description" content="顧問先数 × 月次 review × 削減時間 × 平均報酬で API ¥3/req の payback を即試算。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="ROI 試算 — jpcite">
+<meta name="twitter:description" content="顧問先数 × 月次 確認 × 削減時間 × 平均報酬で API ¥3/リクエスト の回収期間を即試算。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/calculator.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/calculator.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/calculator.html">
+<link rel="canonical" href="https://jpcite.com/calculator.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/calculator.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/calculator.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/styles.css?v=20260428a">
 <script defer src="analytics.js"></script>
 
@@ -54,17 +57,17 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "税務会計AI ROI calculator",
+  "name": "jpcite ROI calculator",
   "applicationCategory": "BusinessApplication",
   "applicationSubCategory": "TaxAccountingTool",
   "operatingSystem": "Web Browser",
-  "url": "https://zeimu-kaikei.ai/calculator.html",
+  "url": "https://jpcite.com/calculator.html",
   "description": "税理士・会計士・補助金 consultant 向けの ROI 試算ツール。顧問先数 / 月次 review / 削減時間 / 平均報酬から税務会計AI API (¥3/req 税別、税込 ¥3.30) の月次 payback を client-side で算定。",
   "browserRequirements": "JavaScript",
   "isAccessibleForFree": true,
   "publisher": {
     "@type": "Organization",
-    "@id": "https://zeimu-kaikei.ai/#publisher"
+    "@id": "https://jpcite.com/#publisher"
   },
   "offers": {
     "@type": "Offer",
@@ -77,7 +80,7 @@
       "unitText": "リクエスト",
       "valueAddedTaxIncluded": true
     },
-    "url": "https://zeimu-kaikei.ai/pricing.html"
+    "url": "https://jpcite.com/pricing.html"
   },
   "inLanguage": "ja"
 }
@@ -88,9 +91,9 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "url": "https://zeimu-kaikei.ai/",
+  "url": "https://jpcite.com/",
   "identifier": "T8010001213708"
 }
 </script>
@@ -248,6 +251,13 @@
     line-height: 1.7;
   }
   .calc-disclaimer strong { color: var(--text); }
+  @media (max-width: 480px) {
+    .calc-page h1 { font-size: clamp(22px, 7vw, 30px); }
+    .calc-form, .calc-output { padding: 18px 16px; }
+    .calc-output dd { font-size: 22px; }
+    .assumption-table { font-size: 12px; }
+    .assumption-table th, .assumption-table td { padding: 8px 8px; }
+  }
 </style>
 </head>
 <body>
@@ -255,186 +265,225 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/docs/">Docs</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/calculator.html" aria-current="page">ROI 試算</a>
-      <a href="/stats.html">Stats</a>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html" aria-current="page">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/calculator.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/calculator.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
 <section class="calc-page">
-  <div class="container">
+ <div class="container">
 
-    <h1>ROI 試算</h1>
-    <p class="lead">
-      顧問先数 / 月次 review 件数 / 1 件あたり削減時間 / 平均時間報酬 を入力すると、
-      税務会計AI API (¥3/req 税別、税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>) の月額コストと、
-      時間削減 + 機会発見の期待値を <strong>client-side</strong> で計算します。
-      入力値はブラウザから外に出ません (送信なし、 LLM 呼び出しなし)。
-    </p>
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/pricing.html">料金</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">月額シミュレーター</span>
+ </nav>
 
-    <div class="calc-shell">
+ <h1>ROI 試算</h1>
+ <p class="lead">
+ 顧問先数 / 月次 確認 件数 / 1 件あたり削減時間 / 平均時間報酬 を入力すると、
+ jpcite API (¥3/リクエスト 税別、税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>) の月額コストと、
+ 時間削減 + 機会発見の期待値を <strong>ブラウザ内で</strong> 計算します。
+ 入力値はブラウザから外に出ません (送信なし、 LLM 呼び出しなし)。
+ </p>
 
-      <!-- Input ----------------------------------------------------- -->
-      <form class="calc-form" id="roi-form" autocomplete="off" novalidate
-            aria-label="ROI 試算 入力フォーム">
-        <h2>入力</h2>
+ <div class="calc-shell">
 
-        <div class="field">
-          <label for="clients">顧問先数</label>
-          <span class="hint">税理士事務所が抱える法人 / 個人クライアント数。</span>
-          <input id="clients" name="clients" type="number" min="0" step="1"
-                 value="50" inputmode="numeric"
-                 aria-describedby="clients-hint">
-          <span class="unit">社</span>
-        </div>
+ <!-- Input ----------------------------------------------------- -->
+ <form class="calc-form" id="roi-form" autocomplete="off" novalidate
+ aria-label="ROI 試算 入力フォーム">
+ <h2>入力</h2>
 
-        <div class="field">
-          <label for="reviews">1 顧問先あたり 月次 review 件数</label>
-          <span class="hint">補助金 / 助成金 / 税制 / 法令改正 を 1 顧問先あたり 月に何回 review するか。</span>
-          <input id="reviews" name="reviews" type="number" min="0" step="1"
-                 value="10" inputmode="numeric">
-          <span class="unit">件 / 顧問先 / 月</span>
-        </div>
+ <div class="field">
+ <label for="clients">顧問先数</label>
+ <span class="hint">税理士事務所が抱える法人 / 個人クライアント数。</span>
+ <input id="clients" name="clients" type="number" min="0" step="1"
+ value="50" inputmode="numeric"
+ aria-describedby="clients-hint">
+ <span class="unit">社</span>
+ </div>
 
-        <div class="field">
-          <label for="minutes">1 件あたり削減時間</label>
-          <span class="hint">人手 review (制度文書 + 一次資料 cross-check) を AI に置き換えた時の短縮分。</span>
-          <input id="minutes" name="minutes" type="number" min="0" step="1"
-                 value="30" inputmode="numeric">
-          <span class="unit">分 / 件</span>
-        </div>
+ <div class="field">
+ <label for="reviews">1 顧問先あたり 月次 確認 件数</label>
+ <span class="hint">補助金 / 助成金 / 税制 / 法令改正 を 1 顧問先あたり 月に何回 確認 するか。</span>
+ <input id="reviews" name="reviews" type="number" min="0" step="1"
+ value="10" inputmode="numeric">
+ <span class="unit">件 / 顧問先 / 月</span>
+ </div>
 
-        <div class="field">
-          <label for="hourly">平均時間報酬</label>
-          <span class="hint">税理士 / 担当者の請求単価または機会費用 (時給換算)。</span>
-          <input id="hourly" name="hourly" type="number" min="0" step="100"
-                 value="10000" inputmode="numeric">
-          <span class="unit">円 / 時間</span>
-        </div>
+ <div class="field">
+ <label for="minutes">1 件あたり削減時間</label>
+ <span class="hint">人手 確認 (制度文書 + 一次資料の突合) を AI に置き換えた時の短縮分。</span>
+ <input id="minutes" name="minutes" type="number" min="0" step="1"
+ value="30" inputmode="numeric">
+ <span class="unit">分 / 件</span>
+ </div>
 
-        <div class="field">
-          <label for="missrate">機会発見率</label>
-          <span class="hint">review した制度のうち <em>本来適用できたが見落としていた</em> 確率。
-            業界平均は 1〜5%、 ここでは 2% を default。</span>
-          <input id="missrate" name="missrate" type="number" min="0" max="100" step="0.5"
-                 value="2" inputmode="decimal">
-          <span class="unit">%</span>
-        </div>
+ <div class="field">
+ <label for="hourly">平均時間報酬</label>
+ <span class="hint">税理士 / 担当者の請求単価または機会費用 (時給換算)。</span>
+ <input id="hourly" name="hourly" type="number" min="0" step="100"
+ value="10000" inputmode="numeric">
+ <span class="unit">円 / 時間</span>
+ </div>
 
-        <div class="field">
-          <label for="missvalue">機会 1 件あたり期待 value</label>
-          <span class="hint">見落としを 1 件捕捉した時の顧問先側の交付決定額 平均値。
-            補助金 1 件 ¥1〜3M が standard、 default は保守的に ¥500,000。</span>
-          <input id="missvalue" name="missvalue" type="number" min="0" step="10000"
-                 value="500000" inputmode="numeric">
-          <span class="unit">円 / 件</span>
-        </div>
+ <div class="field">
+ <label for="missrate">機会発見率</label>
+ <span class="hint">確認 した制度のうち <em>本来適用できたが見落としていた</em> 確率。
+ 業界平均は 1〜5%、 ここでは 2% を初期値。</span>
+ <input id="missrate" name="missrate" type="number" min="0" max="100" step="0.5"
+ value="2" inputmode="decimal">
+ <span class="unit">%</span>
+ </div>
 
-      </form>
+ <div class="field">
+ <label for="missvalue">機会 1 件あたり期待値</label>
+ <span class="hint">見落としを 1 件捕捉した時の顧問先側の交付決定額 平均値。
+ 補助金 1 件 ¥1〜3M が標準、 初期値は保守的に ¥500,000。</span>
+ <input id="missvalue" name="missvalue" type="number" min="0" step="10000"
+ value="500000" inputmode="numeric">
+ <span class="unit">円 / 件</span>
+ </div>
 
-      <!-- Output ---------------------------------------------------- -->
-      <aside class="calc-output" aria-live="polite" aria-atomic="true"
-             aria-label="ROI 試算 結果">
-        <h2>試算結果 (月次)</h2>
-        <dl>
-          <div>
-            <dt>API リクエスト数</dt>
-            <dd id="out-reqs" class="cost">— req<span class="secondary">顧問先 × review 件数</span></dd>
-          </div>
-          <div>
-            <dt>API コスト (税込)</dt>
-            <dd id="out-cost" class="cost">¥—<span class="secondary" id="out-cost-net">税別 ¥— + 消費税 10%</span></dd>
-          </div>
-          <div>
-            <dt>削減時間</dt>
-            <dd id="out-hours" class="savings">— 時間<span class="secondary" id="out-hours-yen">時給換算 ¥—</span></dd>
-          </div>
-          <div>
-            <dt>機会発見 expected value</dt>
-            <dd id="out-opp" class="savings">¥—<span class="secondary" id="out-opp-detail">機会発見率 × 期待 value × review 件数</span></dd>
-          </div>
-          <div>
-            <dt>純便益 (削減 + 機会 − コスト)</dt>
-            <dd id="out-net" class="net">¥—<span class="secondary" id="out-net-mult">API コストに対する倍率 —</span></dd>
-          </div>
-        </dl>
-      </aside>
-    </div>
+ </form>
 
-    <!-- Plain-language summary -->
-    <div class="calc-summary" aria-live="polite">
-      <p id="summary-line">入力に応じて要約が更新されます。</p>
-      <p>※ 削減時間 + 機会発見 = 月次 <strong class="payback" id="summary-payback">¥—</strong> の便益、 API コスト (税込) との比は <span id="summary-ratio">—</span> 倍。</p>
-    </div>
+ <!-- Output ---------------------------------------------------- -->
+ <aside class="calc-output" aria-live="polite" aria-atomic="true"
+ aria-label="ROI 試算 結果">
+ <h2>試算結果 (月次)</h2>
+ <dl>
+ <div>
+ <dt>API リクエスト数</dt>
+ <dd id="out-reqs" class="cost">— リクエスト<span class="secondary">顧問先 × 確認 件数</span></dd>
+ </div>
+ <div>
+ <dt>API コスト (税込)</dt>
+ <dd id="out-cost" class="cost">¥—<span class="secondary" id="out-cost-net">税別 ¥— + 消費税 10%</span></dd>
+ </div>
+ <div>
+ <dt>削減時間</dt>
+ <dd id="out-hours" class="savings">— 時間<span class="secondary" id="out-hours-yen">時給換算 ¥—</span></dd>
+ </div>
+ <div>
+ <dt>機会発見 期待値</dt>
+ <dd id="out-opp" class="savings">¥—<span class="secondary" id="out-opp-detail">機会発見率 × 期待値 × 確認 件数</span></dd>
+ </div>
+ <div>
+ <dt>純便益 (削減 + 機会 − コスト)</dt>
+ <dd id="out-net" class="net">¥—<span class="secondary" id="out-net-mult">API コストに対する倍率 —</span></dd>
+ </div>
+ </dl>
+ </aside>
+ </div>
 
-    <!-- Assumption disclosure -->
-    <h2 style="font-size:18px;margin:32px 0 12px;">前提</h2>
-    <table class="assumption-table" aria-label="計算前提">
-      <thead>
-        <tr><th scope="col">項目</th><th scope="col" class="num">値</th><th scope="col">出所</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">API 単価 (税別)</th>
-          <td class="num">¥3.00 / req</td>
-          <td><a href="/pricing.html#api-paid">/pricing.html</a> · Stripe 従量</td>
-        </tr>
-        <tr>
-          <th scope="row">消費税率</th>
-          <td class="num">10%</td>
-          <td>国税庁 消費税法 §29 標準税率</td>
-        </tr>
-        <tr>
-          <th scope="row">無料枠</th>
-          <td class="num">50 req / 月 / IP</td>
-          <td>匿名利用 (JST 月初 00:00 リセット) — 認証ユーザーは控除しない default</td>
-        </tr>
-        <tr>
-          <th scope="row">請求単位</th>
-          <td class="num">1 req = 1 HTTP / MCP tool 呼び出し</td>
-          <td>結果が 100 件返っても 1 req</td>
-        </tr>
-        <tr>
-          <th scope="row">機会 expected value 計算式</th>
-          <td class="num">review × 発見率 × 1 件 value</td>
-          <td>確率 × 価値 (機会の単純期待値)</td>
-        </tr>
-      </tbody>
-    </table>
+ <!-- Plain-language summary -->
+ <div class="calc-summary" aria-live="polite">
+ <p id="summary-line">入力に応じて要約が更新されます。</p>
+ <p>※ 削減時間 + 機会発見 = 月次 <strong class="payback" id="summary-payback">¥—</strong> の便益、 API コスト (税込) との比は <span id="summary-ratio">—</span> 倍。</p>
+ </div>
 
-    <div class="calc-cta">
-      <a class="btn btn-primary" href="/pricing.html#api-paid">¥3/req metered で始める</a>
-      <a class="btn btn-secondary" href="/docs/getting-started/">API クイックスタート</a>
-      <a class="btn btn-secondary" href="/stats.html">公開統計を確認</a>
-    </div>
+ <!-- Assumption disclosure -->
+ <h2 style="font-size:18px;margin:32px 0 12px;">前提</h2>
+ <table class="assumption-table" aria-label="計算前提">
+ <thead>
+ <tr><th scope="col">項目</th><th scope="col" class="num">値</th><th scope="col">出所</th></tr>
+ </thead>
+ <tbody>
+ <tr>
+ <th scope="row">API 単価 (税別)</th>
+ <td class="num">¥3.00 / リクエスト</td>
+ <td><a href="/pricing.html#api-paid">/pricing.html</a> · Stripe 従量</td>
+ </tr>
+ <tr>
+ <th scope="row">消費税率</th>
+ <td class="num">10%</td>
+ <td>国税庁 消費税法 §29 標準税率</td>
+ </tr>
+ <tr>
+ <th scope="row">無料枠</th>
+ <td class="num">50 リクエスト / 月 / IP</td>
+ <td>匿名利用 (JST 月初 00:00 リセット) — 認証ユーザーは控除しない既定</td>
+ </tr>
+ <tr>
+ <th scope="row">請求単位</th>
+ <td class="num">1 リクエスト = 1 HTTP / MCP ツール 呼び出し</td>
+ <td>結果が 100 件返っても 1 リクエスト</td>
+ </tr>
+ <tr>
+ <th scope="row">機会 期待値 計算式</th>
+ <td class="num">確認 × 発見率 × 1 件期待値</td>
+ <td>確率 × 価値 (機会の単純期待値)</td>
+ </tr>
+ </tbody>
+ </table>
 
-    <p class="calc-disclaimer">
-      <strong>本試算は情報提供目的の参考値です。</strong>
-      実際の便益は顧問先構成・案件複雑度・制度改正頻度・本サービスの該当性により変動します。
-      税務会計AI は税理士法 §52 / §72 の遵守のため、 個別税務助言は提供せず、 一次資料の検索・整理に限定します。
-      税理士業務 / 会計士業務 の判断は必ず資格者にご相談ください。
-    </p>
+ <div class="calc-cta">
+ <a class="btn btn-primary" href="/pricing.html#api-paid">¥3/リクエスト 従量 で始める</a>
+ <a class="btn btn-secondary" href="/docs/getting-started/">API クイックスタート</a>
+ <a class="btn btn-secondary" href="/stats.html">公開統計を確認</a>
+ </div>
 
-  </div>
+ <p class="calc-disclaimer">
+ <strong>本試算は情報提供目的の参考値です。</strong>
+ 実際の便益は顧問先構成・案件複雑度・制度改正頻度・本サービスの該当性により変動します。
+ jpcite は税理士法 §52 / §72 の遵守のため、 個別税務助言は提供せず、 一次資料の検索・整理に限定します。
+ 税理士業務 / 会計士業務 の判断は必ず資格者にご相談ください。
+ </p>
+
+ </div>
 </section>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container">
-    <p class="copy">© 2026 Bookyou株式会社 — 法人番号 T8010001213708</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>
-(function () {
+(function() {
   "use strict";
 
   // Pure client-side ROI calc. NO fetch, NO LLM, NO network. We do not
@@ -544,7 +593,7 @@
   // both keyboard and arrow-spinner clicks; `change` is the IE/blur fall-
   // back. We prefer `input` for sub-second responsiveness — the entire
   // calc is O(1) so there is no debounce concern.
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function() {
     var ids = ["clients", "reviews", "minutes", "hourly", "missrate", "missvalue"];
     ids.forEach(function (id) {
       var el = $(id);
@@ -554,7 +603,7 @@
     });
     recompute();
   });
-})();
+});
 </script>
 
 </body>

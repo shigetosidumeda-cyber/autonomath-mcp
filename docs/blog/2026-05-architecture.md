@@ -14,7 +14,7 @@ author: Bookyou株式会社 (T8010001213708)
 
 # AutonoMath architecture — primary-source SQLite + 全文検索
 
-> 公開日: 2026-05-06 / 運営: Bookyou株式会社 (T8010001213708)
+> 公開日: 2026-05-06 / (T8010001213708)
 
 AutonoMath は「LLM に投げる前に、出典つきで構造化された答えが SQLite に焼かれている」ことを目指す制度 database です。
 ただし launch 時点で全部が live なわけではありません。 **今動いているもの** と **scaffold だけ立っているもの** を正直に分けて書きます。
@@ -52,7 +52,7 @@ LLM が日本の制度に弱い根本は 3 つ。
 ### API + MCP surface
 
 - FastAPI (`/v1/*`, Stripe metered ¥3/req)
-- FastMCP (stdio, 89 tools = 39 jpintel + 30 autonomath at default gates, protocol 2025-06-18)
+- FastMCP (stdio, 89 tools =  + 30 autonomath at default gates, protocol 2025-06-18)
 - 静的サイト (Cloudflare Pages, `/programs/` 配下に SEO page を生成)
 - `llms-full.txt` を月次再生成し LLM crawler 向けに publish
 
@@ -85,9 +85,9 @@ LLM が日本の制度に弱い根本は 3 つ。
 
 ## 関連ドキュメント
 
-- [API リファレンス](https://zeimu-kaikei.ai/docs/api-reference/)
-- [MCP ツール一覧](https://zeimu-kaikei.ai/docs/mcp-tools/)
-- [Per-Tool 精度表](https://zeimu-kaikei.ai/docs/per_tool_precision/)
+- [API リファレンス](https://jpcite.com/docs/api-reference/)
+- [MCP ツール一覧](https://jpcite.com/docs/mcp-tools/)
+- [Per-Tool 精度表](https://jpcite.com/docs/per_tool_precision/)
 
 質問・要望は [info@bookyou.net](mailto:info@bookyou.net) または GitHub issues へ。
 

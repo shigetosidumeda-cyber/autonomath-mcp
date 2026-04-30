@@ -50,7 +50,7 @@ Partner: Money Forward, Inc. — Partner Program (MF Cloud Connect)
 URL (申請): https://biz.moneyforward.com/partner/
 URL (Developer): https://corp.moneyforward.com/partner/cloud/
 
-会社名: Bookyou 株式会社 (法人番号 T8010001213708)
+会社名: Bookyou 株式会社 (適格請求書発行事業者番号 T8010001213708)
 代表者: 梅田茂利
 連絡先: info@bookyou.net
 連携形式: API integration (REST) + MCP plugin (Claude Desktop / Cursor から呼出)

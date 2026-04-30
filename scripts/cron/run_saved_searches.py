@@ -85,8 +85,8 @@ _FREQUENCY_INTERVALS_HOURS: dict[str, int] = {
 }
 
 # Public origin for `/programs/{slug}` deep links. Falls back to the
-# zeimu-kaikei.ai canonical when settings is incomplete (test env).
-_PUBLIC_ORIGIN = "https://zeimu-kaikei.ai"
+# jpcite.com canonical when settings is incomplete (test env).
+_PUBLIC_ORIGIN = "https://jpcite.com"
 
 
 # ---------------------------------------------------------------------------
@@ -258,7 +258,7 @@ def _render_digest_payload(
         # 税理士法 §52 / 弁護士法 §72 fence — repeated by the template
         # body so the disclaimer is structurally always present.
         "disclaimer": (
-            "本通知は税務会計AIによる公開情報の検索結果です。"
+            "本通知はjpciteによる公開情報の検索結果です。"
             "個別具体的な税務助言・法律判断は税理士法 §52 / 弁護士法 §72 に基づき"
             "資格者にご確認ください。"
         ),

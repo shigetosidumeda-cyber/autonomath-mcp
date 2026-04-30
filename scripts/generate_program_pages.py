@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-program static HTML pages for AutonoMath (zeimu-kaikei.ai).
+"""Generate per-program static HTML pages for AutonoMath (jpcite.com).
 
 Input:  data/jpintel.db (SQLite programs table)
 Output: site/programs/{slug}.html (one per indexable row; slug = hepburn romaji + sha1-6)
@@ -28,7 +28,7 @@ Usage
     uv run python scripts/generate_program_pages.py \
         --db data/jpintel.db \
         --out site/programs \
-        --domain zeimu-kaikei.ai \
+        --domain jpcite.com \
         [--limit 3] [--samples-dir site/programs/_samples] [--sample-ids UNI-...,UNI-...]
 
 Exit codes
@@ -51,7 +51,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 
 # JST = UTC+9. Sitemap <lastmod> is dated in JST so the operator timezone
-# matches every other date surfaced on zeimu-kaikei.ai (consistent with
+# matches every other date surfaced on jpcite.com (consistent with
 # CLAUDE.md "anonymous quota resets at JST midnight" baseline).
 _JST = timezone(timedelta(hours=9))
 
@@ -110,7 +110,7 @@ DEFAULT_STRUCTURED_DIR = REPO_ROOT / "site" / "structured"
 DEFAULT_SITEMAP_STRUCTURED = REPO_ROOT / "site" / "sitemap-structured.xml"
 
 SITEMAP_URL_CAP = 50_000  # sitemap.org spec
-DEFAULT_DOMAIN = "zeimu-kaikei.ai"
+DEFAULT_DOMAIN = "jpcite.com"
 
 # Bookyou株式会社 facts — operator entity referenced from every page's JSON-LD.
 OPERATOR_NAME = "Bookyou株式会社"
@@ -124,7 +124,7 @@ OPERATOR_ADDRESS_JP = "東京都文京区小日向2-22-1"
 # Query
 # ---------------------------------------------------------------------------
 
-INDEXABLE_SQL = """
+INDEXABLE_SQL_TEMPLATE = """
 SELECT
     unified_id,
     primary_name,
@@ -146,7 +146,7 @@ SELECT
     updated_at
 FROM programs
 WHERE excluded = 0
-  AND tier IN ('S','A','B','C')
+  AND tier IN ({tier_in})
   AND source_url IS NOT NULL
   AND source_url <> ''
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
@@ -154,6 +154,12 @@ ORDER BY
     CASE tier WHEN 'S' THEN 0 WHEN 'A' THEN 1 WHEN 'B' THEN 2 ELSE 3 END,
     unified_id
 """
+
+# Default kept for backwards compat with internal helpers / tests that still
+# reference INDEXABLE_SQL directly. _iter_rows builds the actual query from
+# the runtime --tiers selection (default: S+A only after the 2026-04-29 SEO
+# AI-feel reduction; was S/A/B/C).
+INDEXABLE_SQL = INDEXABLE_SQL_TEMPLATE.format(tier_in="'S','A','B','C'")
 
 SAMPLE_BY_ID_SQL = """
 SELECT
@@ -680,17 +686,17 @@ def _page_title(row: dict[str, Any], target_types: list[str]) -> str:
 # JSON-LD @graph builder
 # ---------------------------------------------------------------------------
 
-ORG_NODE_ID = "https://zeimu-kaikei.ai/#publisher"
+ORG_NODE_ID = "https://jpcite.com/#publisher"
 
 
 def _org_node(domain: str) -> dict[str, Any]:
     # Single canonical Organization @id across ALL templates (publisher.@id reuses).
-    # Brand "税務会計AI" / "AutonoMath" resolves to same legal entity (Bookyou株式会社).
+    # Brand "jpcite" / "AutonoMath" resolves to same legal entity (Bookyou株式会社).
     return {
         "@type": "Organization",
         "@id": ORG_NODE_ID,
-        "name": "税務会計AI",
-        "alternateName": ["AutonoMath", "Bookyou株式会社"],
+        "name": "jpcite",
+        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "legalName": OPERATOR_NAME,
         "taxID": OPERATOR_CORPORATE_NUMBER,
@@ -1118,8 +1124,8 @@ def build_standalone_json_ld(
     node["publisher"] = {
         "@type": "Organization",
         "@id": ORG_NODE_ID,
-        "name": "税務会計AI",
-        "alternateName": ["AutonoMath", "Bookyou株式会社"],
+        "name": "jpcite",
+        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "legalName": OPERATOR_NAME,
         "taxID": OPERATOR_CORPORATE_NUMBER,
@@ -1792,8 +1798,21 @@ def write_sitemap(
 # ---------------------------------------------------------------------------
 
 
-def _iter_rows(conn: sqlite3.Connection, limit: int | None) -> Iterable[dict[str, Any]]:
-    sql = INDEXABLE_SQL
+def _iter_rows(
+    conn: sqlite3.Connection,
+    limit: int | None,
+    tiers: tuple[str, ...] = ("S", "A", "B", "C"),
+) -> Iterable[dict[str, Any]]:
+    """Yield indexable program rows. ``tiers`` controls the WHERE filter.
+
+    The 2026-04-29 SEO AI-feel reduction collapsed the published HTML pages
+    from tier S/A/B/C (~11k pages) to S/A only (~1.4k). B/C tier rows are
+    still searchable via the API + dashboard (`/programs/?id=UNI-...`); only
+    the static SSG pages are dropped.
+    """
+    safe_tiers = [t for t in tiers if t in ("S", "A", "B", "C")] or ["S", "A"]
+    tier_in = ",".join(f"'{t}'" for t in safe_tiers)
+    sql = INDEXABLE_SQL_TEMPLATE.format(tier_in=tier_in)
     if limit is not None and limit > 0:
         sql = sql + f"\nLIMIT {limit}"
     for row in conn.execute(sql):
@@ -1849,6 +1868,7 @@ def generate(
     structured_dir: Path | None = None,
     sitemap_structured_path: Path | None = None,
     autonomath_db_path: Path | None = None,
+    tiers: tuple[str, ...] = ("S", "A", "B", "C"),
 ) -> tuple[int, int, int]:
     """Returns (written, skipped, errors).
 
@@ -1927,7 +1947,7 @@ def generate(
         return written, skipped, errors
 
     # --- bulk mode
-    for row in _iter_rows(conn, limit):
+    for row in _iter_rows(conn, limit, tiers=tiers):
         try:
             tts = _parse_json_list(row.get("target_types_json"))
             related = _related_programs(conn, row, tts, limit=8)
@@ -2004,6 +2024,14 @@ def _parse_args() -> argparse.Namespace:
         help=f"domain used in canonical URLs; default {DEFAULT_DOMAIN}",
     )
     p.add_argument("--limit", type=int, default=None, help="cap rows (debug)")
+    p.add_argument(
+        "--tiers",
+        default="S,A",
+        help=(
+            "comma-separated tier filter (default: S,A — the 2026-04-29 SEO "
+            "AI-feel reduction). Pass 'S,A,B,C' to render the legacy 10k+ pages."
+        ),
+    )
     p.add_argument("--samples-dir", type=Path, default=DEFAULT_SAMPLES)
     p.add_argument(
         "--sample-ids",
@@ -2076,6 +2104,12 @@ def main() -> int:
         else None
     )
 
+    tiers_tuple = tuple(
+        t.strip().upper() for t in str(args.tiers).split(",") if t.strip()
+    )
+    if not tiers_tuple:
+        tiers_tuple = ("S", "A")
+
     written, skipped, errors = generate(
         db_path=args.db,
         out_dir=args.out,
@@ -2088,6 +2122,7 @@ def main() -> int:
         structured_dir=structured_dir,
         sitemap_structured_path=sitemap_structured_path,
         autonomath_db_path=autonomath_db,
+        tiers=tiers_tuple,
     )
     LOG.info("written=%d skipped=%d errors=%d", written, skipped, errors)
     return 0

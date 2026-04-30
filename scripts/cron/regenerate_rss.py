@@ -25,7 +25,7 @@ because:
 Usage
 -----
     python scripts/cron/regenerate_rss.py
-    python scripts/cron/regenerate_rss.py --news site/news --domain zeimu-kaikei.ai
+    python scripts/cron/regenerate_rss.py --news site/news --domain jpcite.com
     python scripts/cron/regenerate_rss.py --dry-run
 
 Exit codes
@@ -310,7 +310,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--news", type=Path, default=_DEFAULT_NEWS)
     p.add_argument("--out-ja", type=Path, default=_DEFAULT_OUT_JA)
     p.add_argument("--out-en", type=Path, default=_DEFAULT_OUT_EN)
-    p.add_argument("--domain", type=str, default="zeimu-kaikei.ai")
+    p.add_argument("--domain", type=str, default="jpcite.com")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args(argv)
 

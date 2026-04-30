@@ -3,89 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AutonoMath — トライアル鍵を発行しました</title>
+<title>jpcite — トライアル鍵を発行しました</title>
 <meta name="description" content="メール認証だけで 14 日 / 200 リクエストのトライアル API キーが発行されます。クレジットカード登録は不要です。">
 <meta name="robots" content="noindex,nofollow">
-<meta property="og:title" content="AutonoMath — トライアル鍵を発行しました">
-<meta property="og:url" content="https://zeimu-kaikei.ai/trial.html">
+<meta property="og:title" content="jpcite — トライアル鍵を発行しました">
+<meta property="og:url" content="https://jpcite.com/trial.html">
 <meta property="og:type" content="website">
-<link rel="canonical" href="https://zeimu-kaikei.ai/trial.html">
+<link rel="canonical" href="https://jpcite.com/trial.html">
 
 <link rel="stylesheet" href="critical.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=20260430a">
 <style>
   /* trial.html — magic-link landing. Mirrors success.html design tokens
      so the trial reveal flow looks identical to the paid checkout reveal.
-     CSP-safe: no external CSS, no external scripts. */
+     Global tokens come from /styles.css (--accent / --success / --warning
+     / --danger / --bg-alt / --border / --text-muted etc.). */
   .trial { padding: 48px 0 64px; }
   .trial-head { margin: 0 0 28px; }
   .trial-check {
     display:inline-block;width:48px;height:48px;border-radius:50%;
-    background:#10b981;color:#fff;text-align:center;line-height:48px;
+    background:var(--success);color:#fff;text-align:center;line-height:48px;
     font-size:28px;margin:0 0 12px;
   }
   .trial-warn {
     display:inline-block;width:48px;height:48px;border-radius:50%;
-    background:#f59e0b;color:#fff;text-align:center;line-height:48px;
+    background:var(--warning);color:#fff;text-align:center;line-height:48px;
     font-size:28px;margin:0 0 12px;
   }
   .trial-err {
     display:inline-block;width:48px;height:48px;border-radius:50%;
-    background:#dc2626;color:#fff;text-align:center;line-height:48px;
+    background:var(--danger);color:#fff;text-align:center;line-height:48px;
     font-size:28px;margin:0 0 12px;
   }
   .trial h1 {
     font-size:30px;margin:0 0 8px;color:var(--text);font-weight:700;
   }
   .trial .sub {
-    font-size:15px;color:var(--text-muted,#555);line-height:1.7;margin:0 0 24px;
+    font-size:15px;color:var(--text-muted);line-height:1.7;margin:0 0 24px;
   }
   .state-card {
-    background:var(--bg-alt,#f6f7f9);border:1px solid var(--border,#e5e7eb);
+    background:var(--bg-alt);border:1px solid var(--border);
     border-radius:8px;padding:20px 24px;margin:0 0 16px;
   }
   .state-card .label {
-    font-size:13px;color:var(--text-muted,#555);text-transform:uppercase;
+    font-size:13px;color:var(--text-muted);text-transform:uppercase;
     letter-spacing:0.05em;margin:0 0 8px;
   }
   .key-block {
-    background:#111;color:#f7f7f7;padding:16px;border-radius:6px;
-    overflow-x:auto;font-size:14px;font-family:'SF Mono',Menlo,monospace;
+    background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:6px;
+    overflow-x:auto;font-size:14px;font-family:var(--font-mono);
     margin:0 0 12px;word-break:break-all;white-space:pre-wrap;
   }
   .code-block {
-    background:#f5f5f5;color:#111;padding:14px;border-radius:6px;
-    overflow-x:auto;font-size:13px;font-family:'SF Mono',Menlo,monospace;
+    background:var(--bg-tertiary);color:var(--text);padding:14px;border-radius:6px;
+    overflow-x:auto;font-size:13px;font-family:var(--font-mono);
     margin:0 0 12px;
   }
   .key-warning {
-    color:#b91c1c;font-weight:600;font-size:13px;margin:0 0 12px;
+    color:var(--danger);font-weight:600;font-size:13px;margin:0 0 12px;
   }
   .meta-row {
     display:flex;flex-wrap:wrap;gap:16px;font-size:13px;
-    color:var(--text-muted,#555);margin:12px 0 0;
+    color:var(--text-muted);margin:12px 0 0;
   }
   .btn-row { margin:12px 0 0;display:flex;gap:12px;flex-wrap:wrap; }
   .btn-ghost {
-    background:transparent;border:1px solid var(--border,#d1d5db);
+    background:transparent;border:1px solid var(--border);
     padding:8px 16px;border-radius:6px;font-size:14px;cursor:pointer;
     color:var(--text);text-decoration:none;
   }
   .alert {
-    background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 18px;
+    background:#fef3c7;border-left:4px solid var(--warning);padding:14px 18px;
     border-radius:4px;margin:0 0 16px;font-size:14px;line-height:1.6;
   }
   .alert.error {
-    background:#fee2e2;border-left-color:#dc2626;
+    background:#fee2e2;border-left-color:var(--danger);
   }
   .next-steps {
-    background:var(--bg-alt,#f6f7f9);border-radius:8px;padding:20px 24px;
+    background:var(--bg-alt);border-radius:8px;padding:20px 24px;
     margin:24px 0 0;
   }
   .next-steps h2 { font-size:17px;margin:0 0 12px; }
   .next-steps ol { margin:0;padding-left:20px;line-height:1.9;font-size:14px; }
   .disclaimer-52 {
-    background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;
-    padding:14px 18px;margin:24px 0 0;font-size:13px;color:#444;line-height:1.7;
+    background:var(--bg-alt);border:1px solid var(--border);border-radius:6px;
+    padding:14px 18px;margin:24px 0 0;font-size:13px;color:var(--text-muted);line-height:1.7;
   }
   @media (max-width:640px) {
     .trial { padding: 32px 0 48px; }
@@ -96,166 +101,189 @@
 <body>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="dashboard.html">Dashboard</a>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/trial.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/trial.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
-  <section class="trial">
-    <div class="container" style="max-width:760px;">
+ <section class="trial">
+ <div class="container" style="max-width:760px;">
 
-      <!-- Loading state (default while we read the URL fragment) -->
-      <div id="state-loading" tabindex="-1">
-        <p class="spinner" role="status" aria-live="polite">トライアル情報を読み込んでいます…</p>
-      </div>
+ <!-- Loading state (default while we read the URL fragment) -->
+ <div id="state-loading" tabindex="-1">
+ <p class="spinner" role="status" aria-live="polite">トライアル情報を読み込んでいます…</p>
+ </div>
 
-      <!-- Success state — key reveal -->
-      <div id="state-success" tabindex="-1" hidden>
-        <div class="trial-head">
-          <div class="trial-check" aria-hidden="true">&check;</div>
-          <h1>トライアル API キーを発行しました</h1>
-          <p class="sub">下のキーを安全な場所へコピーしてください。この画面を閉じると再表示できません。</p>
-        </div>
+ <!-- Success state — key reveal -->
+ <div id="state-success" tabindex="-1" hidden>
+ <div class="trial-head">
+ <div class="trial-check" aria-hidden="true">&check;</div>
+ <h1>トライアル API キーを発行しました</h1>
+ <p class="sub">下のキーを安全な場所へコピーしてください。この画面を閉じると再表示できません。</p>
+ </div>
 
-        <div class="state-card">
-          <p class="label">Your trial APIキー</p>
-          <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
-          <p class="key-warning" role="alert">このキーは発行時 1 回だけ表示されます。今すぐコピーして保管してください。</p>
-          <div class="btn-row">
-            <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキー をコピー</button>
-          </div>
-          <div class="meta-row" aria-label="trial metadata">
-            <span>有効期間: <strong><span id="meta-duration">14</span> 日</strong></span>
-            <span>リクエスト上限: <strong><span id="meta-cap">200</span> 件</strong></span>
-            <span>失効: <strong id="meta-expires">—</strong></span>
-            <span>カード: <strong>未登録</strong></span>
-          </div>
-        </div>
+ <div class="state-card">
+ <p class="label">Your trial APIキー</p>
+ <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
+ <p class="key-warning" role="alert">このキーは発行時 1 回だけ表示されます。今すぐコピーして保管してください。</p>
+ <div class="btn-row">
+ <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキー をコピー</button>
+ </div>
+ <div class="meta-row" aria-label="trial metadata">
+ <span>有効期間: <strong><span id="meta-duration">14</span> 日</strong></span>
+ <span>リクエスト上限: <strong><span id="meta-cap">200</span> 件</strong></span>
+ <span>失効: <strong id="meta-expires">—</strong></span>
+ <span>カード: <strong>未登録</strong></span>
+ </div>
+ </div>
 
-        <div class="state-card">
-          <p class="label">5 秒で叩く (curl)</p>
-          <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
-          <div class="btn-row">
-            <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; curl をコピー</button>
-          </div>
-        </div>
+ <div class="state-card">
+ <p class="label">5 秒で叩く (curl)</p>
+ <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
+ <div class="btn-row">
+ <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; curl をコピー</button>
+ </div>
+ </div>
 
-        <!-- MCP config block (2026-04-29 onboarding hardening). Same trial -->
-        <!-- key substituted into a Claude Desktop / Cursor / Cline-       -->
-        <!-- compatible config so trial users can wire MCP in 1 paste from -->
-        <!-- this page without hopping to /integrations/. Single config    -->
-        <!-- because the standard MCP shape is identical across clients;   -->
-        <!-- per-client deep dives remain linked under "次のステップ".       -->
-        <div class="state-card">
-          <p class="label">Claude Desktop / Cursor / Cline で使う (MCP config)</p>
-          <pre id="mcp-block" class="code-block" aria-label="MCP config">{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"],
-      "env": {"ZEIMU_KAIKEI_API_KEY": "am_…"}
-    }
-  }
+ <!-- MCP config block (2026-04-29 onboarding hardening). Same trial -->
+ <!-- key substituted into a Claude Desktop / Cursor / Cline-       -->
+ <!-- compatible config so trial users can wire MCP in 1 paste from -->
+ <!-- this page without hopping to /integrations/. Single config    -->
+ <!-- because the standard MCP shape is identical across clients;   -->
+ <!-- per-client deep dives remain linked under "次のステップ".       -->
+ <div class="state-card">
+ <p class="label">Claude Desktop / Cursor / Cline で使う (MCP config)</p>
+ <pre id="mcp-block" class="code-block" aria-label="MCP config">{
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
+ "env": {"AUTONOMATH_API_KEY": "am_…"}
+ }
+ }
 }</pre>
-          <div class="btn-row">
-            <button id="copy-mcp-btn" class="btn-ghost" type="button">&#128203; MCP config をコピー</button>
-          </div>
-          <p style="font-size:12px;color:var(--text-muted,#555);margin:8px 0 0;line-height:1.6;">
-            事前に <code>pip install autonomath-mcp</code> または <code>uv tool install autonomath-mcp</code>。
-            設定ファイルの場所は <a href="/integrations/claude-desktop.html">Claude Desktop</a> /
-            <a href="/integrations/cursor.html">Cursor</a> /
-            <a href="/integrations/cline.html">Cline</a> 参照。
-          </p>
-        </div>
+ <div class="btn-row">
+ <button id="copy-mcp-btn" class="btn-ghost" type="button">&#128203; MCP config をコピー</button>
+ </div>
+ <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
+ 事前に <code>pip install autonomath-mcp</code> または <code>uv tool install autonomath-mcp</code>。
+ 設定ファイルの場所は <a href="/integrations/claude-desktop.html">Claude Desktop</a> /
+ <a href="/integrations/cursor.html">Cursor</a> /
+ <a href="/integrations/cline.html">Cline</a> 参照。
+ </p>
+ </div>
 
-        <div class="next-steps">
-          <h2>次のステップ</h2>
-          <ol>
-            <li><a href="/docs/getting-started">Getting Started</a> — Python / Node の最小例、認証、rate limit</li>
-            <li><a href="/integrations/claude-desktop.html">Claude Desktop (MCP) 統合</a> — stdio で 89 tools をエージェントから直呼び</li>
-            <li>残り 3 日で「終了予告メール」を送ります。本番利用 (¥3/リクエスト 完全従量) への切替は <a href="pricing.html">Pricing</a> から</li>
-          </ol>
-        </div>
+ <div class="next-steps">
+ <h2>次のステップ</h2>
+ <ol>
+ <li><a href="/docs/getting-started">Getting Started</a> — Python / Node の最小例、認証、rate limit</li>
+ <li><a href="/integrations/claude-desktop.html">Claude Desktop (MCP) 統合</a> — stdio で 89 tools をエージェントから直呼び</li>
+ <li>残り 3 日で「終了予告メール」を送ります。本番利用 (¥3/リクエスト 完全従量) への切替は <a href="pricing.html">Pricing</a> から</li>
+ </ol>
+ </div>
 
-        <div class="disclaimer-52" role="note">
-          <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
-          AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務は対象外で、出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は <a href="tos.html">利用規約</a> をご確認ください。
-        </div>
-      </div>
+ <div class="disclaimer-52" role="note">
+ <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
+ jpcite は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務は対象外で、出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は <a href="tos.html">利用規約</a> をご確認ください。
+ </div>
+ </div>
 
-      <!-- Error states -->
-      <div id="state-already" tabindex="-1" hidden>
-        <div class="trial-head">
-          <div class="trial-warn" aria-hidden="true">!</div>
-          <h1>このトライアルは既に発行済みです</h1>
-          <p class="sub">同じメールアドレスで既にトライアル API キーが発行されています。お手元のキーをご利用いただくか、有料プランへ切替えてください。</p>
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="pricing.html">本番利用に切替 (Pricing)</a>
-          <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20トライアルキー再発行" style="text-decoration:none;">キー再発行を相談</a>
-        </div>
-      </div>
+ <!-- Error states -->
+ <div id="state-already" tabindex="-1" hidden>
+ <div class="trial-head">
+ <div class="trial-warn" aria-hidden="true">!</div>
+ <h1>このトライアルは既に発行済みです</h1>
+ <p class="sub">同じメールアドレスで既にトライアル API キーが発行されています。お手元のキーをご利用いただくか、有料プランへ切替えてください。</p>
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="pricing.html">本番利用に切替 (Pricing)</a>
+ <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20トライアルキー再発行" style="text-decoration:none;">キー再発行を相談</a>
+ </div>
+ </div>
 
-      <div id="state-expired" tabindex="-1" hidden>
-        <div class="trial-head">
-          <div class="trial-warn" aria-hidden="true">!</div>
-          <h1>マジックリンクの有効期限が切れています</h1>
-          <p class="sub">マジックリンクは送信から 24 時間有効です。お手数ですがトップページからもう一度トライアル登録をお願いします。</p>
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="/?from=trial-expired#trial">もう一度トライアル登録</a>
-        </div>
-      </div>
+ <div id="state-expired" tabindex="-1" hidden>
+ <div class="trial-head">
+ <div class="trial-warn" aria-hidden="true">!</div>
+ <h1>マジックリンクの有効期限が切れています</h1>
+ <p class="sub">マジックリンクは送信から 24 時間有効です。お手数ですがトップページからもう一度トライアル登録をお願いします。</p>
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="/?from=trial-expired#trial">もう一度トライアル登録</a>
+ </div>
+ </div>
 
-      <div id="state-invalid" tabindex="-1" hidden>
-        <div class="trial-head">
-          <div class="trial-err" aria-hidden="true">&times;</div>
-          <h1>マジックリンクが無効です</h1>
-          <p class="sub">URL が破損しているか、改ざんされている可能性があります。もう一度トップページからトライアル登録をお試しください。</p>
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="/?from=trial-invalid#trial">トップページに戻る</a>
-          <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20トライアル%20magic-link%20問題" style="text-decoration:none;">サポートに連絡</a>
-        </div>
-      </div>
+ <div id="state-invalid" tabindex="-1" hidden>
+ <div class="trial-head">
+ <div class="trial-err" aria-hidden="true">&times;</div>
+ <h1>マジックリンクが無効です</h1>
+ <p class="sub">URL が破損しているか、改ざんされている可能性があります。もう一度トップページからトライアル登録をお試しください。</p>
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="/?from=trial-invalid#trial">トップページに戻る</a>
+ <a class="btn-ghost" href="mailto:info@bookyou.net?subject=AutonoMath%20-%20トライアル%20magic-link%20問題" style="text-decoration:none;">サポートに連絡</a>
+ </div>
+ </div>
 
-      <div id="state-error" tabindex="-1" hidden>
-        <div class="alert error" role="alert">
-          <strong>サーバー側エラーが発生しました。</strong>
-          時間をおいて再試行するか、サポート (<a href="mailto:info@bookyou.net">info@bookyou.net</a>) までご連絡ください。
-        </div>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="/?from=trial-error#trial">もう一度トライアル登録</a>
-        </div>
-      </div>
+ <div id="state-error" tabindex="-1" hidden>
+ <div class="alert error" role="alert">
+ <strong>サーバー側エラーが発生しました。</strong>
+ 時間をおいて再試行するか、サポート (<a href="mailto:info@bookyou.net">info@bookyou.net</a>) までご連絡ください。
+ </div>
+ <div class="btn-row">
+ <a class="btn btn-primary" href="/?from=trial-error#trial">もう一度トライアル登録</a>
+ </div>
+ </div>
 
-    </div>
-  </section>
+ </div>
+ </section>
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特定商取引法</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>
@@ -263,7 +291,7 @@
   // Reads the magic-link verify response: status from the query string,
   // raw API key + metadata from the URL fragment (so the key never lands
   // in our access logs — browsers strip the fragment before sending).
-  (function () {
+  (function() {
     'use strict';
 
     var $ = function (id) { return document.getElementById(id); };
@@ -309,11 +337,11 @@
     function copyToClipboard(text, btn) {
       if (!text) return;
       try {
-        navigator.clipboard.writeText(text).then(function () {
+        navigator.clipboard.writeText(text).then(function() {
           if (btn) {
             var original = btn.textContent;
             btn.textContent = '✓ コピー済み';
-            setTimeout(function () { btn.textContent = original; }, 2000);
+            setTimeout(function() { btn.textContent = original; }, 2000);
           }
         });
       } catch (_e) {
@@ -321,7 +349,7 @@
         var ta = document.createElement('textarea');
         ta.value = text;
         document.body.appendChild(ta);
-        ta.select();
+        ta.select;
         try { document.execCommand('copy'); } catch (_e2) {}
         document.body.removeChild(ta);
       }
@@ -335,7 +363,7 @@
       if (status === 'error')   return showOnly('state-error');
 
       // status=ok — read the fragment.
-      var f = readFragment();
+      var f = readFragment;
       var key = f.api_key || '';
       if (!key) return showOnly('state-invalid');
 
@@ -351,7 +379,7 @@
       if (curlBlock) {
         curlBlock.textContent =
           'curl -H "X-API-Key: ' + key + '" \\\n' +
-          '  "https://api.zeimu-kaikei.ai/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&limit=3"';
+          '  "https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&limit=3"';
       }
 
       // Render the MCP config block with the trial key substituted in.
@@ -360,10 +388,10 @@
         mcpBlock.textContent =
           '{\n' +
           '  "mcpServers": {\n' +
-          '    "zeimu-kaikei": {\n' +
+          '    "jpcite": {\n' +
           '      "command": "uvx",\n' +
           '      "args": ["autonomath-mcp"],\n' +
-          '      "env": {"ZEIMU_KAIKEI_API_KEY": "' + key + '"}\n' +
+          '      "env": {"AUTONOMATH_API_KEY": "' + key + '"}\n' +
           '    }\n' +
           '  }\n' +
           '}';
@@ -381,20 +409,20 @@
       // Wire copy buttons.
       var copyKeyBtn = $('copy-key-btn');
       if (copyKeyBtn) {
-        copyKeyBtn.addEventListener('click', function () {
+        copyKeyBtn.addEventListener('click', function() {
           copyToClipboard(key, copyKeyBtn);
         });
       }
       var copyCurlBtn = $('copy-curl-btn');
       if (copyCurlBtn) {
-        copyCurlBtn.addEventListener('click', function () {
+        copyCurlBtn.addEventListener('click', function() {
           var t = curlBlock ? curlBlock.textContent : '';
           copyToClipboard(t, copyCurlBtn);
         });
       }
       var copyMcpBtn = $('copy-mcp-btn');
       if (copyMcpBtn) {
-        copyMcpBtn.addEventListener('click', function () {
+        copyMcpBtn.addEventListener('click', function() {
           var t = mcpBlock ? mcpBlock.textContent : '';
           copyToClipboard(t, copyMcpBtn);
         });
@@ -415,9 +443,9 @@
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
     } else {
-      init();
+      init;
     }
-  })();
+  });
 </script>
 
 </body>

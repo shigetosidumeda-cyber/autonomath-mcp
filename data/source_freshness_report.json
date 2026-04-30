@@ -1,59 +1,104 @@
 {
   "loop": "loop_i_doc_freshness",
-  "generated_at": "2026-04-26T05:09:13+00:00",
-  "dry_run": false,
+  "generated_at": "2026-04-29T12:03:58+00:00",
+  "dry_run": true,
   "stale_threshold_days": 60,
-  "rows_scanned": 13578,
+  "rows_scanned": 14472,
   "stale_count": 16,
-  "broken_count": 13,
+  "broken_count": 19,
   "per_tier": {
     "A": {
-      "total": 1427,
+      "total": 1401,
       "stale": 0,
       "broken": 0
     },
     "B": {
-      "total": 3716,
+      "total": 4581,
       "stale": 2,
-      "broken": 2
+      "broken": 0
     },
     "C": {
-      "total": 6567,
+      "total": 6442,
       "stale": 14,
-      "broken": 6
+      "broken": 0
     },
     "S": {
-      "total": 114,
+      "total": 125,
       "stale": 0,
-      "broken": 13
+      "broken": 11
     },
     "X": {
-      "total": 1741,
+      "total": 1923,
       "stale": 0,
-      "broken": 0
+      "broken": 8
     }
   },
-  "high_priority_broken": [],
-  "history": [
+  "high_priority_broken": [
     {
-      "generated_at": "2026-04-26T05:09:13+00:00",
-      "tiers_in_scope": [
-        "S"
-      ],
-      "rows_checked": 114,
-      "per_tier": {
-        "S": {
-          "total": 114,
-          "ok": 101,
-          "dead": 13
-        }
-      },
-      "totals": {
-        "ok": 101,
-        "fail": 13
-      },
-      "elapsed_seconds": 36.24,
-      "dry_run": false
+      "unified_id": "UNI-1bdd5c3334",
+      "tier": "S",
+      "source_url": "https://www.city.nagahama.lg.jp/category/chojugai/",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-40bc849d45",
+      "tier": "S",
+      "source_url": "https://www.tokyo-kosha.or.jp/support/josei/jigyo/cybersecurity.html",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-5f224060c2",
+      "tier": "S",
+      "source_url": "http://www.jinsekigun.jp/town/formation/sangyou1/shinko1/engei-2/",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-9ad358dbec",
+      "tier": "S",
+      "source_url": "https://www.city.fukushima.fukushima.jp/nougyou-kikaku/nouringyoushinkoukikin.html",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-a729fbb301",
+      "tier": "S",
+      "source_url": "https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/004/695/yoko.pdf",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-a7f77063d5",
+      "tier": "S",
+      "source_url": "https://www.pref.kochi.lg.jp/soshiki/160501",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-bdea97be24",
+      "tier": "S",
+      "source_url": "https://www.city.tanabe.lg.jp/nougyou/ssist.html",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-df8a88849f",
+      "tier": "S",
+      "source_url": "https://www.city.takasaki.gunma.jp/docs/2020101400035/files/kenkyukai_youkou.docx",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-e77bf254c8",
+      "tier": "S",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/7,0,85,html",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-e80e5c7ed2",
+      "tier": "S",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/29,144903,84,html",
+      "status": 404
+    },
+    {
+      "unified_id": "UNI-f6165b8a9c",
+      "tier": "S",
+      "source_url": "https://www.city.tomisato.lg.jp/0000015127.html",
+      "status": 404
     }
   ]
 }

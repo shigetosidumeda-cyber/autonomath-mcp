@@ -1,7 +1,7 @@
 [project]
 name = "autonomath"
 version = "0.1.0"
-description = "Python SDK for the AutonoMath API (Japanese institutional data: subsidies, loans, tax rulesets, 採択事例)."
+description = "Python SDK for the jpcite API (Japanese institutional data: subsidies, loans, tax rulesets, 採択事例)."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -29,9 +29,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://autonomath.ai"
+Homepage = "https://jpcite.com"
 # TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
 Repository = "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
+"Bug Tracker" = "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues"
 
 [build-system]
 requires = ["hatchling"]

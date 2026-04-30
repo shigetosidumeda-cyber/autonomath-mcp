@@ -4,42 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>あなたのサイトに補助金検索を 1 行で — 税務会計AI Widget</title>
-<meta name="description" content="税理士事務所・商工会議所・中小企業支援サイト向け。HTMLに1行足すだけで補助金検索UIが表示される組み込み型JS widget。Business ¥10,000/月 (10,000 req 含む) + 税込 ¥3.30/req overage、Whitelabel ¥30,000/月 無制限 (fair use)。">
+<title>あなたのサイトに補助金検索を 1 行で — jpcite Widget</title>
+<meta name="description" content="税理士事務所・商工会議所・中小企業支援サイト向け。HTMLに1行足すだけで補助金検索UIが表示される組み込み型JS widget。1 検索 ¥3 (税込 ¥3.30) 完全従量、従量課金 (¥3/検索) 無制限 (fair use)。">
 
-<meta property="og:title" content="税務会計AI Widget — 1 行で組み込める補助金検索">
-<meta property="og:description" content="税理士・支援機関のサイトに&lt;script&gt;1行で補助金検索 widget を埋め込み。Business ¥10,000/月、Whitelabel ¥30,000/月。">
+<meta property="og:title" content="jpcite Widget — 1 行で組み込める補助金検索">
+<meta property="og:description" content="税理士・支援機関のサイトに&lt;script&gt;1行で補助金検索 widget を埋め込み。従量課金 (¥3/検索)、従量課金 (¥3/検索)。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/widget.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/widget.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="税務会計AI Widget — 1 行で組み込める補助金検索">
-<meta name="twitter:description" content="HTMLに1行足すだけで補助金検索UIを表示。Business ¥10,000/月 / Whitelabel ¥30,000/月。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:title" content="jpcite Widget — 1 行で組み込める補助金検索">
+<meta name="twitter:description" content="HTMLに1行足すだけで補助金検索UIを表示。1 検索 ¥3 (税込 ¥3.30) 完全従量。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/widget.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/widget.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/widget.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/widget.html">
+<link rel="canonical" href="https://jpcite.com/widget.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/widget.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "税務会計AI Widget",
-  "description": "税理士・支援機関のサイトに <script> 1 行で埋め込める補助金検索 widget。Business ¥10,000/月 (10,000 req 含む) + ¥3/req overage、Whitelabel ¥30,000/月 (ロゴ・色カスタマイズ可)。",
-  "brand": {"@type": "Brand", "name": "税務会計AI"},
-  "url": "https://zeimu-kaikei.ai/widget.html",
+  "name": "jpcite Widget",
+  "description": "税理士・支援機関のサイトに <script> 1 行で埋め込める補助金検索 widget。従量課金 (¥3/検索) (10,000 req 含む) + ¥3/req overage、従量課金 (¥3/検索) (ロゴ・色カスタマイズ可)。",
+  "brand": {"@type": "Brand", "name": "jpcite"},
+  "url": "https://jpcite.com/widget.html",
   "inLanguage": "ja",
   "offers": [
     {
@@ -47,15 +50,15 @@
       "name": "Business",
       "price": "10000",
       "priceCurrency": "JPY",
-      "description": "¥10,000/月 税別 (税込 ¥11,000)、10,000 req 含む、overage ¥3/req",
-      "url": "https://zeimu-kaikei.ai/widget.html",
+      "description": "¥3/検索 税別 (税込 ¥3.30) 完全従量",
+      "url": "https://jpcite.com/widget.html",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
         "name": "Bookyou株式会社",
         "identifier": "T8010001213708",
         "email": "info@bookyou.net",
-        "url": "https://zeimu-kaikei.ai/"
+        "url": "https://jpcite.com/"
       }
     },
     {
@@ -64,14 +67,14 @@
       "price": "30000",
       "priceCurrency": "JPY",
       "description": "¥30,000/月 税別 (税込 ¥33,000)、ロゴ・色カスタマイズ可",
-      "url": "https://zeimu-kaikei.ai/widget.html",
+      "url": "https://jpcite.com/widget.html",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
         "name": "Bookyou株式会社",
         "identifier": "T8010001213708",
         "email": "info@bookyou.net",
-        "url": "https://zeimu-kaikei.ai/"
+        "url": "https://jpcite.com/"
       }
     }
   ]
@@ -84,10 +87,10 @@
   "@type": "Organization",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
+  "alternateName": ["税務会計AI", "jpcite"],
   "identifier": "T8010001213708",
   "email": "info@bookyou.net",
-  "url": "https://zeimu-kaikei.ai/",
+  "url": "https://jpcite.com/",
   "inLanguage": "ja",
   "address": {
     "@type": "PostalAddress",
@@ -299,244 +302,251 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="税務会計AI ホーム">
-      <span class="brand-name">税務会計AI</span>
-    </a>
-    <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-      <a href="/docs/">Docs</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="audiences/">利用者層</a>
-      <a href="widget.html" aria-current="page">Widget</a>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="widget.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="en/widget.html" lang="en" hreflang="en">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="index.html" aria-label="jpcite ホーム">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ <li><a href="changelog.html">変更履歴</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/widget.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/widget.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
-  <section class="widget-hero container">
-    <h1>あなたのサイトに<br>補助金検索を 1 行で</h1>
-    <p class="lead">
-      税理士事務所・商工会議所・中小企業支援サイトの HP に
-      <code>&lt;script&gt;</code> タグ 1 行で埋め込める補助金検索
-      widget。フィルタ UI・結果リスト・一次資料リンクを自動で生成し、
-      お客様は「自社サイトでそのまま検索できる」体験を得られます。
-    </p>
+ <section class="widget-hero container">
+ <h1>あなたのサイトに<br>補助金検索を 1 行で</h1>
+ <p class="lead">
+ 税理士事務所・商工会議所・中小企業支援サイトの HP に
+ <code>&lt;script&gt;</code> タグ 1 行で埋め込める補助金検索
+ widget。フィルタ UI・結果リスト・一次資料リンクを自動で生成し、
+ お客様は「自社サイトでそのまま検索できる」体験を得られます。
+ </p>
 
-    <div class="code-block" id="snippet-pre">
+ <div class="code-block" id="snippet-pre">
 <span><!-- 1. この 2 行をあなたのサイトの HTML に貼るだけ。 --></span>
-<span>&lt;script async src="https://zeimu-kaikei.ai/widget/autonomath.js"&gt;&lt;/script&gt;</span>
+<span>&lt;script async src="https://jpcite.com/widget/autonomath.js"&gt;&lt;/script&gt;</span>
 <span>&lt;div data-autonomath-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
-      <button class="copy-btn" type="button" id="copy-btn" aria-label="コピー">コピー</button>
-    </div>
-  </section>
+ <button class="copy-btn" type="button" id="copy-btn" aria-label="コピー">コピー</button>
+ </div>
+ </section>
 
-  <section class="demo-wrap container">
-    <h2>ライブデモ (本番と同じ JS)</h2>
-    <div data-autonomath-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="light"
-         data-filters="prefecture,industry,target"
-         data-limit="5"></div>
-    <p class="tokushoho-note">
-      ※ 上記は表示例です。許可された origin を登録した本番キーでは
-      お客様のサイト上で正常に結果が表示されます。
-      詳細は <a href="/widget/demo.html">ドキュメント</a> をご覧ください。
-    </p>
-  </section>
+ <section class="demo-wrap container">
+ <h2>ライブデモ (本番と同じ JS)</h2>
+ <div data-autonomath-widget
+ data-key="wgt_live_00000000000000000000000000000000"
+ data-theme="light"
+ data-filters="prefecture,industry,target"
+ data-limit="5"></div>
+ <p class="tokushoho-note">
+ ※ 上記は表示例です。許可された origin を登録した本番キーでは
+ お客様のサイト上で正常に結果が表示されます。
+ 詳細は <a href="/widget/demo.html">ドキュメント</a> をご覧ください。
+ </p>
+ </section>
 
-  <section class="container">
-    <h2 style="text-align:center;margin:36px 0 8px;">なぜ widget が使われるか</h2>
-    <div class="feature-grid">
-      <div class="feature">
-        <h3>組み込みは 1 行</h3>
-        <p>
-          script タグを貼って div を置くだけ。React / Vue に依存せず、
-          ビルド不要で既存の HP にそのまま差せます。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>検索結果は常に最新</h3>
-        <p>
-          税務会計AI 本体の 13,578 制度 DB を参照。毎晩更新される
-          一次資料リンクと締切を widget にそのまま反映します。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>Origin 制限で安全</h3>
-        <p>
-          キーは登録した URL からのみ使用可能。広告のクリックボムや
-          第三者サイトでの無断流用を防ぎます。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>UI は自社サイトに馴染む</h3>
-        <p>
-          light / dark テーマ + CSS オーバーライド対応。既存サイトの
-          配色・フォントに合わせて違和感なく埋め込めます。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>一次資料リンクで信頼性</h3>
-        <p>
-          全制度に中央省庁・自治体・日本政策金融公庫等の公式 URL を
-          リンク。来訪者は「ちゃんとした根拠」を直接確認できます。
-        </p>
-      </div>
-      <div class="feature">
-        <h3>セルフサーブ・月額定額</h3>
-        <p>
-          Business 以上で included 10,000 リクエスト/月。お問い合わせ不要で
-          Stripe Checkout 完了後、すぐキー発行されます。
-        </p>
-      </div>
-    </div>
-  </section>
+ <section class="container">
+ <h2 style="text-align:center;margin:36px 0 8px;">なぜ widget が使われるか</h2>
+ <div class="feature-grid">
+ <div class="feature">
+ <h3>組み込みは 1 行</h3>
+ <p>
+ script タグを貼って div を置くだけ。React / Vue に依存せず、
+ ビルド不要で既存の HP にそのまま差せます。
+ </p>
+ </div>
+ <div class="feature">
+ <h3>検索結果は常に最新</h3>
+ <p>
+ jpcite 本体の 11,684 制度 DB を参照。毎晩更新される
+ 一次資料リンクと締切を widget にそのまま反映します。
+ </p>
+ </div>
+ <div class="feature">
+ <h3>Origin 制限で安全</h3>
+ <p>
+ キーは登録した URL からのみ使用可能。広告のクリックボムや
+ 第三者サイトでの無断流用を防ぎます。
+ </p>
+ </div>
+ <div class="feature">
+ <h3>UI は自社サイトに馴染む</h3>
+ <p>
+ light / dark テーマ + CSS オーバーライド対応。既存サイトの
+ 配色・フォントに合わせて違和感なく埋め込めます。
+ </p>
+ </div>
+ <div class="feature">
+ <h3>一次資料リンクで信頼性</h3>
+ <p>
+ 全制度に中央省庁・自治体・日本政策金融公庫等の公式 URL を
+ リンク。来訪者は「ちゃんとした根拠」を直接確認できます。
+ </p>
+ </div>
+ <div class="feature">
+ <h3>セルフサーブ・月額定額</h3>
+ <p>
+ Business 以上で included 10,000 リクエスト/月。お問い合わせ不要で
+ Stripe Checkout 完了後、すぐキー発行されます。
+ </p>
+ </div>
+ </div>
+ </section>
 
-  <section class="container" aria-labelledby="plan-title">
-    <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">料金プラン</h2>
-    <p style="text-align:center;color:var(--text-muted);">
-      完全従量の API (税込 ¥3.30/リクエスト) とは別プランです。サイト埋め込みのニーズに合わせて
-      月額ベースで設計しています。
-    </p>
+ <section class="container" aria-labelledby="plan-title">
+ <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">料金プラン</h2>
+ <p style="text-align:center;color:var(--text-muted);">
+ 完全従量の API (税込 ¥3.30/リクエスト) とは別プランです。サイト埋め込みのニーズに合わせて
+ 月額ベースで設計しています。
+ </p>
 
-    <div class="plan-grid">
-      <article class="plan highlight" aria-labelledby="plan-business">
-        <h3 id="plan-business">Business</h3>
-        <p class="price">¥10,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
-        <p class="unit">10,000 リクエスト/月 含む、超過分 税込 ¥3.30/リクエスト</p>
-        <ul>
-          <li>税理士事務所・支援機関の HP 向け</li>
-          <li>10,000 リクエスト/月 が標準利用分として含まれる</li>
-          <li>超過は税込 ¥3.30/リクエスト を Stripe usage-based で自動請求</li>
-          <li>「powered by 税務会計AI」フッターを表示</li>
-          <li>複数 origin (本番 + staging 等) 登録可</li>
-          <li>適格請求書 (T8010001213708) を Stripe が自動発行</li>
-        </ul>
-        <button type="button" class="btn" data-plan="business" id="cta-business">Business を申し込む</button>
-      </article>
+ <div class="plan-grid">
+ <article class="plan highlight" aria-labelledby="plan-business">
+ <h3 id="plan-business">Business</h3>
+ <p class="price">¥10,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
+ <p class="unit">10,000 リクエスト/月 含む、超過分 税込 ¥3.30/リクエスト</p>
+ <ul>
+ <li>税理士事務所・支援機関の HP 向け</li>
+ <li>10,000 リクエスト/月 が標準利用分として含まれる</li>
+ <li>超過は税込 ¥3.30/リクエスト を Stripe usage-based で自動請求</li>
+ <li>「powered by jpcite」フッターを表示</li>
+ <li>複数 origin (本番 + staging 等) 登録可</li>
+ <li>適格請求書 を Stripe が自動発行</li>
+ </ul>
+ <button type="button" class="btn" data-plan="business" id="cta-business">Business を申し込む</button>
+ </article>
 
-      <article class="plan" aria-labelledby="plan-whitelabel">
-        <h3 id="plan-whitelabel">ホワイトラベル</h3>
-        <p class="price">¥30,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
-        <p class="unit">100,000 リクエスト/月 fair use、ブランド表示なし</p>
-        <ul>
-          <li>自社ブランドで提供する商工会議所・金融機関向け</li>
-          <li>「powered by 税務会計AI」フッターを非表示に</li>
-          <li>100,000 リクエスト/月 (fair use) まで追加課金なし</li>
-          <li>Business と同じ origin 制限・一次資料リンク</li>
-          <li>月 100,000 リクエスト を大幅超過した場合のみ個別連絡</li>
-          <li>適格請求書 (T8010001213708) を Stripe が自動発行</li>
-        </ul>
-        <button type="button" class="btn btn--secondary" data-plan="business_whitelabel" id="cta-whitelabel">ホワイトラベル を申し込む</button>
-      </article>
-    </div>
-  </section>
+ <article class="plan" aria-labelledby="plan-whitelabel">
+ <h3 id="plan-whitelabel">ホワイトラベル</h3>
+ <p class="price">¥30,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
+ <p class="unit">100,000 リクエスト/月 fair use、ブランド表示なし</p>
+ <ul>
+ <li>自社ブランドで提供する商工会議所・金融機関向け</li>
+ <li>「powered by jpcite」フッターを非表示に</li>
+ <li>100,000 リクエスト/月 (fair use) まで追加課金なし</li>
+ <li>Business と同じ origin 制限・一次資料リンク</li>
+ <li>月 100,000 リクエスト を大幅超過した場合のみ個別連絡</li>
+ <li>適格請求書 を Stripe が自動発行</li>
+ </ul>
+ <button type="button" class="btn btn--secondary" data-plan="business_whitelabel" id="cta-whitelabel">ホワイトラベル を申し込む</button>
+ </article>
+ </div>
+ </section>
 
-  <section class="signup container" aria-labelledby="signup-title">
-    <h2 id="signup-title">申し込みフォーム</h2>
-    <p style="color:var(--text-muted);font-size:14px;">
-      下記を記入して「決済に進む」を押すと Stripe Checkout に遷移します。
-      決済完了後、<code>wgt_live_...</code> キーが管理ダッシュボード経由で発行されます。
-    </p>
-    <form id="signup-form">
-      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-        <label for="company_url">Company URL (leave blank)</label>
-        <input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off">
-      </div>
-      <div class="field">
-        <label for="signup-email">メールアドレス (請求書送付先) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-        <input type="email" id="signup-email" required aria-required="true" autocomplete="email" placeholder="you@example.com">
-      </div>
-      <div class="field">
-        <label for="signup-plan">プラン</label>
-        <select id="signup-plan">
-          <option value="business">Business ¥10,000/月</option>
-          <option value="business_whitelabel">ホワイトラベル ¥30,000/月</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="signup-origins">許可 origin (1 行 1 件、https:// 付き) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
-        <textarea id="signup-origins" required aria-required="true" placeholder="https://example.com&#10;https://*.example.com"></textarea>
-      </div>
-      <div class="field">
-        <label for="signup-label">ラベル (任意、ダッシュボードで表示)</label>
-        <input type="text" id="signup-label" maxlength="120" placeholder="例: 当事務所サイト">
-      </div>
-      <div class="field">
-        <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;">
-          <input type="checkbox" id="signup-consent" style="margin-top:3px;">
-          <span style="font-size:13px;">
-            <a href="tos.html" rel="noopener">利用規約</a> ・
-            <a href="privacy.html" rel="noopener">プライバシーポリシー</a> ・
-            <a href="tokushoho.html" rel="noopener">特定商取引法に基づく表記</a>
-            を読み、同意しました。
-          </span>
-        </label>
-      </div>
-      <button type="submit" class="btn" id="signup-submit" disabled>決済に進む</button>
-      <p class="status" id="signup-status" role="status" aria-live="polite"></p>
-    </form>
+ <section class="signup container" aria-labelledby="signup-title">
+ <h2 id="signup-title">申し込みフォーム</h2>
+ <p style="color:var(--text-muted);font-size:14px;">
+ 下記を記入して「決済に進む」を押すと Stripe Checkout に遷移します。
+ 決済完了後、<code>wgt_live_...</code> キーが管理ダッシュボード経由で発行されます。
+ </p>
+ <form id="signup-form">
+ <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+ <label for="company_url">Company URL (leave blank)</label>
+ <input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+ </div>
+ <div class="field">
+ <label for="signup-email">メールアドレス (請求書送付先) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <input type="email" id="signup-email" required aria-required="true" autocomplete="email" placeholder="you@example.com">
+ </div>
+ <div class="field">
+ <label for="signup-plan">プラン</label>
+ <select id="signup-plan">
+ <option value="business">従量課金 (¥3/検索)</option>
+ <option value="business_whitelabel">ホワイトラベル ¥30,000/月</option>
+ </select>
+ </div>
+ <div class="field">
+ <label for="signup-origins">許可 origin (1 行 1 件、https:// 付き) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <textarea id="signup-origins" required aria-required="true" placeholder="https://example.com&#10;https://*.example.com"></textarea>
+ </div>
+ <div class="field">
+ <label for="signup-label">ラベル (任意、ダッシュボードで表示)</label>
+ <input type="text" id="signup-label" maxlength="120" placeholder="例: 当事務所サイト">
+ </div>
+ <div class="field">
+ <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400;">
+ <input type="checkbox" id="signup-consent" style="margin-top:3px;">
+ <span style="font-size:13px;">
+ <a href="tos.html" rel="noopener">利用規約</a> ・
+ <a href="privacy.html" rel="noopener">プライバシーポリシー</a> ・
+ <a href="tokushoho.html" rel="noopener">特定商取引法に基づく表記</a>
+ を読み、同意しました。
+ </span>
+ </label>
+ </div>
+ <button type="submit" class="btn" id="signup-submit" disabled>決済に進む</button>
+ <p class="status" id="signup-status" role="status" aria-live="polite"></p>
+ </form>
 
-    <p class="tokushoho-note">
-      最低利用期間・解約違約金はありません。Stripe Customer Portal から
-      いつでもキャンセル可能。消費税 10% は Stripe が自動計算、
-      適格請求書に外税表示されます (登録番号 T8010001213708)。
-    </p>
-  </section>
+ <p class="tokushoho-note">
+ 最低利用期間・解約違約金はありません。Stripe Customer Portal から
+ いつでもキャンセル可能。消費税 10% は Stripe が自動計算、
+ 適格請求書に外税表示されます (登録番号 )。
+ </p>
+ </section>
 
 </main>
 
 <div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
-    · <a href="tokushoho.html">特商法表記</a> / <a href="tos.html">利用規約</a> / <a href="privacy.html">プライバシー</a>
-    · <a href="/docs/openapi/v1.json" rel="noopener">OpenAPI 3.1</a>
-    · データ最終取り込み <time data-trust-fresh datetime="2026-04-25">2026-04-25</time>
-  </p>
 </div>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">税務会計AI</p>
-      <p class="footer-tag">日本の制度 API</p>
-      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="tos.html">利用規約</a>
-      <a href="privacy.html">プライバシー</a>
-      <a href="tokushoho.html">特定商取引法</a>
-      <a href="widget/demo.html">Widget Docs</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a>
+ <a href="changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script src="widget/autonomath.js"></script>
 <script src="/assets/trust-strip.js" defer></script>
 <script>
-(function () {
+(function() {
   // Copy button
   var btn = document.getElementById("copy-btn");
   if (btn) {
-    btn.addEventListener("click", function () {
+    btn.addEventListener("click", function() {
       var text = [
-        '<script async src="https://zeimu-kaikei.ai/widget/autonomath.js"><\/script>',
+        '<script async src="https://jpcite.com/widget/autonomath.js"><\/script>',
         '<div data-autonomath-widget data-key="wgt_live_YOUR_KEY"><\/div>'
       ].join("\n");
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(function () {
+        navigator.clipboard.writeText(text).then(function() {
           btn.textContent = "コピー済";
-          setTimeout(function () { btn.textContent = "コピー"; }, 1800);
+          setTimeout(function() { btn.textContent = "コピー"; }, 1800);
         });
       }
     });
@@ -546,7 +556,7 @@
   ["cta-business", "cta-whitelabel"].forEach(function (id) {
     var b = document.getElementById(id);
     if (!b) return;
-    b.addEventListener("click", function () {
+    b.addEventListener("click", function() {
       var plan = b.getAttribute("data-plan") || "business";
       var sel = document.getElementById("signup-plan");
       if (sel) sel.value = plan;
@@ -559,7 +569,7 @@
   var consent = document.getElementById("signup-consent");
   var submit = document.getElementById("signup-submit");
   if (consent && submit) {
-    consent.addEventListener("change", function () {
+    consent.addEventListener("change", function() {
       submit.disabled = !consent.checked;
     });
   }
@@ -595,7 +605,7 @@
     submit.disabled = true;
 
     var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    var timer = setTimeout(function() { ctrl.abort(); }, 15000);
 
     fetch("/v1/widget/signup", {
       method: "POST",
@@ -605,8 +615,8 @@
         plan: plan,
         label: label || null,
         origins: origins,
-        success_url: "https://zeimu-kaikei.ai/success.html?w={CHECKOUT_SESSION_ID}",
-        cancel_url: "https://zeimu-kaikei.ai/widget.html?cancelled=1"
+        success_url: "https://jpcite.com/success.html?w={CHECKOUT_SESSION_ID}",
+        cancel_url: "https://jpcite.com/widget.html?cancelled=1"
       }),
       signal: ctrl.signal
     })
@@ -639,7 +649,7 @@
       submit.disabled = false;
     });
   });
-})();
+});
 </script>
 
 </body>

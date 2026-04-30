@@ -33,7 +33,7 @@ Show HN: AutonoMath - Japanese public-program API for AI agents (3 yen/req)
 ## URL field
 
 ```
-https://zeimu-kaikei.ai
+https://jpcite.com
 ```
 
 Note: HN guideline — point to product page, not GitHub repo. GitHub URL goes
@@ -91,7 +91,7 @@ Open questions I'd like HN to push on:
 
 Repo: https://github.com/[USERNAME]/[REPO]
 PyPI: https://pypi.org/project/autonomath-mcp/
-Docs: https://zeimu-kaikei.ai/docs/
+Docs: https://jpcite.com/docs/
 
 Will be here all day to answer.
 ```
@@ -101,7 +101,7 @@ Will be here all day to answer.
 ## Pre-submit checklist (operator)
 
 - [ ] Title 80 chars 以下確認 (HN form 自体が cap)
-- [ ] URL `https://zeimu-kaikei.ai` 動作確認 (200 / valid TLS)
+- [ ] URL `https://jpcite.com` 動作確認 (200 / valid TLS)
 - [ ] First comment 800-1500 chars 確認 (上記 1,189)
 - [ ] GitHub URL placeholder `[USERNAME]/[REPO]` を実 URL に置換
 - [ ] PyPI page `pypi.org/project/autonomath-mcp/` 動作確認

@@ -48,7 +48,7 @@ from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.sunset_alerts")
 
-_PUBLIC_ORIGIN = "https://zeimu-kaikei.ai"
+_PUBLIC_ORIGIN = "https://jpcite.com"
 _LOOKBACK_MINUTES = 60
 
 
@@ -221,7 +221,7 @@ def _send_email_sunset(
                 "detected_at": diff["detected_at"],
                 "url": f"{_PUBLIC_ORIGIN}/programs/{entity_id}",
                 "disclaimer": (
-                    "本通知は税務会計AIによる公開情報の検索結果です。"
+                    "本通知はjpciteによる公開情報の検索結果です。"
                     "個別具体的な税務助言・法律判断は税理士法 §52 / 弁護士法 §72 に基づき"
                     "資格者にご確認ください。"
                 ),

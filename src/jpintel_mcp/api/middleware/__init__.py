@@ -46,6 +46,9 @@ from jpintel_mcp.api.middleware.customer_cap import (
 from jpintel_mcp.api.middleware.deprecation_warning import (
     DeprecationWarningMiddleware,
 )
+from jpintel_mcp.api.middleware.host_deprecation import (
+    HostDeprecationMiddleware,
+)
 from jpintel_mcp.api.middleware.kill_switch import (
     KillSwitchMiddleware,
     _reset_kill_switch_state,
@@ -71,6 +74,7 @@ __all__ = [
     "ClientTagMiddleware",
     "CustomerCapMiddleware",
     "DeprecationWarningMiddleware",
+    "HostDeprecationMiddleware",
     "KillSwitchMiddleware",
     "OriginEnforcementMiddleware",
     "PerIpEndpointLimitMiddleware",

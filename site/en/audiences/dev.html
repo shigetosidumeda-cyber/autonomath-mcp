@@ -4,28 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>AutonoMath for AI agent developers — MCP / REST + Claude Desktop + 89 tools</title>
-<meta name="description" content="AutonoMath for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport, no SDK, runs in Claude Desktop, Cursor, and ChatGPT. 89 MCP tools at default gates, protocol 2025-06-18. 50 req/month free to evaluate, then ¥3/req metered.">
+<title>jpcite for AI agent developers — MCP / REST + Claude Desktop + 89 tools</title>
+<meta name="description" content="jpcite for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport, no SDK, runs in Claude Desktop, Cursor, and ChatGPT. 89 MCP tools at default gates, protocol 2025-06-18. 50 req/month free to evaluate, then ¥3/req metered.">
 
-<meta property="og:title" content="AutonoMath for AI agent developers">
+<meta property="og:title" content="jpcite for AI agent developers">
 <meta property="og:description" content="MCP / REST + Claude Desktop ready + 89 tools.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/en/audiences/dev.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/en/audiences/dev.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AutonoMath for AI agent developers">
+<meta name="twitter:title" content="jpcite for AI agent developers">
 <meta name="twitter:description" content="MCP server (89 tools) + REST API. Drop into Claude Desktop.">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://zeimu-kaikei.ai/en/audiences/dev.html">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/audiences/dev.html">
-<link rel="alternate" hreflang="en" href="https://zeimu-kaikei.ai/en/audiences/dev.html">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/audiences/dev.html">
+<link rel="canonical" href="https://jpcite.com/en/audiences/dev.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/audiences/dev.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/audiences/dev.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/audiences/dev.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -39,9 +39,9 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://zeimu-kaikei.ai/en/"},
-    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://zeimu-kaikei.ai/en/audiences/"},
-    {"@type": "ListItem", "position": 3, "name": "AI agent developers", "item": "https://zeimu-kaikei.ai/en/audiences/dev.html"}
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://jpcite.com/en/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "AI agent developers", "item": "https://jpcite.com/en/audiences/dev.html"}
   ]
 }
 </script>
@@ -51,12 +51,12 @@
   "@context": "https://schema.org",
   "@type": "Service",
   "serviceType": "MCP / REST API for AI agent developers",
-  "name": "AutonoMath for AI agent developers",
-  "description": "AutonoMath for AI agent developers. An MCP server over Japanese subsidy / tax / loan / law data. 89 tools, stdio transport, protocol 2025-06-18. Runs in Claude Desktop, Cursor, and ChatGPT.",
+  "name": "jpcite for AI agent developers",
+  "description": "jpcite for AI agent developers. An MCP server over Japanese subsidy / tax / loan / law data. 89 tools, stdio transport, protocol 2025-06-18. Runs in Claude Desktop, Cursor, and ChatGPT.",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://zeimu-kaikei.ai/en/",
+    "url": "https://jpcite.com/en/",
     "identifier": "T8010001213708"
   },
   "audience": {
@@ -86,12 +86,12 @@
   "inLanguage": "en",
   "mainEntity": [
     {"@type": "Question", "name": "Is stdio the only MCP transport?", "acceptedAnswer": {"@type": "Answer", "text": "stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API exposes equivalent functionality, so use that if your environment is HTTP-only."}},
-    {"@type": "Question", "name": "What's the breakdown of the 89 tools?", "acceptedAnswer": {"@type": "Answer", "text": "Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset glue); the entity-fact DB; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are gated off by default. Full schemas are at /docs/mcp-tools/."}},
+    {"@type": "Question", "name": "What's the breakdown of the 89 tools?", "acceptedAnswer": {"@type": "Answer", "text": "Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset glue); the entity-fact DB; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are currently in preparation. Full schemas are at /docs/mcp-tools/."}},
     {"@type": "Question", "name": "Does this work with Claude Desktop, Cursor, and ChatGPT?", "acceptedAnswer": {"@type": "Answer", "text": "Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API via GPTs Actions. Sample configs are in the quickstart section."}},
     {"@type": "Question", "name": "What are the rate limits?", "acceptedAnswer": {"@type": "Answer", "text": "Anonymous (no key) is 50 req/month per IP, reset at JST first-of-month 00:00. Authenticated (API key) has no hard cap, with UTC monthly accounting. Spikes don't 429. Concurrent connections are effectively unlimited across MCP and HTTP."}},
     {"@type": "Question", "name": "Where's the OpenAPI spec?", "acceptedAnswer": {"@type": "Answer", "text": "/docs/openapi/v1.json publishes an OpenAPI 3.1-compliant spec, auto-generated from FastAPI. Imports cleanly into Stoplight, Postman, Insomnia, etc."}},
     {"@type": "Question", "name": "Is there a PyPI / npm package?", "acceptedAnswer": {"@type": "Answer", "text": "PyPI: autonomath-mcp (run via uvx). The internal import path is jpintel_mcp (legacy — don't rename). No npm package planned for now; MCP is stdio, so uvx / pipx is the standard launcher."}},
-    {"@type": "Question", "name": "How does billing work when I embed this in my own SaaS?", "acceptedAnswer": {"@type": "Answer", "text": "Run all requests through one of your API keys, billed at ¥3/req metered. Reselling to end users is allowed; you have no obligation to display the AutonoMath brand (white-label is fine)."}}
+    {"@type": "Question", "name": "How does billing work when I embed this in my own SaaS?", "acceptedAnswer": {"@type": "Answer", "text": "Run all requests through one of your API keys, billed at ¥3/req metered. Reselling to end users is allowed; you have no obligation to display the jpcite brand (white-label is fine)."}}
   ]
 }
 </script>
@@ -101,314 +101,305 @@
 <a class="skip-link" href="#main">Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="container header-inner">
-    <a class="brand" href="../index.html" aria-label="AutonoMath home">
-      <span class="brand-name">AutonoMath</span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="../getting-started.html">Docs</a>
-      <a href="../pricing.html">Pricing</a>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
-      <span class="lang-switch" role="group" aria-label="Language / 言語">
-        <a href="../../audiences/dev.html" lang="ja" hreflang="ja">JP</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a href="dev.html" lang="en" hreflang="en" aria-current="page">EN</a>
-      </span>
-    </nav>
-  </div>
+ <div class="container header-inner">
+ <a class="brand" href="../index.html" aria-label="jpcite home">
+ <span class="brand-name">jpcite</span>
+ </a>
+ <nav class="site-nav" aria-label="Primary navigation">
+ <a href="../getting-started.html">Docs</a>
+ <a href="../pricing.html">Pricing</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="../../audiences/dev.html" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="dev.html" lang="en" hreflang="en" aria-current="page">EN</a>
+ </span>
+ </nav>
+ </div>
 </header>
 
 <main id="main">
 
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="container">
-      <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
-        <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">AI agent developers</span>
-      </nav>
-      <h1 id="hero-title">AutonoMath for AI agent developers</h1>
-      <p class="hero-sub">An MCP server for Japanese subsidy / tax / loan / law data. stdio transport, no SDK, drops straight into Claude Desktop, Cursor, and ChatGPT.</p>
-      <p class="hero-tag">89 MCP tools at default gates (protocol 2025-06-18). 14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 154 laws full-text + 9,484 law catalog stubs + 35 tax rulesets + 13,801 invoice registrants + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases). 50 req/mo free to evaluate, ¥3/req commercial.</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
-        <a class="btn btn-secondary" href="/docs/mcp-tools/">All 89 tools</a>
-        <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI</a>
-        <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
-      </div>
-    </div>
-  </section>
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+ <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">AI agent developers</span>
+ </nav>
+ <h1 id="hero-title">jpcite for AI agent developers</h1>
+ <p class="hero-sub">An MCP server for Japanese subsidy / tax / loan / law data. stdio transport, no SDK, drops straight into Claude Desktop, Cursor, and ChatGPT.</p>
+ <p class="hero-tag">89 MCP tools at default gates (protocol 2025-06-18). 14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 154 laws full-text + 9,484 law catalog stubs + 35 tax rulesets + 13,801 invoice registrants + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases). 50 req/mo free to evaluate, ¥3/req commercial.</p>
+ <div class="cta-row">
+ <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
+ <a class="btn btn-secondary" href="/docs/mcp-tools/">All 89 tools</a>
+ <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI</a>
+ <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
+ </div>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="why-title">
-    <div class="container">
-      <h2 id="why-title" class="section-title">Why AutonoMath</h2>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+ <section class="features" aria-labelledby="why-title">
+ <div class="container">
+ <h2 id="why-title" class="section-title">Why jpcite</h2>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
-        <article class="card">
-          <h3>MCP native, 89 tools</h3>
-          <p class="card-lead">stdio + protocol 2025-06-18</p>
-          <p>FastMCP-based, stdio transport, drops into Claude Desktop and Cursor. No SDK; one <code>uvx</code> line to launch. Tool schemas are exposed via <code>list_tools()</code>, and Claude picks autonomously.</p>
-        </article>
+ <article class="card">
+ <h3>MCP native, 89 tools</h3>
+ <p class="card-lead">stdio + protocol 2025-06-18</p>
+ <p>FastMCP-based, stdio transport, drops into Claude Desktop and Cursor. No SDK; one <code>uvx</code> line to launch. Tool schemas are exposed via <code>list_tools</code>, and Claude picks autonomously.</p>
+ </article>
 
-        <article class="card">
-          <h3>REST is OpenAPI 3.1 too</h3>
-          <p class="card-lead">FastAPI auto-generated spec</p>
-          <p>For HTTP-only environments, the REST API mirrors the same surface. The OpenAPI 3.1 spec lives at /docs/openapi/v1.json and imports into Stoplight, Postman, Insomnia, GPTs Actions, Dify, and LangChain.</p>
-        </article>
+ <article class="card">
+ <h3>REST is OpenAPI 3.1 too</h3>
+ <p class="card-lead">FastAPI auto-generated spec</p>
+ <p>For HTTP-only environments, the REST API mirrors the same surface. The OpenAPI 3.1 spec lives at /docs/openapi/v1.json and imports into Stoplight, Postman, Insomnia, GPTs Actions, Dify, and LangChain.</p>
+ </article>
 
-        <article class="card">
-          <h3>50 free/mo + ¥3/req metered</h3>
-          <p class="card-lead">Evaluate without signup, then go commercial</p>
-          <p>50 anonymous req/month per IP (JST first-of-month reset). Commercial pricing is ¥3/req (¥3.30 tax inclusive), no hard cap, no monthly fixed fee. Stripe metered billing; qualified invoices (T8010001213708) issued automatically.</p>
-        </article>
+ <article class="card">
+ <h3>50 free/mo + ¥3/req metered</h3>
+ <p class="card-lead">Evaluate without signup, then go commercial</p>
+ <p>50 anonymous req/month per IP (JST first-of-month reset). Commercial pricing is ¥3/req (¥3.30 tax inclusive), no hard cap, no monthly fixed fee. Stripe metered billing; qualified invoices issued automatically.</p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="code-demo" aria-labelledby="usecase-title">
-    <div class="container">
-      <h2 id="usecase-title" class="section-title">Primary use cases</h2>
-      <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+ <section class="code-demo" aria-labelledby="usecase-title">
+ <div class="container">
+ <h2 id="usecase-title" class="section-title">Primary use cases</h2>
+ <div class="cards" style="grid-template-columns:repeat(2,1fr);">
 
-        <article class="card">
-          <h3>1. Japanese-program RAG in Claude Desktop</h3>
-          <p>Add the MCP server to your config and Claude searches programs, adoptions, loans, and laws on its own. Natural-language queries like "Tokyo subsidies for construction, around 5M yen" decompose internally into <code>search_programs</code> + <code>check_exclusion</code>.</p>
-        </article>
+ <article class="card">
+ <h3>1. Japanese-program RAG in Claude Desktop</h3>
+ <p>Add the MCP server to your config and Claude searches programs, adoptions, loans, and laws on its own. Natural-language queries like "Tokyo subsidies for construction, around 5M yen" decompose internally into <code>search_programs</code> + <code>check_exclusion</code>.</p>
+ </article>
 
-        <article class="card">
-          <h3>2. Build subsidy SaaS in Cursor / Copilot</h3>
-          <p>Connect MCP from Cursor and the Cursor agent calls AutonoMath tools directly while it generates types and implementation. Importing the OpenAPI spec also gives you fully type-safe client code.</p>
-        </article>
+ <article class="card">
+ <h3>2. Build subsidy SaaS in Cursor / Copilot</h3>
+ <p>Connect MCP from Cursor and the Cursor agent calls jpcite tools directly while it generates types and implementation. Importing the OpenAPI spec also gives you fully type-safe client code.</p>
+ </article>
 
-        <article class="card">
-          <h3>3. GPTs Actions / Dify / LangChain</h3>
-          <p>Import the OpenAPI 3.1 spec as a ChatGPT GPT Action and you have a Japanese-program search GPT instantly. Dify and LangChain take it as a REST tool.</p>
-        </article>
+ <article class="card">
+ <h3>3. GPTs Actions / Dify / LangChain</h3>
+ <p>Import the OpenAPI 3.1 spec as a ChatGPT GPT Action and you have a Japanese-program search GPT instantly. Dify and LangChain take it as a REST tool.</p>
+ </article>
 
-        <article class="card">
-          <h3>4. Compliance feature inside your own SaaS</h3>
-          <p>Add "applicable subsidies", "invoice-system status", and "enforcement check" features to accounting / sales / legal SaaS. ¥3/req metered scales linearly with end-user count, with no fixed cost. White-label is fine.</p>
-        </article>
+ <article class="card">
+ <h3>4. Compliance feature inside your own SaaS</h3>
+ <p>Add "applicable subsidies", "invoice-system status", and "enforcement check" features to accounting / sales / legal SaaS. ¥3/req metered scales linearly with end-user count, with no fixed cost. White-label is fine.</p>
+ </article>
 
-        <article class="card">
-          <h3>5. Embed in enterprise RAG</h3>
-          <p>Combine internal Confluence with AutonoMath in a single RAG. <code>combined_compliance_check</code> / <code>trace_program_to_law</code> chain program &rarr; statute &rarr; circular in one search.</p>
-        </article>
+ <article class="card">
+ <h3>5. Embed in enterprise RAG</h3>
+ <p>Combine internal Confluence with jpcite in a single RAG. <code>combined_compliance_check</code> / <code>trace_program_to_law</code> chain program &rarr; statute &rarr; circular in one search.</p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
-    <div class="container">
-      <h2 id="quickstart-title" class="section-title">Start in 5 minutes</h2>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+ <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
+ <div class="container">
+ <h2 id="quickstart-title" class="section-title">Start in 5 minutes</h2>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
-        <article class="card">
-          <h3>curl (anonymous, 50 free/mo)</h3>
-          <pre class="code-block"><code>curl 'https://api.zeimu-kaikei.ai/v1/programs/search?\
+ <article class="card">
+ <h3>curl (anonymous, 50 free/mo)</h3>
+ <pre class="code-block"><code>curl 'https://api.jpcite.com/v1/programs/search?\
 q=DX&amp;tier=S,A&amp;limit=5'
 
 # OpenAPI spec
-curl https://api.zeimu-kaikei.ai/v1/openapi.json</code></pre>
-          <p class="demo-note">No signup. JST first-of-month reset.</p>
-        </article>
+curl https://api.jpcite.com/v1/openapi.json</code></pre>
+ <p class="demo-note">No signup. JST first-of-month reset.</p>
+ </article>
 
-        <article class="card">
-          <h3>Python + httpx (commercial, ¥3/req)</h3>
-          <pre class="code-block"><code># pip install httpx
+ <article class="card">
+ <h3>Python + httpx (commercial, ¥3/req)</h3>
+ <pre class="code-block"><code># pip install httpx
 import httpx
 client = httpx.Client(
-  base_url="https://api.zeimu-kaikei.ai/v1",
-  headers={"X-API-Key": "sk_..."}
+ base_url="https://api.jpcite.com/v1",
+ headers={"X-API-Key": "sk_..."}
 )
 r = client.get("/programs/search",
-               params={"q": "DX", "limit": 5})
-for p in r.json()["items"]:
-    print(p["name"], p["source_url"])</code></pre>
-          <p class="demo-note">Use <code>httpx.AsyncClient</code> for async.</p>
-        </article>
+ params={"q": "DX", "limit": 5})
+for p in r.json["items"]:
+ print(p["name"], p["source_url"])</code></pre>
+ <p class="demo-note">Use <code>httpx.AsyncClient</code> for async.</p>
+ </article>
 
-        <article class="card">
-          <h3>Claude Desktop (MCP native)</h3>
-          <pre class="code-block"><code>// ~/Library/Application Support/
-//   Claude/claude_desktop_config.json
+ <article class="card">
+ <h3>Claude Desktop (MCP native)</h3>
+ <pre class="code-block"><code>// ~/Library/Application Support/
+// Claude/claude_desktop_config.json
 {
-  "mcpServers": {
-    "autonomath": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"],
-      "env": {
-        "AUTONOMATH_API_KEY": "sk_...",
-        "AUTONOMATH_ENABLED": "true"
-      }
-    }
-  }
+ "mcpServers": {
+ "autonomath": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
+ "env": {
+ "AUTONOMATH_API_KEY": "sk_..."
+ }
+ }
+ }
 }</code></pre>
-          <p class="demo-note">PyPI: autonomath-mcp; uvx launches in place.</p>
-        </article>
+ <p class="demo-note">PyPI: autonomath-mcp; uvx launches in place.</p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="code-demo" aria-labelledby="tools-title">
-    <div class="container">
-      <h2 id="tools-title" class="section-title">A sample of the 89 tools</h2>
-      <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+ <section class="code-demo" aria-labelledby="tools-title">
+ <div class="container">
+ <h2 id="tools-title" class="section-title">A sample of the 89 tools</h2>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
-        <article class="card">
-          <h3>Discovery (7 tools)</h3>
-          <ul class="card-list">
-            <li><code>smb_starter_pack</code></li>
-            <li><code>subsidy_combo_finder</code></li>
-            <li><code>deadline_calendar</code></li>
-            <li><code>dd_profile_am</code></li>
-            <li><code>similar_cases</code></li>
-            <li><code>regulatory_prep_pack</code></li>
-            <li><code>subsidy_roadmap_3yr</code></li>
-          </ul>
-        </article>
+ <article class="card">
+ <h3>Discovery (7 tools)</h3>
+ <ul class="card-list">
+ <li><code>smb_starter_pack</code></li>
+ <li><code>subsidy_combo_finder</code></li>
+ <li><code>deadline_calendar</code></li>
+ <li><code>dd_profile_am</code></li>
+ <li><code>similar_cases</code></li>
+ <li><code>regulatory_prep_pack</code></li>
+ <li><code>subsidy_roadmap_3yr</code></li>
+ </ul>
+ </article>
 
-        <article class="card">
-          <h3>Cross-dataset glue</h3>
-          <ul class="card-list">
-            <li><code>combined_compliance_check</code></li>
-            <li><code>trace_program_to_law</code></li>
-            <li><code>search_tax_incentives</code></li>
-            <li><code>reason_answer</code></li>
-            <li><code>list_tax_sunset_alerts</code></li>
-          </ul>
-        </article>
+ <article class="card">
+ <h3>Cross-dataset glue</h3>
+ <ul class="card-list">
+ <li><code>combined_compliance_check</code></li>
+ <li><code>trace_program_to_law</code></li>
+ <li><code>search_tax_incentives</code></li>
+ <li><code>reason_answer</code></li>
+ <li><code>list_tax_sunset_alerts</code></li>
+ </ul>
+ </article>
 
-        <article class="card">
-          <h3>Autonomath (33 tools)</h3>
-          <ul class="card-list">
-            <li><code>search_certifications</code></li>
-            <li><code>list_open_programs</code></li>
-            <li><code>active_programs_at</code></li>
-            <li><code>search_acceptance_stats_am</code></li>
-            <li><code>search_loans_am</code></li>
-            <li><code>check_enforcement_am</code></li>
-            <li><code>get_law_article_am</code></li>
-            <li><code>graph_traverse</code></li>
-            <li><code>program_lifecycle</code></li>
-            <li><code>prerequisite_chain</code></li>
-            <li><code>query_at_snapshot</code></li>
-          </ul>
-          <p style="margin-top:12px;font-size:13px;"><a href="/docs/mcp-tools/">See all 89 tool schemas &rarr;</a></p>
-        </article>
+ <article class="card">
+ <h3>Autonomath (33 tools)</h3>
+ <ul class="card-list">
+ <li><code>search_certifications</code></li>
+ <li><code>list_open_programs</code></li>
+ <li><code>active_programs_at</code></li>
+ <li><code>search_acceptance_stats_am</code></li>
+ <li><code>search_loans_am</code></li>
+ <li><code>check_enforcement_am</code></li>
+ <li><code>get_law_article_am</code></li>
+ <li><code>graph_traverse</code></li>
+ <li><code>program_lifecycle</code></li>
+ <li><code>prerequisite_chain</code></li>
+ <li><code>query_at_snapshot</code></li>
+ </ul>
+ <p style="margin-top:12px;font-size:13px;"><a href="/docs/mcp-tools/">See all 89 tool schemas &rarr;</a></p>
+ </article>
 
-      </div>
-    </div>
-  </section>
+ </div>
+ </div>
+ </section>
 
-  <section class="pricing-preview" aria-labelledby="pricing-title">
-    <div class="container">
-      <h2 id="pricing-title" class="section-title">Developer pricing</h2>
-      <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 50 anonymous req/month for evaluation, no key needed.</p>
-      <div class="table-wrap">
-        <table class="pricing-table">
-          <caption class="visually-hidden">Pricing for AI agent developers</caption>
-          <thead>
-            <tr>
-              <th scope="col">Tier</th>
-              <th scope="col">Free quota</th>
-              <th scope="col">Paid (tax excl.)</th>
-              <th scope="col">Tax incl.</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><th scope="row">Anonymous (no key)</th><td>50 req/mo per IP</td><td>-</td><td>-</td></tr>
-            <tr><th scope="row">Authenticated (API key)</th><td>-</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
-            <tr><th scope="row">Embedded in your SaaS</th><td>-</td><td>¥3 / req (white-label OK)</td><td>¥3.30 / req</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="pricing-note">Stripe metered billing, qualified invoices (T8010001213708) issued automatically, cancel anytime. <a href="../pricing.html">Full pricing &rarr;</a></p>
-    </div>
-  </section>
+ <section class="pricing-preview" aria-labelledby="pricing-title">
+ <div class="container">
+ <h2 id="pricing-title" class="section-title">Developer pricing</h2>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 50 anonymous req/month for evaluation, no key needed.</p>
+ <div class="table-wrap">
+ <table class="pricing-table">
+ <caption class="visually-hidden">Pricing for AI agent developers</caption>
+ <thead>
+ <tr>
+ <th scope="col">Tier</th>
+ <th scope="col">Free quota</th>
+ <th scope="col">Paid (tax excl.)</th>
+ <th scope="col">Tax incl.</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr><th scope="row">Anonymous (no key)</th><td>50 req/mo per IP</td><td>-</td><td>-</td></tr>
+ <tr><th scope="row">Authenticated (API key)</th><td>-</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">Embedded in your SaaS</th><td>-</td><td>¥3 / req (white-label OK)</td><td>¥3.30 / req</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <p class="pricing-note">Stripe metered billing, qualified invoices issued automatically, cancel anytime. <a href="../pricing.html">Full pricing &rarr;</a></p>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="faq-title" style="background:var(--bg-alt);">
-    <div class="container">
-      <h2 id="faq-title" class="section-title">FAQ (developer)</h2>
-      <h3 style="font-size:16px;margin:18px 0 6px;">Is stdio the only MCP transport?</h3>
-      <p>stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API has the same coverage, so use that if your environment is HTTP-only.</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">What's the breakdown of the 89 tools?</h3>
-      <p>Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset glue); the entity-fact DB; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are gated off by default. Full schemas at /docs/mcp-tools/.</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">Does this work with Claude Desktop, Cursor, and ChatGPT?</h3>
-      <p>Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API through GPTs Actions. Sample configs are in the quickstart.</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">What are the rate limits?</h3>
-      <p>Anonymous (no key) is 50 req/month per IP, reset at JST first-of-month 00:00. Authenticated has no hard cap, UTC monthly. Spikes don't 429. Concurrent connections are effectively unlimited across MCP and HTTP.</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">Where's the OpenAPI spec?</h3>
-      <p>/docs/openapi/v1.json publishes the OpenAPI 3.1 spec, auto-generated from FastAPI. Imports into Stoplight, Postman, Insomnia, etc.</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">PyPI / npm?</h3>
-      <p>PyPI: autonomath-mcp (uvx-runnable). Internal import path is jpintel_mcp (legacy). No npm planned; MCP is stdio, so uvx / pipx is the standard launcher.</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">How does billing work when I embed in my own SaaS?</h3>
-      <p>Run all requests through one of your API keys, ¥3/req metered. Reselling is allowed; there's no requirement to display the AutonoMath brand (white-label is fine).</p>
-      <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
-      <p>Same MCP/REST seen from other angles: <a href="vc.html">VC / M&amp;A advisor</a> (DD automation), <a href="tax-advisor.html">tax advisors</a> (tax ruleset queries), <a href="admin-scrivener.html">administrative scriveners</a> (permit batch queries), <a href="smb.html">SMB owners</a> (LINE-bot end users). <a href="index.html">Compare all 5 audiences</a>.</p>
-    </div>
-  </section>
+ <section class="features" aria-labelledby="faq-title" style="background:var(--bg-alt);">
+ <div class="container">
+ <h2 id="faq-title" class="section-title">FAQ (developer)</h2>
+ <h3 style="font-size:16px;margin:18px 0 6px;">Is stdio the only MCP transport?</h3>
+ <p>stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API has the same coverage, so use that if your environment is HTTP-only.</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">What's the breakdown of the 89 tools?</h3>
+ <p>Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset glue); the entity-fact DB; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are currently in preparation. Full schemas at /docs/mcp-tools/.</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">Does this work with Claude Desktop, Cursor, and ChatGPT?</h3>
+ <p>Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API through GPTs Actions. Sample configs are in the quickstart.</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">What are the rate limits?</h3>
+ <p>Anonymous (no key) is 50 req/month per IP, reset at JST first-of-month 00:00. Authenticated has no hard cap, UTC monthly. Spikes don't 429. Concurrent connections are effectively unlimited across MCP and HTTP.</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">Where's the OpenAPI spec?</h3>
+ <p>/docs/openapi/v1.json publishes the OpenAPI 3.1 spec, auto-generated from FastAPI. Imports into Stoplight, Postman, Insomnia, etc.</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">PyPI / npm?</h3>
+ <p>PyPI: autonomath-mcp (uvx-runnable). Internal import path is jpintel_mcp (legacy). No npm planned; MCP is stdio, so uvx / pipx is the standard launcher.</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">How does billing work when I embed in my own SaaS?</h3>
+ <p>Run all requests through one of your API keys, ¥3/req metered. Reselling is allowed; there's no requirement to display the jpcite brand (white-label is fine).</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
+ <p>Same MCP/REST seen from other angles: <a href="vc.html">VC / M&amp;A advisor</a> (DD automation), <a href="tax-advisor.html">tax advisors</a> (tax ruleset queries), <a href="admin-scrivener.html">administrative scriveners</a> (permit batch queries), <a href="smb.html">SMB owners</a> (LINE-bot end users). <a href="index.html">Compare all 5 audiences</a>.</p>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="resources-title">
-    <div class="container">
-      <h2 id="resources-title" class="section-title">Developer resources</h2>
-      <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/"><strong>REST API reference (112 endpoints)</strong></a> &mdash; Full endpoint specs, authentication, rate limits, response schemas. Auto-generated from FastAPI.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (89 tools)</strong></a> &mdash; Functions callable directly from Claude Desktop / Cursor / Continue. Full schemas published, stdio transport.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>Implementation examples (Python + curl + TypeScript)</strong></a> &mdash; Copy-paste samples. Both MCP and REST, error handling included.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key issuance to first search. Stripe metered billing setup included.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; Direct import into Stoplight, Postman, Insomnia. Source for client SDK auto-generation.</li>
-        <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener"><strong>GitHub: AutonoMath/autonomath-mcp</strong></a> &mdash; Issues / discussions / sample server.json manifest. MIT-compatible license.</li>
-        <li style="padding:10px 0;"><a href="https://pypi.org/project/autonomath-mcp/" rel="noopener"><strong>PyPI: autonomath-mcp</strong></a> &mdash; <code>uvx autonomath-mcp</code> launches immediately. Just add to <code>claude_desktop_config.json</code>.</li>
-      </ul>
-    </div>
-  </section>
+ <section class="features" aria-labelledby="resources-title">
+ <div class="container">
+ <h2 id="resources-title" class="section-title">Developer resources</h2>
+ <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/"><strong>REST API reference (112 endpoints)</strong></a> &mdash; Full endpoint specs, authentication, rate limits, response schemas. Auto-generated from FastAPI.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (89 tools)</strong></a> &mdash; Functions callable directly from Claude Desktop / Cursor / Continue. Full schemas published, stdio transport.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>Implementation examples (Python + curl + TypeScript)</strong></a> &mdash; Copy-paste samples. Both MCP and REST, error handling included.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key issuance to first search. Stripe metered billing setup included.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; Direct import into Stoplight, Postman, Insomnia. Source for client SDK auto-generation.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener"><strong>GitHub: AutonoMath/autonomath-mcp</strong></a> &mdash; Issues / discussions / sample server.json manifest. MIT-compatible license.</li>
+ <li style="padding:10px 0;"><a href="https://pypi.org/project/autonomath-mcp/" rel="noopener"><strong>PyPI: autonomath-mcp</strong></a> &mdash; <code>uvx autonomath-mcp</code> launches immediately. Just add to <code>claude_desktop_config.json</code>.</li>
+ </ul>
+ </div>
+ </section>
 
-  <section class="features" aria-labelledby="cta-title">
-    <div class="container">
-      <h2 id="cta-title" class="section-title">Get started</h2>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
-        <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
-        <a class="btn btn-secondary" href="mailto:info@bookyou.net?subject=AI%20agent%20developer%20inquiry">info@bookyou.net</a>
-        <a class="btn btn-secondary" href="/docs/mcp-tools/">All 89 tools</a>
-      </div>
-      <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. (T8010001213708) &middot; Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
-    </div>
-  </section>
+ <section class="features" aria-labelledby="cta-title">
+ <div class="container">
+ <h2 id="cta-title" class="section-title">Get started</h2>
+ <div class="cta-row">
+ <a class="btn btn-primary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
+ <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" rel="noopener">GitHub</a>
+ <a class="btn btn-secondary" href="mailto:info@bookyou.net?subject=AI%20agent%20developer%20inquiry">info@bookyou.net</a>
+ <a class="btn btn-secondary" href="/docs/mcp-tools/">All 89 tools</a>
+ </div>
+ <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
+ </div>
+ </section>
 
 </main>
 
 <div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    Operator: <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Bookyou Inc.</a> (T8010001213708) |
-    <a href="/en/tokushoho.html">Tokushoho compliance</a> |
-    <a href="/en/tos.html">Terms</a> |
-    <a href="/en/privacy.html">Privacy</a> |
-    <a href="/docs/api-reference/">OpenAPI</a> |
-    Data last refreshed: <time data-trust-fresh datetime="2026-04-25">Apr 25, 2026</time>
-  </p>
 </div>
 
 
 <footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">AutonoMath</p>
-      <p class="footer-tag">Japanese public-program API</p>
-    </div>
-    <nav class="footer-nav" aria-label="Footer">
-      <a href="../about.html">About</a>
-      <a href="../getting-started.html">Getting started</a>
-      <a href="../pricing.html">Pricing</a>
-      <a href="../tokushoho.html">Legal (JP)</a>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
-  </div>
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="../about.html">About</a>
+ <a href="../getting-started.html">Getting started</a>
+ <a href="../pricing.html">Pricing</a>
+ <a href="../tokushoho.html">Legal (JP)</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
 </footer>
 
 <script src="/assets/trust-strip.en.js" defer></script>

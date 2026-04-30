@@ -10,12 +10,12 @@ configSchema:
     autonomathApiKey:
       type: string
       description: >-
-        Optional API key from https://zeimu-kaikei.ai/pricing. Anonymous tier is 50 req/month
+        Optional API key from https://jpcite.com/pricing. Anonymous tier is 50 req/month
         per IP (JST first-of-month reset) and works without a key; metered paid tier
         (¥3/req tax-exclusive, ¥3.30 tax-inclusive) requires one.
     autonomathApiBase:
       type: string
-      default: "https://zeimu-kaikei.ai"
+      default: "https://jpcite.com"
       description: >-
         Override the API base URL. Only set this for self-hosted or staging deployments.
 
@@ -25,7 +25,7 @@ commandFunction: |-
     args: ['-m', 'jpintel_mcp.mcp.server'],
     env: {
       JPINTEL_API_KEY: config.autonomathApiKey || '',
-      JPINTEL_API_BASE: config.autonomathApiBase || 'https://zeimu-kaikei.ai'
+      JPINTEL_API_BASE: config.autonomathApiBase || 'https://jpcite.com'
     }
   })
 
@@ -42,8 +42,8 @@ metadata:
     MCP protocol 2025-06-18, stdio.
     Not legal / tax / 行政書士 advice; 一次資料を必ず確認してください.
     Operator: Bookyou株式会社 (T8010001213708, info@bookyou.net).
-  icon: "https://zeimu-kaikei.ai/assets/mark.svg"
-  homepage: "https://zeimu-kaikei.ai"
+  icon: "https://jpcite.com/assets/mark.svg"
+  homepage: "https://jpcite.com"
   # TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
   repository: "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
   license: "MIT"

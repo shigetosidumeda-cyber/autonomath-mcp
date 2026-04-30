@@ -297,7 +297,7 @@ def test_email_connect_flags_account(client, integration_key, seeded_db):
     r = client.post(
         "/v1/integrations/email/connect",
         headers={"X-API-Key": integration_key},
-        json={"reply_from": "query@parse.zeimu-kaikei.ai"},
+        json={"reply_from": "query@parse.jpcite.com"},
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -313,14 +313,14 @@ def test_email_connect_flags_account(client, integration_key, seeded_db):
     ).fetchone()
     c.close()
     assert row is not None
-    assert row["display_handle"] == "query@parse.zeimu-kaikei.ai"
+    assert row["display_handle"] == "query@parse.jpcite.com"
 
 
 def test_email_inbound_unknown_key_is_silently_ignored(client):
     """An inbound email from a key we cannot resolve must NOT 500 — Postmark
     will retry-storm a 5xx. We respond 200 with status='ignored'."""
     payload = {
-        "OriginalRecipient": "query+am_unknownkey@parse.zeimu-kaikei.ai",
+        "OriginalRecipient": "query+am_unknownkey@parse.jpcite.com",
         "FromFull": {"Email": "outsider@example.com"},
         "Subject": "DX 補助金",
         "MessageID": "msg-1",

@@ -8,6 +8,18 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+### Changed
+
+- **Brand rename — `税務会計AI` → `jpcite` (2026-04-30)** — primary
+  user-facing brand renamed to **jpcite**; `税務会計AI` is retained as
+  `alternateName` only. Apex/API domains migrated:
+  `zeimu-kaikei.ai` → `jpcite.com`, `api.zeimu-kaikei.ai` →
+  `api.jpcite.com`. The PyPI package name `autonomath-mcp` and the
+  legacy import path `jpintel_mcp` are **unchanged** to preserve
+  consumer compatibility. Historical CHANGELOG entries below intentionally
+  retain the old URL strings as a migration trail; new entries
+  going forward use the jpcite.com domains.
+
 ### Documentation
 
 - **I1 — production-state numeric drift fix (2026-04-25)** — synced

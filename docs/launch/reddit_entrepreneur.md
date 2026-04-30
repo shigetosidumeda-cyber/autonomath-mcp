@@ -6,7 +6,7 @@
 
 ## Body
 
-Today I launched 税務会計AI — a search API + MCP server over Japanese institutional data (subsidies, laws, court decisions, invoice registry, tax rulesets, enforcement records). Target users: AI/dev teams building agents that need to reason about Japanese regulation, plus accounting / consulting firms that want clean machine-readable lookups.
+Today I launched jpcite — a search API + MCP server over Japanese institutional data (subsidies, laws, court decisions, invoice registry, tax rulesets, enforcement records). Target users: AI/dev teams building agents that need to reason about Japanese regulation, plus accounting / consulting firms that want clean machine-readable lookups.
 
 I'm posting here mostly to explain why I chose **fully metered ¥3/req** instead of the usual SaaS tier playbook, since that's been the most-asked question from people who've previewed it.
 
@@ -36,13 +36,13 @@ This is information lookup, not tax / legal advice. 税理士法 §52 disclaimer
 ## Try it
 
 ```bash
-curl "https://api.zeimu-kaikei.ai/v1/programs/search?q=農業&prefecture=東京都"
+curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
 Returns programs in Tokyo with primary-source URLs.
 
-- Site: https://zeimu-kaikei.ai
-- Pricing detail: https://zeimu-kaikei.ai/docs/pricing/
+- Site: https://jpcite.com
+- Pricing detail: https://jpcite.com/docs/pricing/
 - GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
 
 No VC, no team, no plans to raise. AMA on the pricing decision, the JP regtech market, or the data plumbing.

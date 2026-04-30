@@ -7,7 +7,7 @@ Legal and data-governance documents intended for the public-facing site plus int
 | `privacy_policy.md` | Privacy policy (personal information / Act on the Protection of Personal Information). | Production `docs/compliance/privacy_policy.md` (public). |
 | `terms_of_service.md` | Terms of service covering API, pricing, and liability. | Production `docs/compliance/terms_of_service.md` (public). |
 | `landing_disclaimer.md` | Landing-page disclaimer about nature of service (not advisory). | Production `docs/compliance/landing_disclaimer.md` (public). |
-| `data_governance.md` | Internal data governance baseline. | Production `docs/compliance/data_governance.md` (public reference). |
+| `data_governance.md` | Internal data governance reference. | Production `docs/compliance/data_governance.md` (public reference). |
 | `electronic_bookkeeping.md` | Notes regarding 電子帳簿保存法 / invoice / receipt retention. | Production `docs/compliance/electronic_bookkeeping.md`. |
 | `data_subject_rights.md` | Procedures for data subject access / deletion requests. | Production `docs/compliance/data_subject_rights.md`. |
 | `tokushoho.md` | 特定商取引法に基づく表記 (canonical docs version, mirrors `site/tokushoho.html`). | Production `docs/compliance/tokushoho.md` (public). |
@@ -20,7 +20,7 @@ Legal and data-governance documents intended for the public-facing site plus int
 
 ## 税理士法 §52 / 弁護士法 §72 fence
 
-The brand sits at `zeimu-kaikei.ai` — 税務会計 territory — and the operator (Bookyou 株式会社) has no licensed 税理士 / 弁護士 staff. Every tax-related surface MUST declare the output information retrieval, NOT 税務助言:
+The brand sits at `jpcite.com` — 税務会計 territory — and the operator (Bookyou 株式会社) has no licensed 税理士 / 弁護士 staff. Every tax-related surface MUST declare the output information retrieval, NOT 税務助言:
 
 - **Site copy** — `site/tos.html`, `site/en/tos.html`, `site/audiences/tax-advisor.html`, `site/en/audiences/tax-advisor.html`, `site/index.html`, `site/pricing.html` carry the disclaimer prominently (callout box, NOT footer-only).
 - **TOS** — `tos.html` §5 covers 弁護士法 §72 / 税理士法 §52 / 公認会計士法 §47-2 / 社会保険労務士法 §27 / 行政書士法 §1-2.

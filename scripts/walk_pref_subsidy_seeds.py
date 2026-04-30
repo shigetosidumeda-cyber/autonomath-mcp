@@ -79,7 +79,7 @@ SEED_PATH = REPO_ROOT / "data" / "autonomath" / "pref_subsidy_seed_urls.json"
 FAILURES_PATH = REPO_ROOT / "data" / "autonomath" / "pref_walker_v2_failures.jsonl"
 RUNLOG_PATH = REPO_ROOT / "data" / "autonomath" / "pref_walker_v2_runlog.json"
 
-UA = "JpIntelBot/1.0 (+https://zeimu-kaikei.ai/about)"
+UA = "JpIntelBot/1.0 (+https://jpcite.com/about)"
 RATE_DELAY = 1.0  # per-host
 HTTP_TIMEOUT = 30
 LICENSE_DEFAULT = "gov_standard_v2.0"

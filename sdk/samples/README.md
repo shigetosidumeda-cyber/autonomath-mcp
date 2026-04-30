@@ -1,4 +1,8 @@
-# 税務会計AI — SDK Samples
+# jpcite (旧 税務会計AI) — SDK Samples
+
+> **Brand**: 本サービスは 2026-04-30 に `税務会計AI` から **jpcite** へ改名されました。
+> alternateName として `税務会計AI` は残しますが、URL / API base は jpcite.com 系に統一されます。
+> 環境変数名 `ZEIMU_KAIKEI_API_KEY` は後方互換のためそのまま使えます。
 
 Paste-and-run scripts in 5 languages. **Zero dependencies, no build step.**
 Each script reads `ZEIMU_KAIKEI_API_KEY` from env (or runs anonymous: 50 req/月 per IP).
@@ -22,7 +26,7 @@ Each script reads `ZEIMU_KAIKEI_API_KEY` from env (or runs anonymous: 50 req/月
 Two paths:
 
 - **Anonymous** (no key set): 50 req/月 per IP. JST 月初 00:00 リセット. Best for evaluation.
-- **Authenticated** (set `ZEIMU_KAIKEI_API_KEY=sk_xxx`): ¥3 / req metered (税込 ¥3.30). Get a key from <https://zeimu-kaikei.ai/pricing>.
+- **Authenticated** (set `ZEIMU_KAIKEI_API_KEY=sk_xxx`): ¥3 / req metered (税込 ¥3.30). Get a key from <https://jpcite.com/pricing>.
 
 ```bash
 export ZEIMU_KAIKEI_API_KEY=sk_xxx_your_key_here
@@ -31,7 +35,7 @@ node sdk/samples/javascript/quickstart.js
 
 ## Endpoint surface used in samples
 
-All samples hit the documented public REST API at `https://api.zeimu-kaikei.ai/v1`:
+All samples hit the documented public REST API at `https://api.jpcite.com/v1`:
 
 | Endpoint                              | Used by                                   |
 | ------------------------------------- | ----------------------------------------- |
@@ -40,14 +44,14 @@ All samples hit the documented public REST API at `https://api.zeimu-kaikei.ai/v
 | `GET /v1/programs/search`             | all                                       |
 | `GET /v1/tax_rulesets/search`         | js, go, ruby, php, curl                   |
 
-Full endpoint catalog: <https://api.zeimu-kaikei.ai/v1/openapi.json>.
+Full endpoint catalog: <https://api.jpcite.com/v1/openapi.json>.
 
 ## Error handling cheatsheet (all samples)
 
 | HTTP | Meaning                                | Fix                                                    |
 | ---- | -------------------------------------- | ------------------------------------------------------ |
 | 401  | Auth failed                            | Check `ZEIMU_KAIKEI_API_KEY` value                     |
-| 403  | Key revoked or quota exhausted         | Visit <https://zeimu-kaikei.ai/dashboard>             |
+| 403  | Key revoked or quota exhausted         | Visit <https://jpcite.com/dashboard>                  |
 | 404  | Path or `unified_id` not found         | Verify path against `/v1/openapi.json`                 |
 | 429  | Rate limited                           | Honor `Retry-After` header (samples retry up to 2x)    |
 | 5xx  | Server error                           | Exponential backoff (samples retry 0.5s/1s/2s)         |

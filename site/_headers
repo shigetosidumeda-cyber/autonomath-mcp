@@ -1,4 +1,4 @@
-# Cloudflare Pages _headers — zeimu-kaikei.ai
+# Cloudflare Pages _headers — jpcite.com
 # Reference: https://developers.cloudflare.com/pages/configuration/headers/
 # Generated 2026-04-25 to support /structured/*.jsonld MIME + cache headers.
 
@@ -13,7 +13,7 @@
 # surface is governed by server-side input sanitization (no user input is
 # reflected into HTML on these pages). Future hardening: extract all inline
 # blocks to self-hosted .js files and drop 'unsafe-inline'.
-# `connect-src` allows the API origin (api.zeimu-kaikei.ai) so dashboard JS
+# `connect-src` allows the API origin (api.jpcite.com) so dashboard JS
 # can fetch /v1/me/* with credentials, and pypi.org so /status/index.html can
 # poll the PyPI JSON endpoint for the latest published autonomath-mcp version
 # alongside the /v1/am/health/deep aggregate. JSON-LD
@@ -24,7 +24,7 @@
 # (Stripe checkout is a top-level redirect, not an embedded iframe). This
 # does not affect form-action which already permits checkout/billing.stripe.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.zeimu-kaikei.ai https://pypi.org; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.jpcite.com https://pypi.org; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -210,7 +210,7 @@
 # Self-hosted Noto Sans JP woff2 subsets (mkdocs theme).
 # Path-fingerprinted by sha10 of the upstream gstatic URL → safe to
 # cache 1y immutable. Access-Control-Allow-Origin enables cross-subdomain
-# use (e.g. api.zeimu-kaikei.ai docs preview).
+# use (e.g. api.jpcite.com docs preview).
 /static/fonts/*
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *

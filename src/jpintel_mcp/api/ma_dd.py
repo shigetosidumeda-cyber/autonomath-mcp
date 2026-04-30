@@ -592,7 +592,7 @@ class DdBatchRequest(BaseModel):
         "and an explicit coverage_scope excluding 役員一覧 / 株主構成 / 経歴 / "
         "反社 / 信用情報 (商業登記法 gray-zone; TDB primary). LLM agents "
         "MUST relay both verbatim.\n\n"
-        "**Operator**: Bookyou株式会社 (法人番号 T8010001213708). "
+        "**Operator**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708). "
         "Brand: 税務会計AI."
     ),
 )

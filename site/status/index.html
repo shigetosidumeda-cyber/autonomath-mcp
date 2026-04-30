@@ -7,9 +7,9 @@
 <title>ステータス / Status — 税務会計AI (AutonoMath)</title>
 <meta name="description" content="税務会計AI (AutonoMath) のリアルタイム稼働状況。API、ランディング、MCP サーバ、DB、Stripe 決済の現在の状態を表示します。">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://zeimu-kaikei.ai/status/">
-<link rel="alternate" hreflang="ja" href="https://zeimu-kaikei.ai/status/">
-<link rel="alternate" hreflang="x-default" href="https://zeimu-kaikei.ai/status/">
+<link rel="canonical" href="https://jpcite.com/status/">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -292,15 +292,15 @@
 <meta property="og:title" content="ステータス / Status — 税務会計AI (AutonoMath)">
 <meta property="og:description" content="税務会計AI (AutonoMath) のリアルタイム稼働状況。API、ランディング、MCP サーバ、DB、Stripe 決済の現在の状態。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://zeimu-kaikei.ai/status/">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
+<meta property="og:url" content="https://jpcite.com/status/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ステータス / Status — 税務会計AI (AutonoMath)">
 <meta name="twitter:description" content="税務会計AI (AutonoMath) のリアルタイム稼働状況。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 </head>
 <body>
 
@@ -308,163 +308,163 @@
 
 <main id="main" class="container">
 
-  <div class="top-bar">
-    <a class="brand" href="/" aria-label="税務会計AI ホーム">
-      <span>税務会計AI</span>
-    </a>
-    <span class="lang-switch" style="font-size:13px;color:var(--text-muted);">
-      <a href="/status/" lang="ja" hreflang="ja" aria-current="page" style="color:var(--text);font-weight:600;text-decoration:none;padding:4px 6px;">JP</a>
-    </span>
-  </div>
+ <div class="top-bar">
+ <a class="brand" href="/" aria-label="税務会計AI ホーム">
+ <span>税務会計AI</span>
+ </a>
+ <span class="lang-switch" style="font-size:13px;color:var(--text-muted);">
+ <a href="/status/" lang="ja" hreflang="ja" aria-current="page" style="color:var(--text);font-weight:600;text-decoration:none;padding:4px 6px;">JP</a>
+ </span>
+ </div>
 
-  <h1>税務会計AI ステータス / AutonoMath Status</h1>
-  <p class="lead">
-    現在の稼働状況をブラウザから直接 API ヘルスチェックを呼び出して表示しています。30 秒ごとに自動更新。<br>
-    Live status — this page calls the API health endpoint directly from your browser. Auto-refreshes every 30 seconds.
-  </p>
+ <h1>税務会計AI ステータス / AutonoMath Status</h1>
+ <p class="lead">
+ 現在の稼働状況をブラウザから直接 API ヘルスチェックを呼び出して表示しています。30 秒ごとに自動更新。<br>
+ Live status — this page calls the API health endpoint directly from your browser. Auto-refreshes every 30 seconds.
+ </p>
 
-  <section class="overall" id="overall" aria-live="polite" aria-atomic="true">
-    <span class="dot" aria-hidden="true"></span>
-    <div>
-      <p class="label" id="overall-label">確認中… / Checking…</p>
-      <p class="meta" id="overall-meta">API ヘルスチェックを実行中です。 / Probing the API health endpoint.</p>
-    </div>
-  </section>
+ <section class="overall" id="overall" aria-live="polite" aria-atomic="true">
+ <span class="dot" aria-hidden="true"></span>
+ <div>
+ <p class="label" id="overall-label">確認中… / Checking…</p>
+ <p class="meta" id="overall-meta">API ヘルスチェックを実行中です。 / Probing the API health endpoint.</p>
+ </div>
+ </section>
 
-  <h2>サービス指標 / Service indicators</h2>
-  <div class="indicators" role="list">
-    <div class="ind" id="ind-api" role="listitem">
-      <span class="dot" aria-hidden="true"></span>
-      <div>
-        <h3>REST API</h3>
-        <p class="endpoint">api.zeimu-kaikei.ai</p>
-        <p class="state-text" id="ind-api-text">未確認 / pending</p>
-      </div>
-    </div>
-    <div class="ind" id="ind-site" role="listitem">
-      <span class="dot" aria-hidden="true"></span>
-      <div>
-        <h3>ランディング / Site</h3>
-        <p class="endpoint">zeimu-kaikei.ai</p>
-        <p class="state-text" id="ind-site-text">運用中 (本ページが表示できているため) / operational (you are reading this page)</p>
-      </div>
-    </div>
-    <div class="ind" id="ind-mcp" role="listitem">
-      <span class="dot" aria-hidden="true"></span>
-      <div>
-        <h3>MCP サーバ (PyPI)</h3>
-        <p class="endpoint">pypi.org/project/autonomath-mcp/</p>
-        <p class="state-text" id="ind-mcp-text">未確認 / pending</p>
-      </div>
-    </div>
-  </div>
+ <h2>サービス指標 / Service indicators</h2>
+ <div class="indicators" role="list">
+ <div class="ind" id="ind-api" role="listitem">
+ <span class="dot" aria-hidden="true"></span>
+ <div>
+ <h3>REST API</h3>
+ <p class="endpoint">api.jpcite.com</p>
+ <p class="state-text" id="ind-api-text">未確認 / pending</p>
+ </div>
+ </div>
+ <div class="ind" id="ind-site" role="listitem">
+ <span class="dot" aria-hidden="true"></span>
+ <div>
+ <h3>ランディング / Site</h3>
+ <p class="endpoint">jpcite.com</p>
+ <p class="state-text" id="ind-site-text">運用中 (本ページが表示できているため) / operational (you are reading this page)</p>
+ </div>
+ </div>
+ <div class="ind" id="ind-mcp" role="listitem">
+ <span class="dot" aria-hidden="true"></span>
+ <div>
+ <h3>MCP サーバ (PyPI)</h3>
+ <p class="endpoint">pypi.org/project/autonomath-mcp/</p>
+ <p class="state-text" id="ind-mcp-text">未確認 / pending</p>
+ </div>
+ </div>
+ </div>
 
-  <h2>コンポーネント / Components</h2>
-  <table class="components" id="components">
-    <thead>
-      <tr>
-        <th>コンポーネント / Component</th>
-        <th>状態 / Status</th>
-        <th>詳細 / Detail</th>
-      </tr>
-    </thead>
-    <tbody id="components-body">
-      <tr id="row-rest" data-key="rest">
-        <td>REST API</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-mcp" data-key="mcp">
-        <td>MCP サーバ (PyPI 公開)</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-db-jpintel" data-key="db_jpintel_reachable">
-        <td>DB — jpintel (programs)</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-db-am" data-key="db_autonomath_reachable">
-        <td>DB — autonomath (entities)</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-freshness" data-key="am_entities_freshness">
-        <td>データ鮮度 / Data freshness</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-license" data-key="license_coverage">
-        <td>ライセンス充足 / License coverage</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-wal" data-key="wal_mode">
-        <td>SQLite 書込ログモード</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-static" data-key="static_files_present">
-        <td>静的リソース / Static files</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
-        <td class="detail">—</td>
-      </tr>
-      <tr id="row-stripe" data-key="stripe">
-        <td>Stripe 決済 / Stripe billing</td>
-        <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">外部</span></td>
-        <td class="detail">外部依存 — <a href="https://www.stripestatus.com/" rel="noopener nofollow">stripestatus.com</a></td>
-      </tr>
-    </tbody>
-  </table>
+ <h2>コンポーネント / Components</h2>
+ <table class="components" id="components">
+ <thead>
+ <tr>
+ <th>コンポーネント / Component</th>
+ <th>状態 / Status</th>
+ <th>詳細 / Detail</th>
+ </tr>
+ </thead>
+ <tbody id="components-body">
+ <tr id="row-rest" data-key="rest">
+ <td>REST API</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-mcp" data-key="mcp">
+ <td>MCP サーバ (PyPI 公開)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-db-jpintel" data-key="db_jpintel_reachable">
+ <td>DB — jpintel (programs)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-db-am" data-key="db_autonomath_reachable">
+ <td>DB — autonomath (entities)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-freshness" data-key="am_entities_freshness">
+ <td>データ鮮度 / Data freshness</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-license" data-key="license_coverage">
+ <td>ライセンス充足 / License coverage</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-wal" data-key="wal_mode">
+ <td>SQLite 書込ログモード</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-static" data-key="static_files_present">
+ <td>静的リソース / Static files</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="row-stripe" data-key="stripe">
+ <td>Stripe 決済 / Stripe billing</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">外部</span></td>
+ <td class="detail">外部依存 — <a href="https://www.stripestatus.com/" rel="noopener nofollow">stripestatus.com</a></td>
+ </tr>
+ </tbody>
+ </table>
 
-  <p class="meta-row">
-    <span>最終確認 / Last checked: <code id="last-checked">—</code></span>
-    <span>API バージョン / API version: <code id="api-version">—</code></span>
-  </p>
+ <p class="meta-row">
+ <span>最終確認 / Last checked: <code id="last-checked">—</code></span>
+ <span>API バージョン / API version: <code id="api-version">—</code></span>
+ </p>
 
-  <div class="support-note">
-    <p><strong>異常を発見した場合 / If you see degraded status:</strong></p>
-    <p>
-      お手数ですが <a href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20%E7%A8%BC%E5%83%8D%E7%95%B0%E5%B8%B8%E3%81%AE%E5%A0%B1%E5%91%8A">info@bookyou.net</a> までご連絡ください。
-      Bookyou株式会社は個人運営 (solo) のため SLA は提供していませんが、検知から平時 1 営業日以内に確認 / 復旧対応します。
-    </p>
-    <p>
-      Please email <a href="mailto:info@bookyou.net?subject=zeimu-kaikei.ai%20status%20report">info@bookyou.net</a>.
-      Bookyou Inc. is a solo operation, so we do not offer a contractual SLA — but we acknowledge and act on incident reports within one business day.
-    </p>
-  </div>
+ <div class="support-note">
+ <p><strong>異常を発見した場合 / If you see degraded status:</strong></p>
+ <p>
+ お手数ですが <a href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20%E7%A8%BC%E5%83%8D%E7%95%B0%E5%B8%B8%E3%81%AE%E5%A0%B1%E5%91%8A">info@bookyou.net</a> までご連絡ください。
+ Bookyou株式会社は個人運営 (solo) のため SLA は提供していませんが、検知から平時 1 営業日以内に確認 / 復旧対応します。
+ </p>
+ <p>
+ Please email <a href="mailto:info@bookyou.net?subject=jpcite.com%20status%20report">info@bookyou.net</a>.
+ Bookyou Inc. is a solo operation, so we do not offer a contractual SLA — but we acknowledge and act on incident reports within one business day.
+ </p>
+ </div>
 
-  <p class="honest-note">
-    本ページの稼働率は契約上の SLA ではなく <em>best-effort</em> 運用上の目安です。
-    数値はリアルタイム実測 (本ページがブラウザから API を直接叩いて表示) のみで、過去の集計値はまだ表示していません。
-    将来的にインシデント履歴 / 24 時間稼働率 / RSS フィードを追加予定です。<br>
-    Uptime numbers shown here are best-effort operational measurements, not a contractual SLA.
-    Values are live-probed (your browser calls the API directly); historical aggregates are not yet displayed.
-    Planned: incident history, 24h uptime rollup, and RSS feed.
-  </p>
+ <p class="honest-note">
+ 本ページの稼働率は契約上の SLA ではなく <em>best-effort</em> 運用上の目安です。
+ 数値はリアルタイム実測 (本ページがブラウザから API を直接叩いて表示) のみで、過去の集計値はまだ表示していません。
+ 将来的にインシデント履歴 / 24 時間稼働率 / RSS フィードを追加予定です。<br>
+ Uptime numbers shown here are best-effort operational measurements, not a contractual SLA.
+ Values are live-probed (your browser calls the API directly); historical aggregates are not yet displayed.
+ Planned: incident history, 24h uptime rollup, and RSS feed.
+ </p>
 
-  <p class="links">
-    <a href="/">← ホームへ戻る / Back to home</a>
-    <a href="/docs/sla/">SLA 方針 / SLA policy</a>
-    <a href="https://api.zeimu-kaikei.ai/v1/am/health/deep" rel="noopener">生 JSON / Raw JSON</a>
-  </p>
+ <p class="links">
+ <a href="/">← ホームへ戻る / Back to home</a>
+ <a href="/docs/sla/">SLA 方針 / SLA policy</a>
+ <a href="https://api.jpcite.com/v1/am/health/deep" rel="noopener">生 JSON で取得 (詳細ヘルスチェック)</a>
+ </p>
 
 </main>
 
 <footer class="site-footer" role="contentinfo">
-  <div class="footer-inner">
-    <p class="footer-brand">税務会計AI (AutonoMath)</p>
-    <p class="footer-tag">日本の制度 API + MCP サーバ</p>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="/tos.html">利用規約</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/tokushoho.html">特定商取引法</a>
-      <a href="/status/">ステータス</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
+ <div class="footer-inner">
+ <p class="footer-brand">税務会計AI (AutonoMath)</p>
+ <p class="footer-tag">日本の制度 API + MCP サーバ</p>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特定商取引法</a>
+ <a href="/status/">ステータス</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">(T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>
@@ -472,12 +472,12 @@
  * Status page — vanilla JS, no dependencies.
  *
  * Probes:
- *   1. https://api.zeimu-kaikei.ai/v1/am/health/deep — REST + DB + freshness.
+ *   1. https://api.jpcite.com/v1/am/health/deep — REST + DB + freshness.
  *      Endpoint is exempt from OriginEnforcementMiddleware (see
  *      src/jpintel_mcp/api/middleware/origin_enforcement.py _EXEMPT_PATHS),
  *      so the request reaches the handler. CORSMiddleware adds
  *      Access-Control-Allow-Origin for whitelisted origins (default
- *      cors_origins includes https://zeimu-kaikei.ai).
+ *      cors_origins includes https://jpcite.com).
  *   2. https://pypi.org/pypi/autonomath-mcp/json — MCP package liveness.
  *      PyPI emits Access-Control-Allow-Origin: *, so this is unconditionally
  *      callable.
@@ -500,7 +500,7 @@
 (function () {
   "use strict";
 
-  var API_HEALTH = "https://api.zeimu-kaikei.ai/v1/am/health/deep";
+  var API_HEALTH = "https://api.jpcite.com/v1/am/health/deep";
   var PYPI_PROJECT = "https://pypi.org/pypi/autonomath-mcp/json";
   var REFRESH_MS = 30 * 1000;
 

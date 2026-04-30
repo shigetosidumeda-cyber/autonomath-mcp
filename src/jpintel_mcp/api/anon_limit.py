@@ -49,8 +49,8 @@ from jpintel_mcp.config import settings
 # bounced. /go/upgrade fix landed the redirect via `site/_redirects`
 # (`/go/upgrade → /upgrade.html`); pointing the header straight at
 # `/upgrade.html` skips the redirect hop entirely.
-UPGRADE_URL_BASE = "https://zeimu-kaikei.ai/upgrade.html"
-UPGRADE_URL_FROM_429 = "https://zeimu-kaikei.ai/upgrade.html?from=429"
+UPGRADE_URL_BASE = "https://jpcite.com/upgrade.html"
+UPGRADE_URL_FROM_429 = "https://jpcite.com/upgrade.html?from=429"
 CTA_TEXT_JA = "API key を発行して制限を解除"
 CTA_TEXT_EN = "Get an API key to remove the limit"
 # Conversion-pathway audit 2026-04-29: alongside the paid upgrade path we
@@ -59,7 +59,7 @@ CTA_TEXT_EN = "Get an API key to remove the limit"
 # email so we can remarket / rescue / learn (vs the prior 100% silent bounce).
 # The homepage form is the entry point for the trial; the anchor #trial
 # scrolls them straight to it.
-TRIAL_SIGNUP_URL_FROM_429 = "https://zeimu-kaikei.ai/?from=429#trial"
+TRIAL_SIGNUP_URL_FROM_429 = "https://jpcite.com/?from=429#trial"
 TRIAL_CTA_TEXT_JA = "カードなしで試す (14 日 / 200 req)"
 TRIAL_CTA_TEXT_EN = "Try without a card (14 days / 200 requests)"
 

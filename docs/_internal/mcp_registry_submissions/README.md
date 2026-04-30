@@ -92,7 +92,7 @@ rebrand 確定後: `scripts/rebrand_mcp_entries.sh --apply --vars=scripts/rebran
 
 | 画像 | Alt | Caption (EN) | Caption (JA) |
 |------|-----|--------------|--------------|
-| mcp_preview_1.png | Terminal-style preview of jpintel-mcp: curl request to /v1/programs/search returning a Tier-S 経営開始資金 result, followed by /v1/exclusions/check detecting a keiei-kaishi-shikin × koyo-shuno-shikin conflict. | jpintel-mcp cross-authority search + exclusion-check demo | jpintel-mcp の横断検索と排他チェックのデモ |
+| mcp_preview_1.png | Terminal-style preview of jpintel-mcp: curl request to /v1/programs/search returning a Tier-S 経営開始資金 result, followed by /v1/exclusions/check detecting a UNI-71f6029070 × koyo-shuno-shikin conflict. | jpintel-mcp cross-authority search + exclusion-check demo | jpintel-mcp の横断検索と排他チェックのデモ |
 | mcp_preview_2.png | Same content at 1600×900 landscape for registry tile displays. | jpintel-mcp wide-tile preview | jpintel-mcp ワイドタイル用プレビュー |
 | demo.svg | 15-second animated terminal showing curl + JSON response for the 12 MCP tools. | AutonoMath 15s animated demo | AutonoMath 15秒アニメデモ |
 

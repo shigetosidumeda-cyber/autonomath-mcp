@@ -20,7 +20,7 @@
     返答待ちで意思決定が 1-2 週間ずれる。
   - DPC 病院維持の経営判断材料が欲しいが、自治体補助の最新情報が
     厚労省 PDF と県庁 HTML に分散して読み切れない。
-- **税務会計AI での解像**:
+- **jpcite での解像**:
   - `search_healthcare_programs(law_basis='医療法', institution_type='医療法人')`
     で県別の最新加算 / 補助を 1 call 取得。
   - `dd_medical_institution_am(canonical_id)` で自院の
@@ -38,7 +38,7 @@
     施設長が把握しきれず、加算取り逃しが年間数百万円単位で発生。
   - 自治体の開設費補助 / 設備整備補助は県市町村ごとに条件が違い、
     複数施設展開時の比較ができない。
-- **税務会計AI での解像**:
+- **jpcite での解像**:
   - `search_care_subsidies(prefecture='大阪府', institution_type_target='介護施設')`
     で県内の現行助成・加算を一覧。
   - `search_healthcare_compliance(institution_type='介護施設')` で同業の
@@ -58,7 +58,7 @@
     通知の見落としで監査指摘になる。
   - 認定薬局 申請要件が県庁ごとに微妙に違い、複数県展開時に
     再確認コストが嵩む。
-- **税務会計AI での解像**:
+- **jpcite での解像**:
   - `check_drug_approval(generic_name=...)` で PMDA 承認状況を
     1 call で取得 (添付文書 url 含む)。
   - `search_care_subsidies(law_basis='薬機法')` で薬局向け補助を一覧。
@@ -77,13 +77,13 @@
     青天井。商用 license 付きの構造化 API がなかった。
   - LLM agent から「介護報酬加算の根拠条文を引用」させたいが、
     集約サイトの URL を渡すと 誤情報リスクで顧客クレーム化する。
-- **税務会計AI での解像**:
+- **jpcite での解像**:
   - REST API `/v1/healthcare/programs` (W4 で公開) を SaaS バックエンドに
     プロキシ。出典 URL は一次情報のみ保証。
   - MCP 経由で Claude Sub-agent に `search_healthcare_programs` を
     与え、自社 UI から自然言語クエリ。
 - **流入想定**: blog 「医療 SaaS に 1 日で制度情報を組み込む
-  (税務会計AI REST + MCP)」。
+  (jpcite REST + MCP)」。
 - **解像度確認**: ¥3/req × エンドユーザ 1,000 call/日 = ¥3,000/日 = ¥90k/月。
   自前構築 6 人月 ¥6M+ 比較で初年度即回収。
 
@@ -96,13 +96,13 @@
   - 介護報酬は 3 年改定で加算条件が頻繁に書き換わる。改定対応の
     リリースが追いつかず、解約理由の上位に。
   - 自治体補助は県・市・町村レベルで分散し、自社で fetch 維持できない。
-- **税務会計AI での解像**:
+- **jpcite での解像**:
   - `search_care_subsidies(authority_level='prefecture')` で 47 都道府県の
     補助を network 化。
   - `get_medical_institution(canonical_id)` で施設マスタの
     cert + 加算届出履歴を都度参照、SaaS 側のマスタ管理を縮小。
 - **流入想定**: blog 「介護 SaaS の改定対応コストを 1/10 にする
-  税務会計AI 連携」。
+  jpcite 連携」。
 - **解像度確認**: ¥3/req × エンドユーザ 500 call/日 = ¥1,500/日 = ¥45k/月。
   改定対応 1 サイクル ¥3M 比較で 5+ 年分の budget。
 

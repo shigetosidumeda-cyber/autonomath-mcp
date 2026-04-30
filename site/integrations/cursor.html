@@ -4,48 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Cursor で 税務会計AI を使う — 5 分で動く統合ガイド</title>
-<meta name="description" content="Cursor IDE に 税務会計AI MCP サーバを追加する手順。Settings → MCP → JSON 1 行 + autonomath-mcp PyPI または .mcpb URL。89 ツール (補助金検索 / 法令 / 適格事業者 / prescreen 他) が Cursor チャットから呼べる。登録不要 / 50 req/月 無料。">
+<title>Cursor と連携する — jpcite</title>
+<meta name="description" content="Cursor IDE の MCP 設定に 1 行追記すれば、jpcite のツールが利用できます。">
 
-<meta property="og:title" content="Cursor で 税務会計AI を使う — 5 分統合ガイド">
-<meta property="og:description" content="Cursor の MCP 設定に JSON 1 行で 89 MCP ツールが Cursor から動く。50 req/月 無料、認証不要。">
+<meta property="og:title" content="Cursor と連携する — jpcite">
+<meta property="og:description" content="Cursor IDE の MCP 設定に 1 行追記すれば、jpcite のツールが利用できます。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://zeimu-kaikei.ai/integrations/cursor.html">
-<meta property="og:image" content="https://zeimu-kaikei.ai/assets/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://jpcite.com/integrations/cursor.html">
 <meta property="og:locale" content="ja_JP">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Cursor で 税務会計AI を使う">
-<meta name="twitter:description" content="Cursor IDE に 5 分で 89 MCP ツール統合。">
-<meta name="twitter:image" content="https://zeimu-kaikei.ai/assets/og-twitter.png">
-
-<link rel="canonical" href="https://zeimu-kaikei.ai/integrations/cursor.html">
+<link rel="canonical" href="https://jpcite.com/integrations/cursor.html">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/styles.css?v=20260429a">
 
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://zeimu-kaikei.ai/#publisher across all pages). All other
-  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
-  the Organization inline. sameAs URLs marked TODO(user-action) are
-  placeholders until the user creates them per
-  docs/runbook/social_profile_setup.md.
--->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "@id": "https://zeimu-kaikei.ai/#publisher",
+  "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
   "legalName": "Bookyou株式会社",
-  "alternateName": "税務会計AI",
-  "url": "https://zeimu-kaikei.ai/",
-  "logo": "https://zeimu-kaikei.ai/assets/logo.svg",
+  "alternateName": ["税務会計AI", "jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo.svg",
   "email": "info@bookyou.net",
   "identifier": "T8010001213708",
   "taxID": "T8010001213708",
@@ -57,20 +42,14 @@
     "addressLocality": "文京区",
     "streetAddress": "小日向 2-22-1"
   },
-  "founder": {
-    "@type": "Person",
-    "name": "梅田茂利"
-  },
+  "founder": {"@type": "Person", "name": "梅田茂利"},
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "info@bookyou.net",
     "contactType": "customer support",
     "availableLanguage": ["ja", "en"]
   },
-  "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber"
-  ]
+  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber/jpintel-mcp"]
 }
 </script>
 
@@ -80,13 +59,11 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "Cursor で 税務会計AI を使う",
-  "description": "Cursor IDE に AutonoMath MCP サーバを追加して 89 ツールを呼び出す手順 (5 分)。",
-  "url": "https://zeimu-kaikei.ai/integrations/cursor.html",
+  "headline": "Cursor と連携する",
+  "url": "https://jpcite.com/integrations/cursor.html",
   "inLanguage": "ja",
-  "author": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "publisher": {"@id": "https://zeimu-kaikei.ai/#publisher"},
-  "proficiencyLevel": "Beginner"
+  "author": {"@id": "https://jpcite.com/#publisher"},
+  "publisher": {"@id": "https://jpcite.com/#publisher"}
 }
 </script>
 </head>
@@ -95,233 +72,110 @@
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
 <header class="site-header" role="banner">
-  <div class="wrap">
-    <a href="/" class="logo">税務会計AI</a>
-    <nav aria-label="主要ナビゲーション">
-      <a href="/products.html">Products</a>
-      <a href="/pricing.html">Pricing</a>
-      <a href="/docs/">Docs</a>
-      <a href="/integrations/" aria-current="page">Integrations</a>
-      <a href="/dashboard.html">Dashboard</a>
+ <div class="wrap">
+ <a href="/" class="logo">jpcite</a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="../about.html">運営について</a>
+      <a href="../products.html">プロダクト</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="../pricing.html">料金</a>
+      <a href="../audiences/">利用者層</a>
+      <details class="nav-trust">
+        <summary>信頼</summary>
+        <ul>
+          <li><a href="../status.html">稼働状況</a></li>
+          <li><a href="../data-freshness.html">データ鮮度</a></li>
+          <li><a href="../transparency.html">透明性</a></li>
+          <li><a href="../sources.html">出典</a></li>
+          <li><a href="../changelog.html">変更履歴</a></li>
+        </ul>
+      </details>
+      <span class="lang-switch" role="group" aria-label="Language / 言語">
+        <a href="/integrations/cursor.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="/en/integrations/cursor.html" lang="en" hreflang="en">EN</a>
+      </span>
     </nav>
-  </div>
+ </div>
 </header>
 
 <main id="main" class="wrap" style="max-width:920px;margin:40px auto;padding:0 20px;line-height:1.7;">
 
-<p style="font-size:0.9em;color:#666;margin-bottom:6px;"><a href="/integrations/">Integrations</a> / Cursor</p>
-<h1 style="margin-bottom:0.2em;">Cursor で 税務会計AI を使う</h1>
-<p style="color:#444;font-size:1.05em;margin-top:0;">5 分で動く統合ガイド (登録不要 / Free 50 リクエスト/月)</p>
+<nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+<a href="/">ホーム</a> <span aria-hidden="true">›</span>
+<a href="/integrations/">連携</a> <span aria-hidden="true">›</span>
+<span aria-current="page">Cursor</span>
+</nav>
+<h1 style="margin-bottom:0.2em;">Cursor と連携する</h1>
 
-<aside style="border:1px solid #c8e0c8;background:#f3faf3;padding:14px 18px;border-radius:8px;margin:20px 0;font-size:0.95em;">
-<strong>所要時間:</strong> 4 分以内。<strong>必要なもの:</strong> Cursor 0.45 以降 (MCP 対応版) + Python 3.10 以降 (<code>pip</code> または <code>uvx</code>)。<strong>API キー不要</strong> — 50 リクエスト/月 per IP は匿名で動きます。
-</aside>
-
-<h2 id="step1">Step 1 — autonomath-mcp をインストール</h2>
-<p>ターミナルで:</p>
-
-<div class="code-block" data-code="pip install autonomath-mcp">
-<pre><code>pip install autonomath-mcp</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p>あるいは <code>uvx</code> で ephemeral 実行 (PATH 汚染なし、自動アップデート):</p>
-
+<h2 id="install">インストール</h2>
 <div class="code-block" data-code="uvx autonomath-mcp">
 <pre><code>uvx autonomath-mcp</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
-<h2 id="step2">Step 2 — Cursor の MCP 設定を開く</h2>
-<p>Cursor を起動し、以下の手順で MCP 設定画面を開きます:</p>
-<ol>
-<li><strong>Cursor Settings</strong> を開く (<kbd>Cmd+,</kbd> / Windows: <kbd>Ctrl+,</kbd>)</li>
-<li>左サイドバーから <strong>Features</strong> → <strong>MCP Servers</strong> を選択</li>
-<li><strong>+ Add new MCP サーバ</strong> をクリック</li>
-</ol>
+<h2 id="config">設定ファイル</h2>
+<p>Cursor Settings → Features → MCP Servers から、または <code>~/.cursor/mcp.json</code> に直接以下を追記します。</p>
+
+<div class="code-block" data-code='{
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"]
+ }
+ }
+}'>
+<pre><code>{
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"]
+ }
+ }
+}</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<p style="font-size:0.92em;color:#555;">本番運用は <code>"env": {"AUTONOMATH_API_KEY": "sk_..."}</code> を追加します。</p>
+
+<h2 id="verify">動作確認</h2>
+<p>MCP Servers 画面の Refresh アイコンをクリック。緑のドットが付けば接続完了です。</p>
 
 <figure style="margin:16px 0;border:1px solid #ddd;border-radius:8px;padding:12px;background:#fafafa;text-align:center;">
-<img src="/integrations/screenshots/cursor-mcp-settings.png" alt="Cursor Settings の MCP Servers 画面" width="1200" height="750" style="max-width:100%;height:auto;border-radius:4px;aspect-ratio:1200/750;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder: Cursor Settings → Features → MCP Servers]</div>
-<figcaption style="font-size:0.85em;color:#666;margin-top:6px;">Cursor Settings → Features → MCP Servers</figcaption>
+<img src="/integrations/screenshots/cursor-mcp-settings.png" alt="Cursor MCP Servers 画面" width="1200" height="750" style="max-width:100%;height:auto;border-radius:4px;aspect-ratio:1200/750;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder]</div>
 </figure>
 
-<h2 id="step3">Step 3 — JSON 設定を貼り付け</h2>
-
-<p>Cursor は <code>~/.cursor/mcp.json</code> (User-level) または <code>.cursor/mcp.json</code> (Project-level) に MCP 設定を保存します。Settings UI からの追加はこのファイルに書き込まれます。</p>
-
-<p><strong>Option A — pip で入れたパッケージを使う (最速)</strong></p>
-
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp"
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp"
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p><strong>Option B — <code>uvx</code> で毎回最新を取る (PATH 解決が確実)</strong></p>
-
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"]
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "uvx",
-      "args": ["autonomath-mcp"]
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p><strong>Option C — <code>.mcpb</code> バンドル URL (DXT-style 1-click インストール、Cursor 0.50+ 対応版)</strong></p>
-
-<div class="code-block" data-code="https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb">
-<pre><code>https://zeimu-kaikei.ai/downloads/autonomath-mcp.mcpb</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p style="font-size:0.92em;color:#555;">Cursor の "Install from MCPB" メニューにこの URL を貼り付け。Python ランタイムを Cursor が自動で解決します。</p>
-
-<details style="margin:14px 0;">
-<summary style="cursor:pointer;color:#0066cc;font-weight:600;">API キー入りバージョン (50 リクエスト/月 を超える運用)</summary>
-<div class="code-block" data-code='{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "env": {
-        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
-      }
-    }
-  }
-}'>
-<pre><code>{
-  "mcpServers": {
-    "zeimu-kaikei": {
-      "command": "autonomath-mcp",
-      "env": {
-        "ZEIMU_KAIKEI_API_KEY": "sk_xxxxxxxxxxxx"
-      }
-    }
-  }
-}</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-<p style="font-size:0.9em;color:#555;margin-top:8px;">API キーは <a href="/dashboard.html">Dashboard</a> で発行 (¥3/リクエスト 完全従量, 税込 ¥3.30, no minimum)。</p>
-</details>
-
-<h2 id="step4">Step 4 — 設定を反映</h2>
-<p>JSON 保存後、MCP Servers 画面で <code>zeimu-kaikei</code> 行の <strong>Refresh</strong> アイコン (円形矢印) をクリック。緑のドットが付いて <code>89 tools</code> と表示されれば接続完了。</p>
-<p>反映されない場合は Cursor を完全終了 (<kbd>Cmd+Q</kbd>) して再起動。</p>
-
-<h2 id="step5">Step 5 — Cursor チャットで試す</h2>
-<p>Cursor のチャット (<kbd>Cmd+L</kbd> / <kbd>Ctrl+L</kbd>) を開き、以下を貼り付け:</p>
-
-<div class="code-block" data-code="@zeimu-kaikei 中小企業向けの省エネ補助金を3件探して。primary source URL もつけて。">
-<pre><code>@zeimu-kaikei 中小企業向けの省エネ補助金を3件探して。primary source URL もつけて。</code></pre>
-<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
-</div>
-
-<p>Cursor が <code>search_programs</code> ツールを呼び、JSON レスポンスを整形して返します。<code>@zeimu-kaikei</code> プレフィックスは省略可ですが、付けるとツールの選択範囲が明確になります。</p>
-
-<h3 style="margin-top:18px;">出力サンプル</h3>
-<pre style="background:#f6f6f6;padding:14px;border-radius:6px;font-size:0.88em;overflow-x:auto;line-height:1.5;">中小企業向け省エネ補助金 3 件:
-
-1. <strong>省エネルギー投資促進支援事業費補助金</strong> (経産省)
-   - 補助率: 1/3 〜 1/2 / 上限 15 億円
-   - 対象: 中小企業 + 省エネ設備更新
-   - 出典: https://www.enecho.meti.go.jp/category/saving_and_new/.../...
-   - 出典取得: 2026-04-22
-
-2. <strong>SHIFT 事業 (脱炭素取り組み支援)</strong> (環境省)
-   - 補助率: 1/3 / 上限 5,000 万円
-   - 出典: https://shift.env.go.jp/.../...
-   - 出典取得: 2026-04-22
-
-3. <strong>省エネルギー設備等導入支援事業 (東京都)</strong>
-   - 補助率: 1/2 / 上限 1,500 万円
-   - 出典: https://www.kankyo.metro.tokyo.lg.jp/.../...
-   - 出典取得: 2026-04-22
-
-※ 上記は情報検索結果です。個別の助成判断は税理士法 §52 により税理士・行政書士へ。</pre>
-
-<h3 id="more-prompts" style="margin-top:24px;">Cursor で活きるプロンプト</h3>
+<h2 id="next">次のステップ</h2>
 <ul>
-<li><code>@zeimu-kaikei 開いている README の事業内容に合う補助金を prescreen_programs で評価して</code> — Cursor が現在ファイルの context を込めて呼ぶ</li>
-<li><code>@zeimu-kaikei 法人番号 T8010001213708 の DD profile (採択履歴 + 適格請求書 + 行政処分)</code> → <code>dd_profile_am</code></li>
-<li><code>@zeimu-kaikei 製造業×埼玉県 SMB スターターパック (補助金 + 融資 + 採択事例 + 締切)</code> → <code>smb_starter_pack</code></li>
-<li><code>@zeimu-kaikei インボイス制度 + 電子帳簿保存法のルールセット詳細</code> → <code>search_tax_rules</code></li>
+<li><a href="/pricing.html">料金</a></li>
+<li><a href="/docs/">ドキュメント</a></li>
+<li><a href="/integrations/">他の連携ガイド</a></li>
 </ul>
-
-<h2 id="troubleshooting">Troubleshooting</h2>
-
-<h3 style="margin-top:14px;">1. MCP Servers 画面に追加しても緑のドットが付かない</h3>
-<ul>
-<li><code>autonomath-mcp</code> が PATH に通っているか確認: <code>which autonomath-mcp</code></li>
-<li>絶対パスで指定: <code>"command": "/usr/local/bin/autonomath-mcp"</code> (or <code>which</code> の出力)</li>
-<li>あるいは <code>"command": "uvx", "args": ["autonomath-mcp"]</code> に切り替え</li>
-</ul>
-
-<h3 style="margin-top:14px;">2. ツールが <code>0 tools</code> と表示される</h3>
-<ul>
-<li>Cursor を完全再起動 (<kbd>Cmd+Q</kbd> / Windows 通知領域から終了)</li>
-<li>Cursor の <strong>Output → MCP</strong> パネルでサーバ起動ログを確認 (Python トレースバックが出ていれば pip 再インストール)</li>
-</ul>
-
-<h3 style="margin-top:14px;">3. <code>autonomath-mcp: command not found</code></h3>
-<ul>
-<li>pip がユーザー領域にインストール: <code>~/.local/bin/autonomath-mcp</code> (Linux/macOS) や <code>%APPDATA%\Python\Scripts\autonomath-mcp.exe</code> (Windows) を <code>command</code> に直接指定</li>
-<li><code>python -m jpintel_mcp.mcp.server</code> でも起動可: <code>"command": "python", "args": ["-m", "jpintel_mcp.mcp.server"]</code></li>
-</ul>
-
-<h3 style="margin-top:14px;">4. Cursor チャットがツールを呼んでくれない</h3>
-<ul>
-<li>プロンプトに <code>@zeimu-kaikei</code> を付けて指名</li>
-<li>"using zeimu-kaikei tools, ..." のように 英語で命令しても効く</li>
-<li>Auto モードよりも Agent モードのほうがツール使用に積極的</li>
-</ul>
-
-<h3 style="margin-top:14px;">5. 50 リクエスト/月 の残量を確認</h3>
-<ul>
-<li><code>@zeimu-kaikei get_usage_status を呼んで残クォータを教えて</code> — このツール呼び出し自体はクォータを消費しません (probe-only)</li>
-<li>JST 月初 00:00 に自動リセット</li>
-</ul>
-
-<h2 id="next-steps">次のステップ</h2>
-<ul>
-<li><strong><a href="/pricing.html">Pricing</a></strong> — 50 リクエスト/月 を超える本番運用は ¥3/リクエスト 完全従量 (税込 ¥3.30)。tier・最低料金・年契約なし</li>
-<li><strong><a href="/docs/api-reference/">API Reference</a></strong> — 89 ツール完全仕様 + パラメータ + レスポンスシェイプ</li>
-<li><strong><a href="/docs/mcp-tools/">MCP ツール一覧</a></strong> — どのツールがどのデータセットを叩くか早見表</li>
-<li><strong><a href="/integrations/claude-desktop.html">Claude Desktop で使う</a></strong> / <strong><a href="/integrations/cline.html">Cline (VS Code) で使う</a></strong> / <strong><a href="/integrations/openai-custom-gpt.html">OpenAI Custom GPT で使う</a></strong></li>
-</ul>
-
-<p style="margin-top:40px;font-size:0.85em;color:#666;border-top:1px solid #eee;padding-top:14px;">
-免責: 本 API は情報検索のみを提供します。税理士法 §52 により個別の税務助言は<a href="/advisors.html">税理士</a>にご相談ください。<br>
-発行: <a href="/about.html">Bookyou株式会社</a> (法人番号 T8010001213708)
-</p>
 
 </main>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <p>© Bookyou株式会社 — <a href="/tos.html">利用規約</a> · <a href="/privacy.html">プライバシー</a> · <a href="/tokushoho.html">特商法</a></p>
-  </div>
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a>
+ <a href="../changelog.html">変更履歴</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <style>
@@ -331,29 +185,28 @@
   .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #999;border-radius:4px;padding:8px 12px;font-size:0.95em;cursor:pointer;color:#0a0a0a;font-family:inherit;min-height:32px;}
   .code-block .copy-btn:hover {background:#f0f0f0;}
   .code-block .copy-btn.copied {background:#d4f4d4;border-color:#7bc77b;color:#226622;}
-  kbd {background:#eee;border:1px solid #bbb;border-radius:3px;padding:1px 5px;font-size:0.88em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
 </style>
 <script>
   document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', function{
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
-      var done = function(){
+      var done = function{
         btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        setTimeout(function{ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function(){
+        navigator.clipboard.writeText(text).then(done, function{
           var ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta); ta.select();
-          try { document.execCommand('copy'); done(); } catch(e) {}
+          ta.value = text; document.body.appendChild(ta); ta.select;
+          try { document.execCommand('copy'); done; } catch(e) {}
           document.body.removeChild(ta);
         });
       } else {
         var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); done(); } catch(e) {}
+        ta.value = text; document.body.appendChild(ta); ta.select;
+        try { document.execCommand('copy'); done; } catch(e) {}
         document.body.removeChild(ta);
       }
     });

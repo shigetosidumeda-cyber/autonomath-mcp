@@ -374,15 +374,15 @@ def _detail_url(table: str, unified_id: str) -> str:
     or back to the homepage so the link is never a 404.
     """
     if table == "programs":
-        return f"https://zeimu-kaikei.ai/programs/{unified_id}"
+        return f"https://jpcite.com/programs/{unified_id}"
     if table == "laws":
-        return f"https://zeimu-kaikei.ai/docs/laws/{unified_id}"
+        return f"https://jpcite.com/docs/laws/{unified_id}"
     if table == "court_decisions":
-        return f"https://zeimu-kaikei.ai/docs/court_decisions/{unified_id}"
+        return f"https://jpcite.com/docs/court_decisions/{unified_id}"
     if table == "tax_rulesets":
-        return f"https://zeimu-kaikei.ai/docs/tax_rulesets/{unified_id}"
+        return f"https://jpcite.com/docs/tax_rulesets/{unified_id}"
     if table == "enforcement_cases":
-        return f"https://zeimu-kaikei.ai/docs/enforcement/{unified_id}"
+        return f"https://jpcite.com/docs/enforcement/{unified_id}"
     return ""
 
 

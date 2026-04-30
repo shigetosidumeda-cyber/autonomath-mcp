@@ -46,8 +46,8 @@ I'd like to submit AutonoMath for inclusion in your directory.
 
 Name:               AutonoMath
 GitHub:             https://github.com/shigetosidumeda-cyber/jpintel-mcp
-Homepage:           https://zeimu-kaikei.ai
-Docs:               https://zeimu-kaikei.ai/docs/
+Homepage:           https://jpcite.com
+Docs:               https://jpcite.com/docs/
 PyPI package:       autonomath-mcp (v0.3.1)
 License:            MIT
 Language:           Python (>= 3.11)
@@ -106,8 +106,8 @@ Search results are snapshots at fetch time; rates / sunset dates / authorities a
 ----- Logo / images -----
 
 I can supply a 512×512 PNG icon and a 1200×630 OG image on request — please reply and I'll attach them. Alternatively, both are available at:
-- https://zeimu-kaikei.ai/static/icons/autonomath-icon-512.png
-- https://zeimu-kaikei.ai/static/og/autonomath-og-1200x630.png
+- https://jpcite.com/static/icons/autonomath-icon-512.png
+- https://jpcite.com/static/og/autonomath-og-1200x630.png
 
 ----- Anything else -----
 
@@ -122,7 +122,7 @@ Thanks,
 代表 / Founder
 Bookyou株式会社 (T8010001213708)
 info@bookyou.net
-https://zeimu-kaikei.ai
+https://jpcite.com
 ```
 
 ---

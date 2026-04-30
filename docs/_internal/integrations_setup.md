@@ -37,10 +37,10 @@ Customer side only:
 3. Configure OAuth consent screen:
    - User type: **External**
    - Scopes: `auth/spreadsheets`, `auth/userinfo.email`
-   - Authorized domains: `zeimu-kaikei.ai`
+   - Authorized domains: `jpcite.com`
 4. Create OAuth 2.0 Client ID (type: **Web application**):
    - Authorized redirect URI:
-     `https://api.zeimu-kaikei.ai/v1/integrations/google/callback`
+     `https://api.jpcite.com/v1/integrations/google/callback`
 5. Copy Client ID + Client Secret into Fly secrets above.
 
 Customer-side flow:
@@ -58,14 +58,14 @@ Customer-side flow:
 `manual_setup_required: true`
 
 1. In Postmark dashboard, create an inbound stream.
-2. Bind it to the parse address `parse.zeimu-kaikei.ai` (or whatever
+2. Bind it to the parse address `parse.jpcite.com` (or whatever
    subdomain is configured).
 3. Set the webhook URL to:
-   `https://api.zeimu-kaikei.ai/v1/integrations/email/inbound`
+   `https://api.jpcite.com/v1/integrations/email/inbound`
 4. (Optional) Set inbound spam filter to **strict**.
 
 Customer-side flow:
-1. Customer emails `query+am_xxx@parse.zeimu-kaikei.ai` with subject
+1. Customer emails `query+am_xxx@parse.jpcite.com` with subject
    `find DX 補助金` (subject = query string).
 2. Postmark parses → POSTs JSON to our webhook.
 3. Server decodes plus-addressing → resolves api_key_hash → runs search →

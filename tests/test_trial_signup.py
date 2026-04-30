@@ -211,7 +211,7 @@ def test_verify_issues_trial_key_and_redirects_to_landing(
     )
     assert r.status_code == 302, r.text
     location = r.headers["location"]
-    assert location.startswith("https://zeimu-kaikei.ai/trial.html?status=ok")
+    assert location.startswith("https://jpcite.com/trial.html?status=ok")
     assert "#api_key=am_" in location
     assert "expires_at=" in location
     assert "request_cap=200" in location
@@ -559,7 +559,7 @@ def test_trial_request_cap_fires_at_200th(
     assert detail.get("trial_requests_used") == 200
     assert "upgrade_url" in detail
     assert detail["upgrade_url"] == (
-        "https://zeimu-kaikei.ai/pricing.html?from=trial#api-paid"
+        "https://jpcite.com/pricing.html?from=trial#api-paid"
     )
     assert "trial_terms" in detail
     assert "cta_text_ja" in detail
@@ -622,7 +622,7 @@ def test_trial_revoked_key_returns_recovery_envelope(
     assert isinstance(detail, dict)
     assert detail.get("trial_expired") is True
     assert detail.get("upgrade_url") == (
-        "https://zeimu-kaikei.ai/pricing.html?from=trial#api-paid"
+        "https://jpcite.com/pricing.html?from=trial#api-paid"
     )
     assert "cta_text_ja" in detail
 
@@ -660,7 +660,7 @@ def test_trial_expired_email_handler_dispatches(seeded_db, monkeypatch):
         "key_last4": "abcd",
         "cause": "expired",
         "checkout_url": (
-            "https://zeimu-kaikei.ai/pricing.html?from=trial#api-paid"
+            "https://jpcite.com/pricing.html?from=trial#api-paid"
         ),
     })
 
@@ -730,5 +730,5 @@ def test_expire_trials_cron_uses_from_trial_url(
     assert payload["cause"] == "cap"
     # The single fix that unblocks the trial-attribution banner.
     assert payload["checkout_url"] == (
-        "https://zeimu-kaikei.ai/pricing.html?from=trial#api-paid"
+        "https://jpcite.com/pricing.html?from=trial#api-paid"
     )
