@@ -1252,7 +1252,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               }
               TBODY.innerHTML = rows.map(function (w) {
                 var statusBadge = w.status === 'active'
-                  ? '<span style="color:#0a0;">稼働中</span>'
+                  ? '<span class="status-active">稼働中</span>'
                   : '<span style="color:var(--danger);">停止中</span>';
                 var failuresColor = (w.failure_count || 0) >= 3 ? 'var(--danger)' : 'var(--text-muted)';
                 return (
