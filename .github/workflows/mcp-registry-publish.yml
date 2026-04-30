@@ -1,0 +1,53 @@
+name: MCP Registry publish
+
+# Publish server.json to https://registry.modelcontextprotocol.io
+# via GitHub Actions OIDC. Triggered on workflow_dispatch — no
+# interactive OAuth click needed because OIDC verifies that the workflow
+# is running inside the same GitHub repo whose namespace
+# (io.github.shigetosidumeda-cyber/autonomath-mcp) we are claiming.
+#
+# The Registry verifies the OIDC token's `repository` claim matches the
+# `name` field's namespace prefix. No PAT, no secrets needed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      validate_only:
+        description: "Validate server.json only, do not publish"
+        required: false
+        default: "false"
+
+permissions:
+  id-token: write   # required for OIDC token
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install mcp-publisher
+        run: |
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m).tar.gz" -o /tmp/mcp-publisher.tar.gz
+          tar -xzf /tmp/mcp-publisher.tar.gz -C /usr/local/bin
+          chmod +x /usr/local/bin/mcp-publisher
+          /usr/local/bin/mcp-publisher --help | head -5
+
+      - name: Validate server.json
+        run: /usr/local/bin/mcp-publisher validate server.json
+
+      - name: Login via GitHub Actions OIDC
+        if: ${{ inputs.validate_only != 'true' }}
+        run: /usr/local/bin/mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        if: ${{ inputs.validate_only != 'true' }}
+        run: /usr/local/bin/mcp-publisher publish
+
+      - name: Confirm published
+        if: ${{ inputs.validate_only != 'true' }}
+        run: |
+          sleep 5
+          curl -sf "https://registry.modelcontextprotocol.io/v0/servers?search=autonomath-mcp" | head -c 500
