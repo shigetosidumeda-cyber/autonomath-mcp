@@ -30,9 +30,14 @@ jobs:
 
       - name: Install mcp-publisher
         run: |
-          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m).tar.gz" -o /tmp/mcp-publisher.tar.gz
-          tar -xzf /tmp/mcp-publisher.tar.gz -C /usr/local/bin
-          chmod +x /usr/local/bin/mcp-publisher
+          # Asset names use linux_amd64 / linux_arm64 (Go conventions),
+          # not the uname-derived linux_x86_64. Hard-code the runner arch.
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" -o /tmp/mcp-publisher.tar.gz
+          file /tmp/mcp-publisher.tar.gz
+          tar -xzf /tmp/mcp-publisher.tar.gz -C /tmp/
+          ls /tmp/
+          sudo mv /tmp/mcp-publisher /usr/local/bin/
+          sudo chmod +x /usr/local/bin/mcp-publisher
           /usr/local/bin/mcp-publisher --help | head -5
 
       - name: Validate server.json
