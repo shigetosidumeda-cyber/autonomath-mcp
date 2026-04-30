@@ -59,6 +59,8 @@ theme:
     - content.tabs.link
   icon:
     repo: fontawesome/brands/github
+  logo: assets/images/logo.svg
+  favicon: assets/images/favicon.svg
   # Material's default "Made with Material" footer is replaced by
   # overrides/partials/footer.html (single-line legal + source links).
 
