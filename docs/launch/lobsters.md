@@ -8,7 +8,7 @@
 
 ## Body
 
-Just shipped jpcite — a REST + MCP search API over Japanese institutional public data (10,790 subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 35 tax rulesets, 2,286 adoption cases). Posting here for the architecture-curious; the technical choices are unusual enough that I think they're worth a discussion.
+Just shipped jpcite — a REST + MCP search API over Japanese institutional public data (11,684 subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, 2,286 adoption cases). Posting here for the architecture-curious; the technical choices are unusual enough that I think they're worth a discussion.
 
 ## Architecture
 
@@ -31,7 +31,7 @@ Three reasons:
 
 ## MCP server
 
-89 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. Drop into Claude Desktop config:
+93 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. Drop into Claude Desktop config:
 
 ```json
 {
@@ -44,7 +44,7 @@ Three reasons:
 }
 ```
 
-The PyPI wheel doesn't ship the 8.29 GB DB — it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. First 50 req/month per IP are free, no signup. After that, ¥3/req metered.
+The PyPI wheel doesn't ship the 8.29 GB DB — it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. First 3 req/day per IP are free, no signup. After that, ¥3/req metered.
 
 ## Honest framing
 
@@ -56,7 +56,7 @@ Not tax advice (税理士法 §52). Information lookup with primary-source URLs 
 curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
-- GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
+- GitHub: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 - Site: https://jpcite.com
 - OpenAPI: https://api.jpcite.com/openapi.json

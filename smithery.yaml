@@ -10,12 +10,12 @@ configSchema:
     autonomathApiKey:
       type: string
       description: >-
-        Optional API key from https://jpcite.com/pricing. Anonymous tier is 50 req/month
-        per IP (JST first-of-month reset) and works without a key; metered paid tier
+        Optional API key from https://jpcite.com/pricing. Anonymous tier is 3 req/day
+        per IP (JST next-day reset) and works without a key; metered paid tier
         (¥3/req tax-exclusive, ¥3.30 tax-inclusive) requires one.
     autonomathApiBase:
       type: string
-      default: "https://jpcite.com"
+      default: "https://api.jpcite.com"
       description: >-
         Override the API base URL. Only set this for self-hosted or staging deployments.
 
@@ -24,20 +24,20 @@ commandFunction: |-
     command: 'python',
     args: ['-m', 'jpintel_mcp.mcp.server'],
     env: {
-      JPINTEL_API_KEY: config.autonomathApiKey || '',
-      JPINTEL_API_BASE: config.autonomathApiBase || 'https://jpcite.com'
+      AUTONOMATH_API_KEY: config.autonomathApiKey || '',
+      AUTONOMATH_API_BASE: config.autonomathApiBase || 'https://api.jpcite.com'
     }
   })
 
 metadata:
-  version: "0.3.1"
-  displayName: "AutonoMath — 日本の制度 MCP (89 tools)"
+  version: "0.3.2"
+  displayName: "AutonoMath — 日本の制度 MCP (93 tools)"
   description: >-
     日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 /
     適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185 / 入札 362 / 融資 108) を
-    REST + MCP API (89 tools) で横断検索。一次資料 URL + fetched_at 99%+、
-    ¥3/req metered (税込 ¥3.30) 完全従量、anon 50/月 per IP free (JST 月初リセット)。
-    89 MCP tools at default gates (39 core + 50 autonomath, including industry packs
+    REST + MCP API (93 tools) で横断検索。一次資料 URL + fetched_at 99%+、
+    ¥3/req metered (税込 ¥3.30) 完全従量、anon 3/日 per IP free (JST 翌日リセット)。
+    93 MCP tools at default gates (39 core + 50 autonomath, including industry packs
     pack_construction / pack_manufacturing / pack_real_estate),
     MCP protocol 2025-06-18, stdio.
     Not legal / tax / 行政書士 advice; 一次資料を必ず確認してください.

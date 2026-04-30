@@ -1,6 +1,6 @@
 # r/LocalLLaMA
 
-**Title**: `MCP server for Japanese tax/subsidy/law data — works with any local agent (Claude Desktop, Cline, custom), 89 tools, ¥3/req`
+**Title**: `MCP server for Japanese tax/subsidy/law data — works with any local agent (Claude Desktop, Cline, custom), 93 tools, ¥3/req`
 
 ---
 
@@ -10,17 +10,17 @@ If you're building agents that need to reason about Japanese institutional data 
 
 **Coverage** (every row has a primary-source URL — no aggregators):
 
-- 10,790 subsidy programs across 47 prefectures
+- 11,684 subsidy programs across 47 prefectures
 - 9,484 laws (e-Gov, CC-BY)
 - 2,065 court decisions
-- 35 tax rulesets
+- 50 tax rulesets
 - 13,801 適格事業者 (invoice registry)
 - 2,286 historical adoption cases for grounding "what actually got funded"
 - 1,185 enforcement records (so you can flag risky 業者)
 
 **MCP integration**:
 
-- 89 tools at default gates, protocol `2025-06-18`, FastMCP over stdio
+- 93 tools at default gates, protocol `2025-06-18`, FastMCP over stdio
 - Tested with Claude Desktop, Cline, and custom Python MCP clients
 - Tools cover search, get-by-ID, lifecycle, prerequisite chains, rule-engine checks, snapshot-time queries, and provenance lookup
 
@@ -37,7 +37,7 @@ If you're building agents that need to reason about Japanese institutional data 
 }
 ```
 
-When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.jpcite.com`. The first 50 req/month per IP are free anonymous, no signup. Past that it's ¥3/req metered. If you want full local DB performance, clone the repo.
+When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.jpcite.com`. The first 3 req/day per IP are free anonymous, no signup. Past that it's ¥3/req metered. If you want full local DB performance, clone the repo.
 
 **Local-only path**: clone the repo, pull the DB tarball, run `autonomath-mcp` against the local SQLite. No network calls. The README has the steps.
 
@@ -51,7 +51,7 @@ Quick smoke-test from a terminal:
 curl "https://api.jpcite.com/v1/programs/search?q=AI&prefecture=東京都"
 ```
 
-- GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
+- GitHub: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 - Site: https://jpcite.com
 

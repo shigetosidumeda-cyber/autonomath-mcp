@@ -13,7 +13,7 @@
 - In-process `httpx.AsyncClient` via `ASGITransport` — measures app logic, zero network overhead
 - 10 warm-up requests per endpoint (SQLite page cache heated), then 500 sequential requests
 - Single process, single SQLite file, FTS5 trigram tokenizer
-- Real `data/jpintel.db` (13,578 active programs tier S/A/B/C, 12,038 total rows incl. X-tier quarantine, 2,286 case studies, 8,704 laws — up from 6,850 in the morning snapshot, 35 tax rulesets)
+- Real `data/jpintel.db` (14,472 active programs tier S/A/B/C, 12,038 total rows incl. X-tier quarantine, 2,286 case studies, 8,704 laws — up from 6,850 in the morning snapshot, 50 tax rulesets)
 - Host: macOS 25.3.0 (operator laptop, M-series Apple Silicon)
 - **NOT a load test** — sequential baseline for alert-threshold derivation
 
@@ -108,6 +108,6 @@ three sample IDs — noise-band.
   higher latency due to SQLite write-lock contention on `usage_events` inserts.
 - Anonymous callers bypass `usage_events` writes, so concurrency penalty is
   lower than authed callers for the same endpoint.
-- FTS5 trigram searches on 13,578-row `programs` and 8,704-row `laws` tables
+- FTS5 trigram searches on 14,472-row `programs` and 8,704-row `laws` tables
   are the bottleneck. Phrase-quoting workaround is active in `programs.py`
   for ≥2-char kanji queries.

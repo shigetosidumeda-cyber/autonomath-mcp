@@ -6,7 +6,7 @@ your own code in 30 seconds.
 
 <!-- TODO(org-claim): switch back to github.com/AutonoMath/autonomath-starter once the AutonoMath GitHub org is claimed and the dedicated starter repo is published. -->
 This repo is a **GitHub template**: click **"Use this template"** at the top
-of <https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/starter>
+of <https://github.com/shigetosidumeda-cyber/autonomath-mcp/tree/main/sdk/starter>
 to copy the `sdk/starter/` folder into your own account.
 
 ## What's inside
@@ -94,4 +94,4 @@ for redistribution rules.
 - Operator: Bookyou株式会社 (法人番号 T8010001213708)
 - Email: <info@bookyou.net>
 <!-- TODO(org-claim): switch back to github.com/AutonoMath/autonomath-starter/issues once the AutonoMath GitHub org is claimed. -->
-- Issues: <https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues>
+- Issues: <https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues>

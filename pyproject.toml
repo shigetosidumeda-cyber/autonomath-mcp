@@ -1,7 +1,7 @@
 [project]
 name = "autonomath-mcp"
 version = "0.3.2"
-description = "REST + MCP search over Japanese institutional data: 11,684 searchable subsidies (14,472 total), 154 laws full-text + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 89 MCP tools (protocol 2025-06-18). 3 yen/req metered (3.30 tax-incl), anonymous 50/month per IP free."
+description = "REST + MCP search over Japanese institutional data: 11,684 searchable subsidies (14,472 total), 154 laws full-text + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 93 MCP tools (protocol 2025-06-18). 3 yen/req metered (3.30 tax-incl), anonymous 3/day per IP free."
 license = { text = "MIT" }
 authors = [
     { name = "Bookyou株式会社", email = "info@bookyou.net" },
@@ -110,15 +110,14 @@ autonomath-mcp = "jpintel_mcp.mcp.server:run"
 autonomath-ingest = "jpintel_mcp.ingest.canonical:run"
 # Legacy aliases for existing installs (will be removed at v1.0):
 jpintel-api = "jpintel_mcp.api.main:run"
-jpintel-mcp = "jpintel_mcp.mcp.server:run"
 jpintel-ingest = "jpintel_mcp.ingest.canonical:run"
 
 [project.urls]
 Homepage = "https://jpcite.com"
 Documentation = "https://jpcite.com/docs/"
 # TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
-Repository = "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
-Issues = "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues"
+Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+Issues = "https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues"
 
 [build-system]
 requires = ["hatchling"]

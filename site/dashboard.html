@@ -388,13 +388,13 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             return null;
           }
           function applyKey() {
-            var key = readKey;
+            var key = readKey();
             var slots = document.querySelectorAll('.qs-key-slot');
             slots.forEach(function (s) {
               s.textContent = key || QS_PLACEHOLDER;
             });
           }
-          applyKey;
+          applyKey();
           // Re-apply when storage events fire (cross-tab) and after dash2.js
           // wires up (give it a couple of ticks).
           window.addEventListener('storage', applyKey);
@@ -423,7 +423,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
                   ta.style.position = 'absolute';
                   ta.style.left = '-9999px';
                   document.body.appendChild(ta);
-                  ta.select;
+                  ta.select();
                   document.execCommand('copy');
                   document.body.removeChild(ta);
                   done(true);
@@ -431,7 +431,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               }
             });
           });
-        });
+        })();
       </script>
 
  <h1>ダッシュボード</h1>
@@ -840,7 +840,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               }
               return origin;
             } catch (_e) { return ''; }
-          });
+          })();
           var SECTION = document.getElementById('saved-searches');
           var TBODY = document.getElementById('saved-searches-tbody');
           var EMPTY = document.getElementById('saved-searches-empty');
@@ -996,12 +996,12 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             try {
               await fetchJSON('/v1/me/saved_searches', {
                 method: 'POST',
-                headers: csrfHeaders,
+                headers: csrfHeaders(),
                 body: { name: name, query: query, frequency: frequency, notify_email: email },
               });
               setBanner('保存条件を登録しました。', false);
-              FORM.reset;
-              await load;
+              FORM.reset();
+              await load();
             } catch (err) {
               setBanner('登録に失敗しました: ' + (err && err.message ? err.message : ''), true);
             }
@@ -1015,10 +1015,10 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             try {
               await fetchJSON('/v1/me/saved_searches/' + encodeURIComponent(id), {
                 method: 'DELETE',
-                headers: csrfHeaders,
+                headers: csrfHeaders(),
               });
               setBanner('削除しました (id=' + id + ')。', false);
-              await load;
+              await load();
             } catch (err) {
               setBanner('削除に失敗しました: ' + (err && err.message ? err.message : ''), true);
             }
@@ -1031,7 +1031,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           } else {
             document.addEventListener('DOMContentLoaded', load);
           }
-        });
+        })();
       </script>
 
  <!-- ============================================================== -->
@@ -1218,7 +1218,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               { 'Content-Type': 'application/json' },
               opts.headers || {}
             );
-            var key = getKey;
+            var key = getKey();
             if (key) headers['X-API-Key'] = key;
             var r = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
             var text = await r.text();
@@ -1239,7 +1239,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           }
 
           async function load() {
-            if (!getKey) return; // hidden until paste-key flow set the key
+            if (!getKey()) return; // hidden until paste-key flow set the key
             try {
               var rows = await fetchJSON('/v1/me/webhooks');
               ROOT.style.display = '';
@@ -1323,8 +1323,8 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
                   showSecret(data.secret_hmac);
                 }
                 setBanner('webhook を登録しました (id=' + (data && data.id) + ')。', false);
-                FORM.reset;
-                await load;
+                FORM.reset();
+                await load();
               } catch (err) {
                 setBanner('登録に失敗しました: ' + (err && err.message ? err.message : ''), true);
               }
@@ -1342,7 +1342,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
                 try {
                   await fetchJSON('/v1/me/webhooks/' + encodeURIComponent(wid), { method: 'DELETE' });
                   setBanner('削除しました (id=' + wid + ')。', false);
-                  await load;
+                  await load();
                 } catch (err) {
                   setBanner('削除に失敗しました: ' + (err && err.message ? err.message : ''), true);
                 }
@@ -1396,7 +1396,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           } else {
             document.addEventListener('DOMContentLoaded', load);
           }
-        });
+        })();
       </script>
 
  <div class="actions-row">

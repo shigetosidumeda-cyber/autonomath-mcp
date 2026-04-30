@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # OPERATOR ONLY: Run manually from tools/offline/. Never imported from src/, scripts/cron/, or scripts/etl/.
-"""Paired A/B bench harness for `direct_web` vs `jpcite_packet`.
+"""Paired token-cost bench harness for direct_web and jpcite arms.
 
 This script is OPERATOR-DRIVEN. It does NOT call any LLM API. It does
 two things:
@@ -19,12 +19,15 @@ NO LLM IMPORTS HERE — see `tools/offline/README.md` and
 under `tools/offline/` precisely so production code (src/, scripts/,
 tests/) never ships an LLM SDK on the hot path.
 
-Per `docs/bench_methodology.md`, the emission MUST cover:
+Per `docs/bench_methodology.md`, the default emission MUST cover:
 
   - Arm `direct_web`: pass query alone, web_search ENABLED.
   - Arm `jpcite_packet`: prefetch
     `GET /v1/evidence/packets/query?q=<urlencoded>`, then pass
     `{query + packet}` with web_search DISABLED.
+  - Arm `jpcite_precomputed_intelligence`: prefetch the operator-owned
+    precomputed intelligence bundle, then pass `{query + bundle}` with
+    web_search DISABLED.
 
 The harness writes the prefetch URL into the instruction line so the
 operator pastes it into curl / their HTTP client without guesswork.
@@ -62,9 +65,8 @@ import urllib.parse
 from pathlib import Path
 from typing import Any
 
-# These are the metric columns the operator MUST fill in for each arm
-# row. The aggregator pulls them by name; missing columns raise.
-NUMERIC_METRIC_COLUMNS: tuple[str, ...] = (
+# These are the metric columns the operator MUST fill in for each arm row.
+REQUIRED_NUMERIC_METRIC_COLUMNS: tuple[str, ...] = (
     "input_tokens",
     "output_tokens",
     "reasoning_tokens",
@@ -73,13 +75,25 @@ NUMERIC_METRIC_COLUMNS: tuple[str, ...] = (
     "yen_cost_per_answer",
     "latency_seconds",
 )
+OPTIONAL_NUMERIC_METRIC_COLUMNS: tuple[str, ...] = (
+    "records_returned",
+    "precomputed_record_count",
+    "packet_tokens_estimate",
+    "source_tokens_estimate",
+)
 RATE_METRIC_COLUMNS: tuple[str, ...] = (
     "citation_rate",
     "hallucination_rate",
 )
+NUMERIC_METRIC_COLUMNS: tuple[str, ...] = (
+    REQUIRED_NUMERIC_METRIC_COLUMNS + OPTIONAL_NUMERIC_METRIC_COLUMNS
+)
 
-# The two arms — must match docs/bench_methodology.md §2.
-ARMS: tuple[str, ...] = ("direct_web", "jpcite_packet")
+# Arms — must match docs/bench_methodology.md §2.
+BASELINE_ARM = "direct_web"
+PACKET_ARM = "jpcite_packet"
+PRECOMPUTED_ARM = "jpcite_precomputed_intelligence"
+ARMS: tuple[str, ...] = (BASELINE_ARM, PACKET_ARM, PRECOMPUTED_ARM)
 
 
 def load_queries(path: Path) -> list[dict[str, str]]:
@@ -123,7 +137,7 @@ def build_instruction(
     qtxt = query["query_text"]
     domain = query["domain"]
 
-    if arm == "direct_web":
+    if arm == BASELINE_ARM:
         text = (
             f"Run query Q (id={qid}, domain={domain}) via {model} with web_search "
             f"ENABLED. Pass ONLY the user query as the message — no Evidence "
@@ -148,7 +162,7 @@ def build_instruction(
             "instructions": text,
         }
 
-    if arm == "jpcite_packet":
+    if arm == PACKET_ARM:
         encoded = urllib.parse.quote(qtxt, safe="")
         prefetch = f"{jpcite_base_url.rstrip('/')}/v1/evidence/packets/query?q={encoded}"
         text = (
@@ -174,17 +188,69 @@ def build_instruction(
             "instructions": text,
         }
 
+    if arm == PRECOMPUTED_ARM:
+        encoded = urllib.parse.quote(qtxt, safe="")
+        prefetch = (
+            f"{jpcite_base_url.rstrip('/')}/v1/intelligence/precomputed/query?q={encoded}"
+        )
+        text = (
+            f"Fetch the operator-owned precomputed intelligence bundle for "
+            f"Q id={qid} from {prefetch} (or the equivalent internal/customer "
+            f"export for this query); pass the user query AND the returned "
+            f"precomputed intelligence JSON to {model} with web_search "
+            f"DISABLED. Record same metrics + corpus_snapshot_id and the "
+            f"precomputed bundle id in packet_id if present. jpcite_requests "
+            f"counts every billable jpcite call/export used for this arm (>=1)."
+        )
+        return {
+            "query_id": qid,
+            "domain": domain,
+            "arm": arm,
+            "model": model,
+            "query_text": qtxt,
+            "tools_enabled": [],
+            "prefetch_url": prefetch,
+            "system_prompt": (
+                "Answer using ONLY the provided precomputed jpcite "
+                "intelligence bundle. Do not web-search. Cite source_url, "
+                "fetched_at, corpus_snapshot_id, and any bundle/provenance id "
+                "present in the bundle."
+            ),
+            "instructions": text,
+        }
+
     raise ValueError(f"unknown arm: {arm!r}")
+
+
+def _parse_arms(raw: str | None) -> tuple[str, ...]:
+    """Parse a comma-separated arm list, preserving canonical order."""
+    if raw is None:
+        return ARMS
+    requested = [part.strip() for part in raw.split(",") if part.strip()]
+    if not requested:
+        raise ValueError("--arms must name at least one arm")
+    unknown = sorted(set(requested) - set(ARMS))
+    if unknown:
+        raise ValueError(
+            f"unknown arm(s): {', '.join(unknown)}; valid arms: {', '.join(ARMS)}"
+        )
+    requested_set = set(requested)
+    return tuple(arm for arm in ARMS if arm in requested_set)
 
 
 def emit(args: argparse.Namespace, out=sys.stdout) -> int:
     """Emit one JSONL line per (query, arm) to `out`."""
+    try:
+        arms = _parse_arms(args.arms)
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     queries = load_queries(Path(args.queries_csv))
     if not queries:
         print("ERROR: no queries loaded from CSV", file=sys.stderr)
         return 2
     for q in queries:
-        for arm in ARMS:
+        for arm in arms:
             rec = build_instruction(q, arm, args.model, args.jpcite_base_url)
             out.write(json.dumps(rec, ensure_ascii=False) + "\n")
     return 0
@@ -214,29 +280,46 @@ def _percentiles(values: list[float]) -> dict[str, float]:
 
 def aggregate(args: argparse.Namespace, out=sys.stdout) -> int:
     """Read results CSV, compute per-arm aggregates, emit JSON."""
+    try:
+        configured_arms = _parse_arms(args.arms)
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+
     path = Path(args.results_csv)
     if not path.exists():
         print(f"ERROR: results CSV not found: {path}", file=sys.stderr)
         return 2
 
+    optional_numeric_columns: tuple[str, ...] = ()
+    active_numeric_columns = REQUIRED_NUMERIC_METRIC_COLUMNS
     per_arm: dict[str, dict[str, list[float]]] = {
         arm: {col: [] for col in NUMERIC_METRIC_COLUMNS + RATE_METRIC_COLUMNS}
         for arm in ARMS
     }
     paired_query_ids: dict[str, set[int]] = {arm: set() for arm in ARMS}
+    seen_arms: set[str] = set()
 
     with path.open("r", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
+        header = set(reader.fieldnames or ())
+        optional_numeric_columns = tuple(
+            col for col in OPTIONAL_NUMERIC_METRIC_COLUMNS if col in header
+        )
+        active_numeric_columns = (
+            REQUIRED_NUMERIC_METRIC_COLUMNS + optional_numeric_columns
+        )
         for row in reader:
             arm = row.get("arm", "").strip()
-            if arm not in ARMS:
+            if arm not in configured_arms:
                 continue
+            seen_arms.add(arm)
             try:
                 qid = int(row.get("query_id", "").strip())
             except (TypeError, ValueError):
                 continue
             paired_query_ids[arm].add(qid)
-            for col in NUMERIC_METRIC_COLUMNS + RATE_METRIC_COLUMNS:
+            for col in active_numeric_columns + RATE_METRIC_COLUMNS:
                 raw = row.get(col, "").strip()
                 if raw == "":
                     continue
@@ -245,20 +328,44 @@ def aggregate(args: argparse.Namespace, out=sys.stdout) -> int:
                 except ValueError:
                     continue
 
+    active_arms = (
+        configured_arms if args.arms else tuple(arm for arm in ARMS if arm in seen_arms)
+    )
+
+    if active_arms:
+        paired_query_count = len(
+            set.intersection(*(paired_query_ids[arm] for arm in active_arms))
+        )
+    else:
+        paired_query_count = 0
+
     summary: dict[str, Any] = {
+        "configured_arms": list(configured_arms),
+        "active_arms": list(active_arms),
+        "optional_numeric_metrics": list(optional_numeric_columns),
         "arms": {},
-        "paired_query_count": len(paired_query_ids[ARMS[0]] & paired_query_ids[ARMS[1]]),
-        "queries_only_in_direct_web": sorted(
-            paired_query_ids["direct_web"] - paired_query_ids["jpcite_packet"]
-        ),
-        "queries_only_in_jpcite_packet": sorted(
-            paired_query_ids["jpcite_packet"] - paired_query_ids["direct_web"]
-        ),
+        "paired_query_count": paired_query_count,
+        "queries_missing_by_arm": {
+            arm: sorted(
+                set.union(*(paired_query_ids[other] for other in active_arms))
+                - paired_query_ids[arm]
+            )
+            for arm in active_arms
+        },
     }
 
-    for arm in ARMS:
+    # Backward-compatible two-arm diagnostics used by existing consumers.
+    if BASELINE_ARM in active_arms and PACKET_ARM in active_arms:
+        summary["queries_only_in_direct_web"] = sorted(
+            paired_query_ids[BASELINE_ARM] - paired_query_ids[PACKET_ARM]
+        )
+        summary["queries_only_in_jpcite_packet"] = sorted(
+            paired_query_ids[PACKET_ARM] - paired_query_ids[BASELINE_ARM]
+        )
+
+    for arm in active_arms:
         arm_block: dict[str, Any] = {}
-        for col in NUMERIC_METRIC_COLUMNS:
+        for col in active_numeric_columns:
             arm_block[col] = _percentiles(per_arm[arm][col])
         for col in RATE_METRIC_COLUMNS:
             vals = per_arm[arm][col]
@@ -272,17 +379,31 @@ def aggregate(args: argparse.Namespace, out=sys.stdout) -> int:
         arm_block["yen_cost_per_answer_distribution"] = cost[:200]
         summary["arms"][arm] = arm_block
 
-    # Convenience: median delta % (direct_web vs jpcite_packet) for each
-    # numeric metric. Operator still owns the published phrasing per
+    # Convenience: median delta % against direct_web for every non-baseline
+    # active arm. Operator still owns the published phrasing per
     # docs/bench_methodology.md §6.
-    summary["median_delta_pct"] = {}
-    for col in NUMERIC_METRIC_COLUMNS:
-        a = summary["arms"]["direct_web"][col]["p50"]
-        b = summary["arms"]["jpcite_packet"][col]["p50"]
-        if a == 0:
-            summary["median_delta_pct"][col] = None
-        else:
-            summary["median_delta_pct"][col] = round((a - b) / a * 100.0, 2)
+    summary["median_delta_pct_vs_direct_web"] = {}
+    if BASELINE_ARM in active_arms:
+        for arm in active_arms:
+            if arm == BASELINE_ARM:
+                continue
+            arm_delta: dict[str, float | None] = {}
+            for col in active_numeric_columns:
+                baseline = summary["arms"][BASELINE_ARM][col]["p50"]
+                candidate = summary["arms"][arm][col]["p50"]
+                if baseline == 0:
+                    arm_delta[col] = None
+                else:
+                    arm_delta[col] = round(
+                        (baseline - candidate) / baseline * 100.0, 2
+                    )
+            summary["median_delta_pct_vs_direct_web"][arm] = arm_delta
+
+    # Preserve the original top-level key for the legacy direct_web vs
+    # jpcite_packet comparison.
+    summary["median_delta_pct"] = summary["median_delta_pct_vs_direct_web"].get(
+        PACKET_ARM, {}
+    )
 
     out.write(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
     return 0
@@ -292,7 +413,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(
         prog="bench_harness",
         description=(
-            "Paired A/B bench harness for direct_web vs jpcite_packet. "
+            "Paired token-cost bench harness for direct_web and jpcite arms. "
             "Operator-driven, NO LLM call from this script."
         ),
     )
@@ -324,7 +445,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--jpcite-base-url",
         type=str,
         default="https://api.jpcite.com",
-        help="jpcite API base for the prefetch URL on the jpcite_packet arm",
+        help="jpcite API base for jpcite prefetch URLs",
+    )
+    p.add_argument(
+        "--arms",
+        type=str,
+        default=None,
+        help=(
+            "comma-separated arms to emit/aggregate; default emits all arms and "
+            "aggregate infers arms present in the CSV"
+        ),
     )
     return p.parse_args(argv)
 

@@ -57,7 +57,7 @@ CREATE TABLE referral_payouts (
 
 ## 計算式
 
-`request_count` は **billable な request のみ** (=`X-API-Key` 経由 / `429` / `4xx` を除く successful 課金 request)。匿名 50 req/月 free は計上対象外。
+`request_count` は **billable な request のみ** (=`X-API-Key` 経由 / `429` / `4xx` を除く successful 課金 request)。匿名 3 req/日 free は計上対象外。
 
 ```
 charged_jpy   = request_count × ¥3

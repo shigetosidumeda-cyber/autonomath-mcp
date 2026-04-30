@@ -51,11 +51,11 @@ tier ラベルは enrichment 充足度を表す指標です。各レコードの
 ## 提供形態
 
 - **REST API** — `https://api.jpcite.com/v1/*`
-- **MCP server** (`autonomath-mcp`) — Claude Desktop / Cursor / ChatGPT / Gemini から **89 ツール** at default gates。stdio 経由、SDK 不要
+- **MCP server** (`autonomath-mcp`) — Claude Desktop / Cursor / ChatGPT / Gemini から **93 ツール** at default gates。stdio 経由、SDK 不要
 
 ## 価格
 
-完全従量 **¥3 / req 税別** (税込 ¥3.30)。匿名 50 req/月 per IP は無料 (JST 月初リセット)。tier プラン無し、最低額無し、契約無し。詳細: [pricing.md](./pricing.md)。
+完全従量 **¥3 / req 税別** (税込 ¥3.30)。匿名 3 req/日 per IP は無料 (JST 翌日リセット)。tier プラン無し、最低額無し、契約無し。詳細: [pricing.md](./pricing.md)。
 
 ## Jグランツ との位置関係
 
@@ -65,7 +65,7 @@ tier ラベルは enrichment 充足度を表す指標です。各レコードの
 
 - [getting-started.md](./getting-started.md) — 5 分で最初のリクエスト
 - [api-reference.md](./api-reference.md) — 全 API 経路
-- [mcp-tools.md](./mcp-tools.md) — 89 MCP ツール
+- [mcp-tools.md](./mcp-tools.md) — 93 MCP ツール
 - [exclusions.md](./exclusions.md) — 排他ルール
 - [pricing.md](./pricing.md) — 料金
 - [faq.md](./faq.md) — よくある質問

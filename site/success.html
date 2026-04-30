@@ -407,7 +407,7 @@
   (function() {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || '';
+    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || 'https://api.jpcite.com';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -480,7 +480,7 @@
           ta.style.position = 'absolute';
           ta.style.left = '-9999px';
           document.body.appendChild(ta);
-          ta.select;
+          ta.select();
           try { document.execCommand('copy'); } finally { document.body.removeChild(ta); }
         }
         if (btn) {
@@ -541,7 +541,7 @@
     }
 
     async function issueKey() {
-      var sid = getSessionId;
+      var sid = getSessionId();
       if (!sid) { showOnly('state-error-missing'); return; }
 
       showOnly('state-loading');
@@ -609,15 +609,15 @@
     }
 
     function boot() {
-      bind;
-      issueKey;
+      bind();
+      issueKey();
     }
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', boot);
     } else {
-      boot;
+      boot();
     }
-  });
+  })();
 </script>
 
 </body>

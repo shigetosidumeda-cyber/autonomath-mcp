@@ -2,10 +2,10 @@
   "dxt_version": "0.1",
   "name": "autonomath-mcp",
   "display_name": "AutonoMath — 日本の制度 API",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "icon": "icon.png",
-  "description": "日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 / 適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185 / 入札 362 / 融資 108) を REST + MCP API (89 tools) で横断検索。一次資料 URL 付き、¥3/req metered (税込 ¥3.30) 完全従量、anon 50/月 per IP free。",
-  "long_description": "Search Japanese institutional public data via REST + MCP API. Coverage: 11,684 searchable subsidies (補助金/融資/税制/認定; tier S=114 / A=1,340 / B=4,186 / C=6,044; full table 14,472 incl. tier X 2,788 quarantine) + 154 laws full-text indexed + 9,484 law catalog stubs (e-Gov, CC-BY; full-text load incremental) + 2,065 court decisions + 50 tax rulesets (インボイス/電帳法 + 研究開発 + IT導入会計処理) + 13,801 invoice registrants (国税庁適格事業者, PDL v1.0) + 2,286 adoption cases + 1,185 enforcement records + 108 loan products (担保 / 個人保証人 / 第三者保証人 三軸独立 enum) + 362 bids + 181 exclusion/prerequisite rules. 89 MCP tools at default gates (39 core + 50 autonomath, including industry packs pack_construction / pack_manufacturing / pack_real_estate). MCP protocol 2025-06-18. Records carry primary-source URL + fetched_at on 99%+ of rows; aggregator sources are excluded. Pricing: ¥3/req tax-exclusive (¥3.30 tax-inclusive, Stripe metered); anonymous tier 50 req/month per IP free (no signup, JST first-of-month reset). Not legal/tax/行政書士 advice; verify primary sources before any business decision. Operator: Bookyou株式会社 (インボイス登録番号 T8010001213708, info@bookyou.net).",
+  "description": "日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 / 適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185 / 入札 362 / 融資 108) を REST + MCP API (93 tools) で横断検索。一次資料 URL 付き、¥3/req metered (税込 ¥3.30) 完全従量、anon 3/日 per IP free。",
+  "long_description": "Search Japanese institutional public data via REST + MCP API. Coverage: 11,684 searchable subsidies (補助金/融資/税制/認定; tier S=114 / A=1,340 / B=4,186 / C=6,044; full table 14,472 incl. 2,788 public-hold/quarantine rows) + 154 laws full-text indexed + 9,484 law catalog stubs (e-Gov, CC-BY; full-text load incremental) + 2,065 court decisions + 50 tax rulesets (インボイス/電帳法 + 研究開発 + IT導入会計処理) + 13,801 invoice registrants (国税庁適格事業者, PDL v1.0) + 2,286 adoption cases + 1,185 enforcement records + 108 loan products (担保 / 個人保証人 / 第三者保証人 三軸独立 enum) + 362 bids + 181 exclusion/prerequisite rules. 93 MCP tools at default gates (39 core + 50 autonomath, including industry packs pack_construction / pack_manufacturing / pack_real_estate). MCP protocol 2025-06-18. Records carry primary-source URL + fetched_at on 99%+ of rows; aggregator sources are excluded. Pricing: ¥3/req tax-exclusive (¥3.30 tax-inclusive, Stripe metered); anonymous tier 3 req/day per IP free (no signup, JST next-day reset). Not legal/tax/行政書士 advice; verify primary sources before any business decision. Operator: Bookyou株式会社 (インボイス登録番号 T8010001213708, info@bookyou.net).",
   "author": {
     "name": "Bookyou株式会社",
     "email": "info@bookyou.net",
@@ -52,7 +52,7 @@
   "tools": [
     {
       "name": "search_programs",
-      "description": "Search 11,684 searchable Japanese public programs of 14,472 total (national + prefectural subsidies, loans, tax incentives, certifications) with tier / prefecture / funding_purpose / amount filters. Tier S=114 / A=1,340 / B=4,186 / C=6,044 searchable; tier X (2,788) quarantined, excluded by default. Typical args: prefecture='東京都' (47 都道府県), target_industry JSIC 1-letter (D=建設, E=製造, K=不動産…), funding_purpose ('equipment'/'it_introduction'/'gx'/'business_restructuring'). Every row carries primary-source URL + fetched_at."
+      "description": "Search 11,684 searchable Japanese public programs of 14,472 total (national + prefectural subsidies, loans, tax incentives, certifications) with tier / prefecture / funding_purpose / amount filters. Tier S=114 / A=1,340 / B=4,186 / C=6,044 searchable; 2,788 public-hold/quarantine rows excluded, excluded by default. Typical args: prefecture='東京都' (47 都道府県), target_industry JSIC 1-letter (D=建設, E=製造, K=不動産…), funding_purpose ('equipment'/'it_introduction'/'gx'/'business_restructuring'). 99%+ of rows carry primary-source URL + fetched_at."
     },
     {
       "name": "get_program",
@@ -112,7 +112,7 @@
     },
     {
       "name": "search_laws",
-      "description": "Search Japanese statutes (e-Gov法令, CC-BY) by name or article text. FTS5 trigram + statute kind / jurisdiction / enforcement-date filters. Primary-source URL + fetched_at on every row."
+      "description": "Search Japanese statutes (e-Gov法令, CC-BY) by name or article text. FTS5 trigram + statute kind / jurisdiction / enforcement-date filters. Primary-source URL + fetched_at on 99%+ of rows."
     },
     {
       "name": "get_law",

@@ -104,11 +104,14 @@ def _assert_route_exists(response, *, path: str) -> None:
         # is a string. If the original detail was the generic Starlette
         # "Not Found", the route is missing. Anything else means a real
         # handler raised it.
-        if isinstance(detail, str) and detail in _GENERIC_404_DETAILS:
+        if (
+            isinstance(detail, str)
+            and detail in _GENERIC_404_DETAILS
+            and err.get("code") == "route_not_found"
+        ):
             # If the global handler also stamped error.code=route_not_found
             # AND the detail is generic, it's truly a missing route.
-            if err.get("code") == "route_not_found":
-                pytest.fail(f"{path} → generic 404 (endpoint missing)")
+            pytest.fail(f"{path} → generic 404 (endpoint missing)")
         # Otherwise: route exists, just 404'd a resource — accept.
     if response.status_code >= 500:
         if response.status_code == 503:
@@ -513,6 +516,44 @@ def test_subscribers_unsubscribe_invalid_token(client):
     # Route exists, token mismatch → 4xx.
     assert r.status_code != 404 or r.json().get("error", {}).get("code") != "route_not_found"
     assert r.status_code < 500
+
+
+# ---------------------------------------------------------------------------
+# Verification / provenance / cost helper surfaces
+# ---------------------------------------------------------------------------
+
+
+def test_source_manifest_route_smoke(client, monkeypatch, tmp_path):
+    """Route must stay mounted even when autonomath.db is unavailable."""
+    monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "missing.db"))
+    r = client.get("/v1/source_manifest/UNI-route-smoke")
+    _assert_route_exists(r, path="/v1/source_manifest/UNI-route-smoke")
+    assert r.status_code == 503
+    r.json()
+
+
+def test_citations_verify_route_smoke(client):
+    """Anonymous request should reach the handler and be auth-rejected."""
+    r = client.post(
+        "/v1/citations/verify",
+        json={"citations": [{"source_text": "source body", "excerpt": "source"}]},
+    )
+    _assert_route_exists(r, path="/v1/citations/verify")
+    assert r.status_code == 401
+    r.json()
+
+
+def test_cost_preview_route_smoke(client):
+    r = client.post(
+        "/v1/cost/preview",
+        json={"stack_or_calls": [{"tool": "search_programs"}]},
+    )
+    _assert_route_exists(r, path="/v1/cost/preview")
+    assert r.status_code == 200, r.text
+    assert r.headers.get("x-metered") == "false"
+    body = r.json()
+    assert body["predicted_total_yen"] == 3
+    assert body["metered"] is False
 
 
 # ---------------------------------------------------------------------------

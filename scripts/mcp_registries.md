@@ -23,13 +23,13 @@ Target launch: 2026-05-06. Last audited: 2026-04-24.
 ### Short description (≤160 chars)
 
 ```
-AutonoMath: 66-tool MCP (38 core + 28 autonomath entity-fact DB) over Japanese primary-gov data — 11,684 programs + 503,930 entities + 6.12M facts + 23,805 relations, 181 exclusion rules, 3-axis loan risk. ¥3/req; 50/月 free.
+AutonoMath: 93-tool MCP (39 core + 50 autonomath entity-fact DB) over Japanese primary-gov data — 11,684 programs + 503,930 entities + 6.12M facts + 23,805 relations, 181 exclusion rules, 3-axis loan risk. ¥3/req; 3/日 free.
 ```
 
 ### Long description (≤500 chars)
 
 ```
-AutonoMath provides structured access to Japanese public-program data via 89 MCP tools (protocol
+AutonoMath provides structured access to Japanese public-program data via 93 MCP tools (protocol
 2025-06-18): 38 core (11,684 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資
 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + laws e-Gov CC-BY 9,484 rows + tax rulesets
 インボイス/電帳法 35 rows + court_decisions 2,065 rows + bids 362 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows delta) + 28 autonomath
@@ -113,7 +113,7 @@ After publish: listing propagates to PulseMCP within ~1 week and to several down
 - Method: PR adding one line to `README.md` under `Finance & Fintech`, alphabetical order
 - Entry draft:
   ```
-  - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 38-tool core (+28 autonomath = 66) MCP over 13,578 Japanese public programs, 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only) live. ¥3/req; 50/月 free. `uvx autonomath-mcp`
+  - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 93 tools at default gates (39 core + 50 autonomath + 4 LR plan) MCP over 11,684 searchable Japanese public programs (out of 14,472 total), 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only) live. ¥3/req; 3/日 free. `uvx autonomath-mcp`
   ```
 - Review: maintainer-gated, usually days
 
@@ -349,13 +349,13 @@ Submit in order; each should take < 10 min.
 ```bash
 # Fork punkpeye/awesome-mcp-servers, add one line under Finance & Fintech:
 # - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 —
-#   AutonoMath: 66-tool MCP over 13,578 Japanese public programs, 181 exclusion rules,
-#   3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 50/月 free. `uvx autonomath-mcp`
+#   AutonoMath: 93-tool MCP over 11,684 searchable Japanese public programs (out of 14,472 total), 181 exclusion rules,
+#   3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 3/日 free. `uvx autonomath-mcp`
 
 gh repo fork punkpeye/awesome-mcp-servers --clone
 # Edit README.md, then:
 gh pr create --title "Add AutonoMath: 66-tool Japanese gov-data MCP" \
-  --body "AutonoMath provides structured access to 13,578 Japanese public programs (補助金/融資/税制/認定) via 89 MCP tools (38 core + 28 autonomath entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations). Laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only mirror) live. 99%+ rows: primary-source lineage. 181 exclusion rules, 3-axis loan risk. ¥3/req metered; 50/月 free."
+  --body "AutonoMath provides structured access to 11,684 searchable Japanese public programs (out of 14,472 total) (補助金/融資/税制/認定) via 93 MCP tools (39 core + 50 autonomath entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations). Laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only mirror) live. 99%+ rows: primary-source lineage. 181 exclusion rules, 3-axis loan risk. ¥3/req metered; anon 3 req/日 free per IP."
 ```
 
 #### Step 9 — Zenn launch article

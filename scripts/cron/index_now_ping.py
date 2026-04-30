@@ -74,9 +74,11 @@ SHARD_BASENAMES = (
     "sitemap-programs.xml",
     "sitemap-prefectures.xml",
     "sitemap-audiences.xml",
+    "sitemap-cross.xml",
     "sitemap-industries.xml",
     "sitemap-qa.xml",
     "sitemap-pages.xml",
+    "docs/sitemap.xml",
 )
 
 # IndexNow spec: batch up to 10,000 URLs per POST.

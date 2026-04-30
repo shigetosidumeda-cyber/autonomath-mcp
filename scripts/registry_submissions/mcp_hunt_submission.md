@@ -14,8 +14,8 @@
 
 ## Pre-flight
 
-- [ ] Public repo `github.com/shigetosidumeda-cyber/jpintel-mcp` is live with a usable README
-- [ ] PyPI package `autonomath-mcp` v0.3.1 is published
+- [ ] Public repo `github.com/shigetosidumeda-cyber/autonomath-mcp` is live with a usable README
+- [ ] PyPI package `autonomath-mcp` v0.3.2 is published
 - [ ] Decided on launch-day timing for the upvote nudge (per memory: 2026-05-06 launch day)
 
 ---
@@ -31,13 +31,13 @@ AutonoMath
 ### One-line tagline (~100 chars)
 
 ```
-68-tool MCP for Japanese institutional data — subsidies, laws, court decisions, tax rulesets, invoice registrants.
+93-tool MCP for Japanese institutional data — subsidies, laws, court decisions, tax rulesets, invoice registrants.
 ```
 
 ### Description (paragraph)
 
 ```
-AutonoMath exposes Japanese institutional public data via 89 MCP tools at default gates (protocol 2025-06-18, stdio): 10,790 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis 担保 / 個人保証人 / 第三者保証人 decomposition + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 35 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0 delta) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row carries source_url + fetched_at; aggregator domains are banned. ¥3.30/req (税込) fully metered, first 50 requests/month free per IP (anonymous, JST monthly reset), no tier SKUs.
+AutonoMath exposes Japanese institutional public data via 93 MCP tools at default gates (protocol 2025-06-18, stdio): 10,790 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis 担保 / 個人保証人 / 第三者保証人 decomposition + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 35 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0 delta) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row carries source_url + fetched_at; aggregator domains are banned. ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
 Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals.
 ```
@@ -45,7 +45,7 @@ Disclaimer (税理士法 §52 fence): information retrieval only. Does not perfo
 ### GitHub URL
 
 ```
-https://github.com/shigetosidumeda-cyber/jpintel-mcp
+https://github.com/shigetosidumeda-cyber/autonomath-mcp
 ```
 
 ### Homepage URL
@@ -88,7 +88,7 @@ pip install autonomath-mcp
 ### Tool count (if asked)
 
 ```
-68 at default gates (4 additional gated off pending fix; 2 further held behind AUTONOMATH_36_KYOTEI_ENABLED)
+93 at default gates (4 additional gated off pending fix; 2 further held behind AUTONOMATH_36_KYOTEI_ENABLED)
 ```
 
 ### License
@@ -134,7 +134,7 @@ Search
 ### Pricing
 
 ```
-¥3.30 per request (税込, fully metered via Stripe). First 50 requests/month free per IP (anonymous, JST monthly reset). No tier SKUs, no seat fees, no annual minimums.
+¥3 per request tax-exclusive (¥3.30 tax-inclusive, fully metered via Stripe). First 3 requests/day per IP free (anonymous, JST next-day reset). No tier SKUs, no seat fees, no annual minimums.
 ```
 
 ### Author / publisher
@@ -165,12 +165,13 @@ OG: site/static/og/autonomath-og-1200x630.png (1200×630)
 ### "Anything else?"
 
 ```
-Honest figures verified 2026-04-29 (v0.3.1):
-- 89 tools at default gates (4 broken tools gated off pending fix)
+Honest figures verified 2026-04-29 (v0.3.2):
+- 93 tools at default gates (4 broken tools gated off pending fix)
 - 154 laws full-text + 9,484 catalog stubs (incremental full-text load)
 - 4,300 sourced compatibility pairs (heuristic 44,515 inferences flagged status='unknown' and not surfaced as truth)
 - 99%+ rows carry source_url + fetched_at
 - aggregator domains (noukaweb, hojyokin-portal, biz.stayway) banned from source_url
+- Evidence Pre-fetch / precomputed intelligence prepares source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins for retrieval; describe it as evidence packaging, not as model-cost savings.
 ```
 
 ---

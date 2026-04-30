@@ -1,0 +1,1194 @@
+[
+  {
+    "profile_name": "municipal_cms_numeric",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000069/69166/R7bosyuuyoukou.pdf",
+    "publisher_domain": "city.osaka.lg.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "update_date",
+      "cms_content_id",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "申請窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "short_cms_hybrid",
+      "pdfplumber_tables": "conditional",
+      "notes": "Short CMS PDF; parse labels first, use tables when detected, and validate numeric CMS ID against landing page."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard06",
+      "source_index": 7,
+      "page_count": 3,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "municipal_cms_numeric: short CMS guideline PDFs parse well; numeric content IDs require landing-page freshness checks.",
+      "risk_reason": "3 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "municipal_grant_toyama_cms",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/006/652/r8.4hurusato_youkou.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "optional_fields": [
+      "deadline",
+      "contact",
+      "update_date",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "補助率等"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "補助限度額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "商工労政課"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "ocr_gated_hybrid",
+      "pdfplumber_tables": "conditional",
+      "notes": "For _res CMS PDFs, try text extraction first; if weak/no text, run OCR then table/section parsing. Keep landing-page provenance."
+    },
+    "ocr_needed": true,
+    "parser_risk": "high",
+    "fixture_candidate": false,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard06",
+      "source_index": 8,
+      "page_count": 7,
+      "text_extractable": false,
+      "tables_detected": true,
+      "fields_found": [],
+      "parser_profile_hint": "municipal_grant_toyama_cms: _res CMS PDFs are often parseable but some are image-only; add OCR fallback only when text_extractable=false and keep landing-page provenance.",
+      "risk_reason": "7 pages; weak/no extractable text layer; tables detected in sampled pages; no target fields found by regex",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 0.0
+    }
+  },
+  {
+    "profile_name": "municipal_grant_numbered",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.city.saitama.lg.jp/001/010/015/099/008/p129852_d/fil/bosyuyoukou.pdf",
+    "publisher_domain": "city.saitama.lg.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "update_date",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "事業スケジュール"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "交付申請資格"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "補助金の額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "交付申請窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "numbered_section_regex",
+      "pdfplumber_tables": "optional",
+      "notes": "Use numbered headings such as 交付申請資格/補助対象事業/補助金の額; visually aligned text may not be real tables."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard06",
+      "source_index": 9,
+      "page_count": 11,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "municipal_grant_numbered: numbered募集要項 PDFs parse by 交付申請窓口, 交付申請資格, 補助対象事業, 補助金の額, 事業スケジュール; tables may be visually aligned but not pdfplumber tables.",
+      "risk_reason": "11 pages; text layer extractable; no sampled tables; all target labels found in numbered municipal募集要項",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "municipal_guideline_handbook",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.city.fukuoka.lg.jp/kankyo/j-suishin/hp/documents/109530/R8_PRtebiki.pdf",
+    "publisher_domain": "city.fukuoka.lg.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "update_date",
+      "landing_page_url",
+      "checklist_pages"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "補助対象設備"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "提出書類チェックリスト"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "handbook_section_first",
+      "pdfplumber_tables": "optional",
+      "notes": "Handbooks mix front-matter and long procedural sections; use TOC/section anchors and avoid full-document table scans unless needed."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard06",
+      "source_index": 10,
+      "page_count": 20,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "municipal_guideline_handbook: mix 3-page公募要領 and 20-page申請手引き; parse front-matter contact plus sections 補助対象設備, 申請受付期間, 提出書類.",
+      "risk_reason": "20 pages; text layer extractable; no sampled tables;申請の手引き carries all target labels, with contact on front matter",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "municipal_guideline_handbook",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.city.fukuoka.lg.jp/keizai/keieishien/documents/R8_syoukibo_youryou.pdf",
+    "publisher_domain": "city.fukuoka.lg.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "update_date",
+      "landing_page_url",
+      "checklist_pages"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "補助対象設備"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "提出書類チェックリスト"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "handbook_section_first",
+      "pdfplumber_tables": "optional",
+      "notes": "Handbooks mix front-matter and long procedural sections; use TOC/section anchors and avoid full-document table scans unless needed."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard06",
+      "source_index": 11,
+      "page_count": 3,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "municipal_guideline_handbook: mix 3-page公募要領 and 20-page申請手引き; parse front-matter contact plus sections 補助対象設備, 申請受付期間, 提出書類.",
+      "risk_reason": "3 pages; text layer extractable; no sampled tables; compact公募要領 has all target labels in front matter and body",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "municipal_grant_brochure",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.city.kobe.lg.jp/documents/31510/20260309110627.pdf",
+    "publisher_domain": "city.kobe.lg.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "update_date",
+      "front_page_summary",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "募集期限",
+        "申込期間"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "申請の手続き"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "brochure_section_first",
+      "pdfplumber_tables": "optional",
+      "notes": "Front page usually carries deadline/contact; interior prose sections carry rates, caps, and docs. Tables are optional."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard06",
+      "source_index": 12,
+      "page_count": 15,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "municipal_grant_brochure:募集案内 PDFs are field-dense but prose-heavy; front page contains deadline/contact, interior sections contain rates/limits/docs.",
+      "risk_reason": "15 pages; text layer extractable; no sampled tables; brochure-style募集案内 exposes deadline/contact on page 1 and rate/limit/docs in interior sections",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "loan_jfc_product",
+    "profile_family": "loan_jfc",
+    "schema_family": "loan_fields",
+    "source_url": "https://www.jfc.go.jp/n/company/national/pdf/goannai_2025.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "required_fields": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "guarantee",
+      "branch_locator_url",
+      "product_name"
+    ],
+    "extraction_anchors": {
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者",
+        "対象となる方"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額",
+        "ご融資額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率",
+        "融資利率",
+        "適用利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間",
+        "ご返済期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証",
+        "担保・保証人"
+      ],
+      "required_docs": [
+        "必要書類",
+        "提出書類",
+        "申込書類"
+      ],
+      "contact": [
+        "お問い合わせ",
+        "相談窓口",
+        "支店",
+        "事業資金相談ダイヤル",
+        "支店の窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月",
+        "発行"
+      ]
+    },
+    "table_strategy": {
+      "mode": "loan_matrix_primary",
+      "pdfplumber_tables": "required",
+      "notes": "JFC product guides are matrix/table-heavy; extract tables by page blocks, then normalize rows into loan_limit, interest_rate, repayment_term, collateral/guarantee."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard07",
+      "source_index": 1,
+      "page_count": 34,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "eligible_borrower",
+        "loan_limit",
+        "interest_rate",
+        "repayment_term",
+        "collateral",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable.",
+      "risk_reason": "34 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "loan_jfc_product",
+    "profile_family": "loan_jfc",
+    "schema_family": "loan_fields",
+    "source_url": "https://www.jfc.go.jp/n/company/sme/pdf/2025jfs.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "required_fields": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "guarantee",
+      "branch_locator_url",
+      "product_name"
+    ],
+    "extraction_anchors": {
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者",
+        "対象となる方"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額",
+        "ご融資額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率",
+        "融資利率",
+        "適用利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間",
+        "ご返済期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証",
+        "担保・保証人"
+      ],
+      "required_docs": [
+        "必要書類",
+        "提出書類",
+        "申込書類"
+      ],
+      "contact": [
+        "お問い合わせ",
+        "相談窓口",
+        "支店",
+        "事業資金相談ダイヤル",
+        "支店の窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月",
+        "発行"
+      ]
+    },
+    "table_strategy": {
+      "mode": "loan_matrix_primary",
+      "pdfplumber_tables": "required",
+      "notes": "JFC product guides are matrix/table-heavy; extract tables by page blocks, then normalize rows into loan_limit, interest_rate, repayment_term, collateral/guarantee."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard07",
+      "source_index": 2,
+      "page_count": 34,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "loan_limit",
+        "interest_rate",
+        "collateral",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable.",
+      "risk_reason": "34 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,max_amount,required_docs,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 0.667
+    }
+  },
+  {
+    "profile_name": "loan_jfc_product",
+    "profile_family": "loan_jfc",
+    "schema_family": "loan_fields",
+    "source_url": "https://www.jfc.go.jp/n/company/af/pdf/jfc25j.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "required_fields": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "guarantee",
+      "branch_locator_url",
+      "product_name"
+    ],
+    "extraction_anchors": {
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者",
+        "対象となる方"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額",
+        "ご融資額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率",
+        "融資利率",
+        "適用利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間",
+        "ご返済期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証",
+        "担保・保証人"
+      ],
+      "required_docs": [
+        "必要書類",
+        "提出書類",
+        "申込書類"
+      ],
+      "contact": [
+        "お問い合わせ",
+        "相談窓口",
+        "支店",
+        "事業資金相談ダイヤル",
+        "支店の窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月",
+        "発行"
+      ]
+    },
+    "table_strategy": {
+      "mode": "loan_matrix_primary",
+      "pdfplumber_tables": "required",
+      "notes": "JFC product guides are matrix/table-heavy; extract tables by page blocks, then normalize rows into loan_limit, interest_rate, repayment_term, collateral/guarantee."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard07",
+      "source_index": 3,
+      "page_count": 24,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "loan_limit",
+        "repayment_term",
+        "collateral",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable.",
+      "risk_reason": "24 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 0.667
+    }
+  },
+  {
+    "profile_name": "loan_jfc_product",
+    "profile_family": "loan_jfc",
+    "schema_family": "loan_fields",
+    "source_url": "https://www.jfc.go.jp/n/company/af/pdf/jfc25j-07.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "required_fields": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "guarantee",
+      "branch_locator_url",
+      "product_name"
+    ],
+    "extraction_anchors": {
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者",
+        "対象となる方"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額",
+        "ご融資額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率",
+        "融資利率",
+        "適用利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間",
+        "ご返済期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証",
+        "担保・保証人"
+      ],
+      "required_docs": [
+        "必要書類",
+        "提出書類",
+        "申込書類"
+      ],
+      "contact": [
+        "お問い合わせ",
+        "相談窓口",
+        "支店",
+        "事業資金相談ダイヤル",
+        "支店の窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月",
+        "発行"
+      ]
+    },
+    "table_strategy": {
+      "mode": "loan_matrix_primary",
+      "pdfplumber_tables": "required",
+      "notes": "JFC product guides are matrix/table-heavy; extract tables by page blocks, then normalize rows into loan_limit, interest_rate, repayment_term, collateral/guarantee."
+    },
+    "ocr_needed": false,
+    "parser_risk": "high",
+    "fixture_candidate": false,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard07",
+      "source_index": 4,
+      "page_count": 2,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "eligible_borrower",
+        "loan_limit"
+      ],
+      "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable.",
+      "risk_reason": "2 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,max_amount; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 0.333
+    }
+  },
+  {
+    "profile_name": "loan_jfc_product",
+    "profile_family": "loan_jfc",
+    "schema_family": "loan_fields",
+    "source_url": "https://www.jfc.go.jp/n/relate/pdf/toriatukai_01_2025.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "required_fields": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "guarantee",
+      "branch_locator_url",
+      "product_name"
+    ],
+    "extraction_anchors": {
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者",
+        "対象となる方"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額",
+        "ご融資額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率",
+        "融資利率",
+        "適用利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間",
+        "ご返済期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証",
+        "担保・保証人"
+      ],
+      "required_docs": [
+        "必要書類",
+        "提出書類",
+        "申込書類"
+      ],
+      "contact": [
+        "お問い合わせ",
+        "相談窓口",
+        "支店",
+        "事業資金相談ダイヤル",
+        "支店の窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月",
+        "発行"
+      ]
+    },
+    "table_strategy": {
+      "mode": "loan_matrix_primary",
+      "pdfplumber_tables": "required",
+      "notes": "JFC product guides are matrix/table-heavy; extract tables by page blocks, then normalize rows into loan_limit, interest_rate, repayment_term, collateral/guarantee."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard07",
+      "source_index": 5,
+      "page_count": 50,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "eligible_borrower",
+        "loan_limit",
+        "interest_rate",
+        "repayment_term",
+        "collateral",
+        "required_docs",
+        "contact"
+      ],
+      "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable.",
+      "risk_reason": "50 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  }
+]

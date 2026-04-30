@@ -9,7 +9,7 @@
 >
 > Validate (memory `feedback_validate_before_apply`):
 > - opted-in 確認 (cold list に送らない、memory `feedback_organic_only_no_ads`)
-> - 数値 13,578 / 66 / ¥3 統一
+> - 数値 14,472 / 66 / ¥3 統一
 > - INV-22: 過剰強調削除済み
 > - unsubscribe link 必須 (特商法 / GDPR)
 
@@ -28,7 +28,7 @@ AutonoMath launch: 日本制度を 1 query で AI に聞く
 ## Preheader (preview text)
 
 ```
-本日 launch。10,790 検索可制度 (full table 13,578 incl. 公開保留分) + 72 MCP ツール at default gates + ¥3/req 完全従量。匿名 50 req/月 per IP は無料です。
+本日 launch。11,684 検索可制度 (full table 14,472 incl. 公開保留分) + 93 MCP ツール at default gates + ¥3/req 完全従量。匿名 3 req/日 per IP は無料です。
 ```
 
 ---
@@ -45,21 +45,21 @@ Bookyou株式会社の梅田です。
 適格事業者 — を AI エージェントが 1 query で呼び出せる REST + MCP API です。
 
 ▼ 収録 (2026-05-06 時点)
-- 制度 13,578 件 (経産省・農水省・中小企業庁・公庫・47 都道府県、一次資料)
+- 制度 14,472 件 (経産省・農水省・中小企業庁・公庫・47 都道府県、一次資料)
 - 採択事例 2,286 / 融資 108 / 行政処分 1,185
 - 法令 9,484 (e-Gov CC-BY) / 適格事業者 13,801 (NTA PDL v1.0)
 - 出典 URL + 取得時刻、99%+ 行に付与
 
 ▼ どう使うか (5 audience 別)
-- AI agent 開発者: Manifest 1 行で 72 MCP ツール at default gates (uvx autonomath-mcp)
+- AI agent 開発者: Manifest 1 行で 93 MCP ツール at default gates (uvx autonomath-mcp)
 - 税理士 / 認定支援機関: Claude で措置法を条文単位 walkthrough
 - 行政書士: 補助金 + 融資 + 許認可を 1 call で一括
-- SMB 経営者 / 経理: ChatGPT で「うちで使える制度?」匿名 50 req/月 無料
+- SMB 経営者 / 経理: ChatGPT で「うちで使える制度?」匿名 3 req/日 無料
 - VC / DD: 法人番号 1 つで処分歴 + 採択歴 + 適格事業者 を一括取得
 
 ▼ 価格
 ¥3/req 税別 (税込 ¥3.30) 完全従量。tier / seat / 年間最低額なし。
-匿名 50 req/月 per IP は無料 (JST 月初リセット、API key 不要)。
+匿名 3 req/日 per IP は無料 (JST 月初リセット、API key 不要)。
 
 ▼ 始め方
 1. ドキュメント: https://jpcite.com/docs/getting-started/
@@ -89,7 +89,7 @@ Bookyou株式会社の梅田です。
 - [ ] `{{ unsubscribe_url }}` が機能する unique link (per-recipient)
 - [ ] 件名 24 文字 / preheader 60 文字以内確認
 - [ ] body 1,000 chars 以内確認 (上記 988)
-- [ ] 数値 13,578 / 55 / ¥3 統一確認
+- [ ] 数値 14,472 / 55 / ¥3 統一確認
 - [ ] テスト送信 (operator 自身の Gmail / Outlook / Yahoo) で render 確認
 - [ ] SPF / DKIM / DMARC pass 確認 (送信失敗回避)
 - [ ] launch 関連 URL 全て 200 動作確認

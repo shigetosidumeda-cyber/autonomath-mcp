@@ -75,7 +75,7 @@ Post-launch canonical layout. Read this in 2 minutes before touching the tree.
 ```
 src/jpintel_mcp/
   api/           FastAPI REST app, mounted at /v1/*
-  mcp/           FastMCP stdio server (89 tools at default gates)
+  mcp/           FastMCP stdio server (93 tools at default gates)
     autonomath_tools/    50 autonomath-gated tools (composition, NTA, Wave 21-23)
     healthcare_tools/    healthcare gate (off by default)
     real_estate_tools/   real-estate gate (off by default)

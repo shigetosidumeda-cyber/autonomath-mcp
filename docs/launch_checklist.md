@@ -96,7 +96,7 @@ L0 Storage 4 項目 (integrity / FK 0 / 3 indexes / cache schema) が **全て P
 
 ### Tasks
 
-- [ ] `.venv/bin/autonomath-mcp` 起動 → `tools/list` で 89 tools 出力確認  + 35 autonomath at default gates)
+- [ ] `.venv/bin/autonomath-mcp` 起動 → `tools/list` で 93 tools 出力確認  + 35 autonomath at default gates)
 - [ ] `/v1/am/*` 16 endpoint の OpenAPI export を確認 (まだ main.py で mount されていない場合は launch ブロッカーに昇格)
 - [ ] envelope v2 (`token_estimate` + `confidence` + `source_attribution` + `cache_hint`) が全 tool に wired
 - [ ] 5 critical invariants Tier 1 (INV-04 / INV-21 / INV-22 / INV-23 / INV-25) active 確認

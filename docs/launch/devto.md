@@ -10,7 +10,7 @@
 
 ## TL;DR
 
-I shipped jpcite (`autonomath-mcp` on PyPI) — a REST + MCP search API over 10,790 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 35 tax rulesets, and 2,286 adoption cases. Every row has a primary-source URL. Pricing is ¥3 per request metered with 50/month free anonymously. No subscription tiers. No signup for the free path.
+I shipped jpcite (`autonomath-mcp` on PyPI) — a REST + MCP search API over 11,684 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 50 tax rulesets, and 2,286 adoption cases. 99%+ of returned rows include a primary-source URL. Pricing is ¥3 per request metered with 3/day free anonymously. No subscription tiers. No signup for the free path.
 
 ```bash
 curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
@@ -54,7 +54,7 @@ Single SQLite file. No microservices. No Kafka. No Snowflake.
 ```
 src/jpintel_mcp/
   api/      FastAPI REST, mounted at /v1/*
-  mcp/      FastMCP stdio server (89 tools, protocol 2025-06-18)
+  mcp/      FastMCP stdio server (93 tools, protocol 2025-06-18)
   ingest/   Data ingestion + canonical tier scoring
   db/       SQLite migrations + query helpers
   billing/  Stripe metered billing
@@ -91,7 +91,7 @@ OpenAPI lives at `https://api.jpcite.com/openapi.json`.
 
 ### MCP surface
 
-89 tools at default gates, protocol `2025-06-18`, FastMCP over stdio. The tool inventory mirrors the REST surface: search, get-by-ID, lifecycle, prerequisite chain, rule-engine check, snapshot-time queries, provenance lookup. Drop into Claude Desktop config:
+93 tools at default gates, protocol `2025-06-18`, FastMCP over stdio. The tool inventory mirrors the REST surface: search, get-by-ID, lifecycle, prerequisite chain, rule-engine check, snapshot-time queries, provenance lookup. Drop into Claude Desktop config:
 
 ```json
 {
@@ -106,7 +106,7 @@ OpenAPI lives at `https://api.jpcite.com/openapi.json`.
 
 Restart Claude Desktop. Ask 「農業に使える東京都の補助金を教えて」. Claude calls `search_programs`, gets back rows with primary-source URLs, and cites them.
 
-The wheel on PyPI doesn't ship the DB (8.29 GB is too big for a wheel). Instead it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. The first 50 req/month per IP are free, no signup. Past that, ¥3/req metered with an API key.
+The wheel on PyPI doesn't ship the DB (8.29 GB is too big for a wheel). Instead it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. The first 3 req/day per IP are free, no signup. Past that, ¥3/req metered with an API key.
 
 If you want full local-mode MCP, clone the repo, fetch the DB tarball, run `autonomath-mcp` against the local file. No network.
 
@@ -124,7 +124,7 @@ That dropped my "active programs" count by ~30%, which was painful. But the rema
 
 ### 2. Source-URL rot is constant
 
-About 8% of source URLs decay per year as ministries rotate CMSes. I run a nightly checker against the `source_url + fetched_at` columns and route 404s into a public-hold bucket (1,923 rows currently). The user-facing `programs` count (10,790) excludes the public-hold rows.
+About 8% of source URLs decay per year as ministries rotate CMSes. I run a nightly checker against the `source_url + fetched_at` columns and route 404s into a public-hold bucket (2,788 rows currently). The user-facing `programs` count (11,684) excludes the public-hold rows.
 
 ### 3. Primary sources disagree with themselves
 
@@ -150,7 +150,7 @@ I get this question more than any other, so here's the long version.
 
 **5. The DB cost is a roughly known function of req volume.** ¥3/req has comfortable margin over my Fly.io + Stripe + bandwidth costs. It scales linearly. I can drop the price later if volume justifies.
 
-The free tier is intentional and aggressive: **50 req/month per IP, no signup**. I want devs to be able to type a curl command into a terminal and see real data back without filling out a form. Most agent prototypes won't exceed 50 req/month anyway, so the free path is genuinely usable.
+The free tier is intentional and aggressive: **3 req/day per IP, no signup**. I want devs to be able to type a curl command into a terminal and see real data back without filling out a form. Most agent prototypes won't exceed 3 req/day anyway, so the free path is genuinely usable.
 
 ```bash
 # This works, no key needed
@@ -207,7 +207,7 @@ Sample response:
 For Claude Desktop / Claude Code MCP, see the README.
 
 - Site: https://jpcite.com
-- GitHub: https://github.com/shigetosidumeda-cyber/jpintel-mcp
+- GitHub: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 - Pricing: https://jpcite.com/docs/pricing/
 - OpenAPI: https://api.jpcite.com/openapi.json

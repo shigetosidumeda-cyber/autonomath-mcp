@@ -9,9 +9,9 @@
 
 Just shipped jpcite: a search API + MCP server over Japanese institutional data.
 
-10,790 subsidies / 9,484 laws / 2,065 court decisions / 13,801 invoice registrants / 35 tax rulesets — every row has a primary-source URL.
+11,684 subsidies / 9,484 laws / 2,065 court decisions / 13,801 invoice registrants / 50 tax rulesets — every row has a primary-source URL.
 
-¥3/req metered. 50/month free anonymously, no signup.
+¥3/req metered. 3/day free anonymously, no signup.
 
 🧵
 
@@ -37,13 +37,13 @@ Stack:
 • 8.29 GB unified DB, 503k entities, 6.12M facts (EAV)
 • Fly.io Tokyo, single-region
 
-72 MCP tools, protocol 2025-06-18.
+93 MCP tools, protocol 2025-06-18.
 
 ---
 
 ## Tweet 4/6 — pricing
 
-¥3/req metered (税込 ¥3.30). 50 req/月 anonymous free.
+¥3/req metered (税込 ¥3.30). 3 req/日 anonymous free.
 
 No tiers. No minimums. No subscription. No annual contracts.
 
@@ -73,7 +73,7 @@ If you're building agents that touch Japanese regulation, I'd love feedback.
 
 🌐 https://jpcite.com
 📦 https://pypi.org/project/autonomath-mcp/
-🐙 https://github.com/shigetosidumeda-cyber/jpintel-mcp
+🐙 https://github.com/shigetosidumeda-cyber/autonomath-mcp
 
 DMs open. Public docs only — no Slack Connect, no DPA negotiation. Self-service all the way.
 

@@ -174,37 +174,37 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
     )
     minimal_files = {
         "server.json": json.dumps(
-            {
-                "name": "autonomath-mcp",
-                "version": "0.3.1",
-                "websiteUrl": "https://jpcite.com",
-                "description": "92 MCP tools at default gates — autonomath-mcp",
-                "tool_count": 92,
-                "repository": {"url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp"},
-            }
+                {
+                    "name": "autonomath-mcp",
+                    "version": "0.3.2",
+                    "websiteUrl": "https://jpcite.com",
+                    "description": "93 MCP tools at default gates — autonomath-mcp",
+                    "tool_count": 93,
+                    "repository": {"url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp"},
+                }
         )
         + "\n",
         "mcp-server.json": canonical_blob,
         "dxt/manifest.json": canonical_blob,
         "smithery.yaml": (
-            'version: "0.3.1"\nhomepage: "https://jpcite.com"\n'
+            'version: "0.3.2"\nhomepage: "https://jpcite.com"\n'
             'env: AUTONOMATH_API_KEY="" AUTONOMATH_API_BASE=""\n'
             "package: autonomath-mcp\n"
             "repo: https://github.com/shigetosidumeda-cyber/autonomath-mcp\n"
-            "description: 92 MCP tools at default gates\n"
+            "description: 93 MCP tools at default gates\n"
         ),
         "scripts/mcp_registries_submission.json": canonical_blob,
         "pyproject.toml": (
-            'version = "0.3.1"\nname = "autonomath-mcp"\n'
-            'description = "92 MCP tools — see https://jpcite.com"\n'
+            'version = "0.3.2"\nname = "autonomath-mcp"\n'
+            'description = "93 MCP tools — see https://jpcite.com"\n'
             'Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"\n'
         ),
         "README.md": (
-            "# autonomath-mcp\n\nhttps://jpcite.com — 92 MCP tools at default gates. "
+            "# autonomath-mcp\n\nhttps://jpcite.com — 93 MCP tools at default gates. "
             "github.com/shigetosidumeda-cyber/autonomath-mcp\n"
         ),
-        "site/llms.txt": "# jpcite\nhttps://jpcite.com — 92 MCP tools at default gates.\n",
-        "CLAUDE.md": "# autonomath-mcp\nhttps://jpcite.com — 92 MCP tools at default gates.\n",
+        "site/llms.txt": "# jpcite\nhttps://jpcite.com — 93 MCP tools at default gates.\n",
+        "CLAUDE.md": "# autonomath-mcp\nhttps://jpcite.com — 93 MCP tools at default gates.\n",
         "sdk/python/autonomath/_shared.py": (
             'DEFAULT_BASE_URL = "https://api.jpcite.com"\n'
             "AUTONOMATH_API_KEY_HINT = 'use env AUTONOMATH_API_KEY'\n"

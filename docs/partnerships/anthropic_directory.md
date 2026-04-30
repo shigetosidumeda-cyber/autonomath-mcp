@@ -15,9 +15,9 @@ Claude Desktop ユーザー (AI 開発者 / 税理士 / 行政書士 / VC) が:
 1. `Settings → Extensions → Browse Directory` で「AutonoMath」を検索
 2. 1 click でインストール (`autonomath-mcp.mcpb` または PyPI `uvx autonomath-mcp`)
 3. すぐに `「弊社の今期使える税制と補助金は?」`と Claude に聞ける
-4. Claude が AutonoMath MCP の 89 tools  + 30 autonomath at default gates) を自動選択して呼出
+4. Claude が AutonoMath MCP の 93 tools  + 30 autonomath at default gates) を自動選択して呼出
 
-API key 不要 (anonymous IP-based 50 req/月 free)、有料化は本人が Stripe portal でカード登録するだけ。
+API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Stripe portal でカード登録するだけ。
 
 ## 配布形式
 
@@ -41,29 +41,29 @@ API key 不要 (anonymous IP-based 50 req/月 free)、有料化は本人が Stri
 ### Japanese (long, ≤500 chars)
 
 ```
-AutonoMath — 日本の制度情報 MCP サーバー (89 tools, protocol 2025-06-18)。
-13,578 プログラム (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 /
+AutonoMath — 日本の制度情報 MCP サーバー (93 tools, protocol 2025-06-18)。
+14,472 プログラム (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 /
 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 法令 e-Gov 本文 154 + メタデータ 9,484 行 +
 税制 ruleset (インボイス / 電帳法) 35 行 + 適格請求書事業者 13,801 行 (PDL v1.0) +
 503,930 entity + 6.12M facts + 177,381 relations + 335k aliases。
 181 件の排他ルール、cross-dataset glue (trace_program_to_law / find_cases_by_law /
 combined_compliance_check)。99%+ rows: source_url + fetched_at、集約サイト不使用。
-¥3/req (税別、税込 ¥3.30) フル従量、IP ベース 50 req/月 無料 (JST 月初リセット、
+¥3/req (税別、税込 ¥3.30) フル従量、IP ベース 3 req/日 無料 (JST 月初リセット、
 key 不要)。Bookyou 株式会社 / info@bookyou.net。
 ```
 
 ### English (long, ≤500 chars)
 
 ```
-AutonoMath — MCP server (89 tools, protocol 2025-06-18) over Japanese public-program
-data: 13,578 programs (subsidy / loan / tax / certification) + 2,286 acceptance cases +
+AutonoMath — MCP server (93 tools, protocol 2025-06-18) over Japanese public-program
+data: 14,472 programs (subsidy / loan / tax / certification) + 2,286 acceptance cases +
 108 loans (3-axis: collateral / individual guarantor / third-party guarantor) +
-1,185 enforcement actions + 154 laws full-text + 9,484 law catalog stubs (e-Gov, CC-BY) + 35 tax rulesets
+1,185 enforcement actions + 154 laws full-text + 9,484 law catalog stubs (e-Gov, CC-BY) + 50 tax rulesets
 (invoice / electronic-bookkeeping) + 13,801 invoice registrants (NTA, PDL v1.0) +
 503,930 entities + 6.12M facts + 177,381 relations + 335k aliases.
 181 exclusion / prerequisite rules; cross-dataset glue: trace_program_to_law /
 find_cases_by_law / combined_compliance_check. 99%+ rows ship source_url +
-fetched_at; no aggregators. ¥3/req fully metered (¥3.30 incl. tax); 50 req/month
+fetched_at; no aggregators. ¥3/req fully metered (¥3.30 incl. tax); 3 req/day
 per IP free (resets JST midnight, no key required). Bookyou Inc. / info@bookyou.net.
 ```
 
@@ -71,7 +71,7 @@ per IP free (resets JST midnight, no key required). Bookyou Inc. / info@bookyou.
 
 JP:
 ```
-日本の制度情報 (補助金 / 融資 / 税制 / 認定) を 69 ツールで横断検索。181 排他ルール、3 軸融資リスク、出典付き。¥3/req、50 req/月 free。
+日本の制度情報 (補助金 / 融資 / 税制 / 認定) を 93 ツールで横断検索。181 排他ルール、3 軸融資リスク、出典付き。¥3/req、3 req/日 free。
 ```
 
 EN:

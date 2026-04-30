@@ -20,7 +20,7 @@ Zero runtime dependencies. Works in Node 20+, Deno, Bun, modern browsers
 
 <!-- TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed. -->
 ```bash
-npm install "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git#subdirectory=sdk/typescript"
+npm install "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp.git#subdirectory=sdk/typescript"
 ```
 
 For the optional MCP bridge, also install the Python MCP server:

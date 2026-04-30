@@ -1,9 +1,9 @@
 {
   "server": {
     "name": "autonomath-mcp",
-    "display_name": "AutonoMath — 日本の制度 MCP (89 tools)",
+    "display_name": "AutonoMath — 日本の制度 MCP (93 tools)",
     "registry_id": "io.github.shigetosidumeda-cyber/autonomath-mcp",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "repo_url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
     "homepage": "https://jpcite.com",
     "docs_url": "https://jpcite.com/docs/",
@@ -23,11 +23,11 @@
       "invoice_registration_number": "T8010001213708",
       "contact": "info@bookyou.net"
     },
-    "description_short": "AutonoMath: 66-tool MCP (38 core + 28 autonomath: 17 V1 + 4 V4 universal + 7 Phase A) over Japanese primary-gov data — 11,684 programs + 503,930 entities + 6.12M facts, 181 exclusion rules, 3-axis loan risk. ¥3/req; 50/月 free.",
-    "description_long": "AutonoMath provides structured access to Japanese public-program data via 89 MCP tools (protocol 2025-06-18): 38 core (11,684 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + 7 one-shot [smb_starter_pack/subsidy_combo_finder/deadline_calendar/dd_profile_am/similar_cases/regulatory_prep_pack/subsidy_roadmap_3yr] + laws e-Gov CC-BY 9,484 rows + tax rulesets インボイス/電帳法 35 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows live delta-only + court decisions 2,065 rows + bids 362 rows) + 28 autonomath: 17 V1 (entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance + list_tax_sunset_alerts) + 4 V4 universal (get_annotations / validate / get_provenance / get_provenance_for_fact) + 7 Phase A absorption (list_static_resources_am / get_static_resource_am / list_example_profiles_am / get_example_profile_am / render_36_kyotei_am / get_36_kyotei_metadata_am / deep_health_am). 181 structural exclusion/prerequisite rules; cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row: source_url + fetched_at; no aggregators. FTS5 trigram tokenizer. ¥3/req tax-excl (¥3.30 incl); 50 req/月 per IP free (JST 月初リセット). 36協定 renderer behind AUTONOMATH_36_KYOTEI_ENABLED gate (社労士法 review). Bookyou株式会社 / info@bookyou.net.",
-    "tool_count": 89,
+    "description_short": "AutonoMath: 93-tool MCP (39 core + 50 autonomath at runtime) over Japanese primary-gov data — 11,684 searchable programs + 503,930 entities + 6.12M facts, 181 exclusion rules, 3-axis loan risk. ¥3/req; 3/日 free.",
+    "description_long": "AutonoMath provides structured access to Japanese public-program data via 93 MCP tools (protocol 2025-06-18): 39 core (11,684 searchable programs 補助金/融資/税制/認定; full table 14,472 incl. public-hold/quarantine rows + 2,286 採択事例 + 108 融資 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + one-shot packs [smb_starter_pack/subsidy_combo_finder/deadline_calendar/dd_profile_am/similar_cases/regulatory_prep_pack/subsidy_roadmap_3yr] + laws e-Gov CC-BY 9,484 rows + tax rulesets インボイス/電帳法 50 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows live delta-only + court decisions 2,065 rows + bids 362 rows) + 50 autonomath at runtime (entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance, plus V4 universal resources and Phase A absorption). Evidence Pre-fetch / precomputed intelligence means source_url/fetched_at lineage, exclusion-rule checks, and cross-dataset joins are prepared for retrieval; describe it as evidence packaging, not as model-cost savings. 181 structural exclusion/prerequisite rules; cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. 99%+ rows carry source_url + fetched_at; no aggregators. FTS5 trigram tokenizer. ¥3/req tax-excl (¥3.30 incl); 3 req/日 per IP free (JST 翌日リセット). 36協定 renderer behind AUTONOMATH_36_KYOTEI_ENABLED gate (社労士法 review). Bookyou株式会社 / info@bookyou.net.",
+    "tool_count": 93,
     "tools_base": [
-      {"name": "search_programs", "summary": "Full-text + faceted search over 13,578 Japanese public programs"},
+      {"name": "search_programs", "summary": "Full-text + faceted search over 11,684 searchable Japanese public programs (14,472 total incl. public-hold/quarantine rows)"},
       {"name": "get_program", "summary": "Full enriched program detail by unified_id (A–J dims, lineage)"},
       {"name": "batch_get_programs", "summary": "Batch-fetch up to 50 programs by unified_id in one round-trip"},
       {"name": "check_exclusions", "summary": "Run 181 exclusion/prerequisite rules on a candidate program set"},
@@ -99,7 +99,8 @@
       {"name": "deep_health_am", "summary": "Phase A: deep health probe (DB connectivity, FTS/vec status, precompute freshness)"}
     ],
     "datasets": {
-      "programs": 13578,
+      "programs_searchable": 11684,
+      "programs_total": 14472,
       "case_studies": 2286,
       "loan_programs": 108,
       "enforcement_cases": 1185,
@@ -107,7 +108,7 @@
       "laws": "e-Gov法令 CC-BY (9,484 rows, continually loading)",
       "court_decisions": "裁判所公開判例 (2,065 rows)",
       "bids": "GEPS + 47都道府県 (362 rows)",
-      "tax_rulesets": "インボイス + 電帳法 (35 rows)",
+      "tax_rulesets": "インボイス + 電帳法 (50 rows)",
       "invoice_registrants": "国税庁 PDL v1.0 (13,801 rows delta-only, re-distributable with attribution)",
       "autonomath_entities": 503930,
       "autonomath_facts": "6.12M",
@@ -116,7 +117,7 @@
       "annotations": 16474
     },
     "pricing": {
-      "anonymous_free": "50 req/月 per IP (JST 月初 00:00 リセット, no key required)",
+      "anonymous_free": "3 req/日 per IP (JST 翌日リセット, no key required)",
       "metered": "¥3/req tax-exclusive (¥3.30 tax-inclusive via Stripe Tax)",
       "no_tiers": true,
       "no_seat_fees": true,
@@ -149,7 +150,7 @@
       "required_fields": ["$schema", "name", "version", "description", "packages"],
       "review": "automatic",
       "propagates_to": ["pulsemcp", "mcp.so", "several downstream aggregators"],
-      "notes": "TODO(org-claim): when AutonoMath GitHub org is claimed, switch namespace back to io.github.AutonoMath/autonomath-mcp. Currently published under shigetosidumeda-cyber/autonomath-mcp (the active repo). Requires GITHUB_TOKEN with repo:read scope or OIDC from Actions."
+      "notes": "Published under io.github.shigetosidumeda-cyber/autonomath-mcp, matching the active GitHub repo. Requires GITHUB_TOKEN with repo:read scope or OIDC from Actions."
     },
     {
       "id": "smithery",
@@ -206,7 +207,7 @@
       "method": "github-pr",
       "target_file": "README.md",
       "target_section": "Finance & Fintech",
-      "entry_draft": "- [AutonoMath](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 66-tool MCP (38 core + 28 autonomath: 17 V1 + 4 V4 universal annotation/validation/provenance + 7 Phase A static/example/template/health) over 13,578 Japanese public programs + entity-fact DB (503,930 entities + 6.12M facts), 181 exclusion rules, 3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 50/月 free. `uvx autonomath-mcp`",
+      "entry_draft": "- [AutonoMath](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 93-tool MCP (39 core + 50 autonomath at runtime) over 11,684 searchable Japanese public programs (14,472 total) + entity-fact DB (503,930 entities + 6.12M facts), 181 exclusion rules, 3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 3/日 free. `uvx autonomath-mcp`",
       "review": "maintainer, days"
     },
     {

@@ -133,7 +133,7 @@ OK:
 **例**:
 
 ```markdown
-> 2026 年 4 月 25 日時点で、AutonoMath DB には **13,578 件** の制度 (補助金 / 融資 / 税制 / 認定、tier S/A/B/C、excluded=0) が canonical 形式で収録されています (出典: 当社 DB の `programs` テーブル)。
+> 2026 年 4 月 25 日時点で、AutonoMath DB には **14,472 件** の制度 (補助金 / 融資 / 税制 / 認定、tier S/A/B/C、excluded=0) が canonical 形式で収録されています (出典: 当社 DB の `programs` テーブル)。
 ```
 
 ---
@@ -151,7 +151,7 @@ OK:
 
 - [ ] Block C (pricing disclaimer) 配置
 - [ ] 消費税込み価格の明示 (¥3.30/req)
-- [ ] 「無料」表記には「月 50 req まで」の条件明記
+- [ ] 「無料」表記には「日 3 req まで」の条件明記
 - [ ] Block D (footer) 配置
 
 ### 3.3 Docs / API reference

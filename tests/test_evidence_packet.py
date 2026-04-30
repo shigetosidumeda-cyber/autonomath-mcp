@@ -118,6 +118,18 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 field_name   TEXT NOT NULL,
                 detected_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+            CREATE TABLE am_program_summary (
+                entity_id        TEXT PRIMARY KEY,
+                primary_name     TEXT,
+                summary_50       TEXT,
+                summary_200      TEXT,
+                summary_800      TEXT,
+                token_50_est     INT,
+                token_200_est    INT,
+                token_800_est    INT,
+                generated_at     TEXT DEFAULT (datetime('now')),
+                source_quality   REAL
+            );
             """
         )
         # Seed 2 source rows, mixed licenses.
@@ -254,6 +266,24 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 0,
             ),
         )
+        con.execute(
+            "INSERT INTO am_program_summary("
+            "entity_id, primary_name, summary_50, summary_200, summary_800, "
+            "token_50_est, token_200_est, token_800_est, generated_at, "
+            "source_quality) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (
+                "program:evp:p1",
+                "EVP テスト P1 補助金",
+                "EVP P1 補助金。一次資料に基づく短縮要約。",
+                "EVP P1 補助金は農林水産省のテスト制度。対象、金額、締切は一次資料を確認。",
+                "EVP P1 補助金は農林水産省のテスト制度。対象、金額、締切、併用条件は一次資料とルール判定を確認。",
+                24,
+                52,
+                78,
+                "2026-04-29T00:00:00",
+                0.91,
+            ),
+        )
         con.commit()
     finally:
         con.close()
@@ -385,6 +415,134 @@ def test_compose_includes_disclaimer_and_known_gaps(fixture_db: Path) -> None:
     assert env["_disclaimer"]["type"] == "information_only"
     assert env["_disclaimer"]["not_legal_or_tax_advice"] is True
     assert isinstance(env["quality"]["known_gaps"], list)
+
+
+def test_compose_include_compression_returns_real_block(fixture_db: Path) -> None:
+    """include_compression=True uses TokenCompressionEstimator, not a hint."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(
+        jpintel_db=settings.db_path, autonomath_db=fixture_db
+    )
+    env = composer.compose_for_program(
+        "UNI-evp-p1",
+        include_compression=True,
+        input_token_price_jpy_per_1m=300.0,
+    )
+    assert env is not None
+    assert "_compression_hint" not in env
+    assert "compression" in env
+
+    compression = env["compression"]
+    assert isinstance(compression["packet_tokens_estimate"], int)
+    assert compression["packet_tokens_estimate"] > 0
+    assert compression["source_tokens_estimate"] is None
+    assert compression["avoided_tokens_estimate"] is None
+    assert compression["compression_ratio"] is None
+    assert compression["source_tokens_basis"] == "unknown"
+    assert "cost_savings_estimate" not in compression
+    assert env["_token_pricing_input_jpy_per_1m"] == 300.0
+
+
+def test_compose_includes_precomputed_program_summary(fixture_db: Path) -> None:
+    """am_program_summary rows surface as compact precomputed basis data."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(
+        jpintel_db=settings.db_path, autonomath_db=fixture_db
+    )
+    env = composer.compose_for_program("UNI-evp-p1")
+    assert env is not None
+    assert env["answer_basis"] == "precomputed"
+
+    precomputed = env["records"][0]["precomputed"]
+    assert precomputed["basis"] == "am_program_summary"
+    assert precomputed["summaries"]["50"]
+    assert precomputed["summaries"]["200"]
+    assert precomputed["summaries"]["800"]
+    assert precomputed["token_estimates"] == {"50": 24, "200": 52, "800": 78}
+    assert precomputed["generated_at"] == "2026-04-29T00:00:00"
+    assert precomputed["source_quality"] == 0.91
+
+
+def test_query_records_include_precomputed_program_summary(
+    fixture_db: Path,
+) -> None:
+    """Query-mode records include am_program_summary data when available."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(
+        jpintel_db=settings.db_path, autonomath_db=fixture_db
+    )
+    env = composer.compose_for_query(
+        "EVP",
+        limit=2,
+        include_compression=True,
+        input_token_price_jpy_per_1m=300.0,
+    )
+
+    assert env["answer_basis"] == "precomputed"
+    records_by_id = {rec["entity_id"]: rec for rec in env["records"]}
+    assert set(records_by_id) == {"program:evp:p1", "program:evp:p2"}
+
+    p1_precomputed = records_by_id["program:evp:p1"]["precomputed"]
+    assert p1_precomputed["basis"] == "am_program_summary"
+    assert p1_precomputed["summaries"]["50"]
+    assert p1_precomputed["token_estimates"] == {"50": 24, "200": 52, "800": 78}
+    assert p1_precomputed["generated_at"] == "2026-04-29T00:00:00"
+
+    assert "precomputed" not in records_by_id["program:evp:p2"]
+
+    compression = env["compression"]
+    assert compression["source_tokens_basis"] == "unknown"
+    assert compression["source_tokens_estimate"] is None
+    assert compression["avoided_tokens_estimate"] is None
+    assert compression["compression_ratio"] is None
+    assert "cost_savings_estimate" not in compression
+
+
+def test_query_answer_basis_omitted_without_precomputed_summary(
+    fixture_db: Path,
+) -> None:
+    """Query-mode answer_basis is precomputed only when a record has it."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(
+        jpintel_db=settings.db_path, autonomath_db=fixture_db
+    )
+    env = composer.compose_for_query("P2", limit=10)
+
+    assert len(env["records"]) == 1
+    assert env["records"][0]["entity_id"] == "program:evp:p2"
+    assert "precomputed" not in env["records"][0]
+    assert "answer_basis" not in env
+
+
+def test_missing_program_summary_table_fails_open(tmp_path: Path) -> None:
+    """Optional am_program_summary absence never blocks packet rendering."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    db = tmp_path / "autonomath_no_summary.db"
+    _build_fixture_autonomath_db(db)
+    con = sqlite3.connect(db)
+    try:
+        con.execute("DROP TABLE am_program_summary")
+        con.commit()
+    finally:
+        con.close()
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=db)
+    env = composer.compose_for_program("UNI-evp-p1", include_compression=True)
+    assert env is not None
+    assert "compression" in env
+    assert "_compression_hint" not in env
+    assert "answer_basis" not in env
+    assert "precomputed" not in env["records"][0]
 
 
 # ---------------------------------------------------------------------------

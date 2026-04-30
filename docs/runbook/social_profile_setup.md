@@ -42,9 +42,9 @@ heavily for `Organization` schema verification.
    - **Logo**: upload `site/assets/logo.svg` (LinkedIn requires PNG —
      export at 400×400 from `assets/og.png` if the SVG isn't accepted).
 5. **Tagline (120 chars max)**:
-   > 日本の補助金・融資・税制・認定制度の API + MCP。¥3/req。一次資料 100%。
+   > 日本の補助金・融資・税制・認定制度の API + MCP。¥3/req。一次資料ベース。
 6. **About / Description (2,000 chars max)**:
-   > jpcite (, 適格請求書発行事業者番号 T8010001213708) は、日本の補助金・融資・税制・認定制度を REST API + MCP server で提供するサービスです。13,578 制度 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料 100% で正規化、集約サイト不採用、AI agent が士業・経営者の代わりに制度横断の照合を行えるよう設計しました。料金は ¥3/req 完全従量 (税込 ¥3.30)、匿名 50 req/月 per IP は登録不要で無料。本サービスは情報検索であり、税理士法 §52 / 弁護士法 §72 に基づく個別具体的な税務助言・法律相談ではありません。
+   > jpcite (, 適格請求書発行事業者番号 T8010001213708) は、日本の補助金・融資・税制・認定制度を REST API + MCP server で提供するサービスです。14,472 制度 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料ベース で正規化、集約サイト不採用、AI agent が士業・経営者の代わりに制度横断の照合を行えるよう設計しました。料金は ¥3/req 完全従量 (税込 ¥3.30)、匿名 3 req/日 per IP は登録不要で無料。本サービスは情報検索であり、税理士法 §52 / 弁護士法 §72 に基づく個別具体的な税務助言・法律相談ではありません。
 7. **Specialties (tags, up to 20)**:
    - `Public program search`
    - `MCP server`
@@ -77,14 +77,14 @@ maintain. Cross-link is the real value.
    Fallback: `@bookyou_inc`.
 4. **Display name**: `jpcite (Bookyou株式会社)`
 5. **Bio (160 chars max)**:
-   > 日本の公的制度を AI が呼べる API + MCP に。¥3/req 完全従量。一次資料 100%、集約サイト不採用。(T8010001213708)。
+   > 日本の公的制度を AI が呼べる API + MCP に。¥3/req 完全従量。一次資料ベース、集約サイト不採用。(T8010001213708)。
 6. **Location**: `東京都`
 7. **Website**: `https://jpcite.com/`
 8. **Profile photo**: same logo as LinkedIn.
 9. **Header (banner) image (1500×500 px)**: optional. If you skip,
    X uses the default — that's fine for entity-binding purposes.
 10. **Pinned tweet** (one-time):
-    > jpcite を公開しました。日本の補助金・融資・税制・認定 13,578 制度 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料 100% で API + MCP 化。¥3/req 完全従量、匿名 50 req/月 per IP 無料。https://jpcite.com/
+    > jpcite を公開しました。日本の補助金・融資・税制・認定 14,472 制度 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料ベース で API + MCP 化。¥3/req 完全従量、匿名 3 req/日 per IP 無料。https://jpcite.com/
 11. After setup: confirm the canonical URL is
     `https://twitter.com/zeimukaikei_ai` (or your fallback handle) and
     swap into the `sameAs` arrays.
@@ -101,7 +101,7 @@ business-named entity.
 **Steps:**
 1. Go to https://github.com/organizations/new.
 2. **Organization name**: `AutonoMath`. (If taken: `BookyouInc` or
-   `bookyou-jp`. Confirm by visiting `https://github.com/shigetosidumeda-cyber/jpintel-mcp`
+   `bookyou-jp`. Confirm by visiting `https://github.com/shigetosidumeda-cyber/autonomath-mcp`
    first.)
 3. **Contact email**: `info@bookyou.net`.
 4. **This organization belongs to**: `My personal account`.
@@ -117,11 +117,11 @@ business-named entity.
 7. Transfer the `autonomath-mcp` repo into the new org:
    - On the personal-account repo: **Settings** → **Transfer
      ownership** → enter the new org name.
-   - This rewrites public clone URLs to `github.com/shigetosidumeda-cyber/jpintel-mcp/...`,
+   - This rewrites public clone URLs to `github.com/shigetosidumeda-cyber/autonomath-mcp/...`,
      but GitHub keeps the old URLs as redirects so existing
      consumers don't break.
-8. After transfer: swap `https://github.com/shigetosidumeda-cyber/jpintel-mcp` →
-   `https://github.com/shigetosidumeda-cyber/jpintel-mcp` in every `sameAs` array.
+8. After transfer: swap `https://github.com/shigetosidumeda-cyber/autonomath-mcp` →
+   `https://github.com/shigetosidumeda-cyber/autonomath-mcp` in every `sameAs` array.
 
 ---
 
@@ -165,7 +165,7 @@ grep -rln "https://www.linkedin.com/company/bookyou/" site/ docs/
 grep -rln "https://twitter.com/zeimukaikei_ai" site/ docs/
 
 # Personal GitHub (currently set to shigetosidumeda-cyber)
-grep -rln "https://github.com/shigetosidumeda-cyber/jpintel-mcp" site/ docs/
+grep -rln "https://github.com/shigetosidumeda-cyber/autonomath-mcp" site/ docs/
 ```
 
 Replace each placeholder with the real canonical URL. The canonical

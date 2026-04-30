@@ -9,7 +9,7 @@
 
 ## なぜ Healthcare V3 か
 
-- jpcite は 2026-05-06 に農業 + SMB 制度 13,578 件で launch する。
+- jpcite は 2026-05-06 に農業 + SMB 制度 14,472 件で launch する。
   Healthcare はその cohort 拡張 — `programs` テーブルへ無理に詰め込まず、
   **専用テーブル 2 本** (`medical_institutions` / `care_subsidies`) を別建てする。
 - ターゲット 3 cohort は **薬機法 / 医療法 / 介護保険法** という 3 本の
@@ -92,10 +92,10 @@ Scaffolding が **本日着地** (`src/jpintel_mcp/mcp/healthcare_tools/`):
 
 - `__init__.py` + `tools.py` で 6 stub 全て `@mcp.tool` 登録 (合計 332 行).
 - 各 stub は sentinel 注記 `{"status": "not_implemented_until_T+90d", "results": []}` を返す。実 SQL は **W4 (T+90d, 2026-08-04)** で TODO コメントの位置に書き足し。
-- `AUTONOMATH_HEALTHCARE_ENABLED` env (default `False`) で gate。launch (2026-05-06) 時点では disabled、manifest は 89 tools のまま。
+- `AUTONOMATH_HEALTHCARE_ENABLED` env (default `False`) で gate。launch (2026-05-06) 時点では disabled、manifest は 93 tools のまま。
 - operator が `True` に flip すると 89 + 6 = **95 tools** に増えるので W4 直前に契約面の事前確認が可能。
 - `tests/test_healthcare_tools.py` が
-  ① env-False で 89 tools / ② env-True で 95 tools / ③ sentinel 注記 return / ④ 各 stub の signature shape を担保。
+  ① env-False で 93 tools / ② env-True で 95 tools / ③ sentinel 注記 return / ④ 各 stub の signature shape を担保。
 
 これで W4 で触る範囲は **TODO コメント 6 箇所の SQL body 差し替えのみ** に縮小済み。signature / docstring / env gate / 登録順序は確定済みで再 deploy なしに query layer を埋められる。
 

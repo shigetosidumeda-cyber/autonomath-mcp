@@ -9,7 +9,7 @@ status: DRAFT — submit post PyPI publish (#74)
 Both accept MCP servers via a web form / GitHub-based pipeline. Because MCP is
 protocol-level, the same `autonomath-mcp` binary installs on both.
 
-**BLOCKER**: submit only after `autonomath-mcp` v0.1.0 is live on PyPI (task #74).
+**BLOCKER**: submit only after `autonomath-mcp` v0.3.2 is live on PyPI (task #74).
 
 ---
 
@@ -24,17 +24,17 @@ https://cursor.directory/plugins (Submit button)
 |-------|-------|
 | Plugin name | `AutonoMath` |
 | Slug | `autonomath-mcp` |
-| Tagline (< 200 chars) | `日本の公的制度 (補助金・融資・税制・認定) 13,578 件 + 採択事例 + 融資三軸分解 + 行政処分 を横断検索する MCP サーバ. 35 排他ルール, protocol 2025-06-18, 12 tools.` |
+| Tagline (< 200 chars) | `日本の公的制度 (補助金・融資・税制・認定) 13,578 件 + 採択事例 + 融資三軸分解 + 行政処分 を横断検索する MCP サーバ. 181 排他ルール, protocol 2025-06-18, 93 tools.` |
 | Category | Data / Productivity / Developer Tools |
 | Icon (256×256 PNG) | `https://jpcite.com/assets/mcp_preview_1.png` |
 | Tile (1200×630) | `https://jpcite.com/assets/mcp_preview_1.png` |
-| Repo URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| Repo URL | `https://github.com/shigetosidumeda-cyber/autonomath-mcp` |
 | Homepage URL | `https://jpcite.com/` |
 | Author | Bookyou 株式会社 |
 | Contact email | `info@bookyou.net` |
 | License | MIT |
 | Install command | `uvx autonomath-mcp` |
-| Pricing | Free 50 req/month per IP (JST first-of-month reset); ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered |
+| Pricing | Free 3 req/day per IP (JST next-day reset); ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered |
 | Tags | `japan, japanese, subsidy, 補助金, grant, loan, tax, certification, government, mcp, stdio, 2025-06-18` |
 
 ### Cursor `.cursor/mcp.json` snippet (users copy into project)
@@ -95,12 +95,12 @@ Path: `~/.codeium/windsurf/mcp_config.json` (macOS / Linux); `%USERPROFILE%\.cod
 
 ## Pre-submission checklist (shared)
 
-- [ ] `autonomath-mcp` v0.1.0 published on PyPI (`pip install autonomath-mcp` resolves)
+- [ ] `autonomath-mcp` v0.3.2 published on PyPI (`pip install autonomath-mcp` resolves)
 - [ ] `uvx autonomath-mcp` works on a clean machine (test on spare laptop)
 - [ ] Cursor Directory account created
-- [ ] GitHub repo `AutonoMath/autonomath-mcp` public with README + LICENSE + CHANGELOG
+- [ ] GitHub repo `shigetosidumeda-cyber/autonomath-mcp` public with README + LICENSE + CHANGELOG
 - [ ] Tile images accessible: `https://jpcite.com/assets/mcp_preview_{1,2}.png` → 200 OK
-- [ ] Screenshot of Cursor MCP panel showing 12 tools after `.cursor/mcp.json` install
+- [ ] Screenshot of Cursor MCP panel showing 93 tools after `.cursor/mcp.json` install
 
 ## Rollout timing (per machine-speed launch plan)
 

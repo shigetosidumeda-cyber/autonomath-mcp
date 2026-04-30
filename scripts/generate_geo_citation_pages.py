@@ -180,7 +180,7 @@ class QAPage:
     qa_pairs: list[tuple[str, str]] = field(default_factory=list)
     facts: list[tuple[str, str]] = field(default_factory=list)
     sources: list[Source] = field(default_factory=list)
-    api_query: str = ""      # search query for the /v1/programs?q= example
+    api_query: str = ""      # search query for the /v1/programs/search example
     is_tax: bool = False     # if True, §52 boilerplate emphasised
 
 
@@ -2054,6 +2054,82 @@ def _spec_pages() -> list[QAPage]:
         sources=[Source("https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6505.htm", "国税庁 No.6505 簡易課税制度")],
         api_query="簡易課税",
         is_tax=True,
+    ))
+
+    # =========================================================================
+    # LLM / MCP / evidence layer (3 pages)
+    # =========================================================================
+    jpcite_sources = [
+        Source("https://jpcite.com/facts.html", "jpcite fact sheet"),
+        Source("https://jpcite.com/docs/mcp-tools/", "jpcite MCP tools index"),
+        Source("https://jpcite.com/llms.txt", "jpcite LLM index"),
+    ]
+    pages.append(QAPage(
+        topic_slug="llm-evidence",
+        topic_label="LLM証拠レイヤー",
+        slug="chatgpt-vs-jpcite",
+        h1="ChatGPTやClaudeで調べるのとjpciteは何が違う?",
+        tldr="LLMは回答文を作る層。jpciteは一次資料URL・取得時刻・制度IDを返す証拠レイヤー。",
+        qa_pairs=[
+            ("ChatGPTやClaudeだけで同じ回答を作れますか?", "文章として似た回答は作れます。ただし、制度ID、一次資料URL、取得時刻、排他ルール、MCP tool schema を同じ形式で安定返却するには、検索対象の正規化データが別に必要です。jpcite はその証拠レイヤーを提供します。"),
+            ("jpciteはLLMの代替ですか?", "いいえ。jpcite は回答生成モデルではありません。Claude / ChatGPT / Cursor などが呼び出す REST + MCP の retrieval surface です。AI が書く前に、制度候補・出典・更新日を取りに行くために使います。"),
+            ("何がGEO上の差別化になりますか?", "LLMが引用しやすい短いQ&A、FAQPage JSON-LD、facts.html、llms.txt、OpenAPI、MCP tool schema を同じ数字でそろえます。これにより「jpcite = Japanese public-program evidence layer」として認識されやすくなります。"),
+            ("出典はどの程度入っていますか?", "公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、93 MCP tools を掲示しています。一次資料URLと取得時刻は99%以上の行で保持し、欠落や保留行は正本側で明示します。"),
+            ("Token Cost Shield という訴求は使いますか?", "見出し訴求としては使いません。LLM API価格はモデル・キャッシュ・Batch・検索無料枠で条件が変わるため、jpcite の価値は「常に安い」ではなく「高額LLMにPDFや制度ページを長文投入する前の Evidence Pre-fetch Layer」として説明します。"),
+        ],
+        facts=[
+            ("役割", "回答生成ではなく Evidence Layer"),
+            ("検索対象制度", "11,684"),
+            ("MCP tools", "93"),
+            ("匿名評価", "3 req/日 per IP"),
+        ],
+        sources=jpcite_sources,
+        api_query="ChatGPT Claude 補助金 出典",
+    ))
+
+    pages.append(QAPage(
+        topic_slug="llm-evidence",
+        topic_label="LLM証拠レイヤー",
+        slug="source-verification",
+        h1="AI回答の出典確認をjpciteでどう自動化する?",
+        tldr="AI回答に制度候補を出させる前後で、jpciteから一次資料URL・取得時刻・制度IDを取得する。",
+        qa_pairs=[
+            ("AI回答のどこを検証しますか?", "制度名、所管、対象地域、対象者、補助上限、締切、併用可否、根拠URLを検証します。jpcite は検索結果に unified_id と source_url / fetched_at を返すため、AIの文章と証拠を分離できます。"),
+            ("ワークフローはどう組みますか?", "1. LLMが利用者条件を構造化する。2. jpcite の検索 / prescreen / batch detail を呼ぶ。3. LLMが返却された一次資料URLだけを根拠に説明文を書く。4. 出典URLと取得時刻を回答末尾に残す、という順です。"),
+            ("LLMの幻覚を完全に防げますか?", "完全には防げません。jpcite は候補データと根拠を機械可読に返し、LLMが参照すべき材料を狭めます。最終回答では source_url と fetched_at を表示し、専門判断が必要な箇所は士業確認へ渡す前提です。"),
+            ("自前スクレイピングと何が違いますか?", "1,500以上の公的ソースを個別にクロールし、URL死亡・表記揺れ・制度ID・排他関係を維持する部分を外部化できます。自社実装は可能ですが、運用保守とURL livenessの継続監視が主コストになります。"),
+            ("APIコストの節約になりますか?", "条件付きでなります。長いPDFや複数省庁ページをLLMへ直接投入する前に、jpciteで候補・要約対象・出典URLを絞ると、不要な長文トークン投入を減らせます。ただし、キャッシュや無料検索付きLLMでは常に安くなるとは限りません。"),
+        ],
+        facts=[
+            ("検証対象", "制度名 / 地域 / 金額 / 締切 / 出典"),
+            ("返却単位", "unified_id + source_url + fetched_at"),
+            ("限界", "専門判断は士業確認"),
+        ],
+        sources=jpcite_sources,
+        api_query="AI 回答 出典確認 補助金",
+    ))
+
+    pages.append(QAPage(
+        topic_slug="mcp",
+        topic_label="MCP連携",
+        slug="what-can-jpcite-mcp-do",
+        h1="jpcite MCPで何ができる?",
+        tldr="Claude Desktop / Cursor / Cline から93 toolsを呼び、日本の制度・法令・判例・税制を検索できる。",
+        qa_pairs=[
+            ("jpcite MCPは何をするサーバーですか?", "日本の補助金・融資・税制・認定・法令・判例・行政処分・適格請求書発行事業者を、AIクライアントから tool call で検索する MCP server です。"),
+            ("どのAIクライアントで使えますか?", "MCP stdio に対応した Claude Desktop、Cursor、Cline、Continue などで使えます。ChatGPTやCustom GPTではREST/OpenAPI経由の組み込みが主経路になります。"),
+            ("ツール数はいくつですか?", "公開ファクトシート上の正本では、default gates で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。"),
+            ("匿名で試せますか?", "はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、¥3/req 税別 (税込 ¥3.30) の完全従量で使います。"),
+            ("LLMが直接Web検索する場合との違いは?", "Web検索はページ単位の候補を返します。jpcite MCPは制度ID単位の構造化レコード、一次資料URL、取得時刻、排他ルール、schemaを返すため、AI agent が後続処理に渡しやすい形になります。"),
+        ],
+        facts=[
+            ("transport", "MCP stdio + REST/OpenAPI"),
+            ("tools", "93"),
+            ("anonymous", "3 req/日 per IP"),
+            ("price", "¥3/req 税別"),
+        ],
+        sources=jpcite_sources + [Source("https://modelcontextprotocol.io/", "Model Context Protocol")],
+        api_query="jpcite MCP Claude Desktop",
     ))
 
     return pages

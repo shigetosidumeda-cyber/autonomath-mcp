@@ -114,8 +114,8 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 
 #### `rate_limit_exceeded`
 - HTTP: 429
-- anonymous 50 req/月 per IP cap、 もしくは authenticated per-key cap 到達。
-- response header: `X-Anon-Quota-Remaining`, `X-Anon-Quota-Reset` (JST 月初 reset)、 `X-Anon-Upgrade-Url`。
+- anonymous 3 req/日 per IP cap、 もしくは authenticated per-key cap 到達。
+- response header: `X-Anon-Quota-Remaining`, `X-Anon-Quota-Reset` (JST daily reset)、 `X-Anon-Upgrade-Url`。
 - 復旧: anonymous → upgrade URL で sign up、 authenticated → `me/cap` で月次 cap 上げ。
 
 #### `cap_reached`
@@ -188,8 +188,8 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 {
   "error": {
     "code": "rate_limit_exceeded",
-    "user_message": "匿名利用枠 50 req/月 を超過しました。 API key を発行してください。",
-    "user_message_en": "Anonymous monthly limit (50 req) reached. Get an API key to continue.",
+    "user_message": "匿名利用枠 3 req/日 を超過しました。 API key を発行してください。",
+    "user_message_en": "Anonymous daily limit (3 req) reached. Get an API key to continue.",
     "request_id": "01KQ3XQ77RR7J8XWZ8C0YR2JN2",
     "severity": "hard",
     "documentation": "https://jpcite.com/docs/error_handling#rate_limit_exceeded",

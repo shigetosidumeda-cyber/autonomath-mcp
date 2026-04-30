@@ -52,7 +52,7 @@ URL (Marketplace 開発者): https://developer.freee.co.jp/
 代表者: 梅田茂利
 連絡先: info@bookyou.net
 製品名: AutonoMath
-製品概要: 13,578 件の日本制度 (補助金 / 融資 / 税制 / 認定) を MCP サーバーで横断検索。
+製品概要: 14,472 件の日本制度 (補助金 / 融資 / 税制 / 認定) を MCP サーバーで横断検索。
         freee 会計の決算データを context として、ユーザーの会計事務所 / SMB に
         最適な制度組合せを Claude / 自社 AI から自然言語で取得可能。
 契約形態: Marketplace plugin (¥0 月額) + 従量 ¥3/req (税別) は AutonoMath が直接課金

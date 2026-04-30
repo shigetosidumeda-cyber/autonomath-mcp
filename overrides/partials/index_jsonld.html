@@ -38,14 +38,14 @@
       "description": "日本の制度データ (補助金・融資・税制・認定制度) 11,684 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を横断検索できる REST + MCP API。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出し可能。",
       "inLanguage": "ja",
       "offers": [
-        {"@type": "Offer", "name": "Free",           "price": "0", "priceCurrency": "JPY", "description": "50 req/月 per IP, 登録不要 (JST 月初リセット)"},
+        {"@type": "Offer", "name": "Free",           "price": "0", "priceCurrency": "JPY", "description": "3 req/日 per IP, 登録不要 (JST 翌日リセット)"},
         {"@type": "Offer", "name": "Paid (metered)", "price": "3", "priceCurrency": "JPY", "description": "¥3 / request 税別 (税込 ¥3.30, Stripe 従量)",
          "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "request", "valueAddedTaxIncluded": false}}
       ],
       "featureList": [
         "11,684 programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 を横断検索",
         "181 排他・前提ルール (exclude 125 + prerequisite 17 + absolute 15 + その他 24)",
-        "MCP ネイティブ (89 tools at default gates, protocol 2025-06-18 — 39 jpintel + 50 autonomath)",
+        "MCP ネイティブ (93 tools at default gates, protocol 2025-06-18 — 39 jpintel + 50 autonomath)",
         "Tier S/A/B/C/X 品質ラベル",
         "融資は 担保 / 個人保証人 / 第三者保証人 の三軸分解",
         "全件 source_url + fetched_at 付与"
@@ -90,7 +90,7 @@
       "publisher": {"@id": "{{ config.extra.domain }}/docs/#app"},
       "license": "{{ config.extra.domain }}/tos.html",
       "isAccessibleForFree": true,
-      "conditionsOfAccess": "匿名 50 req/月 per IP 無料 (JST 月初リセット)、それ以上は ¥3/req 税別 (税込 ¥3.30) 従量課金。",
+      "conditionsOfAccess": "匿名 3 req/日 per IP 無料 (JST 翌日リセット)、それ以上は ¥3/req 税別 (税込 ¥3.30) 従量課金。",
       "inLanguage": "ja",
       "spatialCoverage": {"@type": "Country", "name": "日本"},
       "variableMeasured": [
@@ -111,7 +111,7 @@
         },
         {
           "@type": "DataDownload",
-          "name": "MCP server (stdio, 89 tools at default gates, protocol 2025-06-18)",
+          "name": "MCP server (stdio, 93 tools at default gates, protocol 2025-06-18)",
           "contentUrl": "https://pypi.org/project/autonomath-mcp/",
           "encodingFormat": "application/x-python"
         }
@@ -121,7 +121,7 @@
       "@type": "WebAPI",
       "@id": "{{ config.extra.domain }}/docs/#webapi",
       "name": "jpcite REST + MCP API",
-      "description": "日本の公的制度データを AI エージェント / 開発者向けに 1 API で提供。89 MCP tools at default gates — 39 jpintel (15 基本: search / get / batch × programs + case_studies + loan_programs + enforcement_cases, exclusions, meta + 7 one-shot: smb_starter_pack / subsidy_combo_finder / deadline_calendar / dd_profile_am / similar_cases / regulatory_prep_pack / subsidy_roadmap_3yr + 拡張: 法令 [9,484 行・継続ロード中] / 税務ruleset [50 行 live] / 適格事業者 [PDL v1.0, 13,801 行 delta] / 判例 [2,065 行 live] / 入札 [362 行 live] + cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check) + 50 autonomath (V1: entity-fact DB across tax measures / certifications / laws / authorities / loans / mutual insurance / list_tax_sunset_alerts + メタデータ tools 4: annotations / validate / provenance entity / provenance fact + 静的データセット tools + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine + deep_health_am — 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases) + 多数の REST endpoints。MCP protocol 2025-06-18, stdio transport。",
+      "description": "日本の公的制度データを AI エージェント / 開発者向けに 1 API で提供。93 MCP tools at default gates — 39 jpintel (15 基本: search / get / batch × programs + case_studies + loan_programs + enforcement_cases, exclusions, meta + 7 one-shot: smb_starter_pack / subsidy_combo_finder / deadline_calendar / dd_profile_am / similar_cases / regulatory_prep_pack / subsidy_roadmap_3yr + 拡張: 法令 [9,484 行・継続ロード中] / 税務ruleset [50 行 live] / 適格事業者 [PDL v1.0, 13,801 行 delta] / 判例 [2,065 行 live] / 入札 [362 行 live] + cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check) + 50 autonomath (V1: entity-fact DB across tax measures / certifications / laws / authorities / loans / mutual insurance / list_tax_sunset_alerts + メタデータ tools 4: annotations / validate / provenance entity / provenance fact + 静的データセット tools + lifecycle/abstract/prerequisite/graph_traverse/snapshot/rule_engine + deep_health_am — 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases) + 多数の REST endpoints。MCP protocol 2025-06-18, stdio transport。",
       "documentation": "{{ config.extra.domain }}/docs/",
       "termsOfService": "{{ config.extra.domain }}/tos.html",
       "provider": {"@id": "{{ config.extra.domain }}/docs/#app"},

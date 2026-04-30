@@ -37,9 +37,9 @@ LLM が日本の制度に弱い根本は 3 つ。
 
 ### Data layer (出典つき 注記)
 
-- `data/jpintel.db` (316 MB) — `programs` 10,790 行 (tier S/A/B/C, excluded=0) / `laws` 9,484 行 (本文 154 件 + メタデータ stubs 9,330 件、 本文ロード継続中) / `court_decisions` 2,065 / `invoice_registrants` 13,801 / `tax_rulesets` 35
+- `data/jpintel.db` (316 MB) — `programs` 11,684 行 (tier S/A/B/C, excluded=0) / `laws` 9,484 行 (本文 154 件 + メタデータ stubs 9,330 件、 本文ロード継続中) / `court_decisions` 2,065 / `invoice_registrants` 13,801 / `tax_rulesets` 35
 - `autonomath.db` (8.29 GB, root 配置 — `data/autonomath.db` は 0 byte placeholder) — 503,930 件の正規化レコード / 612 万件の structured 属性 / 17.7 万件の関係性 link / 別名・略称 index 335,605 行 / 制度時系列 snapshot 14,596 行
-- 各 row に `source_url` + `source_fetched_at` (programs 10,790 行で 99.9% / 99.86% 充足)
+- 各 row に `source_url` + `source_fetched_at` (programs 11,684 行で 99.9% / 99.86% 充足)
 - 集約サイト (noukaweb / hojyokin-portal / biz.stayway) は `source_url` 禁止 — 一次資料のみ
 - `source_fetched_at` は **「取得時刻」** であり「最終更新」ではない、と UI/docs で正直に表示
 
@@ -52,7 +52,7 @@ LLM が日本の制度に弱い根本は 3 つ。
 ### API + MCP surface
 
 - FastAPI (`/v1/*`, Stripe metered ¥3/req)
-- FastMCP (stdio, 89 tools =  + 30 autonomath at default gates, protocol 2025-06-18)
+- FastMCP (stdio, 93 tools =  + 30 autonomath at default gates, protocol 2025-06-18)
 - 静的サイト (Cloudflare Pages, `/programs/` 配下に SEO page を生成)
 - `llms-full.txt` を月次再生成し LLM crawler 向けに publish
 

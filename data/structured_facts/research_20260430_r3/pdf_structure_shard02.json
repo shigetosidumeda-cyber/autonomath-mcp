@@ -1,0 +1,1296 @@
+[
+  {
+    "profile_name": "grant_env_content",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.env.go.jp/content/000206520.pdf",
+    "publisher_domain": "env.go.jp",
+    "required_fields": [
+      "deadline",
+      "subsidy_rate",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "eligible_applicant",
+      "max_amount",
+      "update_date",
+      "press_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募実施期間"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "対象事業",
+        "対象団体"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "応募方法",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "提出先・問合せ先"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "section_regex_first",
+      "pdfplumber_tables": "conditional",
+      "notes": "Short-to-medium content PDFs parse well by labels; use tables only for budget/rate matrices."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard02",
+      "source_index": 5,
+      "page_count": 8,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date.",
+      "risk_reason": "8 pages; text layer extractable; no tables detected in first sampled pages; fields: deadline,eligible_applicant,subsidy_rate,required_docs,contact,update_date",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_env_content",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.env.go.jp/content/000369036.pdf",
+    "publisher_domain": "env.go.jp",
+    "required_fields": [
+      "deadline",
+      "subsidy_rate",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "eligible_applicant",
+      "max_amount",
+      "update_date",
+      "press_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募実施期間"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "対象事業",
+        "対象団体"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "応募方法",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "提出先・問合せ先"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "section_regex_first",
+      "pdfplumber_tables": "conditional",
+      "notes": "Short-to-medium content PDFs parse well by labels; use tables only for budget/rate matrices."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard02",
+      "source_index": 6,
+      "page_count": 22,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date.",
+      "risk_reason": "22 pages; text layer extractable; sampled table detected; all target labels found in content PDF; press HTML supplies redundant published date",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_env_content",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.env.go.jp/content/000396485.pdf",
+    "publisher_domain": "env.go.jp",
+    "required_fields": [
+      "deadline",
+      "subsidy_rate",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "eligible_applicant",
+      "max_amount",
+      "update_date",
+      "press_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募実施期間"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "対象事業",
+        "対象団体"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "応募方法",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "提出先・問合せ先"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "section_regex_first",
+      "pdfplumber_tables": "conditional",
+      "notes": "Short-to-medium content PDFs parse well by labels; use tables only for budget/rate matrices."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard02",
+      "source_index": 7,
+      "page_count": 9,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date.",
+      "risk_reason": "9 pages; text layer extractable; sampled table detected; all target labels found in short公募要領",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mlit_press_guideline",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mlit.go.jp/report/press/content/001842304.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "schedule",
+      "press_summary_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "スケジュール",
+        "募集開始",
+        "募集締切"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "補助対象事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "補助限度額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "問い合わせ窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "press_then_guideline",
+      "pdfplumber_tables": "conditional",
+      "notes": "Detect whether the PDF is a 1-2 page press summary or full guideline; parse numbered sections and avoid requiring document lists from press summaries."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard03",
+      "source_index": 1,
+      "page_count": 2,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact"
+      ],
+      "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs.",
+      "risk_reason": "2 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mlit_press_guideline",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mlit.go.jp/kankocho/content/001386417.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "schedule",
+      "press_summary_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "スケジュール",
+        "募集開始",
+        "募集締切"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "補助対象事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "補助限度額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "問い合わせ窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "press_then_guideline",
+      "pdfplumber_tables": "conditional",
+      "notes": "Detect whether the PDF is a 1-2 page press summary or full guideline; parse numbered sections and avoid requiring document lists from press summaries."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard03",
+      "source_index": 2,
+      "page_count": 15,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact"
+      ],
+      "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs.",
+      "risk_reason": "15 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mhlw_mixed",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mhlw.go.jp/content/11600000/001239692.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "required_fields": [
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "deadline",
+      "eligible_applicant",
+      "update_date",
+      "subsidy_rate",
+      "research_program_id"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募締切",
+        "申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "応募できる者",
+        "対象となる事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "基準額",
+        "補助基準額",
+        "委託費"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "公募要項",
+        "申請書",
+        "提出方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "担当係",
+        "部局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "mixed_router",
+      "pdfplumber_tables": "optional",
+      "notes": "Route flyers, handbooks, and research calls by title/page count; use table extraction only when labelled matrices are present."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard03",
+      "source_index": 3,
+      "page_count": 18,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "deadline",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based.",
+      "risk_reason": "18 pages; text layer extractable; tables detected in sampled pages; fields: deadline,max_amount,required_docs,contact,update_date",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mhlw_mixed",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mhlw.go.jp/content/001520023.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "required_fields": [
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "deadline",
+      "eligible_applicant",
+      "update_date",
+      "subsidy_rate",
+      "research_program_id"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募締切",
+        "申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "応募できる者",
+        "対象となる事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "基準額",
+        "補助基準額",
+        "委託費"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "公募要項",
+        "申請書",
+        "提出方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "担当係",
+        "部局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "mixed_router",
+      "pdfplumber_tables": "optional",
+      "notes": "Route flyers, handbooks, and research calls by title/page count; use table extraction only when labelled matrices are present."
+    },
+    "ocr_needed": false,
+    "parser_risk": "high",
+    "fixture_candidate": false,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard03",
+      "source_index": 4,
+      "page_count": 2,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "max_amount"
+      ],
+      "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based.",
+      "risk_reason": "2 pages; text layer extractable; no tables detected in first sampled pages; fields: max_amount",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 0.333
+    }
+  },
+  {
+    "profile_name": "grant_mlit_press_guideline",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mlit.go.jp/jidosha/content/001976721.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "schedule",
+      "press_summary_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "スケジュール",
+        "募集開始",
+        "募集締切"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "補助対象事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "補助限度額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "問い合わせ窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "press_then_guideline",
+      "pdfplumber_tables": "conditional",
+      "notes": "Detect whether the PDF is a 1-2 page press summary or full guideline; parse numbered sections and avoid requiring document lists from press summaries."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard03",
+      "source_index": 5,
+      "page_count": 14,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs.",
+      "risk_reason": "14 pages; text layer extractable; sampled table detected; all target labels found in numbered募集要領",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mhlw_mixed",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mhlw.go.jp/content/12000000/001661577.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "required_fields": [
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "deadline",
+      "eligible_applicant",
+      "update_date",
+      "subsidy_rate",
+      "research_program_id"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募締切",
+        "申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "応募できる者",
+        "対象となる事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "基準額",
+        "補助基準額",
+        "委託費"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "公募要項",
+        "申請書",
+        "提出方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "担当係",
+        "部局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "mixed_router",
+      "pdfplumber_tables": "optional",
+      "notes": "Route flyers, handbooks, and research calls by title/page count; use table extraction only when labelled matrices are present."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard03",
+      "source_index": 6,
+      "page_count": 5,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based.",
+      "risk_reason": "5 pages; text layer extractable; no sampled tables; compact MHLW公募要項 exposes applicant/docs/contact but deadline and subsidy-rate are better captured from HTML/related implementation docs",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mhlw_mixed",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mhlw.go.jp/content/10600000/001676665.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "required_fields": [
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "deadline",
+      "eligible_applicant",
+      "update_date",
+      "subsidy_rate",
+      "research_program_id"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募締切",
+        "申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "応募できる者",
+        "対象となる事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "基準額",
+        "補助基準額",
+        "委託費"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "公募要項",
+        "申請書",
+        "提出方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "担当係",
+        "部局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "mixed_router",
+      "pdfplumber_tables": "optional",
+      "notes": "Route flyers, handbooks, and research calls by title/page count; use table extraction only when labelled matrices are present."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard03",
+      "source_index": 7,
+      "page_count": 91,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "deadline",
+        "max_amount",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based.",
+      "risk_reason": "91 pages; text layer extractable; no sampled tables; research-grant公募要項 is long and e-Rad-specific, with subsidy-rate not applicable in ordinary grant-parser sense",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "research_grant_nedo",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.nedo.go.jp/content/800023302.pdf",
+    "publisher_domain": "nedo.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "subsidy_rate",
+      "max_amount",
+      "update_date",
+      "submission_system",
+      "research_theme"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募締切",
+        "提案書提出期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "提案者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "委託",
+        "補助"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "事業規模"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "提案書",
+        "提出書類一覧"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "担当部"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "research_guideline_hybrid",
+      "pdfplumber_tables": "conditional",
+      "notes": "Use the NEDO kobo page plus content PDF; section parsing first, tables for budget/theme matrices only."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard04",
+      "source_index": 1,
+      "page_count": 38,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "deadline",
+        "eligible_applicant",
+        "subsidy_rate",
+        "required_docs",
+        "contact",
+        "update_date"
+      ],
+      "parser_profile_hint": "research_grant_nedo: use NEDO koubo page plus content PDF; parse front-matter deadline, Jグランツ/e-Rad submission, eligibility, budget/助成額, docs, contact; suppress pdfminer color warnings as non-fatal.",
+      "risk_reason": "38 pages; text layer extractable; no tables detected in first sampled pages; fields: deadline,eligible_applicant,subsidy_rate,required_docs,contact,update_date",
+      "duplicate_source_url_seen_before": false,
+      "required_field_coverage": 1.0
+    }
+  }
+]

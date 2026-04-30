@@ -2,7 +2,7 @@
 
 **Audience**: jpcite operator (Bookyou株式会社, BDFL solo). Quarterly review document.
 **Status**: Y0 launch is 2026-05-06. This file covers Y1-Y5 (2026-05 → 2031-05).
-**Pricing baseline**: ¥3/req tax-excluded (税込 ¥3.30), 50 req/月 anonymous free per IP, 100% organic acquisition, solo + zero-touch ops. No tier SKUs, no seat fees, no annual minimums. See `pricing.md`.
+**Pricing baseline**: ¥3/req tax-excluded (税込 ¥3.30), 3 req/日 anonymous free per IP, 100% organic acquisition, solo + zero-touch ops. No tier SKUs, no seat fees, no annual minimums. See `pricing.md`.
 
 This document encodes the BDFL solo + zero-touch + organic-only constraints from `feedback_zero_touch_solo`, `feedback_organic_only_no_ads`, and `project_autonomath_business_model`. Any decision that violates those constraints (e.g. hiring a CS team, running paid ads, signing DPA negotiations) should be challenged against this doc before action.
 
@@ -177,7 +177,7 @@ These are explicit non-objectives — not "later", but "no":
 
 - ✗ Paid advertising / SEM / display ads
 - ✗ Outbound sales / cold email / cold calls
-- ✗ Tier-based SaaS pricing (Free / Starter / Pro). The only free path is the anonymous 50/月 IP rate limit.
+- ✗ Tier-based SaaS pricing (Free / Starter / Pro). The only free path is the anonymous 3/日 IP rate limit.
 - ✗ DPA / MSA negotiations. Standard ToS is the only contract.
 - ✗ Slack Connect / dedicated CS channels / phone support
 - ✗ Onboarding calls
@@ -215,9 +215,9 @@ But none of V2-V5 are **launch gates** for 2026-05-06. The launch gate is V1 onl
 ## 8. References
 
 - [`docs/pricing.md`](pricing.md) — ¥3/req business model
-- [`evals/gold.yaml`](https://github.com/shigetosidumeda-cyber/jpintel-mcp/blob/main/evals/gold.yaml) — 79-query precision baseline
+- [`evals/gold.yaml`](https://github.com/shigetosidumeda-cyber/autonomath-mcp/blob/main/evals/gold.yaml) — 79-query precision baseline
 - [`docs/per_tool_precision.md`](per_tool_precision.md) — per-tool gate table
-- [`analysis_wave18/audit_full/00_smart_merge_plan.md`](https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/analysis_wave18) (private) — launch plan + post-launch P5-P6
+- [`analysis_wave18/audit_full/00_smart_merge_plan.md`](https://github.com/shigetosidumeda-cyber/autonomath-mcp/tree/main/analysis_wave18) (private) — launch plan + post-launch P5-P6
 - `CLAUDE.md` — non-negotiable constraints (¥3/req metered, no tiers, organic only, solo)
 
 ---

@@ -7,7 +7,7 @@
 > Format: 8-tweet thread, each <= 280 chars, copy-paste ready
 >
 > Validate before send (memory `feedback_validate_before_apply`):
-> - 数値 13,578 / 66 / ¥3 を必ず確認
+> - 数値 14,472 / 66 / ¥3 を必ず確認
 > - URL 動作確認 (https://jpcite.com, /docs/, GitHub, PyPI)
 > - 過剰強調 (必ず / 絶対 / 保証 / 業界初) 削除済み (INV-22)
 
@@ -22,7 +22,7 @@ A REST + MCP API exposing Japanese public-program data — subsidies, loans,
 tax incentives, laws, enforcement, invoice registrants — to AI agents in
 one call.
 
-Built solo. Metered ¥3/req. 50/month free per IP.
+Built solo. Metered ¥3/req. 3/day free per IP.
 
 https://jpcite.com
 
@@ -50,7 +50,7 @@ I wanted one API where Claude can just answer.
 ```
 3/ What's in it (2026-05-06):
 
-- 13,578 programs (METI, MAFF, SME Agency, JFC, prefectures)
+- 14,472 programs (METI, MAFF, SME Agency, JFC, prefectures)
 - 2,286 case studies, 108 loans, 1,185 enforcement
 - 9,484 laws (e-Gov CC-BY)
 - 13,801 invoice registrants (NTA PDL v1.0)
@@ -64,7 +64,7 @@ I wanted one API where Claude can just answer.
 ```
 4/ Built for 5 audiences:
 
-- AI agent devs — 72 MCP tools at default gates, 1 manifest line
+- AI agent devs — 93 MCP tools at default gates, 1 manifest line
 - Tax accountants — Article-level statute trace
 - SMB owners — "what subsidies fit me?" via Claude
 - VCs — DD on subsidy/enforcement/invoice via 法人番号
@@ -110,7 +110,7 @@ source_url — past industry incidents created 詐欺 risk.
    claude_desktop_config.json
 3. pip install autonomath-mcp
 
-Anonymous 50 req/month free per IP. JST monthly reset.
+Anonymous 3 req/day free per IP. JST daily reset.
 ```
 
 ---

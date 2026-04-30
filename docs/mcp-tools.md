@@ -2,8 +2,8 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "jpcite MCP Tools (89 tools)",
-  "description": "jpcite は MCP (Model Context Protocol) サーバーとして 89 ツールを公開する。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出せる。",
+  "headline": "jpcite MCP Tools (93 tools)",
+  "description": "jpcite は MCP (Model Context Protocol) サーバーとして 93 ツールを公開する。Claude Desktop / Cursor / ChatGPT / Gemini から直接呼び出せる。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-26",
   "inLanguage": "ja",
@@ -29,7 +29,7 @@
 
 # MCP Tools
 
-jpcite は **89 ツール at default gates** を MCP server として公開する。**Protocol:** MCP 2025-06-18 (FastMCP SDK)、Transport: stdio JSON-RPC。
+jpcite は **93 ツール at default gates** を MCP server として公開する。**Protocol:** MCP 2025-06-18 (FastMCP SDK)、Transport: stdio JSON-RPC。
 
 ツール構成:
 
@@ -349,7 +349,7 @@ await client.call_tool("get_program", {
 
 ## 採択事例 / 融資 / 行政処分 ツール
 
-制度 (programs) と並ぶ 3 つのデータセットそれぞれに `search` / `get` ツールが用意されている。全て同一の検索モデル (全文検索インデックス (3-gram) + 構造化フィルタ) で、primary-source lineage (`source_url` + `fetched_at`) を全行に含む。REST 相当エンドポイントの詳細引数は [OpenAPI spec](./api-reference.md#openapi-spec) を参照 (`/v1/case-studies/*`, `/v1/enforcement/*`, `/v1/loans/*` は OpenAPI JSON のみで定義、`api-reference.md` への個別章は未掲載)。
+制度 (programs) と並ぶ 3 つのデータセットそれぞれに `search` / `get` ツールが用意されている。全て同一の検索モデル (全文検索インデックス (3-gram) + 構造化フィルタ) で、primary-source lineage (`source_url` + `fetched_at`) を可能な限り含む。REST 相当エンドポイントの詳細引数は [OpenAPI spec](./api-reference.md#openapi-spec) を参照 (`/v1/case-studies/*`, `/v1/enforcement/*`, `/v1/loans/*` は OpenAPI JSON のみで定義、`api-reference.md` への個別章は未掲載)。
 
 ### `search_case_studies` / `get_case_study`
 
@@ -490,7 +490,7 @@ await client.call_tool("prescreen_programs", {
 
 ### `search_laws`
 
-**目的:** 日本の法令 (e-Gov法令) を横断検索。法令名・条文本文に対して 全文検索インデックス (3-gram) + 構造化フィルタ (法令種別 / 所管省庁 / 施行日) を適用。全件 CC-BY ライセンスで一次資料 URL + fetched_at 付き。
+**目的:** 日本の法令 (e-Gov法令) を横断検索。法令名・条文本文に対して 全文検索インデックス (3-gram) + 構造化フィルタ (法令種別 / 所管省庁 / 施行日) を適用。CC-BY ライセンスの一次資料 URL + fetched_at 付き。
 
 ### `get_law`
 

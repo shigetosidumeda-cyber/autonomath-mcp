@@ -1,6 +1,6 @@
 ---
 title: "AutonoMath launch — 日本制度を 1 query で AI に聞く"
-description: "AutonoMath ローンチ記事 (Intro) — 13,578 件の補助金・融資・税制・認定を REST + MCP 69 ツールで横断検索。¥3/req 完全従量、50 req/月 per IP free。"
+description: "AutonoMath ローンチ記事 (Intro) — 14,472 件の補助金・融資・税制・認定を REST + MCP 93 ツールで横断検索。¥3/req 完全従量、3 req/日 per IP free。"
 tags:
   - api
   - mcp
@@ -28,7 +28,7 @@ AutonoMath はその発見・互換・実績確認のレイヤーを **1 本の 
 
 | データ | 件数 | 出典 |
 |---|---|---|
-| 補助金・融資・税制・認定 (programs, tier S/A/B/C) | **13,578** | 47 都道府県 + 全省庁一次資料 (出典 URL + 取得時刻つき) |
+| 補助金・融資・税制・認定 (programs, tier S/A/B/C) | **14,472** | 47 都道府県 + 全省庁一次資料 (出典 URL + 取得時刻つき) |
 | 採択事例 (case_studies) | **2,286** | 経産省・農水省ほか採択結果一次資料 |
 | 融資 (loan_programs, 担保/個人保証人/第三者保証人 三軸) | **108** | 公庫・信金・地銀の要綱 |
 | 行政処分 (enforcement_cases) | **1,185** | 各省庁公示 |
@@ -62,12 +62,12 @@ curl -sS https://api.jpcite.com/v1/programs/search \
 }
 ```
 
-69 ツール  + 30 autonomath at default gates) が即座に Claude / Cursor / ChatGPT から呼べます。
+93 ツール  + 30 autonomath at default gates) が即座に Claude / Cursor / ChatGPT から呼べます。
 
 ## 価格
 
 - **¥3/request** 税抜 (税込 ¥3.30) — 完全従量
-- **匿名 50 req/月 per IP** — JST 月初 00:00 リセット、API key 不要
+- **匿名 3 req/日 per IP** — JST 翌日 00:00 リセット、API key 不要
 - 月額固定 / シート / 年間最低なし。
 
 ## 想定 audience (5)
@@ -76,7 +76,7 @@ curl -sS https://api.jpcite.com/v1/programs/search \
 2. **行政書士** — 補助金 + 融資 + 許認可を 1 call で束ねる
 3. **SMB 経営者** — LINE で「うちの業種で使える制度ある？」を月 10 件まで無料
 4. **VC / M&A advisor** — 法人番号で行政処分歴・採択歴・適格請求書を 1 query で due diligence
-5. **AI agent developer** — MCP / REST どちらでも統合、69 ツール全部叩ける
+5. **AI agent developer** — MCP / REST どちらでも統合、93 ツール全部叩ける
 
 ## なぜ今出すか
 

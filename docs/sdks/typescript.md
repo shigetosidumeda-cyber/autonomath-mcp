@@ -1,7 +1,7 @@
 # TypeScript / JavaScript SDK
 
 Package name: `@autonomath/sdk`. **Pre-release — npm publish pending.** Source
-lives in this repo at [`sdk/typescript/`](https://github.com/shigetosidumeda-cyber/jpintel-mcp/tree/main/sdk/typescript).
+lives in this repo at [`sdk/typescript/`](https://github.com/shigetosidumeda-cyber/autonomath-mcp/tree/main/sdk/typescript).
 
 Zero runtime dependencies. Works in Node 20+, Deno, Bun, and modern browsers
 (uses the global `fetch`).
@@ -11,7 +11,7 @@ Zero runtime dependencies. Works in Node 20+, Deno, Bun, and modern browsers
 Direct from git until the npm publish lands:
 
 ```bash
-npm install "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git#subdirectory=sdk/typescript"
+npm install "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp.git#subdirectory=sdk/typescript"
 ```
 
 For the optional MCP bridge (spawn the Python `autonomath-mcp` server from Node),
@@ -27,7 +27,7 @@ pip install autonomath-mcp
 import { AutonoMath } from "@autonomath/sdk";
 
 const am = new AutonoMath({
-  apiKey: process.env.AUTONOMATH_API_KEY, // optional — anonymous = 50 req/月
+  apiKey: process.env.AUTONOMATH_API_KEY, // optional — anonymous = 3 req/日
 });
 
 const meta = await am.meta();
@@ -49,7 +49,7 @@ for (const p of programs.results) {
 Pass `apiKey` to the constructor; the SDK sends it as `X-API-Key`. Issue keys
 from your [dashboard](https://jpcite.com/dashboard).
 
-Without an API key, anonymous IPs get 50 requests per month (resets JST 00:00
+Without an API key, anonymous IPs get 3 requests per day (resets JST 00:00
 on the 1st).
 
 ## API surface
@@ -175,7 +175,7 @@ const open = programs.results
 
 ## MCP usage
 
-The MCP server (89 tools, protocol 2025-06-18) is implemented in Python.
+The MCP server (93 tools, protocol 2025-06-18) is implemented in Python.
 Spawn it from Node for MCP hosts:
 
 ```ts

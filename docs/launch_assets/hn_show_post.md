@@ -9,7 +9,7 @@
 > Format: title (<=80 chars) + URL + first comment (800-1500 chars)
 >
 > Validate (memory `feedback_validate_before_apply`):
-> - 数値 13,578 / 66 / ¥3 統一
+> - 数値 14,472 / 66 / ¥3 統一
 > - INV-22: 過剰強調削除済み (no "must", "absolute", "guaranteed")
 > - 自演 upvote / sockpuppet NG (HN ban worthy)
 
@@ -51,7 +51,7 @@ to AI agents in one call: subsidies, loans, tax incentives, certifications,
 laws, enforcement cases, invoice registrants.
 
 What:
-- 13,578 programs (METI, MAFF, SME Agency, JFC, 47 prefectures)
+- 14,472 programs (METI, MAFF, SME Agency, JFC, 47 prefectures)
 - 2,286 case studies, 108 loans (3-axis collateral / personal-guarantor /
   third-party-guarantor decomposition), 1,185 enforcement cases
 - 9,484 laws (e-Gov, CC-BY)
@@ -69,14 +69,14 @@ where Claude / Cursor / ChatGPT can answer "is my company eligible?" with
 primary-source URLs attached.
 
 How:
-MCP-native, 89 tools, protocol 2025-06-18, stdio transport. One Manifest
+MCP-native, 93 tools, protocol 2025-06-18, stdio transport. One Manifest
 line plugs it into Claude Desktop. Backed by SQLite 全文検索インデックス (3-gram, Japanese
 compound-word search) + ベクトル検索 for the entity-fact layer. Hosted on
 Fly.io Tokyo. Stripe metered + Stripe Tax for JP invoice compliance.
 
 Pricing:
 Pure metered ¥3/request (~$0.02). No tiers, no seat fees, no annual
-minimums. Anonymous gets 50 req/month free per IP, JST monthly reset.
+minimums. Anonymous gets 3 req/day free per IP, JST daily reset.
 
 Data:
 Aggregators (noukaweb, hojyokin-portal, biz.stayway) are explicitly banned

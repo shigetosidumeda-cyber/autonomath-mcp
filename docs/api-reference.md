@@ -2,8 +2,8 @@
 {
   "@context": "https://schema.org",
   "@type": "APIReference",
-  "headline": "jpcite REST API Reference (112 endpoints)",
-  "description": "jpcite REST API の全 112 endpoint 仕様。programs / exclusions / meta / billing / dashboard / laws / loans / court-decisions / bids / 行政処分 / 採択事例 / invoice 適格事業者 / tax_rulesets / V1+メタデータ+静的データセット 拡張を含む。",
+  "headline": "jpcite REST API Reference (178 endpoints)",
+  "description": "jpcite REST API の全 178 endpoint 仕様。programs / exclusions / meta / billing / dashboard / laws / loans / court-decisions / bids / 行政処分 / 採択事例 / invoice 適格事業者 / tax_rulesets / V1+メタデータ+静的データセット 拡張を含む。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-26",
   "inLanguage": "ja",
@@ -29,7 +29,7 @@
 
 # API Reference
 
-REST API 全 112 endpoint。programs / exclusions / meta / billing / dashboard / 各種データセット (laws / loans / court_decisions / bids / 行政処分 / 採択事例 / invoice / tax_rulesets) / autonomath 拡張 を含む。
+REST API 全 178 endpoint。programs / exclusions / meta / billing / dashboard / 各種データセット (laws / loans / court_decisions / bids / 行政処分 / 採択事例 / invoice / tax_rulesets) / autonomath 拡張 を含む。
 
 ## ベース URL
 
@@ -39,7 +39,7 @@ https://api.jpcite.com
 
 ## 目次 (Endpoint catalogue)
 
-全 112 endpoint。OpenAPI spec (`docs/openapi/v1.json`) と完全一致。★ = 本ページに詳細あり、それ以外は OpenAPI から自動展開した最小ドキュメント (本ページ後半に展開済み)。
+全 178 endpoint。OpenAPI spec (`docs/openapi/v1.json`) と完全一致。★ = 本ページに詳細あり、それ以外は OpenAPI から自動展開した最小ドキュメント (本ページ後半に展開済み)。
 
 - **Programs** (4)
   - `POST /v1/programs/batch` ★
@@ -231,7 +231,7 @@ API key 不在は匿名扱い、無効 key は `401 Unauthorized`。
 
 | 区分 | 上限 |
 |------|---|
-| 匿名 (key 無し) | 50 req/月 per IP (IPv4 /32 / IPv6 /64)、JST 月初 00:00 リセット |
+| 匿名 (key 無し) | 3 req/日 per IP (IPv4 /32 / IPv6 /64)、JST 翌日 00:00 リセット |
 | 認証済み (Paid) | hard cap 無し、¥3/req metered (税込 ¥3.30) |
 
 匿名 IP 制限は discoverability 系 (`/meta`, `/v1/ping`, `/v1/programs/*`, `/v1/exclusions/*`, `/v1/feedback`) にのみ適用。`/healthz`, `/v1/billing/webhook`, `/v1/subscribers/unsubscribe`, dashboard 系 (`/v1/me/*`, `/v1/session`) はカウントしない。
@@ -479,7 +479,7 @@ curl -H "X-API-Key: am_..." \
 - **例外は 500:** `not_found` は「DB に存在しない」ケースだけ。JSON decode 失敗等の例外は batch 全体が `500` で落ちる (部分成功を暗黙に隠さない方針)。
 - **paging なし:** 50-cap がそのまま paging。50 超の ID リストは client 側で `chunk(ids, 50)` してループする。
 
-**Rate limit:** 現在は batch 全体で 1 request 扱い (匿名: 50/月 per IP のうち 1 消費、paid: metered で 1 req 分 ¥3/req (税込 ¥3.30) を usage report)。今後の予定: N 件 × N 単位への課金切り替えを検討中。実施時は事前に変更履歴で告知します。
+**Rate limit:** 現在は batch 全体で 1 request 扱い (匿名: 3/日 per IP のうち 1 消費、paid: metered で 1 req 分 ¥3/req (税込 ¥3.30) を usage report)。今後の予定: N 件 × N 単位への課金切り替えを検討中。実施時は事前に変更履歴で告知します。
 
 **Example:**
 
@@ -523,7 +523,7 @@ with httpx.Client(
 
 排他ルール全件を返す (現在 181 件: hand-seeded 35 + 要綱 PDF からの heuristic 抽出 146)。
 
-> **注意:** 146 件の `excl-ext-*` ルールは要綱 PDF からの rule-based heuristic 抽出で、人手レビュー済みではあるが取りこぼし / 誤検出の可能性が残る。 また hand-seeded 35 件 + heuristic 146 件いずれも、 ヒットしなかった (`hits: []`) ことは「併用して安全」を保証しない。 確定的な exclusion 判定は `source_urls` の一次資料を人手で確認すること。
+> **注意:** 146 件の `excl-ext-*` ルールは要綱 PDF からの rule-based heuristic 抽出で、人手レビュー済みではあるが取りこぼし / 誤検出の可能性が残る。 また hand-seeded 50 件 + heuristic 146 件いずれも、 ヒットしなかった (`hits: []`) ことは「併用して安全」を保証しない。 確定的な exclusion 判定は `source_urls` の一次資料を人手で確認すること。
 
 **認証:** 任意
 
@@ -892,10 +892,10 @@ FastAPI 標準:
 
 ## カテゴリ別エンドポイント (Auto-generated from OpenAPI)
 
-下記は OpenAPI spec (`docs/openapi/v1.json`) から machine-generated した残り 99 endpoint。`scripts/export_openapi.py` が re-export した時点の正本に基づくので、本ページ前半の 13 endpoint と異なり手動加筆の解説は薄め (request/response の shape, curl 例のみ) — 詳細は OpenAPI spec、もしくは [mcp-tools.md](./mcp-tools.md) の同名 MCP tool を参照。
+下記は OpenAPI spec (`docs/openapi/v1.json`) から machine-generated した残り 165 endpoint。`scripts/export_openapi.py` が re-export した時点の正本に基づくので、本ページ前半の 13 endpoint と異なり手動加筆の解説は薄め (request/response の shape, curl 例のみ) — 詳細は OpenAPI spec、もしくは [mcp-tools.md](./mcp-tools.md) の同名 MCP tool を参照。
 
 > **凡例:**
-> - **認証** 列の "任意 (未認証は匿名扱い)" は 50 req/月 per IP の anonymous quota を消費する。**必須** は 401/403 を返す (Bearer / X-API-Key 必須)。
+> - **認証** 列の "任意 (未認証は匿名扱い)" は 3 req/日 per IP の anonymous quota を消費する。**必須** は 401/403 を返す (Bearer / X-API-Key 必須)。
 > - **Response** の `"..."` は array/object の省略表記。完全 schema は OpenAPI spec を参照。
 > - **36協定** template (`/v1/am/templates/saburoku_kyotei*`) は `AUTONOMATH_36_KYOTEI_ENABLED=true` の launch gate 配下。default では OpenAPI から消え、`mcp.list_tools()` でも返らない。
 
@@ -1140,7 +1140,7 @@ Set the customer's self-serve monthly spend cap (P3-W).
 
 Authenticated via require_key (X-API-Key header or Authorization: Bearer).
 Anonymous callers (no key) cannot set a cap because the anonymous tier is
-already gated by the 50 req/月 free quota — there is nothing to cap.
+already gated by the 3 req/日 free quota — there is nothing to cap.
 
 The unit price stays ¥3/req (immutable per
 project_autonomath_business_model). `monthly_cap_yen` is purely a client

@@ -24,9 +24,9 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 |-------|-------|
 | Display name | `AutonoMath` |
 | Slug | `autonomath-mcp` |
-| Tagline (≤200 chars) | `Japanese public-program MCP — 11,547 searchable / 13,578 total programs (補助金/融資/税制/認定) + 採択事例 + 融資三軸 + 行政処分 + 法令/税/インボイス, 181 exclusion rules. ¥3/req, 50/月 free.` |
+| Tagline (≤200 chars) | `Japanese public-program MCP — 11,684 searchable / 14,472 total programs (補助金/融資/税制/認定) + 採択事例 + 融資三軸 + 行政処分 + 法令/税/インボイス, 181 exclusion rules. ¥3/req, 3/日 free.` |
 | Long description (≤500) | See `/Users/shigetoumeda/jpintel-mcp/scripts/mcp_registries_submission.json` → `server.description_long` |
-| Repo URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| Repo URL | `https://github.com/shigetosidumeda-cyber/autonomath-mcp` |
 | Homepage | `https://jpcite.com` |
 | Docs URL | `https://jpcite.com/docs/` |
 | Install command | `uvx autonomath-mcp` |
@@ -91,7 +91,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 | Field name | Required value |
 |-----------|----------------|
 | Server name | `AutonoMath` |
-| Repo URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| Repo URL | `https://github.com/shigetosidumeda-cyber/autonomath-mcp` |
 | Description | Use tagline (≤200 chars) above |
 | Category | `government` |
 | Submitter email | `info@bookyou.net` |
@@ -120,7 +120,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
    - Re-licensing of submission text not required
 3. Fill form:
    - Server name: `AutonoMath`
-   - Repo URL: `https://github.com/shigetosidumeda-cyber/jpintel-mcp`
+   - Repo URL: `https://github.com/shigetosidumeda-cyber/autonomath-mcp`
    - Description: paste tagline above
    - Category: `government` (or closest)
    - Tags: paste tag list above
@@ -146,12 +146,12 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 ### Entry text (committed to PR)
 
 ```
-- [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/jpintel-mcp) 🐍 ☁️ 🍎 🪟 🐧 - AutonoMath: 69-tool MCP (39 core + 30 autonomath entity-fact DB at default gates) over Japanese primary-gov data — 11,547 searchable / 13,578 total programs (補助金/融資/税制/認定) + 2,286 採択事例 + 108 融資 (担保/個人保証人/第三者保証人 三軸分解) + 1,185 行政処分 + 503,930 entities + 6.12M facts + laws (e-Gov CC-BY) + tax rulesets (インボイス/電帳法) + 国税庁 invoice registrants. 181 exclusion/prerequisite rules, primary-source lineage, no aggregators. ¥3/req metered (¥3.30 incl. tax); 50 req/月 free per IP. `uvx autonomath-mcp`.
+- [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 - AutonoMath: 93-tool MCP (39 core + 30 autonomath entity-fact DB at default gates) over Japanese primary-gov data — 11,684 searchable / 14,472 total programs (補助金/融資/税制/認定) + 2,286 採択事例 + 108 融資 (担保/個人保証人/第三者保証人 三軸分解) + 1,185 行政処分 + 503,930 entities + 6.12M facts + laws (e-Gov CC-BY) + tax rulesets (インボイス/電帳法) + 国税庁 invoice registrants. 181 exclusion/prerequisite rules, primary-source lineage, no aggregators. ¥3/req metered (¥3.30 incl. tax); 3 req/日 free per IP. `uvx autonomath-mcp`.
 ```
 
 ### F7 status: DRAFT PR RAISED 2026-04-25
 
-- Fork: `https://github.com/shigetosidumeda-cyber/jpintel-mcp/awesome-mcp-servers`
+- Fork: `https://github.com/shigetosidumeda-cyber/autonomath-mcp/awesome-mcp-servers`
 - Branch: `add-autonomath-mcp`
 - PR URL: `https://github.com/punkpeye/awesome-mcp-servers/pull/5371`
 - Mode: **draft** (operator must mark ready)
@@ -188,7 +188,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
    - Category: pick the **two** closest from Cursor's enum (typically `Data` + `Productivity` or `Developer Tools`)
    - Icon (256×256 PNG): `https://jpcite.com/assets/mcp_preview_1.png` (already 1200×630 — note any resize requirement)
    - Tile (1200×630): `https://jpcite.com/assets/mcp_preview_1.png`
-   - Repo URL: `https://github.com/shigetosidumeda-cyber/jpintel-mcp`
+   - Repo URL: `https://github.com/shigetosidumeda-cyber/autonomath-mcp`
    - Homepage: `https://jpcite.com`
    - Author: `Bookyou株式会社`
    - Contact: `info@bookyou.net`
@@ -230,7 +230,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 1. Open `https://mcpservers.org/submit`.
 2. Fill the 5 fields:
    - Name: `AutonoMath`
-   - Repo URL: `https://github.com/shigetosidumeda-cyber/jpintel-mcp`
+   - Repo URL: `https://github.com/shigetosidumeda-cyber/autonomath-mcp`
    - Description (paste tagline)
    - Category: `government` or closest
    - Email: `info@bookyou.net`

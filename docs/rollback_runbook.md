@@ -114,7 +114,7 @@ flyctl logs --app autonomath-api --region nrt -n 1000 \
 
 ### Step 2. 即時 mitigation
 
-- 該当 endpoint の rate limit を一時的に下げる: `flyctl secrets set ANON_RATE_LIMIT=20 --app autonomath-api` (default 50/月 → 20/月)
+- 該当 endpoint の rate limit を一時的に下げる: `flyctl secrets set ANON_RATE_LIMIT=20 --app autonomath-api` (default 3/日 → 20/月)
 - 大量の同一 query の場合: `response_cache` table の TTL を延長 (`scripts/extend_cache_ttl.py`)
 - Sentry issue を `Resolve` せず `Investigating` に flag
 
@@ -233,7 +233,7 @@ flyctl ssh console -a autonomath-api -C \
 
 # 7. /meta 数値確認
 curl -s https://api.jpcite.com/meta | jq '.total_programs'
-# → 13,578 程度 (前日比 ±1% 以内)
+# → 14,472 程度 (前日比 ±1% 以内)
 ```
 
 **目安所要時間**: 25-40 min (R2 download 5-10 min + SFTP upload 5 min + 起動 + verify)。
@@ -323,7 +323,7 @@ T+0 の **08:00 JST** に必ず通すリスト (`launch_checklist.md::T+0::08:00
 
 以下は **rollback しない**:
 
-- 5xx が **特定 1 IP** で発生し ratelimit に乗っている → 仕様通り (anonymous 50/月 超過)
+- 5xx が **特定 1 IP** で発生し ratelimit に乗っている → 仕様通り (anonymous 3/日 超過)
 - launch 直後 30 分の **HN traffic burst** で latency 一時上昇 (P95 800-1200 ms) → Fly auto-scale で 5-10 min で正常化
 - Sentry に **既存 known issue** の breadcrumb が出るだけ → 新規 issue 件数で判定
 - Cloudflare Pages CDN cache miss が一時増 → Cloudflare 側 stabilize で解消

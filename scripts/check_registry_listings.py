@@ -6,7 +6,7 @@ Curls each registry's expected listing URL and reports whether
 
 Designed for daily cron after 2026-05-06 launch:
 
-    30 8 * * * cd /path/to/jpintel-mcp && .venv/bin/python scripts/check_registry_listings.py
+    30 8 * * * cd /path/to/autonomath-mcp && .venv/bin/python scripts/check_registry_listings.py
 
 Output: writes one JSON line per registry to stdout AND appends to
 ``data/registry_status_<YYYY-MM-DD>.jsonl``. Exit code 0 if every registry
@@ -29,13 +29,17 @@ import argparse
 import datetime as _dt
 import json
 import os
-import socket
 import ssl
 import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+
+try:
+    _UTC = _dt.UTC
+except AttributeError:  # pragma: no cover - Python < 3.11 compatibility.
+    _UTC = _dt.timezone.utc  # noqa: UP017
 
 try:
     import certifi  # type: ignore[import-untyped]
@@ -52,7 +56,7 @@ REGISTRIES: list[dict[str, Any]] = [
     {
         "id": "official_registry",
         "name": "Official MCP Registry",
-        "url": "https://registry.modelcontextprotocol.io/v0/servers/io.github.AutonoMath/autonomath-mcp",
+        "url": "https://registry.modelcontextprotocol.io/v0/servers/io.github.shigetosidumeda-cyber/autonomath-mcp",
         "needles": ["autonomath-mcp", "AutonoMath"],
         "tier": "primary",
     },
@@ -66,7 +70,7 @@ REGISTRIES: list[dict[str, Any]] = [
     {
         "id": "glama",
         "name": "Glama",
-        "url": "https://glama.ai/mcp/servers/AutonoMath/autonomath-mcp",
+        "url": "https://glama.ai/mcp/servers/shigetosidumeda-cyber/autonomath-mcp",
         "needles": ["autonomath-mcp", "AutonoMath"],
         "tier": "primary",
     },
@@ -105,13 +109,14 @@ REGISTRIES: list[dict[str, Any]] = [
         "name": "mcp.so",
         "url": "https://mcp.so/server/autonomath-mcp",
         "needles": ["autonomath-mcp", "AutonoMath"],
+        "miss_needles": ["Project not found"],
         "tier": "secondary",
     },
     {
         "id": "awesome_mcp_servers",
         "name": "Awesome MCP Servers (punkpeye)",
         "url": "https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/README.md",
-        "needles": ["AutonoMath/autonomath-mcp"],
+        "needles": ["shigetosidumeda-cyber/autonomath-mcp"],
         "tier": "secondary",
     },
     {
@@ -158,7 +163,7 @@ def fetch(url: str) -> tuple[int, str, str | None]:
         return e.code, body, f"HTTPError {e.code}"
     except urllib.error.URLError as e:
         return 0, "", f"URLError: {e.reason}"
-    except (TimeoutError, socket.timeout):
+    except TimeoutError:
         return 0, "", "TimeoutError"
     except Exception as e:  # noqa: BLE001
         return 0, "", f"{type(e).__name__}: {e}"
@@ -168,7 +173,8 @@ def check_registry(entry: dict[str, Any]) -> dict[str, Any]:
     status, body, err = fetch(entry["url"])
     listed = False
     matched_needle: str | None = None
-    if 200 <= status < 300 and body:
+    body_is_explicit_miss = any(needle in body for needle in entry.get("miss_needles", []))
+    if 200 <= status < 300 and body and not body_is_explicit_miss:
         for needle in entry["needles"]:
             if needle in body:
                 listed = True
@@ -183,7 +189,7 @@ def check_registry(entry: dict[str, Any]) -> dict[str, Any]:
         "listed": listed,
         "matched_needle": matched_needle,
         "error": err,
-        "checked_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "checked_at": _dt.datetime.now(_UTC).isoformat(),
     }
 
 

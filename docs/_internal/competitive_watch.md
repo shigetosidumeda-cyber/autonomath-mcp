@@ -127,7 +127,7 @@ Git に commit するのは `research/competitive_log_YYYYMM.md` だけ (HTML sn
 - すでに取得済みのものは redirect 設定までを repo 内 `research/domain_shortlist.md` に追記
 
 ### 6.3 GitHub fork watch
-- 対象: `github.com/shigetosidumeda-cyber/jpintel-mcp` の全 fork
+- 対象: `github.com/shigetosidumeda-cyber/autonomath-mcp` の全 fork
 - チェック: `GET /repos/.../forks` で各 fork の `LICENSE` raw を取得、hash 比較
 - 異 hash 検出: Slack HIGH。MIT→proprietary 変更 / 著作権表記削除はライセンス違反の可能性 → OSSコミュニティに周知 or 削除要請 (GitHub DMCA 可だが濫用しない)
 

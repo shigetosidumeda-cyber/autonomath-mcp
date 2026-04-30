@@ -35,8 +35,8 @@ Expected fields based on similar aggregators:
 | Field | Value |
 |---|---|
 | Server name | `autonomath-mcp` |
-| Description | Japanese institutional data (補助金 / 融資 / 税制 / 共済) via MCP 2025-06-18. 6,771 programs, exclusion-rule aware. |
-| GitHub URL | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| Description | Japanese institutional data (補助金 / 融資 / 税制 / 共済) via MCP 2025-06-18. 11,684 searchable programs, exclusion-rule aware. |
+| GitHub URL | `https://github.com/shigetosidumeda-cyber/autonomath-mcp` |
 | Install | `pip install autonomath-mcp` |
 | Category | Finance / Government / Data |
 | Contact | `sss@bookyou.net` |

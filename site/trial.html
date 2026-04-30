@@ -348,7 +348,7 @@
         var ta = document.createElement('textarea');
         ta.value = text;
         document.body.appendChild(ta);
-        ta.select;
+        ta.select();
         try { document.execCommand('copy'); } catch (_e2) {}
         document.body.removeChild(ta);
       }
@@ -362,7 +362,7 @@
       if (status === 'error')   return showOnly('state-error');
 
       // status=ok — read the fragment.
-      var f = readFragment;
+      var f = readFragment();
       var key = f.api_key || '';
       if (!key) return showOnly('state-invalid');
 
@@ -442,9 +442,9 @@
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
     } else {
-      init;
+      init();
     }
-  });
+  })();
 </script>
 
 </body>

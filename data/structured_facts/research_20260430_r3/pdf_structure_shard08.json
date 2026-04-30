@@ -1,0 +1,474 @@
+[
+  {
+    "profile_name": "pref_loan_schema",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "loan_fields",
+    "source_url": "https://www.pref.saitama.lg.jp/documents/4178/r8pamphlet.pdf",
+    "publisher_domain": "pref.saitama.lg.jp",
+    "required_fields": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "guarantee",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者",
+        "融資対象",
+        "制度を利用できる方"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率",
+        "年利",
+        "融資利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証",
+        "保証料"
+      ],
+      "required_docs": [
+        "必要書類",
+        "提出書類",
+        "申込書類"
+      ],
+      "contact": [
+        "お問い合わせ",
+        "相談窓口",
+        "支店",
+        "事業資金相談ダイヤル"
+      ],
+      "update_date": [
+        "令和",
+        "年月",
+        "発行"
+      ]
+    },
+    "table_strategy": {
+      "mode": "loan_table_primary",
+      "pdfplumber_tables": "required",
+      "notes": "Prefecture制度融資 pamphlets should be parsed as tables; use landing page for freshness and program naming."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 23,
+      "page_count": 8,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "collateral",
+        "contact",
+        "eligible_borrower",
+        "interest_rate",
+        "loan_limit",
+        "repayment_term",
+        "update_date"
+      ],
+      "parser_profile_hint": "pref_loan_schema:制度融資 pamphlets require loan fields such as loan_limit, interest_rate, repayment_term, collateral, guarantee, contact; treat grant subsidy_rate as not applicable.",
+      "risk_reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=collateral,contact,eligible_borrower,interest_rate,loan_limit,repayment_term,update_date; representative_page_count=8",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "pref_grant_compact_table",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.pref.wakayama.lg.jp/prefg/060100/d00221813_d/fil/seichosokushin.pdf",
+    "publisher_domain": "pref.wakayama.lg.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "optional_fields": [
+      "deadline",
+      "contact",
+      "update_date",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "補助率等"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "上限額等"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "compact_table_hybrid",
+      "pdfplumber_tables": "required",
+      "notes": "Compact prefecture guidelines often use small tables; normalize file name to program name from HTML page."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 24,
+      "page_count": 5,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "pref_grant_compact_table: compact guideline/rule PDF with table labels; normalize file names to program names from HTML page.",
+      "risk_reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=5",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_smrj_attachment",
+    "profile_family": "smrj_attachment",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.smrj.go.jp/sme/funding/regional_fund/fbrion00000047w8-att/jver9n000000dwf9.pdf",
+    "publisher_domain": "smrj.go.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "max_amount",
+      "contact"
+    ],
+    "optional_fields": [
+      "deadline",
+      "subsidy_rate",
+      "required_docs",
+      "update_date",
+      "external_portal_url",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "助成対象者",
+        "対象企業"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "負担割合"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "助成金額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "添付資料",
+        "提出物"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "窓口",
+        "担当部署"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "hybrid_attachment",
+      "pdfplumber_tables": "conditional",
+      "notes": "Preserve landing-page provenance; parse section labels first and run table extraction for attachment tables,仕様書, and 別紙 blocks."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 25,
+      "page_count": 24,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "deadline",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_smrj_attachment: preserve HTML landing-page provenance, parse long attachment PDFs by section labels and attachment tables; expect external program portals and occasional missing deadline/contact inside the PDF.",
+      "risk_reason": "domain summary from 2 sampled PDFs; risk_distribution={'low': 1, 'medium': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=35",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "pref_loan_or_table_notice",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "ambiguous_support_or_loan_fields",
+    "source_url": "https://web.pref.hyogo.lg.jp/sr08/documents/setubitoushi.pdf",
+    "publisher_domain": "web.pref.hyogo.lg.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "subsidy_rate",
+      "max_amount",
+      "deadline",
+      "update_date",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ],
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証"
+      ]
+    },
+    "table_strategy": {
+      "mode": "ambiguous_table_primary",
+      "pdfplumber_tables": "required",
+      "notes": "Classify table headings before field coercion; branch to loan fields if columns include 利率/返済/融資, otherwise keep grant/support fields."
+    },
+    "ocr_needed": false,
+    "parser_risk": "high",
+    "fixture_candidate": false,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 26,
+      "page_count": 2,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "eligible_applicant",
+        "required_docs"
+      ],
+      "parser_profile_hint": "pref_loan_or_table_notice: table-heavy short PDFs may be loan/support products; classify loan-like rows separately and do not coerce to grant subsidy fields.",
+      "risk_reason": "domain summary from 1 sampled PDFs; risk_distribution={'high': 1}; fields_union=contact,eligible_applicant,required_docs; representative_page_count=2",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  }
+]

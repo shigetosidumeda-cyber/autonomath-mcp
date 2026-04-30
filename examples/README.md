@@ -31,7 +31,7 @@
 
 ```bash
 export AUTONOMATH_API_BASE=https://api.jpcite.com
-export AUTONOMATH_API_KEY=am_xxxx   # 任意; 未設定なら anonymous 50/月
+export AUTONOMATH_API_KEY=am_xxxx   # 任意; 未設定なら anonymous 3/日
 ```
 
 ## 1. 都道府県 + 業種で補助金検索

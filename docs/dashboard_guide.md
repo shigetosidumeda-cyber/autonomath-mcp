@@ -18,7 +18,7 @@ X-API-Key: am_…
 Authorization: Bearer am_…
 ```
 
-匿名は `401 dashboard requires an authenticated API key`。`/v1/programs/search` 等の data 経路は引き続き匿名 50 req/月 で動く ([pricing.md](./pricing.md))。
+匿名は `401 dashboard requires an authenticated API key`。`/v1/programs/search` 等の data 経路は引き続き匿名 3 req/日 で動く ([pricing.md](./pricing.md))。
 
 ## Dashboard summary
 

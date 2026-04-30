@@ -51,9 +51,11 @@ from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
+from jpintel_mcp.api.citations import router as citations_router
 from jpintel_mcp.api.client_profiles import router as client_profiles_router
 from jpintel_mcp.api.compliance import router as compliance_router
 from jpintel_mcp.api.confidence import router as confidence_router
+from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
@@ -62,14 +64,12 @@ from jpintel_mcp.api.device_flow import router as device_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
-from jpintel_mcp.api.citations import router as citations_router
-from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.evidence import router as evidence_router
-from jpintel_mcp.api.funding_stack import router as funding_stack_router
-from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.feedback import router as feedback_router
+from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.houjin import router as houjin_router
+from jpintel_mcp.api.intelligence import router as intelligence_router
 from jpintel_mcp.api.invoice_registrants import router as invoice_registrants_router
 from jpintel_mcp.api.laws import router as laws_router
 from jpintel_mcp.api.legal import router as legal_router
@@ -103,6 +103,7 @@ from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.saved_searches import router as saved_searches_router
 from jpintel_mcp.api.signup import router as signup_router
+from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.stats import router as stats_router
 from jpintel_mcp.api.stats_funnel import router as stats_funnel_router
 from jpintel_mcp.api.subscribers import router as subscribers_router
@@ -386,7 +387,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     # silent "warn but continue" is wrong here.
     from jpintel_mcp.db.session import connect
 
-    BANNED_AGGREGATOR_DOMAINS = [
+    banned_aggregator_domains = [
         "noukaweb",
         "hojyokin-portal",
         "biz.stayway",
@@ -396,7 +397,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         "wikipedia.org",
     ]
     with connect() as _con:
-        for _domain in BANNED_AGGREGATOR_DOMAINS:
+        for _domain in banned_aggregator_domains:
             _count = _con.execute(
                 "SELECT COUNT(*) FROM programs WHERE source_url LIKE ?",
                 (f"%{_domain}%",),
@@ -410,7 +411,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     logger.info(
         "aggregator_integrity_pass",
         extra={
-            "banned_domains_checked": len(BANNED_AGGREGATOR_DOMAINS),
+            "banned_domains_checked": len(banned_aggregator_domains),
             "matches": 0,
         },
     )
@@ -996,6 +997,9 @@ def create_app() -> FastAPI:
     app.include_router(citations_router, dependencies=[AnonIpLimitDep])
     # /v1/cost/preview — Evidence Pre-fetch Layer estimator (no LLM).
     app.include_router(cost_router, dependencies=[AnonIpLimitDep])
+    # /v1/intelligence/precomputed/query — compact precomputed context
+    # bundle for offline token-cost benchmarking and LLM prefetch flows.
+    app.include_router(intelligence_router, dependencies=[AnonIpLimitDep])
     # /v1/funding_stack/check — pure rule engine over compat_matrix + exclusion_rules.
     app.include_router(funding_stack_router, dependencies=[AnonIpLimitDep])
     # /v1/houjin/{bangou} — corporate 360 lookup surfacing 1.12M gBizINFO

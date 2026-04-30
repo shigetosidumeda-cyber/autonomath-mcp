@@ -1071,11 +1071,11 @@
       inp.addEventListener('input', updateUrlPreview);
       inp.addEventListener('change', updateUrlPreview);
     }
-    updateUrlPreview;
+    updateUrlPreview();
   }
 
   function updateUrlPreview() {
-    const { url } = buildUrl;
+    const { url } = buildUrl();
     safeText(els.urlText, url);
     // Method pill is always GET in this playground.
     const methodEl = els.urlPreview.querySelector('.pg-url-method');
@@ -1092,7 +1092,7 @@
   }
 
   function buildCurl() {
-    const { url } = buildUrl;
+    const { url } = buildUrl();
     const bearer = (els.bearer.value || '').trim();
     const lines = ["curl -sS \\", "  '" + url.replace(/'/g, "'\\''") + "' \\", "  -H 'Accept: application/json'"];
     if (bearer) {
@@ -1125,7 +1125,7 @@
     els.send.disabled = true;
     safeText(els.send, '送信中…');
 
-    const { url } = buildUrl;
+    const { url } = buildUrl();
     const bearer = (els.bearer.value || '').trim();
     const headers = { 'Accept': 'application/json' };
     if (bearer) headers['Authorization'] = 'Bearer ' + bearer;
@@ -1144,7 +1144,7 @@
     } catch (e) {
       errMsg = e && e.message ? e.message : String(e);
     }
-    const ms = Math.round(performance.now - t0);
+    const ms = Math.round(performance.now() - t0);
 
     inflight = false;
     els.send.disabled = false;
@@ -1223,18 +1223,18 @@
 
   // ----- 6. Wire-up ------------------------------------------------------
   function init() {
-    renderEndpointSelect;
-    renderParams;
+    renderEndpointSelect();
+    renderParams();
 
     els.endpoint.addEventListener('change', function() {
       currentEndpoint = ENDPOINTS[parseInt(els.endpoint.value, 10) || 0];
-      renderParams;
+      renderParams();
     });
 
     els.send.addEventListener('click', send);
     els.reset.addEventListener('click', function() {
       // Re-render with original defaults (lose current values).
-      renderParams;
+      renderParams();
       els.bearer.value = '';
       els.response.hidden = true;
     });
@@ -1248,7 +1248,7 @@
     });
 
     els.copyCurl.addEventListener('click', async function() {
-      const cmd = buildCurl;
+      const cmd = buildCurl();
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(cmd);
@@ -1258,7 +1258,7 @@
           ta.value = cmd;
           ta.style.position = 'fixed'; ta.style.top = '-1000px';
           document.body.appendChild(ta);
-          ta.select;
+          ta.select();
           document.execCommand('copy');
           document.body.removeChild(ta);
         }
@@ -1286,25 +1286,25 @@
     els.params.addEventListener('keydown', function (e) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
-        send;
+        send();
       }
     });
     els.bearer.addEventListener('keydown', function (e) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
-        send;
+        send();
       }
     });
 
-    updateUrlPreview;
+    updateUrlPreview();
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    init;
+    init();
   }
-});
+})();
 </script>
 
 </body>

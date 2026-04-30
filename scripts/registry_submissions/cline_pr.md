@@ -9,9 +9,9 @@
 
 ## Pre-flight
 
-- [ ] Public repo `github.com/shigetosidumeda-cyber/jpintel-mcp` is live
-- [ ] PyPI package `autonomath-mcp` v0.3.1 is published
-- [ ] README.md renders the pinned tool count (68 default / 4 gated off)
+- [ ] Public repo `github.com/shigetosidumeda-cyber/autonomath-mcp` is live
+- [ ] PyPI package `autonomath-mcp` v0.3.2 is published
+- [ ] README.md renders the pinned tool count (93 default / 4 gated off)
 - [ ] Read `CONTRIBUTING.md` and the index schema in the marketplace repo before opening the PR
 
 ---
@@ -34,8 +34,8 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
 {
   "name": "autonomath-mcp",
   "displayName": "AutonoMath — 日本の制度 MCP",
-  "description": "Search Japanese institutional data: 10,790 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 89 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on 99%+ rows.",
-  "repository": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
+  "description": "Search Japanese institutional data: 10,790 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 93 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on 99%+ rows.",
+  "repository": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
   "homepage": "https://jpcite.com",
   "license": "MIT",
   "language": "Python",
@@ -68,8 +68,8 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
     "融資",
     "税制"
   ],
-  "tools_count": 68,
-  "pricing": "¥3.30/request (税込, fully metered) · first 50 requests/month free per IP (anonymous, JST monthly reset) · no tier SKUs, no seat fees, no annual minimums",
+  "tools_count": 93,
+  "pricing": "¥3/request tax-exclusive (¥3.30 tax-inclusive, fully metered) · first 3 requests/day per IP free (anonymous, JST next-day reset) · no tier SKUs, no seat fees, no annual minimums",
   "operator": {
     "name": "Bookyou株式会社",
     "invoice_registration_number": "T8010001213708",
@@ -95,7 +95,7 @@ npx ajv-cli validate -s schema.json -d <index-file>
 
 ```bash
 git add <index-file>
-git commit -m "Add AutonoMath: 68-tool MCP for Japanese institutional data"
+git commit -m "Add AutonoMath: 93-tool MCP for Japanese institutional data"
 git push -u origin add/autonomath-mcp
 ```
 
@@ -104,7 +104,7 @@ git push -u origin add/autonomath-mcp
 ### PR title
 
 ```
-Add AutonoMath: 68-tool MCP for Japanese institutional data (subsidies / laws / tax / court / invoice)
+Add AutonoMath: 93-tool MCP for Japanese institutional data (subsidies / laws / tax / court / invoice)
 ```
 
 ### PR body
@@ -133,15 +133,17 @@ A single-server entry for **AutonoMath** (`autonomath-mcp` on PyPI), an MCP serv
 
 ## Tools
 
-- **89 tools at default gates** (`tools/list` runtime count, AUTONOMATH_ENABLED=1)
-  - 39 jpintel core tools (programs / case studies / loans / enforcement / laws / court / bids / tax / invoice + 7 one-shot discovery + cross-dataset glue)
-  - 29 autonomath tools (V1 + 4 V4 universal annotation/validation/provenance + Phase A static/example/health + lifecycle/abstract/prerequisite/graph_traverse/rule_engine)
+- **93 tools at default gates** (`tools/list` runtime count, AUTONOMATH_ENABLED=1)
+  - 39 core tools (programs / case studies / loans / enforcement / laws / court / bids / tax / invoice + 7 one-shot discovery + cross-dataset glue)
+  - 50 autonomath tools at runtime (V1 + 4 V4 universal annotation/validation/provenance + Phase A static/example/health + lifecycle/abstract/prerequisite/graph_traverse/rule_engine)
 - **4 additional tools are intentionally gated OFF** pending fix (smoke test 2026-04-29 found them broken):
   - `query_at_snapshot` (`AUTONOMATH_SNAPSHOT_ENABLED`, migration 067 missing)
   - `intent_of` + `reason_answer` (`AUTONOMATH_REASONING_ENABLED`, reasoning package missing)
   - `related_programs` (`AUTONOMATH_GRAPH_ENABLED`, am_node table missing)
 - Two further tools (`render_36_kyotei_am` + `get_36_kyotei_metadata_am`) are held behind `AUTONOMATH_36_KYOTEI_ENABLED` due to 労基法 §36 / 社労士法 review requirements.
 - Protocol: `2025-06-18`. Transport: `stdio`. Runtime hint: `uvx`.
+
+Evidence Pre-fetch / precomputed intelligence means source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins are prepared for retrieval. Describe it as evidence packaging, not as model-cost savings.
 
 ## Install
 
@@ -159,7 +161,7 @@ A single-server entry for **AutonoMath** (`autonomath-mcp` on PyPI), an MCP serv
 ## Pricing
 
 - **¥3 per request** (税込 ¥3.30) — fully metered via Stripe
-- **First 50 requests/month free** per IP (anonymous, JST 月初 00:00 リセット)
+- **First 3 requests/day free** per IP (anonymous, JST 翌日リセット)
 - **No tier SKUs**, no seat fees, no annual minimums, no signup required
 
 ## Disclaimer (税理士法 §52 fence)
@@ -182,7 +184,7 @@ Search results are extracted at the time of fetch; rates / sunset dates / author
 
 ## Repo
 
-- Source: https://github.com/shigetosidumeda-cyber/jpintel-mcp
+- Source: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 - Homepage: https://jpcite.com
 

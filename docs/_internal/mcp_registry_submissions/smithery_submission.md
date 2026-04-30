@@ -25,7 +25,7 @@ Key fields:
 - [ ] `smithery.yaml` validated against Smithery schema (use smithery CLI dry
       run post-rebrand: `smithery validate` or web validator at smithery.ai/new)
 - [ ] Repo public on GitHub
-- [ ] First release tag `v0.1.0` on GitHub + corresponding PyPI release
+- [ ] First release tag `v0.3.2` on GitHub + corresponding PyPI release
 - [ ] Go to `smithery.ai/new` and paste repo URL (triggers immediate index)
 - [ ] Wait for "Claim" email / button → confirm GitHub ownership
 - [ ] Verify install command: `npx -y @smithery/cli install autonomath-mcp

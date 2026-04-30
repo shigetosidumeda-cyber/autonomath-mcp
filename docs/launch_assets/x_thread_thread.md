@@ -8,7 +8,7 @@
 >
 > 関連: `twitter_thread.md` (英語版、separate thread)
 > Validate (memory `feedback_validate_before_apply`):
-> - 数値 13,578 / 55 / ¥3 統一
+> - 数値 14,472 / 55 / ¥3 統一
 > - INV-22: 必ず / 絶対 / 保証 / 業界初 / 最大 等の過剰強調削除済み
 > - hashtag: #AutonoMath #補助金 #MCP #AI
 
@@ -22,7 +22,7 @@ AutonoMath、本日 launch しました。
 日本の公的制度データ (補助金・融資・税制・認定・法令・処分・適格事業者) を、
 AI エージェントが 1 query で呼び出せる REST + MCP API です。
 
-solo 開発、¥3/req 完全従量、匿名 50 req/月 per IP 無料。
+solo 開発、¥3/req 完全従量、匿名 3 req/日 per IP 無料。
 
 https://jpcite.com
 
@@ -52,7 +52,7 @@ AI が即答できる API が欲しかった、というだけです。
 ```
 3/ 何が入ってるか (2026-05-06 時点)
 
-- 制度 13,578 件 (経産省/農水省/中小企業庁/公庫/都道府県)
+- 制度 14,472 件 (経産省/農水省/中小企業庁/公庫/都道府県)
 - 採択事例 2,286 / 融資 108 / 行政処分 1,185
 - 法令 9,484 (e-Gov CC-BY)
 - 適格事業者 13,801 (NTA PDL v1.0)
@@ -68,7 +68,7 @@ AI が即答できる API が欲しかった、というだけです。
 ```
 4/ 想定 audience は 5 つ。
 
-- AI agent 開発者: 72 MCP ツール at default gates、Manifest 1 行
+- AI agent 開発者: 93 MCP ツール at default gates、Manifest 1 行
 - 税理士: 措置法を Claude で walkthrough
 - 行政書士: 補助金+融資+許認可を 1 call
 - SMB 経営者: ChatGPT で「うちの業種は?」
@@ -120,7 +120,7 @@ aggregator (noukaweb / hojyokin-portal 等) は source_url から完全 ban。
    { "command":"uvx", "args":["autonomath-mcp"] }
 3. pip install autonomath-mcp
 
-匿名 50 req/月 per IP 無料 (JST 月初リセット)。
+匿名 3 req/日 per IP 無料 (JST 月初リセット)。
 
 #MCP #AI
 ```

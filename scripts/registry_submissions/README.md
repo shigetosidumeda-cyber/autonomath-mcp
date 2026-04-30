@@ -2,7 +2,7 @@
 
 Drafted submission packets for the 7 MCP registries that require manual action (per the audit in `scripts/mcp_registries.md` / `scripts/mcp_registries_submission.json`). The other 6 registries (PyPI, npm, MCP Official Registry, DXT, Smithery, Glama) auto-publish or auto-index and are out of scope here.
 
-**Status: DRAFT — do not submit until launch readiness clears (repo creation, PyPI publish, v0.3.1 cut).**
+**Status: DRAFT — do not submit until launch readiness clears (repo creation, PyPI publish, v0.3.2 cut).**
 
 ---
 
@@ -11,9 +11,9 @@ Drafted submission packets for the 7 MCP registries that require manual action (
 | Field | Value |
 |---|---|
 | Product | AutonoMath |
-| Version | 0.3.1 |
+| Version | 0.3.2 |
 | PyPI package | `autonomath-mcp` |
-| Repo (pending creation) | https://github.com/shigetosidumeda-cyber/jpintel-mcp |
+| Repo (pending creation) | https://github.com/shigetosidumeda-cyber/autonomath-mcp |
 | Homepage | https://jpcite.com |
 | Docs | https://jpcite.com/docs/ |
 | License | MIT |
@@ -21,9 +21,11 @@ Drafted submission packets for the 7 MCP registries that require manual action (
 | MCP protocol | 2025-06-18 |
 | Transport | stdio |
 | Install | `uvx autonomath-mcp` (or `pip install autonomath-mcp`) |
-| Tool count | **68 at default gates** (4 additional gated off pending fix; 2 further behind `AUTONOMATH_36_KYOTEI_ENABLED`) |
-| Pricing | ¥3.30/req (税込, fully metered) · first 50 req/月 free per IP (anonymous, JST monthly reset) · no tier SKUs |
+| Tool count | **93 at default gates** (4 additional gated off pending fix; 2 further behind `AUTONOMATH_36_KYOTEI_ENABLED`) |
+| Pricing | ¥3/req tax-exclusive (¥3.30 tax-inclusive, fully metered) · 3 req/day per IP free (anonymous, JST next-day reset) · no tier SKUs |
 | Operator | Bookyou株式会社 (T8010001213708) — 代表 梅田茂利 — info@bookyou.net |
+
+Value proposition note: Evidence Pre-fetch / precomputed intelligence means source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins are prepared for retrieval. Describe it as evidence packaging, not as model-cost savings.
 
 ### Honest data counts
 
@@ -80,10 +82,10 @@ After submit, watch wall-clock for review responses runs from 1 day (MCP Hunt) t
 
 ## Pre-submit gating (do all of these before submitting any of the 7)
 
-1. **Repo public**: `gh repo view shigetosidumeda-cyber/jpintel-mcp --json visibility -q .visibility` returns `PUBLIC`. (Per launch readiness, repo creation is currently pending — every entry points at this URL.)
-2. **PyPI package live**: `pip install autonomath-mcp==0.3.1` succeeds.
+1. **Repo public**: `gh repo view shigetosidumeda-cyber/autonomath-mcp --json visibility -q .visibility` returns `PUBLIC`. (Per launch readiness, repo creation is currently pending — every entry points at this URL.)
+2. **PyPI package live**: `pip install autonomath-mcp==0.3.2` succeeds.
 3. **MCP Official Registry entry live**: `mcp publish server.json` completed; PulseMCP / Glama auto-ingest will start propagating within ~24 h.
-4. **README.md authoritative numbers**: matches the canonical facts above (89 tools, 154 laws full-text, 9,484 stubs, 4,300 sourced compat pairs, ¥3.30/req metered).
+4. **README.md authoritative numbers**: matches the canonical facts above (93 tools, 154 laws full-text, 9,484 stubs, 4,300 sourced compat pairs, ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered).
 5. **Disclaimer text matches the fence above** in README, /tos, /privacy, /tokushoho, /legal.
 6. **DXT bundle live**: `https://jpcite.com/downloads/autonomath-mcp.mcpb` returns 200.
 7. **Logos exist**:

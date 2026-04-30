@@ -13,7 +13,7 @@ cohort 顧客から確認できれば **継続**、未達なら sunset。
 
 ## なぜ Real Estate V5 か
 
-- jpcite は 2026-05-06 に農業 + SMB 制度 13,578 件で launch、
+- jpcite は 2026-05-06 に農業 + SMB 制度 14,472 件で launch、
   2026-08-04 に Healthcare V3 を加える計画 (V3 = B5 pattern の先行例)。
   Real Estate V5 は同じ pattern (schema migration 先行 + ingest plan) を
   4 週圧縮で実行する第 5 波。
@@ -115,11 +115,11 @@ Scaffolding が **本日着地** (`src/jpintel_mcp/mcp/real_estate_tools/`):
   との区別が機械可読 (`status` キーで判定)。実 SQL は **T+200d 直前**
   (target 2026-11-22) で本 stub の body 差し替えとして land する。
 - `AUTONOMATH_REAL_ESTATE_ENABLED` env (default `False`) で gate。
-  launch (2026-05-06) 時点では disabled、manifest は **89 tools** のまま。
-- operator が `True` に flip すると 69 + 5 = **89 tools** に増えるので、
+  launch (2026-05-06) 時点では disabled、manifest は **93 tools** のまま。
+- operator が `True` に flip すると 69 + 5 = **93 tools** に増えるので、
   T+150d 程度で partner 向け OpenAPI 事前公開・契約面の peer review が可能。
 - `tests/test_real_estate_tools.py` が
-  ① env-False で 89 tools / ② env-True で 89 tools / ③ sentinel 注記
+  ① env-False で 93 tools / ② env-True で 93 tools / ③ sentinel 注記
   return / ④ 各 stub の signature shape (parameter set + 型注釈 + docstring)
   を担保。
 - migration 042 (real_estate_programs + zoning_overlays) は C7 で適用済み。

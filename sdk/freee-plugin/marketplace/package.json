@@ -6,11 +6,11 @@
   "homepage": "https://jpcite.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git",
+    "url": "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp.git",
     "directory": "sdk/freee-plugin/marketplace"
   },
   "bugs": {
-    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues",
+    "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues",
     "email": "info@bookyou.net"
   },
   "operator": {

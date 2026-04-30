@@ -17,7 +17,7 @@ where jpcite is published. Detailed runbook for the MCP-server-specific registri
 ## 1. PyPI (`autonomath-mcp`)
 
 - **URL**: <https://pypi.org/project/autonomath-mcp/>
-- **Distributable**: sdist (`autonomath-mcp-0.2.0.tar.gz`) + wheel (`autonomath_mcp-0.2.0-py3-none-any.whl`)
+- **Distributable**: sdist (`autonomath-mcp-0.3.2.tar.gz`) + wheel (`autonomath_mcp-0.3.2-py3-none-any.whl`)
 - **Auth**: API token (`PYPI_TOKEN`, scoped to project)
 - **Publish command**:
   ```bash
@@ -25,7 +25,7 @@ where jpcite is published. Detailed runbook for the MCP-server-specific registri
   TWINE_USERNAME=__token__ TWINE_PASSWORD="$PYPI_TOKEN" twine upload dist/*
   ```
 - **Smoke validation**: `twine check dist/*`
-- **Rollback**: `pip yank autonomath-mcp==0.2.0` (irreversible delete is impossible — yank is the only safe rollback)
+- **Rollback**: `pip yank autonomath-mcp==0.3.2` (irreversible delete is impossible — yank is the only safe rollback)
 
 ## 2. npm (`@autonomath/sdk`)
 
@@ -37,7 +37,7 @@ where jpcite is published. Detailed runbook for the MCP-server-specific registri
   cd sdk/typescript && npm publish --access public
   ```
 - **Smoke validation**: `npm pack --dry-run`
-- **Rollback**: `npm deprecate @autonomath/sdk@0.2.0 "deprecated, use 0.2.1+"` within 72 h, otherwise versioned forward only.
+- **Rollback**: `npm deprecate @autonomath/sdk@0.3.2 "deprecated, use 0.3.3+"` within 72 h, otherwise versioned forward only.
 
 ## 3. MCP Official Registry
 

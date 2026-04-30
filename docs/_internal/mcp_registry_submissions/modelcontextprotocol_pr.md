@@ -22,7 +22,7 @@ below.
 ### Artifact
 
 - `mcp-server.json` at repo root (already drafted).
-  - Namespace we plan to use (placeholder): `io.github.shigetoumeda/autonomath-mcp`.
+  - Namespace we plan to use (placeholder): `io.github.shigetosidumeda-cyber/autonomath-mcp`.
     GitHub-owned namespaces do not require DNS verification; ownership is proved
     by pushing from the same GitHub account.
 

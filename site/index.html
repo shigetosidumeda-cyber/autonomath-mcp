@@ -317,7 +317,7 @@
  <h1 id="hero-title">日本の制度データを、 AI が信頼できる形で。</h1>
  <p class="hero-sub">11,684 制度 + 採択事例・融資・判例・法令を、一次資料 URL 付きで返す REST + MCP API。 1 リクエスト ¥3、 匿名 3 req/日 無料。</p>
 
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">「IT導入」と検索すれば、適合する制度名・品質ランク・出典 URL・更新日がそろって返ります。AI から呼び出すための形式に最初から整えてあります。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">「IT導入」と検索すれば、適合する制度名・品質ランク・出典 URL・更新日がそろって返ります。Claude / ChatGPT / Cursor に聞く前に、コンパクトで出典リンク付きの文脈を事前取得できるため、繰り返しの Web 検索や文脈詰め込みを減らせるケースを実測できます。</p>
 
  <div class="cta-row">
  <a class="btn btn-primary" href="#trial" data-cta-variant="hero-trial">API キーを取得 →</a>
@@ -352,9 +352,9 @@
  </details>
 
  <!--
-        Conversion-pathway audit 2026-04-29: email-only trial form. Captures
-        evaluator emails before they bounce (100% of anon visitors leave no
-        contact info today). 14 days / 200 req hard cap, NO card required —
+       Conversion-pathway audit 2026-04-29: email-only trial form. Captures
+       evaluator emails before they bounce (anon visitors otherwise leave no
+       contact info today). 14 days / 200 req hard cap, NO card required —
         not a "Free tier" SKU; pricing stays ¥3/req metered post-trial.
         See src/jpintel_mcp/api/signup.py for the full design rationale.
         ADD-only block; do not modify the rest of the hero / index.html.
@@ -390,7 +390,7 @@
                 resultEl.textContent = '送信中…';
                 resultEl.style.color = '';
               }
-              fetch('/v1/signup', {
+              fetch('https://api.jpcite.com/v1/signup', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
                 body: JSON.stringify({email: emailEl.value})
@@ -424,7 +424,7 @@
                 }
               });
             });
-          });
+          })();
         </script>
  </section>
  </div>
@@ -665,7 +665,7 @@
  <article class="card audience-card" aria-labelledby="aud-dev" style="background:var(--bg-alt);border-color:var(--accent);">
  <h3 id="aud-dev">AI 開発者 (横断利用)</h3>
  <p class="card-lead audience-context">REST + MCP、 89 機能、 SDK 不要</p>
- <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠 (Claude Desktop / Cursor / ChatGPT で即動作)、 uvx 1 行で起動。 SDK のインストール不要です。</p>
+ <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠 (Claude Desktop / Cursor / ChatGPT で即動作)、 uvx 1 行で起動。 事前計算済みの根拠を返すため、削減できるトークン量・Web 検索量はワークロードとモデルごとに測定できます。</p>
  <ul class="card-list">
  <li>AI から呼べる機能 <span data-fact="mcp_tools_total">93</span> 個 / REST 経路 194 本</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
@@ -744,14 +744,14 @@
           ta.style.position = 'absolute';
           ta.style.left = '-9999px';
           document.body.appendChild(ta);
-          ta.select;
+          ta.select();
           document.execCommand('copy');
           document.body.removeChild(ta);
           done(true);
         } catch (e) { done(false); }
       }
     });
-  });
+  })();
   </script>
 
  <section class="prescreen" aria-labelledby="ps-title" id="try">
@@ -1021,7 +1021,7 @@
 
 <script src="/assets/feedback-widget.js" defer></script>
 <script defer>
-document.addEventListener('DOMContentLoaded',  => {
+document.addEventListener('DOMContentLoaded', function() {
   if (window.税務会計AIFeedback) {
     window.税務会計AIFeedback.mount('body', { position: 'bottom-right' });
   }

@@ -138,12 +138,12 @@
 # the API at /v1/programs/{unified_id} regardless of static-page status.
 # ─────────────────────────────────────────────────────────────────────────
 
-# Programs: tier B/C SSG pages were retired. Inbound /programs/{slug}.html
-# requests that no longer match a file on disk fall through to /programs/
-# (search-surface index) so users can re-search by keyword. CF Pages serves
-# the file directly when the slug still exists (tier S/A), so this rule
-# only fires for the retired tier B/C slugs.
-/programs/*  /programs/  302
+# Programs: tier B/C SSG pages were retired. Do not add a broad
+# `/programs/*` fallback here: Cloudflare Pages redirect rules can intercept
+# generated /programs/{slug}.html assets before the static file is served.
+# Legacy UNI-shaped URLs are handled above by the explicit /programs/UNI-*
+# rules; other retired program URLs should miss normally instead of shadowing
+# live static pages.
 
 # Cross prefecture × program retired pair pages: legacy
 # /cross/{pref}/{program}.html → bounce to the prefecture hub
@@ -153,8 +153,8 @@
 /cross/:pref/:slug       /cross/:pref/  302
 /cross                   /cross/        301
 
-# QA: 69 retired pages bounce to the FAQ / QA root.
-/qa/*  /qa/  302
+# QA: retired pages must not be handled with `/qa/*`; that pattern also matches
+# live generated /qa/{topic}/{slug}.html citation pages.
 
 # Industries: retired per-program-per-JSIC pages
 # /industries/{jsic}/{slug}/index.html → /industries/{jsic}/.

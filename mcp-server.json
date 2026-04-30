@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
-  "version": "0.3.1",
-  "description": "Search Japanese institutional data via REST + MCP API. 11,684 searchable subsidies (full table 14,472 incl. tier X quarantine) + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records + 108 loan products (collateral / personal-guarantor / third-party-guarantor 3-axis decomposition) + 362 bids + 181 exclusion/prerequisite rules. 89 MCP tools at default gates (39 core + 50 autonomath, including industry packs pack_construction / pack_manufacturing / pack_real_estate), MCP protocol 2025-06-18. 99%+ rows carry primary-source URL + fetched_at; aggregator sources excluded. ¥3/req tax-exclusive (¥3.30 incl), anonymous 50 req/month per IP free (JST first-of-month reset). Not legal/tax/行政書士 advice; verify primary sources before any business decision. Operator: Bookyou株式会社 (T8010001213708, info@bookyou.net).",
+  "version": "0.3.2",
+  "description": "Search Japanese institutional data via REST + MCP API. 11,684 searchable subsidies (full table 14,472 incl. tier X quarantine) + 154 laws full-text + 9,484 law catalog stubs (full-text load incremental) + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records + 108 loan products (collateral / personal-guarantor / third-party-guarantor 3-axis decomposition) + 362 bids + 181 exclusion/prerequisite rules. 93 MCP tools at default gates (39 core + 50 autonomath, including industry packs pack_construction / pack_manufacturing / pack_real_estate), MCP protocol 2025-06-18. 99%+ rows carry primary-source URL + fetched_at; aggregator sources excluded. ¥3/req tax-exclusive (¥3.30 incl), anonymous 3 req/day per IP free (JST next-day reset). Not legal/tax/行政書士 advice; verify primary sources before any business decision. Operator: Bookyou株式会社 (T8010001213708, info@bookyou.net).",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
@@ -28,7 +28,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "autonomath-mcp",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
@@ -38,7 +38,7 @@
   "tools": [
     {
       "name": "search_programs",
-      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索 (search 11,684 searchable Japanese public programs of 14,472 total). Tier-graded quality labels (S=114 / A=1,340 / B=4,186 / C=6,044) with primary-source URL + fetched_at on every row; tier X (2,788) quarantined, excluded by default. Typical args: prefecture='東京都' (47 都道府県), target_industry JSIC 1-letter code (D=建設, E=製造, K=不動産…), funding_purpose ('equipment' / 'it_introduction' / 'gx' / 'business_restructuring'). For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
+      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索 (search 11,684 searchable Japanese public programs of 14,472 total). Tier-graded quality labels (S=114 / A=1,340 / B=4,186 / C=6,044) with primary-source URL + fetched_at on 99%+ of rows; 2,788 public-hold/quarantine rows excluded, excluded by default. Typical args: prefecture='東京都' (47 都道府県), target_industry JSIC 1-letter code (D=建設, E=製造, K=不動産…), funding_purpose ('equipment' / 'it_introduction' / 'gx' / 'business_restructuring'). For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
     },
     {
       "name": "get_program",
@@ -66,7 +66,7 @@
     },
     {
       "name": "search_loan_programs",
-      "description": "無担保・無保証 融資を 1 クエリで抽出 — 108 日本政策金融公庫 / 自治体 / 信金 融資 programs with three independent enum axes (担保 / 個人保証人 / 第三者保証人). Each axis: required / not_required / negotiable / unknown. No other public site decomposes this"
+      "description": "無担保・無保証 融資を 1 クエリで抽出 — 108 日本政策金融公庫 / 自治体 / 信金 融資 programs with three independent enum axes (担保 / 個人保証人 / 第三者保証人). Each axis: required / not_required / negotiable / unknown. Use this when collateral / guarantor conditions matter"
     },
     {
       "name": "get_loan_program",
@@ -98,7 +98,7 @@
     },
     {
       "name": "search_laws",
-      "description": "日本の法令 (e-Gov法令, CC-BY) を横断検索。法令名・条文本文に FTS5 trigram + 法令種別 / 所管省庁 / 施行日 の構造化フィルタを適用し、一次資料 URL + fetched_at を全行に付与"
+      "description": "日本の法令 (e-Gov法令, CC-BY) を横断検索。法令名・条文本文に FTS5 trigram + 法令種別 / 所管省庁 / 施行日 の構造化フィルタを適用し、一次資料 URL + fetched_at を可能な限り付与"
     },
     {
       "name": "get_law",
@@ -266,7 +266,7 @@
     },
     {
       "name": "get_provenance",
-      "description": "V4 universal: autonomath entity の provenance 全 ledger — 寄与した am_source 全行 (license / fetched_at / source_url / role) と license rollup (pdl_v1.0 / cc_by_4.0 / gov_standard / public_domain / proprietary 件数)。97,272/97,272 source に license fill 済"
+      "description": "V4 universal: autonomath entity の provenance ledger — 寄与した am_source 行 (license / fetched_at / source_url / role) と license rollup (pdl_v1.0 / cc_by_4.0 / gov_standard / public_domain / proprietary 件数)。97,272/97,272 source に license fill 済"
     },
     {
       "name": "get_provenance_for_fact",
@@ -302,7 +302,7 @@
     }
   ],
   "requirements": {
-    "api_key": "https://jpcite.com/pricing — anonymous tier 50 calls/month per IP free (no key, JST first-of-month reset); metered paid tier ¥3/req tax-exclusive (¥3.30 tax-inclusive) requires a key"
+    "api_key": "https://jpcite.com/pricing — anonymous tier 3 calls/day per IP free (no key, JST next-day reset); metered paid tier ¥3/req tax-exclusive (¥3.30 tax-inclusive) requires a key"
   },
   "language": "ja-JP",
   "categories": ["government", "legal", "finance"],
@@ -345,10 +345,10 @@
       "loan_program_count": 108,
       "enforcement_case_count": 1185,
       "exclusion_rule_count": 181,
-      "tool_count": 89,
+      "tool_count": 93,
       "tier_labels": ["S", "A", "B", "C", "X"],
       "languages_supported": ["ja-JP"],
-      "free_tier_monthly_calls_per_ip": 50,
+      "free_tier_daily_calls_per_ip": 3,
       "primary_source_coverage_pct": 99,
       "mcp_protocol_version": "2025-06-18"
     }

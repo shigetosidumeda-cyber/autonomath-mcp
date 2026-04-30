@@ -231,9 +231,12 @@
  <p style="font-size:20px;line-height:1.6;margin:0 0 24px;color:var(--text);max-width:720px;">
  税込 ¥3.30、 完全従量。 匿名 3 req/日 無料、 翌日 00:00 JST リセット。
  </p>
+ <p style="font-size:15px;line-height:1.7;margin:-10px 0 24px;color:var(--text-muted);max-width:720px;">
+	 jpcite は事前取得・事前計算した根拠を返します。Claude / ChatGPT / Cursor に聞く前に、コンパクトで出典リンク付きの文脈を先に用意し、繰り返しの Web 検索や文脈詰め込みを減らせるケースを実測してください。
+ </p>
 
  <div class="hero-calc" style="margin:0 0 28px;border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;max-width:560px;">
- <table style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;">
+ <table style="width:100.0%;border-collapse:collapse;font-variant-numeric:tabular-nums;">
  <thead>
  <tr style="background:var(--bg-alt,#fafaf9);">
  <th scope="col" style="text-align:left;padding:12px 18px;font-size:14px;font-weight:600;color:var(--text-muted);border-bottom:1px solid var(--border,#e5e7eb);">月の利用量</th>
@@ -267,7 +270,7 @@
  <section aria-labelledby="compare-title" style="margin-top:48px;">
  <h2 id="compare-title" class="section-title">他の選択肢との比較</h2>
  <div class="table-wrap" style="overflow-x:auto;">
- <table class="pricing-table" style="width:100%;border-collapse:collapse;font-size:14px;">
+ <table class="pricing-table" style="width:100.0%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-alt,#fafaf9);border-bottom:2px solid var(--border,#e5e7eb);">
  <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;">選択肢</th>
@@ -345,7 +348,7 @@
             bodyEl.textContent = 'いつでも再開できます。 ご質問は info@bookyou.net まで。';
             banner.hidden = false;
           }
-        });
+        })();
       </script>
  <script>
         (function() {
@@ -372,7 +375,7 @@
             var ctrl = new AbortController();
             var timer = setTimeout(function() { ctrl.abort(); }, 15000);
             try {
-              var r = await fetch('/v1/billing/checkout', {
+              var r = await fetch('https://api.jpcite.com/v1/billing/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
@@ -409,7 +412,7 @@
               clearTimeout(timer);
             }
           });
-        });
+        })();
       </script>
  </section>
 
@@ -466,7 +469,7 @@
 
 <script src="/assets/feedback-widget.js" defer></script>
 <script defer>
-document.addEventListener('DOMContentLoaded',  => {
+document.addEventListener('DOMContentLoaded', function() {
   if (window.税務会計AIFeedback) {
     window.税務会計AIFeedback.mount('body', { position: 'bottom-right' });
   }

@@ -31,8 +31,8 @@ dev = [
 [project.urls]
 Homepage = "https://jpcite.com"
 # TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
-Repository = "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
-"Bug Tracker" = "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues"
+Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+"Bug Tracker" = "https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues"
 
 [build-system]
 requires = ["hatchling"]

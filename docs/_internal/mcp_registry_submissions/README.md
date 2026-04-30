@@ -41,7 +41,7 @@ rebrand 確定後: `scripts/rebrand_mcp_entries.sh --apply --vars=scripts/rebran
 ### D-7 (準備)
 - 弁理士 確認完了 → rebrand variables 確定 → `rebrand_vars.env` 作成
 - `scripts/rebrand_mcp_entries.sh --apply` で一括置換
-- LICENSE、最終 README 確認、`v0.1.0` tag 準備
+- LICENSE、最終 README 確認、`v0.3.2` tag 準備
 
 ### D-0 (2026-05-06, 当日): Easy / Auto
 1. **Glama** — repo public にするだけ。form 無し。~24h で index。
@@ -81,6 +81,8 @@ rebrand 確定後: `scripts/rebrand_mcp_entries.sh --apply --vars=scripts/rebran
 | MCP Market | 300-500 字 | 推奨 | 推奨 | tag は自由記述 |
 | Claude Desktop Ext. | manifest.json (DXT 規格) | 不要 (icon で代替) | PNG 256×256 必須 | .mcpb bundle |
 
+Value proposition note: Evidence Pre-fetch / precomputed intelligence means source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins are prepared for retrieval. Describe it as evidence packaging, not as model-cost savings.
+
 既存素材:
 - `site/assets/demo.svg` (6.4 KB 動画 SVG、15s loop)
 - `site/assets/mark.svg` (SVG logo)
@@ -92,9 +94,9 @@ rebrand 確定後: `scripts/rebrand_mcp_entries.sh --apply --vars=scripts/rebran
 
 | 画像 | Alt | Caption (EN) | Caption (JA) |
 |------|-----|--------------|--------------|
-| mcp_preview_1.png | Terminal-style preview of jpintel-mcp: curl request to /v1/programs/search returning a Tier-S 経営開始資金 result, followed by /v1/exclusions/check detecting a UNI-71f6029070 × koyo-shuno-shikin conflict. | jpintel-mcp cross-authority search + exclusion-check demo | jpintel-mcp の横断検索と排他チェックのデモ |
-| mcp_preview_2.png | Same content at 1600×900 landscape for registry tile displays. | jpintel-mcp wide-tile preview | jpintel-mcp ワイドタイル用プレビュー |
-| demo.svg | 15-second animated terminal showing curl + JSON response for the 12 MCP tools. | AutonoMath 15s animated demo | AutonoMath 15秒アニメデモ |
+| mcp_preview_1.png | Terminal-style preview of autonomath-mcp: curl request to /v1/programs/search returning a Tier-S 経営開始資金 result, followed by /v1/exclusions/check detecting a UNI-71f6029070 × koyo-shuno-shikin conflict. | autonomath-mcp cross-authority search + exclusion-check demo | autonomath-mcp の横断検索と排他チェックのデモ |
+| mcp_preview_2.png | Same content at 1600×900 landscape for registry tile displays. | autonomath-mcp wide-tile preview | autonomath-mcp ワイドタイル用プレビュー |
+| demo.svg | 15-second animated terminal showing curl + JSON response for the 93 MCP tools. | AutonoMath 15s animated demo | AutonoMath 15秒アニメデモ |
 
 再生成: Playwright headless `width ≤ 1880px` (memory `feedback_playwright_screenshots`)、demo.svg を HTML inline して terminal chrome で囲む。
 
@@ -130,7 +132,7 @@ rebrand 確定後: `scripts/rebrand_mcp_entries.sh --apply --vars=scripts/rebran
 ## 禁止事項 (memory 由来)
 
 - 有料 placement 購入 禁止 (`feedback_no_cheapskate` ではなく **成功確率** 視点でも、広告枠は怪しい signal)
-- データ 数字 の 水増 禁止 (tools 12、programs 13,578、case_studies 2,286、loan_programs 108、enforcement_cases 1,185、exclusion_rules 35 — 盛らない)
+- データ 数字 の 水増 禁止 (tools 93、programs 11,684 searchable / 14,472 total、case_studies 2,286、loan_programs 108、enforcement_cases 1,185、exclusion_rules 181 — 盛らない)
 - 幻覚 registry 提出 禁止 (未確認の registry に submit して 404 コピー貼るのは論外)
 - ToS 未読 承諾 禁止 (必ず D-7 までに読む)
 
@@ -138,12 +140,12 @@ rebrand 確定後: `scripts/rebrand_mcp_entries.sh --apply --vars=scripts/rebran
 
 ## 関連ファイル
 
-- `/Users/shigetoumeda/jpintel-mcp/mcp-server.json` — canonical manifest
-- `/Users/shigetoumeda/jpintel-mcp/smithery.yaml` — Smithery 用
-- `/Users/shigetoumeda/jpintel-mcp/scripts/rebrand_mcp_entries.sh` — 置換 script
-- `/Users/shigetoumeda/jpintel-mcp/scripts/mcp_registries.md` — Task #29 research
-- `/Users/shigetoumeda/jpintel-mcp/scripts/mcp_registries_submission.json` — Task #29 structured data
-- `/Users/shigetoumeda/jpintel-mcp/src/jpintel_mcp/mcp/server.py` — protocol 実装 (MCP 2025-06-18)
+- `/Users/shigetoumeda/autonomath-mcp/mcp-server.json` — canonical manifest
+- `/Users/shigetoumeda/autonomath-mcp/smithery.yaml` — Smithery 用
+- `/Users/shigetoumeda/autonomath-mcp/scripts/rebrand_mcp_entries.sh` — 置換 script
+- `/Users/shigetoumeda/autonomath-mcp/scripts/mcp_registries.md` — Task #29 research
+- `/Users/shigetoumeda/autonomath-mcp/scripts/mcp_registries_submission.json` — Task #29 structured data
+- `/Users/shigetoumeda/autonomath-mcp/src/jpintel_mcp/mcp/server.py` — protocol 実装 (MCP 2025-06-18)
 
 ---
 

@@ -1,0 +1,82 @@
+{
+  "run_id": "20260430_r3",
+  "run_date": "2026-04-30",
+  "generated_at": "2026-04-30T21:38:31+09:00",
+  "lane": "am_diff_design_acceptance",
+  "shard": "06",
+  "source_aggregate_file": "data/snapshots/am_diff_20260430_r3_shard01-08.json",
+  "acceptance_cases": [],
+  "source_summary": {
+    "run_id": "20260430_r3",
+    "run_date": "2026-04-30",
+    "generated_at": "2026-04-30T21:20:58+09:00",
+    "lane": "am_diff_design",
+    "assigned_shards": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "artifact_type": "acceptance_tests_design",
+    "source_policy": {
+      "llm_api_called": false,
+      "hosted_model_api_called": false,
+      "external_source_refetch_performed": false,
+      "aggregator_sites_used_as_evidence": false,
+      "production_code_or_migration_written": false,
+      "final_integration_file_touched": false,
+      "comparison_basis": "r2 schema proposal and read-only local SQLite checks"
+    },
+    "r2_basis": {
+      "previous_artifact": "data/snapshots/am_diff_20260430_r2_shard01-08.json",
+      "am_pairs_analyzed": 7298,
+      "raw_snapshot_json_changed": 0,
+      "eligibility_hash_changed": 0,
+      "summary_hash_changed": 0,
+      "entities_with_any_typed_field_change": 6276,
+      "field_change_counts": {
+        "target_set_json": 6155,
+        "amount_max_yen": 629,
+        "subsidy_rate_max": 76,
+        "source_url": 721
+      }
+    },
+    "diff_kind_values": [
+      "no_change",
+      "typed_field_changed",
+      "source_status_changed",
+      "content_changed",
+      "noise_only",
+      "projection_regression_candidate",
+      "baseline_only"
+    ],
+    "severity_values": [
+      "none",
+      "low",
+      "medium",
+      "critical"
+    ],
+    "acceptance_case_count": 9,
+    "webhook_gate_summary": {
+      "emit_when": [
+        "expected_diff_kind in typed_field_changed/source_status_changed/content_changed",
+        "expected_severity in medium/critical",
+        "not projection_regression_candidate",
+        "not noise_only",
+        "canonical_source_url is present for source-backed changes"
+      ],
+      "suppress_when": [
+        "expected_diff_kind is no_change",
+        "expected_diff_kind is noise_only",
+        "expected_diff_kind is projection_regression_candidate",
+        "expected_severity is none or low",
+        "only NULL/[] target nullability changed after canonicalization",
+        "only non-business amount_kind or non-subsidy rate_kind changed"
+      ]
+    }
+  }
+}

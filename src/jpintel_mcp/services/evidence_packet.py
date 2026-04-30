@@ -308,6 +308,69 @@ class EvidencePacketComposer:
             total_facts = len(facts)
         return facts, total_facts, with_source
 
+    def _fetch_program_summary(
+        self,
+        am_conn: sqlite3.Connection,
+        canonical_id: str,
+    ) -> dict[str, Any] | None:
+        """Return compact am_program_summary data when present.
+
+        This is optional precomputed data. Missing table / older schema /
+        sparse rows all fail open and simply omit the field.
+        """
+        if not canonical_id:
+            return None
+        try:
+            row = am_conn.execute(
+                "SELECT * FROM am_program_summary WHERE entity_id = ? LIMIT 1",
+                (canonical_id,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return None
+        if row is None:
+            return None
+
+        cols = set(row.keys())
+
+        def _get(name: str) -> Any:
+            if name not in cols:
+                return None
+            return row[name]
+
+        precomputed: dict[str, Any] = {"basis": "am_program_summary"}
+        summaries: dict[str, str] = {}
+        for size in ("50", "200", "800"):
+            value = _get(f"summary_{size}")
+            if isinstance(value, str) and value.strip():
+                summaries[size] = value
+        if summaries:
+            precomputed["summaries"] = summaries
+
+        token_estimates: dict[str, int] = {}
+        for size in ("50", "200", "800"):
+            value = _get(f"token_{size}_est")
+            if value is None:
+                continue
+            try:
+                token_estimates[size] = int(value)
+            except (TypeError, ValueError):
+                continue
+        if token_estimates:
+            precomputed["token_estimates"] = token_estimates
+
+        generated_at = _get("generated_at")
+        if generated_at:
+            precomputed["generated_at"] = generated_at
+
+        source_quality = _get("source_quality")
+        if source_quality is not None:
+            import contextlib
+
+            with contextlib.suppress(TypeError, ValueError):
+                precomputed["source_quality"] = float(source_quality)
+
+        return precomputed if len(precomputed) > 1 else None
+
     def _fetch_rules_for_program(
         self,
         canonical_id: str,
@@ -420,6 +483,37 @@ class EvidencePacketComposer:
             "compatible": "allow",
             "unknown": "unknown",
         }.get(verdict, verdict)
+
+    @staticmethod
+    def _attach_compression_block(
+        envelope: dict[str, Any],
+        *,
+        source_url: str | None,
+        input_token_price_jpy_per_1m: float | None,
+    ) -> None:
+        """Attach a deterministic TokenCompressionEstimator block fail-open."""
+        try:
+            from jpintel_mcp.services.token_compression import (
+                TokenCompressionEstimator,
+            )
+
+            packet_for_estimate = {
+                k: v
+                for k, v in envelope.items()
+                if k not in {"compression", "_compression_hint"}
+            }
+            envelope["compression"] = TokenCompressionEstimator().compose(
+                packet_for_estimate,
+                source_url=source_url,
+                source_basis="unknown",
+                input_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            )
+        except Exception:  # pragma: no cover - defensive fail-open surface
+            logger.exception("evidence_packet: compression estimator failed")
+            quality = envelope.setdefault("quality", {})
+            gaps = quality.setdefault("known_gaps", [])
+            if isinstance(gaps, list) and "compression_unavailable" not in gaps:
+                gaps.append("compression_unavailable")
 
     # ------------------------------------------------------------------
     # Quality scoring.
@@ -641,7 +735,7 @@ class EvidencePacketComposer:
                 subject_id=sid,
                 include_facts=include_facts,
                 include_rules=include_rules,
-                include_compression=include_compression,
+                include_compression=False,
                 fields=fields,
                 input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             )
@@ -686,6 +780,18 @@ class EvidencePacketComposer:
         }
         if truncated:
             envelope["_warning"] = "truncated"
+        if any(rec.get("precomputed") for rec in records):
+            envelope["answer_basis"] = "precomputed"
+        if input_token_price_jpy_per_1m is not None:
+            envelope["_token_pricing_input_jpy_per_1m"] = (
+                input_token_price_jpy_per_1m
+            )
+        if include_compression:
+            self._attach_compression_block(
+                envelope,
+                source_url=None,
+                input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            )
 
         _cache_put(cache_key, envelope)
         return envelope
@@ -745,6 +851,7 @@ class EvidencePacketComposer:
             return None
 
         gaps: list[str] = []
+        precomputed_summary: dict[str, Any] | None = None
         try:
             base: dict[str, Any]
             canonical_id = ""
@@ -782,6 +889,9 @@ class EvidencePacketComposer:
                 am.execute("SELECT 1 FROM am_amendment_diff LIMIT 1").fetchone()
             except sqlite3.OperationalError:
                 gaps.append("amendment_diff_unavailable")
+
+            if subject_kind == "program":
+                precomputed_summary = self._fetch_program_summary(am, canonical_id)
         finally:
             am.close()
 
@@ -815,6 +925,8 @@ class EvidencePacketComposer:
             )
         if include_rules:
             record["rules"] = rules
+        if precomputed_summary is not None:
+            record["precomputed"] = precomputed_summary
 
         coverage_score = self._coverage_score([record])
 
@@ -853,16 +965,18 @@ class EvidencePacketComposer:
 
         if facts_truncated:
             envelope["_warning"] = "truncated"
+        if precomputed_summary is not None:
+            envelope["answer_basis"] = "precomputed"
 
         if input_token_price_jpy_per_1m is not None:
             envelope["_token_pricing_input_jpy_per_1m"] = (
                 input_token_price_jpy_per_1m
             )
         if include_compression:
-            envelope["_compression_hint"] = (
-                "include_compression=True placeholder; the deterministic "
-                "token estimator lives in services/token_compression.py "
-                "(not yet shipped)."
+            self._attach_compression_block(
+                envelope,
+                source_url=record.get("source_url"),
+                input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             )
 
         _cache_put(cache_key, envelope)

@@ -42,17 +42,17 @@ pip install autonomath-mcp
 ### SDK (pre-release、git 直)
 
 ```bash
-pip install "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp#subdirectory=sdk/python"
+pip install "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp#subdirectory=sdk/python"
 npm install "github:AutonoMath/autonomath-mcp#main" --prefix ./sdk/typescript
 ```
 
-PyPI: `autonomath-mcp` v0.3.0 公開済。それまでは HTTP 直叩き or `autonomath-mcp` の MCP サーバー利用。
+PyPI: `autonomath-mcp` v0.3.2 公開済。それまでは HTTP 直叩き or `autonomath-mcp` の MCP サーバー利用。
 
 ## 2. API key
 
 ### 匿名 (即時、登録不要)
 
-API key 無しで叩くと **匿名 50 req/月 per IP** (JST 月初リセット) として動作。
+API key 無しで叩くと **匿名 3 req/日 per IP** (JST 翌日リセット) として動作。
 
 ### Paid (Stripe Checkout 経由、¥3/req 税別)
 
@@ -84,7 +84,7 @@ curl -X POST https://api.jpcite.com/v1/billing/keys/from-checkout \
 curl -H "X-API-Key: am_xxxxxxxxxxxxxxxx" \
   "https://api.jpcite.com/v1/programs/search?q=IT導入"
 
-# 匿名 (50 req/月 per IP)
+# 匿名 (3 req/日 per IP)
 curl "https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5"
 ```
 
@@ -133,7 +133,7 @@ Protocol: `2025-06-18`。`~/Library/Application Support/Claude/claude_desktop_co
 - `uv` 未導入なら `brew install uv` か `pip install uv`
 - `pip install autonomath-mcp` 済みなら `"command": "autonomath-mcp"`
 - ワンクリック: [autonomath-mcp.mcpb](/downloads/autonomath-mcp.mcpb) を Claude Desktop で開く
-- 再起動後、89 ツール at default gates が有効。Cursor / Gemini / ChatGPT (MCP 対応版) も同設定で動作
+- 再起動後、93 ツール at default gates が有効。Cursor / Gemini / ChatGPT (MCP 対応版) も同設定で動作
 
 ツール一覧: [mcp-tools.md](./mcp-tools.md)。
 

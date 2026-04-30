@@ -9,8 +9,8 @@
 
 ## Pre-flight
 
-- [ ] Public repo `github.com/shigetosidumeda-cyber/jpintel-mcp` is live
-- [ ] PyPI package `autonomath-mcp` v0.3.1 is published
+- [ ] Public repo `github.com/shigetosidumeda-cyber/autonomath-mcp` is live
+- [ ] PyPI package `autonomath-mcp` v0.3.2 is published
 - [ ] DXT bundle `autonomath-mcp.mcpb` is downloadable from `https://jpcite.com/downloads/autonomath-mcp.mcpb`
 - [ ] Verify the form's current field names against the live page before pasting (Anthropic updates the form periodically)
 
@@ -39,7 +39,7 @@ MCP server (external)
 ### Short description (160 characters max)
 
 ```
-Search Japanese institutional data: 10,790 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants. 89 MCP tools. ¥3.30/req. 50/月 free anon.
+Search Japanese institutional data: 10,790 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants. 93 MCP tools. ¥3/req (¥3.30 tax-incl). 3/day free anon.
 ```
 
 (Length: 156 characters.)
@@ -47,13 +47,13 @@ Search Japanese institutional data: 10,790 subsidies + 154 laws + 2,065 court de
 ### Long description (500–800 characters)
 
 ```
-AutonoMath exposes Japanese institutional public data via 89 MCP tools at default gates (39 jpintel core + 29 autonomath, protocol 2025-06-18, stdio): 10,790 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 154 laws full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 35 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0 delta) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row carries source_url + fetched_at; no aggregators. ¥3.30/req tax-incl, first 50 req/月 free per IP (anonymous, JST monthly reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
+AutonoMath exposes Japanese institutional public data via 93 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 10,790 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 154 laws full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 35 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0 delta) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row carries source_url + fetched_at; no aggregators. ¥3/req tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
 ```
 
 ### Repository URL
 
 ```
-https://github.com/shigetosidumeda-cyber/jpintel-mcp
+https://github.com/shigetosidumeda-cyber/autonomath-mcp
 ```
 
 ### Homepage URL
@@ -107,7 +107,7 @@ stdio
 ### Number of tools (if asked)
 
 ```
-68 (at default gates; 4 additional tools gated off pending fix; 2 further tools held behind AUTONOMATH_36_KYOTEI_ENABLED)
+93 (at default gates; 4 additional tools gated off pending fix; 2 further tools held behind AUTONOMATH_36_KYOTEI_ENABLED)
 ```
 
 ### Categories / tags (multi-select; pick the ones the form lists)
@@ -131,7 +131,7 @@ japan, japanese, government, subsidies, grants, loans, tax, laws, court-decision
 ### Pricing model
 
 ```
-Pay-per-request: ¥3 per request (税込 ¥3.30, fully metered via Stripe). Anonymous tier: first 50 requests/month free per IP (JST monthly reset, no signup). No subscription tiers, no seat fees, no annual minimums.
+Pay-per-request: ¥3 per request (税込 ¥3.30, fully metered via Stripe). Anonymous tier: first 3 requests/day per IP free (JST next-day reset, no signup). No subscription tiers, no seat fees, no annual minimums.
 ```
 
 ### Privacy / data handling
@@ -165,7 +165,7 @@ info@bookyou.net
 ### Support URL (if asked)
 
 ```
-https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues
+https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues
 ```
 
 ### Demo / example prompts (if asked)
@@ -214,7 +214,7 @@ Square variant: site/static/icons/autonomath-icon-512.png (if needed)
 
 ```
 1. Claude Desktop tool-call demo: search_programs with prefecture=東京都, q=農業
-2. Tool list (89 tools enumerated)
+2. Tool list (93 tools enumerated)
 3. Cross-dataset glue example: trace_program_to_law output with law_id + article
 ```
 
@@ -225,7 +225,8 @@ Square variant: site/static/icons/autonomath-icon-512.png (if needed)
 - Per-tool precision table at docs/per_tool_precision.md.
 - 99%+ of rows carry source_url + fetched_at (12 rows lack URL because the originating small-municipality CMS has no dedicated page).
 - 4 broken tools are gated OFF (not stripped) so a fix can flip them back ON without a manifest bump.
-- Fully metered ¥3.30/req with no tiers reflects a deliberate solo-operator + zero-touch ops policy.
+- Evidence Pre-fetch / precomputed intelligence prepares source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins for retrieval; describe it as evidence packaging, not as model-cost savings.
+- Fully metered ¥3/req tax-exclusive (¥3.30 tax-inclusive) with no tiers reflects a deliberate solo-operator + zero-touch ops policy.
 ```
 
 ---

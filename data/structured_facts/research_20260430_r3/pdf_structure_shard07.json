@@ -1,0 +1,1272 @@
+[
+  {
+    "profile_name": "loan_jfc_product",
+    "profile_family": "loan_jfc",
+    "schema_family": "loan_fields",
+    "source_url": "https://www.jfc.go.jp/n/company/national/pdf/goannai_2025.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "required_fields": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "guarantee",
+      "branch_locator_url",
+      "product_name"
+    ],
+    "extraction_anchors": {
+      "eligible_borrower": [
+        "ご利用いただける方",
+        "融資対象者",
+        "利用対象者",
+        "対象者",
+        "対象となる方"
+      ],
+      "loan_limit": [
+        "融資限度額",
+        "貸付限度額",
+        "融資額",
+        "限度額",
+        "ご融資額"
+      ],
+      "interest_rate": [
+        "利率",
+        "金利",
+        "貸付利率",
+        "基準利率",
+        "融資利率",
+        "適用利率"
+      ],
+      "repayment_term": [
+        "返済期間",
+        "償還期間",
+        "据置期間",
+        "貸付期間",
+        "ご返済期間"
+      ],
+      "collateral": [
+        "担保",
+        "保証人",
+        "保証",
+        "信用保証",
+        "担保・保証人"
+      ],
+      "required_docs": [
+        "必要書類",
+        "提出書類",
+        "申込書類"
+      ],
+      "contact": [
+        "お問い合わせ",
+        "相談窓口",
+        "支店",
+        "事業資金相談ダイヤル",
+        "支店の窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月",
+        "発行"
+      ]
+    },
+    "table_strategy": {
+      "mode": "loan_matrix_primary",
+      "pdfplumber_tables": "required",
+      "notes": "JFC product guides are matrix/table-heavy; extract tables by page blocks, then normalize rows into loan_limit, interest_rate, repayment_term, collateral/guarantee."
+    },
+    "ocr_needed": false,
+    "parser_risk": "high",
+    "fixture_candidate": false,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 12,
+      "page_count": 34,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "collateral",
+        "contact",
+        "eligible_borrower",
+        "interest_rate",
+        "loan_limit",
+        "repayment_term",
+        "required_docs",
+        "update_date"
+      ],
+      "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable.",
+      "risk_reason": "domain summary from 5 sampled PDFs; risk_distribution={'high': 1, 'low': 1, 'medium': 3}; fields_union=collateral,contact,eligible_borrower,interest_rate,loan_limit,repayment_term,required_docs,update_date; representative_page_count=34",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "research_grant_jst",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.jst.go.jp/mirai/jp/uploads/application-guideline-r04.pdf",
+    "publisher_domain": "jst.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "subsidy_rate",
+      "max_amount",
+      "update_date",
+      "e_rad",
+      "program_appendix"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "募集締切",
+        "提案書受付締切",
+        "e-Rad"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "応募者の要件",
+        "研究代表者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "研究費",
+        "直接経費",
+        "委託研究費"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "研究開発費",
+        "上限"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "府省共通研究開発管理システム"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "問い合わせ",
+        "募集専用"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "document_set_hybrid",
+      "pdfplumber_tables": "conditional",
+      "notes": "Parse common guideline and program appendix as a document set; tables are useful for program/theme caps."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 13,
+      "page_count": 71,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "deadline",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "research_grant_jst: parse common guideline plus program別紙 as a document set; extract e-Rad deadline, eligibility, direct-cost caps, required forms, contact; avoid grant-only subsidy_rate assumptions.",
+      "risk_reason": "domain summary from 4 sampled PDFs; risk_distribution={'low': 1, 'medium': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=65",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_maff_hozyo",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.maff.go.jp/j/supply/hozyo/keiei/attach/pdf/240209_101-3-1.pdf",
+    "publisher_domain": "maff.go.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "optional_fields": [
+      "deadline",
+      "contact",
+      "update_date",
+      "landing_page_url",
+      "appendix_table_id"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "補助率等",
+        "別表"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "交付限度額",
+        "補助金額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "別記様式",
+        "事業実施計画"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "地方農政局",
+        "担当課"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "appendix_table_hybrid",
+      "pdfplumber_tables": "conditional",
+      "notes": "Crawl official supply/hozyo HTML first, then parse 第N headings and 別表/別記 appendices; table extraction is useful for rate and amount appendices."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 14,
+      "page_count": 32,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_maff_hozyo: crawl official supply/hozyo HTML before direct PDFs, parse 第N headings and 別表/別記 appendices; deadlines/contact often sit on the landing page and local fetches may hit 403.",
+      "risk_reason": "domain summary from 3 sampled PDFs; risk_distribution={'medium': 3}; fields_union=contact,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=32",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_public_offer_meti",
+    "profile_family": "meti_public_offer",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.meti.go.jp/information/publicoffer/kobo/2026/downloadfiles/k260108001_1.pdf",
+    "publisher_domain": "meti.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "update_date",
+      "program_title",
+      "submission_method",
+      "agency_name",
+      "project_period"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募開始日",
+        "公募締切日"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "補助対象事業者",
+        "応募申請者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "補助対象経費",
+        "補助率・補助額"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "補助上限",
+        "上限"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "提出書類一覧"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "提出先及び問合せ先"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "section_regex_first",
+      "pdfplumber_tables": "optional",
+      "notes": "METI kobo PDFs are usually prose-heavy; use first-page title/date and numbered sections, then table extraction only for 補助対象経費/別表 ranges."
+    },
+    "ocr_needed": false,
+    "parser_risk": "high",
+    "fixture_candidate": false,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 15,
+      "page_count": 24,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "deadline",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_public_offer_meti: parse first-page title/date, then section labels such as 公募期間, 応募資格, 補助率・補助額, 提出書類, 提出先/お問合せ先; table extraction is optional because METI募集要領 often uses unruled paragraphs.",
+      "risk_reason": "domain summary from 5 sampled PDFs; risk_distribution={'high': 1, 'medium': 4}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=27",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mhlw_mixed",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mhlw.go.jp/content/11600000/001239692.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "required_fields": [
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "deadline",
+      "eligible_applicant",
+      "update_date",
+      "subsidy_rate",
+      "research_program_id"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募締切",
+        "申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "応募できる者",
+        "対象となる事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "基準額",
+        "補助基準額",
+        "委託費"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "公募要項",
+        "申請書",
+        "提出方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "担当係",
+        "部局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "mixed_router",
+      "pdfplumber_tables": "optional",
+      "notes": "Route flyers, handbooks, and research calls by title/page count; use table extraction only when labelled matrices are present."
+    },
+    "ocr_needed": false,
+    "parser_risk": "high",
+    "fixture_candidate": false,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 16,
+      "page_count": 11,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "deadline",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based.",
+      "risk_reason": "domain summary from 4 sampled PDFs; risk_distribution={'high': 1, 'medium': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,update_date; representative_page_count=18",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "grant_mlit_press_guideline",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.mlit.go.jp/report/press/content/001842304.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "contact"
+    ],
+    "optional_fields": [
+      "required_docs",
+      "update_date",
+      "schedule",
+      "press_summary_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "スケジュール",
+        "募集開始",
+        "募集締切"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "補助対象事業者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "補助限度額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "問い合わせ窓口"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "press_then_guideline",
+      "pdfplumber_tables": "conditional",
+      "notes": "Detect whether the PDF is a 1-2 page press summary or full guideline; parse numbered sections and avoid requiring document lists from press summaries."
+    },
+    "ocr_needed": false,
+    "parser_risk": "low",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 17,
+      "page_count": 14,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "deadline",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs.",
+      "risk_reason": "domain summary from 3 sampled PDFs; risk_distribution={'low': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=2",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "research_grant_nedo",
+    "profile_family": "grant_subsidy",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.nedo.go.jp/content/800023302.pdf",
+    "publisher_domain": "nedo.go.jp",
+    "required_fields": [
+      "deadline",
+      "eligible_applicant",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "subsidy_rate",
+      "max_amount",
+      "update_date",
+      "submission_system",
+      "research_theme"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限",
+        "公募締切",
+        "提案書提出期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "提案者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "委託",
+        "補助"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額",
+        "事業規模"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "提案書",
+        "提出書類一覧"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局",
+        "担当部"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "research_guideline_hybrid",
+      "pdfplumber_tables": "conditional",
+      "notes": "Use the NEDO kobo page plus content PDF; section parsing first, tables for budget/theme matrices only."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 18,
+      "page_count": 38,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "deadline",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "research_grant_nedo: use NEDO koubo page plus content PDF; parse front-matter deadline, Jグランツ/e-Rad submission, eligibility, budget/助成額, docs, contact; suppress pdfminer color warnings as non-fatal.",
+      "risk_reason": "domain summary from 5 sampled PDFs; risk_distribution={'low': 2, 'medium': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=38",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "pref_grant_cms_file",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.pref.hokkaido.lg.jp/fs/1/1/9/5/3/9/0/8/_/%E3%80%90%E7%A2%BA%E5%AE%9A%E3%80%91%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E6%8A%80%E8%A1%93%E5%B0%8E%E5%85%A5%E7%AD%89%E7%B7%8A%E6%80%A5%E6%94%AF%E6%8F%B4%E4%BA%8B%E6%A5%AD%E8%B2%BB%E8%A3%9C%E5%8A%A9%E9%87%91%E4%BA%A4%E4%BB%98%E8%A6%81%E7%B6%B1.pdf",
+    "publisher_domain": "pref.hokkaido.lg.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "optional_fields": [
+      "deadline",
+      "contact",
+      "update_date",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "交付対象者"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "交付申請"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "deep_cms_section_regex",
+      "pdfplumber_tables": "optional",
+      "notes": "Deep file-store PDFs should retain landing-page URL because deadline/contact can live outside the PDF."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 19,
+      "page_count": 7,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "contact",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate"
+      ],
+      "parser_profile_hint": "pref_grant_cms_file: deep CMS file-store PDF; parse 要綱/交付申請 labels but retain landing page because deadline/contact can be off-PDF.",
+      "risk_reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=contact,eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=7",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "pref_grant_legal_rule",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.pref.kumamoto.jp/uploaded/attachment/308409.pdf",
+    "publisher_domain": "pref.kumamoto.jp",
+    "required_fields": [
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "optional_fields": [
+      "deadline",
+      "eligible_applicant",
+      "contact",
+      "update_date",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内",
+        "補助率及び補助上限額"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "交付申請書",
+        "別記様式"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "legal_article_regex",
+      "pdfplumber_tables": "optional",
+      "notes": "Legal-style rules parse by articles and attached tables; applicant-facing contact/deadline often require landing metadata."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 20,
+      "page_count": 5,
+      "text_extractable": true,
+      "tables_detected": false,
+      "fields_found": [
+        "max_amount",
+        "required_docs",
+        "subsidy_rate",
+        "update_date"
+      ],
+      "parser_profile_hint": "pref_grant_legal_rule: legal-style rules expose rate/amount/docs but often omit applicant-facing deadline/contact; parse article headings and landing metadata.",
+      "risk_reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=max_amount,required_docs,subsidy_rate,update_date; representative_page_count=5",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "pref_grant_short_guideline",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youkou.pdf",
+    "publisher_domain": "pref.kyoto.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "optional_fields": [
+      "deadline",
+      "contact",
+      "update_date",
+      "landing_page_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件",
+        "対象施設"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "申請方法"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "short_guideline_table",
+      "pdfplumber_tables": "conditional",
+      "notes": "Compact PDF with rates/amounts/docs; supplement contact and deadline from official HTML notice."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 21,
+      "page_count": 4,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate"
+      ],
+      "parser_profile_hint": "pref_grant_short_guideline: compact PDF with rates/amounts/docs; use HTML notice for contact/deadline freshness.",
+      "risk_reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=4",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  },
+  {
+    "profile_name": "pref_form_pdf",
+    "profile_family": "municipal_direct_pdf",
+    "schema_family": "grant_fields",
+    "source_url": "https://www.pref.niigata.lg.jp/uploaded/attachment/493995.pdf",
+    "publisher_domain": "pref.niigata.lg.jp",
+    "required_fields": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "optional_fields": [
+      "deadline",
+      "update_date",
+      "landing_page_url",
+      "companion_guideline_url"
+    ],
+    "extraction_anchors": {
+      "deadline": [
+        "公募期間",
+        "募集期間",
+        "申請受付期間",
+        "受付期間",
+        "提出期限",
+        "締切",
+        "応募締切",
+        "交付申請期限"
+      ],
+      "eligible_applicant": [
+        "応募資格",
+        "補助対象者",
+        "対象者",
+        "申請者",
+        "補助事業者",
+        "対象事業者",
+        "事業実施主体",
+        "応募要件"
+      ],
+      "subsidy_rate": [
+        "補助率",
+        "助成率",
+        "交付率",
+        "定額",
+        "以内"
+      ],
+      "max_amount": [
+        "補助上限額",
+        "上限額",
+        "限度額",
+        "補助額",
+        "助成額",
+        "交付額",
+        "予算額"
+      ],
+      "required_docs": [
+        "提出書類",
+        "応募書類",
+        "申請書類",
+        "必要書類",
+        "添付書類",
+        "様式",
+        "申請書"
+      ],
+      "contact": [
+        "問合せ先",
+        "問い合わせ先",
+        "お問合せ先",
+        "連絡先",
+        "提出先",
+        "担当",
+        "事務局"
+      ],
+      "update_date": [
+        "令和",
+        "年月日",
+        "公表日",
+        "改正",
+        "更新日"
+      ]
+    },
+    "table_strategy": {
+      "mode": "form_label_with_context",
+      "pdfplumber_tables": "conditional",
+      "notes": "Application-form PDFs contain labels and blanks; use companion guideline or landing page for values such as deadline."
+    },
+    "ocr_needed": false,
+    "parser_risk": "medium",
+    "fixture_candidate": true,
+    "evidence": {
+      "source_run": "20260430_r2",
+      "source_shard": "shard08",
+      "source_index": 22,
+      "page_count": 5,
+      "text_extractable": true,
+      "tables_detected": true,
+      "fields_found": [
+        "contact",
+        "eligible_applicant",
+        "max_amount",
+        "required_docs",
+        "subsidy_rate"
+      ],
+      "parser_profile_hint": "pref_form_pdf: application-form PDFs have labels but blank values; landing page or companion guideline is required for deadline and program conditions.",
+      "risk_reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=contact,eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=5",
+      "duplicate_source_url_seen_before": true,
+      "required_field_coverage": 1.0
+    }
+  }
+]

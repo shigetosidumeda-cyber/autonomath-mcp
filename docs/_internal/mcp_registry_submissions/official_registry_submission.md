@@ -7,7 +7,7 @@ mcp.so, and several downstream aggregators within one week.
 
 `mcp-server.json` at repo root (drafted 2026-04-23).
 
-Namespace: `io.github.shigetoumeda/autonomath-mcp` — GitHub-owned namespaces do NOT
+Namespace: `io.github.shigetosidumeda-cyber/autonomath-mcp` — GitHub-owned namespaces do NOT
 require DNS verification; ownership is proved by publishing from the same
 GitHub account.
 
@@ -39,10 +39,10 @@ mcp-publisher publish --file mcp-server.json
 ## Verification
 
 - After `publish`, the CLI returns a registry record URL:
-  `https://registry.modelcontextprotocol.io/servers/io.github.shigetoumeda/autonomath-mcp`
+  `https://registry.modelcontextprotocol.io/servers/io.github.shigetosidumeda-cyber/autonomath-mcp`
 - HTTP GET should return 200 with the same JSON.
 - Within 1 week: PulseMCP ingest visible at
-  `pulsemcp.com/servers/io.github.shigetoumeda/autonomath-mcp` (no manual submit).
+  `pulsemcp.com/servers/io.github.shigetosidumeda-cyber/autonomath-mcp` (no manual submit).
 
 ## ToS note
 

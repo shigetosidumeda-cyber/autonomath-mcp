@@ -70,13 +70,13 @@ Run through these **30 minutes before the HN submission**. If any fail, abort an
   ```
 - [ ] `https://api.jpcite.com/openapi.json` returns valid OpenAPI v3 spec
 - [ ] Stripe webhook live + test charge of ¥3 succeeds (use test API key)
-- [ ] Anonymous 50/月 rate limit verified — 51st request returns `429` with reset hint
+- [ ] Anonymous 3/日 rate limit verified — 51st request returns `429` with reset hint
 - [ ] HTTP fallback working: `uvx autonomath-mcp` from a clean machine boots into HTTP mode and answers a search
 
 ### Content polish
 
 - [ ] GitHub README first paragraph matches the value-prop in `hn.md` (no contradiction in counts)
-- [ ] `https://jpcite.com/docs/pricing/` clearly states "¥3/req, 50/月 free anonymously, no tiers"
+- [ ] `https://jpcite.com/docs/pricing/` clearly states "¥3/req, 3/日 free anonymously, no tiers"
 - [ ] `https://jpcite.com/about.html` shows Bookyou株式会社 + T8010001213708 + 梅田茂利 (legal display compliance)
 - [ ] Disclaimer page (`/compliance/landing_disclaimer/`) lists 税理士法 §52, 弁護士法 §72, 行政書士法 §1
 - [ ] PyPI page for `autonomath-mcp` shows `0.3.0` as latest (not `0.2.0`)
@@ -87,7 +87,7 @@ Run through these **30 minutes before the HN submission**. If any fail, abort an
 
 All public posts cite these numbers — verify any one of them on the live API matches the draft text:
 
-- [ ] `programs` count ≈ 10,790 (off by ≤50 OK)
+- [ ] `programs` count ≈ 11,684 (off by ≤50 OK)
 - [ ] `laws` count ≈ 9,484
 - [ ] `court_decisions` count ≈ 2,065
 - [ ] `tax_rulesets` count = 35
@@ -118,6 +118,6 @@ All public posts cite these numbers — verify any one of them on the live API m
 ## Notes
 
 - All drafts are text-only; user posts manually
-- Drafts assume `https://github.com/shigetosidumeda-cyber/jpintel-mcp` is the public repo (verified via `git remote -v` 2026-04-29)
+- Drafts assume `https://github.com/shigetosidumeda-cyber/autonomath-mcp` is the public repo (verified via `git remote -v` 2026-04-29)
 - Operator: Bookyou株式会社 (T8010001213708), 梅田茂利, info@bookyou.net
 - If a subreddit auto-flags one of these for "spam" because they perceive it as promotional — message the moderators with `info@bookyou.net` and the operator T-number; do NOT delete and repost (that triggers stricter flagging)

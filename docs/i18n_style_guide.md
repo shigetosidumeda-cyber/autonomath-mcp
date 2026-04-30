@@ -96,7 +96,7 @@ then **acronym only** afterwards.
 ### 4.5 Currency
 
 - **Yen sign + ASCII digits**: "¥3 per request", "¥3.30 tax-included".
-- **Comma thousands separator**: "13,578 programs".
+- **Comma thousands separator**: "14,472 programs".
 - Never use the kanji 円 in English strings.
 
 ### 4.6 URL conventions

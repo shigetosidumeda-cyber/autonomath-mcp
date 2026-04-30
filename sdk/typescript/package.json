@@ -52,13 +52,13 @@
   "homepage": "https://jpcite.com",
   "bugs": {
     "_comment": "TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.",
-    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp/issues",
+    "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues",
     "email": "info@bookyou.net"
   },
   "repository": {
     "_comment": "TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp.git once the AutonoMath GitHub org is claimed.",
     "type": "git",
-    "url": "git+https://github.com/shigetosidumeda-cyber/jpintel-mcp.git",
+    "url": "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp.git",
     "directory": "sdk/typescript"
   },
   "author": {

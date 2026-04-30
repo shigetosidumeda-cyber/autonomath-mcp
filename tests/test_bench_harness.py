@@ -7,7 +7,7 @@ from anywhere under `tests/`. We invoke the script via `subprocess` the
 same way an operator would call it from the command line.
 
 These tests verify:
-  1. `--mode emit` produces 2 instruction lines per query (one per arm),
+  1. `--mode emit` produces 3 instruction lines per query (one per arm),
      with the expected schema.
   2. `--mode aggregate` reads a results CSV and returns paired-sample
      median/p25/p75 per arm + a median delta % per metric.
@@ -45,8 +45,8 @@ def _run_harness(*args: str, cwd: Path = REPO_ROOT) -> subprocess.CompletedProce
 # -- 1. emit ----------------------------------------------------------------
 
 
-def test_emit_generates_two_lines_per_query() -> None:
-    """For N queries, --mode emit must output exactly 2N JSONL lines."""
+def test_emit_generates_three_lines_per_query() -> None:
+    """For N queries, --mode emit must output exactly 3N JSONL lines."""
     assert SAMPLE_QUERIES_CSV.exists(), f"missing fixture: {SAMPLE_QUERIES_CSV}"
     with SAMPLE_QUERIES_CSV.open("r", encoding="utf-8") as f:
         n_queries = sum(1 for _ in csv.DictReader(f))
@@ -63,12 +63,17 @@ def test_emit_generates_two_lines_per_query() -> None:
     )
     assert res.returncode == 0, res.stderr
     lines = [ln for ln in res.stdout.splitlines() if ln.strip()]
-    assert len(lines) == 2 * n_queries, (
-        f"expected {2 * n_queries} instruction lines, got {len(lines)}"
+    assert len(lines) == 3 * n_queries, (
+        f"expected {3 * n_queries} instruction lines, got {len(lines)}"
     )
 
     # Per-line schema check
     arms_seen_per_query: dict[int, set[str]] = {}
+    expected_arms = {
+        "direct_web",
+        "jpcite_packet",
+        "jpcite_precomputed_intelligence",
+    }
     for ln in lines:
         rec = json.loads(ln)
         for required in (
@@ -83,7 +88,7 @@ def test_emit_generates_two_lines_per_query() -> None:
             "instructions",
         ):
             assert required in rec, f"missing key {required!r} in {rec}"
-        assert rec["arm"] in ("direct_web", "jpcite_packet")
+        assert rec["arm"] in expected_arms
         assert rec["model"] == "claude-sonnet-4-6"
         arms_seen_per_query.setdefault(rec["query_id"], set()).add(rec["arm"])
         if rec["arm"] == "direct_web":
@@ -95,12 +100,35 @@ def test_emit_generates_two_lines_per_query() -> None:
             assert rec["prefetch_url"].startswith(
                 "https://api.jpcite.com/v1/evidence/packets/query?q="
             )
+        elif rec["arm"] == "jpcite_precomputed_intelligence":
+            assert rec["tools_enabled"] == []
+            assert rec["prefetch_url"] is not None
+            assert rec["prefetch_url"].startswith(
+                "https://api.jpcite.com/v1/intelligence/precomputed/query?q="
+            )
 
-    # Every query must have BOTH arms present
+    # Every query must have all three arms present.
     for qid, arms in arms_seen_per_query.items():
-        assert arms == {"direct_web", "jpcite_packet"}, (
-            f"query {qid} missing arms: got {arms}"
-        )
+        assert arms == expected_arms, f"query {qid} missing arms: got {arms}"
+
+
+def test_emit_can_still_generate_legacy_two_arm_run() -> None:
+    """Operators can still emit only the original paired A/B arms."""
+    with SAMPLE_QUERIES_CSV.open("r", encoding="utf-8") as f:
+        n_queries = sum(1 for _ in csv.DictReader(f))
+
+    res = _run_harness(
+        "--mode",
+        "emit",
+        "--queries-csv",
+        str(SAMPLE_QUERIES_CSV),
+        "--arms",
+        "direct_web,jpcite_packet",
+    )
+    assert res.returncode == 0, res.stderr
+    lines = [json.loads(ln) for ln in res.stdout.splitlines() if ln.strip()]
+    assert len(lines) == 2 * n_queries
+    assert {rec["arm"] for rec in lines} == {"direct_web", "jpcite_packet"}
 
 
 def test_emit_with_missing_csv_arg_errors() -> None:
@@ -195,6 +223,7 @@ def test_aggregate_computes_correct_medians(fixture_results_csv: Path) -> None:
 
     # Paired count = 3 (query_ids 1,2,3 in both arms)
     assert summary["paired_query_count"] == 3
+    assert summary["active_arms"] == ["direct_web", "jpcite_packet"]
     assert summary["queries_only_in_direct_web"] == []
     assert summary["queries_only_in_jpcite_packet"] == []
 
@@ -221,6 +250,119 @@ def test_aggregate_computes_correct_medians(fixture_results_csv: Path) -> None:
     assert summary["median_delta_pct"]["input_tokens"] == 90.0
     # No-baseline edge case: web_searches direct_web=5, jpcite=0 -> 100.0
     assert summary["median_delta_pct"]["web_searches"] == 100.0
+
+
+def test_aggregate_computes_three_arm_pairing_and_deltas(tmp_path: Path) -> None:
+    """Three-arm results pair on query_id across all active arms."""
+    path = tmp_path / "bench_results_three_arm.csv"
+    base = {
+        "model": "claude-sonnet-4-6",
+        "output_tokens": 100,
+        "reasoning_tokens": 0,
+        "citation_rate": 1.0,
+        "hallucination_rate": 0.0,
+        "corpus_snapshot_id": "",
+        "packet_id": "",
+        "notes": "",
+    }
+    rows = [
+        {
+            **base,
+            "query_id": 1,
+            "query_text": "Q1",
+            "arm": "direct_web",
+            "input_tokens": 1000,
+            "web_searches": 2,
+            "jpcite_requests": 0,
+            "yen_cost_per_answer": 10,
+            "latency_seconds": 10,
+        },
+        {
+            **base,
+            "query_id": 2,
+            "query_text": "Q2",
+            "arm": "direct_web",
+            "input_tokens": 2000,
+            "web_searches": 4,
+            "jpcite_requests": 0,
+            "yen_cost_per_answer": 20,
+            "latency_seconds": 20,
+        },
+        {
+            **base,
+            "query_id": 1,
+            "query_text": "Q1",
+            "arm": "jpcite_packet",
+            "input_tokens": 500,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 6,
+            "latency_seconds": 5,
+        },
+        {
+            **base,
+            "query_id": 2,
+            "query_text": "Q2",
+            "arm": "jpcite_packet",
+            "input_tokens": 1000,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 8,
+            "latency_seconds": 8,
+        },
+        {
+            **base,
+            "query_id": 1,
+            "query_text": "Q1",
+            "arm": "jpcite_precomputed_intelligence",
+            "input_tokens": 250,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 4,
+            "latency_seconds": 3,
+        },
+        {
+            **base,
+            "query_id": 2,
+            "query_text": "Q2",
+            "arm": "jpcite_precomputed_intelligence",
+            "input_tokens": 500,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 5,
+            "latency_seconds": 4,
+        },
+    ]
+    fieldnames = list(rows[0].keys())
+    with path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    res = _run_harness("--mode", "aggregate", "--results-csv", str(path))
+    assert res.returncode == 0, res.stderr
+    summary = json.loads(res.stdout)
+
+    assert summary["active_arms"] == [
+        "direct_web",
+        "jpcite_packet",
+        "jpcite_precomputed_intelligence",
+    ]
+    assert summary["paired_query_count"] == 2
+    assert summary["queries_missing_by_arm"] == {
+        "direct_web": [],
+        "jpcite_packet": [],
+        "jpcite_precomputed_intelligence": [],
+    }
+    assert summary["arms"]["jpcite_precomputed_intelligence"]["input_tokens"][
+        "p50"
+    ] == 375.0
+    assert summary["median_delta_pct_vs_direct_web"]["jpcite_packet"][
+        "input_tokens"
+    ] == 50.0
+    assert summary["median_delta_pct_vs_direct_web"][
+        "jpcite_precomputed_intelligence"
+    ]["input_tokens"] == 75.0
 
 
 def test_aggregate_with_missing_csv_arg_errors() -> None:
@@ -256,24 +398,25 @@ def test_harness_has_no_llm_imports() -> None:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 head = alias.name.split(".")[0]
-                if head in {"anthropic", "openai", "claude_agent_sdk"}:
-                    hits.append(f"import {alias.name}")
-                elif alias.name == "google.generativeai" or alias.name.startswith(
+                if head in {
+                    "anthropic",
+                    "openai",
+                    "claude_agent_sdk",
+                } or alias.name == "google.generativeai" or alias.name.startswith(
                     "google.generativeai."
                 ):
                     hits.append(f"import {alias.name}")
-        elif isinstance(node, ast.ImportFrom):
-            if node.module and node.module.split(".")[0] in {
+        elif isinstance(node, ast.ImportFrom) and node.module and (
+            node.module.split(".")[0]
+            in {
                 "anthropic",
                 "openai",
                 "claude_agent_sdk",
-            }:
-                hits.append(f"from {node.module} import ...")
-            elif node.module and (
-                node.module == "google.generativeai"
-                or node.module.startswith("google.generativeai.")
-            ):
-                hits.append(f"from {node.module} import ...")
+            }
+            or node.module == "google.generativeai"
+            or node.module.startswith("google.generativeai.")
+        ):
+            hits.append(f"from {node.module} import ...")
     assert not hits, (
         f"bench_harness.py must not import any LLM SDK; found: {hits}. "
         f"Forbidden modules: {sorted(forbidden)}"

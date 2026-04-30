@@ -19,10 +19,10 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 - **ブランド改名 (jpintel → jpcite / AutonoMath)** — Intel との著名商標衝突
   リスクを回避するため、user-facing 全面でリネーム。法人は Bookyou株式会社のまま。
 - **¥3/req 完全従量モデル確定** — tier SKU / 階層プラン / 無料枠 SKU 等を完全廃止。
-  匿名 50 req/月 per IP のみ無料。pricing UI から階層的な表記を削除。
+  匿名 3 req/日 per IP のみ無料。pricing UI から階層的な表記を削除。
 - **freee 助成金AI 比較ページ追加** — `/compare/freee/` 含む 10 競合との honest
   comparison。13-15 軸の matrix + "when to choose us / them" を全 page に。
-- **MCP 89 tools 公開 (default gates 74)** —  + 35 autonomath
+- **MCP 93 tools 公開 (default gates 74)** —  + 35 autonomath
   (V1 + メタデータ tools + 静的データセット tools + lifecycle/abstract/prerequisite/graph/rule_engine + 合成 tools 5)。
   protocol 2025-06-18 準拠、broken 3 tools は env-flag gated off。
 - **OpenAPI 3.1 全 endpoint description 完成** — 111 paths すべてに summary +
@@ -69,7 +69,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 
 - **多言語対応の深化** — 現在 EN は thin layer。深い翻訳 (用語集 / pricing /
   glossary) を進めるか、JA に集中するか未確定。
-- **MCP tool の deprecation 戦略** — 89 tools を 60 程度に絞る (重複統合)。
+- **MCP tool の deprecation 戦略** — 93 tools を 60 程度に絞る (重複統合)。
   external schema なので breaking change の影響が大きく、慎重に検討中。
 - **Webhook subscription 機構** — alerts は email、API は polling のみ。
   HTTP webhook の push delivery 需要があれば。
@@ -96,7 +96,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
   polished SaaS UI ビルドは AI agents 単独では難しく、その方向の機能拡張は
   しない。dashboard は bearer-auth の最小限の usage / billing 表示のみ維持。
 - **tier 制 SKU の復活** — Free tier / Starter / Pro / Enterprise は永久禁止。
-  ¥3/req 完全従量 1 本のみ。anonymous 50/月だけが無料。
+  ¥3/req 完全従量 1 本のみ。anonymous 3/日だけが無料。
 - **DPA / MSA / SOW の人手交渉** — solo + zero-touch なので個別契約調整は
   しない。標準 ToS / Privacy / 特商法のみ。
 - **電話サポート / Slack Connect / 専用 onboarding call** — 全て self-service。

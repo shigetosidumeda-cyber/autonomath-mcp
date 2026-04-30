@@ -9,7 +9,7 @@
 > Length: 1,427 chars (within 1,500 cap)
 >
 > Validate (memory `feedback_validate_before_apply`):
-> - 数値 13,578 / 66 / ¥3 統一
+> - 数値 14,472 / 66 / ¥3 統一
 > - INV-22: 過剰強調 ("must", "absolute", "guaranteed", "industry-first") 削除済み
 > - LinkedIn 営業 DM 案内禁止 (memory `feedback_organic_only_no_ads`)
 
@@ -31,7 +31,7 @@ and case-study evidence."
 
 What's in it (2026-05-06 launch):
 
-- 13,578 programs (METI, MAFF, SME Agency, JFC, all 47 prefectures)
+- 14,472 programs (METI, MAFF, SME Agency, JFC, all 47 prefectures)
 - 2,286 case studies, 108 loans (3-axis collateral decomposition),
   1,185 enforcement cases
 - 9,484 laws (e-Gov, CC-BY), 13,801 invoice registrants (NTA, PDL v1.0)
@@ -41,13 +41,13 @@ What's in it (2026-05-06 launch):
 
 Architecture choices that I think are interesting:
 
-- MCP-native: 89 tools, protocol 2025-06-18, stdio. One Manifest line
+- MCP-native: 93 tools, protocol 2025-06-18, stdio. One Manifest line
   plugs into Claude Desktop / Cursor / ChatGPT / Gemini. No SDK to
   maintain across clients.
 - SQLite 全文検索インデックス (3-gram) for Japanese compound-word search; ベクトル検索
   for the 504k-entity vec layer (gradual activation).
 - Pure metered ¥3/req (~$0.02). No tier SKUs, no seat fees, no annual
-  minimums. Anonymous 50 req/month free per IP.
+  minimums. Anonymous 3 req/day free per IP.
 - Aggregator sources are explicitly banned. Every program cites a
   primary government URL.
 

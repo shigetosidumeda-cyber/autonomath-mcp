@@ -2,9 +2,15 @@
 """Assemble the master sitemap-index.xml for jpcite.com.
 
 The site has multiple sitemaps:
-- sitemap.xml (~30 hand-maintained static URLs: home, /docs, /pricing, etc.)
-- sitemap-programs.xml (per-program HTML, ~11k URLs; auto-generated)
-- sitemap-structured.xml (per-program JSON-LD docs, ~11k URLs; auto-generated)
+- sitemap.xml (hand-maintained static URLs: home, /docs, /pricing, etc.)
+- sitemap-programs.xml (per-program HTML, auto-generated)
+- sitemap-prefectures.xml / sitemap-cross.xml / sitemap-industries.xml (GEO pages)
+- sitemap-audiences.xml / sitemap-qa.xml / sitemap-pages.xml (content pages)
+- docs/sitemap.xml (MkDocs output)
+
+site/structured/*.jsonld is deliberately *not* included in the master index:
+the standalone JSON-LD shard exceeds Cloudflare Pages limits and is governed
+by robots.txt separately.
 
 When sitemap-programs has > 50,000 URLs (sitemap.org spec) the program
 generator splits into shards `sitemap-programs-1.xml`, `sitemap-programs-2.xml`
@@ -43,13 +49,18 @@ DEFAULT_DOMAIN = "jpcite.com"
 KNOWN_BASENAMES = (
     "sitemap.xml",
     "sitemap-programs.xml",  # may itself be a sitemapindex if sharded
-    "sitemap-structured.xml",
+    "sitemap-audiences.xml",
+    "sitemap-prefectures.xml",
+    "sitemap-cross.xml",
+    "sitemap-industries.xml",
+    "sitemap-pages.xml",
+    "sitemap-qa.xml",
+    "docs/sitemap.xml",
 )
 
 # Glob for sharded sitemap-programs files (numbered shards, e.g. sitemap-programs-1.xml).
 SHARD_PATTERNS = (
     "sitemap-programs-*.xml",
-    "sitemap-structured-*.xml",
 )
 
 

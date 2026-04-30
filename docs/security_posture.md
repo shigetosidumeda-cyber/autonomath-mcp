@@ -59,7 +59,7 @@ the Tbps scale (Cloudflare absorbs), insider threat (solo ops).
                                  │
             ┌─────────────────────────────────────────────────────┐
             │ 4. Router dep: enforce_anon_ip_limit (B-series)      │
-            │    – 50 req/月 per /32 or /64 (JST 月初 リセット)       │
+            │    – 3 req/日 per /32 or /64 (JST 翌日リセット)       │
             │    api/anon_limit.py                                  │
             └─────────────────────────────────────────────────────┘
                                  │
@@ -164,7 +164,7 @@ Order of operations on a confirmed incident:
 - `src/jpintel_mcp/api/main.py` — middleware wiring, `_lifespan` invariants
 - `src/jpintel_mcp/api/middleware/rate_limit.py` — D9 burst throttle
 - `src/jpintel_mcp/api/middleware/customer_cap.py` — per-key spend cap
-- `src/jpintel_mcp/api/anon_limit.py` — 50 req/月 anon dep
+- `src/jpintel_mcp/api/anon_limit.py` — 3 req/日 anon dep
 - `src/jpintel_mcp/api/response_sanitizer.py` — INV-22 景表法 strip
 - `src/jpintel_mcp/security/pii_redact.py` — INV-21 redact helper
 - `cloudflare-rules.yaml` — operator WAF + RL apply manifest

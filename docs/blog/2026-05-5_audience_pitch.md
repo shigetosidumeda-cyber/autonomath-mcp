@@ -96,7 +96,7 @@ Bot (AutonoMath via LINE):
   詳細 → https://jpcite.com/programs/UNI-xxxxx
 ```
 
-匿名 50 req/月、API key 不要。経営者本人が直接触れる料金帯にしてあります。
+匿名 3 req/日、API key 不要。経営者本人が直接触れる料金帯にしてあります。
 
 ---
 
@@ -138,13 +138,13 @@ M&A 1 件あたりのデュー期間が短縮できる想定。
 }
 ```
 
-これだけで 69 ツールが即時アクティブ。`search_programs` `check_exclusions` `prescreen_programs` `subsidy_combo_finder` 等を Claude / Cursor / ChatGPT から自然言語で呼べます。
+これだけで 93 ツールが即時アクティブ。`search_programs` `check_exclusions` `prescreen_programs` `subsidy_combo_finder` 等を Claude / Cursor / ChatGPT から自然言語で呼べます。
 
 ### REST (Python SDK / TypeScript SDK)
 
 ```python
 from autonomath import Client
-client = Client()  # anon: 50 req/月 free per IP
+client = Client()  # anon: 3 req/日 free per IP
 results = client.programs.search(q="DX 中小企業", prefecture="大阪")
 ```
 
@@ -157,7 +157,7 @@ const r = await c.programs.search({ q: "DX 中小企業", prefecture: "大阪" }
 ### 開発者 向け価格
 
 - ¥3/req tax-excl (¥3.30 incl)
-- 匿名 50/月 free per IP
+- 匿名 3/日 free per IP
 - API key 取得は self-serve: <https://jpcite.com/dashboard.html>
 
 ---
