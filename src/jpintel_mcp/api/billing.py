@@ -26,7 +26,10 @@ from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request, 
 from pydantic import BaseModel
 
 from jpintel_mcp.api._advisory_lock import LockNotAcquired, advisory_lock
-from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (runtime for FastAPI Depends resolution)
+from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
+    ApiContextDep,
+    DbDep,
+)
 from jpintel_mcp.billing.keys import (
     issue_key,
     resolve_tier_from_price,
@@ -579,15 +582,55 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
 
 
 class PortalRequest(BaseModel):
-    customer_id: str
     return_url: str
+    # `customer_id` historically accepted in the body — now ignored. The
+    # endpoint resolves the Stripe customer from the authenticated API key
+    # (P0-6 hardening, 2026-04-30): trusting a body-supplied customer_id
+    # exposed every customer's billing portal to enumeration by anyone who
+    # could guess `cus_*` ids. The auth'd `/v1/me/billing-portal` already
+    # did the right thing; this endpoint now mirrors that lookup.
+    customer_id: str | None = None
 
 
 @router.post("/portal")
-def create_portal(payload: PortalRequest) -> dict[str, str]:
+def create_portal(
+    payload: PortalRequest,
+    ctx: ApiContextDep,
+    conn: DbDep,
+) -> dict[str, str]:
+    """Stripe Customer Portal URL for the *authenticated* API key's customer.
+
+    Auth: X-API-Key (or `Authorization: Bearer ...`) MUST be supplied.
+    Anonymous callers get 401 here — there is no Stripe customer to open
+    a portal session for. The body-supplied `customer_id` is ignored
+    (kept on the schema for backwards-compat decoding only); the customer
+    is resolved from `api_keys.customer_id` keyed off the auth'd key
+    hash. This closes a P0 enumeration hole where any caller could pass
+    a guessed `cus_*` id and obtain a portal URL for that customer.
+    """
+    if ctx.key_hash is None:
+        # Anonymous tier (no X-API-Key header). No Stripe customer exists.
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "api key required to open billing portal",
+        )
+    row = conn.execute(
+        "SELECT customer_id FROM api_keys WHERE key_hash = ?",
+        (ctx.key_hash,),
+    ).fetchone()
+    customer_id = row["customer_id"] if row else None
+    if not customer_id:
+        # Pre-billing key (anonymous-tier or trial that never paid). Per
+        # CLAUDE.md ¥3/req metered model, the customer_id is created
+        # automatically on first metered usage; until then there is no
+        # portal to open.
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            "no Stripe customer for this api key yet",
+        )
     s = _stripe()
     portal_kwargs: dict[str, object] = {
-        "customer": payload.customer_id,
+        "customer": customer_id,
         "return_url": payload.return_url,
     }
     if settings.stripe_billing_portal_config_id:

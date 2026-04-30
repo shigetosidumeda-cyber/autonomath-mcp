@@ -205,6 +205,7 @@ Pre-commit hooks are configured in `.pre-commit-config.yaml` — do not bypass w
 - Never commit `data/jpintel.db.bak.*` or `.wrangler/` or `.venv/` — if any slip through, add them to `.gitignore`.
 - Never push with `--no-verify` or `--no-gpg-sign`. Fix the hook failure.
 - Never revive the "jpintel" brand in user-facing surfaces (site copy, README headlines, marketing). Internal file paths are fine; user-visible strings are not.
+- Never put LLM API imports (`anthropic`, `openai`, `google.generativeai`, `claude_agent_sdk`) anywhere under `src/`, `scripts/cron/`, `scripts/etl/`, or `tests/`. Operator-only offline tools that need an LLM go in `tools/offline/`. The CI guard `tests/test_no_llm_in_production.py` enforces this — never weaken it. Same rule applies to LLM API-key env vars (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GOOGLE_API_KEY`) on real code lines.
 
 ## Key files
 

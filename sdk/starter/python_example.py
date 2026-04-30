@@ -10,7 +10,7 @@ import json
 import urllib.request
 import urllib.parse
 
-API_BASE = os.environ.get("AUTONOMATH_API_BASE", "https://api.autonomath.ai")
+API_BASE = os.environ.get("AUTONOMATH_API_BASE", "https://api.jpcite.com")
 API_KEY = os.environ.get("AUTONOMATH_API_KEY", "")
 
 params = urllib.parse.urlencode({"q": "東京都", "kind": "subsidy", "limit": 5})

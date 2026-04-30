@@ -23,14 +23,14 @@ Target launch: 2026-05-06. Last audited: 2026-04-24.
 ### Short description (≤160 chars)
 
 ```
-AutonoMath: 66-tool MCP (38 core + 28 autonomath entity-fact DB) over Japanese primary-gov data — 13,578 programs + 503,930 entities + 6.12M facts + 23,805 relations, 181 exclusion rules, 3-axis loan risk. ¥3/req; 50/月 free.
+AutonoMath: 66-tool MCP (38 core + 28 autonomath entity-fact DB) over Japanese primary-gov data — 11,684 programs + 503,930 entities + 6.12M facts + 23,805 relations, 181 exclusion rules, 3-axis loan risk. ¥3/req; 50/月 free.
 ```
 
 ### Long description (≤500 chars)
 
 ```
 AutonoMath provides structured access to Japanese public-program data via 89 MCP tools (protocol
-2025-06-18): 38 core (13,578 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資
+2025-06-18): 38 core (11,684 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資
 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + laws e-Gov CC-BY 9,484 rows + tax rulesets
 インボイス/電帳法 35 rows + court_decisions 2,065 rows + bids 362 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows delta) + 28 autonomath
 (entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across

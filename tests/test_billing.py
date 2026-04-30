@@ -172,8 +172,43 @@ def test_checkout_503_when_price_not_configured(client, monkeypatch):
         assert err.get("code") == "service_unavailable"
 
 
-def test_portal_calls_stripe_with_customer_and_return_url(client, stripe_env, monkeypatch):
-    """/billing/portal hands Stripe the customer_id + return_url verbatim."""
+def test_portal_unauthed_returns_401(client, stripe_env, monkeypatch):
+    """P0-6: anonymous (no X-API-Key) caller gets 401, NEVER a portal URL.
+
+    Pre-fix the body-supplied `customer_id` was sent verbatim to Stripe,
+    letting any caller open the portal for any guessed `cus_*` id. The
+    fix requires an auth'd API key and resolves the customer server-side.
+    """
+    from jpintel_mcp.api import billing as billing_mod
+
+    called: list[dict] = []
+
+    def _should_not_be_called(**kwargs):  # pragma: no cover — exercised on regression
+        called.append(kwargs)
+        raise AssertionError(
+            "Stripe portal session created for unauthed request — enumeration regression"
+        )
+
+    monkeypatch.setattr(
+        billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called
+    )
+
+    r = client.post(
+        "/v1/billing/portal",
+        json={"customer_id": "cus_victim_1", "return_url": "https://example.test/back"},
+    )
+    assert r.status_code == 401, r.text
+    assert called == []
+
+
+def test_portal_resolves_customer_from_authed_key(
+    client, stripe_env, paid_key, monkeypatch
+):
+    """Authed caller gets a portal URL whose `customer` is the API key's
+    own `customer_id` from the DB — the body-supplied `customer_id` is
+    IGNORED so a paying customer cannot pivot to another customer's
+    portal session.
+    """
     from jpintel_mcp.api import billing as billing_mod
 
     captured: list[dict] = []
@@ -189,11 +224,20 @@ def test_portal_calls_stripe_with_customer_and_return_url(client, stripe_env, mo
 
     r = client.post(
         "/v1/billing/portal",
-        json={"customer_id": "cus_portal_1", "return_url": "https://example.test/back"},
+        headers={"X-API-Key": paid_key},
+        json={
+            # Attempt enumeration: caller forges a different customer_id
+            # in the body. The endpoint must IGNORE this and use the DB
+            # `customer_id` keyed off the auth'd key hash instead.
+            "customer_id": "cus_victim_other",
+            "return_url": "https://example.test/back",
+        },
     )
     assert r.status_code == 200, r.text
     assert r.json() == {"url": "https://billing.stripe.test/portal/abc"}
-    assert captured[0]["customer"] == "cus_portal_1"
+    # The `paid_key` fixture issues with customer_id="cus_test_paid".
+    assert captured[0]["customer"] == "cus_test_paid"
+    assert captured[0]["customer"] != "cus_victim_other"
     assert captured[0]["return_url"] == "https://example.test/back"
 
 

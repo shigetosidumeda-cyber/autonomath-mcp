@@ -218,7 +218,7 @@ def test_cors_origin_not_on_whitelist_returns_403(client, monkeypatch):
     monkeypatch.setattr(
         settings,
         "cors_origins",
-        "https://autonomath.ai,https://api.autonomath.ai",
+        "https://autonomath.ai,https://api.jpcite.com",
         raising=False,
     )
     r = client.get("/v1/meta", headers={"Origin": "https://evil.example.com"})
@@ -237,7 +237,7 @@ def test_cors_origin_on_whitelist_passes(client, monkeypatch):
     monkeypatch.setattr(
         settings,
         "cors_origins",
-        "https://autonomath.ai,https://api.autonomath.ai",
+        "https://autonomath.ai,https://api.jpcite.com",
         raising=False,
     )
     r = client.get("/v1/meta", headers={"Origin": "https://autonomath.ai"})
@@ -253,7 +253,7 @@ def test_cors_no_origin_header_passes(client, monkeypatch):
     monkeypatch.setattr(
         settings,
         "cors_origins",
-        "https://autonomath.ai,https://api.autonomath.ai",
+        "https://autonomath.ai,https://api.jpcite.com",
         raising=False,
     )
     r = client.get("/v1/meta")
@@ -269,7 +269,7 @@ def test_cors_preflight_options_blocked_for_non_whitelist_origin(
     monkeypatch.setattr(
         settings,
         "cors_origins",
-        "https://autonomath.ai,https://api.autonomath.ai",
+        "https://autonomath.ai,https://api.jpcite.com",
         raising=False,
     )
     r = client.options(

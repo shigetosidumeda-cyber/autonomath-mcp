@@ -15,15 +15,16 @@ from typing import Any
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException, RequestValidationError
-from fastapi.openapi.utils import get_openapi
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse, RedirectResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 from structlog.contextvars import bind_contextvars, clear_contextvars
 
 from jpintel_mcp import __version__
+from jpintel_mcp.api._error_envelope import make_error, safe_request_id
 from jpintel_mcp.api.accounting import router as accounting_router
 from jpintel_mcp.api.admin import router as admin_router
 from jpintel_mcp.api.admin_kpi import router as admin_kpi_router
@@ -40,21 +41,19 @@ from jpintel_mcp.api.audit import router as audit_router
 from jpintel_mcp.api.audit_log import router as audit_log_router
 from jpintel_mcp.api.autonomath import (
     health_router as autonomath_health_router,
-    router as autonomath_router,
 )
-from jpintel_mcp.api.ma_dd import (
-    router as ma_dd_router,
-    watches_router as me_watches_router,
+from jpintel_mcp.api.autonomath import (
+    router as autonomath_router,
 )
 from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
+from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
-from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.client_profiles import router as client_profiles_router
 from jpintel_mcp.api.compliance import router as compliance_router
-from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.confidence import router as confidence_router
+from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
@@ -69,11 +68,17 @@ from jpintel_mcp.api.laws import router as laws_router
 from jpintel_mcp.api.legal import router as legal_router
 from jpintel_mcp.api.loan_programs import router as loan_programs_router
 from jpintel_mcp.api.logging_config import setup_logging
+from jpintel_mcp.api.ma_dd import (
+    router as ma_dd_router,
+)
+from jpintel_mcp.api.ma_dd import (
+    watches_router as me_watches_router,
+)
 from jpintel_mcp.api.me import router as me_router
 from jpintel_mcp.api.meta import router as meta_router
 from jpintel_mcp.api.meta_freshness import router as meta_freshness_router
-from jpintel_mcp.api._error_envelope import make_error, safe_request_id
 from jpintel_mcp.api.middleware import (
+    AnalyticsRecorderMiddleware,
     AnonQuotaHeaderMiddleware,
     ClientTagMiddleware,
     CustomerCapMiddleware,
@@ -88,15 +93,13 @@ from jpintel_mcp.api.middleware import (
 )
 from jpintel_mcp.api.prescreen import router as prescreen_router
 from jpintel_mcp.api.programs import router as programs_router
+from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.saved_searches import router as saved_searches_router
 from jpintel_mcp.api.signup import router as signup_router
-from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.stats import router as stats_router
 from jpintel_mcp.api.stats_funnel import router as stats_funnel_router
 from jpintel_mcp.api.subscribers import router as subscribers_router
 from jpintel_mcp.api.tax_rulesets import router as tax_rulesets_router
-from jpintel_mcp.api.transparency import router as transparency_router
-from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.testimonials import (
     admin_router as testimonials_admin_router,
 )
@@ -106,6 +109,8 @@ from jpintel_mcp.api.testimonials import (
 from jpintel_mcp.api.testimonials import (
     public_router as testimonials_public_router,
 )
+from jpintel_mcp.api.transparency import router as transparency_router
+from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.usage import router as usage_router
 from jpintel_mcp.api.widget_auth import router as widget_router
 from jpintel_mcp.config import settings
@@ -429,7 +434,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         _bg_stop.set()
         try:
             await asyncio.wait_for(_bg_task, timeout=10.0)
-        except (asyncio.TimeoutError, asyncio.CancelledError):
+        except (TimeoutError, asyncio.CancelledError):
             _bg_task.cancel()
         except Exception:  # pragma: no cover — defensive
             logger.exception("bg_task_worker_shutdown_error")
@@ -642,6 +647,16 @@ def create_app() -> FastAPI:
     # Telemetry middleware runs outermost (added last = executes first in
     # Starlette's LIFO middleware stack) so it captures the full latency.
     app.add_middleware(_QueryTelemetryMiddleware)
+    # P0-10 (2026-04-30): persist EVERY request (auth + anon) to
+    # analytics_events for adoption / funnel / feature-coverage dashboards.
+    # Sits alongside _QueryTelemetryMiddleware (which only emits stdout
+    # JSON lines, never persists). The DB write runs synchronously after
+    # call_next on a short-lived connection — failure never blocks the
+    # response. Excludes /healthz, /readyz, /openapi.json etc internally.
+    # `usage_events` remains the billing ledger; this is orthogonal traffic
+    # analytics that captures the 99% anonymous tail `log_usage` cannot
+    # reach (key_hash NOT NULL FK on usage_events).
+    app.add_middleware(AnalyticsRecorderMiddleware)
     # P0 global kill switch (audit a7388ccfd9ed7fb8c). MUST be added LAST
     # so it executes FIRST in the LIFO stack — a killed app never even
     # runs DB queries / cap bookkeeping for blocked traffic. Allowlists

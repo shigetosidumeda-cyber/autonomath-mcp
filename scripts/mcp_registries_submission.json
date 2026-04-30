@@ -3,7 +3,7 @@
     "name": "autonomath-mcp",
     "display_name": "AutonoMath — 日本の制度 MCP (89 tools)",
     "registry_id": "io.github.shigetosidumeda-cyber/jpintel-mcp",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "repo_url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
     "homepage": "https://jpcite.com",
     "docs_url": "https://jpcite.com/docs/",
@@ -23,9 +23,9 @@
       "invoice_registration_number": "T8010001213708",
       "contact": "info@bookyou.net"
     },
-    "description_short": "AutonoMath: 66-tool MCP (38 core + 28 autonomath: 17 V1 + 4 V4 universal + 7 Phase A) over Japanese primary-gov data — 13,578 programs + 503,930 entities + 6.12M facts, 181 exclusion rules, 3-axis loan risk. ¥3/req; 50/月 free.",
-    "description_long": "AutonoMath provides structured access to Japanese public-program data via 89 MCP tools (protocol 2025-06-18): 38 core (13,578 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + 7 one-shot [smb_starter_pack/subsidy_combo_finder/deadline_calendar/dd_profile_am/similar_cases/regulatory_prep_pack/subsidy_roadmap_3yr] + laws e-Gov CC-BY 9,484 rows + tax rulesets インボイス/電帳法 35 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows live delta-only + court decisions 2,065 rows + bids 362 rows) + 28 autonomath: 17 V1 (entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance + list_tax_sunset_alerts) + 4 V4 universal (get_annotations / validate / get_provenance / get_provenance_for_fact) + 7 Phase A absorption (list_static_resources_am / get_static_resource_am / list_example_profiles_am / get_example_profile_am / render_36_kyotei_am / get_36_kyotei_metadata_am / deep_health_am). 181 structural exclusion/prerequisite rules; cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row: source_url + fetched_at; no aggregators. FTS5 trigram tokenizer. ¥3/req tax-excl (¥3.30 incl); 50 req/月 per IP free (JST 月初リセット). 36協定 renderer behind AUTONOMATH_36_KYOTEI_ENABLED gate (社労士法 review). Bookyou株式会社 / info@bookyou.net.",
-    "tool_count": 66,
+    "description_short": "AutonoMath: 66-tool MCP (38 core + 28 autonomath: 17 V1 + 4 V4 universal + 7 Phase A) over Japanese primary-gov data — 11,684 programs + 503,930 entities + 6.12M facts, 181 exclusion rules, 3-axis loan risk. ¥3/req; 50/月 free.",
+    "description_long": "AutonoMath provides structured access to Japanese public-program data via 89 MCP tools (protocol 2025-06-18): 38 core (11,684 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + 7 one-shot [smb_starter_pack/subsidy_combo_finder/deadline_calendar/dd_profile_am/similar_cases/regulatory_prep_pack/subsidy_roadmap_3yr] + laws e-Gov CC-BY 9,484 rows + tax rulesets インボイス/電帳法 35 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows live delta-only + court decisions 2,065 rows + bids 362 rows) + 28 autonomath: 17 V1 (entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance + list_tax_sunset_alerts) + 4 V4 universal (get_annotations / validate / get_provenance / get_provenance_for_fact) + 7 Phase A absorption (list_static_resources_am / get_static_resource_am / list_example_profiles_am / get_example_profile_am / render_36_kyotei_am / get_36_kyotei_metadata_am / deep_health_am). 181 structural exclusion/prerequisite rules; cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row: source_url + fetched_at; no aggregators. FTS5 trigram tokenizer. ¥3/req tax-excl (¥3.30 incl); 50 req/月 per IP free (JST 月初リセット). 36協定 renderer behind AUTONOMATH_36_KYOTEI_ENABLED gate (社労士法 review). Bookyou株式会社 / info@bookyou.net.",
+    "tool_count": 89,
     "tools_base": [
       {"name": "search_programs", "summary": "Full-text + faceted search over 13,578 Japanese public programs"},
       {"name": "get_program", "summary": "Full enriched program detail by unified_id (A–J dims, lineage)"},

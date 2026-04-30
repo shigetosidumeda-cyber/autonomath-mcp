@@ -53,7 +53,7 @@ asyncio.run(main())
 | Option        | Default                     | Notes                                         |
 | ------------- | --------------------------- | --------------------------------------------- |
 | `api_key`     | `None`                      | `X-API-Key` header. `None` = anonymous/free.  |
-| `base_url`    | `https://api.autonomath.ai` | Override for self-hosted deployments.         |
+| `base_url`    | `https://api.jpcite.com` | Override for self-hosted deployments.         |
 | `timeout`     | `30.0`                      | Per-request seconds.                          |
 | `max_retries` | `3`                         | Applied to 429 and 5xx responses.             |
 

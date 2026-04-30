@@ -47,7 +47,7 @@ import type {
 } from "./types.js";
 
 export const SDK_VERSION = "0.3.2";
-const DEFAULT_BASE_URL = "https://api.autonomath.ai";
+const DEFAULT_BASE_URL = "https://api.jpcite.com";
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_RETRIES = 3;
 

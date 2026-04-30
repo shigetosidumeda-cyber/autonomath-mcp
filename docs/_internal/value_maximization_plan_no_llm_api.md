@@ -1115,3 +1115,416 @@ SLA数値はsample_countと計測条件を伴う場合のみ表示する。sampl
 8. 30日で20事務所接触、5ヒアリング、3pilot、1-3paidを検証する。
 9. M&A/DD高単価化は、誤結合・license・cite_chain・価格を整えてから出す。
 10. Data Licenseは、再配布可能範囲が確定した派生factと差分から始める。
+
+## 28. 10日思考版: Evidence-backed Advisor Loop
+
+さらに突き詰めると、jpciteが勝てる道は「AIチャットを作ること」ではなく、「人間の業務と顧客側AI/agentの両方が、同じ根拠付きデータを毎週参照する状態」を作ることにある。
+
+したがって、人に使われる導線、AIに使われる導線、オーガニックに伸びる導線を別々に設計しない。1つのループに統合する。
+
+**Evidence-backed Advisor Loop**
+
+`顧問先CSV -> bulk evaluate -> saved search -> 週次Digest -> 月次ZIP/監査ログ -> 実務記事/API/MCP事例化 -> 新規流入 -> 次の顧問先CSV`
+
+このループでは、jpcite本体は外部LLM APIを呼ばない。返すものは、制度、法人、採択、締切、出典URL、取得日時、checksum、license、unknown_reason、除外理由、次に呼ぶべきendpoint、監査ログである。顧客側のAI/agentがそれをMCP/REST/OpenAPI経由で読む構成は許容するが、jpcite側のruntime、ETL、cron、CI、評価、翻訳、SDK、MCP serverは外部LLM APIを呼ばない。
+
+### 28.1 何が人に使われるか
+
+人間が継続利用するのは「検索API」ではなく、業務の締切、差分、顧問先への提案、請求根拠を毎週減らす仕組みである。
+
+採用される機能:
+
+- 顧問先CSV / 案件CSVの一括投入
+- `bulk_evaluate` による顧問先別の制度候補、除外理由、根拠URL、月次ZIP
+- `saved_searches` による週次Digest、締切差分、制度変更検知
+- Slack / Sheets / kintone / email / webhookへの配信
+- Report CenterでのCSV/XLSX/ICS/ZIP再生成、共有、manifest確認
+- Integrations Centerでの接続状態、最終成功、最終失敗、再接続、テスト送信、配信履歴
+- 0件、認証切れ、quota超過、webhook disable、Sheets/kintone失敗、支払い失敗を「次に押すボタン」へ変換する復旧UI
+
+採用されにくい機能:
+
+- 単発検索だけのDashboard
+- MCP tool数だけを訴求するページ
+- LINE単体の低単価課金
+- 大量の抽象的なAI記事
+- M&A/DDやData Licenseを、根拠graphとlicense gateなしで前面に出すこと
+
+週次・月次の業務カレンダー:
+
+| タイミング | 利用行動 | jpciteが出す成果物 |
+|---|---|---|
+| 月曜朝 | 顧問先別の新着・締切確認 | 週次Digest、上位候補、除外理由 |
+| 水曜 | saved searchの差分確認 | 制度変更、締切変更、source更新 |
+| 金曜 | 顧問先提案の下書き | 顧問先別CSV/XLSX、引用付き候補一覧 |
+| 月末 | 顧問先報告・請求根拠確認 | 月次ZIP、manifest、client_tag別利用明細 |
+
+主戦場は士業、補助金コンサル、認定支援機関に固定する。中小企業単体はLINE、email、kintone内表示の入口として扱い、最初の主収益にはしない。M&A/金融はDD ZIPの高単価余地があるが、採択金額coverage、法人名寄せ、行政処分、license、cite_chainが整うまで後段に置く。自治体支援は年契約余地があるが、稟議と調達が重いため、Advisor Packの実績後に広げる。
+
+### 28.2 何がAI/agentに使われるか
+
+AI/agentに使われる条件は、「jpciteがAI応答を生成すること」ではない。顧客側AI/agentが、迷わず、安全に、安定して、引用付き構造化データを呼べることである。
+
+AI/agent向け入口:
+
+- MCP: read-only toolsを主入口にし、`discovery`、`monitoring`、`due_diligence`、`tax_risk`、`integration` のtool pack manifestを用意する。
+- REST/OpenAPI: Zapier、Make、RPA、Sheets、Slack向けに、検索、詳細、batch、saved search、webhook、health/metaのsubsetを切る。
+- IDE/agent: Cursor、Cline、Continue、Claude Desktopなどの顧客側client向けに、`mcp.json`、API key設定、失敗時診断、最小tool chainを用意する。
+- 社内bot: Slack/Teams botは要約文ではなく、引用URL、締切、根拠フィールド、追加確認リンクを返す。
+
+全agent-facing endpoint/toolは、通常時も空振り時も同じ構造を返す。
+
+```json
+{
+  "status": "rich | sparse | empty | partial | error",
+  "query_echo": {
+    "normalized_input": {},
+    "applied_filters": {},
+    "unparsed_terms": []
+  },
+  "results": [],
+  "citations": [],
+  "warnings": [],
+  "suggested_actions": [],
+  "meta": {
+    "request_id": "...",
+    "api_version": "...",
+    "latency_ms": 0,
+    "billable_units": 0,
+    "client_tag": "..."
+  }
+}
+```
+
+空配列だけを返さない。`status=empty` のときは、`empty_reason` と `retry_with` を必ず返し、「本当に存在しない」「条件が狭すぎる」「source未取得」「license上返せない」を区別する。
+
+共通citation model:
+
+| フィールド | 目的 |
+|---|---|
+| `source_id` | source正本とのjoin |
+| `source_url` | 一次資料への到達 |
+| `publisher` | 発行主体 |
+| `title` | 出典タイトル |
+| `fetched_at` | 取得日時 |
+| `checksum` | 再現性 |
+| `license` | 再配布可否 |
+| `field_paths` | どの値の根拠か |
+| `excerpt` / `page_ref` | 短い確認材料 |
+| `verification_status` | verified / inferred / stale / unknown |
+| `citation_text_ja` | Slackや稟議書に貼る短文 |
+| `citation_markdown` | docs/report用 |
+
+REST、MCP、SDK、middlewareのエラーは単一envelopeに統一する。
+
+```json
+{
+  "error": {
+    "code": "RATE_LIMITED",
+    "user_message": "...",
+    "developer_message": "...",
+    "retryable": true,
+    "retry_after": 60,
+    "documentation": "..."
+  },
+  "request_id": "..."
+}
+```
+
+`message` / `user_message`、`rate_limited` / `rate_limit_exceeded`、host名、env名、tool名、引数名の揺れは、AI/agentの自動復旧を壊す。`api.jpcite.com`、`AUTONOMATH_API_KEY`、`AUTONOMATH_API_BASE`、実在tool名、実在引数を正本化し、旧名はdeprecation warningにする。
+
+### 28.3 AI / Developer Distributionを成長導線にする
+
+AIツールと開発者が自然に採用するには、機能より先に配布面の不整合をなくす必要がある。runtime上のtool数、README、`mcp-server.json`、DXT、Smithery、OpenAPI path数、PyPI/npm package、SDK名、ブランド名、canonical domainがずれると、AI crawler、MCP registry、開発者の全員が「どれが正か」を判断できない。
+
+Canonical Distribution Manifestを1つ作り、これを配布の正本にする。
+
+```yaml
+product: jpcite
+canonical_domains:
+  site: https://jpcite.com
+  api: https://api.jpcite.com
+canonical_mcp_package: autonomath-mcp
+canonical_api_env:
+  key: AUTONOMATH_API_KEY
+  base: AUTONOMATH_API_BASE
+mcp:
+  tool_count: <runtimeから生成>
+  resource_count: <runtimeから生成>
+  prompt_count: <runtimeから生成>
+openapi:
+  path_count: <docs/openapi/v1.jsonから生成>
+trust:
+  security_txt: https://jpcite.com/.well-known/security.txt
+  status_json: https://jpcite.com/status.json
+  health_sla: https://api.jpcite.com/v1/health/sla
+```
+
+このmanifestから、README、MCP Registry `server.json`、DXT、Smithery、SDK README、examples、`llms.txt`、API docsを生成または検証する。CIはdriftを検出したらfailする。
+
+配布優先順位:
+
+1. Official MCP Registry掲載を最優先にする。
+2. PyPI `autonomath-mcp` のversion、README、`mcp-name`、GitHub namespaceを揃える。
+3. DXT / Smithery / MCPBを同じmanifestから再生成する。
+4. Python / TypeScript SDKは、公開済みpackageだけをpublic docsに載せる。未公開ならpreview扱いにする。
+5. examplesは3分以内に成功する導線に絞る。
+
+3分導入の最小セット:
+
+- anonymous REST read
+- API key付きREST read
+- Python `requests`
+- TypeScript `fetch`
+- MCP client via `uvx autonomath-mcp`
+- DXT install
+
+Trust surfaceもAI-readableにする。
+
+- `/.well-known/security.txt`
+- `/v1/health/sla`
+- `/v1/staleness`
+- corrections feed
+- OpenAPI JSON
+- status JSON
+- data source freshness
+- known limitations
+
+これらを `llms.txt` / `llms-full.txt` / docsから辿れるようにし、「何ができるか」「何ができないか」「根拠はどこか」「どのsourceが古いか」を機械的に読める状態にする。
+
+### 28.4 Organic Growth / SEO / GEO
+
+オーガニック成長は、ページを大量生成することではない。一次資料、更新履歴、比較、透明性、開発者導線、配布registry、実務事例を積み上げることで発生させる。
+
+先に直す信頼ブロッカー:
+
+1. 公開値の単一化
+   `llms.txt`、README、比較ページ、SEO docs、sitemap、DB件数の数字を一致させる。総件数、indexable件数、静的HTML件数、Q&A件数、MCP tool数、OpenAPI path数を分けて表示する。
+
+2. ブランド統一
+   QA、比較、透明性、schema.org、security docsに残る旧名を `jpcite / AutonoMath` に統一する。旧名は必要な場合だけ `formerly` として扱う。
+
+3. sitemap / robots / generator整合
+   `/structured/` をGEO資産にするならrobots方針を変える。使わないならHTML埋め込みJSON-LDを正と明記する。
+
+4. 退役URL導線
+   削減済みQA、industry、cross、program URLは、topic hubや制度family hubへ関連リダイレクトする。単純な `/qa/` 返しは検索意図を失いやすい。
+
+5. 比較ページのファクト更新
+   jGrants、gBizINFO、ミラサポplus、Navit、補助金クラウドなどの比較ページは、公式URL、最終確認日、相手を使うべき場面、併用すべき場面、訂正受付導線を入れる。
+
+狙う検索導線:
+
+| クエリ群 | 例 | 到達先 |
+|---|---|---|
+| 制度名 | `ものづくり補助金 対象経費`、`IT導入補助金 締切` | 制度family / S/A制度 |
+| 地域 | `東京都 補助金 製造業`、`大阪府 中小企業 補助金` | 都道府県 / 主要自治体 |
+| 業種 | `飲食店 補助金`、`建設業 省人化補助金` | 業種hub |
+| 比較 | `jGrants API`、`gBizINFO 補助金 データ` | compare |
+| 更新 | `補助金 公募開始 変更`、`制度 改正 2026` | data freshness / update |
+| 開発者 | `補助金 API`、`MCP 補助金`、`法人番号 インボイス API` | docs / OpenAPI / MCP |
+
+すべてのindex対象ページに固定ブロックを持たせる。
+
+- 冒頭の短い回答
+- 根拠テーブル
+- 一次資料リンク
+- 更新日
+- 著者・発行主体の一貫した `@id`
+- Article / FAQPage / Dataset / GovernmentService / BreadcrumbListの適切なJSON-LD
+- APIで同じデータを取得する例
+- 訂正フォーム
+
+プログラマティックSEOの品質ゲート:
+
+| Tier | index方針 | 条件 |
+|---|---|---|
+| Tier 1 | index | S/A制度、都道府県、主要Q&A、比較、docs |
+| Tier 2 | 条件付きindex | 主要自治体、制度family、prefecture x industry、source別、更新差分、case hub |
+| Tier 3 | noindex / 非公開 | B/C個別、薄い掛け合わせ、検索結果ページ |
+
+Tier 2は、一次資料URLが3件以上、有効S/A制度が5件以上、周辺根拠が3件以上、固有本文1,500字以上を満たしたものだけindex対象にする。
+
+毎月出すべき自然被リンク資産:
+
+- 月次データ品質レポート
+- dataset別freshnessと差分RSS
+- 公式資料リンク切れ一覧
+- correction log
+- source liveness
+- 主要制度の変更履歴
+- MCP/RESTのpaste-and-run examples
+- GitHubのmanifest drift report
+
+GoogleのAI Features向けには、特別なAI専用ファイルやschemaを作ることより、クロール可能な本文、内部リンク、構造化データと可視本文の一致、Search Console監視を重視する。OpenAI向けには、`OAI-SearchBot` と `GPTBot` をrobotsで分け、検索露出と学習利用の許可を明示的に管理する。これは外部LLM APIの利用ではなく、crawler policyである。
+
+### 28.5 Product-Led Growth / Activation
+
+PLGは「新しい大機能を足す」より、既存導線の破断を直して計測できるようにするところから始める。
+
+P0で直す導線:
+
+- `trial.html`: key reveal / quickstart JSが実行されること。
+- `pricing.html`: checkout CTAが確実に起動し、source metadataを渡すこと。
+- `success.html`: paid key revealと初回request導線が動くこと。
+- `dashboard.html`: quickstart、saved search作成、usage、billing、tool recommendationが壊れていないこと。
+- `line.html`: waitlist送信が動き、sourceが残ること。
+- `stats_funnel`: trial signup、magic link verify、first request、saved search、digest、referral、partner、LINE、widgetまで入れること。
+- `analytics.js`: env未設定no-opのまま本番判断しないこと。
+
+30日で試すactivation実験:
+
+| 実験 | 内容 | KPI |
+|---|---|---|
+| Anonymous -> trial | 成功3回目、10回目、残quota10以下、429でCTA出し分け | `anonymous_success_session_to_trial_signup`、`429_to_trial_signup` |
+| Trial checklist | key revealed -> first request within 30min -> 5 req by D7 -> saved search -> digest enabled | `trial_first_request_24h`、`D7_5req_rate`、`trial_to_paid` |
+| Playground -> saved search | 匿名検索条件をsignup後に復元し1 clickでsaved search化 | `successful_search_to_saved_search` |
+| Weekly digest default | 初回saved searchでweekly digestを推奨 | `digest_enabled_rate`、`digest_open_or_click_72h_reactivation` |
+| Dashboard first-run | curl-first / MCP-first / saved-search-firstを比較 | `time_to_first_api_call`、`second_session_D7` |
+| Source-aware pricing | `from=playground|429|trial|line|widget|partner|referral` をcheckout/api_keys/usage_eventsへ保存 | `paid_WAU_by_source` |
+| Widget loop | 埋め込み先にsource/partner codeとPowered by導線 | `widget_impression_to_search`、`widget_search_to_trial` |
+| Partner self-serve | mailtoではなくpartner application idを発行 | `partner_activated`、`partner_paid_requests` |
+
+Referralはpaid顧客限定、opt-in、credit-onlyで小さく始める。現金紹介料を急がない。Widget、partner、LINE、saved search digestはすべてsource attributionを通す。
+
+### 28.6 2026-04-30からの10日集中計画
+
+10日でやることは、機能拡張ではなく、売れる状態、使える状態、測れる状態への圧縮である。
+
+| 日付 | 集中テーマ | 完了条件 |
+|---|---|---|
+| 2026-04-30 | No-LLM boundary | product/runtime/ETL/cron/CIから外部LLM API呼び出し、env、docs誤表現を隔離または削除 |
+| 2026-05-01 | DB正本 | 実DBとschema/migrationの差分を確認し、`usage_events.quantity`、integration migration、saved_searches拡張を反映 |
+| 2026-05-02 | Billing/key P0 | checkout、success、key reveal、二重発行防止、billing portal、Stripe webhook healthをE2E確認 |
+| 2026-05-03 | Host/CORS/env正本 | `api.jpcite.com`、CORS、SDK base URL、Smithery/DXT/env名を統一 |
+| 2026-05-04 | Agent contract | response envelope、citation model、error enum、rate limit headers、MCP structuredContent方針を確定 |
+| 2026-05-05 | Advisor demo kit | Advisor Pack 1枚提案、匿名テンプレCSV、週次Digest sample、月次ZIP sampleを作る |
+| 2026-05-06 | Report/Integration Center最小版 | Report CenterとIntegrations Centerの画面/endpoint/失敗時復旧を最小で通す |
+| 2026-05-07 | Organic trust cleanup | `llms.txt`、README、比較、透明性、sitemap、robots、旧ブランド名、公開件数を整合 |
+| 2026-05-08 | Distribution manifest | runtimeからtool/resources/prompts/OpenAPI path/version/domainを生成し、README/DXT/Smithery/server.json検証 |
+| 2026-05-09 | Pilot launch | 20事務所リスト、5ヒアリング台本、3pilot条件、paid提示資料、計測dashboardを固定 |
+
+10日終了時のGo条件:
+
+- 外部LLM API禁止のCIが緑。
+- `usage_events.quantity` とunit課金が実DBで動く。
+- trial -> key reveal -> first request -> saved search -> digest -> monthly ZIPの最短E2Eが通る。
+- Advisor Pack資料が1枚で説明できる。
+- 匿名CSV demoで個人情報なしに価値が伝わる。
+- `llms.txt` / README / MCP manifest / DXT / Smithery / OpenAPI docsの数字が一致する。
+- 20事務所へ送れる個別文面とdemo URLがある。
+
+### 28.7 30 / 60 / 90日の成長順序
+
+30日: 士業・補助金コンサルの支払い意欲を検証する。
+
+- 20事務所に個別接触。
+- 5件の課題ヒアリング。
+- 3件のpilot。
+- 1-3件のpaid conversion。
+- 売る商品は `Advisor ¥49,800/月` に固定。
+- Developer Meteredは入口、M&A/DDは見せるだけ、Data Licenseは売らない。
+
+成功条件:
+
+- 顧問先10件以上の登録。
+- 2週連続のDigest閲覧。
+- 月次ZIPを顧問先または社内に共有。
+- saved searchが1つ以上残る。
+- 初回paidまたは年契約の明確な稟議に進む。
+
+60日: 継続ループを実装する。
+
+- `client_profiles`
+- CSV import
+- saved search
+- weekly digest
+- monthly ZIP
+- `client_tag`別利用明細
+- Report Center最小版
+- Integrations Center最小版
+- source attribution付きPLG funnel
+- pilot実例ベース記事6-8本
+
+90日: Evidence Graphへ進む。
+
+- `source_manifest`
+- `raw_documents`
+- `adoption_records`の金額coverage改善
+- program / adoption / houjin / invoice / enforcement のjoin edge
+- `unknown_reason`
+- human review queue
+- Trust Dashboard
+- license export gate
+
+90日終了時点で、M&A/DDとData LicenseのGo/No-Goを判定する。30日で3pilot未満、または1paid未満なら、拡張ではなくAdvisor商品の価値仮説を戻して再設計する。
+
+### 28.8 North Starと計測
+
+North Starは `weekly_evidence_loops` にする。
+
+定義:
+
+7日以内に同一accountで、次の3条件が成立した数。
+
+1. `client_profile_imported` または `client_tag >= 5`
+2. `saved_search_created >= 1`
+3. `digest_delivered >= 1` または `report_generated >= 1`
+
+補助KPI:
+
+| 面 | KPI |
+|---|---|
+| Human | 初回CSV upload、初回ZIP生成、Digest open、Report再DL、client_tag数、2週連続Digest閲覧 |
+| AI/Agent | MCP初回tool成功、agent user-agent別first call、OpenAPI/llms.txt経由流入、tool error率、enum correction率 |
+| Organic | GSC clicks/impressions、indexed URL数、docs -> API key、RSS/saved search登録、自然被リンク、correction submissions |
+| PLG | anonymous success -> trial、trial first request 24h、D7 5req、saved search化、trial to paid、paid WAU by source |
+| Quality | source coverage、checksum一致率、unknown_reason付与率、adoption -> program join率、false allow 0 |
+| Revenue | Advisor paid数、ARPA、月次report生成数、unit消費、解約理由、partner paid requests |
+
+PVや記事本数はNorth Starにしない。売上に近いのは、毎週の根拠付き業務ループが成立した数である。
+
+### 28.9 No-Goをさらに強める
+
+以下に該当する場合、成長施策を止めてP0へ戻す。
+
+- 外部LLM APIを呼ぶコード、env、CI、cron、ETL、翻訳、評価、研究スクリプトがproduct treeに残る。
+- `scripts/etl/batch_translate_corpus.py` のような例外が隔離されず、通常運用から呼べる。
+- DB正本、usage schema、billing E2E、key二重発行防止が緑でない。
+- trial/pricing/success/dashboard/LINEのJSが壊れている。
+- `source_url/source_fetched_at/source_checksum/license` 欠損行を有料ZIP、監査レポート、DD、Data Licenseに含める。
+- `license in ('unknown','proprietary')` をexport eligibleにする。
+- 採択金額coverageが弱いまま、M&A/DDを高額商品として前面に出す。
+- 公開件数、tool数、OpenAPI path数、ブランド名、domain、SDK名が複数箇所で矛盾する。
+- `message` / `user_message`、`rate_limited` / `rate_limit_exceeded` の揺れを放置する。
+- 30日で3pilot未満、または1paid未満なのにM&A/DD、Data License、自治体、金融、VCへ広げる。
+- Digest開封、CSV upload、ZIP生成、saved search作成が計測できない状態で記事数だけ増やす。
+- 「AIが判定」「採択確率」「自動で根拠を読む」など、jpcite本体が生成AI応答をしているように見える訴求を使う。
+
+### 28.10 最終優先順位の更新
+
+ここまでを踏まえると、次の順序に固定する。
+
+1. 外部LLM API不使用をCI、docs、manifest、運用手順まで貫通させる。
+2. DB正本、usage schema、billing/key、host/CORS/env、JS破断を直す。
+3. `Advisor ¥49,800/月` を、顧問先CSV + 週次Digest + 月次ZIPの商品として出す。
+4. `weekly_evidence_loops` をNorth Starにし、PLG funnelとsource attributionを入れる。
+5. Agent contract、citation model、error envelope、tool pack manifestを作る。
+6. Distribution manifestでREADME、MCP Registry、DXT、Smithery、SDK、`llms.txt` のdriftを消す。
+7. Organicは、実務pilotから生まれた6-8本の深い記事、比較更新、透明性、data freshness、docsに絞る。
+8. Report Center / Integrations Centerで、継続利用と失敗復旧を商品化する。
+9. Evidence Graph、license gate、Trust Dashboardを整え、M&A/DDとData LicenseのGo/No-Goを判定する。
+10. 自治体、金融、VC、広域Data Licenseは、Advisor Packの実利用と品質指標が揃ってから広げる。
+
+### 28.11 外部仕様メモ
+
+- MCP Tools仕様は、toolの `inputSchema`、`outputSchema`、`structuredContent`、error handling、tool list changed notificationを定義している。jpciteのagent contractは、これに合わせてMCP tool resultへ構造化結果を返す。
+  - https://modelcontextprotocol.io/specification/2025-06-18/server/tools
+- MCP Schema Referenceのlatestは `2025-11-25` として公開されている。互換テストでは現行実装の互換性と、latest schemaへの追従可否を分けて見る。
+  - https://modelcontextprotocol.io/specification/2025-11-25/schema
+- Official MCP Registryは、`server.json`、package metadata、ownership verification、`mcp-publisher publish` の流れを要求する。jpciteの配布正本はこの流れに合わせる。
+  - https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/quickstart.mdx
+- Google Search Centralは、AI featuresへの露出について、通常のクロール、内部リンク、テキスト本文、構造化データと可視本文の一致、Search Console監視を重視している。AI専用の特別なschemaを前提にしない。
+  - https://developers.google.com/search/docs/appearance/ai-features
+- OpenAI crawlersは、検索露出向けの `OAI-SearchBot` と学習向けの `GPTBot` を分けて説明している。jpciteではrobotsで検索露出と学習利用の方針を分ける。これはAPI利用ではなくcrawler制御である。
+  - https://developers.openai.com/api/docs/bots

@@ -280,6 +280,43 @@ CREATE INDEX IF NOT EXISTS idx_empty_search_log_query
 CREATE INDEX IF NOT EXISTS idx_empty_search_log_created
     ON empty_search_log(created_at DESC);
 
+-- Migration 111 (P0-10, 2026-04-30): per-request analytics row for EVERY
+-- HTTP request — including anonymous callers (key_hash NULL). Where
+-- `usage_events` is purpose-built for billing reconciliation against
+-- Stripe and rejects NULL key_hash by FK + NOT NULL, this table captures
+-- the universe of traffic for adoption/funnel/feature-coverage analytics.
+-- Recorded by `AnalyticsRecorderMiddleware` (api/middleware/analytics_recorder.py)
+-- in BackgroundTasks so the response hot-path is never blocked.
+--
+-- PII rule: raw IP NEVER stored — `anon_ip_hash` is sha256(ip||daily_salt)
+-- via `deps.hash_ip_for_telemetry`. `key_hash` is the same HMAC-derived
+-- hash already stored in `api_keys.key_hash` (NOT raw key material).
+-- `path` is the URL path with no query string and no T-numbers / law IDs
+-- (path-param values stripped via `redact_pii`).
+CREATE TABLE IF NOT EXISTS analytics_events (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts            TEXT NOT NULL,
+    method        TEXT NOT NULL,
+    path          TEXT NOT NULL,
+    status        INTEGER NOT NULL,
+    latency_ms    INTEGER,
+    key_hash      TEXT,           -- NULL for anonymous traffic
+    anon_ip_hash  TEXT,           -- sha256(ip||daily_salt); NULL if key_hash present
+    client_tag    TEXT,           -- X-Client-Tag, validated; NULL when absent
+    is_anonymous  INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_analytics_events_ts
+    ON analytics_events(ts DESC);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_path_ts
+    ON analytics_events(path, ts DESC);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_key_ts
+    ON analytics_events(key_hash, ts DESC)
+    WHERE key_hash IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_analytics_events_anon_ts
+    ON analytics_events(anon_ip_hash, ts DESC)
+    WHERE anon_ip_hash IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS schema_migrations (
     id TEXT PRIMARY KEY,
     checksum TEXT NOT NULL,

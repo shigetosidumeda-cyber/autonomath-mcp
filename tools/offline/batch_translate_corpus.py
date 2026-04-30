@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
+# OPERATOR ONLY: Run manually from tools/offline/. Never imported from src/, scripts/cron/, or scripts/etl/.
 """Offline batch translate the AutonoMath corpus to English (operator only).
+
+Operator-only offline script. Not callable from production runtime.
 
 OPERATOR-SIDE ETL — runs once on the operator's workstation, NOT at
 request time. Per `feedback_autonomath_no_api_use` (CLAUDE memory), the
 service must NEVER call the Anthropic API on the user's request path:
-¥0.5/req structure cannot absorb a ¥2-15 LLM call. This script is the
-single sanctioned exception — it pre-computes English aliases offline,
-charges the cost to the operator's developer-budget Anthropic API key,
-and writes the results into am_alias.language='en' so the runtime path
-JOINs them as static reference data.
+¥0.5/req structure cannot absorb a ¥2-15 LLM call. This script pre-computes
+English aliases offline, charges the cost to the operator's developer-budget
+Anthropic API key, and writes the results into am_alias.language='en' so
+the runtime path JOINs them as static reference data.
 
 Total operator cost (estimated):
     programs           10,790 names × 1 LLM call ≈  ¥30,000
@@ -28,9 +30,9 @@ both are batchable. Anthropic Batch API gets us 50% off list price.
 
 Usage:
     export ANTHROPIC_API_KEY=sk-ant-...
-    python scripts/etl/batch_translate_corpus.py --dry-run
-    python scripts/etl/batch_translate_corpus.py --corpus programs --batch-size 100
-    python scripts/etl/batch_translate_corpus.py --corpus all --use-batch-api
+    python tools/offline/batch_translate_corpus.py --dry-run
+    python tools/offline/batch_translate_corpus.py --corpus programs --batch-size 100
+    python tools/offline/batch_translate_corpus.py --corpus all --use-batch-api
 
 Flags:
     --corpus {programs,laws,tax_rulesets,court_decisions,invoice,all}

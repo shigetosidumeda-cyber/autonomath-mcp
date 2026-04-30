@@ -116,7 +116,7 @@ def _force_fallback_with_mock_response(
 
     transport = httpx.MockTransport(_handler)
     real_client = httpx.Client(
-        base_url="https://api.autonomath.ai",
+        base_url="https://api.jpcite.com",
         transport=transport,
         headers={"User-Agent": "test"},
     )

@@ -31,6 +31,9 @@ These are complementary:
 """
 from __future__ import annotations
 
+from jpintel_mcp.api.middleware.analytics_recorder import (
+    AnalyticsRecorderMiddleware,
+)
 from jpintel_mcp.api.middleware.anon_quota_header import (
     AnonQuotaHeaderMiddleware,
 )
@@ -70,6 +73,7 @@ from jpintel_mcp.api.middleware.security_headers import (
 from jpintel_mcp.api.middleware.strict_query import StrictQueryMiddleware
 
 __all__ = [
+    "AnalyticsRecorderMiddleware",
     "AnonQuotaHeaderMiddleware",
     "ClientTagMiddleware",
     "CustomerCapMiddleware",

@@ -21,7 +21,7 @@ from typing import Any
 import requests
 from langchain.tools import Tool
 
-API_BASE = os.environ.get("AUTONOMATH_API_BASE", "https://api.autonomath.ai")
+API_BASE = os.environ.get("AUTONOMATH_API_BASE", "https://api.jpcite.com")
 API_KEY = os.environ.get("AUTONOMATH_API_KEY", "")
 
 

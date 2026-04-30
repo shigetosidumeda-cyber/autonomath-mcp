@@ -14,7 +14,7 @@ from autonomath.exceptions import (
     ServerError,
 )
 
-DEFAULT_BASE_URL = "https://api.autonomath.ai"
+DEFAULT_BASE_URL = "https://api.jpcite.com"
 DEFAULT_TIMEOUT = 30.0
 MAX_RETRIES = 3
 

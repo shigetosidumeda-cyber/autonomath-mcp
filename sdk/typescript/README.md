@@ -162,7 +162,7 @@ Direct install for Claude Desktop is also available without this SDK
 | Option            | Default                       | Notes                                            |
 | ----------------- | ----------------------------- | ------------------------------------------------ |
 | `apiKey`          | `undefined`                   | `X-API-Key` header. Omit for anonymous (50/月).  |
-| `baseUrl`         | `https://api.autonomath.ai`   | Override for self-hosted deployments.            |
+| `baseUrl`         | `https://api.jpcite.com`   | Override for self-hosted deployments.            |
 | `timeoutMs`       | `30000`                       | Per-request timeout via `AbortController`.       |
 | `maxRetries`      | `3`                           | Applied to 429 and 5xx responses.                |
 | `fetch`           | global `fetch`                | Inject custom fetch (undici, polyfill, etc.).    |

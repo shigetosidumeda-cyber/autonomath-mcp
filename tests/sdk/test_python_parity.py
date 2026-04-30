@@ -317,14 +317,14 @@ def test_reasoning_answer_forwards_ts_options() -> None:
 
 
 def test_no_live_api_called(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Sentinel: ensure tests can't accidentally call api.autonomath.ai."""
+    """Sentinel: ensure tests can't accidentally call api.jpcite.com."""
     # If anything bypasses the MockTransport and tries to resolve our prod
     # host, fail loud. We patch httpx's request to forbid it explicitly.
     real_request = httpx.Client.request
 
     def guard(self, method, url, *a, **k):
         url_str = str(url)
-        if "api.autonomath.ai" in url_str:
+        if "api.jpcite.com" in url_str:
             raise AssertionError(f"Test attempted live API call: {url_str}")
         return real_request(self, method, url, *a, **k)
 

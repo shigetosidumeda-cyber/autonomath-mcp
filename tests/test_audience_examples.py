@@ -18,7 +18,7 @@ follow whatever the page currently advertises.
 Skips:
     - non-HTTP snippets (claude_desktop_config.json, plain natural-
       language demos, etc.) are filtered out by URL detection.
-    - aggregator hosts other than ``api.autonomath.ai`` are skipped
+    - aggregator hosts other than ``api.jpcite.com`` are skipped
       (the page may show third-party JST snippets for context).
 """
 from __future__ import annotations

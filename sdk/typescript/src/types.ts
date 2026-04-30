@@ -11,7 +11,7 @@ export type Tier = "S" | "A" | "B" | "C" | "X";
 export interface ClientOptions {
   /** API key issued from https://autonomath.ai/dashboard. Optional — anonymous gets 50 req/月. */
   apiKey?: string;
-  /** Override base URL (self-host / staging). Default: https://api.autonomath.ai */
+  /** Override base URL (self-host / staging). Default: https://api.jpcite.com */
   baseUrl?: string;
   /** Per-request timeout in ms. Default 30000. */
   timeoutMs?: number;
