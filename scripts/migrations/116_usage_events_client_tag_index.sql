@@ -47,6 +47,12 @@
 
 PRAGMA foreign_keys = ON;
 
+-- Add quantity column (required by deps.log_usage + ma_dd bundle_class
+-- multiplier). Dev DBs predating this migration didn't have it; production
+-- deploy 2026-04-30 hit `no such column: quantity` because the index below
+-- references it. migrate.py tolerates duplicate-column on re-apply.
+ALTER TABLE usage_events ADD COLUMN quantity INTEGER DEFAULT 1;
+
 CREATE INDEX IF NOT EXISTS idx_usage_events_breakdown
     ON usage_events(key_hash, ts, client_tag, quantity);
 
