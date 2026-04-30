@@ -200,8 +200,18 @@ def sanitize_response_text(text: str) -> tuple[str, list[str]]:
     # Layer 3: hallucination_guard substring scan over the 60-phrase YAML.
     # `_load()` inside loop_a is `lru_cache(maxsize=1)`, so the only
     # per-request cost is 60 substring checks against `out`. Gated by
-    # AUTONOMATH_HALLUCINATION_GUARD_ENABLED (default on). Pure annotation
-    # — text is never rewritten here.
+    # AUTONOMATH_HALLUCINATION_GUARD_ENABLED (default on).
+    #
+    # Behaviour by severity:
+    #   high    — STRIP the phrase (replace with `[出典未確認のため削除]`)
+    #             so the false claim cannot propagate downstream. We do NOT
+    #             auto-substitute the YAML `correction` text — corrections
+    #             are factual claims and must be operator-reviewed before
+    #             reaching customer surface (per memory feedback_no_fake_data
+    #             + feedback_autonomath_fraud_risk).
+    #   medium/low — annotation only (preserve text); the customer-facing
+    #             tool result still carries the raw phrase but the envelope
+    #             sentinel `loop_a-{severity}` lets the operator audit.
     if getattr(settings, "hallucination_guard_enabled", True):
         try:
             hg_hits = _hallu_match(out)
@@ -213,6 +223,10 @@ def sanitize_response_text(text: str) -> tuple[str, list[str]]:
         for h in hg_hits:
             sev = h.get("severity", "unknown")
             hits.append(f"loop_a-{sev}")
+            if sev == "high":
+                phrase = h.get("phrase", "")
+                if phrase and phrase in out:
+                    out = out.replace(phrase, "[出典未確認のため削除]")
     return out, hits
 
 
@@ -382,12 +396,21 @@ class ResponseSanitizerMiddleware(BaseHTTPMiddleware):
             response.status_code,
             ",".join(sorted(set(hits))),
         )
+        # Surface a per-loop count so operators can grep CDN / Fly logs by
+        # exact magnitude. `X-Hallucination-Guard-Hits` only counts the
+        # `loop_a-*` (Layer 3) prefix; PII / INV-22 / prompt-injection
+        # layers each carry their own prefix and stay aggregated under the
+        # generic `x-content-sanitized: 1` debug flag.
+        extra_headers: dict[str, str] = {"x-content-sanitized": "1"}
+        loop_a_count = sum(1 for h in hits if h.startswith("loop_a-"))
+        if loop_a_count:
+            extra_headers["X-Hallucination-Guard-Hits"] = str(loop_a_count)
         return _rebuild_response(
             body=new_body,
             status_code=response.status_code,
             raw_headers=upstream_raw_headers,
             media_type="application/json",
-            extra_headers={"x-content-sanitized": "1"},
+            extra_headers=extra_headers,
             drop_content_length=True,
         )
 

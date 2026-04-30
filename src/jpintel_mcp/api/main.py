@@ -63,6 +63,7 @@ from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.feedback import router as feedback_router
+from jpintel_mcp.api.houjin import router as houjin_router
 from jpintel_mcp.api.invoice_registrants import router as invoice_registrants_router
 from jpintel_mcp.api.laws import router as laws_router
 from jpintel_mcp.api.legal import router as legal_router
@@ -978,6 +979,11 @@ def create_app() -> FastAPI:
     app.include_router(bids_router, dependencies=[AnonIpLimitDep])
     app.include_router(tax_rulesets_router, dependencies=[AnonIpLimitDep])
     app.include_router(invoice_registrants_router, dependencies=[AnonIpLimitDep])
+    # /v1/houjin/{bangou} — corporate 360 lookup surfacing 1.12M gBizINFO
+    # facts already in autonomath.db (am_entities corporate_entity +
+    # am_entity_facts corp.*). Same anon-quota posture as the other
+    # discovery surfaces — 50/月 per-IP cap applies.
+    app.include_router(houjin_router, dependencies=[AnonIpLimitDep])
     # /v1/calendar/deadlines is live (activated from preview 2026-04-24).
     # Previously gated behind enable_preview_endpoints; now a first-class
     # discovery surface, so it mounts unconditionally.

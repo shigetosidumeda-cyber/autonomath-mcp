@@ -10,7 +10,7 @@
   "license": "MIT",
   "homepage": "https://jpcite.com",
   "repository": {
-    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
+    "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
     "source": "github"
   },
   "protocol": "mcp-2025-06-18",

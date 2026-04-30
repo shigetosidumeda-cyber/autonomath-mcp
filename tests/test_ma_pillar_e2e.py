@@ -344,11 +344,18 @@ def test_audit_bundle_export_round_trip(client, paid_key, tmp_path):
     assert r.status_code == 200, r.text
     body = r.json()
 
-    # Pricing: 5 × ¥3 + ¥30 = ¥45.
+    # Pricing: 5 × ¥3 + 333 × ¥3 = ¥15 + ¥999 = ¥1,014. Default
+    # `bundle_class='standard'` consumes 333 billing units (≈¥1,000) per
+    # the bundle_class quantity ladder. Customer charge stays
+    # `quantity × ¥3` — no tier SKU.
     assert body["batch_size"] == 5
-    assert body["metered_yen"] == 45
+    assert body["bundle_class"] == "standard"
+    assert body["bundle_units"] == 333
+    assert body["metered_yen"] == 5 * 3 + 333 * 3
     assert body["metered_breakdown"]["per_houjin_count"] == 5
-    assert body["metered_breakdown"]["audit_bundle_fee_yen"] == 30
+    assert body["metered_breakdown"]["bundle_class"] == "standard"
+    assert body["metered_breakdown"]["bundle_units"] == 333
+    assert body["metered_breakdown"]["audit_bundle_fee_yen"] == 333 * 3
     _check_disclaimer_envelope(body)
 
     # corpus_snapshot_id pin (audit reproducibility).
@@ -445,3 +452,107 @@ def test_audit_bundle_listing_summary(client, paid_key):
     # (non-zero size) and the sha256 is the standard 64-char hex string.
     assert body["bundle_bytes"] > 0
     assert len(body["bundle_sha256"]) == 64
+
+
+# ---------------------------------------------------------------------------
+# bundle_class quantity multiplier (NOT a tier SKU — artifact-size knob)
+# ---------------------------------------------------------------------------
+
+
+def test_dd_export_bundle_class_deal_charges_3000(client, paid_key):
+    """`bundle_class='deal'` consumes 1,000 billing units = ¥3,000 fee.
+
+    Customer is charged `(N houjin + 1,000) × ¥3`. NO tier SKU — the
+    multiplier is an artifact-size selector. Stripe usage_records carry
+    the same ¥3 unit price.
+    """
+    r = client.post(
+        "/v1/am/dd_export",
+        headers={"X-API-Key": paid_key},
+        json={
+            "deal_id": "MA-E2E-BUNDLE-DEAL",
+            "houjin_bangous": list(_FIVE_HOUJIN),
+            "bundle_class": "deal",
+        },
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    # 5 × ¥3 + 1,000 × ¥3 = ¥15 + ¥3,000 = ¥3,015.
+    assert body["bundle_class"] == "deal"
+    assert body["bundle_units"] == 1_000
+    assert body["metered_yen"] == 5 * 3 + 1_000 * 3
+    assert body["metered_breakdown"]["bundle_class"] == "deal"
+    assert body["metered_breakdown"]["bundle_units"] == 1_000
+    assert body["metered_breakdown"]["audit_bundle_fee_yen"] == 1_000 * 3
+    # Pricing note must explicitly call out the multiplier (¥3 × quantity)
+    # so an LLM agent reading the body cannot mistake it for a tier SKU.
+    assert "bundle_class" in body["pricing_note"]
+
+
+def test_dd_export_bundle_class_case_charges_10000(client, paid_key):
+    """`bundle_class='case'` consumes 3,333 billing units = ¥9,999 fee."""
+    r = client.post(
+        "/v1/am/dd_export",
+        headers={"X-API-Key": paid_key},
+        json={
+            "deal_id": "MA-E2E-BUNDLE-CASE",
+            "houjin_bangous": list(_FIVE_HOUJIN),
+            "bundle_class": "case",
+        },
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    # 5 × ¥3 + 3,333 × ¥3 = ¥15 + ¥9,999 = ¥10,014.
+    assert body["bundle_class"] == "case"
+    assert body["bundle_units"] == 3_333
+    assert body["metered_yen"] == 5 * 3 + 3_333 * 3
+    assert body["metered_breakdown"]["bundle_class"] == "case"
+    assert body["metered_breakdown"]["bundle_units"] == 3_333
+    assert body["metered_breakdown"]["audit_bundle_fee_yen"] == 3_333 * 3
+
+
+def test_dd_export_bundle_class_standard_default(client, paid_key):
+    """Omitting `bundle_class` defaults to 'standard' (333 units, ≈¥1,000)."""
+    r = client.post(
+        "/v1/am/dd_export",
+        headers={"X-API-Key": paid_key},
+        json={
+            "deal_id": "MA-E2E-BUNDLE-DEFAULT",
+            "houjin_bangous": list(_FIVE_HOUJIN[:1]),
+        },
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["bundle_class"] == "standard"
+    assert body["bundle_units"] == 333
+    # 1 × ¥3 + 333 × ¥3 = ¥3 + ¥999 = ¥1,002.
+    assert body["metered_yen"] == 1 * 3 + 333 * 3
+
+
+def test_dd_export_bundle_class_invalid_returns_422(client, paid_key):
+    """Unknown bundle_class is rejected by the pydantic Literal."""
+    r = client.post(
+        "/v1/am/dd_export",
+        headers={"X-API-Key": paid_key},
+        json={
+            "deal_id": "MA-E2E-BUNDLE-BAD",
+            "houjin_bangous": list(_FIVE_HOUJIN[:1]),
+            "bundle_class": "premium",  # not in {standard, deal, case}
+        },
+    )
+    assert r.status_code == 422
+
+
+def test_log_usage_quantity_clamped_at_100k():
+    """`log_usage(quantity=N)` is hard-clamped at 100,000.
+
+    Defends against a typo turning ¥3 into ¥30M. The clamp lives in BOTH
+    the inline path AND the deferred path so neither can be bypassed.
+    """
+    from jpintel_mcp.api.deps import _QUANTITY_MAX
+
+    assert _QUANTITY_MAX == 100_000
+    # Smoke: passing 10M to the inline path must NOT trigger an OverflowError
+    # when the row is written. We don't actually exercise the DB here — the
+    # ApiContext fixture wiring lives in the integration suite — but assert
+    # the constant is present so a future PR cannot quietly delete it.

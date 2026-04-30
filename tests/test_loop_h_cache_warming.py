@@ -269,3 +269,83 @@ def test_loop_h_no_factories_returns_scaffold(tmp_path: Path):
     )
     assert out["loop"] == "loop_h_cache_warming"
     assert out["actions_executed"] == 0
+
+
+def test_compute_factories_module_exposes_three_l4_tools():
+    """Wire-up regression guard: the factory module MUST keep all three
+    L4-wired tools wired (programs.search / programs.get / am.tax_incentives).
+
+    If a future refactor drops one entry, the orchestrator silently stops
+    warming that endpoint's cache, which is invisible until launch traffic
+    arrives. Lock the contract here.
+    """
+    from jpintel_mcp.self_improve._compute_factories import (
+        TOOL_AM_TAX_INCENTIVES,
+        TOOL_PROGRAMS_GET,
+        TOOL_PROGRAMS_SEARCH,
+        build_compute_factories,
+    )
+
+    factories = build_compute_factories()
+    assert set(factories.keys()) == {
+        TOOL_PROGRAMS_SEARCH,
+        TOOL_PROGRAMS_GET,
+        TOOL_AM_TAX_INCENTIVES,
+    }, (
+        "compute_factories drift: every L4-wired endpoint in api/programs.py "
+        "+ api/autonomath.py needs a matching factory here. Update "
+        "_ENDPOINT_TO_L4_TOOL in loop_h_cache_warming.py in lockstep."
+    )
+    # Each entry must be a callable accepting one positional dict.
+    for tool_name, factory in factories.items():
+        assert callable(factory), f"factory for {tool_name} not callable"
+
+
+def test_orchestrator_injects_compute_factories_into_loop_h(monkeypatch):
+    """Lock-in: scripts/self_improve_orchestrator._run_one MUST pass
+    compute_factories when the target is loop_h_cache_warming. Without
+    this kwarg the loop short-circuits to scaffold zeros even when there
+    is real traffic to warm against.
+    """
+    import importlib
+    import sys
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[1]
+    scripts_dir = repo_root / "scripts"
+    monkeypatch.syspath_prepend(str(scripts_dir))
+    if "self_improve_orchestrator" in sys.modules:
+        del sys.modules["self_improve_orchestrator"]
+    orch = importlib.import_module("self_improve_orchestrator")
+
+    # Patch the loop_h module's run() to capture kwargs without doing real work.
+    captured: dict = {}
+
+    def _spy_run(*, dry_run: bool = True, **kwargs):
+        captured["dry_run"] = dry_run
+        captured["kwargs"] = kwargs
+        return {
+            "loop": "loop_h_cache_warming",
+            "scanned": 0,
+            "actions_proposed": 0,
+            "actions_executed": 0,
+        }
+
+    loop_h_mod = importlib.import_module(
+        "jpintel_mcp.self_improve.loop_h_cache_warming"
+    )
+    monkeypatch.setattr(loop_h_mod, "run", _spy_run)
+
+    out = orch._run_one("loop_h_cache_warming", dry_run=True)
+
+    assert out["loop"] == "loop_h_cache_warming"
+    assert captured["dry_run"] is True
+    assert "compute_factories" in captured["kwargs"], (
+        "orchestrator._run_one did not inject compute_factories — Loop H "
+        "will short-circuit to scaffold zeros even with live traffic"
+    )
+    factories = captured["kwargs"]["compute_factories"]
+    assert isinstance(factories, dict) and len(factories) >= 3
+    assert "api.programs.search" in factories
+    assert "api.programs.get" in factories
+    assert "api.am.tax_incentives" in factories

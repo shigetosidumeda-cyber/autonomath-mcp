@@ -45,7 +45,7 @@ metadata:
   icon: "https://jpcite.com/assets/mark.svg"
   homepage: "https://jpcite.com"
   # TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
-  repository: "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
+  repository: "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
   license: "MIT"
   categories:
     - government

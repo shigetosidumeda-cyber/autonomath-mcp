@@ -135,7 +135,50 @@ def run(*, dry_run: bool = True) -> dict[str, int]:
     }
 
 
-if __name__ == "__main__":
+def _cli() -> int:
+    """Operator CLI: `python -m jpintel_mcp.self_improve.loop_a_hallucination_guard ...`.
+
+    Modes:
+      --check "<text>"  -> print matched entries (phrase / severity / correction
+                          / law_basis / audience / vertical) for the given text.
+                          Returns 1 if any high-severity match, else 0.
+      (no args)         -> print the launch-v1 dataset summary (same as before).
+    """
+    import argparse
     import json
 
-    print(json.dumps({"run": run(dry_run=True), "summary": summarize()}, ensure_ascii=False))
+    parser = argparse.ArgumentParser(
+        prog="loop_a_hallucination_guard",
+        description="Loop A hallucination_guard CLI (operator pattern probe).",
+    )
+    parser.add_argument(
+        "--check",
+        metavar="TEXT",
+        help="Substring-match TEXT against the YAML cache; print matched entries.",
+    )
+    args = parser.parse_args()
+
+    if args.check is not None:
+        hits = match(args.check)
+        print(json.dumps(
+            {
+                "input": args.check,
+                "match_count": len(hits),
+                "hits": hits,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ))
+        return 1 if any(h.get("severity") == "high" for h in hits) else 0
+
+    print(json.dumps(
+        {"run": run(dry_run=True), "summary": summarize()},
+        ensure_ascii=False,
+    ))
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(_cli())

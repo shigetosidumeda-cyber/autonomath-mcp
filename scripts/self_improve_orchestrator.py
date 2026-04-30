@@ -81,6 +81,20 @@ def _now_jst_iso() -> str:
 
 def _run_one(name: str, dry_run: bool) -> dict[str, Any]:
     mod = importlib.import_module(f"jpintel_mcp.self_improve.{name}")
+    # Loop H needs the compute_factories injection — without it the loop
+    # short-circuits to the zeroed scaffold (`if not factories` branch in
+    # loop_h_cache_warming.run). Build the {l4_tool_name: callable(params)}
+    # map from the live API helpers so the warmer can rebuild bodies for
+    # the Zipf-head queries. Other loops use the unparameterised contract.
+    if name == "loop_h_cache_warming":
+        from jpintel_mcp.self_improve._compute_factories import (
+            build_compute_factories,
+        )
+
+        return mod.run(
+            dry_run=dry_run,
+            compute_factories=build_compute_factories(),
+        )
     return mod.run(dry_run=dry_run)
 
 

@@ -107,13 +107,20 @@
 
 対象: M&A仲介、VC、金融機関、事業会社の投資・審査部門  
 価値: 法人番号を起点に、インボイス、法人基本情報、採択、行政処分、入札、法令リンクを横断し、監査可能なZIPを出す  
-課金: 現行の `¥3/法人 + ZIP固定¥30` は安すぎる。P1で最低 `¥1,000/export`、案件向けは `¥3,000-¥10,000/deal ZIP` を検証する  
+課金: `¥3/法人 + ¥3 × bundle_units` の純粋従量。`bundle_class` パラメータで成果物サイズを選ぶ:  
+  - `standard` → 333 units (≈¥1,000) — 既定ZIP  
+  - `deal` → 1,000 units (≈¥3,000) — 案件ZIP  
+  - `case` → 3,333 units (≈¥10,000) — フルケースZIP  
+
+これは tier SKU ではなく、`bulk_evaluate` の `row_count` と同じく **artifact-size の量乗数** であり `project_autonomath_business_model` (¥3/req metered ONLY) を維持する。Stripe usage_records は `quantity = bundle_units` の1行として記録される。  
 実装要点:
 
-- `ma_dd.py` のDD batch/exportを商品導線の中心にする。
+- `ma_dd.py` のDD batch/exportを商品導線の中心にする。`bundle_class` enum (`standard|deal|case`) で量乗数を決める。固定¥30フィーは廃止。
 - ZIPに `manifest.json`、`sha256.manifest`、`cite_chain.json`、法人別JSONL、CSV summaryを入れる。
 - R2署名URL、期限、再取得、監査ログを堅くする。
 - 行政処分は誤結合リスクがあるため、法人番号確定と名称・住所推定を分けて表示する。
+- `log_usage(quantity=N)` は `_QUANTITY_MAX = 100,000` で hard-clamp され、典型的タイポ (¥3 → ¥30M) を遮断する。
+- `site/pricing.html` は `¥3/req` 単純表記のまま (bundle_class は API 仕様の internal detail)。
 
 ### 4.4 Saved Search / Alerts / Webhook
 
@@ -876,7 +883,7 @@ GA条件:
 この価格にする理由:
 
 - 補助金クラウド for SMEs は月額3万円税別を公式に提示しており、補助金周辺業務には月額課金余地がある。
-- 企業情報・与信系データは1社単位の従量課金が成立している。DD ZIPを`¥30`固定で売るのは価値を取り逃がす。
+- 企業情報・与信系データは1社単位の従量課金が成立している。DD ZIP は `bundle_class` 量乗数 (`standard=333 / deal=1,000 / case=3,333` units) で `¥1,000 / ¥3,000 / ¥10,000` を選択でき、固定 `¥30` 時代から価値を取り戻す。SKU は増やさず純粋に `quantity × ¥3` を維持。
 - `¥3/unit` は安さの訴求ではなく、利用量の透明性として残す。
 
 参考:

@@ -12,11 +12,18 @@ metered tools into investor-grade workflows:
 Pricing (project_autonomath_business_model — almost-immutable):
     * dd_batch:        ¥3 per houjin_bangou (per-id metered, NOT 1 ¥3/call).
     * group_graph:     ¥3 per call (single houjin seed, single response).
-    * dd_export:       ¥3 × N (per-id) + ¥30 fixed bundle fee. THIS IS THE
-                       ONLY non-¥3 SKU IN THE ENTIRE SYSTEM. Justified by R2
-                       storage compute (zip + sha256 manifest + signed URL
-                       lifecycle). Documented explicitly in docs/pricing.md.
-                       NOT a tier SKU — applies to all paid keys uniformly.
+    * dd_export:       ¥3 × N (per-id) + ¥3 × bundle_units (per-bundle).
+                       Charges remain pure ¥3 × quantity — there is NO tier
+                       SKU. `bundle_class` is an artifact-size knob (like
+                       `row_count` in bulk_evaluate) that maps to a quantity
+                       multiplier:
+                         standard → 333 units (≈¥1,000) — default ZIP
+                         deal     → 1,000 units (≈¥3,000) — deal-room ZIP
+                         case     → 3,333 units (≈¥10,000) — full case ZIP
+                       Justified by R2 storage compute + bundle composition
+                       cost. Customer is always charged `quantity × ¥3`;
+                       Stripe usage_records carry the same unit price.
+                       Documented explicitly in docs/pricing.md.
 
 Per-request anti-runaway:
     The optional `X-Cost-Cap-JPY` header (and `max_cost_jpy` body field on
@@ -82,11 +89,30 @@ watches_router = APIRouter(prefix="/v1/me/watches", tags=["customer_watches"])
 # Per-id metered base price. Mirrors api/cost.py::_UNIT_PRICE_YEN.
 _UNIT_PRICE_YEN: int = 3
 
-# Audit-bundle ZIP fixed fee (the ONLY non-¥3 SKU in the system). Justified by
-# R2 storage compute: gzip a (possibly very large) jsonl bundle, write
-# sha256 manifest, upload to R2, mint a 24h pre-signed URL. Documented in
-# docs/pricing.md.
-_AUDIT_BUNDLE_FEE_YEN: int = 30
+# Bundle-class quantity multipliers. The ZIP export charge is `quantity × ¥3`
+# where quantity = `_BUNDLE_CLASS_UNITS[bundle_class]`. This stays compliant
+# with the ¥3/req metered-only pricing rule (project_autonomath_business_model)
+# — there is NO tier SKU. The `bundle_class` is an artifact-size selector
+# (like `row_count` in bulk_evaluate.py) that controls how many billing units
+# the export consumes:
+#
+#     standard → 333 units (¥999 ≈ ¥1,000) — default
+#     deal     → 1,000 units (¥3,000)      — deal-room ZIP
+#     case     → 3,333 units (¥9,999 ≈ ¥10,000) — full case ZIP
+#
+# The numbers are calibrated so the rounded ¥-target lands at ¥1k / ¥3k / ¥10k
+# while the unit price stays at the canonical ¥3. Stripe usage_records report
+# the same `quantity` so reconciliation stays one-line per export.
+_BUNDLE_CLASS_UNITS: dict[str, int] = {
+    "standard": 333,
+    "deal": 1_000,
+    "case": 3_333,
+}
+
+# Legacy compat shim — code paths and tests that imported the old constant
+# can still resolve `_AUDIT_BUNDLE_FEE_YEN` to the standard-class subtotal.
+# Equals `_BUNDLE_CLASS_UNITS['standard'] * _UNIT_PRICE_YEN` = ¥999.
+_AUDIT_BUNDLE_FEE_YEN: int = _BUNDLE_CLASS_UNITS["standard"] * _UNIT_PRICE_YEN
 
 # Hard cap on the number of 法人番号 per batch call. 200 is the customer-
 # facing contract; matches the spec.
@@ -1144,6 +1170,20 @@ class DdExportRequest(BaseModel):
         list[str], Field(min_length=1, max_length=_MAX_BATCH_HOUJIN)
     ]
     format: Annotated[Literal["zip", "pdf"], Field()] = "zip"
+    bundle_class: Annotated[
+        Literal["standard", "deal", "case"],
+        Field(
+            description=(
+                "Artifact-size selector controlling the per-bundle quantity "
+                "multiplier (NOT a tier SKU). Each class maps to a fixed "
+                "number of ¥3 billing units:\n"
+                "  standard → 333 units (≈¥1,000)\n"
+                "  deal     → 1,000 units (≈¥3,000)\n"
+                "  case     → 3,333 units (≈¥10,000)\n"
+                "Customer is charged `(N houjin + bundle_units) × ¥3`."
+            ),
+        ),
+    ] = "standard"
     max_cost_jpy: Annotated[
         int | None, Field(ge=0)
     ] = None
@@ -1349,14 +1389,16 @@ def _upload_bundle_to_r2(
 
 @router.post(
     "/dd_export",
-    summary="Audit-bundle ZIP via signed R2 URL (¥3×N + ¥30 fixed fee)",
+    summary="Audit-bundle ZIP via signed R2 URL (¥3 × (N + bundle_units))",
     description=(
         "Builds a ZIP containing one JSONL per houjin + cite_chain.json + "
         "sha256.manifest + manifest.json, uploads to R2, returns a signed "
         "URL with 24h TTL.\n\n"
-        "**Pricing**: ¥3 per houjin_bangou + ¥30 fixed bundle fee. THIS IS "
-        "THE ONLY NON-¥3 SKU IN THE ENTIRE SYSTEM — the ¥30 covers R2 "
-        "storage + sha256 manifest compute + signed URL lifecycle. "
+        "**Pricing**: ¥3 per houjin_bangou + ¥3 per `bundle_units` where "
+        "`bundle_units` is determined by `bundle_class` "
+        "(standard=333 / deal=1,000 / case=3,333). Customer total = "
+        "`(N + bundle_units) × ¥3`. NO tier SKU — the multiplier is an "
+        "artifact-size knob like `row_count` in bulk_evaluate. "
         "Documented explicitly in docs/pricing.md.\n\n"
         "**§52 fence**: response carries the 税理士法 §52 disclaimer + "
         "coverage_scope. The bundle README + manifest.json mirror the "
@@ -1410,7 +1452,9 @@ def post_dd_export(
         )
 
     n_ids = len(normalized)
-    predicted_yen = n_ids * _UNIT_PRICE_YEN + _AUDIT_BUNDLE_FEE_YEN
+    bundle_units = _BUNDLE_CLASS_UNITS[payload.bundle_class]
+    bundle_fee_yen = bundle_units * _UNIT_PRICE_YEN
+    predicted_yen = n_ids * _UNIT_PRICE_YEN + bundle_fee_yen
     _check_cost_cap(
         predicted_yen=predicted_yen,
         header_cap=_parse_cost_cap_header(x_cost_cap_jpy),
@@ -1451,12 +1495,11 @@ def post_dd_export(
         zip_bytes=zip_bytes, key=r2_key,
     )
 
-    # Bill: per-id (N rows of am.dd_export.row) + the fixed ¥30 fee
-    # surfaced as a distinct usage_event so dashboards / Stripe usage_records
-    # can break out bundle revenue. The fee is metered as TEN units against
-    # the existing ¥3/req unit so the Stripe report carries the right dollar
-    # amount: 10 units × ¥3 = ¥30. We do this in a single insert with
-    # `result_count=10` so the metering reconciler can spot it.
+    # Bill: per-id (N rows of am.dd_export.row) + the bundle fee surfaced
+    # as a SINGLE usage_event with `quantity=bundle_units` so the Stripe
+    # usage_record posts ONE line for the bundle (not N parallel POSTs).
+    # Same ¥-total as the legacy loop (`bundle_units × ¥3`) but with one
+    # idempotency key per export → cleaner reconciliation surface.
     for hj in normalized:
         log_usage(
             conn,
@@ -1465,20 +1508,26 @@ def post_dd_export(
             params={"houjin_bangou": hj, "deal_id": payload.deal_id},
             result_count=1,
         )
-    # Fixed bundle fee.
-    for _ in range(_AUDIT_BUNDLE_FEE_YEN // _UNIT_PRICE_YEN):
-        log_usage(
-            conn,
-            ctx,
-            endpoint="am.dd_export.bundle_fee",
-            params={"deal_id": payload.deal_id, "bundle_sha256": zip_sha256},
-            result_count=1,
-        )
+    # Bundle fee — single row, quantity = bundle_units.
+    log_usage(
+        conn,
+        ctx,
+        endpoint="am.dd_export.bundle_fee",
+        params={
+            "deal_id": payload.deal_id,
+            "bundle_sha256": zip_sha256,
+            "bundle_class": payload.bundle_class,
+        },
+        quantity=bundle_units,
+        result_count=bundle_units,
+    )
 
     body = {
         "deal_id": payload.deal_id,
         "format": payload.format,
         "batch_size": n_ids,
+        "bundle_class": payload.bundle_class,
+        "bundle_units": bundle_units,
         "signed_url": signed_url,
         "expires_at": expires_at.isoformat(),
         "ttl_hours": _BUNDLE_URL_TTL_HOURS,
@@ -1490,14 +1539,17 @@ def post_dd_export(
             "per_houjin_yen": _UNIT_PRICE_YEN,
             "per_houjin_count": n_ids,
             "subtotal_yen": n_ids * _UNIT_PRICE_YEN,
-            "audit_bundle_fee_yen": _AUDIT_BUNDLE_FEE_YEN,
+            "bundle_class": payload.bundle_class,
+            "bundle_units": bundle_units,
+            "audit_bundle_fee_yen": bundle_fee_yen,
             "total_yen": predicted_yen,
         },
         "pricing_note": (
-            "¥30 audit_bundle export fee — the only non-¥3 SKU. Justified "
-            "by R2 storage compute (zip + sha256 manifest + signed URL "
-            "lifecycle). NOT a tier SKU — applies to all paid keys "
-            "uniformly. See docs/pricing.md."
+            f"Audit bundle export: ¥3 × ({n_ids} houjin + {bundle_units} "
+            f"bundle_units) = ¥{predicted_yen}. Stays pure ¥3/req metered "
+            "— bundle_class controls the artifact-size quantity multiplier "
+            "(standard=333 / deal=1,000 / case=3,333) like row_count in "
+            "bulk_evaluate; it is NOT a tier SKU. See docs/pricing.md."
         ),
         "corpus_snapshot_id": snapshot_id,
         "corpus_checksum": checksum,
@@ -1521,6 +1573,7 @@ __all__ = [
     "router",
     "watches_router",
     "_AUDIT_BUNDLE_FEE_YEN",
+    "_BUNDLE_CLASS_UNITS",
     "_MAX_BATCH_HOUJIN",
     "_NDJSON_THRESHOLD",
     "_TAX_DISCLAIMER",

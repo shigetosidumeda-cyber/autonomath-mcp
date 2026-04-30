@@ -1,6 +1,6 @@
 {
   "loop": "loop_i_doc_freshness",
-  "generated_at": "2026-04-29T12:03:58+00:00",
+  "generated_at": "2026-04-30T07:44:40+00:00",
   "dry_run": true,
   "stale_threshold_days": 60,
   "rows_scanned": 14472,

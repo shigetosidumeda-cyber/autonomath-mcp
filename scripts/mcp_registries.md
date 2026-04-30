@@ -9,7 +9,7 @@ Target launch: 2026-05-06. Last audited: 2026-04-24.
 |---|---|
 | display_name | AutonoMath — 日本の制度 MCP (89 tools) |
 | registry_id | `io.github.AutonoMath/autonomath-mcp` |
-| repo | `https://github.com/shigetosidumeda-cyber/jpintel-mcp` |
+| repo | `https://github.com/shigetosidumeda-cyber/autonomath-mcp` |
 | homepage | `https://jpcite.com` |
 | pypi_package | `autonomath-mcp` |
 | install | `uvx autonomath-mcp` / `pip install autonomath-mcp` |
@@ -113,7 +113,7 @@ After publish: listing propagates to PulseMCP within ~1 week and to several down
 - Method: PR adding one line to `README.md` under `Finance & Fintech`, alphabetical order
 - Entry draft:
   ```
-  - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/jpintel-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 38-tool core (+28 autonomath = 66) MCP over 13,578 Japanese public programs, 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only) live. ¥3/req; 50/月 free. `uvx autonomath-mcp`
+  - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 38-tool core (+28 autonomath = 66) MCP over 13,578 Japanese public programs, 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only) live. ¥3/req; 50/月 free. `uvx autonomath-mcp`
   ```
 - Review: maintainer-gated, usually days
 
@@ -348,7 +348,7 @@ Submit in order; each should take < 10 min.
 
 ```bash
 # Fork punkpeye/awesome-mcp-servers, add one line under Finance & Fintech:
-# - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/jpintel-mcp) 🐍 ☁️ 🍎 🪟 🐧 —
+# - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 —
 #   AutonoMath: 66-tool MCP over 13,578 Japanese public programs, 181 exclusion rules,
 #   3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 50/月 free. `uvx autonomath-mcp`
 

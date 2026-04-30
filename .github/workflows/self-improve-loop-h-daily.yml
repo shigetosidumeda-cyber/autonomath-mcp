@@ -1,0 +1,112 @@
+name: Self-improve Loop H (daily, cache warming)
+
+# Daily Loop H run — Zipf-ranked L4 cache warmer.
+#
+# Why: the legacy l4_cache_warm.py wired at precompute-refresh-cron only
+# LOGS candidates (no compute step) — see lines 144-156 of that script.
+# Loop H is the production warmer: it joins usage_events (last 7d) with
+# l4_query_cache (params recovery), then re-runs each Zipf-head endpoint's
+# pure compute helper to materialise a fresh row in l4_query_cache.
+#
+# Cadence: daily 03:30 JST (= 18:30 UTC). Off-peak so the warming SQL load
+# never collides with prime-time customer traffic. Runs ~10 CPU min budget,
+# zero LLM calls (per CONSTITUTION 13.2 + feedback_autonomath_no_api_use).
+#
+# Output: per-run JSON to `analysis_wave18/self_improve_runs/loop_h_<date>.json`
+# uploaded as a workflow artifact for operator review (no commit). Loop H
+# also writes `data/cache_warming_report.json` on the Fly machine when
+# --execute is on; pre-launch (--no-write) we only emit the orchestrator
+# scaffold so launch-day traffic measurements stay clean.
+#
+# Required GitHub repository secret: FLY_API_TOKEN.
+# Loop H opens its own short-lived sqlite3 connections; no extra secrets.
+
+on:
+  schedule:
+    # 18:30 UTC = 03:30 JST. Off-peak warming window.
+    - cron: "30 18 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode (no-write = scaffold only, execute = real warm)"
+        required: false
+        default: "no-write"
+        type: choice
+        options:
+          - "no-write"
+          - "execute"
+
+concurrency:
+  group: self-improve-loop-h-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run Loop H via orchestrator on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          MODE: ${{ inputs.mode || 'no-write' }}
+        run: |
+          set -euo pipefail
+          # Default to --no-write so scheduled runs are scaffold-only until
+          # the operator promotes Loop H to --execute (T+30d gate matches
+          # weekly orchestrator). Output JSON is captured below.
+          FLAGS="--only loop_h_cache_warming"
+          if [ "${MODE}" = "execute" ]; then
+            FLAGS="${FLAGS} --execute"
+          else
+            FLAGS="${FLAGS} --no-write"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/self_improve_orchestrator.py ${FLAGS}" \
+            > loop_h_run.json
+          # Tag with the JST date for the artifact filename + operator log.
+          DATE_TAG="$(TZ=Asia/Tokyo date +%Y-%m-%d)"
+          mkdir -p analysis_wave18/self_improve_runs
+          cp loop_h_run.json "analysis_wave18/self_improve_runs/loop_h_${DATE_TAG}.json"
+          # Echo summary to the workflow log so operator can read at-a-glance.
+          python -c "
+          import json, sys
+          d = json.load(open('loop_h_run.json'))
+          r = d.get('results', [{}])[0]
+          print(f\"loop_h scanned={r.get('scanned')} \"
+                f\"proposed={r.get('actions_proposed')} \"
+                f\"executed={r.get('actions_executed')}\")
+          "
+
+      - name: Upload run artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: self-improve-loop-h-${{ github.run_id }}
+          path: analysis_wave18/self_improve_runs/loop_h_*.json
+          if-no-files-found: ignore
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=self-improve-loop-h-daily/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.self-improve-loop-h-daily\",\"platform\":\"other\",\"message\":\"self-improve-loop-h-daily failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"self-improve-loop-h-daily\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

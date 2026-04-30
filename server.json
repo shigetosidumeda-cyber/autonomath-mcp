@@ -1,10 +1,10 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.shigetosidumeda-cyber/jpintel-mcp",
-  "description": "日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 / 適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185 / 入札 362 / 融資 108) を REST + MCP API (89 tools) で横断検索。一次資料 URL + fetched_at 99%+、¥3/req metered (税込 ¥3.30) 完全従量、anon 50/月 per IP free (JST 月初リセット)。",
+  "name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
+  "description": "日本の制度 89-tool MCP — 補助金/法令/判例/税制/適格事業者/採択事例/行政処分/入札/融資。¥3/req、anon 50/月 free",
   "version": "0.3.1",
   "repository": {
-    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
+    "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
     "source": "github"
   },
   "websiteUrl": "https://jpcite.com",
@@ -27,37 +27,154 @@
       "tool_count": 89,
       "resource_count": 28,
       "resources": [
-        {"uri": "autonomath://schema/data_model", "name": "Data Model", "mimeType": "text/markdown"},
-        {"uri": "autonomath://schema/record_kinds", "name": "record_kind enum", "mimeType": "text/markdown"},
-        {"uri": "autonomath://schema/envelope", "name": "Response envelope schema (v2)", "mimeType": "text/markdown"},
-        {"uri": "autonomath://schema/tool_manifest", "name": "Tool manifest (summary)", "mimeType": "text/markdown"},
-        {"uri": "autonomath://policy/primary_source", "name": "Primary-Source Policy", "mimeType": "text/markdown"},
-        {"uri": "autonomath://policy/no_hallucination", "name": "No-Hallucination Policy", "mimeType": "text/markdown"},
-        {"uri": "autonomath://policy/tos_excerpt", "name": "Terms of Service excerpt", "mimeType": "text/markdown"},
-        {"uri": "autonomath://list/authorities", "name": "Authority canonical list", "mimeType": "text/markdown"},
-        {"uri": "autonomath://list/prefectures", "name": "47 Prefectures", "mimeType": "text/markdown"},
-        {"uri": "autonomath://list/program_kinds", "name": "program_kind enum", "mimeType": "text/markdown"},
-        {"uri": "autonomath://list/intent_types", "name": "Intent types (i01–i10)", "mimeType": "text/markdown"},
-        {"uri": "autonomath://list/graph_edge_types", "name": "Graph edge types", "mimeType": "text/markdown"},
-        {"uri": "autonomath://list/certification_kinds", "name": "Certification kinds", "mimeType": "text/markdown"},
-        {"uri": "autonomath://list/target_profiles", "name": "Target profile vocabulary", "mimeType": "text/markdown"},
-        {"uri": "autonomath://stats/freshness", "name": "Freshness snapshot", "mimeType": "text/markdown"},
-        {"uri": "autonomath://taxonomies/seido", "name": "Taxonomy: seido", "mimeType": "application/json"},
-        {"uri": "autonomath://taxonomies/glossary", "name": "Taxonomy: glossary", "mimeType": "application/json"},
-        {"uri": "autonomath://taxonomies/money_types", "name": "Taxonomy: money_types", "mimeType": "application/json"},
-        {"uri": "autonomath://taxonomies/obligations", "name": "Taxonomy: obligations", "mimeType": "application/json"},
-        {"uri": "autonomath://taxonomies/dealbreakers", "name": "Taxonomy: dealbreakers", "mimeType": "application/json"},
-        {"uri": "autonomath://taxonomies/sector_combos", "name": "Taxonomy: sector_combos", "mimeType": "application/json"},
-        {"uri": "autonomath://taxonomies/crop_library", "name": "Taxonomy: crop_library (agri)", "mimeType": "application/json"},
-        {"uri": "autonomath://taxonomies/exclusion_rules", "name": "Taxonomy: exclusion_rules (agri)", "mimeType": "application/json"},
-        {"uri": "autonomath://example_profiles/ichigo_20a", "name": "Example profile: ichigo_20a", "mimeType": "application/json"},
-        {"uri": "autonomath://example_profiles/rice_200a", "name": "Example profile: rice_200a", "mimeType": "application/json"},
-        {"uri": "autonomath://example_profiles/new_corp", "name": "Example profile: new_corp", "mimeType": "application/json"},
-        {"uri": "autonomath://example_profiles/dairy_100head", "name": "Example profile: dairy_100head", "mimeType": "application/json"},
-        {"uri": "autonomath://example_profiles/minimal", "name": "Example profile: minimal", "mimeType": "application/json"}
+        {
+          "uri": "autonomath://schema/data_model",
+          "name": "Data Model",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://schema/record_kinds",
+          "name": "record_kind enum",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://schema/envelope",
+          "name": "Response envelope schema (v2)",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://schema/tool_manifest",
+          "name": "Tool manifest (summary)",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://policy/primary_source",
+          "name": "Primary-Source Policy",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://policy/no_hallucination",
+          "name": "No-Hallucination Policy",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://policy/tos_excerpt",
+          "name": "Terms of Service excerpt",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://list/authorities",
+          "name": "Authority canonical list",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://list/prefectures",
+          "name": "47 Prefectures",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://list/program_kinds",
+          "name": "program_kind enum",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://list/intent_types",
+          "name": "Intent types (i01–i10)",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://list/graph_edge_types",
+          "name": "Graph edge types",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://list/certification_kinds",
+          "name": "Certification kinds",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://list/target_profiles",
+          "name": "Target profile vocabulary",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://stats/freshness",
+          "name": "Freshness snapshot",
+          "mimeType": "text/markdown"
+        },
+        {
+          "uri": "autonomath://taxonomies/seido",
+          "name": "Taxonomy: seido",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://taxonomies/glossary",
+          "name": "Taxonomy: glossary",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://taxonomies/money_types",
+          "name": "Taxonomy: money_types",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://taxonomies/obligations",
+          "name": "Taxonomy: obligations",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://taxonomies/dealbreakers",
+          "name": "Taxonomy: dealbreakers",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://taxonomies/sector_combos",
+          "name": "Taxonomy: sector_combos",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://taxonomies/crop_library",
+          "name": "Taxonomy: crop_library (agri)",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://taxonomies/exclusion_rules",
+          "name": "Taxonomy: exclusion_rules (agri)",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://example_profiles/ichigo_20a",
+          "name": "Example profile: ichigo_20a",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://example_profiles/rice_200a",
+          "name": "Example profile: rice_200a",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://example_profiles/new_corp",
+          "name": "Example profile: new_corp",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://example_profiles/dairy_100head",
+          "name": "Example profile: dairy_100head",
+          "mimeType": "application/json"
+        },
+        {
+          "uri": "autonomath://example_profiles/minimal",
+          "name": "Example profile: minimal",
+          "mimeType": "application/json"
+        }
       ],
       "resources_gated": [
-        {"uri": "autonomath://templates/saburoku_kyotei", "name": "36協定 template", "mimeType": "text/plain", "gate": "AUTONOMATH_36_KYOTEI_ENABLED"}
+        {
+          "uri": "autonomath://templates/saburoku_kyotei",
+          "name": "36協定 template",
+          "mimeType": "text/plain",
+          "gate": "AUTONOMATH_36_KYOTEI_ENABLED"
+        }
       ]
     }
   }

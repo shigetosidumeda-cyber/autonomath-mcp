@@ -42,6 +42,7 @@ _PARAMS_DIGEST_WHITELIST: frozenset[str] = frozenset(
         "tax_rulesets.evaluate",
         "invoice_registrants.search",
         "invoice_registrants.get",
+        "houjin.get",
         "calendar.deadlines",
         "meta",
         "ping",
@@ -146,6 +147,17 @@ TIER_LIMITS = {
 # the import graph (signup.py depends on api.deps; importing back the
 # other way would cycle).
 TRIAL_REQUEST_CAP = 200
+
+# Per-call quantity hard cap for log_usage. Defends against a typo turning
+# a single ¥3 request into ¥30M of metered billing — bulk_evaluate, dd_export
+# bundle fees, and any future N-weighted tool all flow through log_usage,
+# so a bad caller passing `quantity=10_000_000` would otherwise punch
+# straight through to Stripe usage_records. 100,000 units = ¥300,000 per
+# call which is generous enough for legitimate large-bundle exports while
+# still imposing a sane ceiling. The clamp is applied in BOTH the inline
+# log_usage path and the deferred _record_usage_async path so neither can
+# be bypassed.
+_QUANTITY_MAX: int = 100_000
 
 # Public landing page that 429-ing trial keys are pointed at. Same string
 # the day-11 nudge + day-14 expired email use, so a user who hits the cap
@@ -501,9 +513,16 @@ def _record_usage_async(
     retention per 税理士法 §41 / 法人税法 §150-2 / 所得税法 §148. The
     seal write is best-effort — a missing migration 089 never blocks
     the response or the usage_events INSERT.
+
+    Upper bound: ``quantity`` is hard-clamped at ``_QUANTITY_MAX`` to
+    defend against a typo turning ¥3 into ¥30M. The clamp is applied
+    twice (inline ``log_usage`` AND the deferred path) so neither code
+    path can be bypassed.
     """
     if quantity < 1:
         quantity = 1
+    if quantity > _QUANTITY_MAX:
+        quantity = _QUANTITY_MAX
     usage_event_id: int | None = None
     try:
         conn = connect()
@@ -630,9 +649,17 @@ def log_usage(
     (Q4 documented). The deferred path opens its own sqlite connection
     (``_record_usage_async``) because the request-scoped ``conn`` is
     closed by ``get_db()``'s finally clause before BackgroundTasks fire.
+
+    Upper bound: ``quantity`` is hard-clamped at ``_QUANTITY_MAX`` (100,000)
+    here AND inside ``_record_usage_async`` so a typo turning ¥3 into ¥30M
+    cannot leak through either path.
     """
     if ctx.key_hash is None:
         return None
+    if quantity < 1:
+        quantity = 1
+    if quantity > _QUANTITY_MAX:
+        quantity = _QUANTITY_MAX
     digest = compute_params_digest(endpoint, params)
 
     # Migration 085: pull the validated X-Client-Tag stashed on

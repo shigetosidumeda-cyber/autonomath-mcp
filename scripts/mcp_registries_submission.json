@@ -2,9 +2,9 @@
   "server": {
     "name": "autonomath-mcp",
     "display_name": "AutonoMath — 日本の制度 MCP (89 tools)",
-    "registry_id": "io.github.shigetosidumeda-cyber/jpintel-mcp",
+    "registry_id": "io.github.shigetosidumeda-cyber/autonomath-mcp",
     "version": "0.3.1",
-    "repo_url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp",
+    "repo_url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
     "homepage": "https://jpcite.com",
     "docs_url": "https://jpcite.com/docs/",
     "license": "MIT",
@@ -145,11 +145,11 @@
       "auth": ["github-oauth", "github-oidc"],
       "manifest_format": "server.json",
       "manifest_schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-      "namespace": "io.github.shigetosidumeda-cyber/jpintel-mcp",
+      "namespace": "io.github.shigetosidumeda-cyber/autonomath-mcp",
       "required_fields": ["$schema", "name", "version", "description", "packages"],
       "review": "automatic",
       "propagates_to": ["pulsemcp", "mcp.so", "several downstream aggregators"],
-      "notes": "TODO(org-claim): when AutonoMath GitHub org is claimed, switch namespace back to io.github.AutonoMath/autonomath-mcp. Currently published under shigetosidumeda-cyber/jpintel-mcp (the active repo). Requires GITHUB_TOKEN with repo:read scope or OIDC from Actions."
+      "notes": "TODO(org-claim): when AutonoMath GitHub org is claimed, switch namespace back to io.github.AutonoMath/autonomath-mcp. Currently published under shigetosidumeda-cyber/autonomath-mcp (the active repo). Requires GITHUB_TOKEN with repo:read scope or OIDC from Actions."
     },
     {
       "id": "smithery",
@@ -168,7 +168,7 @@
       "method": "auto-index-github",
       "required_fields": ["public GitHub repo", "README", "MCP manifest"],
       "review": "daily crawl",
-      "badge_url_template": "https://glama.ai/mcp/servers/shigetosidumeda-cyber/jpintel-mcp/badges/score.svg",
+      "badge_url_template": "https://glama.ai/mcp/servers/shigetosidumeda-cyber/autonomath-mcp/badges/score.svg",
       "paywall": false
     },
     {
@@ -206,7 +206,7 @@
       "method": "github-pr",
       "target_file": "README.md",
       "target_section": "Finance & Fintech",
-      "entry_draft": "- [AutonoMath](https://github.com/shigetosidumeda-cyber/jpintel-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 66-tool MCP (38 core + 28 autonomath: 17 V1 + 4 V4 universal annotation/validation/provenance + 7 Phase A static/example/template/health) over 13,578 Japanese public programs + entity-fact DB (503,930 entities + 6.12M facts), 181 exclusion rules, 3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 50/月 free. `uvx autonomath-mcp`",
+      "entry_draft": "- [AutonoMath](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 66-tool MCP (38 core + 28 autonomath: 17 V1 + 4 V4 universal annotation/validation/provenance + 7 Phase A static/example/template/health) over 13,578 Japanese public programs + entity-fact DB (503,930 entities + 6.12M facts), 181 exclusion rules, 3-axis loan risk, laws/court/bids/tax/invoice. ¥3/req; 50/月 free. `uvx autonomath-mcp`",
       "review": "maintainer, days"
     },
     {

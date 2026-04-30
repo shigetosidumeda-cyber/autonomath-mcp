@@ -68,11 +68,14 @@ router = APIRouter(prefix="/v1/cost", tags=["cost"])
 # Stripe usage_records line item; JCT is added at invoice render.
 _UNIT_PRICE_YEN: int = 3
 
-# Per-tool billing weight. 1.0 = single billing unit (=¥3) per call. We keep
-# the table even though every entry is currently 1.0 because the moment we
-# swap to N-weighted batch billing this table is the ONLY place to update —
-# the customer-cap middleware and Stripe usage_records reporter both read
-# off the same `billing_units * _UNIT_PRICE_YEN` formula.
+# Per-tool billing weight. 1.0 = single billing unit (=¥3) per call. The
+# weights ladder by output size: most discovery tools stay at 1.0, while
+# composite/bulk tools (`am.dd_export`, `bulk_evaluate`) consume weights ≥1
+# in proportion to artifact size. Customer is always charged
+# `weight × ¥3` per unit of work — no tier SKU. The customer-cap middleware
+# and Stripe usage_records reporter both read off the same
+# `billing_units * _UNIT_PRICE_YEN` formula, so updating a weight here
+# automatically propagates everywhere.
 _TOOL_WEIGHTS: dict[str, float] = {
     # Discovery — flat per-call.
     "search_programs": 1.0,
@@ -128,6 +131,24 @@ _TOOL_WEIGHTS: dict[str, float] = {
 # much"; an unknown future tool that turns out to be free is a pleasant
 # surprise rather than a billing event.
 _DEFAULT_TOOL_WEIGHT: float = 1.0
+
+# Bundle-class quantity multipliers for `POST /v1/am/dd_export` (mirrors
+# `api/ma_dd.py::_BUNDLE_CLASS_UNITS`). The export endpoint accepts a
+# `bundle_class` parameter that maps to a fixed unit multiplier — customer
+# is charged `(N houjin + bundle_units) × ¥3`. NOT a tier SKU; this is an
+# artifact-size selector analogous to `row_count` in `bulk_evaluate`.
+#
+#     standard → 333 units (¥999 ≈ ¥1,000)
+#     deal     → 1,000 units (¥3,000)
+#     case     → 3,333 units (¥9,999 ≈ ¥10,000)
+#
+# Surfaced here so the cost-preview endpoint and downstream callers can
+# resolve the weight without importing `ma_dd`.
+_BUNDLE_CLASS_UNITS: dict[str, int] = {
+    "standard": 333,
+    "deal": 1_000,
+    "case": 3_333,
+}
 
 # Tax-relevant tools that must surface the §52 fence in the preview response
 # even though the preview itself is non-metered. An LLM agent that previews
@@ -410,4 +431,5 @@ __all__ = [
     "_reset_preview_rate_state",
     "_TOOL_WEIGHTS",
     "_UNIT_PRICE_YEN",
+    "_BUNDLE_CLASS_UNITS",
 ]

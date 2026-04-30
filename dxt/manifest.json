@@ -36,7 +36,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/shigetosidumeda-cyber/jpintel-mcp"
+    "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
   },
   "server": {
     "type": "python",
