@@ -1,57 +1,189 @@
 {
   "run_id": "20260430",
-  "reviewed_at": "2026-04-30T20:11:27+09:00",
+  "reviewed_at": "2026-04-30T21:05:18+09:00",
   "expected_outputs": 44,
-  "present_outputs": 0,
-  "missing_outputs": 44,
+  "present_outputs": 44,
+  "missing_outputs": 0,
   "empty_outputs": 0,
-  "present": [],
-  "missing": [
-    "analysis_wave18/am_diff_design_2026-04-30.md",
-    "analysis_wave18/consultant_firms_2026-04-30.csv",
-    "analysis_wave18/pdf_extraction_research_2026-04-30.md",
-    "analysis_wave18/url_liveness_2026-04-30.json",
-    "analysis_wave18/loops/20260430/url_liveness_shard01.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard01.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard01.json",
-    "data/snapshots/am_diff_20260430_shard01.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard01.md",
-    "analysis_wave18/loops/20260430/url_liveness_shard02.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard02.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard02.json",
-    "data/snapshots/am_diff_20260430_shard02.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard02.md",
-    "analysis_wave18/loops/20260430/url_liveness_shard03.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard03.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard03.json",
-    "data/snapshots/am_diff_20260430_shard03.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard03.md",
-    "analysis_wave18/loops/20260430/url_liveness_shard04.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard04.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard04.json",
-    "data/snapshots/am_diff_20260430_shard04.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard04.md",
-    "analysis_wave18/loops/20260430/url_liveness_shard05.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard05.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard05.json",
-    "data/snapshots/am_diff_20260430_shard05.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard05.md",
-    "analysis_wave18/loops/20260430/url_liveness_shard06.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard06.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard06.json",
-    "data/snapshots/am_diff_20260430_shard06.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard06.md",
-    "analysis_wave18/loops/20260430/url_liveness_shard07.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard07.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard07.json",
-    "data/snapshots/am_diff_20260430_shard07.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard07.md",
-    "analysis_wave18/loops/20260430/url_liveness_shard08.json",
-    "analysis_wave18/loops/20260430/consultant_firms_shard08.csv",
-    "data/structured_facts/research_20260430/pdf_structure_shard08.json",
-    "data/snapshots/am_diff_20260430_shard08.json",
-    "analysis_wave18/loops/20260430/am_diff_design_shard08.md"
+  "present": [
+    {
+      "path": "analysis_wave18/am_diff_design_2026-04-30.md",
+      "bytes": 84681
+    },
+    {
+      "path": "analysis_wave18/consultant_firms_2026-04-30.csv",
+      "bytes": 66801
+    },
+    {
+      "path": "analysis_wave18/pdf_extraction_research_2026-04-30.md",
+      "bytes": 29157
+    },
+    {
+      "path": "analysis_wave18/url_liveness_2026-04-30.json",
+      "bytes": 1421215
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard01.json",
+      "bytes": 142590
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard01.csv",
+      "bytes": 10057
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard01.json",
+      "bytes": 2253
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard01.json",
+      "bytes": 40666
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard01.md",
+      "bytes": 9199
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard02.json",
+      "bytes": 108931
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard02.csv",
+      "bytes": 9760
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard02.json",
+      "bytes": 2785
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard02.json",
+      "bytes": 41543
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard02.md",
+      "bytes": 9330
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard03.json",
+      "bytes": 104085
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard03.csv",
+      "bytes": 9882
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard03.json",
+      "bytes": 1992
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard03.json",
+      "bytes": 42124
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard03.md",
+      "bytes": 9084
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard04.json",
+      "bytes": 102986
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard04.csv",
+      "bytes": 9382
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard04.json",
+      "bytes": 2935
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard04.json",
+      "bytes": 39881
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard04.md",
+      "bytes": 8856
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard05.json",
+      "bytes": 132999
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard05.csv",
+      "bytes": 7561
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard05.json",
+      "bytes": 3505
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard05.json",
+      "bytes": 43882
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard05.md",
+      "bytes": 9152
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard06.json",
+      "bytes": 212441
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard06.csv",
+      "bytes": 7632
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard06.json",
+      "bytes": 4542
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard06.json",
+      "bytes": 44390
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard06.md",
+      "bytes": 8963
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard07.json",
+      "bytes": 206152
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard07.csv",
+      "bytes": 7637
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard07.json",
+      "bytes": 2666
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard07.json",
+      "bytes": 66100
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard07.md",
+      "bytes": 12729
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/url_liveness_shard08.json",
+      "bytes": 227833
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/consultant_firms_shard08.csv",
+      "bytes": 9975
+    },
+    {
+      "path": "data/structured_facts/research_20260430/pdf_structure_shard08.json",
+      "bytes": 13007
+    },
+    {
+      "path": "data/snapshots/am_diff_20260430_shard08.json",
+      "bytes": 18355
+    },
+    {
+      "path": "analysis_wave18/loops/20260430/am_diff_design_shard08.md",
+      "bytes": 9796
+    }
   ],
+  "missing": [],
   "empty": [],
-  "next_action": "retry_missing_or_empty"
+  "next_action": "dedupe_and_deepen"
 }

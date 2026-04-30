@@ -1,0 +1,439 @@
+{
+  "run_id": "20260430",
+  "run_date": "2026-04-30",
+  "lane": "am_diff_design",
+  "shard": "08",
+  "scope": "Coordinator notes only",
+  "source_policy": {
+    "llm_api_called": false,
+    "hosted_model_api_called": false,
+    "external_source_refetch_performed": false,
+    "aggregator_sites_used_as_evidence": false,
+    "raw_html_pdf_bytes_embedded": false,
+    "baseline_mode_reason": "safe small baseline generated from local DB source fields and normalized field fingerprints"
+  },
+  "diff_status": "baseline_only",
+  "common_state": {
+    "programs_state": {
+      "total_programs": 14472,
+      "tier_s_active": 114,
+      "with_source_url": 13956,
+      "with_source_checksum": 8891,
+      "with_source_fetched_at": 14456
+    },
+    "tier_s_programs_state": {
+      "tier_s_rows": 114,
+      "live_urls": 101,
+      "broken_urls": 13,
+      "status_200": 101,
+      "status_403": 2,
+      "status_404": 11,
+      "with_checksum": 64,
+      "missing_checksum": 50,
+      "with_application_window": 85,
+      "with_target_types": 45,
+      "with_funding_purpose": 39,
+      "with_enriched_json": 114,
+      "with_source_mentions_json": 103
+    },
+    "laws_state": {
+      "total_laws": 9484,
+      "current_laws": 9093,
+      "repealed_laws": 391,
+      "with_source_url": 9484,
+      "with_source_checksum": 9484,
+      "with_fetched_at": 9484,
+      "min_last_amended_date": "1872-11-09",
+      "max_last_amended_date": "2026-04-01"
+    },
+    "am_amendment_snapshot_state": {
+      "snapshot_rows": 14596,
+      "snapshot_entities": 7298,
+      "min_observed_at": "2026-04-24 22:39:26",
+      "max_observed_at": "2026-04-24T10:24:48+00:00",
+      "with_amount_max_yen": 2071,
+      "with_subsidy_rate_max": 1616,
+      "with_target_set_json": 8441,
+      "with_eligibility_hash": 14596,
+      "with_summary_hash": 14596,
+      "with_source_url": 9471,
+      "with_source_fetched_at": 6207
+    },
+    "am_amendment_diff_state": {
+      "diff_rows": 0
+    },
+    "am_snapshot_version_pair_state": {
+      "paired_entities": 7298,
+      "eligibility_hash_changed": 0,
+      "summary_hash_changed": 0,
+      "amount_changed": 629,
+      "subsidy_rate_changed": 76,
+      "target_set_changed": 6155,
+      "source_url_changed": 721
+    },
+    "am_source_state": {
+      "total_sources": 97272,
+      "distinct_domains": 1447,
+      "with_license": 97272,
+      "primary_sources": 95487,
+      "secondary_sources": 1692,
+      "active_sources": 97148,
+      "pdf_sources": 1633,
+      "with_content_hash": 96991
+    },
+    "reproducibility_snapshots_state": {
+      "reproducibility_snapshots": 0
+    },
+    "program_law_refs_state": {
+      "refs": 0,
+      "programs_with_refs": 0,
+      "laws_referenced": 0
+    }
+  },
+  "shard_counts": {
+    "program_candidate_count": 0,
+    "live_urls": 0,
+    "broken_urls": 0,
+    "with_stored_source_checksum": 0,
+    "missing_stored_source_checksum": 0,
+    "distinct_source_urls": 0,
+    "formats": {}
+  },
+  "snapshot_candidates": [],
+  "law_snapshot_samples_for_design": [
+    {
+      "unified_id": "LAW-c05677a146",
+      "law_number": "昭和四十一年政令第百六十四号",
+      "law_title": "地震保険に関する法律施行令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "1966-05-31",
+      "enforced_date": "2026-04-02",
+      "last_amended_date": "2026-04-01",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/341CO0000000164",
+      "source_checksum": "e6a82cf06e004d7915eb59aa194cdbcc9937769d57ae8af11db59f0aca5bd2d8",
+      "fetched_at": "2026-04-24T07:14:18Z"
+    },
+    {
+      "unified_id": "LAW-d92d3a3e91",
+      "law_number": "平成二十五年政令第二百三十七号",
+      "law_title": "大規模災害からの復興に関する法律施行令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "2013-08-19",
+      "enforced_date": "2026-04-01",
+      "last_amended_date": "2026-04-01",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/425CO0000000237",
+      "source_checksum": "b1e280cd51f562ebccf6f10bf5eeb9f0b678dba3e17c78f3391e887270da4a07",
+      "fetched_at": "2026-04-24T08:42:02Z"
+    },
+    {
+      "unified_id": "LAW-5a35ae8f41",
+      "law_number": "昭和三十七年政令第二百八十八号",
+      "law_title": "災害対策基本法施行令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "1962-07-09",
+      "enforced_date": "2026-04-01",
+      "last_amended_date": "2026-04-01",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/337CO0000000288",
+      "source_checksum": "e9f9b2cade15684cd8847dacb5bfc595b3a94ee44b0d9613d3c1676d6433300b",
+      "fetched_at": "2026-04-24T07:08:59Z"
+    },
+    {
+      "unified_id": "LAW-dc8b6600d5",
+      "law_number": "平成五年政令第百六十三号",
+      "law_title": "皇太子徳仁親王の婚姻を記念するための五万円の貨幣の形式等に関する政令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "1993-04-30",
+      "enforced_date": "2026-04-01",
+      "last_amended_date": "2026-04-01",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/405CO0000000163",
+      "source_checksum": "3bcdc480d8c656268987568a4011d4bb3ab532771874ef876bfa6c60ea4adee7",
+      "fetched_at": "2026-04-24T07:41:59Z"
+    },
+    {
+      "unified_id": "LAW-0ac137c667",
+      "law_number": "昭和六十三年政令第五十号",
+      "law_title": "通貨の単位及び貨幣の発行等に関する法律施行令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "1988-03-23",
+      "enforced_date": "2026-04-01",
+      "last_amended_date": "2026-04-01",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/363CO0000000050",
+      "source_checksum": "5b825e5a2adaa4ebb8e7ac3ce05f5ff6507341c36a69ababc9529473467c6c86",
+      "fetched_at": "2026-04-24T07:37:00Z"
+    },
+    {
+      "unified_id": "LAW-479ccc9ed2",
+      "law_number": "令和八年政令第九十一号",
+      "law_title": "サイバー通信情報監理委員会事務局組織令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "2026-03-31",
+      "enforced_date": "2026-04-01",
+      "last_amended_date": "2026-03-31",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/508CO0000000091",
+      "source_checksum": "d341a4b75d413394d29ff3e3dbe99f72cb171d12f0264ff5823d12e9b082155e",
+      "fetched_at": "2026-04-24T09:12:50Z"
+    },
+    {
+      "unified_id": "LAW-8c74f96713",
+      "law_number": "平成六年政令第四百十六号",
+      "law_title": "不当廉売関税等に関する政令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "1994-12-28",
+      "enforced_date": "2026-04-01",
+      "last_amended_date": "2026-03-31",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/406CO0000000416",
+      "source_checksum": "d974e780d80a9ce51dec77692539d954417b8382bed7af33a0ba949066e21425",
+      "fetched_at": "2026-04-24T07:43:39Z"
+    },
+    {
+      "unified_id": "LAW-288d488714",
+      "law_number": "令和八年政令第八十七号",
+      "law_title": "公立義務教育諸学校の学級編制及び教職員定数の標準に関する法律の一部を改正する法律の施行に伴う経過措置に関する政令",
+      "law_type": "cabinet_order",
+      "ministry": null,
+      "promulgated_date": "2026-03-31",
+      "enforced_date": "2026-04-01",
+      "last_amended_date": "2026-03-31",
+      "revision_status": "current",
+      "source_url": "https://laws.e-gov.go.jp/law/508CO0000000087",
+      "source_checksum": "16dc472a8736f5ff3f6fae18360ef9eae42cb8a81590e3eede9e531181b43863",
+      "fetched_at": "2026-04-24T09:12:49Z"
+    }
+  ],
+  "broken_tier_s_sources_for_retry_design": [
+    {
+      "unified_id": "UNI-f6165b8a9c",
+      "primary_name": "とみさと農業気候変動対策支援事業補助金",
+      "source_url": "https://www.city.tomisato.lg.jp/0000015127.html",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-e80e5c7ed2",
+      "primary_name": "一関市水田高収益作物転換特別支援事業交付金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/29,144903,84,html",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-e77bf254c8",
+      "primary_name": "令和7年度一関市農商工連携開発事業費補助金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/7,0,85,html",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-583537bc07",
+      "primary_name": "多面的機能支払交付金",
+      "source_url": "https://www.maff.go.jp/j/nousin/kantai/multifunc.html",
+      "source_last_check_status": 403,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-a729fbb301",
+      "primary_name": "新発田市強い農林水産業づくり支援事業",
+      "source_url": "https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/004/695/yoko.pdf",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-7c132d1a4a",
+      "primary_name": "新規就農者チャレンジ事業",
+      "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/260126.html",
+      "source_last_check_status": 403,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-bdea97be24",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業・経営開始資金）",
+      "source_url": "https://www.city.tanabe.lg.jp/nougyou/ssist.html",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-40bc849d45",
+      "primary_name": "東京都サイバーセキュリティ対策促進助成金",
+      "source_url": "https://www.tokyo-kosha.or.jp/support/josei/jigyo/cybersecurity.html",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-5f224060c2",
+      "primary_name": "神石高原○豊とまと用ビニールハウス規模拡大事業",
+      "source_url": "http://www.jinsekigun.jp/town/formation/sangyou1/shinko1/engei-2/",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-9ad358dbec",
+      "primary_name": "農林業振興基金提案事業補助金",
+      "source_url": "https://www.city.fukushima.fukushima.jp/nougyou-kikaku/nouringyoushinkoukikin.html",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-a7f77063d5",
+      "primary_name": "農業生産工程管理推進事業（高知県）",
+      "source_url": "https://www.pref.kochi.lg.jp/soshiki/160501",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-df8a88849f",
+      "primary_name": "高崎農業の将来を考える研究会補助金",
+      "source_url": "https://www.city.takasaki.gunma.jp/docs/2020101400035/files/kenkyukai_youkou.docx",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    },
+    {
+      "unified_id": "UNI-1bdd5c3334",
+      "primary_name": "鳥獣害に強い地域づくり支援事業（補助金・捕獲檻の貸し出し・追払い用花火の配布）",
+      "source_url": "https://www.city.nagahama.lg.jp/category/chojugai/",
+      "source_last_check_status": 404,
+      "source_fail_count": 1
+    }
+  ],
+  "field_normalization": [
+    "Normalize Unicode with NFKC, collapse whitespace, strip zero-width and control characters.",
+    "Canonicalize URLs by lowercasing scheme/host, removing tracking query params, preserving PDF/doc path and meaningful fragments separately.",
+    "Convert amount_max_man_yen and amount_min_man_yen to integer yen before comparison.",
+    "Normalize subsidy_rate to decimal max rate; do not diff display forms such as 1/2 vs 0.5.",
+    "Parse application_window_json into start_date/end_date/status/fiscal_year/round/cycle and compare typed fields, not raw JSON order.",
+    "Sort and de-duplicate target_types/funding_purpose arrays before hashing.",
+    "For laws, compare law_number, law_title, enforced_date, last_amended_date, revision_status, and source_checksum separately from fetched_at.",
+    "For HTML/PDF text, strip boilerplate zones before low-level difflib: footer/contact/nav/cookie/accessibility/sidebar/breadcrumb/script/style."
+  ],
+  "snapshot_cycle_recommendation": {
+    "open_or_near_deadline_tier_s": "daily while status=open or application_window end_date is present/current; compare typed fields first",
+    "stable_open_ended_loan_tax_pages": "weekly content hash plus typed field check",
+    "e_gov_laws": "weekly catalog checksum, immediate candidate if last_amended_date or revision_status differs",
+    "broken_sources": "retry with backoff and keep 3-strike quarantine evidence separate from business diff",
+    "missing_checksum_rows": "prioritize checksum backfill before declaring field diff"
+  },
+  "false_positive_taxonomy": [
+    {
+      "pattern": "boilerplate_footer_contact",
+      "symptoms": "電話番号、所在地、組織改編、SNS/footer link changes",
+      "mitigation": "zone-strip footer/contact/nav before text hash; keep contact as low-signal auxiliary field"
+    },
+    {
+      "pattern": "dynamic_timestamp_counter",
+      "symptoms": "現在時刻、最終表示日時、access counter、cache bust query",
+      "mitigation": "regex remove timestamps/counters; compare business dates only after label whitelist"
+    },
+    {
+      "pattern": "faq_or_notice_reorder",
+      "symptoms": "FAQ、Q&A、お知らせ一覧の順序だけ変わる",
+      "mitigation": "section item hashing with sorted stable keys; flag only add/remove/changed item bodies"
+    },
+    {
+      "pattern": "pdf_pagination_drift",
+      "symptoms": "ページ番号、ヘッダ/フッタ、改ページ位置の違い",
+      "mitigation": "drop page headers/footers and page-number-only lines before text hash"
+    },
+    {
+      "pattern": "minor_particle_wording",
+      "symptoms": "て・に・を・は、句読点、全半角、令和/西暦併記の揺れ",
+      "mitigation": "NFKC + token-level similarity; suppress if high-signal fields unchanged"
+    },
+    {
+      "pattern": "list_page_churn",
+      "symptoms": "公募一覧ページで他制度の追加が混ざる",
+      "mitigation": "program-specific heading window extraction; fallback to source URL detail page or attachment"
+    },
+    {
+      "pattern": "historical_ingest_metadata",
+      "symptoms": "enriched_json 内の worker_id/model/fetched_at/quality_self_score changes",
+      "mitigation": "exclude ingestion metadata from normalized_business_sha256"
+    }
+  ],
+  "shard_false_positive_focus": [
+    "aggregate taxonomy and schema suggestions; final integration file intentionally untouched",
+    "Coordinator output only. Per user instruction, analysis_wave18/am_diff_design_2026-04-30.md was not written."
+  ],
+  "schema_suggestion": {
+    "snapshot_candidate_fields": [
+      "snapshot_id",
+      "run_id",
+      "entity_table",
+      "entity_id",
+      "source_url",
+      "source_domain",
+      "source_format",
+      "robots_policy_checked_at",
+      "source_status_code",
+      "source_final_url",
+      "source_content_sha256",
+      "source_text_sha256",
+      "source_bytes_len",
+      "source_fetched_at",
+      "normalized_business_json",
+      "normalized_business_sha256",
+      "noise_profile_json",
+      "extractor_version",
+      "diff_status"
+    ],
+    "diff_candidate_fields": [
+      "diff_id",
+      "prev_snapshot_id",
+      "new_snapshot_id",
+      "entity_id",
+      "field_name",
+      "prev_value_json",
+      "new_value_json",
+      "field_severity",
+      "confidence_rule",
+      "noise_class",
+      "evidence_url",
+      "detected_at",
+      "requires_human_review"
+    ],
+    "severity_rules": {
+      "critical": [
+        "deadline/end_date closed or extended",
+        "amount_max_yen changed",
+        "subsidy_rate_max changed",
+        "eligibility target changed",
+        "source_url became broken after prior live"
+      ],
+      "medium": [
+        "application status changed",
+        "new PDF/doc attachment",
+        "law last_amended_date or revision_status changed"
+      ],
+      "low": [
+        "footer/contact text changed",
+        "page date changed with no business field change",
+        "FAQ ordering changed only"
+      ]
+    }
+  },
+  "blockers": [
+    "No prior data/snapshots/am_diff_* source-byte baseline exists in this checkout, so all shard JSON files are baseline_only.",
+    "am_amendment_diff has 0 rows; current diff behavior cannot be validated against accepted prior diffs.",
+    "Tier S has 13 broken source URLs (11x404, 2x403) and 50 rows missing source_checksum.",
+    "program_law_refs is empty, so program-to-law amendment impact cannot yet be joined from local tables.",
+    "data/autonomath.db is 0 bytes; the populated amendment/source DB used for read-only evidence is /Users/shigetoumeda/jpcite/autonomath.db."
+  ],
+  "suggested_next_queries": [
+    "SELECT unified_id, primary_name, source_url FROM programs WHERE tier='S' AND excluded=0 AND (source_checksum IS NULL OR source_checksum='') AND source_url_status='live' ORDER BY primary_name;",
+    "SELECT unified_id, primary_name, source_url, source_last_check_status, source_fail_count FROM programs WHERE tier='S' AND excluded=0 AND source_url_status='broken' ORDER BY source_last_check_status, primary_name;",
+    "WITH paired AS (...) SELECT entity_id FROM paired WHERE eligibility_hash unchanged AND summary_hash unchanged AND high-signal typed fields changed;",
+    "SELECT unified_id, law_title, last_amended_date, revision_status, source_checksum FROM laws ORDER BY last_amended_date DESC LIMIT 100;",
+    "SELECT source_url, COUNT(*) FROM programs WHERE tier='S' AND excluded=0 GROUP BY source_url HAVING COUNT(*)>1;"
+  ]
+}

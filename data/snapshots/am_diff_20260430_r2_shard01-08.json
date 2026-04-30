@@ -1,0 +1,4659 @@
+{
+  "run_id": "20260430_r2",
+  "run_date": "2026-04-30",
+  "generated_at": "2026-04-30T21:13:25+09:00",
+  "lane": "am_diff_design",
+  "assigned_shards": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08"
+  ],
+  "source_policy": {
+    "llm_api_called": false,
+    "hosted_model_api_called": false,
+    "external_source_refetch_performed": false,
+    "aggregator_sites_used_as_evidence": false,
+    "production_code_or_migration_written": false,
+    "final_integration_file_touched": false,
+    "comparison_basis": "previous local baseline JSON vs current local SQLite DBs"
+  },
+  "inputs": {
+    "previous_snapshot_files": [
+      "data/snapshots/am_diff_20260430_shard01.json",
+      "data/snapshots/am_diff_20260430_shard02.json",
+      "data/snapshots/am_diff_20260430_shard03.json",
+      "data/snapshots/am_diff_20260430_shard04.json",
+      "data/snapshots/am_diff_20260430_shard05.json",
+      "data/snapshots/am_diff_20260430_shard06.json",
+      "data/snapshots/am_diff_20260430_shard07.json",
+      "data/snapshots/am_diff_20260430_shard08.json"
+    ],
+    "program_law_db": "data/jpintel.db",
+    "amendment_db": "autonomath.db"
+  },
+  "common_state": {
+    "programs_state": {
+      "total_programs": 14472,
+      "tier_s_active": 114,
+      "with_source_url": 13956,
+      "with_source_checksum": 8891,
+      "with_source_fetched_at": 14456
+    },
+    "tier_s_programs_state": {
+      "tier_s_rows": 114,
+      "live_urls": 101,
+      "broken_urls": 13,
+      "status_200": 101,
+      "status_403": 2,
+      "status_404": 11,
+      "with_checksum": 64,
+      "missing_checksum": 50,
+      "with_application_window": 85,
+      "with_target_types": 45,
+      "with_funding_purpose": 39
+    },
+    "laws_state": {
+      "total_laws": 9484,
+      "current_laws": 9093,
+      "repealed_laws": 391,
+      "with_source_url": 9484,
+      "with_source_checksum": 9484,
+      "with_fetched_at": 9484,
+      "min_last_amended_date": "1872-11-09",
+      "max_last_amended_date": "2026-04-01"
+    },
+    "am_amendment_diff_state": {
+      "diff_rows": 0
+    },
+    "program_law_refs_state": {
+      "refs": 0,
+      "programs_with_refs": 0,
+      "laws_referenced": 0
+    },
+    "am_amendment_snapshot_state": {
+      "snapshot_rows": 14596,
+      "snapshot_entities": 7298,
+      "min_observed_at": "2026-04-24 22:39:26",
+      "max_observed_at": "2026-04-24T10:24:48+00:00",
+      "with_amount_max_yen": 2071,
+      "with_subsidy_rate_max": 1616,
+      "with_target_set_json": 8441,
+      "with_eligibility_hash": 14596,
+      "with_summary_hash": 14596,
+      "with_source_url": 9471,
+      "with_source_fetched_at": 6207
+    },
+    "am_source_state": {
+      "total_sources": 97272,
+      "distinct_domains": 1447,
+      "with_license": 97272,
+      "primary_sources": 95487,
+      "secondary_sources": 1692,
+      "active_sources": 97148,
+      "pdf_sources": 1633,
+      "with_content_hash": 96991
+    },
+    "am_snapshot_version_pair_state": {
+      "paired_entities": 7298,
+      "eligibility_hash_changed": 0,
+      "summary_hash_changed": 0,
+      "raw_snapshot_json_changed": 0,
+      "amount_changed": 629,
+      "subsidy_rate_changed": 76,
+      "target_set_changed": 6155,
+      "source_url_changed": 721,
+      "entities_with_any_typed_field_change": 6276
+    }
+  },
+  "baseline_comparison_summary": {
+    "programs_baseline_objects": 114,
+    "programs_compared": 114,
+    "program_diff_status_counts": {
+      "no_change": 114
+    },
+    "program_typed_field_change_counts": {},
+    "program_source_status_change_counts": {},
+    "program_stored_source_checksum_changed": 0,
+    "program_source_fetched_at_changed": 0,
+    "law_baseline_objects": 8,
+    "law_diff_status_counts": {
+      "no_change": 8
+    },
+    "broken_retry_unique_objects": 13,
+    "broken_retry_status_counts": {
+      "no_change": 13
+    }
+  },
+  "program_comparisons": [
+    {
+      "shard": "01",
+      "rn": 1,
+      "unified_id": "UNI-ext-fcffb68e28",
+      "primary_name": "2026年度 先端国際共同研究推進事業（ASPIRE）単独公募募集",
+      "source_url": "https://www.jst.go.jp/aspire/program/announce/announce_aspire2026.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "85e9bd06a583fcf7ad3ba30a62433a2407afff638df0cced4ded7f264f8dafb1",
+      "current_stable_field_fingerprint_sha256": "85e9bd06a583fcf7ad3ba30a62433a2407afff638df0cced4ded7f264f8dafb1"
+    },
+    {
+      "shard": "01",
+      "rn": 2,
+      "unified_id": "UNI-ext-cd4da7d117",
+      "primary_name": "2026年度LOTUS Programme公募",
+      "source_url": "https://www.jst.go.jp/program/india/call/",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "ffd909b016d7225264893ceff54e1a532c0db3fd858ee3c4023406386df44cac",
+      "current_stable_field_fingerprint_sha256": "ffd909b016d7225264893ceff54e1a532c0db3fd858ee3c4023406386df44cac"
+    },
+    {
+      "shard": "01",
+      "rn": 3,
+      "unified_id": "UNI-ext-93ee4a26c2",
+      "primary_name": "2026年度さくらサイエンスプログラム 国際交流計画募集",
+      "source_url": "https://ssp.jst.go.jp/program/",
+      "source_domain": "ssp.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "51119a507861fd3b7d09bc1432f1dbe8ecc7cb56a60301c751fac4fd59a0dffc",
+      "current_stable_field_fingerprint_sha256": "51119a507861fd3b7d09bc1432f1dbe8ecc7cb56a60301c751fac4fd59a0dffc"
+    },
+    {
+      "shard": "01",
+      "rn": 4,
+      "unified_id": "UNI-ext-cb812819f4",
+      "primary_name": "2026年度公募 戦略的創造研究推進事業 情報通信科学・イノベーション基盤創出（CRONOS）",
+      "source_url": "https://www.jst.go.jp/kisoken/cronos/koubo/2026/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "44c7fbdfc3e194bbbc97531ce7d49addbf03a70e5c836204cbd687776f1b5860",
+      "current_stable_field_fingerprint_sha256": "44c7fbdfc3e194bbbc97531ce7d49addbf03a70e5c836204cbd687776f1b5860"
+    },
+    {
+      "shard": "01",
+      "rn": 5,
+      "unified_id": "UNI-ext-cf3b1ca891",
+      "primary_name": "ACT-X 2026年度研究提案募集",
+      "source_url": "https://www.jst.go.jp/kisoken/boshuu/teian.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "9d5440ae822bfdd50cc5456519a34e3dac3caa9ea92b356a97370087d2263ab3",
+      "current_stable_field_fingerprint_sha256": "9d5440ae822bfdd50cc5456519a34e3dac3caa9ea92b356a97370087d2263ab3"
+    },
+    {
+      "shard": "01",
+      "rn": 6,
+      "unified_id": "UNI-ext-8e97a4f56e",
+      "primary_name": "AMED 創薬ベンチャーエコシステム強化事業",
+      "source_url": "https://www.amed.go.jp/program/list/19/02/005.html",
+      "source_domain": "www.amed.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "cfb27d9a8d26181af54869e4b5262f85a39e9bb5d5d801a76c86a499fe081443",
+      "current_stable_field_fingerprint_sha256": "cfb27d9a8d26181af54869e4b5262f85a39e9bb5d5d801a76c86a499fe081443"
+    },
+    {
+      "shard": "01",
+      "rn": 7,
+      "unified_id": "UNI-ext-31c5820f52",
+      "primary_name": "AMED 橋渡し研究プログラム (preF/シーズF/シーズB/シーズC)",
+      "source_url": "https://www.amed.go.jp/program/list/16/01/014.html",
+      "source_domain": "www.amed.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "5e26efd38356386bca30ab3a73c411f320a7a6f45777677765fbd6ca982aca0d",
+      "current_stable_field_fingerprint_sha256": "5e26efd38356386bca30ab3a73c411f320a7a6f45777677765fbd6ca982aca0d"
+    },
+    {
+      "shard": "01",
+      "rn": 8,
+      "unified_id": "UNI-ext-5c276dea3a",
+      "primary_name": "AMED 次世代型医療機器開発等促進事業 (革新的な医療機器創出プロジェクト)",
+      "source_url": "https://www.amed.go.jp/program/list/17/01/index.html",
+      "source_domain": "www.amed.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "1e9bc74476bfd347f2f57dc979c0a83e9ae4895ef810215b5040a7b3a0a949ec",
+      "current_stable_field_fingerprint_sha256": "1e9bc74476bfd347f2f57dc979c0a83e9ae4895ef810215b5040a7b3a0a949ec"
+    },
+    {
+      "shard": "01",
+      "rn": 9,
+      "unified_id": "UNI-ext-74f94eb0d4",
+      "primary_name": "BOOST次世代AI人材育成プログラム（若手研究者支援）2026年度公募",
+      "source_url": "https://www.jst.go.jp/program/boost/yr/call/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "1f5e07bfcc2f7343bb80d96055f1a141169edd80934b6ff00b62b5e181a0bf83",
+      "current_stable_field_fingerprint_sha256": "1f5e07bfcc2f7343bb80d96055f1a141169edd80934b6ff00b62b5e181a0bf83"
+    },
+    {
+      "shard": "01",
+      "rn": 10,
+      "unified_id": "UNI-ext-d767313d42",
+      "primary_name": "JFC 資本性ローン (新企業育成貸付・挑戦支援資本強化特別貸付)",
+      "source_url": "https://www.jfc.go.jp/n/finance/search/57.html",
+      "source_domain": "www.jfc.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "566627f1b757554c93a240ea22c7a68cc349b27e7f25419c790fad1c7db7f624",
+      "current_stable_field_fingerprint_sha256": "566627f1b757554c93a240ea22c7a68cc349b27e7f25419c790fad1c7db7f624"
+    },
+    {
+      "shard": "01",
+      "rn": 11,
+      "unified_id": "UNI-ext-cf02b69e78",
+      "primary_name": "NEDO懸賞金活用型プログラム／量子コンピュータを用いた社会問題ソリューション開発2",
+      "source_url": "https://www.nedo.go.jp/koubo/CD2_100440.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "f06a3c75dfde66d28bfcdbc54efa946acc1d44367509787c2933e3459df99143",
+      "current_stable_field_fingerprint_sha256": "f06a3c75dfde66d28bfcdbc54efa946acc1d44367509787c2933e3459df99143"
+    },
+    {
+      "shard": "01",
+      "rn": 12,
+      "unified_id": "UNI-ext-f3987611dc",
+      "primary_name": "NEXUS 2026年度　日本ーベトナム「半導体」国際共同研究公募",
+      "source_url": "https://www.jst.go.jp/aspire/nexus/koubo/country/vietnam.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "80f48b94c748255737eb9e29fc5fffac6cbaab551f03a838eb0e61893d26fc32",
+      "current_stable_field_fingerprint_sha256": "80f48b94c748255737eb9e29fc5fffac6cbaab551f03a838eb0e61893d26fc32"
+    },
+    {
+      "shard": "01",
+      "rn": 13,
+      "unified_id": "UNI-ext-dbb9926797",
+      "primary_name": "SBIR推進プログラム",
+      "source_url": "https://www.nedo.go.jp/koubo/CA1_100530.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "06891346ba9bfe77aa7bb951c1d8e437ff89e5260866b6da91a4aefa09d30022",
+      "current_stable_field_fingerprint_sha256": "06891346ba9bfe77aa7bb951c1d8e437ff89e5260866b6da91a4aefa09d30022"
+    },
+    {
+      "shard": "01",
+      "rn": 14,
+      "unified_id": "UNI-ext-29593c9151",
+      "primary_name": "★募集中の公共職業訓練など★（テクノスクール注目情報）",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7301358/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "aaa7309c0f591e88db8896886833e6490eebb6fba9520cd3f03a7c340e1ebf57",
+      "current_stable_field_fingerprint_sha256": "aaa7309c0f591e88db8896886833e6490eebb6fba9520cd3f03a7c340e1ebf57"
+    },
+    {
+      "shard": "01",
+      "rn": 15,
+      "unified_id": "UNI-ext-2458e5ecd4",
+      "primary_name": "【5/12〆】はじめて学ぶIT技能科1（6/10開講・3か月訓練）受講生募集中！",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312407/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "df58f89538e9dc909650724d925372fc0df98f5c62ded300c164dd2a37774b43",
+      "current_stable_field_fingerprint_sha256": "df58f89538e9dc909650724d925372fc0df98f5c62ded300c164dd2a37774b43"
+    },
+    {
+      "shard": "02",
+      "rn": 16,
+      "unified_id": "UNI-ext-2a1f24434a",
+      "primary_name": "【5/1〆】基礎から応用まで学べるIT技能科（西部地区）（5/25開講・3か月訓練）受講生募集中！",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7311401/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "9d2d9ba6b0fb156caad72047481363b1348a778c7c8ab5bc86ba69a727dfb7d7",
+      "current_stable_field_fingerprint_sha256": "9d2d9ba6b0fb156caad72047481363b1348a778c7c8ab5bc86ba69a727dfb7d7"
+    },
+    {
+      "shard": "02",
+      "rn": 17,
+      "unified_id": "UNI-ext-0b587e268c",
+      "primary_name": "【5/7〆】介護実務者・同行援護研修科1（6/1開講・6か月訓練）受講生募集中！",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312389/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "58fecb6eda247353cc77587a5686e2bf181e9aa68b30400d4a7dad6c892ec438",
+      "current_stable_field_fingerprint_sha256": "58fecb6eda247353cc77587a5686e2bf181e9aa68b30400d4a7dad6c892ec438"
+    },
+    {
+      "shard": "02",
+      "rn": 18,
+      "unified_id": "UNI-ext-537bb1a5cc",
+      "primary_name": "【5/7〆】造園科（5/27開講・6か月訓練）受講生募集中！",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312388/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e1f58717520699a48e7a43c72ce5e61b3acbfc1beb630290b45a72af93f39f87",
+      "current_stable_field_fingerprint_sha256": "e1f58717520699a48e7a43c72ce5e61b3acbfc1beb630290b45a72af93f39f87"
+    },
+    {
+      "shard": "02",
+      "rn": 19,
+      "unified_id": "UNI-ext-063f697122",
+      "primary_name": "【事業者向け・募集中】新たな工賃向上プラン実現加速化事業補助金",
+      "source_url": "https://www.pref.tottori.lg.jp/322909.htm",
+      "source_domain": "www.pref.tottori.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "a9726bea75423279b861e0289120120f57feadeb69869e23cfde1465f8014f8a",
+      "current_stable_field_fingerprint_sha256": "a9726bea75423279b861e0289120120f57feadeb69869e23cfde1465f8014f8a"
+    },
+    {
+      "shard": "02",
+      "rn": 20,
+      "unified_id": "UNI-ext-8d8762b43b",
+      "primary_name": "【公募予告】AI for Science 革新的研究推進事業（ARiSE）",
+      "source_url": "https://www.jst.go.jp/program/arise/koubo.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "fc2d0c3eb53f8ab147f13998259a557a7f9f3eb3313915528cb86084df3579b8",
+      "current_stable_field_fingerprint_sha256": "fc2d0c3eb53f8ab147f13998259a557a7f9f3eb3313915528cb86084df3579b8"
+    },
+    {
+      "shard": "02",
+      "rn": 21,
+      "unified_id": "UNI-ext-636f6aa79a",
+      "primary_name": "【募集中】令和８年度プロフェッショナル人材活用促進事業費補助金について",
+      "source_url": "https://www.pref.akita.lg.jp/pages/archive/71336",
+      "source_domain": "www.pref.akita.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "7e0e7d2d51faccf87ba0fdcf2daa74f01f88b97c5f2aa6b4c74c17d0fdff696c",
+      "current_stable_field_fingerprint_sha256": "7e0e7d2d51faccf87ba0fdcf2daa74f01f88b97c5f2aa6b4c74c17d0fdff696c"
+    },
+    {
+      "shard": "02",
+      "rn": 22,
+      "unified_id": "UNI-ext-5d1900df82",
+      "primary_name": "【募集中】令和８年度副業・兼業人材活用促進事業費補助金について",
+      "source_url": "https://www.pref.akita.lg.jp/pages/archive/71337",
+      "source_domain": "www.pref.akita.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "b1e2c57bf43ac7cf0d0da636cd9bd9b284b0845c0acd0011f5878cef6a69a2b6",
+      "current_stable_field_fingerprint_sha256": "b1e2c57bf43ac7cf0d0da636cd9bd9b284b0845c0acd0011f5878cef6a69a2b6"
+    },
+    {
+      "shard": "02",
+      "rn": 23,
+      "unified_id": "UNI-ext-e80e23f09c",
+      "primary_name": "【募集中】山口県レジ袋収益金環境保全活動助成金",
+      "source_url": "https://www.pref.yamaguchi.lg.jp/soshiki/40/150975.html",
+      "source_domain": "www.pref.yamaguchi.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "0303791267870b3ad7c7548b4e36c7590cb8d227897e8efce60467c472927be4",
+      "current_stable_field_fingerprint_sha256": "0303791267870b3ad7c7548b4e36c7590cb8d227897e8efce60467c472927be4"
+    },
+    {
+      "shard": "02",
+      "rn": 24,
+      "unified_id": "UNI-f6165b8a9c",
+      "primary_name": "とみさと農業気候変動対策支援事業補助金",
+      "source_url": "https://www.city.tomisato.lg.jp/0000015127.html",
+      "source_domain": "www.city.tomisato.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "60269ba090a958c56b278ce9c56f03f3cdffc6356e7da493859e8bb21a2dc124",
+      "current_stable_field_fingerprint_sha256": "60269ba090a958c56b278ce9c56f03f3cdffc6356e7da493859e8bb21a2dc124"
+    },
+    {
+      "shard": "02",
+      "rn": 25,
+      "unified_id": "UNI-1c8f4cd075",
+      "primary_name": "みどりの食料システム戦略推進交付金",
+      "source_url": "https://www.maff.go.jp/j/kanbo/kankyo/seisaku/midori/houritsu.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "043cc8546d4a600f4e890358a96a1e12d6c6426eaac0b707800d08cf095ab106",
+      "current_stable_field_fingerprint_sha256": "043cc8546d4a600f4e890358a96a1e12d6c6426eaac0b707800d08cf095ab106"
+    },
+    {
+      "shard": "02",
+      "rn": 26,
+      "unified_id": "UNI-455a7c3e2d",
+      "primary_name": "みよし市 農業振興事業補助金 地場産業振興",
+      "source_url": "https://www1.g-reiki.net/aichi-miyoshi/reiki_honbun/i569RG00000778.html",
+      "source_domain": "www1.g-reiki.net",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "4cf8975e56d3f6c0999a522b84e6823ee95e76782035a1b1bb8b037bbf8328ec",
+      "current_stable_field_fingerprint_sha256": "4cf8975e56d3f6c0999a522b84e6823ee95e76782035a1b1bb8b037bbf8328ec"
+    },
+    {
+      "shard": "02",
+      "rn": 27,
+      "unified_id": "UNI-ext-892d45072a",
+      "primary_name": "アグリ・フードテック分野におけるAI技術の開発・導入に関する俯瞰調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA1_100275.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "9101ec6e982a03475908f63109fde75ed9b9d6f6dbef9adb97257b7aa77174c3",
+      "current_stable_field_fingerprint_sha256": "9101ec6e982a03475908f63109fde75ed9b9d6f6dbef9adb97257b7aa77174c3"
+    },
+    {
+      "shard": "02",
+      "rn": 28,
+      "unified_id": "UNI-ext-36b9ca3980",
+      "primary_name": "アジア太平洋地域に適した風車・浮体搭載用風車に係る産業技術動向調査",
+      "source_url": "https://www.nedo.go.jp/koubo/FF1_100461.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "10f598f50a24a2a418ab657c01e038720d803c4c3a45bfaabab8db9480845e2c",
+      "current_stable_field_fingerprint_sha256": "10f598f50a24a2a418ab657c01e038720d803c4c3a45bfaabab8db9480845e2c"
+    },
+    {
+      "shard": "02",
+      "rn": 29,
+      "unified_id": "UNI-ext-6c1107a0d1",
+      "primary_name": "カーボンリサイクル・火力発電の脱炭素化技術等国際協力事業／カーボンマネジメントに係る国際連携事業／カーボンリサイクル関連技術及び脱炭素化技術等の海外展開可能性の調査",
+      "source_url": "https://www.nedo.go.jp/koubo/EV2_100318.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "ac392f8c59722047804e3096ca9d0717220bcaaa4d427a3909efc70f7b58a392",
+      "current_stable_field_fingerprint_sha256": "ac392f8c59722047804e3096ca9d0717220bcaaa4d427a3909efc70f7b58a392"
+    },
+    {
+      "shard": "02",
+      "rn": 30,
+      "unified_id": "UNI-ext-71437ff1fa",
+      "primary_name": "グリーンイノベーション基金事業に関する広報戦略調査",
+      "source_url": "https://www.nedo.go.jp/koubo/KH1_100159.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e3b0d513f5e67ea6f974f2016c1c7f62899279ec919a61da2823063af11227ce",
+      "current_stable_field_fingerprint_sha256": "e3b0d513f5e67ea6f974f2016c1c7f62899279ec919a61da2823063af11227ce"
+    },
+    {
+      "shard": "03",
+      "rn": 31,
+      "unified_id": "UNI-ext-ad7b51771b",
+      "primary_name": "ゲーミフィケーションを活用した気候変動問題に対する意識変革／行動変容に関する調査",
+      "source_url": "https://www.nedo.go.jp/koubo/EV2_100323.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "04c9365053f094e120badbdac49e441d25732d237bc99d9fda040aab646bec9c",
+      "current_stable_field_fingerprint_sha256": "04c9365053f094e120badbdac49e441d25732d237bc99d9fda040aab646bec9c"
+    },
+    {
+      "shard": "03",
+      "rn": 32,
+      "unified_id": "UNI-ext-6e1e590edd",
+      "primary_name": "サイエンスアゴラ2026の出展企画募集について",
+      "source_url": "https://www.jst.go.jp/sis/scienceagora/2026/entry.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "b90c5ff2847addbfe34d48f6989944cd7e192616188d53614be62b00867fbc81",
+      "current_stable_field_fingerprint_sha256": "b90c5ff2847addbfe34d48f6989944cd7e192616188d53614be62b00867fbc81"
+    },
+    {
+      "shard": "03",
+      "rn": 33,
+      "unified_id": "UNI-6b32629951",
+      "primary_name": "スマート農業技術の開発・実証プロジェクト",
+      "source_url": "https://www.naro.go.jp/smart-nogyo/index.html",
+      "source_domain": "www.naro.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "f9880aaa8bca92e6fc8eb9fa9bd1d1c3ec8f9eb72481a6d85ba5848bb23f4f1f",
+      "current_stable_field_fingerprint_sha256": "f9880aaa8bca92e6fc8eb9fa9bd1d1c3ec8f9eb72481a6d85ba5848bb23f4f1f"
+    },
+    {
+      "shard": "03",
+      "rn": 34,
+      "unified_id": "UNI-5d6de166e3",
+      "primary_name": "スマート農業推進事業（機械設備導入）",
+      "source_url": "https://www.maff.go.jp/j/kanbo/smart/",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "4ba3df88845769e60072763f9ba2a931de805338bb3c65c40b0b5ca3e8ecb1e9",
+      "current_stable_field_fingerprint_sha256": "4ba3df88845769e60072763f9ba2a931de805338bb3c65c40b0b5ca3e8ecb1e9"
+    },
+    {
+      "shard": "03",
+      "rn": 35,
+      "unified_id": "UNI-ext-e5407b0970",
+      "primary_name": "フロンティア領域の導出に資する技術インテリジェンスの高度化に係る調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA2_100268.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "dfcffd51e64c1b171cab307a385890802fb441b917f066c19cb9c907d2ab0b76",
+      "current_stable_field_fingerprint_sha256": "dfcffd51e64c1b171cab307a385890802fb441b917f066c19cb9c907d2ab0b76"
+    },
+    {
+      "shard": "03",
+      "rn": 36,
+      "unified_id": "UNI-ext-c1680532c3",
+      "primary_name": "プログラムマネージャーの育成・活躍推進プログラム（PM研修） 令和８年度公募",
+      "source_url": "https://www.jst.go.jp/innov-jinzai/program/pm/koubo.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "7f6f8c8b077c305fe1dd7f8532bf5f50bd0407299e51c7982afa323426befcd2",
+      "current_stable_field_fingerprint_sha256": "7f6f8c8b077c305fe1dd7f8532bf5f50bd0407299e51c7982afa323426befcd2"
+    },
+    {
+      "shard": "03",
+      "rn": 37,
+      "unified_id": "UNI-ext-950f443a8e",
+      "primary_name": "プロジェクト推進型 SBIRフェーズ１支援",
+      "source_url": "https://www.jst.go.jp/start/sbir/call2026.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "6404cd4f9dbe3c78fb3806ade491eda798eb700e4b98616e386bd8db61357e79",
+      "current_stable_field_fingerprint_sha256": "6404cd4f9dbe3c78fb3806ade491eda798eb700e4b98616e386bd8db61357e79"
+    },
+    {
+      "shard": "03",
+      "rn": 38,
+      "unified_id": "UNI-ext-affc02cb8c",
+      "primary_name": "ベルモント・フォーラムCRA「海洋：自然環境と人類の幸福に向けた生物多様性と生態系の持続可能性の希求」",
+      "source_url": "https://www.jst.go.jp/inter/program/announce/announce_belmont_ocean2025.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "2cdb3a628fcea477866e7eb8c287b2072a2db0d829ec10aef50265ae0bbdc8d5",
+      "current_stable_field_fingerprint_sha256": "2cdb3a628fcea477866e7eb8c287b2072a2db0d829ec10aef50265ae0bbdc8d5"
+    },
+    {
+      "shard": "03",
+      "rn": 39,
+      "unified_id": "UNI-e80e5c7ed2",
+      "primary_name": "一関市水田高収益作物転換特別支援事業交付金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/29,144903,84,html",
+      "source_domain": "www.city.ichinoseki.iwate.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "5a82a1ae9ed5a00801c3314acfb93daed7d9dc8c177f4170c91ea05c4ebf1922",
+      "current_stable_field_fingerprint_sha256": "5a82a1ae9ed5a00801c3314acfb93daed7d9dc8c177f4170c91ea05c4ebf1922"
+    },
+    {
+      "shard": "03",
+      "rn": 40,
+      "unified_id": "UNI-0099a6d1b4",
+      "primary_name": "世代交代・初期投資促進事業（世代交代円滑化タイプ）",
+      "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/hatten.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d383c31168da57edcbb6ada8f7b06e196f41db94a88ffecf5aa01baa7709f813",
+      "current_stable_field_fingerprint_sha256": "d383c31168da57edcbb6ada8f7b06e196f41db94a88ffecf5aa01baa7709f813"
+    },
+    {
+      "shard": "03",
+      "rn": 41,
+      "unified_id": "UNI-14e57fbf79",
+      "primary_name": "中小企業成長加速化補助金",
+      "source_url": "https://mirasapo-plus.go.jp/wordpress/wp-content/uploads/2025/12/26100215/2nd_kobo.pdf",
+      "source_domain": "mirasapo-plus.go.jp",
+      "source_format_guess": "pdf",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "57af894f7511f977f5de94fc324f31a96cfc8244040e367e75c875b9844ec376",
+      "current_stable_field_fingerprint_sha256": "57af894f7511f977f5de94fc324f31a96cfc8244040e367e75c875b9844ec376"
+    },
+    {
+      "shard": "03",
+      "rn": 42,
+      "unified_id": "UNI-c2d0c7502e",
+      "primary_name": "中小企業等事業再構築促進基金",
+      "source_url": "https://jigyou-saikouchiku.go.jp",
+      "source_domain": "jigyou-saikouchiku.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e5a5023a496f6ba14970e3ba54bb611d2d6ccb62dddb584e096a0650ab8c3b37",
+      "current_stable_field_fingerprint_sha256": "e5a5023a496f6ba14970e3ba54bb611d2d6ccb62dddb584e096a0650ab8c3b37"
+    },
+    {
+      "shard": "03",
+      "rn": 43,
+      "unified_id": "UNI-6cd67b3342",
+      "primary_name": "中山間地域等直接支払交付金",
+      "source_url": "https://www.maff.go.jp/j/nousin/tyusan/siharai_seido/",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "014cf7fca4918905cc85a203bb0acf63bd8311b2e0a3d2047939a532ac49e81e",
+      "current_stable_field_fingerprint_sha256": "014cf7fca4918905cc85a203bb0acf63bd8311b2e0a3d2047939a532ac49e81e"
+    },
+    {
+      "shard": "03",
+      "rn": 44,
+      "unified_id": "UNI-e77bf254c8",
+      "primary_name": "令和7年度一関市農商工連携開発事業費補助金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/7,0,85,html",
+      "source_domain": "www.city.ichinoseki.iwate.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "4df5d40e7dc9879a5379996b5de35b566ea7f7f5b15306121a6335808f92eee0",
+      "current_stable_field_fingerprint_sha256": "4df5d40e7dc9879a5379996b5de35b566ea7f7f5b15306121a6335808f92eee0"
+    },
+    {
+      "shard": "03",
+      "rn": 45,
+      "unified_id": "UNI-ext-a0157f1d08",
+      "primary_name": "令和7年度補正 スマートメーターを活用したディマンドリスポンス実証事業",
+      "source_url": "https://sii.or.jp/smartmeterjisshou07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "9b4f933a6fa3ced3966f6f4a194db342b07f2a0213ee317473310622053fed75",
+      "current_stable_field_fingerprint_sha256": "9b4f933a6fa3ced3966f6f4a194db342b07f2a0213ee317473310622053fed75"
+    },
+    {
+      "shard": "04",
+      "rn": 46,
+      "unified_id": "UNI-ext-3b693efeeb",
+      "primary_name": "令和7年度補正 ディマンドリスポンスの拡大に向けたIoT化推進事業",
+      "source_url": "https://sii.or.jp/DRIoT07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "006e43ccbc0a6c04744e056f2b00dd60a634245757d98d3dde24f036a82da3d7",
+      "current_stable_field_fingerprint_sha256": "006e43ccbc0a6c04744e056f2b00dd60a634245757d98d3dde24f036a82da3d7"
+    },
+    {
+      "shard": "04",
+      "rn": 47,
+      "unified_id": "UNI-ext-c9c59c9742",
+      "primary_name": "令和7年度補正 再エネ電源併設蓄電システム等導入支援事業",
+      "source_url": "https://sii.or.jp/saieneheisetsu07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "be54171bf1043b9ed5a4bf18988f3659dba4d96d811ff9fcba18ec6a156b5617",
+      "current_stable_field_fingerprint_sha256": "be54171bf1043b9ed5a4bf18988f3659dba4d96d811ff9fcba18ec6a156b5617"
+    },
+    {
+      "shard": "04",
+      "rn": 48,
+      "unified_id": "UNI-ext-36bb15e26a",
+      "primary_name": "令和7年度補正 地域エネルギー利用最適化・省エネルギー診断拡充事業",
+      "source_url": "https://sii.or.jp/shindan07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "607537e70ec911b35060929ac7d54dcbd1701eebf8f56dbde6c1c1a5443804dd",
+      "current_stable_field_fingerprint_sha256": "607537e70ec911b35060929ac7d54dcbd1701eebf8f56dbde6c1c1a5443804dd"
+    },
+    {
+      "shard": "04",
+      "rn": 49,
+      "unified_id": "UNI-ext-96d4f86f4e",
+      "primary_name": "令和7年度補正 大規模業務産業用蓄電システム等導入支援事業",
+      "source_url": "https://sii.or.jp/daikibogyousan07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "0270f5c0bbeb0d63e491e792e7bfa1970d2c1fea12d2277e2960363064e93e07",
+      "current_stable_field_fingerprint_sha256": "0270f5c0bbeb0d63e491e792e7bfa1970d2c1fea12d2277e2960363064e93e07"
+    },
+    {
+      "shard": "04",
+      "rn": 50,
+      "unified_id": "UNI-ext-3188785802",
+      "primary_name": "令和7年度補正 家庭用蓄電システム導入支援事業",
+      "source_url": "https://sii.or.jp/DRchikudenchi_katei07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "fea3d72b7c5178e35dccfc69493412b6c91592f37884408102989eb4fb81aa9f",
+      "current_stable_field_fingerprint_sha256": "fea3d72b7c5178e35dccfc69493412b6c91592f37884408102989eb4fb81aa9f"
+    },
+    {
+      "shard": "04",
+      "rn": 51,
+      "unified_id": "UNI-ext-6a4d2abadb",
+      "primary_name": "令和7年度補正 業務産業用蓄電システム導入支援事業",
+      "source_url": "https://sii.or.jp/DRchikudenchi_gyousan07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "7fc8df54d12222acaa2f988061d3c3631f38192a8aa12841e717dc469d26262c",
+      "current_stable_field_fingerprint_sha256": "7fc8df54d12222acaa2f988061d3c3631f38192a8aa12841e717dc469d26262c"
+    },
+    {
+      "shard": "04",
+      "rn": 52,
+      "unified_id": "UNI-ext-f3768d99aa",
+      "primary_name": "令和7年度補正 系統用蓄電システム等導入支援事業",
+      "source_url": "https://sii.or.jp/chikudenchi07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "33915c4df103781b9366a3c795c371f5570b684b3d51a0dd95cedba58dcd97cb",
+      "current_stable_field_fingerprint_sha256": "33915c4df103781b9366a3c795c371f5570b684b3d51a0dd95cedba58dcd97cb"
+    },
+    {
+      "shard": "04",
+      "rn": 53,
+      "unified_id": "UNI-ext-5797a641fd",
+      "primary_name": "令和7年度補正予算 省エネ・非化石転換補助金（工場・事業場型）",
+      "source_url": "https://sii.or.jp/koujou07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "10b796cf73d6a6382fa79e2feb8b80dd509e2b63f293a811e4946125aa1670a2",
+      "current_stable_field_fingerprint_sha256": "10b796cf73d6a6382fa79e2feb8b80dd509e2b63f293a811e4946125aa1670a2"
+    },
+    {
+      "shard": "04",
+      "rn": 54,
+      "unified_id": "UNI-ext-7b467a8957",
+      "primary_name": "令和7年度補正予算 省エネ・非化石転換補助金（設備単位型）",
+      "source_url": "https://sii.or.jp/setsubi07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "7f4f89c97deb955bc338acb48c2c5057ee174e963b02020a63f55c78d319a0e4",
+      "current_stable_field_fingerprint_sha256": "7f4f89c97deb955bc338acb48c2c5057ee174e963b02020a63f55c78d319a0e4"
+    },
+    {
+      "shard": "04",
+      "rn": 55,
+      "unified_id": "UNI-ext-a0536c751f",
+      "primary_name": "令和8年度 ZEB実証事業／ZEB化診断・計画策定支援事業",
+      "source_url": "https://sii.or.jp/zeb08/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "78b9b451ce854735380c43b50e8706f41733247c9999b5ec96bfec0ece326466",
+      "current_stable_field_fingerprint_sha256": "78b9b451ce854735380c43b50e8706f41733247c9999b5ec96bfec0ece326466"
+    },
+    {
+      "shard": "04",
+      "rn": 56,
+      "unified_id": "UNI-3a9b7f91e1",
+      "primary_name": "企業版ふるさと納税",
+      "source_url": "https://www.chisou.go.jp/tiiki/tiikisaisei/kigyou_furusato.html",
+      "source_domain": "www.chisou.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "16e91eee9ee302dc63dc5c10732a7715cebac29e72ef12160af2852d89b748f5",
+      "current_stable_field_fingerprint_sha256": "16e91eee9ee302dc63dc5c10732a7715cebac29e72ef12160af2852d89b748f5"
+    },
+    {
+      "shard": "04",
+      "rn": 57,
+      "unified_id": "UNI-ext-553c6b0c00",
+      "primary_name": "先端研究基盤刷新事業の公募について",
+      "source_url": "https://www.jst.go.jp/program/epoch/call2026.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e6da09e0cb93153e85130b5a108494a6b6d86c26af405bbd2b486cd9e29790cb",
+      "current_stable_field_fingerprint_sha256": "e6da09e0cb93153e85130b5a108494a6b6d86c26af405bbd2b486cd9e29790cb"
+    },
+    {
+      "shard": "04",
+      "rn": 58,
+      "unified_id": "UNI-993181f438",
+      "primary_name": "八王子市_日本政策金融公庫等からの低利融資",
+      "source_url": "https://www.city.hachioji.tokyo.jp/kurashi/sangyo/004/001/001/p006558.html",
+      "source_domain": "www.city.hachioji.tokyo.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "426bed44694257e75177f0b7e31fa3e0ffbe324832466e6b49faa51cbf40eb83",
+      "current_stable_field_fingerprint_sha256": "426bed44694257e75177f0b7e31fa3e0ffbe324832466e6b49faa51cbf40eb83"
+    },
+    {
+      "shard": "04",
+      "rn": 59,
+      "unified_id": "UNI-ext-4ebb2a7c66",
+      "primary_name": "公募情報一覧へ",
+      "source_url": "https://www.jst.go.jp/bosyu/bosyu.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d8eadec5cf956ca1932fe16082289e74992fbb46f3918e02d80a1086d327b02e",
+      "current_stable_field_fingerprint_sha256": "d8eadec5cf956ca1932fe16082289e74992fbb46f3918e02d80a1086d327b02e"
+    },
+    {
+      "shard": "04",
+      "rn": 60,
+      "unified_id": "UNI-ext-724890dc1f",
+      "primary_name": "創発的研究支援事業 2026年度研究提案募集",
+      "source_url": "https://www.jst.go.jp/souhatsu/call/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "4c12222468bdaee86923e1ce095f5c52fd9a3e08d2af1a9377e3c44a729ad9d2",
+      "current_stable_field_fingerprint_sha256": "4c12222468bdaee86923e1ce095f5c52fd9a3e08d2af1a9377e3c44a729ad9d2"
+    },
+    {
+      "shard": "05",
+      "rn": 61,
+      "unified_id": "UNI-f4ea790ad4",
+      "primary_name": "危機対応後経営安定資金（セーフティネット貸付）",
+      "source_url": "https://www.jfc.go.jp/n/finance/saftynet/index.html",
+      "source_domain": "www.jfc.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "89f96113629bc29c0d5724998ab0113a55df42c143dfe3462582986586e2b4ca",
+      "current_stable_field_fingerprint_sha256": "89f96113629bc29c0d5724998ab0113a55df42c143dfe3462582986586e2b4ca"
+    },
+    {
+      "shard": "05",
+      "rn": 62,
+      "unified_id": "UNI-8d754d9e9d",
+      "primary_name": "和歌山 次世代につなぐ果樹産地づくり事業",
+      "source_url": "https://www.pref.wakayama.lg.jp/prefg/070300/kajyusantisaisei/index.html",
+      "source_domain": "www.pref.wakayama.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "3b2a8f859e1d7b4d42c0487e9f7bba85e779d5f1a9fdbe9391d6cd236a8fecb8",
+      "current_stable_field_fingerprint_sha256": "3b2a8f859e1d7b4d42c0487e9f7bba85e779d5f1a9fdbe9391d6cd236a8fecb8"
+    },
+    {
+      "shard": "05",
+      "rn": 63,
+      "unified_id": "UNI-074c19fc26",
+      "primary_name": "垂水市新規就農者機械・施設整備事業",
+      "source_url": "http://www.city.tarumizu.lg.jp/nosei/kurashi/sangyo/nogyo/sien/syuunousya_sien.html",
+      "source_domain": "www.city.tarumizu.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "aba2fb6738a9d6482ea2638ed03f0635ad6c3f59a0eae309d57a6ac22d8809bb",
+      "current_stable_field_fingerprint_sha256": "aba2fb6738a9d6482ea2638ed03f0635ad6c3f59a0eae309d57a6ac22d8809bb"
+    },
+    {
+      "shard": "05",
+      "rn": 64,
+      "unified_id": "UNI-583537bc07",
+      "primary_name": "多面的機能支払交付金",
+      "source_url": "https://www.maff.go.jp/j/nousin/kantai/multifunc.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 403,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 403,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "1c4b6ddc942e8d0f13e8f969d2fd6c857a6d20390de23c659e466f17897cdbb9",
+      "current_stable_field_fingerprint_sha256": "1c4b6ddc942e8d0f13e8f969d2fd6c857a6d20390de23c659e466f17897cdbb9"
+    },
+    {
+      "shard": "05",
+      "rn": 65,
+      "unified_id": "UNI-ext-1b5f59a3d2",
+      "primary_name": "大企業等のスタートアップ連携・調達加速化事業（HiP）",
+      "source_url": "https://www.nedo.go.jp/koubo/CA1_100534.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "8ab82bfc0d007a1cd571cbd032d02585cbedf64d7fddab1622a46b11de0a1f1a",
+      "current_stable_field_fingerprint_sha256": "8ab82bfc0d007a1cd571cbd032d02585cbedf64d7fddab1622a46b11de0a1f1a"
+    },
+    {
+      "shard": "05",
+      "rn": 66,
+      "unified_id": "UNI-ext-ef40b5b2f6",
+      "primary_name": "大学発ベンチャー表彰2026　募集のお知らせ",
+      "source_url": "https://www.jst.go.jp/aas/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "916c889dbb8b7acaf2c02c59ebae1a482b62c7773e074ed20e7e19ebd91d244a",
+      "current_stable_field_fingerprint_sha256": "916c889dbb8b7acaf2c02c59ebae1a482b62c7773e074ed20e7e19ebd91d244a"
+    },
+    {
+      "shard": "05",
+      "rn": 67,
+      "unified_id": "UNI-ext-90f6610ac9",
+      "primary_name": "大学発新産業創出基金事業　早暁プログラム第３期ステージ1（令和8年度）公募",
+      "source_url": "https://www.jst.go.jp/program/startupkikin/sogyo-sp/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "3b2cd894baac126679e0c9b52cfab94b208e52073ed8a77b8dd7da30611c6acf",
+      "current_stable_field_fingerprint_sha256": "3b2cd894baac126679e0c9b52cfab94b208e52073ed8a77b8dd7da30611c6acf"
+    },
+    {
+      "shard": "05",
+      "rn": 68,
+      "unified_id": "UNI-ext-0149af7687",
+      "primary_name": "大学発新産業創出基金事業　早暁プログラム（第2期ステージ2）　募集",
+      "source_url": "https://www.jst.go.jp/program/startupkikin/sogyo/koubo-term2-2.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "5ddad164c9598e905971e06093f405c76ef7c3a5a08fb7366ace14c262157eb0",
+      "current_stable_field_fingerprint_sha256": "5ddad164c9598e905971e06093f405c76ef7c3a5a08fb7366ace14c262157eb0"
+    },
+    {
+      "shard": "05",
+      "rn": 69,
+      "unified_id": "UNI-ext-5f0960827c",
+      "primary_name": "小規模事業者持続化補助金 一般型 通常枠 (第19回)",
+      "source_url": "https://r6.jizokukahojokin.info/",
+      "source_domain": "r6.jizokukahojokin.info",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "41eace8fc840d59aae266a2508f477afa69a68692f20081c07ed1f617ae08f58",
+      "current_stable_field_fingerprint_sha256": "41eace8fc840d59aae266a2508f477afa69a68692f20081c07ed1f617ae08f58"
+    },
+    {
+      "shard": "05",
+      "rn": 70,
+      "unified_id": "UNI-aee24f11e3",
+      "primary_name": "小規模事業者持続化補助金（一般型・通常枠）商工会地区分（第19回）",
+      "source_url": "https://www.jizokukanb.com/jizokuka_r6h/",
+      "source_domain": "www.jizokukanb.com",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "485f759937f80a126da58367ce72aecd6bf7d00fe457e097452f6192dfc9d35a",
+      "current_stable_field_fingerprint_sha256": "485f759937f80a126da58367ce72aecd6bf7d00fe457e097452f6192dfc9d35a"
+    },
+    {
+      "shard": "05",
+      "rn": 71,
+      "unified_id": "UNI-d7625f297d",
+      "primary_name": "小規模事業者持続化補助金（創業型）商工会地区分（第3回）",
+      "source_url": "https://r6.jizokukahojokin.info/sogyo/",
+      "source_domain": "r6.jizokukahojokin.info",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "a866fdb58ac5c51964afad40e489eb0a1f2226ddb080b017a388f10180cb54c3",
+      "current_stable_field_fingerprint_sha256": "a866fdb58ac5c51964afad40e489eb0a1f2226ddb080b017a388f10180cb54c3"
+    },
+    {
+      "shard": "05",
+      "rn": 72,
+      "unified_id": "UNI-70bbd090cd",
+      "primary_name": "山形 さくらんぼ温暖化対応技術導入推進事業",
+      "source_url": "https://www.pref.yamagata.jp/140001/sangyo/nourinsuisangyou/nogyo/keikakukaigiyosan/gyakubiki/r7gyakubikirinougyou.html",
+      "source_domain": "www.pref.yamagata.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "bccc2893b34090939181e7fb294a65bc6572a05b2b6c1ec6ed3cc11e00f69a6a",
+      "current_stable_field_fingerprint_sha256": "bccc2893b34090939181e7fb294a65bc6572a05b2b6c1ec6ed3cc11e00f69a6a"
+    },
+    {
+      "shard": "05",
+      "rn": 73,
+      "unified_id": "UNI-4ab082bde9",
+      "primary_name": "山形 園芸やまがた産地発展サポート事業",
+      "source_url": "https://www.pref.yamagata.jp/140001/sangyo/nourinsuisangyou/nogyo/keikakukaigiyosan/gyakubiki/r7gyakubikirinougyou.html",
+      "source_domain": "www.pref.yamagata.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "185989687ccb61f78c24ab19691a61f708e9d8030940340ef907b283d7fe3ca0",
+      "current_stable_field_fingerprint_sha256": "185989687ccb61f78c24ab19691a61f708e9d8030940340ef907b283d7fe3ca0"
+    },
+    {
+      "shard": "05",
+      "rn": 74,
+      "unified_id": "UNI-c1827149c1",
+      "primary_name": "広島 アグリチャレンジ・ゼロ資金 経営開始支援",
+      "source_url": "https://www.pref.hiroshima.lg.jp/site/nougyouseidoshikin/agri-challenge.html",
+      "source_domain": "www.pref.hiroshima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "ad7834e07daab51b5c982af7bfe1d207f685c339b58c24e137bd833c1b0d1e71",
+      "current_stable_field_fingerprint_sha256": "ad7834e07daab51b5c982af7bfe1d207f685c339b58c24e137bd833c1b0d1e71"
+    },
+    {
+      "shard": "05",
+      "rn": 75,
+      "unified_id": "UNI-6b18c2cc13",
+      "primary_name": "広島県 無担保スピード保証融資",
+      "source_url": "https://www.pref.hiroshima.lg.jp/soshiki/75/1168838718427.html",
+      "source_domain": "www.pref.hiroshima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "ff4d10ff1483ab35c475a76e6486479cbe6f30bc11884168e6e6924ee612bfa2",
+      "current_stable_field_fingerprint_sha256": "ff4d10ff1483ab35c475a76e6486479cbe6f30bc11884168e6e6924ee612bfa2"
+    },
+    {
+      "shard": "06",
+      "rn": 76,
+      "unified_id": "UNI-ext-6224db3d79",
+      "primary_name": "戦略的創造研究推進事業 ALCA-Nextにおける2026年度研究開発提案の募集について",
+      "source_url": "https://www.jst.go.jp/alca/koubo/2026/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d4b81d84be1ea649821b3834636188e52e892d7c339b8d2fe227dc44a119b5bd",
+      "current_stable_field_fingerprint_sha256": "d4b81d84be1ea649821b3834636188e52e892d7c339b8d2fe227dc44a119b5bd"
+    },
+    {
+      "shard": "06",
+      "rn": 77,
+      "unified_id": "UNI-363f999bb2",
+      "primary_name": "持続化補助金 一般型 通常枠 商工会版 第19回",
+      "source_url": "https://www.jizokukanb.com/jizokuka_r6h/",
+      "source_domain": "www.jizokukanb.com",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "4093e32fdf884845e0cd7d28c06e35b8180017fa4beed5f6ee8c526550431e6a",
+      "current_stable_field_fingerprint_sha256": "4093e32fdf884845e0cd7d28c06e35b8180017fa4beed5f6ee8c526550431e6a"
+    },
+    {
+      "shard": "06",
+      "rn": 78,
+      "unified_id": "UNI-eedb2ef135",
+      "primary_name": "持続化補助金 創業型 商工会版 第3回",
+      "source_url": "https://r6.jizokukahojokin.info/sogyo/",
+      "source_domain": "r6.jizokukahojokin.info",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e63e189500716f210aba3333e9d6decc8b32eae44558a3f1247075d567153882",
+      "current_stable_field_fingerprint_sha256": "e63e189500716f210aba3333e9d6decc8b32eae44558a3f1247075d567153882"
+    },
+    {
+      "shard": "06",
+      "rn": 79,
+      "unified_id": "UNI-ext-31ee303070",
+      "primary_name": "政府及び政府系機関のスタートアップ支援施策に係る実態分析及び支援ニーズ調査",
+      "source_url": "https://www.nedo.go.jp/koubo/CA2_100525.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "c42cbb1ebd0a55c64bad14d2a37e7b3b071e6a1980229062dbcee01590822681",
+      "current_stable_field_fingerprint_sha256": "c42cbb1ebd0a55c64bad14d2a37e7b3b071e6a1980229062dbcee01590822681"
+    },
+    {
+      "shard": "06",
+      "rn": 80,
+      "unified_id": "UNI-a729fbb301",
+      "primary_name": "新発田市強い農林水産業づくり支援事業",
+      "source_url": "https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/004/695/yoko.pdf",
+      "source_domain": "www.city.shibata.lg.jp",
+      "source_format_guess": "pdf",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "6acf7e3f8808494cc64852f769e08c59f4cb410cbfb36e0cb7408085a098dffb",
+      "current_stable_field_fingerprint_sha256": "6acf7e3f8808494cc64852f769e08c59f4cb410cbfb36e0cb7408085a098dffb"
+    },
+    {
+      "shard": "06",
+      "rn": 81,
+      "unified_id": "UNI-a876aa5445",
+      "primary_name": "新規就農者への補助事業",
+      "source_url": "https://www.city.nagaoka.niigata.jp/sangyou/cate04/ninaite/new-farmer.html",
+      "source_domain": "www.city.nagaoka.niigata.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d425758ae010d8d1db7f1f922ee7e1f9c75be9c6fd32488834d28511190e997e",
+      "current_stable_field_fingerprint_sha256": "d425758ae010d8d1db7f1f922ee7e1f9c75be9c6fd32488834d28511190e997e"
+    },
+    {
+      "shard": "06",
+      "rn": 82,
+      "unified_id": "UNI-7c132d1a4a",
+      "primary_name": "新規就農者チャレンジ事業",
+      "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/260126.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 403,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 403,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "2008133c62ebe1a43f5135bdca8b6b792aada2d051b0618837b7479f222f2031",
+      "current_stable_field_fingerprint_sha256": "2008133c62ebe1a43f5135bdca8b6b792aada2d051b0618837b7479f222f2031"
+    },
+    {
+      "shard": "06",
+      "rn": 83,
+      "unified_id": "UNI-bdea97be24",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業・経営開始資金）",
+      "source_url": "https://www.city.tanabe.lg.jp/nougyou/ssist.html",
+      "source_domain": "www.city.tanabe.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "59448c81a5c6566b3ef18eace5788e617203847baf18981d72c81d22292ccf3d",
+      "current_stable_field_fingerprint_sha256": "59448c81a5c6566b3ef18eace5788e617203847baf18981d72c81d22292ccf3d"
+    },
+    {
+      "shard": "06",
+      "rn": 84,
+      "unified_id": "UNI-088d217f06",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業）",
+      "source_url": "https://www.city.okayama.jp/jigyosha/0000016954.html",
+      "source_domain": "www.city.okayama.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "b9b19d660301bb1a6737ea5faa303447e96525d5125c06620581281776a86c5f",
+      "current_stable_field_fingerprint_sha256": "b9b19d660301bb1a6737ea5faa303447e96525d5125c06620581281776a86c5f"
+    },
+    {
+      "shard": "06",
+      "rn": 85,
+      "unified_id": "UNI-ext-919f373766",
+      "primary_name": "木質バイオマス燃料等の安定的・効率的な供給・利用システム構築支援事業",
+      "source_url": "https://www.nedo.go.jp/koubo/FF1_100464.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "17ec9e16702e560c7448ac6c472af5d256183cbc39a778b0f3029cf9f3a7a487",
+      "current_stable_field_fingerprint_sha256": "17ec9e16702e560c7448ac6c472af5d256183cbc39a778b0f3029cf9f3a7a487"
+    },
+    {
+      "shard": "06",
+      "rn": 86,
+      "unified_id": "UNI-ext-60e34ce4df",
+      "primary_name": "東京都 家庭のゼロエミッション行動推進事業",
+      "source_url": "https://sii.or.jp/zeroemi/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "39f0889535da0564bb6978cbbd0eafa3fefad369e7baf15f2edc282e6ab34246",
+      "current_stable_field_fingerprint_sha256": "39f0889535da0564bb6978cbbd0eafa3fefad369e7baf15f2edc282e6ab34246"
+    },
+    {
+      "shard": "06",
+      "rn": 87,
+      "unified_id": "UNI-40bc849d45",
+      "primary_name": "東京都サイバーセキュリティ対策促進助成金",
+      "source_url": "https://www.tokyo-kosha.or.jp/support/josei/jigyo/cybersecurity.html",
+      "source_domain": "www.tokyo-kosha.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "1bac4914360826c2da9e6550347ee333c105cd797f3ca3849ebba04df343ea37",
+      "current_stable_field_fingerprint_sha256": "1bac4914360826c2da9e6550347ee333c105cd797f3ca3849ebba04df343ea37"
+    },
+    {
+      "shard": "06",
+      "rn": 88,
+      "unified_id": "UNI-bca74fc343",
+      "primary_name": "東京都ゼロエミッション化省エネ設備導入支援事業",
+      "source_url": "https://www.tokyo-co2down.jp/subsidy/zeroemi-shoene",
+      "source_domain": "www.tokyo-co2down.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "66a3992268c71146ef44ef985e1949bb94770faa1f4e81e3709db1f5d365a3cc",
+      "current_stable_field_fingerprint_sha256": "66a3992268c71146ef44ef985e1949bb94770faa1f4e81e3709db1f5d365a3cc"
+    },
+    {
+      "shard": "06",
+      "rn": 89,
+      "unified_id": "UNI-4d5836061d",
+      "primary_name": "東広島市新規就農者初期投資支援事業",
+      "source_url": "https://www.city.higashihiroshima.lg.jp/soshiki/sangyo/8/6/39546.html",
+      "source_domain": "www.city.higashihiroshima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "7778664a5fd828aa9504829b349eac38e884285b84bec4ac9ce143c9dd8d8c9a",
+      "current_stable_field_fingerprint_sha256": "7778664a5fd828aa9504829b349eac38e884285b84bec4ac9ce143c9dd8d8c9a"
+    },
+    {
+      "shard": "06",
+      "rn": 90,
+      "unified_id": "UNI-ext-81c2277fed",
+      "primary_name": "水循環（水資源有効利用）に係る俯瞰調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA2_100270.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "6e604a41f9c3ef0e6dcf94a1db37983184b856e268f0d993db759d1fc8d4dcc4",
+      "current_stable_field_fingerprint_sha256": "6e604a41f9c3ef0e6dcf94a1db37983184b856e268f0d993db759d1fc8d4dcc4"
+    },
+    {
+      "shard": "07",
+      "rn": 91,
+      "unified_id": "UNI-795e155ee7",
+      "primary_name": "環境保全型農業直接支払交付金",
+      "source_url": "https://www.maff.go.jp/j/seisan/kankyo/kakyou_chokubarai/mainp.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "77cfee0523d3da3055b3d71de9848ad7c0ae2b4fa781724d4287489766c21aa8",
+      "current_stable_field_fingerprint_sha256": "77cfee0523d3da3055b3d71de9848ad7c0ae2b4fa781724d4287489766c21aa8"
+    },
+    {
+      "shard": "07",
+      "rn": 92,
+      "unified_id": "UNI-ext-2c9b9479c4",
+      "primary_name": "産業分野等の課題解決に資する数理科学分野の活用に関する産学連携の在り方に関する調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA2_100271.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "424b3e2cc2130bcb105795f08e473af6936e60431485a672b812e01a56f9474c",
+      "current_stable_field_fingerprint_sha256": "424b3e2cc2130bcb105795f08e473af6936e60431485a672b812e01a56f9474c"
+    },
+    {
+      "shard": "07",
+      "rn": 93,
+      "unified_id": "UNI-ext-82e84263ae",
+      "primary_name": "研究成果最適展開支援プログラム（A-STEP）　実装支援（返済型）　2026年度公募",
+      "source_url": "https://www.jst.go.jp/a-step/koubo/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "ceac648d132e3ea39ced027a5e04678ded90c024a5deb483477e2ead9548b951",
+      "current_stable_field_fingerprint_sha256": "ceac648d132e3ea39ced027a5e04678ded90c024a5deb483477e2ead9548b951"
+    },
+    {
+      "shard": "07",
+      "rn": 94,
+      "unified_id": "UNI-ext-fa610b8c0c",
+      "primary_name": "社会技術研究開発事業 2026年度提案募集開始のお知らせ",
+      "source_url": "https://www.jst.go.jp/ristex/proposal/proposal_2026.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "6a16eba6c613be9ddb2ba27fd5b295853ab0778a7191858f9b8af4201181fcb4",
+      "current_stable_field_fingerprint_sha256": "6a16eba6c613be9ddb2ba27fd5b295853ab0778a7191858f9b8af4201181fcb4"
+    },
+    {
+      "shard": "07",
+      "rn": 95,
+      "unified_id": "UNI-5f224060c2",
+      "primary_name": "神石高原○豊とまと用ビニールハウス規模拡大事業",
+      "source_url": "http://www.jinsekigun.jp/town/formation/sangyou1/shinko1/engei-2/",
+      "source_domain": "www.jinsekigun.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "499fbc7a54076e64f70878697587a5ce01eb0d535ea2d266eea8bf5740717e27",
+      "current_stable_field_fingerprint_sha256": "499fbc7a54076e64f70878697587a5ce01eb0d535ea2d266eea8bf5740717e27"
+    },
+    {
+      "shard": "07",
+      "rn": 96,
+      "unified_id": "UNI-ext-f2f29ca9da",
+      "primary_name": "科学技術と社会の未来を考える対話・協働（共創）活動「サイエンスアゴラ連携企画」募集",
+      "source_url": "https://www.jst.go.jp/ristex/variety/co-creation/renkei/",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d4afc78a4cc3b74c578ba369099c6198257e487245a847fbac134e57d05dbd1f",
+      "current_stable_field_fingerprint_sha256": "d4afc78a4cc3b74c578ba369099c6198257e487245a847fbac134e57d05dbd1f"
+    },
+    {
+      "shard": "07",
+      "rn": 97,
+      "unified_id": "UNI-ext-bc2541167a",
+      "primary_name": "第８回輝く女性研究者賞（ジュン アシダ賞）公募開始",
+      "source_url": "https://www.jst.go.jp/diversity/about/award/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "2545d0aafccd84555dededbf719af1808913af4e73ff485c9857650e940cc5ad",
+      "current_stable_field_fingerprint_sha256": "2545d0aafccd84555dededbf719af1808913af4e73ff485c9857650e940cc5ad"
+    },
+    {
+      "shard": "07",
+      "rn": 98,
+      "unified_id": "UNI-245b215ccb",
+      "primary_name": "箕面市経営発展支援事業",
+      "source_url": "https://www.city.minoh.lg.jp/nousei/shinki_shuunou_shien.html",
+      "source_domain": "www.city.minoh.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "cc49923008d1088a57879da537c90e175db343974812d3c79af424c12523f0ab",
+      "current_stable_field_fingerprint_sha256": "cc49923008d1088a57879da537c90e175db343974812d3c79af424c12523f0ab"
+    },
+    {
+      "shard": "07",
+      "rn": 99,
+      "unified_id": "UNI-17e64b14cf",
+      "primary_name": "経営所得安定対策（畑作物の直接支払交付金・米の直接支払交付金等）",
+      "source_url": "https://www.city.maniwa.lg.jp/soshiki/42/",
+      "source_domain": "www.city.maniwa.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e0c6955935f46ebceb1be129aa7b198b4254470efc95b878533f8f95f2b9c4a1",
+      "current_stable_field_fingerprint_sha256": "e0c6955935f46ebceb1be129aa7b198b4254470efc95b878533f8f95f2b9c4a1"
+    },
+    {
+      "shard": "07",
+      "rn": 100,
+      "unified_id": "UNI-6a5a961628",
+      "primary_name": "経営環境変化対応資金（セーフティネット貸付）",
+      "source_url": "https://www.jfc.go.jp/n/finance/saftynet/index.html",
+      "source_domain": "www.jfc.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "109c2cdc7784e99173e610aa7fc6300b2cf58d987578782905d640216a661b70",
+      "current_stable_field_fingerprint_sha256": "109c2cdc7784e99173e610aa7fc6300b2cf58d987578782905d640216a661b70"
+    },
+    {
+      "shard": "07",
+      "rn": 101,
+      "unified_id": "UNI-0e2daaa865",
+      "primary_name": "経営発展支援事業",
+      "source_url": "https://www.city.tsugaru.aomori.jp/soshiki/keizai/nourin/nogyo/7299.html",
+      "source_domain": "www.city.tsugaru.aomori.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "8c29aa447f82fc11bc493f3816ad0d0bf2537a68f0d98296107c088b58e02e30",
+      "current_stable_field_fingerprint_sha256": "8c29aa447f82fc11bc493f3816ad0d0bf2537a68f0d98296107c088b58e02e30"
+    },
+    {
+      "shard": "07",
+      "rn": 102,
+      "unified_id": "UNI-9ad358dbec",
+      "primary_name": "農林業振興基金提案事業補助金",
+      "source_url": "https://www.city.fukushima.fukushima.jp/nougyou-kikaku/nouringyoushinkoukikin.html",
+      "source_domain": "www.city.fukushima.fukushima.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "5b8f4cfc8d000d0a540b1f913595b30812c249cf11604fd1a27875deefee1460",
+      "current_stable_field_fingerprint_sha256": "5b8f4cfc8d000d0a540b1f913595b30812c249cf11604fd1a27875deefee1460"
+    },
+    {
+      "shard": "07",
+      "rn": 103,
+      "unified_id": "UNI-304a4b7448",
+      "primary_name": "農林水産業みらい基金",
+      "source_url": "https://www.miraikikin.org/",
+      "source_domain": "www.miraikikin.org",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "6e07d10ed9b88164adf78b68a5582350b9ca8181146b0ad45456b7406aa2359d",
+      "current_stable_field_fingerprint_sha256": "6e07d10ed9b88164adf78b68a5582350b9ca8181146b0ad45456b7406aa2359d"
+    },
+    {
+      "shard": "07",
+      "rn": 104,
+      "unified_id": "UNI-ext-80e0bfa476",
+      "primary_name": "農業・畜産分野におけるマイクロバイオーム等の産業利用に関する技術動向調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA1_100273.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d896474810aaa2011f59789d497bbc333333a3cf61ec2e518fc201f70f43b164",
+      "current_stable_field_fingerprint_sha256": "d896474810aaa2011f59789d497bbc333333a3cf61ec2e518fc201f70f43b164"
+    },
+    {
+      "shard": "07",
+      "rn": 105,
+      "unified_id": "UNI-a7f77063d5",
+      "primary_name": "農業生産工程管理推進事業（高知県）",
+      "source_url": "https://www.pref.kochi.lg.jp/soshiki/160501",
+      "source_domain": "www.pref.kochi.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "b5480352596481bdef834af895704fb93c8d8bd394b0979ea50809976097e1c5",
+      "current_stable_field_fingerprint_sha256": "b5480352596481bdef834af895704fb93c8d8bd394b0979ea50809976097e1c5"
+    },
+    {
+      "shard": "07",
+      "rn": 106,
+      "unified_id": "UNI-02499eec66",
+      "primary_name": "長崎市_農業経営発展支援事業",
+      "source_url": "https://www.city.nagasaki.lg.jp/page/5942.html",
+      "source_domain": "www.city.nagasaki.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "4f88671926cba1428d15e2627a1f7e832ba9ae373cc2d48e22fb48c708d873c3",
+      "current_stable_field_fingerprint_sha256": "4f88671926cba1428d15e2627a1f7e832ba9ae373cc2d48e22fb48c708d873c3"
+    },
+    {
+      "shard": "07",
+      "rn": 107,
+      "unified_id": "UNI-76ff1702bc",
+      "primary_name": "雇用就農資金",
+      "source_url": "https://www.maff.go.jp/",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "faa727b5b4798985074c296c2f2e33c16a3bc14f014e0be8d3f23b83e423c489",
+      "current_stable_field_fingerprint_sha256": "faa727b5b4798985074c296c2f2e33c16a3bc14f014e0be8d3f23b83e423c489"
+    },
+    {
+      "shard": "07",
+      "rn": 108,
+      "unified_id": "UNI-ext-2450d467f1",
+      "primary_name": "雇用経済部 現在受付中の補助金一覧",
+      "source_url": "https://www.pref.mie.lg.jp/KOYOKEI/HP/m0136700072.htm",
+      "source_domain": "www.pref.mie.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "c751cffe6f63675d247a90efa826927e74558b3e8e02c2ae258edc4a07e2af4b",
+      "current_stable_field_fingerprint_sha256": "c751cffe6f63675d247a90efa826927e74558b3e8e02c2ae258edc4a07e2af4b"
+    },
+    {
+      "shard": "07",
+      "rn": 109,
+      "unified_id": "UNI-08f87b0586",
+      "primary_name": "青年等就農資金",
+      "source_url": "https://www.jfc.go.jp/n/finance/search/seinen.html",
+      "source_domain": "www.jfc.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "73939da8cc7ead29205a04af80c5eac840e2767b66fefd9eddd20f8142a968b2",
+      "current_stable_field_fingerprint_sha256": "73939da8cc7ead29205a04af80c5eac840e2767b66fefd9eddd20f8142a968b2"
+    },
+    {
+      "shard": "07",
+      "rn": 110,
+      "unified_id": "UNI-d33f08a683",
+      "primary_name": "飼料用米等拡大支援事業のうち飼料用米等生産支援事業",
+      "source_url": "https://www.pref.chiba.lg.jp/seisan/kinyuu/seisanhanbai.html#shiryoumaikakudai",
+      "source_domain": "www.pref.chiba.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "07b0e3db1db6793832ffc42cb9e764fa01a6a2a4d2447e739b4968226b7b6698",
+      "current_stable_field_fingerprint_sha256": "07b0e3db1db6793832ffc42cb9e764fa01a6a2a4d2447e739b4968226b7b6698"
+    },
+    {
+      "shard": "07",
+      "rn": 111,
+      "unified_id": "UNI-96ca0b02be",
+      "primary_name": "香川 農畜水産業者未来チャレンジ支援補助金",
+      "source_url": "https://www.pref.kagawa.lg.jp/nouki/tisan/tyarennji_sinnseisyo.html",
+      "source_domain": "www.pref.kagawa.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e4a136fca30bd4c370132dbfaaaedd9c66761275664348207da041f9845cec84",
+      "current_stable_field_fingerprint_sha256": "e4a136fca30bd4c370132dbfaaaedd9c66761275664348207da041f9845cec84"
+    },
+    {
+      "shard": "07",
+      "rn": 112,
+      "unified_id": "UNI-df8a88849f",
+      "primary_name": "高崎農業の将来を考える研究会補助金",
+      "source_url": "https://www.city.takasaki.gunma.jp/docs/2020101400035/files/kenkyukai_youkou.docx",
+      "source_domain": "www.city.takasaki.gunma.jp",
+      "source_format_guess": "docx",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "7e1fcb1e6906abda9b6c4aaea8c417fb6f4b56849fea9ed675bdee841a868c7b",
+      "current_stable_field_fingerprint_sha256": "7e1fcb1e6906abda9b6c4aaea8c417fb6f4b56849fea9ed675bdee841a868c7b"
+    },
+    {
+      "shard": "07",
+      "rn": 113,
+      "unified_id": "UNI-1bdd5c3334",
+      "primary_name": "鳥獣害に強い地域づくり支援事業（補助金・捕獲檻の貸し出し・追払い用花火の配布）",
+      "source_url": "https://www.city.nagahama.lg.jp/category/chojugai/",
+      "source_domain": "www.city.nagahama.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "518ae5c84ab056f7efaafc579a4af4e1b9bc4c8fa9831bfa871a67c3e384f464",
+      "current_stable_field_fingerprint_sha256": "518ae5c84ab056f7efaafc579a4af4e1b9bc4c8fa9831bfa871a67c3e384f464"
+    },
+    {
+      "shard": "07",
+      "rn": 114,
+      "unified_id": "UNI-ext-7c26d9dc62",
+      "primary_name": "～科学技術でSDGsに貢献！～「STI for SDGs」アワード　募集",
+      "source_url": "https://www.jst.go.jp/ristex/sdgs-award/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "635d0e4d94d6c5b80ba61d6bb5199f043279ad59d5b7164b4bccc2da68654fc3",
+      "current_stable_field_fingerprint_sha256": "635d0e4d94d6c5b80ba61d6bb5199f043279ad59d5b7164b4bccc2da68654fc3"
+    }
+  ],
+  "law_comparisons": [
+    {
+      "shard": "08",
+      "unified_id": "LAW-c05677a146",
+      "law_title": "地震保険に関する法律施行令",
+      "source_url": "https://laws.e-gov.go.jp/law/341CO0000000164",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    },
+    {
+      "shard": "08",
+      "unified_id": "LAW-d92d3a3e91",
+      "law_title": "大規模災害からの復興に関する法律施行令",
+      "source_url": "https://laws.e-gov.go.jp/law/425CO0000000237",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    },
+    {
+      "shard": "08",
+      "unified_id": "LAW-5a35ae8f41",
+      "law_title": "災害対策基本法施行令",
+      "source_url": "https://laws.e-gov.go.jp/law/337CO0000000288",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    },
+    {
+      "shard": "08",
+      "unified_id": "LAW-dc8b6600d5",
+      "law_title": "皇太子徳仁親王の婚姻を記念するための五万円の貨幣の形式等に関する政令",
+      "source_url": "https://laws.e-gov.go.jp/law/405CO0000000163",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    },
+    {
+      "shard": "08",
+      "unified_id": "LAW-0ac137c667",
+      "law_title": "通貨の単位及び貨幣の発行等に関する法律施行令",
+      "source_url": "https://laws.e-gov.go.jp/law/363CO0000000050",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    },
+    {
+      "shard": "08",
+      "unified_id": "LAW-479ccc9ed2",
+      "law_title": "サイバー通信情報監理委員会事務局組織令",
+      "source_url": "https://laws.e-gov.go.jp/law/508CO0000000091",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    },
+    {
+      "shard": "08",
+      "unified_id": "LAW-8c74f96713",
+      "law_title": "不当廉売関税等に関する政令",
+      "source_url": "https://laws.e-gov.go.jp/law/406CO0000000416",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    },
+    {
+      "shard": "08",
+      "unified_id": "LAW-288d488714",
+      "law_title": "公立義務教育諸学校の学級編制及び教職員定数の標準に関する法律の一部を改正する法律の施行に伴う経過措置に関する政令",
+      "source_url": "https://laws.e-gov.go.jp/law/508CO0000000087",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    }
+  ],
+  "broken_retry_comparisons": [
+    {
+      "unified_id": "UNI-1bdd5c3334",
+      "primary_name": "鳥獣害に強い地域づくり支援事業（補助金・捕獲檻の貸し出し・追払い用花火の配布）",
+      "source_url": "https://www.city.nagahama.lg.jp/category/chojugai/",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-40bc849d45",
+      "primary_name": "東京都サイバーセキュリティ対策促進助成金",
+      "source_url": "https://www.tokyo-kosha.or.jp/support/josei/jigyo/cybersecurity.html",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-583537bc07",
+      "primary_name": "多面的機能支払交付金",
+      "source_url": "https://www.maff.go.jp/j/nousin/kantai/multifunc.html",
+      "previous_source_last_check_status": 403,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 403,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-5f224060c2",
+      "primary_name": "神石高原○豊とまと用ビニールハウス規模拡大事業",
+      "source_url": "http://www.jinsekigun.jp/town/formation/sangyou1/shinko1/engei-2/",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-7c132d1a4a",
+      "primary_name": "新規就農者チャレンジ事業",
+      "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/260126.html",
+      "previous_source_last_check_status": 403,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 403,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-9ad358dbec",
+      "primary_name": "農林業振興基金提案事業補助金",
+      "source_url": "https://www.city.fukushima.fukushima.jp/nougyou-kikaku/nouringyoushinkoukikin.html",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-a729fbb301",
+      "primary_name": "新発田市強い農林水産業づくり支援事業",
+      "source_url": "https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/004/695/yoko.pdf",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-a7f77063d5",
+      "primary_name": "農業生産工程管理推進事業（高知県）",
+      "source_url": "https://www.pref.kochi.lg.jp/soshiki/160501",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-bdea97be24",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業・経営開始資金）",
+      "source_url": "https://www.city.tanabe.lg.jp/nougyou/ssist.html",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-df8a88849f",
+      "primary_name": "高崎農業の将来を考える研究会補助金",
+      "source_url": "https://www.city.takasaki.gunma.jp/docs/2020101400035/files/kenkyukai_youkou.docx",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-e77bf254c8",
+      "primary_name": "令和7年度一関市農商工連携開発事業費補助金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/7,0,85,html",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-e80e5c7ed2",
+      "primary_name": "一関市水田高収益作物転換特別支援事業交付金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/29,144903,84,html",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    },
+    {
+      "unified_id": "UNI-f6165b8a9c",
+      "primary_name": "とみさと農業気候変動対策支援事業補助金",
+      "source_url": "https://www.city.tomisato.lg.jp/0000015127.html",
+      "previous_source_last_check_status": 404,
+      "previous_source_fail_count": 1,
+      "current_source_last_check_status": 404,
+      "current_source_url_status": "broken",
+      "current_source_fail_count": 1,
+      "diff_status": "no_change"
+    }
+  ],
+  "am_amendment_snapshot_pair_analysis": {
+    "paired_entities": 7298,
+    "raw_snapshot_json_changed": 0,
+    "eligibility_hash_changed": 0,
+    "summary_hash_changed": 0,
+    "entities_with_any_typed_field_change": 6276,
+    "field_change_counts": {
+      "target_set_json": 6155,
+      "amount_max_yen": 629,
+      "subsidy_rate_max": 76,
+      "source_url": 721
+    },
+    "field_change_direction_counts": {
+      "amount_max_yen": {
+        "value_to_null": 629
+      },
+      "subsidy_rate_max": {
+        "value_to_null": 76
+      },
+      "target_set_json": {
+        "value_to_null": 6155
+      },
+      "source_url": {
+        "value_to_null": 721
+      }
+    },
+    "change_combination_counts": {
+      "target_set_json": 4922,
+      "no_change": 1022,
+      "target_set_json+source_url": 657,
+      "amount_max_yen+target_set_json": 472,
+      "amount_max_yen": 90,
+      "amount_max_yen+target_set_json+source_url": 54,
+      "subsidy_rate_max+target_set_json": 33,
+      "subsidy_rate_max": 25,
+      "amount_max_yen+subsidy_rate_max+target_set_json": 13,
+      "source_url": 5,
+      "subsidy_rate_max+target_set_json+source_url": 4,
+      "subsidy_rate_max+source_url": 1
+    },
+    "version_projection_counts": {
+      "1": {
+        "rows": 7298,
+        "amount_non_null": 1350,
+        "subsidy_rate_non_null": 846,
+        "target_set_non_null": 7298,
+        "source_url_non_null": 5096,
+        "source_fetched_at_non_null": 3162,
+        "min_observed_at": "2026-04-24T10:24:48+00:00",
+        "max_observed_at": "2026-04-24T10:24:48+00:00"
+      },
+      "2": {
+        "rows": 7298,
+        "amount_non_null": 721,
+        "subsidy_rate_non_null": 770,
+        "target_set_non_null": 1143,
+        "source_url_non_null": 4375,
+        "source_fetched_at_non_null": 3045,
+        "min_observed_at": "2026-04-24 22:39:26",
+        "max_observed_at": "2026-04-24 22:39:27"
+      }
+    },
+    "top_source_tables_by_field": {
+      "amount_max_yen": {
+        "06_prefecture_programs": 193,
+        "07_new_program_candidates": 96,
+        "16_trade_export_programs": 39,
+        "37_fisheries_aquaculture": 37,
+        "27_chamber_commerce": 25,
+        "40_private_foundations": 24,
+        "66_fisheries_processing_export_deep": 21,
+        "11_mhlw_employment_grants": 19,
+        "24_ip_support": 15,
+        "71_sports_esports_content_deep": 15,
+        "14_retirement_mutual_aid": 12,
+        "29_jeed_disability": 12
+      },
+      "subsidy_rate_max": {
+        "11_mhlw_employment_grants": 24,
+        "24_ip_support": 13,
+        "08_loan_programs": 11,
+        "28_research_grants": 7,
+        "27_chamber_commerce": 6,
+        "37_fisheries_aquaculture": 4,
+        "rd": 2,
+        "148_midwife_maternal_childcare": 1,
+        "14_retirement_mutual_aid": 1,
+        "29_jeed_disability": 1,
+        "131_animal_hospital_veterinary": 1,
+        "56_pharmaceutical_medical_device": 1
+      },
+      "target_set_json": {
+        "provisional": 946,
+        "19_ministry_qa_faq": 552,
+        "20_designated_city_programs": 204,
+        "06_prefecture_programs": 200,
+        "33_prefecture_programs_part2": 190,
+        "07_new_program_candidates": 134,
+        "lg": 120,
+        "08_loan_programs": 95,
+        "40_private_foundations": 75,
+        "rd": 74,
+        "16_trade_export_programs": 66,
+        "11_mhlw_employment_grants": 61
+      },
+      "source_url": {
+        "76_ppp_pfi_public_private": 46,
+        "104_labor_union_wage_talent": 45,
+        "100_shigyo_national_qualifications": 41,
+        "134_life_nonlife_small_short_insurance": 41,
+        "87_children_family_agency_support": 37,
+        "71_sports_esports_content_deep": 34,
+        "120_cosmetics_beauty_industry": 32,
+        "86_diversity_lgbtq_multicultural": 32,
+        "118_product_safety_pse_psc": 30,
+        "127_leisure_facilities_ski_golf_fitness": 30,
+        "155_chemical_petrochemical_manufacturing": 30,
+        "74_vacant_house_housing_safetynet": 30
+      }
+    },
+    "raw_key_match_counts_for_previous_values": {
+      "amount_max_yen": {
+        "amount_max_man_yen": 193,
+        "budget_yen": 96,
+        "application_fee_yen": 59,
+        "budget_r7_initial_yen": 30,
+        "budget_r7_supplementary_yen": 26,
+        "subsidy_cap_jpy": 15,
+        "exam_fee_yen": 11,
+        "subsidy_cap_yen": 11,
+        "fee_jpy": 11,
+        "amount_per_commission_yen": 8,
+        "fee_yen": 8,
+        "__no_exact_raw_key_match__": 7,
+        "amount_total_yen": 6,
+        "capital_max_yen": 4,
+        "amount_daily_max_yen": 4,
+        "amount_monthly_max_yen": 4,
+        "premium_daily_yen": 3,
+        "subsidy_amount_yen": 3,
+        "cap_jpy": 3,
+        "budget_total_yen": 3
+      },
+      "subsidy_rate_max": {
+        "__no_exact_raw_key_match__": 34,
+        "reduction_rate": 13,
+        "interest_rate_base_annual": 11,
+        "selectivity_rate": 7,
+        "pass_rate_latest": 6,
+        "subsidy_rate_of_increase": 1,
+        "interest_rate_pct": 1,
+        "subsidy_rate_sme": 1,
+        "subsidy_rate_national": 1,
+        "funding_rate": 1
+      },
+      "target_set_json": {
+        "__no_exact_raw_key_match__": 6155
+      },
+      "source_url": {
+        "source_primary": 434,
+        "url": 190,
+        "url_primary": 97,
+        "portal_url": 35,
+        "law_url": 2,
+        "guideline_url": 1,
+        "portal_eruboshi": 1,
+        "url_org": 1
+      }
+    },
+    "top_raw_snapshot_keys_version1": {
+      "category": 4145,
+      "confidence": 3258,
+      "fetched_at": 3045,
+      "program_name": 2766,
+      "authority": 2605,
+      "id": 2565,
+      "source_excerpt": 2436,
+      "official_url": 2422,
+      "program_kind": 2215,
+      "source_url": 1953,
+      "subsidy_rate": 1812,
+      "title": 1735,
+      "amount_max_yen": 1700,
+      "legal_basis": 1436,
+      "target_types": 1378,
+      "target_entity": 1080,
+      "note": 1016,
+      "ministry": 965,
+      "primary_name": 960,
+      "origin": 949,
+      "graph_source_id": 946,
+      "notes": 863,
+      "name": 757,
+      "municipality": 750,
+      "prefecture": 747,
+      "authority_level": 746,
+      "authority_name": 746,
+      "source_type": 710,
+      "compatible_with": 598,
+      "source_primary": 580,
+      "summary": 559,
+      "program_name_hint": 552,
+      "question": 552,
+      "answer": 552,
+      "source_section": 552,
+      "record_id": 524,
+      "scope": 518,
+      "target": 497,
+      "collected_at": 477,
+      "primary_source": 474
+    },
+    "samples": {
+      "amount_max_yen": [
+        {
+          "entity_id": "program:07_new_program_candidates:000011:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": 80000000,
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000001:chutaikyo_eligibility_general_a9f9297315",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 300000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000002:chutaikyo_eligibility_wholesale_75c42389c4",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 100000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000003:chutaikyo_eligibility_retail_0086bc3854",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 50000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000004:chutaikyo_eligibility_service_7bbb889d2e",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 50000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:27_chamber_commerce:000000:5d8ffa1cc2",
+          "source_table": "27_chamber_commerce",
+          "previous_value": 20000000,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "authority",
+            "program_kind",
+            "loan_amount_max_yen",
+            "disaster_extra_loan_max_yen",
+            "security_required",
+            "interest_rate_label",
+            "prerequisite_conditions",
+            "use_of_funds",
+            "repayment_period_years",
+            "grace_period_years",
+            "disaster_frame_repayment_setsubi_years"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000001:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": -98000000000,
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000002:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": 576000000000,
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        }
+      ],
+      "subsidy_rate_max": [
+        {
+          "entity_id": "program:27_chamber_commerce:000019:3_cbad51d114",
+          "source_table": "27_chamber_commerce",
+          "previous_value": 0.336,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "authority",
+            "program_kind",
+            "exam_fee_yen",
+            "pass_rate_latest",
+            "pass_rate_source_period",
+            "candidates_latest",
+            "passers_latest",
+            "exam_types",
+            "net_exam_pass_rate",
+            "net_exam_period",
+            "net_exam_candidates"
+          ]
+        },
+        {
+          "entity_id": "program:27_chamber_commerce:000020:2_6ab8095700",
+          "source_table": "27_chamber_commerce",
+          "previous_value": 0.151,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "authority",
+            "program_kind",
+            "exam_fee_yen",
+            "pass_rate_latest",
+            "pass_rate_source_period",
+            "candidates_latest",
+            "passers_latest",
+            "net_exam_pass_rate",
+            "net_exam_period",
+            "net_exam_candidates",
+            "official_url"
+          ]
+        },
+        {
+          "entity_id": "program:11_mhlw_employment_grants:000000:89951e76ec",
+          "source_table": "11_mhlw_employment_grants",
+          "previous_value": 0.6666666666666666,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "program_code",
+            "category",
+            "authority",
+            "amount_formula",
+            "amount_daily_max_yen",
+            "subsidy_rate_sme",
+            "subsidy_rate_large",
+            "target_conditions",
+            "application_deadline_type",
+            "duration_max",
+            "required_documents"
+          ]
+        },
+        {
+          "entity_id": "program:11_mhlw_employment_grants:000021:65_f060eab901",
+          "source_table": "11_mhlw_employment_grants",
+          "previous_value": 0.6,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "program_code",
+            "category",
+            "authority",
+            "amount_formula",
+            "amount_min_yen",
+            "amount_max_yen",
+            "subsidy_rate_sme",
+            "subsidy_rate_large",
+            "target_conditions",
+            "application_deadline_type",
+            "duration_max"
+          ]
+        },
+        {
+          "entity_id": "program:148_midwife_maternal_childcare:000001:10762_5c791bccf4",
+          "source_table": "148_midwife_maternal_childcare",
+          "previous_value": 0.988,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "exam_round",
+            "exam_date",
+            "applicants",
+            "passers",
+            "pass_rate_percent",
+            "notes",
+            "competent_agency",
+            "source_primary"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000007:chutaikyo_subsidy_increase_da2d0e9218",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 0.3333,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "benefit_type",
+            "benefit_name",
+            "subsidy_rate_of_increase",
+            "subsidy_duration_months",
+            "premium_cap_for_eligibility_yen",
+            "exclusion_rule",
+            "penalty_rule",
+            "official_url",
+            "fetched_at"
+          ]
+        },
+        {
+          "entity_id": "program:24_ip_support:000000:5a9e3187a5",
+          "source_table": "24_ip_support",
+          "previous_value": 0.5,
+          "new_value": null,
+          "raw_keys": [
+            "program_id",
+            "program_name",
+            "authority",
+            "program_kind",
+            "reduction_rate",
+            "applicable_fees",
+            "target_entity",
+            "prerequisite_requirements",
+            "compatible_with",
+            "official_url",
+            "source_excerpt",
+            "fetched_at"
+          ]
+        },
+        {
+          "entity_id": "program:24_ip_support:000001:832aa6c026",
+          "source_table": "24_ip_support",
+          "previous_value": 0.5,
+          "new_value": null,
+          "raw_keys": [
+            "program_id",
+            "program_name",
+            "authority",
+            "program_kind",
+            "reduction_rate",
+            "applicable_fees",
+            "target_entity",
+            "prerequisite_requirements",
+            "compatible_with",
+            "official_url",
+            "source_excerpt",
+            "fetched_at"
+          ]
+        }
+      ],
+      "target_set_json": [
+        {
+          "entity_id": "program:04_program_documents:000000:23_25d25bdfe8",
+          "source_table": "04_program_documents",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "form_name",
+            "form_type",
+            "form_format",
+            "form_url_direct",
+            "pages",
+            "signature_required",
+            "support_org_needed",
+            "completion_example_url",
+            "source_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000000:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000011:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000001:chutaikyo_eligibility_general_a9f9297315",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000002:chutaikyo_eligibility_wholesale_75c42389c4",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000003:chutaikyo_eligibility_retail_0086bc3854",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000004:chutaikyo_eligibility_service_7bbb889d2e",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000008:chutaikyo_tax_benefit_employer_28449e0681",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "benefit_type",
+            "target",
+            "treatment",
+            "legal_basis",
+            "non_taxable",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        }
+      ],
+      "source_url": [
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000001:841-348348_a077066b53",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/newpage_53881.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "total_diseases",
+            "as_of_date",
+            "added_in_r07",
+            "rename_in_r07",
+            "source_primary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000002:2283557358",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.nanbyou.or.jp/entry/5460",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "copayment_ratio",
+            "upper_limit_ventilator_users",
+            "high_cost_long_term_criteria",
+            "light_high_cost_criteria",
+            "validity_period_years",
+            "max_extension_months",
+            "application_to",
+            "source_primary"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000003:27ef4b0d57",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.shouman.jp/assist/outline",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "total_diseases_r06",
+            "total_diseases_r07",
+            "disease_groups",
+            "age_limit_years",
+            "age_extension_years",
+            "age_extension_condition",
+            "legal_basis",
+            "application_to"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000004:64369_ac8e2f17bf",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/hani/index.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "as_of_date_r06",
+            "total_r06",
+            "added_in_r06",
+            "total_r07",
+            "scope",
+            "competent_agency",
+            "source_primary",
+            "source_pdf"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000005:78_641ace2e3b",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/content/12401000/001562876.pdf",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "effective_date_first_phase",
+            "income_raise_range_pct",
+            "annual_salary_370_770_raise_pct",
+            "annual_outpatient_cap_yen",
+            "source_primary",
+            "source_secondary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000006:dd08aa1b2c",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000084783.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "experience_years_required",
+            "qualification_options",
+            "designation_authority",
+            "document_scope",
+            "source_primary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000007:c9b0e50c04",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000084783.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "eligible_types",
+            "designation_authority",
+            "source_primary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000008:c2177c7ba2",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.nanbyou.or.jp/entry/5860",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "hub_types",
+            "establishment_year",
+            "basis_notification",
+            "source_primary",
+            "source_secondary",
+            "source_type"
+          ]
+        }
+      ]
+    },
+    "finding": "raw_snapshot_json, eligibility_hash, and summary_hash are unchanged for all 7,298 pairs; observed typed-field differences are projection/nullability differences, not source amendments."
+  },
+  "false_positive_false_negative_taxonomy": [
+    {
+      "id": "raw_stable_projection_null_regression",
+      "class": "false_positive",
+      "observed_count": 6276,
+      "symptom": "raw_snapshot_json and hashes are identical, but typed columns move value_to_null in version 2.",
+      "evidence": "7,298/7,298 paired rows have raw_snapshot_json unchanged; 6,276 entities have at least one typed field changed.",
+      "mitigation": "Do not emit amendment diff when raw_snapshot_sha256 and normalized_business_sha256 are unchanged and all typed diffs are projection-only value_to_null. Emit collector_regression_candidate instead."
+    },
+    {
+      "id": "empty_array_to_null_target_set",
+      "class": "false_positive",
+      "observed_count": 6155,
+      "symptom": "target_set_json is [] in version 1 and NULL in version 2.",
+      "evidence": "6,155 target_set_json changes are all value_to_null from the empty array string.",
+      "mitigation": "Normalize NULL, empty string, and [] to an empty target set before diffing; keep raw nullability in projection audit only."
+    },
+    {
+      "id": "non_business_numeric_as_amount",
+      "class": "false_positive",
+      "observed_count": 629,
+      "symptom": "budget_yen, application_fee_yen, exam_fee_yen, capital_max_yen, or tiny/negative values are projected into amount_max_yen, then disappear.",
+      "evidence": "amount changes are 629 value_to_null; source keys include amount_max_man_yen 193, budget_yen 96, application_fee_yen 59, and many non-subsidy keys.",
+      "mitigation": "Store amount_kind with values such as grant_cap, budget, fee, capital_limit, loan_limit; only grant_cap/loan_limit should drive high-severity program amount diffs."
+    },
+    {
+      "id": "non_subsidy_rate_as_subsidy_rate",
+      "class": "false_positive",
+      "observed_count": 76,
+      "symptom": "pass_rate, interest_rate, selectivity_rate, or reduction_rate are projected as subsidy_rate_max.",
+      "evidence": "rate changes are 76 value_to_null; exact raw-key matches include reduction_rate 13, interest_rate_base_annual 11, selectivity_rate 7, pass_rate_latest 6.",
+      "mitigation": "Store rate_kind and compare only rate_kind=subsidy_rate for eligibility/subsidy severity; loan interest and pass/selectivity rates get separate fields."
+    },
+    {
+      "id": "source_url_alias_to_null",
+      "class": "false_positive",
+      "observed_count": 721,
+      "symptom": "source_url column becomes NULL while raw JSON still carries source_primary, url, url_primary, portal_url, or law_url.",
+      "evidence": "source_url changes are 721 value_to_null; previous values match source_primary 434, url 190, url_primary 97.",
+      "mitigation": "Canonical source URL extractor must search ordered aliases and write source_url_extraction_key; URL disappearance with stable raw hash is collector regression, not source removal."
+    },
+    {
+      "id": "boilerplate_footer_contact",
+      "class": "false_positive",
+      "symptom": "footer, contact address, SNS link, organization banner, or access guide changes only.",
+      "mitigation": "Zone-strip footer/contact/nav before normalized_business_sha256; preserve contact hash as low-signal auxiliary field."
+    },
+    {
+      "id": "dynamic_timestamp_counter",
+      "class": "false_positive",
+      "symptom": "generated_at, page updated label without business date, access counter, cache token, or analytics parameter changes.",
+      "mitigation": "Drop known timestamp/counter lines and tracking query parameters; compare only whitelisted business dates such as application start/end and law amendment dates."
+    },
+    {
+      "id": "faq_or_notice_reorder",
+      "class": "false_positive",
+      "symptom": "FAQ, notices, or attachments are reordered with no item body change.",
+      "mitigation": "Hash stable section items by heading+body; suppress pure ordering diffs and emit add/remove/changed item diffs only."
+    },
+    {
+      "id": "pdf_pagination_drift",
+      "class": "false_positive",
+      "symptom": "PDF text extraction changes page numbers, headers, footers, or line breaks only.",
+      "mitigation": "Drop page-number-only lines and repeated header/footer bands before source_text_sha256 and difflib."
+    },
+    {
+      "id": "hash_blind_typed_field_change",
+      "class": "false_negative",
+      "symptom": "eligibility_hash and summary_hash stay unchanged even when amount/target/source_url typed fields change.",
+      "evidence": "Current pairs show 0 hash changes with 7,581 field-level typed differences across amount/rate/target/source_url.",
+      "mitigation": "Add field_fingerprints_json and normalized_business_sha256 that include canonical typed fields; diff typed fields independently from summary/eligibility text hashes."
+    },
+    {
+      "id": "wrong_field_bucket_suppression",
+      "class": "false_negative",
+      "symptom": "A real fee, budget, loan, or interest-rate change is suppressed because it was stored under the wrong generic amount/rate column or normalized away.",
+      "mitigation": "Typed fields need field_kind, unit, source_key, and confidence_rule; compare within kind-specific fields rather than one generic amount/rate slot."
+    },
+    {
+      "id": "source_alias_missing_status_check",
+      "class": "false_negative",
+      "symptom": "The canonical URL field is NULL but raw JSON has a source alias, so source health/status diffs are skipped.",
+      "mitigation": "Canonicalize source URL aliases before status checks; persist source_url_extraction_key and canonical_source_url so missing canonical URL is visible as extractor failure."
+    }
+  ],
+  "schema_design_one_commit": {
+    "goal": "Additive schema that lets an implementer ship source snapshots, typed-field fingerprints, and projection-regression detection in one commit without changing production behavior first.",
+    "tables": [
+      {
+        "name": "am_source_snapshot",
+        "purpose": "One row per entity/source fetch or DB-derived baseline snapshot.",
+        "columns": [
+          [
+            "snapshot_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "run_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "entity_table",
+            "TEXT NOT NULL"
+          ],
+          [
+            "entity_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "source_url",
+            "TEXT"
+          ],
+          [
+            "canonical_source_url",
+            "TEXT"
+          ],
+          [
+            "source_url_extraction_key",
+            "TEXT"
+          ],
+          [
+            "source_domain",
+            "TEXT"
+          ],
+          [
+            "source_format",
+            "TEXT"
+          ],
+          [
+            "robots_policy_checked_at",
+            "TEXT"
+          ],
+          [
+            "source_status_code",
+            "INTEGER"
+          ],
+          [
+            "source_final_url",
+            "TEXT"
+          ],
+          [
+            "source_content_sha256",
+            "TEXT"
+          ],
+          [
+            "source_text_sha256",
+            "TEXT"
+          ],
+          [
+            "source_bytes_len",
+            "INTEGER"
+          ],
+          [
+            "source_fetched_at",
+            "TEXT"
+          ],
+          [
+            "raw_snapshot_sha256",
+            "TEXT"
+          ],
+          [
+            "normalized_business_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "normalized_business_sha256",
+            "TEXT NOT NULL"
+          ],
+          [
+            "typed_fields_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "field_fingerprints_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "noise_profile_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "extractor_version",
+            "TEXT NOT NULL"
+          ],
+          [
+            "projection_version",
+            "TEXT NOT NULL"
+          ],
+          [
+            "created_at",
+            "TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          ]
+        ],
+        "indexes": [
+          "unique(run_id, entity_table, entity_id, canonical_source_url)",
+          "index(entity_table, entity_id, created_at)",
+          "index(canonical_source_url, source_content_sha256)",
+          "index(normalized_business_sha256)"
+        ]
+      },
+      {
+        "name": "am_source_snapshot_field_diff",
+        "purpose": "Field-level diff rows that separate business changes, source-health changes, noise-only changes, and projection regressions.",
+        "columns": [
+          [
+            "diff_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "prev_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "new_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "entity_table",
+            "TEXT NOT NULL"
+          ],
+          [
+            "entity_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "field_name",
+            "TEXT NOT NULL"
+          ],
+          [
+            "field_kind",
+            "TEXT"
+          ],
+          [
+            "prev_value_json",
+            "TEXT"
+          ],
+          [
+            "new_value_json",
+            "TEXT"
+          ],
+          [
+            "prev_field_sha256",
+            "TEXT"
+          ],
+          [
+            "new_field_sha256",
+            "TEXT"
+          ],
+          [
+            "diff_kind",
+            "TEXT NOT NULL"
+          ],
+          [
+            "field_severity",
+            "TEXT NOT NULL"
+          ],
+          [
+            "confidence_rule",
+            "TEXT NOT NULL"
+          ],
+          [
+            "noise_class",
+            "TEXT"
+          ],
+          [
+            "evidence_url",
+            "TEXT"
+          ],
+          [
+            "requires_human_review",
+            "INTEGER NOT NULL DEFAULT 0"
+          ],
+          [
+            "detected_at",
+            "TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          ]
+        ],
+        "indexes": [
+          "unique(prev_snapshot_id, new_snapshot_id, field_name)",
+          "index(entity_table, entity_id, detected_at)",
+          "index(diff_kind, field_severity)"
+        ]
+      },
+      {
+        "name": "am_amendment_projection_audit",
+        "purpose": "Read-only audit companion for existing am_amendment_snapshot pairs; catches stable-raw/projection-null regressions before webhook/user-facing diffs.",
+        "columns": [
+          [
+            "audit_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "entity_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "prev_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "new_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "raw_snapshot_sha256_same",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "eligibility_hash_same",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "summary_hash_same",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "typed_projection_diff_json",
+            "TEXT NOT NULL"
+          ],
+          [
+            "projection_diff_kind",
+            "TEXT NOT NULL"
+          ],
+          [
+            "created_at",
+            "TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          ]
+        ],
+        "indexes": [
+          "unique(prev_snapshot_id, new_snapshot_id)",
+          "index(projection_diff_kind)"
+        ]
+      }
+    ],
+    "diff_kind_values": [
+      "no_change",
+      "typed_field_changed",
+      "source_status_changed",
+      "content_changed",
+      "noise_only",
+      "projection_regression_candidate",
+      "baseline_only"
+    ],
+    "severity_rules": {
+      "critical": [
+        "application_window.end_date closed/extended",
+        "field_kind=grant_cap or loan_limit amount changed",
+        "field_kind=subsidy_rate changed",
+        "eligibility target set added/removed non-empty target",
+        "source_status changed live->broken after prior live"
+      ],
+      "medium": [
+        "application status changed",
+        "new/removed official PDF/doc attachment",
+        "law last_amended_date or revision_status changed"
+      ],
+      "low": [
+        "footer/contact/page-date-only changes",
+        "FAQ order-only changes",
+        "projection nullability with stable raw/hash"
+      ]
+    },
+    "one_commit_acceptance_checks": [
+      "Backfill one baseline run from current DB without external fetch.",
+      "Run pair audit on existing 7,298 am_amendment_snapshot pairs and classify current 6,276 affected entities as projection_regression_candidate, not business amendment.",
+      "Diff query can return no_change / typed_field_changed / source_status_changed for Tier S baseline rows.",
+      "Unit tests cover NULL vs [] target equivalence, source_url alias extraction, amount_kind separation, and stable raw hash with projection loss."
+    ]
+  },
+  "blockers": [
+    "No external refetch was performed in r2, so source-byte content changes after the previous local DB snapshot are out of scope.",
+    "am_amendment_diff still has 0 rows; user-facing amendment notifications should remain gated until real non-projection diffs exist.",
+    "program_law_refs has 0 rows, so law changes cannot yet be propagated to impacted programs locally.",
+    "The existing am_amendment_snapshot hashes do not cover typed field fingerprints; hash-only comparison has a structural false-negative risk."
+  ],
+  "suggested_next_queries": [
+    "with pair as (select p.entity_id, p.raw_snapshot_json p_raw, n.raw_snapshot_json n_raw, p.amount_max_yen p_amt, n.amount_max_yen n_amt from am_amendment_snapshot p join am_amendment_snapshot n on n.entity_id=p.entity_id and n.version_seq=2 where p.version_seq=1) select count(*) from pair where p_raw=n_raw and p_amt is not n_amt;",
+    "select version_seq, count(*), sum(amount_max_yen is not null), sum(target_set_json is not null), sum(source_url is not null) from am_amendment_snapshot group by version_seq;",
+    "select unified_id, primary_name, source_url, source_last_check_status, source_url_status, source_fail_count from programs where tier='S' and excluded=0 and source_url_status<>'live' order by source_last_check_status, primary_name;",
+    "select unified_id, primary_name, amount_max_man_yen, subsidy_rate, application_window_json, source_url_status from programs where tier='S' and excluded=0 order by primary_name limit 114;",
+    "select unified_id, law_title, last_amended_date, revision_status, source_checksum from laws order by last_amended_date desc limit 20;"
+  ],
+  "artifact_object_counts": {
+    "program_comparison_objects": 114,
+    "law_comparison_objects": 8,
+    "broken_retry_comparison_objects": 13,
+    "false_positive_negative_taxonomy_objects": 12,
+    "schema_table_proposals": 3,
+    "am_pair_entities_analyzed": 7298
+  }
+}

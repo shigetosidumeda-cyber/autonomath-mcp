@@ -1,0 +1,121 @@
+[
+  {
+    "source_url": "https://www.mlit.go.jp/report/press/content/001842304.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "low",
+    "reason": "2 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact",
+    "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs."
+  },
+  {
+    "source_url": "https://www.mlit.go.jp/kankocho/content/001386417.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "page_count": 15,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "low",
+    "reason": "15 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact",
+    "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs."
+  },
+  {
+    "source_url": "https://www.mhlw.go.jp/content/11600000/001239692.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "page_count": 18,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "18 pages; text layer extractable; tables detected in sampled pages; fields: deadline,max_amount,required_docs,contact,update_date",
+    "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based."
+  },
+  {
+    "source_url": "https://www.mhlw.go.jp/content/001520023.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "max_amount"
+    ],
+    "parser_risk": "high",
+    "reason": "2 pages; text layer extractable; no tables detected in first sampled pages; fields: max_amount",
+    "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based."
+  },
+  {
+    "source_url": "https://www.mlit.go.jp/jidosha/content/001976721.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "page_count": 14,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "14 pages; text layer extractable; sampled table detected; all target labels found in numbered募集要領",
+    "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs."
+  },
+  {
+    "source_url": "https://www.mhlw.go.jp/content/12000000/001661577.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "page_count": 5,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "5 pages; text layer extractable; no sampled tables; compact MHLW公募要項 exposes applicant/docs/contact but deadline and subsidy-rate are better captured from HTML/related implementation docs",
+    "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based."
+  },
+  {
+    "source_url": "https://www.mhlw.go.jp/content/10600000/001676665.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "page_count": 91,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "deadline",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "91 pages; text layer extractable; no sampled tables; research-grant公募要項 is long and e-Rad-specific, with subsidy-rate not applicable in ordinary grant-parser sense",
+    "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based."
+  }
+]

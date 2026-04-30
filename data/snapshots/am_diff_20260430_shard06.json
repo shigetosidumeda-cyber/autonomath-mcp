@@ -1,0 +1,1211 @@
+{
+  "run_id": "20260430",
+  "run_date": "2026-04-30",
+  "lane": "am_diff_design",
+  "shard": "06",
+  "scope": "Tier S programs 76-90",
+  "source_policy": {
+    "llm_api_called": false,
+    "hosted_model_api_called": false,
+    "external_source_refetch_performed": false,
+    "aggregator_sites_used_as_evidence": false,
+    "raw_html_pdf_bytes_embedded": false,
+    "baseline_mode_reason": "safe small baseline generated from local DB source fields and normalized field fingerprints"
+  },
+  "diff_status": "baseline_only",
+  "common_state": {
+    "programs_state": {
+      "total_programs": 14472,
+      "tier_s_active": 114,
+      "with_source_url": 13956,
+      "with_source_checksum": 8891,
+      "with_source_fetched_at": 14456
+    },
+    "tier_s_programs_state": {
+      "tier_s_rows": 114,
+      "live_urls": 101,
+      "broken_urls": 13,
+      "status_200": 101,
+      "status_403": 2,
+      "status_404": 11,
+      "with_checksum": 64,
+      "missing_checksum": 50,
+      "with_application_window": 85,
+      "with_target_types": 45,
+      "with_funding_purpose": 39,
+      "with_enriched_json": 114,
+      "with_source_mentions_json": 103
+    },
+    "laws_state": {
+      "total_laws": 9484,
+      "current_laws": 9093,
+      "repealed_laws": 391,
+      "with_source_url": 9484,
+      "with_source_checksum": 9484,
+      "with_fetched_at": 9484,
+      "min_last_amended_date": "1872-11-09",
+      "max_last_amended_date": "2026-04-01"
+    },
+    "am_amendment_snapshot_state": {
+      "snapshot_rows": 14596,
+      "snapshot_entities": 7298,
+      "min_observed_at": "2026-04-24 22:39:26",
+      "max_observed_at": "2026-04-24T10:24:48+00:00",
+      "with_amount_max_yen": 2071,
+      "with_subsidy_rate_max": 1616,
+      "with_target_set_json": 8441,
+      "with_eligibility_hash": 14596,
+      "with_summary_hash": 14596,
+      "with_source_url": 9471,
+      "with_source_fetched_at": 6207
+    },
+    "am_amendment_diff_state": {
+      "diff_rows": 0
+    },
+    "am_snapshot_version_pair_state": {
+      "paired_entities": 7298,
+      "eligibility_hash_changed": 0,
+      "summary_hash_changed": 0,
+      "amount_changed": 629,
+      "subsidy_rate_changed": 76,
+      "target_set_changed": 6155,
+      "source_url_changed": 721
+    },
+    "am_source_state": {
+      "total_sources": 97272,
+      "distinct_domains": 1447,
+      "with_license": 97272,
+      "primary_sources": 95487,
+      "secondary_sources": 1692,
+      "active_sources": 97148,
+      "pdf_sources": 1633,
+      "with_content_hash": 96991
+    },
+    "reproducibility_snapshots_state": {
+      "reproducibility_snapshots": 0
+    },
+    "program_law_refs_state": {
+      "refs": 0,
+      "programs_with_refs": 0,
+      "laws_referenced": 0
+    }
+  },
+  "shard_counts": {
+    "program_candidate_count": 15,
+    "live_urls": 11,
+    "broken_urls": 4,
+    "with_stored_source_checksum": 10,
+    "missing_stored_source_checksum": 5,
+    "distinct_source_urls": 15,
+    "formats": {
+      "html": 14,
+      "pdf": 1
+    }
+  },
+  "snapshot_candidates": [
+    {
+      "rn": 76,
+      "unified_id": "UNI-ext-6224db3d79",
+      "primary_name": "戦略的創造研究推進事業 ALCA-Nextにおける2026年度研究開発提案の募集について",
+      "source_url": "https://www.jst.go.jp/alca/koubo/2026/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "戦略的創造研究推進事業 ALCA-Nextにおける2026年度研究開発提案の募集について",
+        "authority_name": "国立研究開発法人 科学技術振興機構 (JST)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "research_grant",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-03-10"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.jst.go.jp/alca/koubo/2026/index.html"
+      },
+      "stable_field_fingerprint_sha256": "d4b81d84be1ea649821b3834636188e52e892d7c339b8d2fe227dc44a119b5bd"
+    },
+    {
+      "rn": 77,
+      "unified_id": "UNI-363f999bb2",
+      "primary_name": "持続化補助金 一般型 通常枠 商工会版 第19回",
+      "source_url": "https://www.jizokukanb.com/jizokuka_r6h/",
+      "source_domain": "www.jizokukanb.com",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "09668a9d52af5f56a1d2b701e202ab3b8059d8ca",
+      "stored_source_checksum_len": 40,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "持続化補助金 一般型 通常枠 商工会版 第19回",
+        "authority_name": "中小企業庁 × 全国商工会連合会",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2026-03-06",
+          "end_date": "2026-04-30",
+          "cycle": "annual",
+          "fiscal_year": null,
+          "round": 19,
+          "submission_route": "shokokai_via_yoshiki4",
+          "note": "商工会地区の事業者向け 一般型 通常枠。第19回公募要領 第6版 (2026-03 公開) が最新。応募は商工会経由 様式4 発行必須。"
+        },
+        "target_types": [
+          "small_business"
+        ],
+        "funding_purpose": [
+          "sales_channel_development",
+          "marketing",
+          "equipment"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.jizokukanb.com/jizokuka_r6h/"
+      },
+      "stable_field_fingerprint_sha256": "4093e32fdf884845e0cd7d28c06e35b8180017fa4beed5f6ee8c526550431e6a"
+    },
+    {
+      "rn": 78,
+      "unified_id": "UNI-eedb2ef135",
+      "primary_name": "持続化補助金 創業型 商工会版 第3回",
+      "source_url": "https://r6.jizokukahojokin.info/sogyo/",
+      "source_domain": "r6.jizokukahojokin.info",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "d0c7328100dcf89c92ac06f47372456aa92c46c1",
+      "stored_source_checksum_len": 40,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "持続化補助金 創業型 商工会版 第3回",
+        "authority_name": "中小企業庁 × 全国商工会連合会",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2026-02-01",
+          "end_date": "2026-05-31",
+          "cycle": "annual",
+          "fiscal_year": null,
+          "round": 3,
+          "submission_route": "shokokai_via_yoshiki4",
+          "note": "創業3年以内の小規模事業者向け創業型。商工会地区分は /sogyo/ サブパス。第3回 申請受付中。"
+        },
+        "target_types": [
+          "small_business"
+        ],
+        "funding_purpose": [
+          "sales_channel_development",
+          "marketing",
+          "equipment"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://r6.jizokukahojokin.info/sogyo/"
+      },
+      "stable_field_fingerprint_sha256": "e63e189500716f210aba3333e9d6decc8b32eae44558a3f1247075d567153882"
+    },
+    {
+      "rn": 79,
+      "unified_id": "UNI-ext-31ee303070",
+      "primary_name": "政府及び政府系機関のスタートアップ支援施策に係る実態分析及び支援ニーズ調査",
+      "source_url": "https://www.nedo.go.jp/koubo/CA2_100525.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "政府及び政府系機関のスタートアップ支援施策に係る実態分析及び支援ニーズ調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-06-08",
+          "page_date": "2026-04-24"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/CA2_100525.html"
+      },
+      "stable_field_fingerprint_sha256": "c42cbb1ebd0a55c64bad14d2a37e7b3b071e6a1980229062dbcee01590822681"
+    },
+    {
+      "rn": 80,
+      "unified_id": "UNI-a729fbb301",
+      "primary_name": "新発田市強い農林水産業づくり支援事業",
+      "source_url": "https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/004/695/yoko.pdf",
+      "source_domain": "www.city.shibata.lg.jp",
+      "source_format_guess": "pdf",
+      "source_url_status": "broken",
+      "source_last_check_status": 404,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 1,
+      "source_fetched_at": "2026-04-22T13:20:57.045412+00:00",
+      "stored_source_checksum": "d8edb00be16e61ee",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "新発田市強い農林水産業づくり支援事業",
+        "authority_name": "（noukaweb 収集）",
+        "prefecture": null,
+        "municipality": "新発田市",
+        "program_kind": null,
+        "amount_max_yen": 3000000,
+        "amount_min_yen": 100000,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2025-04-01",
+          "end_date": "2026-03-31",
+          "fiscal_year": 2025,
+          "cycle": "annual"
+        },
+        "target_types": null,
+        "funding_purpose": [
+          "設備投資",
+          "施設建設",
+          "運転資金",
+          "環境対応"
+        ],
+        "valid_from": "2026-04-22T13:20:57.045412+00:00",
+        "valid_until": null,
+        "source_url": "https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/004/695/yoko.pdf"
+      },
+      "stable_field_fingerprint_sha256": "6acf7e3f8808494cc64852f769e08c59f4cb410cbfb36e0cb7408085a098dffb"
+    },
+    {
+      "rn": 81,
+      "unified_id": "UNI-a876aa5445",
+      "primary_name": "新規就農者への補助事業",
+      "source_url": "https://www.city.nagaoka.niigata.jp/sangyou/cate04/ninaite/new-farmer.html",
+      "source_domain": "www.city.nagaoka.niigata.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "a4f6180805dfa4a1",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "新規就農者への補助事業",
+        "authority_name": "農林水産省",
+        "prefecture": "新潟県",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 12000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": 1.0,
+        "application_window": {
+          "start_date": "2026-03-30",
+          "end_date": null,
+          "cycle": "rolling",
+          "fiscal_year": null,
+          "budget_exhaustion_risk": null,
+          "note": "不明 / end_raw=不明",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": [
+          "認定新規就農者",
+          "非農家"
+        ],
+        "funding_purpose": [
+          "運転資金",
+          "販路開拓"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.city.nagaoka.niigata.jp/sangyou/cate04/ninaite/new-farmer.html"
+      },
+      "stable_field_fingerprint_sha256": "d425758ae010d8d1db7f1f922ee7e1f9c75be9c6fd32488834d28511190e997e"
+    },
+    {
+      "rn": 82,
+      "unified_id": "UNI-7c132d1a4a",
+      "primary_name": "新規就農者チャレンジ事業",
+      "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/260126.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "broken",
+      "source_last_check_status": 403,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 1,
+      "source_fetched_at": "2026-04-22T13:20:57.045412+00:00",
+      "stored_source_checksum": "b79ac9e464da4bf9",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "新規就農者チャレンジ事業",
+        "authority_name": "農林水産省",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 30000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2026-04-01",
+          "end_date": null,
+          "cycle": "annual",
+          "fiscal_year": 2025,
+          "budget_exhaustion_risk": null,
+          "note": "年 1 回公募 (補正予算、都道府県経由ポイント配分)",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": [
+          "new_farmer",
+          "certified_farmer",
+          "corporation"
+        ],
+        "funding_purpose": [
+          "equipment",
+          "facility",
+          "seedling",
+          "livestock_intro"
+        ],
+        "valid_from": "2026-04-22T13:20:57.045412+00:00",
+        "valid_until": null,
+        "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/260126.html"
+      },
+      "stable_field_fingerprint_sha256": "2008133c62ebe1a43f5135bdca8b6b792aada2d051b0618837b7479f222f2031"
+    },
+    {
+      "rn": 83,
+      "unified_id": "UNI-bdea97be24",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業・経営開始資金）",
+      "source_url": "https://www.city.tanabe.lg.jp/nougyou/ssist.html",
+      "source_domain": "www.city.tanabe.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "broken",
+      "source_last_check_status": 404,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 1,
+      "source_fetched_at": "2026-04-22T13:20:57.045412+00:00",
+      "stored_source_checksum": "7133eed610f4f3e9",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "新規就農者育成総合対策（経営発展支援事業・経営開始資金）",
+        "authority_name": "和歌山県田辺市",
+        "prefecture": "和歌山県",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 10000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": null,
+          "end_date": null,
+          "cycle": "rolling",
+          "fiscal_year": null,
+          "budget_exhaustion_risk": null,
+          "note": "不明 / end_raw=不明",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": [
+          "new_farmer"
+        ],
+        "funding_purpose": [
+          "equipment",
+          "facility",
+          "livestock_intro",
+          "seedling",
+          "operating"
+        ],
+        "valid_from": "2026-04-22T13:20:57.045412+00:00",
+        "valid_until": null,
+        "source_url": "https://www.city.tanabe.lg.jp/nougyou/ssist.html"
+      },
+      "stable_field_fingerprint_sha256": "59448c81a5c6566b3ef18eace5788e617203847baf18981d72c81d22292ccf3d"
+    },
+    {
+      "rn": 84,
+      "unified_id": "UNI-088d217f06",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業）",
+      "source_url": "https://www.city.okayama.jp/jigyosha/0000016954.html",
+      "source_domain": "www.city.okayama.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "2004c84e1d246a6f",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "新規就農者育成総合対策（経営発展支援事業）",
+        "authority_name": "岡山県岡山市",
+        "prefecture": "岡山県",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 10000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": 0.75,
+        "application_window": {
+          "start_date": "2012-05-15",
+          "end_date": null,
+          "cycle": "rolling",
+          "fiscal_year": null,
+          "budget_exhaustion_risk": null,
+          "note": "2012年05月15日(火)〜不明 / end_raw=不明",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": [
+          "認定新規就農者",
+          "個人農業者",
+          "非農家"
+        ],
+        "funding_purpose": [
+          "設備投資",
+          "施設建設"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.city.okayama.jp/jigyosha/0000016954.html"
+      },
+      "stable_field_fingerprint_sha256": "b9b19d660301bb1a6737ea5faa303447e96525d5125c06620581281776a86c5f"
+    },
+    {
+      "rn": 85,
+      "unified_id": "UNI-ext-919f373766",
+      "primary_name": "木質バイオマス燃料等の安定的・効率的な供給・利用システム構築支援事業",
+      "source_url": "https://www.nedo.go.jp/koubo/FF1_100464.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "木質バイオマス燃料等の安定的・効率的な供給・利用システム構築支援事業",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/FF1_100464.html"
+      },
+      "stable_field_fingerprint_sha256": "17ec9e16702e560c7448ac6c472af5d256183cbc39a778b0f3029cf9f3a7a487"
+    },
+    {
+      "rn": 86,
+      "unified_id": "UNI-ext-60e34ce4df",
+      "primary_name": "東京都 家庭のゼロエミッション行動推進事業",
+      "source_url": "https://sii.or.jp/zeroemi/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "東京都 家庭のゼロエミッション行動推進事業",
+        "authority_name": "一般社団法人 環境共創イニシアチブ (SII)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://sii.or.jp/zeroemi/"
+      },
+      "stable_field_fingerprint_sha256": "39f0889535da0564bb6978cbbd0eafa3fefad369e7baf15f2edc282e6ab34246"
+    },
+    {
+      "rn": 87,
+      "unified_id": "UNI-40bc849d45",
+      "primary_name": "東京都サイバーセキュリティ対策促進助成金",
+      "source_url": "https://www.tokyo-kosha.or.jp/support/josei/jigyo/cybersecurity.html",
+      "source_domain": "www.tokyo-kosha.or.jp",
+      "source_format_guess": "html",
+      "source_url_status": "broken",
+      "source_last_check_status": 404,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 1,
+      "source_fetched_at": "2026-04-22T13:20:57.045412+00:00",
+      "stored_source_checksum": "45b580a51d7dc09e",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "東京都サイバーセキュリティ対策促進助成金",
+        "authority_name": "",
+        "prefecture": "東京都",
+        "municipality": null,
+        "program_kind": "grant",
+        "amount_max_yen": 5000000,
+        "amount_min_yen": 100000,
+        "subsidy_rate_max": 0.5,
+        "application_window": {
+          "start_date": "2026-05-13",
+          "end_date": "2027-01-15",
+          "fiscal_year": "令和8年度",
+          "cycle": "年 3 回申請受付。第1回: 2026-05-13〜05-19 (交付決定 2026-07下旬、対象期間 2026-08-01〜11-30)。第2回: 2026-09-09〜09-15 (交付決定 2026-11下旬、対象期間 2026-12-01〜2027-03-31)。第3回: 2027-01-08〜01-15 (交付決定 2027-03下旬、対象期間 2027-04-01〜07-31)。"
+        },
+        "target_types": [
+          "corporation",
+          "sole_proprietor"
+        ],
+        "funding_purpose": [
+          "IT/DX"
+        ],
+        "valid_from": "2026-04-22T13:20:57.045412+00:00",
+        "valid_until": null,
+        "source_url": "https://www.tokyo-kosha.or.jp/support/josei/jigyo/cybersecurity.html"
+      },
+      "stable_field_fingerprint_sha256": "1bac4914360826c2da9e6550347ee333c105cd797f3ca3849ebba04df343ea37"
+    },
+    {
+      "rn": 88,
+      "unified_id": "UNI-bca74fc343",
+      "primary_name": "東京都ゼロエミッション化省エネ設備導入支援事業",
+      "source_url": "https://www.tokyo-co2down.jp/subsidy/zeroemi-shoene",
+      "source_domain": "www.tokyo-co2down.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "17bb1e966725a797",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "東京都ゼロエミッション化省エネ設備導入支援事業",
+        "authority_name": "",
+        "prefecture": "東京都",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 45000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": 0.75,
+        "application_window": {
+          "start_date": "2026-04-01",
+          "fiscal_year": "令和8年度",
+          "cycle": "年度内に複数回の交付申請回（第1〜5回）、R8年度は 2026-04-01 から受付開始（2026-04-01 実施要綱・交付要綱・申請様式改正、2026-04-10 募集要項改定）。"
+        },
+        "target_types": [
+          "corporation",
+          "sole_proprietor"
+        ],
+        "funding_purpose": [
+          "設備投資",
+          "環境対応"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.tokyo-co2down.jp/subsidy/zeroemi-shoene"
+      },
+      "stable_field_fingerprint_sha256": "66a3992268c71146ef44ef985e1949bb94770faa1f4e81e3709db1f5d365a3cc"
+    },
+    {
+      "rn": 89,
+      "unified_id": "UNI-4d5836061d",
+      "primary_name": "東広島市新規就農者初期投資支援事業",
+      "source_url": "https://www.city.higashihiroshima.lg.jp/soshiki/sangyo/8/6/39546.html",
+      "source_domain": "www.city.higashihiroshima.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "e2de7cac46516251",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "東広島市新規就農者初期投資支援事業",
+        "authority_name": "市町村",
+        "prefecture": null,
+        "municipality": "東広島市",
+        "program_kind": "subsidy",
+        "amount_max_yen": 100000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": null,
+          "end_date": "2027-02-28",
+          "cycle": "annual",
+          "fiscal_year": "R8 年度（随時受付、R9.2末まで）",
+          "budget_exhaustion_risk": null,
+          "note": " / ",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": [
+          "認定新規就農者"
+        ],
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.city.higashihiroshima.lg.jp/soshiki/sangyo/8/6/39546.html"
+      },
+      "stable_field_fingerprint_sha256": "7778664a5fd828aa9504829b349eac38e884285b84bec4ac9ce143c9dd8d8c9a"
+    },
+    {
+      "rn": 90,
+      "unified_id": "UNI-ext-81c2277fed",
+      "primary_name": "水循環（水資源有効利用）に係る俯瞰調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA2_100270.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "水循環（水資源有効利用）に係る俯瞰調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-05-11",
+          "page_date": "2026-04-13"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/NA2_100270.html"
+      },
+      "stable_field_fingerprint_sha256": "6e604a41f9c3ef0e6dcf94a1db37983184b856e268f0d993db759d1fc8d4dcc4"
+    }
+  ],
+  "law_snapshot_samples_for_design": [],
+  "broken_tier_s_sources_for_retry_design": [],
+  "field_normalization": [
+    "Normalize Unicode with NFKC, collapse whitespace, strip zero-width and control characters.",
+    "Canonicalize URLs by lowercasing scheme/host, removing tracking query params, preserving PDF/doc path and meaningful fragments separately.",
+    "Convert amount_max_man_yen and amount_min_man_yen to integer yen before comparison.",
+    "Normalize subsidy_rate to decimal max rate; do not diff display forms such as 1/2 vs 0.5.",
+    "Parse application_window_json into start_date/end_date/status/fiscal_year/round/cycle and compare typed fields, not raw JSON order.",
+    "Sort and de-duplicate target_types/funding_purpose arrays before hashing.",
+    "For laws, compare law_number, law_title, enforced_date, last_amended_date, revision_status, and source_checksum separately from fetched_at.",
+    "For HTML/PDF text, strip boilerplate zones before low-level difflib: footer/contact/nav/cookie/accessibility/sidebar/breadcrumb/script/style."
+  ],
+  "snapshot_cycle_recommendation": {
+    "open_or_near_deadline_tier_s": "daily while status=open or application_window end_date is present/current; compare typed fields first",
+    "stable_open_ended_loan_tax_pages": "weekly content hash plus typed field check",
+    "e_gov_laws": "weekly catalog checksum, immediate candidate if last_amended_date or revision_status differs",
+    "broken_sources": "retry with backoff and keep 3-strike quarantine evidence separate from business diff",
+    "missing_checksum_rows": "prioritize checksum backfill before declaring field diff"
+  },
+  "false_positive_taxonomy": [
+    {
+      "pattern": "boilerplate_footer_contact",
+      "symptoms": "電話番号、所在地、組織改編、SNS/footer link changes",
+      "mitigation": "zone-strip footer/contact/nav before text hash; keep contact as low-signal auxiliary field"
+    },
+    {
+      "pattern": "dynamic_timestamp_counter",
+      "symptoms": "現在時刻、最終表示日時、access counter、cache bust query",
+      "mitigation": "regex remove timestamps/counters; compare business dates only after label whitelist"
+    },
+    {
+      "pattern": "faq_or_notice_reorder",
+      "symptoms": "FAQ、Q&A、お知らせ一覧の順序だけ変わる",
+      "mitigation": "section item hashing with sorted stable keys; flag only add/remove/changed item bodies"
+    },
+    {
+      "pattern": "pdf_pagination_drift",
+      "symptoms": "ページ番号、ヘッダ/フッタ、改ページ位置の違い",
+      "mitigation": "drop page headers/footers and page-number-only lines before text hash"
+    },
+    {
+      "pattern": "minor_particle_wording",
+      "symptoms": "て・に・を・は、句読点、全半角、令和/西暦併記の揺れ",
+      "mitigation": "NFKC + token-level similarity; suppress if high-signal fields unchanged"
+    },
+    {
+      "pattern": "list_page_churn",
+      "symptoms": "公募一覧ページで他制度の追加が混ざる",
+      "mitigation": "program-specific heading window extraction; fallback to source URL detail page or attachment"
+    },
+    {
+      "pattern": "historical_ingest_metadata",
+      "symptoms": "enriched_json 内の worker_id/model/fetched_at/quality_self_score changes",
+      "mitigation": "exclude ingestion metadata from normalized_business_sha256"
+    }
+  ],
+  "shard_false_positive_focus": [
+    "minor wording shift without amount/deadline change",
+    "Suppress particle-only wording changes when amount, dates, rate, target set, and status are unchanged."
+  ],
+  "schema_suggestion": {
+    "snapshot_candidate_fields": [
+      "snapshot_id",
+      "run_id",
+      "entity_table",
+      "entity_id",
+      "source_url",
+      "source_domain",
+      "source_format",
+      "robots_policy_checked_at",
+      "source_status_code",
+      "source_final_url",
+      "source_content_sha256",
+      "source_text_sha256",
+      "source_bytes_len",
+      "source_fetched_at",
+      "normalized_business_json",
+      "normalized_business_sha256",
+      "noise_profile_json",
+      "extractor_version",
+      "diff_status"
+    ],
+    "diff_candidate_fields": [
+      "diff_id",
+      "prev_snapshot_id",
+      "new_snapshot_id",
+      "entity_id",
+      "field_name",
+      "prev_value_json",
+      "new_value_json",
+      "field_severity",
+      "confidence_rule",
+      "noise_class",
+      "evidence_url",
+      "detected_at",
+      "requires_human_review"
+    ],
+    "severity_rules": {
+      "critical": [
+        "deadline/end_date closed or extended",
+        "amount_max_yen changed",
+        "subsidy_rate_max changed",
+        "eligibility target changed",
+        "source_url became broken after prior live"
+      ],
+      "medium": [
+        "application status changed",
+        "new PDF/doc attachment",
+        "law last_amended_date or revision_status changed"
+      ],
+      "low": [
+        "footer/contact text changed",
+        "page date changed with no business field change",
+        "FAQ ordering changed only"
+      ]
+    }
+  },
+  "blockers": [
+    "No prior data/snapshots/am_diff_* source-byte baseline exists in this checkout, so all shard JSON files are baseline_only.",
+    "am_amendment_diff has 0 rows; current diff behavior cannot be validated against accepted prior diffs.",
+    "Tier S has 13 broken source URLs (11x404, 2x403) and 50 rows missing source_checksum.",
+    "program_law_refs is empty, so program-to-law amendment impact cannot yet be joined from local tables.",
+    "data/autonomath.db is 0 bytes; the populated amendment/source DB used for read-only evidence is /Users/shigetoumeda/jpcite/autonomath.db."
+  ],
+  "suggested_next_queries": [
+    "SELECT unified_id, primary_name, source_url FROM programs WHERE tier='S' AND excluded=0 AND (source_checksum IS NULL OR source_checksum='') AND source_url_status='live' ORDER BY primary_name;",
+    "SELECT unified_id, primary_name, source_url, source_last_check_status, source_fail_count FROM programs WHERE tier='S' AND excluded=0 AND source_url_status='broken' ORDER BY source_last_check_status, primary_name;",
+    "WITH paired AS (...) SELECT entity_id FROM paired WHERE eligibility_hash unchanged AND summary_hash unchanged AND high-signal typed fields changed;",
+    "SELECT unified_id, law_title, last_amended_date, revision_status, source_checksum FROM laws ORDER BY last_amended_date DESC LIMIT 100;",
+    "SELECT source_url, COUNT(*) FROM programs WHERE tier='S' AND excluded=0 GROUP BY source_url HAVING COUNT(*)>1;"
+  ]
+}

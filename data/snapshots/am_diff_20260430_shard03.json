@@ -1,0 +1,1159 @@
+{
+  "run_id": "20260430",
+  "run_date": "2026-04-30",
+  "lane": "am_diff_design",
+  "shard": "03",
+  "scope": "Tier S programs 31-45",
+  "source_policy": {
+    "llm_api_called": false,
+    "hosted_model_api_called": false,
+    "external_source_refetch_performed": false,
+    "aggregator_sites_used_as_evidence": false,
+    "raw_html_pdf_bytes_embedded": false,
+    "baseline_mode_reason": "safe small baseline generated from local DB source fields and normalized field fingerprints"
+  },
+  "diff_status": "baseline_only",
+  "common_state": {
+    "programs_state": {
+      "total_programs": 14472,
+      "tier_s_active": 114,
+      "with_source_url": 13956,
+      "with_source_checksum": 8891,
+      "with_source_fetched_at": 14456
+    },
+    "tier_s_programs_state": {
+      "tier_s_rows": 114,
+      "live_urls": 101,
+      "broken_urls": 13,
+      "status_200": 101,
+      "status_403": 2,
+      "status_404": 11,
+      "with_checksum": 64,
+      "missing_checksum": 50,
+      "with_application_window": 85,
+      "with_target_types": 45,
+      "with_funding_purpose": 39,
+      "with_enriched_json": 114,
+      "with_source_mentions_json": 103
+    },
+    "laws_state": {
+      "total_laws": 9484,
+      "current_laws": 9093,
+      "repealed_laws": 391,
+      "with_source_url": 9484,
+      "with_source_checksum": 9484,
+      "with_fetched_at": 9484,
+      "min_last_amended_date": "1872-11-09",
+      "max_last_amended_date": "2026-04-01"
+    },
+    "am_amendment_snapshot_state": {
+      "snapshot_rows": 14596,
+      "snapshot_entities": 7298,
+      "min_observed_at": "2026-04-24 22:39:26",
+      "max_observed_at": "2026-04-24T10:24:48+00:00",
+      "with_amount_max_yen": 2071,
+      "with_subsidy_rate_max": 1616,
+      "with_target_set_json": 8441,
+      "with_eligibility_hash": 14596,
+      "with_summary_hash": 14596,
+      "with_source_url": 9471,
+      "with_source_fetched_at": 6207
+    },
+    "am_amendment_diff_state": {
+      "diff_rows": 0
+    },
+    "am_snapshot_version_pair_state": {
+      "paired_entities": 7298,
+      "eligibility_hash_changed": 0,
+      "summary_hash_changed": 0,
+      "amount_changed": 629,
+      "subsidy_rate_changed": 76,
+      "target_set_changed": 6155,
+      "source_url_changed": 721
+    },
+    "am_source_state": {
+      "total_sources": 97272,
+      "distinct_domains": 1447,
+      "with_license": 97272,
+      "primary_sources": 95487,
+      "secondary_sources": 1692,
+      "active_sources": 97148,
+      "pdf_sources": 1633,
+      "with_content_hash": 96991
+    },
+    "reproducibility_snapshots_state": {
+      "reproducibility_snapshots": 0
+    },
+    "program_law_refs_state": {
+      "refs": 0,
+      "programs_with_refs": 0,
+      "laws_referenced": 0
+    }
+  },
+  "shard_counts": {
+    "program_candidate_count": 15,
+    "live_urls": 13,
+    "broken_urls": 2,
+    "with_stored_source_checksum": 8,
+    "missing_stored_source_checksum": 7,
+    "distinct_source_urls": 15,
+    "formats": {
+      "html": 14,
+      "pdf": 1
+    }
+  },
+  "snapshot_candidates": [
+    {
+      "rn": 31,
+      "unified_id": "UNI-ext-ad7b51771b",
+      "primary_name": "ゲーミフィケーションを活用した気候変動問題に対する意識変革／行動変容に関する調査",
+      "source_url": "https://www.nedo.go.jp/koubo/EV2_100323.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "ゲーミフィケーションを活用した気候変動問題に対する意識変革／行動変容に関する調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-04-28",
+          "page_date": "2026-04-15"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/EV2_100323.html"
+      },
+      "stable_field_fingerprint_sha256": "04c9365053f094e120badbdac49e441d25732d237bc99d9fda040aab646bec9c"
+    },
+    {
+      "rn": 32,
+      "unified_id": "UNI-ext-6e1e590edd",
+      "primary_name": "サイエンスアゴラ2026の出展企画募集について",
+      "source_url": "https://www.jst.go.jp/sis/scienceagora/2026/entry.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "サイエンスアゴラ2026の出展企画募集について",
+        "authority_name": "国立研究開発法人 科学技術振興機構 (JST)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "research_grant",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-04-09"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.jst.go.jp/sis/scienceagora/2026/entry.html"
+      },
+      "stable_field_fingerprint_sha256": "b90c5ff2847addbfe34d48f6989944cd7e192616188d53614be62b00867fbc81"
+    },
+    {
+      "rn": 33,
+      "unified_id": "UNI-6b32629951",
+      "primary_name": "スマート農業技術の開発・実証プロジェクト",
+      "source_url": "https://www.naro.go.jp/smart-nogyo/index.html",
+      "source_domain": "www.naro.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "be9dcd44104abcb4",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "スマート農業技術の開発・実証プロジェクト",
+        "authority_name": "農林水産省/農研機構",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 100000000,
+        "amount_min_yen": 10000000,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2025-12-23",
+          "end_date": "2026-01-16",
+          "cycle": "annual",
+          "fiscal_year": 2025,
+          "budget_exhaustion_risk": null,
+          "note": "年1〜2回公募",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": [
+          "認定農業者",
+          "法人全般"
+        ],
+        "funding_purpose": [
+          "IT/DX"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.naro.go.jp/smart-nogyo/index.html"
+      },
+      "stable_field_fingerprint_sha256": "f9880aaa8bca92e6fc8eb9fa9bd1d1c3ec8f9eb72481a6d85ba5848bb23f4f1f"
+    },
+    {
+      "rn": 34,
+      "unified_id": "UNI-5d6de166e3",
+      "primary_name": "スマート農業推進事業（機械設備導入）",
+      "source_url": "https://www.maff.go.jp/j/kanbo/smart/",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "9220518c6410c494",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "スマート農業推進事業（機械設備導入）",
+        "authority_name": "（noukaweb 収集）",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": null,
+        "amount_max_yen": 5000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2025-12-23",
+          "end_date": "2026-01-16",
+          "fiscal_year": 2025,
+          "cycle": "annual"
+        },
+        "target_types": [
+          "any",
+          "corporation",
+          "group"
+        ],
+        "funding_purpose": [
+          "equipment",
+          "other"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.maff.go.jp/j/kanbo/smart/"
+      },
+      "stable_field_fingerprint_sha256": "4ba3df88845769e60072763f9ba2a931de805338bb3c65c40b0b5ca3e8ecb1e9"
+    },
+    {
+      "rn": 35,
+      "unified_id": "UNI-ext-e5407b0970",
+      "primary_name": "フロンティア領域の導出に資する技術インテリジェンスの高度化に係る調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA2_100268.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "フロンティア領域の導出に資する技術インテリジェンスの高度化に係る調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-05-11",
+          "page_date": "2026-04-13"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/NA2_100268.html"
+      },
+      "stable_field_fingerprint_sha256": "dfcffd51e64c1b171cab307a385890802fb441b917f066c19cb9c907d2ab0b76"
+    },
+    {
+      "rn": 36,
+      "unified_id": "UNI-ext-c1680532c3",
+      "primary_name": "プログラムマネージャーの育成・活躍推進プログラム（PM研修） 令和８年度公募",
+      "source_url": "https://www.jst.go.jp/innov-jinzai/program/pm/koubo.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "プログラムマネージャーの育成・活躍推進プログラム（PM研修） 令和８年度公募",
+        "authority_name": "国立研究開発法人 科学技術振興機構 (JST)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "research_grant",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-04-22"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.jst.go.jp/innov-jinzai/program/pm/koubo.html"
+      },
+      "stable_field_fingerprint_sha256": "7f6f8c8b077c305fe1dd7f8532bf5f50bd0407299e51c7982afa323426befcd2"
+    },
+    {
+      "rn": 37,
+      "unified_id": "UNI-ext-950f443a8e",
+      "primary_name": "プロジェクト推進型 SBIRフェーズ１支援",
+      "source_url": "https://www.jst.go.jp/start/sbir/call2026.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "プロジェクト推進型 SBIRフェーズ１支援",
+        "authority_name": "国立研究開発法人 科学技術振興機構 (JST)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "research_grant",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-03-23"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.jst.go.jp/start/sbir/call2026.html"
+      },
+      "stable_field_fingerprint_sha256": "6404cd4f9dbe3c78fb3806ade491eda798eb700e4b98616e386bd8db61357e79"
+    },
+    {
+      "rn": 38,
+      "unified_id": "UNI-ext-affc02cb8c",
+      "primary_name": "ベルモント・フォーラムCRA「海洋：自然環境と人類の幸福に向けた生物多様性と生態系の持続可能性の希求」",
+      "source_url": "https://www.jst.go.jp/inter/program/announce/announce_belmont_ocean2025.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "ベルモント・フォーラムCRA「海洋：自然環境と人類の幸福に向けた生物多様性と生態系の持続可能性の希求」",
+        "authority_name": "国立研究開発法人 科学技術振興機構 (JST)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "research_grant",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2025-09-12"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.jst.go.jp/inter/program/announce/announce_belmont_ocean2025.html"
+      },
+      "stable_field_fingerprint_sha256": "2cdb3a628fcea477866e7eb8c287b2072a2db0d829ec10aef50265ae0bbdc8d5"
+    },
+    {
+      "rn": 39,
+      "unified_id": "UNI-e80e5c7ed2",
+      "primary_name": "一関市水田高収益作物転換特別支援事業交付金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/29,144903,84,html",
+      "source_domain": "www.city.ichinoseki.iwate.jp",
+      "source_format_guess": "html",
+      "source_url_status": "broken",
+      "source_last_check_status": 404,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 1,
+      "source_fetched_at": "2026-04-22T13:20:57.045412+00:00",
+      "stored_source_checksum": "1872a99c2ad72dfc",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "一関市水田高収益作物転換特別支援事業交付金",
+        "authority_name": "（noukaweb 収集）",
+        "prefecture": null,
+        "municipality": "一関市",
+        "program_kind": null,
+        "amount_max_yen": 300000,
+        "amount_min_yen": 200000,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2022-06-01",
+          "end_date": "2022-07-29",
+          "fiscal_year": 2022,
+          "cycle": "one_off"
+        },
+        "target_types": [
+          "集落営農",
+          "法人全般"
+        ],
+        "funding_purpose": null,
+        "valid_from": "2026-04-22T13:20:57.045412+00:00",
+        "valid_until": null,
+        "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/29,144903,84,html"
+      },
+      "stable_field_fingerprint_sha256": "5a82a1ae9ed5a00801c3314acfb93daed7d9dc8c177f4170c91ea05c4ebf1922"
+    },
+    {
+      "rn": 40,
+      "unified_id": "UNI-0099a6d1b4",
+      "primary_name": "世代交代・初期投資促進事業（世代交代円滑化タイプ）",
+      "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/hatten.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "07af8db8c7659c36",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "世代交代・初期投資促進事業（世代交代円滑化タイプ）",
+        "authority_name": "",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 10000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": 0.5,
+        "application_window": {
+          "end_date": "2026-01-31",
+          "fiscal_year": "令和7年度補正",
+          "cycle": "市町村経由の要望調査（自治体別の締切設定）"
+        },
+        "target_types": [
+          "corporation",
+          "sole_proprietor"
+        ],
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/hatten.html"
+      },
+      "stable_field_fingerprint_sha256": "d383c31168da57edcbb6ada8f7b06e196f41db94a88ffecf5aa01baa7709f813"
+    },
+    {
+      "rn": 41,
+      "unified_id": "UNI-14e57fbf79",
+      "primary_name": "中小企業成長加速化補助金",
+      "source_url": "https://mirasapo-plus.go.jp/wordpress/wp-content/uploads/2025/12/26100215/2nd_kobo.pdf",
+      "source_domain": "mirasapo-plus.go.jp",
+      "source_format_guess": "pdf",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "9e0bed68fdc11c36",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "中小企業成長加速化補助金",
+        "authority_name": "",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 500000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": 0.5,
+        "application_window": {
+          "start_date": "2026-02-24",
+          "end_date": "2026-03-26",
+          "fiscal_year": 2025,
+          "cycle": "annual"
+        },
+        "target_types": [
+          "corporation"
+        ],
+        "funding_purpose": [
+          "設備投資"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://mirasapo-plus.go.jp/wordpress/wp-content/uploads/2025/12/26100215/2nd_kobo.pdf"
+      },
+      "stable_field_fingerprint_sha256": "57af894f7511f977f5de94fc324f31a96cfc8244040e367e75c875b9844ec376"
+    },
+    {
+      "rn": 42,
+      "unified_id": "UNI-c2d0c7502e",
+      "primary_name": "中小企業等事業再構築促進基金",
+      "source_url": "https://jigyou-saikouchiku.go.jp",
+      "source_domain": "jigyou-saikouchiku.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "77205f8507f66f58",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "中小企業等事業再構築促進基金",
+        "authority_name": "",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "incentive",
+        "amount_max_yen": 100000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2025-02-07",
+          "end_date": "2025-03-26",
+          "fiscal_year": 2024,
+          "cycle": "closed_program_postprocess_only"
+        },
+        "target_types": [
+          "corporation",
+          "sole_proprietor"
+        ],
+        "funding_purpose": [
+          "人件費",
+          "販路開拓"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://jigyou-saikouchiku.go.jp"
+      },
+      "stable_field_fingerprint_sha256": "e5a5023a496f6ba14970e3ba54bb611d2d6ccb62dddb584e096a0650ab8c3b37"
+    },
+    {
+      "rn": 43,
+      "unified_id": "UNI-6cd67b3342",
+      "primary_name": "中山間地域等直接支払交付金",
+      "source_url": "https://www.maff.go.jp/j/nousin/tyusan/siharai_seido/",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "d888b41d139b994d",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "中山間地域等直接支払交付金",
+        "authority_name": "国（農水省等）",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 5000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": 1.0,
+        "application_window": {
+          "start_date": "2026-04-01",
+          "end_date": "2026-06-30",
+          "cycle": "annual",
+          "fiscal_year": 2026,
+          "budget_exhaustion_risk": null,
+          "note": "4月 / ",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": null,
+        "funding_purpose": [
+          "環境対応"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.maff.go.jp/j/nousin/tyusan/siharai_seido/"
+      },
+      "stable_field_fingerprint_sha256": "014cf7fca4918905cc85a203bb0acf63bd8311b2e0a3d2047939a532ac49e81e"
+    },
+    {
+      "rn": 44,
+      "unified_id": "UNI-e77bf254c8",
+      "primary_name": "令和7年度一関市農商工連携開発事業費補助金",
+      "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/7,0,85,html",
+      "source_domain": "www.city.ichinoseki.iwate.jp",
+      "source_format_guess": "html",
+      "source_url_status": "broken",
+      "source_last_check_status": 404,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 1,
+      "source_fetched_at": "2026-04-22T13:20:57.045412+00:00",
+      "stored_source_checksum": "ece447c999cb4cb1",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "令和7年度一関市農商工連携開発事業費補助金",
+        "authority_name": "（noukaweb 収集）",
+        "prefecture": null,
+        "municipality": "年度一関市",
+        "program_kind": null,
+        "amount_max_yen": 1000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2025-04-14",
+          "end_date": "2025-09-30",
+          "fiscal_year": 2025,
+          "cycle": "annual"
+        },
+        "target_types": [
+          "個人農業者",
+          "法人全般"
+        ],
+        "funding_purpose": null,
+        "valid_from": "2026-04-22T13:20:57.045412+00:00",
+        "valid_until": null,
+        "source_url": "https://www.city.ichinoseki.iwate.jp/index.cfm/7,0,85,html"
+      },
+      "stable_field_fingerprint_sha256": "4df5d40e7dc9879a5379996b5de35b566ea7f7f5b15306121a6335808f92eee0"
+    },
+    {
+      "rn": 45,
+      "unified_id": "UNI-ext-a0157f1d08",
+      "primary_name": "令和7年度補正 スマートメーターを活用したディマンドリスポンス実証事業",
+      "source_url": "https://sii.or.jp/smartmeterjisshou07r/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "令和7年度補正 スマートメーターを活用したディマンドリスポンス実証事業",
+        "authority_name": "一般社団法人 環境共創イニシアチブ (SII)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://sii.or.jp/smartmeterjisshou07r/"
+      },
+      "stable_field_fingerprint_sha256": "9b4f933a6fa3ced3966f6f4a194db342b07f2a0213ee317473310622053fed75"
+    }
+  ],
+  "law_snapshot_samples_for_design": [],
+  "broken_tier_s_sources_for_retry_design": [],
+  "field_normalization": [
+    "Normalize Unicode with NFKC, collapse whitespace, strip zero-width and control characters.",
+    "Canonicalize URLs by lowercasing scheme/host, removing tracking query params, preserving PDF/doc path and meaningful fragments separately.",
+    "Convert amount_max_man_yen and amount_min_man_yen to integer yen before comparison.",
+    "Normalize subsidy_rate to decimal max rate; do not diff display forms such as 1/2 vs 0.5.",
+    "Parse application_window_json into start_date/end_date/status/fiscal_year/round/cycle and compare typed fields, not raw JSON order.",
+    "Sort and de-duplicate target_types/funding_purpose arrays before hashing.",
+    "For laws, compare law_number, law_title, enforced_date, last_amended_date, revision_status, and source_checksum separately from fetched_at.",
+    "For HTML/PDF text, strip boilerplate zones before low-level difflib: footer/contact/nav/cookie/accessibility/sidebar/breadcrumb/script/style."
+  ],
+  "snapshot_cycle_recommendation": {
+    "open_or_near_deadline_tier_s": "daily while status=open or application_window end_date is present/current; compare typed fields first",
+    "stable_open_ended_loan_tax_pages": "weekly content hash plus typed field check",
+    "e_gov_laws": "weekly catalog checksum, immediate candidate if last_amended_date or revision_status differs",
+    "broken_sources": "retry with backoff and keep 3-strike quarantine evidence separate from business diff",
+    "missing_checksum_rows": "prioritize checksum backfill before declaring field diff"
+  },
+  "false_positive_taxonomy": [
+    {
+      "pattern": "boilerplate_footer_contact",
+      "symptoms": "電話番号、所在地、組織改編、SNS/footer link changes",
+      "mitigation": "zone-strip footer/contact/nav before text hash; keep contact as low-signal auxiliary field"
+    },
+    {
+      "pattern": "dynamic_timestamp_counter",
+      "symptoms": "現在時刻、最終表示日時、access counter、cache bust query",
+      "mitigation": "regex remove timestamps/counters; compare business dates only after label whitelist"
+    },
+    {
+      "pattern": "faq_or_notice_reorder",
+      "symptoms": "FAQ、Q&A、お知らせ一覧の順序だけ変わる",
+      "mitigation": "section item hashing with sorted stable keys; flag only add/remove/changed item bodies"
+    },
+    {
+      "pattern": "pdf_pagination_drift",
+      "symptoms": "ページ番号、ヘッダ/フッタ、改ページ位置の違い",
+      "mitigation": "drop page headers/footers and page-number-only lines before text hash"
+    },
+    {
+      "pattern": "minor_particle_wording",
+      "symptoms": "て・に・を・は、句読点、全半角、令和/西暦併記の揺れ",
+      "mitigation": "NFKC + token-level similarity; suppress if high-signal fields unchanged"
+    },
+    {
+      "pattern": "list_page_churn",
+      "symptoms": "公募一覧ページで他制度の追加が混ざる",
+      "mitigation": "program-specific heading window extraction; fallback to source URL detail page or attachment"
+    },
+    {
+      "pattern": "historical_ingest_metadata",
+      "symptoms": "enriched_json 内の worker_id/model/fetched_at/quality_self_score changes",
+      "mitigation": "exclude ingestion metadata from normalized_business_sha256"
+    }
+  ],
+  "shard_false_positive_focus": [
+    "visit counters and dynamic timestamps",
+    "NEDO/SII listing pages can expose current timestamp or publication-list churn; isolate target heading before difflib."
+  ],
+  "schema_suggestion": {
+    "snapshot_candidate_fields": [
+      "snapshot_id",
+      "run_id",
+      "entity_table",
+      "entity_id",
+      "source_url",
+      "source_domain",
+      "source_format",
+      "robots_policy_checked_at",
+      "source_status_code",
+      "source_final_url",
+      "source_content_sha256",
+      "source_text_sha256",
+      "source_bytes_len",
+      "source_fetched_at",
+      "normalized_business_json",
+      "normalized_business_sha256",
+      "noise_profile_json",
+      "extractor_version",
+      "diff_status"
+    ],
+    "diff_candidate_fields": [
+      "diff_id",
+      "prev_snapshot_id",
+      "new_snapshot_id",
+      "entity_id",
+      "field_name",
+      "prev_value_json",
+      "new_value_json",
+      "field_severity",
+      "confidence_rule",
+      "noise_class",
+      "evidence_url",
+      "detected_at",
+      "requires_human_review"
+    ],
+    "severity_rules": {
+      "critical": [
+        "deadline/end_date closed or extended",
+        "amount_max_yen changed",
+        "subsidy_rate_max changed",
+        "eligibility target changed",
+        "source_url became broken after prior live"
+      ],
+      "medium": [
+        "application status changed",
+        "new PDF/doc attachment",
+        "law last_amended_date or revision_status changed"
+      ],
+      "low": [
+        "footer/contact text changed",
+        "page date changed with no business field change",
+        "FAQ ordering changed only"
+      ]
+    }
+  },
+  "blockers": [
+    "No prior data/snapshots/am_diff_* source-byte baseline exists in this checkout, so all shard JSON files are baseline_only.",
+    "am_amendment_diff has 0 rows; current diff behavior cannot be validated against accepted prior diffs.",
+    "Tier S has 13 broken source URLs (11x404, 2x403) and 50 rows missing source_checksum.",
+    "program_law_refs is empty, so program-to-law amendment impact cannot yet be joined from local tables.",
+    "data/autonomath.db is 0 bytes; the populated amendment/source DB used for read-only evidence is /Users/shigetoumeda/jpcite/autonomath.db."
+  ],
+  "suggested_next_queries": [
+    "SELECT unified_id, primary_name, source_url FROM programs WHERE tier='S' AND excluded=0 AND (source_checksum IS NULL OR source_checksum='') AND source_url_status='live' ORDER BY primary_name;",
+    "SELECT unified_id, primary_name, source_url, source_last_check_status, source_fail_count FROM programs WHERE tier='S' AND excluded=0 AND source_url_status='broken' ORDER BY source_last_check_status, primary_name;",
+    "WITH paired AS (...) SELECT entity_id FROM paired WHERE eligibility_hash unchanged AND summary_hash unchanged AND high-signal typed fields changed;",
+    "SELECT unified_id, law_title, last_amended_date, revision_status, source_checksum FROM laws ORDER BY last_amended_date DESC LIMIT 100;",
+    "SELECT source_url, COUNT(*) FROM programs WHERE tier='S' AND excluded=0 GROUP BY source_url HAVING COUNT(*)>1;"
+  ]
+}

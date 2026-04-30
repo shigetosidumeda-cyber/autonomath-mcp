@@ -1,0 +1,214 @@
+[
+  {
+    "source_url": "https://www.city.kanoya.lg.jp/documents/10589/ijuteijuyoukou.pdf",
+    "publisher_domain": "city.kanoya.lg.jp",
+    "page_count": 3,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "parser_risk": "medium",
+    "reason": "3 pages; text layer extractable; no tables detected in first sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs",
+    "parser_profile_hint": "municipal_grant_simple_rule: short ordinance/rule PDF with amount/rate/docs; source URL churn means live page discovery is required."
+  },
+  {
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/005/874/koyousousyutu.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "page_count": 6,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "6 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date",
+    "parser_profile_hint": "municipal_grant_toyama_cms: _res CMS PDFs are often parseable but some are image-only; add OCR fallback only when text_extractable=false and keep landing-page provenance."
+  },
+  {
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/005/874/syokisetubi.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "page_count": 11,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "11 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date",
+    "parser_profile_hint": "municipal_grant_toyama_cms: _res CMS PDFs are often parseable but some are image-only; add OCR fallback only when text_extractable=false and keep landing-page provenance."
+  },
+  {
+    "source_url": "https://www.city.moka.lg.jp/material/files/group/20/R7mokasien.pdf",
+    "publisher_domain": "city.moka.lg.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "subsidy_rate",
+      "max_amount",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "2 pages; text layer extractable; tables detected in sampled pages; fields: deadline,subsidy_rate,max_amount,contact,update_date",
+    "parser_profile_hint": "municipal_flyer_table: flyer-style PDFs expose date/rate/amount but may omit required_docs; merge HTML page context for completeness."
+  },
+  {
+    "source_url": "https://www.city.sapporo.jp/keizai/kanko/hojo/documents/bosyuuyouryoupdf.pdf",
+    "publisher_domain": "city.sapporo.jp",
+    "page_count": 9,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "low",
+    "reason": "9 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact",
+    "parser_profile_hint": "municipal_guideline_compact: compact department-folder guidelines expose core fields; choose募集要領 over separate要綱/様式 PDFs."
+  },
+  {
+    "source_url": "https://www.city.yokohama.lg.jp/business/kigyoshien/keieishien/kaihatsu/gijutsu/kaihatsu.files/0122_20260402.pdf",
+    "publisher_domain": "city.yokohama.lg.jp",
+    "page_count": 74,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "74 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date",
+    "parser_profile_hint": "municipal_large_manual: large 70+ page guidance PDFs are extractable; cap table extraction pages and use TOC/section anchors for speed."
+  },
+  {
+    "source_url": "https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000069/69166/R7bosyuuyoukou.pdf",
+    "publisher_domain": "city.osaka.lg.jp",
+    "page_count": 3,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "3 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date",
+    "parser_profile_hint": "municipal_cms_numeric: short CMS guideline PDFs parse well; numeric content IDs require landing-page freshness checks."
+  },
+  {
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/006/652/r8.4hurusato_youkou.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "page_count": 7,
+    "text_extractable": false,
+    "tables_detected": true,
+    "fields_found": [],
+    "parser_risk": "high",
+    "reason": "7 pages; weak/no extractable text layer; tables detected in sampled pages; no target fields found by regex",
+    "parser_profile_hint": "municipal_grant_toyama_cms: _res CMS PDFs are often parseable but some are image-only; add OCR fallback only when text_extractable=false and keep landing-page provenance."
+  },
+  {
+    "source_url": "https://www.city.saitama.lg.jp/001/010/015/099/008/p129852_d/fil/bosyuyoukou.pdf",
+    "publisher_domain": "city.saitama.lg.jp",
+    "page_count": 11,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "11 pages; text layer extractable; no sampled tables; all target labels found in numbered municipal募集要項",
+    "parser_profile_hint": "municipal_grant_numbered: numbered募集要項 PDFs parse by 交付申請窓口, 交付申請資格, 補助対象事業, 補助金の額, 事業スケジュール; tables may be visually aligned but not pdfplumber tables."
+  },
+  {
+    "source_url": "https://www.city.fukuoka.lg.jp/kankyo/j-suishin/hp/documents/109530/R8_PRtebiki.pdf",
+    "publisher_domain": "city.fukuoka.lg.jp",
+    "page_count": 20,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "20 pages; text layer extractable; no sampled tables;申請の手引き carries all target labels, with contact on front matter",
+    "parser_profile_hint": "municipal_guideline_handbook: mix 3-page公募要領 and 20-page申請手引き; parse front-matter contact plus sections 補助対象設備, 申請受付期間, 提出書類."
+  },
+  {
+    "source_url": "https://www.city.fukuoka.lg.jp/keizai/keieishien/documents/R8_syoukibo_youryou.pdf",
+    "publisher_domain": "city.fukuoka.lg.jp",
+    "page_count": 3,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "3 pages; text layer extractable; no sampled tables; compact公募要領 has all target labels in front matter and body",
+    "parser_profile_hint": "municipal_guideline_handbook: mix 3-page公募要領 and 20-page申請手引き; parse front-matter contact plus sections 補助対象設備, 申請受付期間, 提出書類."
+  },
+  {
+    "source_url": "https://www.city.kobe.lg.jp/documents/31510/20260309110627.pdf",
+    "publisher_domain": "city.kobe.lg.jp",
+    "page_count": 15,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "15 pages; text layer extractable; no sampled tables; brochure-style募集案内 exposes deadline/contact on page 1 and rate/limit/docs in interior sections",
+    "parser_profile_hint": "municipal_grant_brochure:募集案内 PDFs are field-dense but prose-heavy; front page contains deadline/contact, interior sections contain rates/limits/docs."
+  }
+]

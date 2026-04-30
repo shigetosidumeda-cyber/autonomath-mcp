@@ -1,0 +1,130 @@
+[
+  {
+    "source_url": "https://www.city.kanoya.lg.jp/documents/10589/ijuteijuyoukou.pdf",
+    "publisher_domain": "city.kanoya.lg.jp",
+    "page_count": 3,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "parser_risk": "medium",
+    "reason": "3 pages; text layer extractable; no tables detected in first sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs"
+  },
+  {
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/005/874/koyousousyutu.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "page_count": 6,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "6 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date"
+  },
+  {
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/005/874/syokisetubi.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "page_count": 11,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "11 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date"
+  },
+  {
+    "source_url": "https://www.city.moka.lg.jp/material/files/group/20/R7mokasien.pdf",
+    "publisher_domain": "city.moka.lg.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "subsidy_rate",
+      "max_amount",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "2 pages; text layer extractable; tables detected in sampled pages; fields: deadline,subsidy_rate,max_amount,contact,update_date"
+  },
+  {
+    "source_url": "https://www.city.sapporo.jp/keizai/kanko/hojo/documents/bosyuuyouryoupdf.pdf",
+    "publisher_domain": "city.sapporo.jp",
+    "page_count": 9,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "low",
+    "reason": "9 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact"
+  },
+  {
+    "source_url": "https://www.city.yokohama.lg.jp/business/kigyoshien/keieishien/kaihatsu/gijutsu/kaihatsu.files/0122_20260402.pdf",
+    "publisher_domain": "city.yokohama.lg.jp",
+    "page_count": 74,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "74 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date"
+  },
+  {
+    "source_url": "https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000069/69166/R7bosyuuyoukou.pdf",
+    "publisher_domain": "city.osaka.lg.jp",
+    "page_count": 3,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "3 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date"
+  },
+  {
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/006/652/r8.4hurusato_youkou.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "page_count": 7,
+    "text_extractable": false,
+    "tables_detected": true,
+    "fields_found": [],
+    "parser_risk": "high",
+    "reason": "7 pages; weak/no extractable text layer; tables detected in sampled pages; no target fields found by regex"
+  }
+]

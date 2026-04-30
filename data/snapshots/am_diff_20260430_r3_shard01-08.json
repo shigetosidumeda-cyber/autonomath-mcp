@@ -1,0 +1,590 @@
+{
+  "run_id": "20260430_r3",
+  "run_date": "2026-04-30",
+  "generated_at": "2026-04-30T21:20:58+09:00",
+  "lane": "am_diff_design",
+  "assigned_shards": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08"
+  ],
+  "artifact_type": "acceptance_tests_design",
+  "source_policy": {
+    "llm_api_called": false,
+    "hosted_model_api_called": false,
+    "external_source_refetch_performed": false,
+    "aggregator_sites_used_as_evidence": false,
+    "production_code_or_migration_written": false,
+    "final_integration_file_touched": false,
+    "comparison_basis": "r2 schema proposal and read-only local SQLite checks"
+  },
+  "r2_basis": {
+    "previous_artifact": "data/snapshots/am_diff_20260430_r2_shard01-08.json",
+    "am_pairs_analyzed": 7298,
+    "raw_snapshot_json_changed": 0,
+    "eligibility_hash_changed": 0,
+    "summary_hash_changed": 0,
+    "entities_with_any_typed_field_change": 6276,
+    "field_change_counts": {
+      "target_set_json": 6155,
+      "amount_max_yen": 629,
+      "subsidy_rate_max": 76,
+      "source_url": 721
+    }
+  },
+  "diff_kind_values": [
+    "no_change",
+    "typed_field_changed",
+    "source_status_changed",
+    "content_changed",
+    "noise_only",
+    "projection_regression_candidate",
+    "baseline_only"
+  ],
+  "severity_values": [
+    "none",
+    "low",
+    "medium",
+    "critical"
+  ],
+  "acceptance_case_count": 9,
+  "acceptance_cases": [
+    {
+      "case_id": "AMDIFF-R3-001",
+      "scenario": "NULL vs [] target equivalence",
+      "prev_snapshot": {
+        "snapshot_id": "case001-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:null-vs-empty-target",
+        "source_url": "https://agency.example.go.jp/program/target",
+        "canonical_source_url": "https://agency.example.go.jp/program/target",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case001-raw",
+        "normalized_business_sha256": "sha256:case001-business",
+        "typed_fields_json": {
+          "target_set": null
+        },
+        "field_fingerprints_json": {
+          "target_set": "sha256:canonical-empty-target"
+        },
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case001-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:null-vs-empty-target",
+        "source_url": "https://agency.example.go.jp/program/target",
+        "canonical_source_url": "https://agency.example.go.jp/program/target",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case001-raw",
+        "normalized_business_sha256": "sha256:case001-business",
+        "typed_fields_json": {
+          "target_set": []
+        },
+        "field_fingerprints_json": {
+          "target_set": "sha256:canonical-empty-target"
+        },
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "no_change",
+      "expected_severity": "none",
+      "should_emit_webhook": false,
+      "reason": "NULL, empty string, and [] target sets must canonicalize to the same empty target set before field diffing."
+    },
+    {
+      "case_id": "AMDIFF-R3-002",
+      "scenario": "stable raw hash + projection loss",
+      "prev_snapshot": {
+        "snapshot_id": "case002-prev",
+        "entity_table": "am_amendment_snapshot",
+        "entity_id": "acceptance:stable-raw-projection-loss",
+        "source_url": "https://agency.example.go.jp/program/grant",
+        "canonical_source_url": "https://agency.example.go.jp/program/grant",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case002-raw",
+        "normalized_business_sha256": "sha256:case002-business",
+        "eligibility_hash": "sha256:case002-eligibility",
+        "summary_hash": "sha256:case002-summary",
+        "typed_fields_json": {
+          "amounts": [
+            {
+              "field_name": "amount_max_yen",
+              "amount_kind": "grant_cap",
+              "value_yen": 5000000,
+              "source_key": "subsidy_cap_yen"
+            }
+          ]
+        },
+        "field_fingerprints_json": {
+          "amounts.grant_cap": "sha256:grant-cap-5000000"
+        },
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case002-new",
+        "entity_table": "am_amendment_snapshot",
+        "entity_id": "acceptance:stable-raw-projection-loss",
+        "source_url": "https://agency.example.go.jp/program/grant",
+        "canonical_source_url": "https://agency.example.go.jp/program/grant",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case002-raw",
+        "normalized_business_sha256": "sha256:case002-business",
+        "eligibility_hash": "sha256:case002-eligibility",
+        "summary_hash": "sha256:case002-summary",
+        "typed_fields_json": {
+          "amounts": [
+            {
+              "field_name": "amount_max_yen",
+              "amount_kind": "grant_cap",
+              "value_yen": null,
+              "source_key": "subsidy_cap_yen"
+            }
+          ]
+        },
+        "field_fingerprints_json": {
+          "amounts.grant_cap": "sha256:grant-cap-null"
+        },
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "projection_regression_candidate",
+      "expected_severity": "low",
+      "should_emit_webhook": false,
+      "reason": "When raw, normalized business, eligibility, and summary hashes are unchanged and the only typed diff is value_to_null, classify as collector projection regression, not an amendment."
+    },
+    {
+      "case_id": "AMDIFF-R3-003",
+      "scenario": "amount_kind separation",
+      "prev_snapshot": {
+        "snapshot_id": "case003-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:amount-kind-separation",
+        "source_url": "https://agency.example.go.jp/program/budget",
+        "canonical_source_url": "https://agency.example.go.jp/program/budget",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case003-raw-prev",
+        "normalized_business_sha256": "sha256:case003-business-prev",
+        "typed_fields_json": {
+          "amounts": [
+            {
+              "field_name": "amount_max_yen",
+              "amount_kind": "grant_cap",
+              "value_yen": 1000000,
+              "source_key": "subsidy_cap_yen"
+            },
+            {
+              "field_name": "budget_yen",
+              "amount_kind": "budget",
+              "value_yen": 80000000,
+              "source_key": "budget_yen"
+            }
+          ]
+        },
+        "field_fingerprints_json": {
+          "amounts.grant_cap": "sha256:grant-cap-1000000",
+          "amounts.budget": "sha256:budget-80000000"
+        },
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case003-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:amount-kind-separation",
+        "source_url": "https://agency.example.go.jp/program/budget",
+        "canonical_source_url": "https://agency.example.go.jp/program/budget",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case003-raw-new",
+        "normalized_business_sha256": "sha256:case003-business-new",
+        "typed_fields_json": {
+          "amounts": [
+            {
+              "field_name": "amount_max_yen",
+              "amount_kind": "grant_cap",
+              "value_yen": 1000000,
+              "source_key": "subsidy_cap_yen"
+            },
+            {
+              "field_name": "budget_yen",
+              "amount_kind": "budget",
+              "value_yen": 90000000,
+              "source_key": "budget_yen"
+            }
+          ]
+        },
+        "field_fingerprints_json": {
+          "amounts.grant_cap": "sha256:grant-cap-1000000",
+          "amounts.budget": "sha256:budget-90000000"
+        },
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "typed_field_changed",
+      "expected_severity": "low",
+      "should_emit_webhook": false,
+      "reason": "Budget amount changes must remain separated from grant_cap or loan_limit changes; they can create a low-severity field diff but must not pass the amendment webhook gate."
+    },
+    {
+      "case_id": "AMDIFF-R3-004",
+      "scenario": "rate_kind separation",
+      "prev_snapshot": {
+        "snapshot_id": "case004-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:rate-kind-separation",
+        "source_url": "https://agency.example.go.jp/program/rate",
+        "canonical_source_url": "https://agency.example.go.jp/program/rate",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case004-raw-prev",
+        "normalized_business_sha256": "sha256:case004-business-prev",
+        "typed_fields_json": {
+          "rates": [
+            {
+              "field_name": "subsidy_rate_max",
+              "rate_kind": "subsidy_rate",
+              "value": 0.5,
+              "source_key": "subsidy_rate_sme"
+            },
+            {
+              "field_name": "interest_rate_pct",
+              "rate_kind": "interest_rate",
+              "value": 0.012,
+              "source_key": "interest_rate_pct"
+            }
+          ]
+        },
+        "field_fingerprints_json": {
+          "rates.subsidy_rate": "sha256:subsidy-rate-0.5",
+          "rates.interest_rate": "sha256:interest-rate-0.012"
+        },
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case004-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:rate-kind-separation",
+        "source_url": "https://agency.example.go.jp/program/rate",
+        "canonical_source_url": "https://agency.example.go.jp/program/rate",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case004-raw-new",
+        "normalized_business_sha256": "sha256:case004-business-new",
+        "typed_fields_json": {
+          "rates": [
+            {
+              "field_name": "subsidy_rate_max",
+              "rate_kind": "subsidy_rate",
+              "value": 0.5,
+              "source_key": "subsidy_rate_sme"
+            },
+            {
+              "field_name": "interest_rate_pct",
+              "rate_kind": "interest_rate",
+              "value": 0.013,
+              "source_key": "interest_rate_pct"
+            }
+          ]
+        },
+        "field_fingerprints_json": {
+          "rates.subsidy_rate": "sha256:subsidy-rate-0.5",
+          "rates.interest_rate": "sha256:interest-rate-0.013"
+        },
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "typed_field_changed",
+      "expected_severity": "low",
+      "should_emit_webhook": false,
+      "reason": "Interest/pass/selectivity rates must not be bucketed as subsidy_rate; only rate_kind=subsidy_rate can become a critical subsidy-rate amendment."
+    },
+    {
+      "case_id": "AMDIFF-R3-005",
+      "scenario": "source_url alias extraction",
+      "prev_snapshot": {
+        "snapshot_id": "case005-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:source-url-alias",
+        "source_url": "https://agency.example.go.jp/program/source",
+        "canonical_source_url": "https://agency.example.go.jp/program/source",
+        "source_url_extraction_key": "source_url",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case005-raw",
+        "normalized_business_sha256": "sha256:case005-business",
+        "raw_snapshot_json": {
+          "source_primary": "https://agency.example.go.jp/program/source",
+          "title": "official source alias fixture"
+        },
+        "typed_fields_json": {
+          "source_url": "https://agency.example.go.jp/program/source"
+        },
+        "field_fingerprints_json": {
+          "canonical_source_url": "sha256:case005-url"
+        },
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case005-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:source-url-alias",
+        "source_url": null,
+        "canonical_source_url": "https://agency.example.go.jp/program/source",
+        "source_url_extraction_key": "source_primary",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case005-raw",
+        "normalized_business_sha256": "sha256:case005-business",
+        "raw_snapshot_json": {
+          "source_primary": "https://agency.example.go.jp/program/source",
+          "title": "official source alias fixture"
+        },
+        "typed_fields_json": {
+          "source_url": null
+        },
+        "field_fingerprints_json": {
+          "canonical_source_url": "sha256:case005-url"
+        },
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "no_change",
+      "expected_severity": "none",
+      "should_emit_webhook": false,
+      "reason": "Canonical URL comparison must use ordered source aliases such as source_primary, url, url_primary, portal_url, law_url, and guideline_url before treating source_url NULL as removal."
+    },
+    {
+      "case_id": "AMDIFF-R3-006",
+      "scenario": "source_status_changed",
+      "prev_snapshot": {
+        "snapshot_id": "case006-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:source-status-changed",
+        "source_url": "https://agency.example.go.jp/program/live-to-broken",
+        "canonical_source_url": "https://agency.example.go.jp/program/live-to-broken",
+        "source_status_code": 200,
+        "source_url_status": "live",
+        "source_fail_count": 0,
+        "raw_snapshot_sha256": "sha256:case006-raw-prev",
+        "normalized_business_sha256": "sha256:case006-business-prev",
+        "typed_fields_json": {},
+        "field_fingerprints_json": {},
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case006-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:source-status-changed",
+        "source_url": "https://agency.example.go.jp/program/live-to-broken",
+        "canonical_source_url": "https://agency.example.go.jp/program/live-to-broken",
+        "source_status_code": 404,
+        "source_url_status": "broken",
+        "source_fail_count": 1,
+        "raw_snapshot_sha256": null,
+        "normalized_business_sha256": "sha256:case006-business-prev",
+        "typed_fields_json": {},
+        "field_fingerprints_json": {},
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "source_status_changed",
+      "expected_severity": "critical",
+      "should_emit_webhook": true,
+      "reason": "An official source changing from prior live 200 to broken 404 is a source-health amendment candidate and should pass the webhook gate."
+    },
+    {
+      "case_id": "AMDIFF-R3-007",
+      "scenario": "content_changed",
+      "prev_snapshot": {
+        "snapshot_id": "case007-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:content-changed",
+        "source_url": "https://agency.example.go.jp/program/content",
+        "canonical_source_url": "https://agency.example.go.jp/program/content",
+        "source_status_code": 200,
+        "source_content_sha256": "sha256:case007-content-prev",
+        "source_text_sha256": "sha256:case007-text-prev",
+        "raw_snapshot_sha256": "sha256:case007-raw-prev",
+        "normalized_business_sha256": "sha256:case007-business-prev",
+        "normalized_business_json": {
+          "official_notice": "Guideline version A is published.",
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "typed_fields_json": {
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "field_fingerprints_json": {
+          "application_window.end_date": "sha256:deadline-2026-06-30"
+        },
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case007-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:content-changed",
+        "source_url": "https://agency.example.go.jp/program/content",
+        "canonical_source_url": "https://agency.example.go.jp/program/content",
+        "source_status_code": 200,
+        "source_content_sha256": "sha256:case007-content-new",
+        "source_text_sha256": "sha256:case007-text-new",
+        "raw_snapshot_sha256": "sha256:case007-raw-new",
+        "normalized_business_sha256": "sha256:case007-business-new",
+        "normalized_business_json": {
+          "official_notice": "Guideline version B is published.",
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "typed_fields_json": {
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "field_fingerprints_json": {
+          "application_window.end_date": "sha256:deadline-2026-06-30"
+        },
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "content_changed",
+      "expected_severity": "medium",
+      "should_emit_webhook": true,
+      "reason": "A normalized business-content hash change with stable typed fingerprints is still a review-worthy official content change, provided it is not explained by noise classes."
+    },
+    {
+      "case_id": "AMDIFF-R3-008",
+      "scenario": "noise_only",
+      "prev_snapshot": {
+        "snapshot_id": "case008-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:noise-only",
+        "source_url": "https://agency.example.go.jp/program/noise",
+        "canonical_source_url": "https://agency.example.go.jp/program/noise",
+        "source_status_code": 200,
+        "source_content_sha256": "sha256:case008-content-prev",
+        "source_text_sha256": "sha256:case008-text-prev",
+        "raw_snapshot_sha256": "sha256:case008-raw-prev",
+        "normalized_business_sha256": "sha256:case008-business",
+        "typed_fields_json": {
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "field_fingerprints_json": {
+          "application_window.end_date": "sha256:deadline-2026-06-30"
+        },
+        "noise_profile_json": {
+          "noise_classes": []
+        }
+      },
+      "new_snapshot": {
+        "snapshot_id": "case008-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:noise-only",
+        "source_url": "https://agency.example.go.jp/program/noise",
+        "canonical_source_url": "https://agency.example.go.jp/program/noise",
+        "source_status_code": 200,
+        "source_content_sha256": "sha256:case008-content-new",
+        "source_text_sha256": "sha256:case008-text-new",
+        "raw_snapshot_sha256": "sha256:case008-raw-new",
+        "normalized_business_sha256": "sha256:case008-business",
+        "typed_fields_json": {
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "field_fingerprints_json": {
+          "application_window.end_date": "sha256:deadline-2026-06-30"
+        },
+        "noise_profile_json": {
+          "noise_classes": [
+            "boilerplate_footer_contact",
+            "dynamic_timestamp_counter"
+          ]
+        }
+      },
+      "expected_diff_kind": "noise_only",
+      "expected_severity": "low",
+      "should_emit_webhook": false,
+      "reason": "Raw/source hashes may move, but if normalized_business_sha256 and typed fingerprints are unchanged and the delta is only footer/contact/timestamp noise, suppress webhook emission."
+    },
+    {
+      "case_id": "AMDIFF-R3-009",
+      "scenario": "typed_field_changed",
+      "prev_snapshot": {
+        "snapshot_id": "case009-prev",
+        "entity_table": "programs",
+        "entity_id": "acceptance:typed-field-changed",
+        "source_url": "https://agency.example.go.jp/program/typed-field",
+        "canonical_source_url": "https://agency.example.go.jp/program/typed-field",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case009-raw-prev",
+        "normalized_business_sha256": "sha256:case009-business-prev",
+        "typed_fields_json": {
+          "amounts": [
+            {
+              "field_name": "amount_max_yen",
+              "amount_kind": "grant_cap",
+              "value_yen": 5000000,
+              "source_key": "subsidy_cap_yen"
+            }
+          ],
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "field_fingerprints_json": {
+          "amounts.grant_cap": "sha256:grant-cap-5000000",
+          "application_window.end_date": "sha256:deadline-2026-06-30"
+        },
+        "noise_profile_json": {}
+      },
+      "new_snapshot": {
+        "snapshot_id": "case009-new",
+        "entity_table": "programs",
+        "entity_id": "acceptance:typed-field-changed",
+        "source_url": "https://agency.example.go.jp/program/typed-field",
+        "canonical_source_url": "https://agency.example.go.jp/program/typed-field",
+        "source_status_code": 200,
+        "raw_snapshot_sha256": "sha256:case009-raw-new",
+        "normalized_business_sha256": "sha256:case009-business-new",
+        "typed_fields_json": {
+          "amounts": [
+            {
+              "field_name": "amount_max_yen",
+              "amount_kind": "grant_cap",
+              "value_yen": 3000000,
+              "source_key": "subsidy_cap_yen"
+            }
+          ],
+          "application_window": {
+            "end_date": "2026-06-30"
+          }
+        },
+        "field_fingerprints_json": {
+          "amounts.grant_cap": "sha256:grant-cap-3000000",
+          "application_window.end_date": "sha256:deadline-2026-06-30"
+        },
+        "noise_profile_json": {}
+      },
+      "expected_diff_kind": "typed_field_changed",
+      "expected_severity": "critical",
+      "should_emit_webhook": true,
+      "reason": "A grant_cap amount change is a canonical typed business-field change and must be detected independently from summary or eligibility text hashes."
+    }
+  ],
+  "webhook_gate_summary": {
+    "emit_when": [
+      "expected_diff_kind in typed_field_changed/source_status_changed/content_changed",
+      "expected_severity in medium/critical",
+      "not projection_regression_candidate",
+      "not noise_only",
+      "canonical_source_url is present for source-backed changes"
+    ],
+    "suppress_when": [
+      "expected_diff_kind is no_change",
+      "expected_diff_kind is noise_only",
+      "expected_diff_kind is projection_regression_candidate",
+      "expected_severity is none or low",
+      "only NULL/[] target nullability changed after canonicalization",
+      "only non-business amount_kind or non-subsidy rate_kind changed"
+    ]
+  }
+}

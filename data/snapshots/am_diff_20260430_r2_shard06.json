@@ -1,0 +1,1754 @@
+{
+  "run_id": "20260430_r2",
+  "run_date": "2026-04-30",
+  "generated_at": "2026-04-30T21:16:25+09:00",
+  "lane": "am_diff_design",
+  "shard": "06",
+  "source_aggregate_file": "data/snapshots/am_diff_20260430_r2_shard01-08.json",
+  "source_policy": {
+    "llm_api_called": false,
+    "hosted_model_api_called": false,
+    "external_source_refetch_performed": false,
+    "aggregator_sites_used_as_evidence": false,
+    "production_code_or_migration_written": false,
+    "final_integration_file_touched": false,
+    "comparison_basis": "previous local baseline JSON vs current local SQLite DBs"
+  },
+  "common_state": {
+    "programs_state": {
+      "total_programs": 14472,
+      "tier_s_active": 114,
+      "with_source_url": 13956,
+      "with_source_checksum": 8891,
+      "with_source_fetched_at": 14456
+    },
+    "tier_s_programs_state": {
+      "tier_s_rows": 114,
+      "live_urls": 101,
+      "broken_urls": 13,
+      "status_200": 101,
+      "status_403": 2,
+      "status_404": 11,
+      "with_checksum": 64,
+      "missing_checksum": 50,
+      "with_application_window": 85,
+      "with_target_types": 45,
+      "with_funding_purpose": 39
+    },
+    "laws_state": {
+      "total_laws": 9484,
+      "current_laws": 9093,
+      "repealed_laws": 391,
+      "with_source_url": 9484,
+      "with_source_checksum": 9484,
+      "with_fetched_at": 9484,
+      "min_last_amended_date": "1872-11-09",
+      "max_last_amended_date": "2026-04-01"
+    },
+    "am_amendment_diff_state": {
+      "diff_rows": 0
+    },
+    "program_law_refs_state": {
+      "refs": 0,
+      "programs_with_refs": 0,
+      "laws_referenced": 0
+    },
+    "am_amendment_snapshot_state": {
+      "snapshot_rows": 14596,
+      "snapshot_entities": 7298,
+      "min_observed_at": "2026-04-24 22:39:26",
+      "max_observed_at": "2026-04-24T10:24:48+00:00",
+      "with_amount_max_yen": 2071,
+      "with_subsidy_rate_max": 1616,
+      "with_target_set_json": 8441,
+      "with_eligibility_hash": 14596,
+      "with_summary_hash": 14596,
+      "with_source_url": 9471,
+      "with_source_fetched_at": 6207
+    },
+    "am_source_state": {
+      "total_sources": 97272,
+      "distinct_domains": 1447,
+      "with_license": 97272,
+      "primary_sources": 95487,
+      "secondary_sources": 1692,
+      "active_sources": 97148,
+      "pdf_sources": 1633,
+      "with_content_hash": 96991
+    },
+    "am_snapshot_version_pair_state": {
+      "paired_entities": 7298,
+      "eligibility_hash_changed": 0,
+      "summary_hash_changed": 0,
+      "raw_snapshot_json_changed": 0,
+      "amount_changed": 629,
+      "subsidy_rate_changed": 76,
+      "target_set_changed": 6155,
+      "source_url_changed": 721,
+      "entities_with_any_typed_field_change": 6276
+    }
+  },
+  "baseline_comparison_summary": {
+    "programs_baseline_objects": 114,
+    "programs_compared": 114,
+    "program_diff_status_counts": {
+      "no_change": 114
+    },
+    "program_typed_field_change_counts": {},
+    "program_source_status_change_counts": {},
+    "program_stored_source_checksum_changed": 0,
+    "program_source_fetched_at_changed": 0,
+    "law_baseline_objects": 8,
+    "law_diff_status_counts": {
+      "no_change": 8
+    },
+    "broken_retry_unique_objects": 13,
+    "broken_retry_status_counts": {
+      "no_change": 13
+    }
+  },
+  "program_comparisons": [
+    {
+      "shard": "06",
+      "rn": 76,
+      "unified_id": "UNI-ext-6224db3d79",
+      "primary_name": "戦略的創造研究推進事業 ALCA-Nextにおける2026年度研究開発提案の募集について",
+      "source_url": "https://www.jst.go.jp/alca/koubo/2026/index.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d4b81d84be1ea649821b3834636188e52e892d7c339b8d2fe227dc44a119b5bd",
+      "current_stable_field_fingerprint_sha256": "d4b81d84be1ea649821b3834636188e52e892d7c339b8d2fe227dc44a119b5bd"
+    },
+    {
+      "shard": "06",
+      "rn": 77,
+      "unified_id": "UNI-363f999bb2",
+      "primary_name": "持続化補助金 一般型 通常枠 商工会版 第19回",
+      "source_url": "https://www.jizokukanb.com/jizokuka_r6h/",
+      "source_domain": "www.jizokukanb.com",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "4093e32fdf884845e0cd7d28c06e35b8180017fa4beed5f6ee8c526550431e6a",
+      "current_stable_field_fingerprint_sha256": "4093e32fdf884845e0cd7d28c06e35b8180017fa4beed5f6ee8c526550431e6a"
+    },
+    {
+      "shard": "06",
+      "rn": 78,
+      "unified_id": "UNI-eedb2ef135",
+      "primary_name": "持続化補助金 創業型 商工会版 第3回",
+      "source_url": "https://r6.jizokukahojokin.info/sogyo/",
+      "source_domain": "r6.jizokukahojokin.info",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "e63e189500716f210aba3333e9d6decc8b32eae44558a3f1247075d567153882",
+      "current_stable_field_fingerprint_sha256": "e63e189500716f210aba3333e9d6decc8b32eae44558a3f1247075d567153882"
+    },
+    {
+      "shard": "06",
+      "rn": 79,
+      "unified_id": "UNI-ext-31ee303070",
+      "primary_name": "政府及び政府系機関のスタートアップ支援施策に係る実態分析及び支援ニーズ調査",
+      "source_url": "https://www.nedo.go.jp/koubo/CA2_100525.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "c42cbb1ebd0a55c64bad14d2a37e7b3b071e6a1980229062dbcee01590822681",
+      "current_stable_field_fingerprint_sha256": "c42cbb1ebd0a55c64bad14d2a37e7b3b071e6a1980229062dbcee01590822681"
+    },
+    {
+      "shard": "06",
+      "rn": 80,
+      "unified_id": "UNI-a729fbb301",
+      "primary_name": "新発田市強い農林水産業づくり支援事業",
+      "source_url": "https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/004/695/yoko.pdf",
+      "source_domain": "www.city.shibata.lg.jp",
+      "source_format_guess": "pdf",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "6acf7e3f8808494cc64852f769e08c59f4cb410cbfb36e0cb7408085a098dffb",
+      "current_stable_field_fingerprint_sha256": "6acf7e3f8808494cc64852f769e08c59f4cb410cbfb36e0cb7408085a098dffb"
+    },
+    {
+      "shard": "06",
+      "rn": 81,
+      "unified_id": "UNI-a876aa5445",
+      "primary_name": "新規就農者への補助事業",
+      "source_url": "https://www.city.nagaoka.niigata.jp/sangyou/cate04/ninaite/new-farmer.html",
+      "source_domain": "www.city.nagaoka.niigata.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "d425758ae010d8d1db7f1f922ee7e1f9c75be9c6fd32488834d28511190e997e",
+      "current_stable_field_fingerprint_sha256": "d425758ae010d8d1db7f1f922ee7e1f9c75be9c6fd32488834d28511190e997e"
+    },
+    {
+      "shard": "06",
+      "rn": 82,
+      "unified_id": "UNI-7c132d1a4a",
+      "primary_name": "新規就農者チャレンジ事業",
+      "source_url": "https://www.maff.go.jp/j/new_farmer/n_syunou/260126.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 403,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 403,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "2008133c62ebe1a43f5135bdca8b6b792aada2d051b0618837b7479f222f2031",
+      "current_stable_field_fingerprint_sha256": "2008133c62ebe1a43f5135bdca8b6b792aada2d051b0618837b7479f222f2031"
+    },
+    {
+      "shard": "06",
+      "rn": 83,
+      "unified_id": "UNI-bdea97be24",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業・経営開始資金）",
+      "source_url": "https://www.city.tanabe.lg.jp/nougyou/ssist.html",
+      "source_domain": "www.city.tanabe.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "59448c81a5c6566b3ef18eace5788e617203847baf18981d72c81d22292ccf3d",
+      "current_stable_field_fingerprint_sha256": "59448c81a5c6566b3ef18eace5788e617203847baf18981d72c81d22292ccf3d"
+    },
+    {
+      "shard": "06",
+      "rn": 84,
+      "unified_id": "UNI-088d217f06",
+      "primary_name": "新規就農者育成総合対策（経営発展支援事業）",
+      "source_url": "https://www.city.okayama.jp/jigyosha/0000016954.html",
+      "source_domain": "www.city.okayama.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "b9b19d660301bb1a6737ea5faa303447e96525d5125c06620581281776a86c5f",
+      "current_stable_field_fingerprint_sha256": "b9b19d660301bb1a6737ea5faa303447e96525d5125c06620581281776a86c5f"
+    },
+    {
+      "shard": "06",
+      "rn": 85,
+      "unified_id": "UNI-ext-919f373766",
+      "primary_name": "木質バイオマス燃料等の安定的・効率的な供給・利用システム構築支援事業",
+      "source_url": "https://www.nedo.go.jp/koubo/FF1_100464.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "17ec9e16702e560c7448ac6c472af5d256183cbc39a778b0f3029cf9f3a7a487",
+      "current_stable_field_fingerprint_sha256": "17ec9e16702e560c7448ac6c472af5d256183cbc39a778b0f3029cf9f3a7a487"
+    },
+    {
+      "shard": "06",
+      "rn": 86,
+      "unified_id": "UNI-ext-60e34ce4df",
+      "primary_name": "東京都 家庭のゼロエミッション行動推進事業",
+      "source_url": "https://sii.or.jp/zeroemi/",
+      "source_domain": "sii.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "39f0889535da0564bb6978cbbd0eafa3fefad369e7baf15f2edc282e6ab34246",
+      "current_stable_field_fingerprint_sha256": "39f0889535da0564bb6978cbbd0eafa3fefad369e7baf15f2edc282e6ab34246"
+    },
+    {
+      "shard": "06",
+      "rn": 87,
+      "unified_id": "UNI-40bc849d45",
+      "primary_name": "東京都サイバーセキュリティ対策促進助成金",
+      "source_url": "https://www.tokyo-kosha.or.jp/support/josei/jigyo/cybersecurity.html",
+      "source_domain": "www.tokyo-kosha.or.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "current_source_status": {
+        "source_url_status": "broken",
+        "source_last_check_status": 404,
+        "source_fail_count": 1
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "1bac4914360826c2da9e6550347ee333c105cd797f3ca3849ebba04df343ea37",
+      "current_stable_field_fingerprint_sha256": "1bac4914360826c2da9e6550347ee333c105cd797f3ca3849ebba04df343ea37"
+    },
+    {
+      "shard": "06",
+      "rn": 88,
+      "unified_id": "UNI-bca74fc343",
+      "primary_name": "東京都ゼロエミッション化省エネ設備導入支援事業",
+      "source_url": "https://www.tokyo-co2down.jp/subsidy/zeroemi-shoene",
+      "source_domain": "www.tokyo-co2down.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "66a3992268c71146ef44ef985e1949bb94770faa1f4e81e3709db1f5d365a3cc",
+      "current_stable_field_fingerprint_sha256": "66a3992268c71146ef44ef985e1949bb94770faa1f4e81e3709db1f5d365a3cc"
+    },
+    {
+      "shard": "06",
+      "rn": 89,
+      "unified_id": "UNI-4d5836061d",
+      "primary_name": "東広島市新規就農者初期投資支援事業",
+      "source_url": "https://www.city.higashihiroshima.lg.jp/soshiki/sangyo/8/6/39546.html",
+      "source_domain": "www.city.higashihiroshima.lg.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "7778664a5fd828aa9504829b349eac38e884285b84bec4ac9ce143c9dd8d8c9a",
+      "current_stable_field_fingerprint_sha256": "7778664a5fd828aa9504829b349eac38e884285b84bec4ac9ce143c9dd8d8c9a"
+    },
+    {
+      "shard": "06",
+      "rn": 90,
+      "unified_id": "UNI-ext-81c2277fed",
+      "primary_name": "水循環（水資源有効利用）に係る俯瞰調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA2_100270.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "previous_diff_status": "baseline_only",
+      "diff_status": "no_change",
+      "previous_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "current_source_status": {
+        "source_url_status": "live",
+        "source_last_check_status": 200,
+        "source_fail_count": 0
+      },
+      "typed_field_changed_fields": [],
+      "source_status_changed_fields": [],
+      "stored_source_checksum_changed": false,
+      "source_fetched_at_changed": false,
+      "previous_stable_field_fingerprint_sha256": "6e604a41f9c3ef0e6dcf94a1db37983184b856e268f0d993db759d1fc8d4dcc4",
+      "current_stable_field_fingerprint_sha256": "6e604a41f9c3ef0e6dcf94a1db37983184b856e268f0d993db759d1fc8d4dcc4"
+    }
+  ],
+  "law_comparisons": [
+    {
+      "shard": "08",
+      "unified_id": "LAW-479ccc9ed2",
+      "law_title": "サイバー通信情報監理委員会事務局組織令",
+      "source_url": "https://laws.e-gov.go.jp/law/508CO0000000091",
+      "diff_status": "no_change",
+      "changed_fields": [],
+      "fetched_at_changed": false
+    }
+  ],
+  "broken_retry_comparisons": [],
+  "am_amendment_snapshot_pair_analysis": {
+    "paired_entities": 7298,
+    "raw_snapshot_json_changed": 0,
+    "eligibility_hash_changed": 0,
+    "summary_hash_changed": 0,
+    "entities_with_any_typed_field_change": 6276,
+    "field_change_counts": {
+      "target_set_json": 6155,
+      "amount_max_yen": 629,
+      "subsidy_rate_max": 76,
+      "source_url": 721
+    },
+    "field_change_direction_counts": {
+      "amount_max_yen": {
+        "value_to_null": 629
+      },
+      "subsidy_rate_max": {
+        "value_to_null": 76
+      },
+      "target_set_json": {
+        "value_to_null": 6155
+      },
+      "source_url": {
+        "value_to_null": 721
+      }
+    },
+    "change_combination_counts": {
+      "target_set_json": 4922,
+      "no_change": 1022,
+      "target_set_json+source_url": 657,
+      "amount_max_yen+target_set_json": 472,
+      "amount_max_yen": 90,
+      "amount_max_yen+target_set_json+source_url": 54,
+      "subsidy_rate_max+target_set_json": 33,
+      "subsidy_rate_max": 25,
+      "amount_max_yen+subsidy_rate_max+target_set_json": 13,
+      "source_url": 5,
+      "subsidy_rate_max+target_set_json+source_url": 4,
+      "subsidy_rate_max+source_url": 1
+    },
+    "version_projection_counts": {
+      "1": {
+        "rows": 7298,
+        "amount_non_null": 1350,
+        "subsidy_rate_non_null": 846,
+        "target_set_non_null": 7298,
+        "source_url_non_null": 5096,
+        "source_fetched_at_non_null": 3162,
+        "min_observed_at": "2026-04-24T10:24:48+00:00",
+        "max_observed_at": "2026-04-24T10:24:48+00:00"
+      },
+      "2": {
+        "rows": 7298,
+        "amount_non_null": 721,
+        "subsidy_rate_non_null": 770,
+        "target_set_non_null": 1143,
+        "source_url_non_null": 4375,
+        "source_fetched_at_non_null": 3045,
+        "min_observed_at": "2026-04-24 22:39:26",
+        "max_observed_at": "2026-04-24 22:39:27"
+      }
+    },
+    "top_source_tables_by_field": {
+      "amount_max_yen": {
+        "06_prefecture_programs": 193,
+        "07_new_program_candidates": 96,
+        "16_trade_export_programs": 39,
+        "37_fisheries_aquaculture": 37,
+        "27_chamber_commerce": 25,
+        "40_private_foundations": 24,
+        "66_fisheries_processing_export_deep": 21,
+        "11_mhlw_employment_grants": 19,
+        "24_ip_support": 15,
+        "71_sports_esports_content_deep": 15,
+        "14_retirement_mutual_aid": 12,
+        "29_jeed_disability": 12
+      },
+      "subsidy_rate_max": {
+        "11_mhlw_employment_grants": 24,
+        "24_ip_support": 13,
+        "08_loan_programs": 11,
+        "28_research_grants": 7,
+        "27_chamber_commerce": 6,
+        "37_fisheries_aquaculture": 4,
+        "rd": 2,
+        "148_midwife_maternal_childcare": 1,
+        "14_retirement_mutual_aid": 1,
+        "29_jeed_disability": 1,
+        "131_animal_hospital_veterinary": 1,
+        "56_pharmaceutical_medical_device": 1
+      },
+      "target_set_json": {
+        "provisional": 946,
+        "19_ministry_qa_faq": 552,
+        "20_designated_city_programs": 204,
+        "06_prefecture_programs": 200,
+        "33_prefecture_programs_part2": 190,
+        "07_new_program_candidates": 134,
+        "lg": 120,
+        "08_loan_programs": 95,
+        "40_private_foundations": 75,
+        "rd": 74,
+        "16_trade_export_programs": 66,
+        "11_mhlw_employment_grants": 61
+      },
+      "source_url": {
+        "76_ppp_pfi_public_private": 46,
+        "104_labor_union_wage_talent": 45,
+        "100_shigyo_national_qualifications": 41,
+        "134_life_nonlife_small_short_insurance": 41,
+        "87_children_family_agency_support": 37,
+        "71_sports_esports_content_deep": 34,
+        "120_cosmetics_beauty_industry": 32,
+        "86_diversity_lgbtq_multicultural": 32,
+        "118_product_safety_pse_psc": 30,
+        "127_leisure_facilities_ski_golf_fitness": 30,
+        "155_chemical_petrochemical_manufacturing": 30,
+        "74_vacant_house_housing_safetynet": 30
+      }
+    },
+    "raw_key_match_counts_for_previous_values": {
+      "amount_max_yen": {
+        "amount_max_man_yen": 193,
+        "budget_yen": 96,
+        "application_fee_yen": 59,
+        "budget_r7_initial_yen": 30,
+        "budget_r7_supplementary_yen": 26,
+        "subsidy_cap_jpy": 15,
+        "exam_fee_yen": 11,
+        "subsidy_cap_yen": 11,
+        "fee_jpy": 11,
+        "amount_per_commission_yen": 8,
+        "fee_yen": 8,
+        "__no_exact_raw_key_match__": 7,
+        "amount_total_yen": 6,
+        "capital_max_yen": 4,
+        "amount_daily_max_yen": 4,
+        "amount_monthly_max_yen": 4,
+        "premium_daily_yen": 3,
+        "subsidy_amount_yen": 3,
+        "cap_jpy": 3,
+        "budget_total_yen": 3
+      },
+      "subsidy_rate_max": {
+        "__no_exact_raw_key_match__": 34,
+        "reduction_rate": 13,
+        "interest_rate_base_annual": 11,
+        "selectivity_rate": 7,
+        "pass_rate_latest": 6,
+        "subsidy_rate_of_increase": 1,
+        "interest_rate_pct": 1,
+        "subsidy_rate_sme": 1,
+        "subsidy_rate_national": 1,
+        "funding_rate": 1
+      },
+      "target_set_json": {
+        "__no_exact_raw_key_match__": 6155
+      },
+      "source_url": {
+        "source_primary": 434,
+        "url": 190,
+        "url_primary": 97,
+        "portal_url": 35,
+        "law_url": 2,
+        "guideline_url": 1,
+        "portal_eruboshi": 1,
+        "url_org": 1
+      }
+    },
+    "top_raw_snapshot_keys_version1": {
+      "category": 4145,
+      "confidence": 3258,
+      "fetched_at": 3045,
+      "program_name": 2766,
+      "authority": 2605,
+      "id": 2565,
+      "source_excerpt": 2436,
+      "official_url": 2422,
+      "program_kind": 2215,
+      "source_url": 1953,
+      "subsidy_rate": 1812,
+      "title": 1735,
+      "amount_max_yen": 1700,
+      "legal_basis": 1436,
+      "target_types": 1378,
+      "target_entity": 1080,
+      "note": 1016,
+      "ministry": 965,
+      "primary_name": 960,
+      "origin": 949,
+      "graph_source_id": 946,
+      "notes": 863,
+      "name": 757,
+      "municipality": 750,
+      "prefecture": 747,
+      "authority_level": 746,
+      "authority_name": 746,
+      "source_type": 710,
+      "compatible_with": 598,
+      "source_primary": 580,
+      "summary": 559,
+      "program_name_hint": 552,
+      "question": 552,
+      "answer": 552,
+      "source_section": 552,
+      "record_id": 524,
+      "scope": 518,
+      "target": 497,
+      "collected_at": 477,
+      "primary_source": 474
+    },
+    "samples": {
+      "amount_max_yen": [
+        {
+          "entity_id": "program:07_new_program_candidates:000011:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": 80000000,
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000001:chutaikyo_eligibility_general_a9f9297315",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 300000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000002:chutaikyo_eligibility_wholesale_75c42389c4",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 100000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000003:chutaikyo_eligibility_retail_0086bc3854",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 50000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000004:chutaikyo_eligibility_service_7bbb889d2e",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 50000000,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:27_chamber_commerce:000000:5d8ffa1cc2",
+          "source_table": "27_chamber_commerce",
+          "previous_value": 20000000,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "authority",
+            "program_kind",
+            "loan_amount_max_yen",
+            "disaster_extra_loan_max_yen",
+            "security_required",
+            "interest_rate_label",
+            "prerequisite_conditions",
+            "use_of_funds",
+            "repayment_period_years",
+            "grace_period_years",
+            "disaster_frame_repayment_setsubi_years"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000001:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": -98000000000,
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000002:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": 576000000000,
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        }
+      ],
+      "subsidy_rate_max": [
+        {
+          "entity_id": "program:27_chamber_commerce:000019:3_cbad51d114",
+          "source_table": "27_chamber_commerce",
+          "previous_value": 0.336,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "authority",
+            "program_kind",
+            "exam_fee_yen",
+            "pass_rate_latest",
+            "pass_rate_source_period",
+            "candidates_latest",
+            "passers_latest",
+            "exam_types",
+            "net_exam_pass_rate",
+            "net_exam_period",
+            "net_exam_candidates"
+          ]
+        },
+        {
+          "entity_id": "program:27_chamber_commerce:000020:2_6ab8095700",
+          "source_table": "27_chamber_commerce",
+          "previous_value": 0.151,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "authority",
+            "program_kind",
+            "exam_fee_yen",
+            "pass_rate_latest",
+            "pass_rate_source_period",
+            "candidates_latest",
+            "passers_latest",
+            "net_exam_pass_rate",
+            "net_exam_period",
+            "net_exam_candidates",
+            "official_url"
+          ]
+        },
+        {
+          "entity_id": "program:11_mhlw_employment_grants:000000:89951e76ec",
+          "source_table": "11_mhlw_employment_grants",
+          "previous_value": 0.6666666666666666,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "program_code",
+            "category",
+            "authority",
+            "amount_formula",
+            "amount_daily_max_yen",
+            "subsidy_rate_sme",
+            "subsidy_rate_large",
+            "target_conditions",
+            "application_deadline_type",
+            "duration_max",
+            "required_documents"
+          ]
+        },
+        {
+          "entity_id": "program:11_mhlw_employment_grants:000021:65_f060eab901",
+          "source_table": "11_mhlw_employment_grants",
+          "previous_value": 0.6,
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "program_code",
+            "category",
+            "authority",
+            "amount_formula",
+            "amount_min_yen",
+            "amount_max_yen",
+            "subsidy_rate_sme",
+            "subsidy_rate_large",
+            "target_conditions",
+            "application_deadline_type",
+            "duration_max"
+          ]
+        },
+        {
+          "entity_id": "program:148_midwife_maternal_childcare:000001:10762_5c791bccf4",
+          "source_table": "148_midwife_maternal_childcare",
+          "previous_value": 0.988,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "exam_round",
+            "exam_date",
+            "applicants",
+            "passers",
+            "pass_rate_percent",
+            "notes",
+            "competent_agency",
+            "source_primary"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000007:chutaikyo_subsidy_increase_da2d0e9218",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": 0.3333,
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "benefit_type",
+            "benefit_name",
+            "subsidy_rate_of_increase",
+            "subsidy_duration_months",
+            "premium_cap_for_eligibility_yen",
+            "exclusion_rule",
+            "penalty_rule",
+            "official_url",
+            "fetched_at"
+          ]
+        },
+        {
+          "entity_id": "program:24_ip_support:000000:5a9e3187a5",
+          "source_table": "24_ip_support",
+          "previous_value": 0.5,
+          "new_value": null,
+          "raw_keys": [
+            "program_id",
+            "program_name",
+            "authority",
+            "program_kind",
+            "reduction_rate",
+            "applicable_fees",
+            "target_entity",
+            "prerequisite_requirements",
+            "compatible_with",
+            "official_url",
+            "source_excerpt",
+            "fetched_at"
+          ]
+        },
+        {
+          "entity_id": "program:24_ip_support:000001:832aa6c026",
+          "source_table": "24_ip_support",
+          "previous_value": 0.5,
+          "new_value": null,
+          "raw_keys": [
+            "program_id",
+            "program_name",
+            "authority",
+            "program_kind",
+            "reduction_rate",
+            "applicable_fees",
+            "target_entity",
+            "prerequisite_requirements",
+            "compatible_with",
+            "official_url",
+            "source_excerpt",
+            "fetched_at"
+          ]
+        }
+      ],
+      "target_set_json": [
+        {
+          "entity_id": "program:04_program_documents:000000:23_25d25bdfe8",
+          "source_table": "04_program_documents",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "program_name",
+            "form_name",
+            "form_type",
+            "form_format",
+            "form_url_direct",
+            "pages",
+            "signature_required",
+            "support_org_needed",
+            "completion_example_url",
+            "source_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000000:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:07_new_program_candidates:000011:07_new_program_candidatesunknown_6bdaaec94f",
+          "source_table": "07_new_program_candidates",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "candidate_name",
+            "mentioned_in",
+            "ministry",
+            "budget_yen",
+            "program_kind_hint",
+            "expected_start",
+            "policy_background_excerpt",
+            "source_url",
+            "source_pdf_page",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000001:chutaikyo_eligibility_general_a9f9297315",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000002:chutaikyo_eligibility_wholesale_75c42389c4",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000003:chutaikyo_eligibility_retail_0086bc3854",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000004:chutaikyo_eligibility_service_7bbb889d2e",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "rule_category",
+            "industry",
+            "employee_count_max",
+            "capital_max_yen",
+            "condition_logic",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        },
+        {
+          "entity_id": "program:14_retirement_mutual_aid:000008:chutaikyo_tax_benefit_employer_28449e0681",
+          "source_table": "14_retirement_mutual_aid",
+          "previous_value": "[]",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "program_code",
+            "rule_type",
+            "benefit_type",
+            "target",
+            "treatment",
+            "legal_basis",
+            "non_taxable",
+            "official_url",
+            "fetched_at",
+            "confidence"
+          ]
+        }
+      ],
+      "source_url": [
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000001:841-348348_a077066b53",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/newpage_53881.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "total_diseases",
+            "as_of_date",
+            "added_in_r07",
+            "rename_in_r07",
+            "source_primary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000002:2283557358",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.nanbyou.or.jp/entry/5460",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "copayment_ratio",
+            "upper_limit_ventilator_users",
+            "high_cost_long_term_criteria",
+            "light_high_cost_criteria",
+            "validity_period_years",
+            "max_extension_months",
+            "application_to",
+            "source_primary"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000003:27ef4b0d57",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.shouman.jp/assist/outline",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "total_diseases_r06",
+            "total_diseases_r07",
+            "disease_groups",
+            "age_limit_years",
+            "age_extension_years",
+            "age_extension_condition",
+            "legal_basis",
+            "application_to"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000004:64369_ac8e2f17bf",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/shougaishahukushi/hani/index.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "as_of_date_r06",
+            "total_r06",
+            "added_in_r06",
+            "total_r07",
+            "scope",
+            "competent_agency",
+            "source_primary",
+            "source_pdf"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000005:78_641ace2e3b",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/content/12401000/001562876.pdf",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "effective_date_first_phase",
+            "income_raise_range_pct",
+            "annual_salary_370_770_raise_pct",
+            "annual_outpatient_cap_yen",
+            "source_primary",
+            "source_secondary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000006:dd08aa1b2c",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000084783.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "experience_years_required",
+            "qualification_options",
+            "designation_authority",
+            "document_scope",
+            "source_primary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000007:c9b0e50c04",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000084783.html",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "eligible_types",
+            "designation_authority",
+            "source_primary",
+            "source_type"
+          ]
+        },
+        {
+          "entity_id": "program:125_rare_diseases_pediatric_chronic:000008:c2177c7ba2",
+          "source_table": "125_rare_diseases_pediatric_chronic",
+          "previous_value": "https://www.nanbyou.or.jp/entry/5860",
+          "new_value": null,
+          "raw_keys": [
+            "record_id",
+            "category",
+            "title",
+            "summary",
+            "hub_types",
+            "establishment_year",
+            "basis_notification",
+            "source_primary",
+            "source_secondary",
+            "source_type"
+          ]
+        }
+      ]
+    },
+    "finding": "raw_snapshot_json, eligibility_hash, and summary_hash are unchanged for all 7,298 pairs; observed typed-field differences are projection/nullability differences, not source amendments."
+  },
+  "false_positive_false_negative_taxonomy": [
+    {
+      "id": "raw_stable_projection_null_regression",
+      "class": "false_positive",
+      "observed_count": 6276,
+      "symptom": "raw_snapshot_json and hashes are identical, but typed columns move value_to_null in version 2.",
+      "evidence": "7,298/7,298 paired rows have raw_snapshot_json unchanged; 6,276 entities have at least one typed field changed.",
+      "mitigation": "Do not emit amendment diff when raw_snapshot_sha256 and normalized_business_sha256 are unchanged and all typed diffs are projection-only value_to_null. Emit collector_regression_candidate instead."
+    },
+    {
+      "id": "empty_array_to_null_target_set",
+      "class": "false_positive",
+      "observed_count": 6155,
+      "symptom": "target_set_json is [] in version 1 and NULL in version 2.",
+      "evidence": "6,155 target_set_json changes are all value_to_null from the empty array string.",
+      "mitigation": "Normalize NULL, empty string, and [] to an empty target set before diffing; keep raw nullability in projection audit only."
+    },
+    {
+      "id": "non_business_numeric_as_amount",
+      "class": "false_positive",
+      "observed_count": 629,
+      "symptom": "budget_yen, application_fee_yen, exam_fee_yen, capital_max_yen, or tiny/negative values are projected into amount_max_yen, then disappear.",
+      "evidence": "amount changes are 629 value_to_null; source keys include amount_max_man_yen 193, budget_yen 96, application_fee_yen 59, and many non-subsidy keys.",
+      "mitigation": "Store amount_kind with values such as grant_cap, budget, fee, capital_limit, loan_limit; only grant_cap/loan_limit should drive high-severity program amount diffs."
+    },
+    {
+      "id": "non_subsidy_rate_as_subsidy_rate",
+      "class": "false_positive",
+      "observed_count": 76,
+      "symptom": "pass_rate, interest_rate, selectivity_rate, or reduction_rate are projected as subsidy_rate_max.",
+      "evidence": "rate changes are 76 value_to_null; exact raw-key matches include reduction_rate 13, interest_rate_base_annual 11, selectivity_rate 7, pass_rate_latest 6.",
+      "mitigation": "Store rate_kind and compare only rate_kind=subsidy_rate for eligibility/subsidy severity; loan interest and pass/selectivity rates get separate fields."
+    },
+    {
+      "id": "source_url_alias_to_null",
+      "class": "false_positive",
+      "observed_count": 721,
+      "symptom": "source_url column becomes NULL while raw JSON still carries source_primary, url, url_primary, portal_url, or law_url.",
+      "evidence": "source_url changes are 721 value_to_null; previous values match source_primary 434, url 190, url_primary 97.",
+      "mitigation": "Canonical source URL extractor must search ordered aliases and write source_url_extraction_key; URL disappearance with stable raw hash is collector regression, not source removal."
+    },
+    {
+      "id": "boilerplate_footer_contact",
+      "class": "false_positive",
+      "symptom": "footer, contact address, SNS link, organization banner, or access guide changes only.",
+      "mitigation": "Zone-strip footer/contact/nav before normalized_business_sha256; preserve contact hash as low-signal auxiliary field."
+    },
+    {
+      "id": "dynamic_timestamp_counter",
+      "class": "false_positive",
+      "symptom": "generated_at, page updated label without business date, access counter, cache token, or analytics parameter changes.",
+      "mitigation": "Drop known timestamp/counter lines and tracking query parameters; compare only whitelisted business dates such as application start/end and law amendment dates."
+    },
+    {
+      "id": "faq_or_notice_reorder",
+      "class": "false_positive",
+      "symptom": "FAQ, notices, or attachments are reordered with no item body change.",
+      "mitigation": "Hash stable section items by heading+body; suppress pure ordering diffs and emit add/remove/changed item diffs only."
+    },
+    {
+      "id": "pdf_pagination_drift",
+      "class": "false_positive",
+      "symptom": "PDF text extraction changes page numbers, headers, footers, or line breaks only.",
+      "mitigation": "Drop page-number-only lines and repeated header/footer bands before source_text_sha256 and difflib."
+    },
+    {
+      "id": "hash_blind_typed_field_change",
+      "class": "false_negative",
+      "symptom": "eligibility_hash and summary_hash stay unchanged even when amount/target/source_url typed fields change.",
+      "evidence": "Current pairs show 0 hash changes with 7,581 field-level typed differences across amount/rate/target/source_url.",
+      "mitigation": "Add field_fingerprints_json and normalized_business_sha256 that include canonical typed fields; diff typed fields independently from summary/eligibility text hashes."
+    },
+    {
+      "id": "wrong_field_bucket_suppression",
+      "class": "false_negative",
+      "symptom": "A real fee, budget, loan, or interest-rate change is suppressed because it was stored under the wrong generic amount/rate column or normalized away.",
+      "mitigation": "Typed fields need field_kind, unit, source_key, and confidence_rule; compare within kind-specific fields rather than one generic amount/rate slot."
+    },
+    {
+      "id": "source_alias_missing_status_check",
+      "class": "false_negative",
+      "symptom": "The canonical URL field is NULL but raw JSON has a source alias, so source health/status diffs are skipped.",
+      "mitigation": "Canonicalize source URL aliases before status checks; persist source_url_extraction_key and canonical_source_url so missing canonical URL is visible as extractor failure."
+    }
+  ],
+  "schema_design_one_commit": {
+    "goal": "Additive schema that lets an implementer ship source snapshots, typed-field fingerprints, and projection-regression detection in one commit without changing production behavior first.",
+    "tables": [
+      {
+        "name": "am_source_snapshot",
+        "purpose": "One row per entity/source fetch or DB-derived baseline snapshot.",
+        "columns": [
+          [
+            "snapshot_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "run_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "entity_table",
+            "TEXT NOT NULL"
+          ],
+          [
+            "entity_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "source_url",
+            "TEXT"
+          ],
+          [
+            "canonical_source_url",
+            "TEXT"
+          ],
+          [
+            "source_url_extraction_key",
+            "TEXT"
+          ],
+          [
+            "source_domain",
+            "TEXT"
+          ],
+          [
+            "source_format",
+            "TEXT"
+          ],
+          [
+            "robots_policy_checked_at",
+            "TEXT"
+          ],
+          [
+            "source_status_code",
+            "INTEGER"
+          ],
+          [
+            "source_final_url",
+            "TEXT"
+          ],
+          [
+            "source_content_sha256",
+            "TEXT"
+          ],
+          [
+            "source_text_sha256",
+            "TEXT"
+          ],
+          [
+            "source_bytes_len",
+            "INTEGER"
+          ],
+          [
+            "source_fetched_at",
+            "TEXT"
+          ],
+          [
+            "raw_snapshot_sha256",
+            "TEXT"
+          ],
+          [
+            "normalized_business_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "normalized_business_sha256",
+            "TEXT NOT NULL"
+          ],
+          [
+            "typed_fields_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "field_fingerprints_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "noise_profile_json",
+            "TEXT NOT NULL DEFAULT {}"
+          ],
+          [
+            "extractor_version",
+            "TEXT NOT NULL"
+          ],
+          [
+            "projection_version",
+            "TEXT NOT NULL"
+          ],
+          [
+            "created_at",
+            "TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          ]
+        ],
+        "indexes": [
+          "unique(run_id, entity_table, entity_id, canonical_source_url)",
+          "index(entity_table, entity_id, created_at)",
+          "index(canonical_source_url, source_content_sha256)",
+          "index(normalized_business_sha256)"
+        ]
+      },
+      {
+        "name": "am_source_snapshot_field_diff",
+        "purpose": "Field-level diff rows that separate business changes, source-health changes, noise-only changes, and projection regressions.",
+        "columns": [
+          [
+            "diff_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "prev_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "new_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "entity_table",
+            "TEXT NOT NULL"
+          ],
+          [
+            "entity_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "field_name",
+            "TEXT NOT NULL"
+          ],
+          [
+            "field_kind",
+            "TEXT"
+          ],
+          [
+            "prev_value_json",
+            "TEXT"
+          ],
+          [
+            "new_value_json",
+            "TEXT"
+          ],
+          [
+            "prev_field_sha256",
+            "TEXT"
+          ],
+          [
+            "new_field_sha256",
+            "TEXT"
+          ],
+          [
+            "diff_kind",
+            "TEXT NOT NULL"
+          ],
+          [
+            "field_severity",
+            "TEXT NOT NULL"
+          ],
+          [
+            "confidence_rule",
+            "TEXT NOT NULL"
+          ],
+          [
+            "noise_class",
+            "TEXT"
+          ],
+          [
+            "evidence_url",
+            "TEXT"
+          ],
+          [
+            "requires_human_review",
+            "INTEGER NOT NULL DEFAULT 0"
+          ],
+          [
+            "detected_at",
+            "TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          ]
+        ],
+        "indexes": [
+          "unique(prev_snapshot_id, new_snapshot_id, field_name)",
+          "index(entity_table, entity_id, detected_at)",
+          "index(diff_kind, field_severity)"
+        ]
+      },
+      {
+        "name": "am_amendment_projection_audit",
+        "purpose": "Read-only audit companion for existing am_amendment_snapshot pairs; catches stable-raw/projection-null regressions before webhook/user-facing diffs.",
+        "columns": [
+          [
+            "audit_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "entity_id",
+            "TEXT NOT NULL"
+          ],
+          [
+            "prev_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "new_snapshot_id",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "raw_snapshot_sha256_same",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "eligibility_hash_same",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "summary_hash_same",
+            "INTEGER NOT NULL"
+          ],
+          [
+            "typed_projection_diff_json",
+            "TEXT NOT NULL"
+          ],
+          [
+            "projection_diff_kind",
+            "TEXT NOT NULL"
+          ],
+          [
+            "created_at",
+            "TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP"
+          ]
+        ],
+        "indexes": [
+          "unique(prev_snapshot_id, new_snapshot_id)",
+          "index(projection_diff_kind)"
+        ]
+      }
+    ],
+    "diff_kind_values": [
+      "no_change",
+      "typed_field_changed",
+      "source_status_changed",
+      "content_changed",
+      "noise_only",
+      "projection_regression_candidate",
+      "baseline_only"
+    ],
+    "severity_rules": {
+      "critical": [
+        "application_window.end_date closed/extended",
+        "field_kind=grant_cap or loan_limit amount changed",
+        "field_kind=subsidy_rate changed",
+        "eligibility target set added/removed non-empty target",
+        "source_status changed live->broken after prior live"
+      ],
+      "medium": [
+        "application status changed",
+        "new/removed official PDF/doc attachment",
+        "law last_amended_date or revision_status changed"
+      ],
+      "low": [
+        "footer/contact/page-date-only changes",
+        "FAQ order-only changes",
+        "projection nullability with stable raw/hash"
+      ]
+    },
+    "one_commit_acceptance_checks": [
+      "Backfill one baseline run from current DB without external fetch.",
+      "Run pair audit on existing 7,298 am_amendment_snapshot pairs and classify current 6,276 affected entities as projection_regression_candidate, not business amendment.",
+      "Diff query can return no_change / typed_field_changed / source_status_changed for Tier S baseline rows.",
+      "Unit tests cover NULL vs [] target equivalence, source_url alias extraction, amount_kind separation, and stable raw hash with projection loss."
+    ]
+  },
+  "blockers": [
+    "No external refetch was performed in r2, so source-byte content changes after the previous local DB snapshot are out of scope.",
+    "am_amendment_diff still has 0 rows; user-facing amendment notifications should remain gated until real non-projection diffs exist.",
+    "program_law_refs has 0 rows, so law changes cannot yet be propagated to impacted programs locally.",
+    "The existing am_amendment_snapshot hashes do not cover typed field fingerprints; hash-only comparison has a structural false-negative risk."
+  ],
+  "suggested_next_queries": [
+    "with pair as (select p.entity_id, p.raw_snapshot_json p_raw, n.raw_snapshot_json n_raw, p.amount_max_yen p_amt, n.amount_max_yen n_amt from am_amendment_snapshot p join am_amendment_snapshot n on n.entity_id=p.entity_id and n.version_seq=2 where p.version_seq=1) select count(*) from pair where p_raw=n_raw and p_amt is not n_amt;",
+    "select version_seq, count(*), sum(amount_max_yen is not null), sum(target_set_json is not null), sum(source_url is not null) from am_amendment_snapshot group by version_seq;",
+    "select unified_id, primary_name, source_url, source_last_check_status, source_url_status, source_fail_count from programs where tier='S' and excluded=0 and source_url_status<>'live' order by source_last_check_status, primary_name;",
+    "select unified_id, primary_name, amount_max_man_yen, subsidy_rate, application_window_json, source_url_status from programs where tier='S' and excluded=0 order by primary_name limit 114;",
+    "select unified_id, law_title, last_amended_date, revision_status, source_checksum from laws order by last_amended_date desc limit 20;"
+  ],
+  "artifact_object_counts": {
+    "program_comparison_objects": 15,
+    "law_comparison_objects": 1,
+    "broken_retry_comparison_objects": 0
+  }
+}

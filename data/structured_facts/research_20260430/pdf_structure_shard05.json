@@ -1,0 +1,96 @@
+[
+  {
+    "source_url": "https://www.pref.hokkaido.lg.jp/fs/1/1/9/5/3/9/0/8/_/%E3%80%90%E7%A2%BA%E5%AE%9A%E3%80%91%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E6%8A%80%E8%A1%93%E5%B0%8E%E5%85%A5%E7%AD%89%E7%B7%8A%E6%80%A5%E6%94%AF%E6%8F%B4%E4%BA%8B%E6%A5%AD%E8%B2%BB%E8%A3%9C%E5%8A%A9%E9%87%91%E4%BA%A4%E4%BB%98%E8%A6%81%E7%B6%B1.pdf",
+    "publisher_domain": "pref.hokkaido.lg.jp",
+    "page_count": 7,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "medium",
+    "reason": "7 pages; text layer extractable; no tables detected in first sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact"
+  },
+  {
+    "source_url": "https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youkou.pdf",
+    "publisher_domain": "pref.kyoto.jp",
+    "page_count": 4,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs"
+    ],
+    "parser_risk": "medium",
+    "reason": "4 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs"
+  },
+  {
+    "source_url": "https://www.pref.kumamoto.jp/uploaded/attachment/308409.pdf",
+    "publisher_domain": "pref.kumamoto.jp",
+    "page_count": 5,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "5 pages; text layer extractable; no tables detected in first sampled pages; fields: subsidy_rate,max_amount,required_docs,update_date"
+  },
+  {
+    "source_url": "https://www.pref.wakayama.lg.jp/prefg/060100/d00221813_d/fil/seichosokushin.pdf",
+    "publisher_domain": "pref.wakayama.lg.jp",
+    "page_count": 5,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "5 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,update_date"
+  },
+  {
+    "source_url": "https://web.pref.hyogo.lg.jp/sr08/documents/setubitoushi.pdf",
+    "publisher_domain": "web.pref.hyogo.lg.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "high",
+    "reason": "2 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,required_docs,contact"
+  },
+  {
+    "source_url": "https://www.hataraku.metro.tokyo.lg.jp/kaizen/ryoritsu/bosyuuyoukou_cushara_dantaihojyo2.pdf",
+    "publisher_domain": "hataraku.metro.tokyo.lg.jp",
+    "page_count": 14,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "14 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date"
+  }
+]

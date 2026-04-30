@@ -1,0 +1,1107 @@
+{
+  "run_id": "20260430",
+  "run_date": "2026-04-30",
+  "lane": "am_diff_design",
+  "shard": "02",
+  "scope": "Tier S programs 16-30",
+  "source_policy": {
+    "llm_api_called": false,
+    "hosted_model_api_called": false,
+    "external_source_refetch_performed": false,
+    "aggregator_sites_used_as_evidence": false,
+    "raw_html_pdf_bytes_embedded": false,
+    "baseline_mode_reason": "safe small baseline generated from local DB source fields and normalized field fingerprints"
+  },
+  "diff_status": "baseline_only",
+  "common_state": {
+    "programs_state": {
+      "total_programs": 14472,
+      "tier_s_active": 114,
+      "with_source_url": 13956,
+      "with_source_checksum": 8891,
+      "with_source_fetched_at": 14456
+    },
+    "tier_s_programs_state": {
+      "tier_s_rows": 114,
+      "live_urls": 101,
+      "broken_urls": 13,
+      "status_200": 101,
+      "status_403": 2,
+      "status_404": 11,
+      "with_checksum": 64,
+      "missing_checksum": 50,
+      "with_application_window": 85,
+      "with_target_types": 45,
+      "with_funding_purpose": 39,
+      "with_enriched_json": 114,
+      "with_source_mentions_json": 103
+    },
+    "laws_state": {
+      "total_laws": 9484,
+      "current_laws": 9093,
+      "repealed_laws": 391,
+      "with_source_url": 9484,
+      "with_source_checksum": 9484,
+      "with_fetched_at": 9484,
+      "min_last_amended_date": "1872-11-09",
+      "max_last_amended_date": "2026-04-01"
+    },
+    "am_amendment_snapshot_state": {
+      "snapshot_rows": 14596,
+      "snapshot_entities": 7298,
+      "min_observed_at": "2026-04-24 22:39:26",
+      "max_observed_at": "2026-04-24T10:24:48+00:00",
+      "with_amount_max_yen": 2071,
+      "with_subsidy_rate_max": 1616,
+      "with_target_set_json": 8441,
+      "with_eligibility_hash": 14596,
+      "with_summary_hash": 14596,
+      "with_source_url": 9471,
+      "with_source_fetched_at": 6207
+    },
+    "am_amendment_diff_state": {
+      "diff_rows": 0
+    },
+    "am_snapshot_version_pair_state": {
+      "paired_entities": 7298,
+      "eligibility_hash_changed": 0,
+      "summary_hash_changed": 0,
+      "amount_changed": 629,
+      "subsidy_rate_changed": 76,
+      "target_set_changed": 6155,
+      "source_url_changed": 721
+    },
+    "am_source_state": {
+      "total_sources": 97272,
+      "distinct_domains": 1447,
+      "with_license": 97272,
+      "primary_sources": 95487,
+      "secondary_sources": 1692,
+      "active_sources": 97148,
+      "pdf_sources": 1633,
+      "with_content_hash": 96991
+    },
+    "reproducibility_snapshots_state": {
+      "reproducibility_snapshots": 0
+    },
+    "program_law_refs_state": {
+      "refs": 0,
+      "programs_with_refs": 0,
+      "laws_referenced": 0
+    }
+  },
+  "shard_counts": {
+    "program_candidate_count": 15,
+    "live_urls": 14,
+    "broken_urls": 1,
+    "with_stored_source_checksum": 10,
+    "missing_stored_source_checksum": 5,
+    "distinct_source_urls": 15,
+    "formats": {
+      "html": 15
+    }
+  },
+  "snapshot_candidates": [
+    {
+      "rn": 16,
+      "unified_id": "UNI-ext-2a1f24434a",
+      "primary_name": "【5/1〆】基礎から応用まで学べるIT技能科（西部地区）（5/25開講・3か月訓練）受講生募集中！",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7311401/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "ce5d1226adfd182c",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【5/1〆】基礎から応用まで学べるIT技能科（西部地区）（5/25開講・3か月訓練）受講生募集中！",
+        "authority_name": "徳島県",
+        "prefecture": "徳島県",
+        "municipality": null,
+        "program_kind": "support",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7311401/"
+      },
+      "stable_field_fingerprint_sha256": "9d2d9ba6b0fb156caad72047481363b1348a778c7c8ab5bc86ba69a727dfb7d7"
+    },
+    {
+      "rn": 17,
+      "unified_id": "UNI-ext-0b587e268c",
+      "primary_name": "【5/7〆】介護実務者・同行援護研修科1（6/1開講・6か月訓練）受講生募集中！",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312389/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "490b10a8b1504816",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【5/7〆】介護実務者・同行援護研修科1（6/1開講・6か月訓練）受講生募集中！",
+        "authority_name": "徳島県",
+        "prefecture": "徳島県",
+        "municipality": null,
+        "program_kind": "support",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312389/"
+      },
+      "stable_field_fingerprint_sha256": "58fecb6eda247353cc77587a5686e2bf181e9aa68b30400d4a7dad6c892ec438"
+    },
+    {
+      "rn": 18,
+      "unified_id": "UNI-ext-537bb1a5cc",
+      "primary_name": "【5/7〆】造園科（5/27開講・6か月訓練）受講生募集中！",
+      "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312388/",
+      "source_domain": "www.pref.tokushima.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "ff338cccc36aa9c2",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【5/7〆】造園科（5/27開講・6か月訓練）受講生募集中！",
+        "authority_name": "徳島県",
+        "prefecture": "徳島県",
+        "municipality": null,
+        "program_kind": "support",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312388/"
+      },
+      "stable_field_fingerprint_sha256": "e1f58717520699a48e7a43c72ce5e61b3acbfc1beb630290b45a72af93f39f87"
+    },
+    {
+      "rn": 19,
+      "unified_id": "UNI-ext-063f697122",
+      "primary_name": "【事業者向け・募集中】新たな工賃向上プラン実現加速化事業補助金",
+      "source_url": "https://www.pref.tottori.lg.jp/322909.htm",
+      "source_domain": "www.pref.tottori.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "70daa6cc4cedd2c2",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【事業者向け・募集中】新たな工賃向上プラン実現加速化事業補助金",
+        "authority_name": "鳥取県",
+        "prefecture": "鳥取県",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.pref.tottori.lg.jp/322909.htm"
+      },
+      "stable_field_fingerprint_sha256": "a9726bea75423279b861e0289120120f57feadeb69869e23cfde1465f8014f8a"
+    },
+    {
+      "rn": 20,
+      "unified_id": "UNI-ext-8d8762b43b",
+      "primary_name": "【公募予告】AI for Science 革新的研究推進事業（ARiSE）",
+      "source_url": "https://www.jst.go.jp/program/arise/koubo.html",
+      "source_domain": "www.jst.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【公募予告】AI for Science 革新的研究推進事業（ARiSE）",
+        "authority_name": "国立研究開発法人 科学技術振興機構 (JST)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "research_grant",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-04-20"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.jst.go.jp/program/arise/koubo.html"
+      },
+      "stable_field_fingerprint_sha256": "fc2d0c3eb53f8ab147f13998259a557a7f9f3eb3313915528cb86084df3579b8"
+    },
+    {
+      "rn": 21,
+      "unified_id": "UNI-ext-636f6aa79a",
+      "primary_name": "【募集中】令和８年度プロフェッショナル人材活用促進事業費補助金について",
+      "source_url": "https://www.pref.akita.lg.jp/pages/archive/71336",
+      "source_domain": "www.pref.akita.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "2130036467cbf779",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【募集中】令和８年度プロフェッショナル人材活用促進事業費補助金について",
+        "authority_name": "秋田県",
+        "prefecture": "秋田県",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.pref.akita.lg.jp/pages/archive/71336"
+      },
+      "stable_field_fingerprint_sha256": "7e0e7d2d51faccf87ba0fdcf2daa74f01f88b97c5f2aa6b4c74c17d0fdff696c"
+    },
+    {
+      "rn": 22,
+      "unified_id": "UNI-ext-5d1900df82",
+      "primary_name": "【募集中】令和８年度副業・兼業人材活用促進事業費補助金について",
+      "source_url": "https://www.pref.akita.lg.jp/pages/archive/71337",
+      "source_domain": "www.pref.akita.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "d222ec1df50b19cf",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【募集中】令和８年度副業・兼業人材活用促進事業費補助金について",
+        "authority_name": "秋田県",
+        "prefecture": "秋田県",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.pref.akita.lg.jp/pages/archive/71337"
+      },
+      "stable_field_fingerprint_sha256": "b1e2c57bf43ac7cf0d0da636cd9bd9b284b0845c0acd0011f5878cef6a69a2b6"
+    },
+    {
+      "rn": 23,
+      "unified_id": "UNI-ext-e80e23f09c",
+      "primary_name": "【募集中】山口県レジ袋収益金環境保全活動助成金",
+      "source_url": "https://www.pref.yamaguchi.lg.jp/soshiki/40/150975.html",
+      "source_domain": "www.pref.yamaguchi.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "285c33e2de6b764f",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "【募集中】山口県レジ袋収益金環境保全活動助成金",
+        "authority_name": "山口県",
+        "prefecture": "山口県",
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.pref.yamaguchi.lg.jp/soshiki/40/150975.html"
+      },
+      "stable_field_fingerprint_sha256": "0303791267870b3ad7c7548b4e36c7590cb8d227897e8efce60467c472927be4"
+    },
+    {
+      "rn": 24,
+      "unified_id": "UNI-f6165b8a9c",
+      "primary_name": "とみさと農業気候変動対策支援事業補助金",
+      "source_url": "https://www.city.tomisato.lg.jp/0000015127.html",
+      "source_domain": "www.city.tomisato.lg.jp",
+      "source_format_guess": "html",
+      "source_url_status": "broken",
+      "source_last_check_status": 404,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 1,
+      "source_fetched_at": "2026-04-22T13:20:57.045412+00:00",
+      "stored_source_checksum": "1be7ce283ff41fbd",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "とみさと農業気候変動対策支援事業補助金",
+        "authority_name": "（noukaweb 収集）",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": null,
+        "amount_max_yen": 10000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2026-04-01",
+          "end_date": "2026-09-30",
+          "fiscal_year": 2026,
+          "cycle": "annual"
+        },
+        "target_types": [
+          "認定農業者",
+          "認定新規就農者",
+          "農業法人",
+          "個人農業者",
+          "法人全般"
+        ],
+        "funding_purpose": [
+          "施設建設",
+          "環境対応"
+        ],
+        "valid_from": "2026-04-22T13:20:57.045412+00:00",
+        "valid_until": null,
+        "source_url": "https://www.city.tomisato.lg.jp/0000015127.html"
+      },
+      "stable_field_fingerprint_sha256": "60269ba090a958c56b278ce9c56f03f3cdffc6356e7da493859e8bb21a2dc124"
+    },
+    {
+      "rn": 25,
+      "unified_id": "UNI-1c8f4cd075",
+      "primary_name": "みどりの食料システム戦略推進交付金",
+      "source_url": "https://www.maff.go.jp/j/kanbo/kankyo/seisaku/midori/houritsu.html",
+      "source_domain": "www.maff.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "ebfee8a08a5ca43d",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "みどりの食料システム戦略推進交付金",
+        "authority_name": "国（農水省等）",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": 5000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": 0.5,
+        "application_window": {
+          "start_date": "2025-04-01",
+          "end_date": "2026-03-31",
+          "cycle": "annual",
+          "fiscal_year": 2025,
+          "budget_exhaustion_risk": null,
+          "note": " / ",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": null,
+        "funding_purpose": [
+          "販路開拓",
+          "環境対応"
+        ],
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.maff.go.jp/j/kanbo/kankyo/seisaku/midori/houritsu.html"
+      },
+      "stable_field_fingerprint_sha256": "043cc8546d4a600f4e890358a96a1e12d6c6426eaac0b707800d08cf095ab106"
+    },
+    {
+      "rn": 26,
+      "unified_id": "UNI-455a7c3e2d",
+      "primary_name": "みよし市 農業振興事業補助金 地場産業振興",
+      "source_url": "https://www1.g-reiki.net/aichi-miyoshi/reiki_honbun/i569RG00000778.html",
+      "source_domain": "www1.g-reiki.net",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": "31509a8700e4cb35",
+      "stored_source_checksum_len": 16,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "みよし市 農業振興事業補助金 地場産業振興",
+        "authority_name": "市町村",
+        "prefecture": null,
+        "municipality": "みよし市",
+        "program_kind": "subsidy",
+        "amount_max_yen": 100000000,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "start_date": "2025-04-01",
+          "end_date": "2026-03-31",
+          "cycle": "annual",
+          "fiscal_year": 2025,
+          "budget_exhaustion_risk": null,
+          "note": " / ",
+          "windows": [],
+          "submission_route": "direct",
+          "days_from_apply_to_decision": null
+        },
+        "target_types": [
+          "認定農業者",
+          "認定新規就農者"
+        ],
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www1.g-reiki.net/aichi-miyoshi/reiki_honbun/i569RG00000778.html"
+      },
+      "stable_field_fingerprint_sha256": "4cf8975e56d3f6c0999a522b84e6823ee95e76782035a1b1bb8b037bbf8328ec"
+    },
+    {
+      "rn": 27,
+      "unified_id": "UNI-ext-892d45072a",
+      "primary_name": "アグリ・フードテック分野におけるAI技術の開発・導入に関する俯瞰調査",
+      "source_url": "https://www.nedo.go.jp/koubo/NA1_100275.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "アグリ・フードテック分野におけるAI技術の開発・導入に関する俯瞰調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/NA1_100275.html"
+      },
+      "stable_field_fingerprint_sha256": "9101ec6e982a03475908f63109fde75ed9b9d6f6dbef9adb97257b7aa77174c3"
+    },
+    {
+      "rn": 28,
+      "unified_id": "UNI-ext-36b9ca3980",
+      "primary_name": "アジア太平洋地域に適した風車・浮体搭載用風車に係る産業技術動向調査",
+      "source_url": "https://www.nedo.go.jp/koubo/FF1_100461.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "アジア太平洋地域に適した風車・浮体搭載用風車に係る産業技術動向調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/FF1_100461.html"
+      },
+      "stable_field_fingerprint_sha256": "10f598f50a24a2a418ab657c01e038720d803c4c3a45bfaabab8db9480845e2c"
+    },
+    {
+      "rn": 29,
+      "unified_id": "UNI-ext-6c1107a0d1",
+      "primary_name": "カーボンリサイクル・火力発電の脱炭素化技術等国際協力事業／カーボンマネジメントに係る国際連携事業／カーボンリサイクル関連技術及び脱炭素化技術等の海外展開可能性の調査",
+      "source_url": "https://www.nedo.go.jp/koubo/EV2_100318.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "カーボンリサイクル・火力発電の脱炭素化技術等国際協力事業／カーボンマネジメントに係る国際連携事業／カーボンリサイクル関連技術及び脱炭素化技術等の海外展開可能性の調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": {
+          "close_date": "2026-04-28",
+          "page_date": "2026-04-15"
+        },
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/EV2_100318.html"
+      },
+      "stable_field_fingerprint_sha256": "ac392f8c59722047804e3096ca9d0717220bcaaa4d427a3909efc70f7b58a392"
+    },
+    {
+      "rn": 30,
+      "unified_id": "UNI-ext-71437ff1fa",
+      "primary_name": "グリーンイノベーション基金事業に関する広報戦略調査",
+      "source_url": "https://www.nedo.go.jp/koubo/KH1_100159.html",
+      "source_domain": "www.nedo.go.jp",
+      "source_format_guess": "html",
+      "source_url_status": "live",
+      "source_last_check_status": 200,
+      "source_url_last_checked": "2026-04-30T09:34:51+00:00",
+      "source_fail_count": 0,
+      "source_fetched_at": "2026-04-26 05:09:13",
+      "stored_source_checksum": null,
+      "stored_source_checksum_len": 0,
+      "raw_bytes_stored_in_this_file": false,
+      "diff_status": "baseline_only",
+      "field_level_hints": {
+        "high_signal": [
+          "amount_max_yen",
+          "amount_min_yen",
+          "subsidy_rate_max",
+          "application_window",
+          "target_types",
+          "funding_purpose",
+          "valid_from",
+          "valid_until",
+          "source_url_status"
+        ],
+        "low_signal_noise": [
+          "contact",
+          "footer",
+          "generated_at",
+          "last_updated_label_only",
+          "access_counter",
+          "pdf_page_number"
+        ]
+      },
+      "normalized_fields": {
+        "primary_name": "グリーンイノベーション基金事業に関する広報戦略調査",
+        "authority_name": "国立研究開発法人 新エネルギー・産業技術総合開発機構 (NEDO)",
+        "prefecture": null,
+        "municipality": null,
+        "program_kind": "subsidy",
+        "amount_max_yen": null,
+        "amount_min_yen": null,
+        "subsidy_rate_max": null,
+        "application_window": null,
+        "target_types": null,
+        "funding_purpose": null,
+        "valid_from": "2026-04-26 05:09:13",
+        "valid_until": null,
+        "source_url": "https://www.nedo.go.jp/koubo/KH1_100159.html"
+      },
+      "stable_field_fingerprint_sha256": "e3b0d513f5e67ea6f974f2016c1c7f62899279ec919a61da2823063af11227ce"
+    }
+  ],
+  "law_snapshot_samples_for_design": [],
+  "broken_tier_s_sources_for_retry_design": [],
+  "field_normalization": [
+    "Normalize Unicode with NFKC, collapse whitespace, strip zero-width and control characters.",
+    "Canonicalize URLs by lowercasing scheme/host, removing tracking query params, preserving PDF/doc path and meaningful fragments separately.",
+    "Convert amount_max_man_yen and amount_min_man_yen to integer yen before comparison.",
+    "Normalize subsidy_rate to decimal max rate; do not diff display forms such as 1/2 vs 0.5.",
+    "Parse application_window_json into start_date/end_date/status/fiscal_year/round/cycle and compare typed fields, not raw JSON order.",
+    "Sort and de-duplicate target_types/funding_purpose arrays before hashing.",
+    "For laws, compare law_number, law_title, enforced_date, last_amended_date, revision_status, and source_checksum separately from fetched_at.",
+    "For HTML/PDF text, strip boilerplate zones before low-level difflib: footer/contact/nav/cookie/accessibility/sidebar/breadcrumb/script/style."
+  ],
+  "snapshot_cycle_recommendation": {
+    "open_or_near_deadline_tier_s": "daily while status=open or application_window end_date is present/current; compare typed fields first",
+    "stable_open_ended_loan_tax_pages": "weekly content hash plus typed field check",
+    "e_gov_laws": "weekly catalog checksum, immediate candidate if last_amended_date or revision_status differs",
+    "broken_sources": "retry with backoff and keep 3-strike quarantine evidence separate from business diff",
+    "missing_checksum_rows": "prioritize checksum backfill before declaring field diff"
+  },
+  "false_positive_taxonomy": [
+    {
+      "pattern": "boilerplate_footer_contact",
+      "symptoms": "電話番号、所在地、組織改編、SNS/footer link changes",
+      "mitigation": "zone-strip footer/contact/nav before text hash; keep contact as low-signal auxiliary field"
+    },
+    {
+      "pattern": "dynamic_timestamp_counter",
+      "symptoms": "現在時刻、最終表示日時、access counter、cache bust query",
+      "mitigation": "regex remove timestamps/counters; compare business dates only after label whitelist"
+    },
+    {
+      "pattern": "faq_or_notice_reorder",
+      "symptoms": "FAQ、Q&A、お知らせ一覧の順序だけ変わる",
+      "mitigation": "section item hashing with sorted stable keys; flag only add/remove/changed item bodies"
+    },
+    {
+      "pattern": "pdf_pagination_drift",
+      "symptoms": "ページ番号、ヘッダ/フッタ、改ページ位置の違い",
+      "mitigation": "drop page headers/footers and page-number-only lines before text hash"
+    },
+    {
+      "pattern": "minor_particle_wording",
+      "symptoms": "て・に・を・は、句読点、全半角、令和/西暦併記の揺れ",
+      "mitigation": "NFKC + token-level similarity; suppress if high-signal fields unchanged"
+    },
+    {
+      "pattern": "list_page_churn",
+      "symptoms": "公募一覧ページで他制度の追加が混ざる",
+      "mitigation": "program-specific heading window extraction; fallback to source URL detail page or attachment"
+    },
+    {
+      "pattern": "historical_ingest_metadata",
+      "symptoms": "enriched_json 内の worker_id/model/fetched_at/quality_self_score changes",
+      "mitigation": "exclude ingestion metadata from normalized_business_sha256"
+    }
+  ],
+  "shard_false_positive_focus": [
+    "boilerplate footers and contact sections",
+    "Prefecture pages often update contact/footer blocks; require amount/deadline/body section corroboration before medium+ severity."
+  ],
+  "schema_suggestion": {
+    "snapshot_candidate_fields": [
+      "snapshot_id",
+      "run_id",
+      "entity_table",
+      "entity_id",
+      "source_url",
+      "source_domain",
+      "source_format",
+      "robots_policy_checked_at",
+      "source_status_code",
+      "source_final_url",
+      "source_content_sha256",
+      "source_text_sha256",
+      "source_bytes_len",
+      "source_fetched_at",
+      "normalized_business_json",
+      "normalized_business_sha256",
+      "noise_profile_json",
+      "extractor_version",
+      "diff_status"
+    ],
+    "diff_candidate_fields": [
+      "diff_id",
+      "prev_snapshot_id",
+      "new_snapshot_id",
+      "entity_id",
+      "field_name",
+      "prev_value_json",
+      "new_value_json",
+      "field_severity",
+      "confidence_rule",
+      "noise_class",
+      "evidence_url",
+      "detected_at",
+      "requires_human_review"
+    ],
+    "severity_rules": {
+      "critical": [
+        "deadline/end_date closed or extended",
+        "amount_max_yen changed",
+        "subsidy_rate_max changed",
+        "eligibility target changed",
+        "source_url became broken after prior live"
+      ],
+      "medium": [
+        "application status changed",
+        "new PDF/doc attachment",
+        "law last_amended_date or revision_status changed"
+      ],
+      "low": [
+        "footer/contact text changed",
+        "page date changed with no business field change",
+        "FAQ ordering changed only"
+      ]
+    }
+  },
+  "blockers": [
+    "No prior data/snapshots/am_diff_* source-byte baseline exists in this checkout, so all shard JSON files are baseline_only.",
+    "am_amendment_diff has 0 rows; current diff behavior cannot be validated against accepted prior diffs.",
+    "Tier S has 13 broken source URLs (11x404, 2x403) and 50 rows missing source_checksum.",
+    "program_law_refs is empty, so program-to-law amendment impact cannot yet be joined from local tables.",
+    "data/autonomath.db is 0 bytes; the populated amendment/source DB used for read-only evidence is /Users/shigetoumeda/jpcite/autonomath.db."
+  ],
+  "suggested_next_queries": [
+    "SELECT unified_id, primary_name, source_url FROM programs WHERE tier='S' AND excluded=0 AND (source_checksum IS NULL OR source_checksum='') AND source_url_status='live' ORDER BY primary_name;",
+    "SELECT unified_id, primary_name, source_url, source_last_check_status, source_fail_count FROM programs WHERE tier='S' AND excluded=0 AND source_url_status='broken' ORDER BY source_last_check_status, primary_name;",
+    "WITH paired AS (...) SELECT entity_id FROM paired WHERE eligibility_hash unchanged AND summary_hash unchanged AND high-signal typed fields changed;",
+    "SELECT unified_id, law_title, last_amended_date, revision_status, source_checksum FROM laws ORDER BY last_amended_date DESC LIMIT 100;",
+    "SELECT source_url, COUNT(*) FROM programs WHERE tier='S' AND excluded=0 GROUP BY source_url HAVING COUNT(*)>1;"
+  ]
+}

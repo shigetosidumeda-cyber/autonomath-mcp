@@ -1,0 +1,472 @@
+[
+  {
+    "source_url": "https://www.city.fukuoka.lg.jp/kankyo/j-suishin/hp/documents/109530/R8_PRtebiki.pdf",
+    "publisher_domain": "city.fukuoka.lg.jp",
+    "page_count": 11,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 2 sampled PDFs; risk_distribution={'low': 2}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=20",
+    "parser_profile_hint": "municipal_guideline_handbook: mix 3-page公募要領 and 20-page申請手引き; parse front-matter contact plus sections 補助対象設備, 申請受付期間, 提出書類."
+  },
+  {
+    "source_url": "https://www.city.kanoya.lg.jp/documents/10589/ijuteijuyoukou.pdf",
+    "publisher_domain": "city.kanoya.lg.jp",
+    "page_count": 3,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=3",
+    "parser_profile_hint": "municipal_grant_simple_rule: short ordinance/rule PDF with amount/rate/docs; source URL churn means live page discovery is required."
+  },
+  {
+    "source_url": "https://www.city.kobe.lg.jp/documents/31510/20260309110627.pdf",
+    "publisher_domain": "city.kobe.lg.jp",
+    "page_count": 15,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'low': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=15",
+    "parser_profile_hint": "municipal_grant_brochure:募集案内 PDFs are field-dense but prose-heavy; front page contains deadline/contact, interior sections contain rates/limits/docs."
+  },
+  {
+    "source_url": "https://www.city.moka.lg.jp/material/files/group/20/R7mokasien.pdf",
+    "publisher_domain": "city.moka.lg.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "max_amount",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=contact,deadline,max_amount,subsidy_rate,update_date; representative_page_count=2",
+    "parser_profile_hint": "municipal_flyer_table: flyer-style PDFs expose date/rate/amount but may omit required_docs; merge HTML page context for completeness."
+  },
+  {
+    "source_url": "https://www.city.osaka.lg.jp/kenko/cmsfiles/contents/0000069/69166/R7bosyuuyoukou.pdf",
+    "publisher_domain": "city.osaka.lg.jp",
+    "page_count": 3,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'low': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=3",
+    "parser_profile_hint": "municipal_cms_numeric: short CMS guideline PDFs parse well; numeric content IDs require landing-page freshness checks."
+  },
+  {
+    "source_url": "https://www.city.saitama.lg.jp/001/010/015/099/008/p129852_d/fil/bosyuyoukou.pdf",
+    "publisher_domain": "city.saitama.lg.jp",
+    "page_count": 11,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'low': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=11",
+    "parser_profile_hint": "municipal_grant_numbered: numbered募集要項 PDFs parse by 交付申請窓口, 交付申請資格, 補助対象事業, 補助金の額, 事業スケジュール; tables may be visually aligned but not pdfplumber tables."
+  },
+  {
+    "source_url": "https://www.city.sapporo.jp/keizai/kanko/hojo/documents/bosyuuyouryoupdf.pdf",
+    "publisher_domain": "city.sapporo.jp",
+    "page_count": 9,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'low': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=9",
+    "parser_profile_hint": "municipal_guideline_compact: compact department-folder guidelines expose core fields; choose募集要領 over separate要綱/様式 PDFs."
+  },
+  {
+    "source_url": "https://www.city.toyama.lg.jp/_res/projects/default_project/_page_/001/005/874/koyousousyutu.pdf",
+    "publisher_domain": "city.toyama.lg.jp",
+    "page_count": 7,
+    "text_extractable": false,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "high",
+    "reason": "domain summary from 3 sampled PDFs; risk_distribution={'high': 1, 'low': 2}; fields_union=contact,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=6",
+    "parser_profile_hint": "municipal_grant_toyama_cms: _res CMS PDFs are often parseable but some are image-only; add OCR fallback only when text_extractable=false and keep landing-page provenance."
+  },
+  {
+    "source_url": "https://www.city.yokohama.lg.jp/business/kigyoshien/keieishien/kaihatsu/gijutsu/kaihatsu.files/0122_20260402.pdf",
+    "publisher_domain": "city.yokohama.lg.jp",
+    "page_count": 74,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'low': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=74",
+    "parser_profile_hint": "municipal_large_manual: large 70+ page guidance PDFs are extractable; cap table extraction pages and use TOC/section anchors for speed."
+  },
+  {
+    "source_url": "https://www.env.go.jp/content/000285465.pdf",
+    "publisher_domain": "env.go.jp",
+    "page_count": 9,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 4 sampled PDFs; risk_distribution={'low': 4}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=9",
+    "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date."
+  },
+  {
+    "source_url": "https://www.hataraku.metro.tokyo.lg.jp/kaizen/ryoritsu/bosyuuyoukou_cushara_dantaihojyo2.pdf",
+    "publisher_domain": "hataraku.metro.tokyo.lg.jp",
+    "page_count": 14,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'low': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=14",
+    "parser_profile_hint": "metro_bureau_grant: preserve bureau subdomain; structured募集要項 PDFs parse well with deadline/applicant/rate/amount/docs/contact/update labels."
+  },
+  {
+    "source_url": "https://www.jfc.go.jp/n/company/national/pdf/goannai_2025.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "page_count": 34,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "collateral",
+      "contact",
+      "eligible_borrower",
+      "interest_rate",
+      "loan_limit",
+      "repayment_term",
+      "required_docs",
+      "update_date"
+    ],
+    "parser_risk": "high",
+    "reason": "domain summary from 5 sampled PDFs; risk_distribution={'high': 1, 'low': 1, 'medium': 3}; fields_union=collateral,contact,eligible_borrower,interest_rate,loan_limit,repayment_term,required_docs,update_date; representative_page_count=34",
+    "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable."
+  },
+  {
+    "source_url": "https://www.jst.go.jp/mirai/jp/uploads/application-guideline-r04.pdf",
+    "publisher_domain": "jst.go.jp",
+    "page_count": 71,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 4 sampled PDFs; risk_distribution={'low': 1, 'medium': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=65",
+    "parser_profile_hint": "research_grant_jst: parse common guideline plus program別紙 as a document set; extract e-Rad deadline, eligibility, direct-cost caps, required forms, contact; avoid grant-only subsidy_rate assumptions."
+  },
+  {
+    "source_url": "https://www.maff.go.jp/j/supply/hozyo/keiei/attach/pdf/240209_101-3-1.pdf",
+    "publisher_domain": "maff.go.jp",
+    "page_count": 32,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 3 sampled PDFs; risk_distribution={'medium': 3}; fields_union=contact,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=32",
+    "parser_profile_hint": "grant_maff_hozyo: crawl official supply/hozyo HTML before direct PDFs, parse 第N headings and 別表/別記 appendices; deadlines/contact often sit on the landing page and local fetches may hit 403."
+  },
+  {
+    "source_url": "https://www.meti.go.jp/information/publicoffer/kobo/2026/downloadfiles/k260108001_1.pdf",
+    "publisher_domain": "meti.go.jp",
+    "page_count": 24,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "high",
+    "reason": "domain summary from 5 sampled PDFs; risk_distribution={'high': 1, 'medium': 4}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=27",
+    "parser_profile_hint": "grant_public_offer_meti: parse first-page title/date, then section labels such as 公募期間, 応募資格, 補助率・補助額, 提出書類, 提出先/お問合せ先; table extraction is optional because METI募集要領 often uses unruled paragraphs."
+  },
+  {
+    "source_url": "https://www.mhlw.go.jp/content/11600000/001239692.pdf",
+    "publisher_domain": "mhlw.go.jp",
+    "page_count": 11,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "update_date"
+    ],
+    "parser_risk": "high",
+    "reason": "domain summary from 4 sampled PDFs; risk_distribution={'high': 1, 'medium': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,update_date; representative_page_count=18",
+    "parser_profile_hint": "grant_mhlw_mixed: content-number PDFs include flyers, handbooks, and research-grant calls; route research grants to e-Rad/research profile where 補助率 is often absent and deadlines/contact are section-based."
+  },
+  {
+    "source_url": "https://www.mlit.go.jp/report/press/content/001842304.pdf",
+    "publisher_domain": "mlit.go.jp",
+    "page_count": 14,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "domain summary from 3 sampled PDFs; risk_distribution={'low': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=2",
+    "parser_profile_hint": "grant_mlit_press_guideline: distinguish 1-2 page press summaries from full 募集要領; extract schedule/contact from numbered sections and avoid assuming every press PDF contains required_docs."
+  },
+  {
+    "source_url": "https://www.nedo.go.jp/content/800023302.pdf",
+    "publisher_domain": "nedo.go.jp",
+    "page_count": 38,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 5 sampled PDFs; risk_distribution={'low': 2, 'medium': 3}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=38",
+    "parser_profile_hint": "research_grant_nedo: use NEDO koubo page plus content PDF; parse front-matter deadline, Jグランツ/e-Rad submission, eligibility, budget/助成額, docs, contact; suppress pdfminer color warnings as non-fatal."
+  },
+  {
+    "source_url": "https://www.pref.hokkaido.lg.jp/fs/1/1/9/5/3/9/0/8/_/%E3%80%90%E7%A2%BA%E5%AE%9A%E3%80%91%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E6%8A%80%E8%A1%93%E5%B0%8E%E5%85%A5%E7%AD%89%E7%B7%8A%E6%80%A5%E6%94%AF%E6%8F%B4%E4%BA%8B%E6%A5%AD%E8%B2%BB%E8%A3%9C%E5%8A%A9%E9%87%91%E4%BA%A4%E4%BB%98%E8%A6%81%E7%B6%B1.pdf",
+    "publisher_domain": "pref.hokkaido.lg.jp",
+    "page_count": 7,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "contact",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=contact,eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=7",
+    "parser_profile_hint": "pref_grant_cms_file: deep CMS file-store PDF; parse 要綱/交付申請 labels but retain landing page because deadline/contact can be off-PDF."
+  },
+  {
+    "source_url": "https://www.pref.kumamoto.jp/uploaded/attachment/308409.pdf",
+    "publisher_domain": "pref.kumamoto.jp",
+    "page_count": 5,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=max_amount,required_docs,subsidy_rate,update_date; representative_page_count=5",
+    "parser_profile_hint": "pref_grant_legal_rule: legal-style rules expose rate/amount/docs but often omit applicant-facing deadline/contact; parse article headings and landing metadata."
+  },
+  {
+    "source_url": "https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youkou.pdf",
+    "publisher_domain": "pref.kyoto.jp",
+    "page_count": 4,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=4",
+    "parser_profile_hint": "pref_grant_short_guideline: compact PDF with rates/amounts/docs; use HTML notice for contact/deadline freshness."
+  },
+  {
+    "source_url": "https://www.pref.niigata.lg.jp/uploaded/attachment/493995.pdf",
+    "publisher_domain": "pref.niigata.lg.jp",
+    "page_count": 5,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=contact,eligible_applicant,max_amount,required_docs,subsidy_rate; representative_page_count=5",
+    "parser_profile_hint": "pref_form_pdf: application-form PDFs have labels but blank values; landing page or companion guideline is required for deadline and program conditions."
+  },
+  {
+    "source_url": "https://www.pref.saitama.lg.jp/documents/4178/r8pamphlet.pdf",
+    "publisher_domain": "pref.saitama.lg.jp",
+    "page_count": 8,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "collateral",
+      "contact",
+      "eligible_borrower",
+      "interest_rate",
+      "loan_limit",
+      "repayment_term",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=collateral,contact,eligible_borrower,interest_rate,loan_limit,repayment_term,update_date; representative_page_count=8",
+    "parser_profile_hint": "pref_loan_schema:制度融資 pamphlets require loan fields such as loan_limit, interest_rate, repayment_term, collateral, guarantee, contact; treat grant subsidy_rate as not applicable."
+  },
+  {
+    "source_url": "https://www.pref.wakayama.lg.jp/prefg/060100/d00221813_d/fil/seichosokushin.pdf",
+    "publisher_domain": "pref.wakayama.lg.jp",
+    "page_count": 5,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'medium': 1}; fields_union=eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=5",
+    "parser_profile_hint": "pref_grant_compact_table: compact guideline/rule PDF with table labels; normalize file names to program names from HTML page."
+  },
+  {
+    "source_url": "https://www.smrj.go.jp/sme/funding/regional_fund/fbrion00000047w8-att/jver9n000000dwf9.pdf",
+    "publisher_domain": "smrj.go.jp",
+    "page_count": 24,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "deadline",
+      "eligible_applicant",
+      "max_amount",
+      "required_docs",
+      "subsidy_rate",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "domain summary from 2 sampled PDFs; risk_distribution={'low': 1, 'medium': 1}; fields_union=contact,deadline,eligible_applicant,max_amount,required_docs,subsidy_rate,update_date; representative_page_count=35",
+    "parser_profile_hint": "grant_smrj_attachment: preserve HTML landing-page provenance, parse long attachment PDFs by section labels and attachment tables; expect external program portals and occasional missing deadline/contact inside the PDF."
+  },
+  {
+    "source_url": "https://web.pref.hyogo.lg.jp/sr08/documents/setubitoushi.pdf",
+    "publisher_domain": "web.pref.hyogo.lg.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "contact",
+      "eligible_applicant",
+      "required_docs"
+    ],
+    "parser_risk": "high",
+    "reason": "domain summary from 1 sampled PDFs; risk_distribution={'high': 1}; fields_union=contact,eligible_applicant,required_docs; representative_page_count=2",
+    "parser_profile_hint": "pref_loan_or_table_notice: table-heavy short PDFs may be loan/support products; classify loan-like rows separately and do not coerce to grant subsidy fields."
+  }
+]

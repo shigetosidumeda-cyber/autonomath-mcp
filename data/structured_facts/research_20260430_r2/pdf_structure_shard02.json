@@ -1,0 +1,128 @@
+[
+  {
+    "source_url": "https://www.maff.go.jp/j/supply/hozyo/keiei/attach/pdf/240209_101-3-1.pdf",
+    "publisher_domain": "maff.go.jp",
+    "page_count": 32,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "medium",
+    "reason": "32 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact",
+    "parser_profile_hint": "grant_maff_hozyo: crawl official supply/hozyo HTML before direct PDFs, parse 第N headings and 別表/別記 appendices; deadlines/contact often sit on the landing page and local fetches may hit 403."
+  },
+  {
+    "source_url": "https://www.maff.go.jp/j/supply/hozyo/keiei/attach/pdf/250331_091-1-1.pdf",
+    "publisher_domain": "maff.go.jp",
+    "page_count": 31,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "medium",
+    "reason": "31 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact",
+    "parser_profile_hint": "grant_maff_hozyo: crawl official supply/hozyo HTML before direct PDFs, parse 第N headings and 別表/別記 appendices; deadlines/contact often sit on the landing page and local fetches may hit 403."
+  },
+  {
+    "source_url": "https://www.maff.go.jp/j/seisan/suisin/tuyoi_nougyou/t_tuti/R7/attach/pdf/250107-92.pdf",
+    "publisher_domain": "maff.go.jp",
+    "page_count": 58,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "58 pages; text layer extractable; no tables detected in first sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date",
+    "parser_profile_hint": "grant_maff_hozyo: crawl official supply/hozyo HTML before direct PDFs, parse 第N headings and 別表/別記 appendices; deadlines/contact often sit on the landing page and local fetches may hit 403."
+  },
+  {
+    "source_url": "https://www.env.go.jp/content/000285465.pdf",
+    "publisher_domain": "env.go.jp",
+    "page_count": 9,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "deadline",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "9 pages; text layer extractable; no tables detected in first sampled pages; fields: deadline,subsidy_rate,max_amount,required_docs,contact,update_date",
+    "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date."
+  },
+  {
+    "source_url": "https://www.env.go.jp/content/000206520.pdf",
+    "publisher_domain": "env.go.jp",
+    "page_count": 8,
+    "text_extractable": true,
+    "tables_detected": false,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "8 pages; text layer extractable; no tables detected in first sampled pages; fields: deadline,eligible_applicant,subsidy_rate,required_docs,contact,update_date",
+    "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date."
+  },
+  {
+    "source_url": "https://www.env.go.jp/content/000369036.pdf",
+    "publisher_domain": "env.go.jp",
+    "page_count": 22,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "22 pages; text layer extractable; sampled table detected; all target labels found in content PDF; press HTML supplies redundant published date",
+    "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date."
+  },
+  {
+    "source_url": "https://www.env.go.jp/content/000396485.pdf",
+    "publisher_domain": "env.go.jp",
+    "page_count": 9,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "deadline",
+      "eligible_applicant",
+      "subsidy_rate",
+      "max_amount",
+      "required_docs",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "9 pages; text layer extractable; sampled table detected; all target labels found in short公募要領",
+    "parser_profile_hint": "grant_env_content: short-to-medium content PDFs with stable labels 公募期間, 対象, 補助率, 補助額, 応募方法, 連絡先; combine with press page for published/update date."
+  }
+]

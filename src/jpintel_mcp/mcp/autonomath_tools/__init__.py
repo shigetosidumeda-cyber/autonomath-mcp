@@ -24,7 +24,10 @@ from jpintel_mcp.mcp.server import mcp as _mcp
 from . import (
     annotation_tools,  # noqa: F401  — V4 Phase 4: get_annotations (am_entity_annotation, migration 046)
     autonomath_wrappers,  # noqa: F401  — decorator side-effect (5 wrappers; sib_tool intentionally skipped — am_sib_contract has 35 rows from Wave 19 backfill but tool not yet stabilized)
+    citations_tools,  # noqa: F401  — 2026-04-30: verify_citations (api/citations.py companion). LR plan §28.2 verification path.
     composition_tools,  # noqa: F401  — Wave 21: 5 composition tools (apply_eligibility_chain_am / find_complementary_programs_am / simulate_application_am / track_amendment_lineage_am / program_active_periods_am, AUTONOMATH_COMPOSITION_ENABLED gate)
+    evidence_packet_tools,  # noqa: F401  — 2026-04-30: get_evidence_packet (api/evidence.py companion). LR plan §6 Evidence Packet composer.
+    funding_stack_tools,  # noqa: F401  — 2026-04-30: check_funding_stack_am (api/funding_stack.py companion). Pure rule engine.
     graph_traverse_tool,  # noqa: F401  — O7 Wave 18: graph_traverse (heterogeneous 1-3 hop KG walk over v_am_relation_all, AUTONOMATH_GRAPH_TRAVERSE_ENABLED gate)
     health_tool,  # noqa: F401  — Phase A: deep_health_am (10-check aggregate)
     industry_packs,  # noqa: F401  — Wave 23 (2026-04-29): 3 industry-specific cohort wrappers (pack_construction / pack_manufacturing / pack_real_estate). Top 10 programs + 5 saiketsu + 3 通達 per call. AUTONOMATH_INDUSTRY_PACKS_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§47条の2 envelope.
@@ -36,6 +39,7 @@ from . import (
     provenance_tools,  # noqa: F401  — V4 Phase 4: get_provenance + get_provenance_for_fact (am_source.license, migration 049)
     rule_engine_tool,  # noqa: F401  — R9 unified rule_engine_check (am_unified_rule view, migration 064)
     snapshot_tool,  # noqa: F401  — R8: query_at_snapshot (dataset versioning, migration 067)
+    source_manifest_tools,  # noqa: F401  — 2026-04-30: get_source_manifest (api/source_manifest.py companion). Per-program provenance rollup.
     static_resources_tool,  # noqa: F401  — Phase A: 4 tools (list/get static resources + example profiles)
     sunset_tool,  # noqa: F401  — V1 feature #11 (dd_v4_05): list_tax_sunset_alerts
     tax_rule_tool,  # noqa: F401  — decorator side-effect (1 tool)

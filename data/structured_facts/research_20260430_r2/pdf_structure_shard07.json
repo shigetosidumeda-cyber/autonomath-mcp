@@ -1,0 +1,88 @@
+[
+  {
+    "source_url": "https://www.jfc.go.jp/n/company/national/pdf/goannai_2025.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "page_count": 34,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "low",
+    "reason": "34 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+    "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable."
+  },
+  {
+    "source_url": "https://www.jfc.go.jp/n/company/sme/pdf/2025jfs.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "page_count": 34,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "loan_limit",
+      "interest_rate",
+      "collateral",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "34 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,max_amount,required_docs,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+    "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable."
+  },
+  {
+    "source_url": "https://www.jfc.go.jp/n/company/af/pdf/jfc25j.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "page_count": 24,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "loan_limit",
+      "repayment_term",
+      "collateral",
+      "contact",
+      "update_date"
+    ],
+    "parser_risk": "medium",
+    "reason": "24 pages; text layer extractable; tables detected in sampled pages; fields: deadline,eligible_applicant,subsidy_rate,max_amount,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+    "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable."
+  },
+  {
+    "source_url": "https://www.jfc.go.jp/n/company/af/pdf/jfc25j-07.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "page_count": 2,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_borrower",
+      "loan_limit"
+    ],
+    "parser_risk": "high",
+    "reason": "2 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,max_amount; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+    "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable."
+  },
+  {
+    "source_url": "https://www.jfc.go.jp/n/relate/pdf/toriatukai_01_2025.pdf",
+    "publisher_domain": "jfc.go.jp",
+    "page_count": 50,
+    "text_extractable": true,
+    "tables_detected": true,
+    "fields_found": [
+      "eligible_borrower",
+      "loan_limit",
+      "interest_rate",
+      "repayment_term",
+      "collateral",
+      "required_docs",
+      "contact"
+    ],
+    "parser_risk": "medium",
+    "reason": "50 pages; text layer extractable; tables detected in sampled pages; fields: eligible_applicant,subsidy_rate,max_amount,required_docs,contact,update_date; r2 loan-schema override: grant deadline/subsidy_rate not assumed",
+    "parser_profile_hint": "loan_jfc_product: use loan schema only: eligible_borrower, loan_limit, interest_rate, repayment_term, collateral/guarantee, required_docs, contact, update_date; deadline/subsidy_rate are normally not applicable."
+  }
+]
