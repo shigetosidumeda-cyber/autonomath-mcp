@@ -65,6 +65,7 @@ from jpintel_mcp.api.enforcement import router as enforcement_router
 from jpintel_mcp.api.citations import router as citations_router
 from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.evidence import router as evidence_router
+from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.feedback import router as feedback_router
@@ -993,8 +994,10 @@ def create_app() -> FastAPI:
     app.include_router(source_manifest_router, dependencies=[AnonIpLimitDep])
     # /v1/citations/verify — deterministic citation verifier.
     app.include_router(citations_router, dependencies=[AnonIpLimitDep])
-    # /v1/cost/preview — Token Cost Shield estimator (no LLM).
+    # /v1/cost/preview — Evidence Pre-fetch Layer estimator (no LLM).
     app.include_router(cost_router, dependencies=[AnonIpLimitDep])
+    # /v1/funding_stack/check — pure rule engine over compat_matrix + exclusion_rules.
+    app.include_router(funding_stack_router, dependencies=[AnonIpLimitDep])
     # /v1/houjin/{bangou} — corporate 360 lookup surfacing 1.12M gBizINFO
     # facts already in autonomath.db (am_entities corporate_entity +
     # am_entity_facts corp.*). Same anon-quota posture as the other

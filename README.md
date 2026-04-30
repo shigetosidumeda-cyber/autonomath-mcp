@@ -1,8 +1,10 @@
 # jpcite (旧 税務会計AI) — Japanese Institutional Data Search API + MCP Server
 
+mcp-name: io.github.shigetosidumeda-cyber/autonomath-mcp
+
 *Rebranded 2026-04-30 — `税務会計AI` (alternateName) は jpcite に改名されました。*
 
-*Updated 2026-04-30 — v0.3.1*
+*Updated 2026-04-30 — v0.3.2*
 
 [![PyPI version](https://img.shields.io/pypi/v/autonomath-mcp.svg)](https://pypi.org/project/autonomath-mcp/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)

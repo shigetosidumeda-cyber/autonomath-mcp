@@ -1,6 +1,6 @@
 [project]
 name = "autonomath-mcp"
-version = "0.3.1"
+version = "0.3.2"
 description = "REST + MCP search over Japanese institutional data: 11,684 searchable subsidies (14,472 total), 154 laws full-text + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 89 MCP tools (protocol 2025-06-18). 3 yen/req metered (3.30 tax-incl), anonymous 50/month per IP free."
 license = { text = "MIT" }
 authors = [
