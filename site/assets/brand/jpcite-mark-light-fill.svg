@@ -5,17 +5,17 @@
   Re-vectorized for crisp scaling. Two shapes:
     (1) dot — citation marker, lower-left (filled circle)
     (2) page — document body with a triangular folded-corner notch at upper-right
-  Single colour (currentColor) so it inherits CSS color in light/dark.
+  Single colour (#0d1117) so it inherits CSS color in light/dark.
   ViewBox 256x256 — square for favicon / app-icon use.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="jpcite">
   <title>jpcite</title>
   <!-- Dot: citation marker, lower-left -->
-  <circle cx="56" cy="200" r="32" fill="currentColor"/>
+  <circle cx="56" cy="200" r="32" fill="#0d1117"/>
   <!-- Page: rounded rectangle with triangular fold cut at upper-right.
        Path walks: top-left corner (rounded) → top edge to fold start → diagonal
        fold cut → right edge → rounded bottom-right → bottom edge → rounded
        bottom-left → left edge → close. -->
   <path d="M 112 32 L 200 32 L 240 72 L 240 192 Q 240 208 224 208 L 112 208 Q 96 208 96 192 L 96 48 Q 96 32 112 32 Z"
-        fill="currentColor"/>
+        fill="#0d1117"/>
 </svg>

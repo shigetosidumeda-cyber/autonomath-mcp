@@ -1,107 +1,110 @@
-# jpintel-mcp — Brand guidelines
+# jpcite — Brand Guidelines
+
+Updated 2026-04-30 with the official logo lockup.
 
 Minimal brand system for a developer-tool API. Priority: legibility and consistency over decoration.
 
+## Logo
+
+The official lockup is **mark + wordtype** rendered together. The mark alone may be used in tight spaces (favicon, app icons).
+
+**Mark anatomy** — two shapes:
+1. **Dot** (lower-left): citation marker — the bullet that signals a referenced fact.
+2. **Page** (upper-right): document with a triangular folded-corner notch — the cited source itself.
+
+The composition reads as "a citation pointing at a source", which is the product's positioning.
+
+### Asset paths
+
+All variants live under `site/assets/brand/`. Public-facing entry points are at `site/assets/` for backward compatibility.
+
+| Use case | File | Notes |
+|---|---|---|
+| Browser favicon (svg) | `assets/favicon.svg` (= `assets/mark.svg` = `assets/logo.svg`) | currentColor — inherits CSS dark mode |
+| Browser favicon (raster) | `assets/favicon-{16,32,192,512}.png` | transparent-bg, fill `#0d1117` |
+| Apple touch icon | `assets/apple-touch-icon.png` | 180×180, transparent |
+| Lockup (cream bg) | `assets/brand/jpcite-lockup-light.png` | 1033×302, official light-theme lockup |
+| Lockup (black bg) | `assets/brand/jpcite-lockup-dark.png` | 1033×302, official dark-theme lockup |
+| Lockup sized | `assets/brand/lockup-{300,600,900,1200,1600}-{light,dark}.png` | preset widths |
+| Mark only sized | `assets/brand/mark-{16,32,64,128,256,512,1024}-{light,dark}.png` | with bg color (cream/black) baked in |
+| Mark transparent | `assets/brand/mark-transparent-{16,32,64,128,180,192,256,512,1024}-{light,dark}.png` | for OS / app launchers |
+| OG image (1200×630) | `assets/og.png` (= `assets/og-twitter.png`) | lockup on cream |
+| OG square (1200×1200) | `assets/og-square.png` | mark on cream, for some platforms |
+| Source bitmaps | `assets/brand/raw/jpcite-lockup-{light,dark}-source.png` | original 1672×941 PNG, immutable reference |
+
+### Re-rasterizing
+
+To regenerate sized PNGs from the SVG, run:
+
+```bash
+.venv/bin/python -c "
+import cairosvg
+SVG = open('site/assets/brand/jpcite-mark.svg').read().replace('currentColor', '#0d1117')
+for size in (16, 32, 64, 128, 180, 192, 256, 512, 1024):
+    cairosvg.svg2png(bytestring=SVG.encode(),
+        write_to=f'site/assets/brand/mark-transparent-{size}-light.png',
+        output_width=size, output_height=size)
+"
+```
+
+To regenerate from the source bitmap (lockup PNG variants), see the script at the head of this commit's diff.
+
 ## Colors
 
-| Role    | Value     | Usage                                       |
-|---------|-----------|---------------------------------------------|
-| Accent  | `#1e3a8a` | Mark background, hero backgrounds, primary CTA, focus ring |
-| Primary | `#ffffff` | Page background, on-accent text             |
-| Text    | `#0f172a` | Body copy, wordmark on light background     |
-| Muted   | `#64748b` | Secondary UI text (labels, captions)        |
-| Rule    | `#e2e8f0` | Dividers, table borders                     |
+| Role | Value | Usage |
+|---|---|---|
+| Logo (light theme) | `#0d1117` | Mark + wordtype on cream / white background |
+| Logo (dark theme) | `#fafafa` | Mark + wordtype on near-black background |
+| Background (light) | `#fcf8f4` (source) / `#ffffff` (web) | Source uses cream; site uses pure white |
+| Background (dark) | `#0d1117` | Used by `prefers-color-scheme: dark` site CSS |
+| Accent | `#1e3a8a` | CTA buttons, focus ring |
+| Text | `#111111` (light) / `#e6edf3` (dark) | Body copy |
+| Muted | `#404040` (light) / `#8b949e` (dark) | Captions, labels |
+| Border | `#e5e5e5` (light) / `#30363d` (dark) | Dividers |
 
-Contrast (WCAG):
-- `#0f172a` on `#ffffff` = 18.1:1 (AAA)
-- `#ffffff` on `#1e3a8a` = 9.4:1 (AAA)
-- `#1e3a8a` on `#ffffff` = 9.4:1 (AAA)
+WCAG (contrast):
+- `#0d1117` on `#fcf8f4` = 18.4 : 1 (AAA)
+- `#fafafa` on `#0d1117` = 18.0 : 1 (AAA)
+- `#1e3a8a` on `#ffffff` = 9.4 : 1 (AAA)
 
 Do not introduce additional accent hues. One brand color keeps the surface legible.
 
 ## Typography
 
-System font stack (no web font dependency):
+System font stack (no web font dependency for lockup; web fonts only on documentation):
 
 ```
--apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic UI",
-"Hiragino Sans", system-ui, sans-serif
+-apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI",
+"Meiryo", system-ui, sans-serif
 ```
 
-Monospace (code, badges, the `jp` mark):
+Monospace (code blocks):
 
 ```
 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace
 ```
 
-Weights:
-- 400 — body copy
-- 500 — UI labels
-- 600 — headings, wordmark, mark, meta
+The wordtype in the official lockup is a custom-spaced "jpcite" rendering. When using "jpcite" in HTML body text, system fonts are acceptable — do NOT try to recreate the lockup with web text.
 
-Letter-spacing:
-- Wordmark `jpintel` / `jpintel-mcp`: `-1.2` to `-1.8` (tight)
-- Mark `jp`: `-0.5`
-- Meta / code: `0`
+## Usage rules
 
-## Logo usage
-
-### Wordmark (`logo.svg`)
-- Minimum width: 80px (wide) / 24px tall
-- Clear-space: one letter-height on all sides
-- Default color: `#0f172a` on light bg, `#ffffff` on accent bg
-- Do NOT re-space letters, do NOT italicize, do NOT add drop-shadow
-
-### Mark (`mark.svg`)
-- 40x40 square, 6px rounded corners, `jp` centered
-- Minimum size: 24x24 on screen, 16x16 for favicon
-- Use only on accent (`#1e3a8a`) background or on pure white (see `favicon-*`)
-- The mark is NOT a logo-lockup companion — use wordmark alone in most cases
-
-### Lockup (wordmark + mark)
-- Gap between mark and wordmark = 0.4x mark width (e.g. 16px for a 40px mark)
-- Vertical-center align to mark
-- Never rotate either element
-
-## OG / social images
-
-Three variants under `site/assets/`:
-- `og.png` — 1200x630 (default Open Graph)
-- `og-twitter.png` — 1200x600 (Twitter summary_large_image)
-- `og-square.png` — 1200x1200 (Instagram / LinkedIn / Mastodon)
-
-All share the layout: mark + wordmark top-left, rule + tagline centered, program-count meta bottom-left. Regenerate by running the Chrome headless command documented in `README_badge` history (see repo history for the exact invocation).
-
-## Favicon
-
-- `favicon.svg` — scalable, preferred by modern browsers
-- `favicon-32.png` — 32x32 raster
-- `favicon-16.png` — 16x16 raster
-- `apple-touch-icon.png` — 180x180 for iOS home screen
-
-All use the same `jp` mark on accent background.
-
-## Do NOT
-
-- Rotate the mark or wordmark
-- Recolor either (no gradients, no alternate hues, no stroke)
-- Stretch or skew — always preserve aspect ratio
-- Add drop-shadow, glow, outer ring, or 3D effect
-- Place on a busy photo background
-- Insert emoji, flag, sakura, kanji-stamp, or other cliché imagery adjacent to the logo
-- Translate "jpintel" — it is a proper noun
+- **Min size**: lockup ≥ 200 px wide. Below that, use mark only.
+- **Clear space**: minimum padding around the lockup = the height of the dot (≈ 1/4 of the lockup height).
+- **Backgrounds**: cream / white / near-black only. NO gradients, NO photo backgrounds, NO outline strokes, NO color fills other than `#0d1117` or `#fafafa`.
+- **Don't**: stretch, rotate, recolor outside the palette, recombine the dot and page into a single shape, italicize, or add drop-shadow.
+- **Dark mode**: web pages use the SVG with `currentColor` so it auto-flips with `prefers-color-scheme`. For static contexts, choose `lockup-dark.png` or `mark-transparent-*-dark.png` explicitly.
 
 ## Sizes at a glance
 
-| Asset              | Dim         | Format | Bytes (approx) |
-|--------------------|-------------|--------|----------------|
-| logo.svg           | 200x44      | SVG    | 0.5 KB         |
-| mark.svg           | 40x40       | SVG    | 0.5 KB         |
-| favicon.svg        | 40x40       | SVG    | 0.5 KB         |
-| favicon-16.png     | 16x16       | PNG    | 0.4 KB         |
-| favicon-32.png     | 32x32       | PNG    | 0.7 KB         |
-| apple-touch-icon   | 180x180     | PNG    | 3.5 KB         |
-| og.png             | 1200x630    | PNG    | 34 KB          |
-| og-twitter.png     | 1200x600    | PNG    | 33 KB          |
-| og-square.png      | 1200x1200   | PNG    | 48 KB          |
-| README_badge.svg   | 120x20      | SVG    | 0.5 KB         |
+| Asset | Dimensions | Format |
+|---|---|---|
+| `assets/favicon.svg` (= mark.svg, logo.svg) | viewBox 256×256 | SVG (currentColor) |
+| `assets/favicon-16.png` | 16×16 | PNG (transparent) |
+| `assets/favicon-32.png` | 32×32 | PNG (transparent) |
+| `assets/favicon-192.png` | 192×192 | PNG (transparent) |
+| `assets/favicon-512.png` | 512×512 | PNG (transparent) |
+| `assets/apple-touch-icon.png` | 180×180 | PNG (transparent) |
+| `assets/og.png` (= og-twitter.png) | 1200×630 | PNG (cream bg, light lockup) |
+| `assets/og-square.png` | 1200×1200 | PNG (cream bg, mark) |
+| `assets/brand/jpcite-lockup-light.png` | 1033×302 | PNG (cream bg) |
+| `assets/brand/jpcite-lockup-dark.png` | 1033×302 | PNG (black bg) |
