@@ -106,6 +106,39 @@ def healthz(conn: DbDep) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
+# /v1/meta/corpus_snapshot — §17.D corpus snapshot id surface
+# ---------------------------------------------------------------------------
+#
+# Mirrors the value embedded in every paid response's audit_seal envelope
+# so a client can ask "what data version did I see today" without paying
+# for a full lookup. Cached process-locally for 6 hours via
+# `_audit_seal.get_corpus_snapshot_id`. Returns a single field so a
+# trivial `curl | jq -r .corpus_snapshot_id` works for shell scripts.
+
+
+class CorpusSnapshotResponse(BaseModel):
+    corpus_snapshot_id: str
+
+
+@router.get(
+    "/v1/meta/corpus_snapshot",
+    response_model=CorpusSnapshotResponse,
+    summary="Current corpus snapshot id (FREE, anon-allowed)",
+)
+def get_corpus_snapshot() -> CorpusSnapshotResponse:
+    """Return the corpus_snapshot_id label used in today's audit seals.
+
+    Format: ``corpus-YYYY-MM-DD`` derived from the JST date of
+    ``MAX(am_source.last_verified)``. Computed once per process boot
+    and refreshed every 6 hours, so this endpoint is effectively a
+    constant-cost lookup.
+    """
+    from jpintel_mcp.api._audit_seal import get_corpus_snapshot_id
+
+    return CorpusSnapshotResponse(corpus_snapshot_id=get_corpus_snapshot_id())
+
+
+# ---------------------------------------------------------------------------
 # /v1/ping — auth-aware probe, separate from /healthz (liveness only).
 # ---------------------------------------------------------------------------
 

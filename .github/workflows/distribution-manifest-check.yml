@@ -1,0 +1,66 @@
+name: distribution-manifest-check
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+concurrency:
+  group: distribution-manifest-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-drift-and-runtime-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      # Cache the project venv so the runtime probe stays fast across runs.
+      # The drift checker itself does not need the venv (pure stdlib + PyYAML),
+      # but the runtime probe imports the FastAPI app + FastMCP server.
+      - name: Cache .venv
+        id: cache-venv
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-py312-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+
+      - name: Create venv and install package (cache miss only)
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -e ".[dev]"
+
+      - name: Static distribution-manifest drift check
+        # ~0.2s locally; pure file scan, no DB / no runtime boot.
+        run: |
+          .venv/bin/python scripts/check_distribution_manifest_drift.py
+
+      - name: Runtime distribution probe
+        # Imports jpintel_mcp.api.main:app + jpintel_mcp.mcp.server:mcp and
+        # verifies len(app.routes) + len(mcp._tool_manager.list_tools())
+        # against the static manifest.
+        env:
+          AUTONOMATH_ENABLED: "1"
+        run: |
+          .venv/bin/python scripts/probe_runtime_distribution.py
+
+      - name: Tests for the manifest guard itself
+        # Confirms the manifest parses, the script handles synthetic drift,
+        # and the runtime probe agrees with the manifest.
+        env:
+          AUTONOMATH_ENABLED: "1"
+        run: |
+          .venv/bin/pytest tests/test_distribution_manifest.py -v

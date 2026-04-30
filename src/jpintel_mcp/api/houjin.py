@@ -37,6 +37,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 
 router = APIRouter(prefix="/v1/houjin", tags=["houjin"])
@@ -456,5 +457,13 @@ def get_houjin_360(
         # keep it OUT of params_digest. The endpoint name + status are what
         # the SLA / freshness dashboard needs.
         params={"hit": True},
+    )
+    # §17.D audit seal on paid responses (no-op for anon).
+    attach_seal_to_body(
+        body,
+        endpoint="houjin.get",
+        request_params={"bangou": norm},
+        api_key_hash=ctx.key_hash,
+        conn=conn,
     )
     return JSONResponse(content=body)

@@ -127,7 +127,7 @@ def generate_api_key() -> tuple[str, str]:
 #   "free"  — DUNNING DEMOTE state (customer whose card is failing). Short
 #             daily cap via RATE_LIMIT_FREE_PER_DAY (default 100). NOT the
 #             public anonymous Free tier (that lives in anon_rate_limit,
-#             50/month per IP, applied via AnonIpLimitDep).
+#             3/day per IP, applied via AnonIpLimitDep).
 #   "paid"  — metered via Stripe usage_records at ¥3/req, no 429 enforcement.
 #   "trial" — email-only 14d / 200 req hard cap, no Stripe. The cap is
 #             enforced synchronously in _enforce_quota against the
@@ -685,6 +685,7 @@ def log_usage(
                 request_params=params,
                 response_body=response_body,
                 client_tag=client_tag,
+                api_key_hash=ctx.key_hash,
             )
         except Exception:  # noqa: BLE001
             audit_seal = None

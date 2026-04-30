@@ -61,6 +61,7 @@ from fastapi import APIRouter, Body, Header, HTTPException, Query, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
+from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._corpus_snapshot import (
     attach_corpus_snapshot,
     compute_corpus_snapshot,
@@ -773,6 +774,19 @@ def post_dd_batch(
         "_disclaimer": _TAX_DISCLAIMER,
         "coverage_scope": _COVERAGE_SCOPE,
     }
+    # §17.D audit seal on paid responses (no-op for anon — dd_batch is
+    # paid-only via the 401 path upstream, so api_key_hash is non-None
+    # by the time we reach here).
+    attach_seal_to_body(
+        body,
+        endpoint="am.dd_batch",
+        request_params={
+            "houjin_count": n_ids,
+            "depth": payload.depth,
+        },
+        api_key_hash=ctx.key_hash,
+        conn=conn,
+    )
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content=body,
@@ -1559,6 +1573,18 @@ def post_dd_export(
         "_disclaimer": _TAX_DISCLAIMER,
         "coverage_scope": _COVERAGE_SCOPE,
     }
+    # §17.D audit seal on paid responses (dd_export is paid-only; 401 above).
+    attach_seal_to_body(
+        body,
+        endpoint="am.dd_export",
+        request_params={
+            "deal_id": payload.deal_id,
+            "bundle_class": payload.bundle_class,
+            "houjin_count": n_ids,
+        },
+        api_key_hash=ctx.key_hash,
+        conn=conn,
+    )
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content=body,

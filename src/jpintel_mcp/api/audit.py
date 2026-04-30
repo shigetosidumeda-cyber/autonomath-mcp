@@ -83,13 +83,15 @@ from pathlib import Path
 from typing import Annotated, Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, status
+from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._corpus_snapshot import (
     attach_corpus_snapshot,
-    snapshot_headers,
     compute_corpus_snapshot,
+    snapshot_headers,
 )
 from jpintel_mcp.api._error_envelope import (
     COMMON_ERROR_RESPONSES,
@@ -111,6 +113,13 @@ from jpintel_mcp.config import settings
 _log = logging.getLogger("jpintel.api.audit")
 
 router = APIRouter(prefix="/v1/audit", tags=["audit (会計士・監査法人)"])
+
+# Public seal verifier mounted WITHOUT AnonIpLimitDep so a customer can
+# always verify a paid seal — even after the 3/day anonymous quota is
+# burned. Verification is read-only on a hash-only row, billable=0; the
+# DDOS surface is the same as any cached static doc and is left to the
+# upstream Cloudflare layer.
+public_router = APIRouter(prefix="/v1/audit", tags=["audit (会計士・監査法人)"])
 
 
 # ---------------------------------------------------------------------------
@@ -1676,6 +1685,17 @@ def render_workpaper(
         "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
     }
     attach_corpus_snapshot(body, conn)
+    attach_seal_to_body(
+        body,
+        endpoint="audit.workpaper",
+        request_params={
+            "client_id": payload.client_id,
+            "ruleset_count": len(ids),
+            "report_format": payload.report_format,
+        },
+        api_key_hash=ctx.key_hash,
+        conn=conn,
+    )
     return JSONResponse(content=body, headers=snapshot_headers(conn))
 
 
@@ -1865,6 +1885,17 @@ def batch_evaluate(
         "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
     }
     attach_corpus_snapshot(body, conn)
+    attach_seal_to_body(
+        body,
+        endpoint="audit.batch_evaluate",
+        request_params={
+            "audit_firm_id": payload.audit_firm_id,
+            "profile_count": n_profiles,
+            "ruleset_count": len(ids),
+        },
+        api_key_hash=ctx.key_hash,
+        conn=conn,
+    )
     return JSONResponse(content=body, headers=snapshot_headers(conn))
 
 
@@ -1957,6 +1988,13 @@ def cite_chain_resolve(
         "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
     }
     attach_corpus_snapshot(body, conn)
+    attach_seal_to_body(
+        body,
+        endpoint="audit.cite_chain",
+        request_params={"ruleset_id": ruleset_id},
+        api_key_hash=ctx.key_hash,
+        conn=conn,
+    )
     return JSONResponse(content=body, headers=snapshot_headers(conn))
 
 
@@ -2097,7 +2135,125 @@ def snapshot_attestation(
         "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
     }
     attach_corpus_snapshot(body, conn)
+    attach_seal_to_body(
+        body,
+        endpoint="audit.snapshot_attestation",
+        request_params={"year": year},
+        api_key_hash=ctx.key_hash,
+        conn=conn,
+    )
     return JSONResponse(content=body, headers=snapshot_headers(conn))
+
+
+# ---------------------------------------------------------------------------
+# Endpoint: GET /v1/audit/seals/{seal_id} — public seal verifier
+# ---------------------------------------------------------------------------
+#
+# Per docs/_internal/llm_resilient_business_plan_2026-04-30.md §17.D:
+#   verifying a seal is FREE so customers always trust it. The endpoint is
+#   anon-allowed (no X-API-Key required) and billable=0 (NO log_usage call,
+#   NO Stripe report). The trade-off is a slightly broader read surface on
+#   audit_seals — but the row stores ONLY hashes, never the response body
+#   itself, so a correlated lookup leaks nothing about the original query.
+#
+# Returns:
+#   200 — { seal_id, issued_at, subject_hash, corpus_snapshot_id, verified }.
+#         "verified" is true when the persisted (call_id, ts, query_hash,
+#         response_hash) tuple still HMAC-validates against the seal secret;
+#         false otherwise (corruption / secret rotation / forgery attempt).
+#   404 — seal not found. Customer should re-issue (or the row was purged
+#         past its 7-year retention window).
+
+
+@public_router.get(
+    "/seals/{seal_id}",
+    summary="Public audit-seal verifier (FREE, anon-allowed)",
+    description=(
+        "Returns the persisted seal envelope so a customer can prove "
+        "MONTHS later that a paid response carried a valid seal. The "
+        "endpoint is FREE — no X-API-Key required, no usage_events row, "
+        "no Stripe report — so customers always trust the verification "
+        "result. The seal row itself stores only hashes; the original "
+        "response body is the customer's responsibility to retain."
+    ),
+    responses={
+        200: {
+            "description": (
+                "Seal found and HMAC-validated. ``verified=true`` when the "
+                "persisted tuple matches the binding HMAC; ``verified=false`` "
+                "if the row has been tampered with or the secret rotated."
+            ),
+        },
+        404: {"description": "No seal with this id (or purged past retention)."},
+    },
+)
+def verify_audit_seal(
+    seal_id: Annotated[
+        str,
+        PathParam(
+            min_length=1,
+            max_length=64,
+            description=(
+                "Either a §17.D ``seal_<32-hex>`` id or the legacy "
+                "26-char ULID ``call_id`` carried on pre-119 seals."
+            ),
+        ),
+    ],
+    conn: DbDep,
+) -> JSONResponse:
+    """GET /v1/audit/seals/{seal_id} — anon-allowed, billable=0."""
+    # Local import keeps the audit_seal module out of the router import
+    # graph until the endpoint is actually invoked (audit.py is a hot
+    # import path; we already pay the cost of attach_seal_to_body, but
+    # lookup_seal is rarely-touched).
+    from jpintel_mcp.api._audit_seal import lookup_seal, verify_hmac
+
+    row = lookup_seal(conn, seal_id=seal_id)
+    if row is None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "seal_id": seal_id,
+                "verified": False,
+                "reason": "not_found",
+                "_disclaimer": (
+                    "該当 seal が見つかりませんでした。再発行するか、"
+                    "保管期限 (7年) を過ぎた可能性があります。"
+                ),
+            },
+        )
+    # HMAC-validate the persisted tuple. We need the full row for that —
+    # pull the binding fields from the existing audit_seals schema.
+    full_row = conn.execute(
+        "SELECT call_id, ts, query_hash, response_hash, hmac, "
+        "seal_id, corpus_snapshot_id "
+        "FROM audit_seals WHERE call_id = ? LIMIT 1",
+        (row.get("call_id"),),
+    ).fetchone()
+    verified = False
+    if full_row is not None:
+        try:
+            verified = verify_hmac(
+                full_row["call_id"],
+                full_row["ts"],
+                full_row["query_hash"],
+                full_row["response_hash"],
+                full_row["hmac"],
+            )
+        except (KeyError, TypeError):
+            verified = False
+    body = {
+        "seal_id": (row.get("seal_id") or row.get("call_id")),
+        "issued_at": row.get("ts"),
+        "subject_hash": (
+            "sha256:" + str(row.get("response_hash"))
+            if row.get("response_hash")
+            else None
+        ),
+        "corpus_snapshot_id": row.get("corpus_snapshot_id"),
+        "verified": bool(verified),
+    }
+    return JSONResponse(content=body)
 
 
 # ---------------------------------------------------------------------------

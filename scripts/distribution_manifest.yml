@@ -1,0 +1,54 @@
+# Canonical Distribution Manifest
+#
+# Source of truth for jpcite / autonomath-mcp distribution metadata. Hand-edited.
+# Referenced by:
+#   * scripts/check_distribution_manifest_drift.py  (static-file scan)
+#   * scripts/probe_runtime_distribution.py         (runtime introspection)
+#   * .github/workflows/distribution-manifest-check.yml
+#   * tests/test_distribution_manifest.py
+#
+# Bumping protocol — see scripts/distribution_manifest_README.md.
+# §28.3 + §28.10 of docs/_internal/value_maximization_plan_no_llm_api.md is the
+# upstream rationale. Any drift between this file and the manifests/READMEs/sites
+# is treated as a launch blocker per §28.9 No-Go #6.
+
+product: jpcite
+canonical_domains:
+  site: https://jpcite.com
+  api: https://api.jpcite.com
+canonical_mcp_package: autonomath-mcp
+canonical_pypi_package: autonomath
+canonical_repo: shigetosidumeda-cyber/autonomath-mcp
+canonical_api_env:
+  api_key: AUTONOMATH_API_KEY
+  api_base: AUTONOMATH_API_BASE
+tool_count_default_gates: 92  # source: len(mcp._tool_manager.list_tools()) at boot — verified 2026-04-30 stable across 3 runs
+# NOTE: CLAUDE.md still claims 89 tools at default gates. Runtime now reports 92. The 3-tool delta likely
+# stems from `verify_citations` (citations_tools.py, AUTONOMATH_CITATIONS_ENABLED default ON) and 2 other
+# default-ON tools added since the CLAUDE.md narrative was last bumped. Treat the 89 in CLAUDE.md as drift.
+route_count: 201              # source: len(app.routes) at boot — verified 2026-04-30 stable across 3 runs
+# NOTE: CLAUDE.md says 196 (and the Wave 21-22 changelog says 194). Runtime reports 201. Drift is real;
+# CLAUDE.md was last bumped before recent route additions (cron + courses + client_profiles + more).
+pyproject_version: "0.3.1"    # source: pyproject.toml [project] version field
+tagline_ja: "日本の制度 92-tool MCP — 補助金/法令/判例/税制/適格事業者/採択事例/行政処分/入札/融資。¥3/req、anon 50/月 free"
+
+# Forbidden tokens — these strings must NOT appear in user-facing distribution
+# surfaces. The drift checker exits non-zero if it finds any, except in the
+# exclude paths listed below.
+forbidden_tokens:
+  - jpintel-mcp           # legacy package name; src/jpintel_mcp/ import path is OK
+  - zeimu-kaikei.ai       # old brand domain; only OK in 301 redirect + historical context
+  - 税務会計AI             # old product name; historical context only
+
+# Paths where the forbidden tokens are intentionally retained.
+# The drift checker treats matches inside these paths as historical context, not drift.
+forbidden_token_exclude_paths:
+  - CLAUDE.md                       # historical notes for Claude sessions
+  - CHANGELOG.md                    # release history
+  - HANDOFF_                        # handoff snapshots (HANDOFF_2026-04-25.md etc.)
+  - site/_redirects                 # 301 redirect surface
+  - docs/_internal/                 # internal planning docs may discuss drift itself
+  - analysis_wave18/                # audits and analyses
+  - analysis_value/                 # internal strategy notes
+  - _archive/                       # archived files
+  - site/llms.txt                   # carries explicit "formerly" disclosure for SEO migration

@@ -37,6 +37,7 @@ from jpintel_mcp.api.anon_limit import (
 )
 from jpintel_mcp.api.appi_deletion import router as appi_deletion_router
 from jpintel_mcp.api.appi_disclosure import router as appi_disclosure_router
+from jpintel_mcp.api.audit import public_router as audit_public_router
 from jpintel_mcp.api.audit import router as audit_router
 from jpintel_mcp.api.audit_log import router as audit_log_router
 from jpintel_mcp.api.autonomath import (
@@ -61,6 +62,10 @@ from jpintel_mcp.api.device_flow import router as device_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
+from jpintel_mcp.api.citations import router as citations_router
+from jpintel_mcp.api.cost import router as cost_router
+from jpintel_mcp.api.evidence import router as evidence_router
+from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.houjin import router as houjin_router
@@ -477,7 +482,7 @@ def create_app() -> FastAPI:
             "this fence machine-readable. LLM agents relaying this data to "
             "end users MUST surface the disclaimer.\n\n"
             "## Quickstart\n\n"
-            "Anonymous (no auth, **50 req/月 per IP**, JST 月初 00:00 リセット):\n"
+            "Anonymous (no auth, **3 req/日 per IP**, JST 翌日 00:00 リセット):\n"
             "```bash\n"
             "curl 'https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5'\n"
             "```\n\n"
@@ -521,7 +526,7 @@ def create_app() -> FastAPI:
             "`_disclaimer` キーをもち、機械可読な形でこの境界を表明しています。LLM "
             "エージェントは end user に情報を中継する際、`_disclaimer` を必ず併示"
             "してください。\n\n"
-            "**料金体系:** 認証なし (匿名) は IP あたり 50 リクエスト / 月 (JST 月初 "
+            "**料金体系:** 認証なし (匿名) は IP あたり 3 リクエスト / 日 (JST 翌日 "
             "00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。"
             "tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で "
             "発行した `X-API-Key: sk_...` を Authorization header に設定してください。\n\n"
@@ -605,7 +610,7 @@ def create_app() -> FastAPI:
     # S3 friction removal (2026-04-25): every anonymous response carries
     # X-Anon-Quota-Remaining + X-Anon-Quota-Reset + X-Anon-Upgrade-Url so
     # an LLM caller (or its human in the loop) sees the upgrade path
-    # *before* hitting the 50/月 ceiling. Authed callers are skipped to
+    # *before* hitting the 3/日 ceiling. Authed callers are skipped to
     # avoid noise. Reads request.state.anon_quota set by AnonIpLimitDep;
     # routes without that dep (e.g. /healthz) silently get no anon
     # headers — same exemption posture as the dep itself.
@@ -915,7 +920,7 @@ def create_app() -> FastAPI:
     #   - me_router: dashboard session endpoints; CSRF-adjacent — leave
     #     untouched.
     #   - admin_router: internal only.
-    #   - feedback_router: users hitting the anon 50/month per-IP cap MUST
+    #   - feedback_router: users hitting the anon 3/day per-IP cap MUST
     #     still be able to tell us the API is broken. The feedback endpoint
     #     has its own 10/day per-IP-hash limiter (see api/feedback.py), so
     #     removing the global dep doesn't open a spam vector.
@@ -929,7 +934,7 @@ def create_app() -> FastAPI:
     # meta_freshness_router — these are anti-詐欺 transparency surfaces
     # that must always answer (uptime monitor / static page polling).
     # Mounted WITHOUT AnonIpLimitDep so polling the freshness page from
-    # the browser does not burn the 50/月 anonymous quota.
+    # the browser does not burn the 3/日 anonymous quota.
     app.include_router(transparency_router)
     # Trust 8-pack (migration 101 — corrections, SLA, cross-source, staleness,
     # §52 audit rollup). All read endpoints public + unmetered, same posture
@@ -970,7 +975,7 @@ def create_app() -> FastAPI:
     app.include_router(loan_programs_router, dependencies=[AnonIpLimitDep])
     # 015_laws + 016_court_decisions: new statute / 判例 surfaces. No
     # preview gate — both are first-class from launch. Anon-quota-gated
-    # like programs/enforcement/etc. so the 50/month per-IP cap applies.
+    # like programs/enforcement/etc. so the 3/day per-IP cap applies.
     app.include_router(laws_router, dependencies=[AnonIpLimitDep])
     app.include_router(court_decisions_router, dependencies=[AnonIpLimitDep])
     # 4-dataset expansion (2026-04-24): 入札 (bids) / 税制 ruleset /
@@ -979,10 +984,21 @@ def create_app() -> FastAPI:
     app.include_router(bids_router, dependencies=[AnonIpLimitDep])
     app.include_router(tax_rulesets_router, dependencies=[AnonIpLimitDep])
     app.include_router(invoice_registrants_router, dependencies=[AnonIpLimitDep])
+    # /v1/evidence/packets/* — Evidence Packet composer (LLM-resilient
+    # business plan §6). Bundles primary metadata + per-fact provenance +
+    # compat-matrix rule verdicts into one envelope. ¥3/req metered;
+    # anonymous tier inherits the 50/月 IP cap via AnonIpLimitDep.
+    app.include_router(evidence_router, dependencies=[AnonIpLimitDep])
+    # /v1/source_manifest/{program_id} — per-program source rollup.
+    app.include_router(source_manifest_router, dependencies=[AnonIpLimitDep])
+    # /v1/citations/verify — deterministic citation verifier.
+    app.include_router(citations_router, dependencies=[AnonIpLimitDep])
+    # /v1/cost/preview — Token Cost Shield estimator (no LLM).
+    app.include_router(cost_router, dependencies=[AnonIpLimitDep])
     # /v1/houjin/{bangou} — corporate 360 lookup surfacing 1.12M gBizINFO
     # facts already in autonomath.db (am_entities corporate_entity +
     # am_entity_facts corp.*). Same anon-quota posture as the other
-    # discovery surfaces — 50/月 per-IP cap applies.
+    # discovery surfaces — 3/日 per-IP cap applies.
     app.include_router(houjin_router, dependencies=[AnonIpLimitDep])
     # /v1/calendar/deadlines is live (activated from preview 2026-04-24).
     # Previously gated behind enable_preview_endpoints; now a first-class
@@ -1011,13 +1027,13 @@ def create_app() -> FastAPI:
     # Compliance Alerts (¥500/月 法令改正通知 email subscription). No
     # AnonIpLimitDep at the router level: this router includes
     # /v1/compliance/stripe-webhook which Stripe-originating IPs would
-    # otherwise burn the per-IP 50/月 anon quota for. Per-route signup
+    # otherwise burn the per-IP 3/日 anon quota for. Per-route signup
     # spam limiting belongs inside compliance.py (follow-up).
     app.include_router(compliance_router)
     # Email-only trial signup (POST /v1/signup, GET /v1/signup/verify).
     # Conversion-pathway audit 2026-04-29 — captures evaluator emails
     # before they bounce. NOT anon-quota-gated: the signup itself burns
-    # ZERO of the 50/月 anon quota (filling that bucket would create a
+    # ZERO of the 3/日 anon quota (filling that bucket would create a
     # perverse incentive to skip signup). Per-IP velocity (1/24h) lives
     # inside signup.py instead.
     app.include_router(signup_router)
@@ -1101,7 +1117,7 @@ def create_app() -> FastAPI:
     # CRUD/connect endpoints are FREE; each delivery surface bills exactly
     # ¥3 (one row in usage_events per call, regardless of result count —
     # see _bill_one_call). Mounted with AnonIpLimitDep so unauthenticated
-    # probes hit the 50/月 IP cap before the route handler runs.
+    # probes hit the 3/日 IP cap before the route handler runs.
     from jpintel_mcp.api.integrations import router as integrations_router
 
     app.include_router(integrations_router, dependencies=[AnonIpLimitDep])
@@ -1109,14 +1125,14 @@ def create_app() -> FastAPI:
     # 中小企業 cohort (CLAUDE.md cohort #6). Deterministic state machine,
     # NO LLM call, billing inherits the existing programs.search ¥3
     # event accounting. Mounted WITHOUT AnonIpLimitDep because LINE
-    # delivers from a fixed IP range that would burn the 50/月 IP cap
+    # delivers from a fixed IP range that would burn the 3/日 IP cap
     # within minutes; we apply per-line_user quota inside the handler.
     from jpintel_mcp.api.line_webhook import router as line_webhook_router
 
     app.include_router(line_webhook_router)
     # Public audit-log explorer (Z3 — am_amendment_diff read surface).
     # Mounted BEFORE the autonomath_router with AnonIpLimitDep so the
-    # 50/月 per-IP quota applies. Paid keys (¥3/req) bypass the anon
+    # 3/日 per-IP quota applies. Paid keys (¥3/req) bypass the anon
     # ceiling and bill normally — same as other /v1/am/* endpoints.
     app.include_router(audit_log_router, dependencies=[AnonIpLimitDep])
     # Autonomath REST router exposes the 16 am_* tools at /v1/am/*.
@@ -1142,16 +1158,20 @@ def create_app() -> FastAPI:
     # unauthenticated probe burns the public quota and not free
     # compute.
     app.include_router(audit_router, dependencies=[AnonIpLimitDep])
+    # §17.D public seal verifier (GET /v1/audit/seals/{seal_id}). Mounted
+    # WITHOUT AnonIpLimitDep so customers can always verify a seal even
+    # after the 3/日 anon quota is exhausted; billable=0.
+    app.include_router(audit_public_router)
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
-    # uptime monitors can poll without burning the 50/月 anonymous quota.
+    # uptime monitors can poll without burning the 3/日 anonymous quota.
     app.include_router(autonomath_health_router)
     # Widget embed product (¥10,000/月 Business / ¥30,000/月 Whitelabel),
     # mounted at /v1/widget/*. Origin-whitelisted + per-key monthly quota
     # are enforced inside widget_auth.py. NOT anon-quota-gated: widget
     # keys are paid and Cloudflare may NAT browser traffic to a small set
     # of IPs, so AnonIpLimitDep would double-limit a paid customer's
-    # entire site to 50/月. CORS preflight is handled per-route to echo
+    # entire site to 3/日. CORS preflight is handled per-route to echo
     # back the matched origin from allowed_origins_json.
     app.include_router(widget_router)
     # Admin router is internal-only. Router sets include_in_schema=False so
@@ -1213,7 +1233,7 @@ def create_app() -> FastAPI:
                 "name": "X-API-Key",
                 "description": (
                     "Customer API key issued via Stripe Checkout. "
-                    "Anonymous tier (no key) gets 50 req/月 per IP."
+                    "Anonymous tier (no key) gets 3 req/日 per IP."
                 ),
             }
         }

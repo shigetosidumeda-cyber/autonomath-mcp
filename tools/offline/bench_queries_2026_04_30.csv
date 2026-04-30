@@ -1,0 +1,31 @@
+query_id,domain,query_text,notes
+1,subsidy,東京都の設備投資補助金は?,prefecture-scoped subsidy lookup
+2,subsidy,IT導入補助金 2025 期限は?,deadline question on a specific program
+3,subsidy,ものづくり補助金 中小企業 申請要件,eligibility check on a national flagship subsidy
+4,subsidy,小規模事業者持続化補助金 上限額,amount lookup on a national subsidy
+5,subsidy,事業再構築補助金 採択率 直近,outcome statistic on a high-traffic program
+6,subsidy,大阪府 創業 補助金,prefecture-scoped startup subsidy
+7,subsidy,省エネ 設備更新 補助金 2025,topical subsidy with a year filter
+8,subsidy,人材確保 助成金 厚生労働省,subsidy by ministry + topic
+9,subsidy,GX 脱炭素 補助金 中小企業,GX cohort cross-cut
+10,subsidy,商店街 活性化 補助金,niche local-government subsidy
+11,houjin,法人番号 4120101047866 の採択履歴,corp-number adoption history
+12,houjin,株式会社メルカリ 法人番号 採択事例,corp name to corp-number to adoption
+13,houjin,法人番号 1010001034730 の行政処分有無,corp-number enforcement check
+14,houjin,適格請求書発行事業者 T8010001213708 登録日,invoice registrant detail
+15,houjin,東京都港区 IT企業 採択事例,corp-by-region subsidy adoption
+16,law,インボイス制度 売上1000万円未満 必要書類,small-business invoice obligation
+17,law,電子帳簿保存法 改正 2024,e-storage law update
+18,law,個人情報保護法 漏洩 報告義務,APPI breach reporting
+19,law,労働基準法 36協定 上限,working-hours overtime cap
+20,law,中小企業基本法 中小企業 定義,SME statutory definition
+21,tax,研究開発税制 中小企業 控除率,SME R&D tax credit rate
+22,tax,固定資産税 償却資産 軽減措置,depreciable asset tax relief
+23,tax,事業承継税制 適用要件,business-succession tax regime
+24,tax,賃上げ促進税制 控除率 2025,wage-hike tax credit rate by year
+25,tax,消費税 簡易課税 みなし仕入率,consumption-tax simplified rate
+26,enforcement,過去3年の建設業 業務停止,enforcement history by industry + window
+27,enforcement,宅地建物取引業 免許取消 直近,real-estate license revocation
+28,enforcement,建設業 営業停止 東京都,enforcement scoped to prefecture
+29,enforcement,労働者派遣事業 行政処分 件数,staffing-industry enforcement count
+30,enforcement,金融商品取引業 業務改善命令,financial-instrument business order

@@ -1,0 +1,107 @@
+name: adoption-program-join-weekly
+
+# Weekly cron: backfill jpi_adoption_records.program_id (autonomath.db,
+# migration 113) by joining `program_name_raw` against the `programs`
+# corpus in jpintel.db. Pure-Python (difflib.SequenceMatcher) — NO LLM,
+# per CONSTITUTION 13.2 + feedback_autonomath_no_api_use.
+#
+# Plan refs: docs/_internal/value_maximization_plan_no_llm_api.md §7.1
+# (採択金額・採択者・制度join 最優先) + §28.7 (90日 Evidence Graph).
+#
+# Cadence: Sunday 18:15 UTC == Monday 03:15 JST. Off-peak so the
+# read-only programs scan + UPDATE batch never collides with prime-time
+# customer traffic.
+#
+# Output: telemetry JSON to stdout uploaded as workflow artifact at
+#   analysis_wave18/adoption_join/run_<JST-date>.json
+# Sentry alert on failure (same hop pattern as self-improve-loop-h-daily).
+#
+# Required GitHub repository secret: FLY_API_TOKEN.
+
+on:
+  schedule:
+    # 18:15 UTC Sunday == 03:15 JST Monday.
+    - cron: '15 18 * * 0'
+  workflow_dispatch:
+    inputs:
+      rematch:
+        description: "Re-evaluate every row (override prior matches)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+concurrency:
+  group: adoption-program-join-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  join:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run adoption_program_join via flyctl ssh
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          REMATCH: ${{ inputs.rematch || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${REMATCH}" = "true" ]; then
+            FLAGS="--rematch"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/adoption_program_join.py ${FLAGS}" \
+            > join_run.json
+          DATE_TAG="$(TZ=Asia/Tokyo date +%Y-%m-%d)"
+          mkdir -p analysis_wave18/adoption_join
+          cp join_run.json "analysis_wave18/adoption_join/run_${DATE_TAG}.json"
+          # Echo summary to the workflow log so the operator reads at-a-glance.
+          python -c "
+          import json
+          d = json.load(open('join_run.json'))
+          print(
+              f\"adoption_program_join scanned={d.get('rows_scanned')} \"
+              f\"exact={d.get('exact_matched')} \"
+              f\"fuzzy_high={d.get('fuzzy_high_matched')} \"
+              f\"fuzzy_med={d.get('fuzzy_med_matched')} \"
+              f\"unmatched={d.get('unmatched')} \"
+              f\"elapsed_s={d.get('elapsed_s')}\"
+          )
+          "
+
+      - name: Upload run artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: adoption-program-join-${{ github.run_id }}
+          path: analysis_wave18/adoption_join/run_*.json
+          if-no-files-found: ignore
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=adoption-program-join-weekly/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.adoption-program-join-weekly\",\"platform\":\"other\",\"message\":\"adoption-program-join-weekly failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"adoption-program-join-weekly\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

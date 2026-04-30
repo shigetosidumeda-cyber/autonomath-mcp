@@ -42,13 +42,16 @@ primitive, not a customer-LLM prompt fragment.
 """
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import hmac as _hmac
 import json
 import secrets
 import sqlite3
+import threading
 import time
-from datetime import UTC, datetime, timedelta
+import uuid
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
 
 from jpintel_mcp.config import settings
@@ -176,19 +179,143 @@ def extract_source_urls(response_body: Any, *, max_urls: int = 32) -> list[str]:
     return out[:max_urls]
 
 
+#: JST timezone for the corpus_snapshot_id `YYYY-MM-DD` derivation.
+_JST = timezone(timedelta(hours=9))
+
+#: Process-local cache for the corpus_snapshot_id (task §17.D — refresh every
+#: 6 hours, computed once per process boot, surfaced via
+#: ``GET /v1/meta/corpus_snapshot`` and embedded in the audit_seal envelope).
+#: The value is a ``corpus-YYYY-MM-DD`` string derived from the JST date of
+#: ``MAX(am_source.last_verified)`` on autonomath.db. ``_lock`` protects the
+#: read/refresh path under concurrent FastAPI workers; sqlite reads are short.
+_CORPUS_SNAPSHOT_TTL_SECONDS = 6 * 3600
+_corpus_snapshot_cache: dict[str, Any] = {
+    "value": None,         # str | None — ``corpus-YYYY-MM-DD`` once seeded
+    "computed_at": 0.0,    # monotonic seconds, 0 == never computed
+}
+_corpus_snapshot_lock = threading.Lock()
+
+
+def _derive_corpus_snapshot_id() -> str:
+    """Return ``corpus-YYYY-MM-DD`` for the current corpus state.
+
+    Reads ``MAX(am_source.last_verified)`` from autonomath.db and converts
+    that timestamp to a JST date. When the DB / table / column is absent
+    (test envs where autonomath.db is a 0-byte placeholder) we fall back
+    to today's JST date so the field is always populated.
+
+    Never raises — any sqlite or filesystem failure collapses to the
+    today-fallback so the response path is never blocked on corpus probe.
+    """
+    today_jst = datetime.now(_JST).strftime("corpus-%Y-%m-%d")
+    try:
+        db_path = settings.autonomath_db_path
+    except Exception:  # noqa: BLE001 — config probe never fatal
+        return today_jst
+    if not db_path.exists() or db_path.stat().st_size == 0:
+        return today_jst
+    try:
+        uri = f"file:{db_path}?mode=ro"
+        conn = sqlite3.connect(uri, uri=True, timeout=2.0)
+        try:
+            row = conn.execute(
+                "SELECT MAX(last_verified) FROM am_source"
+            ).fetchone()
+        finally:
+            conn.close()
+    except sqlite3.Error:
+        return today_jst
+    if not row or not row[0]:
+        return today_jst
+    raw = str(row[0])
+    # ``last_verified`` is stored as ``YYYY-MM-DD HH:MM:SS`` UTC. Parse
+    # tolerantly (with or without 'T', with or without timezone) and
+    # convert to JST so the date label rolls over at JST midnight.
+    parsed: datetime | None = None
+    candidates = [raw, raw.replace(" ", "T")]
+    if "+" not in raw and "Z" not in raw:
+        candidates.append(raw.replace(" ", "T") + "+00:00")
+    for cand in candidates:
+        try:
+            parsed = datetime.fromisoformat(cand)
+            break
+        except ValueError:
+            continue
+    if parsed is None:
+        return today_jst
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(_JST).strftime("corpus-%Y-%m-%d")
+
+
+def get_corpus_snapshot_id(*, force_refresh: bool = False) -> str:
+    """Return the cached ``corpus-YYYY-MM-DD`` snapshot id.
+
+    Computed once per process boot and refreshed every 6 hours. The cache
+    is process-local — each worker computes independently. Performance:
+    cache hit is a single dict lookup (sub-microsecond); the recompute
+    path runs at most every 6 hours per worker.
+    """
+    now = time.monotonic()
+    with _corpus_snapshot_lock:
+        cached = _corpus_snapshot_cache.get("value")
+        computed_at = _corpus_snapshot_cache.get("computed_at", 0.0)
+        if (
+            not force_refresh
+            and isinstance(cached, str)
+            and now - float(computed_at) < _CORPUS_SNAPSHOT_TTL_SECONDS
+        ):
+            return cached
+        value = _derive_corpus_snapshot_id()
+        _corpus_snapshot_cache["value"] = value
+        _corpus_snapshot_cache["computed_at"] = now
+        return value
+
+
+def _reset_corpus_snapshot_cache_for_tests() -> None:
+    """Test helper — drop the cached snapshot id."""
+    with _corpus_snapshot_lock:
+        _corpus_snapshot_cache["value"] = None
+        _corpus_snapshot_cache["computed_at"] = 0.0
+
+
+def _key_hash_prefix(api_key_hash: str | None) -> str:
+    """Return the first 8 chars of the api_key_hash for the seal envelope.
+
+    The full hash is statutory evidence and stays in the DB (audit_seals
+    row). Customers see only the prefix in the response so their logs
+    can group seals by key without leaking the full hash. Empty string
+    when no key (anon path — but anon never reaches this codepath today).
+    """
+    if not api_key_hash:
+        return ""
+    return str(api_key_hash)[:8]
+
+
 def build_seal(
     *,
     endpoint: str,
     request_params: dict[str, Any] | None,
     response_body: Any,
     client_tag: str | None = None,
+    api_key_hash: str | None = None,
+    corpus_snapshot_id: str | None = None,
 ) -> dict[str, Any]:
     """Build the audit_seal envelope dict (without persistence).
 
-    Returned dict is the exact shape inserted into the response under
-    the ``audit_seal`` key. Persistence happens separately via
-    :func:`persist_seal` so a sandbox / test path can use the dict
-    without touching SQLite.
+    Returned dict carries BOTH legacy fields (``call_id`` / ``ts`` /
+    ``query_hash`` / ``response_hash`` / ``source_urls`` / ``hmac`` —
+    used for the HMAC verification path) AND the §17.D task-spec
+    surface (``seal_id`` / ``issued_at`` / ``subject_hash`` /
+    ``key_hash_prefix`` / ``corpus_snapshot_id`` / ``verify_endpoint`` /
+    ``_disclaimer``) so customer agents can copy the seal verbatim into
+    their work-paper without picking field names.
+
+    Persistence happens separately via :func:`persist_seal` so a sandbox
+    / test path can use the dict without touching SQLite.
+
+    Performance: SHA-256 of a ~50KB JSON body + a single HMAC measures
+    well under 5ms on the API hot path (Q4 perf-diff bench).
     """
     call_id = _new_call_id()
     ts = datetime.now(UTC).isoformat()
@@ -196,7 +323,20 @@ def build_seal(
     response_hash = _sha256_hex(_canonical_json(response_body))
     source_urls = extract_source_urls(response_body)
     hmac_hex = compute_hmac(call_id, ts, query_hash, response_hash)
+    snapshot_id = corpus_snapshot_id or get_corpus_snapshot_id()
+    seal_id = "seal_" + uuid.uuid4().hex
     seal: dict[str, Any] = {
+        # ----- §17.D customer-facing surface -----------------------------
+        "seal_id": seal_id,
+        "issued_at": ts,
+        "subject_hash": "sha256:" + response_hash,
+        "key_hash_prefix": _key_hash_prefix(api_key_hash),
+        "corpus_snapshot_id": snapshot_id,
+        "verify_endpoint": f"/v1/audit/seals/{seal_id}",
+        "_disclaimer": (
+            "信頼できる出典として運用する場合は、verify_endpoint で seal の真正性を確認してください。"
+        ),
+        # ----- legacy fields (HMAC verification path) --------------------
         "call_id": call_id,
         "ts": ts,
         "endpoint": endpoint,
@@ -222,6 +362,10 @@ def persist_seal(
     or the INSERT fails, we swallow the error so the customer-facing
     response is never blocked. Operators see the failure via the usual
     sqlite3 OperationalError path on the daily cron sweep.
+
+    Migration 119 added ``seal_id`` + ``corpus_snapshot_id`` columns. We
+    INSERT them when present; on a pre-119 schema the second INSERT path
+    falls back to the legacy column set so the row still lands.
     """
     try:
         retention_until = (
@@ -229,12 +373,15 @@ def persist_seal(
         ).isoformat()
     except (TypeError, ValueError):
         retention_until = (datetime.now(UTC) + timedelta(days=365 * _RETENTION_YEARS + 2)).isoformat()
+    seal_id = seal.get("seal_id")
+    corpus_snapshot_id = seal.get("corpus_snapshot_id")
     try:
         conn.execute(
             "INSERT OR IGNORE INTO audit_seals("
             "  call_id, api_key_hash, ts, endpoint, query_hash, response_hash,"
-            "  source_urls_json, client_tag, hmac, retention_until"
-            ") VALUES (?,?,?,?,?,?,?,?,?,?)",
+            "  source_urls_json, client_tag, hmac, retention_until,"
+            "  seal_id, corpus_snapshot_id"
+            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 seal["call_id"],
                 api_key_hash,
@@ -246,19 +393,132 @@ def persist_seal(
                 seal.get("client_tag"),
                 seal["hmac"],
                 retention_until,
+                seal_id,
+                corpus_snapshot_id,
             ),
         )
+        return
     except sqlite3.OperationalError:
-        # Migration 089 not applied yet — never block the customer
-        # response on an audit_seal write failure. Same posture as
-        # log_empty_search.
-        pass
+        # Either migration 089 missing OR migration 119 missing. Try the
+        # legacy 10-column schema (pre-119) before giving up. Migration
+        # 089 absence ultimately swallows in the inner try below.
+        with contextlib.suppress(sqlite3.OperationalError):
+            conn.execute(
+                "INSERT OR IGNORE INTO audit_seals("
+                "  call_id, api_key_hash, ts, endpoint, query_hash, response_hash,"
+                "  source_urls_json, client_tag, hmac, retention_until"
+                ") VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (
+                    seal["call_id"],
+                    api_key_hash,
+                    seal["ts"],
+                    seal["endpoint"],
+                    seal["query_hash"],
+                    seal["response_hash"],
+                    json.dumps(seal.get("source_urls", []), ensure_ascii=False),
+                    seal.get("client_tag"),
+                    seal["hmac"],
+                    retention_until,
+                ),
+            )
+
+
+def attach_seal_to_body(
+    body: dict[str, Any],
+    *,
+    endpoint: str,
+    request_params: dict[str, Any] | None,
+    api_key_hash: str | None,
+    conn: sqlite3.Connection | None = None,
+    client_tag: str | None = None,
+) -> dict[str, Any]:
+    """Build, attach, and persist an audit_seal for the given body.
+
+    Mutates ``body`` in place (adding the ``audit_seal`` key) and returns
+    it for chaining. Persistence is best-effort — a missing migration 089
+    or 119 swallows silently.
+
+    No-op when ``api_key_hash`` is None (anon path — sealing requires a
+    key for both customer-side ownership and statutory retention).
+
+    Performance budget (§17 step 5): seal generation < 5ms per response.
+    The hot path is hash + HMAC + uuid + a single sqlite INSERT — well
+    inside the 5ms budget on the typical paid endpoint body size.
+    """
+    if not api_key_hash:
+        return body
+    seal = build_seal(
+        endpoint=endpoint,
+        request_params=request_params,
+        response_body=body,
+        client_tag=client_tag,
+        api_key_hash=api_key_hash,
+    )
+    body["audit_seal"] = seal
+    if conn is not None:
+        # Never block the response on a persist failure — persist_seal
+        # already swallows OperationalError; this catch is defence in
+        # depth for any other sqlite3.Error subclass.
+        with contextlib.suppress(sqlite3.Error):
+            persist_seal(conn, seal=seal, api_key_hash=api_key_hash)
+    return body
+
+
+def lookup_seal(
+    conn: sqlite3.Connection,
+    *,
+    seal_id: str,
+) -> dict[str, Any] | None:
+    """Return the persisted seal row for the given ``seal_id`` or None.
+
+    Used by the public verify endpoint at ``GET /v1/audit/seals/{seal_id}``.
+    Tolerates pre-migration-119 schemas (no ``seal_id`` column) by falling
+    back to the legacy ``call_id`` lookup — a customer who issued a seal
+    on the legacy code path can still verify via the same URL by supplying
+    their ``call_id`` value (the response shape carries both formats).
+    """
+    try:
+        row = conn.execute(
+            "SELECT call_id, ts, response_hash, hmac, seal_id, corpus_snapshot_id "
+            "FROM audit_seals WHERE seal_id = ? LIMIT 1",
+            (seal_id,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        row = None
+    if row is None:
+        # Fallback: legacy call_id lookup (no seal_id column or no row).
+        try:
+            row = conn.execute(
+                "SELECT call_id, ts, response_hash, hmac, NULL AS seal_id, "
+                "NULL AS corpus_snapshot_id FROM audit_seals "
+                "WHERE call_id = ? LIMIT 1",
+                (seal_id,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return None
+        if row is None:
+            return None
+    keys = row.keys() if hasattr(row, "keys") else None
+    if keys:
+        return {k: row[k] for k in keys}
+    # tuple fallback
+    return {
+        "call_id": row[0],
+        "ts": row[1],
+        "response_hash": row[2],
+        "hmac": row[3],
+        "seal_id": row[4] if len(row) > 4 else None,
+        "corpus_snapshot_id": row[5] if len(row) > 5 else None,
+    }
 
 
 __all__ = [
+    "attach_seal_to_body",
     "build_seal",
     "compute_hmac",
     "extract_source_urls",
+    "get_corpus_snapshot_id",
+    "lookup_seal",
     "persist_seal",
     "verify_hmac",
 ]

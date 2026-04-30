@@ -1,0 +1,174 @@
+name: weekly-digest
+
+# Weekly Saved-Search Digest cron (60-day Advisor Loop core).
+#
+# What this does
+# --------------
+# Sweeps every saved_searches row whose frequency='weekly' AND is_active=1
+# AND last_run_at is older than ~6d20h, replays the saved query against
+# the live `programs` table, diffs the result set against the previous
+# run's content-hash snapshot (stored in saved_searches.last_result_signature
+# + analytics_events.client_tag), renders a NEW / REMOVED / MODIFIED
+# digest, and emits one analytics_events row with event_name='digest_delivered'.
+#
+# This is the Advisor Loop substrate referenced in
+# `docs/_internal/value_maximization_plan_no_llm_api.md` §28.8 — the
+# `digest_delivered` half of the `weekly_evidence_loops` North Star.
+# It is intentionally separate from saved-searches-cron.yml (the legacy
+# daily Slack/email run that meters at ¥3 in usage_events).
+#
+# Required GitHub repository secret
+# ---------------------------------
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api`. Same secret used by the other
+#                   Fly-targeting weekly crons.
+#   SENTRY_DSN      (optional) — alert when flyctl ssh exits non-zero,
+#                   when the script reports >5% error rate, or when the
+#                   summary JSON shows digests_sent=0 across a non-empty
+#                   sweep (signal of a regression in the diff/render
+#                   path that would silently kill the North Star metric).
+#
+# Failure routing
+# ---------------
+# `weekly_digest.py` exits non-zero only on hard SQLite failures. Empty
+# runs (searches_run=0) exit 0 — the JSON summary line in Fly logs is
+# the operator signal. The workflow's post-run step parses the summary
+# stdout and raises a Sentry alert when:
+#   * flyctl ssh itself failed (status: failure())
+#   * digests_sent == 0 AND searches_run > 0
+#   * errors / searches_run > 0.05
+# All three conditions are tolerated as "still green" but each emits a
+# distinct Sentry breadcrumb so the operator can triage from one place.
+
+on:
+  schedule:
+    # 22:00 UTC Sunday == 07:00 JST Monday. Lands before the weekday
+    # workday starts so consultants see the digest at their first
+    # morning email check. Staggered +50 min vs saved-searches-cron's
+    # 21:10 UTC daily slot to avoid Fly machine ssh contention with
+    # any Sunday-evening run of the legacy cron.
+    - cron: "0 22 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no email, no analytics row, no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      limit:
+        description: "Cap the sweep at N rows (debug knob; empty = no cap)"
+        required: false
+        default: ""
+
+concurrency:
+  group: weekly-digest
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run weekly digest sweep on Fly machine
+        id: sweep
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          LIMIT: ${{ inputs.limit || '' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          if [ -n "${LIMIT}" ]; then
+            FLAGS="${FLAGS} --limit ${LIMIT}"
+          fi
+          # `flyctl ssh console -C "<cmd>"` runs <cmd> non-interactively
+          # in the autonomath-api machine. The python entry uses the
+          # baked-in /app/.venv interpreter so we inherit JPINTEL_DB_PATH
+          # / AUTONOMATH_DB_PATH / POSTMARK_API_TOKEN / api_key_salt
+          # from the Fly secret store.
+          OUTPUT=$(flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/cron/weekly_digest.py ${FLAGS}" 2>&1 | tail -200)
+          echo "${OUTPUT}"
+          # Capture the LAST JSON-looking line for the alert step. The
+          # script's final stdout line is the summary JSON.
+          SUMMARY=$(echo "${OUTPUT}" | grep -oE '\{"ran_at":[^}]*\}' | tail -1 || echo '{}')
+          echo "summary=${SUMMARY}" >> "${GITHUB_OUTPUT}"
+
+      - name: Sentry alert on cron failure or zero-digests / >5% error rate
+        if: always()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SUMMARY_JSON: ${{ steps.sweep.outputs.summary }}
+          STEP_OUTCOME: ${{ steps.sweep.outcome }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+
+          REASON=""
+          if [ "${STEP_OUTCOME}" = "failure" ]; then
+            REASON="flyctl_ssh_failed"
+          elif [ -n "${SUMMARY_JSON:-}" ] && [ "${SUMMARY_JSON}" != "{}" ]; then
+            # Parse the summary with python (already on ubuntu-latest).
+            REASON=$(python3 - <<PY
+import json, os, sys
+try:
+    s = json.loads(os.environ.get("SUMMARY_JSON", "{}"))
+except Exception:
+    print("")
+    sys.exit(0)
+ran = int(s.get("searches_run") or 0)
+sent = int(s.get("digests_sent") or 0)
+err = int(s.get("errors") or 0)
+if ran > 0 and sent == 0:
+    print("zero_digests_with_nonempty_sweep")
+elif ran > 0 and (err / ran) > 0.05:
+    print("error_rate_above_5pct")
+else:
+    print("")
+PY
+            )
+          fi
+
+          if [ -z "${REASON}" ]; then
+            echo "summary OK; no Sentry alert fired."
+            exit 0
+          fi
+
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          MSG="weekly-digest cron alert: reason=${REASON}"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=weekly-digest-cron/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.weekly-digest",
+            "platform": "other",
+            "message": "${MSG}",
+            "tags": {
+              "workflow": "weekly-digest",
+              "reason": "${REASON}",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            },
+            "extra": {
+              "summary_json": ${SUMMARY_JSON:-null}
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."
