@@ -216,16 +216,17 @@
   Access-Control-Allow-Origin: *
 
 # OG / Twitter PNGs + decorative WebP previews. PNG sources stay because
-# the Twitter card scraper does not reliably resolve WebP. 30-day cache
-# is plenty — these are pure marketing assets.
+# the Twitter card scraper does not reliably resolve WebP. 1-day cache
+# (was 30d — caused branding-update propagation pain on 2026-04-30 logo
+# refresh). Brand assets need to rotate fast when corrected.
 /assets/*.png
-  Cache-Control: public, max-age=2592000
+  Cache-Control: public, max-age=86400
 
 /assets/*.webp
-  Cache-Control: public, max-age=2592000
+  Cache-Control: public, max-age=86400
 
 /assets/*.svg
-  Cache-Control: public, max-age=2592000
+  Cache-Control: public, max-age=86400
 
 # Industry × program crosspages — same SEO fan-out as /programs/*, mostly
 # read by crawlers, cache aggressively.
