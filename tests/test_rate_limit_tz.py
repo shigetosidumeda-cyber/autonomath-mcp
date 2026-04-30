@@ -67,7 +67,7 @@ def test_anon_51st_request_is_429_with_jst_reset(
     )
 
     # Use a tiny limit so the test exhausts quickly.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", _LIMIT)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", _LIMIT)
 
     ip = "198.51.100.201"  # TEST-NET, not a real address
 

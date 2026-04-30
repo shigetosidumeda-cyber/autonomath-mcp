@@ -284,14 +284,14 @@ class Settings(BaseSettings):
     # below. Kept daily because the dunning window is short (days, not weeks).
     rate_limit_free_per_day: int = Field(default=100, alias="RATE_LIMIT_FREE_PER_DAY")
 
-    # Per-IP MONTHLY quota for anonymous (no X-API-Key) callers. Lives in
-    # table `anon_rate_limit` (migration 007; `date` column stores the
-    # first-of-month JST, YYYY-MM-01, as the bucket key). Resets on JST
-    # calendar month boundary. Revised 2026-04-23 from daily 100 → monthly
-    # 50 to align Free tier with "sample, not product" positioning.
-    # Authenticated calls bypass — their tier quota still applies via
-    # deps._enforce_quota().
-    anon_rate_limit_per_month: int = Field(default=50, alias="ANON_RATE_LIMIT_PER_MONTH")
+    # Per-IP DAILY quota for anonymous (no X-API-Key) callers. Lives in
+    # table `anon_rate_limit` (migration 007; `date` column stores
+    # YYYY-MM-DD JST as the bucket key). Resets on JST 翌日 00:00.
+    # Revised 2026-04-30 from monthly 50 → daily 3: monthly cap front-loaded
+    # all activity into day 1 with 29 silent days; daily promotes return
+    # + habit (DAU). Authenticated calls bypass — their tier quota still
+    # applies via deps._enforce_quota().
+    anon_rate_limit_per_day: int = Field(default=3, alias="ANON_RATE_LIMIT_PER_DAY")
     anon_rate_limit_enabled: bool = Field(default=True, alias="ANON_RATE_LIMIT_ENABLED")
 
     # Admin (internal) endpoints under /v1/admin/*. Empty → endpoints return

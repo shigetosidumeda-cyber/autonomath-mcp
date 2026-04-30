@@ -27,7 +27,7 @@ mechanism (memory: `feedback_zero_touch_solo`):
     3.  Daily cron `scripts/cron/expire_trials.py` revokes any trial key
         past 14 days OR over 200 requests, fires a "your trial ended"
         mail, and the user can re-sign up via Stripe Checkout for a paid
-        key (existing path) or fall back to anonymous 50/月 per-IP free.
+        key (existing path) or fall back to anonymous 3/日 per-IP free.
 
 Constraints (from the audit + memory):
     * Solo + zero-touch: NO operator approval. Email is the only gate.

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — Search Japanese institutional data via REST + MCP API.</title>
-<meta name="description" content="Search Japanese institutional data (11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records) via REST + MCP API. Primary source URL included, ¥3/request fully metered, anon 50/month free.">
+<meta name="description" content="Search Japanese institutional data (11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records) via REST + MCP API. Primary source URL included, ¥3/request fully metered, anon 3/day free.">
 
 <meta property="og:title" content="jpcite — Japanese public programs, one API.">
 <meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (89 tools, 2025-06-18). Primary-source lineage on every row.">
@@ -211,12 +211,12 @@
            the H1 — relocated to BELOW the curl block (CRO Fix 2) so the
            visitor hits the working curl first. Footer §52 remains. -->
  <h1 id="hero-title">Search Japanese subsidies &amp; tax rules with one line of AI.</h1>
- <p class="hero-sub">¥3.30/req (tax incl.) · 50 req/month free, no signup. Drop into Claude / Cursor / curl and run.</p>
+ <p class="hero-sub">¥3.30/req (tax incl.) · 3 req/day free, no signup. Drop into Claude / Cursor / curl and run.</p>
  <div class="cta-row">
- <a class="btn btn-primary" href="getting-started.html">Try free (50 req/month per IP, no signup)</a>
+ <a class="btn btn-primary" href="getting-started.html">Try free (3 req/day per IP, no signup)</a>
  <a class="btn btn-secondary" href="/downloads/autonomath-mcp.mcpb" download aria-label="Download Claude Desktop Extension">Add to Claude Desktop (.mcpb)</a>
  </div>
- <p class="hero-note">Anonymous 50 req/month per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> first-of-month reset); ¥3/req tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on 99%+ of rows.</p>
+ <p class="hero-note">Anonymous 3 req/day per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> first-of-month reset); ¥3/req tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on 99%+ of rows.</p>
  </div>
  </section>
 
@@ -281,7 +281,7 @@
  <p>Call 89 MCP tools directly from an agent. REST is OpenAPI 3.1. stdio transport, no SDK.</p>
  <ul class="card-list">
  <li>¥3/req tax exclusive (¥3.30 tax inclusive)</li>
- <li>Anonymous 50 req/month per IP free</li>
+ <li>Anonymous 3 req/day per IP free</li>
  <li>Claude Desktop / Cursor / ChatGPT compatible</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="getting-started.html">Read the docs &rarr;</a></p>
@@ -372,10 +372,10 @@
  <article class="card audience-card" aria-labelledby="aud-gyosei">
  <h3 id="aud-gyosei"><span aria-hidden="true">📑</span> Administrative scriveners (gyoseishoshi)</h3>
  <p class="card-lead audience-context">Construction-focused, permit-heavy caseload</p>
- <p class="audience-pitch">Pull "applicable subsidies + loans + permits" for a case in one call. Filter by region × industry × deadline. Try the first 50/month free.</p>
+ <p class="audience-pitch">Pull "applicable subsidies + loans + permits" for a case in one call. Filter by region × industry × deadline. Try the first 3/day free.</p>
  <ul class="card-list">
  <li>API + MCP — one call, cross-source</li>
- <li>Anonymous 50 req/month per IP free</li>
+ <li>Anonymous 3 req/day per IP free</li>
  <li>Region × industry × deadline search</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/admin-scrivener.html">Admin scrivener details &rarr;</a></p>
@@ -408,11 +408,11 @@
  <article class="card audience-card" aria-labelledby="aud-dev">
  <h3 id="aud-dev"><span aria-hidden="true">🤖</span> AI agent developers</h3>
  <p class="card-lead audience-context">Claude Desktop / Cursor / your own SaaS integration</p>
- <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 89 tools. ¥3/req, 50/month free. Works in Claude Desktop and Cursor out of the box.</p>
+ <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 89 tools. ¥3/req, 3/day free. Works in Claude Desktop and Cursor out of the box.</p>
  <ul class="card-list">
  <li>89 MCP tools, protocol 2025-06-18</li>
  <li>stdio transport, no SDK</li>
- <li>50 req/month evaluation, then ¥3/req metered</li>
+ <li>3 req/day evaluation, then ¥3/req metered</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/dev.html">Developer details &rarr;</a> · <a href="../docs/mcp-tools/">MCP tool list</a></p>
  </article>
@@ -442,7 +442,7 @@
  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
  <div class="container">
  <h2 id="curl-title" class="section-title">Try in 5 seconds (no signup)</h2>
- <p class="demo-lead" style="margin:-16px 0 16px;">Anonymous IP gets 50 req/month free. Paste and run.</p>
+ <p class="demo-lead" style="margin:-16px 0 16px;">Anonymous IP gets 3 req/day free. Paste and run.</p>
  <pre class="code-block" id="curl-snippet" aria-label="curl example for /v1/programs/search"><code>$ curl 'https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
 {
  "results": [...],
@@ -643,7 +643,7 @@
  <article class="card" aria-labelledby="who-dev">
  <h3 id="who-dev">Developers / AI engineers</h3>
  <p class="card-lead">Recommended: API + MCP</p>
- <p>For embedding into agents, RAG pipelines, or your own SaaS. OpenAPI 3.1, stdio MCP, ¥3/req metered, anonymous 50 req/month for evaluation with no signup.</p>
+ <p>For embedding into agents, RAG pipelines, or your own SaaS. OpenAPI 3.1, stdio MCP, ¥3/req metered, anonymous 3 req/day for evaluation with no signup.</p>
  </article>
 
  <article class="card" aria-labelledby="who-sme">
@@ -685,7 +685,7 @@
  <tbody>
  <tr>
  <th scope="row">API + MCP</th>
- <td>50 req/month per IP</td>
+ <td>3 req/day per IP</td>
  <td>¥3 / req (tax excl.)</td>
  <td>¥3.30 / req</td>
  </tr>

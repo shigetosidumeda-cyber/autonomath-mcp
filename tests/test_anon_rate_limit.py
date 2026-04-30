@@ -3,10 +3,10 @@
 Exercises the router-level dep installed in `api/anon_limit.py`.
 
 Monkeypatched items to look out for:
-  - `settings.anon_rate_limit_per_month` to shrink the 50 default where a
+  - `settings.anon_rate_limit_per_day` to shrink the 50 default where a
     test wants to exhaust in a few calls (keeps each test < 100 ms).
   - `settings.anon_rate_limit_enabled` for the "flag off" case.
-  - `api.anon_limit._jst_month_bucket` to simulate a month rollover without
+  - `api.anon_limit._jst_day_bucket` to simulate a month rollover without
     needing freezegun (not in the dev deps).
 """
 from __future__ import annotations
@@ -48,12 +48,12 @@ def _clear_anon_table(client: TestClient, seeded_db: Path):
     c.close()
 
 
-def _count_row(db: Path, ip_hash: str, month_bucket: str) -> int:
+def _count_row(db: Path, ip_hash: str, day_bucket: str) -> int:
     c = sqlite3.connect(db)
     try:
         row = c.execute(
             "SELECT call_count FROM anon_rate_limit WHERE ip_hash = ? AND date = ?",
-            (ip_hash, month_bucket),
+            (ip_hash, day_bucket),
         ).fetchone()
     finally:
         c.close()
@@ -99,8 +99,8 @@ def test_anon_call_increments_counter(client: TestClient, seeded_db: Path):
     # fingerprint. TestClient defaults are deterministic — UA="testclient"
     # (classified "other"), Accept-Language unset ("?"), HTTP/1.1, no JA3.
     ip_h = _testclient_hash(anon, "testclient")
-    month_bucket = anon._jst_month_bucket()
-    assert _count_row(seeded_db, ip_h, month_bucket) == 1
+    day_bucket = anon._jst_day_bucket()
+    assert _count_row(seeded_db, ip_h, day_bucket) == 1
 
 
 def test_same_ip_hashes_to_same_value(client: TestClient):
@@ -120,7 +120,7 @@ def test_different_ips_have_separate_quotas(
     from jpintel_mcp.config import settings
 
     # Shrink so each IP is easily exhausted in the test.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 3)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 3)
 
     for _ in range(3):
         r = client.get("/meta", headers={"x-forwarded-for": "198.51.100.1"})
@@ -130,9 +130,9 @@ def test_different_ips_have_separate_quotas(
         assert r.status_code == 200
 
     # Each IP has its own row with its own count.
-    month_bucket = anon._jst_month_bucket()
-    assert _count_row(seeded_db, _testclient_hash(anon, "198.51.100.1"), month_bucket) == 3
-    assert _count_row(seeded_db, _testclient_hash(anon, "198.51.100.2"), month_bucket) == 3
+    day_bucket = anon._jst_day_bucket()
+    assert _count_row(seeded_db, _testclient_hash(anon, "198.51.100.1"), day_bucket) == 3
+    assert _count_row(seeded_db, _testclient_hash(anon, "198.51.100.2"), day_bucket) == 3
 
 
 def test_over_limit_returns_429_with_retry_after_and_resets_at(
@@ -142,7 +142,7 @@ def test_over_limit_returns_429_with_retry_after_and_resets_at(
     from jpintel_mcp.config import settings
 
     # Shrink to 5 so the test runs in < 100 ms.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 5)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 5)
 
     ip = "198.51.100.9"
     # 5 allowed.
@@ -174,7 +174,7 @@ def test_authed_call_bypasses_throttled_ip(
     from jpintel_mcp.billing.keys import issue_key
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 2)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 2)
 
     ip = "198.51.100.22"
     # Burn the anon bucket from this IP.
@@ -197,29 +197,29 @@ def test_authed_call_bypasses_throttled_ip(
 
 
 # ---------------------------------------------------------------------------
-# JST month rollover
+# JST day rollover
 # ---------------------------------------------------------------------------
 
 
-def test_month_rollover_gives_fresh_quota(
+def test_day_rollover_gives_fresh_quota(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ):
     """Month N exhausted -> switch to month N+1 bucket -> quota resets."""
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 2)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 2)
 
     anon = _anon_module()
 
     # Month 1: freeze bucket string to 2026-04-01 (April).
-    monkeypatch.setattr(anon, "_jst_month_bucket", lambda *a, **k: "2026-04-01")
+    monkeypatch.setattr(anon, "_jst_day_bucket", lambda *a, **k: "2026-04-29")
     ip = "198.51.100.33"
     for _ in range(2):
         assert client.get("/meta", headers={"x-forwarded-for": ip}).status_code == 200
     assert client.get("/meta", headers={"x-forwarded-for": ip}).status_code == 429
 
     # Month 2: rollover — a different bucket string gives a fresh quota.
-    monkeypatch.setattr(anon, "_jst_month_bucket", lambda *a, **k: "2026-05-01")
+    monkeypatch.setattr(anon, "_jst_day_bucket", lambda *a, **k: "2026-04-30")
     assert client.get("/meta", headers={"x-forwarded-for": ip}).status_code == 200
 
 
@@ -235,7 +235,7 @@ def test_disabled_flag_skips_the_check(
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "anon_rate_limit_enabled", False)
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 1)  # would tripwire if on
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 1)  # would tripwire if on
 
     ip = "198.51.100.44"
     for _ in range(5):
@@ -244,7 +244,7 @@ def test_disabled_flag_skips_the_check(
 
     anon = _anon_module()
     # No row was ever written because the dep short-circuited on the flag.
-    assert _count_row(seeded_db, anon.hash_ip(ip), anon._jst_month_bucket()) == 0
+    assert _count_row(seeded_db, anon.hash_ip(ip), anon._jst_day_bucket()) == 0
 
 
 # ---------------------------------------------------------------------------
@@ -258,18 +258,18 @@ def test_healthz_never_counts_against_quota(
     """/healthz must never touch the anon bucket — it is the liveness probe."""
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 3)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 3)
 
     anon = _anon_module()
     ip_h = _testclient_hash(anon, "testclient")
-    month_bucket = anon._jst_month_bucket()
+    day_bucket = anon._jst_day_bucket()
 
     for _ in range(10):
         r = client.get("/healthz")
         assert r.status_code == 200
 
     # No row — /healthz is not wired to AnonIpLimitDep.
-    assert _count_row(seeded_db, ip_h, month_bucket) == 0
+    assert _count_row(seeded_db, ip_h, day_bucket) == 0
 
 
 # ---------------------------------------------------------------------------
@@ -296,7 +296,7 @@ def test_ipv6_addresses_in_same_slash_64_share_bucket(client: TestClient):
 def test_fly_client_ip_wins_over_xff(client: TestClient, seeded_db: Path):
     """Fly-Client-IP is trusted over X-Forwarded-For when both are present."""
     anon = _anon_module()
-    month_bucket = anon._jst_month_bucket()
+    day_bucket = anon._jst_day_bucket()
 
     r = client.get(
         "/meta",
@@ -306,5 +306,5 @@ def test_fly_client_ip_wins_over_xff(client: TestClient, seeded_db: Path):
         },
     )
     assert r.status_code == 200
-    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.77"), month_bucket) == 1
-    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.99"), month_bucket) == 0
+    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.77"), day_bucket) == 1
+    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.99"), day_bucket) == 0

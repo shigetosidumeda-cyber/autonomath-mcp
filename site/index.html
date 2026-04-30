@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — 日本の制度を AI から検索できる REST + MCP API。</title>
-<meta name="description" content="日本の制度 (補助金 11,684 + 法令本文 154 + 法令メタデータ 9,484 + 判例 2,065 + 税制 50 + 適格事業者 13,801 + 採択事例 2,286 + 行政処分 1,185) を検索する REST + MCP API。一次資料 URL 付き。¥3/リクエスト 完全従量、 匿名 50/月 無料。">
+<meta name="description" content="日本の制度 (補助金 11,684 + 法令本文 154 + 法令メタデータ 9,484 + 判例 2,065 + 税制 50 + 適格事業者 13,801 + 採択事例 2,286 + 行政処分 1,185) を検索する REST + MCP API。一次資料 URL 付き。¥3/リクエスト 完全従量、 匿名 3/日 無料。">
 
 <meta property="og:title" content="jpcite — 日本の制度データを 5 つの形で">
 <meta property="og:description" content="API + MCP / LINE bot / 法令改正アラート / 埋込ウィジェット / 士業 案件紹介。 日本の公的制度 14,472 件を用途別に。">
@@ -218,7 +218,7 @@
     "@type": "Offer",
     "price": "3",
     "priceCurrency": "JPY",
-    "description": "¥3/req 税別 (税込 ¥3.30)、匿名 50 req/月 per IP 無料 (JST 月初リセット)"
+    "description": "¥3/req 税別 (税込 ¥3.30)、匿名 3 req/日 per IP 無料 (JST 翌日リセット)"
   }
 }
 </script>
@@ -233,7 +233,7 @@
       "description": "89 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/req 税別 (税込 ¥3.30)、匿名 50 req/月 free"}
+      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/req 税別 (税込 ¥3.30)、匿名 3 req/日 free"}
     },
     {
       "@type": "Product",
@@ -315,7 +315,7 @@
            understood in 200ms. Numbers row + early-access detail relocated
            below the fold so the visitor hits punch + visual + CTA first. -->
  <h1 id="hero-title">日本の制度データを、 AI が信頼できる形で。</h1>
- <p class="hero-sub">11,684 制度 + 採択事例・融資・判例・法令を、 全件出典 URL 付きで返す REST + MCP API。 1 リクエスト ¥3、 匿名 50 req/月 無料。</p>
+ <p class="hero-sub">11,684 制度 + 採択事例・融資・判例・法令を、 全件出典 URL 付きで返す REST + MCP API。 1 リクエスト ¥3、 匿名 3 req/日 無料。</p>
 
  <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">「IT導入」と検索すれば、適合する制度名・品質ランク・出典 URL・更新日がそろって返ります。AI から呼び出すための形式に最初から整えてあります。</p>
 
@@ -347,7 +347,7 @@
  <li>税理士法 §52・弁護士法 §72 への注意書きを全 API レスポンスに同梱</li>
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
- <summary style="cursor:pointer;color:var(--text);">早期アクセス受付中 (匿名 50 リクエスト/月 / LINE 月 10 件は本日から無料)</summary>
+ <summary style="cursor:pointer;color:var(--text);">早期アクセス受付中 (匿名 3 リクエスト/日 / LINE 月 10 件は本日から無料)</summary>
  <p style="margin:6px 0 0;">登録不要の無料枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a> · <a href="line.html">LINE bot</a>)。¥3/リクエスト 完全従量の本番開始は <a href="dashboard.html">ダッシュボード</a> でカード登録のみ。</p>
  </details>
 
@@ -669,7 +669,7 @@
  <ul class="card-list">
  <li>AI から呼べる機能 <span data-fact="mcp_tools_total">89</span> 個 / REST 経路 194 本</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
- <li>無料 50 リクエスト/月で動作確認 → 商用は ¥3/リクエスト 完全従量</li>
+ <li>無料 3 リクエスト/日で動作確認 → 商用は ¥3/リクエスト 完全従量</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/dev.html">開発者向け詳細 →</a> · <a href="/docs/mcp-tools/">機能一覧</a></p>
  </article>
@@ -757,7 +757,7 @@
  <section class="prescreen" aria-labelledby="ps-title" id="try">
  <div class="container">
  <h2 id="ps-title" class="section-title">制度プレスクリーン — 3 問で 上位 5 件</h2>
- <p class="prescreen-sub">都道府県・事業形態・予定投資額を入れるだけで、<strong>11,684 制度</strong>から適合度の高い<strong>上位 5 件</strong>を表示します。無料・登録不要・匿名 50 リクエスト/月/IP。 入力 1 回で結果が返ります。</p>
+ <p class="prescreen-sub">都道府県・事業形態・予定投資額を入れるだけで、<strong>11,684 制度</strong>から適合度の高い<strong>上位 5 件</strong>を表示します。無料・登録不要・匿名 3 リクエスト/日/IP。 入力 1 回で結果が返ります。</p>
  <style>
         /* prescreen a11y polish — scoped, additive only */
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
@@ -805,7 +805,7 @@
  </div>
  <button class="ps-submit" type="submit" id="ps-submit">上位 5 件を見る</button>
  </form>
- <p class="ps-hint">回答は AI ではなく、制度データベースから規則ベースでマッチングします (prefecture + target_types + amount_fit)。出典 URL は一次資料のみ。送信内容は保存しません。レート制限のため IP ハッシュのみ記録 (JST 月初リセット)。</p>
+ <p class="ps-hint">回答は AI ではなく、制度データベースから規則ベースでマッチングします (prefecture + target_types + amount_fit)。出典 URL は一次資料のみ。送信内容は保存しません。レート制限のため IP ハッシュのみ記録 (JST 翌日リセット)。</p>
  <!-- Live-region split (a11y): announce only the short
              status summary (e.g. "5 件の制度が見つかりました"), not the
              entire rendered HTML. JAWS / NVDA / VoiceOver previously
@@ -890,7 +890,7 @@
  <article class="card" aria-labelledby="who-dev">
  <h3 id="who-dev">開発者 / AI エンジニア</h3>
  <p class="card-lead">推奨: API + MCP</p>
- <p>AI・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/リクエスト 従量、登録不要の 50 リクエスト/月 で評価できる。</p>
+ <p>AI・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/リクエスト 従量、登録不要の 3 リクエスト/日 で評価できる。</p>
  </article>
 
  <article class="card" aria-labelledby="who-sme">
@@ -987,7 +987,7 @@
 
  <section class="features"><div class="container" style="text-align:center;padding:48px 0;">
  <h2>5 分で動かしてみる</h2>
- <p>登録不要・ 50 リクエスト/月 まで無料。 Claude Desktop / Cursor から uvx 1 行で。</p>
+ <p>登録不要・ 3 リクエスト/日 まで無料。 Claude Desktop / Cursor から uvx 1 行で。</p>
  <p>
  <a class="btn btn-primary" href="/docs/getting-started/">スタートガイド →</a>
  &nbsp;·&nbsp;

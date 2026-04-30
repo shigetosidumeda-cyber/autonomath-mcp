@@ -61,8 +61,8 @@
 | 課金モデル | 完全従量制 (no tier SKU, no seat fee, no annual minimum) |
 | 単価 (税別) | ¥3 / request |
 | 単価 (税込) | ¥3.30 |
-| 無料枠 | 匿名 50 req/月 per IP |
-| 無料枠リセット | JST 月初 00:00 |
+| 無料枠 | 匿名 3 req/日 per IP |
+| 無料枠リセット | JST 翌日 00:00 |
 | 認証 | API key (オプション、無料枠は匿名 IP base) |
 | 課金プロセッサ | Stripe Metered + Stripe Tax |
 | 国内インボイス対応 | 適格請求書発行事業者 (T8010001213708) |

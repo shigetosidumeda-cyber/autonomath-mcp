@@ -41,7 +41,7 @@ def test_200_anon_response_carries_quota_headers(
     from jpintel_mcp.config import settings
 
     # Pin a small limit so remaining=4 is easy to assert without 50 hops.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 5)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 5)
 
     r = client.get("/meta", headers={"x-forwarded-for": "198.51.100.101"})
     assert r.status_code == 200, r.text
@@ -79,7 +79,7 @@ def test_429_body_includes_upgrade_url_and_bilingual_cta(
     """
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 2)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 2)
 
     ip = "198.51.100.102"
     # Burn the bucket.
@@ -134,7 +134,7 @@ def test_authenticated_response_omits_anon_headers(
     from jpintel_mcp.config import settings
 
     # Even a tiny anon limit must not poison the authed path.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 2)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 2)
 
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
@@ -174,7 +174,7 @@ def test_soft_warning_body_injection_at_80pct(
     to the headers we inject ``_meta.upgrade_hint`` into the JSON body
     when the caller is in the last 20% of their monthly runway.
 
-    With ``anon_rate_limit_per_month=12``, the threshold is hit on the
+    With ``anon_rate_limit_per_day=12``, the threshold is hit on the
     third call (remaining=12-3=9 <= 10). The first two calls (remaining
     11, 10) — note: 12-1=11 above threshold, 12-2=10 at threshold —
     must NOT carry the hint, and the third (remaining=9) MUST.
@@ -185,7 +185,7 @@ def test_soft_warning_body_injection_at_80pct(
     # second call remaining=10 (at threshold, hint included), third call
     # remaining=9 (below threshold, hint included). The middleware fires
     # at remaining <= 10.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 12)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 12)
 
     ip = "198.51.100.150"
 
@@ -250,7 +250,7 @@ def test_soft_warning_skipped_when_above_threshold(
     """
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 50)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 50)
 
     r = client.get("/meta", headers={"x-forwarded-for": "198.51.100.151"})
     assert r.status_code == 200, r.text
@@ -279,7 +279,7 @@ def test_soft_warning_body_omitted_for_authed(
     from jpintel_mcp.billing.keys import issue_key
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 5)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 5)
 
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row

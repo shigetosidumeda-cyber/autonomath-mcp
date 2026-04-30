@@ -35,18 +35,18 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
-def test_rest_anonymous_usage_returns_50_limit_and_jst_reset(
+def test_rest_anonymous_usage_returns_3_limit_and_jst_reset(
     client: "TestClient",
 ) -> None:
-    """No X-API-Key → tier=anonymous, limit=50, used=0, reset_at JST."""
+    """No X-API-Key → tier=anonymous, limit=3, used=0, reset_at JST."""
     r = client.get("/v1/usage", headers={"x-forwarded-for": "203.0.113.50"})
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["tier"] == "anonymous"
-    assert body["limit"] == 50
-    # No prior anon traffic from this IP this month → used=0, remaining=50.
+    assert body["limit"] == 3
+    # No prior anon traffic from this IP today → used=0, remaining=3.
     assert body["used"] == 0
-    assert body["remaining"] == 50
+    assert body["remaining"] == 3
     assert body["reset_timezone"] == "JST"
     # JST month-start ISO ends with +09:00 offset.
     assert body["reset_at"].endswith("+09:00"), body["reset_at"]
@@ -87,8 +87,8 @@ def test_rest_anonymous_usage_does_not_consume_quota(
 def test_rest_anonymous_usage_reflects_existing_count(
     client: "TestClient", seeded_db: "Path"
 ) -> None:
-    """If the IP+fingerprint hash already has N calls this month, the
-    probe MUST report used=N / remaining=50-N.
+    """If the IP+fingerprint hash already has N calls today, the
+    probe MUST report used=N / remaining=3-N.
     """
     # Burn 2 anon slots first via /meta (which IS anon-quota-gated).
     ip = "203.0.113.52"
@@ -100,7 +100,7 @@ def test_rest_anonymous_usage_reflects_existing_count(
     r = client.get("/v1/usage", headers={"x-forwarded-for": ip})
     body = r.json()
     assert body["used"] == 2, body
-    assert body["remaining"] == 50 - 2, body
+    assert body["remaining"] == 3 - 2, body
 
 
 def test_rest_paid_usage_returns_paid_tier_and_utc_reset(
@@ -138,7 +138,7 @@ def test_mcp_get_usage_status_anonymous_returns_ceiling_and_jst_note(
 
     res = get_usage_status()
     assert res["tier"] == "anonymous"
-    assert res["limit"] == 50
+    assert res["limit"] == 3
     assert res["remaining"] is None  # unknown over MCP stdio
     assert res["reset_timezone"] == "JST"
     assert res["reset_at"].endswith("+09:00")

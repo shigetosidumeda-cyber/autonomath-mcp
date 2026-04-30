@@ -1,8 +1,9 @@
-"""Per-IP MONTHLY rate limit for anonymous callers (no X-API-Key).
+"""Per-IP DAILY rate limit for anonymous callers (no X-API-Key).
 
-Free tier is 50 req/month per IP (revised 2026-04-23 from daily 100).
-Bucket key stored in `anon_rate_limit.date` as YYYY-MM-01 in JST — first
-day of the JST calendar month. Reset occurs at JST 月初 00:00.
+Free tier is 3 req/day per IP (revised 2026-04-30 from monthly 50 — the
+monthly cap front-loaded all activity into day 1 then 29 silent days; daily
+gives habit + return). Bucket key stored in `anon_rate_limit.date` as
+YYYY-MM-DD in JST. Reset occurs at JST 翌日 00:00.
 
 Why a router-level dependency (not global middleware): a whitelist matters
 here — /healthz, /readyz, /v1/billing/webhook (Stripe), the subscribers
@@ -41,7 +42,7 @@ from jpintel_mcp.config import settings
 #
 # Both `UPGRADE_URL_BASE` (non-429 anon) and `UPGRADE_URL_FROM_429` (429
 # envelope) now point at `/upgrade.html` — the plain landing page that
-# explains the 50 req/月 cap, points at `pricing.html#api-paid`, and
+# explains the 3 req/日 cap, points at `pricing.html#api-paid`, and
 # lists the `/go` device-flow as a tertiary "if you actually have a
 # device code" option. Earlier versions sent non-429 anon callers to
 # `/go` directly, but `/go.html` is the device-flow activation page that
@@ -100,22 +101,74 @@ _log = logging.getLogger("jpintel.anon_limit")
 _JST = timezone(timedelta(hours=9))
 
 
-def _jst_month_bucket(now: datetime | None = None) -> str:
-    """Return YYYY-MM-01 for the current JST calendar month.
+def _jst_day_bucket(now: datetime | None = None) -> str:
+    """Return YYYY-MM-DD for the current JST calendar day.
 
     Stored in `anon_rate_limit.date` (TEXT column) as a 10-char ISO date.
-    Using first-of-month (YYYY-MM-01) rather than YYYY-MM keeps SQLite's
-    built-in `date()` comparisons usable for the retention cleanup.
+    Switched 2026-04-30 from monthly (YYYY-MM-01) to daily — the monthly
+    cap front-loaded usage into day 1 with 29 silent days; daily resets
+    promote return + habit. Same column, same comparison-friendly format.
     """
     now = now or datetime.now(_JST)
     if now.tzinfo is None:
         now = now.replace(tzinfo=UTC)
     now_jst = now.astimezone(_JST)
-    return now_jst.replace(day=1).strftime("%Y-%m-%d")
+    return now_jst.strftime("%Y-%m-%d")
+
+
+def _next_jst_day_start(now_jst: datetime) -> datetime:
+    """Return the first instant (00:00 JST) of the next calendar day."""
+    base = now_jst.replace(hour=0, minute=0, second=0, microsecond=0)
+    return base + timedelta(days=1)
+
+
+def _seconds_until_jst_day_start(now: datetime | None = None) -> int:
+    """Seconds remaining until the next JST 翌日 00:00 (quota reset)."""
+    now = now or datetime.now(_JST)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=UTC)
+    now_jst = now.astimezone(_JST)
+    next_day = _next_jst_day_start(now_jst)
+    return max(1, int((next_day - now_jst).total_seconds()))
+
+
+def _jst_next_day_iso(now: datetime | None = None) -> str:
+    """ISO8601 timestamp of the next JST 翌日 00:00 (for the response body)."""
+    now = now or datetime.now(_JST)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=UTC)
+    now_jst = now.astimezone(_JST)
+    return _next_jst_day_start(now_jst).isoformat()
+
+
+# ---------------------------------------------------------------------------
+# Monthly-bucket back-compat shims.
+# Pre-2026-04-30 the anon limit was monthly (50 req/月) and `usage.py`
+# imports the monthly helpers verbatim. The runtime cap is now daily (3
+# req/日) but the monthly helpers remain valid as a separate "month
+# rollover" view used by /v1/usage/me to render quota state. Keeping
+# them here as thin shims preserves the import contract without
+# duplicating the JST date math.
+# ---------------------------------------------------------------------------
+
+
+def _jst_month_bucket(now: datetime | None = None) -> str:
+    """Return YYYY-MM-01 for the current JST calendar month.
+
+    Used by the authenticated quota path in api/usage.py (paid + free
+    tiers reset on UTC month boundaries; anon resets daily, see
+    `_jst_day_bucket`). The 10-char string lex-compares correctly
+    against the SQL date columns it's joined onto.
+    """
+    now = now or datetime.now(_JST)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=UTC)
+    now_jst = now.astimezone(_JST)
+    return now_jst.strftime("%Y-%m-01")
 
 
 def _next_jst_month_start(now_jst: datetime) -> datetime:
-    """Return the first instant (00:00 JST) of the next calendar month."""
+    """First instant (00:00 JST) of the next calendar month."""
     if now_jst.month == 12:
         return now_jst.replace(
             year=now_jst.year + 1, month=1, day=1,
@@ -127,18 +180,8 @@ def _next_jst_month_start(now_jst: datetime) -> datetime:
     )
 
 
-def _seconds_until_jst_month_start(now: datetime | None = None) -> int:
-    """Seconds remaining until the next JST 月初 00:00 (quota reset)."""
-    now = now or datetime.now(_JST)
-    if now.tzinfo is None:
-        now = now.replace(tzinfo=UTC)
-    now_jst = now.astimezone(_JST)
-    next_month = _next_jst_month_start(now_jst)
-    return max(1, int((next_month - now_jst).total_seconds()))
-
-
 def _jst_next_month_iso(now: datetime | None = None) -> str:
-    """ISO8601 timestamp of the next JST 月初 (for the response body)."""
+    """ISO8601 timestamp of the next JST 月初 00:00 (for the response body)."""
     now = now or datetime.now(_JST)
     if now.tzinfo is None:
         now = now.replace(tzinfo=UTC)
@@ -450,23 +493,23 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         _log.exception("anon_rate_limit: connect() failed; failing open")
         return
 
-    limit = settings.anon_rate_limit_per_month
+    limit = settings.anon_rate_limit_per_day
     ip = _client_ip(request)
     # Fingerprint-aware hash: combines normalized IP with UA-class +
     # Accept-Language + HTTP version + JA3 so CGNAT / VPN rotation that
     # shares one fingerprint still aggregates to one bucket.
     ip_h = hash_ip(ip, request)
-    month_bucket = _jst_month_bucket()
+    day_bucket = _jst_day_bucket()
     now_iso = datetime.now(UTC).isoformat()
 
     new_count: int | None = None
     try:
-        new_count = _try_increment(anon_conn, ip_h, month_bucket, now_iso)
+        new_count = _try_increment(anon_conn, ip_h, day_bucket, now_iso)
     except sqlite3.Error:
         _log.exception(
-            "anon_rate_limit: DB error on increment; failing open ip_hash=%s month=%s",
+            "anon_rate_limit: DB error on increment; failing open ip_hash=%s day=%s",
             ip_h[:12],
-            month_bucket,
+            day_bucket,
         )
     finally:
         import contextlib
@@ -479,8 +522,8 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         return
 
     if new_count > limit:
-        resets_at = _jst_next_month_iso()
-        retry_after = _seconds_until_jst_month_start()
+        resets_at = _jst_next_day_iso()
+        retry_after = _seconds_until_jst_day_start()
         # Stash quota state on request.state so the 429 path's headers
         # (set inside _AnonRateLimitExceeded.headers) and any future
         # observer get the same remaining=0 view that the middleware
@@ -496,12 +539,14 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         raise _AnonRateLimitExceeded(
             body={
                 "detail": (
-                    f"匿名リクエスト上限 ({limit}/月) に達しました。"
-                    "X-API-Key ヘッダを設定するか、JST 翌月 1 日 00:00 にリセットされます。"
+                    f"匿名リクエスト上限 ({limit}/日) に達しました。"
+                    "明日また 3 回お試しいただけます (JST 翌日 00:00 リセット)。"
+                    "X-API-Key ヘッダを設定すれば即解除されます。"
                 ),
                 "detail_en": (
-                    f"Anonymous rate limit exceeded ({limit}/month). "
-                    "Provide X-API-Key or wait for reset at 00:00 JST on the 1st."
+                    f"Anonymous rate limit exceeded ({limit}/day). "
+                    "Try 3 more requests tomorrow (00:00 JST reset). "
+                    "Provide X-API-Key for immediate uncapping."
                 ),
                 "retry_after": retry_after,
                 "reset_at_jst": resets_at,
@@ -548,7 +593,7 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         request.state.anon_quota = {
             "remaining": max(0, limit - new_count),
             "limit": limit,
-            "reset_at_jst": _jst_next_month_iso(),
+            "reset_at_jst": _jst_next_day_iso(),
         }
     except Exception:  # pragma: no cover
         pass

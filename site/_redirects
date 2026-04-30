@@ -50,7 +50,7 @@
 # entry point. Originally pointed at /go, but /go.html is the device-flow
 # activation page that REQUIRES a user_code (e.g. ABCD-1234) — a 429-bouncer
 # arriving from a curl/browser has no code, so they bounced. Now redirected
-# to /upgrade.html which explains the 50 req/月 cap, points at pricing
+# to /upgrade.html which explains the 3 req/日 cap, points at pricing
 # (#api-paid), and offers the device-flow path as a tertiary link for
 # people who got there with a code. Query string is preserved by CF for
 # funnel attribution.

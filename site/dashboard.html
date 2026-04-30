@@ -254,7 +254,7 @@
  <span aria-hidden="true">⚡ </span>5 分で最初の API 呼び出し
  </h2>
  <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">
- 下のいずれか 1 つを選んでコピペするだけ。あなたの APIキー (もしくは匿名 50 リクエスト/月) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
+ 下のいずれか 1 つを選んでコピペするだけ。あなたの APIキー (もしくは匿名 3 リクエスト/日) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
  </p>
  <div role="tablist" aria-label="Quick start client" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:0 0 14px;">
  <button type="button" role="tab" id="qs-tab-curl" aria-selected="true" aria-controls="qs-panel-curl"
@@ -273,7 +273,7 @@
  <pre id="qs-curl-snippet" class="qs-code" aria-label="curl quick-start"><code>curl -H "X-API-Key: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>" \
  "https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3"</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-curl-snippet">コピー</button>
- <p class="qs-note">APIキー を省くと匿名 50 リクエスト/月 per IP (JST 月初リセット) で動作。</p>
+ <p class="qs-note">APIキー を省くと匿名 3 リクエスト/日 per IP (JST 翌日リセット) で動作。</p>
  </div>
 
  <div role="tabpanel" id="qs-panel-claude" aria-labelledby="qs-tab-claude" class="qs-panel" hidden>
@@ -463,13 +463,13 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </p>
  <div class="quota-counter-bar"
  role="progressbar"
- aria-label="月次 API 呼び出し上限 (JST 月初 00:00 リセット)"
+ aria-label="月次 API 呼び出し上限 (JST 翌日 00:00 リセット)"
  aria-valuenow="0"
  aria-valuemin="0"
  aria-valuemax="100">
  <div class="quota-counter-fill"></div>
  </div>
- <p class="quota-counter-note">月初 00:00 JST にリセット</p>
+ <p class="quota-counter-note">翌日 00:00 JST にリセット</p>
  </section>
 
  <!-- Current Stripe billing period end. Filled by dashboard.src.js
@@ -607,6 +607,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <button type="button" id="dash2-billing-csv" class="btn-ghost">CSV ダウンロード</button>
  <button type="button" id="dash2-billing-json" class="btn-ghost">JSON ダウンロード</button>
  </div>
+ <p class="stat-note" style="margin:10px 0 0;"><a href="/v1/billing/client_tag_breakdown?format=csv">顧問先別 client_tag 利用明細 (CSV)</a> &mdash; X-Client-Tag で集計した当月分の 1 件あたり ¥3 内訳。</p>
  </section>
 
  <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">

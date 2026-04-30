@@ -59,10 +59,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>API Playground — jpcite を今すぐ試す</title>
-<meta name="description" content="ブラウザから直接 https://api.jpcite.com/v1/* を叩ける対話型 playground。匿名 50 req/月 まで無料、API キーなしで起動。10 主要エンドポイント、パラメータ自動補完、curl コピー。">
+<meta name="description" content="ブラウザから直接 https://api.jpcite.com/v1/* を叩ける対話型 playground。匿名 3 req/日 まで無料、API キーなしで起動。10 主要エンドポイント、パラメータ自動補完、curl コピー。">
 
 <meta property="og:title" content="API Playground — jpcite">
-<meta property="og:description" content="登録不要、API キー不要、ブラウザ完結。10 主要エンドポイントを今すぐ試す。匿名 50 req/月 無料。">
+<meta property="og:description" content="登録不要、API キー不要、ブラウザ完結。10 主要エンドポイントを今すぐ試す。匿名 3 req/日 無料。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/playground.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -72,7 +72,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="API Playground — jpcite">
-<meta name="twitter:description" content="登録不要、API キー不要、ブラウザで今すぐ試す。匿名 50 req/月 無料。">
+<meta name="twitter:description" content="登録不要、API キー不要、ブラウザで今すぐ試す。匿名 3 req/日 無料。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/playground.html">
@@ -486,7 +486,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "jpcite API Playground",
-  "description": "登録不要・API キー不要で /v1/* エンドポイントを直接叩ける REST API 試用ページ。匿名 50 req/月 無料、curl コピー対応。",
+  "description": "登録不要・API キー不要で /v1/* エンドポイントを直接叩ける REST API 試用ページ。匿名 3 req/日 無料、curl コピー対応。",
   "url": "https://jpcite.com/playground.html",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Web",
@@ -508,7 +508,7 @@
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "JPY",
-    "description": "匿名 50 req/月 per IP まで無料。超過後は ¥3.30/req (税込) 完全従量。"
+    "description": "匿名 3 req/日 per IP まで無料。超過後は ¥3.30/req (税込) 完全従量。"
   }
 }
 </script>
@@ -562,13 +562,13 @@
  </p>
 
  <div class="pg-banner" role="note">
- <strong>本番 API です。</strong> リクエストは即時 <code>api.jpcite.com</code> に届き、 匿名クォータ (50/月) を消費します。 リセットは <strong>JST 月初 00:00</strong>。 残量は下のインジケータで確認できます。
+ <strong>本番 API です。</strong> リクエストは即時 <code>api.jpcite.com</code> に届き、 匿名クォータ (3/日) を消費します。 リセットは <strong>JST 翌日 00:00</strong>。 残量は下のインジケータで確認できます。
  </div>
 
  <div class="pg-quota" id="pg-quota" data-state="ok" aria-live="polite">
  <span>匿名クォータ</span>
  <span class="pg-quota-num"><span id="pg-quota-remaining">--</span> / <span data-fact="anonymous_quota_per_month">50</span></span>
- <span>req (JST 月初 00:00 リセット)</span>
+ <span>req (JST 翌日 00:00 リセット)</span>
  <span id="pg-quota-cta" hidden> · <a href="pricing.html#api-paid">上限間近 — API キー発行で解除 →</a></span>
  </div>
 
@@ -589,7 +589,7 @@
 
  <div class="pg-field">
  <label for="pg-bearer">APIキー (任意)
- <span class="pg-hint">未入力なら匿名 (50 リクエスト/月)。 <code>sk_live_...</code> をペーストすると ¥3.30/リクエスト で送信</span>
+ <span class="pg-hint">未入力なら匿名 (3 リクエスト/日)。 <code>sk_live_...</code> をペーストすると ¥3.30/リクエスト で送信</span>
  </label>
  <input type="password" id="pg-bearer" autocomplete="off" spellcheck="false" placeholder="sk_live_..." />
  </div>

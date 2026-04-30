@@ -1072,7 +1072,7 @@ def set_monthly_cap(
 
     Authenticated via require_key (X-API-Key header or Authorization: Bearer).
     Anonymous callers (no key) cannot set a cap because the anonymous tier is
-    already gated by the 50 req/月 free quota — there is nothing to cap.
+    already gated by the 3 req/日 free quota — there is nothing to cap.
 
     The unit price stays ¥3/req (immutable per
     project_autonomath_business_model). `monthly_cap_yen` is purely a client
@@ -1081,7 +1081,7 @@ def set_monthly_cap(
     request, so the cap is hard.
     """
     if ctx.key_hash is None:
-        # Anonymous tier — refuse. Anon callers have a 50/month free quota and
+        # Anonymous tier — refuse. Anon callers have a 3/day free quota and
         # never produce a Stripe usage record, so there is no cap to set.
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,

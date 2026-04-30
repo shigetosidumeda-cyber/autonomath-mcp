@@ -1,6 +1,6 @@
 // Prescreen demo widget — posts profile to /v1/programs/prescreen and
 // renders the top matches. Anonymous calls hit the per-IP free quota
-// (50 req/month, JST first-of-month reset) — no API key needed.
+// (3 req/day, JST first-of-month reset) — no API key needed.
 //
 // API base is read from the <form data-api-base> attribute on the
 // landing <form>. To point at a local API during development,
@@ -318,7 +318,7 @@
       });
       if (resp.status === 429) {
         showRichError(
-          '匿名上限 (50 req/月 per IP) に達しました。<a href="/dashboard.html">API キーを発行</a> (Free 50 req/月、追加は ¥3/req 税込 ¥3.30)。'
+          '匿名上限 (3 req/日 per IP) に達しました。<a href="/dashboard.html">API キーを発行</a> (Free 3 req/日、追加は ¥3/req 税込 ¥3.30)。'
         );
         return;
       }
@@ -367,7 +367,7 @@
       // Highest-intent moment after rendering matches → ask for the next step.
       var ctaHtml =
         '<div class="ps-cta">' +
-        '<a class="btn btn-primary" href="/dashboard.html">続きを API キーで取得 (Free 50 req/月)</a>' +
+        '<a class="btn btn-primary" href="/dashboard.html">続きを API キーで取得 (Free 3 req/日)</a>' +
         '<a class="btn btn-secondary" href="/getting-started.html">MCP で接続する</a>' +
         "</div>";
       // 経営者→顧問税理士 reseller handoff: surface mailto + print-to-PDF

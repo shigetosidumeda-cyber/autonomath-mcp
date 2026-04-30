@@ -10,9 +10,9 @@ to report on (audit a-wave-17-mcp-ux).
 Posture:
   - Anonymous (no X-API-Key / Bearer): READ-ONLY lookup against the
     anon_rate_limit table for this IP+fingerprint hash. Never increments.
-    Returns ``tier="anonymous"``, ``limit=settings.anon_rate_limit_per_month``,
+    Returns ``tier="anonymous"``, ``limit=settings.anon_rate_limit_per_day``,
     ``remaining = limit - call_count`` (clamped at 0), ``reset_at`` =
-    next JST 月初 00:00 ISO8601 (gotchas: anon resets are JST, NOT UTC).
+    next JST 翌日 00:00 ISO8601 (gotchas: anon resets are JST, NOT UTC).
   - Authenticated (paid): COUNT(*) from usage_events for the current
     UTC calendar month + key_hash. Returns ``tier="paid"`` with
     ``limit=null`` (no upper cap on metered ¥3/req) and
@@ -34,8 +34,8 @@ from pydantic import BaseModel
 from jpintel_mcp.api.anon_limit import (
     UPGRADE_URL_BASE,
     _client_ip,
-    _jst_month_bucket,
-    _jst_next_month_iso,
+    _jst_day_bucket,
+    _jst_next_day_iso,
     hash_ip,
 )
 from jpintel_mcp.api.deps import ApiContextDep, DbDep
@@ -107,18 +107,18 @@ def _anonymous_status(
     Same hashing logic (`hash_ip` with request) as the live enforce path,
     so the `used` count we return matches what the next protected call
     would see. If the row is absent (caller has not made any anon call
-    this month) we report used=0 and full remaining.
+    today) we report used=0 and full remaining.
     """
-    limit = settings.anon_rate_limit_per_month
+    limit = settings.anon_rate_limit_per_day
     ip = _client_ip(request)
     ip_h = hash_ip(ip, request)
-    month_bucket = _jst_month_bucket()
+    day_bucket = _jst_day_bucket()
     used = 0
     try:
         row = conn.execute(
             "SELECT call_count FROM anon_rate_limit "
             "WHERE ip_hash = ? AND date = ?",
-            (ip_h, month_bucket),
+            (ip_h, day_bucket),
         ).fetchone()
     except sqlite3.OperationalError:
         # Schema missing — treat as fresh bucket. /v1/usage must never 500.
@@ -134,12 +134,12 @@ def _anonymous_status(
         "limit": limit,
         "remaining": remaining,
         "used": used,
-        "reset_at": _jst_next_month_iso(),
+        "reset_at": _jst_next_day_iso(),
         "reset_timezone": "JST",
         "upgrade_url": UPGRADE_URL_BASE,
         "note": (
-            f"匿名 tier は IP+fingerprint 単位で {limit} req/月。"
-            "JST 月初 00:00 にリセット。X-API-Key で paid (¥3/req) に切替可能。"
+            f"匿名 tier は IP+fingerprint 単位で {limit} req/日。"
+            "JST 翌日 00:00 にリセット。X-API-Key で paid (¥3/req) に切替可能。"
         ),
     }
 

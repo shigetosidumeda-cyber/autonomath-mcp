@@ -698,7 +698,7 @@ def _count_results(result: Any) -> int:
 # don't have a REST equivalent (dd_profile_am / rule_engine_check) get a
 # structured ``remote_only_via_REST_API`` envelope via remote_only_error().
 # Memory contract: ¥3/req metering applies on the REST side, anonymous
-# 50/月 is enforced by IP, no Anthropic API call here.
+# 3/日 is enforced by IP, no Anthropic API call here.
 # --------------------------------------------------------------------------- #
 
 
@@ -2048,7 +2048,7 @@ def get_usage_status(
         Field(
             description=(
                 "Caller's API key. None / omitted → returns the configured "
-                "anonymous quota (50 req/月 per IP+fingerprint). When provided, "
+                "anonymous quota (3 req/日 per IP+fingerprint). When provided, "
                 "returns the authenticated key's month-to-date usage."
             ),
         ),
@@ -2063,7 +2063,7 @@ def get_usage_status(
       - ``used``: month-to-date or day-to-date count for this caller
       - ``reset_at``: ISO 8601 timestamp of next quota reset
       - ``reset_timezone``: "JST" (anonymous) or "UTC" (authenticated). The
-        anonymous bucket resets at JST 月初 00:00; authenticated counters
+        anonymous bucket resets at JST 翌日 00:00; authenticated counters
         reset at UTC midnight (daily) or UTC 月初 (paid month-to-date).
         These are NOT the same — a 50-req/月 anonymous bucket can roll
         over up to 9 hours BEFORE a UTC-tracked dashboard says it should.
@@ -2071,7 +2071,7 @@ def get_usage_status(
       - ``note``: human-readable summary.
 
     **Why this matters for MCP callers:** the anonymous tier hands out
-    50 req/月 per IP+fingerprint. An LLM batch that does 60 small queries
+    3 req/日 per IP+fingerprint. An LLM batch that does 60 small queries
     in one session will hit the ceiling at request 51 with a hard 429.
     Calling ``get_usage_status`` *before* a batch lets the agent tell the
     user "あと N 件で月次クォータに達します。継続するなら API key を発行してください。"
@@ -2143,7 +2143,7 @@ def get_usage_status(
     if not api_key:
         return {
             "tier": "anonymous",
-            "limit": settings.anon_rate_limit_per_month,
+            "limit": settings.anon_rate_limit_per_day,
             "remaining": None,  # unknown over MCP stdio
             "used": 0,  # unknown
             "reset_at": _jst_next_month_iso(),
@@ -2151,7 +2151,7 @@ def get_usage_status(
             "upgrade_url": "https://jpcite.com/go",
             "note": (
                 "Anonymous tier は IP+fingerprint 単位で "
-                f"{settings.anon_rate_limit_per_month} req/月 (JST 月初 00:00 リセット)。"
+                f"{settings.anon_rate_limit_per_day} req/月 (JST 翌日 00:00 リセット)。"
                 "MCP stdio は client IP を解決できないため exact remaining は不明。"
                 "正確な残量は REST endpoint `GET /v1/usage` を呼ぶか、"
                 "X-API-Key を発行 (paid tier ¥3/req 税別) してください。"
@@ -9153,7 +9153,7 @@ def run() -> None:
     # === END S3 HTTP FALLBACK ============================
     # === DEVICE FLOW AUTH PATCH: startup check ===
     # Logs whether a token is already stored in the OS keychain. No-op
-    # if anonymous (50/month free quota applies). See jpintel_mcp.mcp.auth.
+    # if anonymous (3/day free quota applies). See jpintel_mcp.mcp.auth.
     ensure_authenticated()
     # === END DEVICE FLOW AUTH PATCH ==============
     mcp.run(transport="stdio")
