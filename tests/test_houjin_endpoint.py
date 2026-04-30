@@ -214,7 +214,7 @@ def test_anon_within_quota_returns_200(
         pytest.skip(f"sample 法人番号 {_SAMPLE_BANGOU} no longer in DB.")
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 5)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 5)
 
     r = client.get(
         f"/v1/houjin/{_SAMPLE_BANGOU}",
@@ -238,7 +238,7 @@ def test_anon_over_quota_returns_429(
     from jpintel_mcp.config import settings
 
     # 1 call per month → 2nd call MUST 429.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 1)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 1)
 
     ip = "198.51.100.211"
     r1 = client.get(

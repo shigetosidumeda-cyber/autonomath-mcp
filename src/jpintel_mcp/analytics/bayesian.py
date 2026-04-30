@@ -44,9 +44,21 @@ Anything else falls into "other".
 """
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Any
 
-from scipy.stats import beta as beta_dist
+
+@lru_cache(maxsize=1)
+def _beta_dist():
+    """Lazy-load scipy.stats.beta — saves ~2.5s on API boot.
+
+    scipy is the dominant import cost in the API process (perf audit
+    2026-04-30). Only this module + the /v1/confidence/* endpoint use it.
+    The first call to confidence_interval() pays the import cost (~200ms);
+    subsequent calls hit the lru_cache and are free.
+    """
+    from scipy.stats import beta as beta_dist
+    return beta_dist
 
 # Flat prior — see module docstring.
 PRIOR_ALPHA: float = 1.0
@@ -97,7 +109,7 @@ def confidence_interval_95(alpha: float, beta: float) -> tuple[float, float]:
     """
     if alpha <= 0 or beta <= 0:
         raise ValueError("alpha and beta must be > 0")
-    lo, hi = beta_dist.interval(0.95, alpha, beta)
+    lo, hi = _beta_dist().interval(0.95, alpha, beta)
     return (max(0.0, float(lo)), min(1.0, float(hi)))
 
 
