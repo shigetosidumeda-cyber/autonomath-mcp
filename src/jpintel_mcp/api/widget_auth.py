@@ -14,14 +14,15 @@ Widget keys look like `wgt_live_{32 hex}` (41 chars total). They sit in
     be used from the whitelisted origins.
   * Widget keys only reach `/v1/widget/*`. They can't call /v1/programs,
     /v1/billing, etc. Full separation at the routing layer.
-  * Widget pricing is a monthly package (¥10,000 → 10,000 req 含む),
-    not pure metered like `am_` keys.
+  * Widget pricing uses the same metered usage posture as the public API,
+    but is tracked in its own counters because browser-visible keys need
+    a different abuse boundary.
 
 Endpoints (all under /v1/widget)
 --------------------------------
   GET  /search         proxies to programs search logic (library import)
   GET  /enum_values    enum dropdowns for the widget filter UI
-  POST /signup         creates Stripe Checkout URL (Widget Business plan)
+  POST /signup         creates Stripe Checkout URL (Widget metered plan)
   POST /stripe-webhook Stripe subscription lifecycle (widget plan)
   GET  /{key_id}/usage lightweight JSON for owners (stubbed — key hash gate)
   OPTIONS routes are handled by the FastAPI CORS middleware we mount on the
@@ -36,6 +37,7 @@ when the widget product launches. Kept isolated so a bug here can't
 brownout the main `/v1/*` surface.
 """
 
+import contextlib
 import hmac
 import json
 import logging
@@ -79,17 +81,31 @@ router = APIRouter(prefix="/v1/widget", tags=["widget"])
 # Plan constants
 # ---------------------------------------------------------------------------
 
-PLAN_BUSINESS = "business"
-PLAN_WHITELABEL = "business_whitelabel"
+PLAN_METERED = "metered"
+PLAN_BUSINESS = "business"  # legacy alias accepted for old checkout metadata
+PLAN_WHITELABEL = "business_whitelabel"  # legacy rows only; not offered in signup
+METERED_WIDGET_PLANS = frozenset({PLAN_METERED, PLAN_BUSINESS, PLAN_WHITELABEL})
 
-# Included request allowance per plan. Overage on Business billed separately
-# via Stripe usage_records at ¥3/req (same price as the main metered API —
-# setup_stripe_widget_product.py creates an overage Price and attaches it
-# to the widget subscription as a second line item).
+# New widget keys use the same ¥3/request metered posture as the public API.
+# The schema still has included_reqs_mtd for backward compatibility, but new
+# keys are provisioned with 0 included requests.
 PLAN_INCLUDED_REQS: dict[str, int] = {
-    PLAN_BUSINESS: 10_000,
-    PLAN_WHITELABEL: 100_000,  # fair-use soft cap — no hard 429 by default
+    PLAN_METERED: 0,
+    PLAN_BUSINESS: 0,
+    PLAN_WHITELABEL: 0,
 }
+
+
+def _normalize_plan(plan: str | None) -> str:
+    value = (plan or PLAN_METERED).strip()
+    if value in (PLAN_METERED, PLAN_BUSINESS):
+        # The existing migration constrains plan to 'business' or
+        # 'business_whitelabel'. Treat 'business' as the persisted legacy
+        # spelling for the current metered SKU.
+        return PLAN_BUSINESS
+    if value == PLAN_WHITELABEL:
+        raise ValueError("widget whitelabel plan is no longer offered")
+    raise ValueError("plan must be 'metered'")
 
 # Per-key per-minute rate limit (abuse gate, NOT quota). Kept in-process
 # because the widget path must stay cheap — a dropping window over the last
@@ -272,6 +288,25 @@ class WidgetKeyRow:
         self.disabled_at = row["disabled_at"]
 
 
+def _copy_widget_key_row(dst: WidgetKeyRow, src: WidgetKeyRow) -> WidgetKeyRow:
+    for name in WidgetKeyRow.__slots__:
+        setattr(dst, name, getattr(src, name))
+    return dst
+
+
+def _refresh_widget_key(conn: sqlite3.Connection, wk: WidgetKeyRow) -> WidgetKeyRow:
+    row = conn.execute(
+        "SELECT * FROM widget_keys WHERE key_id = ?",
+        (wk.key_id,),
+    ).fetchone()
+    if row is None:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            {"error": "invalid_key", "detail": "widget key not found"},
+        )
+    return _copy_widget_key_row(wk, WidgetKeyRow(row))
+
+
 def _load_key(conn: sqlite3.Connection, key_id: str) -> WidgetKeyRow:
     if not key_id or not key_id.startswith("wgt_live_") or len(key_id) != 41:
         raise HTTPException(
@@ -306,57 +341,108 @@ def _roll_month_if_needed(
     iso = now.isoformat()
     conn.execute(
         "UPDATE widget_keys SET reqs_used_mtd = 0, bucket_month = ?, updated_at = ? "
-        "WHERE key_id = ?",
-        (current, iso, wk.key_id),
+        "WHERE key_id = ? AND COALESCE(bucket_month, '') != ?",
+        (current, iso, wk.key_id, current),
     )
-    wk.bucket_month = current
-    wk.reqs_used_mtd = 0
-    return wk
+    return _refresh_widget_key(conn, wk)
 
 
 def _enforce_quota_and_increment(
     conn: sqlite3.Connection, wk: WidgetKeyRow
 ) -> None:
-    """Enforce monthly quota and bump counters.
-
-    Business plan: 10,000 included + ¥3/req overage. Overage is permitted
-    (we never 429 a paying customer on the included bucket) and billed via
-    Stripe usage_records — see _report_overage.
-
-    Whitelabel plan: 100,000 fair-use soft cap. We log a warning past the
-    cap but don't 429 — solo-ops means we follow up manually if someone
-    is 10x over.
-    """
-    # Overage path: count but report to Stripe.
-    exceeded = wk.reqs_used_mtd >= wk.included_reqs_mtd
-    now_iso = datetime.now(UTC).isoformat()
-    conn.execute(
-        "UPDATE widget_keys SET reqs_used_mtd = reqs_used_mtd + 1, "
-        "reqs_total = reqs_total + 1, last_used_at = ?, updated_at = ? "
-        "WHERE key_id = ?",
-        (now_iso, now_iso, wk.key_id),
-    )
-    wk.reqs_used_mtd += 1
-    wk.reqs_total += 1
-    if exceeded and wk.plan == PLAN_BUSINESS:
-        # Fire-and-forget: if Stripe is unavailable we eat the cost this
-        # request, solo-ops accepts that blast radius.
-        try:
-            _report_overage(wk.stripe_subscription_id)
-        except Exception:  # noqa: BLE001
-            logger.warning(
-                "widget_overage_report_failed key=%s sub=%s",
-                wk.key_id[:14],
-                wk.stripe_subscription_id,
-                exc_info=True,
+    """Bump counters and atomically queue one metered usage unit when needed."""
+    savepoint = f"widget_quota_{secrets.token_hex(4)}"
+    conn.execute(f"SAVEPOINT {savepoint}")
+    try:
+        now_iso = datetime.now(UTC).isoformat()
+        row = conn.execute(
+            """
+            UPDATE widget_keys
+               SET reqs_used_mtd = reqs_used_mtd + 1,
+                   reqs_total = reqs_total + 1,
+                   last_used_at = ?,
+                   updated_at = ?
+             WHERE key_id = ?
+            RETURNING reqs_used_mtd, reqs_total, included_reqs_mtd, plan,
+                      stripe_subscription_id
+            """,
+            (now_iso, now_iso, wk.key_id),
+        ).fetchone()
+        if row is None:
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED,
+                {"error": "invalid_key", "detail": "widget key not found"},
             )
 
+        def _field(name: str, index: int) -> Any:
+            return row[name] if hasattr(row, "keys") else row[index]
 
-def _report_overage(subscription_id: str) -> None:
-    """Report a single usage unit to Stripe for the widget's overage price."""
-    from jpintel_mcp.billing.stripe_usage import report_usage_async
+        wk.reqs_used_mtd = int(_field("reqs_used_mtd", 0) or 0)
+        wk.reqs_total = int(_field("reqs_total", 1) or 0)
+        wk.included_reqs_mtd = int(_field("included_reqs_mtd", 2) or 0)
+        wk.plan = str(_field("plan", 3) or wk.plan)
+        wk.stripe_subscription_id = str(_field("stripe_subscription_id", 4) or "")
 
-    report_usage_async(subscription_id)
+        exceeded = wk.reqs_used_mtd > wk.included_reqs_mtd
+        if exceeded and wk.plan in METERED_WIDGET_PLANS:
+            # Counter + durable queue row are a single atomic unit. If the
+            # queue write fails, roll the counter back and return a retryable
+            # 503 instead of silently losing billable overage.
+            try:
+                _report_overage(
+                    conn,
+                    wk.stripe_subscription_id,
+                    idempotency_key=f"widget_{wk.key_id}_{wk.reqs_total}",
+                )
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "widget_overage_report_failed key=%s sub=%s",
+                    wk.key_id[:14],
+                    wk.stripe_subscription_id,
+                    exc_info=True,
+                )
+                raise HTTPException(
+                    status.HTTP_503_SERVICE_UNAVAILABLE,
+                    {
+                        "error": "billing_queue_unavailable",
+                        "detail": "usage was not recorded; retry later",
+                    },
+                ) from exc
+        conn.execute(f"RELEASE SAVEPOINT {savepoint}")
+    except Exception:
+        with contextlib.suppress(sqlite3.Error):
+            conn.execute(f"ROLLBACK TO SAVEPOINT {savepoint}")
+        with contextlib.suppress(sqlite3.Error):
+            conn.execute(f"RELEASE SAVEPOINT {savepoint}")
+        raise
+
+
+def _report_overage(
+    conn: sqlite3.Connection, subscription_id: str, *, idempotency_key: str
+) -> None:
+    """Queue one widget overage usage unit for durable Stripe reporting."""
+    if not subscription_id:
+        raise RuntimeError("widget overage missing stripe_subscription_id")
+
+    from jpintel_mcp.api import _bg_task_queue
+
+    _bg_task_queue.enqueue(
+        conn,
+        kind="stripe_usage_sync",
+        payload={
+            "subscription_id": subscription_id,
+            "quantity": 1,
+            "idempotency_key": idempotency_key,
+        },
+        dedup_key=f"widget_overage:{idempotency_key}",
+    )
+
+
+def _stripe_event_field(event: Any, key: str, default: Any = None) -> Any:
+    try:
+        return event[key]
+    except (KeyError, TypeError):
+        return default
 
 
 # ---------------------------------------------------------------------------
@@ -456,7 +542,6 @@ def widget_search(
     the tight latency budget (TTFB matters on a 3rd-party's site).
     """
     wk, origin = _authorize(conn, request, key, x_widget_key)
-    _enforce_quota_and_increment(conn, wk)
 
     # Reuse programs search logic in-process. Import inside the handler
     # because programs.py imports from multiple subsystems that are cheap
@@ -522,6 +607,7 @@ def widget_search(
     except (json.JSONDecodeError, AttributeError):
         body = {"total": 0, "results": [], "limit": limit, "offset": 0}
 
+    _enforce_quota_and_increment(conn, wk)
     body["widget"] = {
         "plan": wk.plan,
         "branding": not wk.branding_removed,  # show "powered by" iff True
@@ -603,7 +689,7 @@ def widget_enum_values(
 class WidgetSignupRequest(BaseModel):
     email: EmailStr
     origins: list[str] = Field(..., min_length=1, max_length=20)
-    plan: str = Field(default=PLAN_BUSINESS)
+    plan: str = Field(default=PLAN_METERED)
     label: str | None = Field(default=None, max_length=120)
     success_url: str
     cancel_url: str
@@ -611,9 +697,7 @@ class WidgetSignupRequest(BaseModel):
     @field_validator("plan")
     @classmethod
     def _check_plan(cls, v: str) -> str:
-        if v not in (PLAN_BUSINESS, PLAN_WHITELABEL):
-            raise ValueError("plan must be 'business' or 'business_whitelabel'")
-        return v
+        return _normalize_plan(v)
 
     @field_validator("origins")
     @classmethod
@@ -654,20 +738,20 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
     if settings.stripe_api_version:
         stripe.api_version = settings.stripe_api_version
 
-    price_env_key = (
-        "STRIPE_PRICE_WIDGET_BUSINESS"
-        if payload.plan == PLAN_BUSINESS
-        else "STRIPE_PRICE_WIDGET_WHITELABEL"
-    )
     import os
 
-    price_id = os.environ.get(price_env_key, "")
+    price_id = os.environ.get("STRIPE_PRICE_WIDGET_METERED") or os.environ.get(
+        "STRIPE_PRICE_WIDGET_BUSINESS", ""
+    )
     if not price_id:
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             {
                 "error": "price_unconfigured",
-                "detail": f"{price_env_key} not set. Run scripts/setup_stripe_widget_product.py",
+                "detail": (
+                    "STRIPE_PRICE_WIDGET_METERED not set. "
+                    "Legacy STRIPE_PRICE_WIDGET_BUSINESS is still accepted."
+                ),
             },
         )
 
@@ -714,15 +798,10 @@ async def widget_stripe_webhook(
     conn: DbDep,
     stripe_signature: Annotated[str | None, Header(alias="stripe-signature")] = None,
 ) -> dict[str, str]:
-    """Handle widget-product Stripe events.
+    """Process widget billing events.
 
-    Key lifecycle events:
-      checkout.session.completed        -> provision widget_keys row
-      customer.subscription.deleted     -> disabled_at = now()
-      invoice.payment_failed            -> disabled_at = now() (widget is
-        not dunning-tolerant like the main API — a widget on a public
-        site stays disabled through dunning rather than billing overage
-        nobody will ever pay for).
+    Checkout completion provisions a widget key. Subscription cancellation
+    or payment failure disables widget access until billing is resolved.
     """
     if not settings.stripe_webhook_secret:
         raise HTTPException(
@@ -740,13 +819,26 @@ async def widget_stripe_webhook(
     except stripe.SignatureVerificationError:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "bad signature") from None
 
-    obj = event["data"]["object"]
-    etype = event["type"]
+    etype = _stripe_event_field(event, "type", "")
+    obj = _stripe_event_field(_stripe_event_field(event, "data", {}), "object", {})
+    event_id = str(_stripe_event_field(event, "id", "") or "")
+    event_livemode = bool(_stripe_event_field(event, "livemode", False))
+    is_production = settings.env == "prod"
+    if event_livemode != is_production:
+        logger.error(
+            "widget.webhook.livemode_mismatch event_id=%s event_livemode=%s "
+            "is_production=%s",
+            event_id,
+            event_livemode,
+            is_production,
+        )
+        return {"status": "livemode_mismatch_ignored"}
 
     # Only react to widget-tagged events. Shared webhook endpoint with the
     # main billing flow is deliberately NOT re-used — that one provisions
     # api_keys and would misroute widget signups.
     is_widget = False
+    widget_lookup_failed = False
     if isinstance(obj, dict):
         md = obj.get("metadata") or {}
         is_widget = md.get("autonomath_product") == "widget"
@@ -764,27 +856,101 @@ async def widget_stripe_webhook(
                         obj = dict(obj)
                         obj["_widget_subscription"] = sub
                 except Exception:  # noqa: BLE001
+                    widget_lookup_failed = True
                     logger.warning(
                         "widget_webhook_sub_retrieve_failed sub=%s", sub_id, exc_info=True
                     )
     if not is_widget:
+        if widget_lookup_failed:
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                "widget subscription lookup failed",
+            )
         # Silently ignore non-widget events so a shared endpoint with the
         # main billing webhook doesn't double-process.
         return {"status": "ignored", "reason": "not_widget"}
 
-    if etype == "checkout.session.completed":
-        _provision_widget_key(conn, session_obj=obj)
-    elif etype == "customer.subscription.deleted":
-        _disable_widget_key(conn, subscription_id=obj.get("id"))
-    elif etype == "invoice.payment_failed":
-        sub_id = obj.get("subscription")
-        if sub_id:
-            _disable_widget_key(conn, subscription_id=sub_id)
-    elif etype == "invoice.paid":
-        # Re-enable a disabled key on successful payment.
-        sub_id = obj.get("subscription")
-        if sub_id:
-            _enable_widget_key(conn, subscription_id=sub_id)
+    dedup_id = f"widget:{event_id}" if event_id else ""
+    if dedup_id:
+        existing = conn.execute(
+            "SELECT processed_at FROM stripe_webhook_events WHERE event_id = ?",
+            (dedup_id,),
+        ).fetchone()
+        if existing:
+            if existing["processed_at"] is None:
+                raise HTTPException(
+                    status.HTTP_503_SERVICE_UNAVAILABLE,
+                    "webhook event previously received but not processed",
+                )
+            logger.info(
+                "widget.webhook.duplicate_ignored event_id=%s type=%s",
+                event_id,
+                etype,
+            )
+            return {"status": "duplicate_ignored"}
+        try:
+            conn.execute("BEGIN IMMEDIATE")
+            conn.execute(
+                "INSERT INTO stripe_webhook_events"
+                " (event_id, event_type, livemode, received_at)"
+                " VALUES (?, ?, ?, datetime('now'))",
+                (dedup_id, etype, 1 if event_livemode else 0),
+            )
+        except Exception:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+            re_check = conn.execute(
+                "SELECT processed_at FROM stripe_webhook_events WHERE event_id = ?",
+                (dedup_id,),
+            ).fetchone()
+            if re_check:
+                return {"status": "duplicate_ignored"}
+            raise
+
+    handler_exc: BaseException | None = None
+    try:
+        if etype == "checkout.session.completed":
+            _provision_widget_key(conn, session_obj=obj)
+        elif etype == "customer.subscription.deleted":
+            _disable_widget_key(conn, subscription_id=obj.get("id"))
+        elif etype == "invoice.payment_failed":
+            sub_id = obj.get("subscription")
+            if sub_id:
+                _disable_widget_key(conn, subscription_id=sub_id)
+        elif etype == "invoice.paid":
+            # Re-enable a disabled key on successful payment.
+            sub_id = obj.get("subscription")
+            if sub_id:
+                _enable_widget_key(conn, subscription_id=sub_id)
+    except Exception as exc:  # noqa: BLE001
+        handler_exc = exc
+
+    if handler_exc is not None:
+        if dedup_id:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        logger.exception(
+            "widget.webhook.handler_failed event_id=%s type=%s",
+            event_id,
+            etype,
+        )
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "widget webhook handler failed",
+        ) from handler_exc
+
+    if dedup_id:
+        try:
+            conn.execute(
+                "UPDATE stripe_webhook_events SET processed_at = datetime('now')"
+                " WHERE event_id = ?",
+                (dedup_id,),
+            )
+            conn.execute("COMMIT")
+        except Exception:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+            raise
 
     return {"status": "received"}
 
@@ -794,7 +960,11 @@ def _provision_widget_key(conn: sqlite3.Connection, session_obj: dict) -> None:
     sub_id = session_obj.get("subscription")
     customer_id = session_obj.get("customer")
     md = session_obj.get("metadata") or {}
-    plan = md.get("autonomath_plan") or PLAN_BUSINESS
+    try:
+        plan = _normalize_plan(md.get("autonomath_plan"))
+    except ValueError:
+        logger.warning("widget_provision_unsupported_plan md=%s", md)
+        return
     label = md.get("autonomath_label") or None
     try:
         origins = json.loads(md.get("autonomath_origins") or "[]")
@@ -822,8 +992,8 @@ def _provision_widget_key(conn: sqlite3.Connection, session_obj: dict) -> None:
 
     key_id = _generate_widget_key()
     now = datetime.now(UTC).isoformat()
-    included = PLAN_INCLUDED_REQS.get(plan, 10_000)
-    branding_removed = 1 if plan == PLAN_WHITELABEL else 0
+    included = PLAN_INCLUDED_REQS.get(plan, 0)
+    branding_removed = 0
     conn.execute(
         "INSERT INTO widget_keys("
         "  key_id, owner_email, label, allowed_origins_json, stripe_customer_id, "

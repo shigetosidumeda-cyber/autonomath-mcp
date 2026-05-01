@@ -1,16 +1,16 @@
 /*!
- * AutonoMath Embed Widget SDK
+ * jpcite Embed Widget SDK
  * 補助金検索 widget — 税理士事務所・商工会議所・中小企業支援サイト向け
  *
  * Usage (auto-init):
- *   <script src="https://jpcite.com/widget/autonomath.js"></script>
- *   <div data-autonomath-widget
+ *   <script src="https://jpcite.com/widget/jpcite.js"></script>
+ *   <div data-jpcite-widget
  *        data-key="wgt_live_..."
  *        data-filters="industry,prefecture,target"
  *        data-theme="light"></div>
  *
  * Usage (programmatic):
- *   const w = new Autonomath.Widget({
+ *   const w = new Jpcite.Widget({
  *     container: '#my-div',
  *     key: 'wgt_live_...',
  *     filters: ['industry', 'prefecture', 'target'],
@@ -20,7 +20,7 @@
  *     onResult: function (program) { ... }
  *   });
  *
- * Operated by Bookyou Inc. (T8010001213708). AGPL-compatible, no build step,
+ * Operated by Bookyou Inc.. AGPL-compatible, no build step,
  * no external deps, vanilla JS. UMD wrap — works as <script> or CommonJS.
  * See site/widget/docs.html for the full integration guide.
  *
@@ -31,9 +31,15 @@
   if (typeof module === "object" && module.exports) {
     module.exports = factory();
   } else {
-    root.Autonomath = root.Autonomath || {};
     var api = factory();
-    for (var k in api) { if (Object.prototype.hasOwnProperty.call(api, k)) root.Autonomath[k] = api[k]; }
+    root.Jpcite = root.Jpcite || {};
+    root.Autonomath = root.Autonomath || {};
+    for (var k in api) {
+      if (Object.prototype.hasOwnProperty.call(api, k)) {
+        root.Jpcite[k] = api[k];
+        root.Autonomath[k] = api[k]; // backwards-compatible alias
+      }
+    }
   }
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
@@ -53,7 +59,7 @@
       searching: "検索中...",
       no_results: "該当する制度が見つかりませんでした。",
       error_origin: "このサイトはこのキーで許可されていません。",
-      error_quota: "月間リクエスト上限 (3 req/日) に達しました。JST 翌日 00:00 にリセットされます。",
+      error_quota: "リクエスト上限に達しました。匿名枠は JST の日次枠で管理されます。",
       error_rate: "短時間にリクエストが多すぎます。しばらくお待ちください。",
       error_network: "通信エラーが発生しました。",
       error_invalid_key: "widget key が無効です。",
@@ -67,7 +73,7 @@
       deadline_label: "締切",
       view_detail: "詳細を見る",
       source_label: "一次資料",
-      powered_by: "Powered by AutonoMath",
+      powered_by: "Powered by jpcite",
       results_summary: "件ヒット"
     },
     en: {
@@ -75,7 +81,7 @@
       searching: "Searching...",
       no_results: "No matching programs found.",
       error_origin: "This origin is not allowed for this key.",
-      error_quota: "Monthly quota exceeded (3 req/day). Resets at JST 00:00 next day.",
+      error_quota: "Daily allowance exceeded (3 req/day). Resets at JST 00:00 next day.",
       error_rate: "Too many requests. Please wait a moment.",
       error_network: "Network error.",
       error_invalid_key: "Invalid widget key.",
@@ -89,7 +95,7 @@
       deadline_label: "Deadline",
       view_detail: "View details",
       source_label: "Source",
-      powered_by: "Powered by AutonoMath",
+      powered_by: "Powered by jpcite",
       results_summary: " results"
     }
   };
@@ -527,7 +533,7 @@
 
   function autoInit() {
     if (typeof document === "undefined") return;
-    var nodes = document.querySelectorAll("[data-autonomath-widget]");
+    var nodes = document.querySelectorAll("[data-jpcite-widget], [data-autonomath-widget]");
     for (var i = 0; i < nodes.length; i++) {
       var el = nodes[i];
       if (el.getAttribute("data-autonomath-widget-mounted") === "true") continue;
@@ -544,7 +550,7 @@
           apiBase: el.getAttribute("data-api-base") || undefined
         });
       } catch (e) {
-        if (typeof console !== "undefined") console.error("[autonomath]", e);
+        if (typeof console !== "undefined") console.error("[jpcite-widget]", e);
       }
     }
   }

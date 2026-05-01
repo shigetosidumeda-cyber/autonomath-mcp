@@ -1,5 +1,5 @@
 /*
- * AutonoMath Embed Widget — optional external stylesheet.
+ * jpcite Embed Widget — optional external stylesheet.
  *
  * The JS SDK already injects these styles inline on mount so customers
  * do NOT need to load this file. It exists for two narrow cases:
@@ -7,17 +7,17 @@
  *   1. CSP `style-src 'self'` — sites that forbid inline <style> and want
  *      to self-host the widget CSS instead of granting 'unsafe-inline'.
  *      Load this file manually and call:
- *        new Autonomath.Widget({ ..., injectCss: false });
+ *        new Jpcite.Widget({ ..., injectCss: false });
  *      (coming in a future release; today the JS always injects).
  *
  *   2. Host-side customization — override the .autonomath-widget-* class
- *      names without editing the JS. Load this AFTER autonomath.js so
+ *      names without editing the JS. Load this AFTER jpcite.js so
  *      specificity wins, or use !important sparingly.
  *
- * Class naming uses BEM-ish `.autonomath-widget__element--modifier` so
- * collisions with host page CSS are nearly impossible.
+ * The current CSS class prefix is retained for existing embeds. New
+ * integration snippets should use `data-jpcite-widget` and `/widget/jpcite.js`.
  *
- * Copyright 2026 Bookyou Inc. (T8010001213708). Operated under the same
+ * Copyright 2026 Bookyou Inc.. Operated under the same
  * license as the widget JS.
  */
 

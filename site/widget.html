@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>あなたのサイトに補助金検索を 1 行で — jpcite Widget</title>
-<meta name="description" content="税理士事務所・商工会議所・中小企業支援サイト向け。HTMLに1行足すだけで補助金検索UIが表示される組み込み型JS widget。1 検索 ¥3 (税込 ¥3.30) 完全従量、従量課金 (¥3/検索) 無制限 (fair use)。">
+<meta name="description" content="税理士事務所・商工会議所・中小企業支援サイト向け。HTMLに1行足すだけで補助金検索UIが表示される組み込み型JS widget。匿名 3 件/日まで無料、以降は ¥3/リクエスト (税込 ¥3.30) 完全従量。">
 
 <meta property="og:title" content="jpcite Widget — 1 行で組み込める補助金検索">
-<meta property="og:description" content="税理士・支援機関のサイトに&lt;script&gt;1行で補助金検索 widget を埋め込み。従量課金 (¥3/検索)、従量課金 (¥3/検索)。">
+<meta property="og:description" content="税理士・支援機関のサイトに&lt;script&gt;1行で補助金検索 widget を埋め込み。匿名 3 件/日まで無料、以降は ¥3/リクエスト完全従量。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/widget.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite Widget — 1 行で組み込める補助金検索">
-<meta name="twitter:description" content="HTMLに1行足すだけで補助金検索UIを表示。1 検索 ¥3 (税込 ¥3.30) 完全従量。">
+<meta name="twitter:description" content="HTMLに1行足すだけで補助金検索UIを表示。匿名 3 件/日まで無料、以降は ¥3/リクエスト (税込 ¥3.30) 完全従量。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/widget.html">
@@ -40,40 +40,22 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "jpcite Widget",
-  "description": "税理士・支援機関のサイトに <script> 1 行で埋め込める補助金検索 widget。従量課金 (¥3/検索) (10,000 req 含む) + ¥3/req overage、従量課金 (¥3/検索) (ロゴ・色カスタマイズ可)。",
+  "description": "税理士・支援機関のサイトに <script> 1 行で埋め込める補助金検索 widget。匿名 3 件/日まで無料、以降は ¥3/リクエスト (税込 ¥3.30) 完全従量。",
   "brand": {"@type": "Brand", "name": "jpcite"},
   "url": "https://jpcite.com/widget.html",
   "inLanguage": "ja",
   "offers": [
     {
       "@type": "Offer",
-      "name": "Business",
-      "price": "10000",
+      "name": "Metered",
+      "price": "3",
       "priceCurrency": "JPY",
-      "description": "¥3/検索 税別 (税込 ¥3.30) 完全従量",
+      "description": "¥3/リクエスト 税別 (税込 ¥3.30)。匿名 3 件/日まで無料",
       "url": "https://jpcite.com/widget.html",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
-        "name": "Bookyou株式会社",
-        "identifier": "T8010001213708",
-        "email": "info@bookyou.net",
-        "url": "https://jpcite.com/"
-      }
-    },
-    {
-      "@type": "Offer",
-      "name": "Whitelabel",
-      "price": "30000",
-      "priceCurrency": "JPY",
-      "description": "¥30,000/月 税別 (税込 ¥33,000)、ロゴ・色カスタマイズ可",
-      "url": "https://jpcite.com/widget.html",
-      "availability": "https://schema.org/InStock",
-      "seller": {
-        "@type": "Organization",
-        "name": "Bookyou株式会社",
-        "identifier": "T8010001213708",
-        "email": "info@bookyou.net",
+        "name": "jpcite",
         "url": "https://jpcite.com/"
       }
     }
@@ -85,11 +67,8 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
-  "identifier": "T8010001213708",
-  "email": "info@bookyou.net",
+  "name": "jpcite",
+  "alternateName": ["jpcite"],
   "url": "https://jpcite.com/",
   "inLanguage": "ja",
   "address": {
@@ -342,16 +321,15 @@
  </p>
 
  <div class="code-block" id="snippet-pre">
-<span><!-- 1. この 2 行をあなたのサイトの HTML に貼るだけ。 --></span>
-<span>&lt;script async src="https://jpcite.com/widget/autonomath.js"&gt;&lt;/script&gt;</span>
-<span>&lt;div data-autonomath-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
+<span>&lt;script async src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;</span>
+<span>&lt;div data-jpcite-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
  <button class="copy-btn" type="button" id="copy-btn" aria-label="コピー">コピー</button>
  </div>
  </section>
 
  <section class="demo-wrap container">
  <h2>ライブデモ (本番と同じ JS)</h2>
- <div data-autonomath-widget
+ <div data-jpcite-widget
  data-key="wgt_live_00000000000000000000000000000000"
  data-theme="light"
  data-filters="prefecture,industry,target"
@@ -402,9 +380,9 @@
  </p>
  </div>
  <div class="feature">
- <h3>セルフサーブ・月額定額</h3>
+ <h3>セルフサーブ・完全従量</h3>
  <p>
- Business 以上で included 10,000 リクエスト/月。お問い合わせ不要で
+ 匿名 3 件/日まで無料、以降は ¥3/リクエスト。お問い合わせ不要で
  Stripe Checkout 完了後、すぐキー発行されます。
  </p>
  </div>
@@ -414,39 +392,23 @@
  <section class="container" aria-labelledby="plan-title">
  <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">料金プラン</h2>
  <p style="text-align:center;color:var(--text-muted);">
- 完全従量の API (税込 ¥3.30/リクエスト) とは別プランです。サイト埋め込みのニーズに合わせて
- 月額ベースで設計しています。
+ API と同じく、匿名 3 件/日まで無料。以降は税込 ¥3.30/リクエストの完全従量です。
  </p>
 
  <div class="plan-grid">
  <article class="plan highlight" aria-labelledby="plan-business">
- <h3 id="plan-business">Business</h3>
- <p class="price">¥10,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
- <p class="unit">10,000 リクエスト/月 含む、超過分 税込 ¥3.30/リクエスト</p>
+ <h3 id="plan-business">従量課金</h3>
+ <p class="price">¥3.30 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ リクエスト (税込)</span></p>
+ <p class="unit">匿名 3 件/日まで無料。税別 ¥3、月額固定なし</p>
  <ul>
  <li>税理士事務所・支援機関の HP 向け</li>
- <li>10,000 リクエスト/月 が標準利用分として含まれる</li>
- <li>超過は税込 ¥3.30/リクエスト を Stripe usage-based で自動請求</li>
+ <li>匿名 3 件/日まで無料</li>
+ <li>超過は税込 ¥3.30/リクエストを Stripe usage-based で自動請求</li>
  <li>「powered by jpcite」フッターを表示</li>
  <li>複数 origin (本番 + staging 等) 登録可</li>
  <li>適格請求書 を Stripe が自動発行</li>
  </ul>
- <button type="button" class="btn" data-plan="business" id="cta-business">Business を申し込む</button>
- </article>
-
- <article class="plan" aria-labelledby="plan-whitelabel">
- <h3 id="plan-whitelabel">ホワイトラベル</h3>
- <p class="price">¥30,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 月 (税別)</span></p>
- <p class="unit">100,000 リクエスト/月 fair use、ブランド表示なし</p>
- <ul>
- <li>自社ブランドで提供する商工会議所・金融機関向け</li>
- <li>「powered by jpcite」フッターを非表示に</li>
- <li>100,000 リクエスト/月 (fair use) まで追加課金なし</li>
- <li>Business と同じ origin 制限・一次資料リンク</li>
- <li>月 100,000 リクエスト を大幅超過した場合のみ個別連絡</li>
- <li>適格請求書 を Stripe が自動発行</li>
- </ul>
- <button type="button" class="btn btn--secondary" data-plan="business_whitelabel" id="cta-whitelabel">ホワイトラベル を申し込む</button>
+ <button type="button" class="btn" data-plan="metered" id="cta-business">申し込む</button>
  </article>
  </div>
  </section>
@@ -469,8 +431,7 @@
  <div class="field">
  <label for="signup-plan">プラン</label>
  <select id="signup-plan">
- <option value="business">従量課金 (¥3/検索)</option>
- <option value="business_whitelabel">ホワイトラベル ¥30,000/月</option>
+ <option value="metered">従量課金 (¥3/リクエスト)</option>
  </select>
  </div>
  <div class="field">
@@ -499,7 +460,7 @@
  <p class="tokushoho-note">
  最低利用期間・解約違約金はありません。Stripe Customer Portal から
  いつでもキャンセル可能。消費税 10% は Stripe が自動計算、
- 適格請求書に外税表示されます (登録番号 )。
+ 適格請求書は Stripe から発行されます。登録情報は特商法表記をご確認ください。
  </p>
  </section>
 
@@ -522,25 +483,22 @@
  <a href="trust.html">信頼</a>
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
- <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ <a href="tokushoho.html">特商法</a><a href="about.html">お問い合わせ</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ <p class="footer-copy">&copy; 2026 jpcite</p>
  </div>
 </footer>
 
-<script src="widget/autonomath.js"></script>
+<script src="widget/jpcite.js"></script>
 <script src="/assets/trust-strip.js" defer></script>
 <script>
 (function() {
-  // Copy button
   var btn = document.getElementById("copy-btn");
   if (btn) {
     btn.addEventListener("click", function() {
       var text = [
-        '<script async src="https://jpcite.com/widget/autonomath.js"><\/script>',
-        '<div data-autonomath-widget data-key="wgt_live_YOUR_KEY"><\/div>'
+        '<script async src="https://jpcite.com/widget/jpcite.js"><\/script>',
+        '<div data-jpcite-widget data-key="wgt_live_YOUR_KEY"><\/div>'
       ].join("\n");
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(function() {
@@ -551,12 +509,11 @@
     });
   }
 
-  // Plan CTAs scroll to form and preselect
-  ["cta-business", "cta-whitelabel"].forEach(function (id) {
+  ["cta-business"].forEach(function (id) {
     var b = document.getElementById(id);
     if (!b) return;
     b.addEventListener("click", function() {
-      var plan = b.getAttribute("data-plan") || "business";
+      var plan = b.getAttribute("data-plan") || "metered";
       var sel = document.getElementById("signup-plan");
       if (sel) sel.value = plan;
       var form = document.getElementById("signup-form");
@@ -564,7 +521,6 @@
     });
   });
 
-  // Consent gating
   var consent = document.getElementById("signup-consent");
   var submit = document.getElementById("signup-submit");
   if (consent && submit) {
@@ -573,7 +529,6 @@
     });
   }
 
-  // Submit
   var form = document.getElementById("signup-form");
   if (!form) return;
   form.addEventListener("submit", function (ev) {
@@ -614,7 +569,7 @@
         plan: plan,
         label: label || null,
         origins: origins,
-        success_url: "https://jpcite.com/success.html?w={CHECKOUT_SESSION_ID}",
+        success_url: "https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}",
         cancel_url: "https://jpcite.com/widget.html?cancelled=1"
       }),
       signal: ctrl.signal
