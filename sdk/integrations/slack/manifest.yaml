@@ -1,0 +1,41 @@
+# Slack App manifest v1
+# Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)
+# Brand:    jpcite (https://jpcite.com)
+# Endpoint: https://slack.jpcite.com/slack/commands  (customer-hosted; see README)
+display_information:
+  name: jpcite
+  description: >-
+    法人番号 360 と公的制度 (補助金 / 融資 / 税制 / 法令 / 行政処分) を Slack から
+    検索。¥3/req metered、Bookyou株式会社 (T8010001213708) 提供。
+  background_color: "#0f172a"
+  long_description: >-
+    `/jpcite <query>` で jpcite REST API を呼び出し、Slack message として結果を
+    返します。13 桁の数字なら法人 360 (名称・住所・適格事業者・行政処分・採択履歴)、
+    自由文なら制度上位 5 件。LLM 推論は行わず、応答は jpcite REST に基づく決定論的
+    出力です。各クエリは ¥3/req metered (税込 ¥3.30) で課金されます。
+features:
+  bot_user:
+    display_name: jpcite
+    always_online: true
+  slash_commands:
+    - command: /jpcite
+      description: jpcite で法人 / 制度を検索 (¥3/req)
+      usage_hint: "<法人番号 or キーワード>"
+      url: https://slack.jpcite.com/slack/commands
+      should_escape: false
+oauth_config:
+  scopes:
+    bot:
+      - commands
+      - chat:write
+      - chat:write.public
+settings:
+  event_subscriptions:
+    request_url: https://slack.jpcite.com/slack/events
+    bot_events: []
+  interactivity:
+    is_enabled: true
+    request_url: https://slack.jpcite.com/slack/interactivity
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

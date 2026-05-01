@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>jpcite プラグイン設定</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <main class="jpcite-config">
+      <h1>jpcite — 法人番号 360 ルックアップ</h1>
+      <p class="jpcite-cost-note">
+        ¥3/req metered (税込 ¥3.30) ・ 提供:
+        <a href="https://jpcite.com" target="_blank" rel="noopener">jpcite.com</a>
+        ・ 運営: Bookyou株式会社 (T8010001213708)
+      </p>
+      <form id="jpcite-config-form" autocomplete="off">
+        <fieldset>
+          <legend>API 認証</legend>
+          <label for="jpcite-api-key">jpcite API キー (X-API-Key)</label>
+          <input
+            type="text"
+            id="jpcite-api-key"
+            name="apiKey"
+            spellcheck="false"
+            placeholder="jpcite_sk_..."
+            required
+          />
+          <p class="hint">
+            API キーは
+            <a href="https://jpcite.com/dashboard" target="_blank" rel="noopener"
+              >jpcite.com の dashboard</a
+            >
+            から発行できます。
+          </p>
+        </fieldset>
+        <fieldset>
+          <legend>kintone フィールド対応</legend>
+          <label for="jpcite-houjin-field-code"
+            >法人番号フィールドコード (例: <code>houjin_bangou</code>)</label
+          >
+          <input
+            type="text"
+            id="jpcite-houjin-field-code"
+            name="houjinFieldCode"
+            spellcheck="false"
+            placeholder="houjin_bangou"
+            required
+          />
+          <p class="hint">
+            13 桁の法人番号を保持するフィールドコードを入力してください。フィールド
+            コードはアプリ設定画面の「フィールド」タブで確認できます。
+          </p>
+        </fieldset>
+        <div class="jpcite-config-actions">
+          <button type="submit" class="jpcite-btn jpcite-btn-primary">
+            保存
+          </button>
+          <button type="button" id="jpcite-config-cancel" class="jpcite-btn">
+            キャンセル
+          </button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>

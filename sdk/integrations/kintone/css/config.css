@@ -1,0 +1,18 @@
+/* jpcite kintone plug-in — configuration screen styles. */
+
+body { font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif; background: #f8fafc; color: #0f172a; }
+.jpcite-config { max-width: 560px; margin: 24px auto; padding: 24px; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
+.jpcite-config h1 { font-size: 18px; margin: 0 0 6px; }
+.jpcite-cost-note { font-size: 12px; color: #475569; margin: 0 0 18px; }
+.jpcite-cost-note a { color: #1d4ed8; }
+fieldset { border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; margin: 0 0 14px; }
+legend { font-weight: 600; color: #1e293b; padding: 0 6px; }
+label { display: block; font-size: 13px; color: #1e293b; margin-bottom: 4px; }
+input[type="text"] { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: "JetBrains Mono", "Source Code Pro", monospace; font-size: 13px; }
+input[type="text"]:focus { outline: 2px solid #2563eb; outline-offset: 1px; }
+.hint { font-size: 12px; color: #64748b; margin: 4px 0 0; }
+.hint code { background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
+.jpcite-config-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.jpcite-btn { appearance: none; border: 1px solid #cbd5e1; background: #fff; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.jpcite-btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+.jpcite-btn-primary:hover { background: #1d4ed8; }

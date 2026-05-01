@@ -1,0 +1,56 @@
+{
+  "manifest_version": 1,
+  "version": "0.3.2",
+  "type": "APP",
+  "name": {
+    "ja": "jpcite — 法人番号 360 ルックアップ",
+    "en": "jpcite — Houjin 360 lookup"
+  },
+  "description": {
+    "ja": "法人番号フィールドの横に「jpcite で見る」ボタンを追加し、法人 360 (名称・住所・適格事業者・行政処分・採択履歴) をモーダルで表示します。¥3/req metered。",
+    "en": "Adds a 'View on jpcite' button next to a corporate-number field on the kintone record-detail screen. Opens a modal with corporate 360 (name, address, qualified-invoice status, enforcement, adoption history). ¥3/req metered."
+  },
+  "icon": "image/icon.png",
+  "homepage_url": {
+    "ja": "https://jpcite.com/integrations/kintone",
+    "en": "https://jpcite.com/integrations/kintone"
+  },
+  "desktop": {
+    "js": [
+      "https://js.cybozu.com/jquery/3.7.1/jquery.min.js",
+      "js/jpcite.js"
+    ],
+    "css": [
+      "css/jpcite.css"
+    ]
+  },
+  "mobile": {
+    "js": [
+      "js/jpcite.js"
+    ],
+    "css": [
+      "css/jpcite.css"
+    ]
+  },
+  "config": {
+    "required_params": [
+      "api_key",
+      "houjin_field_code"
+    ],
+    "html": "config.html",
+    "js": [
+      "js/config.js"
+    ],
+    "css": [
+      "css/config.css"
+    ]
+  },
+  "uploaded_files": [
+    "image/icon.png",
+    "js/jpcite.js",
+    "js/config.js",
+    "css/jpcite.css",
+    "css/config.css",
+    "config.html"
+  ]
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>jpcite 月次サマリ</title>
+    <style>
+      body { font-family: "Helvetica Neue", "Hiragino Sans", "Yu Gothic", sans-serif; color: #0f172a; max-width: 640px; margin: 0 auto; padding: 16px; }
+      h1 { font-size: 18px; margin: 0 0 4px; }
+      .subhead { font-size: 12px; color: #475569; margin: 0 0 18px; }
+      h2 { font-size: 14px; margin: 18px 0 6px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; color: #1e293b; }
+      ul { margin: 0; padding-left: 18px; }
+      li { margin: 2px 0; font-size: 13px; }
+      a { color: #1d4ed8; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .empty { font-size: 12px; color: #64748b; }
+      .err { font-size: 12px; color: #b91c1c; }
+      .meta { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+      footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b; }
+      footer a { color: #475569; }
+    </style>
+  </head>
+  <body>
+    <h1>jpcite 月次サマリ</h1>
+    <p class="subhead">
+      {{ customer_name }} 様 ・ 生成: {{ generated_at.strftime("%Y-%m-%d %H:%M UTC") }}
+      ・ 保存検索 {{ section_count }} 件 / ヒット {{ summary_count }} 件
+    </p>
+
+    {% if sections %}
+      {% for section in sections %}
+        <h2>{{ section.saved_search.name }}</h2>
+        {% if section.error_code %}
+          <p class="err">取得失敗: {{ section.error_code }}</p>
+        {% elif section.items %}
+          <ul>
+            {% for row in section.items %}
+              <li>
+                {% if row.source_url %}
+                  <a href="{{ row.source_url }}" rel="noopener">{{ row.name or row.title or row.primary_name or "(名称不明)" }}</a>
+                {% else %}
+                  {{ row.name or row.title or row.primary_name or "(名称不明)" }}
+                {% endif %}
+                {% if row.authority %}<span class="meta"> · {{ row.authority }}</span>{% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty">該当なし。</p>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p class="empty">保存済みの検索はまだありません。</p>
+    {% endif %}
+
+    <footer>
+      <p>{{ footer_text }}</p>
+      <p>
+        本メールの配信停止 / 保存検索の編集:
+        <a href="{{ unsubscribe_url }}">{{ unsubscribe_url }}</a>
+      </p>
+    </footer>
+  </body>
+</html>

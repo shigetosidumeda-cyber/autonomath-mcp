@@ -1,0 +1,67 @@
+/* jpcite kintone plug-in — runtime styles. */
+
+.jpcite-btn {
+  appearance: none;
+  border: 1px solid #2563eb;
+  background: #fff;
+  color: #1d4ed8;
+  font: inherit;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+.jpcite-btn:hover { background: #eff6ff; }
+.jpcite-btn:disabled { opacity: 0.6; cursor: progress; }
+
+.jpcite-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.jpcite-modal-card {
+  background: #fff;
+  width: min(560px, 92vw);
+  border-radius: 10px;
+  padding: 20px 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+.jpcite-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+}
+.jpcite-modal-header h2 { font-size: 16px; margin: 0; color: #0f172a; }
+.jpcite-modal-close {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #64748b;
+}
+.jpcite-modal-body { display: grid; grid-template-columns: 9em 1fr; gap: 6px 12px; margin: 0; }
+.jpcite-modal-body dt { font-weight: 600; color: #475569; }
+.jpcite-modal-body dd { margin: 0; color: #0f172a; word-break: break-all; }
+.jpcite-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #475569;
+}
+.jpcite-modal-footer a { color: #1d4ed8; }
+.jpcite-modal-error { color: #b91c1c; }
+.jpcite-cost { color: #64748b; }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <style>
+      body { font-family: "Roboto", "Noto Sans JP", sans-serif; padding: 12px; color: #0f172a; }
+      h1 { font-size: 14px; margin: 0 0 6px; }
+      p.note { font-size: 11px; color: #475569; margin: 0 0 10px; }
+      label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+      input { width: 100%; padding: 6px 8px; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 4px; font-family: "Source Code Pro", monospace; font-size: 12px; }
+      button { appearance: none; border: none; background: #2563eb; color: #fff; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; }
+      button.secondary { background: #fff; color: #475569; border: 1px solid #cbd5e1; }
+      .actions { display: flex; gap: 6px; margin-top: 8px; }
+      .status { font-size: 11px; margin-top: 8px; min-height: 14px; }
+      .status.ok { color: #166534; }
+      .status.err { color: #991b1b; }
+      .footer { margin-top: 16px; font-size: 10px; color: #64748b; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <h1>jpcite — API キー設定</h1>
+    <p class="note">¥3/req metered (税込 ¥3.30) ・ 提供: jpcite.com ・ 運営: Bookyou株式会社 (T8010001213708)</p>
+    <label for="apiKey">API キー (X-API-Key)</label>
+    <input id="apiKey" type="text" placeholder="jpcite_sk_..." spellcheck="false" />
+    <div class="actions">
+      <button id="save">保存</button>
+      <button id="clear" class="secondary">削除</button>
+    </div>
+    <div id="status" class="status"></div>
+    <p class="footer">
+      API キーはこのスプレッドシートの Document Properties に保存されます (Apps Script のドキュメント
+      スコープ)。共有先のユーザーには見えません。
+    </p>
+    <script>
+      (function () {
+        var apiKey = document.getElementById("apiKey");
+        var status = document.getElementById("status");
+        google.script.run
+          .withSuccessHandler(function (masked) {
+            apiKey.placeholder = masked || "jpcite_sk_...";
+          })
+          .getApiKeyMasked();
+
+        document.getElementById("save").addEventListener("click", function () {
+          status.textContent = "保存中...";
+          status.className = "status";
+          google.script.run
+            .withSuccessHandler(function () {
+              status.textContent = "保存しました。新しいセルから利用できます。";
+              status.className = "status ok";
+              apiKey.value = "";
+            })
+            .withFailureHandler(function (err) {
+              status.textContent = "失敗: " + (err && err.message ? err.message : err);
+              status.className = "status err";
+            })
+            .setApiKey(apiKey.value);
+        });
+
+        document.getElementById("clear").addEventListener("click", function () {
+          google.script.run
+            .withSuccessHandler(function () {
+              status.textContent = "削除しました。";
+              status.className = "status ok";
+              apiKey.value = "";
+              apiKey.placeholder = "jpcite_sk_...";
+            })
+            .clearApiKey();
+        });
+      })();
+    </script>
+  </body>
+</html>

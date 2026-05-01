@@ -1,0 +1,23 @@
+jpcite 月次サマリ ({{ generated_at.strftime("%Y-%m-%d %H:%M UTC") }})
+{{ customer_name }} 様
+
+保存検索 {{ section_count }} 件 / ヒット {{ summary_count }} 件
+{% for section in sections %}
+== {{ section.saved_search.name }} ==
+{% if section.error_code %}
+取得失敗: {{ section.error_code }}
+{% elif section.items %}
+{% for row in section.items %}
+- {{ row.name or row.title or row.primary_name or "(名称不明)" }}{% if row.source_url %}
+  {{ row.source_url }}{% endif %}{% if row.authority %} ({{ row.authority }}){% endif %}
+{% endfor %}
+{% else %}
+該当なし。
+{% endif %}
+{% endfor %}
+
+----
+{{ footer_text }}
+
+配信停止 / 保存検索の編集:
+{{ unsubscribe_url }}
