@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>ブラウザから 1 click で日本の制度を引く — jpcite</title>
+<meta name="description" content="bookmarklet (1 line) と Chrome 拡張で、任意のページの法人番号 (13桁) や制度名を選択 → 右クリック → jpcite で照会。税理士・コンサル・記者の業務動線に jpcite を組み込む。">
+
+<meta property="og:title" content="ブラウザから 1 click で日本の制度を引く — jpcite">
+<meta property="og:description" content="bookmarklet と Chrome 拡張。法人番号 13桁を選択するだけで jpcite に問い合わせ。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/bookmarklet.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ブラウザから 1 click で日本の制度を引く — jpcite">
+<meta name="twitter:description" content="bookmarklet と Chrome 拡張。法人番号 13桁の選択 → 即 jpcite 照会。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/bookmarklet.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+<script defer src="/analytics.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="wrap">
+    <a href="/" class="logo">jpcite</a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/about.html">運営について</a>
+      <a href="/products.html">プロダクト</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/audiences/">利用者層</a>
+      <a href="/integrations/">連携</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap" style="max-width:980px;margin:40px auto;padding:0 20px;line-height:1.7;">
+
+<h1 style="margin-bottom:0.2em;">ブラウザから 1 click で日本の制度を引く</h1>
+<p style="color:#444;margin-top:0;font-size:1.05em;">
+  税理士・コンサル・記者が Web 巡回中に出会った <strong>法人番号 (13桁)</strong> や
+  <strong>制度名</strong> を、選択 → 1 click で jpcite に照会できる
+  bookmarklet と Chrome 拡張です。<br>
+  匿名 3 req/日 無料 (IPベース、JST 翌日 00:00 リセット)。超過は ¥3/req (税込 ¥3.30)。
+</p>
+
+<!-- ─────────────────────────────────────────────
+  Section 1: Bookmarklet (server side 0、今すぐ使える)
+  ─────────────────────────────────────────────── -->
+
+<h2 id="bookmarklet">1. ブックマークレット (今すぐ使える)</h2>
+
+<p>
+  下のボタンをブラウザのブックマークバーに <strong>ドラッグ&ドロップ</strong> してください。<br>
+  以降、任意のページでテキストを選択 → ブックマークをクリックで jpcite に照会します。
+  選択無しの場合は入力プロンプトが出ます。
+</p>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:18px;background:#f6f6f6;border:1px dashed #b0b0b0;border-radius:8px;margin:14px 0;">
+  <a id="bookmarklet-btn"
+     href="javascript:(function(){var s=((getSelection()+'')||prompt('jpcite 検索:')||'').trim(),d=s.replace(/\D/g,''),b='https://api.jpcite.com/v1/';s&&open(/^T?\d{13}$/i.test(s)?b+'houjin/'+d:b+'programs/search?q='+encodeURIComponent(s),'_blank')})()"
+     style="display:inline-flex;align-items:center;gap:8px;background:#1c1917;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;cursor:grab;"
+     draggable="true"
+     onclick="event.preventDefault();alert('このボタンは「ブックマークバーへドラッグ」して使ってください。クリックでは動作しません。');">
+    <img src="/assets/favicon-v2.svg" alt="" width="18" height="18" style="vertical-align:middle;">
+    jpcite で照会
+  </a>
+  <span style="color:#666;font-size:0.95em;">← ブックマークバーへドラッグ&ドロップ</span>
+</div>
+
+<details style="margin:14px 0;">
+  <summary style="cursor:pointer;color:#3B82F6;">ソースコード (JavaScript 1 line) を表示</summary>
+  <div class="code-block" data-code="javascript:(function(){var s=((getSelection()+'')||prompt('jpcite 検索:')||'').trim(),d=s.replace(/\D/g,''),b='https://api.jpcite.com/v1/';s&&open(/^T?\d{13}$/i.test(s)?b+'houjin/'+d:b+'programs/search?q='+encodeURIComponent(s),'_blank')})()" style="margin-top:8px;">
+<pre><code>javascript:(function(){var s=((getSelection()+'')||prompt('jpcite 検索:')||'').trim(),d=s.replace(/\D/g,''),b='https://api.jpcite.com/v1/';s&&open(/^T?\d{13}$/i.test(s)?b+'houjin/'+d:b+'programs/search?q='+encodeURIComponent(s),'_blank')})()</code></pre>
+    <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+  </div>
+  <p style="font-size:0.9em;color:#555;margin-top:8px;">
+    動作: 選択テキスト → 13桁数字 (T プレフィックス可) なら <code>/v1/houjin/{n}</code>、
+    それ以外なら <code>/v1/programs/search?q=&lt;encoded&gt;</code> を新タブで開く。
+    外部 LLM API は呼び出さず、選択した文字列で jpcite の検索ページを開きます。
+  </p>
+</details>
+
+<h3 id="bookmarklet-howto">使い方 3 step</h3>
+<ol>
+  <li>ブラウザのブックマークバーを表示 (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>)。</li>
+  <li>上の「jpcite で照会」ボタンをブックマークバーへドラッグ&ドロップ。</li>
+  <li>任意の Web ページで法人番号 / 制度名を選択 → ブックマークをクリック。</li>
+</ol>
+
+<!-- ─────────────────────────────────────────────
+  Section 2: Chrome 拡張 (右クリック menu + popup form)
+  ─────────────────────────────────────────────── -->
+
+<h2 id="chrome-extension">2. Chrome 拡張 (右クリック menu + popup form)</h2>
+
+<p>
+  bookmarklet より一歩深い体験。13桁数字を <strong>hover でハイライト</strong>、
+  右クリック menu「jpcite で照会」、ツールバーアイコンから popup form。
+</p>
+
+<ul>
+  <li>権限は <code>contextMenus</code> のみ (拡張は fetch せず、ブラウザにタブを開かせるだけ — bookmarklet と同等のプライバシー)。</li>
+  <li>外部 LLM API は呼び出しません。</li>
+  <li>料金は同じ。匿名 3 req/日 無料、超過 ¥3/req。</li>
+</ul>
+
+<div style="display:flex;flex-wrap:wrap;gap:14px;margin:18px 0;">
+  <a class="btn btn-primary" href="#chrome-install" style="background:#1c1917;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600;">Chrome Web Store (公開準備中)</a>
+</div>
+
+<h3 id="chrome-install">Chrome Web Store 公開後の手順</h3>
+<ol>
+  <li>Chrome Web Store で「jpcite」を検索 → 「Chrome に追加」。</li>
+  <li>ツールバーに jpcite アイコンが現れます。</li>
+  <li>任意のページで 13桁数字を hover → ハイライト → クリックで照会。</li>
+</ol>
+
+<h3 id="chrome-unpacked">公開前 / 開発者向け unpacked 読み込み</h3>
+<ol>
+  <li>GitHub から <code>sdk/chrome-extension/</code> を clone。</li>
+  <li><code>chrome://extensions/</code> を開き、右上「デベロッパーモード」 ON。</li>
+  <li>「パッケージ化されていない拡張機能を読み込む」→ <code>sdk/chrome-extension/</code> を指定。</li>
+</ol>
+
+<!-- ─────────────────────────────────────────────
+  Section 3: 比較・想定 user・ROI
+  ─────────────────────────────────────────────── -->
+
+<h2 id="compare">3. ブックマークレット vs Chrome 拡張 — 比較</h2>
+
+<table style="width:100%;border-collapse:collapse;margin:14px 0;">
+  <thead>
+    <tr style="background:#f6f6f6;">
+      <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">項目</th>
+      <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">ブックマークレット</th>
+      <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">Chrome 拡張</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">配布形態</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">本ページから drag drop (即使える)</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">Chrome Web Store (公開には ¥750 + Google アカ要)</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">起動 UX</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">テキスト選択 → ブックマーククリック (2 step)</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">右クリック menu / 13桁 hover クリック / popup form (1 step)</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">13桁の自動検出</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">無し (選択時のみ判定)</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">有り (hover ハイライト + click)</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">対応 ブラウザ</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">Chrome / Edge / Firefox / Safari 全部</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">Chrome / Edge (Chromium 系)</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">権限要求</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">無し (ページ DOM のみ)</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;"><code>contextMenus</code> のみ (host_permissions 空)</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">同期 (PC 間)</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">ブラウザのブックマーク同期で OK</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">Chrome アカウント同期で OK</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">配布 SEO</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">本ページのみ</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">Chrome Web Store 検索流入が追加</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">推奨</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;"><strong>まずはこちら。</strong> インストール不要ですぐ使えます。</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">右クリックや hover 検出を使いたい利用者向けです。</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ─────────────────────────────────────────────
+  Section 4: 想定 user
+  ─────────────────────────────────────────────── -->
+
+<h2 id="users">4. 想定 user</h2>
+
+<dl style="margin:14px 0;">
+  <dt style="font-weight:600;margin-top:12px;">税理士・会計士・行政書士 (顧問先 fan-out)</dt>
+  <dd style="margin-left:0;color:#444;">国税庁 法人番号公表サイト・gBizINFO・金融機関の与信書類で 13桁を見つけた瞬間に jpcite で <code>/v1/houjin/&lt;n&gt;</code> を叩く。採択履歴・行政処分・適格請求書登録状況が 1 click で揃う。</dd>
+
+  <dt style="font-weight:600;margin-top:12px;">補助金 / 経営コンサル</dt>
+  <dd style="margin-left:0;color:#444;">METI / 中小企業庁 / 都道府県の制度ニュースを巡回中、制度名を選択 → 即 jpcite で類似制度・併給排他ルール・申請ラウンドを照会。</dd>
+
+  <dt style="font-weight:600;margin-top:12px;">記者・調査会社・M&A デューデリ</dt>
+  <dd style="margin-left:0;color:#444;">企業 IR / 報道記事に出てくる 13桁法人番号を hover でハイライトしてくれる。クリックで採択額・補助金履歴・enforcement (行政処分) を即横断確認。</dd>
+
+  <dt style="font-weight:600;margin-top:12px;">SMB 経営者 / 個人事業主</dt>
+  <dd style="margin-left:0;color:#444;">商工会・信金のメルマガで気になる制度名を選択 → そのまま jpcite で詳細。匿名 3 req/日でほぼ用が足りる。</dd>
+</dl>
+
+<h2 id="workflow">5. 何が短くなるか</h2>
+
+<p>
+  本ツールは、ブラウザ上の調査作業から jpcite の検索へすばやく移動するための補助機能です。
+  コピー、別タブ移動、検索 URL 入力、法人番号の整形を省き、一次資料付きの確認に進みやすくします。
+</p>
+
+<table style="width:100%;border-collapse:collapse;margin:14px 0;">
+  <thead>
+    <tr style="background:#f6f6f6;">
+      <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">場面</th>
+      <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">通常の手順</th>
+      <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">このツール</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">法人番号を調べる</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">13桁をコピーし、検索ページを開き、貼り付ける</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">選択してクリック。13桁なら自動で法人情報照会へ送ります。</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">制度名を確認する</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">制度名をコピーし、jpcite で検索し直す</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">選択語をそのまま制度検索に渡します。</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #e5e5e5;">AI に渡す前の根拠確認</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">Web 検索結果や PDF を読み直して出典を探す</td>
+      <td style="padding:10px;border:1px solid #e5e5e5;">jpcite の構造化レスポンスで、出典 URL と取得時刻を先に確認できます。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="next">次のステップ</h2>
+<ul>
+  <li><a href="/integrations/">他クライアント連携</a> (Claude Desktop / Cursor / ChatGPT)</li>
+  <li><a href="/docs/api-reference/">REST API リファレンス</a></li>
+  <li><a href="/pricing.html">料金</a></li>
+</ul>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">jpcite</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/about.html">運営について</a>
+      <a href="/products.html">プロダクト</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/tokushoho.html">特商法</a>
+      <a href="/contact.html">お問い合わせ</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 jpcite</p>
+  </div>
+</footer>
+
+<style>
+  .code-block {position:relative;margin:12px 0;}
+  .code-block pre {background:#f6f6f6;color:#1c1917;padding:14px 80px 14px 14px;border-radius:6px;overflow-x:auto;margin:0;line-height:1.5;border:1px solid #e7e5e4;}
+  .code-block pre code {color:inherit;font-family:'JetBrains Mono', monospace;font-size:0.85em;word-break:break-all;white-space:pre-wrap;}
+  .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #ccc;border-radius:4px;padding:4px 10px;font-size:0.82em;cursor:pointer;color:#333;font-family:inherit;}
+  .code-block .copy-btn:hover {background:#f0f0f0;}
+  .code-block .copy-btn.copied {background:#d4f4d4;border-color:#7bc77b;color:#226622;}
+  kbd {background:#f4f4f5;border:1px solid #d4d4d8;border-radius:3px;padding:1px 5px;font-size:0.85em;font-family:'JetBrains Mono', monospace;}
+</style>
+<script>
+  document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.code-block');
+      var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
+      var done = function(){
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function(){
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
+          document.body.removeChild(ta);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

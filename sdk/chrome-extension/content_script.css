@@ -1,0 +1,26 @@
+/* jpcite Chrome 拡張 — 13桁法人番号 hover ハイライト用 style.
+ *
+ * 目的: ページの 13桁数字を控えめに underline + dotted で示し、hover 時のみ
+ *       目立たせる。読者の本文体験を壊さないよう、色は jpcite ブランド
+ *       (#3B82F6) の半透明にとどめる。
+ *
+ * !important を多用するのは、ページ側の reset CSS / global * セレクタに
+ *       埋もれて見えなくなるのを防ぐため (拡張は他人のサイトに乗る)。
+ */
+
+.jpcite-houjin-hl {
+  cursor: pointer !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+  text-decoration-color: rgba(59, 130, 246, 0.6) !important;
+  text-underline-offset: 2px !important;
+  background-color: rgba(59, 130, 246, 0.06) !important;
+  border-radius: 2px !important;
+  padding: 0 2px !important;
+  transition: background-color 120ms ease-in-out !important;
+}
+
+.jpcite-houjin-hl:hover {
+  background-color: rgba(59, 130, 246, 0.18) !important;
+  text-decoration-color: rgba(59, 130, 246, 1) !important;
+}

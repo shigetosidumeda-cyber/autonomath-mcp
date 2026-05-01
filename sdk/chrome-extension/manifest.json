@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "jpcite — 日本の制度を 1 click で",
+  "short_name": "jpcite",
+  "version": "0.1.0",
+  "description": "選択中の法人番号 (13桁) や制度名キーワードを右クリック 1 操作で jpcite に照会します。¥3/req 課金、匿名 3 req/日 無料 (IPベース)。",
+  "default_locale": "ja",
+  "homepage_url": "https://jpcite.com/bookmarklet.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "jpcite で照会 (選択中のテキスト or 任意クエリ)",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": [
+    "contextMenus"
+  ],
+  "host_permissions": [],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "css": ["content_script.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
