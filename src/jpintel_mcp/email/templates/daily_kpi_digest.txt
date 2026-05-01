@@ -1,4 +1,4 @@
-税務会計AI — 日次 KPI ダイジェスト ({{date_jst}} JST)
+jpcite — 日次 KPI ダイジェスト ({{date_jst}} JST)
 ====================================================
 generated {{generated_at}}
 
@@ -29,6 +29,6 @@ generated {{generated_at}}
 詳細: https://jpcite.com/admin/kpi.html (ADMIN_API_KEY 必要)
 
 ----
-税務会計AI / Bookyou株式会社 (T8010001213708)
+jpcite / Bookyou株式会社 (T8010001213708)
 東京都文京区小日向2-22-1 / info@bookyou.net
 このメールは運営者宛の内部レポートです (購読解除不可のオペレーター通知)。

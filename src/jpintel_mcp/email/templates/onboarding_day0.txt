@@ -16,7 +16,7 @@ APIキーを発行しました。
 制度検索の最小例 (東京都の中小企業向け制度を5件):
 
   curl -H "X-API-Key: YOUR_KEY" \
-    "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_types=smb&limit=5"
+    "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=5"
 
 ---
 
@@ -32,10 +32,10 @@ APIキーを発行しました。
 
 税理士法 §52 / 弁護士法 §72 該当の業務はおこないません:
 
-AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は https://jpcite.com/tos.html をご確認ください。
+jpcite は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は https://jpcite.com/tos.html をご確認ください。
 
 --
-AutonoMath — 日本の制度情報 API + MCP
+jpcite — 日本の制度情報 API + MCP
 このメールは API キー発行の控えとしてお送りしています (解除不可のトランザクションメール)。
 お問い合わせ: info@bookyou.net
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1

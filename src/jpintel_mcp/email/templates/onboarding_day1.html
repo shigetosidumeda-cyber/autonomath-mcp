@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AutonoMath — 最初の1リクエストはもう叩けましたか?</title>
+<title>jpcite — 最初の1リクエストはもう叩けましたか?</title>
 </head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Hiragino Sans',sans-serif;max-width:640px;margin:24px auto;padding:0 20px;color:#111;line-height:1.7;">
 
 <h1 style="font-size:22px;margin:0 0 12px;">最初の1リクエストはもう叩けましたか?</h1>
 
-<p>昨日 AutonoMath API ({{tier}} プラン / 鍵末尾 <code>{{key_last4}}</code>) をお申し込みいただきました。経験上、最初の 1 リクエストが通れば一気に流れに乗れるので、今日は<strong>クライアントごとの最短セットアップ</strong>と<strong>よくある詰まりどころ</strong>だけお送りします。</p>
+<p>昨日 jpcite API ({{tier}} プラン / 鍵末尾 <code>{{key_last4}}</code>) をお申し込みいただきました。経験上、最初の 1 リクエストが通れば一気に流れに乗れるので、今日は<strong>クライアントごとの最短セットアップ</strong>と<strong>よくある詰まりどころ</strong>だけお送りします。</p>
 
 <h2 style="font-size:17px;margin-top:28px;">使うクライアントを1つ選んでください</h2>
 
 <h3 style="font-size:15px;margin-top:18px;">A. Claude Desktop / Claude Code</h3>
-<p style="color:#444;font-size:14px;margin:6px 0;">MCP 対応 LLM クライアント。<code>claude_desktop_config.json</code> に追記するだけで 69 ツール (programs.search / search_tax_incentives / check_invoice_registrant ほか) が自然言語から呼べます。</p>
+<p style="color:#444;font-size:14px;margin:6px 0;">MCP 対応 LLM クライアント。<code>claude_desktop_config.json</code> に追記するだけで 93 ツール (programs.search / search_tax_incentives / check_invoice_registrant ほか) が自然言語から呼べます。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>{
   "mcpServers": {
     "autonomath": {
-      "command": "npx",
-      "args": ["-y", "@autonomath/mcp"],
-      "env": { "AUTONOMATH_API_KEY": "YOUR_KEY" }
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": { "JPCITE_API_KEY": "YOUR_KEY" }
     }
   }
 }</code></pre>
@@ -37,28 +37,28 @@
 <h3 style="font-size:15px;margin-top:18px;">D. 直接 curl / SDK</h3>
 <p style="color:#444;font-size:14px;margin:6px 0;">MCP を経由せず REST で叩く場合の最小例:</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
-  "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_types=smb&limit=10"</code></pre>
+  "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=10"</code></pre>
 
 <h2 style="font-size:17px;margin-top:32px;">よくある詰まりどころ</h2>
 <ul style="color:#444;">
   <li><strong>401 Unauthorized</strong> — ヘッダ名は <code>X-API-Key</code> です(<code>Authorization: Bearer YOUR_KEY</code> でも受けます)。<code>Api-Key</code> や <code>X-Api-Token</code> は通りません。</li>
-  <li><strong>429 Too Many Requests</strong> — <code>Retry-After</code> ヘッダの秒数を待ってください。Paid キーは月次課金で上限なし、匿名は 50 req/月 (JST 月初リセット) です。</li>
+  <li><strong>429 Too Many Requests</strong> — <code>Retry-After</code> ヘッダの秒数を待ってください。Paid キーは月次課金で上限なし、匿名は 3 req/日 (JST 翌日 00:00 リセット) です。</li>
   <li><strong>FTS の単一漢字ノイズ</strong> — <code>q=税額控除</code> は「税」だけ含む行も拾います。2文字以上の熟語は <code>q="税額控除"</code> のように引用符で囲ってください。</li>
-  <li><strong>MCP が起動しない</strong> — <code>npx -y @autonomath/mcp</code> は初回 30 秒程度かかります。タイムアウトを 60s に伸ばしてください。</li>
+  <li><strong>MCP が起動しない</strong> — <code>uvx autonomath-mcp</code> は初回 30 秒程度かかります。タイムアウトを 60s に伸ばしてください。</li>
   <li><strong>環境変数が読まれない</strong> — Claude Desktop は <code>config.json</code> の <code>env</code> ブロックのみ読みます。シェルの <code>export</code> は無視されます。</li>
 </ul>
 
 <p style="margin-top:24px;">それでも止まっていれば、このメールに「こう書いたがこう返る」の1行だけでも返信ください。人間が読みます。</p>
 
 <h2 style="font-size:15px;margin-top:32px;color:#444;">税理士法 §52 / 弁護士法 §72 該当の業務はおこないません</h2>
-<p style="font-size:13px;color:#666;">AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。</p>
+<p style="font-size:13px;color:#666;">jpcite は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。</p>
 
-<p style="margin-top:20px;">— Bookyou 株式会社 / AutonoMath</p>
+<p style="margin-top:20px;">— Bookyou 株式会社 / jpcite</p>
 
 <hr style="border:none;border-top:1px solid #eee;margin:32px 0 12px;">
 <p style="color:#888;font-size:12px;">
-AutonoMath — 日本の制度情報 API + MCP<br>
-このメールは AutonoMath の活性化シーケンス (D+1) としてお送りしています。<br>
+jpcite — 日本の制度情報 API + MCP<br>
+このメールは jpcite の活性化シーケンス (D+1) としてお送りしています。<br>
 お問い合わせ: <a href="mailto:info@bookyou.net" style="color:#888;">info@bookyou.net</a><br>
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1<br>
 ライセンス: ご利用は <a href="https://jpcite.com/tos.html" style="color:#888;">利用規約</a> / <a href="https://jpcite.com/privacy.html" style="color:#888;">プライバシーポリシー</a>に基づきます。<br>

@@ -1,22 +1,22 @@
 最初の1リクエストはもう叩けましたか?
 
-昨日 AutonoMath API ({{tier}} プラン / 鍵末尾 {{key_last4}}) をお申し込みいただきました。経験上、最初の 1 リクエストが通れば一気に流れに乗れるので、今日はクライアントごとの最短セットアップとよくある詰まりどころだけお送りします。
+昨日 jpcite API ({{tier}} プラン / 鍵末尾 {{key_last4}}) をお申し込みいただきました。経験上、最初の 1 リクエストが通れば一気に流れに乗れるので、今日はクライアントごとの最短セットアップとよくある詰まりどころだけお送りします。
 
 ---
 
 使うクライアントを1つ選んでください:
 
 A. Claude Desktop / Claude Code
-   MCP 対応 LLM クライアント。claude_desktop_config.json に追記するだけで 69 ツール
+   MCP 対応 LLM クライアント。claude_desktop_config.json に追記するだけで 93 ツール
    (programs.search / search_tax_incentives / check_invoice_registrant ほか) が
    自然言語から呼べます。
 
    {
      "mcpServers": {
        "autonomath": {
-         "command": "npx",
-         "args": ["-y", "@autonomath/mcp"],
-         "env": { "AUTONOMATH_API_KEY": "YOUR_KEY" }
+         "command": "uvx",
+         "args": ["autonomath-mcp"],
+         "env": { "JPCITE_API_KEY": "YOUR_KEY" }
        }
      }
    }
@@ -35,7 +35,7 @@ D. 直接 curl / SDK
    MCP を経由せず REST で叩く場合の最小例:
 
    curl -H "X-API-Key: YOUR_KEY" \
-     "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_types=smb&limit=10"
+     "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=10"
 
 ---
 
@@ -47,14 +47,14 @@ D. 直接 curl / SDK
 
 - 429 Too Many Requests
   Retry-After ヘッダの秒数を待ってください。Paid キーは月次課金で上限なし、
-  匿名は 50 req/月 (JST 月初リセット) です。
+  匿名は 3 req/日 (JST 翌日 00:00 リセット) です。
 
 - FTS の単一漢字ノイズ
   q=税額控除 は「税」だけ含む行も拾います。2文字以上の熟語は
   q="税額控除" のように引用符で囲ってください。
 
 - MCP が起動しない
-  npx -y @autonomath/mcp は初回 30 秒程度かかります。
+  uvx autonomath-mcp は初回 30 秒程度かかります。
   タイムアウトを 60s に伸ばしてください。
 
 - 環境変数が読まれない
@@ -67,13 +67,13 @@ D. 直接 curl / SDK
 
 税理士法 §52 / 弁護士法 §72 該当の業務はおこないません:
 
-AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
+jpcite は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
 
-— Bookyou 株式会社 / AutonoMath
+— Bookyou 株式会社 / jpcite
 
 --
-AutonoMath — 日本の制度情報 API + MCP
-このメールは AutonoMath の活性化シーケンス (D+1) としてお送りしています。
+jpcite — 日本の制度情報 API + MCP
+このメールは jpcite の活性化シーケンス (D+1) としてお送りしています。
 お問い合わせ: info@bookyou.net
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
 ライセンス: ご利用は利用規約 (https://jpcite.com/tos.html) / プライバシーポリシー (https://jpcite.com/privacy.html) に基づきます。

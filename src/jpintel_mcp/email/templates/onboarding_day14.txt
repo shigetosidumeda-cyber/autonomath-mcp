@@ -14,9 +14,9 @@
    {
      "mcpServers": {
        "autonomath": {
-         "command": "npx",
-         "args": ["-y", "@autonomath/mcp"],
-         "env": { "AUTONOMATH_API_KEY": "YOUR_KEY" }
+         "command": "uvx",
+         "args": ["autonomath-mcp"],
+         "env": { "JPCITE_API_KEY": "YOUR_KEY" }
        }
      }
    }
@@ -33,8 +33,9 @@
      "https://api.jpcite.com/v1/programs/batch" \
      -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'
 
-   同じく /v1/invoice_registrants/batch (法人番号 N 件) や /v1/am/dd_profile/batch も
-   あります。50 件まで 1 リクエスト・¥3.30 でまとめられます。
+   取引先の法人番号 N 件は /v1/am/dd_batch にまとめられます。50 件まで
+   1 リクエスト・¥3.30 で、補助金採択 / 行政処分 / 適格請求書発行登録を
+   一括確認できます。
 
 3) monthly_cap_yen で予算上限を縛る
 
@@ -60,11 +61,11 @@
 
 税理士法 §52 / 弁護士法 §72 該当の業務はおこないません:
 
-AutonoMath は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
+jpcite は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務はおこないません。出力結果は士業による確認の代替にはなりません。
 
 --
-AutonoMath — 日本の制度情報 API + MCP
-このメールは AutonoMath の活性化シーケンス (D+14) としてお送りしています。
+jpcite — 日本の制度情報 API + MCP
+このメールは jpcite の活性化シーケンス (D+14) としてお送りしています。
 お問い合わせ: info@bookyou.net
 運営: Bookyou 株式会社 (T8010001213708) / 東京都文京区小日向2-22-1
 配信停止: {{{pm:unsubscribe}}}

@@ -53,6 +53,17 @@ TEMPLATES_DIR = (
     / "templates"
 )
 
+_STALE_USER_FACING_COPY = (
+    "AutonoMath",
+    "税務会計AI",
+    "50 req/月",
+    "50/月",
+    "69 MCP",
+    "AUTONOMATH_API_KEY",
+    "@autonomath/mcp",
+    "npx -y",
+)
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -102,6 +113,20 @@ def _mock_client(captured: list[httpx.Request]) -> PostmarkClient:
         env="prod",
         _http=http,
     )
+
+
+def test_email_templates_use_current_public_copy() -> None:
+    """Outbound emails must not regress to old brand/quota/MCP install copy."""
+    failures: list[str] = []
+    for path in sorted(TEMPLATES_DIR.iterdir()):
+        if not path.is_file():
+            continue
+        body = path.read_text(encoding="utf-8")
+        for needle in _STALE_USER_FACING_COPY:
+            if needle in body:
+                failures.append(f"{path.name}: {needle}")
+
+    assert failures == []
 
 
 @pytest.fixture()
