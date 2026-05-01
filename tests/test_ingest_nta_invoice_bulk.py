@@ -114,9 +114,9 @@ def test_workflow_file_uses_jpintel_db_path_and_120_min_timeout() -> None:
     """Three contract pins on the workflow file itself."""
     assert WORKFLOW_PATH.is_file(), "nta-bulk-monthly.yml missing"
     wf = WORKFLOW_PATH.read_text(encoding="utf-8")
-    # Schedule: 1st of month, 18:00 UTC = 03:00 JST.
+    # Schedule: 1st of month, 18:00 UTC = 03:00 JST on the 2nd.
     assert '0 18 1 * *' in wf, (
-        "monthly cron schedule must be '0 18 1 * *' (03:00 JST 1st of month)"
+        "monthly cron schedule must be '0 18 1 * *' (18:00 UTC on day 1)"
     )
     # Path: must write to /data/jpintel.db, NOT /data/autonomath.db.
     assert "--db /data/jpintel.db" in wf, (

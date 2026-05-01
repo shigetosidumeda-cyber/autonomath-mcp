@@ -12,7 +12,7 @@ name: nta-bulk-monthly
 # not this workflow).
 #
 # Cadence:
-#   * 1st of month 03:00 JST (= 18:00 UTC the previous day). NTA's
+#   * 1st of month 18:00 UTC (= 03:00 JST on the 2nd). NTA's
 #     zenken file is published 「前月末日時点における公表している最新情報」;
 #     the file is consistently up by ~01:00 JST on the 1st.
 #   * The workflow itself is long-running — set the timeout generously
@@ -31,13 +31,10 @@ name: nta-bulk-monthly
 
 on:
   schedule:
-    # 18:30 UTC on the 1st of every month == 03:30 JST 1st of month.
+    # 18:00 UTC on the 1st of every month == 03:00 JST 2nd of month.
     # NTA publishes the zenken (full snapshot) on the 1st with the
-    # previous month-end as cutoff — so by 03:30 JST the file is always up.
-    # Staggered +30 min vs health-drill-monthly (0 18 1) to avoid Fly
-    # machine contention; this workflow is a long-running 25-40 min
-    # ingest so we cannot use a shorter offset.
-    - cron: "30 18 1 * *"
+    # previous month-end as cutoff — so by this run the file is always up.
+    - cron: "0 18 1 * *"
   workflow_dispatch:
     inputs:
       mode:
