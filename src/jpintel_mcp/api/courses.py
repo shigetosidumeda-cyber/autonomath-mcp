@@ -198,39 +198,11 @@ def _record_metered_delivery(
     """Mirror the saved-search delivery metering shape exactly so dashboards
     surface course / digest / report deliveries on the same axis.
     """
-    row = conn.execute(
-        "SELECT tier, stripe_subscription_id FROM api_keys WHERE key_hash = ?",
-        (key_hash,),
-    ).fetchone()
-    if row is None:
-        return
-    tier = row["tier"] if hasattr(row, "keys") else row[0]
-    sub_id = row["stripe_subscription_id"] if hasattr(row, "keys") else row[1]
-    metered = tier == "paid"
-    cur = conn.execute(
-        "INSERT INTO usage_events("
-        "  key_hash, endpoint, ts, status, metered, params_digest,"
-        "  latency_ms, result_count"
-        ") VALUES (?,?,?,?,?,?,?,?)",
-        (
-            key_hash,
-            endpoint,
-            datetime.now(UTC).isoformat(),
-            200,
-            1 if metered else 0,
-            None,
-            None,
-            None,
-        ),
-    )
-    usage_event_id = cur.lastrowid
-    if metered and sub_id:
-        try:
-            from jpintel_mcp.billing.stripe_usage import report_usage_async
+    from jpintel_mcp.billing.delivery import record_metered_delivery
 
-            report_usage_async(sub_id, usage_event_id=usage_event_id)
-        except Exception:  # noqa: BLE001
-            logger.warning("courses.stripe_push_failed", exc_info=True)
+    ok = record_metered_delivery(conn, key_hash=key_hash, endpoint=endpoint)
+    if not ok:
+        logger.warning("courses.delivery_billing_skipped endpoint=%s", endpoint)
 
 
 # ---------------------------------------------------------------------------

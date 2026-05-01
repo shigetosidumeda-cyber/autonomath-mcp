@@ -59,6 +59,7 @@ _REPO = Path(__file__).resolve().parent.parent.parent
 _SRC = _REPO / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.same_day_push")
@@ -313,38 +314,12 @@ def _deliver(payload: dict[str, Any], dry_run: bool) -> bool:
 
 def _bill_one(conn: sqlite3.Connection, api_key_hash: str) -> None:
     try:
-        sub_row = conn.execute(
-            "SELECT stripe_subscription_id, tier FROM api_keys "
-            "WHERE key_hash = ?",
-            (api_key_hash,),
-        ).fetchone()
-        if sub_row is None:
-            return
-        sub_id = sub_row["stripe_subscription_id"]
-        # sqlite3.Row supports `in` but not `.get()`; default to 'paid' on
-        # legacy schema rows that pre-date the `tier` column.
-        tier = sub_row["tier"] if "tier" in sub_row else "paid"  # noqa: SIM401
-        metered = 1 if tier == "paid" else 0
-        cur = conn.execute(
-            "INSERT INTO usage_events("
-            "  key_hash, endpoint, ts, status, metered, params_digest"
-            ") VALUES (?,?,?,?,?,?)",
-            (
-                api_key_hash, ENDPOINT_LABEL,
-                datetime.now(UTC).isoformat(),
-                200, metered, "same_day_push",
-            ),
+        record_metered_delivery(
+            conn,
+            key_hash=api_key_hash,
+            endpoint=ENDPOINT_LABEL,
         )
-        usage_event_id = cur.lastrowid
         conn.commit()
-        try:
-            from jpintel_mcp.billing.stripe_usage import report_usage_async
-            report_usage_async(
-                subscription_id=sub_id, quantity=1,
-                usage_event_id=usage_event_id,
-            )
-        except Exception:  # noqa: BLE001
-            logger.warning("stripe report_usage_async failed", exc_info=True)
     except Exception:  # noqa: BLE001
         logger.warning("same_day_push billing row failed", exc_info=True)
 

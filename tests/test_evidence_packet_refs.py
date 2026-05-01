@@ -631,6 +631,7 @@ def test_webhook_program_created_payload_carries_evidence_endpoint(
     expected_sig = "hmac-sha256=" + hmac.new(
         secret.encode(), sent_body, hashlib.sha256
     ).hexdigest()
+    assert sent_headers["X-Jpcite-Signature"] == expected_sig
     assert sent_headers["X-Zeimu-Signature"] == expected_sig
 
 

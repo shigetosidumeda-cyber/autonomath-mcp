@@ -45,7 +45,7 @@ import argparse
 import logging
 import sqlite3
 import sys
-from datetime import UTC, date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -54,9 +54,11 @@ _REPO = Path(__file__).resolve().parent.parent.parent
 _SRC = _REPO / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.post_award_monitor")
+JST = timezone(timedelta(hours=9))
 
 
 # Alert windows (days out from deadline). When today's distance to the
@@ -251,40 +253,12 @@ def _bill_one(conn: sqlite3.Connection, api_key_hash: str) -> None:
     matching deps.ApiContext.metered semantics.
     """
     try:
-        sub_row = conn.execute(
-            "SELECT stripe_subscription_id, tier FROM api_keys "
-            "WHERE key_hash = ?",
-            (api_key_hash,),
-        ).fetchone()
-        if sub_row is None:
-            return
-        sub_id = sub_row["stripe_subscription_id"]
-        # sqlite3.Row supports `in` but not `.get()`; default to 'paid' on
-        # legacy schema rows that pre-date the `tier` column.
-        tier = sub_row["tier"] if "tier" in sub_row else "paid"  # noqa: SIM401
-        metered = 1 if tier == "paid" else 0
-        cur = conn.execute(
-            "INSERT INTO usage_events("
-            "  key_hash, endpoint, ts, status, metered, params_digest"
-            ") VALUES (?,?,?,?,?,?)",
-            (
-                api_key_hash, ENDPOINT_LABEL,
-                datetime.now(UTC).isoformat(),
-                200, metered, "post_award_alert",
-            ),
+        record_metered_delivery(
+            conn,
+            key_hash=api_key_hash,
+            endpoint=ENDPOINT_LABEL,
         )
-        usage_event_id = cur.lastrowid
         conn.commit()
-        # Fire-and-forget Stripe report — no-ops when sub_id is None.
-        try:
-            from jpintel_mcp.billing.stripe_usage import report_usage_async
-            report_usage_async(
-                subscription_id=sub_id,
-                quantity=1,
-                usage_event_id=usage_event_id,
-            )
-        except Exception:  # noqa: BLE001
-            logger.warning("stripe report_usage_async failed", exc_info=True)
     except Exception:  # noqa: BLE001
         logger.warning(
             "post_award_monitor billing row failed key=%s",
@@ -312,7 +286,7 @@ def run(
         from jpintel_mcp.config import settings
         db_path = Path(settings.db_path)
     if as_of is None:
-        as_of = datetime.now(UTC).date()
+        as_of = datetime.now(JST).date()
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     try:

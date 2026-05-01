@@ -60,6 +60,7 @@ _SRC = _REPO / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
@@ -443,54 +444,13 @@ def _record_metered_delivery(
     if dry_run:
         return
 
-    # Lookup api_keys row for tier + stripe subscription, mirroring
-    # require_key (api/deps.py).
-    row = jp_conn.execute(
-        "SELECT tier, stripe_subscription_id, customer_id "
-        "FROM api_keys WHERE key_hash = ?",
-        (key_hash,),
-    ).fetchone()
-    if row is None:
-        logger.warning("metered.api_key_missing saved_id=%s", saved_id)
-        return
-    tier = row["tier"]
-    sub_id = row["stripe_subscription_id"]
-    metered = tier == "paid"
-
-    cur = jp_conn.execute(
-        "INSERT INTO usage_events("
-        "  key_hash, endpoint, ts, status, metered, params_digest,"
-        "  latency_ms, result_count"
-        ") VALUES (?,?,?,?,?,?,?,?)",
-        (
-            key_hash,
-            "saved_searches.digest",
-            datetime.now(UTC).isoformat(),
-            200,
-            1 if metered else 0,
-            None,  # PII-adjacent — saved-search names are user-supplied
-            None,
-            None,
-        ),
+    ok = record_metered_delivery(
+        jp_conn,
+        key_hash=key_hash,
+        endpoint="saved_searches.digest",
     )
-    usage_event_id = cur.lastrowid
-
-    jp_conn.execute(
-        "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
-        (datetime.now(UTC).isoformat(), key_hash),
-    )
-
-    # Stripe usage_record push — fire-and-forget. Same call shape as
-    # `log_usage` on the request hot path so dashboards stay coherent.
-    if metered and sub_id:
-        try:
-            from jpintel_mcp.billing.stripe_usage import report_usage_async
-
-            report_usage_async(sub_id, usage_event_id=usage_event_id)
-        except Exception:  # noqa: BLE001
-            logger.warning(
-                "metered.stripe_push_failed saved_id=%s", saved_id, exc_info=True
-            )
+    if not ok:
+        logger.warning("metered.delivery_skipped saved_id=%s", saved_id)
 
 
 # ---------------------------------------------------------------------------

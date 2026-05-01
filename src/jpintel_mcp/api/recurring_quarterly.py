@@ -220,41 +220,18 @@ def _gather_eligible_unapplied(
 
 def _record_metered_pdf(
     conn: sqlite3.Connection, key_hash: str
-) -> None:
+) -> bool:
     """Bill ¥3 for the PDF render. Mirrors saved_searches.digest shape."""
-    row = conn.execute(
-        "SELECT tier, stripe_subscription_id FROM api_keys WHERE key_hash = ?",
-        (key_hash,),
-    ).fetchone()
-    if row is None:
-        return
-    tier = row["tier"]
-    sub_id = row["stripe_subscription_id"]
-    metered = tier == "paid"
-    cur = conn.execute(
-        "INSERT INTO usage_events("
-        "  key_hash, endpoint, ts, status, metered, params_digest,"
-        "  latency_ms, result_count"
-        ") VALUES (?,?,?,?,?,?,?,?)",
-        (
-            key_hash,
-            "recurring.quarterly_pdf",
-            datetime.now(UTC).isoformat(),
-            200,
-            1 if metered else 0,
-            None,
-            None,
-            None,
-        ),
-    )
-    usage_event_id = cur.lastrowid
-    if metered and sub_id:
-        try:
-            from jpintel_mcp.billing.stripe_usage import report_usage_async
+    from jpintel_mcp.billing.delivery import record_metered_delivery
 
-            report_usage_async(sub_id, usage_event_id=usage_event_id)
-        except Exception:  # noqa: BLE001
-            logger.warning("recurring.stripe_push_failed", exc_info=True)
+    ok = record_metered_delivery(
+        conn,
+        key_hash=key_hash,
+        endpoint="recurring.quarterly_pdf",
+    )
+    if not ok:
+        logger.warning("recurring.pdf_billing_skipped key=%s", key_hash[:8])
+    return ok
 
 
 def _render_pdf_to(
@@ -397,7 +374,7 @@ def _send_slack_test_message(channel_url: str) -> tuple[bool, str | None]:
     body = json.dumps(
         {
             "text": (
-                ":white_check_mark: 税務会計AI: Slack 通知の連携が完了しました。"
+                ":white_check_mark: jpcite: Slack 通知の連携が完了しました。"
                 "今後、保存条件に該当する更新があればこのチャンネルへ配信します。"
             ),
         }

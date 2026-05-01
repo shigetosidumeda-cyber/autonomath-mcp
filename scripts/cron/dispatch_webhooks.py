@@ -34,7 +34,7 @@ Idempotency:
 
 Constraints:
   * No Anthropic / claude / SDK calls. Pure SQLite + httpx + stdlib.
-  * HMAC required (X-Zeimu-Signature: hmac-sha256={hex}).
+  * HMAC required (X-Jpcite-Signature: hmac-sha256={hex}).
   * User-Agent: jpcite-webhook/1.0.
   * RFC1918 / loopback host rebind defence: re-validates the URL at fire time.
 
@@ -68,6 +68,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
 from jpintel_mcp.api.customer_webhooks import compute_signature  # noqa: E402
+from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
@@ -154,6 +155,21 @@ def _is_safe_webhook(url: str) -> tuple[bool, str | None]:
 # ---------------------------------------------------------------------------
 
 
+def _corpus_snapshot_id(jp_conn: sqlite3.Connection) -> str | None:
+    """Best-effort corpus snapshot label for webhook references."""
+    try:
+        from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
+
+        snapshot_id, _checksum = compute_corpus_snapshot(jp_conn)
+        return snapshot_id
+    except Exception:
+        return None
+
+
+def _evidence_packet_endpoint(program_id: str) -> str:
+    return f"/v1/evidence/packets/program/{program_id}"
+
+
 def _collect_program_created(
     jp_conn: sqlite3.Connection,
     since_iso: str,
@@ -176,18 +192,26 @@ def _collect_program_created(
             LIMIT 1000""",
         (since_iso,),
     ).fetchall()
+    snapshot_id = _corpus_snapshot_id(jp_conn)
     return [
         {
             "event_type": "program.created",
             "event_id": str(r["unified_id"]),
             "data": {
+                "entity_id": r["unified_id"],
                 "unified_id": r["unified_id"],
                 "name": r["primary_name"],
                 "summary": None,  # programs schema has no summary column
+                "diff_id": None,
+                "field_name": "created",
                 "source_url": r["source_url"] or r["official_url"],
                 "prefecture": r["prefecture"],
                 "program_kind": r["program_kind"],
                 "tier": r["tier"],
+                "corpus_snapshot_id": snapshot_id,
+                "evidence_packet_endpoint": _evidence_packet_endpoint(
+                    str(r["unified_id"])
+                ),
             },
             "timestamp": r["updated_at"],
         }
@@ -197,6 +221,7 @@ def _collect_program_created(
 
 def _collect_program_amended(
     am_path: Path,
+    jp_conn: sqlite3.Connection,
     since_iso: str,
 ) -> list[dict[str, Any]]:
     """Return events for am_amendment_diff rows within window."""
@@ -225,6 +250,7 @@ def _collect_program_amended(
         # an array of field-level diffs. Customers want "what changed for X"
         # not 5 events per program.
         grouped: dict[str, dict[str, Any]] = {}
+        snapshot_id = _corpus_snapshot_id(jp_conn)
         for r in rows:
             eid = r["entity_id"]
             if eid not in grouped:
@@ -232,10 +258,15 @@ def _collect_program_amended(
                     "event_type": "program.amended",
                     "event_id": f"{eid}@{r['detected_at']}",
                     "data": {
+                        "entity_id": eid,
                         "unified_id": eid,
                         "name": None,
+                        "diff_id": r["diff_id"],
+                        "field_name": r["field_name"],
                         "diffs": [],
                         "source_url": r["source_url"],
+                        "corpus_snapshot_id": snapshot_id,
+                        "evidence_packet_endpoint": _evidence_packet_endpoint(eid),
                     },
                     "timestamp": r["detected_at"],
                 }
@@ -385,6 +416,9 @@ def _deliver_one(
     headers = {
         "Content-Type": "application/json; charset=utf-8",
         "User-Agent": "jpcite-webhook/1.0",
+        "X-Jpcite-Signature": sig,
+        "X-Jpcite-Event": event_type,
+        # Legacy aliases retained for existing integrations.
         "X-Zeimu-Signature": sig,
         "X-Zeimu-Event": event_type,
     }
@@ -506,39 +540,13 @@ def _bill_one_delivery(
     """
     if not jp_conn:
         return
-    try:
-        # Look up the calling key's stripe_subscription_id so the metered
-        # report has somewhere to land. NULL -> no Stripe report (legacy
-        # / free-tier key never connected to Stripe).
-        row = jp_conn.execute(
-            "SELECT stripe_subscription_id FROM api_keys WHERE key_hash = ?",
-            (api_key_hash,),
-        ).fetchone()
-        sub_id = row["stripe_subscription_id"] if row else None
-    except Exception:
-        sub_id = None
-
-    try:
-        cur = jp_conn.execute(
-            """INSERT INTO usage_events(
-                    key_hash, endpoint, ts, status, metered, params_digest,
-                    latency_ms, result_count
-               ) VALUES (?, 'webhook.delivered', ?, 200, 1, NULL, NULL, NULL)""",
-            (api_key_hash, datetime.now(UTC).isoformat()),
-        )
-        usage_event_id = cur.lastrowid
-    except Exception:
-        logger.warning("webhook usage_event insert failed", exc_info=True)
-        return
-
-    if not sub_id:
-        return
-    try:
-        from jpintel_mcp.billing.stripe_usage import report_usage_async
-
-        report_usage_async(sub_id, usage_event_id=usage_event_id)
-    except Exception:
-        logger.warning("webhook stripe report failed", exc_info=True)
+    ok = record_metered_delivery(
+        jp_conn,
+        key_hash=api_key_hash,
+        endpoint="webhook.delivered",
+    )
+    if not ok:
+        logger.warning("webhook.delivery_billing_skipped webhook_id=%s", webhook_id)
 
 
 def _queue_disabled_email(
@@ -647,7 +655,7 @@ def run(
 
         events: list[dict[str, Any]] = []
         if "program.amended" in subscribed_types:
-            events.extend(_collect_program_amended(am_path, since_iso))
+            events.extend(_collect_program_amended(am_path, jp_conn, since_iso))
         for et, fn in _COLLECTORS.items():
             if et in subscribed_types and et != "program.amended":
                 events.extend(fn(jp_conn, since_iso))

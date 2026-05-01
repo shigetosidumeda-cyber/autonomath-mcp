@@ -178,10 +178,10 @@ def generate_secret() -> str:
 
 
 def compute_signature(secret: str, payload_bytes: bytes) -> str:
-    """Return ``hmac-sha256={hex}`` for the X-Zeimu-Signature header.
+    """Return ``hmac-sha256={hex}`` for the webhook signature headers.
 
     Header format mirrors Stripe / GitHub conventions:
-        X-Zeimu-Signature: hmac-sha256=<64 hex chars>
+        X-Jpcite-Signature: hmac-sha256=<64 hex chars>
 
     Customer verifies by recomputing HMAC over the raw request body with
     their stored secret. Constant-time comparison via hmac.compare_digest.
@@ -500,7 +500,7 @@ def test_delivery(
         "data": {
             "webhook_id": webhook_id,
             "message": (
-                "This is a test delivery from 税務会計AI (zeimu-kaikei-webhook/1.0). "
+                "This is a test delivery from jpcite (jpcite-webhook/1.0). "
                 "If you see this, your endpoint received the POST. "
                 "本サービスは公開情報の集約であり税務助言・法律相談ではありません (§52)."
             ),
@@ -511,7 +511,12 @@ def test_delivery(
 
     headers = {
         "Content-Type": "application/json; charset=utf-8",
-        "User-Agent": "zeimu-kaikei-webhook/1.0",
+        "User-Agent": "jpcite-webhook/1.0",
+        "X-Jpcite-Signature": signature,
+        "X-Jpcite-Event": "test.ping",
+        "X-Jpcite-Webhook-Id": str(webhook_id),
+        # Backward-compatible aliases for customers who integrated before
+        # the public jpcite header names were introduced.
         "X-Zeimu-Signature": signature,
         "X-Zeimu-Event": "test.ping",
         "X-Zeimu-Webhook-Id": str(webhook_id),
