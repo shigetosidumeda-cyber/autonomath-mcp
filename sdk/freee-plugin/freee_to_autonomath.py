@@ -1,22 +1,23 @@
-"""freee → AutonoMath glue layer.
+"""freee → jpcite glue layer.
 
 A *stateless* adapter that maps freee 会計 API company / journal data into the
-shape expected by AutonoMath ``GET /v1/programs/search``.
+shape expected by jpcite ``GET /v1/programs/search``.
 
 Security model
 --------------
 - The freee OAuth2 access_token is supplied by the **plugin caller** (個人 dev
   or agency). It is never persisted, logged, or transmitted anywhere except
   ``api.freee.co.jp``.
-- The AutonoMath API key is also supplied by the caller. It is never persisted
-  or logged. It is only sent to ``api.autonomath.jp`` as ``X-API-Key``.
+- The jpcite API key is also supplied by the caller. It is never persisted
+  or logged. It is only sent to ``api.jpcite.com`` as ``X-API-Key``. It is not
+  an OpenAI / Anthropic / Gemini key.
 - This module is fully stateless; no globals, no caches, no disk writes.
 
 Data model
 ----------
 freee company endpoint (``GET /api/1/companies/{company_id}``) plus the trial
 balance endpoint provide enough context to derive the six prefilter fields
-AutonoMath cares about for ``search_programs``:
+jpcite cares about for ``search_programs``:
 
     industry_jsic        ← freee.company.business_industry_code
     revenue_yen          ← Σ trial_balance(売上高)
@@ -25,7 +26,7 @@ AutonoMath cares about for ``search_programs``:
     prefecture           ← freee.company.prefecture_code → 都道府県名
     corporate_class      ← freee.company.company_type (kojin / houjin)
 
-A single ``recommend()`` call returns up to 5 AutonoMath programs ranked by the
+A single ``recommend()`` call returns up to 5 jpcite programs ranked by the
 server's default scoring. Every returned row is guaranteed to carry a
 ``source_url`` field — items missing that field are dropped (defense-in-depth
 against the noukaweb-class aggregator ban documented in CLAUDE.md).
@@ -39,7 +40,7 @@ import httpx
 from pydantic import BaseModel, Field
 
 FREEE_API_BASE = "https://api.freee.co.jp"
-AUTONOMATH_API_BASE = "https://api.autonomath.jp"
+JPCITE_API_BASE = "https://api.jpcite.com"
 
 # JIS X 0401 都道府県コード (1-47) → 都道府県名. freee の prefecture_code は
 # 0-origin ではなく JIS 準拠の 1-origin。
@@ -69,7 +70,7 @@ class CompanyContext(BaseModel):
 
 
 class ProgramRecommendation(BaseModel):
-    """Subset of AutonoMath program fields safe to surface in freee plugin UI."""
+    """Subset of jpcite program fields safe to surface in freee plugin UI."""
 
     unified_id: str
     title: str
@@ -148,19 +149,19 @@ def fetch_company_context(
 
 
 def _build_search_params(ctx: CompanyContext, limit: int) -> dict[str, Any]:
-    """Map ``CompanyContext`` to AutonoMath ``/v1/programs/search`` query params.
+    """Map ``CompanyContext`` to jpcite ``/v1/programs/search`` query params.
 
-    Only the fields AutonoMath actually accepts as filters are forwarded; the
+    Only the fields jpcite actually accepts as filters are forwarded; the
     rest serve as scoring context the server already infers from the prefecture
     + tier defaults.
     """
     params: dict[str, Any] = {"limit": int(limit)}
     if ctx.prefecture:
         params["prefecture"] = ctx.prefecture
-    # Default to the tiers that surface on the AutonoMath landing page.
+    # Default to the tiers that surface on the jpcite landing page.
     params["tier"] = ["S", "A", "B"]
     if ctx.expense_categories:
-        # Caller-derived purpose hints; AutonoMath maps these via its own ALIAS table.
+        # Caller-derived purpose hints; jpcite maps these via its own ALIAS table.
         params["funding_purpose"] = ctx.expense_categories[:5]
     if ctx.corporate_class:
         params["target_type"] = [ctx.corporate_class]
@@ -173,19 +174,19 @@ def call_autonomath_search(
     params: dict[str, Any],
     http_client: httpx.Client | None = None,
 ) -> list[dict[str, Any]]:
-    """Invoke AutonoMath ``/v1/programs/search`` and return raw item dicts."""
+    """Invoke jpcite ``/v1/programs/search`` and return raw item dicts."""
     if not autonomath_api_key or not isinstance(autonomath_api_key, str):
         raise ValueError("autonomath_api_key is required (caller-supplied)")
 
     owns_client = http_client is None
-    client = http_client or httpx.Client(base_url=AUTONOMATH_API_BASE, timeout=15.0)
+    client = http_client or httpx.Client(base_url=JPCITE_API_BASE, timeout=15.0)
     try:
         resp = client.get(
             "/v1/programs/search",
             params=params,
             headers={
                 "X-API-Key": autonomath_api_key,
-                "User-Agent": "autonomath-freee-plugin/0.1",
+                "User-Agent": "jpcite-freee-plugin/0.2",
             },
         )
         resp.raise_for_status()
@@ -206,7 +207,7 @@ def recommend(
     freee_client: httpx.Client | None = None,
     autonomath_client: httpx.Client | None = None,
 ) -> list[ProgramRecommendation]:
-    """Top-level glue. Returns up to ``limit`` AutonoMath recommendations.
+    """Top-level glue. Returns up to ``limit`` jpcite recommendations.
 
     Every returned row carries a ``source_url`` (rows without one are dropped).
     Tokens are only forwarded to their respective APIs and never logged.

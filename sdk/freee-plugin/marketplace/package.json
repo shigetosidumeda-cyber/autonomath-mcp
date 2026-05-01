@@ -1,6 +1,6 @@
 {
-  "name": "zeimu-kaikei-ai-freee-plugin",
-  "version": "0.1.0",
+  "name": "jpcite-freee-plugin",
+  "version": "0.2.0",
   "private": true,
   "description": "freee app marketplace plugin for jpcite — 補助金・税制・法令・判例・入札・インボイス登録番号の横断検索を freee 会計から呼び出す。",
   "homepage": "https://jpcite.com",

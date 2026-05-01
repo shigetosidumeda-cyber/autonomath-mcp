@@ -26,7 +26,7 @@ def _seed_session_cookie(client: TestClient, mf_session: dict) -> None:
     payload = {"mf": mf_session}
     raw = base64.b64encode(json.dumps(payload).encode("utf-8"))
     signed = signer.sign(raw).decode("utf-8")
-    client.cookies.set("zk_mf_sid", signed)
+    client.cookies.set("jpcite_mf_sid", signed)
 
 
 def test_proxy_requires_auth():
@@ -60,7 +60,7 @@ def test_invoice_number_validation():
 
 
 def test_proxy_forwards_api_key_not_token(monkeypatch):
-    """upstream への request に X-API-Key (zk_live_...) が乗り、
+    """upstream への request に X-API-Key が乗り、
     MF access_token は載らない (情報漏洩防止)。"""
     import proxy_endpoints as pe
 
@@ -100,7 +100,7 @@ def test_proxy_forwards_api_key_not_token(monkeypatch):
 
     # X-API-Key が付与されている
     headers_lower = {k.lower(): v for k, v in captured.get("headers", {}).items()}
-    assert headers_lower.get("x-api-key") == "zk_test_dummy_value_xyz"
+    assert headers_lower.get("x-api-key") == "jpcite_test_dummy_value_xyz"
     assert headers_lower.get("x-mf-tenant-uid") == "tenant-001"
     assert headers_lower.get("x-plugin-source") == "mf-cloud"
 

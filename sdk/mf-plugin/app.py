@@ -2,7 +2,7 @@
 
   /healthz                    Fly.io / uptime probe
   /oauth/{authorize,callback,logout}   MF OAuth2 (authorization_code)
-  /mf-plugin/{search-*,check-*,me}    proxy to api.zeimu-kaikei.ai
+  /mf-plugin/{search-*,check-*,me}    proxy to api.jpcite.com
   /static/*                   vanilla HTML UI (frontend/)
   /                           bounce to /oauth/authorize or /static/index.html
 
@@ -30,14 +30,14 @@ FRONTEND_DIR = HERE / "frontend"
 
 def create_app() -> FastAPI:
     settings = load_settings()
-    app = FastAPI(title="zeimu-kaikei-mf-plugin", version="0.1.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="jpcite-mf-plugin", version="0.2.0", docs_url=None, redoc_url=None)
     app.state.settings = settings
 
     # session: HttpOnly + Secure + SameSite=None (iframe 内で動作するため)
     app.add_middleware(
         SessionMiddleware,
         secret_key=settings.session_secret,
-        session_cookie="zk_mf_sid",
+        session_cookie="jpcite_mf_sid",
         max_age=6 * 60 * 60,  # 6h
         same_site="none",
         https_only=settings.is_production,
@@ -51,7 +51,7 @@ def create_app() -> FastAPI:
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline'; "
             "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https://zeimu-kaikei.ai; "
+            "img-src 'self' data: https://jpcite.com; "
             "connect-src 'self'; "
             f"frame-ancestors 'self' {ancestors};"
         )
@@ -63,7 +63,7 @@ def create_app() -> FastAPI:
 
     @app.get("/healthz")
     def healthz() -> dict[str, object]:
-        return {"ok": True, "version": "0.1.0"}
+        return {"ok": True, "version": "0.2.0"}
 
     app.include_router(oauth_router)
     app.include_router(proxy_router)

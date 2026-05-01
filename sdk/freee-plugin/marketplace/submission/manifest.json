@@ -2,12 +2,14 @@
   "$schema": "https://developer.freee.co.jp/schemas/app-submission/v1.json",
   "manifest_version": 1,
   "submission_target": "freee app marketplace (Public app)",
+  "brand_history_note": "Public marketplace copy, URLs, and plugin host use the current jpcite name and jpcite.com domain.",
   "app": {
-    "name_ja": "税務会計AI",
-    "name_en": "Zeimu Kaikei AI",
-    "tagline_ja": "freee 会計から、補助金・税制・法令・判例・インボイス登録番号を AI 横断検索",
-    "tagline_en": "Cross-search Japanese subsidies, tax incentives, statutes, court decisions, and invoice registrants from inside freee.",
-    "category": "AI / 業務効率化",
+    "name_ja": "jpcite",
+    "name_en": "jpcite",
+    "alternate_name_ja": null,
+    "tagline_ja": "freee 会計から、補助金・税制・法令・判例・インボイス登録番号を一次資料付きで確認",
+    "tagline_en": "Check Japanese subsidies, tax incentives, statutes, court decisions, and invoice registrants from inside freee with official-source evidence.",
+    "category": "業務効率化",
     "subcategory": "経理アシスタント",
     "icon": "submission/screenshots/icon-640x640.png",
     "highlight_images": [
@@ -28,11 +30,11 @@
       }
     ],
     "youtube_url": null,
-    "integration_page_url": "https://zeimu-kaikei.ai/freee",
-    "help_page_url": "https://zeimu-kaikei.ai/docs/freee",
-    "privacy_policy_url": "https://zeimu-kaikei.ai/privacy",
-    "terms_of_service_url": "https://zeimu-kaikei.ai/terms",
-    "tokutei_shotorihiki_url": "https://zeimu-kaikei.ai/tokutei",
+    "integration_page_url": "https://jpcite.com/freee",
+    "help_page_url": "https://jpcite.com/docs/freee",
+    "privacy_policy_url": "https://jpcite.com/privacy",
+    "terms_of_service_url": "https://jpcite.com/terms",
+    "tokutei_shotorihiki_url": "https://jpcite.com/tokutei",
     "support_email": "info@bookyou.net",
     "developer": {
       "company_name": "Bookyou株式会社",
@@ -43,17 +45,17 @@
       "website": "https://bookyou.net/"
     },
     "demo_account": {
-      "instructions_ja": "freee Marketplace 審査用に、以下の sandbox アカウントを発行済みです。本番 freee 事業所と接続せず、税務会計AI 側の demo dataset (公開制度データ) を返します。",
+      "instructions_ja": "freee Marketplace 審査用に、以下の sandbox アカウントを発行済みです。本番 freee 事業所と接続せず、jpcite 側の demo dataset (公開制度データ) を返します。",
       "freee_test_email": "freee-review@bookyou.net",
       "freee_test_password": "(一式 別途送付 — submission form の `secure_notes` に記載)",
-      "zeimu_kaikei_demo_url": "https://zeimu-kaikei.ai/demo"
+      "jpcite_demo_url": "https://jpcite.com/demo"
     }
   },
   "oauth": {
     "authorization_url": "https://accounts.secure.freee.co.jp/public_api/authorize",
     "token_url": "https://accounts.secure.freee.co.jp/public_api/token",
     "redirect_uris": [
-      "https://freee-plugin.zeimu-kaikei.ai/oauth/callback"
+      "https://freee-plugin.jpcite.com/oauth/callback"
     ],
     "scopes": [
       "read"
@@ -63,14 +65,18 @@
   "pricing": {
     "model": "metered_per_request",
     "currency": "JPY",
-    "free_quota_per_month": 50,
+    "free_quota_per_day": 3,
+    "free_quota_per_month": null,
     "unit_price_jpy_inclusive_tax": 3.30,
     "unit_price_jpy_exclusive_tax": 3.00,
     "tax_rate": 0.10,
     "billing_cycle": "monthly",
     "billing_target": "marketplace_app_subscription",
-    "description_ja": "freee アプリストア経由の本アプリ利用者は月 50 リクエストまで無料、超過分は 1 リクエスト ¥3.30 (税込) の従量課金です。座席数や Pro/Free 等のティア課金は一切ありません。請求は Bookyou株式会社 (T8010001213708) が Stripe 経由で適格請求書として発行します。",
-    "description_en": "Up to 50 requests / month are free. Beyond that, JPY 3.30 (inclusive of 10% tax) per request. No seat fees, no tier upgrades. Billed monthly via Stripe by Bookyou K.K. (qualified-invoice issuer T8010001213708)."
+    "tier_skus": [],
+    "seat_fees": false,
+    "annual_minimums_jpy": 0,
+    "description_ja": "完全従量課金。利用者は 1 日 3 リクエストまで無料 (JST 翌日 00:00 リセット)。それを超える利用は 1 リクエスト ¥3.30 (税込) の metered 単価です。座席数・Pro/Free 等のティア課金・年間最低額は一切ありません。請求は Bookyou株式会社 (T8010001213708) が Stripe 経由で適格請求書として発行します。",
+    "description_en": "Fully metered pay-as-you-go. Users get 3 requests per day for free (resets 00:00 JST next day); usage beyond that is JPY 3.30 (inclusive of 10% tax) per request. No seat fees, no tier upgrades, no annual minimums. Billed monthly via Stripe by Bookyou K.K. (qualified-invoice issuer T8010001213708)."
   },
   "compliance": {
     "personal_information_handling_ja": "freee 会計から取得する事業所情報・法人番号は、検索クエリの内部スコープにのみ使用し、Bookyou のサーバーには永続化しません。利用ログは API 利用量計測のため 30 日間保持し、その後自動削除します。詳細はプライバシーポリシーをご参照ください。",

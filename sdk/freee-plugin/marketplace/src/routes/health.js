@@ -8,8 +8,8 @@ export const healthRouter = Router();
 healthRouter.get('/', (_req, res) => {
   res.json({
     status: 'ok',
-    name: 'zeimu-kaikei-ai-freee-plugin',
-    version: '0.1.0',
+    name: 'jpcite-freee-plugin',
+    version: '0.2.0',
     time: new Date().toISOString(),
   });
 });

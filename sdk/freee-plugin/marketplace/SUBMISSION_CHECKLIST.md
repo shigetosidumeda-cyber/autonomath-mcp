@@ -1,8 +1,7 @@
-# freee アプリストア 提出チェックリスト
+# freee アプリストア 提出チェックリスト (jpcite)
 
-> 目的: `税務会計AI` を freee の Public app として最短ルートで提出する。
-> 想定スケジュール: agent 側で完了 (本ドキュメントの ✅) + 人間側で必要な
-> アクション (⚠️) を 1 営業日以内で潰せば、提出当日に submit 可能。
+> 目的: `jpcite` を freee の Public app として最短ルートで提出する。
+> 読み方: ✅ は提出前チェック済み、⚠️ は実アカウントや管理画面での確認が必要。
 
 ## A. コード / インフラ
 
@@ -20,10 +19,10 @@
 | 10 | テスト (env + 認可 + プロキシ) | ✅ done | `npm test` で 9/9 PASS |
 | 11 | Dockerfile + Fly.io toml | ✅ done | HND リージョン、shared-cpu-1x / 256MB |
 | 12 | `.dockerignore` / `.gitignore` | ✅ done | secrets / node_modules 除外 |
-| 13 | Fly.io 実デプロイ + DNS (`freee-plugin.zeimu-kaikei.ai`) | ⚠️ **要人間** | `fly launch` + Cloudflare DNS A/AAAA レコード |
+| 13 | Fly.io 実デプロイ + DNS (`freee-plugin.jpcite.com`) | ⚠️ **要人間** | `fly launch` + Cloudflare DNS A/AAAA レコード |
 | 14 | freee 開発者ポータルでアプリ作成 + client_id/secret 取得 | ⚠️ **要人間** | https://app.secure.freee.co.jp/developers/applications |
-| 15 | redirect_uri 登録 (`https://freee-plugin.zeimu-kaikei.ai/oauth/callback`) | ⚠️ **要人間** | freee 側の設定画面 |
-| 16 | Stripe metered subscription 紐付け (`zk_live_...`) | ⚠️ **要人間** | Bookyou 既存の Stripe Connect で OK |
+| 15 | redirect_uri 登録 (`https://freee-plugin.jpcite.com/oauth/callback`) | ⚠️ **要人間** | freee 側の設定画面 |
+| 16 | Stripe metered subscription 紐付け (`jpcite_live_...`) | ⚠️ **要人間** | Bookyou 既存の Stripe Connect で OK |
 
 ## B. 提出パッケージ (submission/)
 
@@ -36,12 +35,12 @@
 | 21 | アイコン 640×640 PNG | ✅ stub | `submission/screenshots/icon-640x640.png` (合成画像) |
 | 22 | ハイライト画像 5 点 (1200×630 PNG) | ✅ stub | `submission/screenshots/01..05.png` (UI モックアップ) |
 | 23 | 実 freee 連携での スクリーンショット | ⚠️ **要人間** | freee 本番事業所でログイン → プラグイン起動 → 各タブで実検索 → スクリーンショット 5 枚を上書き保存 |
-| 24 | プライバシーポリシー URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/privacy` のページ実装 (本文は `description.ja.md` の compliance 節を流用可) |
-| 25 | 利用規約 URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/terms` のページ実装 |
-| 26 | 特商法表記 URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/tokutei` のページ実装 (Bookyou 法人情報で OK) |
-| 27 | 連携ページ URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/freee` のランディング |
-| 28 | ヘルプページ URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/docs/freee` のドキュメント |
-| 29 | 審査担当者用 demo アカウント発行 | ⚠️ **要人間** | freee と zeimu-kaikei.ai 両方で sandbox 用ログイン情報を作成、submission form の secure_notes に記載 |
+| 24 | プライバシーポリシー URL | ⚠️ **要人間** | `https://jpcite.com/privacy` のページ実装 (本文は `description.ja.md` の compliance 節を流用可) |
+| 25 | 利用規約 URL | ⚠️ **要人間** | `https://jpcite.com/terms` のページ実装 |
+| 26 | 特商法表記 URL | ⚠️ **要人間** | `https://jpcite.com/tokutei` のページ実装 (Bookyou 法人情報で OK) |
+| 27 | 連携ページ URL | ⚠️ **要人間** | `https://jpcite.com/freee` のランディング |
+| 28 | ヘルプページ URL | ⚠️ **要人間** | `https://jpcite.com/docs/freee` のドキュメント |
+| 29 | 審査担当者用 demo アカウント発行 | ⚠️ **要人間** | freee と jpcite.com 両方で sandbox 用ログイン情報を作成、submission form の secure_notes に記載 |
 | 30 | YouTube デモ動画 | 任意 | freee は optional。後追いで OK |
 
 ## C. 法令・コンプライアンス
@@ -60,11 +59,11 @@
 | # | 項目 | 状態 | データ ソース |
 |---|---|---|---|
 | 37 | アプリ名 / キャッチコピー | ✅ ready | `description.ja.md` 冒頭 + `manifest.json` |
-| 38 | カテゴリ選択 (AI / 業務効率化) | ✅ ready | `manifest.json` category |
+| 38 | カテゴリ選択 (業務効率化) | ✅ ready | `manifest.json` category |
 | 39 | アイコン アップロード | ✅ stub | `submission/screenshots/icon-640x640.png` |
 | 40 | ハイライト画像 アップロード ×5 | ✅ stub | `submission/screenshots/01-05*.png` |
 | 41 | 連携ページ / ヘルプページ URL 入力 | ⚠️ **要人間** | URL 実装後 |
-| 42 | callback URL 入力 (= redirect_uri) | ⚠️ **要人間** | `https://freee-plugin.zeimu-kaikei.ai/oauth/callback` |
+| 42 | callback URL 入力 (= redirect_uri) | ⚠️ **要人間** | `https://freee-plugin.jpcite.com/oauth/callback` |
 | 43 | 申請権限 (scope) 選択: read | ✅ ready | manifest.oauth.scopes |
 | 44 | 開発者情報 / 連絡先メール | ✅ ready | manifest.app.developer |
 | 45 | 審査用 demo アカウント情報 | ⚠️ **要人間** | 上記 #29 で生成した値を input |
@@ -72,23 +71,14 @@
 
 ## 提出可能までのギャップ
 
-agent 側で完了 (✅): 35/46 項目。
+提出前チェック済み (✅): 35/46 項目。
 要人間アクション (⚠️): 11 項目 (主に DNS / Fly.io / freee 開発者登録 / 公開ページ実装 / 実環境スクリーンショット)。
 
-## agent 工数 (token-time)
+## 検証状態
 
-このパッケージを agent ループで構築するのにかかった目安:
-
-| フェーズ | agent hours (cumulative) |
-|---|---|
-| 既存コード偵察 + freee dev docs WebFetch | ~0.3h |
-| OAuth / proxy / UI 実装 | ~1.2h |
-| テスト (9 ケース) | ~0.4h |
-| Dockerfile / fly.toml | ~0.2h |
-| submission/manifest.json + copy 3 本 | ~0.6h |
-| screenshot stub 生成器 + 6 枚レンダリング | ~0.5h |
-| README + このチェックリスト | ~0.3h |
-| **合計** | **~3.5h agent-time** |
+- Node built-in test runner で OAuth state / proxy logic を検証。
+- 実 freee API と実 jpcite API はテストから呼ばない。
+- 実環境 screenshot と marketplace 申請は人手確認が必要。
 
 ## 提出後タイムライン (freee 公式: 約 1 週間 → 申請ガイドの公称値)
 

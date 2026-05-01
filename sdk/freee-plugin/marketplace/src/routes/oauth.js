@@ -170,7 +170,7 @@ oauthRouter.get('/callback', async (req, res, next) => {
 // 3. /oauth/logout --------------------------------------------------------
 oauthRouter.get('/logout', (req, res) => {
   req.session?.destroy?.(() => {
-    res.clearCookie('zk_freee_sid');
-    res.redirect('https://zeimu-kaikei.ai/');
+    res.clearCookie('jpcite_freee_sid');
+    res.redirect('https://jpcite.com/');
   });
 });

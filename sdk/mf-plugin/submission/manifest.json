@@ -3,11 +3,11 @@
   "manifest_version": 1,
   "submission_target": "マネーフォワード クラウド アプリポータル (Public app)",
   "app": {
-    "name_ja": "税務会計AI",
-    "name_en": "Zeimu Kaikei AI",
-    "tagline_ja": "MF クラウドから、補助金・税制・法令・判例・インボイス登録番号を AI 横断検索",
-    "tagline_en": "Cross-search Japanese subsidies, tax incentives, statutes, court decisions, and invoice registrants from inside Money Forward Cloud.",
-    "category": "AI / 業務効率化",
+    "name_ja": "jpcite",
+    "name_en": "jpcite",
+    "tagline_ja": "MF クラウドから、補助金・税制・法令・判例・インボイス登録番号を横断検索",
+    "tagline_en": "Cross-search Japanese subsidies, tax incentives, statutes, court decisions, and invoice registrants from inside Money Forward Cloud — powered by jpcite.",
+    "category": "業務効率化",
     "subcategory": "経理・税務アシスタント",
     "icon": "submission/screenshots/icon-512x512.png",
     "highlight_images": [
@@ -38,11 +38,11 @@
       }
     ],
     "youtube_url": null,
-    "integration_page_url": "https://zeimu-kaikei.ai/mf",
-    "help_page_url": "https://zeimu-kaikei.ai/docs/mf",
-    "privacy_policy_url": "https://zeimu-kaikei.ai/privacy",
-    "terms_of_service_url": "https://zeimu-kaikei.ai/terms",
-    "tokutei_shotorihiki_url": "https://zeimu-kaikei.ai/tokutei",
+    "integration_page_url": "https://jpcite.com/mf",
+    "help_page_url": "https://jpcite.com/docs/mf",
+    "privacy_policy_url": "https://jpcite.com/privacy",
+    "terms_of_service_url": "https://jpcite.com/terms",
+    "tokutei_shotorihiki_url": "https://jpcite.com/tokutei",
     "support_email": "info@bookyou.net",
     "developer": {
       "company_name": "Bookyou株式会社",
@@ -53,10 +53,10 @@
       "website": "https://bookyou.net/"
     },
     "demo_account": {
-      "instructions_ja": "MF アプリポータル審査用に、sandbox 用の MF 事業者アカウントと zeimu-kaikei.ai 側の demo dataset (公開制度データのみ) を用意します。本番事業所と接続せず、公開済みの補助金・税制・インボイス公表情報のみを返します。",
+      "instructions_ja": "MF アプリポータル審査用に、sandbox 用の MF 事業者アカウントと jpcite.com 側の demo dataset (公開制度データのみ) を用意します。本番事業所と接続せず、公開済みの補助金・税制・インボイス公表情報のみを返します。",
       "mf_test_email": "mf-review@bookyou.net",
       "mf_test_password": "(別途 secure_notes で送付)",
-      "zeimu_kaikei_demo_url": "https://zeimu-kaikei.ai/demo"
+      "jpcite_demo_url": "https://jpcite.com/demo"
     }
   },
   "oauth": {
@@ -66,7 +66,7 @@
     "token_url": "https://app.biz.moneyforward.com/oauth/token",
     "revoke_url": "https://app.biz.moneyforward.com/oauth/revoke",
     "redirect_uris": [
-      "https://mf-plugin.zeimu-kaikei.ai/oauth/callback"
+      "https://mf-plugin.jpcite.com/oauth/callback"
     ],
     "scopes": [
       "mfc/ac/data.read"
@@ -77,14 +77,18 @@
   "pricing": {
     "model": "metered_per_request",
     "currency": "JPY",
-    "free_quota_per_month": 50,
+    "free_quota_per_day_anonymous": 3,
+    "free_quota_per_month": null,
     "unit_price_jpy_inclusive_tax": 3.30,
     "unit_price_jpy_exclusive_tax": 3.00,
     "tax_rate": 0.10,
     "billing_cycle": "monthly",
     "billing_target": "marketplace_app_subscription",
-    "description_ja": "MF アプリポータル経由の本アプリ利用者は月 50 リクエストまで無料、超過分は 1 リクエスト ¥3.30 (税込) の従量課金です。座席数や Pro/Free 等のティア課金は一切ありません。請求は Bookyou株式会社 (T8010001213708) が Stripe 経由で適格請求書として発行します。MF 利用者の MF 側請求には影響しません。",
-    "description_en": "Up to 50 requests / month are free. Beyond that, JPY 3.30 (inclusive of 10% tax) per request. No seat fees, no tier upgrades. Billed monthly via Stripe by Bookyou K.K. (qualified-invoice issuer T8010001213708)."
+    "tier_skus": [],
+    "seat_fees": false,
+    "annual_minimums_jpy": 0,
+    "description_ja": "完全従量課金。匿名 (未認証) 利用者は IP 単位で 1 日 3 リクエストまで無料 (JST 翌日 00:00 リセット)。それを超える利用と認証済み利用は全て 1 リクエスト ¥3.30 (税込) の metered 単価です。座席数・Pro/Free 等のティア課金・年間最低額は一切ありません。請求は Bookyou株式会社 (T8010001213708) が Stripe 経由で適格請求書として発行します。MF 利用者の MF 側請求には影響しません。",
+    "description_en": "Fully metered pay-as-you-go. Anonymous (unauthenticated) users get 3 requests per day per IP for free (resets 00:00 JST next day); everything beyond that, and all authenticated traffic, is JPY 3.30 (inclusive of 10% tax) per request. No seat fees, no tier upgrades, no annual minimums. Billed monthly via Stripe by Bookyou K.K. (qualified-invoice issuer T8010001213708)."
   },
   "compliance": {
     "personal_information_handling_ja": "MF クラウドから取得する事業者表示名と tenant_uid は、検索クエリの内部スコープと利用量計測にのみ使用し、Bookyou のサーバーには 30 日を超えて保持しません。仕訳データ・取引明細・従業員情報は本アプリで一切読み取りません。詳細はプライバシーポリシーをご参照ください。",
@@ -109,7 +113,7 @@
     "sla": "best-effort (no contractual uptime; 過去 90 日 99.9% 達成中)"
   },
   "infra": {
-    "host": "https://mf-plugin.zeimu-kaikei.ai",
+    "host": "https://mf-plugin.jpcite.com",
     "region": "Fly.io HND",
     "runtime": "Python 3.11 + FastAPI + Uvicorn",
     "csp_frame_ancestors": [

@@ -72,7 +72,7 @@
   // --- renderers ---------------------------------------------------------
   function renderSubsidy(p) {
     const tier = p.tier || '';
-    const url = p.source_url || `https://zeimu-kaikei.ai/programs/${encodeURIComponent(p.unified_id || p.id || '')}`;
+    const url = p.source_url || `https://jpcite.com/programs/${encodeURIComponent(p.unified_id || p.id || '')}`;
     return `<li>
       <div class="title">${escape(p.primary_name || p.title || p.name || '(無題)')}</div>
       <div class="meta">
@@ -82,13 +82,13 @@
       </div>
       <div class="deep">
         <a href="${escape(url)}" target="_blank" rel="noopener">出典を確認</a>
-        ${p.unified_id ? ` · <a href="https://zeimu-kaikei.ai/programs/${encodeURIComponent(p.unified_id)}" target="_blank" rel="noopener">税務会計AIで詳細</a>` : ''}
+        ${p.unified_id ? ` · <a href="https://jpcite.com/programs/${encodeURIComponent(p.unified_id)}" target="_blank" rel="noopener">jpciteで詳細</a>` : ''}
       </div>
     </li>`;
   }
 
   function renderTax(t) {
-    const url = t.source_url || `https://zeimu-kaikei.ai/tax/${encodeURIComponent(t.measure_id || t.id || '')}`;
+    const url = t.source_url || `https://jpcite.com/tax/${encodeURIComponent(t.measure_id || t.id || '')}`;
     return `<li>
       <div class="title">${escape(t.measure_name || t.title || t.name || '(無題)')}</div>
       <div class="meta">

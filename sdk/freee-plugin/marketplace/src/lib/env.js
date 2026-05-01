@@ -1,14 +1,16 @@
 // Centralized env access. assertEnv() runs at startup so a missing var
 // crashes the boot loop instead of leaking 500s at request time.
 
-const REQUIRED = [
+// Required env vars. JPCITE_API_KEY is the canonical name (post 2026-04-30
+// brand rename); ZEIMU_KAIKEI_API_KEY is accepted as a legacy alias and
+// satisfies the requirement as well.
+const REQUIRED_PLAIN = [
   'FREEE_CLIENT_ID',
   'FREEE_CLIENT_SECRET',
   'PLUGIN_BASE_URL',
-  'ZEIMU_KAIKEI_API_BASE',
-  'ZEIMU_KAIKEI_API_KEY',
   'SESSION_SECRET',
 ];
+const REQUIRED_ALIASES = [['JPCITE_API_KEY', 'ZEIMU_KAIKEI_API_KEY']];
 
 export const ENV = Object.freeze({
   get FREEE_CLIENT_ID() {
@@ -20,13 +22,19 @@ export const ENV = Object.freeze({
   get PLUGIN_BASE_URL() {
     return (process.env.PLUGIN_BASE_URL ?? '').replace(/\/+$/, '');
   },
-  get ZEIMU_KAIKEI_API_BASE() {
+  get JPCITE_API_BASE() {
     return (
-      process.env.ZEIMU_KAIKEI_API_BASE ?? 'https://api.zeimu-kaikei.ai'
+      process.env.JPCITE_API_BASE ?? process.env.ZEIMU_KAIKEI_API_BASE ?? 'https://api.jpcite.com'
     ).replace(/\/+$/, '');
   },
+  get JPCITE_API_KEY() {
+    return process.env.JPCITE_API_KEY ?? process.env.ZEIMU_KAIKEI_API_KEY ?? '';
+  },
+  get ZEIMU_KAIKEI_API_BASE() {
+    return this.JPCITE_API_BASE;
+  },
   get ZEIMU_KAIKEI_API_KEY() {
-    return process.env.ZEIMU_KAIKEI_API_KEY ?? '';
+    return this.JPCITE_API_KEY;
   },
   get SESSION_SECRET() {
     return process.env.SESSION_SECRET ?? '';
@@ -37,11 +45,16 @@ export const ENV = Object.freeze({
 });
 
 export function assertEnv() {
-  const missing = REQUIRED.filter((k) => !process.env[k]);
+  const missing = REQUIRED_PLAIN.filter((k) => !process.env[k]);
+  for (const aliasGroup of REQUIRED_ALIASES) {
+    if (!aliasGroup.some((k) => process.env[k])) {
+      missing.push(aliasGroup.join('|'));
+    }
+  }
   if (missing.length > 0) {
     // eslint-disable-next-line no-console
     console.error(
-      '[zeimu-kaikei-freee-plugin] missing env vars:',
+      '[jpcite-freee-plugin] missing env vars:',
       missing.join(', '),
     );
     throw new Error('missing_env_vars');

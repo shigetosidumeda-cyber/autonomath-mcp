@@ -1,5 +1,5 @@
 # Production image for the freee app marketplace plugin.
-# Deployed to Fly.io Tokyo (HND) so latency to api.zeimu-kaikei.ai stays <30ms.
+# Deployed to Fly.io Tokyo (HND) so latency to api.jpcite.com stays <30ms.
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json ./

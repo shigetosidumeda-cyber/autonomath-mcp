@@ -17,7 +17,7 @@
 ## 差し替え手順 (user 作業)
 
 1. Bookyou 株式会社が用意する公式 logo を `icon-512x512.png` に上書き保存。
-2. MF アプリポータル登録後、実プラグインを `https://mf-plugin.zeimu-kaikei.ai`
+2. MF アプリポータル登録後、実プラグインを `https://mf-plugin.jpcite.com`
    にデプロイし、demo MF 事業者でログイン。
 3. 各タブで実検索を行い、screenshot を 1200×630 で取得。背景色は MF の
    ブランドガイドラインに合わせて白基調を推奨。

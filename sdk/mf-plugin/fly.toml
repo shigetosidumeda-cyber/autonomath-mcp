@@ -1,4 +1,4 @@
-app = "zeimu-kaikei-mf-plugin"
+app = "jpcite-mf-plugin"
 primary_region = "hnd"
 
 [build]

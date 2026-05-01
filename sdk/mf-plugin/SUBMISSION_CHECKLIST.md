@@ -1,8 +1,7 @@
-# MF アプリポータル 提出チェックリスト
+# MF アプリポータル 提出チェックリスト (jpcite)
 
-> 目的: `税務会計AI` を MF クラウドの公開アプリとして最短ルートで提出する。
-> 想定スケジュール: agent 側で完了 (本ドキュメントの ✅) + 人間側で必要な
-> アクション (⚠️) を 1 営業日以内で潰せば、提出当日に submit 可能。
+> 目的: `jpcite` を MF クラウドの公開アプリとして最短ルートで提出する。
+> 読み方: ✅ は提出前チェック済み、⚠️ は実アカウントや管理画面での確認が必要。
 
 ## A. コード / インフラ
 
@@ -23,10 +22,10 @@
 | 13 | テスト (env + 認可 + プロキシ + CSP) | ✅ done | `pytest tests/` で全 PASS |
 | 14 | Dockerfile + Fly.io toml | ✅ done | HND リージョン、shared-cpu-1x / 256MB |
 | 15 | `.dockerignore` / `.gitignore` | ✅ done | secrets / .venv 除外 |
-| 16 | Fly.io 実デプロイ + DNS (`mf-plugin.zeimu-kaikei.ai`) | ⚠️ **要人間** | `fly launch` + Cloudflare DNS A/AAAA |
+| 16 | Fly.io 実デプロイ + DNS (`mf-plugin.jpcite.com`) | ⚠️ **要人間** | `fly launch` + Cloudflare DNS A/AAAA |
 | 17 | MF アプリポータルでアプリ作成 + Client ID/Secret 取得 | ⚠️ **要人間** | https://app.biz.moneyforward.com/app-portal/ |
-| 18 | redirect_uri 登録 (`https://mf-plugin.zeimu-kaikei.ai/oauth/callback`) | ⚠️ **要人間** | アプリポータル「アプリ開発」画面 |
-| 19 | Stripe metered subscription 紐付け (`zk_live_...`) | ⚠️ **要人間** | Bookyou 既存の Stripe で OK |
+| 18 | redirect_uri 登録 (`https://mf-plugin.jpcite.com/oauth/callback`) | ⚠️ **要人間** | アプリポータル「アプリ開発」画面 |
+| 19 | Stripe metered subscription 紐付け (`jpcite_live_...`) | ⚠️ **要人間** | Bookyou 既存の Stripe で OK |
 
 ## B. 提出パッケージ (submission/)
 
@@ -40,12 +39,12 @@
 | 25 | ハイライト画像 5 点 (1200×630 PNG) | ✅ stub | `submission/screenshots/01..05-*.png` |
 | 26 | 実 logo PNG (Bookyou 公式) | ⚠️ **要人間** | user から提供必要 |
 | 27 | 実 MF 連携での screenshot 5 枚 | ⚠️ **要人間** | MF 本番事業所でログイン → プラグイン起動 → 各タブで実検索 → 1200×630 取得 |
-| 28 | プライバシーポリシー URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/privacy` (description.ja の compliance 節を流用可) |
-| 29 | 利用規約 URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/terms` |
-| 30 | 特商法表記 URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/tokutei` |
-| 31 | 連携ページ URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/mf` |
-| 32 | ヘルプページ URL | ⚠️ **要人間** | `https://zeimu-kaikei.ai/docs/mf` |
-| 33 | 審査担当者用 demo アカウント発行 | ⚠️ **要人間** | MF 側 `mf-review@bookyou.net` + zeimu-kaikei.ai 側 sandbox 認証情報 |
+| 28 | プライバシーポリシー URL | ⚠️ **要人間** | `https://jpcite.com/privacy` (description.ja の compliance 節を流用可) |
+| 29 | 利用規約 URL | ⚠️ **要人間** | `https://jpcite.com/terms` |
+| 30 | 特商法表記 URL | ⚠️ **要人間** | `https://jpcite.com/tokutei` |
+| 31 | 連携ページ URL | ⚠️ **要人間** | `https://jpcite.com/mf` |
+| 32 | ヘルプページ URL | ⚠️ **要人間** | `https://jpcite.com/docs/mf` |
+| 33 | 審査担当者用 demo アカウント発行 | ⚠️ **要人間** | MF 側 `mf-review@bookyou.net` + jpcite.com 側 sandbox 認証情報 |
 
 ## C. 法令・コンプライアンス
 
@@ -63,11 +62,11 @@
 | # | 項目 | 状態 | データ ソース |
 |---|---|---|---|
 | 40 | アプリ名 / キャッチコピー | ✅ ready | `description.ja.md` 冒頭 + `manifest.json` |
-| 41 | カテゴリ選択 (AI / 業務効率化) | ✅ ready | `manifest.json` category |
+| 41 | カテゴリ選択 (業務効率化) | ✅ ready | `manifest.json` category |
 | 42 | アイコン アップロード | ✅ stub | `submission/screenshots/icon-512x512.png` (差し替え推奨) |
 | 43 | ハイライト画像 アップロード ×5 | ✅ stub | `submission/screenshots/01-05*.png` (差し替え推奨) |
 | 44 | 連携ページ / ヘルプページ URL 入力 | ⚠️ **要人間** | URL 実装後 |
-| 45 | callback URL 入力 (= redirect_uri) | ⚠️ **要人間** | `https://mf-plugin.zeimu-kaikei.ai/oauth/callback` |
+| 45 | callback URL 入力 (= redirect_uri) | ⚠️ **要人間** | `https://mf-plugin.jpcite.com/oauth/callback` |
 | 46 | 申請 scope 選択: mfc/ac/data.read | ✅ ready | `manifest.oauth.scopes` |
 | 47 | クライアント認証方式 (CLIENT_SECRET_BASIC) | ✅ ready | アプリ登録画面で選択 |
 | 48 | 開発者情報 / 連絡先メール | ✅ ready | `manifest.app.developer` |
@@ -76,21 +75,14 @@
 
 ## 提出可能までのギャップ
 
-agent 側で完了 (✅): 35/50 項目。
+提出前チェック済み (✅): 35/50 項目。
 要人間アクション (⚠️): 15 項目 (主に DNS / Fly.io / MF 開発者登録 / 公開ページ実装 / 実環境 screenshot / logo)。
 
-## agent 工数 (token-time)
+## 検証状態
 
-| フェーズ | agent hours (cumulative) |
-|---|---|
-| MF dev docs WebFetch + freee plugin pattern 偵察 | ~0.4h |
-| OAuth (callback + revoke + refresh) / proxy / UI 実装 | ~1.2h |
-| テスト (10+ ケース) | ~0.4h |
-| Dockerfile / fly.toml | ~0.1h |
-| submission/manifest.json + copy 3 本 | ~0.6h |
-| screenshot stub 生成器 + 6 枚レンダリング | ~0.2h |
-| README + このチェックリスト | ~0.3h |
-| **合計** | **~3.2h agent-time** |
+- pytest で OAuth state / proxy logic を検証。
+- 実 MF API と実 jpcite API はテストから呼ばない。
+- 実環境 screenshot と marketplace 申請は人手確認が必要。
 
 ## 提出後タイムライン (MF 公式 SLA は未公表)
 
@@ -126,4 +118,4 @@ agent 側で完了 (✅): 35/50 項目。
 | 公開審査 SLA | 公称 1 週間 | 未公表 (推定 1-2 週間) |
 | referral fee | freee Partner Program 経由で 10% 還元前提 | 公式 partner fee 体系は未確認 (`mfc/ac/data.read` 単独利用なら別途交渉) |
 | 提出物 schema | 公式 schema URL 公開 | 公式 schema URL 未公開 → アプリポータル UI フォーム転記 |
-| 同一仕様 | manifest 構造、税理士法免責、¥3.30/req metering、tokutei 表示、qualified-invoice 番号、subprocessor list、tier 課金禁止、LLM 推論禁止 | (左記すべてと同一) |
+| 同一仕様 | manifest 構造、税理士法免責、¥3.30/req metering、tokutei 表示、qualified-invoice 番号、subprocessor list、tier 課金禁止 | (左記すべてと同一) |

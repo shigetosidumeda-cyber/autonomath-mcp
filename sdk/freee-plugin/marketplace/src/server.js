@@ -1,10 +1,10 @@
-// 税務会計AI — freee app marketplace plugin entry point.
+// jpcite — freee app marketplace plugin entry point.
 //
 // This is a thin proxy that:
 //   1. Owns the freee OAuth2 dance (authorization_code grant).
 //   2. Stores the freee user's access_token + company snapshot in an Express
 //      session cookie (server-side, HttpOnly, Secure).
-//   3. Proxies search requests to api.zeimu-kaikei.ai using a Bookyou-owned
+//   3. Proxies search requests to api.jpcite.com using a Bookyou-owned
 //      service API key. The freee end-user is NEVER charged directly; usage
 //      is metered against the marketplace app subscription owned by Bookyou.
 //   4. Renders a vanilla-HTML pop-out UI inside freee's iframe.
@@ -48,7 +48,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"], // inline only for the small popup
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:', 'https://zeimu-kaikei.ai'],
+        imgSrc: ["'self'", 'data:', 'https://jpcite.com'],
         connectSrc: ["'self'"],
         frameAncestors: [
           "'self'",
@@ -70,7 +70,7 @@ app.set('trust proxy', 1);
 
 app.use(
   session({
-    name: 'zk_freee_sid',
+    name: 'jpcite_freee_sid',
     secret: ENV.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -93,7 +93,7 @@ app.use('/healthz', healthRouter);
 app.use('/oauth', oauthRouter);
 
 // /freee-plugin/{search-tax-incentives,search-subsidies,check-invoice-registrant}
-// — proxy endpoints to api.zeimu-kaikei.ai
+// — proxy endpoints to api.jpcite.com
 app.use('/freee-plugin', searchRouter);
 
 // /static — vanilla HTML + JS popup UI rendered inside freee's iframe
@@ -151,6 +151,6 @@ const PORT = Number(process.env.PORT ?? 8080);
 app.listen(PORT, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
   console.log(
-    `[zeimu-kaikei-freee-plugin] listening on :${PORT} (env=${ENV.NODE_ENV})`,
+    `[jpcite-freee-plugin] listening on :${PORT} (env=${ENV.NODE_ENV})`,
   );
 });

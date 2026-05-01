@@ -1,13 +1,16 @@
 # Fly.io app config. Run:
-#   fly launch --no-deploy --copy-config --name zeimu-kaikei-freee-plugin
+#   fly launch --no-deploy --copy-config --name jpcite-freee-plugin
 #   fly secrets set FREEE_CLIENT_ID=... FREEE_CLIENT_SECRET=... \
-#                   ZEIMU_KAIKEI_API_KEY=zk_live_... \
+#                   JPCITE_API_KEY=am_live_... \
 #                   SESSION_SECRET=$(openssl rand -hex 32) \
-#                   PLUGIN_BASE_URL=https://freee-plugin.zeimu-kaikei.ai
+#                   PLUGIN_BASE_URL=https://freee-plugin.jpcite.com
 #   fly deploy
+#
+# The legacy env var ZEIMU_KAIKEI_API_KEY is still accepted as an alias for
+# JPCITE_API_KEY; see src/lib/env.js.
 
-app = "zeimu-kaikei-freee-plugin"
-primary_region = "hnd"   # Tokyo — same region as api.zeimu-kaikei.ai
+app = "jpcite-freee-plugin"
+primary_region = "hnd"   # Tokyo — same region as api.jpcite.com
 
 [build]
   dockerfile = "Dockerfile"
@@ -15,7 +18,7 @@ primary_region = "hnd"   # Tokyo — same region as api.zeimu-kaikei.ai
 [env]
   NODE_ENV = "production"
   PORT = "8080"
-  ZEIMU_KAIKEI_API_BASE = "https://api.zeimu-kaikei.ai"
+  JPCITE_API_BASE = "https://api.jpcite.com"
 
 [http_service]
   internal_port = 8080

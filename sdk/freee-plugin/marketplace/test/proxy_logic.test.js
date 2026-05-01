@@ -10,8 +10,8 @@ import assert from 'node:assert/strict';
 process.env.FREEE_CLIENT_ID ??= 'test_client_id';
 process.env.FREEE_CLIENT_SECRET ??= 'test_client_secret';
 process.env.PLUGIN_BASE_URL ??= 'https://test.example.com';
-process.env.ZEIMU_KAIKEI_API_BASE ??= 'https://api.test.zeimu-kaikei.ai';
-process.env.ZEIMU_KAIKEI_API_KEY ??= 'zk_test_KEY_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+process.env.JPCITE_API_BASE ??= 'https://api.test.jpcite.com';
+process.env.JPCITE_API_KEY ??= 'am_test_KEY_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 process.env.SESSION_SECRET ??= 'a'.repeat(40);
 process.env.NODE_ENV = 'test';
 
@@ -91,7 +91,7 @@ test('search proxy forwards x-api-key + houjin_bangou; strips secrets', async ()
   // Upstream call carried the right headers.
   assert.equal(calls.length, 1);
   const headers = calls[0].init.headers;
-  assert.equal(headers['x-api-key'], process.env.ZEIMU_KAIKEI_API_KEY);
+  assert.equal(headers['x-api-key'], process.env.JPCITE_API_KEY);
   assert.equal(headers['x-zk-houjin-bangou'], '8010001213708');
   assert.equal(headers['x-zk-freee-company-id'], '999001');
 

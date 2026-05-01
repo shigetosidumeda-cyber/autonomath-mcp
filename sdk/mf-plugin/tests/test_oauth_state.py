@@ -1,6 +1,6 @@
 """OAuth state CSRF + env 検証 + redirect URL の smoke test。
 
-実 MF / 実 zeimu-kaikei は叩かない (httpx.MockTransport で全モック化)。
+実 MF / 実 jpcite は叩かない (httpx.MockTransport で全モック化)。
 """
 
 from __future__ import annotations
@@ -28,7 +28,20 @@ def test_load_settings_passes_with_full_env():
     s = load_settings()
     assert s.mf_client_id == "test-client-id"
     assert s.mf_scope == "mfc/ac/data.read"
-    assert s.redirect_uri == "https://mf-plugin.zeimu-kaikei.ai/oauth/callback"
+    assert s.redirect_uri == "https://mf-plugin.jpcite.com/oauth/callback"
+
+
+def test_load_settings_accepts_legacy_api_env(monkeypatch):
+    from config import load_settings
+
+    monkeypatch.delenv("JPCITE_API_KEY", raising=False)
+    monkeypatch.delenv("JPCITE_API_BASE", raising=False)
+    monkeypatch.setenv("ZEIMU_KAIKEI_API_KEY", "legacy_key")
+    monkeypatch.setenv("ZEIMU_KAIKEI_BASE_URL", "https://legacy-api.example.test")
+
+    s = load_settings()
+    assert s.jpcite_api_key == "legacy_key"
+    assert s.jpcite_api_base == "https://legacy-api.example.test"
 
 
 def test_load_settings_missing(monkeypatch):
@@ -60,7 +73,7 @@ def test_authorize_redirects_to_mf_with_state():
     assert "scope=mfc%2Fac%2Fdata.read" in loc
     assert "state=" in loc
     # session cookie が立っている
-    assert any(c.name == "zk_mf_sid" for c in c.cookies.jar)
+    assert any(c.name == "jpcite_mf_sid" for c in c.cookies.jar)
 
 
 def test_callback_rejects_bad_state():

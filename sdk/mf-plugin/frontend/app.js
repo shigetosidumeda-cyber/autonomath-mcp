@@ -1,4 +1,4 @@
-// 税務会計AI — MF Cloud iframe popup UI
+// jpcite — MF Cloud iframe popup UI
 // 同 origin の /mf-plugin/* に POST するだけ。token は server-side session にあり、
 // この script は token に触れない。
 

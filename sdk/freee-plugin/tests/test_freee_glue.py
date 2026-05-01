@@ -1,6 +1,6 @@
-"""Mock-only tests for the freee → AutonoMath glue layer.
+"""Mock-only tests for the freee → jpcite glue layer.
 
-No real freee or AutonoMath calls are made. We use httpx.MockTransport to
+No real freee or jpcite calls are made. We use httpx.MockTransport to
 intercept both endpoints and assert the glue's stateless behavior + the
 ``source_url`` filter.
 """
@@ -117,7 +117,7 @@ def _make_freee_client() -> httpx.Client:
 
 def _make_autonomath_client() -> httpx.Client:
     return httpx.Client(
-        base_url="https://api.autonomath.jp",
+        base_url="https://api.jpcite.com",
         transport=httpx.MockTransport(_autonomath_handler),
         timeout=5.0,
     )

@@ -52,14 +52,14 @@
 
 ## 取得情報の確認
 
-ブラウザ DevTools → Application → Cookies で `zk_mf_sid` (HttpOnly) があるのみ。
+ブラウザ DevTools → Application → Cookies で `jpcite_mf_sid` (HttpOnly) があるのみ。
 localStorage / sessionStorage / window.* に access_token / refresh_token が**漏れていない**
 ことが確認できます。
 
 ## 想定される質問
 
 - **Q. 仕訳データを読みますか?** → 読みません。`mfc/ac/data.read` を要求しますが、本アプリで実際に呼ぶのは事業者表示名と tenant_uid のみです。
-- **Q. MF 利用者に直接課金しますか?** → しません。Bookyou が保有する jpcite.com のサービス契約に対して 1 req ¥3.30 (税込) の metered subscription として課金されます (月 50 req 無料)。
+- **Q. MF 利用者に直接課金しますか?** → しません。Bookyou が保有する jpcite.com のサービス契約に対して 1 req ¥3.30 (税込) の metered subscription として課金されます (3 req/日 無料)。
 - **Q. データ residency は?** → 日本国内 (Fly.io HND リージョン + Cloudflare Tokyo edge)。
 
 ## 連絡先

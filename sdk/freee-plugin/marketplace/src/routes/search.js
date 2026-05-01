@@ -1,6 +1,6 @@
 // /freee-plugin/{search-tax-incentives,search-subsidies,check-invoice-registrant}
 //
-// Thin proxy → api.zeimu-kaikei.ai. The freee end-user is NOT charged
+// Thin proxy → api.jpcite.com. The freee end-user is NOT charged
 // directly. We attach the Bookyou-owned service API key, so usage is metered
 // against the marketplace app's Stripe subscription. The freee user's
 // company context (法人番号 / company_id) is forwarded as scoping headers but
@@ -41,8 +41,8 @@ searchRouter.use(requireFreeeSession);
 function upstreamHeaders(session) {
   const headers = {
     accept: 'application/json',
-    'x-api-key': ENV.ZEIMU_KAIKEI_API_KEY,
-    'user-agent': 'zeimu-kaikei-freee-plugin/0.1',
+    'x-api-key': ENV.JPCITE_API_KEY,
+    'user-agent': 'jpcite-freee-plugin/0.1',
   };
   // Forward freee context for analytics + 法人番号 scoping (read-only).
   // These are NOT auth — server still uses our service key for metering.
@@ -58,7 +58,7 @@ function upstreamHeaders(session) {
 // Fetch helper with timeout + JSON safety. Drops upstream `_internal` keys
 // before responding to the freee iframe.
 async function proxyJson(upstreamPath, params, session, res) {
-  const url = new URL(`${ENV.ZEIMU_KAIKEI_API_BASE}${upstreamPath}`);
+  const url = new URL(`${ENV.JPCITE_API_BASE}${upstreamPath}`);
   for (const [k, v] of Object.entries(params ?? {})) {
     if (v == null || v === '') continue;
     if (Array.isArray(v)) {
@@ -79,7 +79,7 @@ async function proxyJson(upstreamPath, params, session, res) {
   } catch (e) {
     res.status(504).json({
       error: 'upstream_timeout',
-      hint: 'api.zeimu-kaikei.ai did not respond in 15s',
+      hint: 'api.jpcite.com did not respond in 15s',
       _disclaimer: DISCLAIMER,
     });
     return;
@@ -125,7 +125,7 @@ searchRouter.get('/search-tax-incentives', async (req, res) => {
 });
 
 // 2. 補助金 検索 ---------------------------------------------------------
-// Maps to GET /v1/programs/search (existing AutonoMath endpoint).
+// Maps to GET /v1/programs/search.
 searchRouter.get('/search-subsidies', async (req, res) => {
   const params = {
     q: req.query.q,

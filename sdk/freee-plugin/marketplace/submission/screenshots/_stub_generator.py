@@ -13,7 +13,7 @@ Outputs:
     01-subsidy-search.png
     02-tax-incentive.png
     03-invoice-check.png
-    04-mcp-claude-desktop.png
+    04-evidence-prefetch.png
     05-disclaimer-footer.png
 """
 
@@ -64,11 +64,10 @@ def make_icon() -> None:
     draw = ImageDraw.Draw(img)
     # Subtle gradient feel via a darker circle bottom-right.
     draw.ellipse((size * 0.55, size * 0.55, size * 1.4, size * 1.4), fill=(10, 90, 214))
-    # Foreground: 税務会計AI in 2 lines.
+    # Foreground: jpcite wordmark.
     f_big = find_jp_font(150)
     f_med = find_jp_font(70)
-    draw.text((size / 2, size / 2 - 70), "税務会計", font=f_big, fill="white", anchor="mm")
-    draw.text((size / 2, size / 2 + 90), "AI", font=f_big, fill="white", anchor="mm")
+    draw.text((size / 2, size / 2 - 30), "jpcite", font=f_big, fill="white", anchor="mm")
     draw.text((size / 2, size - 60), "for freee", font=f_med, fill=(220, 234, 255), anchor="mm")
     img.save(HERE / "icon-640x640.png", "PNG", optimize=True)
 
@@ -80,8 +79,8 @@ def _frame(draw: ImageDraw.ImageDraw, w: int, h: int, title: str, subtitle: str)
     draw.line((0, 80, w, 80), fill=LINE, width=2)
     f_title = find_jp_font(32)
     f_sub = find_jp_font(20)
-    draw.text((40, 40), "税務会計AI", font=f_title, fill=FG, anchor="lm")
-    draw.text((250, 44), "freee 会計 連携", font=f_sub, fill=FG_MUTE, anchor="lm")
+    draw.text((40, 40), "jpcite", font=f_title, fill=FG, anchor="lm")
+    draw.text((180, 44), "freee 会計 連携", font=f_sub, fill=FG_MUTE, anchor="lm")
     # Company pill (right side)
     draw.rounded_rectangle((w - 280, 30, w - 130, 60), radius=15, fill=(238, 244, 255))
     draw.text((w - 205, 45), "Bookyou株式会社", font=find_jp_font(18), fill=ACCENT, anchor="mm")
@@ -108,7 +107,7 @@ def _frame(draw: ImageDraw.ImageDraw, w: int, h: int, title: str, subtitle: str)
     )
     draw.text(
         (40, h - foot_h + 72),
-        "提供: 税務会計AI / 運営: Bookyou株式会社 (T8010001213708)",
+        "提供: jpcite / 運営: Bookyou株式会社 (T8010001213708)",
         font=find_jp_font(14),
         fill=FG_MUTE,
         anchor="lm",
@@ -189,19 +188,19 @@ def screenshot_subsidy() -> None:
         draw, 40, cy, w - 80,
         "省エネルギー投資促進支援事業費補助金",
         [("tier", "S"), ("text", "経産省"), ("text", "全国")],
-        "出典を確認 (https://sii.or.jp/) · 税務会計AIで詳細",
+        "出典を確認 (https://sii.or.jp/) · jpciteで詳細",
     )
     cy = _result_card(
         draw, 40, cy, w - 80,
         "東京都中小企業 設備投資緊急支援事業",
         [("tier", "A"), ("text", "東京都産業労働局"), ("text", "東京都")],
-        "出典を確認 · 税務会計AIで詳細",
+        "出典を確認 · jpciteで詳細",
     )
     cy = _result_card(
         draw, 40, cy, w - 80,
         "ものづくり補助金 (一般型 / 省エネ枠)",
         [("tier", "S"), ("text", "中小企業庁"), ("text", "全国")],
-        "出典を確認 · 税務会計AIで詳細",
+        "出典を確認 · jpciteで詳細",
     )
     img.save(HERE / "01-subsidy-search.png", "PNG", optimize=True)
 
@@ -289,93 +288,78 @@ def screenshot_invoice() -> None:
     img.save(HERE / "03-invoice-check.png", "PNG", optimize=True)
 
 
-def screenshot_claude_mcp() -> None:
-    """Optional 4th screenshot: shows the same product callable from Claude Desktop via MCP."""
+def screenshot_evidence_prefetch() -> None:
+    """Optional 4th screenshot: official-source evidence packet prefetch."""
     w, h = 1200, 630
-    img = Image.new("RGB", (w, h), (245, 245, 245))
+    img = Image.new("RGB", (w, h), BG)
     draw = ImageDraw.Draw(img)
-    # Mock Claude Desktop chrome
-    draw.rectangle((0, 0, w, 50), fill=(40, 40, 45))
-    draw.text((20, 25), "Claude Desktop — 税務会計AI MCP", font=find_jp_font(18), fill="white", anchor="lm")
+    _frame(draw, w, h, "証跡パケット", "")
 
-    # User question bubble
-    draw.rounded_rectangle((600, 90, 1160, 190), radius=12, fill=(220, 230, 245))
     draw.text(
-        (620, 110),
-        "うちの今期使える税制と補助金の組み合わせを\n教えて。業種は IT、従業員 12 名、東京都。",
+        (60, 120),
+        "freee 事業所情報から、確認用の一次資料セットを事前取得",
+        font=find_jp_font(26),
+        fill=FG,
+        anchor="la",
+    )
+    draw.rounded_rectangle((60, 170, 1140, 510), radius=12, fill="white", outline=LINE)
+    draw.text(
+        (90, 205),
+        "証跡パケット: 東京都 / IT / 法人番号あり",
+        font=find_jp_font(20),
+        fill=FG,
+        anchor="la",
+    )
+    draw.text(
+        (90, 250),
+        "1. 中小企業経営強化税制",
         font=find_jp_font(18),
         fill=FG,
         anchor="la",
     )
-
-    # Claude reply with tool call
-    draw.rounded_rectangle((40, 220, 760, 510), radius=12, fill="white", outline=LINE)
     draw.text(
-        (60, 240),
-        "🔧 search_tax_incentives(q='IT 投資', prefecture='東京都')",
+        (90, 280),
+        "   一次資料: e-Gov 租税特別措置法 第42条の12の4",
         font=find_jp_font(15),
         fill=FG_MUTE,
         anchor="la",
     )
     draw.text(
-        (60, 280),
-        "適用可能性が高い制度はこちらです:",
-        font=find_jp_font(18),
-        fill=FG,
-        anchor="la",
-    )
-    draw.text(
-        (60, 320),
-        "1. 中小企業経営強化税制 (即時償却 / 税額控除)",
-        font=find_jp_font(16),
-        fill=FG,
-        anchor="la",
-    )
-    draw.text(
-        (60, 350),
-        "   出典: e-Gov 租税特別措置法 第42条の12の4",
-        font=find_jp_font(14),
-        fill=FG_MUTE,
-        anchor="la",
-    )
-    draw.text(
-        (60, 390),
+        (90, 325),
         "2. DX 投資促進税制",
-        font=find_jp_font(16),
+        font=find_jp_font(18),
         fill=FG,
         anchor="la",
     )
     draw.text(
-        (60, 420),
-        "   出典: 経産省 / 租税特別措置法 第42条の12の7",
-        font=find_jp_font(14),
-        fill=FG_MUTE,
-        anchor="la",
-    )
-    draw.text(
-        (60, 460),
-        "3. IT 導入補助金 2026 (デジタル枠)",
-        font=find_jp_font(16),
-        fill=FG,
-        anchor="la",
-    )
-    draw.text(
-        (60, 490),
-        "   出典: 中小企業庁 IT 導入補助金事務局",
-        font=find_jp_font(14),
-        fill=FG_MUTE,
-        anchor="la",
-    )
-
-    # Caption
-    draw.text(
-        (w / 2, h - 30),
-        "MCP プロトコル経由で、Claude Desktop からも freee 会計データを context に検索可能",
+        (90, 355),
+        "   一次資料: 経産省 / 租税特別措置法 第42条の12の7",
         font=find_jp_font(15),
         fill=FG_MUTE,
-        anchor="mm",
+        anchor="la",
     )
-    img.save(HERE / "04-mcp-claude-desktop.png", "PNG", optimize=True)
+    draw.text(
+        (90, 400),
+        "3. IT 導入補助金 2026 (デジタル枠)",
+        font=find_jp_font(18),
+        fill=FG,
+        anchor="la",
+    )
+    draw.text(
+        (90, 430),
+        "   一次資料: 中小企業庁 IT 導入補助金事務局",
+        font=find_jp_font(15),
+        fill=FG_MUTE,
+        anchor="la",
+    )
+    draw.text(
+        (90, 475),
+        "各項目は制度名・適用期間・出典 URL・取得日時をまとめて表示します。",
+        font=find_jp_font(16),
+        fill=ACCENT,
+        anchor="la",
+    )
+    img.save(HERE / "04-evidence-prefetch.png", "PNG", optimize=True)
 
 
 def screenshot_disclaimer() -> None:
@@ -428,7 +412,7 @@ def main() -> None:
     screenshot_subsidy()
     screenshot_tax()
     screenshot_invoice()
-    screenshot_claude_mcp()
+    screenshot_evidence_prefetch()
     screenshot_disclaimer()
     print("Generated:")
     for f in sorted(HERE.glob("*.png")):

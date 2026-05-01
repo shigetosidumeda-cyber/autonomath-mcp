@@ -8,8 +8,8 @@ import assert from 'node:assert/strict';
 process.env.FREEE_CLIENT_ID = 'test_client_id';
 process.env.FREEE_CLIENT_SECRET = 'test_client_secret';
 process.env.PLUGIN_BASE_URL = 'https://test.example.com';
-process.env.ZEIMU_KAIKEI_API_BASE = 'https://api.test.zeimu-kaikei.ai';
-process.env.ZEIMU_KAIKEI_API_KEY = 'zk_test_KEY_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+process.env.JPCITE_API_BASE = 'https://api.test.jpcite.com';
+process.env.JPCITE_API_KEY = 'am_test_KEY_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 process.env.SESSION_SECRET = 'a'.repeat(40);
 process.env.NODE_ENV = 'test';
 
@@ -32,11 +32,28 @@ test('PLUGIN_BASE_URL strips trailing slash', () => {
   process.env.PLUGIN_BASE_URL = 'https://test.example.com';
 });
 
-test('ZEIMU_KAIKEI_API_BASE has a sane default', () => {
-  const saved = process.env.ZEIMU_KAIKEI_API_BASE;
+test('JPCITE_API_BASE has a sane default', () => {
+  const saved = process.env.JPCITE_API_BASE;
+  delete process.env.JPCITE_API_BASE;
+  assert.equal(ENV.JPCITE_API_BASE, 'https://api.jpcite.com');
+  process.env.JPCITE_API_BASE = saved;
+});
+
+test('legacy ZEIMU_KAIKEI aliases still work', () => {
+  const savedBase = process.env.JPCITE_API_BASE;
+  const savedKey = process.env.JPCITE_API_KEY;
+  delete process.env.JPCITE_API_BASE;
+  delete process.env.JPCITE_API_KEY;
+  process.env.ZEIMU_KAIKEI_API_BASE = 'https://legacy-api.test.jpcite.com';
+  process.env.ZEIMU_KAIKEI_API_KEY = 'legacy_test_key';
+
+  assert.equal(ENV.JPCITE_API_BASE, 'https://legacy-api.test.jpcite.com');
+  assert.equal(ENV.JPCITE_API_KEY, 'legacy_test_key');
+
+  process.env.JPCITE_API_BASE = savedBase;
+  process.env.JPCITE_API_KEY = savedKey;
   delete process.env.ZEIMU_KAIKEI_API_BASE;
-  assert.equal(ENV.ZEIMU_KAIKEI_API_BASE, 'https://api.zeimu-kaikei.ai');
-  process.env.ZEIMU_KAIKEI_API_BASE = saved;
+  delete process.env.ZEIMU_KAIKEI_API_KEY;
 });
 
 test('assertEnv rejects short SESSION_SECRET', () => {

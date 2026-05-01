@@ -1,4 +1,4 @@
-"""zeimu-kaikei.ai の REST API へのプロキシエンドポイント。
+"""jpcite.com の REST API へのプロキシエンドポイント。
 
 エンドポイント (全て session 認可必須):
   POST /mf-plugin/search-tax-incentives        → /v1/am/tax/search
@@ -8,8 +8,8 @@
   POST /mf-plugin/search-court-decisions       → /v1/court_decisions/search
 
 仕様:
-  - upstream の zeimu-kaikei.ai に対しては Bookyou 所有の **サービスキー**
-    (zk_live_...) を X-API-Key ヘッダで付与する。MF の access_token は
+  - upstream の jpcite API に対しては Bookyou 所有の **サービスキー**
+    を X-API-Key ヘッダで付与する。MF の access_token は
     upstream には**転送しない** (ヘッダリーク防止)。
   - upstream のレスポンスはそのまま返すが、`_disclaimer` フィールドが無ければ
     付与する (税理士法 §52 への一貫性)。
@@ -59,13 +59,13 @@ async def _proxy_get(request: Request, upstream_path: str, params: dict[str, Any
     settings = request.app.state.settings
     sess = _ensure_authed(request)
     headers = {
-        "X-API-Key": settings.zeimu_kaikei_api_key,
+        "X-API-Key": settings.jpcite_api_key,
         "Accept": "application/json",
         # tenant_uid はあくまで識別子。氏名やメール等の PII は転送しない。
         "X-MF-Tenant-Uid": sess.get("tenant_uid") or "",
         "X-Plugin-Source": "mf-cloud",
     }
-    url = f"{settings.zeimu_kaikei_base_url.rstrip('/')}{upstream_path}"
+    url = f"{settings.jpcite_api_base.rstrip('/')}{upstream_path}"
     async with httpx.AsyncClient(timeout=15.0) as client:
         resp = await client.get(url, params=params, headers=headers)
     if resp.status_code >= 500:
