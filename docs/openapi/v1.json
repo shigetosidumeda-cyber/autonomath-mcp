@@ -10216,7 +10216,7 @@
             "type": "array"
           },
           "plan": {
-            "default": "business",
+            "default": "metered",
             "title": "Plan",
             "type": "string"
           },
@@ -10475,27 +10475,20 @@
             }
           },
           {
+            "description": "Industry slug. Prefer agriculture_forestry or manufacturing; legacy agri/manufacture aliases are accepted.",
             "in": "query",
             "name": "industry",
             "required": false,
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "agriculture_forestry",
-                    "manufacturing",
-                    "manufacture",
-                    "it",
-                    "service",
-                    "construction",
-                    "retail"
-                  ],
                   "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
+              "description": "Industry slug. Prefer agriculture_forestry or manufacturing; legacy agri/manufacture aliases are accepted.",
               "title": "Industry"
             }
           },
