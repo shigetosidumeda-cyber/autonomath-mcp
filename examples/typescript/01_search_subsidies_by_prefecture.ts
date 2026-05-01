@@ -7,12 +7,12 @@
  * When the TS SDK is published, replace the `fetch` call with:
  *
  *     import { Client } from "@autonomath/client";
- *     const c = new Client({ apiKey: process.env.AUTONOMATH_API_KEY });
+ *     const c = new Client({ apiKey: process.env.JPCITE_API_KEY });
  *     const data = await c.searchPrograms({ prefecture: "青森県", tier: ["S", "A"], amount_min: 500, limit: 10 });
  *
  * env vars:
  *   JPINTEL_API_KEY   (optional)
- *   JPINTEL_API_BASE  (default: http://localhost:8080)
+ *   JPINTEL_API_BASE  (default: https://api.jpcite.com)
  *
  * run:
  *   npm install
@@ -28,7 +28,7 @@
  *   total matches: 3
  */
 
-const API_BASE = process.env.JPINTEL_API_BASE ?? "http://localhost:8080";
+const API_BASE = process.env.JPINTEL_API_BASE ?? "https://api.jpcite.com";
 const API_KEY = process.env.JPINTEL_API_KEY;
 
 type ProgramRow = {

@@ -1,11 +1,11 @@
 {
   "dxt_version": "0.1",
   "name": "autonomath-mcp",
-  "display_name": "AutonoMath — 日本の制度 API",
+  "display_name": "jpcite — 日本の制度 API",
   "version": "0.3.2",
   "icon": "icon.png",
-  "description": "日本の制度 (補助金 11,684 / 法令本文 154 + 法令メタデータ 9,484 / 判例 2,065 / 税制 50 / 適格事業者 13,801 / 採択事例 2,286 / 行政処分 1,185 / 入札 362 / 融資 108) を REST + MCP API (93 tools) で横断検索。一次資料 URL 付き、¥3/req metered (税込 ¥3.30) 完全従量、anon 3/日 per IP free。",
-  "long_description": "Search Japanese institutional public data via REST + MCP API. Coverage: 11,684 searchable subsidies (補助金/融資/税制/認定; tier S=114 / A=1,340 / B=4,186 / C=6,044; full table 14,472 incl. 2,788 public-hold/quarantine rows) + 154 laws full-text indexed + 9,484 law catalog stubs (e-Gov, CC-BY; full-text load incremental) + 2,065 court decisions + 50 tax rulesets (インボイス/電帳法 + 研究開発 + IT導入会計処理) + 13,801 invoice registrants (国税庁適格事業者, PDL v1.0) + 2,286 adoption cases + 1,185 enforcement records + 108 loan products (担保 / 個人保証人 / 第三者保証人 三軸独立 enum) + 362 bids + 181 exclusion/prerequisite rules. 93 MCP tools at default gates (39 core + 50 autonomath, including industry packs pack_construction / pack_manufacturing / pack_real_estate). MCP protocol 2025-06-18. Records carry primary-source URL + fetched_at on 99%+ of rows; aggregator sources are excluded. Pricing: ¥3/req tax-exclusive (¥3.30 tax-inclusive, Stripe metered); anonymous tier 3 req/day per IP free (no signup, JST next-day reset). Not legal/tax/行政書士 advice; verify primary sources before any business decision. Operator: Bookyou株式会社 (インボイス登録番号 T8010001213708, info@bookyou.net).",
+  "description": "日本の補助金・助成金・融資・税制優遇・法令・判例・インボイス登録・行政処分情報を、一次資料URLと取得日時付きで検索できるMCP拡張です。93ツールを収録。従量課金は1リクエスト税別3円（税込3.30円）、匿名利用は1 IPあたり1日3回まで無料です。",
+  "long_description": "jpciteは、日本の制度・法令・判例・税務・入札・行政処分などの公開情報を横断検索するためのMCP拡張です。検索対象には、11,684件の検索可能な公的制度情報のほか、法令、裁判例、税務ルール、インボイス登録事業者、採択事例、融資商品、入札情報、併給制限・前提要件ルールが含まれます。93のツールを、制度探索、適合確認、証拠パケット、出典確認、デューデリジェンス、監査補助の用途ごとに利用できます。検索可能な行の99%以上に一次資料URLと取得日時を付与し、不完全なデータは注意点として明示します。料金は1リクエスト税別3円（税込3.30円）の従量課金です。匿名利用は登録不要で1 IPあたり1日3回まで無料、翌日JSTにリセットされます。法務・税務・行政書士業務の助言ではありません。重要な判断の前には必ず一次資料を確認してください。運営: Bookyou株式会社 (info@bookyou.net)。",
   "author": {
     "name": "Bookyou株式会社",
     "email": "info@bookyou.net",
@@ -16,23 +16,32 @@
   "support": "https://jpcite.com/docs/faq",
   "license": "MIT",
   "keywords": [
+    "mcp",
+    "mcp-server",
+    "mcp-tools",
     "japan",
     "japanese",
-    "subsidy",
-    "grant",
-    "loan",
+    "legal-tech",
+    "subsidies",
+    "grants",
+    "loans",
     "tax",
-    "certification",
-    "government",
+    "tax-incentives",
+    "corporate-registry",
+    "enforcement",
+    "evidence",
+    "citation",
+    "rag",
+    "agent-tools",
+    "claude",
+    "stdio",
     "補助金",
     "助成金",
     "融資",
     "税制優遇",
     "認定制度",
     "採択事例",
-    "行政処分",
-    "mcp",
-    "stdio"
+    "行政処分"
   ],
   "repository": {
     "type": "git",
@@ -46,330 +55,563 @@
       "args": [
         "autonomath-mcp"
       ],
-      "env": {}
+      "env": {
+        "JPCITE_API_BASE": "https://api.jpcite.com",
+        "JPCITE_API_KEY": ""
+      }
     }
   },
   "tools": [
     {
-      "name": "search_programs",
-      "description": "Search 11,684 searchable Japanese public programs of 14,472 total (national + prefectural subsidies, loans, tax incentives, certifications) with tier / prefecture / funding_purpose / amount filters. Tier S=114 / A=1,340 / B=4,186 / C=6,044 searchable; 2,788 public-hold/quarantine rows excluded, excluded by default. Typical args: prefecture='東京都' (47 都道府県), target_industry JSIC 1-letter (D=建設, E=製造, K=不動産…), funding_purpose ('equipment'/'it_introduction'/'gx'/'business_restructuring'). 99%+ of rows carry primary-source URL + fetched_at."
-    },
-    {
-      "name": "get_program",
-      "description": "Full enriched program detail by unified_id — A–J dimensions, source_mentions, lineage, related programs."
-    },
-    {
       "name": "batch_get_programs",
-      "description": "Batch fetch up to 50 programs by unified_id in one round-trip. Use after search_programs to hydrate selected results."
-    },
-    {
-      "name": "check_exclusions",
-      "description": "Given a candidate set of program IDs, run all 181 exclusion / prerequisite rules and return only the violations — answers \"can I combine A and B?\" in one call."
-    },
-    {
-      "name": "list_exclusion_rules",
-      "description": "Enumerate all 181 exclusion + prerequisite rules (125 exclude + 17 prerequisite + 15 absolute + 24 other) with source_url evidence. Browse the catalog; use check_exclusions to test specific combinations."
-    },
-    {
-      "name": "search_case_studies",
-      "description": "Search 2,286 採択事例 (real acceptance records, 事業再構築 + ものづくり + IT導入 etc.). Filter by prefecture / industry / program / amount."
-    },
-    {
-      "name": "get_case_study",
-      "description": "Full 採択事例 detail including applicant attributes, project scope, awarded amount, primary source."
-    },
-    {
-      "name": "search_loan_programs",
-      "description": "Search 108 融資プログラム (日本政策金融公庫 / 自治体融資 / 信金) with three-axis risk filters — 担保 / 個人保証人 / 第三者保証人 are separate enum axes for exact \"無担保・無保証人\" queries."
-    },
-    {
-      "name": "get_loan_program",
-      "description": "Full 融資 detail including 3-axis guarantor decomposition, interest rate, repayment terms, target entities, primary source."
-    },
-    {
-      "name": "search_enforcement_cases",
-      "description": "Search 1,185 行政処分 cases (指名停止 / 建設業処分 / 宅建業処分 等) to vet contractors / applicants / vendors by entity name, authority, or period."
-    },
-    {
-      "name": "get_enforcement_case",
-      "description": "Full 行政処分 detail — entity, violation type, authority, duration, effective/expiry dates, source."
-    },
-    {
-      "name": "get_meta",
-      "description": "Dataset meta — total row counts, tier distribution, prefecture distribution, exclusion rule count, last-ingest timestamp, version."
-    },
-    {
-      "name": "enum_values",
-      "description": "Probe the live canonical vocabulary for filter fields (target_type / funding_purpose / program_kind / authority_level / prefecture / event_type / ministry / loan_type / provider / programs_used). Returns top-N by frequency so callers pick real values instead of hallucinating strings that silently return 0 rows."
-    },
-    {
-      "name": "prescreen_programs",
-      "description": "Ranked pre-screening from caller profile (prefecture / sole_proprietor / planned investment / declared certifications). Fuses search_programs + check_exclusions + amount-fit in one call. Returns fit_score, match_reasons, and caveats (insufficient amount, missing prerequisite, etc.) per row — rows aren't hidden, issues are surfaced."
-    },
-    {
-      "name": "upcoming_deadlines",
-      "description": "Calendar of 補助金 / 助成金 deadlines closing within N days (default 30). Filters + sorts application_window.end_date server-side; days_remaining per row. Nationwide and prefecture-unassigned rows always pass a prefecture filter — solves \"what's due for 東京 SMBs in 30 days\" in one call."
-    },
-    {
-      "name": "search_laws",
-      "description": "Search Japanese statutes (e-Gov法令, CC-BY) by name or article text. FTS5 trigram + statute kind / jurisdiction / enforcement-date filters. Primary-source URL + fetched_at on 99%+ of rows."
-    },
-    {
-      "name": "get_law",
-      "description": "Full statute body (table of contents + all articles + supplementary provisions) by law_id."
-    },
-    {
-      "name": "list_law_revisions",
-      "description": "Timeline of amendments for one statute (enforcement date, reason, diff links) — track how a program's underlying law has shifted."
-    },
-    {
-      "name": "search_court_decisions",
-      "description": "Search Japanese court decisions (最高裁 / 高裁 / 地裁 / 簡裁) by case number, issue keyword, ruling date, or court level. Returns holdings + referenced statutes with primary-source URLs."
-    },
-    {
-      "name": "get_court_decision",
-      "description": "Full decision detail (parties, facts, issues, holding, disposition, cited statutes, lower-court history) by decision_id."
-    },
-    {
-      "name": "find_precedents_by_statute",
-      "description": "Given a law_id + article number, return court decisions that directly cite that article — surfaces actual enforcement patterns and interpretive divergence."
-    },
-    {
-      "name": "search_bids",
-      "description": "Search national + prefectural tenders (GEPS + 47 都道府県). Filter by issuing agency, category, estimated amount, procurement method. Notice URL + specification doc + publication date as lineage."
-    },
-    {
-      "name": "get_bid",
-      "description": "Full tender detail (agency, category, spec doc, eligibility, procurement method, estimated/awarded price, result) by bid_id."
+      "description": "補助金 1-50 件を 1 コールで一括取得 (batch fetch programs by unified_id — 50 round-trips collapse to one)"
     },
     {
       "name": "bid_eligible_for_profile",
-      "description": "Ranked eligibility check for a bidder profile (rank, region, sector, track record). Insufficient rank / out-of-region / no prior awards are surfaced as caveats, not hidden."
+      "description": "申請者プロフィール (等級・地域・業種・実績) から参加可能な入札案件をランク付きで返す一発判定。不足要件は hide せず caveat で surface"
     },
     {
-      "name": "search_tax_rules",
-      "description": "Search qualified-invoice + electronic-records-retention rulesets. Filter by transaction scope, transition period, qualifying requirements, penalties. Lineage to 国税庁 notices / guidance / FAQ."
-    },
-    {
-      "name": "get_tax_rule",
-      "description": "Full tax ruleset detail (requirements, transition rules, bookkeeping duties, exceptions, related Q&A) by rule_id."
-    },
-    {
-      "name": "evaluate_tax_applicability",
-      "description": "Given a transaction profile (amount, registrant flag, date, document format), return invoice + e-records applicability and required actions via rules engine."
-    },
-    {
-      "name": "search_invoice_registrants",
-      "description": "Search 国税庁 qualified invoice issuer registry (PDL v1.0, re-distributable with attribution). Filter by 法人番号, name, registration/cancellation date — counterparty registration verification and deregistration monitoring."
-    },
-    {
-      "name": "trace_program_to_law",
-      "description": "Trace a subsidy / loan program's statutory basis (unified_id → law_id + article). Indexes program_law_refs so agents can attribute the grant ordinance to its underlying law with primary-source citations."
-    },
-    {
-      "name": "find_cases_by_law",
-      "description": "Given law_id + article, return enforcement cases that directly cite that article — via enforcement_decision_refs, couples with search_enforcement_cases."
+      "name": "check_exclusions",
+      "description": "候補制度の組み合わせについて、併給禁止・前提要件ルールを確認し、抵触する可能性のある条件だけを返します。"
     },
     {
       "name": "combined_compliance_check",
-      "description": "Given a business profile + planned transactions, cross-evaluate applicable laws, precedent trends, tax requirements, and bid eligibility restrictions. Top-level cross-dataset glue: one call surfaces the full regulatory surface for a new venture."
-    },
-    {
-      "name": "smb_starter_pack",
-      "description": "SMB onboarding pack from (prefecture + industry_jsic + employees): top 補助金 + loan options + exclusion conflicts + similar case studies + recent enforcement + 30/60/90-day deadlines in a single call. Collapses a 6-call discovery chain."
-    },
-    {
-      "name": "subsidy_combo_finder",
-      "description": "Find non-conflicting subsidy + loan + tax combos for a profile (keyword / prefecture / industry_jsic). Auto-runs check_exclusions, filters distressed-loan keywords, returns ranked top-N combos in one call."
-    },
-    {
-      "name": "deadline_calendar",
-      "description": "Upcoming deadlines grouped by month for N months ahead, filterable by prefecture. Unknown prefectures surface input_warnings instead of silently empty; 0-hit prefecture result hints at national fallback."
+      "description": "事業プロフィール + 予定取引から関連する法令 / 判例傾向 / 税務要件 / 入札資格制限を横断評価。cross-dataset glue の最上位で、新規事業の制度・判例・税務・入札横断棚卸しを 1 コールで返す"
     },
     {
       "name": "dd_profile_am",
-      "description": "Due-diligence from houjin_bangou (T-prefix / hyphens / 全角 all normalized): entity + adoptions history + invoice registration + enforcement record in one call. Honesty gates on null adoption amounts + invoice mirror delta-only."
+      "description": "法人番号から採択履歴、インボイス登録状況、行政処分情報を 1 コールで束ねる due-diligence 集約。データが不完全な場合は coverage notes として明示する"
     },
     {
-      "name": "similar_cases",
-      "description": "Case-study-led discovery: from a seed case_id (or free-text description) return up to 20 similar 採択事例 ranked by weighted Jaccard (industry×2 + prefecture×1 + programs_used overlap×3). Each hit's programs_used names are best-effort resolved into programs rows (unified_id / tier / official_url) and returned as supporting_programs — the inverse of search_case_studies."
+      "name": "deadline_calendar",
+      "description": "都道府県 + 向こう N ヶ月の締切を月ごと grouped view で 1 コール返却。prefecture 未知は input_warnings envelope、該当0件は national 制度への hint を返す"
     },
     {
-      "name": "regulatory_prep_pack",
-      "description": "Industry (JSIC) + prefecture (+ optional company size) → bundles relevant 法令 / 認定制度 / 税務ruleset / recent enforcement into a single compliance starter pack. Replaces the 4-5 round trip (search_laws → programs(certification) → search_tax_rules → search_enforcement_cases). Empty / sparse sections surface honesty hints + nested error envelope."
+      "name": "enum_values",
+      "description": "検索フィルタで利用できる値を頻度順に返します。地域、制度種別、所管省庁などの候補を事前確認できます。"
     },
     {
-      "name": "subsidy_roadmap_3yr",
-      "description": "Industry (JSIC) + prefecture + company_size + funding_purpose → 3-year (default 36-month) timeline of plausibly-applicable subsidy / loan / tax application windows, bucketed into JST fiscal-year quarters (Apr-Jun=Q1). Returns timeline + by_quarter_count + total_ceiling_yen. Past from_date clamps to today JST; cycle=annual past start projects forward; empty results return nested error envelope (code/message/hint)."
+      "name": "evaluate_tax_applicability",
+      "description": "取引プロフィール (取引額 / 登録事業者フラグ / 取引日 / 書類形式) からインボイス + 電帳法の適用判定と必要対応を rules engine で返す"
     },
     {
-      "name": "search_tax_incentives",
-      "description": "Search tax measures in the autonomath entity-fact DB (税額控除 / 特別償却 / 優遇税制). Indexes 503,930 entities + 6.12M facts via FTS5 trigram + unicode61."
+      "name": "find_cases_by_law",
+      "description": "law_id + 条番号から、その条文を直接引用した行政処分事例を検索。enforcement_decision_refs 経由で search_enforcement_cases と連携"
     },
     {
-      "name": "search_certifications",
-      "description": "Search certification programs in autonomath DB (経営力向上計画 / 先端設備等導入計画 / 事業継続力強化計画 等)."
+      "name": "find_precedents_by_statute",
+      "description": "条文指定 (law_id + 条番号) からその条文を直接引用した判例を抽出。制度の運用実態・解釈揺れを把握する横断索引"
     },
     {
-      "name": "list_open_programs",
-      "description": "List currently-open program rounds from am_application_round — deadline-aware answers for '今出せるやつ' queries."
+      "name": "get_bid",
+      "description": "入札案件 1 件の完全詳細 (発注機関 / 品目 / 仕様書 / 参加資格 / 入札方式 / 予定価格 / 落札結果) を取得"
     },
     {
-      "name": "enum_values_am",
-      "description": "Probe canonical vocabulary for autonomath filter fields (authority / region / industry_jsic / record_kind / target_profile etc.). Pre-empts hallucinated filter values that return 0 rows."
+      "name": "get_case_study",
+      "description": "採択事例 1 件の完全詳細を取得 (applicant attributes + project scope + 受給額 + source_url + publication_date)"
     },
     {
-      "name": "search_by_law",
-      "description": "Find autonomath entities/facts anchored to a specific statute in am_law (e.g., 中小企業等経営強化法第X条に紐づく制度)."
+      "name": "get_court_decision",
+      "description": "判例 1 件の完全詳細 (当事者・事実関係・争点・判示事項・主文・参照条文・下級審履歴) を取得"
     },
     {
-      "name": "active_programs_at",
-      "description": "Return programs that were active on a given date — leverages am_amendment_snapshot for time-bound lookups."
+      "name": "get_enforcement_case",
+      "description": "会計検査院 事例 1 件の完全詳細を取得 (event_type / ministry / bureau / recipient_name / occurred_fiscal_years / amount_improper_grant_yen / reason_excerpt / legal_basis / source_url)"
     },
     {
-      "name": "related_programs",
-      "description": "Graph-walk am_relation (23,805 edges, 15 relation types) to surface related programs / certifications / tax measures for a given entity."
+      "name": "get_law",
+      "description": "law_id を指定して法令本文 (目次 + 全条文 + 附則) を完全取得。search_laws / find_precedents_by_statute / trace_program_to_law で返る law_id の詳細展開用"
     },
     {
-      "name": "search_acceptance_stats_am",
-      "description": "Search acceptance / adoption statistics in autonomath DB — complement to the core search_case_studies with broader fact coverage."
+      "name": "get_loan_program",
+      "description": "融資プログラム 1 件の完全詳細を取得 (3-axis 担保・保証人 decomposition + 金利 base/special + loan_period + grace_period + target_conditions)"
     },
     {
-      "name": "intent_of",
-      "description": "Extract the legislative / program intent facet from am_entity_facts — answers 'why does this program exist' with primary-source citations."
+      "name": "get_meta",
+      "description": "データの鮮度・網羅件数を確認 (total 補助金 counts, tier distribution S/A/B/C/X, prefecture counts, 181 rule count, last_ingested_at). Call before first search if user asks about coverage / freshness; otherwise skip"
     },
     {
-      "name": "reason_answer",
-      "description": "Semantic QA over autonomath facts with tiered vector indexes (am_entities_vec). Skeleton — full embedding pipeline deferred to v0.3.x."
+      "name": "get_program",
+      "description": "補助金 1 件の完全詳細を unified_id で取得 (full enriched program detail: A-J dimensions, application_window, documents, exclusions, source_mentions + lineage)"
     },
     {
-      "name": "get_am_tax_rule",
-      "description": "Full detail of a single am_tax_rule row (scope, rate, period, requirements, primary source) by rule id."
-    },
-    {
-      "name": "search_gx_programs_am",
-      "description": "Search GX (green transformation) programs in autonomath DB — deeper coverage than core search_programs for 脱炭素 / 省エネ / 再エネ facets."
-    },
-    {
-      "name": "search_loans_am",
-      "description": "Search loan products in am_loan_product (日本政策金融公庫 + 自治体 + 民間) with rate / term / collateral / guarantor filters. Complements core search_loan_programs."
-    },
-    {
-      "name": "check_enforcement_am",
-      "description": "Check enforcement / disqualification detail in am_enforcement_detail — vendor / applicant vetting beyond core search_enforcement_cases."
-    },
-    {
-      "name": "search_mutual_plans_am",
-      "description": "Search mutual insurance / 共済 plans in am_insurance_mutual (中小企業倒産防止共済 / 小規模企業共済 等)."
-    },
-    {
-      "name": "get_law_article_am",
-      "description": "Get a specific law article from am_law by statute id + article number — complement to core get_law for autonomath-side coverage."
-    },
-    {
-      "name": "list_tax_sunset_alerts",
-      "description": "List tax incentives whose effective_until expires within N days (default 365). Tax-cliff alerting for 大綱-driven sunsets (年度末 3/31 / 年末 12/31) — answers '来年度どの優遇が消えるか' in one call."
-    },
-    {
-      "name": "get_annotations",
-      "description": "V4 universal: list annotations attached to an autonomath entity (examiner_feedback / curator_note / amendment / qa kinds). 16,474 annotation rows from program-resolved examiner feedback (8,189 source rows). Surfaces program-level review notes that don't live in the structured fields."
-    },
-    {
-      "name": "validate",
-      "description": "V4 universal: run all applicable validation rules (6 generic predicates registered: required_field / format / enum / range / cross_reference / freshness) against an entity / fact / applicant_data payload. Caches results in am_validation_result keyed by canonical applicant hash. Returns per-rule pass/fail + explanation."
-    },
-    {
-      "name": "get_provenance",
-      "description": "V4 universal: full provenance ledger for an autonomath entity — every am_source row that contributed (license, fetched_at, source_url, role) plus license rollup (pdl_v1.0 / cc_by_4.0 / gov_standard / public_domain / proprietary counts). 97,272/97,272 sources have license filled."
-    },
-    {
-      "name": "get_provenance_for_fact",
-      "description": "V4 universal: provenance for a single am_entity_facts row by fact_id — which source supplied this specific (entity_id, field_name, value) tuple, with license and fetched_at."
-    },
-    {
-      "name": "list_static_resources_am",
-      "description": "Phase A: list static taxonomies bundled with autonomath (8 static taxonomies in data/autonomath_static/: prefecture / industry_jsic / target_profile / authority_level / record_kind / relation_type / event_type / funding_purpose). Pre-empts 0-hit queries from hallucinated enum values."
-    },
-    {
-      "name": "get_static_resource_am",
-      "description": "Phase A: fetch a single static taxonomy by name (e.g., 'prefecture' returns the canonical 47 都道府県 list with codes and aliases). Read-only, no DB hit."
-    },
-    {
-      "name": "list_example_profiles_am",
-      "description": "Phase A: list 5 canonical example applicant profiles (sole_proprietor_agri / smb_manufacturing_kanto / startup_it_tokyo / certified_keiei_kyouka / construction_kansai). Useful as ready-to-use payloads for prescreen / starter-pack tools and for AI-agent few-shot grounding."
-    },
-    {
-      "name": "get_example_profile_am",
-      "description": "Phase A: fetch a single example profile by id. Returns the full applicant_data dict (prefecture / industry_jsic / employees / sole_proprietor / declared_certifications / planned_investment_yen) ready for prescreen_programs / smb_starter_pack input."
-    },
-    {
-      "name": "deep_health_am",
-      "description": "Phase A: deep health probe for autonomath subsystem — DB connectivity, am_entities row count, FTS index status, vec index status, jpi_pc_program_health row count, last precompute refresh timestamp. Mounted on health_router (no AnonIpLimitDep), separate from /healthz."
+      "name": "get_tax_rule",
+      "description": "税務 ruleset 1 件の完全詳細 (適用要件 / 経過措置 / 帳簿要件 / 例外規定 / 関連 Q&A) を取得"
     },
     {
       "name": "get_usage_status",
       "description": "META: 現在のクォータ残量を確認する (probe current API quota state without consuming a slot)."
     },
     {
+      "name": "list_exclusion_rules",
+      "description": "181 本の併給禁止 / 前提要件ルールを列挙します。要綱 PDF 等の一次資料から抽出した条件を、抵触可能性の確認用に返します。"
+    },
+    {
+      "name": "list_law_revisions",
+      "description": "1 法令の改正履歴を時系列で列挙 (施行日 / 改正理由 / diff リンク)。制度の根拠法が過去どう変わったかを追跡"
+    },
+    {
+      "name": "prescreen_programs",
+      "description": "申請者プロフィール (都道府県 / 個人事業主 / 投資規模 / 保有資格) からランク付き候補 + match_reasons + caveats を返す一発判定 — search_programs + check_exclusions + amount fit チェックを 1 クエリに束ねる。曖昧入力 (Tokyo / 東京) は正規化し profile_echo で返送。amount 不足や prerequisite 未申告は row を隠さず caveat 文言で提示"
+    },
+    {
+      "name": "regulatory_prep_pack",
+      "description": "業種 (JSIC) + 都道府県 (+ 規模) で関連法令 / 認定 / 税務ruleset / 直近 enforcement を 1 コールで束ねる compliance starter pack。新規事業立ち上げ時の 4-5 往復 (search_laws → programs(certification) → search_tax_rules → search_enforcement_cases) を回避。各セクション空 / 全0件は honesty hint / nested-error envelope で返す"
+    },
+    {
+      "name": "search_bids",
+      "description": "国・自治体の入札案件 (GEPS + 47 都道府県) を横断検索。発注機関 / 品目 / 予定金額 / 入札方式 (一般競争・指名・随意契約) でフィルタ、公告 URL + 仕様書 + 公示日時を lineage として返す"
+    },
+    {
+      "name": "search_case_studies",
+      "description": "採択事例を検索 — 2,286 real 補助金 recipient profiles (company_name / 法人番号 / prefecture / JSIC 業種 / employees) paired with programs received + 受給額. For 'a business like mine actually got this' evidence; use search_programs for policy definitions"
+    },
+    {
+      "name": "search_court_decisions",
+      "description": "裁判所公開の判例 (最高裁 / 高裁 / 地裁 / 簡裁) を横断検索。事件番号・争点・判決年月日・審級でフィルタ、主文・判示事項・参照条文を一次資料 URL 付きで返す"
+    },
+    {
+      "name": "search_enforcement_cases",
+      "description": "会計検査院 不当・不正受給事例を横断検索 — 1,185 cases of improper 補助金 handling (不当請求 / 目的外使用 / 重複受給 / 資格不備). For due-diligence vetting (vendor / counterparty / 取引先 名), recipient-name substring match across reason_excerpt / source_title. Spread across METI / MAFF / 国交省 / 厚労省; not queryable elsewhere. Typical args: entity_name (法人名 / 受給者名 部分一致), authority='METI' / 'MAFF' / '国交省' / '厚労省', event_type='improper_grant' / 'purpose_violation' / 'duplicate_receipt' / 'eligibility_defect'."
+    },
+    {
+      "name": "search_invoice_registrants",
+      "description": "国税庁 適格請求書発行事業者公表システム (PDL v1.0 下流提供可) を横断検索。法人番号 / 事業者名 / 登録日 / 取消日でフィルタ、取引先の登録状況確認と失効監視に使う"
+    },
+    {
+      "name": "search_laws",
+      "description": "日本の法令 (e-Gov法令, CC-BY) を横断検索。法令名・条文本文に FTS5 trigram + 法令種別 / 所管省庁 / 施行日 の構造化フィルタを適用し、一次資料 URL + fetched_at を可能な限り付与"
+    },
+    {
+      "name": "search_loan_programs",
+      "description": "無担保・無保証 融資を 1 クエリで抽出 — 108 日本政策金融公庫 / 自治体 / 信金 融資 programs with three independent enum axes (担保 / 個人保証人 / 第三者保証人). Each axis: required / not_required / negotiable / unknown. Use this when collateral / guarantor conditions matter"
+    },
+    {
+      "name": "search_programs",
+      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索。11,684 searchable Japanese public programs with primary-source URL + fetched_at on 99%+ searchable rows; review-held rows are excluded from normal search. Typical args: prefecture='東京都', target_industry JSIC 1-letter code, funding_purpose. For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
+    },
+    {
+      "name": "search_tax_rules",
+      "description": "インボイス制度・電子帳簿保存法の施行ルール (ruleset) を横断検索。適用対象取引 / 経過措置期間 / 適格要件 / 罰則でフィルタ、国税庁告示・通達・FAQ の一次資料 lineage 付き"
+    },
+    {
+      "name": "similar_cases",
+      "description": "case_id or 自由文 description から「似た採択事例 + その制度」を逆引き返却。Jaccard 加重 (industry×2 + prefecture×1 + programs_used×3) で sort、各 hit の programs_used を programs テーブルへ best-effort 解決し supporting_programs (unified_id / tier / official_url) を同梱。search_case_studies の逆方向 entry point"
+    },
+    {
+      "name": "smb_starter_pack",
+      "description": "SMB プロフィール (都道府県 + JSIC 業種 + 従業員数) から top 補助金 / 融資 / 排他ルール / 類似採択事例 / 直近3年行政処分 / 30-60-90日締切 を 1 コール で返す 3年ロードマップ pack。6ツールchainを単発集約"
+    },
+    {
+      "name": "subsidy_combo_finder",
+      "description": "プロファイル条件 (keyword / 都道府県 / JSIC) に合う subsidy + loan + 税制 の non-conflict な組合せ top N を 1 コールで返す。check_exclusions 自動適用、ranking 済み、災害貸付等の distressed keyword は自動除外"
+    },
+    {
+      "name": "subsidy_roadmap_3yr",
+      "description": "industry (JSIC) + 都道府県 + company_size + funding_purpose から今後 N ヶ月 (default 36) の applicable 補助金/融資/税制 application window を JST 会計年度 quarter (Apr-Jun=Q1) にバケットして返す。1 call で「いつ何を申請するか」の全体地図 (timeline + by_quarter_count + total_ceiling_yen) が取れる。past from_date は today JST に clamp、cycle=annual の past start は次年度に project、空結果は nested error envelope (code/message/hint)"
+    },
+    {
+      "name": "trace_program_to_law",
+      "description": "補助金・融資制度の根拠法や根拠告示をたどり、関連する法令ID・条番号・一次資料URLを返します。"
+    },
+    {
+      "name": "upcoming_deadlines",
+      "description": "今日から within_days 以内に締切を迎える 補助金 / 助成金 を昇順で返すカレンダー。application_window.end_date を SQL 側で filter+sort し days_remaining を併記。prefecture 指定でも 全国 / prefecture 未設定 行は自動 fallback で残す — 「東京の SMB 向けで 30 日以内」を 1 コールで解ける"
+    },
+    {
+      "name": "audit_batch_evaluate",
+      "description": "複数の監査対象プロフィールを一括評価し、対象ごとの確認結果、注意点、監査調書作成時に参照しやすい項目を返します。課金は評価対象件数に応じます。"
+    },
+    {
+      "name": "compose_audit_workpaper",
+      "description": "監査ワークペーパー用の資料を対象プロフィールと確認ルールに基づいて生成します。出典、取得時点、注意書きを含み、監査意見の代替ではありません。"
+    },
+    {
+      "name": "resolve_citation_chain",
+      "description": "税務ルール、法令、通達、質疑応答、文書回答の引用関係を一次資料に基づいて整理し、監査調書の索引に使いやすい形で返します。"
+    },
+    {
+      "name": "active_programs_at",
+      "description": "指定日付時点で active な制度を返す。Historical coverage は snapshot-based のため、response の coverage notes を確認してください。"
+    },
+    {
+      "name": "check_enforcement_status",
+      "description": "法人番号または対象者名から、行政処分・失格情報の有無を確認し、デューデリジェンス向けの要約を返します。"
+    },
+    {
+      "name": "check_funding_stack",
+      "description": "複数制度の併用可否を組み合わせごとに判定し、併用可能・不可・要確認・不明の区分と確認上の注意点を返します。"
+    },
+    {
+      "name": "enum_values_extended",
+      "description": "検索対象、地域、業種、関係種別などのフィルタ候補を頻度順に列挙します。検索前の条件確認に使えます。"
+    },
+    {
+      "name": "get_tax_incentive",
+      "description": "税制優遇または税務ルールの詳細をID指定で取得します。検索結果の深掘りに使えます。"
+    },
+    {
+      "name": "get_evidence_packet",
+      "description": "対象制度の基本情報、項目ごとの出典、併給確認結果をまとめた証拠パケットを返します。1回の呼び出しにつき1リクエストとして課金されます。"
+    },
+    {
+      "name": "get_law_article",
+      "description": "法令IDと条番号を指定して特定の条文を取得します。法令検索や判例検索の結果確認に使えます。"
+    },
+    {
+      "name": "get_source_manifest",
+      "description": "制度1件について、項目ごとの出典、ライセンス、発行者、初回・最終取得日時をまとめた出典一覧を返します。出典が未登録の項目はその旨を明示します。"
+    },
+    {
       "name": "graph_traverse",
-      "description": "[KG] O7 — heterogeneous 1-3 hop knowledge-graph traversal over am_relation. 5-7 tool calls collapsed into 1 SQL walk; pure traversal (no Anthropic API)."
+      "description": "制度、法令、認定、税務ルールなどの関連関係を1〜3段階でたどり、関係する公開情報をまとめて返します。"
     },
     {
-      "name": "unified_lifecycle_calendar",
-      "description": "[O4-LIFECYCLE-CALENDAR] tax sunset + program sunset + application close + law cliff を月別/半期別 1 コール merge。"
+      "name": "list_open_programs",
+      "description": "指定日時点で公募中の制度を一覧で返します。現在利用できる制度を確認する入口として使えます。"
     },
     {
-      "name": "program_lifecycle",
-      "description": "[O4-LIFECYCLE] 制度ライフサイクル 8 段階判定 — abolished / superseded / sunset_imminent / sunset_scheduled / amended / active / not_yet / unknown を 1 コールで決定論的に返す。"
-    },
-    {
-      "name": "program_abstract_structured",
-      "description": "[I18N] R7 — return audience-targeted, closed-vocab Japanese abstract for a single program. Translation is the customer LLM's job; we never call Anthropic API. official_name_ja + legal_id must stay verbatim (i18n_hints.official_name_must_keep_ja=true)."
+      "name": "list_tax_sunset_alerts",
+      "description": "指定日数以内に期限を迎える税制優遇を列挙し、年度末・年末などの期限別に確認できます。"
     },
     {
       "name": "prerequisite_chain",
-      "description": "[R5-PREREQUISITE-CHAIN] 前提認定 chain — 対象 program に必要な認定/計画/登録 + 取得時間 + 費用を 1 コール。"
+      "description": "対象制度の申請前に必要な認定、計画、登録、想定される取得時間や費用をまとめて返します。"
+    },
+    {
+      "name": "program_abstract_structured",
+      "description": "制度1件について、対象者別に読みやすい日本語要約を返します。正式名称や法令IDは原文どおり保持します。"
+    },
+    {
+      "name": "program_lifecycle",
+      "description": "制度の状態を、廃止、後継制度あり、期限間近、期限予定、改正あり、有効、開始前、不明の区分で返します。"
+    },
+    {
+      "name": "related_programs",
+      "description": "指定した制度・法令・認定などに関連する制度群を、関係種別とともに返します。"
     },
     {
       "name": "rule_engine_check",
-      "description": "[R9-UNIFIED-RULE-ENGINE] One-tool rule evaluation across 6 corpora: exclusion (181 hand-curated rules) + compat_matrix (約4,300 sourced pairs + 約44,500 heuristic-inferred pairs marked status='unknown') + combo + subsidy + tax + validation."
+      "description": "併給制限、前提要件、補助金、税制、入力検証などのルールを横断評価し、判定結果と確認理由を返します。"
     },
     {
-      "name": "query_at_snapshot",
-      "description": "[AUDIT] R8 — pin programs query to historical dataset state. Returns rows + 3-axis audit trail (source_url + fetched_at + valid_from) for 法廷証拠 reproducibility."
+      "name": "search_acceptance_stats",
+      "description": "制度別・年度別の採択件数や金額分布など、採択実績の統計情報を検索します。"
+    },
+    {
+      "name": "search_by_law",
+      "description": "法令IDを指定して、その法令を根拠または参照元とする制度、通達、関連情報を検索します。"
+    },
+    {
+      "name": "search_certifications",
+      "description": "経営力向上計画、先端設備等導入計画、事業継続力強化計画などの認定制度を検索します。"
+    },
+    {
+      "name": "search_gx_programs",
+      "description": "脱炭素、再生可能エネルギー、GX移行に関連する補助金、融資、税制優遇を検索します。"
+    },
+    {
+      "name": "search_business_loans",
+      "description": "融資商品を期間、金利、担保・保証条件などで検索します。"
+    },
+    {
+      "name": "search_mutual_plans",
+      "description": "中小機構共済、倒産防止共済などの共済・相互扶助制度を検索します。"
+    },
+    {
+      "name": "search_tax_incentives",
+      "description": "税額控除、特別償却、各種優遇などの税制優遇を横断検索します。対象、期限、要件などで絞り込めます。"
+    },
+    {
+      "name": "unified_lifecycle_calendar",
+      "description": "税制優遇の期限、制度の終了予定、申請締切、法令上の期限を月別または半期別にまとめて返します。"
+    },
+    {
+      "name": "verify_citations",
+      "description": "引用文が一次資料に含まれるかを照合し、確認済み、推定、一致不明の区分と再確認用のチェックサムを返します。"
+    },
+    {
+      "name": "get_annotations",
+      "description": "Annotations attached to public records, including review notes, amendment notes, and QA notes. Returns structured annotations that do not fit in the main record fields"
+    },
+    {
+      "name": "get_provenance",
+      "description": "Provenance lookup for public records, including source URLs, licenses, fetched timestamps, source role, and license summary"
+    },
+    {
+      "name": "get_provenance_for_fact",
+      "description": "項目IDを指定して、その項目の出典、ライセンス、取得日時を確認します。"
+    },
+    {
+      "name": "validate",
+      "description": "必須項目、形式、選択肢、範囲、相互参照、鮮度の観点から入力データや公開情報を検証し、ルールごとの合否と説明を返します。"
+    },
+    {
+      "name": "service_health",
+      "description": "サービスのデータ更新状況、検索インデックス、主要データセットの状態を確認します。運用監視向けの診断情報を返します。"
+    },
+    {
+      "name": "get_example_profile",
+      "description": "サンプルプロフィールをID指定で取得します。制度適合確認やスターターパックの入力例として使えます。"
+    },
+    {
+      "name": "get_static_resource",
+      "description": "都道府県、業種、制度種別などの静的な参照リストを名前指定で取得します。"
+    },
+    {
+      "name": "list_example_profiles",
+      "description": "標準サンプルプロフィールの一覧を返します。個人事業主、中小企業、スタートアップ、認定取得済み事業者などの入力例を確認できます。"
+    },
+    {
+      "name": "list_static_resources",
+      "description": "利用できる静的参照リストを列挙します。地域、業種、対象者区分、所管区分などの候補確認に使えます。"
+    },
+    {
+      "name": "cite_tsutatsu",
+      "description": "Lookup a 通達 article by code. Returns title + body excerpt + source_url. 出力は citation のみで税務助言 (税理士法 §52) ではない。"
+    },
+    {
+      "name": "find_bunsho_kaitou",
+      "description": "国税庁 文書回答事例 (事前照会回答) を全文検索。出力は citation のみで税務助言 (税理士法 §52) ではない。出典 source_url で原典確認必須。"
+    },
+    {
+      "name": "find_saiketsu",
+      "description": "国税不服審判所 (KFS) 公表裁決事例 を全文検索 (FTS5 trigram on nta_saiketsu)。出力は citation のみで税務助言 (税理士法 §52) ではない。出典 source_url で原典確認必須。"
+    },
+    {
+      "name": "find_shitsugi",
+      "description": "国税庁 質疑応答事例 を全文検索 (FTS5 trigram on nta_shitsugi)。出力は citation のみで税務助言 (税理士法 §52) ではない。出典 source_url で原典確認必須。"
+    },
+    {
+      "name": "apply_eligibility_chain",
+      "description": "対象制度について、前提認定、適用ルール、併給制限を順に確認し、適合・一部適合・不適合の判定と理由、参照元を返します。"
+    },
+    {
+      "name": "find_complementary_programs",
+      "description": "基準となる制度に対して、併用候補となる制度の組み合わせ、想定上限額、競合条件、確認が必要な注意点を返します。"
+    },
+    {
+      "name": "program_active_periods",
+      "description": "制度ごとの公募期間、締切までの日数、受付中・予定・終了済みの件数、最も近い締切日を返します。"
+    },
+    {
+      "name": "simulate_application_steps",
+      "description": "申請準備の流れを確認し、必要書類、前提認定、想定審査日数、準備状況の目安を返します。専門家による申請書作成や助言の代替ではありません。"
+    },
+    {
+      "name": "track_amendment_lineage",
+      "description": "制度や関連資料の改正・更新履歴を時系列で返します。日付が確定している変更と、内容差分のみ確認できる変更を分けて表示します。"
+    },
+    {
+      "name": "bundle_application_kit",
+      "description": "制度の基本情報、準備メモ、必要書類チェックリスト、類似採択例をまとめた申請準備キットを生成します。申請書面の作成代行ではありません。"
+    },
+    {
+      "name": "cross_check_jurisdiction",
+      "description": "法人登記、インボイス登録、採択情報などの所在地情報を照合し、都道府県の不一致や確認が必要な点を返します。"
+    },
+    {
+      "name": "forecast_program_renewal",
+      "description": "過去の公募周期や更新状況に基づき、翌年度に制度が再公募される可能性と想定時期を統計的な目安として返します。"
+    },
+    {
+      "name": "match_due_diligence_questions",
+      "description": "DD question deck (30-60 items) を industry × program portfolio × 与信 risk に合わせて生成する。公開データと maintained template library に基づく。"
+    },
+    {
+      "name": "prepare_kessan_briefing",
+      "description": "前回決算以降の制度適合条件や税制関連情報の変更点を、月次または四半期の概要として返します。税務代理ではなく確認用の資料です。"
+    },
+    {
+      "name": "pack_construction",
+      "description": "建設業向けに、関連度の高い制度、国税不服審判所の裁決事例、関連通達をまとめて返します。情報検索用であり、税務助言ではありません。"
+    },
+    {
+      "name": "pack_manufacturing",
+      "description": "製造業向けに、関連度の高い制度、国税不服審判所の裁決事例、関連通達をまとめて返します。情報検索用であり、税務助言ではありません。"
+    },
+    {
+      "name": "pack_real_estate",
+      "description": "不動産業向けに、関連度の高い制度、国税不服審判所の裁決事例、関連通達をまとめて返します。情報検索用であり、税務助言ではありません。"
     }
   ],
   "resources": [
-    {"uri": "autonomath://schema/data_model", "name": "Data Model", "description": "Canonical DB schema overview (tables, columns, relationships).", "mimeType": "text/markdown"},
-    {"uri": "autonomath://schema/record_kinds", "name": "record_kind enum", "description": "Discriminator values for am_entities.record_kind.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://schema/envelope", "name": "Response envelope schema (v2)", "description": "Canonical JSON envelope shape every tool returns.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://schema/tool_manifest", "name": "Tool manifest (summary)", "description": "Quick reference for the 50 autonomath tools.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://policy/primary_source", "name": "Primary-Source Policy", "description": "Rule that every fact must trace to a government primary source.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://policy/no_hallucination", "name": "No-Hallucination Policy", "description": "Hard rules the client LLM must follow when speaking on top of AutonoMath data.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://policy/tos_excerpt", "name": "Terms of Service excerpt", "description": "Key ToS clauses relevant to client LLM operators.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://list/authorities", "name": "Authority canonical list", "description": "All authority_canonical values in the DB, refreshed daily.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://list/prefectures", "name": "47 Prefectures", "description": "JIS X 0401 two-digit prefecture codes and names.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://list/program_kinds", "name": "program_kind enum", "description": "Sub-type vocabulary for record_kind=program.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://list/intent_types", "name": "Intent types (i01-i10)", "description": "The 10 pre-mapped query intents.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://list/graph_edge_types", "name": "Graph edge types", "description": "The 11 edge types in am_relation.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://list/certification_kinds", "name": "Certification kinds", "description": "Observed distribution of certification sub-kinds.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://list/target_profiles", "name": "Target profile vocabulary", "description": "Observed target_types values (drifting vocabulary; use ALIAS).", "mimeType": "text/markdown"},
-    {"uri": "autonomath://stats/freshness", "name": "Freshness snapshot", "description": "Row counts and last updated_at across record_kind.", "mimeType": "text/markdown"},
-    {"uri": "autonomath://taxonomies/seido", "name": "Taxonomy: seido", "description": "制度 master taxonomy (補助金/助成金/融資/税制/認定制度 codes + parent groupings).", "mimeType": "application/json"},
-    {"uri": "autonomath://taxonomies/glossary", "name": "Taxonomy: glossary", "description": "用語 glossary — Japanese subsidy/loan/tax terminology with canonical labels.", "mimeType": "application/json"},
-    {"uri": "autonomath://taxonomies/money_types", "name": "Taxonomy: money_types", "description": "助成区分 enum — 補助金/助成金/交付金/融資/保証/税制 etc. with sub-types.", "mimeType": "application/json"},
-    {"uri": "autonomath://taxonomies/obligations", "name": "Taxonomy: obligations", "description": "Post-award 義務 catalog (報告/取得財産管理/返還事由 etc.) keyed by 制度 code.", "mimeType": "application/json"},
-    {"uri": "autonomath://taxonomies/dealbreakers", "name": "Taxonomy: dealbreakers", "description": "Dealbreaker rules — disqualifying conditions per 制度 (税滞納/暴排/倒産 etc.).", "mimeType": "application/json"},
-    {"uri": "autonomath://taxonomies/sector_combos", "name": "Taxonomy: sector_combos", "description": "Sector-combination matrix — which 制度 combine cleanly across industry/size axes.", "mimeType": "application/json"},
-    {"uri": "autonomath://taxonomies/crop_library", "name": "Taxonomy: crop_library (agri)", "description": "農業 crop library — JAS 品目コード + 標準収量 + 標準作期 + 補助金マッピング.", "mimeType": "application/json"},
-    {"uri": "autonomath://taxonomies/exclusion_rules", "name": "Taxonomy: exclusion_rules (agri)", "description": "農業 exclusion rules — 制度間の併給制限/重複申請禁止/排他条件.", "mimeType": "application/json"},
-    {"uri": "autonomath://example_profiles/ichigo_20a", "name": "Example profile: ichigo_20a", "description": "Type A: 新規就農個人 — いちご 20a 施設栽培 (埼玉). Reference shape for 個人事業主 intake.", "mimeType": "application/json"},
-    {"uri": "autonomath://example_profiles/rice_200a", "name": "Example profile: rice_200a", "description": "Type D: 集落営農 — 水稲 200a + 大豆輪作 (新潟). Reference shape for 大規模法人 intake.", "mimeType": "application/json"},
-    {"uri": "autonomath://example_profiles/new_corp", "name": "Example profile: new_corp", "description": "Type C: 法人参入 — 設立 5 年以内 / 施設トマト 40a (千葉). Reference shape for 新設法人 intake.", "mimeType": "application/json"},
-    {"uri": "autonomath://example_profiles/dairy_100head", "name": "Example profile: dairy_100head", "description": "Type B: 既存農家 — フリーストール 100 頭酪農拡張 (北海道). Reference shape for 既存事業者 intake.", "mimeType": "application/json"},
-    {"uri": "autonomath://example_profiles/minimal", "name": "Example profile: minimal", "description": "Minimal viable baseline — required-only fields. Use for null/edge-case testing.", "mimeType": "application/json"}
+    {
+      "uri": "jpcite://schema/data_model",
+      "name": "Data Model",
+      "description": "Public data model overview, including record types, fields, and relationships.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://schema/record_kinds",
+      "name": "Record type vocabulary",
+      "description": "Record type values used to classify public information in jpcite.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://schema/envelope",
+      "name": "Response envelope schema (v2)",
+      "description": "Canonical JSON envelope shape every tool returns.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://schema/tool_manifest",
+      "name": "Tool manifest (summary)",
+      "description": "Quick reference for the jpcite tools.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://policy/primary_source",
+      "name": "Primary-Source Policy",
+      "description": "Rule that every fact must trace to a government primary source.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://policy/source_grounded_answers",
+      "name": "Source-Grounded Answer Policy",
+      "description": "Rules for presenting answers with citations and clear limits when using jpcite data.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://policy/tos_excerpt",
+      "name": "Terms of Service excerpt",
+      "description": "Key terms of service clauses relevant to client applications.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://list/authorities",
+      "name": "Authority canonical list",
+      "description": "Official authority names available as search filters, refreshed daily.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://list/prefectures",
+      "name": "47 Prefectures",
+      "description": "JIS X 0401 two-digit prefecture codes and names.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://list/program_kinds",
+      "name": "Program kind vocabulary",
+      "description": "Program sub-type vocabulary for subsidies, loans, tax incentives, certifications, and related programs.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://list/intent_types",
+      "name": "Intent types (i01-i10)",
+      "description": "The 10 pre-mapped query intents.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://list/graph_edge_types",
+      "name": "Graph edge types",
+      "description": "Relationship types used to connect programs, laws, certifications, and related records.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://list/certification_kinds",
+      "name": "Certification kinds",
+      "description": "Observed distribution of certification sub-kinds.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://list/target_profiles",
+      "name": "Target profile vocabulary",
+      "description": "Observed target_types values (drifting vocabulary; use ALIAS).",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://stats/freshness",
+      "name": "Freshness snapshot",
+      "description": "Record counts and latest update timestamps by record type.",
+      "mimeType": "text/markdown"
+    },
+    {
+      "uri": "jpcite://taxonomies/seido",
+      "name": "Taxonomy: seido",
+      "description": "制度 master taxonomy (補助金/助成金/融資/税制/認定制度 codes + parent groupings).",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://taxonomies/glossary",
+      "name": "Taxonomy: glossary",
+      "description": "用語 glossary — Japanese subsidy/loan/tax terminology with canonical labels.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://taxonomies/money_types",
+      "name": "Taxonomy: money_types",
+      "description": "助成区分 enum — 補助金/助成金/交付金/融資/保証/税制 etc. with sub-types.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://taxonomies/obligations",
+      "name": "Taxonomy: obligations",
+      "description": "Post-award 義務 catalog (報告/取得財産管理/返還事由 etc.) keyed by 制度 code.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://taxonomies/dealbreakers",
+      "name": "Taxonomy: dealbreakers",
+      "description": "Dealbreaker rules — disqualifying conditions per 制度 (税滞納/暴排/倒産 etc.).",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://taxonomies/sector_combos",
+      "name": "Taxonomy: sector_combos",
+      "description": "Sector-combination matrix — which 制度 combine cleanly across industry/size axes.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://taxonomies/sector_terms",
+      "name": "Taxonomy: sector_terms",
+      "description": "業種・地域・制度種別に関する用語集。検索語の正規化と絞り込みに利用します。",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://taxonomies/exclusion_rules",
+      "name": "Taxonomy: exclusion_rules",
+      "description": "制度間の併給制限、重複申請禁止、前提要件、排他条件の分類。",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://example_profiles/ichigo_20a",
+      "name": "Example profile: ichigo_20a",
+      "description": "Type A: 個人事業主の制度検索。地域、事業内容、投資予定を含む入力例。",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://example_profiles/rice_200a",
+      "name": "Example profile: rice_200a",
+      "description": "Type D: 法人・団体の制度検索。複数拠点、設備投資、雇用計画を含む入力例。",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://example_profiles/new_corp",
+      "name": "Example profile: new_corp",
+      "description": "Type C: 法人参入 — 設立 5 年以内 / 施設トマト 40a (千葉). Reference shape for 新設法人 intake.",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://example_profiles/dairy_100head",
+      "name": "Example profile: dairy_100head",
+      "description": "Type B: 既存事業者の制度検索。既存事業の拡張、設備更新、資金用途を含む入力例。",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "jpcite://example_profiles/minimal",
+      "name": "Example profile: minimal",
+      "description": "最小構成のサンプルプロフィールです。必須項目だけの入力例として使えます。",
+      "mimeType": "application/json"
+    }
   ],
   "resources_gated": [
-    {"uri": "autonomath://templates/saburoku_kyotei", "name": "36協定 template (時間外労働・休日労働協定届)", "description": "36協定 (労基法 §36) draft template. Gated behind AUTONOMATH_36_KYOTEI_ENABLED.", "mimeType": "text/plain", "gate_env": "AUTONOMATH_36_KYOTEI_ENABLED"}
+    {
+      "uri": "jpcite://templates/saburoku_kyotei",
+      "name": "36協定 template (時間外労働・休日労働協定届)",
+      "description": "36協定 (労基法 §36) の下書き支援テンプレート。利用可能なアカウントでのみ表示され、利用前に有資格者の確認が必要です。",
+      "mimeType": "text/plain",
+      "gate_env": "operator_enabled"
+    }
   ]
 }

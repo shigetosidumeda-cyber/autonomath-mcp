@@ -1,9 +1,10 @@
 // MCP stdio bridge.
 //
-// The AutonoMath MCP server is implemented in Python (PyPI: `autonomath-mcp`).
+// The jpcite MCP server is currently distributed as the Python package
+// `autonomath-mcp` for compatibility.
 // This module spawns it as a child process so Node-based MCP hosts (Claude Desktop
 // custom configs, Continue, Cline, custom agents) can use it without re-implementing
-// the 67-tool surface in TypeScript.
+// the 93-tool surface in TypeScript.
 //
 // Prerequisite:
 //   pip install autonomath-mcp
@@ -14,7 +15,7 @@
 //   import { spawnMcp } from "@autonomath/sdk/mcp";
 //
 //   const mcp = spawnMcp({
-//     apiKey: process.env.AUTONOMATH_API_KEY,
+//     apiKey: process.env.JPCITE_API_KEY,
 //   });
 //
 //   // pipe to/from your MCP host
@@ -26,13 +27,17 @@
 import { spawn, type ChildProcessWithoutNullStreams, type SpawnOptions } from "node:child_process";
 
 export interface SpawnMcpOptions {
-  /** AutonoMath API key. Sets `AUTONOMATH_API_KEY` env var for the child. */
+  /**
+   * jpcite REST/MCP API key. This is sent as X-API-Key by the child and is not
+   * an LLM provider key. Sets JPCITE_API_KEY, plus the legacy AUTONOMATH_API_KEY
+   * alias for older MCP package releases.
+   */
   apiKey?: string;
   /** Override executable. Default: "autonomath-mcp" (resolved from PATH). */
   command?: string;
   /** Extra args appended to the spawn. */
   args?: string[];
-  /** Override base URL (self-host). Sets `AUTONOMATH_BASE_URL` env. */
+  /** Override base URL (self-host). Sets JPCITE_API_BASE plus the legacy alias. */
   baseUrl?: string;
   /** Extra env vars. Merged with `process.env`. */
   env?: NodeJS.ProcessEnv;
@@ -60,8 +65,14 @@ export function spawnMcp(options: SpawnMcpOptions = {}): ChildProcessWithoutNull
     ...process.env,
     ...options.env,
   };
-  if (options.apiKey) env["AUTONOMATH_API_KEY"] = options.apiKey;
-  if (options.baseUrl) env["AUTONOMATH_BASE_URL"] = options.baseUrl;
+  if (options.apiKey) {
+    env["JPCITE_API_KEY"] = options.apiKey;
+    env["AUTONOMATH_API_KEY"] = options.apiKey;
+  }
+  if (options.baseUrl) {
+    env["JPCITE_API_BASE"] = options.baseUrl;
+    env["AUTONOMATH_API_BASE"] = options.baseUrl;
+  }
 
   const child = spawn(command, args, {
     cwd: options.cwd ?? process.cwd(),
@@ -78,7 +89,7 @@ export function spawnMcp(options: SpawnMcpOptions = {}): ChildProcessWithoutNull
  *
  *   {
  *     "mcpServers": {
- *       "autonomath": mcpServerConfig({ apiKey: "am_..." })
+ *       "jpcite": mcpServerConfig({ apiKey: "am_..." })
  *     }
  *   }
  */
@@ -92,8 +103,8 @@ export function mcpServerConfig(options: {
   env: Record<string, string>;
 } {
   const env: Record<string, string> = {};
-  if (options.apiKey) env["AUTONOMATH_API_KEY"] = options.apiKey;
-  if (options.baseUrl) env["AUTONOMATH_BASE_URL"] = options.baseUrl;
+  if (options.apiKey) env["JPCITE_API_KEY"] = options.apiKey;
+  if (options.baseUrl) env["JPCITE_API_BASE"] = options.baseUrl;
   return {
     command: options.command ?? "autonomath-mcp",
     args: [],

@@ -1,4 +1,4 @@
-// Types for AutonoMath REST API responses.
+// Types for jpcite REST API responses.
 // Hand-written to mirror server Pydantic models. Will switch to OpenAPI codegen
 // post-launch (see sdk/README.md).
 
@@ -9,7 +9,7 @@
 export type Tier = "S" | "A" | "B" | "C" | "X";
 
 export interface ClientOptions {
-  /** API key issued from https://autonomath.ai/dashboard. Optional — anonymous gets 50 req/月. */
+  /** API key issued from https://jpcite.com/dashboard. Optional; anonymous gets 3 req/day per IP. */
   apiKey?: string;
   /** Override base URL (self-host / staging). Default: https://api.jpcite.com */
   baseUrl?: string;

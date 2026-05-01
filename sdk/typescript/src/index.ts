@@ -1,4 +1,5 @@
-// @autonomath/sdk — TypeScript / JavaScript SDK for the AutonoMath REST API.
+// jpcite TypeScript / JavaScript SDK. The npm package is currently published
+// as @autonomath/sdk for compatibility.
 //
 // Zero runtime dependencies. Uses the global `fetch` (Node 20+, Deno, Bun, browsers).
 // MCP usage: `import { spawnMcp } from "@autonomath/sdk/mcp"` (spawns the
@@ -6,9 +7,9 @@
 //
 // Quickstart:
 //
-//   import { AutonoMath } from "@autonomath/sdk";
+//   import { Jpcite } from "@autonomath/sdk";
 //
-//   const am = new AutonoMath({ apiKey: process.env.AUTONOMATH_API_KEY });
+//   const am = new Jpcite({ apiKey: process.env.JPCITE_API_KEY });
 //
 //   const programs = await am.searchPrograms({ q: "省エネ", tier: ["S", "A"], limit: 5 });
 //   for (const p of programs.results) console.log(p.unified_id, p.primary_name);
@@ -18,6 +19,7 @@ import {
   AutonoMathError,
   BadRequestError,
   CapReachedError,
+  JpciteError,
   NotFoundError,
   RateLimitError,
   ServerError,
@@ -52,12 +54,12 @@ const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_RETRIES = 3;
 
 /**
- * AutonoMath REST API client.
+ * jpcite REST API client.
  *
  * One client instance covers all endpoints (programs, loans, tax incentives,
  * enforcement, laws, exclusions, dashboard, cap, me).
  */
-export class AutonoMath {
+export class Jpcite {
   public readonly baseUrl: string;
   private readonly apiKey: string | undefined;
   private readonly timeoutMs: number;
@@ -71,7 +73,7 @@ export class AutonoMath {
     this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     this.maxRetries = options.maxRetries ?? DEFAULT_MAX_RETRIES;
     const suffix = options.userAgentSuffix ? ` ${options.userAgentSuffix}` : "";
-    this.userAgent = `autonomath-sdk-typescript/${SDK_VERSION}${suffix}`;
+    this.userAgent = `jpcite-sdk-typescript/${SDK_VERSION}${suffix}`;
 
     const providedFetch = options.fetch;
     if (providedFetch) {
@@ -100,7 +102,7 @@ export class AutonoMath {
   // ─── 2. Programs (補助金 / 助成金 / 認定制度) ─────────────────────────
 
   /**
-   * Search the 10,972-row programs catalog (補助金・助成金・認定制度, S/A/B/C tiers).
+   * Search the 11,684-row searchable programs catalog (補助金・助成金・融資・税制・認定制度, S/A/B/C tiers).
    * Filters: tier, prefecture, authority_level, funding_purpose, target_type, etc.
    */
   async searchPrograms(params: SearchParams = {}): Promise<SearchResponse> {
@@ -249,7 +251,7 @@ export class AutonoMath {
     })) as CapResponse;
   }
 
-  // ─── internals ──────────────────────────────────────────────────────
+  // ─── low-level helper ───────────────────────────────────────────────
 
   /**
    * Low-level request helper. Public for advanced use cases (custom endpoints,
@@ -321,6 +323,9 @@ export class AutonoMath {
     }
   }
 }
+
+/** Compatibility alias for older @autonomath/sdk imports. Prefer Jpcite. */
+export class AutonoMath extends Jpcite {}
 
 // ────────────────────────────────────────────────────────────────────
 // Query string builders
@@ -472,6 +477,7 @@ export {
   AutonoMathError,
   BadRequestError,
   CapReachedError,
+  JpciteError,
   NotFoundError,
   RateLimitError,
   ServerError,
@@ -504,5 +510,5 @@ export type {
   Tier,
 } from "./types.js";
 
-// Test-only internals.
+// Test-only helpers.
 export const __internals = { buildSearchQuery, buildLoanQuery, buildTaxQuery, buildEnforcementQuery, shouldRetry, backoffMs };

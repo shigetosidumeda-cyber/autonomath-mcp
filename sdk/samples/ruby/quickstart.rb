@@ -1,17 +1,17 @@
 # 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 #
-# 税務会計AI — Ruby quickstart
+# jpcite — Ruby quickstart
 # ----------------------------------------------------------
 # Run: `ruby quickstart.rb`  (Ruby 3.0+; stdlib only — Net::HTTP + JSON)
-# Set ZEIMU_KAIKEI_API_KEY=sk_xxx for paid (¥3/req).
-# Without a key, runs anonymous: 50 req/月 per IP.
+# Set JPCITE_API_KEY=am_xxx for paid (¥3/req).
+# Without a key, runs anonymous: 3 req/日 per IP.
 
 require 'net/http'
 require 'uri'
 require 'json'
 
-BASE_URL = 'https://api.zeimu-kaikei.ai/v1'
-API_KEY  = ENV['ZEIMU_KAIKEI_API_KEY']
+BASE_URL = 'https://api.jpcite.com/v1'
+API_KEY  = ENV['JPCITE_API_KEY'] || ENV['AUTONOMATH_API_KEY']
 
 def call(path, params = {})
   uri = URI(BASE_URL + path)
@@ -33,9 +33,9 @@ def call(path, params = {})
 
   case res.code.to_i
   when 401
-    raise 'auth failed: check ZEIMU_KAIKEI_API_KEY'
+    raise 'auth failed: check JPCITE_API_KEY'
   when 429
-    raise "rate limited; retry-after=#{res['retry-after'] || '?'}s (anon = 50/月)"
+    raise "rate limited; retry-after=#{res['retry-after'] || '?'}s (anon = 3/日)"
   when 500..599
     raise "server error #{res.code}: try again later"
   end
@@ -60,7 +60,7 @@ begin
     puts "    - #{r['unified_id']}  [#{r['ruleset_kind']}]  #{r['ruleset_name']}"
   end
 
-  mode = API_KEY ? 'authenticated (¥3/req)' : 'anonymous (50/月 free)'
+  mode = API_KEY ? 'authenticated (¥3/req)' : 'anonymous (3/日 free)'
   puts
   puts "Mode: #{mode}"
 rescue => e

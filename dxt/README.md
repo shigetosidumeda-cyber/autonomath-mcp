@@ -1,4 +1,4 @@
-# Claude Desktop Extension (.mcpb) — AutonoMath
+# Claude Desktop Extension (.mcpb) — jpcite
 
 This directory is the source for the Anthropic Desktop Extension bundle
 (`.mcpb`, formerly `.dxt`). One-click install for Claude Desktop users:
@@ -24,7 +24,7 @@ runtime install uses `uvx autonomath-mcp` so the extension stays tiny
 - `server.json → version`
 - `server.json → packages[0].version`
 
-Bump all four in lockstep per the release checklist in `CLAUDE.md`.
+Bump all four in lockstep per the release checklist.
 
 ## Manifest schema
 
@@ -35,7 +35,7 @@ shipping format). Key invariants:
   install time)
 - `server.mcp_config.command`: `uvx`
 - `server.mcp_config.args`: `["autonomath-mcp"]`
-- `tools[]`: list all 12 exposed MCP tools with short descriptions so
+- `tools[]`: list all 93 default-on MCP tools with short descriptions so
   the Claude Desktop Extension marketplace listing shows accurate
   capabilities before install.
 
@@ -45,5 +45,4 @@ shipping format). Key invariants:
 2. Docs `/docs/getting-started/` → same download link
 3. Claude Desktop Extension marketplace submission (manual, post-launch)
 
-See `docs/_internal/mcp_registry_submissions/` for the full registry
-submission list.
+See the registry submission checklist for the full submission list.

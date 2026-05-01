@@ -1,6 +1,6 @@
-# AutonoMath starter template
+# jpcite starter template
 
-Minimal scaffold to call the [AutonoMath](https://autonomath.ai) API
+Minimal scaffold to call the [jpcite](https://jpcite.com) API
 (Japanese government program / law / case-study / enforcement search) from
 your own code in 30 seconds.
 
@@ -30,13 +30,17 @@ sdk/starter/
    cd autonomath-starter
    ```
 
-2. **Get an API key** at <https://autonomath.ai> (anonymous tier: 50
-   req/month free per IP, no signup; authenticated: ¥3/req metered).
+2. **Get an API key** at <https://jpcite.com/dashboard> (anonymous tier: 3
+   req/day free per IP, no signup; authenticated: ¥3/req metered).
    Then export it:
 
    ```bash
-   export AUTONOMATH_API_KEY=am_xxx   # optional for the anon tier
+   export JPCITE_API_KEY=am_xxx   # optional for the anon tier
    ```
+
+   `JPCITE_API_KEY` is the jpcite REST/MCP key sent as `X-API-Key`; it is
+   not an LLM provider key. Legacy `AUTONOMATH_API_KEY` is accepted only as
+   a backwards-compatible alias.
 
 3. **Run the Python example**:
 
@@ -62,20 +66,20 @@ sdk/starter/
 
 ## Pricing
 
-- **Anonymous**: 50 requests / month per IP, free, no signup. Resets
-  JST 月初 00:00.
+- **Anonymous**: 3 requests / day per IP, free, no signup. Resets
+  JST 翌日 00:00.
 - **Authenticated**: ¥3/req (税込 ¥3.30), fully metered via Stripe.
   No tier SKUs, no seat fees, no annual minimums.
 
 ## Data scope
 
-66 MCP tools / REST endpoints over a 8.29 GB primary-source-cited corpus:
+93 default-on MCP tools plus REST endpoints over a primary-source-cited corpus:
 
-- 11,547 補助金・融資・税制・認定 programs (tier S/A/B/C, excluded=0)
+- 11,684 searchable 補助金・融資・税制・認定 programs (tier S/A/B/C, excluded=0)
 - 9,484 laws (e-Gov 法令データ)
 - 2,286 採択事例 (real adoption case studies)
 - 1,185 行政処分・不正受給 enforcement records
-- 35 tax_rulesets, 2,065 court decisions, 362 bids
+- 50 tax_rulesets, 2,065 court decisions, 362 bids
 - 13,801 invoice_registrants
 
 Every row cites a primary government source; aggregators are banned.
@@ -84,8 +88,8 @@ Every row cites a primary government source; aggregators are banned.
 
 This starter template is released under **MIT** (see `LICENSE`). You can
 fork it, modify it, ship it inside commercial products. The
-**AutonoMath dataset and API** carry their own terms — see
-<https://autonomath.ai/terms> and the
+**jpcite dataset and API** carry their own terms — see
+<https://jpcite.com/tos.html> and the
 [HuggingFace dataset card](https://huggingface.co/datasets/bookyou/autonomath-japan-public-programs)
 for redistribution rules.
 

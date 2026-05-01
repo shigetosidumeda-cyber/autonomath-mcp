@@ -1,14 +1,14 @@
 <?php
 // 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 //
-// 税務会計AI — PHP quickstart
+// jpcite — PHP quickstart
 // ----------------------------------------------------------
 // Run: `php quickstart.php`  (PHP 8.0+; cURL extension only, zero composer deps)
-// Set ZEIMU_KAIKEI_API_KEY=sk_xxx for paid (¥3/req).
-// Without a key, runs anonymous: 50 req/月 per IP.
+// Set JPCITE_API_KEY=am_xxx for paid (¥3/req).
+// Without a key, runs anonymous: 3 req/日 per IP.
 
-const BASE_URL = 'https://api.zeimu-kaikei.ai/v1';
-$API_KEY = getenv('ZEIMU_KAIKEI_API_KEY') ?: null;
+const BASE_URL = 'https://api.jpcite.com/v1';
+$API_KEY = getenv('JPCITE_API_KEY') ?: (getenv('AUTONOMATH_API_KEY') ?: null);
 
 function call(string $path, array $params = []): array {
     global $API_KEY;
@@ -46,11 +46,11 @@ function call(string $path, array $params = []): array {
     $body = substr($response, $hsize);
     curl_close($ch);
 
-    if ($code === 401) throw new RuntimeException('auth failed: check ZEIMU_KAIKEI_API_KEY');
+    if ($code === 401) throw new RuntimeException('auth failed: check JPCITE_API_KEY');
     if ($code === 429) {
         preg_match('/^retry-after:\s*(\d+)/im', $rawHeaders, $m);
         $retry = $m[1] ?? '?';
-        throw new RuntimeException("rate limited; retry-after={$retry}s (anon = 50/月)");
+        throw new RuntimeException("rate limited; retry-after={$retry}s (anon = 3/日)");
     }
     if ($code >= 500) throw new RuntimeException("server error $code: try again later");
     if ($code >= 400) throw new RuntimeException("HTTP $code: $body");
@@ -75,7 +75,7 @@ try {
         echo "    - {$r['unified_id']}  [{$r['ruleset_kind']}]  {$r['ruleset_name']}\n";
     }
 
-    $mode = $API_KEY ? 'authenticated (¥3/req)' : 'anonymous (50/月 free)';
+    $mode = $API_KEY ? 'authenticated (¥3/req)' : 'anonymous (3/日 free)';
     echo "\nMode: $mode\n";
 } catch (Throwable $e) {
     fwrite(STDERR, 'ERROR: ' . $e->getMessage() . "\n");

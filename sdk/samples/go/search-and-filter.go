@@ -1,6 +1,6 @@
 // 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 //
-// 税務会計AI — Go paginated search + filter chain
+// jpcite — Go paginated search + filter chain
 // ----------------------------------------------------------
 // Run: `go run search-and-filter.go`  (Go 1.21+; stdlib only)
 // Demonstrates:
@@ -22,10 +22,17 @@ import (
 )
 
 const (
-	baseURL  = "https://api.zeimu-kaikei.ai/v1"
+	baseURL  = "https://api.jpcite.com/v1"
 	pageSize = 20
-	maxPages = 3 // cap to spare anonymous quota (50/月)
+	maxPages = 3 // cap to spare anonymous quota (3/日)
 )
+
+func apiKey() string {
+	if key := os.Getenv("JPCITE_API_KEY"); key != "" {
+		return key
+	}
+	return os.Getenv("AUTONOMATH_API_KEY")
+}
 
 type Program struct {
 	UnifiedID       string  `json:"unified_id"`
@@ -44,11 +51,11 @@ type SearchResp struct {
 func describeStatus(code int, body string) string {
 	switch {
 	case code == 401:
-		return "auth failed: ZEIMU_KAIKEI_API_KEY missing or invalid"
+		return "auth failed: JPCITE_API_KEY missing or invalid"
 	case code == 403:
 		return "forbidden: key revoked or quota exhausted"
 	case code == 429:
-		return "rate limited (anon = 50/月; auth = burst limit)"
+		return "rate limited (anon = 3/日; auth = burst limit)"
 	case code == 404:
 		return "not found"
 	case code >= 500:
@@ -63,7 +70,7 @@ func call(path string, params url.Values, attempt int) (*SearchResp, error) {
 
 	req, _ := http.NewRequest("GET", u.String(), nil)
 	req.Header.Set("Accept", "application/json")
-	if key := os.Getenv("ZEIMU_KAIKEI_API_KEY"); key != "" {
+	if key := apiKey(); key != "" {
 		req.Header.Set("X-API-Key", key)
 	}
 
@@ -110,7 +117,7 @@ func main() {
 	filters.Add("tier", "A")
 
 	auth := "anonymous"
-	if os.Getenv("ZEIMU_KAIKEI_API_KEY") != "" {
+	if apiKey() != "" {
 		auth = "authenticated"
 	}
 	fmt.Println("Filters:", filters.Encode())
@@ -153,7 +160,7 @@ func main() {
 	}
 
 	fmt.Printf("\nFetched %d programs across %d page(s).\n", totalSeen, pageNum)
-	if os.Getenv("ZEIMU_KAIKEI_API_KEY") != "" {
+	if apiKey() != "" {
 		fmt.Printf("Cost: %d req × ¥3 = ¥%d (税抜)\n", pageNum, pageNum*3)
 	}
 }

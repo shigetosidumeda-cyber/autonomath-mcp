@@ -25,8 +25,8 @@ Pinned attributes:
 | `canonical_mcp_package`          | `autonomath-mcp` (PyPI name)               |
 | `canonical_pypi_package`         | `autonomath` (sdk/python name)             |
 | `canonical_repo`                 | `shigetosidumeda-cyber/autonomath-mcp`     |
-| `canonical_api_env.api_key`      | `AUTONOMATH_API_KEY`                       |
-| `canonical_api_env.api_base`     | `AUTONOMATH_API_BASE`                      |
+| `canonical_api_env.api_key`      | `JPCITE_API_KEY`                           |
+| `canonical_api_env.api_base`     | `JPCITE_API_BASE`                          |
 | `tool_count_default_gates`       | runtime `len(mcp._tool_manager.list_tools())` |
 | `route_count`                    | runtime `len(app.routes)`                  |
 | `pyproject_version`              | `pyproject.toml [project] version`         |

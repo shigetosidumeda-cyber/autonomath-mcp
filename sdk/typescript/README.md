@@ -1,13 +1,14 @@
-# @autonomath/sdk
+# jpcite TypeScript SDK (`@autonomath/sdk`)
 
-Official TypeScript / JavaScript SDK for the [AutonoMath](https://autonomath.ai)
-REST + MCP API. Catalogs Japanese institutional programs:
+Official TypeScript / JavaScript SDK for [jpcite](https://jpcite.com)
+REST + MCP API. The package is currently published as `@autonomath/sdk`
+for compatibility. Catalogs Japanese institutional programs:
 
-- 11,547 補助金 / 助成金 / 認定制度
+- 11,684 searchable 補助金 / 助成金 / 認定制度
 - 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解)
 - 2,286 採択事例
 - 1,185 行政処分
-- 35 税制 ruleset (インボイス / 電帳法 etc.)
+- 50 税制 ruleset (インボイス / 電帳法 etc.)
 - 9,484 法令 (e-Gov, CC-BY)
 - 181 排他/前提ルール
 
@@ -18,10 +19,8 @@ Zero runtime dependencies. Works in Node 20+, Deno, Bun, modern browsers
 
 **Pre-release — npm publish pending.** Install direct from git for now:
 
-<!-- TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed. -->
-```bash
-npm install "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp.git#subdirectory=sdk/typescript"
-```
+Public npm release is pending. Until then, call the REST API directly or use the
+MCP package from Python.
 
 For the optional MCP bridge, also install the Python MCP server:
 
@@ -34,10 +33,10 @@ pipx install autonomath-mcp
 ## Quickstart
 
 ```ts
-import { AutonoMath } from "@autonomath/sdk";
+import { Jpcite } from "@autonomath/sdk";
 
-const am = new AutonoMath({
-  apiKey: process.env.AUTONOMATH_API_KEY, // optional — anonymous gets 50 req/月
+const am = new Jpcite({
+  apiKey: process.env.JPCITE_API_KEY, // optional — anonymous gets 3 req/日
 });
 
 // 1. Search programs
@@ -97,11 +96,12 @@ for (const hit of check.hits) {
 
 ## Errors
 
-All errors inherit from `AutonoMathError`:
+All SDK errors inherit from `JpciteError` (`AutonoMathError` remains as a
+compatibility alias):
 
 ```ts
 import {
-  AutonoMathError,
+  JpciteError,
   AuthError,        // 401 / 403
   BadRequestError,  // 400 / 422
   CapReachedError,  // 402 (monthly ¥-cap)
@@ -128,20 +128,26 @@ Retries are automatic for 429 (respects `Retry-After`) and 5xx
 
 ## Pricing
 
-¥3/req tax-excluded (¥3.30 incl), fully metered. Anonymous tier: 50 req/月
-per IP, JST 月初 00:00 リセット. No tier SKUs, no seat fees, no annual minimums.
-Sign up: https://autonomath.ai/
+¥3/req tax-excluded (¥3.30 incl), metered per successful billable request.
+Anonymous tier: 3 req/day per IP, JST next-day reset. No tier SKUs, no
+seat fees, no annual minimum commitment.
+Sign up: https://jpcite.com/
+
+`JPCITE_API_KEY` is the jpcite REST/MCP key sent as `X-API-Key`; it is not an
+OpenAI / Anthropic / Gemini key. The Python MCP server still accepts
+`AUTONOMATH_API_KEY` as a legacy alias.
 
 ## MCP usage (optional)
 
-The MCP server is implemented in Python (PyPI: `autonomath-mcp`, 66 tools).
+The jpcite MCP server is currently distributed as the Python package
+`autonomath-mcp` (93 tools) for compatibility.
 This package can spawn it as a child process for Node-based MCP hosts.
 
 ```ts
 import { spawnMcp, mcpServerConfig } from "@autonomath/sdk/mcp";
 
 // 1. Spawn directly
-const proc = spawnMcp({ apiKey: process.env.AUTONOMATH_API_KEY });
+const proc = spawnMcp({ apiKey: process.env.JPCITE_API_KEY });
 process.stdin.pipe(proc.stdin);
 proc.stdout.pipe(process.stdout);
 
@@ -149,19 +155,19 @@ proc.stdout.pipe(process.stdout);
 const cfg = mcpServerConfig({ apiKey: "am_..." });
 // {
 //   "mcpServers": {
-//     "autonomath": cfg
+//     "jpcite": cfg
 //   }
 // }
 ```
 
 Direct install for Claude Desktop is also available without this SDK
-(see https://autonomath.ai/docs/mcp-tools/).
+(see https://jpcite.com/docs/mcp-tools/).
 
 ## Options
 
 | Option            | Default                       | Notes                                            |
 | ----------------- | ----------------------------- | ------------------------------------------------ |
-| `apiKey`          | `undefined`                   | `X-API-Key` header. Omit for anonymous (50/月).  |
+| `apiKey`          | `undefined`                   | `X-API-Key` header. Omit for anonymous (3/day per IP). |
 | `baseUrl`         | `https://api.jpcite.com`   | Override for self-hosted deployments.            |
 | `timeoutMs`       | `30000`                       | Per-request timeout via `AbortController`.       |
 | `maxRetries`      | `3`                           | Applied to 429 and 5xx responses.                |
@@ -174,11 +180,11 @@ ESM build: ~7 KB minified, ~3 KB gzip. Zero dependencies.
 
 ## Versioning
 
-`@autonomath/sdk` follows the AutonoMath REST API version. SDK 0.2.x →
+`@autonomath/sdk` follows the jpcite REST API version. SDK 0.2.x →
 API v1, MCP protocol 2025-06-18.
 
 ## License
 
 MIT — see [LICENSE](./LICENSE).
 
-Operator: Bookyou株式会社 (T8010001213708) · info@bookyou.net
+Contact: info@bookyou.net

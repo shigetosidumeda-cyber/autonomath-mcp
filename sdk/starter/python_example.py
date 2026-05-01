@@ -1,7 +1,7 @@
-"""Minimal AutonoMath query: search 東京都 subsidies.
+"""Minimal jpcite query: search 東京都 subsidies.
 
 Run:
-    export AUTONOMATH_API_KEY=am_xxx   # optional; anon tier works without
+    export JPCITE_API_KEY=am_xxx   # optional; anon tier works without
     python python_example.py
 """
 
@@ -10,8 +10,10 @@ import json
 import urllib.request
 import urllib.parse
 
-API_BASE = os.environ.get("AUTONOMATH_API_BASE", "https://api.jpcite.com")
-API_KEY = os.environ.get("AUTONOMATH_API_KEY", "")
+API_BASE = os.environ.get("JPCITE_API_BASE") or os.environ.get(
+    "AUTONOMATH_API_BASE", "https://api.jpcite.com"
+)
+API_KEY = os.environ.get("JPCITE_API_KEY") or os.environ.get("AUTONOMATH_API_KEY", "")
 
 params = urllib.parse.urlencode({"q": "東京都", "kind": "subsidy", "limit": 5})
 req = urllib.request.Request(f"{API_BASE}/v1/programs/search?{params}")

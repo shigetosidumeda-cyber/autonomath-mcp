@@ -1,4 +1,4 @@
-"""LangChain Tool wrapper for AutonoMath /v1/programs/search.
+"""LangChain Tool wrapper for jpcite /v1/programs/search.
 
 Usage:
     from langchain_tool import autonomath_tool
@@ -8,8 +8,9 @@ Or wire into an agent:
     from langchain.agents import initialize_agent
     agent = initialize_agent([autonomath_tool], llm, ...)
 
-Pricing: ¥3/req authenticated, anonymous 50 req/month/IP free.
-Set AUTONOMATH_API_KEY env var for authenticated calls.
+Pricing: ¥3/req authenticated, anonymous 3 req/day/IP free.
+Set JPCITE_API_KEY env var for authenticated calls. This is a jpcite API key,
+not an LLM provider key.
 """
 
 from __future__ import annotations
@@ -21,8 +22,10 @@ from typing import Any
 import requests
 from langchain.tools import Tool
 
-API_BASE = os.environ.get("AUTONOMATH_API_BASE", "https://api.jpcite.com")
-API_KEY = os.environ.get("AUTONOMATH_API_KEY", "")
+API_BASE = os.environ.get("JPCITE_API_BASE") or os.environ.get(
+    "AUTONOMATH_API_BASE", "https://api.jpcite.com"
+)
+API_KEY = os.environ.get("JPCITE_API_KEY") or os.environ.get("AUTONOMATH_API_KEY", "")
 
 
 def _search_programs(query: str) -> str:
@@ -43,7 +46,7 @@ def _search_programs(query: str) -> str:
         retry = resp.headers.get("Retry-After", "?")
         return json.dumps(
             {"error": "rate_limited", "retry_after_sec": retry,
-             "hint": "anonymous tier 50 req/month — set AUTONOMATH_API_KEY for ¥3/req metered access"},
+             "hint": "anonymous tier 3 req/day — set JPCITE_API_KEY for ¥3/req metered access"},
             ensure_ascii=False,
         )
     if resp.status_code >= 400:

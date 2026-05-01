@@ -11,13 +11,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `meta()` now hits `GET /v1/meta` directly (was `/meta`, which 308-redirects
   to `/v1/meta` — wasting a round-trip and breaking strict HTTP clients that
   refuse to follow cross-prefix redirects).
-- `package.json` `description` corrected from `11,547 programs` to the
-  dedup'd S/A/B/C count `10,972 programs` (verified via
-  `SELECT tier, COUNT(*) FROM programs WHERE excluded=0 GROUP BY tier`:
-  S=116 + A=1,366 + B=3,321 + C=6,169 = 10,972).
-- `mcp.ts` header comment updated from `55-tool surface` to `67-tool surface`
-  to match `server.json` (`tool_count: 67` = 39 core + 28 autonomath).
-- `searchPrograms()` JSDoc updated from `11,547-row` to `10,972-row`
+- `package.json` `description` corrected to the current searchable S/A/B/C
+  count: `11,684 programs` (full table `14,472`, with tier X quarantine excluded
+  from search by default).
+- `mcp.ts` header comment updated to the 93 default-on MCP tool surface.
+- `searchPrograms()` JSDoc updated to the 11,684-row searchable catalog
   (S/A/B/C only, tier X quarantine excluded).
 - Bumped `SDK_VERSION` constant to match package version.
 

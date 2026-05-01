@@ -188,7 +188,7 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
         "dxt/manifest.json": canonical_blob,
         "smithery.yaml": (
             'version: "0.3.2"\nhomepage: "https://jpcite.com"\n'
-            'env: AUTONOMATH_API_KEY="" AUTONOMATH_API_BASE=""\n'
+            'env: JPCITE_API_KEY="" JPCITE_API_BASE=""\n'
             "package: autonomath-mcp\n"
             "repo: https://github.com/shigetosidumeda-cyber/autonomath-mcp\n"
             "description: 93 MCP tools at default gates\n"
@@ -207,7 +207,7 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
         "CLAUDE.md": "# autonomath-mcp\nhttps://jpcite.com — 93 MCP tools at default gates.\n",
         "sdk/python/autonomath/_shared.py": (
             'DEFAULT_BASE_URL = "https://api.jpcite.com"\n'
-            "AUTONOMATH_API_KEY_HINT = 'use env AUTONOMATH_API_KEY'\n"
+            "JPCITE_API_KEY_HINT = 'use env JPCITE_API_KEY'\n"
         ),
     }
     for rel, content in minimal_files.items():

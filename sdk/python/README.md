@@ -1,6 +1,6 @@
 # autonomath (Python SDK)
 
-Python client for the [AutonoMath](https://autonomath.ai) REST API - a catalog
+Python client for the [jpcite](https://jpcite.com) REST API - a catalog
 of Japanese institutional programs (subsidies, loans, tax incentives) with an
 exclusion-rule engine.
 

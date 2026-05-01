@@ -13,12 +13,12 @@
  *
  * When the TS SDK is published, swap the `fetch` for:
  *     import { Client } from "@autonomath/client";
- *     const c = new Client({ apiKey: process.env.AUTONOMATH_API_KEY });
+ *     const c = new Client({ apiKey: process.env.JPCITE_API_KEY });
  *     const data = await c.searchPrograms({ prefecture: "青森県", tier: ["S","A"], limit: 10 });
  *
  * env vars (set in .env.local; do NOT prefix with NEXT_PUBLIC_):
  *   JPINTEL_API_KEY     (required in production, optional for dev)
- *   JPINTEL_API_BASE    (default: http://localhost:8080)
+ *   JPINTEL_API_BASE    (default: https://api.jpcite.com)
  *
  * run (inside a Next 14+ project):
  *   npm install next react react-dom
@@ -61,7 +61,7 @@ type SearchResponse = {
 };
 
 async function searchAomori(): Promise<SearchResponse | { error: string }> {
-  const base = process.env.JPINTEL_API_BASE ?? "http://localhost:8080";
+  const base = process.env.JPINTEL_API_BASE ?? "https://api.jpcite.com";
   const key = process.env.JPINTEL_API_KEY;
 
   const qs = new URLSearchParams();

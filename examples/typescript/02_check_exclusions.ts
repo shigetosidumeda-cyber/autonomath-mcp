@@ -7,12 +7,12 @@
  * When the TS SDK is published, replace the `fetch` call with:
  *
  *     import { Client } from "@autonomath/client";
- *     const c = new Client({ apiKey: process.env.AUTONOMATH_API_KEY });
+ *     const c = new Client({ apiKey: process.env.JPCITE_API_KEY });
  *     const data = await c.checkExclusions(candidates);
  *
  * env vars:
  *   JPINTEL_API_KEY   (optional)
- *   JPINTEL_API_BASE  (default: http://localhost:8080)
+ *   JPINTEL_API_BASE  (default: https://api.jpcite.com)
  *
  * run:
  *   npm install
@@ -38,7 +38,7 @@
  *   total hits: 4 / rules_checked: 35
  */
 
-const API_BASE = process.env.JPINTEL_API_BASE ?? "http://localhost:8080";
+const API_BASE = process.env.JPINTEL_API_BASE ?? "https://api.jpcite.com";
 const API_KEY = process.env.JPINTEL_API_KEY;
 
 type ExclusionHit = {

@@ -8,7 +8,7 @@ the LLM pick programs, call this before the final answer."
 
 env vars:
     JPINTEL_API_KEY   (optional)
-    JPINTEL_API_BASE  (default: http://localhost:8080)
+    JPINTEL_API_BASE  (default: https://api.jpcite.com)
 
 run:
     pip install -r ../requirements.txt
@@ -40,7 +40,7 @@ import sys
 
 import httpx
 
-API_BASE = os.environ.get("JPINTEL_API_BASE", "http://localhost:8080")
+API_BASE = os.environ.get("JPINTEL_API_BASE", "https://api.jpcite.com")
 API_KEY = os.environ.get("JPINTEL_API_KEY")
 
 

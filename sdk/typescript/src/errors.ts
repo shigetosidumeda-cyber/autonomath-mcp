@@ -1,7 +1,7 @@
-// AutonoMath SDK errors.
+// jpcite SDK errors. Legacy AutonoMath names remain as compatibility aliases.
 //
 // Hierarchy:
-//   AutonoMathError
+//   JpciteError / AutonoMathError
 //     ├─ AuthError       (401 / 403)
 //     ├─ NotFoundError   (404)
 //     ├─ RateLimitError  (429, with retryAfter)
@@ -94,3 +94,6 @@ export class ServerError extends AutonoMathError {
     this.name = "ServerError";
   }
 }
+
+export type JpciteErrorOptions = AutonoMathErrorOptions;
+export { AutonoMathError as JpciteError };

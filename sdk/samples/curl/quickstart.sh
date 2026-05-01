@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 #
-# 税務会計AI — curl / bash quickstart
+# jpcite — curl / bash quickstart
 # ----------------------------------------------------------
 # Run: `bash quickstart.sh`  (curl + jq recommended; jq optional)
-# Set ZEIMU_KAIKEI_API_KEY=sk_xxx for paid (¥3/req).
-# Without a key, anonymous tier: 50 req/月 per IP, JST 月初リセット.
+# Set JPCITE_API_KEY=am_xxx for paid (¥3/req).
+# Without a key, anonymous tier: 3 req/日 per IP, JST 翌日 00:00 リセット.
 #
 # Errors handled by inspecting HTTP status line:
 #   401 = auth fail (check key)
@@ -14,14 +14,15 @@
 
 set -euo pipefail
 
-BASE="https://api.zeimu-kaikei.ai/v1"
+BASE="https://api.jpcite.com/v1"
 # Use a single string so bash 3.2 (macOS default) doesn't choke on empty arrays under set -u.
-if [ -n "${ZEIMU_KAIKEI_API_KEY:-}" ]; then
-  AUTH_OPT=(-H "X-API-Key: ${ZEIMU_KAIKEI_API_KEY}")
+JPCITE_KEY="${JPCITE_API_KEY:-${AUTONOMATH_API_KEY:-}}"
+if [ -n "${JPCITE_KEY}" ]; then
+  AUTH_OPT=(-H "X-API-Key: ${JPCITE_KEY}")
   MODE="authenticated (¥3/req)"
 else
   AUTH_OPT=()
-  MODE="anonymous (50/月 free)"
+  MODE="anonymous (3/日 free)"
 fi
 # safe expansion: yields nothing when AUTH_OPT is empty
 AUTH=("${AUTH_OPT[@]+${AUTH_OPT[@]}}")
@@ -74,4 +75,4 @@ curl -fsS -G "${BASE}/programs/search" "${AUTH[@]+${AUTH[@]}}" \
   | pp '{total, returned: (.results | length), first: .results[0]?.primary_name}'
 echo
 
-echo "Done. Reference: https://api.zeimu-kaikei.ai/v1/openapi.json"
+echo "Done. Reference: https://api.jpcite.com/v1/openapi.json"

@@ -1,6 +1,6 @@
 // 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 //
-// 税務会計AI — Node.js paginated search + filter chain
+// jpcite — Node.js paginated search + filter chain
 // ----------------------------------------------------------
 // Run: `node search-and-filter.js`  (Node 18+; zero deps)
 // Demonstrates:
@@ -8,15 +8,15 @@
 //   - filtering by tier + prefecture + funding_purpose
 //   - per-page error handling with HTTP 401/429/5xx coverage
 
-const BASE_URL = "https://api.zeimu-kaikei.ai/v1";
-const API_KEY = process.env.ZEIMU_KAIKEI_API_KEY || null;
+const BASE_URL = "https://api.jpcite.com/v1";
+const API_KEY = process.env.JPCITE_API_KEY || process.env.AUTONOMATH_API_KEY || null;
 const PAGE_SIZE = 20;
-const MAX_PAGES = 3; // cap so anonymous tier doesn't burn all 50/月
+const MAX_PAGES = 3; // cap so anonymous tier doesn't burn all 3/日
 
 function describeError(status, body) {
-  if (status === 401) return "auth failed: ZEIMU_KAIKEI_API_KEY missing or invalid";
+  if (status === 401) return "auth failed: JPCITE_API_KEY missing or invalid";
   if (status === 403) return "forbidden: key revoked or quota exhausted";
-  if (status === 429) return "rate limited (anon = 50/月; auth = burst limit)";
+  if (status === 429) return "rate limited (anon = 3/日; auth = burst limit)";
   if (status === 404) return "not found: check unified_id or path";
   if (status >= 500) return `server error ${status}: try again later`;
   return `HTTP ${status}: ${body}`;

@@ -344,8 +344,9 @@ def _scan_canonical_values(
                 )
             )
 
-    # Env names: README + smithery + dxt + sdk shared must use AUTONOMATH_*, not
-    # JPINTEL_*.
+    # Env names: README + smithery + dxt + sdk shared must use JPCITE_* as the
+    # canonical names. AUTONOMATH_* may remain only as an explicit legacy alias;
+    # JPINTEL_* is an older internal name and should not appear.
     env_strict_files = [
         REPO_ROOT / "README.md",
         REPO_ROOT / "smithery.yaml",
@@ -377,6 +378,34 @@ def _scan_canonical_values(
                     observed="JPINTEL_API_BASE",
                     status="DRIFT",
                     hint=f"Rename JPINTEL_API_BASE to {env_base}.",
+                )
+            )
+        if "AUTONOMATH_API_KEY" in text and env_key not in text:
+            rows.append(
+                DriftRow(
+                    field="canonical_api_env.api_key",
+                    expected=env_key,
+                    file=rel,
+                    observed="AUTONOMATH_API_KEY without canonical JPCITE alias",
+                    status="DRIFT",
+                    hint=(
+                        f"Prefer {env_key}; keep AUTONOMATH_API_KEY only as "
+                        "an explicitly documented legacy alias."
+                    ),
+                )
+            )
+        if "AUTONOMATH_API_BASE" in text and env_base not in text:
+            rows.append(
+                DriftRow(
+                    field="canonical_api_env.api_base",
+                    expected=env_base,
+                    file=rel,
+                    observed="AUTONOMATH_API_BASE without canonical JPCITE alias",
+                    status="DRIFT",
+                    hint=(
+                        f"Prefer {env_base}; keep AUTONOMATH_API_BASE only as "
+                        "an explicitly documented legacy alias."
+                    ),
                 )
             )
 

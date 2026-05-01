@@ -1,7 +1,7 @@
 {
   "name": "@autonomath/sdk",
   "version": "0.3.2",
-  "description": "Official TypeScript / JavaScript SDK for the jpcite REST + MCP API. Japanese institutional programs (補助金 / 融資 / 税制 / 認定): 10,972 programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + tax incentives + laws.",
+  "description": "Official TypeScript / JavaScript SDK for the jpcite REST + MCP API. Japanese institutional programs: 11,684 searchable programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 50 tax rulesets + laws.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,7 +31,7 @@
     "prepack": "npm run build"
   },
   "keywords": [
-    "autonomath",
+    "jpcite",
     "japan",
     "subsidy",
     "subsidies",
@@ -51,18 +51,11 @@
   ],
   "homepage": "https://jpcite.com",
   "bugs": {
-    "_comment": "TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.",
-    "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues",
+    "url": "https://jpcite.com/docs/",
     "email": "info@bookyou.net"
   },
-  "repository": {
-    "_comment": "TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp.git once the AutonoMath GitHub org is claimed.",
-    "type": "git",
-    "url": "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp.git",
-    "directory": "sdk/typescript"
-  },
   "author": {
-    "name": "Bookyou株式会社 (T8010001213708)",
+    "name": "jpcite",
     "email": "info@bookyou.net",
     "url": "https://jpcite.com"
   },

@@ -1,11 +1,11 @@
-# jpcite (旧 税務会計AI) — SDK Samples
+# jpcite — SDK Samples
 
-> **Brand**: 本サービスは 2026-04-30 に `税務会計AI` から **jpcite** へ改名されました。
-> alternateName として `税務会計AI` は残しますが、URL / API base は jpcite.com 系に統一されます。
-> 環境変数名 `ZEIMU_KAIKEI_API_KEY` は後方互換のためそのまま使えます。
+> **Brand**: URL / API base は jpcite.com 系に統一されています。
+> 環境変数名は `JPCITE_API_KEY` を使います。これは jpcite の REST/MCP API key であり、LLM provider key ではありません。
 
 Paste-and-run scripts in 5 languages. **Zero dependencies, no build step.**
-Each script reads `ZEIMU_KAIKEI_API_KEY` from env (or runs anonymous: 50 req/月 per IP).
+Each script reads `JPCITE_API_KEY` from env (or runs anonymous: 3 req/日 per IP).
+Legacy `AUTONOMATH_API_KEY` is accepted only as a backwards-compatible alias.
 
 > 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 
@@ -25,11 +25,11 @@ Each script reads `ZEIMU_KAIKEI_API_KEY` from env (or runs anonymous: 50 req/月
 
 Two paths:
 
-- **Anonymous** (no key set): 50 req/月 per IP. JST 月初 00:00 リセット. Best for evaluation.
-- **Authenticated** (set `ZEIMU_KAIKEI_API_KEY=sk_xxx`): ¥3 / req metered (税込 ¥3.30). Get a key from <https://jpcite.com/pricing>.
+- **Anonymous** (no key set): 3 req/日 per IP. JST 翌日 00:00 リセット. Best for evaluation.
+- **Authenticated** (set `JPCITE_API_KEY=am_xxx`): ¥3 / req metered (税込 ¥3.30). Get a key from <https://jpcite.com/dashboard>.
 
 ```bash
-export ZEIMU_KAIKEI_API_KEY=sk_xxx_your_key_here
+export JPCITE_API_KEY=am_xxx_your_key_here
 node sdk/samples/javascript/quickstart.js
 ```
 
@@ -50,7 +50,7 @@ Full endpoint catalog: <https://api.jpcite.com/v1/openapi.json>.
 
 | HTTP | Meaning                                | Fix                                                    |
 | ---- | -------------------------------------- | ------------------------------------------------------ |
-| 401  | Auth failed                            | Check `ZEIMU_KAIKEI_API_KEY` value                     |
+| 401  | Auth failed                            | Check `JPCITE_API_KEY` value                         |
 | 403  | Key revoked or quota exhausted         | Visit <https://jpcite.com/dashboard>                  |
 | 404  | Path or `unified_id` not found         | Verify path against `/v1/openapi.json`                 |
 | 429  | Rate limited                           | Honor `Retry-After` header (samples retry up to 2x)    |
@@ -59,9 +59,9 @@ Full endpoint catalog: <https://api.jpcite.com/v1/openapi.json>.
 ## Want a real client library?
 
 - **Python**: `pip install autonomath-mcp` — full client + MCP server in one package.
-- **TypeScript / Node**: `npm install @autonomath/sdk` — typed client with retry + MCP spawn helper.
+- **TypeScript / Node**: `@autonomath/sdk` — typed client with retry + MCP spawn helper. Use the direct git install from `sdk/typescript/README.md` until npm publish.
 
-The samples in this directory are intentionally lightweight (single-file, paste-and-run). Use the published packages above if you want typed responses, retry policy, and OpenAPI-generated models.
+The samples in this directory are intentionally lightweight (single-file, paste-and-run). Use the SDK packages above if you want typed responses, retry policy, and OpenAPI-generated models.
 
 ## Compliance notes
 

@@ -1,10 +1,10 @@
 // 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 //
-// 税務会計AI — Go quickstart
+// jpcite — Go quickstart
 // ----------------------------------------------------------
 // Run: `go run quickstart.go`  (Go 1.21+; stdlib net/http only, zero deps)
-// Set ZEIMU_KAIKEI_API_KEY=sk_xxx to use a paid key (¥3/req).
-// Without a key, runs anonymous: 50 req/月 per IP.
+// Set JPCITE_API_KEY=am_xxx to use a paid key (¥3/req).
+// Without a key, runs anonymous: 3 req/日 per IP.
 
 package main
 
@@ -17,7 +17,14 @@ import (
 	"os"
 )
 
-const baseURL = "https://api.zeimu-kaikei.ai/v1"
+const baseURL = "https://api.jpcite.com/v1"
+
+func apiKey() string {
+	if key := os.Getenv("JPCITE_API_KEY"); key != "" {
+		return key
+	}
+	return os.Getenv("AUTONOMATH_API_KEY")
+}
 
 type Program struct {
 	UnifiedID   string `json:"unified_id"`
@@ -47,7 +54,7 @@ func call(path string, params url.Values, out interface{}) error {
 
 	req, _ := http.NewRequest("GET", u.String(), nil)
 	req.Header.Set("Accept", "application/json")
-	if key := os.Getenv("ZEIMU_KAIKEI_API_KEY"); key != "" {
+	if key := apiKey(); key != "" {
 		req.Header.Set("X-API-Key", key)
 	}
 
@@ -60,9 +67,9 @@ func call(path string, params url.Values, out interface{}) error {
 	body, _ := io.ReadAll(resp.Body)
 	switch {
 	case resp.StatusCode == 401:
-		return fmt.Errorf("auth failed: check ZEIMU_KAIKEI_API_KEY")
+		return fmt.Errorf("auth failed: check JPCITE_API_KEY")
 	case resp.StatusCode == 429:
-		return fmt.Errorf("rate limited; retry-after=%s (anon = 50/月)", resp.Header.Get("Retry-After"))
+		return fmt.Errorf("rate limited; retry-after=%s (anon = 3/日)", resp.Header.Get("Retry-After"))
 	case resp.StatusCode >= 500:
 		return fmt.Errorf("server error %d: try again later", resp.StatusCode)
 	case resp.StatusCode >= 400:
@@ -102,8 +109,8 @@ func main() {
 		fmt.Printf("    - %s  [%s]  %s\n", r.UnifiedID, r.RulesetKind, r.RulesetName)
 	}
 
-	mode := "anonymous (50/月 free)"
-	if os.Getenv("ZEIMU_KAIKEI_API_KEY") != "" {
+	mode := "anonymous (3/日 free)"
+	if apiKey() != "" {
 		mode = "authenticated (¥3/req)"
 	}
 	fmt.Println("\nMode:", mode)

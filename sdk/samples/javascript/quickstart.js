@@ -1,13 +1,13 @@
 // 注: 本SDKは情報検索のみ。税理士法 §52 により、個別税務助言は税理士にご相談ください。
 //
-// 税務会計AI — JavaScript / Node.js quickstart
+// jpcite — JavaScript / Node.js quickstart
 // ----------------------------------------------------------
 // Run: `node quickstart.js`  (Node 18+; uses built-in fetch, zero deps)
-// Set ZEIMU_KAIKEI_API_KEY=sk_xxx to use a paid key (¥3/req).
-// Without a key, runs anonymous: 50 req/月 per IP, JST 月初リセット.
+// Set JPCITE_API_KEY=am_xxx to use a paid key (¥3/req).
+// Without a key, runs anonymous: 3 req/日 per IP, JST 翌日 00:00 リセット.
 
-const BASE_URL = "https://api.zeimu-kaikei.ai/v1";
-const API_KEY = process.env.ZEIMU_KAIKEI_API_KEY || null;
+const BASE_URL = "https://api.jpcite.com/v1";
+const API_KEY = process.env.JPCITE_API_KEY || process.env.AUTONOMATH_API_KEY || null;
 
 async function call(path, params = {}) {
   const url = new URL(BASE_URL + path);
@@ -19,10 +19,10 @@ async function call(path, params = {}) {
   if (API_KEY) headers["X-API-Key"] = API_KEY;
 
   const res = await fetch(url, { headers });
-  if (res.status === 401) throw new Error("auth failed: check ZEIMU_KAIKEI_API_KEY");
+  if (res.status === 401) throw new Error("auth failed: check JPCITE_API_KEY");
   if (res.status === 429) {
     const retry = res.headers.get("retry-after") || "?";
-    throw new Error(`rate limited; retry-after=${retry}s (anonymous tier = 50/月)`);
+    throw new Error(`rate limited; retry-after=${retry}s (anonymous tier = 3/日)`);
   }
   if (res.status >= 500) throw new Error(`server error ${res.status}: try again later`);
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
@@ -44,7 +44,7 @@ async function main() {
     console.log(`    - ${r.unified_id}  [${r.ruleset_kind}]  ${r.ruleset_name}`);
   }
 
-  console.log("\nMode:", API_KEY ? "authenticated (¥3/req)" : "anonymous (50/月 free)");
+  console.log("\nMode:", API_KEY ? "authenticated (¥3/req)" : "anonymous (3/日 free)");
 }
 
 main().catch((e) => {
