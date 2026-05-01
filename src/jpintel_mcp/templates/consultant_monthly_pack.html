@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ month_label }} 月次レポート — {{ client_label }} ({{ houjin_bangou_redacted }})</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 22mm 16mm; @bottom-center {
+    content: "税理士法 §52 / 弁護士法 §72 — Bookyou Inc. T8010001213708 — page " counter(page) " / " counter(pages);
+    font-size: 7pt; color: #666;
+} }
+body { font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
+       font-size: 9.5pt; color: #1a1a1a; line-height: 1.55; }
+h1 { font-size: 15pt; margin: 0 0 4mm 0; border-bottom: 0.4mm solid #2a2a2a; padding-bottom: 2mm; }
+h2 { font-size: 11pt; margin: 8mm 0 3mm 0; color: #1a3a8a; border-bottom: 0.15mm solid #ccd; padding-bottom: 1mm; }
+h3 { font-size: 9.5pt; margin: 4mm 0 1.5mm 0; color: #333; }
+.meta { font-size: 8.5pt; color: #555; margin-bottom: 6mm; }
+table { border-collapse: collapse; width: 100%; font-size: 8.8pt; margin: 2mm 0 4mm 0; }
+th, td { border: 0.15mm solid #888; padding: 1mm 2mm; text-align: left; vertical-align: top; }
+th { background: #f0f3f8; }
+.tier { font-weight: normal; color: #888; font-size: 0.85em; }
+.empty { color: #777; font-style: italic; padding: 2mm 0; }
+.disclaimer { margin-top: 8mm; padding: 3mm; border-left: 0.6mm solid #c2922c;
+              background: #fff8e1; font-size: 8.4pt; color: #444; }
+.cover dt { font-weight: bold; float: left; clear: left; width: 9em; color: #333; }
+.cover dd { margin: 0 0 1pt 10em; color: #111; }
+.amount { text-align: right; font-feature-settings: "tnum"; white-space: nowrap; }
+.section-summary { color: #666; font-size: 8.6pt; margin: -1mm 0 3mm 0; }
+ul.cite { padding-left: 4mm; margin: 1mm 0 3mm 0; font-size: 8.4pt; color: #444; }
+ul.cite li { margin-bottom: 1mm; word-break: break-all; }
+.kind-badge { display: inline-block; padding: 0.5pt 2pt; border-radius: 1.5pt;
+              background: #eef; color: #335; font-size: 8pt; }
+</style>
+</head>
+<body>
+<h1>{{ month_label }} 月次パック — {{ client_label }}</h1>
+<div class="meta">
+  発行: {{ rendered_at }} JST &nbsp;|&nbsp;
+  顧問先: {{ client_label }} (法人番号末尾4桁: {{ houjin_bangou_redacted }}) &nbsp;|&nbsp;
+  業種: {{ jsic_label }} &nbsp;|&nbsp; 所在: {{ prefecture }}
+</div>
+
+<dl class="cover">
+<dt>対象月</dt><dd>{{ month_label }}</dd>
+<dt>corpus_snapshot_id</dt><dd><code>{{ corpus_snapshot_id }}</code></dd>
+<dt>生成 request 数</dt><dd>{{ req_count }} 件 (¥3 × {{ req_count }} = ¥{{ req_yen }})</dd>
+<dt>顧問先識別子</dt><dd><code>{{ client_id_token }}</code> (税理士法人内部 ID; 法人番号は本書に含めません)</dd>
+</dl>
+
+<h2>1. 当月の制度改正 ({{ amendments|length }} 件)</h2>
+<p class="section-summary">jpcite が {{ month_label }} に検出した、本顧問先に関連する可能性のある制度改正の摘要です。</p>
+{% if amendments %}
+<table>
+  <tr><th style="width:38%">制度名</th><th style="width:14%">変更項目</th><th style="width:21%">変更前 → 変更後</th><th style="width:11%">検出日</th><th style="width:16%">tier</th></tr>
+  {% for a in amendments %}
+  <tr>
+    <td>{{ a.entity_name }}</td>
+    <td>{{ a.field_label }}</td>
+    <td>{{ a.prev_display }} → {{ a.new_display }}</td>
+    <td>{{ a.detected_date }}</td>
+    <td><span class="tier">{{ a.tier }}</span></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="empty">該当期間内に検出された制度改正はありません。</p>
+{% endif %}
+
+<h2>2. 顧問先が利用できる可能性のある制度 ({{ eligible_programs|length }} 件)</h2>
+<p class="section-summary">業種 ({{ jsic_label }}) × 所在 ({{ prefecture }}) でフィルタした補助金 / 税制 / 認定 / 融資の上位候補です (確度ベース、申込条件は必ず一次出典で確認してください)。</p>
+{% if eligible_programs %}
+<table>
+  <tr><th style="width:42%">制度名</th><th style="width:18%">所管</th><th style="width:13%">区分</th><th style="width:14%">上限額(万円)</th><th style="width:13%">tier</th></tr>
+  {% for p in eligible_programs %}
+  <tr>
+    <td>{{ p.primary_name }}</td>
+    <td>{{ p.authority_name or '—' }}</td>
+    <td><span class="kind-badge">{{ p.program_kind or '—' }}</span></td>
+    <td class="amount">{{ p.amount_max_man_yen_fmt }}</td>
+    <td><span class="tier">{{ p.tier }}</span></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="empty">該当する制度は当月の corpus snapshot からは検出されませんでした (顧問先プロファイル登録後に再生成可能)。</p>
+{% endif %}
+
+<h2>3. 同業同地域の採択事例 ({{ adoptions|length }} 件)</h2>
+<p class="section-summary">業種 medium = {{ jsic_medium }} かつ 所在 = {{ prefecture }} の他法人による直近採択事例です (法人名 / 法人番号は秘匿します)。</p>
+{% if adoptions %}
+<table>
+  <tr><th style="width:32%">プロジェクト</th><th style="width:24%">制度</th><th style="width:14%">公表日</th><th style="width:14%">交付額(万円)</th><th style="width:16%">round</th></tr>
+  {% for r in adoptions %}
+  <tr>
+    <td>{{ r.project_title or '(タイトル未掲載)' }}</td>
+    <td>{{ r.program_name_raw or '—' }}</td>
+    <td>{{ r.announced_at or '—' }}</td>
+    <td class="amount">{{ r.amount_granted_man_yen_fmt }}</td>
+    <td>{{ r.round_label or '—' }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="empty">同業同地域の採択事例は本期間 corpus からは見つかりませんでした。</p>
+{% endif %}
+
+<h2>4. 同業の行政処分 ({{ enforcements|length }} 件)</h2>
+<p class="section-summary">同業 (issuing_authority キーワード一致) の行政処分・指導・回収命令の直近事例です (リスク把握用)。</p>
+{% if enforcements %}
+<table>
+  <tr><th style="width:30%">処分機関</th><th style="width:14%">処分種別</th><th style="width:11%">公表日</th><th style="width:45%">事案要約</th></tr>
+  {% for e in enforcements %}
+  <tr>
+    <td>{{ e.issuing_authority }}</td>
+    <td><span class="kind-badge">{{ e.enforcement_kind }}</span></td>
+    <td>{{ e.issuance_date }}</td>
+    <td>{{ e.reason_truncated }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="empty">同業の直近行政処分は検出されませんでした。</p>
+{% endif %}
+
+<h2>5. 出典 URL ({{ citations|length }} 件)</h2>
+<p class="section-summary">本書に記載した全データ項目の一次出典 URL 一覧です。再現性のため URL は省略せず全件掲載します。</p>
+{% if citations %}
+<ul class="cite">
+  {% for c in citations %}
+  <li>[{{ c.section }}] {{ c.label }} — <a href="{{ c.url }}">{{ c.url }}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty">出典 URL は本月のレポートに含まれる項目がないため空です。</p>
+{% endif %}
+
+<div class="disclaimer">
+<b>境界条項 (税理士法 §52 / 弁護士法 §72)</b><br>
+本書は jpcite が公開情報を集計した <b>事実の摘要</b> です。
+個別具体的な税務助言・申告書作成・法律解釈・補助金採択可否判断は含まれません。
+税理士・弁護士・社会保険労務士・行政書士 等の有資格者が、本書を入力資料として
+ご自身の判断と責任において顧問先にご提供ください。
+本書の生成元は <b>Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)</b> で、
+原データは公的機関・各省庁・自治体の公開資料です。
+記載項目の現行内容は必ず一次出典 (上記 §5 URL) でご確認ください。
+</div>
+</body>
+</html>
