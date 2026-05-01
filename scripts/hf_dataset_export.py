@@ -30,7 +30,6 @@ attribution preserved per row in `source_url`).
 from __future__ import annotations
 
 import argparse
-import shutil
 import sqlite3
 import sys
 from pathlib import Path
@@ -38,6 +37,12 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+ETL_DIR = REPO_ROOT / "scripts" / "etl"
+if str(ETL_DIR) not in sys.path:
+    sys.path.insert(0, str(ETL_DIR))
+
+from hf_export_safety_gate import HfExportSafetyError, assert_hf_export_safe  # noqa: E402
+
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_OUTPUT = REPO_ROOT / "dist" / "hf-dataset"
 
@@ -135,14 +140,20 @@ def main() -> int:
         print(f"ERROR: DB not found: {db_path}", file=sys.stderr)
         return 1
 
-    out_dir.mkdir(parents=True, exist_ok=True)
-
     print(f"Source DB:  {db_path}")
     print(f"Output dir: {out_dir}")
     print()
 
     conn = sqlite3.connect(str(db_path))
     try:
+        try:
+            assert_hf_export_safe(conn, EXPORTS)
+        except HfExportSafetyError as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
+
+        out_dir.mkdir(parents=True, exist_ok=True)
+
         total_rows = 0
         total_bytes = 0
         for table, query in EXPORTS:
