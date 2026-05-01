@@ -18,8 +18,8 @@ Without a reconciliation pass we under-bill (lost revenue) or over-bill
 
 What it does
 ------------
-1. SQL: ``SELECT COUNT(*) FROM usage_events WHERE metered=1 AND status<400
-   AND ts >= now-24h``  → expected_usage.
+1. SQL: ``SELECT SUM(COALESCE(quantity, 1)) FROM usage_events WHERE
+   metered=1 AND status<400 AND ts >= now-24h``  -> expected_usage.
 2. Stripe: for each distinct ``api_keys.stripe_subscription_id`` seen in
    the same window, fetch the subscription_item's usage_record_summaries
    for the period and aggregate quantity. Sum across customers →
@@ -86,7 +86,7 @@ _DEFAULT_WINDOW_HOURS = 24
 
 
 # ---------------------------------------------------------------------------
-# Local side: count metered usage_events in the window.
+# Local side: sum metered usage_events quantity in the window.
 # ---------------------------------------------------------------------------
 
 
@@ -96,9 +96,9 @@ def _count_local_usage(
     since_iso: str,
     until_iso: str,
 ) -> int:
-    """Return count of metered + non-error events in [since, until)."""
+    """Return usage quantity for metered + non-error events in [since, until)."""
     cur = conn.execute(
-        "SELECT COUNT(*) FROM usage_events "
+        "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events "
         "WHERE metered=1 AND (status IS NULL OR status < 400) "
         "AND ts >= ? AND ts < ?",
         (since_iso, until_iso),
@@ -113,7 +113,7 @@ def _per_subscription_local(
     since_iso: str,
     until_iso: str,
 ) -> dict[str, int]:
-    """Return {stripe_subscription_id: local_count} for the window.
+    """Return {stripe_subscription_id: local_quantity} for the window.
 
     Joins usage_events to api_keys to recover the Stripe subscription. Keys
     with NULL stripe_subscription_id (anonymous tier requests, free quota
@@ -123,7 +123,7 @@ def _per_subscription_local(
     cur = conn.execute(
         """
         SELECT COALESCE(ak.stripe_subscription_id, '') AS sub_id,
-               COUNT(*) AS n
+               COALESCE(SUM(COALESCE(ue.quantity, 1)), 0) AS n
         FROM usage_events ue
         LEFT JOIN api_keys ak ON ak.key_hash = ue.key_hash
         WHERE ue.metered = 1

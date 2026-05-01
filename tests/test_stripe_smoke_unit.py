@@ -102,13 +102,13 @@ def test_stripe_signature_format_shape():
 
 
 def test_webhook_roundtrip_subscription_created(client, monkeypatch, seeded_db: Path):
-    """End-to-end: signed payload → FastAPI billing router → api_keys row.
+    """End-to-end: signed payload → FastAPI billing router → event row.
 
     `stripe.Webhook.construct_event` is patched to return a fixed event so
     we're not depending on webhook-secret env alignment here (that's covered
     by `test_stripe_signature_accepted_by_construct_event` above). This test
-    proves the smoke's payload *structure* is accepted by the handler and
-    lands the expected row.
+    proves the smoke's payload *structure* is accepted by the handler without
+    issuing a raw key from the webhook.
     """
     from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp.config import settings
@@ -151,17 +151,19 @@ def test_webhook_roundtrip_subscription_created(client, monkeypatch, seeded_db: 
 
     c = sqlite3.connect(seeded_db)
     try:
-        row = c.execute(
-            "SELECT tier, customer_id, revoked_at FROM api_keys "
-            "WHERE stripe_subscription_id = ?",
+        (n_keys,) = c.execute(
+            "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
             ("sub_unit_new",),
+        ).fetchone()
+        event_row = c.execute(
+            "SELECT processed_at FROM stripe_webhook_events WHERE event_id = ?",
+            ("evt_unit_sub_created",),
         ).fetchone()
     finally:
         c.close()
-    assert row is not None, "webhook did not persist api_keys row"
-    assert row[0] == "paid"
-    assert row[1] == "cus_unit_new"
-    assert row[2] is None  # not revoked
+    assert n_keys == 0
+    assert event_row is not None
+    assert event_row[0] is not None
 
 
 def test_webhook_roundtrip_payment_failed_demotes_tier(

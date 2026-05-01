@@ -26,16 +26,19 @@ Safe to re-run on the same window for two layered reasons:
   1. ``bg_task_queue`` enqueue uses ``dedup_key='stripe_backfill:{usage_event_id}'``.
      ON CONFLICT DO NOTHING means a second run that sees the same unsynced
      row simply re-uses the existing queue row.
-  2. Stripe-side ``idempotency_key='usage_{usage_event_id}'`` is stable per
-     usage event, so even if the queue row triggers two POSTs (worker retry
-     after a transient failure) Stripe deduplicates server-side.
+  2. Stripe-side idempotency uses the original
+     ``usage_events.billing_idempotency_key`` when present, otherwise falls
+     back to ``usage_{usage_event_id}``. This preserves deduplication for
+     requests that already posted to Stripe but failed before local sync was
+     marked complete.
 
 Window
 ------
-Default 72h lookback — long enough to absorb a multi-deploy weekend but
-short enough that the partial index ``idx_usage_events_stripe_sync`` keeps
-the scan O(unsynced rows). Tuneable via ``--window-hours`` if a longer
-outage requires deeper sweep (e.g. 168h after a week-long Stripe key rot).
+The cron sweeps every currently unsynced metered row, not just a recent
+lookback window. That prevents a 72h+ scheduler outage from turning old
+``stripe_synced_at IS NULL`` rows into permanent revenue loss. The
+``--window-hours`` flag remains in the report for operator context; the
+work bound is the ``--max-events`` cap.
 
 Rate limit
 ----------
@@ -52,7 +55,7 @@ Usage::
 
     python scripts/cron/stripe_usage_backfill.py            # real run
     python scripts/cron/stripe_usage_backfill.py --dry-run  # log + count only
-    python scripts/cron/stripe_usage_backfill.py --window-hours 168
+    python scripts/cron/stripe_usage_backfill.py --window-hours 168  # report window only
     python scripts/cron/stripe_usage_backfill.py --max-events 500
 
 Required env vars
@@ -97,14 +100,13 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import json
 import logging
+import sqlite3
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    import sqlite3
+from typing import Any
 
 # Allow running as a script without `pip install -e .`.
 _REPO = Path(__file__).resolve().parent.parent.parent
@@ -118,8 +120,8 @@ from jpintel_mcp.observability import heartbeat, safe_capture_message  # noqa: E
 
 logger = logging.getLogger("autonomath.cron.stripe_usage_backfill")
 
-# Window default: 72h. Longer than a typical deploy cadence, shorter than
-# the 168h bound where the partial index starts to lag for active accounts.
+# Report window default: 72h. The scanner itself has no lower time bound;
+# it orders unsynced rows by id and caps work with _DEFAULT_MAX_EVENTS.
 _DEFAULT_WINDOW_HOURS = 72
 
 # Per-run cap: 1000 rows. At ¥3/req that is ¥3,000 of usage healed per run;
@@ -127,6 +129,37 @@ _DEFAULT_WINDOW_HOURS = 72
 # backlog. Higher caps risk a single long-running cron crowding out other
 # bg_task_queue work behind the SQLite writer lock.
 _DEFAULT_MAX_EVENTS = 1000
+
+# A worker crash after claim_next() can leave a task in processing forever.
+# Backfill treats a processing row as reclaimable once it has been untouched
+# for this long.
+_STALE_PROCESSING_AFTER = timedelta(minutes=30)
+
+
+def _row_value(row: Any, name: str, index: int) -> Any:
+    return row[name] if hasattr(row, "keys") else row[index]
+
+
+def _parse_iso_utc(value: Any) -> datetime | None:
+    if not value:
+        return None
+    text = str(value)
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
+def _processing_is_stale(updated_at: Any, *, now: datetime | None = None) -> bool:
+    parsed = _parse_iso_utc(updated_at)
+    if parsed is None:
+        return True
+    return (now or datetime.now(UTC)) - parsed >= _STALE_PROCESSING_AFTER
 
 
 # ---------------------------------------------------------------------------
@@ -137,7 +170,6 @@ _DEFAULT_MAX_EVENTS = 1000
 def _select_unsynced(
     conn: sqlite3.Connection,
     *,
-    since_iso: str,
     max_events: int,
 ) -> list[dict[str, Any]]:
     """Return up to `max_events` unsynced metered events with sub_id resolved.
@@ -159,28 +191,40 @@ def _select_unsynced(
     partial index ``idx_usage_events_stripe_sync``, so the scan stays O(K)
     in unsynced rows regardless of total table size.
     """
-    cur = conn.execute(
-        """
+    select_sql = """
         SELECT ue.id           AS usage_event_id,
-               ak.stripe_subscription_id AS subscription_id
+               ak.stripe_subscription_id AS subscription_id,
+               COALESCE(ue.quantity, 1) AS quantity,
+               ue.billing_idempotency_key AS billing_idempotency_key
           FROM usage_events ue
           JOIN api_keys ak ON ak.key_hash = ue.key_hash
          WHERE ue.metered = 1
            AND (ue.status IS NULL OR ue.status < 400)
            AND ue.stripe_synced_at IS NULL
-           AND ue.ts >= ?
            AND ak.stripe_subscription_id IS NOT NULL
            AND ak.stripe_subscription_id != ''
          ORDER BY ue.id ASC
          LIMIT ?
-        """,
-        (since_iso, max_events),
-    )
+    """
+    try:
+        cur = conn.execute(select_sql, (max_events,))
+    except sqlite3.OperationalError as exc:
+        if "billing_idempotency_key" not in str(exc):
+            raise
+        cur = conn.execute(
+            select_sql.replace(
+                "ue.billing_idempotency_key AS billing_idempotency_key",
+                "NULL AS billing_idempotency_key",
+            ),
+            (max_events,),
+        )
     rows: list[dict[str, Any]] = []
     for row in cur.fetchall():
         rows.append({
             "usage_event_id": int(row[0]),
             "subscription_id": str(row[1]),
+            "quantity": int(row[2]),
+            "billing_idempotency_key": row[3] if row[3] else None,
         })
     return rows
 
@@ -195,6 +239,8 @@ def _enqueue_one(
     *,
     usage_event_id: int,
     subscription_id: str,
+    quantity: int,
+    billing_idempotency_key: str | None = None,
 ) -> tuple[bool, int | None]:
     """Enqueue a `stripe_usage_sync` task for one usage_event row.
 
@@ -210,24 +256,120 @@ def _enqueue_one(
     in the report would wobble; the pre-check keeps the breadcrumb honest.
     """
     dedup_key = f"stripe_backfill:{usage_event_id}"
+    payload = {
+        "subscription_id": subscription_id,
+        "usage_event_id": usage_event_id,
+        "quantity": quantity,
+    }
+    if billing_idempotency_key:
+        payload["idempotency_key"] = billing_idempotency_key
     existing = conn.execute(
-        "SELECT id FROM bg_task_queue WHERE dedup_key = ?",
+        "SELECT id, status, updated_at FROM bg_task_queue WHERE dedup_key = ?",
         (dedup_key,),
     ).fetchone()
     if existing is not None:
-        return False, int(existing[0])
+        existing_id = int(_row_value(existing, "id", 0))
+        existing_status = _row_value(existing, "status", 1)
+        existing_updated_at = _row_value(existing, "updated_at", 2)
+        if (
+            existing_status == "done"
+            or existing_status == "failed"
+            or (
+            existing_status == "processing"
+            and _processing_is_stale(existing_updated_at)
+            )
+        ):
+            conn.execute(
+                "UPDATE bg_task_queue "
+                "SET status = 'pending', attempts = 0, last_error = NULL, "
+                "payload_json = ?, "
+                "updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), "
+                "next_attempt_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') "
+                "WHERE id = ?",
+                (
+                    json.dumps(payload, ensure_ascii=False),
+                    existing_id,
+                ),
+            )
+            return True, existing_id
+        return False, existing_id
 
     task_id = enqueue(
         conn,
         kind="stripe_usage_sync",
-        payload={
-            "subscription_id": subscription_id,
-            "usage_event_id": usage_event_id,
-            "quantity": 1,
-        },
+        payload=payload,
         dedup_key=dedup_key,
     )
     return True, task_id
+
+
+def _select_recoverable_widget_overage_tasks(
+    conn: sqlite3.Connection,
+    *,
+    max_tasks: int,
+) -> list[dict[str, Any]]:
+    """Return stuck widget overage queue rows that need another worker pass."""
+    rows = conn.execute(
+        """
+        SELECT id, status, updated_at, dedup_key, payload_json
+          FROM bg_task_queue
+         WHERE kind = 'stripe_usage_sync'
+           AND dedup_key LIKE 'widget_overage:%'
+           AND status IN ('failed', 'processing')
+         ORDER BY id ASC
+         LIMIT ?
+        """,
+        (max_tasks,),
+    ).fetchall()
+    recoverable: list[dict[str, Any]] = []
+    for row in rows:
+        status = str(_row_value(row, "status", 1))
+        updated_at = _row_value(row, "updated_at", 2)
+        if status == "failed" or (
+            status == "processing" and _processing_is_stale(updated_at)
+        ):
+            recoverable.append(
+                {
+                    "id": int(_row_value(row, "id", 0)),
+                    "dedup_key": _row_value(row, "dedup_key", 3),
+                    "payload_json": _row_value(row, "payload_json", 4),
+                }
+            )
+    return recoverable
+
+
+def _payload_with_widget_idempotency(task: dict[str, Any]) -> str | None:
+    dedup_key = str(task.get("dedup_key") or "")
+    if not dedup_key.startswith("widget_overage:"):
+        return None
+    idempotency_key = dedup_key.removeprefix("widget_overage:")
+    try:
+        payload = json.loads(str(task.get("payload_json") or "{}"))
+    except json.JSONDecodeError:
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    payload["idempotency_key"] = idempotency_key
+    payload["quantity"] = 1
+    return json.dumps(payload, ensure_ascii=False, default=str)
+
+
+def _requeue_existing_task(conn: sqlite3.Connection, task: dict[str, Any]) -> None:
+    payload_json = _payload_with_widget_idempotency(task)
+    task_id = int(task["id"])
+    payload_clause = "payload_json = ?, " if payload_json is not None else ""
+    params: tuple[Any, ...] = (
+        (payload_json, task_id) if payload_json is not None else (task_id,)
+    )
+    conn.execute(
+        "UPDATE bg_task_queue "
+        "SET status = 'pending', attempts = 0, last_error = NULL, "
+        f"{payload_clause}"
+        "updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), "
+        "next_attempt_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') "
+        "WHERE id = ?",
+        params,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -265,12 +407,15 @@ def backfill(
     conn = connect(db_path) if db_path else connect()
     enqueued = 0
     already_queued = 0
+    widget_overage_requeued = 0
     errors = 0
     try:
-        rows = _select_unsynced(
-            conn, since_iso=since_iso, max_events=max_events,
-        )
+        rows = _select_unsynced(conn, max_events=max_events)
         scanned = len(rows)
+        widget_overage_tasks = _select_recoverable_widget_overage_tasks(
+            conn,
+            max_tasks=max_events,
+        )
 
         if dry_run:
             # Don't enqueue; just count what WOULD have been new.
@@ -284,6 +429,7 @@ def backfill(
                     enqueued += 1
                 else:
                     already_queued += 1
+            widget_overage_requeued = len(widget_overage_tasks)
         else:
             # Real run: enqueue inside a single tx so a crash mid-loop
             # doesn't half-fill the queue. The ON CONFLICT DO NOTHING
@@ -296,6 +442,8 @@ def backfill(
                             conn,
                             usage_event_id=r["usage_event_id"],
                             subscription_id=r["subscription_id"],
+                            quantity=r["quantity"],
+                            billing_idempotency_key=r.get("billing_idempotency_key"),
                         )
                         if was_new:
                             enqueued += 1
@@ -309,6 +457,9 @@ def backfill(
                             r["subscription_id"],
                             exc_info=True,
                         )
+                for task in widget_overage_tasks:
+                    _requeue_existing_task(conn, task)
+                    widget_overage_requeued += 1
                 conn.execute("COMMIT")
             except Exception:
                 with contextlib.suppress(Exception):  # pragma: no cover — defensive
@@ -323,6 +474,7 @@ def backfill(
         "scanned": scanned,
         "enqueued": enqueued,
         "already_queued": already_queued,
+        "widget_overage_requeued": widget_overage_requeued,
         "errors": errors,
         "dry_run": dry_run,
         "max_events": max_events,
@@ -335,20 +487,24 @@ def backfill(
     if not dry_run:
         safe_capture_message(
             f"stripe_usage_backfill: scanned={scanned} enqueued={enqueued} "
-            f"already_queued={already_queued} errors={errors}",
+            f"already_queued={already_queued} "
+            f"widget_overage_requeued={widget_overage_requeued} errors={errors}",
             level="error" if errors > 0 else "info",
             scanned=str(scanned),
             enqueued=str(enqueued),
             already_queued=str(already_queued),
+            widget_overage_requeued=str(widget_overage_requeued),
             errors=str(errors),
             window_hours=str(window_hours),
         )
 
     logger.info(
-        "stripe_usage_backfill done scanned=%d enqueued=%d already_queued=%d errors=%d dry_run=%s",
+        "stripe_usage_backfill done scanned=%d enqueued=%d already_queued=%d "
+        "widget_overage_requeued=%d errors=%d dry_run=%s",
         scanned,
         enqueued,
         already_queued,
+        widget_overage_requeued,
         errors,
         dry_run,
     )
