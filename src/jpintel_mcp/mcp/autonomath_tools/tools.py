@@ -47,7 +47,6 @@ from jpintel_mcp.config import settings
 from jpintel_mcp.mcp._http_fallback import (  # === S3 HTTP FALLBACK ===
     detect_fallback_mode_autonomath,
     http_call,
-    remote_only_error,
 )
 from jpintel_mcp.mcp.server import (
     _READ_ONLY,
@@ -3354,11 +3353,11 @@ __all__ = [
     "search_tax_incentives",
     "search_certifications",
     "list_open_programs",
-    "enum_values",
+    "enum_values_am",
     "search_by_law",
     "active_programs_at",
     "related_programs",
-    "search_acceptance_stats",
+    "search_acceptance_stats_am",
     "intent_of",
     "reason_answer",
 ]

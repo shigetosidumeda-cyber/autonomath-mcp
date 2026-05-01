@@ -90,6 +90,32 @@ def test_detect_fallback_mode_well_seeded(tmp_path: Path) -> None:
     assert detect_fallback_mode(db_path=db) is False
 
 
+def test_jpcite_env_names_take_precedence(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Public env names should be jpcite-first; AutonoMath names are aliases."""
+    from jpintel_mcp.mcp import _http_fallback
+
+    monkeypatch.setenv("JPCITE_API_KEY", "am_jpcite")
+    monkeypatch.setenv("AUTONOMATH_API_KEY", "am_legacy")
+    monkeypatch.setenv("JPCITE_API_BASE", "https://api.example.test/")
+    monkeypatch.setenv("AUTONOMATH_API_BASE", "https://legacy.example.test/")
+
+    assert _http_fallback._api_key() == "am_jpcite"  # type: ignore[attr-defined]
+    assert _http_fallback._api_base() == "https://api.example.test"  # type: ignore[attr-defined]
+
+
+def test_legacy_autonomath_env_alias_still_works(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Existing MCP installs using old env names must not break."""
+    from jpintel_mcp.mcp import _http_fallback
+
+    monkeypatch.delenv("JPCITE_API_KEY", raising=False)
+    monkeypatch.delenv("JPCITE_API_BASE", raising=False)
+    monkeypatch.setenv("AUTONOMATH_API_KEY", "am_legacy")
+    monkeypatch.setenv("AUTONOMATH_API_BASE", "https://legacy.example.test/")
+
+    assert _http_fallback._api_key() == "am_legacy"  # type: ignore[attr-defined]
+    assert _http_fallback._api_base() == "https://legacy.example.test"  # type: ignore[attr-defined]
+
+
 # --------------------------------------------------------------------------- #
 # Case 2: fallback mode → search_programs round-trips via HTTP
 # --------------------------------------------------------------------------- #
@@ -196,7 +222,6 @@ def test_rule_engine_check_returns_remote_only_in_fallback(
     # Reach into the registered FastMCP tool — it's defined inside a guarded
     # block, so we look it up through the mcp tool registry instead of
     # hardcoding the function reference.
-    from jpintel_mcp.mcp.server import mcp
 
     # FastMCP stores tools under ``_tools_manager`` or similar; read through
     # the public list_tools() helper if available, else fall back to the

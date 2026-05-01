@@ -42,6 +42,7 @@ import uuid
 from typing import Any
 
 __all__ = [
+    "safe_internal_error_payload",
     "safe_internal_message",
 ]
 
@@ -88,16 +89,63 @@ def safe_internal_message(
     incident_id = uuid.uuid4().hex[:12]
     log = logger or _DEFAULT_LOGGER
     prefix = f"[{tool_name}] " if tool_name else ""
+    log_extra = dict(extra or {})
+    correlation_id = _find_correlation_id(log_extra)
+    log_extra["incident_id"] = incident_id
+    if tool_name:
+        log_extra["tool_name"] = tool_name
+    if correlation_id:
+        log_extra["correlation_id"] = correlation_id
     # Using logger.exception so the full traceback lands in the log.
     # The exception text ITSELF is only ever logged, never returned.
     log.exception(
-        "%sinternal error %s: %s",
+        "%sinternal error %s%s: %s",
         prefix,
         incident_id,
+        f" correlation={correlation_id}" if correlation_id else "",
         type(exc).__name__,
-        extra=extra or {},
+        extra=log_extra,
     )
     return (
         f"internal error (incident={incident_id})",
         incident_id,
     )
+
+
+def safe_internal_error_payload(
+    exc: BaseException,
+    *,
+    logger: logging.Logger | None = None,
+    tool_name: str | None = None,
+    extra: dict[str, Any] | None = None,
+    code: str = "internal",
+    severity: str = "hard",
+) -> dict[str, Any]:
+    """Return a sanitized MCP error object for an unexpected exception.
+
+    The payload is safe to embed under ``{"error": ...}``: it contains no
+    exception class, exception message, SQL, file path, migration name, or
+    traceback. The raw exception is still logged by ``safe_internal_message``.
+    """
+    message, incident_id = safe_internal_message(
+        exc,
+        logger=logger,
+        tool_name=tool_name,
+        extra=extra,
+    )
+    return {
+        "code": code,
+        "message": message,
+        "hint": "Unhandled tool error. Retry with backoff; report the incident id if it persists.",
+        "severity": severity,
+        "documentation": f"https://jpcite.com/docs/error_handling#{code}",
+        "incident_id": incident_id,
+    }
+
+
+def _find_correlation_id(extra: dict[str, Any]) -> str | None:
+    for key in ("correlation_id", "request_id", "trace_id", "incident_id"):
+        value = extra.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None

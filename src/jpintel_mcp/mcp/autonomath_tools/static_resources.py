@@ -1,10 +1,6 @@
-"""Static resource access — pure file reads, zero compute, zero LLM.
-These tools serve curated taxonomies that don't change per request.
-
-Files served are sourced from /Users/shigetoumeda/Autonomath/ (Bookyou株式会社 internal compilation,
-proprietary license — free to redistribute as part of jpintel-mcp output).
-"""
+"""Static resource access for curated jpcite taxonomies."""
 from __future__ import annotations
+
 import json
 from functools import lru_cache
 from pathlib import Path
@@ -44,8 +40,8 @@ def list_static_resources() -> list[dict[str, object]]:
     return [
         {
             "id": rid,
-            "filename": fname,
-            "path_relative": f"data/autonomath_static/{fname}",
+            "filename": Path(fname).name,
+            "path_relative": f"jpcite/static/{rid}",
             "size_bytes": (STATIC_DIR / fname).stat().st_size,
         }
         for rid, fname in _STATIC_RESOURCES.items()
@@ -62,8 +58,8 @@ def get_static_resource(resource_id: str) -> dict[str, object]:
     return {
         "id": resource_id,
         "data": _load_json(path),
-        "license": "Proprietary — Bookyou株式会社 internal compilation. Free to redistribute via jpintel-mcp.",
-        "source_origin": "AutonoMath knowledge base (jpcite.com)",
+        "license": "Available as part of jpcite API responses; verify primary-source terms for downstream redistribution.",
+        "source_origin": "jpcite reference data",
     }
 
 def list_example_profiles() -> list[dict[str, object]]:
@@ -88,6 +84,6 @@ def get_example_profile(profile_id: str) -> dict[str, object]:
     return {
         "id": profile_id,
         "profile": _load_json(path),
-        "license": "Public example data — Bookyou株式会社 / AutonoMath. No real PII.",
+        "license": "Public example data for jpcite. No real PII.",
         "purpose": "Reference shape for a complete client intake payload.",
     }

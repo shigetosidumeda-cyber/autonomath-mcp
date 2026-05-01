@@ -11,6 +11,8 @@ Three cases:
     3. caller-provided ``_sanitized=1`` → regex skipped (no double-pass)
 """
 
+import sqlite3
+
 from jpintel_mcp.mcp.server import _envelope_merge
 
 
@@ -64,3 +66,52 @@ def test_no_double_sanitize() -> None:
     # upstream sanitizer. This guards against re-encoding cost / hit-list
     # duplication when REST wraps an MCP tool.
     assert "必ず採択" in str(out)
+
+
+def test_unexpected_mcp_tool_exception_is_incident_sanitized() -> None:
+    """Unhandled server-tool exceptions must not leak raw internals."""
+    from jpintel_mcp.mcp.server import _with_mcp_telemetry
+
+    @_with_mcp_telemetry
+    def boom() -> dict:
+        raise RuntimeError(
+            "OperationalError: no such table: am_secret_table at "
+            "/Users/shigetoumeda/jpcite/scripts/migrations/121_secret.sql\n"
+            "Traceback (most recent call last)"
+        )
+
+    out = boom()
+    blob = str(out)
+
+    assert isinstance(out, dict)
+    assert out.get("status") == "error"
+    assert out.get("error", {}).get("code") == "internal"
+    assert "incident=" in out.get("error", {}).get("message", "")
+    assert "RuntimeError" not in blob
+    assert "OperationalError" not in blob
+    assert "am_secret_table" not in blob
+    assert "/Users/shigetoumeda" not in blob
+    assert "migrations/121_secret.sql" not in blob
+    assert "Traceback" not in blob
+
+
+def test_autonomath_envelope_exception_is_incident_sanitized() -> None:
+    """The AutonoMath envelope decorator must also sanitize raised errors."""
+    from jpintel_mcp.mcp.autonomath_tools.envelope_wrapper import with_envelope
+
+    @with_envelope("boom_am")
+    def boom() -> dict:
+        raise sqlite3.OperationalError(
+            "no such table: am_tax_measure from /Users/me/autonomath.db"
+        )
+
+    out = boom()
+    blob = str(out)
+
+    assert out.get("status") == "error"
+    assert out.get("error", {}).get("code") == "db_unavailable"
+    assert "incident=" in out.get("error", {}).get("message", "")
+    assert "OperationalError" not in blob
+    assert "am_tax_measure" not in blob
+    assert "/Users/me" not in blob
+    assert "autonomath.db" not in blob

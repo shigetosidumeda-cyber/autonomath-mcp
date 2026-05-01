@@ -49,9 +49,7 @@ def test_get_static_resource_seido_returns_data():
     assert "license" in result
     assert "source_origin" in result
     data = result["data"]
-    if isinstance(data, list):
-        assert len(data) > 0
-    elif isinstance(data, dict):
+    if isinstance(data, (list, dict)):
         assert len(data) > 0
     else:
         pytest.fail(f"unexpected data type: {type(data)}")

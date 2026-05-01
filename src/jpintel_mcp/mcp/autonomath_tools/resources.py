@@ -1,6 +1,4 @@
-"""AutonoMath MCP resources — read-only reference documents (MCP 2025-06-18).
-
-Wave-17 Agent-2 addition (2026-04-24).
+"""jpcite MCP resources — read-only reference documents (MCP 2025-06-18).
 
 The MCP 2025-06-18 protocol supports three primary capabilities:
 
@@ -11,7 +9,7 @@ The MCP 2025-06-18 protocol supports three primary capabilities:
   3. **prompts**   — pre-designed query templates the client can request
      and fill with arguments (implemented in prompts.py).
 
-This module defines **15 resources** under the ``autonomath://`` URI scheme.
+This module defines read-only resources under the legacy ``autonomath://`` URI scheme.
 They are self-contained static / computed documents that let a customer LLM
 answer meta-questions ("what record_kinds exist?", "what does the primary
 source policy say?", "which intent should I use?") without round-tripping
@@ -45,29 +43,27 @@ so it can be called at merge time with the jpintel-mcp server singleton.
 from __future__ import annotations
 
 import json
+import os as _os
 import sqlite3
-from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # ---------------------------------------------------------------------------
 # Metadata & registry
 # ---------------------------------------------------------------------------
 
-
-import os as _os
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 _DB_PATH = Path(_os.environ.get(
     "AUTONOMATH_DB_PATH",
     str(_REPO_ROOT / "autonomath.db"),
 ))
 
-# Phase A static-file roots (8 taxonomies + 5 example profiles + 36協定 template).
-# Verified on disk 2026-04-26: data/autonomath_static/{seido,glossary,money_types,
-# obligations,dealbreakers,sector_combos,agri/crop_library,agri/exclusion_rules}.json
-# + example_profiles/{A_ichigo_20a,D_rice_200a,J_new_corp,Q_dairy_100head,N_minimal}.json
-# + templates/36_kyotei_template.txt
+# Static-file roots (8 taxonomies + 5 example profiles + optional templates).
 _STATIC_DIR = _REPO_ROOT / "data" / "autonomath_static"
 _EXAMPLE_DIR = _STATIC_DIR / "example_profiles"
 _TEMPLATE_DIR = _STATIC_DIR / "templates"
@@ -101,11 +97,11 @@ _TAXONOMY_FILES: dict[str, tuple[str, str]] = {
     ),
     "crop_library": (
         "agri/crop_library.json",
-        "農業 crop library — JAS 品目コード + 標準収量 + 標準作期 + 補助金マッピング.",
+        "一次産業 crop library — 品目コード + 標準収量 + 標準作期 + 制度マッピング.",
     ),
     "exclusion_rules": (
         "agri/exclusion_rules.json",
-        "農業 exclusion rules — 制度間の併給制限 / 重複申請禁止 / 排他条件.",
+        "制度併用ルール — 制度間の併給制限 / 重複申請禁止 / 排他条件.",
     ),
 }
 
@@ -184,40 +180,25 @@ def _safe_query(sql: str, params: tuple = ()) -> list[tuple]:
 # ---------------------------------------------------------------------------
 
 
-_DATA_MODEL_MD = """# AutonoMath Data Model (canonical)
+_DATA_MODEL_MD = """# jpcite Data Model
 
-AutonoMath is a **single-table entity store** wrapped in an EAV satellite,
-with reference dimensions and a graph edge store.
+jpcite returns public-program records with stable IDs, source URLs, fetched
+timestamps, and lightweight relationship metadata. The model is intentionally
+retrieval-first: clients should cite the returned source fields instead of
+turning the result into unsupported professional advice.
 
-## Tables
+## Common public fields
 
-```
-am_entities              — one row per record (PRIMARY)
-  id               INTEGER PRIMARY KEY
-  canonical_id     TEXT UNIQUE       — stable external ID
-  record_kind      TEXT              — discriminator, see record_kinds resource
-  primary_name     TEXT
-  authority_canonical TEXT           — FK → am_authority
-  raw_json         TEXT              — lossless source payload (json_extract)
+  - `id` / `unified_id`: stable record identifier
+  - `record_kind`: program, tax_measure, certification, law, adoption,
+    enforcement, statistic, corporate_entity, etc.
+  - `primary_name`: display name
+  - `authority`: ministry, municipality, or other public authority
+  - `source_url`: primary-source URL where available
+  - `source_fetched_at`: last observed timestamp where available
+  - `confidence` / `quality`: retrieval confidence and coverage hints
 
-am_entity_facts         — normalized EAV (~3.2M rows)
-  entity_id        INTEGER           — FK → am_entities.id
-  fact_key         TEXT
-  fact_value       TEXT
-  fact_type        TEXT              — string|number|date|enum
-
-am_entities_fts         — FTS5 trigram over primary_name + raw_json
-am_authority            — 省庁 / 自治体 / 公庫 …       (6 top-level)
-am_law                  — e-Gov 法令                   (253 rows)
-am_region               — 都道府県 / 市区町村           (1,795 rows)
-am_industry_jsic        — JSIC 日本標準産業分類         (35 rows)
-am_target_profile       — 事業者属性プロファイル
-graph.sqlite::am_relation — directed edges, typed     (20,599 edges)
-```
-
-## Relationship edges
-
-Types:
+## Relationship labels
 
   - prerequisite / compatible / incompatible
   - replaces / amends
@@ -226,13 +207,13 @@ Types:
   - applies_to_industry / applies_to_size
   - references_law
 
-## Immutable constraints
+## Client rules
 
-  1. Every row has exactly one `record_kind`.
-  2. Every row has a primary-source URL (cited via `source_topic`).
-  3. `raw_json` is lossless — we never mutate source payload, only project.
-  4. No LLM-generated content ever enters `am_entities`. Only curated /
-     scraped data from primary sources.
+  1. Treat source URLs as part of the answer, not optional metadata.
+  2. Do not invent missing amounts, deadlines, or eligibility conditions.
+  3. When a field is missing, say it is missing and point the user to the
+     primary source for final confirmation.
+  4. No LLM-generated content is written back into jpcite's source corpus.
 """
 
 _RECORD_KINDS_MD = """# record_kind enum (discriminator values)
@@ -264,7 +245,7 @@ Do not confuse:
 
 _PRIMARY_SOURCE_POLICY_MD = """# Primary-Source Policy (authoritative)
 
-**Rule**: every fact returned by AutonoMath MUST be traceable to a
+**Rule**: every fact returned by jpcite SHOULD be traceable to a
 **primary source** — meaning a government-authored document hosted on a
 government domain, OR an authoritative intermediary we have explicitly
 whitelisted (公庫 / JETRO / NEDO).
@@ -307,14 +288,14 @@ MUST not present unverified rows as authoritative.
 
 _NO_HALLUCINATION_POLICY_MD = """# No-Hallucination Policy (for client LLMs)
 
-AutonoMath is a **read-only projection of a curated database**. It does not
-invent programs, rates, deadlines, or authorities. Client LLMs consuming
-AutonoMath MUST respect this contract.
+jpcite is a **read-only retrieval layer over curated public data**. It does
+not invent programs, rates, deadlines, or authorities. Client LLMs consuming
+jpcite MUST respect this contract.
 
 ## Hard rules for client LLMs
 
 1. **Never synthesize a program name the tool did not return.** If a user
-   asks "what grant lets me buy a tractor?" and AutonoMath returns zero
+   asks "what grant lets me buy a tractor?" and jpcite returns zero
    results, the answer is "none found in the database" — NOT an invented
    name.
 
@@ -335,15 +316,15 @@ AutonoMath MUST respect this contract.
 
   - Prefer `intent=i01..i10` queries (see `list/intent_types`) over ad-hoc
     keyword searches — they route through curated query plans.
-  - When confidence is mixed, return the AutonoMath envelope verbatim and
+  - When confidence is mixed, return the jpcite envelope verbatim and
     let the human decide. "The tool returned the following 3 rows: …" is
     always valid.
 
 ## What happens if you break this
 
-Our terms of service make the client operator liable for hallucinations
-injected on top of AutonoMath data. This is not a light rule — we have a
-disclaimer ready for every envelope.
+The client application is responsible for any unsupported claims it adds on
+top of jpcite data. Keep source URLs attached and avoid turning retrieved
+facts into professional advice.
 """
 
 _INTENT_TYPES_MD = """# Intent types i01–i10
@@ -456,7 +437,7 @@ def _freshness_stats_md() -> str:
     (last_update,) = (
         _safe_query("SELECT MAX(updated_at) FROM am_entities")[:1] or [(None,)]
     )[0] if _safe_query("SELECT MAX(updated_at) FROM am_entities") else (None,)
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     lines = [
         "# Freshness snapshot",
         "",
@@ -567,7 +548,8 @@ def _certification_kinds_md() -> str:
 def _tool_manifest_md() -> str:
     return (
         "# Tool manifest (summary)\n\n"
-        "AutonoMath exposes 23 tools. The full JSON manifest lives at\n"
+        "jpcite exposes MCP tools for public-program retrieval. "
+        "The full JSON manifest lives at\n"
         "`docs/mcp_tool_manifest.json`; this resource is a quick reference.\n\n"
         "  - `reason_answer(query, intent)` — main intent-routed search\n"
         "  - `search_programs(...)`         — filter by prefecture/industry/size\n"
@@ -710,7 +692,10 @@ _RESOURCES: list[ResourceMeta] = [
     ResourceMeta(
         uri="autonomath://policy/no_hallucination",
         name="No-Hallucination Policy",
-        description="Hard rules the client LLM must follow when speaking on top of AutonoMath data.",
+        description=(
+            "Hard rules the client LLM must follow when speaking on top of "
+            "jpcite data."
+        ),
         content=_NO_HALLUCINATION_POLICY_MD,
     ),
     ResourceMeta(
@@ -774,30 +759,30 @@ _RESOURCES: list[ResourceMeta] = [
     ResourceMeta(
         uri="autonomath://policy/tos_excerpt",
         name="Terms of Service excerpt",
-        description="Key ToS clauses relevant to client LLM operators.",
+        description="Key ToS clauses relevant to LLM clients.",
         content=(
             "# Terms of Service — relevant excerpts\n\n"
-            "  - **No warranty**: AutonoMath data is advisory, not legal "
-            "advice. Verify against the linked primary source before "
-            "committing resources.\n"
-            "  - **Operator liability**: the client operator is responsible "
-            "for any hallucinations their LLM adds on top of our envelopes.\n"
-            "  - **Rate**: ¥3 / successful request 税別 (¥3.30 税込), 50 free/mo per IP.\n"
+            "  - **No warranty**: jpcite data is information retrieval, not "
+            "legal, tax, or application advice. Verify against the linked "
+            "primary source before committing resources.\n"
+            "  - **LLM output**: the client application is responsible for "
+            "claims added on top of jpcite envelopes.\n"
+            "  - **Rate**: ¥3 / successful request 税別 (¥3.30 税込). Anonymous use is 3 requests/day per IP.\n"
             "  - **Readonly**: all tools are idempotent and read-only.\n"
             "  - **No PII ingestion**: never send personal data into a tool "
             "argument; they are logged.\n"
-            "  - Full ToS: https://autonomath.app/tos\n"
+            "  - Full ToS: https://jpcite.com/docs/compliance/terms_of_service/\n"
         ),
     ),
 ]
 
 # ---------------------------------------------------------------------------
-# Phase A static-file resources (8 taxonomies + 5 example profiles).
+# Static-file resources (8 taxonomies + 5 example profiles).
 # These attach the JSON payloads under data/autonomath_static/ as MCP
 # `resources[]` so a client LLM can read them directly via resource URI
 # without round-tripping through the legacy list_static_resources_am /
 # get_static_resource_am tool pair (which remains registered for
-# back-compat — tools are not deprecated, just shadowed).
+# compatibility.
 # ---------------------------------------------------------------------------
 
 for _slug, (_rel_path, _desc) in _TAXONOMY_FILES.items():
@@ -806,7 +791,7 @@ for _slug, (_rel_path, _desc) in _TAXONOMY_FILES.items():
         ResourceMeta(
             uri=f"autonomath://taxonomies/{_slug}",
             name=f"Taxonomy: {_slug}",
-            description=_desc + " (Phase A static file; CC0 / Bookyou株式会社 internal compilation.)",
+            description=_desc + " Static reference data served by jpcite.",
             mime_type="application/json",
             update_frequency="static",
             provider=_make_taxonomy_provider(_slug),
@@ -835,10 +820,8 @@ _SABUROKU_RESOURCE = ResourceMeta(
     uri="autonomath://templates/saburoku_kyotei",
     name="36協定 template (時間外労働・休日労働協定届)",
     description=(
-        "36協定 (労基法 §36) draft template. Gated behind "
-        "AUTONOMATH_36_KYOTEI_ENABLED — exposed only when the operator has "
-        "completed legal review (社労士 supervision arrangement). The output "
-        "is a draft requiring 社労士 confirmation; do not file as-is."
+        "36協定 (労基法 §36) draft template. The output is a draft requiring "
+        "qualified professional confirmation; do not file as-is."
     ),
     mime_type="text/plain",
     update_frequency="static",

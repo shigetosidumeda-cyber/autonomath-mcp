@@ -42,7 +42,6 @@ import functools
 import logging
 import sqlite3
 import time
-import traceback
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -50,6 +49,7 @@ if TYPE_CHECKING:
 
 from .cs_features import build_meta, enhance_error_with_retry
 from .error_envelope import ERROR_CODES, is_error, make_error  # noqa: F401
+from .._error_helpers import safe_internal_error_payload
 
 # O8 — Bayesian per-fact uncertainty. Soft-imported so a sandbox without
 # the autonomath.db view (or scipy) still produces an envelope; the
@@ -1013,21 +1013,15 @@ def with_envelope(
                 raw = fn(*args, **kwargs)
             except Exception as exc:  # pragma: no cover - exercised via tests
                 code, severity = _classify_exception(exc)
-                logger.warning(
-                    "tool %s raised %s: %s",
-                    tool_name, exc.__class__.__name__, exc,
+                err = safe_internal_error_payload(
+                    exc,
+                    logger=logger,
+                    tool_name=tool_name,
+                    extra={"tool_kwargs": tool_kwargs_snapshot},
+                    code=code,
+                    severity=severity,
                 )
-                logger.debug(
-                    "tool %s traceback:\n%s",
-                    tool_name, traceback.format_exc(),
-                )
-                err = {
-                    "code": code,
-                    "message": f"{exc.__class__.__name__}: {exc}"[:120],
-                    "severity": severity,
-                    "hint": ERROR_CODES[code]["summary"],
-                    "documentation": f"https://jpcite.com/docs/error_handling#{code}",
-                }
+                err["hint"] = ERROR_CODES.get(code, ERROR_CODES["internal"])["summary"]
                 latency = (time.perf_counter() - t0) * 1000.0
                 return build_envelope(
                     tool_name=tool_name,

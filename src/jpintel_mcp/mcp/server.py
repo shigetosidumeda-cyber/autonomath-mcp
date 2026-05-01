@@ -34,6 +34,7 @@ from jpintel_mcp.api.vocab import (
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.session import connect, init_db
 from jpintel_mcp.mcp._constants import PrefectureParam
+from jpintel_mcp.mcp._error_helpers import safe_internal_error_payload
 from jpintel_mcp.mcp._http_fallback import (  # === S3 HTTP FALLBACK (uvx empty-DB fix) ===
     detect_fallback_mode,
     http_call,
@@ -213,7 +214,7 @@ def _empty_loan_hint(
     if loan_type:
         return (
             f"loan_type='{loan_type}' で 0 件. 日本語値 ('運転資金' 等) はヒットしません "
-            "(DB は英語 slug: 'general', 'agri', 'safety_net' 等で保存). "
+            "(値は 'general', 'agriculture_forestry', 'safety_net' 等の slug です). "
             "`enum_values(field='loan_type')` で 11 種の canonical slug を確認してください."
         )
     return (
@@ -1009,7 +1010,25 @@ def _with_mcp_telemetry(fn: Any) -> Any:
         except Exception as exc:
             error_class = type(exc).__name__
             status = "error"
-            raise
+            safe_error = safe_internal_error_payload(
+                exc,
+                logger=logger,
+                tool_name=tool_name,
+                extra={"params_shape": _mcp_params_shape(dict(kwargs))},
+            )
+            result = _envelope_merge(
+                tool_name=tool_name,
+                result={
+                    "error": safe_error,
+                    "total": 0,
+                    "limit": 20,
+                    "offset": 0,
+                    "results": [],
+                },
+                kwargs=dict(kwargs),
+                latency_ms=(time.monotonic() - t0) * 1000.0,
+            )
+            return result
         finally:
             latency_ms = int((time.monotonic() - t0) * 1000)
             if all_kwargs is None:
@@ -1606,8 +1625,7 @@ def list_exclusion_rules(
             description=(
                 "Filter rules that reference this program in program_a, "
                 "program_b, or program_b_group. Accepts unified_id "
-                "(UNI-…) or agri-canonical names (keiei-kaishi-shikin, "
-                "etc). Omit for all rules."
+                "(UNI-…) or known program slugs. Omit for all rules."
             ),
         ),
     ] = None,
@@ -1623,11 +1641,11 @@ def list_exclusion_rules(
         ),
     ] = False,
 ) -> dict[str, Any]:
-    """COMPLIANCE: 補助金の併給禁止 / 前提要件ルールを列挙する (list 181 subsidy exclusion + prerequisite rules across agri + non-agri). Pre-extracted from 公募要領 PDF footnotes — not available as structured data on Jグランツ 公開 API or any ministry site. Parsing these from JP prose is exactly the kind of brittle LLM work this tool eliminates.
+    """COMPLIANCE: 補助金の併給禁止 / 前提要件ルールを列挙する (list 181 subsidy exclusion + prerequisite rules across public-program domains). Use this when the user wants to browse combination restrictions, prerequisite certifications, same-asset restrictions, or explicit combine_ok rules.
 
     Typical queries:
       - "補助金の排他ルール一覧が欲しい"
-      - "農業系の併給制限を教えて"
+      - "設備投資系の併給制限を教えて"
       - "IT 導入補助金の他省庁事業との重複排除ルールは?"
 
     Rule kinds (181 total):
@@ -1637,7 +1655,11 @@ def list_exclusion_rules(
       - 9 combine_ok (明示的に併用可と告知済み)
       - 6 conditional_reduction (併用時に上限減額)
       - 9 その他 (same_asset_exclusive 3 / cross_tier_same_asset 2 / area_allocation 1 / cross_tier_loan_interest 1 / entity_scope_restriction 1 / mutex_certification 1)
-    Provenance: 35 hand-seeded named rules (22 agri + 13 non-agri) + 146 primary-source auto-extracted (`rule_id = excl-ext-*`, 要綱 / 公募要領 PDF parser output). Domain coverage spans 事業再構築・ものづくり・IT導入・省エネ系 に加え、経営開始資金 / 経営発展支援 / 雇用就農 / 青年等就農 / スーパーL / 認定新規就農者 / 認定農業者 の農業系.
+
+    Each row includes rule_id, kind, severity, referenced program identifiers,
+    source_url where available, and a concise explanation. Treat this as a
+    screening aid: absence of a matching rule is not a legal guarantee that
+    every combination is allowed.
 
     TOKEN BUDGET: default is lean (~68 KB for all 181 rows). For raw citation
     text pass `verbose=True` (~124 KB). To narrow scope use `kind=[...]`.
@@ -1725,8 +1747,8 @@ def list_exclusion_rules(
                     "rules even on a single program_id."
                 )
                 suggestions.append(
-                    "search_programs(q=program_id) で unified_id の表記揺れ "
-                    "(UNI-… vs agri-canonical 名) を確認."
+                    "search_programs(q=program_id) で unified_id や制度名の "
+                    "表記揺れを確認."
                 )
             elif kind:
                 suggestions.append(
@@ -1769,9 +1791,7 @@ def check_exclusions(
             description=(
                 "2+ program identifiers to check against the full 181 "
                 "exclusion / prerequisite rule set. Accepts unified_id or "
-                "agri-canonical names ('keiei-kaishi-shikin', "
-                "'koyo-shuno-shikin', 'super-l-shikin', 'it-dounyu-2026', "
-                "etc.). For a prerequisite check, 1 program id is allowed. "
+                "known program slugs. For a prerequisite check, 1 program id is allowed. "
                 "Capped at 50 (parity with batch_get_programs); larger sets "
                 "should be chunked by the caller."
             ),
@@ -1787,8 +1807,9 @@ def check_exclusions(
       - "これら3つの補助金に同時申請できる?"
       - "スーパーL資金を使う前に必要な認定は?"
 
-    Empty `hits[]` means no rule fired — safe-by-default interpretation: 併給可
-    (within the 181 codified rules; edge cases outside this set may still exist).
+    Empty `hits[]` means no registered rule fired. It does not prove that the
+    combination is allowed; important cases should still be checked against
+    the primary source and the relevant office.
 
     WHEN NOT:
       - `list_exclusion_rules` instead if the user wants to browse rules generally without a specific candidate set.
@@ -1807,7 +1828,7 @@ def check_exclusions(
             "error": {
                 "code": "empty_input",
                 "message": "program_ids required",
-                "hint": "Pass unified_id (UNI-xxxx) or agri-canonical names (keiei-kaishi-shikin, etc).",
+                "hint": "Pass unified_id (UNI-xxxx) or a known program slug.",
                 "retry_with": ["search_programs", "list_exclusion_rules"],
             },
         }
@@ -2064,17 +2085,16 @@ def get_usage_status(
       - ``reset_at``: ISO 8601 timestamp of next quota reset
       - ``reset_timezone``: "JST" (anonymous) or "UTC" (authenticated). The
         anonymous bucket resets at JST 翌日 00:00; authenticated counters
-        reset at UTC midnight (daily) or UTC 月初 (paid month-to-date).
-        These are NOT the same — a 50-req/月 anonymous bucket can roll
-        over up to 9 hours BEFORE a UTC-tracked dashboard says it should.
+        reset at JST 翌日 00:00; authenticated paid usage is reported as
+        month-to-date and resets at UTC 月初.
       - ``upgrade_url``: when relevant, the public upgrade landing.
       - ``note``: human-readable summary.
 
     **Why this matters for MCP callers:** the anonymous tier hands out
     3 req/日 per IP+fingerprint. An LLM batch that does 60 small queries
-    in one session will hit the ceiling at request 51 with a hard 429.
+    in one session will hit the ceiling at request 4 with a hard 429.
     Calling ``get_usage_status`` *before* a batch lets the agent tell the
-    user "あと N 件で月次クォータに達します。継続するなら API key を発行してください。"
+    user "あと N 件で日次クォータに達します。継続するなら API key を発行してください。"
     instead of failing mid-flight.
 
     **Caveat (MCP stdio):** the MCP transport has no client IP, so
@@ -2085,7 +2105,7 @@ def get_usage_status(
     response is exact (month-to-date count from usage_events).
 
     WHEN:
-      - Before launching a batch operation that may exceed 50 calls.
+      - Before launching a batch operation that may exceed 3 anonymous calls.
       - When a previous tool returned a 429-ish hint.
       - To reassure the user about cost before recommending a sweep.
     WHEN NOT: Do NOT call on every turn — once you know the remaining,
@@ -2094,8 +2114,8 @@ def get_usage_status(
 
     EXAMPLE (anonymous, MCP):
       get_usage_status() →
-        {"tier":"anonymous","limit":50,"remaining":null,
-         "reset_at":"2026-05-01T00:00:00+09:00","reset_timezone":"JST",
+        {"tier":"anonymous","limit":3,"remaining":null,
+         "reset_at":"2026-05-02T00:00:00+09:00","reset_timezone":"JST",
          "note":"MCP stdio cannot resolve per-IP bucket; call GET /v1/usage for exact remaining."}
 
     EXAMPLE (paid):
@@ -2108,18 +2128,12 @@ def get_usage_status(
 
     _JST = _tz(timedelta(hours=9))
 
-    def _jst_next_month_iso() -> str:
+    def _jst_next_day_iso() -> str:
         now = datetime.now(_JST)
-        if now.month == 12:
-            nxt = now.replace(
-                year=now.year + 1, month=1, day=1,
-                hour=0, minute=0, second=0, microsecond=0,
-            )
-        else:
-            nxt = now.replace(
-                month=now.month + 1, day=1,
-                hour=0, minute=0, second=0, microsecond=0,
-            )
+        nxt = (
+            now.replace(hour=0, minute=0, second=0, microsecond=0)
+            + timedelta(days=1)
+        )
         return nxt.isoformat()
 
     def _utc_next_month_iso() -> str:
@@ -2146,12 +2160,12 @@ def get_usage_status(
             "limit": settings.anon_rate_limit_per_day,
             "remaining": None,  # unknown over MCP stdio
             "used": 0,  # unknown
-            "reset_at": _jst_next_month_iso(),
+            "reset_at": _jst_next_day_iso(),
             "reset_timezone": "JST",
             "upgrade_url": "https://jpcite.com/go",
             "note": (
                 "Anonymous tier は IP+fingerprint 単位で "
-                f"{settings.anon_rate_limit_per_day} req/月 (JST 翌日 00:00 リセット)。"
+                f"{settings.anon_rate_limit_per_day} req/日 (JST 翌日 00:00 リセット)。"
                 "MCP stdio は client IP を解決できないため exact remaining は不明。"
                 "正確な残量は REST endpoint `GET /v1/usage` を呼ぶか、"
                 "X-API-Key を発行 (paid tier ¥3/req 税別) してください。"
@@ -2356,7 +2370,7 @@ _ENUM_SOURCES: dict[str, tuple[str, str, str]] = {
         "GROUP BY loan_type ORDER BY n DESC LIMIT ?",
         "SELECT COUNT(DISTINCT loan_type) FROM loan_programs "
         "WHERE loan_type IS NOT NULL",
-        "Loan category. English slugs: 'general', 'agri', 'succession', "
+        "Loan category. English slugs: 'general', 'agriculture_forestry', 'succession', "
         "'green', 'productivity', 'overseas', 'safety_net', 'special_rate', "
         "'social', 'tourism', 'wage_increase'.",
     ),
@@ -4736,7 +4750,7 @@ def subsidy_combo_finder(
         "source": {
             "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             "tool": "subsidy_combo_finder",
-            "db": "jpintel.db",
+            "corpus": "jpcite public-program corpus",
             "note": (
                 "blocked_names は 公募要領 記載の併給禁止 category/program 一覧. "
                 "'他の助成金' のような category 型 は fuzzy 除外済み (false negative 可)."
@@ -4809,7 +4823,7 @@ def dd_profile_am(
     返り値 (≤ 3 KB 目安):
       {
         "houjin_bangou": "...",          # 正規化後
-        "entity": {                       # 法人マスタ (autonomath corporate_entity があれば)
+        "entity": {                       # 法人マスタ (収録があれば)
           "name", "category", "prefecture", "municipality", "certified_at"
         },
         "adoptions_summary": {
@@ -4837,8 +4851,8 @@ def dd_profile_am(
     DATA HONESTY GATES (誤解防止):
       - adoptions.amount_granted_yen is 100% NULL in current snapshot —
         total_amount_man_yen は返しません (虚偽の数字を作らない)。
-      - invoice_registrants は delta mirror (13,801 / 4M 公表済み) —
-        "unknown_in_mirror" = "国税庁に未登録" ではない。absence ≠ not registered。
+      - invoice_registrants の "unknown" は "国税庁に未登録" ではない。
+        重要な確認では国税庁の公式検索も確認してください。
       - enforcement.found=false は 公表 1,185 行政処分 corpus 外であって、反社
         チェック / 信用情報 / 帝国データバンク は別途必要 (範囲外)。
 
@@ -4853,8 +4867,8 @@ def dd_profile_am(
       → `get_invoice_registrant(registration_number)` で登録履歴の詳細
     """
     # === S3 HTTP FALLBACK ===
-    # dd_profile_am is a composite tool (autonomath corporate_entity +
-    # enforcement + invoice mirror). No single REST endpoint mirrors this
+    # dd_profile_am is a composite tool (corporate profile +
+    # enforcement + invoice lookup). No single REST endpoint mirrors this
     # shape today, so fallback returns the structured remote_only error
     # plus a recommended REST chain. Operators will land a /v1/am/dd_profile
     # endpoint in a follow-up; until then this surfaces an honest hint.
@@ -4865,9 +4879,9 @@ def dd_profile_am(
             "error": "remote_only_via_REST_API",
             "tool": "dd_profile_am",
             "message": (
-                "dd_profile_am は composite tool (法人番号 → corporate_entity + "
-                "enforcement + invoice). MCP HTTP-fallback では未対応です — "
-                "ローカル DB 不在 (uvx インストール) 時は REST chain を直接呼んでください。"
+                "dd_profile_am は法人番号から企業プロフィール、行政処分、"
+                "インボイス登録をまとめる composite tool です。"
+                "MCP HTTP-fallback では未対応のため、REST chain を直接呼んでください。"
             ),
             "rest_chain_hint": [
                 f"{base}/v1/enforcement-cases/search?q={houjin_bangou}",
@@ -4876,7 +4890,7 @@ def dd_profile_am(
             ],
             "rest_api_base": base,
             "remediation": (
-                "1) Use the REST chain above, or 2) clone the repo for a full local DB."
+                "Use the REST chain above for the same public-data checks."
             ),
         }
     # === END S3 HTTP FALLBACK ===
@@ -5071,8 +5085,11 @@ def dd_profile_am(
         "source": {
             "tool": "dd_profile_am",
             "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
-            "dbs": ["autonomath.db (am_entities adoption + corporate_entity)",
-                    "jpintel.db (invoice_registrants + enforcement_cases via check_enforcement)"],
+            "data_sources": [
+                "corporate profile and adoption records",
+                "invoice registrant lookup",
+                "public enforcement records",
+            ],
         },
     }
 
@@ -5606,8 +5623,8 @@ def subsidy_roadmap_3yr(
         - For 融資 / 補助金 dual-use combo → use subsidy_combo_finder.
         - For tax incentive timing → use search_tax_incentives + cliff dates.
 
-    LIMITATIONS: 60% は 随時/rolling で start/end null → 漏れる
-    (`list_open_programs` 参照). industry filter は heuristic.
+    LIMITATIONS: 随時/rolling で start/end がない制度は timeline に出ない場合があります。
+    業種 filter は補助的な絞り込みです。
     """
     from datetime import date as _date
     from datetime import timedelta as _td
@@ -7087,7 +7104,7 @@ def search_tax_rules(
     LIMITATIONS:
       - This is NOT tax advice. `evaluate_tax_applicability` only matches declared JSON predicates — it does not interpret tax law.
       - Cliff dates: 2026-09-30 (2割特例 終了), 2027-09-30 (80% 経過措置), 2029-09-30 (50% 経過措置 / 少額特例 終了). Use `effective_on` to snapshot.
-      - COVERAGE (35 rows live): インボイス制度 / 電子帳簿保存法 / 中小企業 法人税・消費税 特例. 相続税 / 贈与税 / 事業承継税制 / 組織再編税制 は未収載 — `get_am_tax_rule` (autonomath.db: 相続 / 贈与 / 事業承継 を含む 900+ rule 全文) に fallback してください.
+      - COVERAGE (35 rows live): インボイス制度 / 電子帳簿保存法 / 中小企業 法人税・消費税 特例. 相続税 / 贈与税 / 事業承継税制 / 組織再編税制 は未収載 — broader tax-rule lookup が必要な場合は `get_am_tax_rule` を併用してください.
     """
     conn = connect()
     try:
@@ -7738,7 +7755,7 @@ def resolve_citation_chain(
         ),
     ],
 ) -> dict[str, Any]:
-    """[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。NTA primary source corpus (autonomath.db migration 103: 通達 3,221 / 質疑応答 286 / 文書回答 278) + jpintel.db laws + court_decisions を walk。出力 tree は監査調書 索引にそのまま貼付可。¥3 / call。§47条の2 + §52 sensitive — citing tax authorities is sensitive territory.
+    """[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3 / call。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。
     """
     try:
         from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
@@ -8020,9 +8037,8 @@ def trace_program_to_law(
                     ),
                     "hint": (
                         "Use `search_programs(...)` and take results[].unified_id "
-                        "(shape UNI-* or UNI-ext-<10hex>). Autonomath canonical "
-                        "ids like 'program:xxx' are NOT accepted here — they live "
-                        "in autonomath.db, not jpintel.db/programs."
+                        "(shape UNI-* or UNI-ext-<10hex>). Other entity ids like "
+                        "'program:xxx' are not accepted here."
                     ),
                     "retry_with": ["search_programs", "get_program"],
                 },
@@ -8278,14 +8294,12 @@ def combined_compliance_check(
         bool,
         Field(
             description=(
-                "When False (default), the compat_matrix section is filtered to "
-                "rows with inferred_only=0 — pairs that carry a primary-source "
-                "citation in source_url. The 40k+ heuristic-only inferred rows "
-                "are excluded from `pairs[]` but their count is surfaced in "
-                "`compat_matrix.inferred_excluded_count` so callers see the "
-                "honest coverage gap (景表法 fence). Set True to widen the "
-                "search to all rows incl. inferred ones — appropriate when the "
-                "caller wants signal even at lower confidence."
+                "When False (default), the compat_matrix section returns only "
+                "pairs that carry a primary-source citation in source_url. "
+                "Lower-confidence inferred pairs are excluded from `pairs[]`; "
+                "their count is surfaced in `compat_matrix.inferred_excluded_count` "
+                "so callers understand the coverage boundary. Set True to widen "
+                "the search to all rows including inferred ones."
             ),
         ),
     ] = False,
@@ -8539,10 +8553,18 @@ def combined_compliance_check(
                 }
 
                 # Combo calculator member-containment scan — 56-row table, O(56).
+                # Keep this best-effort independently from compat_matrix: a
+                # fixture or older DB may lack am_combo_calculator, but that
+                # must not discard already-resolved compat pairs.
                 cand_set = set(candidate_program_ids)
-                combo_rows = am_conn.execute(
-                    "SELECT * FROM am_combo_calculator"
-                ).fetchall()
+                combo_unavailable = False
+                try:
+                    combo_rows = am_conn.execute(
+                        "SELECT * FROM am_combo_calculator"
+                    ).fetchall()
+                except sqlite3.OperationalError:
+                    combo_rows = []
+                    combo_unavailable = True
                 matched: list[dict[str, Any]] = []
                 for cr in combo_rows:
                     try:
@@ -8571,6 +8593,8 @@ def combined_compliance_check(
                     "matched_combos": matched,
                     "unmatched_count": len(combo_rows) - len(matched),
                 }
+                if combo_unavailable:
+                    combo_section["subsystem_unavailable"] = True
 
                 # data_quality.compat_unknown_bucket_pct — global ratio of unknown
                 # rows in am_compat_matrix. This is a STATIC honesty surface (not
@@ -8582,23 +8606,29 @@ def combined_compliance_check(
                 # pointer. The pct also now distinguishes inferred_only rows
                 # so the LLM can see how much of the corpus is heuristic vs.
                 # primary-source-cited.
-                tot_row = am_conn.execute(
-                    "SELECT "
-                    "  SUM(CASE WHEN compat_status='unknown' THEN 1 ELSE 0 END) AS u, "
-                    "  SUM(CASE WHEN inferred_only=1 THEN 1 ELSE 0 END) AS inf, "
-                    "  COUNT(*) AS t "
-                    "FROM am_compat_matrix"
-                ).fetchone()
-                if tot_row and tot_row["t"]:
-                    compat_unknown_pct = round(
-                        100.0 * (tot_row["u"] or 0) / float(tot_row["t"]), 2
-                    )
-                    compat_inferred_pct = round(
-                        100.0 * (tot_row["inf"] or 0) / float(tot_row["t"]), 2
-                    )
-                else:
+                try:
+                    tot_row = am_conn.execute(
+                        "SELECT "
+                        "  SUM(CASE WHEN compat_status='unknown' THEN 1 ELSE 0 END) AS u, "
+                        "  SUM(CASE WHEN inferred_only=1 THEN 1 ELSE 0 END) AS inf, "
+                        "  COUNT(*) AS t "
+                        "FROM am_compat_matrix"
+                    ).fetchone()
+                    if tot_row and tot_row["t"]:
+                        compat_unknown_pct = round(
+                            100.0 * (tot_row["u"] or 0) / float(tot_row["t"]), 2
+                        )
+                        compat_inferred_pct = round(
+                            100.0 * (tot_row["inf"] or 0) / float(tot_row["t"]), 2
+                        )
+                    else:
+                        compat_inferred_pct = None
+                except sqlite3.OperationalError:
+                    # Older fixture DBs can have the pair table but not the
+                    # latest data-quality columns. Keep resolved pairs.
+                    compat_unknown_pct = None
                     compat_inferred_pct = None
-            except (sqlite3.OperationalError, FileNotFoundError, ImportError):
+            except (sqlite3.OperationalError, FileNotFoundError, ImportError) as exc:
                 # autonomath.db absent / table missing — surface empty sections
                 # so the LLM can see the dark inventory was attempted but the
                 # subsystem was unavailable. Never hard-fail.
@@ -8609,11 +8639,15 @@ def combined_compliance_check(
                     "unknown_count": 0,
                     "missing_count": 0,
                     "subsystem_unavailable": True,
+                    "subsystem_error": type(exc).__name__,
+                    "subsystem_error_message": str(exc)[:200],
                 }
                 combo_section = {
                     "matched_combos": [],
                     "unmatched_count": 0,
                     "subsystem_unavailable": True,
+                    "subsystem_error": type(exc).__name__,
+                    "subsystem_error_message": str(exc)[:200],
                 }
 
         applicable_tax = sum(1 for t in tax_results if t.get("applicable"))
@@ -8880,9 +8914,10 @@ def regulatory_prep_pack(
         # --- tax_rulesets ------------------------------------------------
         tax_sql = (
             "SELECT unified_id, ruleset_name, effective_from, effective_until, "
-            "source_url FROM tax_rulesets WHERE 1=1 "
+            "source_url FROM tax_rulesets WHERE "
+            "(ruleset_name LIKE ? OR COALESCE(eligibility_conditions,'') LIKE ?) "
         )
-        tax_params: list[Any] = []
+        tax_params: list[Any] = [like, like]
         if not include_expired:
             tax_sql += "AND (effective_until IS NULL OR effective_until >= date('now')) "
         tax_sql += "ORDER BY effective_from DESC LIMIT ?"

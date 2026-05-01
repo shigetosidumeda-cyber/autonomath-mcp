@@ -10,7 +10,7 @@ one of the 66 tools returns 0 rows — silent broken.
 This module routes tool calls to ``api.jpcite.com`` whenever the
 local DB is missing data (row count of ``programs`` < 100). The MCP
 process behaves identically from the caller's perspective: same JSON
-shape, same metering (¥3/req), same anonymous 50/月 quota — the
+shape, same metering (¥3/req), same anonymous 3 req/day quota — the
 counting just happens server-side.
 
 Design notes
@@ -18,10 +18,11 @@ Design notes
 - One ``httpx.Client`` reused across calls (connection pooling).
 - 10s timeout, 1 retry on connection / 5xx errors. Anything else is
   surfaced to the tool so the user sees the real error.
-- ``AUTONOMATH_API_KEY`` env passed as ``X-API-Key``. Anonymous (no
-  key) is allowed — the REST side gates the 50/月 quota by IP.
-- ``AUTONOMATH_API_BASE`` env override (default ``https://api.jpcite.com``)
-  for staging / local dev.
+- ``JPCITE_API_KEY`` env passed as ``X-API-Key``. This is a jpcite REST/MCP
+  key, not an LLM provider key. ``AUTONOMATH_API_KEY`` remains a legacy alias.
+  Anonymous (no key) is allowed — the REST side gates the 3 req/day quota by IP.
+- ``JPCITE_API_BASE`` env override (default ``https://api.jpcite.com``) for
+  staging / local dev. ``AUTONOMATH_API_BASE`` remains a legacy alias.
 - User-Agent carries the MCP package version so the REST side can
   segment fallback traffic in dashboards.
 - We do **not** import ``httpx`` at module top — keep importing lazy
@@ -30,7 +31,7 @@ Design notes
 
 Memory contract (project_autonomath_business_model.md):
 - ¥3/req metered (税込 ¥3.30) — applies to fallback calls too.
-- Anonymous 50 req/月 per IP — same quota.
+- Anonymous 3 req/日 per IP — same quota.
 - No Anthropic API call here. Inference happens client-side (Claude
   Desktop).
 """
@@ -60,12 +61,20 @@ _PROGRAMS_FLOOR = 1
 
 
 def _api_base() -> str:
-    raw = os.environ.get("AUTONOMATH_API_BASE") or _DEFAULT_API_BASE
+    raw = (
+        os.environ.get("JPCITE_API_BASE")
+        or os.environ.get("AUTONOMATH_API_BASE")
+        or _DEFAULT_API_BASE
+    )
     return raw.rstrip("/")
 
 
 def _api_key() -> str | None:
-    return os.environ.get("AUTONOMATH_API_KEY") or None
+    return (
+        os.environ.get("JPCITE_API_KEY")
+        or os.environ.get("AUTONOMATH_API_KEY")
+        or None
+    )
 
 
 def _user_agent() -> str:

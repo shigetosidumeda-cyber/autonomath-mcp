@@ -132,8 +132,12 @@ def test_search_programs_fields_full_includes_enriched_and_lineage_keys(client, 
 
 
 def test_search_programs_invalid_fields_raises_valueerror(client, seeded_db):
-    with pytest.raises(ValueError):
-        search_programs(fields="garbage")
+    res = search_programs(fields="garbage")
+    assert res["total"] == 0
+    assert res["results"] == []
+    assert res["error"]["code"] == "internal"
+    assert res["error"]["incident_id"]
+    assert "garbage" not in res["error"]["message"]
 
 
 def test_search_programs_limit_clamps_above_100(client, seeded_db):
@@ -500,9 +504,9 @@ def _seed_regulatory_prep(seeded_db):
             )
         # 3 tax_rulesets: 1 current, 1 expired, 1 future-effective.
         for tid, rname, eff_from, eff_until in [
-            ("TAX-aaaaaa0001", "テスト現行税制",   "2025-04-01", None),
-            ("TAX-aaaaaa0002", "テスト失効税制",   "2020-04-01", "2024-03-31"),
-            ("TAX-aaaaaa0003", "テスト経過措置税制","2026-10-01", "2029-09-30"),
+            ("TAX-aaaaaa0001", "テスト製造業現行税制",   "2025-04-01", None),
+            ("TAX-aaaaaa0002", "テスト製造業失効税制",   "2020-04-01", "2024-03-31"),
+            ("TAX-aaaaaa0003", "テスト製造業経過措置税制","2026-10-01", "2029-09-30"),
         ]:
             c.execute(
                 """INSERT INTO tax_rulesets(unified_id, ruleset_name, tax_category,
