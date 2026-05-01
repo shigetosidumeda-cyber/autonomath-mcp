@@ -296,7 +296,7 @@ def _assert_snapshot_fields(
     )
 
 
-def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed):
+def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed, paid_key):
     """Hit all 11 customer-facing detail endpoints; assert snapshot fields.
 
     Coverage map:
@@ -316,24 +316,25 @@ def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed):
     Each row's body must carry both audit-trail keys at the top level.
     """
     expected_snap, expected_ck = _live_snapshot(snapshot_seed)
+    headers = {"X-API-Key": paid_key}
 
     # ---- 1. programs (already wired pre-2026-04-29) ----
-    r = client.get("/v1/programs/UNI-test-s-1")
+    r = client.get("/v1/programs/UNI-test-s-1", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="programs")
 
     # ---- 2. laws (already wired) ----
-    r = client.get("/v1/laws/LAW-5a0a000001")
+    r = client.get("/v1/laws/LAW-5a0a000001", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="laws")
 
     # ---- 3. tax_rulesets (already wired) ----
-    r = client.get("/v1/tax_rulesets/TAX-5e500a0001")
+    r = client.get("/v1/tax_rulesets/TAX-5e500a0001", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="tax_rulesets")
 
     # ---- 4. court_decisions (already wired) ----
-    r = client.get("/v1/court-decisions/HAN-5a0a050001")
+    r = client.get("/v1/court-decisions/HAN-5a0a050001", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(
         r.json(), expected_snap, expected_ck, where="court_decisions"
@@ -342,7 +343,7 @@ def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed):
     # ---- 5. audit cite_chain (already wired) ----
     # Uses the seeded TAX-5e500a0001 ruleset id; chain may be 1 hop deep
     # since we only wired LAW-5a0a000001 as a related_law_id reference.
-    r = client.get("/v1/audit/cite_chain/TAX-5e500a0001")
+    r = client.get("/v1/audit/cite_chain/TAX-5e500a0001", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="audit")
 
@@ -350,7 +351,11 @@ def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed):
     # autonomath.db isn't populated in tests (am_conn returns None on the
     # connect path) — the handler still emits the snapshot envelope with
     # an empty graph. That's exactly what we need to test.
-    r = client.get("/v1/am/group_graph", params={"houjin_bangou": "9999999999992"})
+    r = client.get(
+        "/v1/am/group_graph",
+        params={"houjin_bangou": "9999999999992"},
+        headers=headers,
+    )
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="ma_dd")
 
@@ -365,31 +370,31 @@ def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed):
     finally:
         conn.close()
     assert loan_row is not None, "loan_programs seed row missing"
-    r = client.get(f"/v1/loan-programs/{loan_row[0]}")
+    r = client.get(f"/v1/loan-programs/{loan_row[0]}", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(
         r.json(), expected_snap, expected_ck, where="loan_programs"
     )
 
     # ---- 8. case_studies (newly wired) ----
-    r = client.get("/v1/case-studies/CS-snapshot-001")
+    r = client.get("/v1/case-studies/CS-snapshot-001", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="case_studies")
 
     # ---- 9. enforcement (newly wired) ----
-    r = client.get("/v1/enforcement-cases/ENF-snapshot-001")
+    r = client.get("/v1/enforcement-cases/ENF-snapshot-001", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="enforcement")
 
     # ---- 10. bids (newly wired) ----
-    r = client.get("/v1/bids/BID-5b0d050002")
+    r = client.get("/v1/bids/BID-5b0d050002", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="bids")
 
     # ---- 11. invoice_registrants (newly wired) ----
     # Snapshot fields appear at the top level alongside `result` +
     # `attribution` so PDL v1.0 compliance and the audit trail compose.
-    r = client.get("/v1/invoice_registrants/T9999999999992")
+    r = client.get("/v1/invoice_registrants/T9999999999992", headers=headers)
     assert r.status_code == 200, r.text
     _assert_snapshot_fields(
         r.json(), expected_snap, expected_ck, where="invoice_registrants"

@@ -25,6 +25,7 @@ a tiny corpus when the test client is warm).
 """
 from __future__ import annotations
 
+import itertools
 import json
 import sqlite3
 import time
@@ -37,6 +38,54 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from fastapi.testclient import TestClient
+
+
+@pytest.fixture(autouse=True)
+def _rotate_client_ip_per_call(client: TestClient) -> None:
+    """Inject a unique ``X-Forwarded-For`` per request on the shared client.
+
+    Two separate per-IP throttles can 429 this file's perf loop on the
+    fixed ``testclient`` IP that ``starlette.testclient`` reports:
+
+    1. ``api/anon_limit.py`` — anonymous quota is 3 req/JST-day per IP
+       (``settings.anon_rate_limit_per_day=3``, default-on; the autouse
+       reset only clears the persisted ``anon_rate_limit`` row, not the
+       4th call's increment within a single test).
+    2. ``api/middleware/per_ip_endpoint_limit.py`` — sliding 30 req/min
+       per IP on ``GET /v1/programs/search``. The conftest reset clears
+       this between tests, but ``test_short_ascii_query_p95_under_150ms``
+       fires 3 warm-up + 20 measured = 23 calls in a single test, which
+       sits close enough to the 30 cap that any retry / future warm-up
+       bump would re-flake.
+
+    Rotating the source IP per call moves every request into its own
+    fresh bucket on both layers — anon quota of 3 never trips because no
+    IP makes more than one call, and the per-endpoint counter likewise
+    never crosses 30 on any single IP. We deliberately do NOT disable
+    either middleware: the perf assertion still exercises the real
+    request path (FastAPI + middleware stack + handler), which is what
+    the latency guard is supposed to measure.
+
+    IPs are drawn from 198.51.100.0/24 (RFC 5737 TEST-NET-2) so they
+    cannot collide with any real client identity. The original
+    ``client.get`` is wrapped in a lambda that mixes our ``X-Forwarded-For``
+    on top of any caller-supplied headers (caller wins on conflict, which
+    no test in this file does).
+    """
+    # 198.51.100.x is documentation-only per RFC 5737 — guaranteed not to
+    # match anything real (Fly-Client-IP, the production primary identity
+    # axis, isn't set under TestClient, so XFF first-hop wins).
+    counter = itertools.count(1)
+    original_get = client.get
+
+    def _get_with_unique_ip(url, **kwargs):
+        n = next(counter)
+        ip = f"198.51.100.{(n % 250) + 1}"
+        headers = dict(kwargs.pop("headers", {}) or {})
+        headers.setdefault("X-Forwarded-For", ip)
+        return original_get(url, headers=headers, **kwargs)
+
+    client.get = _get_with_unique_ip  # type: ignore[method-assign]
 
 
 def _percentile(samples: list[float], pct: float) -> float:

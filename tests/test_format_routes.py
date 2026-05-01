@@ -222,7 +222,7 @@ def test_saved_search_results_csv(client, fmt_key):
     assert "# 税理士法 §52" in text
 
 
-def test_saved_search_results_json_default(client, fmt_key):
+def test_saved_search_results_json_default(client, fmt_key, seeded_db: Path):
     saved_id = _create_saved_search(client, fmt_key)
     r = client.get(
         f"/v1/me/saved_searches/{saved_id}/results",
@@ -233,6 +233,16 @@ def test_saved_search_results_json_default(client, fmt_key):
     assert body["saved_search_id"] == saved_id
     assert "corpus_snapshot_id" in body
     assert isinstance(body["results"], list)
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT metered, result_count, quantity "
+            "FROM usage_events WHERE endpoint = ?",
+            ("saved_searches.results",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row == (1, len(body["results"]), 1)
 
 
 # ---------------------------------------------------------------------------

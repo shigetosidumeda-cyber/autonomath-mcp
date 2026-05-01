@@ -142,7 +142,7 @@ def _corpus_row_counts(conn: sqlite3.Connection) -> tuple[int, ...]:
 def compute_corpus_snapshot(
     conn: sqlite3.Connection,
     *,
-    api_version: str = "v0.3.1",
+    api_version: str = "v0.3.2",
 ) -> tuple[str, str]:
     """Compute (corpus_snapshot_id, corpus_checksum) for the current corpus.
 
@@ -187,7 +187,7 @@ def attach_corpus_snapshot(
     body: dict,
     conn: sqlite3.Connection,
     *,
-    api_version: str = "v0.3.1",
+    api_version: str = "v0.3.2",
 ) -> dict:
     """Inject `corpus_snapshot_id` + `corpus_checksum` keys onto a response
     body in-place and return the same dict (for chaining).
@@ -205,7 +205,7 @@ def attach_corpus_snapshot(
 def snapshot_headers(
     conn: sqlite3.Connection,
     *,
-    api_version: str = "v0.3.1",
+    api_version: str = "v0.3.2",
 ) -> dict[str, str]:
     """Return ``{X-Corpus-Snapshot-Id, X-Corpus-Checksum}`` header pair.
 

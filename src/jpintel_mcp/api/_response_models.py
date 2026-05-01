@@ -91,7 +91,7 @@ class SearchResponse(BaseModel, Generic[T]):
         default=None,
         description=(
             "One-line provenance hint, e.g. "
-            "'fts5_trigram + LIKE fallback (3 rows from 285)'."
+            "'text search with fallback matching (3 rows from 285)'."
         ),
     )
     error: dict[str, Any] | None = Field(
@@ -334,7 +334,11 @@ class CoverageResponse(BaseModel):
     loan_programs: int = 0
     enforcement_cases: int = 0
     exclusion_rules: int = 0
-    laws_jpintel: int = 0
+    laws_jpintel: int = Field(
+        0,
+        title="Laws",
+        description="Law metadata records in the public jpcite corpus.",
+    )
     tax_rulesets: int = 0
     court_decisions: int = 0
     bids: int = 0

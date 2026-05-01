@@ -6,8 +6,6 @@ We cleaned up landing/docs/docstrings on 2026-04-26. These tests ensure they sta
 import re
 from pathlib import Path
 
-import pytest
-
 REPO = Path(__file__).resolve().parent.parent
 
 # Phrases that imply unreproducible / unique / decisive moat — fraud-adjacent if not backed

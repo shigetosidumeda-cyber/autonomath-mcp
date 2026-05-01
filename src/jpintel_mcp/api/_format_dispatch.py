@@ -97,7 +97,7 @@ DISCLAIMER_HEADER_VALUE_JA_RFC8187 = (
     "/%E5%80%8B%E5%88%A5%E5%88%A4%E6%96%AD%E3%81%AF%E5%A3%AB%E6%A5%AD"
     "%E7%A2%BA%E8%AA%8D%E5%BF%85%E9%A0%88"
 )
-BRAND_FOOTER = "税務会計AI / Bookyou株式会社 / T8010001213708"
+BRAND_FOOTER = "jpcite / Bookyou株式会社"
 
 
 # ---------------------------------------------------------------------------

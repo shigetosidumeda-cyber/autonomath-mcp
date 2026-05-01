@@ -5,7 +5,7 @@ Wire shape::
     > **税理士法 §52**: 本データは税務助言ではありません。個別具体的な
     > 判断は税理士・行政書士・弁護士にご確認ください。
     >
-    > _出典: e-Gov 法令データ CC-BY 4.0 / 国税庁 PDL v1.0 / 税務会計AI
+    > _出典: e-Gov 法令データ CC-BY 4.0 / 国税庁 PDL v1.0 / jpcite
     > Bookyou株式会社 T8010001213708_
 
     | unified_id | source_url | source_fetched_at | license | … |

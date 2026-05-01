@@ -1,3 +1,4 @@
+import contextlib
 import json
 import re
 import sqlite3
@@ -11,7 +12,8 @@ from fastapi import APIRouter, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
 
 from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
-from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
+from jpintel_mcp.api._envelope import StandardResponse, wants_envelope_v2
+from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope, safe_request_id
 from jpintel_mcp.api.deps import (
     ApiContextDep,
     DbDep,
@@ -36,6 +38,67 @@ from jpintel_mcp.models import (
 from jpintel_mcp.utils.slug import program_static_url
 
 router = APIRouter(prefix="/v1/programs", tags=["programs"])
+
+
+# ---------------------------------------------------------------------------
+# Search ranking constants.
+# ---------------------------------------------------------------------------
+# bm25 column weighting (FTS5 recall fix, 2026-04-30):
+# programs_fts is declared as fts5(unified_id UNINDEXED, primary_name,
+# aliases, enriched_text, tokenize='trigram'). bm25 takes one weight per
+# INDEXED column (UNINDEXED columns are not counted), in declaration order.
+# primary_name is weighted 5x — a query like '税額控除' that hits the
+# program name directly should outrank a doc that only mentions the
+# phrase in long-form description text. aliases / enriched_text stay at
+# 1.0 as the baseline. Lower bm25 = better, so ORDER BY ... ASC.
+BM25_EXPR = "bm25(programs_fts, 5.0, 1.0, 1.0)"
+
+# Tier prior multiplier (calibration C3, 2026-04-30):
+# Replaces the prior strict tier-bucket ordering (S>A>B>C>X) on the FTS
+# path with a soft multiplier on bm25 score. Weights come from the
+# measured evidence_score per tier on the production corpus; expected
+# priors (S=0.95 / A=0.85 / B=0.70 / C=0.50) overpredicted — Brier 0.156.
+# Re-fit values: S=0.758 / A=0.751 / B=0.752 / C=0.698 / X=0.589.
+# Proportionally normalised to a centred multiplier so the average is ~1.
+# bm25 is negative (lower=better), so a >1 weight makes negatives more
+# negative (boost) and a <1 weight makes negatives less negative (demote).
+# ORDER BY (bm25 * tier_weight) ASC keeps the same direction as plain bm25.
+# `_TIER_WEIGHT_CASE_*` are SQL fragments derived from this dict; keep them
+# in lock-step (the dict is the single source of truth, the SQL is built
+# below at module load time).
+TIER_PRIOR_WEIGHTS: dict[str, float] = {
+    "S": 1.07,
+    "A": 1.06,
+    "B": 1.06,
+    "C": 0.99,
+    "X": 0.83,
+}
+
+
+def _build_tier_weight_case(column_ref: str) -> str:
+    """Return a SQLite CASE expression that maps `column_ref`'s tier value
+    to the calibrated multiplier in TIER_PRIOR_WEIGHTS. The 'X' bucket is
+    folded into ELSE so unknown / NULL tier rows are demoted with the
+    quarantine weight (0.83), matching the previous hard-coded behaviour
+    where the worst bucket was the catch-all."""
+    parts = ["CASE " + column_ref]
+    fallback = TIER_PRIOR_WEIGHTS["X"]
+    for tier, weight in TIER_PRIOR_WEIGHTS.items():
+        if tier == "X":
+            continue
+        parts.append(f"WHEN '{tier}' THEN {weight}")
+    parts.append(f"ELSE {fallback} END")
+    return " ".join(parts)
+
+
+_TIER_WEIGHT_CASE_INNER = _build_tier_weight_case("programs.tier")
+_TIER_WEIGHT_CASE_OUTER = _build_tier_weight_case("tier")
+
+
+def _mark_envelope_v2_served(request: Request) -> None:
+    """Tell EnvelopeAdapterMiddleware that this route emitted the v2 shape."""
+    with contextlib.suppress(Exception):
+        request.state.envelope_v2_served = True
 
 
 # ---------------------------------------------------------------------------
@@ -756,6 +819,17 @@ def _row_to_program(row: sqlite3.Row) -> Program:
         checksum = row["source_checksum"]
     except (IndexError, KeyError):
         checksum = None
+    if checksum is None:
+        # Older/fixture DBs may lack source_checksum, or carry NULL for it.
+        # Include the mutable fields that affect the cached Program shape so
+        # in-place test/admin updates do not leave stale next_deadline values.
+        legacy_parts: list[str] = []
+        for col in ("updated_at", "application_window_json"):
+            try:
+                legacy_parts.append(str(row[col]))
+            except (IndexError, KeyError):
+                legacy_parts.append("")
+        checksum = "legacy:" + "|".join(legacy_parts)
 
     key = (uid, checksum)
     with _PROGRAM_CACHE_LOCK:
@@ -902,44 +976,20 @@ def _row_to_program_detail(row: sqlite3.Row, fields: FieldsLevel) -> dict[str, A
     summary="Search 補助金 / 助成金 / 融資 / 税制 / 認定 programs",
     description=(
         "Discover candidate Japanese public-funding programs by free-text + "
-        "structured filters across **10,790 active rows** (tier S/A/B/C — "
-        "tier X is a quality-gate quarantine, not returned). Backed by FTS5 "
-        "trigram on name/aliases/enriched_json plus exact filters on "
-        "prefecture, authority_level, target_types, funding_purpose, and "
-        "amount band.\n\n"
+        "structured filters across **11,684 searchable source-linked rows**. "
+        "Review-held rows are excluded from public search. Filters include "
+        "prefecture, authority level, target type, funding purpose, and amount band.\n\n"
         "**When to use this endpoint:** the caller has a topic / region / "
         "kind in mind ('IT導入', '東京都', '補助金') and wants candidates. "
         "For *judgment* (does this profile fit?), prefer "
         "`POST /v1/programs/prescreen`. For exact-id lookup use "
         "`GET /v1/programs/{unified_id}`. For up-to-50 ids in one call use "
         "`POST /v1/programs/batch`.\n\n"
-        "**FTS5 query rewriting (automatic — no operator tweaks needed):** "
-        "the handler treats `q` as free text and rewrites it into a safe "
-        "FTS5 MATCH expression before execution.\n"
-        " - 2+ char kanji compounds are auto phrase-quoted "
-        "(`q=税額控除` → `\"税額控除\"`) so the trigram tokens must appear "
-        "contiguously. This defeats the single-kanji overlap "
-        "false-positive (`税額控除` no longer co-ranks `ふるさと納税`-only rows).\n"
-        " - User-quoted phrases are preserved verbatim. "
-        "`q='\"中小企業 デジタル化\"'` searches the whole phrase as one term; "
-        "`q='\"DX\" 製造業'` ANDs DX (phrase) with 製造業 (auto-quoted).\n"
-        " - Whitespace + Japanese/ASCII punctuation (`,` `、` `。` `;` `!` "
-        "etc.) are token separators. FTS5-special chars (`*` `:` `(` `)` "
-        "`^` `+`) are stripped to keep the parser predictable.\n"
-        " - Full-width ASCII / 全角 space NFKC-normalized to half-width "
-        "(`ＩＴ補助金` matches `IT補助金`).\n"
-        " - Hiragana/katakana readings auto-OR'd with their kanji canonical "
-        "form when in the KANA_EXPANSIONS map "
-        "(`q=のうぎょう` matches 農業-only docs). Wrap in quotes "
-        "(`q='\"のうぎょう\"'`) to disable expansion.\n"
-        " - Empty / whitespace / punctuation-only `q` (no other filter) "
-        "returns 0 rows — this is a safety guard against accidental "
-        "corpus dumps. Combine `q=` with `tier=S` etc. to browse by "
-        "structural filter without a free-text term.\n\n"
+        "**Search behavior:** punctuation and full-width characters are normalized, "
+        "quoted phrases are preserved, and empty searches without filters return "
+        "no rows. Combine text search with filters when browsing broad topics.\n\n"
         "Use `as_of_date=YYYY-MM-DD` to pin the result set to a historical "
-        "dataset state (R8 dataset versioning) — useful for 申告時点の "
-        "制度状態 audit. Rows are honestly tiered (S/A/B/C); `confidence` "
-        "and `source_fetched_at` are exposed per-row."
+        "dataset state. `confidence` and `source_fetched_at` are exposed per-row."
     ),
     responses={
         **COMMON_ERROR_RESPONSES,
@@ -1006,11 +1056,9 @@ def search_programs(
         Query(
             description=(
                 "Free-text search across primary_name / aliases / enriched. "
-                "The handler auto phrase-quotes 2+ char kanji compounds to "
-                "defeat trigram single-kanji false matches; user `\"...\"` "
-                "phrases are preserved verbatim; punctuation acts as token "
-                "separator. Empty `q` with no other filter returns 0 (corpus "
-                "dump guard). See endpoint description for full rules."
+                "Japanese phrases are normalized, user `\"...\"` phrases are "
+                "preserved verbatim, and punctuation acts as a token separator. "
+                "Empty `q` with no other filter returns 0 to avoid broad dumps."
             ),
             max_length=200,
         ),
@@ -1071,12 +1119,9 @@ def search_programs(
         str | None,
         Query(
             description=(
-                "R8 dataset versioning — pin the result set to the dataset "
-                "state at YYYY-MM-DD (ISO-8601 date). Predicate: "
-                "`valid_from <= as_of_date AND (valid_until IS NULL OR "
-                "valid_until > as_of_date)`. Omit / null = live (today). "
-                "Used by tax accountants / 行政書士 to fix 申告時点の制度状態 "
-                "for audit. Returns 422 on malformed date."
+                "Pin the result set to the dataset state at YYYY-MM-DD "
+                "(ISO-8601 date). Omit / null = live (today). Returns 422 "
+                "on malformed date."
             ),
             max_length=10,
         ),
@@ -1227,6 +1272,75 @@ def search_programs(
         resp.headers["X-Corpus-Checksum"] = checksum
         return resp  # type: ignore[return-value]
 
+    # v2 response envelope for AI/agent clients. The legacy body is copied
+    # into results[] without mutating the cached legacy payload.
+    if wants_envelope_v2(request):
+        _mark_envelope_v2_served(request)
+        rows = list(response_body.get("results") or [])
+        filters: dict[str, Any] = {
+            "fields": fields,
+            "limit": int(response_body.get("limit", limit)),
+            "offset": int(response_body.get("offset", offset)),
+        }
+        if tier:
+            filters["tier"] = sorted(tier)
+        if prefecture is not None:
+            filters["prefecture"] = prefecture
+        if authority_level is not None:
+            filters["authority_level"] = authority_level
+        if funding_purpose:
+            filters["funding_purpose"] = sorted(funding_purpose)
+        if target_type:
+            filters["target_type"] = sorted(target_type)
+        if amount_min is not None:
+            filters["amount_min"] = amount_min
+        if amount_max is not None:
+            filters["amount_max"] = amount_max
+        if include_excluded:
+            filters["include_excluded"] = True
+        if _as_of_iso is not None:
+            filters["as_of_date"] = _as_of_iso
+
+        suggested_actions = [
+            {
+                "endpoint": "/v1/programs/{unified_id}",
+                "args": {"unified_id": str(row.get("unified_id"))},
+                "reason": "fetch full program detail",
+            }
+            for row in rows[:3]
+            if isinstance(row, dict) and row.get("unified_id")
+        ]
+        query_echo = {
+            "normalized_input": {"q": q.strip()} if q else {},
+            "applied_filters": filters,
+            "unparsed_terms": [],
+        }
+        common_kwargs = {
+            "request_id": safe_request_id(request),
+            "query_echo": query_echo,
+            "suggested_actions": suggested_actions,
+            "latency_ms": _latency_ms,
+            "billable_units": 1,
+            "client_tag": getattr(request.state, "client_tag", None),
+        }
+        if not rows:
+            env = StandardResponse.empty(
+                empty_reason="no_match",
+                retry_with={"q": q, "broaden": True} if q else {"broaden": True},
+                **common_kwargs,
+            )
+        elif len(rows) < 5:
+            env = StandardResponse.sparse(
+                rows,
+                retry_with={"limit": min(100, max(limit, 20)), "offset": 0},
+                **common_kwargs,
+            )
+        else:
+            env = StandardResponse.rich(rows, **common_kwargs)
+        headers = snapshot_headers(conn)
+        headers["X-Envelope-Version"] = "v2"
+        return JSONResponse(content=env.to_wire(), headers=headers)
+
     # Mirror the snapshot pair into headers on the JSON path too — same
     # auditor log-grep workflow as the format-non-JSON branch.
     return JSONResponse(content=response_body, headers=snapshot_headers(conn))
@@ -1265,7 +1379,7 @@ def _build_search_response(
     # Empty-q safety (2026-04-29 FTS rewriter audit): when `q` is provided
     # as an explicit string but evaluates to empty after normalization
     # (`q=""`, `q="   "`, `q="**"`, `q=":;"` etc) AND no other filter is
-    # supplied, return empty rather than the entire 10,790-row corpus.
+    # supplied, return empty rather than the searchable program corpus.
     # Rationale:
     #   - The HTTP shape `?q=` (empty value) is almost always a buggy
     #     client that meant to put a real term, not "give me everything".
@@ -1290,7 +1404,7 @@ def _build_search_response(
 
     # Bug2 fix (2026-04-26): treat whitespace-only `q` as no query. Previously
     # `if q:` was truthy for `q="   "`, then `q_clean=""` produced LIKE `%%`
-    # which matched the entire 10,790-row corpus — both a correctness bug and
+    # which matched the entire searchable program corpus — both a correctness bug and
     # a quota-burn vector at ¥3/req. Use stripped-truthiness here, and trust
     # downstream code to read q_clean (which is set inside this branch only).
     if q and q.strip():
@@ -1340,6 +1454,91 @@ def _build_search_response(
         # path will substring-match the literal string, which is harmless on
         # punctuation-only input (matches 0 in practice).
         fts_tokens_empty = not bool(norm_tokens)
+
+        # LIKE-clause builder — extracted so the same logic feeds both
+        # (a) the initial LIKE branch (short tokens, kana expansion mix)
+        # and (b) the post-count zero-recall retry below (FTS5 trigram
+        # tokenizer cannot match tokens shorter than its 3-gram window;
+        # when bm25-weighted FTS finds nothing, fall back to substring).
+        # Column coverage depends on script class + length of the term:
+        # - Japanese / mixed terms with len >= 2 scan primary_name +
+        #   aliases_json + enriched_json so the concept is found even
+        #   when it only appears in the long-form description.
+        # - Short pure-ASCII terms (len<3, [A-Za-z0-9] only — e.g. IT,
+        #   DX, AI) scan primary_name + aliases_json ONLY. Including
+        #   enriched_json for 2-char ASCII is a double failure:
+        #     (a) Latency: the 12k-row enriched_json scan is ~400ms P95
+        #         (vs 17ms for the FTS path on 2+ char kanji) because
+        #         'IT' appears as a substring inside English words
+        #         ('Information', 'credit', 'exhibit') and JSON meta
+        #         keys across ~60% of the corpus.
+        #     (b) Relevance: those substring hits are not what the user
+        #         means when they search 'IT' — they want IT導入補助金,
+        #         not every program whose enriched blob happens to
+        #         contain the byte-pair 'IT'. Restricting to
+        #         primary_name + aliases_json surfaces exactly the
+        #         acronym-in-name rows agents expect.
+        # - Bug3 fix (2026-04-26): single-character queries (any script,
+        #   e.g. `税`, `補`, `B`) ALSO scan primary_name + aliases_json
+        #   ONLY. The enriched_json scan on a 1-char query matches ~half
+        #   the corpus on background mentions and produces unranked noise
+        #   in the top-5. Restricting to name+aliases keeps single-char
+        #   queries useful (e.g. `税` returns programs whose name begins
+        #   with 税…) without the noise floor.
+        #   See docs/performance.md for the perf audit that drove this.
+        def _like_clause_for(term: str) -> tuple[str, list]:
+            if len(term) == 1:
+                # Bug3: any 1-char query → narrow scan.
+                return (
+                    "(primary_name LIKE ? OR aliases_json LIKE ?)",
+                    [f"%{term}%", f"%{term}%"],
+                )
+            if len(term) < 3 and _is_pure_ascii_word(term):
+                # Short pure-ASCII: narrow scan, skip enriched_json.
+                return (
+                    "(primary_name LIKE ? OR aliases_json LIKE ?)",
+                    [f"%{term}%", f"%{term}%"],
+                )
+            # Default: full three-column scan.
+            return (
+                "(primary_name LIKE ? OR aliases_json LIKE ? OR "
+                " COALESCE(enriched_json,'') LIKE ?)",
+                [f"%{term}%", f"%{term}%", f"%{term}%"],
+            )
+
+        def _build_like_branch() -> tuple[str, list]:
+            """Build the LIKE OR-clause + its params for the current query.
+
+            We have two stacking dimensions:
+            (1) candidate-term axis (q_clean + KANA expansions) -> OR'd
+            (2) whitespace-token axis (multi-token user query like
+                `"IT 導入"`) -> AND'd. Without the AND, the multi-token
+                case becomes substring `%IT 導入%` against rows that
+                never actually contain a literal space between the two
+                tokens, so it would match 0. (Bug1 fix)
+            """
+            local_params: list = []
+            per_candidate_clauses: list[str] = []
+            for cand in search_terms:
+                if cand == q_clean and len(norm_tokens) > 1:
+                    # Multi-token user query: AND each token's LIKE clause.
+                    sub_clauses: list[str] = []
+                    for tok in norm_tokens:
+                        clause, clause_params = _like_clause_for(tok)
+                        sub_clauses.append(clause)
+                        local_params.extend(clause_params)
+                    per_candidate_clauses.append(
+                        "(" + " AND ".join(sub_clauses) + ")"
+                    )
+                else:
+                    clause, clause_params = _like_clause_for(cand)
+                    per_candidate_clauses.append(clause)
+                    local_params.extend(clause_params)
+            return (
+                "(" + " OR ".join(per_candidate_clauses) + ")",
+                local_params,
+            )
+
         if (
             shortest >= 3
             and len(search_terms) == 1
@@ -1359,84 +1558,10 @@ def _build_search_response(
             join_fts = True
             params.append(_build_fts_match(q_clean))
         else:
-            # LIKE fallback. We have two stacking dimensions:
-            # (1) candidate-term axis (q_clean + KANA expansions) -> OR'd
-            # (2) whitespace-token axis (multi-token user query like
-            #     `"IT 導入"`) -> AND'd. Without the AND, the multi-token
-            #     case becomes substring `%IT 導入%` against rows that
-            #     never actually contain a literal space between the two
-            #     tokens, so it would match 0. (Bug1 fix)
-            #
-            # Column coverage depends on script class + length of the term:
-            # - Japanese / mixed terms with len >= 2 scan primary_name +
-            #   aliases_json + enriched_json so the concept is found even
-            #   when it only appears in the long-form description.
-            # - Short pure-ASCII terms (len<3, [A-Za-z0-9] only — e.g. IT,
-            #   DX, AI) scan primary_name + aliases_json ONLY. Including
-            #   enriched_json for 2-char ASCII is a double failure:
-            #     (a) Latency: the 12k-row enriched_json scan is ~400ms P95
-            #         (vs 17ms for the FTS path on 2+ char kanji) because
-            #         'IT' appears as a substring inside English words
-            #         ('Information', 'credit', 'exhibit') and JSON meta
-            #         keys across ~60% of the corpus.
-            #     (b) Relevance: those substring hits are not what the user
-            #         means when they search 'IT' — they want IT導入補助金,
-            #         not every program whose enriched blob happens to
-            #         contain the byte-pair 'IT'. Restricting to
-            #         primary_name + aliases_json surfaces exactly the
-            #         acronym-in-name rows agents expect.
-            # - Bug3 fix (2026-04-26): single-character queries (any script,
-            #   e.g. `税`, `補`, `B`) ALSO scan primary_name + aliases_json
-            #   ONLY. The enriched_json scan on a 1-char query matches ~half
-            #   the corpus on background mentions and produces unranked noise
-            #   in the top-5. Restricting to name+aliases keeps single-char
-            #   queries useful (e.g. `税` returns programs whose name begins
-            #   with 税…) without the noise floor.
-            #   See docs/performance.md for the perf audit that drove this.
-            #
-            # Per-term LIKE column-set decision:
-            def _like_clause_for(term: str) -> tuple[str, list]:
-                if len(term) == 1:
-                    # Bug3: any 1-char query → narrow scan.
-                    return (
-                        "(primary_name LIKE ? OR aliases_json LIKE ?)",
-                        [f"%{term}%", f"%{term}%"],
-                    )
-                if len(term) < 3 and _is_pure_ascii_word(term):
-                    # Short pure-ASCII: narrow scan, skip enriched_json.
-                    return (
-                        "(primary_name LIKE ? OR aliases_json LIKE ?)",
-                        [f"%{term}%", f"%{term}%"],
-                    )
-                # Default: full three-column scan.
-                return (
-                    "(primary_name LIKE ? OR aliases_json LIKE ? OR "
-                    " COALESCE(enriched_json,'') LIKE ?)",
-                    [f"%{term}%", f"%{term}%", f"%{term}%"],
-                )
-
-            # Per candidate term (q_clean + kana expansions), build a clause
-            # that AND-combines the multi-token requirement when applicable.
-            # Each candidate term either uses its own multi-token expansion
-            # (only for q_clean's own tokens) or scans as a single string
-            # (kana expansions are single tokens by construction).
-            per_candidate_clauses: list[str] = []
-            for cand in search_terms:
-                if cand == q_clean and len(norm_tokens) > 1:
-                    # Multi-token user query: AND each token's LIKE clause.
-                    sub_clauses: list[str] = []
-                    for tok in norm_tokens:
-                        clause, clause_params = _like_clause_for(tok)
-                        sub_clauses.append(clause)
-                        params.extend(clause_params)
-                    per_candidate_clauses.append(
-                        "(" + " AND ".join(sub_clauses) + ")"
-                    )
-                else:
-                    clause, clause_params = _like_clause_for(cand)
-                    per_candidate_clauses.append(clause)
-                    params.extend(clause_params)
-            where.append("(" + " OR ".join(per_candidate_clauses) + ")")
+            # LIKE fallback (short / punctuation / mixed-length tokens).
+            like_clause, like_params = _build_like_branch()
+            where.append(like_clause)
+            params.extend(like_params)
 
     if tier:
         where.append(f"tier IN ({','.join('?' * len(tier))})")
@@ -1486,6 +1611,13 @@ def _build_search_response(
         where.append(_as_of_sql)
         params.extend(_as_of_params)
 
+    # Search ranking constants live at module scope:
+    #   - BM25_EXPR                : bm25() expression with 5x primary_name weight
+    #   - TIER_PRIOR_WEIGHTS       : calibrated tier multiplier (Brier-fit)
+    #   - _TIER_WEIGHT_CASE_INNER  : SQL CASE expr keyed off `programs.tier`
+    #   - _TIER_WEIGHT_CASE_OUTER  : SQL CASE expr keyed off unqualified `tier`
+    # See module top for derivation + sign-convention commentary.
+
     if join_fts:
         base_from = "programs_fts JOIN programs USING(unified_id)"
         where_clause = "programs_fts MATCH ?"
@@ -1498,18 +1630,9 @@ def _build_search_response(
     # Dedup by primary_name at COUNT and SELECT time: 18 primary_names are
     # duplicated in the corpus today (up to 13x). Without dedup, a search
     # for `IT導入補助金` returns 4 near-identical rows. We keep the
-    # highest-tier row per name. ROW_NUMBER() over a tier-ordered partition
-    # picks one row per primary_name.
-    tier_order_inner = (
-        "CASE programs.tier "
-        "WHEN 'S' THEN 0 WHEN 'A' THEN 1 WHEN 'B' THEN 2 WHEN 'C' THEN 3 "
-        "ELSE 4 END"
-    )
-    tier_order_outer = (
-        "CASE tier "
-        "WHEN 'S' THEN 0 WHEN 'A' THEN 1 WHEN 'B' THEN 2 WHEN 'C' THEN 3 "
-        "ELSE 4 END"
-    )
+    # highest-tier row per name. ROW_NUMBER() over the same calibrated
+    # ordering as the outer SELECT (see _tier_weight_case_* + bm25 composite
+    # below) picks one row per primary_name.
 
     # COUNT(DISTINCT primary_name) for the dedup-aware total.
     count_sql = (
@@ -1518,45 +1641,148 @@ def _build_search_response(
     )
     (total,) = conn.execute(count_sql, params).fetchone()
 
+    # FTS5 zero-recall retry (recall fix, 2026-04-30):
+    # The trigram tokenizer cannot index tokens shorter than 3 chars, and even
+    # with 5x primary_name bm25 weighting some valid kanji compound queries
+    # produce empty FTS results due to phrase-quote strictness. When the FTS
+    # path returns 0 rows AND we have a non-trivial user query, retry once
+    # with the LIKE branch — substring scan against primary_name + aliases +
+    # enriched_json. Same /v1/programs/search endpoint, no extra cost to
+    # the caller (single ¥3 charge) and no extra LLM hop.
+    if join_fts and total == 0 and q and q.strip():
+        like_clause, like_params = _build_like_branch()
+        # Reset to non-FTS shape so the SELECT below runs against `programs`
+        # without the programs_fts join. Drop the FTS MATCH param we appended
+        # earlier and the FTS clause; rebuild the WHERE list with LIKE.
+        join_fts = False
+        # Recompute params: rebuild from scratch using the same filter
+        # decisions made above (tier, prefecture, etc.) so the structural
+        # filters survive the retry.
+        params = list(like_params)
+        where_for_retry: list[str] = [like_clause]
+        if tier:
+            where_for_retry.append(f"tier IN ({','.join('?' * len(tier))})")
+            params.extend(tier)
+        if prefecture:
+            where_for_retry.append("prefecture = ?")
+            params.append(prefecture)
+        if authority_level:
+            where_for_retry.append("authority_level = ?")
+            params.append(authority_level)
+        if funding_purpose:
+            for fp in funding_purpose:
+                where_for_retry.append("funding_purpose_json LIKE ?")
+                params.append(f"%{json.dumps(fp, ensure_ascii=False)}%")
+        if target_type:
+            for t in target_type:
+                where_for_retry.append("target_types_json LIKE ?")
+                params.append(f"%{json.dumps(t, ensure_ascii=False)}%")
+        if amount_min is not None:
+            where_for_retry.append("amount_max_man_yen >= ?")
+            params.append(amount_min)
+        if amount_max is not None:
+            where_for_retry.append("amount_max_man_yen <= ?")
+            params.append(amount_max)
+        if not include_excluded:
+            where_for_retry.append("excluded = 0")
+            where_for_retry.append("COALESCE(tier,'X') != 'X'")
+        _as_of_sql, _as_of_params = _as_of_predicate(as_of_iso, "programs")
+        if _as_of_sql:
+            where_for_retry.append(_as_of_sql)
+            params.extend(_as_of_params)
+        base_from = "programs"
+        where_clause = " AND ".join(where_for_retry) if where_for_retry else "1=1"
+        count_sql = (
+            f"SELECT COUNT(DISTINCT programs.primary_name) FROM {base_from} "
+            f"WHERE {where_clause}"
+        )
+        (total,) = conn.execute(count_sql, params).fetchone()
+
     # Ordering priorities (highest first):
     #   1. primary_name contains the raw query literally — defeats the
     #      trigram false-positive where 企業版ふるさと納税 outranks
     #      研究開発税制(試験研究費の税額控除) on a 税額控除 query.
-    #   2. Tier S/A/B/C/other — user-facing quality gate.
-    #   3. FTS rank (only on the FTS path) as a tie-breaker.
-    #   4. primary_name alphabetical for deterministic paging.
+    #   2. FTS path: composite `bm25 * tier_prior_weight` ASC. Replaces the
+    #      old strict tier-bucket sort (S>A>B>C>X) — calibrated against the
+    #      measured evidence_score per tier, so an extremely strong bm25 hit
+    #      on tier B can outrank a weak tier S hit (Brier-fit, see comment
+    #      next to TIER_PRIOR_WEIGHTS above).
+    #      Non-FTS path: tier_prior_weight DESC as a continuous quality sort
+    #      (no bm25 to multiply into).
+    #   3. primary_name alphabetical for deterministic paging.
     #
     # Inner uses `programs.*` qualified refs (join site); outer uses flat
     # unqualified refs (subquery projection drops the qualifier).
-    inner_order_parts: list[str] = []
     outer_order_parts: list[str] = []
     name_match_params: list = []
     if raw_query:
-        inner_order_parts.append(
-            "CASE WHEN programs.primary_name LIKE ? THEN 0 ELSE 1 END"
-        )
         outer_order_parts.append(
             "CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END"
         )
         name_match_params.append(f"%{raw_query}%")
-    inner_order_parts.append(tier_order_inner)
-    outer_order_parts.append(tier_order_outer)
+    # Outer ORDER BY (post-dedup) is always against the unqualified projection.
     if join_fts:
-        inner_order_parts.append("programs_fts.rank")
-        outer_order_parts.append("_rank")
-    inner_order_parts.append("programs.primary_name")
+        # `_score` is bm25 (negative) × tier_weight; lower = better.
+        outer_order_parts.append("_score")
+    else:
+        # No bm25 → sort by tier weight DESC (higher weight = better tier).
+        outer_order_parts.append(f"{_TIER_WEIGHT_CASE_OUTER} DESC")
     outer_order_parts.append("primary_name")
-    inner_order_sql = "ORDER BY " + ", ".join(inner_order_parts)
     outer_order_sql = "ORDER BY " + ", ".join(outer_order_parts)
 
-    # Inner projection: all programs.* columns + _rank (FTS only) + _rn.
-    rank_col = ", programs_fts.rank AS _rank" if join_fts else ""
-    inner_sql = (
-        f"SELECT programs.*{rank_col}, "
-        f"  ROW_NUMBER() OVER (PARTITION BY programs.primary_name "
-        f"                     {inner_order_sql}) AS _rn "
-        f"FROM {base_from} WHERE {where_clause}"
-    )
+    # ROW_NUMBER OVER's ORDER BY runs in different contexts depending on
+    # whether we're on the FTS path (one level deeper) or the non-FTS path
+    # (directly off the programs table). Build each independently.
+    #
+    # FTS path: bm25() cannot appear inside ROW_NUMBER OVER (SQLite rejects
+    # FTS5 auxiliary functions in window-function contexts). We therefore
+    # project bm25 * tier_weight as `_score` (and the raw bm25 as `_rank`
+    # for diagnostics / regression debugging) in an inner-most subquery and
+    # reference the alias in the OVER clause one level out. The OVER then
+    # runs against an unqualified projection ('primary_name', '_score', ...)
+    # — the inner-most SELECT used `programs.*`, so column names there are
+    # unqualified.
+    if join_fts:
+        rn_order_parts: list[str] = []
+        if raw_query:
+            rn_order_parts.append(
+                "CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END"
+            )
+        # Composite calibrated score (bm25 × tier_prior_weight). Inside the
+        # PARTITION BY primary_name dedup window this also picks the
+        # highest-tier (lowest _score) row per duplicated name.
+        rn_order_parts.append("_score")
+        rn_order_parts.append("primary_name")
+        rn_order_sql = "ORDER BY " + ", ".join(rn_order_parts)
+
+        innermost_sql = (
+            f"SELECT programs.*, {BM25_EXPR} AS _rank, "
+            f"({BM25_EXPR}) * ({_TIER_WEIGHT_CASE_INNER}) AS _score "
+            f"FROM {base_from} WHERE {where_clause}"
+        )
+        inner_sql = (
+            f"SELECT *, ROW_NUMBER() OVER (PARTITION BY primary_name "
+            f"                     {rn_order_sql}) AS _rn "
+            f"FROM ({innermost_sql})"
+        )
+    else:
+        # Non-FTS path: no bm25 to multiply into, so tier_weight DESC is the
+        # ranking signal (higher tier_weight = stronger prior).
+        rn_order_parts = []
+        if raw_query:
+            rn_order_parts.append(
+                "CASE WHEN programs.primary_name LIKE ? THEN 0 ELSE 1 END"
+            )
+        rn_order_parts.append(f"{_TIER_WEIGHT_CASE_INNER} DESC")
+        rn_order_parts.append("programs.primary_name")
+        rn_order_sql = "ORDER BY " + ", ".join(rn_order_parts)
+
+        inner_sql = (
+            f"SELECT programs.*, "
+            f"  ROW_NUMBER() OVER (PARTITION BY programs.primary_name "
+            f"                     {rn_order_sql}) AS _rn "
+            f"FROM {base_from} WHERE {where_clause}"
+        )
     select_sql = (
         f"SELECT * FROM ({inner_sql}) "
         f"WHERE _rn = 1 {outer_order_sql} LIMIT ? OFFSET ?"
@@ -1809,6 +2035,18 @@ def batch_get_programs(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
             f"unified_ids cap is 50, got {len(unified_ids)}",
         )
+    n_billable = len(unified_ids)
+    from jpintel_mcp.api.middleware.customer_cap import (
+        projected_monthly_cap_response,
+    )
+
+    cap_response = projected_monthly_cap_response(
+        conn,
+        ctx.key_hash,
+        n_billable,
+    )
+    if cap_response is not None:
+        return cap_response
 
     # Single SQL round-trip: IN-list with a placeholder per id. sqlite
     # hard-caps parameter count at 999 by default, so 50 is well under.
@@ -1845,7 +2083,6 @@ def batch_get_programs(
     # quantity=len(unified_ids) here closes the bulk-billing gap without
     # any new schema. Local usage_events still gets one row (audit), Stripe
     # gets one record at quantity=N (charge), reconciliation stays clean.
-    n_billable = len(unified_ids)
     log_usage(
         conn,
         ctx,
@@ -1868,10 +2105,9 @@ def batch_get_programs(
         "including `enriched_json` (eligibility narrative, application "
         "window, required documents) and lineage (`source_url`, "
         "`source_fetched_at`, `source_checksum`).\n\n"
-        "**404 semantics:** tier-X (quarantined) rows return 404 — the "
-        "stable slug must never serve a quality-gated row. To pin the "
-        "lookup to a historical dataset state, supply "
-        "`as_of_date=YYYY-MM-DD` (R8 dataset versioning).\n\n"
+        "**404 semantics:** rows that are not public-searchable return 404. "
+        "To pin the lookup to a historical dataset state, supply "
+        "`as_of_date=YYYY-MM-DD`.\n\n"
         "**Discovery flow:** call `GET /v1/programs/search` first, then "
         "follow up on each `unified_id` with this endpoint to get the "
         "narrative + required-documents detail."
@@ -1937,10 +2173,8 @@ def get_program(
         str | None,
         Query(
             description=(
-                "R8 dataset versioning — pin lookup to dataset state at "
-                "YYYY-MM-DD (ISO-8601). When set, the row is filtered with "
-                "`valid_from <= as_of_date AND (valid_until IS NULL OR "
-                "valid_until > as_of_date)`. Omit / null = live (today)."
+                "Pin lookup to dataset state at YYYY-MM-DD (ISO-8601). "
+                "Omit / null = live (today)."
             ),
             max_length=10,
         ),
