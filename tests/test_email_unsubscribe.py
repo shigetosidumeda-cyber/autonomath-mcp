@@ -86,7 +86,7 @@ def test_post_unsubscribe_writes_master_and_mirrors_legacy(
     something to flip. The master write is unconditional (INSERT OR
     IGNORE) and would fire even if the legacy row were missing.
     """
-    email = "alice@example.com"
+    email = "email-unsubscribe-alice@example.com"
     token = _make_token(email)
 
     # Seed an existing newsletter subscription so we can prove the mirror

@@ -129,7 +129,7 @@ def search_enforcement_cases(
         Query(
             description=(
                 "Free-text search over program_name_hint + reason_excerpt + "
-                "source_title (LIKE, case-insensitive)."
+                "source_title (case-insensitive text match)."
             ),
             max_length=200,
         ),

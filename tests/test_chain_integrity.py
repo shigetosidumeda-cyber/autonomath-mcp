@@ -217,12 +217,14 @@ def test_chain_s2_invoice_registrants_search_to_get(client, chain_seed):
 # ---------------------------------------------------------------------------
 
 
-def test_chain_s3_search_laws_to_find_cases(client, chain_seed):
+def test_chain_s3_search_laws_to_find_cases(client, chain_seed, paid_key):
     """search_laws returns a unified_id; the related-programs / court
     decisions endpoint accepts that same id."""
+    headers = {"X-API-Key": paid_key}
     r1 = client.get(
         "/v1/laws/search",
         params={"q": "租税特別措置法", "limit": 5},
+        headers=headers,
     )
     assert r1.status_code == 200, r1.text
     body1 = r1.json()
@@ -237,16 +239,17 @@ def test_chain_s3_search_laws_to_find_cases(client, chain_seed):
         assert law_id, f"law row missing unified_id: {results[0]!r}"
 
     # Step 2a: get_law endpoint.
-    r2 = client.get(f"/v1/laws/{law_id}")
+    r2 = client.get(f"/v1/laws/{law_id}", headers=headers)
     assert r2.status_code in (200, 404), r2.text
     # Step 2b: related-programs derived from the law id (the actual chain
     # the regulatory_prep_pack tool exercises).
-    r3 = client.get(f"/v1/laws/{law_id}/related-programs")
+    r3 = client.get(f"/v1/laws/{law_id}/related-programs", headers=headers)
     assert r3.status_code in (200, 404), r3.text
     # Step 2c: court decisions by statute (the intended downstream chain).
     r4 = client.post(
         "/v1/court-decisions/by-statute",
         json={"statute": "租税特別措置法", "limit": 5},
+        headers=headers,
     )
     # Accept either schema validation 422 (statute may need a stricter
     # shape) or 200; never 5xx.
@@ -283,11 +286,12 @@ def test_chain_s4_search_court_decisions_to_get(client, chain_seed):
 # ---------------------------------------------------------------------------
 
 
-def test_chains_never_emit_5xx(client, chain_seed):
+def test_chains_never_emit_5xx(client, chain_seed, paid_key):
     """Belt-and-braces: every endpoint touched by the 4 chains must
     return < 500 even with empty / minimal inputs. A 5xx here means a
     chain caller would see an opaque server error instead of a
     structured envelope."""
+    headers = {"X-API-Key": paid_key}
     paths = [
         ("GET", "/v1/programs/search", None),
         ("POST", "/v1/exclusions/check", {"program_ids": ["UNI-test-s-1", "UNI-test-b-1"]}),
@@ -297,9 +301,9 @@ def test_chains_never_emit_5xx(client, chain_seed):
     ]
     for method, path, body in paths:
         if method == "GET":
-            r = client.get(path)
+            r = client.get(path, headers=headers)
         else:
-            r = client.post(path, json=body or {})
+            r = client.post(path, json=body or {}, headers=headers)
         assert r.status_code < 500, (
             f"{method} {path} → {r.status_code}: 5xx leaked from chain"
         )

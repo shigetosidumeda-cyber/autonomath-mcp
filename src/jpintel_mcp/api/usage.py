@@ -38,7 +38,7 @@ from jpintel_mcp.api.anon_limit import (
     _jst_next_day_iso,
     hash_ip,
 )
-from jpintel_mcp.api.deps import ApiContextDep, DbDep
+from jpintel_mcp.api.deps import ApiContextDep, DbDep  # noqa: TC001
 from jpintel_mcp.config import settings
 
 router = APIRouter(tags=["usage"])
@@ -53,10 +53,10 @@ class UsageStatus(BaseModel):
     """Single shape covers anonymous + paid + free (dunning) tiers.
 
     `limit` and `remaining` are nullable so the metered ("paid") tier can
-    return both as None — there is no upper bound on a metered key, the
-    customer pays ¥3/req for whatever volume they consume. The dashboard
-    (`/v1/me/dashboard`) is the right surface for "how much will this
-    cost me this month", not /v1/usage.
+    return both as None. Customers pay ¥3/req for successful metered
+    requests and can set a hard monthly budget cap with `/v1/me/cap`.
+    The dashboard (`/v1/me/dashboard`) is the right surface for "how much
+    will this cost me this month", not /v1/usage.
     """
 
     tier: str  # "anonymous" | "paid" | "free"

@@ -144,8 +144,7 @@ def search_court_decisions(
         Query(
             description=(
                 "Free-text search across case_name + subject_area + "
-                "key_ruling + impact_on_business (FTS5 with quoted-phrase "
-                "workaround for 2+ character kanji compounds)."
+                "key_ruling + impact_on_business with Japanese phrase normalization."
             ),
             max_length=200,
         ),
@@ -176,8 +175,7 @@ def search_court_decisions(
         str | None,
         Query(
             description=(
-                "Filter by 分野 (substring LIKE — the column is free-text "
-                "and varies by 判例集, so exact-match is too brittle)."
+                "Filter by 分野 (substring match; source vocabulary varies by 判例集)."
             ),
             max_length=120,
         ),
@@ -186,10 +184,8 @@ def search_court_decisions(
         str | None,
         Query(
             description=(
-                "Filter rows whose `related_law_ids_json` contains this "
-                "LAW-<10 hex> unified_id. JSON-array substring LIKE — "
-                "accurate because unified_ids are fixed-width and have a "
-                "distinctive `LAW-` prefix."
+                "Filter rows whose related-law identifier list contains "
+                "this LAW identifier."
             ),
             pattern=r"^LAW-[0-9a-f]{10}$",
         ),

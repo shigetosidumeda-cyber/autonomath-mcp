@@ -21,12 +21,10 @@ import threading
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-import pytest
 
 # The conftest already sets JPINTEL_DB_PATH for the integration suite,
 # but for these focused unit tests we want a clean per-test DB. We build
 # one straight from db/schema.sql.
-from jpintel_mcp.api import _bg_task_queue as queue_mod
 from jpintel_mcp.api._bg_task_queue import (
     claim_next,
     enqueue,

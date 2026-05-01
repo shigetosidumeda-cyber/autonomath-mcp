@@ -91,13 +91,19 @@ Specialty = Literal[
 ]
 
 Industry = Literal[
-    "agri",
+    "agriculture_forestry",
+    "manufacturing",
     "manufacture",
     "it",
     "service",
     "construction",
     "retail",
 ]
+
+_INDUSTRY_ALIASES = {
+    "agri": "agriculture_forestry",
+    "manufacture": "manufacturing",
+}
 
 CommissionModel = Literal["flat", "percent"]
 
@@ -160,7 +166,7 @@ class MatchResponse(BaseModel):
     results: list[AdvisorOut]
     ranking: dict[str, str] = Field(
         default_factory=lambda: {
-            "method": "specialty+industry match, then success_count desc, then id asc",
+            "method": "practice area, industry/region fit, and prior completed introductions",
             "disclosure": (
                 "本リストは広告ではありません。専門性と実績のマッチングで並べ替えています。"
                 "(景品表示法 対応)"
@@ -202,6 +208,13 @@ class SignupRequest(BaseModel):
             raise ValueError("houjin_bangou must be 13 digits")
         return v
 
+    @field_validator("industries", mode="before")
+    @classmethod
+    def _normalize_industries(cls, v: Any) -> Any:
+        if isinstance(v, list):
+            return [_INDUSTRY_ALIASES.get(str(item), item) for item in v]
+        return v
+
     @field_validator("agreed_to_terms")
     @classmethod
     def _must_agree(cls, v: bool) -> bool:
@@ -218,8 +231,9 @@ class SignupResponse(BaseModel):
     stripe_connect_onboarding_url: str | None = Field(
         default=None,
         description=(
-            "Returned when STRIPE_SECRET_KEY is set. Null in dev/offline mode — "
-            "the signup row is still created so the advisor can retry onboarding."
+            "Returned when Stripe onboarding is available. Null when onboarding "
+            "cannot be started immediately; the signup record is still created "
+            "so the advisor can retry."
         ),
     )
 
@@ -268,7 +282,7 @@ def _load_json_array(raw: str | None) -> list[str]:
         return []
     if not isinstance(val, list):
         return []
-    return [str(x) for x in val]
+    return [_INDUSTRY_ALIASES.get(str(x), str(x)) for x in val]
 
 
 def _row_to_advisor(row: sqlite3.Row) -> AdvisorOut:
@@ -342,13 +356,17 @@ def query_matching_advisors(
         score_parts.append("(CASE WHEN prefecture = ? THEN 100 ELSE 0 END)")
         params.append(pref_canon)
     if industry:
-        # JSON LIKE match — '["agri"...]' contains '"agri"'. Safe because
-        # we constrain industry to the Industry literal enum on the caller
-        # side (see SignupRequest / FastAPI Query annotation).
-        score_parts.append(
-            '(CASE WHEN industries_json LIKE ? THEN 20 ELSE 0 END)'
-        )
-        params.append(f'%"{industry}"%')
+        # JSON LIKE match. Keep the legacy agriculture slug as a read alias
+        # so existing rows still rank while public inputs use the clearer
+        # agriculture_forestry value.
+        industry_slugs = [industry]
+        if industry == "agriculture_forestry":
+            industry_slugs.append("agri")
+        elif industry == "manufacturing":
+            industry_slugs.append("manufacture")
+        like_parts = " OR ".join("industries_json LIKE ?" for _ in industry_slugs)
+        score_parts.append(f"(CASE WHEN {like_parts} THEN 20 ELSE 0 END)")
+        params.extend(f'%"{slug}"%' for slug in industry_slugs)
     if specialty:
         score_parts.append(
             '(CASE WHEN specialties_json LIKE ? THEN 10 ELSE 0 END)'
@@ -400,10 +418,7 @@ def match_advisors(
 ) -> JSONResponse:
     """Top ``limit`` advisors matching the supplied filters.
 
-    Intentionally doesn't go through the digest whitelist (ctx.log_usage
-    is called with no params): advisor match responses are not a retention
-    signal, and the params (esp. prefecture) carry enough geographic info
-    that hashing them into a digest starts to smell PII-adjacent.
+    Returns public advisor profile fields and a deterministic match score.
     """
     results = query_matching_advisors(
         conn, prefecture=prefecture, industry=industry, specialty=specialty, limit=limit
@@ -415,7 +430,7 @@ def match_advisors(
             "results": results,
             "ranking": {
                 "method": (
-                    "specialty+industry match, then success_count desc, then id asc"
+                    "practice area, industry/region fit, and prior completed introductions"
                 ),
                 "disclosure": (
                     "本リストは広告ではありません。専門性と実績のマッチングで "
@@ -782,11 +797,7 @@ def report_conversion(
 ) -> JSONResponse:
     """Advisor marks a referral as converted. Commission computed + queued.
 
-    Authentication model: authentication is provided by possession of the
-    ``referral_token`` (treat as a bearer secret for that single referral)
-    combined with the advisor later being able to verify via Stripe Connect.
-    A stronger model would require the advisor's API key — deferred to the
-    dashboard login flow.
+    The ``referral_token`` is a single-referral bearer credential.
     """
     row = conn.execute(
         "SELECT r.id, r.advisor_id, r.converted_at, a.commission_model,"

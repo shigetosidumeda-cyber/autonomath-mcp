@@ -201,15 +201,14 @@ _HOUJIN_BANGOU_PATTERN = r"^\d{13}$"
         "Search 362 入札案件 (government procurement bids) sourced from "
         "GEPS (政府電子調達) + ministry / 自治体 procurement portals. "
         "Filter by `bid_kind` (open / selective / negotiated / "
-        "kobo_subsidy), 発注機関 法人番号, 落札者 法人番号, programs.unified_id "
+        "kobo_subsidy), 発注機関 法人番号, 落札者 法人番号, linked program "
         "hint, awarded_amount band, deadline window.\n\n"
         "**When to use:** caller asks 'who won the 国土交通省 2025 IT "
         "procurement?' or 'are there still-open 物品調達 in 関東 with "
         "award ceiling > 1億?'. Pair with `/v1/am/enforcement` to "
         "screen winners for 入札参加資格停止.\n\n"
-        "**FTS quirk:** terms < 3 chars will not match (trigram "
-        "tokenizer limitation); use the structured filters instead "
-        "or longer phrases. When `q` is omitted, results sort by "
+        "**Search note:** very short terms may not match; use the structured "
+        "filters instead or longer phrases. When `q` is omitted, results sort by "
         "most recently published first."
     ),
     responses={
@@ -265,11 +264,9 @@ def search_bids(
         Query(
             description=(
                 "Free-text search across bid_title + bid_description + "
-                "procuring_entity + winner_name (FTS5 with quoted-phrase "
-                "workaround for 2+ character kanji compounds). Terms "
-                "shorter than 3 characters will not match — trigram "
-                "tokenizer limitation; use a longer phrase or the "
-                "structured filters instead."
+                "procuring_entity + winner_name. Japanese phrases are "
+                "normalized. Very short terms may not match; use a longer "
+                "phrase or the structured filters instead."
             ),
             max_length=200,
         ),
@@ -301,8 +298,8 @@ def search_bids(
         str | None,
         Query(
             description=(
-                "Exact programs.unified_id (UNI-* / TAX-* / LAW-* etc.) — "
-                "returns bids linked to that program via ingest matchers."
+                "Exact linked program identifier; returns bids associated "
+                "with that program."
             ),
             max_length=64,
         ),

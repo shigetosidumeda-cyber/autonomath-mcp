@@ -1,4 +1,4 @@
-"""REST handlers for the 16 AutonoMath am_* tools (the 6.8GB autonomath.db layer).
+"""REST handlers for the 16 jpcite am_* tools (the 6.8GB autonomath.db layer).
 
 Paired with the @mcp.tool decorated functions in jpintel_mcp/mcp/autonomath_tools/.
 Each route is a thin FastAPI wrapper around the underlying Python function —
@@ -14,17 +14,20 @@ the REST prefix `am/` mirrors that convention.
 Billing: every endpoint calls `log_usage()` with `ctx` from `ApiContextDep`.
 Anonymous callers (no X-API-Key / Bearer) pass through because require_key()
 constructs a `tier='free'` context when the header is absent. The router
-is mounted with `AnonIpLimitDep` in api/main.py so anonymous 50/month
+is mounted with `AnonIpLimitDep` in api/main.py so anonymous 3/day
 IP quota applies uniformly. Authenticated paid tier is metered ¥3/req.
 """
 from __future__ import annotations
 
+import contextlib
 import sqlite3
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, HTTPException, Path, Query, Request, status
 from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._envelope import StandardResponse, wants_envelope_v2
+from jpintel_mcp.api._error_envelope import safe_request_id
 from jpintel_mcp.api._health_deep import get_deep_health
 from jpintel_mcp.api._response_models import (
     AMActiveAtResponse,
@@ -53,6 +56,7 @@ from jpintel_mcp.api._response_models import (
 )
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.cache.l4 import canonical_cache_key, get_or_compute
+from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.autonomath_tools import (
     annotation_tools,
     autonomath_wrappers,
@@ -63,7 +67,6 @@ from jpintel_mcp.mcp.autonomath_tools import (
     tools,
     validation_tools,
 )
-from jpintel_mcp.config import settings
 from jpintel_mcp.templates.saburoku_kyotei import (
     TemplateError,
     render_36_kyotei,
@@ -80,7 +83,7 @@ from jpintel_mcp.templates.saburoku_kyotei import (
 # context (「保証しません」) is INV-22-safe.
 _SABUROKU_DISCLAIMER = (
     "本テンプレートは draft です。労基署提出前に必ず社労士確認を行ってください。"
-    "AutonoMath は generation accuracy について保証しません。"
+    "jpcite は generation accuracy について保証しません。"
 )
 
 # 税理士法 §52 fence for /v1/am/tax_incentives + /v1/am/tax_rule. Mirrors
@@ -89,7 +92,7 @@ _SABUROKU_DISCLAIMER = (
 # relay our output as 税務助言. We provide DOC-level information (制度名 /
 # 根拠条文 / 計算例 from public 国税庁・財務省・e-Gov sources) — never advice.
 _TAX_DISCLAIMER = (
-    "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+    "本情報は税務助言ではありません。jpcite は公的機関が公表する税制・補助金・"
     "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
     "税務判断・申告書作成代行は行いません。個別案件は資格を有する税理士に必ずご相談"
     "ください。本サービスの情報利用により生じた損害について、当社は一切の責任を負いません。"
@@ -117,7 +120,7 @@ router = APIRouter(prefix="/v1/am", tags=["autonomath"])
 
 # Separate router for unbilled, unrate-limited heartbeat endpoints.
 # Mounted in main.py without AnonIpLimitDep so production uptime monitors
-# can poll without consuming the 50/month anonymous IP quota.
+# can poll without consuming the 3/day anonymous IP quota.
 health_router = APIRouter(prefix="/v1/am", tags=["autonomath-health"])
 
 
@@ -885,13 +888,19 @@ def rest_search_acceptance_stats(
 # ---------------------------------------------------------------------------
 # 9. intent_of
 # ---------------------------------------------------------------------------
-@router.get("/intent", response_model=AMIntentResponse)
+@router.get(
+    "/intent",
+    response_model=AMIntentResponse,
+    include_in_schema=settings.autonomath_reasoning_enabled,
+)
 def rest_intent_of(
     conn: DbDep,
     ctx: ApiContextDep,
     query: Annotated[str, Query(min_length=1, max_length=500)],
 ) -> JSONResponse:
     """Route a natural-language query to the best-fit tool + extracted slots (query_rewrite layer)."""
+    if not settings.autonomath_reasoning_enabled:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "reasoning tools disabled")
     result = tools.intent_of(query=query)
     log_usage(conn, ctx, "am.intent")
     return JSONResponse(content=_apply_envelope(
@@ -902,7 +911,11 @@ def rest_intent_of(
 # ---------------------------------------------------------------------------
 # 10. reason_answer
 # ---------------------------------------------------------------------------
-@router.get("/reason", response_model=AMReasonResponse)
+@router.get(
+    "/reason",
+    response_model=AMReasonResponse,
+    include_in_schema=settings.autonomath_reasoning_enabled,
+)
 def rest_reason_answer(
     conn: DbDep,
     ctx: ApiContextDep,
@@ -910,6 +923,8 @@ def rest_reason_answer(
     persona: Annotated[str | None, Query(max_length=100)] = None,
 ) -> JSONResponse:
     """Return a citation-backed narrative answer (source_url + snippet per claim)."""
+    if not settings.autonomath_reasoning_enabled:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "reasoning tools disabled")
     result = tools.reason_answer(query=query, persona=persona)
     log_usage(conn, ctx, "am.reason")
     return JSONResponse(content=_apply_envelope(
@@ -1214,7 +1229,7 @@ def rest_get_law_article(
 # ---------------------------------------------------------------------------
 @router.get("/annotations/{entity_id}", response_model=AMAnnotationsResponse)
 def rest_get_annotations(
-    entity_id: Annotated[str, Path(min_length=1, max_length=200, description="am_entities.canonical_id (TEXT)")],
+    entity_id: Annotated[str, Path(min_length=1, max_length=200, description="Stable entity identifier.")],
     conn: DbDep,
     ctx: ApiContextDep,
     kinds: Annotated[
@@ -1231,7 +1246,7 @@ def rest_get_annotations(
     ] = False,
     limit: Annotated[int, Query(ge=1, le=500)] = 50,
 ) -> JSONResponse:
-    """am_entity_annotation 逆引き — examiner feedback / quality score / ML 推論 等を 1 コール (16,474 行)."""
+    """Return annotations, review signals, and quality scores for one entity."""
     result = annotation_tools.get_annotations(
         entity_id=entity_id,
         kinds=kinds,
@@ -1362,7 +1377,7 @@ def rest_list_static_resources(
     conn: DbDep,
     ctx: ApiContextDep,
 ) -> JSONResponse:
-    """List 8 curated AutonoMath taxonomies (seido / glossary / money_types / obligations / dealbreakers / sector_combos / crop_library / exclusion_rules)."""
+    """List 8 curated jpcite taxonomies (seido / glossary / money_types / obligations / dealbreakers / sector_combos / crop_library / exclusion_rules)."""
     results = static_resources.list_static_resources()
     log_usage(conn, ctx, "am.static.list", params={})
     return JSONResponse(content=_apply_envelope(
@@ -1552,16 +1567,59 @@ def rest_render_36_kyotei(
 # Mounted on health_router (no AnonIpLimitDep) so monitors don't burn quota.
 # ---------------------------------------------------------------------------
 @health_router.get("/health/deep", response_model=DeepHealthResponse)
-def rest_deep_health(force: bool = False) -> JSONResponse:
+def rest_deep_health(
+    request: Request,
+    force: bool = False,
+    fail_on_unhealthy: bool = False,
+) -> JSONResponse:
     """10-check aggregate health (db + freshness + license + provenance + bundle + WAL).
 
     Unbilled, unlogged, no anonymous-IP rate limit — heartbeat surface for
     uptime monitors. Returns ``status`` ∈ {ok, degraded, unhealthy}.
 
     Responses are cached for 30 seconds; pass ``?force=true`` to bypass for
-    debugging or post-deploy verification.
+    debugging or post-deploy verification. Monitors that only understand HTTP
+    status can pass ``?fail_on_unhealthy=true`` to receive 503 for an
+    unhealthy aggregate.
     """
-    return JSONResponse(content=get_deep_health(force=force))
+    doc = get_deep_health(force=force)
+    status_code = 503 if fail_on_unhealthy and doc.get("status") == "unhealthy" else 200
+    if wants_envelope_v2(request):
+        with contextlib.suppress(Exception):
+            request.state.envelope_v2_served = True
+        health_status = str(doc.get("status") or "unknown")
+        if health_status == "ok":
+            env = StandardResponse.sparse(
+                [doc],
+                request_id=safe_request_id(request),
+                query_echo={
+                    "normalized_input": {"force": force},
+                    "applied_filters": {"force": force},
+                    "unparsed_terms": [],
+                },
+                billable_units=0,
+            )
+        else:
+            env = StandardResponse.partial(
+                [doc],
+                request_id=safe_request_id(request),
+                warnings=[f"deep health status={health_status}"],
+                query_echo={
+                    "normalized_input": {"force": force},
+                    "applied_filters": {
+                        "force": force,
+                        "fail_on_unhealthy": fail_on_unhealthy,
+                    },
+                    "unparsed_terms": [],
+                },
+                billable_units=0,
+            )
+        return JSONResponse(
+            content=env.to_wire(),
+            status_code=status_code,
+            headers={"X-Envelope-Version": "v2"},
+        )
+    return JSONResponse(content=doc, status_code=status_code)
 
 
 # ---------------------------------------------------------------------------

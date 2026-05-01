@@ -75,7 +75,7 @@ _HTML_OK = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Unsubscribed - AutonoMath</title>
+<title>Unsubscribed - jpcite</title>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
          max-width: 560px; margin: 80px auto; padding: 0 20px; color: #111; line-height: 1.7; }
@@ -86,8 +86,8 @@ _HTML_OK = """<!DOCTYPE html>
 </head>
 <body>
   <h1>登録を解除しました / Unsubscribed.</h1>
-  <p>今後 AutonoMath からマーケティング・案内のメールを送ることはありません。</p>
-  <p>You will no longer receive marketing or activation emails from AutonoMath.</p>
+  <p>今後 jpcite からマーケティング・案内のメールを送ることはありません。</p>
+  <p>You will no longer receive marketing or activation emails from jpcite.</p>
   <p style="font-size:13px; color:#777;">
     取引関連メール (鍵発行控え・決済通知・セキュリティ通知) は引き続き送信されることがあります
     (特定電子メール法 §3-2 i 例外)。
@@ -102,7 +102,7 @@ _HTML_BAD = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Invalid link - AutonoMath</title>
+<title>Invalid link - jpcite</title>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
          max-width: 560px; margin: 80px auto; padding: 0 20px; color: #111; line-height: 1.7; }

@@ -4,7 +4,7 @@ Single thin server route file backing the **Top 5 zero-touch workflow
 integrations**. Each integration is a different inbound shape that ultimately
 calls the existing ``/v1/programs/search`` body builder + ``log_usage``
 (``programs.search`` endpoint name → ¥3/req metered for paid keys, anonymous
-50/月 IP cap for unauthenticated).
+3/日 IP cap for unauthenticated).
 
 Design constraints (non-negotiable, per project memory):
 
@@ -18,7 +18,7 @@ Design constraints (non-negotiable, per project memory):
 * **§52 disclaimer in every response** — verbatim string from
   ``api/tax_rulesets.py`` ``_TAX_DISCLAIMER`` so the customer-facing legal
   fence is identical across surfaces.
-* **Brand:** 税務会計AI / Bookyou株式会社 / T8010001213708.
+* **Brand:** jpcite.
 * **Each invocation = ¥3 metered** — slash command, sheets call, email
   reply, Excel cell refresh, kintone button click all bill identically.
 
@@ -104,7 +104,7 @@ SECTION_52_FOOTER_SHORT = (
 )
 
 # Brand line surfaced in HTML/email bodies + Excel A1 cell.
-BRAND_LINE = "税務会計AI / 運営: Bookyou株式会社 (T8010001213708)"
+BRAND_LINE = "jpcite"
 
 # Subject parser for Postmark inbound: extract API key from plus-addressing
 # (``query+am_xxx@jpcite.com``). Anchored, conservative — anything that
@@ -125,7 +125,7 @@ def _resolve_key_to_ctx(db, raw_key: str | None) -> ApiContext:
     standard header. We deliberately do NOT raise the 401 trial-revoke
     HTML envelope here — integrations always return platform-shaped
     plaintext / JSON, never the dashboard-style trial cap dialog. A
-    revoked / unknown key falls through to anonymous (50/月 IP) so the
+    revoked / unknown key falls through to anonymous (3/日 IP) so the
     integration still works for an evaluator probing a stale template.
     """
     if not raw_key:
@@ -223,7 +223,7 @@ def _bill_one_call(
     """Charge exactly one ``programs.search`` event per integration call.
 
     Anonymous callers (``ctx.key_hash`` None) are not billed — the
-    anonymous 50/月 IP quota already capped them upstream via the
+    anonymous 3/日 IP quota already capped them upstream via the
     ``AnonIpLimitDep`` mounted on this router. Authenticated paid callers
     bill ¥3 (税込 ¥3.30) per integration invocation.
     """
@@ -298,7 +298,7 @@ async def slack_slash_command(
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    f"*税務会計AI* で `{query}` を検索: "
+                    f"*jpcite* で `{query}` を検索: "
                     f"{body.get('total', 0)} 件 (上位 {len(rows)} 件表示)"
                 ),
             },
@@ -337,7 +337,7 @@ async def slack_slash_command(
     return JSONResponse(
         content={
             "response_type": "in_channel",
-            "text": f"税務会計AI: {query}",
+            "text": f"jpcite: {query}",
             "blocks": blocks,
         }
     )
@@ -380,7 +380,7 @@ async def slack_incoming_webhook(
     return JSONResponse(
         content={
             "response_type": "in_channel",
-            "text": f"税務会計AI: {query}",
+            "text": f"jpcite: {query}",
             "blocks": [
                 {
                     "type": "section",
@@ -770,7 +770,7 @@ class KintoneRequest(BaseModel):
     description=(
         "Pure client-side kintone plugin (`sdk/integrations/kintone/plugin.zip`) "
         "fetches this endpoint when the user clicks the in-record button "
-        '"AutonoMath で関連補助金検索". Returns a JSON envelope the plugin '
+        '"jpcite で関連補助金検索". Returns a JSON envelope the plugin '
         "renders into a modal + writes top result into configured fields. "
         "Origins `*.cybozu.com` / `*.kintone.com` are CORS-allowlisted in "
         "`config.py::cors_origins`."
@@ -1200,7 +1200,7 @@ async def kintone_sync(
                 "authority": {"value": s["authority"]},
                 "amount_label": {"value": s["amount"]},
                 "source_url": {"value": s["url"]},
-                "synced_by": {"value": "AutonoMath"},
+                "synced_by": {"value": "jpcite"},
             }
         )
 

@@ -103,9 +103,9 @@ _MAX_BODY_BYTES = 100 * 1024  # 100 KB
 # monkeypatch a fake server.
 LINE_REPLY_URL = "https://api.line.me/v2/bot/message/reply"
 
-# Anonymous-equivalent monthly cap mirroring the core API's 50/month
-# anonymous quota. The LINE bot's free path uses the same number so the
-# user-facing rule is identical: 50 events per JST month per LINE user.
+# LINE-specific free cap. This is intentionally separate from the core
+# anonymous HTTP API's 3/day IP quota because LINE users are identified by
+# stable line_user_id and the bot has its own monthly reset column.
 ANON_MONTHLY_CAP = 50
 
 # Per-event ¥amount when billed against a parent API key. The rest of

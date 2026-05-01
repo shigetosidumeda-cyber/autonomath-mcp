@@ -23,7 +23,7 @@ Posture
 -------
 - All read endpoints are public and unmetered. Same posture as
   ``transparency_router`` and ``audit_log_router``: trust signals must
-  always be reachable. Polling consumes ZERO of the 50/月 anonymous quota.
+  always be reachable. Polling consumes ZERO of the 3/日 anonymous quota.
 - The write endpoint (POST /v1/corrections) is rate-limited inside the
   handler (one submission per (entity_id, field, IP-hash, day)) — so
   ``main.py`` does not wrap this router with ``AnonIpLimitDep``.
@@ -433,7 +433,7 @@ async def corrections_rss_feed() -> Response:
         '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" '
         'xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
         "<channel>\n"
-        "  <title>税務会計AI Corrections (correction_log)</title>\n"
+        "  <title>jpcite Corrections (correction_log)</title>\n"
         f"  <link>https://{_RSS_DOMAIN}/corrections.xml</link>\n"
         f'  <atom:link href="https://{_RSS_DOMAIN}/corrections.xml" rel="self" type="application/rss+xml" />\n'
         "  <description>Customer-reported and cross-source detected data "

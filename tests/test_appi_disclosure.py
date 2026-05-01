@@ -15,12 +15,8 @@ covered separately in test_email.py.
 from __future__ import annotations
 
 import sqlite3
-from typing import TYPE_CHECKING
 
 import pytest
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 @pytest.fixture()

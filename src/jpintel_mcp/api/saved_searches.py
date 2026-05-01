@@ -25,11 +25,13 @@ Cost posture:
     * **Subscription** (POST/GET/DELETE) is FREE — these are CRUD calls on
       the customer's own row, not a metered surface. They still count
       against the per-key middleware rate limit.
-    * **Delivery** is ¥3/req metered. Each digest email the cron sends
-      records one row into ``usage_events`` (endpoint
+    * **Delivery / manual replay** is ¥3/req metered. Each digest email the
+      cron sends records one row into ``usage_events`` (endpoint
       ``saved_searches.digest``, status 200) and triggers
       ``report_usage_async`` which posts a usage_record to Stripe. See
-      ``scripts/cron/run_saved_searches.py`` for the wiring.
+      ``scripts/cron/run_saved_searches.py`` for the wiring. Manual
+      ``/{id}/results`` and ``/{id}/results.xlsx`` calls are logged via
+      ``log_usage`` on this route.
 
 §52 fence:
     Every digest email rendered by ``saved_search_digest`` carries the
@@ -51,6 +53,7 @@ from pydantic import BaseModel, EmailStr, Field
 from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
     ApiContextDep,
     DbDep,
+    log_usage,
 )
 
 router = APIRouter(prefix="/v1/me/saved_searches", tags=["saved-searches"])
@@ -528,7 +531,7 @@ def _has_sheet_id_column(conn) -> bool:
 
 class BindSheetRequest(BaseModel):
     sheet_id: str = Field(..., min_length=20, max_length=120)
-    sheet_tab_name: str | None = Field(default="AutonoMath", max_length=64)
+    sheet_tab_name: str | None = Field(default="jpcite", max_length=64)
 
 
 class BindSheetResponse(BaseModel):
@@ -574,7 +577,7 @@ def bind_sheet_to_saved_search(
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "saved search not found")
 
-    tab = payload.sheet_tab_name or "AutonoMath"
+    tab = payload.sheet_tab_name or "jpcite"
     conn.execute(
         "UPDATE saved_searches "
         "   SET sheet_id = ?, sheet_tab_name = ? "
@@ -669,8 +672,24 @@ def saved_search_results(
         as_of_iso=None,
     )
     rows = body.get("results", []) if isinstance(body, dict) else []
+    for result in rows:
+        if not isinstance(result, dict):
+            continue
+        program_id = result.get("unified_id")
+        if isinstance(program_id, str) and program_id:
+            result.setdefault(
+                "evidence_packet_endpoint",
+                f"/v1/evidence/packets/program/{program_id}",
+            )
     total = int(body.get("total", 0)) if isinstance(body, dict) else 0
     snapshot_id, checksum = compute_corpus_snapshot(conn)
+    log_usage(
+        conn,
+        ctx,
+        "saved_searches.results",
+        params={"saved_search_id": saved_id, "format": format},
+        result_count=total,
+    )
 
     if format == "json":
         from fastapi.responses import JSONResponse
@@ -772,10 +791,18 @@ def saved_search_results_xlsx(
         as_of_iso=None,
     )
     rows = body.get("results", []) if isinstance(body, dict) else []
+    total = int(body.get("total", 0)) if isinstance(body, dict) else 0
+    log_usage(
+        conn,
+        ctx,
+        "saved_searches.results_xlsx",
+        params={"saved_search_id": saved_id, "format": "xlsx"},
+        result_count=total,
+    )
     meta = {
         "saved_search_id": saved_id,
-        "total": int(body.get("total", 0)) if isinstance(body, dict) else 0,
-        "license": "AutonoMath / Bookyou株式会社 (T8010001213708)",
+        "total": total,
+        "license": "jpcite evidence export",
     }
     return render_xlsx(rows, meta)
 

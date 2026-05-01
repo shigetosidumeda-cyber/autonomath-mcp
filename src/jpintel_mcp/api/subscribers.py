@@ -150,7 +150,7 @@ _UNSUB_HTML_OK = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Unsubscribed — AutonoMath</title>
+<title>Unsubscribed — jpcite</title>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
          max-width: 560px; margin: 80px auto; padding: 0 20px; color: #111; line-height: 1.7; }
@@ -161,8 +161,8 @@ _UNSUB_HTML_OK = """<!DOCTYPE html>
 </head>
 <body>
   <h1>登録を解除しました / Unsubscribed.</h1>
-  <p>今後 AutonoMath からメールを送ることはありません。</p>
-  <p>You will no longer receive emails from AutonoMath.</p>
+  <p>今後 jpcite からメールを送ることはありません。</p>
+  <p>You will no longer receive emails from jpcite.</p>
   <p><a href="/">&larr; Home</a></p>
 </body>
 </html>
@@ -173,7 +173,7 @@ _UNSUB_HTML_BAD = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Invalid link — AutonoMath</title>
+<title>Invalid link — jpcite</title>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", sans-serif;
          max-width: 560px; margin: 80px auto; padding: 0 20px; color: #111; line-height: 1.7; }

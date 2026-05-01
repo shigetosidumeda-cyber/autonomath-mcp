@@ -265,13 +265,7 @@ def list_subscriptions(
     ctx: ApiContextDep,
     conn: DbDep,
 ) -> list[SubscriptionResponse]:
-    """List the calling key's active subscriptions.
-
-    Inactive (deactivated) rows are NOT returned by default — they are kept
-    on disk for audit but are noise on the read path. There is no
-    `?include_inactive=true` flag in MVP; the customer who wants to inspect
-    history can hit the DB directly via support.
-    """
+    """List the calling key's active alert subscriptions."""
     if ctx.key_hash is None:
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,

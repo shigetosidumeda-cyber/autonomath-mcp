@@ -518,7 +518,7 @@ _TOOL_CATALOG: list[dict[str, Any]] = [
         "keywords": ["判例", "判決", "裁判", "court", "decision", "訴訟"],
     },
     {
-        "endpoint": "/v1/enforcement/search",
+        "endpoint": "/v1/enforcement-cases/search",
         "name": "enforcement.search",
         "purpose": "行政処分・指導歴 (1,185 件) — 与信 / コンプライアンス DD",
         "keywords": ["処分", "違反", "コンプラ", "enforcement", "penalty", "行政指導"],

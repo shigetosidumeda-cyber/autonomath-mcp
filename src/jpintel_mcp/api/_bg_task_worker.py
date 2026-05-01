@@ -27,6 +27,7 @@ Design contract:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 from typing import Any
@@ -134,10 +135,8 @@ def _handle_stripe_status_refresh(payload: dict[str, Any]) -> None:
     try:
         _refresh_subscription_status_from_stripe(conn, sub_id)
     finally:
-        try:
+        with contextlib.suppress(Exception):
             conn.close()
-        except Exception:  # pragma: no cover
-            pass
 
 
 def _handle_dunning_email(payload: dict[str, Any]) -> None:
@@ -159,10 +158,8 @@ def _handle_dunning_email(payload: dict[str, Any]) -> None:
             next_retry_epoch=payload.get("next_retry_epoch"),
         )
     finally:
-        try:
+        with contextlib.suppress(Exception):
             conn.close()
-        except Exception:  # pragma: no cover
-            pass
 
 
 def _handle_welcome_email_trial(payload: dict[str, Any]) -> None:
@@ -264,7 +261,7 @@ def _handle_stripe_usage_sync(payload: dict[str, Any]) -> None:
     """Reconcile a usage_events row that was inserted before Stripe sync.
 
     Payload: {"subscription_id": str, "quantity": int,
-              "usage_event_id": int}.
+              "usage_event_id": int | None, "idempotency_key": str | None}.
 
     Only used when a stripe_usage daemon thread legitimately failed and we
     want to retry through the queue. The default hot-path stays the
@@ -280,6 +277,8 @@ def _handle_stripe_usage_sync(payload: dict[str, Any]) -> None:
         sub_id,
         quantity=int(payload.get("quantity") or 1),
         usage_event_id=payload.get("usage_event_id"),
+        idempotency_key=payload.get("idempotency_key"),
+        raise_on_failure=True,
     )
 
 
@@ -382,10 +381,8 @@ async def run_worker_loop(stop_event: asyncio.Event) -> None:
                 # Close after the claim transaction so the worker doesn't
                 # hold a connection idle while sleeping. The dispatcher
                 # opens its own short-lived conn for handler-side DB I/O.
-                try:
+                with contextlib.suppress(Exception):
                     conn.close()
-                except Exception:  # pragma: no cover
-                    pass
 
             if row is not None:
                 ok, err = _dispatch_one(row)
@@ -396,10 +393,8 @@ async def run_worker_loop(stop_event: asyncio.Event) -> None:
                     else:
                         mark_failed(conn2, int(row["id"]), err or "unknown")
                 finally:
-                    try:
+                    with contextlib.suppress(Exception):
                         conn2.close()
-                    except Exception:  # pragma: no cover
-                        pass
                 # Loop tight on a hit so a backlog drains quickly.
                 continue
 
@@ -414,10 +409,8 @@ async def run_worker_loop(stop_event: asyncio.Event) -> None:
             logger.exception("bg_task_worker_iteration_error")
 
         # Sleep with cancellation responsiveness.
-        try:
+        with contextlib.suppress(TimeoutError):
             await asyncio.wait_for(stop_event.wait(), timeout=POLL_INTERVAL_S)
-        except asyncio.TimeoutError:
-            pass
 
     logger.info("bg_task_worker_stopped")
 

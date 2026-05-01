@@ -238,7 +238,7 @@ async def meta_freshness(
     try:
         registry = _load_registry_cached()
     except FileNotFoundError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+        raise HTTPException(status_code=503, detail=str(e)) from e
 
     enriched = _load_enriched_lookup()
     agg = aggregate_freshness(registry, enriched, tier_filter=tier)

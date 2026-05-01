@@ -124,7 +124,7 @@ def _row_to_case_study(row: sqlite3.Row) -> CaseStudy:
     description=(
         "Browse 2,286 採択事例 (real awarded grants) — searchable across "
         "`company_name + case_title + case_summary + source_excerpt` "
-        "via FTS5 trigram + filterable by 都道府県 / industry_jsic / "
+        "and filterable by 都道府県 / industry_jsic / "
         "法人番号 / `program_used` / 補助金額 band / 従業員数 band.\n\n"
         "**Use cases:** prior-art research ('which companies received "
         "ものづくり補助金 in 群馬?'), benchmark sizing ('what's the typical "
@@ -141,7 +141,7 @@ def _row_to_case_study(row: sqlite3.Row) -> CaseStudy:
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
-            "description": "Paginated case_studies. Search via FTS5 trigram on company_name + case_title + summary.",
+            "description": "Paginated case studies with text search over company_name + case_title + summary.",
             "content": {
                 "application/json": {
                     "example": {
@@ -180,9 +180,8 @@ def search_case_studies(
         Query(
             description=(
                 "Free-text search over company_name + case_title + "
-                "case_summary + source_excerpt. Backed by FTS5 trigram "
-                "(case_studies_fts) for queries of length >= 2; falls back "
-                "to LIKE for single-char or 0-result short-ASCII queries."
+                "case_summary + source_excerpt. Multi-character queries use "
+                "text search; short queries use fallback matching."
             ),
             max_length=200,
         ),

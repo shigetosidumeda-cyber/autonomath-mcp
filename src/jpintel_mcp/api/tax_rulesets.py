@@ -33,7 +33,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
-from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope
 from jpintel_mcp.api.deps import (
     ApiContextDep,
     DbDep,
@@ -85,7 +84,7 @@ _ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 # pattern (rule_engine_check / template_tool: see CLAUDE.md "every render
 # response carries a `_disclaimer` field").
 _TAX_DISCLAIMER = (
-    "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+    "本情報は税務助言ではありません。jpcite は公的機関が公表する税制・補助金・"
     "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
     "税務判断・申告書作成代行は行いません。個別案件は資格を有する税理士に必ずご相談"
     "ください。本サービスの情報利用により生じた損害について、当社は一切の責任を負いません。"
@@ -838,7 +837,7 @@ def _resolve_single_citation(
                             }
                         ],
                         "_disclaimer": (
-                            "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+                            "本情報は税務助言ではありません。jpcite は公的機関が公表する税制・補助金・"
                             "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
                             "税務判断・申告書作成代行は行いません。"
                         ),
@@ -857,9 +856,8 @@ def search_tax_rulesets(
         Query(
             description=(
                 "Free-text search across ruleset_name + eligibility_conditions "
-                "+ calculation_formula (FTS5 with quoted-phrase workaround "
-                "for 2+ character kanji compounds). Terms shorter than 3 "
-                "characters fall through to LIKE to dodge trigram zero-match."
+                "+ calculation_formula. Japanese phrases are normalized; "
+                "very short terms use fallback matching."
             ),
             max_length=200,
         ),

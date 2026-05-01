@@ -47,9 +47,8 @@ class FundingStackCheckRequest(BaseModel):
     """POST body for ``/v1/funding_stack/check``.
 
     ``program_ids`` is a non-empty list (max 5). Each id should be a
-    canonical ``program:...`` id (autonomath) or a ``unified_id`` /
-    primary_name (jpintel) — the underlying matcher accepts whatever the
-    upstream curated rule corpora used as keys.
+    jpcite ``unified_id`` or a primary program name; the matcher also
+    accepts legacy curated rule keys for backwards compatibility.
     """
 
     program_ids: Annotated[

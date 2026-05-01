@@ -157,7 +157,7 @@ def _notify_operator_and_requester(
         # Requester acknowledgement: NO personal data echoed — only the
         # request_id + the 14-day SLA. This is a 取引関連メール.
         requester_text = (
-            "AutonoMath (運営: Bookyou株式会社) です。\n\n"
+            "jpcite (運営: Bookyou株式会社) です。\n\n"
             "個人情報の保護に関する法律 第31条 に基づく開示請求を受付けました。\n\n"
             f"  受付番号: {request_id}\n"
             f"  受付日時: {received_at}\n\n"
@@ -179,13 +179,13 @@ def _notify_operator_and_requester(
             for to_addr, subject, body, tag in (
                 (
                     "info@bookyou.net",
-                    f"[AutonoMath] APPI §31 開示請求 受付 ({request_id})",
+                    f"[jpcite] APPI §31 開示請求 受付 ({request_id})",
                     operator_text,
                     "appi-disclosure-operator",
                 ),
                 (
                     requester_email,
-                    "[AutonoMath] 個人情報開示請求の受付確認",
+                    "[jpcite] 個人情報開示請求の受付確認",
                     requester_text,
                     "appi-disclosure-requester",
                 ),

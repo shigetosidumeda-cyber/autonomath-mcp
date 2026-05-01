@@ -103,9 +103,8 @@ def _row_to_law(row: sqlite3.Row) -> Law:
         "required, redistribution permitted with attribution). The "
         "`source_url` on each row points to the canonical e-Gov 法令検索 "
         "permalink — relay it.\n\n"
-        "**FTS quirk:** trigram tokenizer matches single kanji; for "
-        "2+ char kanji compounds quote the phrase (`q=\"所得税法\"`). "
-        "Terms < 3 chars fall through to LIKE.\n\n"
+        "**Search note:** Japanese legal phrases are normalized. For very "
+        "short terms, structured filters or longer phrases are more reliable.\n\n"
         "Pair with `GET /v1/laws/{unified_id}/related-programs` to "
         "trace which 補助金 cite a given statute as authority / "
         "eligibility / exclusion / penalty."
@@ -155,9 +154,8 @@ def search_laws(
         Query(
             description=(
                 "Free-text search across law_title + law_short_title + "
-                "law_number + summary (FTS5 with quoted-phrase workaround "
-                "for 2+ character kanji compounds). Terms shorter than 3 "
-                "characters fall through to LIKE to dodge trigram zero-match."
+                "law_number + summary. Japanese phrases are normalized; "
+                "very short terms use fallback matching."
             ),
             max_length=200,
         ),
