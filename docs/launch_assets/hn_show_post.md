@@ -18,14 +18,14 @@
 ## Title (78 chars)
 
 ```
-Show HN: AutonoMath – Japanese public-program API for AI agents (¥3/req)
+Show HN: jpcite – Japanese public-program API for AI agents (¥3/req)
 ```
 
 Note: HN title length max 80 chars. Above is 73 chars (counting the leading
 "Show HN: ", title body 64 chars). En-dash variant kept; ASCII-only fallback:
 
 ```
-Show HN: AutonoMath - Japanese public-program API for AI agents (3 yen/req)
+Show HN: jpcite - Japanese public-program API for AI agents (3 yen/req)
 ```
 
 ---
@@ -46,7 +46,7 @@ in the first comment.
 ```
 Hi HN, Shigetoshi here. Solo dev in Tokyo.
 
-AutonoMath is a REST + MCP API that exposes Japanese public-program data
+jpcite is a REST + MCP API that exposes Japanese public-program data
 to AI agents in one call: subsidies, loans, tax incentives, certifications,
 laws, enforcement cases, invoice registrants.
 
@@ -57,8 +57,7 @@ What:
 - 9,484 laws (e-Gov, CC-BY)
 - 13,801 invoice registrants (NTA, PDL v1.0, delta-only live mirror)
 - 503,930 entities + 6.12M facts in entity-fact EAV layer
-- 181 exclusion / prerequisite rules (35 hand-seeded + 146 auto-extracted
-  from primary-source 要綱)
+- 181 exclusion / prerequisite rules curated from public program guidelines
 - 99%+ rows with source_url + fetched_at lineage
 
 Why:

@@ -48,7 +48,7 @@
 
 - **全文検索の挙動** — 3-gram トークナイザーのため、単漢字 query (例: `税`) は複数フィールドに広く一致する。2 文字以上を推奨
 - **制度時系列 (historical diff)** — 一部の row でのみ厳密な差分が確定。改正トラッキングは継続改善中
-- **制度併用判定 matrix** — 出典付きペアは順次拡充中。残りは heuristic (status='unknown' でフラグ)
+- **制度併用チェック** — 登録済みルールに一致する論点を返す。未登録の組み合わせは安全保証にならない
 - **検索除外プール** — 検索インデックスは tier S/A/B/C のみ収録。tier C 未満は二次レビュー後に編入する運用
 - **法令条文** — e-Gov 全文ロード継続中 (本文 154 件 + メタデータ 9,484 件、resolver で全件にリーチ可能)
 
@@ -70,4 +70,4 @@
 - [pricing.md](./pricing.md) — 料金
 - [exclusions.md](./exclusions.md) — 排他ルール
 - [sla.md](./sla.md) — 稼働率コミットメント
-- [compliance/landing_disclaimer.md](compliance/landing_disclaimer.md) — 法的免責の正本
+- [compliance/landing_disclaimer.md](compliance/landing_disclaimer.md) — 法的免責

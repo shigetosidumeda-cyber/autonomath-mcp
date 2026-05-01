@@ -1,6 +1,6 @@
 # Partnership — Anthropic / Claude Desktop MCP Directory
 
-> **要約 (summary):** Claude Desktop の **MCP server registry** に AutonoMath を登録。`mcp publish server.json` 1 コマンド + DXT bundle (`autonomath-mcp.mcpb`) で完結。Claude 利用者 (50,000+ active developers) が **直接** AutonoMath を叩く。referral fee なし — Anthropic は registry 運営者であり referral partner ではない。AutonoMath が直接従量課金。
+> **要約 (summary):** Claude Desktop の **MCP server registry** に jpcite を登録。`mcp publish server.json` 1 コマンド + DXT bundle (`autonomath-mcp.mcpb`) で完結。Claude 利用者 (50,000+ active developers) が **直接** jpcite を叩く。referral fee なし — Anthropic は registry 運営者であり referral partner ではない。jpcite が直接従量課金。
 
 ## ターゲットと規模
 
@@ -12,10 +12,10 @@
 
 Claude Desktop ユーザー (AI 開発者 / 税理士 / 行政書士 / VC) が:
 
-1. `Settings → Extensions → Browse Directory` で「AutonoMath」を検索
+1. `Settings → Extensions → Browse Directory` で「jpcite」を検索
 2. 1 click でインストール (`autonomath-mcp.mcpb` または PyPI `uvx autonomath-mcp`)
 3. すぐに `「弊社の今期使える税制と補助金は?」`と Claude に聞ける
-4. Claude が AutonoMath MCP の 93 tools  + 30 autonomath at default gates) を自動選択して呼出
+4. Claude が jpcite MCP の 93 tools  + 30 autonomath at default gates) を自動選択して呼出
 
 API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Stripe portal でカード登録するだけ。
 
@@ -27,13 +27,13 @@ API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Strip
 | DXT Bundle (`autonomath-mcp.mcpb`) | URL から `.mcpb` をダウンロード → ダブルクリック | `bash scripts/build_mcpb.sh` |
 | PyPI | `uvx autonomath-mcp` で manual config | 既存 `autonomath-mcp` v0.3.0 |
 
-`server.json` は既に整備済 (`/Users/shigetoumeda/jpintel-mcp/server.json`、Schema `2025-12-11`、Protocol `2025-06-18`)。
+`server.json` は既に整備済 (Schema `2025-12-11`、Protocol `2025-06-18`)。
 
 ## referral fee なし
 
 - Anthropic は **registry 運営者** であり、referral partner ではない
-- AutonoMath は **直接** ユーザーに ¥3/req を課金
-- Anthropic API / claude CLI / SDK は **AutonoMath サーバー側で呼ばない** (memory `feedback_autonomath_no_api_use`) — 推論はユーザー側 Claude Desktop の subagent が実行
+- jpcite は **直接** ユーザーに ¥3/req を課金
+- Anthropic API / claude CLI / SDK は **jpcite サーバー側で呼ばない** (memory `feedback_autonomath_no_api_use`) — 推論はユーザー側 Claude Desktop の subagent が実行
 - discount は永久 NG
 
 ## Directory listing copy 案
@@ -41,24 +41,24 @@ API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Strip
 ### Japanese (long, ≤500 chars)
 
 ```
-AutonoMath — 日本の制度情報 MCP サーバー (93 tools, protocol 2025-06-18)。
+jpcite — 日本の制度情報 MCP サーバー (93 tools, protocol 2025-06-18)。
 14,472 プログラム (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 /
 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 法令 e-Gov 本文 154 + メタデータ 9,484 行 +
 税制 ruleset (インボイス / 電帳法) 35 行 + 適格請求書事業者 13,801 行 (PDL v1.0) +
 503,930 entity + 6.12M facts + 177,381 relations + 335k aliases。
 181 件の排他ルール、cross-dataset glue (trace_program_to_law / find_cases_by_law /
 combined_compliance_check)。99%+ rows: source_url + fetched_at、集約サイト不使用。
-¥3/req (税別、税込 ¥3.30) フル従量、IP ベース 3 req/日 無料 (JST 月初リセット、
+¥3/req (税別、税込 ¥3.30) フル従量、IP ベース 3 req/日 無料 (JST 翌日 00:00 リセット、
 key 不要)。Bookyou 株式会社 / info@bookyou.net。
 ```
 
 ### English (long, ≤500 chars)
 
 ```
-AutonoMath — MCP server (93 tools, protocol 2025-06-18) over Japanese public-program
+jpcite — MCP server (93 tools, protocol 2025-06-18) over Japanese public-program
 data: 14,472 programs (subsidy / loan / tax / certification) + 2,286 acceptance cases +
 108 loans (3-axis: collateral / individual guarantor / third-party guarantor) +
-1,185 enforcement actions + 154 laws full-text + 9,484 law catalog stubs (e-Gov, CC-BY) + 50 tax rulesets
+1,185 enforcement actions + 154 laws full-text + 9,484 law law metadata records (e-Gov, CC-BY) + 50 tax rulesets
 (invoice / electronic-bookkeeping) + 13,801 invoice registrants (NTA, PDL v1.0) +
 503,930 entities + 6.12M facts + 177,381 relations + 335k aliases.
 181 exclusion / prerequisite rules; cross-dataset glue: trace_program_to_law /
@@ -90,9 +90,9 @@ python -c "import re; print(re.search(r'version\s*=\s*\"(.+?)\"', open('pyprojec
 # 両 version が一致
 
 # 2. publish (launch day = 2026-05-06、それ以前は実行禁止)
-export MCP_REGISTRY_TOKEN="ghp_..."   # GitHub PAT, repo:read on AutonoMath/autonomath-mcp
+export MCP_REGISTRY_TOKEN="ghp_..."   # GitHub PAT, repo:read on jpcite/autonomath-mcp
 mcp publish server.json
-# expected: "Published io.github.AutonoMath/autonomath-mcp@0.2.0 successfully"
+# expected: "Published io.github.jpcite/autonomath-mcp@0.2.0 successfully"
 
 # 3. DXT bundle 配布 (Claude Desktop 直接 install ルート)
 bash scripts/build_mcpb.sh
@@ -113,7 +113,7 @@ bash scripts/build_mcpb.sh
 
 - Anthropic への営業電話 / 個別契約は **永久 NG** (memory `feedback_organic_only_no_ads`)
 - Anthropic の logo / 商標は **法務 OK 受領後のみ** (memory `feedback_no_trademark_registration`)
-- claude CLI / claude SDK は **AutonoMath サーバーから一切呼ばない** (memory `feedback_autonomath_no_api_use`、5,000 円損失で確立)
+- claude CLI / claude SDK は **jpcite サーバーから一切呼ばない** (memory `feedback_autonomath_no_api_use`、5,000 円損失で確立)
 - "Anthropic Partner" / "Claude Certified" 表記は許諾あるまで禁止 (景表法)
 - "Featured" 申請 → 落選 でフォローアップしない (organic only)
 

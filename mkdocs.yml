@@ -1,4 +1,4 @@
-# AutonoMath — MkDocs Material config.
+# jpcite — MkDocs Material config.
 #
 # Build locally:
 #   pip install -r docs-requirements.txt
@@ -9,9 +9,9 @@
 
 site_name: jpcite
 site_description: jpcite — 日本の制度 (補助金 / 融資 / 税制 / 認定制度) 11,684件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料付きで返す REST + MCP API。¥3/req、匿名 3 req/日 無料。
-site_author: Bookyou 株式会社
+site_author: jpcite
 site_url: "https://jpcite.com/docs/"
-copyright: "© 2026 Bookyou 株式会社 (T8010001213708) · info@bookyou.net · AutonoMath"
+copyright: "© 2026 jpcite"
 
 # Disable the github edit link — we don't want the internal repo structure
 # exposed publicly before rebrand lands. Re-enable post-launch by setting
@@ -112,6 +112,30 @@ plugins:
         - ja
         - en
   - tags
+  # Algolia DocSearch — staged, OFF until DocSearch credentials land.
+  #
+  # Status: applied 2026-05-01 via the OSS docs program at
+  # https://docsearch.algolia.com/apply/. Crawler-side ranking + JS widget
+  # hook are wired through a custom theme partial (overrides/partials/
+  # docsearch.html — to be added when keys arrive). Until then the
+  # mkdocs-material native lunr search above remains the only search
+  # surface, and `mkdocs build --strict` keeps passing because no plugin
+  # requires the secrets.
+  #
+  # Activation steps once Algolia returns app_id + api_key + index_name:
+  #   1. drop the credentials into Cloudflare Pages secrets:
+  #        ALGOLIA_APP_ID / ALGOLIA_API_KEY / ALGOLIA_INDEX
+  #      (read-only "search-only" key — never the admin key)
+  #   2. uncomment the extra_javascript / extra_css block below
+  #   3. re-enable theme.features.search.suggest (already on) and add
+  #      `docsearch_url` to the navbar
+  #   4. trigger the Algolia crawler (DocSearch dashboard → "trigger crawl")
+  #
+  # Ref: https://docsearch.algolia.com/docs/integrations#mkdocs
+  # extra_css:
+  #   - https://cdn.jsdelivr.net/npm/@docsearch/css@3
+  # extra_javascript:
+  #   - assets/docsearch-init.js  # reads window.__DOCSEARCH_CFG__ injected by overrides/partials/docsearch.html
   # Material's social plugin auto-generates per-page OG images (1200x630
   # PNG) using site_name + page title + description. Cards land at
   # site/docs/assets/images/social/<page>.png and are referenced via the
@@ -121,7 +145,7 @@ plugins:
   - social:
       cards: true
       cards_layout_options:
-        background_color: "#0F172A"  # AutonoMath dark navy
+        background_color: "#0F172A"  # jpcite dark navy
         color: "#FFFFFF"
   # git-revision-date-localized reads the last-commit timestamp per page
   # and displays "最終更新" at the bottom. Requires the build to run
@@ -138,22 +162,27 @@ plugins:
   #     type: date
   #     fallback_to_build_date: true
 
-# Directories under docs/ that must not be rendered or published.
-# `_internal/` holds operational docs (deploy gotchas, email setup,
-# incident stash-files) that agents + ops keep in-repo but that must
-# never appear in public nav, search index, or sitemap.
-#
-# The 5 files below are ops-facing runbooks that previously leaked at
-# stable public URLs (e.g. /docs/monitoring/) because `not_in_nav` only
-# hides nav — it still builds + publishes the page. They contain Stripe
-# test-mode env var names, Fly app identifiers, Twilio routing, and other
-# operator-only detail that has no place on a public docs site.
-# Keep `canonical/` itself *out* of this list because docs/canonical/
-# also hosts public canonical product docs built into the nav.
+# Public docs allowlist by exclusion: operator runbooks, draft launch
+# material, and local setup notes stay in-repo but are not rendered into
+# the customer-facing documentation site.
 exclude_docs: |
   _internal/
   _internal/health_monitoring_runbook.md
   _internal/dr_backup_runbook.md
+  compliance/electronic_bookkeeping.md
+  cs_templates.md
+  disaster_recovery.md
+  english_v4_plan.md
+  invariant_runbook.md
+  launch_checklist.md
+  monitoring.md
+  observability.md
+  operator_daily.md
+  organic_outreach_templates.md
+  rollback_runbook.md
+  security_posture.md
+  solo_ops_handoff.md
+  runbook/
   assets/*.jsonld
   overrides/
   canonical/perf_baseline.md
@@ -165,9 +194,17 @@ exclude_docs: |
   disaster_recovery.md
   solo_ops_handoff.md
   hiring_decision_gate.md
+  healthcare_v3_plan.md
+  long_term_strategy.md
   organic_outreach_templates.md
+  partner_referral_mechanism.md
+  partnerships/
+  real_estate_v5_plan.md
+  registries.md
+  seo_strategy.md
   launch_announcement_calendar.md
   launch_assets/
+  blog/
   launch_checklist.md
   go_no_go_gate.md
   rollback_runbook.md
@@ -178,7 +215,9 @@ exclude_docs: |
   roadmap.md
   audit_trail.md
   launch/
+  mcp/
   runbook/
+  mcp/
   # Operator-only / pre-launch-internal pages — moved out of public nav
   # (2026-04-29 customer-doc cleanup). These contain hiring criteria, ARR
   # projections, distribution strategy, internal eval gates, vertical launch
@@ -188,6 +227,9 @@ exclude_docs: |
   seo_strategy.md
   invariant_runbook.md
   self_improve_loops.md
+  cache_architecture.md
+  bench_methodology.md
+  bench_results_template.md
   per_tool_precision.md
   partner_referral_mechanism.md
   partnerships/
@@ -224,6 +266,7 @@ nav:
 
   - API:
       - REST: api-reference.md
+      - レスポンス エンベロープ: api-reference/response_envelope.md
       - エラー: error_handling.md
       - MCP ツール: mcp-tools.md
       - 排他ルール: exclusions.md
@@ -231,16 +274,17 @@ nav:
   - 開発者:
       - サンプル: examples.md
       - Prompt Cookbook: prompt_cookbook.md
-      - キャッシュ動作: cache_architecture.md
       - ダッシュボード: dashboard_guide.md
       - アラート: alerts_guide.md
       - Webhook: webhooks.md
       - SDK (TypeScript): sdks/typescript.md
+      - ブックマークレット & Chrome 拡張: integrations/bookmarklet.md
 
   - 信頼:
       - SLA: sla.md
       - Confidence: confidence_methodology.md
       - Hallucination 対策: hallucination_guard_methodology.md
+      - 制度フィード (RSS): https://jpcite.com/data-freshness.html#rss-heading
 
   - コンプライアンス:
       - 概要: compliance/INDEX.md
@@ -249,19 +293,7 @@ nav:
       - 免責事項: compliance/landing_disclaimer.md
       - データガバナンス: compliance/data_governance.md
       - データ主体の権利: compliance/data_subject_rights.md
-      - 電子帳簿保存法: compliance/electronic_bookkeeping.md
       - 特定商取引法に基づく表記: compliance/tokushoho.md
-
-  # Blog posts live at docs/blog/ (mkdocs source) → built to site/docs/blog/.
-  # A literal copy is also placed at site/blog/ for static Cloudflare routing.
-  # Drafts stay `published: false` in frontmatter until launch day flip
-  # (2026-05-06). At launch, flip frontmatter → true and unhide this nav.
-  - ブログ:
-      - ローンチ記事 (開発者向け): blog/2026-05-06-launch-day-developer.md
-      - ローンチ記事 (MCP / エージェント): blog/2026-05-06-launch-day-mcp-agent.md
-      - launch — 1 query で AI に聞く (intro): blog/2026-05-launch-intro.md
-      - 5 audience pitch (税理士/行政書士/SMB/VC/Dev): blog/2026-05-5_audience_pitch.md
-      - architecture — Pre-computed Reasoning Layer: blog/2026-05-architecture.md
 
 validation:
   nav:

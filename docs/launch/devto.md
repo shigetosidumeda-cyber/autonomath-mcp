@@ -87,7 +87,7 @@ Everything under `/v1/*`:
 - `/v1/exclusions/*` — eligibility rules
 - `/v1/am/*` — annotations, validation, provenance, static resources, example profiles
 
-OpenAPI lives at `https://api.jpcite.com/openapi.json`.
+OpenAPI lives at `https://api.jpcite.com/v1/openapi.json`.
 
 ### MCP surface
 
@@ -210,7 +210,7 @@ For Claude Desktop / Claude Code MCP, see the README.
 - GitHub: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 - Pricing: https://jpcite.com/docs/pricing/
-- OpenAPI: https://api.jpcite.com/openapi.json
+- OpenAPI: https://api.jpcite.com/v1/openapi.json
 
 Solo project under Bookyou株式会社 (T8010001213708). No VC, no team. Public docs and GitHub issues only.
 

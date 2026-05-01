@@ -1,4 +1,4 @@
-# Search Console + Bing Webmaster + Yandex Setup Runbook -- jpintel-mcp
+# Search Console + Bing Webmaster + Yandex Setup Runbook -- jpcite
 
 **Owner**: 梅田茂利 (info@bookyou.net) -- solo zero-touch
 **Last reviewed**: 2026-04-29
@@ -26,25 +26,25 @@ Ten-second summary:
 
 | Sitemap shard | URLs | Contents |
 |---|---:|---|
-| `sitemap.xml` | 74 | About / pricing / docs / EN mirror / hand-maintained |
-| `sitemap-programs.xml` | 10,951 | Per-program HTML (`/programs/{slug}.html`) |
+| `sitemap.xml` | 77 | About / pricing / docs / EN mirror / hand-maintained |
+| `sitemap-programs.xml` | 1,413 | High-signal per-program HTML (`/programs/{slug}.html`) |
 | `sitemap-prefectures.xml` | 48 | 47 都道府県 + index |
-| `sitemap-audiences.xml` | 12 | Audience landing pages |
-| `sitemap-industries.xml` | 1,027 | Industry × program cross |
-| `sitemap-qa.xml` | 99 | Long-tail QA pages |
+| `sitemap-audiences.xml` | 16 | Audience landing pages |
+| `sitemap-cross.xml` | 47 | Cross-topic landing pages |
+| `sitemap-industries.xml` | 22 | Industry landing pages |
+| `sitemap-qa.xml` | 104 | Long-tail QA pages |
 | `sitemap-pages.xml` | 1 | News index |
-| `sitemap-structured.xml` | 10,951 | JSON-LD shards (NOT in index, R2 post-launch) |
-| **Total submitted** | **~12,212** | excluding structured shard |
+| `sitemap-structured.xml` | 1,413 | JSON-LD shards for structured-data discovery |
+| `docs/sitemap.xml` | 36 | MkDocs documentation pages |
+| **Total submitted** | **3,177** | includes structured shard while below Pages file budget |
 
-`site/sitemap-index.xml` references the first 8 shards (structured shard
-intentionally excluded -- it lives behind Cloudflare Pages 20k file cap
-and will move to R2 post-launch; see `robots.txt §Sitemaps`).
+`site/sitemap-index.xml` references the public shards including
+`sitemap-structured.xml`. Keep the structured shard in the index while it is
+below the Cloudflare Pages file budget; move it to R2 only if corpus growth
+requires it.
 
-> WARNING (2026-04-29): `sitemap-index.xml` currently references
-> `sitemap-cross.xml` which does **not** exist on disk. Google will log
-> "Couldn't fetch" for that shard on every refresh. Fix is to either
-> (a) generate `site/sitemap-cross.xml` from `site/cross/`, or
-> (b) drop the entry from `sitemap-index.xml`. Tracked as P0-3 below.
+Verified 2026-05-01: the sitemap index references only shards present on disk,
+including `sitemap-cross.xml` and `sitemap-structured.xml`.
 
 ---
 
@@ -298,30 +298,29 @@ GitHub Actions schedule: `.github/workflows/index-now-cron.yml`
 
 ## 8. robots.txt schema directive
 
-Confirmed (2026-04-29): `site/robots.txt` lines 136-147 list 5 sitemap
-URLs, but `sitemap-index.xml` references 8 shards. This is fine -- the
-index is the canonical entry point and crawlers follow it. However, for
-crawlers that ignore index files (some niche bots), we add the missing
-3 shards (industries / qa / pages) inline. See §10 patches.
+Confirmed (2026-05-01): `site/robots.txt` lists the sitemap index plus each
+public shard inline, including `sitemap-structured.xml`. The index remains the
+canonical entry point; inline shard URLs are a fallback for crawlers that do
+not follow sitemap indexes reliably.
 
 ---
 
 ## 9. Estimated indexing timeline
 
 Assumes: domain age ~3 months, low backlink profile (organic-only, no
-paid acquisition), ~12k URLs submitted, IndexNow cron active.
+paid acquisition), 3,177 URLs submitted, IndexNow cron active.
 
 | Time | Google indexed | Bing indexed | Notes |
 |---|---:|---:|---|
 | Day 0 (verify) | 0 | 0 | Sitemap submitted, both still in queue |
 | Day 1-3 | 8-12 | 30-100 | Cornerstone pages indexed first |
-| Week 1 | 200-500 | 800-1,500 | Bing IndexNow boost obvious |
-| Week 2 | 1,000-2,500 | 3,000-6,000 | First long-tail queries hit |
-| Week 4 | 3,500-7,000 | 8,000-11,000 | Most of corpus discoverable |
-| Week 8 | 7,000-10,000 | 11,000-12,000 | Approaching theoretical max |
-| Week 12 | 10,500-12,000 | 12,000 | Steady-state; thin pages may be excluded |
+| Week 1 | 150-400 | 500-1,200 | Bing IndexNow boost obvious |
+| Week 2 | 600-1,500 | 1,800-2,800 | First long-tail queries hit |
+| Week 4 | 1,800-2,800 | 2,800-3,100 | Most of corpus discoverable |
+| Week 8 | 2,500-3,000 | 3,000-3,177 | Approaching theoretical max |
+| Week 12 | 2,800-3,177 | 3,100-3,177 | Steady-state; thin pages may be excluded |
 
-Theoretical max = ~12,212 (sitemap submitted total). Google typically
+Theoretical max = 3,177 (sitemap submitted total, including structured JSON-LD). Google typically
 indexes 80-90 % of submitted URLs for a low-authority site; the
 remaining 10-20 % are flagged as "Crawled - currently not indexed"
 (thin / duplicate / low-value classifier). Bing is more permissive and
@@ -329,15 +328,14 @@ indexes ~95-100 %.
 
 > If week-4 Google count is under 1,500: investigate **Page indexing
 > report** in Search Console for "Discovered - currently not indexed"
-> volume. Most likely cause: sitemap-cross.xml 404 (P0-3 below)
-> burning crawl budget. Second cause: thin programs without enough
-> distinct content.
+> volume. Most likely cause: thin programs without enough distinct content
+> or crawl-budget throttling; the sitemap shards are expected to resolve.
 
 ---
 
 ## 10. P0 actions for the operator
 
-These are the only steps that block faster indexing. **Do them now.**
+These are the remaining operator steps for faster indexing.
 
 ### P0-1 -- Set GitHub Actions secrets
 
@@ -362,18 +360,10 @@ Type=TXT  Name=@  Value=yandex-verification: <...>      TTL=3600
 Multiple TXT records on `@` are allowed -- each verification provider
 looks up its own prefix.
 
-### P0-3 -- Resolve sitemap-cross.xml 404
+### P0-3 -- Verify sitemap shard fetches after deploy
 
-`sitemap-index.xml` references `sitemap-cross.xml` which does not exist.
-Pick one:
-
-1. Generate it: extend `scripts/sitemap_gen.py` to also emit
-   `site/sitemap-cross.xml` from `site/cross/`. (Likely under-construction;
-   the cross/ directory has only a `hokkaido` subdir at present.)
-2. Or remove the `<sitemap><loc>.../sitemap-cross.xml</loc></sitemap>`
-   block from `site/sitemap-index.xml` until cross-pages are ready.
-
-Either path keeps Google's "Couldn't fetch" warning out of Search Console.
+After Cloudflare Pages deploy, confirm every shard listed in
+`site/sitemap-index.xml` returns HTTP 200 on `https://jpcite.com/`.
 
 ### P0-4 -- Upload IndexNow key file to site root
 

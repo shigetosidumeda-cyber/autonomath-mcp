@@ -1,37 +1,25 @@
 # Hallucination Guard
 
-LLM が生成した回答に紛れる **高頻度な制度誤解** を、API 出力の前段で検出するためのフィルタ。
+LLM が生成した回答に紛れやすい **高頻度な制度誤解** を検出し、注意書きと確認すべき根拠を返すための仕組みです。
 
 ## 目的
 
-`hallucination_guard` は補助金 / 税制 / 融資 / 認定 / 行政処分 / 法令 の典型的な誤解 phrase を検出し、`correction` と `law_basis` を一緒に surface する。LLM 推論は API 側では行わない (推論は顧客側 LLM)。
+補助金 / 税制 / 融資 / 認定 / 行政処分 / 法令の典型的な誤解表現を検出し、`correction` と `law_basis` を一緒に返します。jpcite サーバー側で LLM 推論は行いません。
 
-## データ構造
+## 返す内容
 
-`data/hallucination_guard.yaml` (v1 = **60 entries**)。
+| field | 意味 |
+|---|---|
+| `phrase` | 検出された誤解表現 |
+| `severity` | 注意の強さ |
+| `correction` | どう直して読むべきか |
+| `law_basis` | 関連する根拠法令・制度資料 |
+| `audience` | 主な利用者カテゴリ |
+| `vertical` | 補助金、税制、融資などの領域 |
 
-```yaml
-entries:
-  - phrase: "..."         # verbatim misconception
-    severity: high        # high | medium | low
-    correction: "..."     # one-line correction
-    law_basis: "..."      # optional 法律名 + 条
-    audience: 税理士       # 税理士 | 行政書士 | SMB | VC | Dev
-    vertical: 税制         # 補助金 | 税制 | 融資 | 認定 | 行政処分 | 法令
-```
+## 拡張方針
 
-Grid = 5 audience × 6 vertical × 2 phrase = 60 entries。
-
-## ランタイム
-
-`src/jpintel_mcp/self_improve/loop_a_hallucination_guard.py`:
-
-- `match(text) -> list[dict]` — substring scan、pure (DB / network 不使用)
-- `summarize() -> dict` — severity / audience / vertical 別カウント
-
-## 拡張 (60 → 1,500+)
-
-cron による継続拡張は内部運用 (詳細非公開)。candidate は all `*_candidates` テーブル経由で人手 review してから昇格する。
+誤解表現は、公開資料・利用者からのフィードバック・検証済みの失敗例をもとに増やします。追加前に人が確認し、誤検出が多い表現は公開レスポンスに昇格しません。
 
 ## 関連
 

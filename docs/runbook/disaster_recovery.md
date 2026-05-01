@@ -1,11 +1,11 @@
-# Disaster Recovery Runbook -- jpintel-mcp
+# Disaster Recovery Runbook -- jpcite
 
 **Owner**: 梅田茂利 (info@bookyou.net) -- solo zero-touch
 **Last reviewed**: 2026-04-29
 **Related**: `docs/disaster_recovery.md` (public-facing scenario matrix), `docs/_internal/dr_backup_runbook.md` (legacy R2 setup notes)
 
 This is the actionable, single-operator playbook for recovering the two SQLite
-databases of the AutonoMath / jpcite service. It supersedes the prior
+databases of the jpcite / jpcite service. It supersedes the prior
 runbook for the new tiered-backup pipeline (`scripts/cron/backup_*.py`).
 
 ## 1. What we back up

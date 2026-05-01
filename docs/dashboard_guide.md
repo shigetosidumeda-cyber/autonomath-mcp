@@ -1,6 +1,6 @@
 # Self-serve dashboard
 
-顧客 self-serve ダッシュボード: <https://jpcite.com/dashboard.html>。 4 つの bearer-authenticated view を control plane の cookie session 上に提供。
+顧客 self-serve ダッシュボード: <https://jpcite.com/dashboard.html>。 API key を使って、利用量、請求、上限設定、通知設定を確認できます。
 
 | Endpoint | 用途 |
 | --- | --- |
@@ -29,7 +29,6 @@ curl -s "https://jpcite.com/v1/me/dashboard?days=30" \
 
 ```json
 {
-  "key_hash_prefix": "7fa2c9e1",
   "tier": "paid",
   "days": 30,
   "series": [{"date": "2026-03-26", "calls": 0}, ...],
@@ -49,7 +48,7 @@ curl -s "https://jpcite.com/v1/me/dashboard?days=30" \
 - `series` は zero-calls 日も埋めて 30 日 chart を gap-fill 不要に
 - `last_30_amount_yen = last_30_calls * 3` (税別)
 - `cap_remaining_yen` は cap 未設定時 `null`
-- `month_to_date_calls` は metered + success のみ (cap middleware の定義と同じ)
+- `month_to_date_calls` は metered + success のみ (cap 判定と同じ集計)
 
 ## Tool 別
 
@@ -107,7 +106,7 @@ curl -X POST "https://jpcite.com/v1/me/cap" \
   -d '{"monthly_cap_yen": null}'
 ```
 
-Month-to-date metered spend が cap に達すると以降の data 経路は `503` (`cap_reached: true`) を返し、JST 月初リセットまで停止。
+Month-to-date metered spend が cap に達すると以降の data 経路は `503` (`cap_reached: true`) を返し、当月の請求期間が切り替わるか cap を上げる/解除するまで停止。
 
 ## 制度改正アラート
 
@@ -126,13 +125,13 @@ Month-to-date metered spend が cap に達すると以降の data 経路は `503
 - **min_severity:** `critical` / `important` / `info` (default `important`)
 - **webhook_url:** optional、HTTPS のみ。client 側 pre-validate:
   - `https://` で始まる、2048 文字以内
-  - RFC1918 / loopback / link-local / unique-local の internal IP literal を拒否
-  - 内部 DNS 名は client 側通過、サーバ cron が fire-time に再検証
+  - ローカルネットワーク向けの IP literal は登録不可
+  - 配信時にも安全な宛先か再確認
 - **email:** optional。`webhook_url` または `email` のどちらか必須
 
 ### 削除
 
-`削除` は `window.confirm()` 後に `DELETE` を叩く。サーバは soft-delete (`active=0`)、再開時は新規登録。404 (既削除) は UI 側で「既に削除されています」と表示。
+`削除` は確認ダイアログ後に `DELETE` を送ります。削除後に再開する場合は新規登録してください。404 は UI 側で「既に削除されています」と表示します。
 
 ### Banner
 

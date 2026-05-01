@@ -397,7 +397,7 @@ Claude Desktop / ChatGPT / Cursor の Manifest に 1 行追加するだけで AI
 agent から日本の制度を直接 reasoning できます。SDK 不要。
 
 4/ 料金は完全従量 ¥3/req 税別 (税込 ¥3.30)。
-tier / seat / 年間最低額なし。匿名 3 req/日 per IP は無料 (JST 月初リセット)。
+tier / seat / 年間最低額なし。匿名 3 req/日 per IP は無料 (JST 翌日 00:00 リセット)。
 Stripe Tax 経由でインボイス対応。
 
 5/ Jグランツが「申請ポータル」なのに対し、

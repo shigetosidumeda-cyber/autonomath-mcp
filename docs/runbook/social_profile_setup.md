@@ -100,14 +100,14 @@ business-named entity.
 
 **Steps:**
 1. Go to https://github.com/organizations/new.
-2. **Organization name**: `AutonoMath`. (If taken: `BookyouInc` or
+2. **Organization name**: `jpcite`. (If taken: `BookyouInc` or
    `bookyou-jp`. Confirm by visiting `https://github.com/shigetosidumeda-cyber/autonomath-mcp`
    first.)
 3. **Contact email**: `info@bookyou.net`.
 4. **This organization belongs to**: `My personal account`.
 5. **Plan**: Free.
 6. After creation, on the org settings page:
-   - **Display name**: `Bookyou株式会社 (AutonoMath)`
+   - **Display name**: `Bookyou株式会社 (jpcite)`
    - **Description**:
      > Operator of jpcite (https://jpcite.com). Japanese public-program API + MCP server. 適格請求書発行事業者番号 T8010001213708.
    - **URL**: `https://jpcite.com/`

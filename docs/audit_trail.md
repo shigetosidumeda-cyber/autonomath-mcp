@@ -74,7 +74,7 @@ A standard work-paper entry looks like:
 
 > 評価日時: 2026-04-29 12:34 JST
 > 評価対象: 当社 (資本金 30,000,000 円, 青色申告) の 試験研究費税額控除 (一般型) 適用可否
-> 使用 API: AutonoMath `/v1/tax_rulesets/evaluate`
+> 使用 API: jpcite `/v1/tax_rulesets/evaluate`
 > リクエスト: `{ "business_profile": {...}, "target_ruleset_ids": ["TAX-ca4b993ca5"] }`
 > レスポンス: `applicable=true`, reasons=["blue_form_return_filed == True", "research_expense_jpy >= 1"]
 > **Corpus snapshot:** `corpus_snapshot_id=2026-04-29T03:14:07Z`,
@@ -94,7 +94,7 @@ To verify the evaluation, the auditor re-runs the same request. Three cases:
 This is a HONEST reproducibility check. We do **not** claim
 cryptographic non-repudiation — the checksum is a 64-bit truncation, the
 corpus snapshot timestamp is from our own clock. But for a work-paper that
-needs to survive cross-examination, "the AutonoMath corpus checksum
+needs to survive cross-examination, "the jpcite corpus checksum
 flipped between my two runs, so I documented the new state on $date" is a
 defensible audit trail.
 
@@ -128,7 +128,7 @@ recomputes the snapshot ~12 times/hour, not 3.6M.
 
 Auditors who need second-by-second precision (e.g. evaluating around a
 known cliff date such as 2026-09-30 / 2027-09-30 / 2029-09-30) can pass the
-`X-AutonoMath-Snapshot-Refresh: 1` header to bypass the cache. (Header
+`X-jpcite-Snapshot-Refresh: 1` header to bypass the cache. (Header
 support is opt-in and reserved for licensed audit tools — see
 `/v1/me/audit-tools` for activation.)
 

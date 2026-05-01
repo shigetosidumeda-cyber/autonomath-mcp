@@ -114,7 +114,7 @@ Surfaced every Monday by `weekly_digest.py`. Key signals:
 - **Email** to info@bookyou.net — treat as PC1 unless clearly a feature request (PC4)
 - **GitHub Issues** on this repo — already structured; apply priority label on receipt
 - **Zenn comments** on published articles — check every Monday morning before triage
-- **HN / X / Reddit** — check if any mention "AutonoMath" or "autonomath-mcp"; use organic search (no paid monitoring)
+- **HN / X / Reddit** — check if any mention "jpcite" or "autonomath-mcp"; use organic search (no paid monitoring)
 
 ### 3.3 External Monitoring (always-on, non-weekly)
 

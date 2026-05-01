@@ -24,7 +24,10 @@ Required measured fields per answer: `input_tokens`, `output_tokens`,
 `yen_cost_per_answer`, `citation_rate`, and `hallucination_rate`.
 For `jpcite_precomputed_intelligence`, also record natural-language
 lookup coverage: `records_returned`, `precomputed_record_count`, and
-`zero_result_rate`.
+`zero_result_rate`. Before operator LLM calls, run
+`tools/offline/bench_prefetch_probe.py` and use its output to fill
+`records_returned`, `precomputed_record_count`, and
+`packet_tokens_estimate` where the probe can measure them.
 
 ### Per-arm medians
 
@@ -53,11 +56,14 @@ For `jpcite_precomputed_intelligence` only:
 |---|---:|
 | records_returned | ... |
 | precomputed_record_count | ... |
+| packet_tokens_estimate | ... |
 | zero_result_rate | ...% |
 
 Use `records_returned` as the per-query returned-record count or as the
 reported aggregate specified in `notes`. `zero_result_rate` is the share
 of precomputed-arm queries where `records_returned = 0`.
+`packet_tokens_estimate` is an estimate of context size, not a measured
+LLM billing token count.
 
 ### Cost-per-answer distribution
 
@@ -101,6 +107,9 @@ jpcite_precomputed_intelligence:   [..., ..., ..., ...]
 - Natural-language query hit-rate fields for
   `jpcite_precomputed_intelligence` measure lookup coverage only; they
   do not prove answer quality or cost savings by themselves.
+- `packet_tokens_estimate` is produced before the LLM call from the
+  prefetched packet/bundle. Treat it as an operator-side context-size
+  estimate; use provider-reported `input_tokens` for billing claims.
 - Phrasing rules from `docs/bench_methodology.md` §7 apply: no
   「必ずX%削減」、「業界最安」、「ChatGPTより正確」 phrasing in any
   derivative collateral citing this file.
@@ -123,11 +132,21 @@ python tools/offline/bench_harness.py \
 #     --arms direct_web,jpcite_packet \
 #     > bench_instructions.jsonl
 
-# 2. Operator runs each instruction line manually against their LLM
+# 2. Probe jpcite prefetch URLs before any operator LLM calls.
+python tools/offline/bench_prefetch_probe.py \
+    --instructions-jsonl bench_instructions.jsonl \
+    --output-csv bench_prefetch_probe.csv
+
+# Copy records_returned, precomputed_record_count, and
+# packet_tokens_estimate from bench_prefetch_probe.csv into the matching
+# jpcite rows in bench_results.csv. Leave fields empty when the probe
+# cannot measure them.
+
+# 3. Operator runs each instruction line manually against their LLM
 #    provider, writes bench_results.csv with the columns listed in
 #    docs/bench_methodology.md §3.
 
-# 3. Aggregate
+# 4. Aggregate
 python tools/offline/bench_harness.py \
     --results-csv bench_results.csv \
     --mode aggregate \

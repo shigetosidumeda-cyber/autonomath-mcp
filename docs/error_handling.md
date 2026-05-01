@@ -9,12 +9,12 @@
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/about.html"
+    "name": "jpcite",
+    "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "Bookyou株式会社",
+    "name": "jpcite",
     "logo": {
       "@type": "ImageObject",
       "url": "https://jpcite.com/og/default.png"
@@ -81,7 +81,7 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 #### `unknown_query_parameter`
 - HTTP: 422
 - endpoint 未定義の query param が含まれる。 `expected: [...]` 許可、 `unknown: [...]` 違反。
-- 復旧: `expected` 内 param のみで再送。 `JPINTEL_STRICT_QUERY_DISABLED=1` で middleware 無効化可 (dev のみ推奨)。
+- 復旧: `expected` 内 param のみで再送。問題が続く場合は `request_id` を添えて問い合わせる。
 
 ### Data lookup (4xx)
 
@@ -139,21 +139,20 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 
 #### `db_locked`
 - HTTP: 503
-- soft severity。 SQLite single-writer choke で busy timeout 到達。
+- soft severity。一時的にデータ更新や読み取りが混み合っている状態。
 - response header: `Retry-After`。
 - 復旧: 5-30 秒後 retry。
 
 #### `db_unavailable`
 - HTTP: 503
-- hard severity。 DB file 不在 / corrupt / mount 失敗。
-- 通常: `/v1/am/*` で autonomath.db (8.29 GB) が bootstrap されてない場合に発火。
+- hard severity。データストアまたは関連サービスが利用できない状態。
 - response header: `Retry-After: 300`。
-- 復旧: operator が R2 から restore (時間 5-15 分)、 待つ以外なし。
+- 復旧: 数分後に再試行。継続する場合は `request_id` を添えて問い合わせ。
 
 #### `subsystem_unavailable`
 - HTTP: 503
-- hard severity。 sub-feature の前提 (e.g. `reasoning` package import 失敗) 不在。
-- 復旧: operator が configuration 確認。
+- hard severity。特定機能の前提サービスが利用できない状態。
+- 復旧: 少し待って再試行。継続する場合は `request_id` を添えて問い合わせ。
 
 #### `service_unavailable`
 - HTTP: 503
@@ -164,11 +163,11 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 
 #### `internal`
 - HTTP: 500
-- canonical envelope の error code、 想定外の例外。 `request_id` を operator に共有。
+- 想定外のエラー。問い合わせ時は `request_id` を共有してください。
 
 #### `internal_error`
 - HTTP: 500
-- legacy alias of `internal`。 同等。 LLM client は両方を internal 扱いで OK。
+- `internal` と同等の互換コード。問い合わせ時は `request_id` を共有してください。
 
 ---
 
@@ -177,7 +176,7 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 1. **HTTP status を見る前に `error.code` を見る** — envelope は HTTP 200 でも `status: error` のことがある。
 2. **`severity: hard` は再試行しない** — 入力 / auth 修正が必要。
 3. **`severity: soft` は exponential backoff retry** (1s / 2s / 4s / 8s) で 最大 3 回。
-4. **`request_id` を必ずログ** — operator が trace するための唯一の glue。
+4. **`request_id` を必ずログ** — 問い合わせ時の確認に使います。
 5. **`documentation` URL は機械可読** — LLM client は `\#<code>` anchor で該当 section を fetch して self-recovery 可能。
 
 ---
@@ -205,9 +204,9 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 response headers:
 ```
 X-Anon-Quota-Remaining: 0
-X-Anon-Quota-Reset: 2026-05-01T00:00:00+09:00
+X-Anon-Quota-Reset: <next JST 00:00>
 X-Anon-Upgrade-Url: https://jpcite.com/upgrade.html?from=429
-Retry-After: <seconds-until-month-reset>
+Retry-After: <seconds-until-daily-reset>
 ```
 
 ---
@@ -218,4 +217,4 @@ Retry-After: <seconds-until-month-reset>
 - Pricing + free tier: [pricing.md](pricing.md)
 - SLA: [sla.md](sla.md)
 - Privacy + APPI § 31/§ 33: [compliance/privacy_policy.md](compliance/privacy_policy.md)
-- 不在の場合: info@bookyou.net
+- 不在の場合: 特商法ページの連絡先へお問い合わせください。

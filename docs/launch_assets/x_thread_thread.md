@@ -10,14 +10,14 @@
 > Validate (memory `feedback_validate_before_apply`):
 > - 数値 14,472 / 55 / ¥3 統一
 > - INV-22: 必ず / 絶対 / 保証 / 業界初 / 最大 等の過剰強調削除済み
-> - hashtag: #AutonoMath #補助金 #MCP #AI
+> - hashtag: #jpcite #補助金 #MCP #AI
 
 ---
 
 ## Tweet 1/8 — launch + hook (134 文字)
 
 ```
-AutonoMath、本日 launch しました。
+jpcite、本日 launch しました。
 
 日本の公的制度データ (補助金・融資・税制・認定・法令・処分・適格事業者) を、
 AI エージェントが 1 query で呼び出せる REST + MCP API です。
@@ -26,7 +26,7 @@ solo 開発、¥3/req 完全従量、匿名 3 req/日 per IP 無料。
 
 https://jpcite.com
 
-#AutonoMath #MCP #AI
+#jpcite #MCP #AI
 ```
 
 ---
@@ -58,7 +58,7 @@ AI が即答できる API が欲しかった、というだけです。
 - 適格事業者 13,801 (NTA PDL v1.0)
 - 出典 URL 99%+ 付与
 
-#AutonoMath
+#jpcite
 ```
 
 ---
@@ -120,7 +120,7 @@ aggregator (noukaweb / hojyokin-portal 等) は source_url から完全 ban。
    { "command":"uvx", "args":["autonomath-mcp"] }
 3. pip install autonomath-mcp
 
-匿名 3 req/日 per IP 無料 (JST 月初リセット)。
+匿名 3 req/日 per IP 無料 (JST 翌日 00:00 リセット)。
 
 #MCP #AI
 ```
@@ -142,7 +142,7 @@ PyPI: pypi.org/project/autonomath-mcp/
 
 reply / DM open。
 
-#AutonoMath
+#jpcite
 ```
 
 ---
@@ -153,7 +153,7 @@ reply / DM open。
 - [ ] GitHub URL placeholder `[USERNAME]/[REPO]` を実 URL に置換
 - [ ] thread の reply 連結を順序通りに
 - [ ] 英語 thread (`twitter_thread.md`) と同時 publish 推奨だが、別 thread として独立
-- [ ] hashtag (#AutonoMath #補助金 #MCP #AI) 4 種を散らす
+- [ ] hashtag (#jpcite #補助金 #MCP #AI) 4 種を散らす
 
 ---
 

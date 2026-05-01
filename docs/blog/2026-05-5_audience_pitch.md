@@ -1,6 +1,6 @@
 ---
-title: "AutonoMath を 5 つの仕事に使う — 税理士・行政書士・SMB・VC・Dev"
-description: "AutonoMath を実務に組み込む 5 つの walkthrough — 税理士 / 行政書士 / SMB 経営者 / VC・M&A / AI 開発者。"
+title: "jpcite を 5 つの仕事に使う — 税理士・行政書士・SMB・VC・Dev"
+description: "jpcite を実務に組み込む 5 つの walkthrough — 税理士 / 行政書士 / SMB 経営者 / VC・M&A / AI 開発者。"
 tags:
   - api
   - mcp
@@ -9,14 +9,14 @@ tags:
   - vc
 published: false
 date: 2026-05-06
-author: Bookyou株式会社 (T8010001213708)
+author: Bookyou株式会社
 ---
 
-# AutonoMath を 5 つの仕事に使う
+# jpcite を 5 つの仕事に使う
 
-> 公開日: 2026-05-06 / (T8010001213708)
+> 公開日: 2026-05-06
 
-AutonoMath は「日本の制度データを 1 query にまとめた API」です。
+jpcite は「日本の制度データを 1 query にまとめた API」です。
 誰がどう使うかを 5 シナリオで示します。Claude / Cursor / ChatGPT から MCP で呼ぶ前提です。
 
 ---
@@ -40,7 +40,7 @@ Claude: search_tax_incentives(keyword="設備投資") を呼びます…
 ```
 
 実務効果: 国税庁通達 + 措置法 + 関連補助金の横断調査を **1 prompt** に圧縮。
-1 件 ¥3 / 月 50 件まで匿名無料。月数千円で運用可能。
+1 件 ¥3 / 匿名 3 req/日 無料。月数千円で運用可能。
 
 ---
 
@@ -59,19 +59,19 @@ progs = requests.get(
 
 # Step 2: 排他チェック
 excl = requests.post(
-    "https://api.jpcite.com/v1/programs/check_exclusions",
+    "https://api.jpcite.com/v1/exclusions/check",
     json={"unified_ids": [p["unified_id"] for p in progs["results"]]},
 ).json()
 
 # Step 3: 融資候補 (3 軸: 担保/個人保証人/第三者保証人)
 loans = requests.get(
-    "https://api.jpcite.com/v1/loans/search",
+    "https://api.jpcite.com/v1/loan-programs/search",
     params={"purpose": "開業", "no_personal_guarantor": True, "limit": 10},
 ).json()
 
-# Step 4: 許認可 (autonomath certifications)
+# Step 4: 許認可
 auths = requests.get(
-    "https://api.jpcite.com/v1/am/certifications/search",
+    "https://api.jpcite.com/v1/am/certifications",
     params={"q": "食品衛生"},
 ).json()
 ```
@@ -82,12 +82,12 @@ auths = requests.get(
 
 ## 3. SMB 経営者 — LINE で月 10 件まで free
 
-LINE で AutonoMath のフロントを公開しています (post-launch)。
+LINE で jpcite のフロントを公開しています (post-launch)。
 
 ```
 You: 神奈川の製造業 (10人) で使える補助金ある？
 
-Bot (AutonoMath via LINE):
+Bot (jpcite via LINE):
   ✓ 「ものづくり補助金」(最大 1,000 万円)
   ✓ 「事業再構築補助金 (post-tier)」(最大 1.5 億円)
   ✓ 「神奈川県設備投資促進補助金」(最大 200 万円)
@@ -106,8 +106,8 @@ Bot (AutonoMath via LINE):
 
 ```python
 result = requests.post(
-    "https://api.jpcite.com/v1/dd/profile",
-    json={"corporate_number": "T1234567890123"},
+    "https://api.jpcite.com/v1/am/dd_batch",
+    json={"houjin_bangous": ["1234567890123"], "max_cost_jpy": 3},
 ).json()
 
 # 含まれる:
@@ -149,8 +149,8 @@ results = client.programs.search(q="DX 中小企業", prefecture="大阪")
 ```
 
 ```typescript
-import { AutonoMath } from "@autonomath/sdk";
-const c = new AutonoMath();
+import { jpcite } from "@autonomath/sdk";
+const c = new jpcite();
 const r = await c.programs.search({ q: "DX 中小企業", prefecture: "大阪" });
 ```
 
@@ -176,4 +176,4 @@ const r = await c.programs.search({ q: "DX 中小企業", prefecture: "大阪" }
 
 ---
 
-© 2026 Bookyou株式会社 (T8010001213708) · info@bookyou.net · AutonoMath
+© 2026 Bookyou株式会社 · info@bookyou.net · jpcite

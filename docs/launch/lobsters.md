@@ -59,6 +59,6 @@ curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 - GitHub: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 - PyPI: https://pypi.org/project/autonomath-mcp/
 - Site: https://jpcite.com
-- OpenAPI: https://api.jpcite.com/openapi.json
+- OpenAPI: https://api.jpcite.com/v1/openapi.json
 
 Solo built under Bookyou株式会社. Happy to dig into 全文検索 schema choices, the EAV trade-offs (yes, EAV has classic issues — I'll defend the choice in comments), or the data-ingest pipeline.

@@ -18,7 +18,7 @@
 ## Post body (1,427 chars)
 
 ```
-Today I'm launching AutonoMath — a REST + MCP API exposing Japanese
+Today I'm launching jpcite — a REST + MCP API exposing Japanese
 public-program data to AI agents in a single call.
 
 For the past few years, anyone trying to surface Japanese government
@@ -78,7 +78,7 @@ PyPI: https://pypi.org/project/autonomath-mcp/
 - [ ] PyPI URL 動作確認 (publish 完了後)
 - [ ] hashtag 5 種 (#MCP #ClaudeDesktop #JapanTech #SaaS #AIagents)
 - [ ] LinkedIn の audience 設定: Public (Anyone)
-- [ ] First image: AutonoMath logo placeholder (launch 後正式版で差し替え)
+- [ ] First image: jpcite logo placeholder (launch 後正式版で差し替え)
 
 ---
 

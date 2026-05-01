@@ -1,6 +1,6 @@
 # Partnership — SmartHR
 
-> **要約 (summary):** SmartHR (60,000 社、人事 / 労務 SaaS) のダッシュボード内に **AutonoMath widget** を embed。雇用関係助成金 (キャリアアップ / 雇用調整 / 両立支援) の候補を社員データから自動抽出。¥3/req metered。月次売上の 10% を SmartHR に referral 還元。
+> **要約 (summary):** SmartHR (60,000 社、人事 / 労務 SaaS) のダッシュボード内に **jpcite widget** を embed。雇用関係助成金 (キャリアアップ / 雇用調整 / 両立支援) の候補を社員データから自動抽出。¥3/req metered。月次売上の 10% を SmartHR に referral 還元。
 
 ## ターゲットと規模
 
@@ -18,7 +18,7 @@ SmartHR 上で人事 / 労務担当が、自社の従業員リストを見なが
 >   申請に必要な要件と、併用可能な助成金は?」
 ```
 
-→ AutonoMath widget が:
+→ jpcite widget が:
 
 1. SmartHR の従業員データから `employment_type` (正社員 / 契約 / パート) / `employment_start_date` / `industry_jsic` を読取
 2. `search_programs` で **雇用関係助成金** カテゴリ (厚労省所管 約 80 制度) を絞込
@@ -38,7 +38,7 @@ SmartHR 上で人事 / 労務担当が、自社の従業員リストを見なが
 
 ```yaml
 # manifest.yaml (概略)
-name: AutonoMath — 雇用関係助成金候補
+name: jpcite — 雇用関係助成金候補
 version: 0.1.0
 display:
   category: HR / 助成金
@@ -79,7 +79,7 @@ URL (Developer): https://developer.smarthr.jp/
 代表者: 梅田茂利
 連絡先: info@bookyou.net
 連携形式: SmartHR App Store widget (iframe embed)
-データ取扱: pass-through、AutonoMath は従業員 PII を保存しない
+データ取扱: pass-through、jpcite は従業員 PII を保存しない
 referral 還元: metered 売上の 10% を月次振込
 法令: 個人情報保護法 (employee:read scope に限定) / 労基法 / 雇用保険法 整合
 ```
@@ -96,7 +96,7 @@ referral 還元: metered 売上の 10% を月次振込
 
 ## 触れない
 
-- 従業員氏名 / マイナンバー / 給与額は **AutonoMath に送信しない** — 雇用区分 / 在籍期間 / 業種のみ
+- 従業員氏名 / マイナンバー / 給与額は **jpcite に送信しない** — 雇用区分 / 在籍期間 / 業種のみ
 - DPA / 個別契約は **締結しない**。SmartHR App Store の標準 ToS で運用 (memory `feedback_zero_touch_solo`)
 - SmartHR の logo は法務 OK 取得後のみ
 - 「SmartHR 認定パートナー」呼称は SmartHR から正式付与あるまで使わない (景表法対応)

@@ -34,13 +34,13 @@
 ### Title (max 300 chars, keep pithy)
 
 ```
-[Show] AutonoMath: MCP server for 11k+ Japanese government subsidy/loan/tax data, ¥3/req metered
+[Show] jpcite: MCP server for 11k+ Japanese government subsidy/loan/tax data, ¥3/req metered
 ```
 
 ### Body
 
 ```
-Solo dev (Tokyo) launching AutonoMath today — a REST + MCP server that
+Solo dev (Tokyo) launching jpcite today — a REST + MCP server that
 exposes Japanese public-program data to AI agents (Claude Desktop, Cursor,
 ChatGPT, Gemini) in a single call.
 
@@ -106,7 +106,7 @@ Launching a metered-only B2B API today (¥3/req, no tiers, no seats) — feedbac
 ### Body
 
 ```
-Solo founder (Tokyo) launching AutonoMath today — a REST + MCP API that
+Solo founder (Tokyo) launching jpcite today — a REST + MCP API that
 exposes Japanese public-program data (subsidies, loans, tax incentives,
 laws, enforcement, invoice registrants) to AI agents.
 

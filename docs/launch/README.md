@@ -68,7 +68,7 @@ Run through these **30 minutes before the HN submission**. If any fail, abort an
   ```bash
   curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
   ```
-- [ ] `https://api.jpcite.com/openapi.json` returns valid OpenAPI v3 spec
+- [ ] `https://api.jpcite.com/v1/openapi.json` returns valid OpenAPI v3 spec
 - [ ] Stripe webhook live + test charge of ¥3 succeeds (use test API key)
 - [ ] Anonymous 3/日 rate limit verified — 51st request returns `429` with reset hint
 - [ ] HTTP fallback working: `uvx autonomath-mcp` from a clean machine boots into HTTP mode and answers a search

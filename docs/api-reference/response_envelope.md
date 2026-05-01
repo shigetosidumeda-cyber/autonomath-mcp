@@ -1,8 +1,8 @@
 # Canonical response envelope (v2)
 
-Status: **opt-in** (default = legacy shape). Plan reference: `docs/_internal/value_maximization_plan_no_llm_api.md` §28.2.
+Status: **opt-in** (default = legacy shape).
 
-The v2 envelope unifies the wire shape that customer agents (Cursor / Cline / Continue / Claude Desktop / Zapier / Make / RPA / SDK consumers) pattern-match on. Pre-v2, AutonoMath emitted ~4 distinct success shapes (`{total,limit,offset,results}`, nested 360 blocks, AutonoMath-specific status/explanation/meta, raw pydantic dumps). v2 collapses every successful response into one shape; every error into one shape.
+The v2 envelope unifies the wire shape that customer agents (Cursor / Cline / Continue / Claude Desktop / Zapier / Make / RPA / SDK consumers) pattern-match on. Pre-v2, jpcite emitted ~4 distinct success shapes (`{total,limit,offset,results}`, nested 360 blocks, jpcite-specific status/explanation/meta, raw pydantic dumps). v2 collapses every successful response into one shape; every error into one shape.
 
 ## When to use v2
 
@@ -21,15 +21,7 @@ Use legacy when:
 
 ## How to opt in
 
-Either path suffices (route consults whichever is present first):
-
-1. Query parameter:
-
-   ```
-   GET /v1/programs/search?q=IT導入&envelope=v2
-   ```
-
-2. Accept header:
+Use the explicit media type:
 
    ```http
    GET /v1/programs/search?q=IT導入
@@ -99,7 +91,7 @@ Status semantics:
   "error": {
     "code": "RATE_LIMITED",
     "user_message": "レート制限を超過しました。Retry-After ヘッダの秒数だけ待ってから再試行してください。",
-    "developer_message": "anonymous IP quota: 3/日 (reset 2026-05-01T00:00+09:00)",
+    "developer_message": "anonymous IP quota: 3/day (reset <next JST 00:00>)",
     "retryable": true,
     "retry_after": 60,
     "documentation": "https://jpcite.com/docs/api-reference/response_envelope#rate_limited"
@@ -144,17 +136,17 @@ Errors set `"isError": true` at the result root and surface `error.user_message`
 
 ## Migrated routes (worked examples)
 
-The following routes accept the `?envelope=v2` opt-in today. Other routes return the legacy shape regardless of the flag — they will be migrated incrementally.
+The following routes accept the `Accept: application/vnd.jpcite.v2+json` opt-in today. Other routes return the legacy shape regardless of the header — they will be migrated incrementally.
 
 | Route | Default shape | v2 shape |
 |---|---|---|
 | `GET /v1/programs/search` | `{total, limit, offset, results}` | `StandardResponse[Program]` |
 | `GET /v1/houjin/{bangou}` | nested 360 block | single-result `StandardResponse[dict]` with `citations[]` |
-| `GET /v1/am/health/deep` | `{status, version, checks, timestamp_utc}` | single-result `StandardResponse[dict]` (status maps `ok→rich`, `degraded/unhealthy→partial`) |
+| `GET /v1/am/health/deep` | `{status, version, checks, timestamp_utc}` | single-result `StandardResponse[dict]` (`ok` returns a sparse single-result envelope; `degraded` / `unhealthy` return `partial`) |
 
 ## Sample v2 response
 
-`GET /v1/programs/search?q=IT導入&tier=S&envelope=v2`:
+`GET /v1/programs/search?q=IT導入&tier=S` with `Accept: application/vnd.jpcite.v2+json`:
 
 ```json
 {
@@ -181,10 +173,10 @@ The following routes accept the `?envelope=v2` opt-in today. Other routes return
 
 ## Migration timeline
 
-- **2026-04-30** (this commit) — v2 ships as opt-in via `?envelope=v2` / `Accept: application/vnd.jpcite.v2+json`. Three routes migrated as worked examples.
+- **2026-04-30** — v2 ships as opt-in via `Accept: application/vnd.jpcite.v2+json`.
 - **2026-05-06** (launch) — v2 documented in API reference, MCP tools, and SDK READMEs as the recommended shape for AI/agent clients.
 - **2026-05-06 → 2026-08-04** (90-day window) — both shapes supported in parallel. Legacy callers see no change. v2 adoption tracked via `X-Envelope-Version` access logs.
-- **2026-08-04** — default flips to v2. Legacy callers must explicitly opt out via `?envelope=v1` for an additional 30-day grace period. After 2026-09-03 the legacy shape is removed.
+- **2026-08-04** — planned default-flip review point. Any legacy opt-out mechanism must be documented before activation; launch-time negotiation is header-only.
 
 ## Stability
 
@@ -194,8 +186,6 @@ The following routes accept the `?envelope=v2` opt-in today. Other routes return
 
 ## See also
 
-- `src/jpintel_mcp/api/_envelope.py` — Pydantic models + helper constructors (`StandardResponse.rich`, `.empty`, `.partial`, `.error`; `StandardError.rate_limited`, `.unauthorized`, `.not_found`, `.bad_request`, `.internal`, …).
-- `src/jpintel_mcp/mcp/_envelope.py` — `wrap_for_mcp(...)` adapter for MCP CallToolResult.
-- `src/jpintel_mcp/api/middleware/envelope_adapter.py` — opt-in detection middleware (parses query+header, stamps `X-Envelope-Version` response header).
-- `tests/test_response_envelope.py` — 8-test suite covering rich/empty/error/MCP/opt-in/legacy paths.
-- `analysis_wave18/response_envelope_audit_2026-04-30.md` — pre-work audit (8 routes × 3 error paths).
+- [api-reference.md](../api-reference.md) — REST API reference
+- [error_handling.md](../error_handling.md) — error codes and retry guidance
+- [sdks/typescript.md](../sdks/typescript.md) — SDK usage

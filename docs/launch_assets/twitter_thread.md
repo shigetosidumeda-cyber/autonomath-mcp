@@ -16,7 +16,7 @@
 ## Tweet 1/8 — launch announcement + hook (271 chars)
 
 ```
-AutonoMath launches today.
+jpcite launches today.
 
 A REST + MCP API exposing Japanese public-program data — subsidies, loans,
 tax incentives, laws, enforcement, invoice registrants — to AI agents in

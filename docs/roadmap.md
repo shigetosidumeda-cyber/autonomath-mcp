@@ -16,7 +16,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 
 過去 30 日に実装・公開したもの。
 
-- **ブランド改名 (jpintel → jpcite / AutonoMath)** — Intel との著名商標衝突
+- **ブランド改名 (jpintel → jpcite / jpcite)** — Intel との著名商標衝突
   リスクを回避するため、user-facing 全面でリネーム。法人は Bookyou株式会社のまま。
 - **¥3/req 完全従量モデル確定** — tier SKU / 階層プラン / 無料枠 SKU 等を完全廃止。
   匿名 3 req/日 per IP のみ無料。pricing UI から階層的な表記を削除。
@@ -28,7 +28,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 - **OpenAPI 3.1 全 endpoint description 完成** — 111 paths すべてに summary +
   2-3 文 description + realistic example request/response。Stainless / Mintlify
   drop-in 可。
-- **AutonoMath self-improvement loop ON** — examiner_feedback 8,189 件を 16,474
+- **jpcite self-improvement loop ON** — examiner_feedback 8,189 件を 16,474
   annotation rows に変換、6 generic validation predicate 登録、provenance 4
   endpoint mount。
 - **NTA 適格事業者 PDL v1.0 license bulk fill** — 87,251 rows に license 付与

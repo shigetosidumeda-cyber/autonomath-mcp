@@ -1,96 +1,80 @@
 ---
-title: "AutonoMath architecture — primary-source SQLite + 全文検索 で構築する 制度 AI database"
-description: "AutonoMath の data layer (jpintel + autonomath unified)、search layer (全文検索インデックス + ベクトル検索)、precompute scaffolding (現在 1/33 populated) と、出典 + 取得時刻つき 注記 の設計。"
+title: "jpcite architecture — 出典付きデータを AI に渡すための設計"
+description: "jpcite が一次資料 URL、取得時刻、構造化フィールドを組み合わせ、AI クライアントに検証可能な日本制度データを渡す仕組み。"
 tags:
   - architecture
-  - sqlite
-  - 全文検索
-  - ベクトル検索
   - mcp
+  - api
+  - provenance
 published: false
 date: 2026-05-06
-author: Bookyou株式会社 (T8010001213708)
+author: Bookyou株式会社
 ---
 
-# AutonoMath architecture — primary-source SQLite + 全文検索
+# jpcite architecture — 出典付きデータを AI に渡すための設計
 
-> 公開日: 2026-05-06 / (T8010001213708)
+jpcite は、LLM に日本の制度を「思い出させる」ためのサービスではありません。補助金・融資・税制・法令・採択事例などの公開資料を先に構造化し、AI クライアントが出典付きで参照できるようにするデータ取得レイヤーです。
 
-AutonoMath は「LLM に投げる前に、出典つきで構造化された答えが SQLite に焼かれている」ことを目指す制度 database です。
-ただし launch 時点で全部が live なわけではありません。 **今動いているもの** と **scaffold だけ立っているもの** を正直に分けて書きます。
+## なぜ必要か
 
----
+日本の制度情報は、各省庁、都道府県、市区町村、公庫、国税庁などに分散しています。しかも PDF、HTML、告示、Q&A、別紙、脚注に分かれています。
 
-## なぜ SQLite に焼くのか
+LLM に毎回 Web 検索させると、次の問題が起きます。
 
-LLM が日本の制度に弱い根本は 3 つ。
+- 古い制度名や終了済みの募集回を拾う
+- 出典 URL が曖昧になる
+- PDF の脚注にある併用制限を見落とす
+- 回答のたびに検索・読解トークンが膨らむ
 
-1. **散らかっている** — 47 都道府県 + 各省庁 + 公庫 + 国税庁、ぜんぶ別ポータル + PDF
-2. **license が曖昧** — 「再配布可？」を一次資料まで遡らないと分からない
-3. **構造化されていない** — 要綱の脚注 (「併用したら失格」等) が機械可読でない
+jpcite は、この「探す・整える・出典を残す」部分を API と MCP ツールとして提供します。
 
-これを LLM プロンプトで毎回解くのは無駄。一次資料を取りに行って canonical 化し、SQLite に焼く工程を AutonoMath 側で持ちます。
+## 3 つのレイヤー
 
----
+### 1. Evidence Retrieval
 
-## 今 live な layer
+制度、法令、税務公開資料、採択事例、行政処分などを横断検索し、可能な限り `source_url` と `source_fetched_at` を付けて返します。
 
-### Data layer (出典つき 注記)
+AI が回答するときは、制度名だけでなく「どの資料を、いつ取得したデータか」まで確認できます。
 
-- `data/jpintel.db` (316 MB) — `programs` 11,684 行 (tier S/A/B/C, excluded=0) / `laws` 9,484 行 (本文 154 件 + メタデータ stubs 9,330 件、 本文ロード継続中) / `court_decisions` 2,065 / `invoice_registrants` 13,801 / `tax_rulesets` 35
-- `autonomath.db` (8.29 GB, root 配置 — `data/autonomath.db` は 0 byte placeholder) — 503,930 件の正規化レコード / 612 万件の structured 属性 / 17.7 万件の関係性 link / 別名・略称 index 335,605 行 / 制度時系列 snapshot 14,596 行
-- 各 row に `source_url` + `source_fetched_at` (programs 11,684 行で 99.9% / 99.86% 充足)
-- 集約サイト (noukaweb / hojyokin-portal / biz.stayway) は `source_url` 禁止 — 一次資料のみ
-- `source_fetched_at` は **「取得時刻」** であり「最終更新」ではない、と UI/docs で正直に表示
+### 2. Structured Fields
 
-### Search layer
+制度名、対象者、地域、補助上限、申請期間、対象経費、関連法令など、AI が比較しやすいフィールドに整理します。
 
-- **全文検索インデックス (3-gram 分割)** で日本語形態素境界をスキップ (`税額控除` を `税|額|控|除` の 3-gram で hit)
-- 副作用: 単一漢字の偽 hit (`ふるさと納税` が `税額控除` query にぶら下がる) が出るので、2 文字以上の漢字熟語は phrase query (`"税額控除"`) を使う運用
-- **ベクトル検索** は schema + 5-tier インデックスが入っており、 wire-up は段階点灯中。launch 時点で全 query が vec に乗るわけではなく、tier 別に gradual 開放
+これにより、単なる全文検索ではなく、次のような比較ができます。
 
-### API + MCP surface
+- 東京都の設備投資補助金を上限額順に並べる
+- 融資制度を担保・保証人条件で比べる
+- 法令、採択事例、行政処分を同じ法人や制度からたどる
+- 複数制度を候補にしたときの併用注意点を確認する
 
-- FastAPI (`/v1/*`, Stripe metered ¥3/req)
-- FastMCP (stdio, 93 tools =  + 30 autonomath at default gates, protocol 2025-06-18)
-- 静的サイト (Cloudflare Pages, `/programs/` 配下に SEO page を生成)
-- `llms-full.txt` を月次再生成し LLM crawler 向けに publish
+### 3. MCP / REST Surface
 
----
+開発者は REST API から使えます。Claude Desktop、Cursor などの AI クライアントでは MCP ツールとして使えます。
 
-## まだ scaffold な layer (precompute)
+AI 側は、jpcite のツールを呼んで資料を取得し、その資料をもとに回答します。jpcite サーバー側では外部 LLM API を呼びません。
 
-ここは正直に書きます。
+## Evidence Packet
 
-`autonomath.db` には **precompute 専用 table が 33 個** 切ってあります (migration で schema は完成済)。設計意図は cron で夜間に重い集計 (top subsidies by industry / combo pairs / seasonal calendar 等) を焼き、API は SELECT のみで返す、というもの。
+Evidence Packet は、LLM に渡しやすい形で、関連資料、出典 URL、取得時刻、注意点をまとめる機能です。
 
-現状:
+目的は「AI に大量の検索を毎回させる」ことではなく、必要な根拠資料を先に整えて渡すことです。トークン削減やコスト削減の効果は、モデル、質問、プロンプト、検索設定によって変わるため、固定の削減率は保証しません。
 
-- **33 table 中 1 table のみ populated** — program_health 集計 table が 66 行
-- 残り 32 table は **0 行**
-- `scripts/cron/precompute_refresh.py` の各 `_refresh_*` 関数は現在 `return 0` の no-op (各 table の population SELECT は per-tool ticket で順次差し込み予定)
+## 併用チェック
 
-つまり **「Pre-computed Reasoning Layer が live で全 query を裏打ちしている」状態ではありません**。launch 時点では FTS + entity-fact EAV + 排他ルール 181 件で全 tool が応答し、precompute は **roadmap-aware な scaffold** として共存しています。順次焼いていきますが、今日「全 33 table が冷えたまま動いている」のはそのとおりです。
+補助金や助成金は、同じ経費を二重に申請できない、片方の制度に前提認定が必要、年度や募集回で扱いが変わる、といった論点があります。
 
----
+jpcite の併用チェックは、複数制度を候補にした時点で「どこを確認すべきか」を返します。`hits` が空でも安全保証ではなく、申請前には一次資料と担当窓口の確認が必要です。
 
-## なぜ SQLite を選んだか
+## 設計上の原則
 
-- **single-file replication** — Fly volumes / S3 / R2 へ 1 file コピー 1 行
-- **read-heavy + small writes** に用途が一致 (月次 ingest + 24h 配信)
-- **全文検索インデックス + ベクトル検索 が bundled** で別 search engine 不要
-- **¥0 fixed cost** — 100% organic + solo + zero-touch を可能にする条件
-
----
+- 一次資料 URL を優先する
+- 取得時刻と制度の最終更新日を混同しない
+- LLM に答えを作らせる前に、根拠資料を渡す
+- 税務助言、法律相談、申請代行のように見える表現を避ける
+- 料金は `¥3/req` の従量課金に統一する
 
 ## 関連ドキュメント
 
 - [API リファレンス](https://jpcite.com/docs/api-reference/)
 - [MCP ツール一覧](https://jpcite.com/docs/mcp-tools/)
-- [Per-Tool 精度表](https://jpcite.com/docs/per_tool_precision/)
-
-質問・要望は [info@bookyou.net](mailto:info@bookyou.net) または GitHub issues へ。
-
----
-
-© 2026 Bookyou株式会社 (T8010001213708) · info@bookyou.net · AutonoMath
+- [正直な能力と限界](https://jpcite.com/docs/honest_capabilities/)

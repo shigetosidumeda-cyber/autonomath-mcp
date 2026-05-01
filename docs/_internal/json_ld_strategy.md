@@ -58,17 +58,17 @@ AutonoMath の内部 `program_kind` は大半が `subsidy`/`grant`、次に `loa
 ## 3. ファイル構成 (File layout)
 
 ```
-site/programs/{slug}.html              # 10,951 per-program SEO page (embedded <script type="application/ld+json">@graph)
-site/structured/{unified_id}.jsonld    # 10,951 standalone validator-friendly JSON-LD (single @type)
-site/sitemap-programs.xml              # 10,951 HTML URL の sitemap
-site/sitemap-structured.xml            # 10,951 .jsonld URL の sitemap
+site/programs/{slug}.html              # 1,413 high-signal per-program SEO pages (embedded <script type="application/ld+json">@graph)
+site/structured/{unified_id}.jsonld    # 1,413 standalone validator-friendly JSON-LD files (single @type)
+site/sitemap-programs.xml              # 1,413 HTML URL の sitemap
+site/sitemap-structured.xml            # 1,413 .jsonld URL の sitemap
 site/sitemap.xml                       # 30 hand-maintained static URL (home, /docs, /pricing, ...)
 site/sitemap-index.xml                 # 上記 3 sitemap を束ねる master index (GSC 提出先)
 site/_headers                          # Cloudflare Pages: .jsonld → application/ld+json
 ```
 
-- per-program HTML: 10,951 本 / 195 MB (one-page average ~18 KB)
-- per-program standalone JSON-LD: 10,951 本 / 43 MB (avg ~4 KB)
+- per-program HTML: 1,413 本
+- per-program standalone JSON-LD: 1,413 本
 - 合計 file 数 ~22k は Cloudflare Pages の 25k file 上限内で余裕
 - URL: `https://jpcite.com/programs/{slug}` (HTML), `https://jpcite.com/structured/{unified_id}.jsonld` (JSON-LD)
 
@@ -311,10 +311,10 @@ def main(since: str | None = None):
 
 ## 6. ホスティング + 配信 (Hosting + distribution)
 
-- **ホスト先**: `fallback_plan.md` の Cloudflare Pages `AutonoMath-fallback` にそのまま相乗り (静的のみ)
-- Fly.io は使わない (static の Fly は overkill、Pages の方が AI クローラにも近い)
+- **ホスト先**: Cloudflare Pages project `autonomath` (`jpcite.com` / `www.jpcite.com`)
+- API は Fly.io `autonomath-api`、静的サイトは Cloudflare Pages
 - **Content-Type**: `.jsonld` は `application/ld+json` (Pages の `_headers` で明示)
-- **sitemap**: 本体 `site/sitemap.xml` から `site/sitemap-structured.xml` を `<sitemapindex>` で参照
+- **sitemap**: `site/sitemap-index.xml` から `site/sitemap-structured.xml` を `<sitemapindex>` で参照
 - **robots.txt**: `Allow: /structured/` を明記 (デフォルトで allow だが、AI クローラ向けに explicit)
 - Google Search Console で sitemap 提出 (ランキング狙いではなく **crawler discovery 目的**)
 - Bing Webmaster にも submit (Perplexity は Bing index を噛んでいる説あり)

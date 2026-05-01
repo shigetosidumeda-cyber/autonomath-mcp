@@ -1,21 +1,19 @@
-/* AutonoMath feedback widget.
+/* jpcite feedback widget.
  *
- * Self-contained vanilla JS. Exposes window.AutonoMathFeedback.mount().
+ * Self-contained vanilla JS. Exposes window.jpciteFeedback.mount().
  *
- * Backend schema (src/jpintel_mcp/api/feedback.py) accepts ONLY:
- *   message (required, 1..4000), rating (1..5), endpoint (<=256), request_id (<=128).
- * The UI also collects category + email + page_url locally; we fold those into
- * the `message` body (as prefix lines) and pass `page_url` as `endpoint` so they
- * survive to the DB without changing the API contract.
+ * Sends message/rating/context to the jpcite feedback API.
+ * Extra UI fields are folded into the message body so the endpoint can stay
+ * small and stable.
  *
  * Rate limit: 10/day per IP hash (anonymous) or key_hash (authed).
  */
 (function () {
   "use strict";
-  if (window.AutonoMathFeedback) return;
+  if (window.jpciteFeedback) return;
 
   var API_URL =
-    (window.AUTONOMATH_API_BASE || "https://api.jpcite.com").replace(/\/+$/, "") +
+    (window.JPCITE_API_BASE || "https://api.jpcite.com").replace(/\/+$/, "") +
     "/v1/feedback";
 
   var STYLE_ID = "am-fb-style";
@@ -128,7 +126,7 @@
       autocomplete: "email"
     });
     try {
-      var saved = window.localStorage.getItem("AutonoMathEmail");
+      var saved = window.localStorage.getItem("jpciteEmail");
       if (saved) email.value = saved;
     } catch (_) {}
 
@@ -240,7 +238,7 @@
       // Persist email locally for next time.
       try {
         if (email.value) {
-          window.localStorage.setItem("AutonoMathEmail", email.value.trim());
+          window.localStorage.setItem("jpciteEmail", email.value.trim());
         }
       } catch (_) {}
 
@@ -340,5 +338,5 @@
     }
   }
 
-  window.AutonoMathFeedback = { mount: mount, open: function () { open({}); } };
+  window.jpciteFeedback = { mount: mount, open: function () { open({}); } };
 })();

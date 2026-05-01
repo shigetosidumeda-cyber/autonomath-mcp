@@ -303,7 +303,7 @@ reconcile, KPI digest, DR drill 等)。**全 cron は heartbeat 行を
 |------------------------------|-------------------|--------------------|-----------|------|
 | nightly-backup               | `17 18 * * *`     | 03:17 JST 毎日     | `scripts/backup.py`                    | jpintel.db 日次 backup → R2 |
 | analytics-cron               | `0 18 * * *`      | 03:00 JST 毎日     | `cf_analytics_export.py` + `pypi_downloads.py` + `npm_downloads.py` | DL stats |
-| nta-bulk-monthly             | `0 18 1 * *`      | 03:00 JST 月初     | `ingest_nta_invoice_bulk.py`           | 適格事業者 4M-row bulk |
+| nta-bulk-monthly             | `0 18 1 * *`      | 03:00 JST 2日      | `ingest_nta_invoice_bulk.py`           | 適格事業者 4M-row bulk |
 | health-drill-monthly         | `0 18 1 * *`      | 03:00 JST 月初     | `health_drill.py`                      | DR scenario 1-3 dry-run |
 | index-now-cron               | `30 18 * * *`     | 03:30 JST 毎日     | `index_now_ping.py`                    | Bing/Yandex/Naver fan-out |
 | refresh-sources              | `17 18 * * *`     | 03:17 JST 毎日     | `scripts/refresh_sources.py`           | URL 整合性 |

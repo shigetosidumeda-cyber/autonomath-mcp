@@ -4,7 +4,7 @@
 **Title (73 chars)**: `Show HN: jpcite – Japanese tax & subsidy data API for LLM agents (¥3/req)`
 
 ASCII fallback if HN strips the kanji:
-`Show HN: AutonoMath - Japanese tax/subsidy data API for LLM agents (3 yen/req)`
+`Show HN: jpcite - Japanese tax/subsidy data API for LLM agents (3 yen/req)`
 
 ---
 
@@ -26,7 +26,7 @@ Try it (no key needed for the first 3/day):
 curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```
 
-Returns JSON with primary-source URLs. OpenAPI: `https://api.jpcite.com/openapi.json`.
+Returns JSON with primary-source URLs. OpenAPI: `https://api.jpcite.com/v1/openapi.json`.
 
 Repo: https://github.com/shigetosidumeda-cyber/autonomath-mcp
 PyPI: https://pypi.org/project/autonomath-mcp/

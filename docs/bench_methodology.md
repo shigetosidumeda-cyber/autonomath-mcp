@@ -1,8 +1,8 @@
 # Bench methodology: three-arm token-cost benchmark
 
-Status: planning + tooling. The harness is shipped under
-`tools/offline/bench_harness.py` (operator-only). **No LLM call runs from
-this repository.** The operator (or a customer / analyst) executes the
+Status: measurement protocol. The harness is shipped under
+`tools/offline/bench_harness.py`. **No LLM call runs from
+the production service.** The operator (or a customer / analyst) executes the
 LLM calls themselves and feeds results back to the harness.
 
 This document specifies how to run the bench. It does NOT publish
@@ -12,19 +12,26 @@ public format.
 ## 1. Why this bench exists
 
 This is an operator-facing measurement protocol for **Evidence
-Pre-fetch** and **Precomputed Intelligence**. It is not a headline claim
-that jpcite always saves tokens or always reduces cost. The benchmark
-measures whether, for a fixed model, prompt scaffold, query set, and run
-date, supplying jpcite evidence before the LLM call changes token use,
-web-search use, answer cost, citation behavior, and unsupported-claim
-rate relative to a direct web-search baseline.
+Pre-fetch** and **Precomputed Intelligence**. It is a workload-dependent
+measurement, not a headline claim that supplying jpcite evidence
+universally saves tokens or universally reduces cost. The observed
+direction and magnitude of any token / cost / citation / hallucination
+delta depend on the model, prompt scaffold, query distribution,
+provider prompt-cache state, provider tool pricing, run date, and
+customer environment. The benchmark measures whether, for a fixed
+model, prompt scaffold, query set, and run date, supplying jpcite
+evidence before the LLM call changes token use, web-search use, answer
+cost, citation behavior, and unsupported-claim rate relative to a
+direct web-search baseline.
 
-Per `docs/_internal/llm_resilient_business_plan_2026-04-30.md` Section
-9.1 ("Bench方法"), public claims about token / cost reduction must be
+Public claims about token / cost reduction must be
 backed by a paired A/B benchmark on the same questions, same model,
-same date. We must NEVER state a fixed reduction percentage (e.g.
-"AIコスト90%削減") — only "当社指定ベンチでは中央値X%低下" with the disclosed
-caveats below.
+same date. We must NEVER state a fixed reduction percentage as a
+generalized headline (e.g. a flat "AIコスト◯◯%削減" claim) — actual
+deltas vary materially by workload, prompt scaffold, model selection,
+provider prompt-cache hit rate, and provider web-search / tool pricing.
+Only "当社指定ベンチでは中央値X%低下" — scoped to the benchmark date,
+model, and query set — with the disclosed caveats below is acceptable.
 
 The minimum measurement set is: `input_tokens`, `output_tokens`,
 `reasoning_tokens`, `web_searches`, `jpcite_requests`,
@@ -40,7 +47,7 @@ scaffold. Only the input changes.
 | arm | input to LLM | tools enabled | what it measures |
 |---|---|---|---|
 | `direct_web` | user query alone | provider web search ON | baseline LLM self-research behavior: tokens, cost, web-search count, citations, unsupported claims |
-| `jpcite_packet` | user query + Evidence Packet (prefetched from `GET /v1/evidence/packets/query?q=...`) | provider web search OFF | Evidence Pre-fetch: whether supplied source packets reduce search/tool dependence and change token/cost/quality metrics |
+| `jpcite_packet` | user query + Evidence Packet (prefetched from `POST /v1/evidence/packets/query`) | provider web search OFF | Evidence Pre-fetch: whether supplied source packets reduce search/tool dependence and change token/cost/quality metrics |
 | `jpcite_precomputed_intelligence` | user query + precomputed jpcite intelligence bundle | provider web search OFF | Precomputed Intelligence: whether a prepared bundle changes token/cost/quality metrics without provider web search |
 
 The arms are paired per query. Default public runs should include all
@@ -67,7 +74,7 @@ deltas are computed over the active arms present in the CSV.
 ### 2.2 Arm: `jpcite_packet`
 
 1. Read the same query string.
-2. Prefetch evidence: `GET https://api.jpcite.com/v1/evidence/packets/query?q=<urlencoded>`.
+2. Prefetch evidence: `POST https://api.jpcite.com/v1/evidence/packets/query` with the query in the JSON body.
    - Record `jpcite_requests = 1` (each customer-billable jpcite call
      counts; if the harness needs to follow up with `/v1/programs/{id}`
      etc. for richer context, increment per call).
@@ -112,6 +119,46 @@ deltas are computed over the active arms present in the CSV.
    - `tools = []` (web search disabled).
 4. Record the same metrics. `web_searches` is expected to be `0`.
 
+## 2.4 Offline prefetch probe before LLM calls
+
+Before running any operator LLM calls, run the offline prefetch probe
+against the generated jpcite prefetch instructions. The probe is
+operator-only instrumentation: it fetches the jpcite packet/bundle
+URLs, records lookup coverage and approximate packet size, and gives
+the operator concrete values to copy into `bench_results.csv`. It does
+not call an LLM and does not establish answer quality or token/cost
+savings by itself.
+
+Typical sequence:
+
+```bash
+# First emit the bench instruction set.
+python tools/offline/bench_harness.py \
+    --queries-csv tools/offline/bench_queries_2026_04_30.csv \
+    --mode emit \
+    --model <your-model> \
+    > bench_instructions.jsonl
+
+# Then probe jpcite prefetch URLs before any LLM provider calls.
+python tools/offline/bench_prefetch_probe.py \
+    --instructions-jsonl bench_instructions.jsonl \
+    --output-csv bench_prefetch_probe.csv
+```
+
+Use the probe output to fill, for each applicable jpcite row:
+
+- `records_returned`: number of records returned for that query.
+- `precomputed_record_count`: number of records available in the
+  precomputed index/snapshot searched for that query, when exposed by
+  the prefetch response.
+- `packet_tokens_estimate`: estimated token count of the packet/bundle
+  that will be supplied to the LLM.
+
+Leave a field empty when the prefetch response or probe cannot measure
+it. Do not substitute an assumed value. If the operator changes the
+packet/bundle between probing and the LLM call, rerun the probe or note
+the mismatch in `notes`.
+
 ## 3. Per-query metrics logged
 
 Each row of `bench_results.csv` MUST carry these columns. Operators may
@@ -136,6 +183,7 @@ add extras but cannot drop these.
 | `packet_id` | str | jpcite arms only | Evidence Packet id or precomputed bundle id; empty for direct_web |
 | `records_returned` | int | precomputed arm only | number of records returned by natural-language lookup; empty for other arms |
 | `precomputed_record_count` | int | precomputed arm only | total records in the searched precomputed index/snapshot; empty for other arms |
+| `packet_tokens_estimate` | int | jpcite arms only | approximate token count of the prefetched packet/bundle supplied to the LLM; empty when not measured |
 | `notes` | str | operator | freeform |
 
 Token-cost computation (¥):
@@ -182,6 +230,8 @@ natural-language query hit-rate:
   natural-language lookup.
 - `precomputed_record_count`: per-query or run-level count of records in
   the precomputed index/snapshot searched.
+- `packet_tokens_estimate`: per-query estimate of the precomputed
+  bundle tokens supplied to the LLM.
 - `zero_result_rate`: share of precomputed-arm queries where
   `records_returned = 0`.
 
@@ -282,17 +332,24 @@ python tools/offline/bench_harness.py \
 #     --arms direct_web,jpcite_packet \
 #     > bench_instructions.jsonl
 
-# 2. Operator runs each instruction line manually against their LLM
+# 2. Probe jpcite prefetch URLs before any operator LLM calls.
+#    Copy measured records_returned, precomputed_record_count, and
+#    packet_tokens_estimate into the matching bench_results.csv rows.
+python tools/offline/bench_prefetch_probe.py \
+    --instructions-jsonl bench_instructions.jsonl \
+    --output-csv bench_prefetch_probe.csv
+
+# 3. Operator runs each instruction line manually against their LLM
 #    provider and writes results to bench_results.csv with the columns
 #    listed in §3 above. The harness does NOT call the LLM.
 
-# 3. Aggregate
+# 4. Aggregate
 python tools/offline/bench_harness.py \
     --results-csv bench_results.csv \
     --mode aggregate \
     > bench_summary.json
 
-# 4. Operator pastes medians into docs/bench_results_template.md and
+# 5. Operator pastes medians into docs/bench_results_template.md and
 #    publishes under docs/bench_results_YYYY-MM-DD.md.
 ```
 
@@ -312,11 +369,5 @@ python tools/offline/bench_harness.py \
 
 ## 10. References
 
-- `docs/_internal/llm_resilient_business_plan_2026-04-30.md` §9.1
-  (bench specification).
-- `docs/_internal/llm_resilient_business_plan_2026-04-30.md` §6
-  (Evidence Packet shape).
-- `tools/offline/README.md` (operator-only boundary rules).
+- `tools/offline/README.md` (offline harness boundary rules).
 - `tests/test_no_llm_in_production.py` (CI invariant).
-- `feedback_autonomath_no_api_use` (operator memory: ¥3/req structure
-  cannot absorb LLM-API cost on hot path).

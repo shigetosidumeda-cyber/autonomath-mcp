@@ -44,7 +44,7 @@ where jpcite is published. Detailed runbook for the MCP-server-specific registri
 - **URL**: <https://registry.modelcontextprotocol.io/>
 - **Source repo**: <https://github.com/modelcontextprotocol/registry>
 - **Manifest**: `server.json` (root), schema `https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json`
-- **Auth**: `MCP_REGISTRY_TOKEN` (GitHub OAuth or PAT, `repo:read` on `AutonoMath/autonomath-mcp`)
+- **Auth**: `MCP_REGISTRY_TOKEN` (GitHub OAuth or PAT, `repo:read` on `jpcite/autonomath-mcp`)
 - **Publish command**:
   ```bash
   mcp publish server.json
@@ -78,7 +78,7 @@ where jpcite is published. Detailed runbook for the MCP-server-specific registri
 - **Listing path**: fully auto-indexed from public GitHub repo + README + MCP manifest
 - **Auth**: none (no submission form)
 - **Smoke validation**: confirm public repo + README renders, listing appears within 24 h crawl
-- **Badge**: `https://glama.ai/mcp/servers/AutonoMath/autonomath-mcp/badges/score.svg`
+- **Badge**: `https://glama.ai/mcp/servers/jpcite/autonomath-mcp/badges/score.svg`
 
 ## 7. Cline MCP Marketplace
 
@@ -149,7 +149,7 @@ If any of the above five (Continue.dev, Goose, Zed, Cody) ship a marketplace pos
 |---|---|---|
 | PyPI (#1) | `PYPI_TOKEN` | <https://pypi.org/manage/account/token/> (scope: `autonomath-mcp`) |
 | npm (#2) | `NPM_TOKEN` | <https://www.npmjs.com/settings/~/tokens> (Automation, publish scope) |
-| MCP Registry (#3) | `MCP_REGISTRY_TOKEN` | GitHub PAT, `repo:read` on `AutonoMath/autonomath-mcp` |
+| MCP Registry (#3) | `MCP_REGISTRY_TOKEN` | GitHub PAT, `repo:read` on `jpcite/autonomath-mcp` |
 | DXT (#4) | none | self-distributed `.mcpb` at <https://jpcite.com/downloads/autonomath-mcp.mcpb> |
 | Smithery (#5) | none | dashboard claim only |
 | Glama (#6) | none | auto-indexed |

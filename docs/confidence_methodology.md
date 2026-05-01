@@ -1,88 +1,42 @@
-# Confidence (信頼度ダッシュボード)
+# Confidence Methodology
 
-`/v1/stats/confidence` はツール単位の **発見確率** (見つけられる確率) と **再利用確率** (実 action に変わる確率) を統計的に推定し、95% 区間と一緒に公開する。
+jpcite の Confidence は、「検索して見つかるか」「実務で再利用されるか」を、利用状況の集計から推定するための指標です。
 
-## 1. 数値目標
+これは品質をよく見せるための自己採点ではなく、ユーザーがどの領域で安心して使えるか、どの領域はまだ慎重に見るべきかを示すための公開指標です。
 
-| 指標 | T+90d | Y1 |
-| --- | --- | --- |
-| Discovery | 90% | 95% |
-| Use | 80% | 92% |
+## 見ている指標
 
-## 2. 定義
+| 指標 | 意味 |
+|---|---|
+| Discovery | 検索・取得したときに、該当する結果を返せた割合 |
+| Use | 一度使われた機能が、一定期間内に再利用された割合 |
+| Coverage note | その領域で、どのデータが十分で、どこに限界があるか |
 
-### Discovery
+## 表示方法
 
-```
-Discovery_T = P(found_result | invoked)
-```
+各ツールまたはデータ領域ごとに、次の情報を表示します。
 
-- **trial:** tool への 1 回の呼び出し
-- **success:** `result_count > 0` を返したもの
-- **入力:** `query_log_v2.tool` / `result_bucket` / `result_count`
+- 推定値
+- 95% 区間
+- サンプル数
+- データの注意点
 
-### Use
+サンプル数が少ない領域では、推定値が高くても信頼区間を広く表示します。少数の成功例だけで「高精度」と見せないためです。
 
-```
-Use_T = P(returned_within_7d | first_invocation)
-```
+## 集計の考え方
 
-- **trial:** 各 (api_key_hash, tool) の **最初** のイベント
-- **success:** 同じ (api_key_hash, tool) で 7 日以内に再呼び出し
-- **入力:** `usage_events.key_hash` / `endpoint` / `ts`
-- 匿名 (`key_hash IS NULL`) は識別不能のため Use の母集団から除外
+Confidence は、利用者単位の詳細ではなく、ツールや用途ごとに集計します。個別の顧客、API key、検索文そのものを公開することはありません。
 
-7 日 window は「retention の確認」を「one-shot trial」と切り分けるための閾値。
+新しいツールは、利用データが少ないため最初は区間が広くなります。一定数の利用が蓄積されるまでは、数値を過大に解釈しないでください。
 
-## 3. Bayesian モデル
+## プライバシー
 
-各 tool の確率を独立 Bernoulli プロセスとしてモデル化。
+- 個別顧客が識別できる粒度では公開しません。
+- 生の検索文や個人情報を公開ダッシュボードに出しません。
+- 集計値は、用途・ツール・大きな利用者カテゴリに丸めます。
 
-- **事前分布:** `Beta(1, 1)` (= Uniform[0, 1])
-- **事後分布:** `Beta(α + hits, β + trials − hits)`
-- **95% CI:** `scipy.stats.beta.interval(0.95, α, β)`
+## 限界
 
-### サンプル
+Confidence は、jpcite が返した結果の利用実績を表す指標です。行政判断、税務判断、法的判断の正しさを保証するものではありません。
 
-`Beta(1, 1)` + 80 hit / 100 trial:
-
-```
-posterior     = Beta(81, 21)
-posterior mean = 0.7941
-95% CI        ≈ [0.711, 0.866]
-```
-
-事後平均 79.4% は Use の T+90d 目標 (80%) をわずかに下回る。「目標 80% を下回ったかどうか」は trial を増やさないと統計的に判断できない (= **targets are earned by data, not preloaded**)。
-
-### Cohort 集計
-
-- 公開 audience cohort: `tax_advisor` / `admin_scrivener` / `smb` / `vc` / `developer` / `other` (= 5 audience に分類できなかった残余)
-- それより細かい (個別顧客に近い) granularity は **公開しない**
-
-### 全体への重み付け
-
-```
-discovery_weighted = Σ (discovery_T × trials_T) / Σ trials_T
-```
-
-呼び出し数の少ない tool が 100% でヘッドラインを引き上げる artifact を回避。
-
-## 4. PII / プライバシー
-
-- `query_log_v2` は INV-21 で PII redaction 済み (raw 法人番号 / email / 電話番号は格納されない)
-- `usage_events.key_hash` は SHA-256 + pepper の不可逆ハッシュのみ
-- `/v1/stats/confidence` の出力はツール単位の集約値とコホート bucket のみで、顧客ごとの内訳は返さない
-
-## 5. 更新サイクル
-
-| 場所 | 更新タイミング |
-| --- | --- |
-| `/v1/stats/confidence` (live) | リクエスト時に live SQL + 5 分 cache |
-| `analytics/confidence_<DATE>.json` (日次スナップショット) | 日次 cron |
-| `site/confidence.html` (公開ダッシュボード) | live + 履歴 |
-
-## 6. 既知の制約
-
-- **新 tool の cold-start:** trial 数小だと CI 幅が広く、ヘッドラインを引き上げる統計的判断が難しい。trial = 30 を超えるまでは目視評価
-- **Use の 7 日 window は固定:** 業界によっては 14 日が妥当な可能性、再評価ターゲット = T+180d
-- **Discovery と Use は独立計算:** 結合確率 P(use | discovery) は推定せず周辺確率のみ。Y1 で結合 model に拡張予定
+実申請・税務処理・法務判断の前には、一次資料、担当窓口、専門家による確認が必要です。

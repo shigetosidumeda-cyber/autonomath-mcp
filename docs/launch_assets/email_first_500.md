@@ -18,7 +18,7 @@
 ## Subject
 
 ```
-AutonoMath launch: 日本制度を 1 query で AI に聞く
+jpcite launch: 日本制度を 1 query で AI に聞く
 ```
 
 (全角 24 文字、Gmail / Outlook の preview pane で truncate されない)
@@ -28,7 +28,7 @@ AutonoMath launch: 日本制度を 1 query で AI に聞く
 ## Preheader (preview text)
 
 ```
-本日 launch。11,684 検索可制度 (full table 14,472 incl. 公開保留分) + 93 MCP ツール at default gates + ¥3/req 完全従量。匿名 3 req/日 per IP は無料です。
+本日 launch。日本の公的制度データを REST + MCP で呼び出せます。¥3/req 完全従量、匿名 3 req/日 per IP は無料です。
 ```
 
 ---
@@ -39,7 +39,7 @@ AutonoMath launch: 日本制度を 1 query で AI に聞く
 {{ subscriber_name | default("購読者各位") }} 様
 
 Bookyou株式会社の梅田です。
-本日 2026-05-06、AutonoMath を launch しました。
+本日 2026-05-06、jpcite を launch しました。
 
 日本の公的制度データ — 補助金・融資・税制優遇・認定制度・法令・行政処分・
 適格事業者 — を AI エージェントが 1 query で呼び出せる REST + MCP API です。
@@ -51,7 +51,7 @@ Bookyou株式会社の梅田です。
 - 出典 URL + 取得時刻、99%+ 行に付与
 
 ▼ どう使うか (5 audience 別)
-- AI agent 開発者: Manifest 1 行で 93 MCP ツール at default gates (uvx autonomath-mcp)
+- AI agent 開発者: Manifest 1 行で MCP ツールを呼び出し (uvx autonomath-mcp)
 - 税理士 / 認定支援機関: Claude で措置法を条文単位 walkthrough
 - 行政書士: 補助金 + 融資 + 許認可を 1 call で一括
 - SMB 経営者 / 経理: ChatGPT で「うちで使える制度?」匿名 3 req/日 無料
@@ -59,7 +59,7 @@ Bookyou株式会社の梅田です。
 
 ▼ 価格
 ¥3/req 税別 (税込 ¥3.30) 完全従量。tier / seat / 年間最低額なし。
-匿名 3 req/日 per IP は無料 (JST 月初リセット、API key 不要)。
+匿名 3 req/日 per IP は無料 (JST 翌日 00:00 リセット、API key 不要)。
 
 ▼ 始め方
 1. ドキュメント: https://jpcite.com/docs/getting-started/
@@ -73,7 +73,7 @@ Bookyou株式会社の梅田です。
 宜しくお願い致します。
 
 ---
-梅田茂利 / Bookyou株式会社 (T8010001213708)
+梅田茂利 / Bookyou株式会社
 東京都文京区小日向2-22-1 / info@bookyou.net
 
 配信停止: {{ unsubscribe_url }}

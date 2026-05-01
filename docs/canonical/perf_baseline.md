@@ -1,4 +1,4 @@
-# AutonoMath REST API — Performance Baseline
+# jpcite REST API — Performance Baseline
 
 Date: 2026-04-23
 Hardware: Apple Silicon (Darwin arm64), macOS dev box

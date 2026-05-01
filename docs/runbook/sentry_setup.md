@@ -106,7 +106,7 @@ below. Estimated 5-7 min per rule once you have the rhythm.
 ## Step 3 — Dashboard (15-20 min, 12 widgets)
 
 1. Sentry left nav → **Dashboards** → **+ Create Dashboard**.
-2. Title: `AutonoMath — Solo Ops Dashboard`.
+2. Title: `jpcite — Solo Ops Dashboard`.
 3. For each widget in `sentry_dashboard.json::dashboard.widgets`:
    - Click "+ Add Widget".
    - Choose visualization type matching the YAML's `type` field:

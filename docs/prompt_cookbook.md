@@ -16,84 +16,83 @@
 
 ---
 
-## Bucket: Agriculture
+## 用途: 地域・設備・事業分野別の制度調査
 
-### Recipe 1 — Aomori × Apple × New Farmer
+### Recipe 1 — Tokyo × Manufacturing × Energy Saving
 
-- **Persona:** 新規就農者 (青森県でりんご)
+- **Persona:** 中小企業経営者 (東京都の製造業)
 - **Hook:** 国・県・市町村の制度を一括棚卸し
 
 **Prompt:**
 
-> 青森県でりんご農家として新規就農する予定です。使える補助金・融資・支援金を国・青森県・市町村のレベルで網羅的に洗い出してください。認定新規就農者の取得を前提にしていいです。金額上限と申請窓口の締切がわかるものを優先し、併用不可の組み合わせがあれば注意点も添えてください。
+> 東京都で金属加工業を営んでいます。省エネ設備更新と生産性向上に使える補助金・融資・税制を、国・東京都・区市町村のレベルで洗い出してください。金額上限、対象経費、申請締切、賃上げ要件がわかるものを優先し、同じ設備費で併用できない組み合わせがあれば注意点も添えてください。
 
 **Tool sequence:**
 
 ```yaml
 - tool: search_programs
   args:
-    q: りんご 新規就農
-    prefecture: 青森県
+    q: 省エネ 設備更新 製造業
+    prefecture: 東京都
     tier: [S, A, B]
     fields: default
     limit: 20
 - tool: search_programs  # 国レベルも横断
   args:
-    q: 新規就農 認定
+    q: 生産性向上 設備投資
     authority_level: national
     tier: [S, A, B]
     limit: 10
 - tool: check_exclusions
   args:
     program_ids:
-      - UNI-71f6029070
-      - keiei-hatten-shoki
-      - seinen-shuno-shikin
+      - "<top hit from search>"
+      - "<second candidate from search>"
 - tool: get_program
   args:
     unified_id: "<top hit from search>"
     fields: full
 ```
 
-**Notes:** 青森県は 49 programs (うち tier S/A/B は一部)。りんご + 新規就農に直接マッチする制度 7 件確認済み。市町村レベルはつがる市・弘前市が厚い。
+**Notes:** 東京都・区市町村・国の設備投資支援を横断。上限額、対象経費、賃上げ要件、同一経費の併用不可を source URL で確認する。
 
 ---
 
-### Recipe 2 — Niigata × Rice × Corporate
+### Recipe 2 — Osaka × Restaurant × Renovation
 
-- **Persona:** 農業法人経営者 / 認定農業者 (新潟県で米作)
-- **Hook:** 経営規模拡大・機械更新の支援を網羅
+- **Persona:** 飲食店オーナー (大阪府で店舗改装)
+- **Hook:** 改装・省エネ・IT 導入の支援を網羅
 
 **Prompt:**
 
-> 新潟県で米作の農業法人 (認定農業者、農地所有適格法人) を運営しています。経営規模拡大・機械更新・担い手育成に使える補助金と、スーパー L 資金などの融資を網羅的に教えてください。国事業と新潟県独自事業を分けて、上限額の大きい順に並べてほしいです。
+> 大阪府で飲食店を運営しています。店舗改装、省エネ設備、予約・会計システム導入に使える補助金と融資を網羅的に教えてください。国事業、大阪府、市区町村の制度を分けて、上限額の大きい順に並べてください。
 
 **Tool sequence:**
 
 ```yaml
 - tool: search_programs
   args:
-    q: 認定農業者 経営規模
-    prefecture: 新潟県
+    q: 飲食店 改装 省エネ
+    prefecture: 大阪府
     tier: [S, A, B]
     limit: 20
 - tool: search_programs
   args:
-    q: スーパーL 担い手
+    q: IT導入 販路開拓
     authority_level: national
     limit: 10
 - tool: search_programs
   args:
-    q: 農地所有適格法人
-    prefecture: 新潟県
+    q: 創業 融資 飲食店
+    prefecture: 大阪府
     limit: 10
 - tool: get_program
   args:
-    unified_id: super-L-shikin
+    unified_id: "<top hit from search>"
     fields: full
 ```
 
-**Notes:** 新潟県 106 programs。農地所有適格法人育成促進 / 多様な米づくり推進 / 経営体発展総合支援 が主。スーパー L は認定農業者が前提。
+**Notes:** 店舗改装は対象経費と施工前申請の要件が分かれやすい。IT 導入・販路開拓・省エネ設備の重複申請は source URL と排他ルールで確認する。
 
 ---
 
@@ -136,7 +135,7 @@
 
 ---
 
-## Bucket: SMB / Non-Agri
+## 用途: 中小企業・地域ビジネス
 
 ### Recipe 4 — Tokyo × Manufacturing × CapEx
 
@@ -211,7 +210,7 @@
       - jizokuka-hojokin
 ```
 
-**Notes:** 大阪府 44 programs (うち非農業 IT/DX は大阪市デジタル化推進支援など少数)。国レベルの IT 導入補助金 + 大阪市上乗せで組む構成が実用的。
+**Notes:** 大阪府 44 programs。IT/DX では大阪市デジタル化推進支援なども候補になる。国レベルの IT 導入補助金 + 大阪市上乗せで組む構成が実用的。
 
 ---
 
@@ -252,7 +251,7 @@
 
 ---
 
-## Bucket: Accounting / Tax
+## 用途: Accounting / Tax
 
 ### Recipe 7 — SMB Enhancement Act × Tax Preferences
 
@@ -336,7 +335,7 @@
 
 ---
 
-## Bucket: Exclusions
+## 用途: 併用チェック
 
 ### Recipe 9 — 5-Way Compatibility Check
 
@@ -411,12 +410,12 @@
 import os, requests
 
 BASE = "https://api.jpcite.com"
-HEAD = {"X-API-Key": os.environ.get('AUTONOMATH_API_KEY','')}"}
+HEAD = {"X-API-Key": os.environ.get("JPCITE_API_KEY", "")}
 
 # Recipe 1 step 1
 r = requests.get(
     f"{BASE}/v1/programs/search",
-    params={"q": "りんご 新規就農", "prefecture": "青森県",
+    params={"q": "省エネ 設備更新 製造業", "prefecture": "東京都",
             "tier": ["S", "A", "B"], "limit": 20},
     headers=HEAD, timeout=10,
 )
