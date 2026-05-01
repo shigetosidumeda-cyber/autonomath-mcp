@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>記者・調査会社向け jpcite — 取材先の法人番号を即時に裏取り</title>
+<meta name="description" content="フリージャーナリスト・Web メディア・調査会社・IR 系向け jpcite。22,258 件の行政処分 + 2,286 採択履歴 + 167K 法人 + 9,484 法令を法人番号 1 click で横断。bookmarklet (drag drop) と Chrome 拡張で取材動線に直接組込み。匿名 3 req/日 無料。">
+
+<meta property="og:title" content="記者・調査会社向け jpcite — 取材先の法人番号を即時に裏取り">
+<meta property="og:description" content="行政処分 22,258 + 採択 2,286 + 法人 167K + 法令 9,484 を 1 click で横断。bookmarklet + Chrome 拡張で取材動線に組込み。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/audiences/journalist.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="記者・調査会社向け jpcite">
+<meta name="twitter:description" content="法人番号 1 click で行政処分 + 採択履歴 + 適格事業者を裏取り。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/audiences/journalist.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/audiences/journalist.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/audiences/journalist.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/audiences/journalist.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
+
+<script defer src="../analytics.js"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://jpcite.com/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "記者・調査会社向け", "item": "https://jpcite.com/audiences/journalist.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "取材先 法人番号 裏取り API",
+  "name": "jpcite for Journalists & Research Firms",
+  "description": "フリージャーナリスト・Web メディア・調査会社・IR 系向け jpcite。法人番号 1 click で行政処分 22,258 + 採択 2,286 + 法人 167K + 法令 9,484 を横断。bookmarklet と Chrome 拡張で取材動線に組込み可能。",
+  "provider": {
+    "@type": "Organization",
+    "name": "jpcite",
+    "url": "https://jpcite.com/"},
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "フリージャーナリスト・Web メディア・調査会社・IR アナリスト"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP 従量",
+      "price": "3",
+      "priceCurrency": "JPY"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "TDB / TSR と何が違う?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite は商業 DB の置き換えではなく並走です。TDB / TSR が扱う与信・財務・取引履歴は含みません。jpcite は政府公表の一次資料 (官報・各省庁・裁決事例) のみを扱い、行政処分・採択履歴・適格事業者・法令を法人番号で横断します。"}},
+    {"@type": "Question", "name": "行政処分 22,258 件は官報全件?", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。22,258 件は政府公表記録のサブセットです (省庁・自治体公表分の現時点累計)。官報全件には到達していません。各行に出典 URL + content_hash + fetched_at を付与しています。"}},
+    {"@type": "Question", "name": "匿名で使えますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。IP ベースで 1 日 3 リクエストまで匿名無料 (JST 翌日 00:00 リセット)。多くの取材活動はこの枠でカバーできます。"}},
+    {"@type": "Question", "name": "記事の出典として引用できますか?", "acceptedAnswer": {"@type": "Answer", "text": "各レコードに一次資料の URL + content_hash + fetched_at を付けています。記事中で jpcite クレジットを表記いただける場合、取材用の拡張枠をご相談いただけます。"}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="../index.html" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../pricing.html">料金</a>
+ <a href="../audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="../status.html">稼働状況</a></li>
+ <li><a href="../data-freshness.html">データ鮮度</a></li>
+ <li><a href="../transparency.html">透明性</a></li>
+ <li><a href="../sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/audiences/journalist.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/audiences/journalist.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/audiences/">利用者層</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">記者・調査会社向け</span>
+ </nav>
+ <h1 id="hero-title">記者・調査会社向け</h1>
+ <p class="hero-sub">取材先の法人番号を即時に裏取り — 22,258 件の行政処分 + 採択履歴 + 適格事業者を 1 click で。</p>
+ </div>
+ </section>
+
+ <section class="features">
+ <div class="container">
+
+ <h2 class="section-title">対象</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li>フリージャーナリスト・Web メディア記者</li>
+ <li>調査会社・リサーチャー</li>
+ <li>IR / 株式アナリスト・投資メディア</li>
+ <li>地方紙・業界紙の取材デスク</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">収録データ (実数)</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li>行政処分: <strong>22,258 件</strong> (政府公表記録のサブセット、出典 URL 付)</li>
+ <li>採択履歴: <strong>2,286 件</strong> (補助金・公募の採択事例、年度・主体別)</li>
+ <li>法人 master: <strong>167,000 件</strong> (法人番号で正規化)</li>
+ <li>法令 catalog: <strong>9,484 件</strong> (e-Gov CC-BY、本文 154 件 index 済)</li>
+ <li>適格事業者: <strong>13,801 件</strong> (国税庁 PDL v1.0 配信)</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">取材動線への組込み</h2>
+ <p>取材中の Web ページから 1 click で jpcite に問い合わせる導線を 2 種類提供します。</p>
+
+ <h3 style="margin-top:20px;">1. ブックマークレット (drag drop で即使える)</h3>
+ <p>下のボタンをブラウザのブックマークバーに <strong>ドラッグ&ドロップ</strong>。任意のページで法人番号や制度名を選択 → ブックマーククリックで jpcite に照会。</p>
+
+ <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:18px;background:#f6f6f6;border:1px dashed #b0b0b0;border-radius:8px;margin:14px 0;">
+ <a id="bookmarklet-btn"
+ href="javascript:(function(){var s=((getSelection()+'')||prompt('jpcite 検索:')||'').trim(),d=s.replace(/\D/g,''),b='https://api.jpcite.com/v1/';s&&open(/^T?\d{13}$/i.test(s)?b+'houjin/'+d:b+'programs/search?q='+encodeURIComponent(s),'_blank')})()"
+ style="display:inline-flex;align-items:center;gap:8px;background:#1c1917;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;cursor:grab;"
+ draggable="true"
+ onclick="event.preventDefault();alert('このボタンは「ブックマークバーへドラッグ」して使ってください。クリックでは動作しません。');">
+ <img src="/assets/favicon-v2.svg" alt="" width="18" height="18" style="vertical-align:middle;">
+ jpcite で照会
+ </a>
+ <span style="color:#666;font-size:0.95em;">← ブックマークバーへドラッグ&ドロップ</span>
+ </div>
+
+ <h3 style="margin-top:20px;">2. Chrome 拡張 (13桁数字 hover で 1 click)</h3>
+ <p>Web ページ上の 13 桁数字を自動ハイライト。hover → click で jpcite を新タブで開きます。<br>
+ 権限は <code>contextMenus</code> のみ (拡張は fetch せず、ブラウザにタブを開かせるだけ — bookmarklet と同等のプライバシー)。</p>
+ <div class="cta-row" style="margin-top:12px;">
+ <a class="btn btn-secondary" href="../bookmarklet.html">使い方の詳細</a>
+ </div>
+
+ <h2 class="section-title" style="margin-top:32px;">取材で使う価値</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>匿名 3 req/日 無料</strong> で小規模な確認に利用できます (IP ベース、JST 翌日 00:00 リセット)</li>
+ <li>各レコードに <strong>出典 URL + content_hash + fetched_at</strong> を付与 — 「裏取り」用エビデンスとして記事内引用可能</li>
+ <li>大手新聞契約の <strong>TDB / TSR と並走</strong> — 商業 DB の置き換えではなく公的一次資料を補完</li>
+ <li>個人情報・取引履歴・財務情報は<strong>含まない</strong> (公的に開示された一次資料のみ)</li>
+ <li>API + MCP (¥3/リクエスト 完全従量、月額固定・席数課金なし)</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">取材中の利用例</h2>
+ <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code>1. 取材中、企業 IR 資料に 法人番号 8010001213708 を発見
+2. ページ上で 13 桁を選択 → ブックマーククリック (Chrome 拡張なら hover → click)
+3. 新タブで /v1/houjin/8010001213708 が開く
+   → 行政処分歴・採択履歴・適格事業者登録状況・関連法令を 1 秒で確認
+4. 各行の出典 URL を記事の脚注に引用</code></pre>
+
+ <div class="cta-row" style="margin-top:24px;">
+ <a class="btn btn-primary" href="../bookmarklet.html">ブックマークレットを取得 &rarr;</a>
+ <a class="btn btn-secondary" href="/docs/api-reference/">API リファレンス</a>
+ <a class="btn btn-secondary" href="../pricing.html">料金</a>
+ </div>
+
+ </div>
+ </section>
+
+ <section class="features" style="background:#fafaf9;">
+ <div class="container">
+ <h2 class="section-title">ジャーナリスト無償拡張枠 (self-service 申請)</h2>
+ <p style="font-size:16px;line-height:2;">
+ 記事内で <strong>jpcite への出典表記</strong>をいただける場合、取材用の拡張枠をご相談いただけます。
+ 匿名 3 req/日では足りない深掘り取材に。
+ </p>
+
+ <h3 style="margin-top:20px;">申請方法</h3>
+ <ol style="font-size:16px;line-height:2;">
+ <li>下のリンクから申請メールを送信</li>
+ <li>内容確認後、利用枠と連絡先をご案内</li>
+ <li>必要に応じて取材用 API キーを発行</li>
+ <li>記事掲載時に「データ出典: jpcite」または同等のクレジットを記載</li>
+ </ol>
+
+ <div class="cta-row" style="margin-top:20px;">
+ <a class="btn btn-primary" href="../about.html">
+ 問い合わせ先を見る &rarr;
+ </a>
+ </div>
+
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:20px 0 0;">
+ ※ 取材用枠は個別確認のうえで発行します。
+ 不正利用や reseller 用途と判断した場合は発行をお断りすることがあります。
+ 申請テンプレートに必要事項を埋めて送信してください — 氏名・所属、媒体、対象記事の概要、月間想定 req 数、クレジット表記の形式案。
+ </p>
+ </div>
+ </section>
+
+ <section class="features">
+ <div class="container">
+ <h2 class="section-title">正直な開示 (disclaimer)</h2>
+ <ul class="card-list" style="font-size:15px;line-height:2;color:var(--text-muted);">
+ <li><strong>行政処分 22,258 件は「官報全件」ではありません。</strong>政府公表記録のサブセット (各省庁・自治体公表分の現時点累計) です。官報全件には到達していません。</li>
+ <li><strong>データ更新頻度は tier 別:</strong> S = 日次、A = 日次、B = 週次、C = 月次。各レコードに <code>fetched_at</code> を付与しています。最新性が要件の取材では <code>fetched_at</code> を確認してください。</li>
+ <li><strong>jpcite はサーバー側で LLM API を呼びません。</strong>AI クライアント (Claude Desktop / Cursor 等) が jpcite の MCP サーバを呼び出す構成です。jpcite は一次資料 URL と構造化データを返します。</li>
+ <li>個人情報・取引履歴・財務情報は<strong>含みません</strong>。公的に開示された一次資料のみを扱います。与信・財務分析は TDB / TSR 等の商業 DB が適切です。</li>
+ <li>記者・調査会社の取材判断は人間の責任です。jpcite は事実関係の <strong>裏取り補助</strong>であって、記事内容の保証や編集判断の代行はしません。</li>
+ </ul>
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:20px 0 0;">
+ 本サービスは情報検索です。個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
+ </p>
+ </div>
+ </section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a><a href="../about.html">お問い合わせ</a>
+ </nav>
+ <p class="footer-copy">&copy; 2026 jpcite</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>
