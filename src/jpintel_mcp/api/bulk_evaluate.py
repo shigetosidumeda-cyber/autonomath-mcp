@@ -502,6 +502,14 @@ async def bulk_evaluate_clients(
         except Exception:  # noqa: BLE001
             logger.warning("idem replay failed; falling through to live eval")
 
+    from jpintel_mcp.api.middleware.customer_cap import (
+        projected_monthly_cap_response,
+    )
+
+    cap_response = projected_monthly_cap_response(conn, ctx.key_hash, n)
+    if cap_response is not None:
+        return cap_response
+
     # Live eval path.
     results: list[list[dict[str, Any]]] = []
     for client_row in rows:

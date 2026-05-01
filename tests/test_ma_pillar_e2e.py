@@ -383,11 +383,18 @@ def test_audit_bundle_export_round_trip(client, paid_key, tmp_path):
     ]
     jp_conn.close()
 
-    zip_bytes, zip_sha256 = _build_audit_bundle_zip(
+    # This legacy test exercises the bundle layout WITHOUT the license
+    # gate (profiles built directly via _build_dd_profile do not carry a
+    # license field; the production route enriches via
+    # _enrich_profile_with_license before calling the bundle builder).
+    # Opt-out so all 5 profiles survive into the ZIP and the legacy
+    # `manifest.json` / sha256.manifest layout assertions still hold.
+    zip_bytes, zip_sha256, _gate = _build_audit_bundle_zip(
         deal_id=deal_id,
         profiles=profiles,
         snapshot_id=snapshot_id,
         checksum=body["corpus_checksum"],
+        apply_license_gate=False,
     )
 
     # Crack open the ZIP and assert the bundle layout.

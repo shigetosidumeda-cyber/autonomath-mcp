@@ -12,7 +12,7 @@ populated as of 2026-04-29). Joins jpintel-mirrored auxiliaries:
     autonomath.db  am_enforcement_detail   (n_enforcements, recent kinds)
 
 Pricing: ¥3/req metered (1 unit), single GET. Anonymous tier shares the
-50/月 IP cap via AnonIpLimitDep on the router mount in api/main.py.
+3/日 IP cap via AnonIpLimitDep on the router mount in api/main.py.
 
 §52 envelope: every 2xx body carries a `_disclaimer` envelope key plus a
 `_namayoke_caveat` (名寄せ) explicitly noting that 法人番号 → entity_id
@@ -25,6 +25,7 @@ this surface.
 """
 from __future__ import annotations
 
+import contextlib
 import os
 import re
 import sqlite3
@@ -33,11 +34,13 @@ import unicodedata
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse
 
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
+from jpintel_mcp.api._envelope import StandardError, StandardResponse, wants_envelope_v2
+from jpintel_mcp.api._error_envelope import safe_request_id
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 
 router = APIRouter(prefix="/v1/houjin", tags=["houjin"])
@@ -66,7 +69,7 @@ _MAX_RECENT_ENFORCEMENTS = 5
 
 # 税理士法 §52 fence — DOC-level information, never 税務助言.
 _DISCLAIMER = (
-    "本情報は税務助言ではありません。AutonoMath は公的機関 (gBizINFO・国税庁・"
+    "本情報は税務助言ではありません。jpcite は公的機関 (gBizINFO・国税庁・"
     "会計検査院 等) が公表する企業情報を検索・整理して提供するサービスで、"
     "税理士法 §52 に基づき個別具体的な税務判断・与信判断は行いません。"
     "個別案件は資格を有する税理士・公認会計士に必ずご相談ください。"
@@ -81,6 +84,12 @@ _NAMAYOKE_CAVEAT = (
     "事業譲渡 等のイベント前後では同一番号の下に異なる時点の情報が混在する場合"
     "があります。最新の登記情報は法務局・gBizINFO 一次サイトでご確認ください。"
 )
+
+
+def _mark_envelope_v2_served(request: Request) -> None:
+    """Tell EnvelopeAdapterMiddleware that this route emitted the v2 shape."""
+    with contextlib.suppress(Exception):
+        request.state.envelope_v2_served = True
 
 
 # ---------------------------------------------------------------------------
@@ -344,7 +353,7 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
         "`jpi_adoption_records` (採択履歴) + "
         "`am_enforcement_detail` (行政処分).\n\n"
         "**Pricing:** ¥3/call (1 unit). Anonymous callers share the "
-        "50/月 per-IP cap (JST 月初 00:00 リセット).\n\n"
+        "3/日 per-IP cap (JST 翌日 00:00 リセット).\n\n"
         "**§52 envelope:** every 2xx body carries `_disclaimer` "
         "(税理士法 §52 fence) + `_namayoke_caveat` (商号変更・合併 周辺の "
         "名寄せ caveat). LLM relays must surface both verbatim.\n\n"
@@ -379,6 +388,7 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
     },
 )
 def get_houjin_360(
+    request: Request,
     bangou: Annotated[
         str,
         PathParam(
@@ -429,12 +439,37 @@ def get_houjin_360(
             status_code=status.HTTP_404_NOT_FOUND,
             params={"miss": True},
         )
+        if wants_envelope_v2(request):
+            _mark_envelope_v2_served(request)
+            err = StandardError.not_found(
+                "houjin",
+                norm,
+                developer_message=(
+                    "houjin not found in current corporate snapshot; "
+                    f"official lookup may still contain bangou={norm}"
+                ),
+            )
+            env = StandardResponse.from_error(
+                err,
+                request_id=safe_request_id(request),
+                query_echo={
+                    "normalized_input": {"bangou": norm},
+                    "applied_filters": {"bangou": norm},
+                    "unparsed_terms": [],
+                },
+                billable_units=0,
+            )
+            return JSONResponse(
+                status_code=status.HTTP_404_NOT_FOUND,
+                content=env.to_wire(),
+                headers={"X-Envelope-Version": "v2"},
+            )
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={
                 "detail": (
                     "Not found in current corporate snapshot. "
-                    "AutonoMath mirrors a 79,876-row gBizINFO subset; "
+                    "jpcite mirrors a 79,876-row gBizINFO subset; "
                     "this 法人番号 may be real but not yet absorbed."
                 ),
                 "houjin_bangou": norm,
@@ -466,4 +501,35 @@ def get_houjin_360(
         api_key_hash=ctx.key_hash,
         conn=conn,
     )
+    if wants_envelope_v2(request):
+        _mark_envelope_v2_served(request)
+        provenance = body.get("provenance") or {}
+        citations = []
+        if provenance.get("primary_source"):
+            citations.append(
+                {
+                    "source_url": provenance.get("primary_source"),
+                    "publisher": "gBizINFO / jpcite mirror",
+                    "title": "Corporate 360 public-source snapshot",
+                    "fetched_at": provenance.get("fetched_at"),
+                    "verification_status": "verified",
+                }
+            )
+        env = StandardResponse.sparse(
+            [body],
+            request_id=safe_request_id(request),
+            citations=citations,
+            query_echo={
+                "normalized_input": {"bangou": norm},
+                "applied_filters": {"bangou": norm},
+                "unparsed_terms": [],
+            },
+            latency_ms=_latency_ms,
+            billable_units=1,
+            client_tag=getattr(request.state, "client_tag", None),
+        )
+        return JSONResponse(
+            content=env.to_wire(),
+            headers={"X-Envelope-Version": "v2"},
+        )
     return JSONResponse(content=body)

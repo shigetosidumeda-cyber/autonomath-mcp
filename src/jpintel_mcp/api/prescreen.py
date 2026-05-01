@@ -81,9 +81,8 @@ class PrescreenRequest(BaseModel):
         str | None,
         Field(
             description=(
-                "JSIC 大分類 letter (A..T). Accepts JP names ('製造業', '農業'). "
-                "Used for hints only in v1 — does not exclude programs because "
-                "program-level industry tagging coverage is thin."
+                "業種（日本標準産業分類の大分類）。例: 農林水産業、製造業、情報通信業。"
+                "候補理由の補助情報として使います。"
             ),
             max_length=10,
         ),
@@ -93,7 +92,7 @@ class PrescreenRequest(BaseModel):
         Field(
             description=(
                 "True = 個人事業主. False = 法人 (incl. 株式会社/合同会社/組合). "
-                "None = unspecified (match against both target_types)."
+                "None = 未指定なら個人事業主・法人のどちらも候補に含めます。"
             ),
         ),
     ] = None
@@ -180,8 +179,8 @@ class PrescreenMatch(BaseModel):
         default=None,
         description=(
             "Site-relative path to the program's static SEO page on "
-            "jpcite.com. Computed from primary_name + unified_id "
-            "via jpintel_mcp.utils.slug. Use this for deep-links."
+            "jpcite.com. Computed from primary_name + unified_id. "
+            "Use this for deep-links."
         ),
     )
     fit_score: int = Field(
@@ -441,12 +440,8 @@ def run_prescreen(conn: sqlite3.Connection, profile: PrescreenRequest) -> Prescr
         "and why?' (fit judgment). LLM agents building 'help this SMB "
         "find support' flows should prefer prescreen — it cuts the "
         "keyword-guessing round-trips.\n\n"
-        "**Scope (v1):** prefecture (direct + 全国 fallback), "
-        "target_types (sole_proprietor / corporation, EN+JP aliases), "
-        "amount sufficiency vs `planned_investment_man_yen`, and "
-        "exclusion-rule prerequisite flagging (e.g. 認定新規就農者 "
-        "required but not declared). Ranking: tier (S>A>B>C) → match "
-        "count → amount_max_man_yen desc."
+        "**Scope (v1):** 事業者区分、事業規模、予定投資額、保有認定、地域をもとに、"
+        "候補理由と注意点を返します。"
     ),
     responses={
         200: {

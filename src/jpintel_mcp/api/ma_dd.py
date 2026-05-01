@@ -50,21 +50,24 @@ import logging
 import os
 import secrets
 import sqlite3
-import time
 import zipfile
 from datetime import UTC, datetime, timedelta
 from io import BytesIO
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, Body, Header, HTTPException, Query, status
+from fastapi import APIRouter, Header, HTTPException, Query, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._corpus_snapshot import (
-    attach_corpus_snapshot,
     compute_corpus_snapshot,
+)
+from jpintel_mcp.api._license_gate import (
+    REDISTRIBUTABLE_LICENSES,
+    annotate_attribution,
+    filter_redistributable,
 )
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 
@@ -142,7 +145,7 @@ _BUNDLE_URL_TTL_HOURS: int = 24
 # api/autonomath.py::_TAX_DISCLAIMER + dd_profile_am::coverage_scope so
 # LLM agents see consistent fence vocabulary across surfaces.
 _TAX_DISCLAIMER = (
-    "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+    "本情報は税務助言ではありません。jpcite は公的機関が公表する税制・補助金・"
     "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
     "税務判断・申告書作成代行は行いません。個別案件は資格を有する税理士に必ずご相談"
     "ください。本サービスの情報利用により生じた損害について、当社は一切の責任を負いません。"
@@ -279,6 +282,80 @@ def contextlib_suppress(*exc):
     import contextlib
 
     return contextlib.suppress(*exc)
+
+
+# ---------------------------------------------------------------------------
+# License-gate enrichment (license + attribution metadata per profile)
+# ---------------------------------------------------------------------------
+
+
+def _enrich_profile_with_license(
+    profile: dict[str, Any],
+    *,
+    am_conn: sqlite3.Connection | None,
+) -> None:
+    """Resolve `license` + `source_url` + `publisher` + `fetched_at` for a
+    DD profile in place.
+
+    The license-export gate (api/_license_gate.py) requires every paid
+    export row to carry a recognized license value before bytes leave
+    the operator's perimeter (§24 + §28.9 No-Go #5 of the value-max plan).
+    DD profiles are composed from MULTIPLE upstream tables and the
+    license is owned by the underlying `am_source` row. We resolve it
+    best-effort for the corporate_entity that backs the profile and fall
+    back to ``unknown`` when no source mapping exists — the gate then
+    correctly blocks the row at export time.
+
+    The function mutates `profile` in place (adds 4 keys). It NEVER
+    raises; missing tables / rows degrade to ``unknown`` so a partial
+    deploy never 500s the export route.
+
+    Tests monkey-patch this attribute (`monkeypatch.setattr(ma_dd,
+    "_enrich_profile_with_license", _fake_enrich)`) to exercise the
+    gate against a deterministic license map without seeding am_source
+    rows.
+    """
+    # Already enriched by an earlier code path — preserve.
+    if "license" in profile:
+        return
+
+    profile.setdefault("license", "unknown")
+    profile.setdefault("source_url", None)
+    profile.setdefault("publisher", None)
+    profile.setdefault("fetched_at", None)
+
+    if am_conn is None:
+        return
+
+    entity = profile.get("entity") or {}
+    canonical_id = entity.get("canonical_id") if isinstance(entity, dict) else None
+    if not canonical_id:
+        return
+
+    # am_source — best-effort resolve; columns vary across migrations so
+    # we wrap in try/except.
+    try:
+        row = am_conn.execute(
+            """SELECT s.license, s.publisher, s.source_url, s.fetched_at
+                 FROM am_source s
+                 JOIN am_entity_source es ON es.source_id = s.source_id
+                WHERE es.entity_id = ?
+             ORDER BY s.fetched_at DESC NULLS LAST
+                LIMIT 1""",
+            (canonical_id,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return
+    if row is None:
+        return
+    if row["license"]:
+        profile["license"] = row["license"]
+    if row["publisher"]:
+        profile["publisher"] = row["publisher"]
+    if row["source_url"]:
+        profile["source_url"] = row["source_url"]
+    if row["fetched_at"]:
+        profile["fetched_at"] = row["fetched_at"]
 
 
 # ---------------------------------------------------------------------------
@@ -620,7 +697,7 @@ class DdBatchRequest(BaseModel):
         "反社 / 信用情報 (商業登記法 gray-zone; TDB primary). LLM agents "
         "MUST relay both verbatim.\n\n"
         "**Operator**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708). "
-        "Brand: 税務会計AI."
+        "Brand: jpcite."
     ),
 )
 def post_dd_batch(
@@ -674,6 +751,13 @@ def post_dd_batch(
         header_cap=_parse_cost_cap_header(x_cost_cap_jpy),
         body_cap=payload.max_cost_jpy,
     )
+    from jpintel_mcp.api.middleware.customer_cap import (
+        projected_monthly_cap_response,
+    )
+
+    cap_response = projected_monthly_cap_response(conn, ctx.key_hash, n_ids)
+    if cap_response is not None:
+        return cap_response
 
     # 2. Snapshot id once per request so every profile in the batch quotes
     #    the same auditor work-paper identity.
@@ -738,7 +822,7 @@ def post_dd_batch(
                 "corpus_checksum": checksum,
                 "operator": "Bookyou株式会社",
                 "operator_houjin_bangou": "T8010001213708",
-                "brand": "税務会計AI",
+                "brand": "jpcite",
             },
             "_disclaimer": _TAX_DISCLAIMER,
             "coverage_scope": _COVERAGE_SCOPE,
@@ -770,7 +854,7 @@ def post_dd_batch(
         "corpus_checksum": checksum,
         "operator": "Bookyou株式会社",
         "operator_houjin_bangou": "T8010001213708",
-        "brand": "税務会計AI",
+        "brand": "jpcite",
         "_disclaimer": _TAX_DISCLAIMER,
         "coverage_scope": _COVERAGE_SCOPE,
     }
@@ -1141,7 +1225,7 @@ def get_group_graph(
         "corpus_checksum": checksum,
         "operator": "Bookyou株式会社",
         "operator_houjin_bangou": "T8010001213708",
-        "brand": "税務会計AI",
+        "brand": "jpcite",
         "_disclaimer": _TAX_DISCLAIMER,
         "coverage_scope": _COVERAGE_SCOPE,
         "graph_scope_note": (
@@ -1209,16 +1293,34 @@ def _build_audit_bundle_zip(
     profiles: list[dict[str, Any]],
     snapshot_id: str,
     checksum: str,
-) -> tuple[bytes, str]:
+    apply_license_gate: bool = True,
+) -> tuple[bytes, str, dict[str, Any]]:
     """Materialize the audit-bundle ZIP in memory. Return (zip_bytes,
-    sha256_hex_of_zip).
+    sha256_hex_of_zip, gate_summary).
 
-    Bundle contents:
+    Bundle contents (always):
       manifest.json                        — deal_id, snapshot, file map
-      profiles/<houjin>.jsonl              — one profile per file, jsonl
+      profiles/<houjin>.jsonl              — one profile per ALLOWED file, jsonl
       cite_chain.json                      — provenance cite-chain rollup
       sha256.manifest                      — `<sha256>  <filename>` per line
       README.txt                           — boutique-readable summary
+
+    Bundle contents (when `apply_license_gate=True`):
+      MANIFEST.json                        — license-gate manifest (schema_version
+                                             license_gate.v1, allowed/blocked counts,
+                                             attribution_notice, policy)
+      attribution.txt                      — one CC-BY 4.0 §3 attribution line per
+                                             allowed row
+
+    License-gate semantics (api/_license_gate.py):
+      * `apply_license_gate=False` (legacy default) — every profile is written
+        as-is. ``gate_summary`` carries ``allowed_count = len(profiles)`` and
+        ``blocked_count = 0``.
+      * `apply_license_gate=True` (paid export route) — profiles split via
+        `filter_redistributable`. Only allowed profiles get a `profiles/`
+        entry. Blocked rows surface only via the count + reason rollup in
+        MANIFEST.json. The blocked rows' `houjin_bangou` MUST NOT leak into
+        any allowed JSONL — we never serialize them as bytes.
 
     The ZIP is materialized in memory (BytesIO) so we can stream it to R2
     in a single pass. For >200 法人 the materialized size is bounded by
@@ -1228,8 +1330,28 @@ def _build_audit_bundle_zip(
     buf = BytesIO()
     inner_files: dict[str, bytes] = {}
 
-    # Per-houjin JSONL.
-    for p in profiles:
+    # ---- License gate: split allowed / blocked --------------------------
+    if apply_license_gate:
+        allowed_profiles, blocked_profiles = filter_redistributable(profiles)
+    else:
+        allowed_profiles = list(profiles)
+        blocked_profiles = []
+
+    blocked_reasons: dict[str, int] = {}
+    for p in blocked_profiles:
+        v = p.get("license")
+        key = v if isinstance(v, str) and v else "unknown"
+        blocked_reasons[key] = blocked_reasons.get(key, 0) + 1
+
+    gate_summary: dict[str, Any] = {
+        "allowed_count": len(allowed_profiles),
+        "blocked_count": len(blocked_profiles),
+        "blocked_reasons": blocked_reasons,
+        "redistributable_licenses": sorted(REDISTRIBUTABLE_LICENSES),
+    }
+
+    # Per-houjin JSONL — ALLOWED rows only.
+    for p in allowed_profiles:
         hj = p.get("houjin_bangou") or "_unknown"
         # Honest filename: include the deal_id so unzipped contents don't
         # collide between bundles in a deal-room workspace.
@@ -1239,12 +1361,12 @@ def _build_audit_bundle_zip(
         line = json.dumps(p, ensure_ascii=False, sort_keys=True).encode("utf-8")
         inner_files[fname] = line + b"\n"
 
-    # Cite chain rollup — every source_url across the profile set with a
-    # short context tag. Used by auditors to cross-reference primary
-    # sources without re-running the API.
+    # Cite chain rollup — every source_url across the ALLOWED profile set
+    # with a short context tag. Used by auditors to cross-reference primary
+    # sources without re-running the API. Blocked rows never leak.
     cite_chain: list[dict[str, Any]] = []
     seen_urls: set[str] = set()
-    for p in profiles:
+    for p in allowed_profiles:
         hj = p.get("houjin_bangou")
         for ev in (p.get("enforcement", {}) or {}).get("recent_history", []) or []:
             url = ev.get("source_url")
@@ -1292,24 +1414,86 @@ def _build_audit_bundle_zip(
 
     # README — boutique-readable summary.
     readme = (
-        f"AutonoMath audit bundle\n"
-        f"=======================\n\n"
+        f"jpcite audit bundle\n"
+        f"===================\n\n"
         f"Deal: {deal_id}\n"
-        f"Profiles: {len(profiles)}\n"
+        f"Profiles (allowed): {len(allowed_profiles)}\n"
+        f"Profiles (blocked): {len(blocked_profiles)}\n"
         f"Corpus snapshot: {snapshot_id}\n"
         f"Corpus checksum: {checksum}\n"
         f"Generated: {datetime.now(UTC).isoformat()}\n"
         f"Operator: Bookyou株式会社 (T8010001213708)\n"
-        f"Brand: 税務会計AI\n\n"
+        f"Brand: jpcite\n\n"
         f"Files:\n"
         f"  manifest.json           — bundle metadata + file map\n"
-        f"  profiles/<houjin>.jsonl — one record per company\n"
+        f"  profiles/<houjin>.jsonl — one record per allowed company\n"
         f"  cite_chain.json         — provenance rollup\n"
-        f"  sha256.manifest         — `<sha256>  <filename>` per line\n\n"
-        f"§52 fence: {_TAX_DISCLAIMER}\n\n"
+        f"  sha256.manifest         — `<sha256>  <filename>` per line\n"
+        + (
+            "  MANIFEST.json           — license-gate manifest (schema license_gate.v1)\n"
+            "  attribution.txt         — CC-BY 4.0 §3 per-row attribution\n"
+            if apply_license_gate
+            else ""
+        )
+        + f"\n§52 fence: {_TAX_DISCLAIMER}\n\n"
         f"Coverage scope: {_COVERAGE_SCOPE}\n"
     )
     inner_files["README.txt"] = readme.encode("utf-8")
+
+    # ---- License-gate artifacts (only when gate enabled) ----------------
+    if apply_license_gate:
+        # attribution.txt — one CC-BY 4.0 §3 line per ALLOWED row.
+        # Format: 出典: {publisher} / {source_url} / 取得 {fetched_at} / license={license}
+        attribution_lines: list[str] = []
+        attribution_lines.append(
+            f"# jpcite audit bundle — attribution (CC-BY 4.0 §3)\n"
+            f"# Deal: {deal_id}\n"
+            f"# Generated: {datetime.now(UTC).isoformat()}\n"
+            f"# Allowed: {len(allowed_profiles)} | Blocked: {len(blocked_profiles)}\n"
+        )
+        for p in allowed_profiles:
+            ann = annotate_attribution(p)
+            hj = p.get("houjin_bangou") or "_unknown"
+            attribution_lines.append(f"[{hj}] {ann['_attribution']}")
+        inner_files["attribution.txt"] = (
+            "\n".join(attribution_lines) + "\n"
+        ).encode("utf-8")
+
+        # MANIFEST.json (license-gate format) — schema_version "license_gate.v1".
+        # Distinct from `manifest.json` (lowercase, file-map style) so legacy
+        # readers don't accidentally parse one as the other.
+        license_manifest = {
+            "schema_version": "license_gate.v1",
+            "deal_id": deal_id,
+            "generated_at": datetime.now(UTC).isoformat(),
+            "operator": "Bookyou株式会社",
+            "operator_houjin_bangou": "T8010001213708",
+            "brand": "jpcite",
+            "corpus_snapshot_id": snapshot_id,
+            "corpus_checksum": checksum,
+            "allowed_count": len(allowed_profiles),
+            "blocked_count": len(blocked_profiles),
+            "blocked_reasons": blocked_reasons,
+            "redistributable_licenses": sorted(REDISTRIBUTABLE_LICENSES),
+            "policy": (
+                "allow-list (NOT deny-list). Any row whose license value is "
+                "not in `redistributable_licenses` is blocked from export, "
+                "including future / unknown / typo values. See "
+                "api/_license_gate.py for the canonical implementation."
+            ),
+            "attribution_notice": (
+                "Each allowed row carries an `_attribution` line in "
+                "attribution.txt formatted per CC-BY 4.0 §3: "
+                "「出典: {publisher} / {source_url} / 取得 {fetched_at} / "
+                "license={license}」. Downstream consumers MUST preserve the "
+                "attribution line when redistributing the row."
+            ),
+            "_disclaimer": _TAX_DISCLAIMER,
+            "coverage_scope": _COVERAGE_SCOPE,
+        }
+        inner_files["MANIFEST.json"] = json.dumps(
+            license_manifest, ensure_ascii=False, indent=2, sort_keys=True
+        ).encode("utf-8")
 
     # SHA-256 manifest computed BEFORE manifest.json is written so manifest
     # itself doesn't need to be self-referential.
@@ -1325,10 +1509,11 @@ def _build_audit_bundle_zip(
         "generated_at": datetime.now(UTC).isoformat(),
         "operator": "Bookyou株式会社",
         "operator_houjin_bangou": "T8010001213708",
-        "brand": "税務会計AI",
+        "brand": "jpcite",
         "corpus_snapshot_id": snapshot_id,
         "corpus_checksum": checksum,
-        "profile_count": len(profiles),
+        "profile_count": len(allowed_profiles) if apply_license_gate else len(profiles),
+        "license_gate": gate_summary if apply_license_gate else None,
         "files": [
             {"name": n, "sha256": hashlib.sha256(b).hexdigest(), "bytes": len(b)}
             for n, b in sorted(inner_files.items())
@@ -1347,7 +1532,7 @@ def _build_audit_bundle_zip(
             zf.writestr(name, inner_files[name])
 
     raw = buf.getvalue()
-    return raw, hashlib.sha256(raw).hexdigest()
+    return raw, hashlib.sha256(raw).hexdigest(), gate_summary
 
 
 def _upload_bundle_to_r2(
@@ -1474,6 +1659,17 @@ def post_dd_export(
         header_cap=_parse_cost_cap_header(x_cost_cap_jpy),
         body_cap=payload.max_cost_jpy,
     )
+    from jpintel_mcp.api.middleware.customer_cap import (
+        projected_monthly_cap_response,
+    )
+
+    cap_response = projected_monthly_cap_response(
+        conn,
+        ctx.key_hash,
+        n_ids + bundle_units,
+    )
+    if cap_response is not None:
+        return cap_response
 
     snapshot_id, checksum = compute_corpus_snapshot(conn)
     am_conn = _open_autonomath_ro()
@@ -1487,17 +1683,26 @@ def post_dd_export(
             )
             for hj in normalized
         ]
+        # License gate enrichment — every profile gets its license + 4-tuple
+        # attribution metadata BEFORE the bundle is built. Tests monkeypatch
+        # this attribute on the module to inject a deterministic license map
+        # (see tests/test_license_gate.py); production resolves via am_source.
+        for p in profiles:
+            _enrich_profile_with_license(p, am_conn=am_conn)
     finally:
         if am_conn is not None:
             with contextlib_suppress(sqlite3.Error):
                 am_conn.close()
 
-    # Build + upload bundle.
-    zip_bytes, zip_sha256 = _build_audit_bundle_zip(
+    # Build + upload bundle. The license gate is ON for the paid export
+    # route — anything not in REDISTRIBUTABLE_LICENSES is filtered out
+    # before bytes leave the operator's perimeter (§24 + §28.9 No-Go #5).
+    zip_bytes, zip_sha256, gate_summary = _build_audit_bundle_zip(
         deal_id=payload.deal_id,
         profiles=profiles,
         snapshot_id=snapshot_id,
         checksum=checksum,
+        apply_license_gate=True,
     )
     # R2 key: includes deal_id + snapshot_id + a random nonce so two boutique
     # users running the same deal on the same snapshot get distinct keys
@@ -1565,11 +1770,12 @@ def post_dd_export(
             "(standard=333 / deal=1,000 / case=3,333) like row_count in "
             "bulk_evaluate; it is NOT a tier SKU. See docs/pricing.md."
         ),
+        "license_gate": gate_summary,
         "corpus_snapshot_id": snapshot_id,
         "corpus_checksum": checksum,
         "operator": "Bookyou株式会社",
         "operator_houjin_bangou": "T8010001213708",
-        "brand": "税務会計AI",
+        "brand": "jpcite",
         "_disclaimer": _TAX_DISCLAIMER,
         "coverage_scope": _COVERAGE_SCOPE,
     }
@@ -1591,6 +1797,8 @@ def post_dd_export(
         headers={
             "X-Metered-Yen": str(predicted_yen),
             "X-Bundle-Sha256": zip_sha256,
+            "X-License-Gate-Allowed": str(gate_summary["allowed_count"]),
+            "X-License-Gate-Blocked": str(gate_summary["blocked_count"]),
         },
     )
 
@@ -1609,4 +1817,5 @@ __all__ = [
     "_build_audit_bundle_zip",
     "_check_cost_cap",
     "_parse_cost_cap_header",
+    "_enrich_profile_with_license",
 ]

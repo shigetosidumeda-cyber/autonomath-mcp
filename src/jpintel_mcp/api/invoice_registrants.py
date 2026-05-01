@@ -275,8 +275,8 @@ def _row_to_registrant(row: sqlite3.Row) -> InvoiceRegistrantOut:
         "valid T-prefixed invoice number before claiming 仕入税額控除. "
         "For exact T-number lookup (T + 13 digits), prefer "
         "`GET /v1/invoice_registrants/{invoice_registration_number}`.\n\n"
-        "**Limits:** `q` requires 2+ chars and is index-eligible LIKE "
-        "(prefix only — not FTS). Bulk dump is intentionally not "
+        "**Limits:** `q` requires 2+ chars and uses prefix name matching. "
+        "Bulk dump is intentionally not "
         "supported; for full snapshots use NTA's official download URL "
         "in the `attribution.source_url`.\n\n"
         "**License:** every 2xx body carries a PDL v1.0 `attribution` "
@@ -298,14 +298,14 @@ def _row_to_registrant(row: sqlite3.Row) -> InvoiceRegistrantOut:
                         "offset": 0,
                         "results": [
                             {
-                                "invoice_registration_number": "T8010001213708",
-                                "houjin_bangou": "8010001213708",
-                                "normalized_name": "Bookyou株式会社",
-                                "address_normalized": "東京都文京区小日向2-22-1",
+                                "invoice_registration_number": "T1234567890123",
+                                "houjin_bangou": "1234567890123",
+                                "normalized_name": "株式会社サンプル",
+                                "address_normalized": "東京都千代田区丸の内1-1-1",
                                 "prefecture": "東京都",
-                                "registered_date": "2025-05-12",
+                                "registered_date": "2024-04-01",
                                 "registrant_kind": "corporation",
-                                "trade_name": "税務会計AI",
+                                "trade_name": None,
                                 "revoked_date": None,
                                 "expired_date": None,
                                 "last_updated_nta": "2025-05-13",
@@ -342,8 +342,8 @@ def search_invoice_registrants(
         str | None,
         Query(
             description=(
-                "Prefix match on 事業者名 (normalized_name). Index-eligible "
-                "LIKE — not FTS. Short queries (< 2 chars) are rejected to "
+                "Prefix match on 事業者名 (normalized_name). Short queries "
+                "(< 2 chars) are rejected to "
                 "keep the match selective."
             ),
             max_length=200,
@@ -563,12 +563,12 @@ def search_invoice_registrants(
                 "application/json": {
                     "example": {
                         "result": {
-                            "invoice_registration_number": "T8010001213708",
-                            "houjin_bangou": "8010001213708",
-                            "normalized_name": "Bookyou株式会社",
-                            "address_normalized": "東京都文京区小日向2-22-1",
+                            "invoice_registration_number": "T1234567890123",
+                            "houjin_bangou": "1234567890123",
+                            "normalized_name": "株式会社サンプル",
+                            "address_normalized": "東京都千代田区丸の内1-1-1",
                             "prefecture": "東京都",
-                            "registered_date": "2025-05-12",
+                            "registered_date": "2024-04-01",
                             "registrant_kind": "corporation",
                             "trade_name": None,
                             "revoked_date": None,

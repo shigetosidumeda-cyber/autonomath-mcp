@@ -45,6 +45,18 @@ _BOOKYOU_BANGOU = "8010001213708"
 _MALFORMED_BANGOU = "12345"
 
 
+@pytest.fixture(autouse=True)
+def _pin_jpintel_db_for_anon_quota(
+    seeded_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Keep anon quota writes on the seeded jpintel DB during full-suite runs."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.api import anon_limit as _anon_limit
+
+    monkeypatch.setattr(settings, "db_path", seeded_db)
+    monkeypatch.setattr(_anon_limit.settings, "db_path", seeded_db)
+
+
 def _has_any_data(bangou: str) -> bool:
     """Probe autonomath.db directly: does this bangou show up anywhere?
 
@@ -204,17 +216,18 @@ def test_unknown_houjin_returns_404_with_envelope(client: TestClient) -> None:
 def test_anon_within_quota_returns_200(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Anonymous caller within the 50/月 IP cap gets 200.
+    """Anonymous caller within the daily IP cap gets 200.
 
     Uses the autouse ``_reset_anon_rate_limit`` fixture (conftest.py) so
-    the bucket starts at 0. We pin a small per-month cap to keep the
-    setup tight without 50 hops.
+    the bucket starts at 0. We pin a small per-day cap to keep the setup tight.
     """
     if not _has_any_data(_SAMPLE_BANGOU):
         pytest.skip(f"sample 法人番号 {_SAMPLE_BANGOU} no longer in DB.")
     from jpintel_mcp.config import settings
+    from jpintel_mcp.api import anon_limit as _anon_limit
 
     monkeypatch.setattr(settings, "anon_rate_limit_per_day", 5)
+    monkeypatch.setattr(_anon_limit.settings, "anon_rate_limit_per_day", 5)
 
     r = client.get(
         f"/v1/houjin/{_SAMPLE_BANGOU}",
@@ -228,7 +241,7 @@ def test_anon_within_quota_returns_200(
 def test_anon_over_quota_returns_429(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Anonymous caller hitting the 50/月 IP cap gets 429 on /v1/houjin too.
+    """Anonymous caller hitting the daily IP cap gets 429 on /v1/houjin too.
 
     Pinning the limit at 1 makes the second call cross the threshold;
     the conftest autouse fixture wipes anon_rate_limit between tests.
@@ -236,9 +249,11 @@ def test_anon_over_quota_returns_429(
     if not _has_any_data(_SAMPLE_BANGOU):
         pytest.skip(f"sample 法人番号 {_SAMPLE_BANGOU} no longer in DB.")
     from jpintel_mcp.config import settings
+    from jpintel_mcp.api import anon_limit as _anon_limit
 
-    # 1 call per month → 2nd call MUST 429.
+    # 1 call per day → 2nd call MUST 429.
     monkeypatch.setattr(settings, "anon_rate_limit_per_day", 1)
+    monkeypatch.setattr(_anon_limit.settings, "anon_rate_limit_per_day", 1)
 
     ip = "198.51.100.211"
     r1 = client.get(

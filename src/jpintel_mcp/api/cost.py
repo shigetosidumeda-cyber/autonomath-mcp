@@ -18,7 +18,7 @@ spend has already happened. Cost preview gives them a deterministic, FREE
 
 Pricing model (immutable)
 -------------------------
-AutonoMath is pure metered ¥3/req 税別 (税込 ¥3.30) per
+jpcite is pure metered ¥3/req 税別 (税込 ¥3.30) per
 `project_autonomath_business_model`. There are NO tier SKUs, NO bulk
 discounts, NO seat fees. The math is therefore trivial: predicted cost =
 billing_units * ¥3 where billing_units = sum-over-calls(weight) * iterations.
@@ -46,7 +46,7 @@ import hashlib
 import logging
 import threading
 import time
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -165,7 +165,7 @@ _TAX_RELEVANT_TOOLS: frozenset[str] = frozenset(
 )
 
 _TAX_DISCLAIMER = (
-    "本情報は税務助言ではありません。AutonoMath は公的機関が公表する税制・補助金・"
+    "本情報は税務助言ではありません。jpcite は公的機関が公表する税制・補助金・"
     "法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な"
     "税務判断・申告書作成代行は行いません。個別案件は資格を有する税理士に必ずご相談"
     "ください。本サービスの情報利用により生じた損害について、当社は一切の責任を負いません。"
@@ -369,7 +369,7 @@ def compute_predicted_cost(
         "(`evaluate_tax_ruleset`, `search_tax_incentives`, etc.) the response "
         "carries a `disclaimer` field. LLM agents MUST relay it.\n\n"
         "**Operator**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708). "
-        "Brand: 税務会計AI."
+        "Brand: jpcite."
     ),
 )
 def post_cost_preview(
