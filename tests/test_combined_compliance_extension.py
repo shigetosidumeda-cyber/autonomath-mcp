@@ -33,12 +33,48 @@ import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _DEFAULT_DB = _REPO_ROOT / "autonomath.db"
-_DB_PATH = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_DEFAULT_DB)))
 
-if not _DB_PATH.exists():
+
+def _has_required_compat_schema(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+        try:
+            cols = {
+                row[1]
+                for row in conn.execute("PRAGMA table_info(am_compat_matrix)")
+            }
+            required = {
+                "program_a_id",
+                "program_b_id",
+                "compat_status",
+                "inferred_only",
+            }
+            if not required.issubset(cols):
+                return False
+            row = conn.execute(
+                "SELECT 1 FROM am_compat_matrix "
+                "WHERE compat_status='compatible' LIMIT 1"
+            ).fetchone()
+            return row is not None
+        finally:
+            conn.close()
+    except sqlite3.Error:
+        return False
+
+
+_ENV_DB_PATH = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_DEFAULT_DB)))
+_DB_PATH = (
+    _ENV_DB_PATH
+    if _has_required_compat_schema(_ENV_DB_PATH)
+    else _DEFAULT_DB
+)
+
+if not _has_required_compat_schema(_DB_PATH):
     pytest.skip(
-        f"autonomath.db ({_DB_PATH}) not present; skipping P0.3 extension tests. "
-        "Set AUTONOMATH_DB_PATH to point at a snapshot.",
+        f"autonomath.db ({_DB_PATH}) missing required am_compat_matrix schema; "
+        "skipping P0.3 extension tests. Set AUTONOMATH_DB_PATH to a full snapshot.",
         allow_module_level=True,
     )
 
@@ -49,12 +85,28 @@ os.environ.setdefault("AUTONOMATH_ENABLED", "1")
 # function via the module attribute. We DO NOT go through FastMCP dispatch —
 # the goal is unit-level coverage of the extension code path.
 from jpintel_mcp.mcp import server  # noqa: E402
+from jpintel_mcp.mcp.autonomath_tools import db as _am_db  # noqa: E402
 
 # `combined_compliance_check` is wrapped by @_with_mcp_telemetry and @mcp.tool.
 # The wrappers stack as: mcp.tool → telemetry → original function. We reach the
 # raw callable via the FastMCP tool registry; if structure changes the test
 # fixture below will surface a clear NameError.
 _TOOL = server.combined_compliance_check
+
+
+@pytest.fixture(autouse=True)
+def _pin_autonomath_db(monkeypatch: pytest.MonkeyPatch):
+    """Keep this module on the live autonomath snapshot during full-suite runs.
+
+    Several tests monkeypatch ``AUTONOMATH_DB_PATH`` to tiny fixture DBs. The
+    MCP DB helper also caches a per-thread connection, so reset both the module
+    path and the cached connection before each assertion here.
+    """
+    _am_db.close_all()
+    monkeypatch.setenv("AUTONOMATH_DB_PATH", str(_DB_PATH))
+    monkeypatch.setattr(_am_db, "AUTONOMATH_DB_PATH", _DB_PATH)
+    yield
+    _am_db.close_all()
 
 
 def _profile() -> dict[str, Any]:
@@ -174,7 +226,9 @@ def test_candidate_program_ids_triggers_compat_matrix_lookup():
         f"known-compatible pair reported missing — lookup logic regression: {cm}"
     )
     assert len(cm["pairs"]) == 1, (
-        f"expected exactly 1 pair entry for binomial(2,2), got {len(cm['pairs'])}"
+        f"expected exactly 1 pair entry for binomial(2,2), got {len(cm['pairs'])}; "
+        f"cm={cm!r}; test_db={_DB_PATH}; runtime_db={_am_db.AUTONOMATH_DB_PATH}; "
+        f"env_db={os.environ.get('AUTONOMATH_DB_PATH')}"
     )
     found = cm["pairs"][0]
     # The native key shape is preserved by the read pass (no rekeying). The

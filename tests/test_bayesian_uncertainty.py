@@ -25,14 +25,13 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api.uncertainty import (
+    KIND_W_DEFAULT,
     LICENSE_W,
     LICENSE_W_NULL,
-    KIND_W_DEFAULT,
     MODEL_TAG,
     get_uncertainty_for_fact,
     score_fact,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers — minimal autonomath fixture
@@ -280,6 +279,97 @@ def test_get_uncertainty_for_fact_returns_payload(
     assert axes == {
         "license", "freshness", "field_kind", "cross_source_agreement",
     }
+
+
+def test_fact_uncertainty_payload_exposes_continuous_score(
+    fixture_db: sqlite3.Connection,
+) -> None:
+    """A7: per-fact uncertainty is numeric evidence, not just a label."""
+    fact_id = fixture_db.execute(
+        "SELECT id FROM am_entity_facts "
+        " WHERE entity_id='e_agree' ORDER BY id LIMIT 1"
+    ).fetchone()["id"]
+
+    payload = get_uncertainty_for_fact(fact_id, fixture_db)
+
+    assert payload is not None
+    assert isinstance(payload["score"], float)
+    assert 0.0 <= payload["score"] <= 1.0
+    assert payload["label"] in {"high", "medium", "low", "unknown"}
+    assert isinstance(payload["alpha"], float)
+    assert isinstance(payload["beta"], float)
+    assert len(payload["ci_95"]) == 2
+
+
+def test_continuous_score_is_not_label_only_or_three_bucket_only() -> None:
+    """A7: same label can carry different posterior means."""
+    low_a = score_fact(
+        field_kind="amount",
+        license_value="gov_standard_v2.0",
+        days_since_fetch=365,
+        n_sources=1,
+        agreement=0,
+    )
+    low_b = score_fact(
+        field_kind="amount",
+        license_value="pdl_v1.0",
+        days_since_fetch=180,
+        n_sources=1,
+        agreement=0,
+    )
+
+    assert low_a["label"] == "low"
+    assert low_b["label"] == "low"
+    assert low_a["score"] != low_b["score"]
+    assert len({low_a["score"], low_b["score"]}) == 2
+
+
+def test_get_uncertainty_for_fact_degrades_when_view_missing() -> None:
+    """A7: pre-migration DBs degrade by omitting the uncertainty envelope."""
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.executescript(_AM_SCHEMA_SQL)
+        conn.execute(
+            "INSERT INTO am_entity_facts "
+            "(entity_id, field_name, field_value_text, field_kind) "
+            "VALUES ('e_missing_view', 'note', 'free text', 'text')"
+        )
+        fact_id = conn.execute(
+            "SELECT id FROM am_entity_facts WHERE entity_id='e_missing_view'"
+        ).fetchone()["id"]
+
+        assert get_uncertainty_for_fact(fact_id, conn) is None
+    finally:
+        conn.close()
+
+
+def test_multi_source_agreement_changes_continuous_score() -> None:
+    """A7: agreement updates the posterior score, not only the label."""
+    single_source = score_fact(
+        field_kind="amount",
+        license_value="gov_standard_v2.0",
+        days_since_fetch=30,
+        n_sources=1,
+        agreement=0,
+    )
+    agreed_sources = score_fact(
+        field_kind="amount",
+        license_value="gov_standard_v2.0",
+        days_since_fetch=30,
+        n_sources=3,
+        agreement=1,
+    )
+
+    assert agreed_sources["score"] > single_source["score"]
+    assert agreed_sources["label"] == single_source["label"]
+    agreement_axis = next(
+        axis
+        for axis in agreed_sources["evidence"]
+        if axis["axis"] == "cross_source_agreement"
+    )
+    assert agreement_axis["n_sources"] == 3
+    assert math.isclose(agreement_axis["bonus_alpha"], 0.2, rel_tol=1e-6)
 
 
 def test_get_uncertainty_for_fact_returns_none_for_missing(

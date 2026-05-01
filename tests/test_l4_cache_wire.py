@@ -115,6 +115,25 @@ def _hit_count(tool: str) -> int:
         conn.close()
 
 
+def _without_anon_upgrade_hint(body: dict) -> dict:
+    """Return a copy without dynamic anonymous-quota body hints.
+
+    L4 cache equality should cover the cached payload. The anon quota middleware
+    legitimately injects per-request remaining-count text after the route
+    returns, so two identical cache responses can differ only in this hint.
+    """
+    out = dict(body)
+    meta = out.get("_meta")
+    if isinstance(meta, dict):
+        meta_out = dict(meta)
+        meta_out.pop("upgrade_hint", None)
+        if meta_out:
+            out["_meta"] = meta_out
+        else:
+            out.pop("_meta", None)
+    return out
+
+
 @pytest.fixture(autouse=True)
 def _reset_l4_cache(seeded_db: Path):
     """Wipe the L4 families this file owns before/after each test.
@@ -361,7 +380,7 @@ def test_am_tax_incentives_l4_miss_then_hit(client: "TestClient"):
     r2 = client.get("/v1/am/tax_incentives", params={"limit": 5})
     assert r2.status_code == 200, r2.text
     body2 = r2.json()
-    assert body1 == body2
+    assert _without_anon_upgrade_hint(body1) == _without_anon_upgrade_hint(body2)
     assert _row_count(_AM_TAX_TOOL) == 1
     assert _hit_count(_AM_TAX_TOOL) == 1
 
