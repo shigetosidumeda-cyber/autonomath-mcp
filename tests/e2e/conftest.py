@@ -56,20 +56,35 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=False,
         help="Allow @pytest.mark.production tests to run (manual workflow only).",
     )
+    parser.addoption(
+        "--run-e2e",
+        action="store_true",
+        default=False,
+        help="Allow @pytest.mark.e2e browser tests to run against JPINTEL_E2E_BASE_URL.",
+    )
 
 
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
-    """Skip production-marked tests unless --run-production is passed."""
-    if config.getoption("--run-production"):
-        return
+    """Skip production/e2e tests unless explicitly requested."""
+    run_production = config.getoption("--run-production")
+    run_e2e = (
+        config.getoption("--run-e2e")
+        or os.environ.get("JPINTEL_E2E", "").strip().lower() in ("1", "true")
+        or run_production
+    )
     skip_prod = pytest.mark.skip(
         reason="@pytest.mark.production requires --run-production"
     )
+    skip_e2e = pytest.mark.skip(
+        reason="@pytest.mark.e2e requires --run-e2e or JPINTEL_E2E=1"
+    )
     for item in items:
-        if "production" in item.keywords:
+        if "production" in item.keywords and not run_production:
             item.add_marker(skip_prod)
+        if "e2e" in item.keywords and not run_e2e:
+            item.add_marker(skip_e2e)
 
 
 # --------------------------------------------------------------------------- #

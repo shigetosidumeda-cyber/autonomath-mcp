@@ -1,4 +1,4 @@
-"""AutonoMath pre-launch smoke test — 2026-04-24.
+"""jpcite pre-launch smoke test — 2026-04-24.
 
 Usage:
     .venv/bin/python tests/smoke/smoke_pre_launch.py
@@ -7,17 +7,14 @@ Writes: tests/smoke/pre_launch_2026_04_24.md
 """
 from __future__ import annotations
 
-import importlib
 import json
 import logging
 import os
 import sqlite3
 import sys
-import tempfile
 import time
 import traceback
 from datetime import UTC, datetime
-from io import StringIO
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +25,18 @@ REAL_DB = REPO_ROOT / "data" / "jpintel.db"
 assert REAL_DB.exists(), f"data/jpintel.db not found at {REAL_DB}"
 os.environ["JPINTEL_DB_PATH"] = str(REAL_DB)
 os.environ.setdefault("API_KEY_SALT", "smoke-test-salt")
+# Disable the global anon rate limit for the broad smoke pass — the harness
+# fires ~60+ anon requests across REST/MCP/telemetry sections, which would
+# otherwise be 429'd after the first 3 per JST day under the production
+# 3 req/day cap. The dedicated rate-limit test below re-enables enforcement
+# locally by using its own TestClient + IP, with the bypass scoped via env
+# toggle just for that block.
+os.environ["ANON_RATE_LIMIT_ENABLED"] = "false"
+# Also disable the per-second token-bucket burst guard (rate_limit
+# middleware: 1 req/s sustained / burst 5 for anon). The harness packs
+# unrelated requests within the same second and would otherwise 429 after
+# the burst is drained — this gate is orthogonal to the daily cap.
+os.environ["RATE_LIMIT_BURST_DISABLED"] = "1"
 
 # ── Logging capture for telemetry Part C ───────────────────────────────────
 class _JsonCapture(logging.Handler):
@@ -373,42 +382,51 @@ rest_results.append({
 if not tier422_ok:
     all_failures.append(f"REST FAIL [invalid tier]: expected 422 got {r_bad_tier.status_code}")
 
-# Rate limit test — 51 requests from varied IPs
-# Use X-Forwarded-For to change the IP per request; the 51st on the SAME IP should 429.
-# First, get a fresh TestClient with anon quota = 50 (default).
+# Rate limit test — 3 requests succeed, 4th 429s (production cap = 3/day per IP).
+# The harness-wide bypass set above (ANON_RATE_LIMIT_ENABLED=false) is locally
+# overridden on the live `settings` singleton just for this block, so the dep
+# enforces the cap. Restored after the test even if it fails.
 # Clear anon_rate_limit table to start clean.
 _rconn = sqlite3.connect(str(REAL_DB))
 _rconn.execute("DELETE FROM anon_rate_limit WHERE ip_hash != 'smoke-permanent-fixture'")
 _rconn.commit()
 _rconn.close()
 
-# Hit 50 times from test-ip-ratelimit-smoke, then 51st should 429
-RATE_TEST_IP = "10.99.88.77"
-with TestClient(app, raise_server_exceptions=False) as rl_client:
-    for i in range(50):
-        rl_client.get("/v1/programs/search",
-                      params={"limit": 1},
-                      headers={"X-Forwarded-For": RATE_TEST_IP})
-    r51 = rl_client.get("/v1/programs/search",
-                        params={"limit": 1},
-                        headers={"X-Forwarded-For": RATE_TEST_IP})
-    rl429_ok = r51.status_code == 429
-    rest_results.append({
-        "label": "rate limit (51st anon → 429)",
-        "method": "GET",
-        "path": "/v1/programs/search (51st from same IP)",
-        "expected": "429",
-        "actual": str(r51.status_code),
-        "latency_ms": 0,
-        "verdict": _verdict(rl429_ok),
-    })
-    if not rl429_ok:
-        all_failures.append(
-            f"REST FAIL [rate limit 429]: 51st request got {r51.status_code} not 429. "
-            f"Body: {str(r51.text)[:200]}"
-        )
+from jpintel_mcp.config import settings as _live_settings
+_anon_enabled_orig = _live_settings.anon_rate_limit_enabled
+_live_settings.anon_rate_limit_enabled = True
 
-print(f"  Error paths done")
+# Hit 3 times from a fixed IP, then 4th should 429
+RATE_TEST_IP = "10.99.88.77"
+try:
+    with TestClient(app, raise_server_exceptions=False) as rl_client:
+        for i in range(3):
+            rl_client.get("/v1/programs/search",
+                          params={"limit": 1},
+                          headers={"X-Forwarded-For": RATE_TEST_IP})
+        r4 = rl_client.get("/v1/programs/search",
+                           params={"limit": 1},
+                           headers={"X-Forwarded-For": RATE_TEST_IP})
+finally:
+    _live_settings.anon_rate_limit_enabled = _anon_enabled_orig
+
+rl429_ok = r4.status_code == 429
+rest_results.append({
+    "label": "rate limit (4th anon → 429)",
+    "method": "GET",
+    "path": "/v1/programs/search (4th from same IP)",
+    "expected": "429",
+    "actual": str(r4.status_code),
+    "latency_ms": 0,
+    "verdict": _verdict(rl429_ok),
+})
+if not rl429_ok:
+    all_failures.append(
+        f"REST FAIL [rate limit 429]: 4th request got {r4.status_code} not 429. "
+        f"Body: {str(r4.text)[:200]}"
+    )
+
+print("  Error paths done")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Part B: MCP smoke — core 31 tools (autonomath 16 covered separately by test_autonomath_tools.py)
@@ -536,7 +554,7 @@ else:
 REPORT_PATH = REPO_ROOT / "tests" / "smoke" / "pre_launch_2026_04_24.md"
 
 lines = [
-    f"# AutonoMath Pre-Launch Smoke Test — {TIMESTAMP[:10]}",
+    f"# jpcite Pre-Launch Smoke Test — {TIMESTAMP[:10]}",
     "",
     f"**Generated**: {TIMESTAMP}  ",
     f"**DB**: `{REAL_DB}`  ",
@@ -597,7 +615,7 @@ if all_failures:
 lines += [
     "---",
     "",
-    f"## Summary",
+    "## Summary",
     "",
     f"- REST: **{rest_pass}/{rest_total}** passed",
     f"- MCP: **{mcp_pass}/{mcp_total}** passed",
