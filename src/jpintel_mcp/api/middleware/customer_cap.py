@@ -1,8 +1,8 @@
 """Customer self-cap middleware (P3-W, dd_v8_09).
 
 Enforces a customer-set monthly spend cap (`api_keys.monthly_cap_yen`) by
-short-circuiting the request before it reaches the router when month-to-date
-billable spend has already reached the cap.
+short-circuiting the request before it reaches the router when the next
+billable unit would exceed the cap.
 
 Pricing posture (immutable):
     * AutonoMath is pure metered ¥3/req 税別 — see CLAUDE.md and memory
@@ -11,12 +11,14 @@ Pricing posture (immutable):
       themselves via POST /v1/me/cap.
     * `monthly_cap_yen IS NULL` -> uncapped (default).
     * `monthly_cap_yen IS NOT NULL` -> request returns 503 with
-      `cap_reached: true` once month-to-date billable spend reaches the cap.
+      `cap_reached: true` once serving the next billable unit would exceed
+      the cap.
 
 Spend computation:
-    Month-to-date billable spend = COUNT(usage_events row) * UNIT_PRICE_YEN,
+    Month-to-date billable spend = SUM(usage_events.quantity) * UNIT_PRICE_YEN,
     where the row is in the current JST calendar month and represents a
-    successful metered call (status<400 AND metered=1). Failed calls (4xx /
+    successful metered call ((status IS NULL OR status<400) AND metered=1).
+    Failed calls (4xx /
     5xx) are not billed and do not count toward the cap. This mirrors the
     "do not bill failures" rule already enforced in deps.log_usage().
 
@@ -30,7 +32,7 @@ When cap is reached:
 
 Anonymous tier:
     Requests with no X-API-Key / Authorization: Bearer header are skipped.
-    The 50 req/月 free anon quota is enforced separately by AnonIpLimitDep
+    The 3 req/日 free anon quota is enforced separately by AnonIpLimitDep
     on each anon-accepting router, and never produces a Stripe usage record.
 
 Cache:
@@ -40,14 +42,12 @@ Cache:
     DB but redundant work. The cache is invalidated on POST /v1/me/cap so
     a customer who changes their cap sees the new value on the next call.
 
-Cross-process note:
-    Multiple uvicorn workers each have their own cache; a request hitting
-    worker A may see a slightly stale count from worker B for up to 5 min.
-    The over-shoot is bounded by `5min * QPS * ¥3` per worker, which at
-    typical metered traffic (sub-1 QPS for a single key) is well under ¥1k
-    for a customer who set ¥5k cap — acceptable for a soft trust signal.
-    A multi-process Redis cache would tighten this, deferred until QPS
-    scaling actually warrants it.
+Final billing guard:
+    The request-time middleware is a UX gate. deps.log_usage() performs the
+    authoritative no-overcharge check again immediately before writing a
+    successful metered usage_events row and reporting Stripe usage, under
+    SQLite's writer lock. If a burst races the request-time gate, the later
+    request is served but not billed rather than exceeding the customer cap.
 """
 from __future__ import annotations
 
@@ -86,10 +86,11 @@ _CACHE_TTL_S: float = 300.0
 _JST = timezone(timedelta(hours=9))
 
 
-# Cache entry layout: (cap_yen, count_in_month, expires_monotonic).
+# Cache entry layout:
+# (cap_yen, billable_units_in_month, expires_monotonic, tree_group_id).
 # cap_yen=None means "no cap"; we still cache so we don't re-read api_keys
 # on every request for an uncapped customer.
-_CapCacheEntry = tuple[int | None, int, float]
+_CapCacheEntry = tuple[int | None, int, float, str]
 _cap_cache: dict[str, _CapCacheEntry] = {}
 _cap_cache_lock = threading.Lock()
 
@@ -105,6 +106,52 @@ def invalidate_cap_cache(key_hash: str | None = None) -> None:
             _cap_cache.clear()
             return
         _cap_cache.pop(key_hash, None)
+
+
+def _cap_cache_scope(
+    conn: sqlite3.Connection, key_hash: str
+) -> tuple[str, list[str]]:
+    """Return a stable cache group id and every key hash in that billing tree."""
+    row = conn.execute(
+        "SELECT id, parent_key_id FROM api_keys WHERE key_hash = ?",
+        (key_hash,),
+    ).fetchone()
+    if row is None:
+        return f"key:{key_hash}", [key_hash]
+    row_keys = row.keys() if hasattr(row, "keys") else []
+    own_id = row["id"] if "id" in row_keys else None
+    parent_key_id = row["parent_key_id"] if "parent_key_id" in row_keys else None
+    root = parent_key_id if parent_key_id is not None else own_id
+    if root is None:
+        return f"key:{key_hash}", [key_hash]
+    rows = conn.execute(
+        "SELECT key_hash FROM api_keys WHERE id = ? OR parent_key_id = ?",
+        (root, root),
+    ).fetchall()
+    hashes = [r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows]
+    if key_hash not in hashes:
+        hashes.append(key_hash)
+    return f"tree:{root}", hashes
+
+
+def invalidate_cap_cache_for_tree(
+    conn: sqlite3.Connection, key_hash: str | None = None
+) -> None:
+    """Drop cached cap entries for every key sharing the caller's cap."""
+    if key_hash is None:
+        invalidate_cap_cache(None)
+        return
+    try:
+        group_id, hashes = _cap_cache_scope(conn, key_hash)
+    except Exception:
+        invalidate_cap_cache(key_hash)
+        return
+    with _cap_cache_lock:
+        for kh in hashes:
+            _cap_cache.pop(kh, None)
+        for kh, entry in list(_cap_cache.items()):
+            if entry[3] == group_id:
+                _cap_cache.pop(kh, None)
 
 
 def _reset_cap_cache_state() -> None:
@@ -149,10 +196,10 @@ def _extract_raw_key(request: Request) -> str | None:
 def _read_cap_and_count(
     conn: sqlite3.Connection, key_hash: str
 ) -> tuple[int | None, int, str | None]:
-    """Return (cap_yen, count_metered_success_this_month, tier).
+    """Return (cap_yen, billable_units_metered_success_this_month, tier).
 
-    Anonymous keys (key_hash==None) never reach this function. The COUNT only
-    bills metered & successful (status<400) rows so 4xx/5xx don't burn cap.
+    Anonymous keys (key_hash==None) never reach this function. The SUM only
+    bills metered & successful (status<400) units so 4xx/5xx don't burn cap.
 
     Migration 086: when the caller's row carries a non-NULL parent_key_id,
     we walk to the parent's row and read the parent's `monthly_cap_yen`,
@@ -162,13 +209,15 @@ def _read_cap_and_count(
     their share of the parent's quota by spreading traffic.
     """
     row = conn.execute(
-        "SELECT tier, monthly_cap_yen, id, parent_key_id "
+        "SELECT tier, monthly_cap_yen, id, parent_key_id, revoked_at "
         "FROM api_keys WHERE key_hash = ?",
         (key_hash,),
     ).fetchone()
     if row is None:
         return (None, 0, None)
     tier = row["tier"]
+    if row["revoked_at"] is not None or tier != "paid":
+        return (None, 0, tier)
     row_keys = row.keys() if hasattr(row, "keys") else []
     parent_key_id = row["parent_key_id"] if "parent_key_id" in row_keys else None
     own_id = row["id"] if "id" in row_keys else None
@@ -196,13 +245,13 @@ def _read_cap_and_count(
 
     if root is None:
         # Legacy row (pre-086 schema) — single-key scope.
-        (count,) = conn.execute(
-            """SELECT COUNT(*)
+        (units,) = conn.execute(
+            """SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0)
                  FROM usage_events
                 WHERE key_hash = ?
                   AND ts >= ?
                   AND metered = 1
-                  AND status < 400""",
+                  AND (status IS NULL OR status < 400)""",
             (key_hash, month_start_utc_iso),
         ).fetchone()
     else:
@@ -218,16 +267,16 @@ def _read_cap_and_count(
         if not tree_hashes:
             tree_hashes = [key_hash]
         placeholders = ",".join("?" * len(tree_hashes))
-        (count,) = conn.execute(
-            f"""SELECT COUNT(*)
+        (units,) = conn.execute(
+            f"""SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0)
                   FROM usage_events
                  WHERE key_hash IN ({placeholders})
                    AND ts >= ?
                    AND metered = 1
-                   AND status < 400""",  # noqa: S608 — placeholders only
+                   AND (status IS NULL OR status < 400)""",  # noqa: S608 — placeholders only
             (*tree_hashes, month_start_utc_iso),
         ).fetchone()
-    return (cap, int(count), tier)
+    return (cap, int(units or 0), tier)
 
 
 def _cap_status(
@@ -244,33 +293,160 @@ def _cap_status(
     with _cap_cache_lock:
         entry = _cap_cache.get(key_hash)
         if entry is not None and entry[2] > now:
-            cap, count, _expires = entry
-            # tier was never cached (only cap+count); re-read on miss to keep
-            # the entry small. For the hot path we don't need tier.
+            cap, count, _expires, _group_id = entry
+            # A key can be revoked while this cache is warm. Re-read just
+            # credential status so stale cache cannot mask auth with a cap 503.
+            row = conn.execute(
+                "SELECT tier, revoked_at FROM api_keys WHERE key_hash = ?",
+                (key_hash,),
+            ).fetchone()
+            if row is None or row["revoked_at"] is not None or row["tier"] != "paid":
+                _cap_cache.pop(key_hash, None)
+                return None, 0, row["tier"] if row is not None else None
             return cap, count, None
 
     cap, count, tier = _read_cap_and_count(conn, key_hash)
+    try:
+        group_id, hashes = _cap_cache_scope(conn, key_hash)
+    except Exception:
+        group_id, hashes = f"key:{key_hash}", [key_hash]
+    expires = now + _CACHE_TTL_S
     with _cap_cache_lock:
-        _cap_cache[key_hash] = (cap, count, now + _CACHE_TTL_S)
+        for kh in hashes:
+            _cap_cache[kh] = (cap, count, expires, group_id)
     return cap, count, tier
 
 
 def _build_cap_reached_body(
-    cap_yen: int, month_to_date_yen: int
+    cap_yen: int,
+    month_to_date_yen: int,
+    *,
+    projected_yen: int | None = None,
+    projected_units: int | None = None,
 ) -> dict[str, Any]:
-    return {
-        "error": {
-            "code": "monthly_cap_reached",
-            "cap_reached": True,
-            "cap_yen": cap_yen,
-            "month_to_date_yen": month_to_date_yen,
-            "resets_at": _jst_next_month_start_iso(),
-            "message": (
-                f"月次上限 ¥{cap_yen} に達しました。"
-                f"翌月 1 日 00:00 JST にリセットされます。"
-            ),
-        }
+    error: dict[str, Any] = {
+        "code": "monthly_cap_reached",
+        "cap_reached": True,
+        "cap_yen": cap_yen,
+        "month_to_date_yen": month_to_date_yen,
+        "resets_at": _jst_next_month_start_iso(),
+        "message": (
+            f"月次上限 ¥{cap_yen} を超えるため、このリクエストは実行されません。"
+            f"翌月 1 日 00:00 JST にリセットされます。"
+        ),
     }
+    if projected_yen is not None:
+        error["projected_yen"] = projected_yen
+    if projected_units is not None:
+        error["projected_units"] = projected_units
+    return {
+        "error": error
+    }
+
+
+def _retry_after_seconds() -> int:
+    return max(
+        1,
+        int(
+            (
+                datetime.fromisoformat(_jst_next_month_start_iso())
+                - datetime.now(_JST)
+            ).total_seconds()
+        ),
+    )
+
+
+def _coerce_units(units: int) -> int:
+    try:
+        units = int(units)
+    except (TypeError, ValueError):
+        units = 1
+    return max(1, units)
+
+
+def projected_monthly_cap_response(
+    conn: sqlite3.Connection,
+    key_hash: str | None,
+    projected_units: int,
+) -> JSONResponse | None:
+    """Return a 503 response if a known multi-unit charge would exceed cap.
+
+    The middleware can only price the default one-unit request. Batch/export
+    handlers call this after they know the exact `log_usage(quantity=N)` value,
+    before they create a Stripe-billable usage row.
+    """
+    if key_hash is None:
+        return None
+    units = _coerce_units(projected_units)
+    cap_yen, count, _tier = _read_cap_and_count(conn, key_hash)
+    if cap_yen is None:
+        return None
+    month_to_date_yen = count * _UNIT_PRICE_YEN
+    projected_yen = month_to_date_yen + (units * _UNIT_PRICE_YEN)
+    if projected_yen <= cap_yen:
+        return None
+    body = _build_cap_reached_body(
+        cap_yen=cap_yen,
+        month_to_date_yen=month_to_date_yen,
+        projected_yen=projected_yen,
+        projected_units=units,
+    )
+    return JSONResponse(
+        status_code=503,
+        content=body,
+        headers={"Retry-After": str(_retry_after_seconds())},
+    )
+
+
+def note_cap_usage(key_hash: str | None, quantity: int = 1) -> None:
+    """Pessimistically advance the in-process cap cache after billing.
+
+    `usage_events` is sometimes written in FastAPI background tasks. Without
+    this cache bump, a burst of successful requests inside the 5-minute TTL can
+    keep seeing the pre-burst count and overshoot a customer-set cap.
+    """
+    if key_hash is None:
+        return
+    units = _coerce_units(quantity)
+    now = time.monotonic()
+    with _cap_cache_lock:
+        entry = _cap_cache.get(key_hash)
+        if entry is None:
+            return
+        cap, count, expires, group_id = entry
+        if expires <= now:
+            return
+        for kh, cached in list(_cap_cache.items()):
+            cached_cap, cached_count, cached_expires, cached_group = cached
+            if cached_group != group_id or cached_expires <= now:
+                continue
+            _cap_cache[kh] = (
+                cached_cap,
+                cached_count + units,
+                cached_expires,
+                cached_group,
+            )
+
+
+def metered_charge_within_cap(
+    conn: sqlite3.Connection,
+    key_hash: str | None,
+    quantity: int = 1,
+) -> bool:
+    """Return True iff recording this successful metered charge is allowed.
+
+    This is the final billing-side guard used by deps.log_usage() under
+    `BEGIN IMMEDIATE`. The middleware's projected check can be stale across
+    workers; this check is intentionally fresh and fail-closed by its caller.
+    """
+    if key_hash is None:
+        return True
+    units = _coerce_units(quantity)
+    cap_yen, count, _tier = _read_cap_and_count(conn, key_hash)
+    if cap_yen is None:
+        return True
+    projected_yen = (count + units) * _UNIT_PRICE_YEN
+    return projected_yen <= cap_yen
 
 
 class CustomerCapMiddleware(BaseHTTPMiddleware):
@@ -343,30 +519,29 @@ class CustomerCapMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         month_to_date_yen = count * _UNIT_PRICE_YEN
-        if month_to_date_yen < cap_yen:
+        projected_yen = month_to_date_yen + _UNIT_PRICE_YEN
+        if projected_yen <= cap_yen:
             return await call_next(request)
 
         # Cap reached. 503 + spec body, no usage_events row created.
-        retry_after_s = max(
-            1,
-            int(
-                (
-                    datetime.fromisoformat(_jst_next_month_start_iso())
-                    - datetime.now(_JST)
-                ).total_seconds()
-            ),
-        )
         body = _build_cap_reached_body(
-            cap_yen=cap_yen, month_to_date_yen=month_to_date_yen
+            cap_yen=cap_yen,
+            month_to_date_yen=month_to_date_yen,
+            projected_yen=projected_yen,
+            projected_units=1,
         )
         return JSONResponse(
             status_code=503,
             content=body,
-            headers={"Retry-After": str(retry_after_s)},
+            headers={"Retry-After": str(_retry_after_seconds())},
         )
 
 
 __all__ = [
     "CustomerCapMiddleware",
     "invalidate_cap_cache",
+    "invalidate_cap_cache_for_tree",
+    "metered_charge_within_cap",
+    "note_cap_usage",
+    "projected_monthly_cap_response",
 ]

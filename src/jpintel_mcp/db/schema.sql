@@ -243,6 +243,10 @@ CREATE TABLE IF NOT EXISTS usage_events (
     -- Stripe usage_record + one idempotency key. Mirrors
     -- `log_usage(quantity=...)`.
     quantity INTEGER NOT NULL DEFAULT 1,
+    -- Migration 122: stable logical request key derived from HTTP
+    -- Idempotency-Key. Prevents duplicate usage_events / Stripe increments
+    -- when a 2xx handler records usage but response-cache finalization fails.
+    billing_idempotency_key TEXT,
     FOREIGN KEY(key_hash) REFERENCES api_keys(key_hash)
 );
 
@@ -261,6 +265,9 @@ CREATE INDEX IF NOT EXISTS idx_usage_events_endpoint_created
 CREATE INDEX IF NOT EXISTS idx_usage_events_client_tag
     ON usage_events(key_hash, client_tag, ts)
     WHERE client_tag IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_usage_events_billing_idempotency
+    ON usage_events(key_hash, billing_idempotency_key)
+    WHERE billing_idempotency_key IS NOT NULL;
 
 -- Migration 062: empty-search log. Every 0-result search query is captured
 -- here so the operator can drive ingest prioritization off real demand.

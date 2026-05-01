@@ -19,7 +19,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import threading
-from pathlib import Path
+from pathlib import Path  # noqa: TC003
 
 import pytest
 
@@ -99,8 +99,7 @@ def test_event_dedup_records_event_id_on_first_delivery(
 def test_duplicate_event_id_returns_200_and_does_not_double_process(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
-    """Replaying the same event_id 3x => exactly 1 stripe_webhook_events row,
-    exactly 1 api_keys row, and the duplicate responses say 'duplicate_ignored'."""
+    """Replaying the same event_id 3x => one event row, no webhook-issued key."""
     event = {
         "id": "evt_dedup_replay",
         "type": "customer.subscription.created",
@@ -145,28 +144,26 @@ def test_duplicate_event_id_returns_200_and_does_not_double_process(
     finally:
         c.close()
     assert n_events == 1, "event_id row must be unique"
-    assert n_keys == 1, "key must NOT be re-issued on duplicate event"
+    assert n_keys == 0, "subscription.created must not issue API keys"
 
 
-def test_duplicate_event_does_not_re_send_welcome_email(
+def test_invoice_paid_replay_does_not_send_hidden_welcome_email(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
-    """The welcome-email side-effect is the highest-impact dedup target —
-    replaying must not double-mail the customer.
+    """invoice.paid replay must not send a welcome email with an unrevealed key.
 
-    P0 dedup contract: the webhook enqueues to the durable bg_task_queue
-    (api/_bg_task_queue.py) with `dedup_key=f"welcome:{sub_id}"`. The
-    queue's ON CONFLICT(dedup_key) DO NOTHING guarantees at-most-one row
-    even on Stripe webhook redelivery. We assert that contract by:
+    Raw key issuance is browser-bound to /keys/from-checkout. The webhook may
+    enqueue status-refresh work, but must never enqueue/send welcome_email for
+    a key the buyer cannot see. We assert that contract by:
       1. patching `jpintel_mcp.email.postmark.get_client` so the worker's
          lazy import (`from jpintel_mcp.email import get_client`) lands
          on the counting stub
       2. submitting the same `invoice.paid` event 3x (Stripe retry
          simulation)
-      3. draining the queue once and checking exactly 1 send.
+      3. draining the queue once and checking zero welcome sends.
     """
-    from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp import email as email_pkg
+    from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp.email import postmark as postmark_mod
 
     # Clear any prior bg_task_queue rows left behind by earlier tests in
@@ -224,9 +221,8 @@ def test_duplicate_event_does_not_re_send_welcome_email(
         )
         assert r.status_code == 200, r.text
 
-    # Drain the bg_task_queue synchronously: one welcome row should have
-    # been enqueued (with `dedup_key=welcome:sub_dedup_email`) and the
-    # subsequent two webhook deliveries should have been deduped to no-op.
+    # Drain the bg_task_queue synchronously. invoice.paid may enqueue
+    # stripe_status_refresh, but it must not enqueue welcome_email.
     from jpintel_mcp.api._bg_task_queue import claim_next, mark_done
     from jpintel_mcp.api._bg_task_worker import _dispatch_one
 
@@ -250,7 +246,17 @@ def test_duplicate_event_does_not_re_send_welcome_email(
     finally:
         drain_conn.close()
 
-    assert len(sent) == 1, f"welcome email should fire once, fired {len(sent)} times"
+    assert sent == [], f"invoice.paid must not send welcome email, sent={sent!r}"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT 1 FROM bg_task_queue WHERE kind = ? AND dedup_key = ?",
+            ("welcome_email", "welcome:sub_dedup_email"),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row is None
 
 
 # ---------------------------------------------------------------------------

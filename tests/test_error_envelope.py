@@ -19,10 +19,7 @@ across the REST surface; ``api/_error_envelope.py:make_error`` and
 """
 from __future__ import annotations
 
-import json
 
-import pytest
-from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api._error_envelope import (

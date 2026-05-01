@@ -14,7 +14,7 @@ This module asserts:
      pool that rotates the source IP between requests but keeps the same
      LLM-client UA / lang / HTTP-version / JA3 collapses to one logical
      caller. Without this, a /22 NAT pool would deliver
-     50 × len(pool)/月 free requests instead of 50/月.
+     3 × len(pool)/日 free requests instead of 3/日.
 
   2. **UA-rotation does NOT reset the bucket** — bumping
      "Cursor/1.2.3" → "Cursor/1.2.4" between requests stays in the same
@@ -70,12 +70,12 @@ def _hash_for(ip: str, fingerprint: str) -> str:
     ).hexdigest()
 
 
-def _row_count(db: Path, ip_hash: str, month_bucket: str) -> int:
+def _row_count(db: Path, ip_hash: str, day_bucket: str) -> int:
     c = sqlite3.connect(db)
     try:
         row = c.execute(
             "SELECT call_count FROM anon_rate_limit WHERE ip_hash = ? AND date = ?",
-            (ip_hash, month_bucket),
+            (ip_hash, day_bucket),
         ).fetchone()
     finally:
         c.close()
@@ -121,7 +121,7 @@ def test_same_fingerprint_different_ips_share_bucket(
     """
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 50)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 3)
 
     headers_a = {
         "x-forwarded-for": "203.0.113.10",
@@ -140,7 +140,7 @@ def test_same_fingerprint_different_ips_share_bucket(
     assert r2.status_code == 200
 
     anon = _anon_module()
-    month_bucket = anon._jst_month_bucket()
+    day_bucket = anon._jst_day_bucket()
 
     # Both rows exist under DIFFERENT ip_hash values — fingerprint composes,
     # not collapses.
@@ -149,8 +149,8 @@ def test_same_fingerprint_different_ips_share_bucket(
     h_b = _hash_for("203.0.113.11", fp)
     assert h_a != h_b, "different IPs must hash to different rows"
 
-    assert _row_count(seeded_db, h_a, month_bucket) == 1
-    assert _row_count(seeded_db, h_b, month_bucket) == 1
+    assert _row_count(seeded_db, h_a, day_bucket) == 1
+    assert _row_count(seeded_db, h_b, day_bucket) == 1
 
     # And — load-bearing assertion — the legacy IP-only hash (no
     # fingerprint) MUST differ from the new composed hash. If a future
@@ -190,7 +190,7 @@ def test_ua_version_rotation_does_not_reset_bucket(
     """
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_month", 50)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 3)
 
     ip = "203.0.113.20"
 
@@ -214,13 +214,13 @@ def test_ua_version_rotation_does_not_reset_bucket(
     assert r2.status_code == 200, r2.text
 
     anon = _anon_module()
-    month_bucket = anon._jst_month_bucket()
+    day_bucket = anon._jst_day_bucket()
 
     fp = "cursor|ja|h1.1|?"
     ip_h = _hash_for(ip, fp)
 
     # Both calls hit the same bucket — version-bump did not split.
-    assert _row_count(seeded_db, ip_h, month_bucket) == 2, (
+    assert _row_count(seeded_db, ip_h, day_bucket) == 2, (
         "UA version rotation reset the bucket — classifier is leaking the "
         "raw UA string into the fingerprint hash"
     )

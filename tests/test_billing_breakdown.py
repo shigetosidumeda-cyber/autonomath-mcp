@@ -15,13 +15,13 @@ from __future__ import annotations
 
 import sqlite3
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
 import pytest
 
 from jpintel_mcp.api.deps import hash_api_key
-from jpintel_mcp.billing.keys import issue_key
+from jpintel_mcp.billing.keys import issue_child_key, issue_key
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -89,6 +89,23 @@ def _seed_events(
                 (key_hash, "test", _ts_jst(d), 200, 1, tag, qty)
                 for (tag, d, qty) in rows
             ],
+        )
+        c.commit()
+    finally:
+        c.close()
+
+
+def _seed_raw_usage_events(
+    seeded_db: Path,
+    rows: list[tuple[str, str, int | None, int | None, str | None, int | None]],
+) -> None:
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.executemany(
+            "INSERT INTO usage_events("
+            "  key_hash, endpoint, ts, status, metered, client_tag, quantity"
+            ") VALUES (?,?,?,?,?,?,?)",
+            rows,
         )
         c.commit()
     finally:
@@ -184,6 +201,32 @@ def test_breakdown_sorted_by_yen_desc(
 
     yen_values = [row["yen_excl_tax"] for row in r.json()["by_client_tag"]]
     assert yen_values == sorted(yen_values, reverse=True)
+
+
+def test_breakdown_totals_include_rows_beyond_max_breakdown_rows(
+    client, breakdown_key: str, seeded_db: Path
+):
+    """Grand totals reconcile even when the visible by-tag list is capped."""
+    kh = hash_api_key(breakdown_key)
+    today = _today_jst()
+    _seed_events(
+        seeded_db,
+        key_hash=kh,
+        rows=[(f"tag_{i:04d}", today, 1) for i in range(1001)],
+    )
+
+    r = client.get(
+        "/v1/billing/client_tag_breakdown",
+        headers={"X-API-Key": breakdown_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+
+    assert body["capped_at_max_rows"] is True
+    assert len(body["by_client_tag"]) == 1000
+    assert body["total_requests"] == 1001
+    assert body["total_billable_units"] == 1001
+    assert body["total_billable_yen_excl_tax"] == 3003
 
 
 # ---------------------------------------------------------------------------
@@ -343,6 +386,66 @@ def test_breakdown_period_filter_excludes_outside_rows(
     assert "outside_tag" not in tags
 
 
+def test_breakdown_only_counts_billable_success_rows(
+    client, breakdown_key: str, seeded_db: Path
+):
+    kh = hash_api_key(breakdown_key)
+    today = _today_jst()
+    ts = _ts_jst(today)
+    _seed_raw_usage_events(
+        seeded_db,
+        [
+            (kh, "billable.quantity_one", ts, 200, 1, "kept", 1),
+            (kh, "billable.quantity_two", ts, 201, 1, "kept", 2),
+            (kh, "failed", ts, 500, 1, "drop_failed", 9),
+            (kh, "client_error", ts, 404, 1, "drop_4xx", 9),
+            (kh, "unmetered", ts, 200, 0, "drop_unmetered", 9),
+        ],
+    )
+
+    r = client.get(
+        "/v1/billing/client_tag_breakdown",
+        params={"period_start": today.isoformat(), "period_end": today.isoformat()},
+        headers={"X-API-Key": breakdown_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["total_requests"] == 2
+    assert body["total_billable_units"] == 3
+    assert body["total_billable_yen_excl_tax"] == 9
+    assert [row["client_tag"] for row in body["by_client_tag"]] == ["kept"]
+
+
+def test_breakdown_uses_jst_day_for_utc_stored_events(
+    client, breakdown_key: str, seeded_db: Path
+):
+    kh = hash_api_key(breakdown_key)
+    may_1_jst_start_utc = datetime(2026, 4, 30, 15, 0, 0, tzinfo=UTC).isoformat()
+    april_30_jst_utc = datetime(2026, 4, 30, 14, 59, 59, tzinfo=UTC).isoformat()
+    may_2_jst_start_utc = datetime(2026, 5, 1, 15, 0, 0, tzinfo=UTC).isoformat()
+    _seed_raw_usage_events(
+        seeded_db,
+        [
+            (kh, "april_jst", april_30_jst_utc, 200, 1, "drop_april", 5),
+            (kh, "may_1_jst", may_1_jst_start_utc, 200, 1, "may_1", 2),
+            (kh, "may_2_jst", may_2_jst_start_utc, 200, 1, "drop_may_2", 7),
+        ],
+    )
+
+    r = client.get(
+        "/v1/billing/client_tag_breakdown",
+        params={"period_start": "2026-05-01", "period_end": "2026-05-01"},
+        headers={"X-API-Key": breakdown_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["total_requests"] == 1
+    assert body["total_billable_units"] == 2
+    assert body["by_client_tag"][0]["client_tag"] == "may_1"
+    assert body["by_client_tag"][0]["first_seen"] == "2026-05-01"
+    assert body["by_client_tag"][0]["last_seen"] == "2026-05-01"
+
+
 # ---------------------------------------------------------------------------
 # Test 7: cross-account isolation
 # ---------------------------------------------------------------------------
@@ -403,6 +506,61 @@ def test_breakdown_cross_account_isolation(
     assert "acct_a_tag" not in b_tags
 
 
+def test_child_key_breakdown_does_not_expose_sibling_usage(
+    client, breakdown_key: str, seeded_db: Path
+):
+    """Child keys see only their own client_tag rows, not siblings."""
+    parent_hash = hash_api_key(breakdown_key)
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        child_a, child_a_hash = issue_child_key(
+            c, parent_key_hash=parent_hash, label="child-a"
+        )
+        child_b, child_b_hash = issue_child_key(
+            c, parent_key_hash=parent_hash, label="child-b"
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    today = _today_jst()
+    _seed_events(
+        seeded_db,
+        key_hash=parent_hash,
+        rows=[("parent_tag", today, 1)] * 2,
+    )
+    _seed_events(
+        seeded_db,
+        key_hash=child_a_hash,
+        rows=[("child_a_tag", today, 1)] * 3,
+    )
+    _seed_events(
+        seeded_db,
+        key_hash=child_b_hash,
+        rows=[("child_b_secret", today, 1)] * 5,
+    )
+
+    r = client.get(
+        "/v1/billing/client_tag_breakdown",
+        headers={"X-API-Key": child_a},
+    )
+    assert r.status_code == 200, r.text
+    child_body = r.json()
+    assert child_body["total_requests"] == 3
+    assert [row["client_tag"] for row in child_body["by_client_tag"]] == [
+        "child_a_tag"
+    ]
+
+    parent = client.get(
+        "/v1/billing/client_tag_breakdown",
+        headers={"X-API-Key": breakdown_key},
+    )
+    assert parent.status_code == 200, parent.text
+    parent_tags = {row["client_tag"] for row in parent.json()["by_client_tag"]}
+    assert {"parent_tag", "child_a_tag", "child_b_secret"} <= parent_tags
+
+
 # ---------------------------------------------------------------------------
 # Test 8: untagged rows surfaced as client_tag: null (NOT dropped)
 # ---------------------------------------------------------------------------
@@ -449,6 +607,20 @@ def test_breakdown_surfaces_untagged_as_null(
 def test_breakdown_requires_api_key(client):
     r = client.get("/v1/billing/client_tag_breakdown")
     assert r.status_code == 401
+
+
+def test_breakdown_unauthenticated_does_not_consume_anon_quota(
+    client, seeded_db: Path
+):
+    r = client.get("/v1/billing/client_tag_breakdown")
+    assert r.status_code == 401
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        count = c.execute("SELECT COUNT(*) FROM anon_rate_limit").fetchone()[0]
+    finally:
+        c.close()
+    assert count == 0
 
 
 def test_breakdown_rejects_inverted_period(client, breakdown_key: str):

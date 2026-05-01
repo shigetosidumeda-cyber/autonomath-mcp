@@ -3,10 +3,11 @@
 Pure metered billing (¥3/req 税別 / ¥3.30 税込). Every successful request for
 a `paid` tier key spawns a daemon thread that:
 
-  1. Looks up the subscription_item_id for the caller's Stripe subscription
-     (cached in-process via functools.lru_cache — Stripe subs are immutable
-     in `items[0].id` for the subscription's lifetime in our single-price
-     model, so a per-process cache is safe).
+  1. Looks up the metered subscription_item_id for the caller's Stripe
+     subscription (cached in-process via functools.lru_cache). In the
+     normal API subscription there is one metered item; widget subscriptions
+     can also have a fixed monthly base item plus a metered overage item, so
+     item selection must never assume `items[0]`.
   2. POSTs quantity=1 to /v1/subscription_items/{si}/usage_records with
      `action=increment` and `timestamp=now`.
 
@@ -31,12 +32,17 @@ import logging
 import threading
 from datetime import UTC, datetime
 from functools import lru_cache
+from typing import Any
 
 import stripe
 
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.billing.usage")
+
+
+class UsageReportError(RuntimeError):
+    """Raised when a durable Stripe usage sync did not complete."""
 
 
 def _configure_stripe() -> None:
@@ -53,15 +59,89 @@ def _configure_stripe() -> None:
         stripe.api_version = settings.stripe_api_version
 
 
+def _stripe_value(obj: Any, key: str, default: Any = None) -> Any:
+    """Read a key from dict-like Stripe objects and plain dict test doubles."""
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    try:
+        return obj[key]
+    except Exception:
+        return getattr(obj, key, default)
+
+
+def _stripe_path(obj: Any, *keys: str) -> Any:
+    cur = obj
+    for key in keys:
+        cur = _stripe_value(cur, key)
+        if cur is None:
+            return None
+    return cur
+
+
+def _is_metered_item(item: Any) -> bool:
+    usage_type = _stripe_path(item, "price", "recurring", "usage_type")
+    if usage_type is None:
+        usage_type = _stripe_path(item, "plan", "usage_type")
+    return usage_type == "metered"
+
+
+def _metadata_text(metadata: Any) -> str:
+    if not metadata:
+        return ""
+    if not isinstance(metadata, dict):
+        try:
+            metadata = dict(metadata)
+        except Exception:
+            return ""
+    return " ".join(f"{k} {v}" for k, v in metadata.items()).lower()
+
+
+def _looks_like_overage_item(item: Any) -> bool:
+    price = _stripe_value(item, "price") or {}
+    haystack = " ".join(
+        str(part or "")
+        for part in (
+            _stripe_value(item, "id"),
+            _stripe_value(item, "metadata"),
+            _stripe_value(price, "id"),
+            _stripe_value(price, "lookup_key"),
+            _stripe_value(price, "nickname"),
+            _metadata_text(_stripe_value(price, "metadata")),
+        )
+    ).lower()
+    return "overage" in haystack
+
+
+def _select_subscription_item(items: list[Any]) -> Any | None:
+    """Pick the Stripe item that accepts usage_records.
+
+    Multiple-item widget subscriptions have a licensed base item and a
+    metered overage item. The core API has one metered item. If a legacy
+    test double omits recurring.usage_type but only supplies a single item,
+    keep the old single-item behavior; with multiple non-metered/unknown
+    items, fail closed instead of charging the first line.
+    """
+    metered_items = [item for item in items if _is_metered_item(item)]
+    if metered_items:
+        for item in metered_items:
+            if _looks_like_overage_item(item):
+                return item
+        return metered_items[0]
+    if len(items) == 1:
+        return items[0]
+    return None
+
+
 @lru_cache(maxsize=4096)
 def _get_subscription_item_id(subscription_id: str) -> str | None:
-    """Return the first subscription_item.id for a subscription.
+    """Return the metered subscription_item.id for a subscription.
 
-    Our billing model has exactly one metered Price per subscription
-    (lookup_key=per_request_v3), so items[0] is unambiguous. Result is
-    cached for the process lifetime — Stripe sub items are stable for a
-    given subscription in our single-price setup, and a process restart
-    on deploy is frequent enough that a TTL is not needed.
+    Core API subscriptions have exactly one metered Price
+    (lookup_key=per_request_v3). Widget subscriptions can have a fixed base
+    item plus a metered overage item; select by `recurring.usage_type` and
+    prefer an item labelled "overage" when present. Result is cached for the
+    process lifetime; on Stripe POST failure the cache is cleared so a stale
+    item id can heal on the next backfill attempt.
 
     Returns None on any error; the caller logs and skips.
     """
@@ -70,18 +150,31 @@ def _get_subscription_item_id(subscription_id: str) -> str | None:
     _configure_stripe()
     try:
         sub = stripe.Subscription.retrieve(subscription_id)
-        items = sub.get("items", {}).get("data", []) if isinstance(sub, dict) else None
-        if items is None and hasattr(sub, "items"):
-            items = sub["items"]["data"]
+        items = _stripe_path(sub, "items", "data") or []
         if not items:
             return None
-        return items[0]["id"]
+        selected = _select_subscription_item(list(items))
+        if selected is None:
+            logger.warning(
+                "sub_item lookup found no metered item sub=%s items=%d",
+                subscription_id,
+                len(items),
+            )
+            return None
+        item_id = _stripe_value(selected, "id")
+        return str(item_id) if item_id else None
     except Exception:
         logger.warning("sub_item lookup failed sub=%s", subscription_id, exc_info=True)
         return None
 
 
-def _mark_synced(usage_event_id: int, stripe_record_id: str) -> None:
+def _clear_subscription_item_cache() -> None:
+    cache_clear = getattr(_get_subscription_item_id, "cache_clear", None)
+    if cache_clear is not None:
+        cache_clear()
+
+
+def _mark_synced(usage_event_id: int, stripe_record_id: str) -> bool:
     """Update usage_events row with Stripe record id + sync timestamp.
 
     Opens its own short-lived connection because we are running in a
@@ -105,6 +198,7 @@ def _mark_synced(usage_event_id: int, stripe_record_id: str) -> None:
                 ),
             )
             conn.commit()
+            return True
         finally:
             conn.close()
     except Exception:
@@ -114,13 +208,17 @@ def _mark_synced(usage_event_id: int, stripe_record_id: str) -> None:
             stripe_record_id,
             exc_info=True,
         )
+        return False
 
 
 def _report_sync(
     subscription_id: str,
     quantity: int = 1,
     usage_event_id: int | None = None,
-) -> None:
+    *,
+    idempotency_key: str | None = None,
+    raise_on_failure: bool = False,
+) -> bool:
     """Synchronous inner body — always called from a daemon thread.
 
     On success, if `usage_event_id` was supplied, the local
@@ -129,10 +227,17 @@ def _report_sync(
     retry (audit a37f6226fe319dc40).
     """
     if not settings.stripe_secret_key:
-        return
+        if raise_on_failure:
+            raise UsageReportError("stripe secret key is not configured")
+        return False
     si_id = _get_subscription_item_id(subscription_id)
     if not si_id:
-        return
+        _clear_subscription_item_cache()
+        if raise_on_failure:
+            raise UsageReportError(
+                f"metered subscription item not found for {subscription_id}"
+            )
+        return False
     _configure_stripe()
     # Idempotency key MUST be stable per logical request so the inline
     # `log_usage` and the deferred `_record_usage_async` paths cannot
@@ -143,7 +248,9 @@ def _report_sync(
     # (subscription_id, second-truncated timestamp): two reports in the
     # same second collide intentionally — better a missed unit than a
     # double-charge.
-    if usage_event_id is not None:
+    if idempotency_key is not None:
+        idem_key = idempotency_key
+    elif usage_event_id is not None:
         idem_key = f"usage_{usage_event_id}"
     else:
         idem_key = f"usage_{subscription_id}_{int(datetime.now(UTC).timestamp())}"
@@ -155,26 +262,33 @@ def _report_sync(
             action="increment",
             idempotency_key=idem_key,
         )
-    except Exception:
+    except Exception as err:
         logger.warning(
             "usage_record POST failed sub=%s si=%s", subscription_id, si_id, exc_info=True
         )
-        return
+        _clear_subscription_item_cache()
+        if raise_on_failure:
+            raise UsageReportError("stripe usage_record POST failed") from err
+        return False
     if usage_event_id is None:
-        return
+        return True
     record_id = None
     try:
         record_id = record.get("id") if isinstance(record, dict) else getattr(record, "id", None)
     except Exception:
         record_id = None
-    if record_id:
-        _mark_synced(usage_event_id, record_id)
+    if record_id and _mark_synced(usage_event_id, record_id):
+        return True
+    if raise_on_failure:
+        raise UsageReportError("stripe usage_record created but local sync mark failed")
+    return False
 
 
 def report_usage_async(
     subscription_id: str | None,
     quantity: int = 1,
     usage_event_id: int | None = None,
+    idempotency_key: str | None = None,
 ) -> None:
     """Spawn a daemon thread to report 1 unit of usage to Stripe.
 
@@ -192,10 +306,11 @@ def report_usage_async(
     t = threading.Thread(
         target=_report_sync,
         args=(subscription_id, quantity, usage_event_id),
+        kwargs={"idempotency_key": idempotency_key},
         daemon=True,
         name="stripe-usage",
     )
     t.start()
 
 
-__all__ = ["report_usage_async"]
+__all__ = ["report_usage_async", "UsageReportError"]

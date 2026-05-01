@@ -5,16 +5,20 @@ Covers:
   1. ``StandardResponse.rich`` populates status='rich' + meta.
   2. ``StandardResponse.empty`` carries ``empty_reason`` + ``retry_with``.
   3. ``StandardError.rate_limited`` fills retry_after / retryable / code.
-  4. ``?envelope=v2`` opt-in on /v1/programs/search returns the v2 shape.
+  4. Accept-header v2 opt-in on /v1/programs/search returns the v2 shape.
   5. Without opt-in the same route returns the legacy shape (no regression).
   6. Opt-in error path (404 on /v1/houjin/) follows the v2 error envelope.
   7. ``wrap_for_mcp`` returns a CallToolResult with structuredContent + content[].
-  8. The opt-in flag is parsed from BOTH ``?envelope=v2`` and Accept headers.
+  8. The opt-in flag is parsed from the vendor Accept header only.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
-from fastapi.testclient import TestClient
+
+if TYPE_CHECKING:
+    from fastapi.testclient import TestClient
 
 from jpintel_mcp.api._envelope import (
     Citation,
@@ -159,12 +163,16 @@ def test_other_error_constructors() -> None:
 
 
 # --------------------------------------------------------------------------
-# Test 4 — opt-in via ?envelope=v2 on /v1/programs/search
+# Test 4 — opt-in via Accept header on /v1/programs/search
 # --------------------------------------------------------------------------
 
 
 def test_programs_search_v2_opt_in_returns_envelope(client: TestClient) -> None:
-    r = client.get("/v1/programs/search", params={"envelope": "v2", "q": "テスト"})
+    r = client.get(
+        "/v1/programs/search",
+        params={"q": "テスト"},
+        headers={"Accept": "application/vnd.jpcite.v2+json"},
+    )
     assert r.status_code == 200
     body = r.json()
     # v2 mandatory keys per §28.2:
@@ -207,7 +215,10 @@ def test_programs_search_legacy_shape_unchanged(client: TestClient) -> None:
 
 def test_houjin_404_with_v2_opt_in(client: TestClient) -> None:
     # 13-digit bangou that we know is not in the seeded test corpus.
-    r = client.get("/v1/houjin/9999999999999", params={"envelope": "v2"})
+    r = client.get(
+        "/v1/houjin/9999999999999",
+        headers={"Accept": "application/vnd.jpcite.v2+json"},
+    )
     assert r.status_code in (404, 503)  # 503 if autonomath.db is missing in test sandbox
     body = r.json()
     if r.status_code == 503:
@@ -264,7 +275,7 @@ def test_wrap_for_mcp_bare_error() -> None:
 
 
 # --------------------------------------------------------------------------
-# Test 8 — opt-in flag parses BOTH query param and Accept header
+# Test 8 — opt-in flag parses the vendor Accept header
 # --------------------------------------------------------------------------
 
 
@@ -274,9 +285,9 @@ class _FakeRequest:
         self.headers = {"accept": accept}
 
 
-def test_wants_envelope_v2_recognises_query_param() -> None:
-    assert wants_envelope_v2(_FakeRequest(qp={"envelope": "v2"})) is True
-    assert wants_envelope_v2(_FakeRequest(qp={"envelope": "V2"})) is True
+def test_wants_envelope_v2_ignores_query_param() -> None:
+    assert wants_envelope_v2(_FakeRequest(qp={"envelope": "v2"})) is False
+    assert wants_envelope_v2(_FakeRequest(qp={"envelope": "V2"})) is False
     assert wants_envelope_v2(_FakeRequest(qp={"envelope": "v1"})) is False
     assert wants_envelope_v2(_FakeRequest(qp={})) is False
 

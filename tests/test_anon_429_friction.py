@@ -167,75 +167,60 @@ def test_authenticated_response_omits_anon_headers(
 def test_soft_warning_body_injection_at_80pct(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """CRO Fix 5a (2026-04-29): in-response upgrade_hint when remaining<=10.
+    """CRO Fix 5a (2026-04-29): in-response upgrade_hint in the last 20%.
 
     Many MCP hosts and curl scripts surface the response body to the
     user but swallow the X-Anon-Quota-Remaining header. So in addition
     to the headers we inject ``_meta.upgrade_hint`` into the JSON body
-    when the caller is in the last 20% of their monthly runway.
-
-    With ``anon_rate_limit_per_day=12``, the threshold is hit on the
-    third call (remaining=12-3=9 <= 10). The first two calls (remaining
-    11, 10) — note: 12-1=11 above threshold, 12-2=10 at threshold —
-    must NOT carry the hint, and the third (remaining=9) MUST.
+    when the caller is in the last 20% of their daily allowance.
     """
     from jpintel_mcp.config import settings
 
-    # 12 / month → first call remaining=11 (above threshold, no hint),
-    # second call remaining=10 (at threshold, hint included), third call
-    # remaining=9 (below threshold, hint included). The middleware fires
-    # at remaining <= 10.
-    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 12)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 5)
 
     ip = "198.51.100.150"
 
-    # Call 1 — remaining 11, no hint.
+    # Call 1 — remaining 4, above the last-20% threshold.
     r1 = client.get("/meta", headers={"x-forwarded-for": ip})
     assert r1.status_code == 200, r1.text
-    assert r1.headers.get("X-Anon-Quota-Remaining") == "11"
+    assert r1.headers.get("X-Anon-Quota-Remaining") == "4"
     body1 = r1.json()
     assert (
         not isinstance(body1.get("_meta"), dict)
         or "upgrade_hint" not in body1.get("_meta", {})
-    ), f"call 1 (remaining 11) should NOT carry upgrade_hint; body={body1}"
+    ), f"call 1 (remaining 4) should NOT carry upgrade_hint; body={body1}"
 
-    # Call 2 — remaining 10, hint MUST be present.
-    r2 = client.get("/meta", headers={"x-forwarded-for": ip})
-    assert r2.status_code == 200, r2.text
-    assert r2.headers.get("X-Anon-Quota-Remaining") == "10"
-    body2 = r2.json()
-    assert isinstance(body2.get("_meta"), dict), (
-        f"call 2 (remaining 10) missing _meta; body keys={list(body2)}"
-    )
-    hint2 = body2["_meta"].get("upgrade_hint")
-    assert isinstance(hint2, str) and hint2, (
-        f"call 2 missing upgrade_hint string; _meta={body2['_meta']}"
-    )
-    assert "残 10 req" in hint2, f"hint missing remaining count; hint={hint2!r}"
-    assert "jpcite.com/upgrade" in hint2, (
-        f"hint missing upgrade URL; hint={hint2!r}"
-    )
-    assert "JST" in hint2 and "reset" in hint2, (
-        f"hint missing JST reset cue; hint={hint2!r}"
-    )
+    for _ in range(3):
+        mid = client.get("/meta", headers={"x-forwarded-for": ip})
+        assert mid.status_code == 200, mid.text
 
-    # Call 3 — remaining 9, hint still present + count updated.
-    r3 = client.get("/meta", headers={"x-forwarded-for": ip})
-    assert r3.status_code == 200, r3.text
-    assert r3.headers.get("X-Anon-Quota-Remaining") == "9"
-    body3 = r3.json()
-    hint3 = body3.get("_meta", {}).get("upgrade_hint")
-    assert hint3 and "残 9 req" in hint3, (
-        f"call 3 hint should reflect new remaining; hint={hint3!r}"
+    # Call 5 — remaining 0, inside the last 20%; hint MUST be present.
+    r5 = client.get("/meta", headers={"x-forwarded-for": ip})
+    assert r5.status_code == 200, r5.text
+    assert r5.headers.get("X-Anon-Quota-Remaining") == "0"
+    body5 = r5.json()
+    assert isinstance(body5.get("_meta"), dict), (
+        f"call 5 (remaining 0) missing _meta; body keys={list(body5)}"
+    )
+    hint5 = body5["_meta"].get("upgrade_hint")
+    assert isinstance(hint5, str) and hint5, (
+        f"call 5 missing upgrade_hint string; _meta={body5['_meta']}"
+    )
+    assert "残 0 req" in hint5, f"hint missing remaining count; hint={hint5!r}"
+    assert "jpcite.com/upgrade" in hint5, (
+        f"hint missing upgrade URL; hint={hint5!r}"
+    )
+    assert "JST" in hint5 and "reset" in hint5, (
+        f"hint missing JST reset cue; hint={hint5!r}"
     )
 
     # Content-Length must match the rewritten body — TestClient asserts
-    # this implicitly when r3.json() succeeds, but check the header is
+    # this implicitly when r5.json() succeeds, but check the header is
     # at least a positive integer (proxy for "we did update it after
     # injecting").
-    cl = r3.headers.get("content-length")
-    assert cl is not None and int(cl) == len(r3.content), (
-        f"content-length mismatch after injection: header={cl}, body={len(r3.content)}"
+    cl = r5.headers.get("content-length")
+    assert cl is not None and int(cl) == len(r5.content), (
+        f"content-length mismatch after injection: header={cl}, body={len(r5.content)}"
     )
 
 

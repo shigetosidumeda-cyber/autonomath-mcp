@@ -16,11 +16,9 @@ Cache key
 ``sha256(api_key_hash + ':' + endpoint_path + ':' + body + ':' + key)``
 
 Including the api_key_hash prevents two distinct customers from colliding on
-the same arbitrary key. Including the body prevents a buggy client that
-re-uses one Idempotency-Key across different payloads from short-circuiting
-into the wrong cached response (the spec is "same key + different body =
-fail closed" but we go a step further and treat them as separate cache
-slots so the second body executes normally).
+the same arbitrary key. Including the body means an accidentally reused key
+with a different payload is treated as a separate live request instead of
+replaying the wrong response.
 
 Storage
 -------
@@ -31,8 +29,10 @@ migration 087 (target_db: jpintel). Eviction:
 
 Scope
 -----
-Only POST requests are eligible. GET / DELETE / OPTIONS pass through. POST
-requests without `Idempotency-Key` pass through (the header is opt-in).
+Only allowlisted data-query POST requests are eligible. GET / DELETE /
+OPTIONS, credential issuance, billing, login, webhooks, and admin paths pass
+through. POST requests without `Idempotency-Key` pass through (the header is
+opt-in).
 
 ¥0 metering
 -----------
@@ -41,23 +41,23 @@ Stripe usage_record. We achieve this by returning the cached response
 directly from the middleware before the router dispatches, mirroring how
 the customer-cap 503 path skips billing.
 
-Stripe webhook + admin paths
-----------------------------
-We exclude `/v1/billing/webhook` (Stripe's own deduplication via event_id)
-and `/v1/admin/*` (operator surfaces, never customer-facing).
+Sensitive POSTs are intentionally excluded so raw API keys, session cookies,
+Stripe redirects, webhooks, and user comments are never replayed from this
+generic cache.
 """
 from __future__ import annotations
 
+import asyncio
 import base64
 import contextlib
 import hashlib
 import json
 import logging
 import sqlite3
+import time
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
-from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 
@@ -70,6 +70,9 @@ logger = logging.getLogger("jpintel.idempotency")
 
 # 24h TTL per spec.
 _CACHE_TTL_HOURS = 24
+_PENDING_PREFIX = "__pending__:"
+_PENDING_TTL_SECONDS = 3600
+_PENDING_WAIT_SECONDS = 15
 
 # Header constants.
 _HEADER_KEY = "idempotency-key"
@@ -103,6 +106,26 @@ _SKIP_RESPONSE_HEADERS: frozenset[str] = frozenset(
     }
 )
 
+# Only pure data-query POST endpoints are cacheable. This keeps the generic
+# replay layer away from raw-key issuance, session cookies, Stripe redirects,
+# webhooks, dashboard mutations, and one-shot user submissions.
+_CACHEABLE_EXACT: frozenset[str] = frozenset(
+    {
+        "/v1/programs/batch",
+        "/v1/programs/prescreen",
+        "/v1/exclusions/check",
+        "/v1/funding_stack/check",
+        "/v1/tax_rulesets/evaluate",
+        "/v1/court-decisions/by-statute",
+        "/v1/evidence/packets/query",
+        "/v1/am/validate",
+        "/v1/audit/batch_evaluate",
+        "/v1/audit/workpaper",
+        "/v1/am/dd_batch",
+        "/v1/am/dd_export",
+    }
+)
+
 # Path prefixes / exact paths that bypass the cache entirely.
 _BYPASS_PATH_PREFIXES: tuple[str, ...] = (
     "/v1/billing/webhook",  # Stripe handles its own dedup via event_id
@@ -120,6 +143,8 @@ _BYPASS_EXACT: frozenset[str] = frozenset(
 
 
 def _is_bypass_path(path: str) -> bool:
+    if path not in _CACHEABLE_EXACT:
+        return True
     if path in _BYPASS_EXACT:
         return True
     return any(path.startswith(p) for p in _BYPASS_PATH_PREFIXES)
@@ -155,6 +180,106 @@ def _api_key_hash_for(request: Request) -> str:
             request.client.host.encode("utf-8")
         ).hexdigest()[:32]
     return "ip:unknown"
+
+
+def _raw_api_key_for(request: Request) -> str:
+    raw = request.headers.get("x-api-key", "").strip()
+    if raw:
+        return raw
+    auth = request.headers.get("authorization", "")
+    parts = auth.split(None, 1)
+    if len(parts) == 2 and parts[0].lower() == "bearer":
+        return parts[1].strip()
+    return ""
+
+
+def _raw_api_key_present(request: Request) -> bool:
+    return bool(_raw_api_key_for(request))
+
+
+def _row_value(row: object, name: str, index: int) -> object:
+    try:
+        return row[name]  # type: ignore[index]
+    except (IndexError, KeyError, TypeError):
+        return row[index]  # type: ignore[index]
+
+
+def _iso_is_past(value: object, *, now: datetime | None = None) -> bool:
+    if not value:
+        return False
+    text = str(value).replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return False
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC) <= (now or datetime.now(UTC))
+
+
+def _cached_replay_auth_still_valid(
+    conn: sqlite3.Connection, request: Request
+) -> bool:
+    """Re-check auth before serving a cached response.
+
+    Replays skip the router, so they must not skip revocation / trial-expiry
+    gates. The first request still executes through the normal dependency
+    stack; this guard only applies to cached responses and pending waits.
+    """
+    raw = _raw_api_key_for(request)
+    if not raw:
+        return False
+    try:
+        from jpintel_mcp.api.deps import hash_api_key
+
+        key_hash = hash_api_key(raw)
+        try:
+            row = conn.execute(
+                "SELECT tier, revoked_at, trial_expires_at "
+                "FROM api_keys WHERE key_hash = ?",
+                (key_hash,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            row = conn.execute(
+                "SELECT tier, revoked_at FROM api_keys WHERE key_hash = ?",
+                (key_hash,),
+            ).fetchone()
+        if row is None:
+            return False
+        tier = str(_row_value(row, "tier", 0) or "")
+        revoked_at = _row_value(row, "revoked_at", 1)
+        if revoked_at:
+            return False
+        try:
+            trial_expires_at = _row_value(row, "trial_expires_at", 2)
+        except Exception:
+            trial_expires_at = None
+        if tier == "trial" and _iso_is_past(trial_expires_at):
+            now_iso = datetime.now(UTC).isoformat()
+            with contextlib.suppress(sqlite3.Error):
+                conn.execute(
+                    "UPDATE api_keys SET revoked_at = ? "
+                    "WHERE key_hash = ? AND revoked_at IS NULL",
+                    (now_iso, key_hash),
+                )
+            return False
+        return True
+    except Exception:  # pragma: no cover — defensive fail-closed
+        logger.exception("idempotency_replay_auth_check_failed")
+        return False
+
+
+def _auth_failed_response() -> Response:
+    return Response(
+        content=json.dumps(
+            {"detail": "api key revoked or expired"},
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ),
+        status_code=401,
+        media_type="application/json",
+        headers={"X-Metered": "false", "X-Cost-Yen": "0"},
+    )
 
 
 def _compute_cache_key(
@@ -218,12 +343,26 @@ def _read_cached(conn: sqlite3.Connection, cache_key: str) -> str | None:
         expires_at = row[1]
     if not blob or not expires_at:
         return None
+    if str(blob).startswith(_PENDING_PREFIX):
+        return None
     try:
         if datetime.fromisoformat(str(expires_at).replace("Z", "+00:00")) <= datetime.now(UTC):
             return None
     except ValueError:
         return None
     return str(blob)
+
+
+def _sqlite_busy(exc: sqlite3.OperationalError) -> bool:
+    text = str(exc).lower()
+    return "locked" in text or "busy" in text
+
+
+def _delete_cached(conn: sqlite3.Connection, cache_key: str) -> None:
+    try:
+        conn.execute("DELETE FROM am_idempotency_cache WHERE cache_key = ?", (cache_key,))
+    except sqlite3.OperationalError:
+        return
 
 
 def _write_cached(
@@ -243,6 +382,94 @@ def _write_cached(
         # Migration not applied; silently drop the write so the request
         # still succeeds — the next caller will see a cache miss.
         logger.warning("idempotency_cache_write_skipped_table_missing")
+
+
+def _claim_or_read_cached(
+    conn: sqlite3.Connection, cache_key: str
+) -> tuple[str, str | None]:
+    """Return ('hit', blob), ('pending', None), ('busy', None), or ('owner', None).
+
+    The pending sentinel closes the concurrent double-billing gap: one
+    request owns the live execution; simultaneous replays with the same key
+    wait for the cached response instead of dispatching another metered call.
+    If SQLite is busy, fail closed as ``busy`` so the middleware can return a
+    retryable non-metered response instead of running a second live request.
+    """
+    now = datetime.now(UTC)
+    pending_expires = (now + timedelta(seconds=_PENDING_TTL_SECONDS)).isoformat()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute(
+            "SELECT response_blob, expires_at FROM am_idempotency_cache WHERE cache_key = ?",
+            (cache_key,),
+        ).fetchone()
+        if row is not None:
+            try:
+                blob = row["response_blob"]
+                expires_at = row["expires_at"]
+            except (IndexError, KeyError, TypeError):
+                blob = row[0]
+                expires_at = row[1]
+            expired = False
+            try:
+                expired = (
+                    datetime.fromisoformat(str(expires_at).replace("Z", "+00:00"))
+                    <= now
+                )
+            except ValueError:
+                expired = True
+            if expired and str(blob).startswith(_PENDING_PREFIX):
+                conn.execute(
+                    "UPDATE am_idempotency_cache "
+                    "SET response_blob = ?, expires_at = ?, created_at = ? "
+                    "WHERE cache_key = ?",
+                    (
+                        _PENDING_PREFIX + str(now.timestamp()),
+                        pending_expires,
+                        now.isoformat(),
+                        cache_key,
+                    ),
+                )
+                conn.execute("COMMIT")
+                return "busy", None
+            if expired:
+                conn.execute(
+                    "DELETE FROM am_idempotency_cache WHERE cache_key = ?",
+                    (cache_key,),
+                )
+                row = None
+            elif str(blob).startswith(_PENDING_PREFIX):
+                conn.execute("COMMIT")
+                return "pending", None
+            else:
+                conn.execute("COMMIT")
+                return "hit", str(blob)
+        if row is None:
+            conn.execute(
+                "INSERT INTO am_idempotency_cache("
+                "    cache_key, response_blob, expires_at, created_at"
+                ") VALUES (?,?,?,?)",
+                (
+                    cache_key,
+                    _PENDING_PREFIX + str(now.timestamp()),
+                    pending_expires,
+                    now.isoformat(),
+                ),
+            )
+            conn.execute("COMMIT")
+            return "owner", None
+    except sqlite3.OperationalError as exc:
+        with contextlib.suppress(Exception):
+            conn.execute("ROLLBACK")
+        if _sqlite_busy(exc):
+            logger.warning("idempotency_claim_busy")
+            return "busy", None
+        return "owner", None
+    except Exception:
+        with contextlib.suppress(Exception):
+            conn.execute("ROLLBACK")
+        raise
+    return "owner", None
 
 
 class IdempotencyMiddleware(BaseHTTPMiddleware):
@@ -275,6 +502,12 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         if not idempotency_key:
             return await call_next(request)
 
+        # Anonymous callers are intentionally not replay-cached. Otherwise a
+        # single successful anonymous POST could be replayed indefinitely
+        # without touching the daily anonymous quota.
+        if not _raw_api_key_present(request):
+            return await call_next(request)
+
         # Read body. Starlette consumes the body stream once; we re-inject
         # via `request._receive` so the downstream handler still sees it.
         body = await request.body()
@@ -292,6 +525,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         cache_key = _compute_cache_key(
             api_key_hash, path, body, idempotency_key
         )
+        billing_key = "idem_" + hashlib.sha256(cache_key.encode("utf-8")).hexdigest()
 
         # Connect on demand; fail-open on any DB error.
         try:
@@ -303,19 +537,26 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         try:
-            cached_blob = _read_cached(conn, cache_key)
+            cache_state, cached_blob = _claim_or_read_cached(conn, cache_key)
         except Exception:  # pragma: no cover — defensive
-            logger.exception("idempotency_read_failed")
+            logger.exception("idempotency_claim_failed")
+            cache_state = "owner"
             cached_blob = None
 
-        if cached_blob is not None:
+        if cache_state == "hit" and cached_blob is not None:
             # Replay path — bypass the router entirely. ¥0 (no log_usage).
+            if not _cached_replay_auth_still_valid(conn, request):
+                with contextlib.suppress(Exception):
+                    conn.close()
+                return _auth_failed_response()
             try:
                 status_code, hdrs, body_bytes = _deserialise_response(
                     cached_blob
                 )
             except Exception:  # pragma: no cover — defensive
                 logger.exception("idempotency_deserialise_failed")
+                with contextlib.suppress(Exception):
+                    _delete_cached(conn, cache_key)
                 with contextlib.suppress(Exception):
                     conn.close()
                 return await call_next(request)
@@ -330,13 +571,96 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                 headers=hdrs,
             )
 
+        if cache_state == "busy":
+            with contextlib.suppress(Exception):
+                conn.close()
+            return Response(
+                content=json.dumps(
+                    {"error": "idempotency_cache_busy", "detail": "retry later"},
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                ),
+                status_code=503,
+                media_type="application/json",
+                headers={
+                    "Retry-After": "1",
+                    "X-Metered": "false",
+                    "X-Cost-Yen": "0",
+                },
+            )
+
+        if cache_state == "pending":
+            if not _cached_replay_auth_still_valid(conn, request):
+                with contextlib.suppress(Exception):
+                    conn.close()
+                return _auth_failed_response()
+            deadline = time.monotonic() + _PENDING_WAIT_SECONDS
+            cached_blob = None
+            while time.monotonic() < deadline:
+                await asyncio.sleep(0.05)
+                try:
+                    cached_blob = _read_cached(conn, cache_key)
+                except Exception:  # pragma: no cover — defensive
+                    logger.exception("idempotency_pending_read_failed")
+                    cached_blob = None
+                if cached_blob is not None:
+                    break
+
+            if cached_blob is not None:
+                try:
+                    status_code, hdrs, body_bytes = _deserialise_response(
+                        cached_blob
+                    )
+                except Exception:  # pragma: no cover — defensive
+                    logger.exception("idempotency_pending_deserialise_failed")
+                    with contextlib.suppress(Exception):
+                        _delete_cached(conn, cache_key)
+                    with contextlib.suppress(Exception):
+                        conn.close()
+                    return await call_next(request)
+                with contextlib.suppress(Exception):
+                    conn.close()
+                hdrs[_HEADER_REPLAYED] = "true"
+                hdrs["X-Metered"] = "false"
+                hdrs["X-Cost-Yen"] = "0"
+                return Response(
+                    content=body_bytes,
+                    status_code=status_code,
+                    headers=hdrs,
+                )
+
+            with contextlib.suppress(Exception):
+                conn.close()
+            return Response(
+                content=json.dumps(
+                    {"error": "idempotency_request_in_progress"},
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                ),
+                status_code=409,
+                media_type="application/json",
+                headers={"X-Metered": "false", "X-Cost-Yen": "0"},
+            )
+
         # Cache miss — run the handler, then capture and cache the response.
+        from jpintel_mcp.api.idempotency_context import (
+            billing_event_index,
+            billing_idempotency_key,
+        )
+
+        billing_key_token = billing_idempotency_key.set(billing_key)
+        billing_index_token = billing_event_index.set(0)
         try:
             response = await call_next(request)
         except Exception:
             with contextlib.suppress(Exception):
+                _delete_cached(conn, cache_key)
+            with contextlib.suppress(Exception):
                 conn.close()
             raise
+        finally:
+            billing_event_index.reset(billing_index_token)
+            billing_idempotency_key.reset(billing_key_token)
 
         # Only cache successful (2xx) responses. Caching a 4xx / 5xx would
         # lock the customer into the failure for 24h; live retries are safer.
@@ -349,7 +673,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                     resp_body += chunk
                 blob = _serialise_response(
                     response.status_code,
-                    {k: v for k, v in response.headers.items()},
+                    dict(response.headers.items()),
                     resp_body,
                 )
                 _write_cached(
@@ -359,12 +683,17 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                 new_resp = Response(
                     content=resp_body,
                     status_code=response.status_code,
-                    headers={k: v for k, v in response.headers.items()},
+                    headers=dict(response.headers.items()),
                     media_type=response.media_type,
                 )
                 response = new_resp
             except Exception:  # pragma: no cover — defensive
                 logger.exception("idempotency_capture_failed")
+                with contextlib.suppress(Exception):
+                    _delete_cached(conn, cache_key)
+        else:
+            with contextlib.suppress(Exception):
+                _delete_cached(conn, cache_key)
         with contextlib.suppress(Exception):
             conn.close()
         return response

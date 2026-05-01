@@ -1,11 +1,11 @@
 """Per-key / per-IP token-bucket throttle tests (D9, 2026-04-25).
 
-Covers the middleware in `api/middleware/rate_limit.py` — NOT the monthly
-50 req/月 anon quota (that lives in `tests/test_anon_rate_limit.py`).
+Covers the middleware in `api/middleware/rate_limit.py` — NOT the daily
+3 req/day anon quota (that lives in `tests/test_anon_rate_limit.py`).
 
 Each test resets the bucket store via `_reset_rate_limit_buckets()` and
 clears the `anon_rate_limit` table via the autouse fixture in
-`tests/conftest.py` so the burst throttle and the monthly quota don't
+`tests/conftest.py` so the burst throttle and the daily quota don't
 contaminate each other.
 """
 from __future__ import annotations
@@ -35,7 +35,12 @@ def _enable_throttle_for_this_module(
     """Re-enable the throttle (conftest disables it for the rest of the
     suite via ``RATE_LIMIT_BURST_DISABLED=1``) and reset bucket state on
     every test in this module."""
+    from jpintel_mcp.config import settings
+
     monkeypatch.delenv("RATE_LIMIT_BURST_DISABLED", raising=False)
+    # These tests exercise the short-window token bucket. Keep the daily
+    # anonymous quota high enough that it cannot fire before burst=5.
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 999)
     _reset_buckets()
     yield
     _reset_buckets()
@@ -69,15 +74,15 @@ def test_anon_burst_over_limit_returns_429(client: TestClient) -> None:
     assert int(r.headers["Retry-After"]) >= 1
 
 
-def test_anon_429_does_not_burn_monthly_quota(client: TestClient) -> None:
+def test_anon_429_does_not_burn_daily_quota(client: TestClient) -> None:
     """A request rejected by the burst middleware must not increment the
-    monthly anon counter — the router-dep runs INSIDE the handler, after
+    daily anon counter — the router-dep runs INSIDE the handler, after
     the middleware has already short-circuited."""
     import hashlib
     import hmac
     import sqlite3
 
-    from jpintel_mcp.api.anon_limit import _jst_month_bucket, _normalize_ip_to_prefix
+    from jpintel_mcp.api.anon_limit import _jst_day_bucket, _normalize_ip_to_prefix
     from jpintel_mcp.config import settings
 
     # Burn the burst.
@@ -97,14 +102,14 @@ def test_anon_429_does_not_burn_monthly_quota(client: TestClient) -> None:
         hashlib.sha256,
     ).hexdigest()
 
-    # Inspect the monthly counter — the rejected request must NOT have
+    # Inspect the daily counter — the rejected request must NOT have
     # advanced it past 5 (the 5 successful calls).
     db_path = settings.db_path
     c = sqlite3.connect(db_path)
     try:
         row = c.execute(
             "SELECT call_count FROM anon_rate_limit WHERE ip_hash = ? AND date = ?",
-            (ip_h, _jst_month_bucket()),
+            (ip_h, _jst_day_bucket()),
         ).fetchone()
     finally:
         c.close()

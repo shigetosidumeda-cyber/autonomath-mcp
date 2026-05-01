@@ -10,19 +10,24 @@ Flow:
                                            Checkout completion
 
 Pricing model (see `project_autonomath_business_model.md` memory, 2026-04-23):
-  Anonymous Free (50 req/month per IP) → metered via Stripe usage_records
-  at ¥3/req 税別 / ¥3.30 税込 (lookup_key=per_request_v3). No tiers,
-  no subscription cancellation distinct from card removal.
+  Anonymous callers are capped separately by AnonIpLimitDep (3 req/day per IP)
+  and never produce Stripe usage records. Authenticated paid keys are metered
+  at ¥3/req 税別 / ¥3.30 税込 (lookup_key=per_request_v3).
 """
 
 from __future__ import annotations
 
+import contextlib
+import hashlib
+import json
 import logging
+import secrets
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Annotated
+from urllib.parse import urlparse
 
 import stripe
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request, Response, status
 from pydantic import BaseModel
 
 from jpintel_mcp.api._advisory_lock import LockNotAcquired, advisory_lock
@@ -66,8 +71,8 @@ def _capture(exc: BaseException) -> None:
 
     Webhook handlers swallow errors by design (idempotency > visibility) but
     silent failures translate directly to silent revenue loss — a Stripe
-    invoice.paid that quietly raises means a customer pays but never gets a
-    key. Every swallow site that touches money / DB writes / external APIs
+    invoice.paid that quietly raises can leave subscription status stale.
+    Every swallow site that touches money / DB writes / external APIs
     forwards via this helper so Sentry sees the truth even when the
     response stays 200.
     """
@@ -156,13 +161,12 @@ def _send_dunning_safe(
 def _send_welcome_safe(*, to: str | None, raw_key: str, tier: str) -> None:
     """Fire-and-forget welcome mail. Never raises back into the caller.
 
-    D+0 welcome on key issuance lives in two paths (see issue_from_checkout
-    and the subscription.created / invoice.paid webhooks). Email is NOT a
-    critical path — a dead Postmark must never leave a paid invoice
-    un-acknowledged. The email layer already handles test-mode / missing-
-    token / transport errors internally; this wrapper catches the
-    ImportError path + any last-defence bug so a regression here does not
-    500 Stripe.
+    D+0 welcome on key issuance lives on the browser-bound
+    issue_from_checkout path. Email is NOT a critical path — a dead Postmark
+    must never leave a paid checkout unable to reveal the key. The email
+    layer already handles test-mode / missing-token / transport errors
+    internally; this wrapper catches the ImportError path + any last-defence
+    bug so a regression here does not break checkout completion.
 
     D+0 is the ONE mail that contains the raw API key. It is sent here
     synchronously — NOT via `email.scheduler` — because rows in the
@@ -193,6 +197,54 @@ def _send_welcome_safe(*, to: str | None, raw_key: str, tier: str) -> None:
         # the 5-min Sentry alert window.
         _capture(e)
         logger.warning("welcome email failed tier=%s", tier, exc_info=True)
+
+
+def _queue_welcome_email(
+    conn,
+    *,
+    sub_id: str,
+    to: str | None,
+    key_last4: str,
+    tier: str,
+) -> None:
+    """Queue the paid welcome email and refresh stale pending retries.
+
+    Checkout success can be retried by the browser after a lost response. In
+    that path we revoke the first parent key and reveal a fresh one, so any
+    not-yet-sent welcome task for the subscription must point at the latest
+    active key suffix. Already-sent rows are re-opened with the new suffix; the
+    email carries only last4, and a second correct note is better than a stale
+    first key suffix after checkout recovery.
+    """
+    from jpintel_mcp.api import _bg_task_queue
+
+    payload = {
+        "to": to,
+        "key_last4": key_last4,
+        "tier": tier,
+    }
+    dedup_key = f"welcome:{sub_id}"
+    task_id = _bg_task_queue.enqueue(
+        conn,
+        kind="welcome_email",
+        payload=payload,
+        dedup_key=dedup_key,
+    )
+    now = _bg_task_queue._now_iso()
+    conn.execute(
+        "UPDATE bg_task_queue "
+        "SET payload_json = ?, status = 'pending', attempts = 0, "
+        "last_error = NULL, updated_at = ?, next_attempt_at = ? "
+        "WHERE id = ? AND kind = 'welcome_email' "
+        "AND dedup_key = ? AND status IN ('pending', 'failed', 'done')",
+        (
+            json.dumps(payload, ensure_ascii=False, default=str),
+            now,
+            now,
+            task_id,
+            dedup_key,
+        ),
+    )
 
 
 def _extract_subscription_state(obj: dict) -> tuple[str | None, int | None, bool | None]:
@@ -289,10 +341,8 @@ def _refresh_subscription_status_from_stripe_bg(sub_id: str) -> None:
         )
     finally:
         if conn is not None:
-            try:
+            with contextlib.suppress(Exception):
                 conn.close()
-            except Exception:
-                pass
 
 
 def _send_dunning_safe_bg(
@@ -329,10 +379,8 @@ def _send_dunning_safe_bg(
         )
     finally:
         if conn is not None:
-            try:
+            with contextlib.suppress(Exception):
                 conn.close()
-            except Exception:
-                pass
 
 
 def _stripe() -> types.ModuleType:  # returns configured stripe module
@@ -345,6 +393,64 @@ def _stripe() -> types.ModuleType:  # returns configured stripe module
     if settings.stripe_api_version:
         stripe.api_version = settings.stripe_api_version
     return stripe
+
+
+_CHECKOUT_ALLOWED_HOSTS = frozenset({"jpcite.com", "www.jpcite.com"})
+_CHECKOUT_SUCCESS_PATHS = frozenset({"/success.html", "/en/success.html"})
+_CHECKOUT_CANCEL_PATHS = frozenset({
+    "/pricing.html",
+    "/en/pricing.html",
+    "/widget.html",
+    "/en/widget.html",
+})
+_CHECKOUT_GO_PREFIX = "/go/"
+_CHECKOUT_STATE_COOKIE = "jpcite_checkout_state"
+_CHECKOUT_STATE_MAX_AGE_SECONDS = 60 * 60
+
+
+def _validate_checkout_redirect_url(raw_url: str, *, kind: str) -> str:
+    """Allow only jpcite-owned Checkout redirects.
+
+    Stripe substitutes ``{CHECKOUT_SESSION_ID}`` into success_url. If callers
+    can point that URL at an attacker-controlled origin, the attacker can claim
+    the newly paid subscription's API key through /keys/from-checkout.
+    """
+    parsed = urlparse(raw_url)
+    if parsed.scheme != "https" or parsed.username or parsed.password:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"invalid {kind}_url")
+    if parsed.hostname not in _CHECKOUT_ALLOWED_HOSTS or parsed.port not in (None, 443):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"invalid {kind}_url")
+    allowed_paths = _CHECKOUT_SUCCESS_PATHS if kind == "success" else _CHECKOUT_CANCEL_PATHS
+    path_allowed = parsed.path in allowed_paths or parsed.path.startswith(_CHECKOUT_GO_PREFIX)
+    if not path_allowed:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"invalid {kind}_url")
+    if kind == "success" and "{CHECKOUT_SESSION_ID}" not in raw_url:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "success_url must include {CHECKOUT_SESSION_ID}",
+        )
+    return raw_url
+
+
+def _checkout_state_hash(state: str) -> str:
+    return hashlib.sha256(
+        f"checkout-state|{settings.api_key_salt}|{state}".encode()
+    ).hexdigest()
+
+
+def _set_checkout_state_cookie(request: Request, response: Response, state: str) -> None:
+    is_https = request.url.scheme == "https" or request.headers.get(
+        "x-forwarded-proto"
+    ) == "https"
+    response.set_cookie(
+        key=_CHECKOUT_STATE_COOKIE,
+        value=state,
+        max_age=_CHECKOUT_STATE_MAX_AGE_SECONDS,
+        httponly=True,
+        secure=is_https,
+        samesite="lax",
+        path="/v1/billing",
+    )
 
 
 def _check_b2b_tax_id_safe(customer_id: str | None) -> None:
@@ -518,7 +624,11 @@ class CheckoutResponse(BaseModel):
 
 
 @router.post("/checkout", response_model=CheckoutResponse)
-def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
+def create_checkout(
+    payload: CheckoutRequest,
+    request: Request,
+    response: Response,
+) -> CheckoutResponse:
     s = _stripe()
     price_id = settings.stripe_price_per_request
     if not price_id:
@@ -559,12 +669,17 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
     # Dashboard 側 ToS URL 未設定だと live mode で 500 になるため撤去した
     # (research/data_expansion_design.md:243). リンク先 HTML は
     # https://jpcite.com/tos.html + /privacy.html.
+    success_url = _validate_checkout_redirect_url(payload.success_url, kind="success")
+    cancel_url = _validate_checkout_redirect_url(payload.cancel_url, kind="cancel")
+    checkout_state = secrets.token_urlsafe(32)
+
     session = s.checkout.Session.create(
         mode="subscription",
         line_items=[{"price": price_id}],
-        success_url=payload.success_url,
-        cancel_url=payload.cancel_url,
+        success_url=success_url,
+        cancel_url=cancel_url,
         customer_email=payload.customer_email,
+        metadata={"checkout_state_hash": _checkout_state_hash(checkout_state)},
         allow_promotion_codes=True,
         locale="ja",
         custom_text={
@@ -578,6 +693,7 @@ def create_checkout(payload: CheckoutRequest) -> CheckoutResponse:
         },
         **extra,
     )
+    _set_checkout_state_cookie(request, response, checkout_state)
     return CheckoutResponse(url=session.url, session_id=session.id)
 
 
@@ -598,16 +714,7 @@ def create_portal(
     ctx: ApiContextDep,
     conn: DbDep,
 ) -> dict[str, str]:
-    """Stripe Customer Portal URL for the *authenticated* API key's customer.
-
-    Auth: X-API-Key (or `Authorization: Bearer ...`) MUST be supplied.
-    Anonymous callers get 401 here — there is no Stripe customer to open
-    a portal session for. The body-supplied `customer_id` is ignored
-    (kept on the schema for backwards-compat decoding only); the customer
-    is resolved from `api_keys.customer_id` keyed off the auth'd key
-    hash. This closes a P0 enumeration hole where any caller could pass
-    a guessed `cus_*` id and obtain a portal URL for that customer.
-    """
+    """Create a Stripe Customer Portal URL for the authenticated API key."""
     if ctx.key_hash is None:
         # Anonymous tier (no X-API-Key header). No Stripe customer exists.
         raise HTTPException(
@@ -615,9 +722,17 @@ def create_portal(
             "api key required to open billing portal",
         )
     row = conn.execute(
-        "SELECT customer_id FROM api_keys WHERE key_hash = ?",
+        "SELECT customer_id, tier, parent_key_id, revoked_at "
+        "FROM api_keys WHERE key_hash = ?",
         (ctx.key_hash,),
     ).fetchone()
+    if row and row["parent_key_id"] is not None:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "child api keys cannot open billing portal",
+        )
+    if row and row["revoked_at"]:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "api key revoked")
     customer_id = row["customer_id"] if row else None
     if not customer_id:
         # Pre-billing key (anonymous-tier or trial that never paid). Per
@@ -650,7 +765,12 @@ class KeyIssueResponse(BaseModel):
 
 
 @router.post("/keys/from-checkout", response_model=KeyIssueResponse)
-def issue_from_checkout(payload: KeyIssueRequest, conn: DbDep) -> KeyIssueResponse:
+def issue_from_checkout(
+    payload: KeyIssueRequest,
+    request: Request,
+    response: Response,
+    conn: DbDep,
+) -> KeyIssueResponse:
     """Issue an API key after checkout completion.
 
     The client holds a session_id from Stripe Checkout. Metered subscriptions
@@ -660,6 +780,16 @@ def issue_from_checkout(payload: KeyIssueRequest, conn: DbDep) -> KeyIssueRespon
     """
     s = _stripe()
     session = s.checkout.Session.retrieve(payload.session_id)
+    session_metadata = getattr(session, "metadata", None) or {}
+    if not isinstance(session_metadata, dict):
+        session_metadata = dict(session_metadata)
+    expected_state_hash = session_metadata.get("checkout_state_hash")
+    submitted_state = request.cookies.get(_CHECKOUT_STATE_COOKIE)
+    if not expected_state_hash or not submitted_state:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "checkout state missing")
+    if not secrets.compare_digest(expected_state_hash, _checkout_state_hash(submitted_state)):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "checkout state mismatch")
+
     # Metered subs have no upfront charge → `no_payment_required`.
     # Non-metered flows would return "paid". Reject anything else so an
     # abandoned checkout cannot mint a key.
@@ -672,29 +802,72 @@ def issue_from_checkout(payload: KeyIssueRequest, conn: DbDep) -> KeyIssueRespon
     price_id = sub["items"]["data"][0]["price"]["id"]
     tier = resolve_tier_from_price(price_id)
 
-    existing = conn.execute(
-        "SELECT key_hash FROM api_keys WHERE stripe_subscription_id = ? AND revoked_at IS NULL LIMIT 1",
-        (sub_id,),
-    ).fetchone()
-    if existing:
-        raise HTTPException(
-            status.HTTP_409_CONFLICT,
-            "api key already issued for this subscription; use /v1/billing/portal to rotate",
-        )
-
     # D+0 welcome. Email comes from Checkout's customer_details; fall back
     # to customer_email if the buyer used an existing Stripe Customer.
     _recipient = (
         getattr(session, "customer_details", None)
         and getattr(session.customer_details, "email", None)
     ) or getattr(session, "customer_email", None)
-    raw = issue_key(
-        conn,
-        customer_id=customer_id,
-        tier=tier,
-        stripe_subscription_id=sub_id,
-        customer_email=_recipient,
-    )
+    txn_started = False
+    try:
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+            txn_started = True
+        active_children = conn.execute(
+            "SELECT COUNT(*) FROM api_keys "
+            "WHERE stripe_subscription_id = ? "
+            "AND revoked_at IS NULL "
+            "AND parent_key_id IS NOT NULL",
+            (sub_id,),
+        ).fetchone()[0]
+        if int(active_children or 0) > 0:
+            logger.warning(
+                "checkout_reissue_refused_active_children sub=%s active_children=%s",
+                sub_id,
+                active_children,
+            )
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "api key already issued for this subscription; rotate from dashboard",
+            )
+
+        existing_rows = conn.execute(
+            "SELECT key_hash FROM api_keys "
+            "WHERE stripe_subscription_id = ? "
+            "AND revoked_at IS NULL "
+            "AND parent_key_id IS NULL",
+            (sub_id,),
+        ).fetchall()
+        if existing_rows:
+            now = datetime.now(UTC).isoformat()
+            conn.execute(
+                "UPDATE api_keys SET revoked_at = ? "
+                "WHERE stripe_subscription_id = ? "
+                "AND revoked_at IS NULL "
+                "AND parent_key_id IS NULL",
+                (now, sub_id),
+            )
+            logger.info(
+                "checkout_reissued_key sub=%s revoked_existing=%s",
+                sub_id,
+                len(existing_rows),
+            )
+
+        raw = issue_key(
+            conn,
+            customer_id=customer_id,
+            tier=tier,
+            stripe_subscription_id=sub_id,
+            customer_email=_recipient,
+        )
+        if txn_started:
+            conn.execute("COMMIT")
+            txn_started = False
+    except Exception:
+        if txn_started:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        raise
     # Route the D+0 welcome through the durable queue with the SAME dedup_key
     # the webhook path uses (audit P0-2, 2026-04-26). The success.html POST
     # and the `customer.subscription.created` webhook race; without a shared
@@ -702,14 +875,22 @@ def issue_from_checkout(payload: KeyIssueRequest, conn: DbDep) -> KeyIssueRespon
     # gets two welcome mails. The worker's send_welcome only emails
     # key_last4 (raw key is not transmitted via Postmark — only shown once
     # on success.html), so the queue payload omits the raw key entirely.
-    from jpintel_mcp.api._bg_task_queue import enqueue as _bg_enqueue
-
-    _bg_enqueue(
-        conn,
-        kind="welcome_email",
-        payload={"to": _recipient, "key_last4": raw[-4:] if raw else "????", "tier": tier},
-        dedup_key=f"welcome:{sub_id}",
-    )
+    try:
+        _queue_welcome_email(
+            conn,
+            sub_id=sub_id,
+            to=_recipient,
+            key_last4=raw[-4:] if raw else "????",
+            tier=tier,
+        )
+    except Exception:
+        logger.warning(
+            "welcome_email_enqueue_failed sub=%s customer=%s",
+            sub_id,
+            customer_id,
+            exc_info=True,
+        )
+    response.delete_cookie(_CHECKOUT_STATE_COOKIE, path="/v1/billing")
     return KeyIssueResponse(api_key=raw, tier=tier, customer_id=customer_id)
 
 
@@ -803,10 +984,15 @@ async def webhook(
     # before any handler runs.
     if event_id:
         existing = conn.execute(
-            "SELECT 1 FROM stripe_webhook_events WHERE event_id = ?",
+            "SELECT processed_at FROM stripe_webhook_events WHERE event_id = ?",
             (event_id,),
         ).fetchone()
         if existing:
+            if existing["processed_at"] is None:
+                raise HTTPException(
+                    status.HTTP_503_SERVICE_UNAVAILABLE,
+                    "webhook event previously received but not processed",
+                )
             logger.info(
                 "stripe.webhook.duplicate_ignored event_id=%s type=%s",
                 event_id,
@@ -836,10 +1022,8 @@ async def webhook(
             # If BEGIN fails (already in a transaction) or the INSERT
             # races a concurrent delivery to the unique event_id, fall
             # back to the duplicate path and re-check.
-            try:
+            with contextlib.suppress(Exception):
                 conn.execute("ROLLBACK")
-            except Exception:
-                pass
             re_check = conn.execute(
                 "SELECT 1 FROM stripe_webhook_events WHERE event_id = ?",
                 (event_id,),
@@ -876,28 +1060,21 @@ async def webhook(
     _handler_exc: BaseException | None = None
     try:
         # Metered billing: `customer.subscription.created` fires immediately on
-        # Checkout completion (before any invoice). That is the primary moment
-        # to issue the API key so the customer can start calling /v1 without
-        # waiting for the first billing cycle.
+        # Checkout completion. It must NOT issue the raw API key: the only
+        # safe reveal path is the jpcite-owned success page after Checkout.
         if etype == "customer.subscription.created":
             sub_id = obj.get("id")
             customer_id = obj.get("customer")
             if sub_id and customer_id:
-                # Issue the key SYNCHRONOUSLY so a buyer hitting /v1 immediately
-                # after Checkout has a row to authenticate against. Welcome
-                # email is deferred via background_tasks (Postmark P95 too slow
-                # for the 5s Stripe deadline).
-                _issue_key_for_subscription(
-                    conn,
-                    sub_id=sub_id,
-                    customer_id=customer_id,
-                    obj=obj,
-                    background_tasks=background_tasks,
-                )
+                # Raw API keys can only be shown once, on the jpcite-owned
+                # Checkout success page. The webhook must not mint the key
+                # first, otherwise /keys/from-checkout cannot reveal it to
+                # the buyer and the paid onboarding path breaks.
                 # Cache subscription state for /v1/me dunning banner (migration
                 # 052). The webhook payload carries `status`, `current_period_end`,
-                # and `cancel_at_period_end` directly. Run AFTER _issue_key_for_subscription
-                # so the new api_keys row exists and gets updated on the same call.
+                # and `cancel_at_period_end` directly. If the buyer has not
+                # revealed a key yet this update is a no-op; later events will
+                # refresh status after the key exists.
                 status_val, cpe_int, cancel_bool = _extract_subscription_state(obj)
                 if status_val:
                     update_subscription_status(
@@ -918,20 +1095,12 @@ async def webhook(
                 background_tasks.add_task(_check_b2b_tax_id_safe, customer_id)
 
         elif etype == "invoice.paid":
-            # Safety net: if subscription.created was missed (webhook delivery
-            # failure during the first seconds of the sub), the first
-            # invoice.paid still issues the key.
+            # Do not mint API keys from webhooks. Raw keys are reveal-once
+            # credentials, and the only safe reveal surface is the browser-bound
+            # /keys/from-checkout path guarded by the Checkout state cookie.
             sub_id = obj.get("subscription")
             customer_id = obj.get("customer")
             if sub_id and customer_id:
-                _issue_key_for_subscription(
-                    conn,
-                    sub_id=sub_id,
-                    customer_id=customer_id,
-                    obj=obj,
-                    email_fallback=obj.get("customer_email"),
-                    background_tasks=background_tasks,
-                )
                 # Un-suspend: if a prior payment_failed demoted the key to free,
                 # restoring tier=paid here re-enables the ¥3/req metered path.
                 # No-op when the key is already paid.
@@ -979,14 +1148,21 @@ async def webhook(
             #      wins — losing it (LockNotAcquired path before) was
             #      strictly worse than letting it execute under the
             #      regular SQLite writer-serialization.
+            status_val, cpe_int, cancel_bool = _extract_subscription_state(obj)
             price_id = obj["items"]["data"][0]["price"]["id"]
-            tier = resolve_tier_from_price(price_id)
+            # Stripe can send subscription.updated for dunning states such as
+            # past_due / unpaid with the same metered price. Price alone must
+            # never re-promote a failing-card customer after payment_failed.
+            tier = (
+                resolve_tier_from_price(price_id)
+                if status_val in (None, "", "active", "trialing")
+                else "free"
+            )
             n = update_tier_by_subscription(conn, sub_id, tier)
             logger.info("tier-updated sub=%s tier=%s rows=%d", sub_id, tier, n)
             # Cache the new subscription state. The payload carries the
             # updated status / period_end / cancel flag, so no live
             # retrieve needed.
-            status_val, cpe_int, cancel_bool = _extract_subscription_state(obj)
             if status_val:
                 update_subscription_status(
                     conn,
@@ -1011,7 +1187,7 @@ async def webhook(
             attempt = obj.get("attempt_count", 1)
             # Demote to free quota (rate_limit_free_per_day, daily cap) immediately
             # so a failing card cannot keep racking up metered usage during Stripe's
-            # dunning window. Distinct from anon Free tier (50/month IP-based).
+            # dunning window. Distinct from anon Free tier (3/day IP-based).
             # invoice.paid re-promotes to paid if the retry succeeds;
             # customer.subscription.deleted revokes entirely on final failure.
             n = 0
@@ -1199,17 +1375,11 @@ async def webhook(
                 trial_end_epoch,
             )
     except Exception as handler_exc:  # noqa: BLE001
-        # Hold the exception so we can still COMMIT the dedup row before
-        # returning. We deliberately swallow all dispatch failures here —
-        # returning 200 to Stripe with the dedup row persisted means the
-        # event will not retry. The operator sees the failure in Sentry +
-        # logs and can replay manually if needed (Stripe Dashboard supports
-        # event re-send for any single event_id).
         _handler_exc = handler_exc
         _capture(handler_exc)
         logger.exception(
             "stripe.webhook.handler_failed event_id=%s type=%s — "
-            "committing dedup row to suppress retry storm",
+            "rolling back so Stripe can retry",
             event_id,
             etype,
         )
@@ -1221,6 +1391,15 @@ async def webhook(
     # block — without that, the open BEGIN IMMEDIATE rolled back via
     # FastAPI's connection-close, the dedup row vanished, and Stripe
     # retried the same event_id (re-firing every successful side-effect).
+    if _handler_exc is not None:
+        if event_id:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "webhook handler failed",
+        ) from _handler_exc
+
     if event_id:
         try:
             conn.execute(
@@ -1230,10 +1409,8 @@ async def webhook(
             )
             conn.execute("COMMIT")
         except Exception as commit_exc:
-            try:
+            with contextlib.suppress(Exception):
                 conn.execute("ROLLBACK")
-            except Exception:
-                pass
             # COMMIT failure means the dedup row + side-effects roll back,
             # Stripe retries the same event_id. Capture so a sustained
             # COMMIT failure pattern (disk full / WAL truncation) is
@@ -1241,89 +1418,3 @@ async def webhook(
             _capture(commit_exc)
             raise
     return {"status": "received"}
-
-
-def _issue_key_for_subscription(
-    conn,
-    *,
-    sub_id: str,
-    customer_id: str,
-    obj: dict,
-    email_fallback: str | None = None,
-    background_tasks: BackgroundTasks | None = None,
-) -> None:
-    """Mint a key for a subscription iff none exists.
-
-    Idempotent across duplicate webhook deliveries (Stripe retries up to 3
-    days). Shared by `customer.subscription.created` and `invoice.paid` so
-    a missed delivery of the former still recovers via the latter.
-
-    When `background_tasks` is provided, the welcome email is scheduled via
-    BackgroundTasks (fires after the response is sent) so the webhook can
-    return 200 inside Stripe's 5s budget. When None (legacy callers like
-    `issue_from_checkout`), the email sends inline.
-    """
-    has_key = conn.execute(
-        "SELECT 1 FROM api_keys WHERE stripe_subscription_id = ? LIMIT 1",
-        (sub_id,),
-    ).fetchone()
-    if has_key:
-        return
-
-    # subscription.created carries items[] directly; invoice.paid does not,
-    # so we retrieve the Subscription to read the price id.
-    items = obj.get("items") if isinstance(obj, dict) else None
-    if items and items.get("data"):
-        price_id = items["data"][0]["price"]["id"]
-    else:
-        sub = stripe.Subscription.retrieve(sub_id)
-        price_id = sub["items"]["data"][0]["price"]["id"]
-
-    tier = resolve_tier_from_price(price_id)
-
-    # subscription.created has no customer_email field; we'd need to
-    # retrieve the Customer to know the email. For now accept the
-    # fallback (from invoice.paid) or None — key still issues.
-    _recipient = email_fallback
-    raw = issue_key(
-        conn,
-        customer_id=customer_id,
-        tier=tier,
-        stripe_subscription_id=sub_id,
-        customer_email=_recipient,
-    )
-    logger.info(
-        "issued api_key via webhook sub=%s tier=%s (key prefix=%s)",
-        sub_id,
-        tier,
-        raw[:8],
-    )
-    if background_tasks is not None:
-        # Defer Postmark call off the request path (P1 perf fix per audit
-        # a9fd80e134b538a32) — but route through the durable bg_task_queue
-        # (migration 060, P0 bg-task-durability) instead of in-memory
-        # FastAPI BackgroundTasks. The welcome mail itself only carries
-        # key_last4 (raw key is shown exactly once on success.html); the
-        # queue payload therefore omits the raw key — storing it in
-        # plaintext SQLite would be a credential-leak surface (P1, audit
-        # 2026-04-26). Idempotent on `welcome:<sub_id>` so a Stripe webhook
-        # redelivery (3-day retry window) does not double-mail.
-        from jpintel_mcp.api._bg_task_queue import enqueue as _bg_enqueue
-
-        _bg_enqueue(
-            conn,
-            kind="welcome_email",
-            payload={"to": _recipient, "key_last4": raw[-4:] if raw else "????", "tier": tier},
-            dedup_key=f"welcome:{sub_id}",
-        )
-    else:
-        # Legacy non-webhook caller (no BackgroundTasks scope) — route
-        # through the queue so we still hit the shared dedup gate.
-        from jpintel_mcp.api._bg_task_queue import enqueue as _bg_enqueue
-
-        _bg_enqueue(
-            conn,
-            kind="welcome_email",
-            payload={"to": _recipient, "key_last4": raw[-4:] if raw else "????", "tier": tier},
-            dedup_key=f"welcome:{sub_id}",
-        )

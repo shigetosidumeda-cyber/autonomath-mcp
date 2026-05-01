@@ -196,6 +196,29 @@ def test_authed_call_bypasses_throttled_ip(
     assert r.status_code == 200
 
 
+def test_bogus_api_key_counts_as_anonymous(
+    client: TestClient, seeded_db: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """A fake X-API-Key must not uncap anon-accepting routes."""
+    from jpintel_mcp.config import settings
+
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 2)
+    ip = "198.51.100.24"
+    headers = {"x-forwarded-for": ip, "X-API-Key": "am_bogus_not_a_real_key"}
+
+    assert client.get("/meta", headers=headers).status_code == 401
+    assert client.get("/meta", headers=headers).status_code == 401
+    r = client.get("/meta", headers=headers)
+    assert r.status_code == 429
+
+    anon = _anon_module()
+    assert _count_row(
+        seeded_db,
+        _testclient_hash(anon, ip),
+        anon._jst_day_bucket(),
+    ) == 3
+
+
 # ---------------------------------------------------------------------------
 # JST day rollover
 # ---------------------------------------------------------------------------

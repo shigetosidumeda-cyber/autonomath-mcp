@@ -35,12 +35,11 @@ import hmac
 import json
 import sqlite3
 import time
-from pathlib import Path
+from pathlib import Path  # noqa: TC003
 
 import pytest
 import stripe  # noqa: F401  (kept for parity / future use)
 from stripe._webhook import WebhookSignature
-
 
 WHSEC_TEST = "whsec_test_xxxxx"
 
@@ -61,7 +60,7 @@ def _sign_payload(
     test_valid_signature_returns_200, not a silent green elsewhere.
     """
     ts = int(time.time()) if timestamp is None else timestamp
-    signed_payload = f"{ts}.{payload_bytes.decode('utf-8')}".encode("utf-8")
+    signed_payload = f"{ts}.{payload_bytes.decode('utf-8')}".encode()
     digest = hmac.new(
         secret.encode("utf-8"),
         msg=signed_payload,

@@ -3,7 +3,7 @@
 Writes one row to ``analytics_events`` for EVERY HTTP request, including
 anonymous traffic that ``log_usage()`` cannot capture (because
 ``usage_events.key_hash`` is NOT NULL by FK + schema constraint, and 99% of
-launch-window traffic is anonymous on the 50/月 free tier).
+launch-window traffic is anonymous on the 3/日 free tier).
 
 This is intentionally separate from ``log_usage()`` / ``usage_events``:
 

@@ -48,6 +48,7 @@ from jpintel_mcp.api.autonomath import (
 )
 from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
+from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
@@ -90,7 +91,9 @@ from jpintel_mcp.api.middleware import (
     ClientTagMiddleware,
     CustomerCapMiddleware,
     DeprecationWarningMiddleware,
+    EnvelopeAdapterMiddleware,
     HostDeprecationMiddleware,
+    IdempotencyMiddleware,
     KillSwitchMiddleware,
     OriginEnforcementMiddleware,
     PerIpEndpointLimitMiddleware,
@@ -136,11 +139,7 @@ def _detect_lang(text: str) -> str:
     """Return 'ja', 'en', or 'mixed' based on CJK character ratio."""
     if not text:
         return "en"
-    cjk = sum(
-        1
-        for ch in text
-        if unicodedata.category(ch) in ("Lo",) and "⺀" <= ch <= "鿿"
-    )
+    cjk = sum(1 for ch in text if unicodedata.category(ch) in ("Lo",) and "⺀" <= ch <= "鿿")
     ratio = cjk / len(text)
     if ratio > 0.5:
         return "ja"
@@ -307,6 +306,441 @@ class _QueryTelemetryMiddleware(BaseHTTPMiddleware):
         return response
 
 
+logger = logging.getLogger("jpintel.api")
+_ready = False
+
+_COMPONENT_SCHEMA_NAMES = {
+    "jpintel_mcp__api__advisors__SignupRequest": "AdvisorSignupRequest",
+    "jpintel_mcp__api__advisors__SignupResponse": "AdvisorSignupResponse",
+    "jpintel_mcp__api__alerts__SubscribeRequest": "AlertSubscribeRequest",
+    "jpintel_mcp__api__billing__CheckoutRequest": "BillingCheckoutRequest",
+    "jpintel_mcp__api__client_profiles__DeleteResponse": "ClientProfileDeleteResponse",
+    "jpintel_mcp__api__compliance__CheckoutRequest": "ComplianceCheckoutRequest",
+    "jpintel_mcp__api__compliance__CheckoutResponse": "CheckoutResponse",
+    "jpintel_mcp__api__compliance__SubscribeRequest": "ComplianceSubscribeRequest",
+    "jpintel_mcp__api__compliance__SubscribeResponse": "ComplianceSubscribeResponse",
+    "jpintel_mcp__api__customer_webhooks__DeleteResponse": "WebhookDeleteResponse",
+    "jpintel_mcp__api__dashboard__UsageDay": "UsageDay",
+    "jpintel_mcp__api__invoice_registrants__SearchResponse": ("InvoiceRegistrantSearchResponse"),
+    "jpintel_mcp__api__me__UsageDay": "UsageDay",
+    "jpintel_mcp__api__saved_searches__DeleteResponse": "SavedSearchDeleteResponse",
+    "jpintel_mcp__api__signup__SignupRequest": "TrialSignupRequest",
+    "jpintel_mcp__api__signup__SignupResponse": "TrialSignupResponse",
+    "jpintel_mcp__api__subscribers__SubscribeRequest": "SubscriberSubscribeRequest",
+    "jpintel_mcp__api__subscribers__SubscribeResponse": "SubscriberSubscribeResponse",
+    "jpintel_mcp__models__SearchResponse": "ProgramSearchResponse",
+}
+
+
+def _camelize_component_part(value: str) -> str:
+    return "".join(part[:1].upper() + part[1:] for part in re.split(r"[_\W]+", value) if part)
+
+
+def _public_component_schema_name(name: str) -> str:
+    explicit = _COMPONENT_SCHEMA_NAMES.get(name)
+    if explicit:
+        return explicit
+    if not name.startswith("jpintel_mcp__"):
+        return name
+
+    parts = name.split("__")
+    model_name = parts[-1]
+    module_parts = [part for part in parts[1:-1] if part not in {"api", "models", "jpintel_mcp"}]
+    prefix = "".join(_camelize_component_part(part) for part in module_parts[-2:])
+    return f"{prefix}{model_name}" if prefix else model_name
+
+
+def _rewrite_openapi_component_refs(node: Any, renamed: dict[str, str]) -> None:
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str):
+            prefix = "#/components/schemas/"
+            if ref.startswith(prefix):
+                name = ref[len(prefix) :]
+                public_name = renamed.get(name)
+                if public_name:
+                    node["$ref"] = f"{prefix}{public_name}"
+        for value in node.values():
+            _rewrite_openapi_component_refs(value, renamed)
+    elif isinstance(node, list):
+        for item in node:
+            _rewrite_openapi_component_refs(item, renamed)
+
+
+def _normalize_openapi_component_schema_names(schema: dict[str, Any]) -> None:
+    components = schema.get("components")
+    if not isinstance(components, dict):
+        return
+    schemas = components.get("schemas")
+    if not isinstance(schemas, dict):
+        return
+
+    renamed = {
+        name: _public_component_schema_name(name)
+        for name in schemas
+        if _public_component_schema_name(name) != name
+    }
+    if not renamed:
+        return
+
+    normalized: dict[str, Any] = {}
+    for name, component_schema in schemas.items():
+        public_name = renamed.get(name, name)
+        existing = normalized.get(public_name)
+        if existing is not None and existing != component_schema:
+            raise RuntimeError(f"OpenAPI component rename collision: {name} -> {public_name}")
+        normalized[public_name] = component_schema
+    components["schemas"] = normalized
+    _rewrite_openapi_component_refs(schema, renamed)
+
+
+def _sanitize_openapi_public_text(text: str) -> str:
+    text = re.sub(
+        r"\A(?:Stripe webhook|stripe webhook|billing event) endpoint\..*",
+        "Billing event endpoint.",
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\APersist a (?:trial_signups|trial signup) (?:row|record) \+ mail a magic link\. Always 202 Accepted\..*",
+        (
+            "Accept a trial signup and send a magic link. Accepted signup "
+            "attempts return 202.\n\n"
+            "The response shape is stable so signups do not disclose whether an "
+            "address has already used a trial. Rate-limit failures may return 429. "
+            "Trial keys are not connected to paid billing."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\AVerify the magic-link token, issue a trial key, redirect to /trial\.html\..*",
+        (
+            "Verify a magic-link token, issue a trial key, and redirect to the "
+            "trial page. Invalid, expired, or already-used links redirect with "
+            "a status indicator. Successful verification returns the newly "
+            "issued key in the URL fragment for one-time display."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\AList the calling key's webhooks .*",
+        ("List the calling key's registered outbound webhooks, including disabled webhooks."),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\ARegister a new outbound webhook\..*",
+        (
+            "Register a new outbound webhook. The response includes the "
+            "signing secret once; subsequent reads include only a short "
+            "signing secret hint."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\ARecords the calling key's preference for which inbound parse address to publish\..*",
+        (
+            "Record the calling key's preferred inbound email parse address. "
+            "Final setup may require support assistance."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\ACreate an unverified advisor profile \+ return Stripe Connect onboarding URL\..*",
+        (
+            "Create an advisor profile and return an onboarding URL when "
+            "available. Self-serve signup does not require an API key."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\AConfirm the advisor's 法人番号 exists in invoice registrant records .*",
+        (
+            "Confirm an advisor's 法人番号 against invoice registrant records "
+            "and mark the advisor profile as verified when it matches."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\ACreate a new pending subscription \+ send verification email\..*",
+        (
+            "Create a pending subscription and send a verification email. "
+            "Duplicate requests use the same response shape to avoid email "
+            "enumeration."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r"\AMark a subscriber as verified\. Renders a minimal HTML page\..*",
+        (
+            "Verify a subscriber email token and render a confirmation page. "
+            "Repeated valid clicks are idempotent. Paid subscribers are "
+            "directed to checkout."
+        ),
+        text,
+        flags=re.S,
+    )
+    text = re.sub(r"P0 fixes from audit.*?(?=\n\n\*\*|\Z)", "", text, flags=re.S)
+    text = re.sub(r"\*\*Operator\*\*:.*?(?=\n\n|\Z)", "", text, flags=re.S)
+    text = re.sub(r"Operator: Bookyou株式会社.*?(?=\.|\n)", "jpcite support", text)
+    text = re.sub(r"See `src/[^`]+` module docstring for scope\.\n?", "", text)
+    text = re.sub(r"\(memory: [^)]+\)", "", text)
+    text = re.sub(r"memory: [A-Za-z0-9_/-]+", "", text)
+    text = re.sub(
+        r"\*\*404 semantics:\*\*.*?\n\n",
+        (
+            "**404 semantics:** A miss means the record is not available in "
+            "jpcite's current snapshot. The response includes official lookup "
+            "guidance when available.\n\n"
+        ),
+        text,
+        flags=re.S,
+    )
+    replacements = [
+        (r"info@bookyou\.net", "support contact"),
+        (r"Bookyou株式会社", "support team"),
+        (r"Bookyou Inc\.", "support team"),
+        (r"T8010001213708", "support contact"),
+        (r"usage_events", "usage records"),
+        (r"jpintel\.db", "indexed corpus"),
+        (r"autonomath\.db", "extended corpus"),
+        (r"\bBackgroundTasks\b", "background work"),
+        (r"\bSQLite\b", "persistent storage"),
+        (r"stripe_webhook_events", "billing event records"),
+        (r"\bsecret_hmac\b", "signing secret"),
+        (r"\bsecret_last4\b", "signing secret hint"),
+        (r"trial_signups", "trial signup"),
+        (r"\bUNIQUE\b", "deduplication rule"),
+        (r"\bIntegrityError\b", "duplicate signup"),
+        (r"deps\._enforce_quota", "quota checks"),
+        (r"ApiContext\.metered", "metering checks"),
+        (r"issued_api_key_hash", "issued key record"),
+        (r"raw-key", "one-time key"),
+        (r"raw API key", "one-time API key"),
+        (
+            r"Returned when STRIPE_SECRET_KEY is set\. Null in dev/offline mode — the signup record is still created so the advisor can retry onboarding\.",
+            "Returned when Stripe onboarding is available. Null when onboarding cannot be started immediately; the signup record is still created so the advisor can retry.",
+        ),
+        (r"\bSTRIPE_SECRET_KEY\b", "Stripe onboarding"),
+        (r"\bdev/offline mode\b", "onboarding unavailable"),
+        (r"\bWired by L5\.?", ""),
+        (r"safe overshoot", "conservative estimate"),
+        (
+            r"Honeypot\. Real callers MUST leave this null/empty\. The web form hides this field via CSS; only autofilled bots populate it\. Any non-empty value is treated as abuse and rejected\.",
+            "Reserved anti-abuse field. Leave it empty.",
+        ),
+        (r"\(api/programs\.py\)", ""),
+        (r"empty-corpus query", "unbounded saved search"),
+        (r"free \(dunning\) tiers", "temporary billing-status cases"),
+        (
+            r"Authentication: intentionally light today.*",
+            "Access is limited to the advisor dashboard flow.",
+        ),
+        (
+            r"\s*expected to be reached via the Stripe Connect Express portal return\n"
+            r"URL \(or via magic-link email\)\. Adding API-key auth here would block\n"
+            r"the simplest flow where the advisor arrives from Stripe's own\n"
+            r"dashboard\. If this becomes abused, add a signed HMAC\n"
+            r"``\?token=\.\.\.`` in the URL and verify here\.",
+            "",
+        ),
+        (
+            r"If this becomes abused, add a signed HMAC\s+``\?token=\.\.\.`` "
+            r"in the URL and verify here\.",
+            "",
+        ),
+        (r"runaway-billing", "excess delivery"),
+        (r"hammering their downstream", "sending too many test requests"),
+        (r"scripts/[^\s`)]+", "scheduled source refresh"),
+        (r"seed_advisors\.py", "source refresh"),
+        (r"docs/_internal/[^\s`)]+", "support-assisted setup notes"),
+        (r"default gates", "standard configuration"),
+        (r"legal review pending", "not publicly available"),
+        (r"\bbroken\b", "disabled"),
+        (r"\bmigration\s+\d+", "schema update"),
+        (r"\bcron\b", "scheduled job"),
+        (r"\bOperator\b", "Support team"),
+        (r"\boperator\b", "support team"),
+        (r"\binternal HTTP hop\b", "extra HTTP hop"),
+        (r"\binternal-only columns\b", "non-public columns"),
+        (r"\binternal-only\b", "non-public"),
+        (r"\binternal runbook\b", "support-assisted setup notes"),
+        (r"\bsupport runbook\b", "support-assisted setup notes"),
+        (r"\binternal write\b", "write"),
+        (r"\bInternal error\b", "Server error"),
+        (r"\binternal client identifier\b", "client-defined identifier"),
+        (r"\binternal billing\b", "billing"),
+        (r"project_autonomath_business_model", "the published pricing model"),
+        (r"feedback_autonomath_no_api_use", "jpcite does not call an LLM API"),
+        (r"metadata\.autonomath_product", "metadata.product"),
+        (r"autonomath\.intake_consistency_rules", "jpcite validation rules"),
+        (r"autonomath\.intake\.", "jpcite.validation."),
+        (r"\bAutonoMath\b", "jpcite"),
+        (r"\bautonomath dataset\b", "jpcite dataset"),
+        (r"\bunified autonomath dataset\b", "unified jpcite dataset"),
+        (r"\(autonomath\)", ""),
+        (r"\(jpintel\)", ""),
+        (r"\bjpintel\b", "jpcite"),
+        (
+            r"jpintel_mcp\.utils\.slug\.program_static_url",
+            "jpcite static URL builder",
+        ),
+        (r"jpintel_mcp\.utils\.slug", "jpcite static URL builder"),
+        (r"am_validation_rule", "configured validation rules"),
+        (r"jpintel 内", "jpcite で"),
+        (r"jpcite でで", "jpcite で"),
+        (r"\bapi_key_hash\b", "API key identifier"),
+        (
+            r"``GOOGLE_OAUTH_CLIENT_ID`` env var must be set on the support team "
+            r"side before this works \(503 otherwise\)\.",
+            "Google OAuth must be configured before this works (503 otherwise).",
+        ),
+        (r"\bNO billing\b", "no billing charge"),
+        (r"\bFREE\b", "no request charge"),
+        (
+            r"the two values differ only in the guarantee that full's "
+            r"enriched/source_mentions keys are present even when null",
+            "the two values differ only in the documented `full` response shape; "
+            "enriched/source_mentions keys are included even when null",
+        ),
+        (r"keys guaranteed present", "keys included in the documented response shape"),
+        (r"\bguaranteed present\b", "included in the documented response shape"),
+        (
+            r"must yield byte-identical\n\s+results, OR",
+            "is expected to yield byte-identical results, or",
+        ),
+        (r"manual review", "support review"),
+        (r"manual support team action", "support-assisted setup"),
+        (r"data/workpapers/[^\s`)]+", "generated PDF"),
+        (r"data/quarterly_pdfs/[^\s`)]+", "generated PDF"),
+        (r"benchmark bundles?", "JSON responses"),
+        (r"debugging or post-deploy verification", "fresh status checks"),
+        (r"post-launch monthly bulk refresh", "scheduled source refresh"),
+        (r"launch-week miss frequently means", "miss may mean"),
+        (r"X-Zeimu-", "X-Jpcite-"),
+        (r"fts5_trigram \+ LIKE fallback", "text search with fallback matching"),
+        (r"FTS5 trigram", "text search"),
+        (r"FTS5", "text search"),
+        (r"fts5_trigram", "text search"),
+        (r"\bFTS\b", "text search"),
+        (r"trigram tokenizer limitation", "short-query limitation"),
+        (r"trigram zero-match", "short-query zero-match"),
+        (
+            r"quoted-phrase workaround for 2\+ character kanji compounds",
+            "Japanese phrase normalization",
+        ),
+        (r"quality-gate quarantine", "publication review hold"),
+        (r"Tier X", "review-held rows"),
+        (r"tier X", "review-held rows"),
+        (r"case_studies_fts", "case study index"),
+        (r"corpus dump guard", "broad empty-search guard"),
+        (r"\bhandler\b", "API"),
+        (r"am_entity_facts\.source_id", "per-fact source reference"),
+        (r"am_entity_facts\.id", "fact identifier"),
+        (r"am_entities\.canonical_id", "stable entity identifier"),
+        (r"am_entity_source", "entity-level source references"),
+        (r"am_entity_annotation", "entity annotations"),
+        (r"am_entity_facts", "fact records"),
+        (r"am_entities", "source records"),
+        (r"am_source", "source catalog"),
+        (r"am_amendment_diff", "public change log"),
+        (r"am_amendment_snapshot", "historical snapshot"),
+        (r"entity_id_map", "stable identifier map"),
+        (r"jpi_[A-Za-z0-9_]+", "public dataset"),
+        (r"programs\.unified_id", "linked program identifier"),
+        (r"invoice_registrants", "invoice registrant records"),
+        (r"widget_keys row", "widget key"),
+        (r"\bLIKE\b", "fallback matching"),
+        (r"\brank(ed|ing)?\b", "relevance-ordered"),
+        (r"\bcache key\b", "repeat-request matching"),
+        (r"\bcached\b", "temporarily reused"),
+        (r"\bcache\b", "short-lived response reuse"),
+        (r"\btable\b", "dataset"),
+        (r"\btables\b", "datasets"),
+        (r"\bview\b", "dataset"),
+        (r"\bviews\b", "datasets"),
+        (r"\bmig(?:ration)?\.?\s*\d+", "schema update"),
+        (r"\.sql\b", ""),
+        (r"\bwave\s*\d+\b", "current release"),
+        (r"\bWave\s*\d+\b", "Current release"),
+        (r"\bphase[_ -]?[A-Za-z0-9]+\b", "release track"),
+        (r"\bgate(d)?\b", "controlled"),
+        (r"not re-metered", "not billed again"),
+        (r"read-from-disk", "read from packaged data"),
+    ]
+    for pattern, replacement in replacements:
+        text = re.sub(pattern, replacement, text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def _sanitize_openapi_public_schema(node: Any) -> None:
+    if isinstance(node, dict):
+        tags = node.get("tags")
+        if isinstance(tags, list):
+            node["tags"] = [
+                {
+                    "autonomath": "jpcite",
+                    "autonomath-health": "jpcite-health",
+                }.get(item, item)
+                for item in tags
+            ]
+        if node.get("title") == "WebhookResponse":
+            properties = node.get("properties")
+            if isinstance(properties, dict):
+                secret_schema = properties.pop("secret_hmac", None)
+                if isinstance(secret_schema, dict):
+                    secret_schema["title"] = "Signing Secret"
+                    properties["signing_secret"] = secret_schema
+                hint_schema = properties.pop("secret_last4", None)
+                if isinstance(hint_schema, dict):
+                    hint_schema["title"] = "Signing Secret Hint"
+                    properties["signing_secret_hint"] = hint_schema
+            required = node.get("required")
+            if isinstance(required, list):
+                node["required"] = [
+                    {
+                        "secret_hmac": "signing_secret",
+                        "secret_last4": "signing_secret_hint",
+                    }.get(item, item)
+                    for item in required
+                ]
+        if node.get("title") == "_DataHealthCheck":
+            properties = node.get("properties")
+            if isinstance(properties, dict) and "table" in properties:
+                properties["dataset"] = properties.pop("table")
+                dataset_schema = properties.get("dataset")
+                if isinstance(dataset_schema, dict):
+                    dataset_schema["title"] = "Dataset"
+            required = node.get("required")
+            if isinstance(required, list):
+                node["required"] = ["dataset" if item == "table" else item for item in required]
+        enum_values = node.get("enum")
+        if isinstance(enum_values, list):
+            node["enum"] = [item for item in enum_values if item != "internal"]
+        parameters = node.get("parameters")
+        if isinstance(parameters, list):
+            node["parameters"] = [
+                parameter
+                for parameter in parameters
+                if not (isinstance(parameter, dict) and parameter.get("name") == "include_internal")
+            ]
+        for key, value in list(node.items()):
+            if isinstance(value, str):
+                node[key] = _sanitize_openapi_public_text(value)
+            else:
+                _sanitize_openapi_public_schema(value)
+    elif isinstance(node, list):
+        for item in node:
+            _sanitize_openapi_public_schema(item)
+
+
 @asynccontextmanager
 async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Startup/teardown for the API.
@@ -331,8 +765,6 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     _init_sentry()
     setup_logging(level=settings.log_level, fmt=settings.log_format)
     init_db()
-
-    logger = logging.getLogger("jpintel.api")
 
     # ── Pepper guard (prod only) ────────────────────────────────────────
     # In production, refuse to start if the API-key hashing pepper is
@@ -368,9 +800,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
                 if len(_candidates) == 1:
                     Fernet(_candidates[0].encode("utf-8"))
                 else:
-                    MultiFernet([
-                        Fernet(k.encode("utf-8")) for k in _candidates
-                    ])
+                    MultiFernet([Fernet(k.encode("utf-8")) for k in _candidates])
             except Exception as _exc:  # noqa: BLE001
                 logger.critical(
                     "FATAL: INTEGRATION_TOKEN_SECRET is set but is not a valid "
@@ -427,9 +857,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     from jpintel_mcp.api._bg_task_worker import run_worker_loop
 
     _bg_stop = asyncio.Event()
-    _bg_task = asyncio.create_task(
-        run_worker_loop(_bg_stop), name="bg_task_worker"
-    )
+    _bg_task = asyncio.create_task(run_worker_loop(_bg_stop), name="bg_task_worker")
 
     _ready = True
     try:
@@ -450,20 +878,15 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="AutonoMath",
+        title="jpcite",
         version=__version__,
         description=(
-            "AutonoMath is a Japanese public-program intelligence API + MCP "
-            "server. It exposes a single retrieval surface over **10,790 "
-            "補助金 / 融資 / 税制 / 認定** programs (tier S/A/B/C searchable; "
-            "1,923 tier-X rows are quarantined and not returned), **2,286 "
-            "採択事例 (case studies)**, **108 融資 (loan products)** decomposed "
-            "across the three risk axes (担保 / 個人保証人 / 第三者保証人), "
-            "**1,185 行政処分 (enforcement cases)**, **9,484 laws** (e-Gov, "
-            "CC-BY 4.0), **35 税務判定ルールセット (tax rulesets)**, **2,065 "
-            "court decisions (判例)**, **362 bids (入札)**, and **13,801 "
-            "適格請求書発行事業者 (NTA invoice registrants, PDL v1.0)**. Every row "
-            "carries a primary-source URL + fetched_at timestamp.\n\n"
+            "jpcite is a Japanese public-program intelligence API + MCP "
+            "server. It exposes a single retrieval surface over public "
+            "Japanese programs, case studies, loan products, enforcement "
+            "cases, laws, tax references, court decisions, bids, and invoice "
+            "registrants. Records include source URLs and fetched timestamps "
+            "where available.\n\n"
             "## Who this is for\n\n"
             "Built for LLM agents (Claude / ChatGPT / Perplexity / Cursor) "
             "and developers building Japanese-business automation. Use cases:\n"
@@ -477,7 +900,7 @@ def create_app() -> FastAPI:
             "- read e-Gov 法令 articles and trace which programs cite them\n\n"
             "## Information lookup, not professional advice (税理士法 §52)\n\n"
             "**This API returns information retrieved from public Japanese "
-            "government sources. It is NOT 税務助言 (tax advice), NOT 法律相談 "
+            "sources and official provider pages. It is NOT 税務助言 (tax advice), NOT 法律相談 "
             "(legal advice), and NOT a substitute for 士業 (税理士 / 弁護士 / "
             "社労士 / 行政書士) consultation.** Every `/v1/am/*` and `/v1/tax_*` "
             "response carries an explicit `_disclaimer` envelope key making "
@@ -489,9 +912,10 @@ def create_app() -> FastAPI:
             "curl 'https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5'\n"
             "```\n\n"
             "Authenticated (¥3/req metered, 税込 ¥3.30, no tier SKUs, no "
-            "minimums) — pass `X-API-Key: sk_...` issued via Stripe Checkout:\n"
+            "monthly minimum commitment) — pass `X-API-Key: am_...` issued via "
+            "Stripe Checkout:\n"
             "```bash\n"
-            "curl -H 'X-API-Key: sk_live_...' "
+            "curl -H 'X-API-Key: am_live_...' "
             "'https://api.jpcite.com/v1/programs/search?q=DX&prefecture=東京都&tier=S'\n"
             "```\n\n"
             "## Pagination + envelopes\n\n"
@@ -502,19 +926,17 @@ def create_app() -> FastAPI:
             "the license. Do not strip it.\n"
             "- `/v1/am/*` and `/v1/tax_rulesets/*` carry `_disclaimer` "
             "(税理士法 §52 fence) — relay verbatim.\n\n"
-            "## Operator\n\n"
-            "Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708), 代表 梅田茂利, "
-            "info@bookyou.net. Canonical site: https://jpcite.com. "
+            "## About\n\n"
+            "Canonical site: https://jpcite.com. "
             "MCP package: `pip install autonomath-mcp` (PyPI). "
-            "MCP exposes 69 tools at default gates (39 jpintel + 30 "
-            "autonomath; protocol 2025-06-18).\n\n"
+            "MCP exposes 93 tools in the standard configuration.\n\n"
             "---\n\n"
             "## 日本語要約 (JP summary)\n\n"
-            "AutonoMath (税務会計AI) は **10,790 件の補助金 / 融資 / 税制 / 認定** "
-            "(tier S/A/B/C のみ検索対象、tier X 1,923 件は品質保留)、**2,286 件の"
+            "jpcite は **11,684 件の検索可能な補助金 / 融資 / 税制 / 認定** "
+            "(全 14,472 件を追跡し、11,684 件を通常検索で公開)、**2,286 件の"
             "採択事例**、**108 件の融資商品** (担保 / 個人保証人 / 第三者保証人 "
             "三軸分解)、**1,185 件の行政処分**、**9,484 件の法令** (e-Gov / "
-            "CC-BY 4.0)、**35 件の税務判定ルールセット**、**2,065 件の判例**、"
+            "CC-BY 4.0)、**50 件の税務判定ルールセット**、**2,065 件の判例**、"
             "**362 件の入札案件**、**13,801 件の適格請求書発行事業者 (国税庁 / PDL "
             "v1.0)** を、REST + MCP の単一検索面で公開する API です。各レコードは "
             "一次情報源 URL と取得時刻 (`source_url` / `fetched_at`) を保持しています。\n\n"
@@ -531,10 +953,9 @@ def create_app() -> FastAPI:
             "**料金体系:** 認証なし (匿名) は IP あたり 3 リクエスト / 日 (JST 翌日 "
             "00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。"
             "tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で "
-            "発行した `X-API-Key: sk_...` を Authorization header に設定してください。\n\n"
-            "**運営者:** Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708 / 代表 梅田茂利 / "
-            "info@bookyou.net / 東京都文京区小日向2-22-1)。商号: 税務会計AI。"
-            "公式サイト: https://jpcite.com/."
+            "発行した `X-API-Key: am_...` を `X-API-Key` ヘッダー"
+            "または `Authorization: Bearer ...` で送信してください。\n\n"
+            "**公式サイト:** https://jpcite.com/."
         ),
         lifespan=_lifespan,
         openapi_url="/v1/openapi.json",
@@ -597,6 +1018,11 @@ def create_app() -> FastAPI:
     # — see api/response_sanitizer.py docstring).
     app.add_middleware(ResponseSanitizerMiddleware)
     app.add_middleware(_RequestContextMiddleware)
+    # §28.2 response envelope negotiation. Routes that explicitly serve the
+    # v2 shape set request.state.envelope_v2_served or the response header;
+    # all other routes keep advertising v1 even when a caller sends the v2
+    # Accept media type.
+    app.add_middleware(EnvelopeAdapterMiddleware)
     # Deprecation observability (2026-04-29): tags hits to routes flagged
     # `deprecated=True` (OpenAPI canonical) OR responses carrying RFC 8594
     # `Deprecation` / RFC 9745 `Sunset` headers. Emits to Sentry via
@@ -631,6 +1057,10 @@ def create_app() -> FastAPI:
     # the request id, but before telemetry so a cap-rejection is logged with
     # the full latency. Anonymous callers (no X-API-Key) are skipped.
     app.add_middleware(CustomerCapMiddleware)
+    # Idempotency-Key replay cache for customer POST retries. Added after
+    # CustomerCap so Starlette executes it before cap/router work; replayed
+    # responses return directly and do not create usage_events rows.
+    app.add_middleware(IdempotencyMiddleware)
     # D9 burst throttle: 10 req/s per paid key, 1 req/s per anon IP. Sits
     # OUTSIDE the cap middleware (added later → wraps cap) so a 429 never
     # records a usage_events row. Whitelists /healthz, /readyz, Stripe
@@ -695,7 +1125,10 @@ def create_app() -> FastAPI:
         is_am = path_str.startswith("/v1/am/")
         _log.warning(
             "db_missing path=%s is_am=%s err=%s rid=%s",
-            path_str, is_am, exc, rid,
+            path_str,
+            is_am,
+            exc,
+            rid,
         )
         canonical = make_error(
             code="db_unavailable",
@@ -725,9 +1158,7 @@ def create_app() -> FastAPI:
             # when the request bypassed _RequestContextMiddleware (very
             # rare — typically a startup-error raise).
             rid = secrets.token_hex(8)
-        _log.exception(
-            "unhandled exception request_id=%s path=%s", rid, request.url.path
-        )
+        _log.exception("unhandled exception request_id=%s path=%s", rid, request.url.path)
         # Back-compat shape: keep "detail" + "request_id" at the root for
         # callers that already pattern-match on those keys (test_error_handler
         # asserts this), AND attach the canonical δ envelope under "error".
@@ -748,9 +1179,7 @@ def create_app() -> FastAPI:
     # Custom 429 handler for the anon rate limit — emits the flat body
     # `{"detail": "...", "limit": ..., "resets_at": "..."}` at the root
     # level instead of FastAPI's default `{"detail": ...}` envelope.
-    app.add_exception_handler(
-        _AnonRateLimitExceeded, anon_rate_limit_exception_handler
-    )
+    app.add_exception_handler(_AnonRateLimitExceeded, anon_rate_limit_exception_handler)
 
     # Pydantic's default 422 body is English-only. Translate common
     # constraint types to Japanese via a `msg_ja` field tacked onto each
@@ -782,14 +1211,9 @@ def create_app() -> FastAPI:
     }
 
     @app.exception_handler(RequestValidationError)
-    async def _validation_handler(
-        request: Request, exc: RequestValidationError
-    ) -> JSONResponse:
+    async def _validation_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
         errors_en = exc.errors()
-        errors_ja = [
-            {**e, "msg_ja": _msg_ja.get(e.get("type"), e.get("msg"))}
-            for e in errors_en
-        ]
+        errors_ja = [{**e, "msg_ja": _msg_ja.get(e.get("type"), e.get("msg"))} for e in errors_en]
         # δ2: attach the canonical {"error": {...}} envelope alongside the
         # back-compat `detail` / `detail_summary_ja` keys so tooling can
         # opt into the structured shape without breaking existing callers.
@@ -867,7 +1291,10 @@ def create_app() -> FastAPI:
                 if k not in {"code", "user_message", "request_id"}:
                     extras[k] = v
         elif exc.detail and exc.detail not in {
-            "Not Found", "Method Not Allowed", "Unauthorized", "Forbidden",
+            "Not Found",
+            "Method Not Allowed",
+            "Unauthorized",
+            "Forbidden",
         }:
             extras["detail"] = exc.detail
 
@@ -989,7 +1416,7 @@ def create_app() -> FastAPI:
     # /v1/evidence/packets/* — Evidence Packet composer (LLM-resilient
     # business plan §6). Bundles primary metadata + per-fact provenance +
     # compat-matrix rule verdicts into one envelope. ¥3/req metered;
-    # anonymous tier inherits the 50/月 IP cap via AnonIpLimitDep.
+    # anonymous tier inherits the 3/day IP cap via AnonIpLimitDep.
     app.include_router(evidence_router, dependencies=[AnonIpLimitDep])
     # /v1/source_manifest/{program_id} — per-program source rollup.
     app.include_router(source_manifest_router, dependencies=[AnonIpLimitDep])
@@ -1012,6 +1439,10 @@ def create_app() -> FastAPI:
     # discovery surface, so it mounts unconditionally.
     app.include_router(calendar_router, dependencies=[AnonIpLimitDep])
     app.include_router(billing_router)
+    # /v1/billing/client_tag_breakdown — authenticated control-plane read.
+    # It is never billable and must not consume the public anonymous free
+    # allowance when an unauthenticated caller gets a 401.
+    app.include_router(billing_breakdown_router)
     # P3.5 Stripe edge cases (refund_request intake live; dispute/tax-exempt/
     # currency/invoice-modification/Stripe-Tax-fallback are dispatched from
     # billing.webhook itself, only the refund_request REST endpoint mounts here).
@@ -1050,7 +1481,7 @@ def create_app() -> FastAPI:
     # `/v1/me/billing_history`, `/v1/me/tool_recommendation`). Anonymous
     # callers are rejected inside each handler — the router does not get
     # AnonIpLimitDep because dashboard reads should not consume the public
-    # 50-req/月 IP quota.
+    # 3 req/日 IP quota.
     app.include_router(dashboard_router)
     app.include_router(feedback_router)
     # APPI §31 個人情報開示請求 intake. Anonymous-accessible (a data subject
@@ -1230,7 +1661,6 @@ def create_app() -> FastAPI:
         )
         schema["servers"] = [
             {"url": "https://api.jpcite.com", "description": "Production"},
-            {"url": "http://localhost:8080", "description": "Local development"},
         ]
         schema.setdefault("components", {})
         schema["components"]["securitySchemes"] = {
@@ -1251,13 +1681,15 @@ def create_app() -> FastAPI:
         # Info-section metadata: contact / ToS / license. Surfaces in
         # generated docs (Stainless, Mintlify, ReDoc) and SDK readmes.
         schema["info"]["contact"] = {
-            "name": "AutonoMath Support",
+            "name": "jpcite Support",
             "email": "info@bookyou.net",
         }
-        schema["info"]["termsOfService"] = "https://jpcite.com/terms.html"
+        schema["info"]["termsOfService"] = "https://jpcite.com/tos.html"
         schema["info"]["license"] = {
             "name": "Proprietary - see termsOfService",
         }
+        _normalize_openapi_component_schema_names(schema)
+        _sanitize_openapi_public_schema(schema)
         app.openapi_schema = schema
         return schema
 

@@ -23,20 +23,24 @@ but `www` is also accessible and any browser request from there must
 not be silently dropped. Operators must set ``JPINTEL_CORS_ORIGINS``
 explicitly to allow ``http://localhost:3000`` etc. in dev environments.
 
-Allowlist exempts ``/healthz``, ``/readyz``, and the Stripe webhook —
-monitoring + Stripe callbacks may originate from origins we cannot
-predict.
+Allowlist exempts health checks, signed webhooks, and the widget surface.
+Widget requests have per-key origin allowlists and must reach
+``widget_auth`` so the customer-specific allowlist can be enforced there.
 """
 from __future__ import annotations
 
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import Response
 
 from jpintel_mcp.config import settings
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from starlette.requests import Request
+    from starlette.responses import Response
 
 # Paths exempt from origin enforcement — see module docstring.
 # /v1/billing/webhook is the Stripe-signed webhook; the signature header
@@ -54,6 +58,7 @@ _EXEMPT_PATHS: frozenset[str] = frozenset(
         "/v1/am/health/deep",
     }
 )
+_EXEMPT_PATH_PREFIXES: tuple[str, ...] = ("/v1/widget/",)
 
 
 def _allowed_origins() -> set[str]:
@@ -77,7 +82,9 @@ class OriginEnforcementMiddleware(BaseHTTPMiddleware):
         if not origin:
             return await call_next(request)
         # Exempt monitoring + webhook surfaces.
-        if request.url.path in _EXEMPT_PATHS:
+        if request.url.path in _EXEMPT_PATHS or request.url.path.startswith(
+            _EXEMPT_PATH_PREFIXES
+        ):
             return await call_next(request)
         allowed = _allowed_origins()
         normalized = origin.rstrip("/")

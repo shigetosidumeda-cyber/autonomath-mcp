@@ -61,16 +61,16 @@ def _post_webhook(client, event: dict):
 
 
 # ---------------------------------------------------------------------------
-# Case 1: 初回処理 — first delivery records the event AND issues the key
+# Case 1: 初回処理 — first delivery records the event and does not issue a key
 # ---------------------------------------------------------------------------
 
 
 def test_first_delivery_processes_and_records_event(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
-    """First webhook delivery: event row inserted + api_keys row issued."""
+    """First webhook delivery: event row inserted; raw key waits for checkout state."""
     event = {
-        "id": "evt_dedup_first",
+        "id": "evt_dedup_first_legacy",
         "type": "customer.subscription.created",
         "livemode": False,
         "data": {
@@ -93,10 +93,10 @@ def test_first_delivery_processes_and_records_event(
         row = c.execute(
             "SELECT event_id, event_type, livemode FROM stripe_webhook_events"
             " WHERE event_id = ?",
-            ("evt_dedup_first",),
+            ("evt_dedup_first_legacy",),
         ).fetchone()
         assert row is not None, "first delivery did not record event into dedup table"
-        assert row[0] == "evt_dedup_first"
+        assert row[0] == "evt_dedup_first_legacy"
         assert row[1] == "customer.subscription.created"
         assert row[2] == 0  # livemode=False
 
@@ -104,7 +104,7 @@ def test_first_delivery_processes_and_records_event(
             "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
             ("sub_dedup_first",),
         ).fetchone()
-        assert n_keys == 1, f"expected exactly 1 api_keys row, got {n_keys}"
+        assert n_keys == 0, f"subscription.created must not issue keys, got {n_keys}"
     finally:
         c.close()
 
@@ -121,11 +121,11 @@ def test_duplicate_replay_short_circuits(
 
     The dedup row already exists from delivery #1. Delivery #2 must:
       * return status="duplicate_ignored" (not "received")
-      * NOT create a second api_keys row
+     * NOT create an api_keys row
       * NOT re-schedule background tasks (welcome email, Customer.modify)
     """
     event = {
-        "id": "evt_dedup_replay",
+        "id": "evt_dedup_replay_legacy",
         "type": "customer.subscription.created",
         "livemode": False,
         "data": {
@@ -142,11 +142,9 @@ def test_duplicate_replay_short_circuits(
     assert r1.status_code == 200, r1.text
     assert r1.json() == {"status": "received"}
 
-    # Replay — same event_id. The handler must short-circuit BEFORE
-    # _issue_key_for_subscription, BEFORE background_tasks scheduling.
+    # Replay — same event_id. The handler must short-circuit before any
+    # subscription side-effect or background task scheduling.
     with patch(
-        "jpintel_mcp.api.billing._issue_key_for_subscription"
-    ) as mock_issue, patch(
         "jpintel_mcp.api.billing._apply_invoice_metadata_safe"
     ) as mock_apply:
         r2 = _post_webhook(client, event)
@@ -155,7 +153,6 @@ def test_duplicate_replay_short_circuits(
     assert r2.json() == {"status": "duplicate_ignored"}, (
         f"expected duplicate_ignored on replay, got {r2.json()}"
     )
-    mock_issue.assert_not_called()
     mock_apply.assert_not_called()
 
     # Database invariants: still exactly 1 dedup row + 1 api_keys row.
@@ -163,7 +160,7 @@ def test_duplicate_replay_short_circuits(
     try:
         (n_events,) = c.execute(
             "SELECT COUNT(*) FROM stripe_webhook_events WHERE event_id = ?",
-            ("evt_dedup_replay",),
+            ("evt_dedup_replay_legacy",),
         ).fetchone()
         assert n_events == 1, (
             f"expected single dedup row after replay, got {n_events}"
@@ -173,8 +170,8 @@ def test_duplicate_replay_short_circuits(
             "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
             ("sub_dedup_replay",),
         ).fetchone()
-        assert n_keys == 1, (
-            f"replay must NOT mint a second key, got {n_keys} keys"
+        assert n_keys == 0, (
+            f"subscription.created replay must not mint keys, got {n_keys} keys"
         )
     finally:
         c.close()

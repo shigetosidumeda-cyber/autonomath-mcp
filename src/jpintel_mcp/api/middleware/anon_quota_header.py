@@ -3,11 +3,11 @@ plus in-response soft-warning body injection (CRO Fix 5a, 2026-04-29).
 
 Every successful anonymous response (no X-API-Key, no Authorization: Bearer)
 carries three response headers so an LLM caller — or its human-in-the-loop —
-sees the remaining free quota and the conversion path **before** the 50/月
+sees the remaining free quota and the conversion path **before** the 3 req/日
 ceiling triggers a 429:
 
-* ``X-Anon-Quota-Remaining`` — integer, calls left this JST calendar month.
-* ``X-Anon-Quota-Reset``     — ISO 8601 timestamp of next JST 月初 00:00.
+* ``X-Anon-Quota-Remaining`` — integer, calls left this JST calendar day.
+* ``X-Anon-Quota-Reset``     — ISO 8601 timestamp of next JST 翌日 00:00.
 * ``X-Anon-Upgrade-Url``     — public landing for API-key issuance.
 
 Why headers (not body wrapping):
@@ -22,15 +22,15 @@ hint surfaced naturally.
 Why anonymous-only:
 
 The 429 path covers the hard ceiling. These headers cover the *soft*
-runway — the 0..49 calls before the ceiling — to convert traffic that
-otherwise would silently churn at request 51. Authenticated callers
+runway — the calls before the daily ceiling — to convert traffic that
+otherwise would silently churn at request 4. Authenticated callers
 already know the upgrade URL (they used it once); spamming it on every
 paid response is noise.
 
 CRO Fix 5a — in-response soft-warning (2026-04-29):
 
-When the anonymous caller is in the last 20% of their monthly runway
-(``remaining <= 10``, i.e. >=80% used), we additionally inject
+When the anonymous caller is in the last 20% of their daily runway, we
+additionally inject
 ``_meta.upgrade_hint`` into the JSON response body. Headers alone aren't
 enough: many MCP hosts and curl scripts surface the body to the user but
 swallow response headers. The hint is a single human-readable string and
@@ -83,18 +83,25 @@ if TYPE_CHECKING:
 
 _log = logging.getLogger("jpintel.anon_quota_header")
 
-# Fire the soft warning when the caller has burned 80%+ of the monthly
-# bucket, i.e. <= 10 calls left out of the default 50/月. This is hard-
-# coded rather than read from settings: the threshold is a UX choice, not
-# an operational knob, and tying it to the 80% rule keeps the message
-# concrete ("残 X req") regardless of how the operator tunes the cap.
-_SOFT_WARNING_THRESHOLD_REMAINING = 10
-
 # Public landing for the soft-warning conversion path. The hard 429 path
 # already uses ``UPGRADE_URL_FROM_429`` (?from=429); the soft warning
 # uses the bare ``/upgrade`` URL so funnel analytics can distinguish
 # preventive conversions from forced ones.
 _SOFT_UPGRADE_URL = "https://jpcite.com/upgrade"
+
+# Routes whose JSON contract is strict-shape: every key is part of a
+# documented Program / ProgramDetail / SearchResponse schema, and tests
+# assert exact key sets (minimal whitelist, full key guarantee, parity
+# between two consecutive calls). Body injection of ``_meta.upgrade_hint``
+# would silently add an extra key to the response — breaking minimal-
+# whitelist exclusivity and producing differing payloads across calls
+# because the ``remaining`` counter advances. For these prefixes we
+# stamp the X-Anon-Quota-* headers (header-level CRO surface) but skip
+# the body inject. Conversion callers that read JSON only still see the
+# upgrade signal via ``X-Anon-Upgrade-Url`` + ``X-Anon-Quota-Remaining``.
+_BODY_INJECT_DENYLIST_PREFIXES = (
+    "/v1/programs/",
+)
 
 
 def _is_anonymous(request: Request) -> bool:
@@ -119,12 +126,16 @@ def _build_upgrade_hint(remaining: int, reset_at: str) -> str:
     actionable, includes the concrete remaining count + the JST reset
     cue + the upgrade URL. ``reset_at`` is accepted for parity with
     ``X-Anon-Quota-Reset`` but is intentionally not interpolated: the
-    next-month-start phrase ("月初 JST 0:00 reset") is calendar-stable
-    and reads more naturally than an ISO timestamp inline.
+    next-day-start phrase ("JST 翌日 00:00 reset") is calendar-stable and
+    reads more naturally than an ISO timestamp inline.
     """
     del reset_at  # see docstring — kept in signature for symmetry / future use
+    # Copy reflects the 2026-04-30 monthly→daily switch (see anon_limit.py
+    # module docstring): cap is 3 req/日 with JST 翌日 00:00 reset, NOT
+    # the legacy monthly copy with 月初 reset. Stale copy was caught by the 2026-05-01
+    # conversion-friction audit (analysis_wave18/conversion_friction_audit_2026-05-01.md).
     return (
-        f"残 {remaining} req。 Free 50/月、 月初 JST 0:00 reset。 "
+        f"残 {remaining} req。 Free 3 req/日、 JST 翌日 00:00 reset。 "
         f"{_SOFT_UPGRADE_URL} で API キー発行で即時再開"
     )
 
@@ -318,6 +329,7 @@ class AnonQuotaHeaderMiddleware(BaseHTTPMiddleware):
 
         try:
             remaining = int(quota.get("remaining", 0))
+            limit = int(quota.get("limit", 0) or 0)
             reset_at = str(quota.get("reset_at_jst", ""))
             if remaining < 0:
                 remaining = 0
@@ -331,7 +343,15 @@ class AnonQuotaHeaderMiddleware(BaseHTTPMiddleware):
 
         # Soft-warning body injection: only when the caller is at 80%+
         # consumption. Below the threshold the headers alone are enough.
-        if remaining <= _SOFT_WARNING_THRESHOLD_REMAINING:
+        # Strict-shape routes (programs.{search,get_program,batch}) opt
+        # out of body injection — their response contract enumerates an
+        # exact key set. Headers stay on so the upgrade signal survives.
+        path = request.url.path or ""
+        body_inject_denied = any(
+            path.startswith(prefix) for prefix in _BODY_INJECT_DENYLIST_PREFIXES
+        )
+        should_soft_warn = limit > 0 and remaining * 5 <= limit
+        if should_soft_warn and not body_inject_denied:
             response = await _maybe_inject_upgrade_hint(
                 response, remaining=remaining, reset_at=reset_at
             )

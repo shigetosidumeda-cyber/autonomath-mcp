@@ -26,8 +26,9 @@ Auth + scope:
     Requires an authenticated API key (X-API-Key or Bearer Authorization).
     Scope is the parent/child tree of the caller (migration 086) so a parent
     sees the full fan-out across child keys, and a child sees only itself.
-    The breakdown query itself is billed as 1 request (charged on the next
-    Stripe invoice, same as any other authed call).
+    The breakdown query itself is not metered; charging a customer to inspect
+    their own bill creates recursive accounting and makes reconciliation
+    harder to explain.
 
 Hot path:
     SQLite GROUP BY on usage_events keyed by (key_hash, ts, client_tag).
@@ -45,7 +46,8 @@ fails any anthropic / openai / google / claude_agent_sdk import.
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timedelta, timezone
+from dataclasses import dataclass
+from datetime import UTC, date, datetime, timedelta, timezone
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
@@ -139,6 +141,16 @@ class ClientTagBreakdownResponse(BaseModel):
     _disclaimer: str
 
 
+@dataclass(frozen=True)
+class BreakdownAggregate:
+    rows: list[ClientTagRow]
+    capped: bool
+    total_requests: int
+    total_billable_units: int
+    untagged_requests: int
+    untagged_billable_units: int
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -155,12 +167,11 @@ def _first_of_month_jst(d: date) -> date:
 
 
 def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
-    """Return every key_hash in the parent/child tree containing `key_hash`.
+    """Return the key hashes the caller is allowed to inspect.
 
-    Mirrors `me._resolve_tree_key_hashes` exactly — duplicated rather than
-    imported so the billing module does not depend on the dashboard module.
-    Migration 086: parent caller sees children too; a child sees the full
-    tree as well (defensive — keeps fan-out math symmetric across roles).
+    Parent keys see their children for consolidated billing. Child keys see
+    only their own usage so sibling `client_tag` values do not leak across
+    tenants.
     """
     row = conn.execute(
         "SELECT id, parent_key_id FROM api_keys WHERE key_hash = ?",
@@ -171,12 +182,11 @@ def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
     rk = row.keys() if hasattr(row, "keys") else []
     own_id = row["id"] if "id" in rk else None
     parent_key_id = row["parent_key_id"] if "parent_key_id" in rk else None
-    root = parent_key_id if parent_key_id is not None else own_id
-    if root is None:
+    if parent_key_id is not None or own_id is None:
         return [key_hash]
     rows = conn.execute(
         "SELECT key_hash FROM api_keys WHERE id = ? OR parent_key_id = ?",
-        (root, root),
+        (own_id, own_id),
     ).fetchall()
     hashes = [r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows]
     if key_hash not in hashes:
@@ -238,32 +248,59 @@ def _aggregate(
     tree_hashes: list[str],
     period_start: date,
     period_end: date,
-) -> tuple[list[ClientTagRow], bool]:
+) -> BreakdownAggregate:
     """Run the GROUP BY aggregate over usage_events within [start, end].
 
     `period_end` is JST-calendar inclusive — the SQL bound is therefore
     converted to a half-open range `< (end+1) midnight JST` to capture
-    the full day's events. Both bounds are emitted in JST-anchored ISO
-    timestamps so the WHERE is sargable against the existing
-    `(key_hash, ts, client_tag, quantity)` covering index (migration 116).
+    the full day's events. Bounds are converted to UTC and compared via
+    SQLite datetime() so UTC-stored usage rows and older offset-stamped
+    rows land in the same customer-visible JST billing day.
 
     Returns (rows, capped_flag) where `capped_flag` is True when the
     advisor has more than _MAX_BREAKDOWN_ROWS distinct tags (signal for
     paginated-endpoint follow-up — out of scope for this task).
     """
     if not tree_hashes:
-        return [], False
+        return BreakdownAggregate([], False, 0, 0, 0, 0)
     placeholders = ",".join("?" * len(tree_hashes))
     # Bounds: [start_jst_midnight, end_jst_midnight + 1d) — half-open so a
     # request landing at 2026-04-30T23:59:59+09:00 is included in an
     # April invoice, but 2026-05-01T00:00:00+09:00 is NOT.
     start_iso = datetime(
         period_start.year, period_start.month, period_start.day, tzinfo=_JST
-    ).isoformat()
+    ).astimezone(UTC).isoformat()
     end_exclusive = period_end + timedelta(days=1)
     end_iso = datetime(
         end_exclusive.year, end_exclusive.month, end_exclusive.day, tzinfo=_JST
-    ).isoformat()
+    ).astimezone(UTC).isoformat()
+    totals = conn.execute(
+        f"""SELECT
+                COUNT(*) AS req_count,
+                COALESCE(SUM(COALESCE(quantity, 1)), 0) AS units,
+                COALESCE(SUM(CASE WHEN client_tag IS NULL THEN 1 ELSE 0 END), 0)
+                    AS untagged_requests,
+                COALESCE(
+                    SUM(CASE WHEN client_tag IS NULL THEN COALESCE(quantity, 1) ELSE 0 END),
+                    0
+                ) AS untagged_units
+              FROM usage_events
+             WHERE key_hash IN ({placeholders})
+               AND COALESCE(metered, 0) = 1
+               AND status >= 200
+               AND status < 400
+               AND datetime(ts) >= datetime(?)
+               AND datetime(ts) <  datetime(?)""",  # noqa: S608 — placeholders only
+        (*tree_hashes, start_iso, end_iso),
+    ).fetchone()
+
+    total_requests = int(totals["req_count"] or 0) if totals is not None else 0
+    total_units = int(totals["units"] or 0) if totals is not None else 0
+    untagged_requests = (
+        int(totals["untagged_requests"] or 0) if totals is not None else 0
+    )
+    untagged_units = int(totals["untagged_units"] or 0) if totals is not None else 0
+
     # Single GROUP BY with NULL preserved (SQLite GROUP BY treats NULL as
     # its own bucket by default — verified against the migration 085
     # query in me._aggregate_by_client_tag). first_seen / last_seen are
@@ -273,13 +310,16 @@ def _aggregate(
         f"""SELECT
                 client_tag,
                 COUNT(*) AS req_count,
-                COALESCE(SUM(quantity), 0) AS units,
-                MIN(substr(ts, 1, 10)) AS first_seen,
-                MAX(substr(ts, 1, 10)) AS last_seen
+                COALESCE(SUM(COALESCE(quantity, 1)), 0) AS units,
+                MIN(date(datetime(ts), '+9 hours')) AS first_seen,
+                MAX(date(datetime(ts), '+9 hours')) AS last_seen
               FROM usage_events
              WHERE key_hash IN ({placeholders})
-               AND ts >= ?
-               AND ts <  ?
+               AND COALESCE(metered, 0) = 1
+               AND status >= 200
+               AND status < 400
+               AND datetime(ts) >= datetime(?)
+               AND datetime(ts) <  datetime(?)
           GROUP BY client_tag
           ORDER BY units DESC, req_count DESC, client_tag IS NULL, client_tag ASC
           LIMIT ?""",  # noqa: S608 — placeholders only, _MAX_BREAKDOWN_ROWS+1 literal
@@ -308,7 +348,14 @@ def _aggregate(
                 last_seen=last_seen,
             )
         )
-    return out, capped
+    return BreakdownAggregate(
+        rows=out,
+        capped=capped,
+        total_requests=total_requests,
+        total_billable_units=total_units,
+        untagged_requests=untagged_requests,
+        untagged_billable_units=untagged_units,
+    )
 
 
 def _resolve_account_id(conn, key_hash: str) -> str | None:
@@ -380,7 +427,8 @@ def get_client_tag_breakdown(
     response reconcile 1:1 with the Stripe invoice that covers the same
     period (JST calendar boundary, 切り捨て consumption-tax math).
 
-    The request itself is metered like any other authed call — 1 unit ¥3.
+    The request itself is intentionally unmetered so the response reconciles
+    directly against the underlying usage_events ledger.
     """
     if ctx.key_hash is None:
         # Anonymous / no-key — no Stripe customer to break down.
@@ -407,19 +455,20 @@ def get_client_tag_breakdown(
         )
 
     tree_hashes = _resolve_tree_key_hashes(conn, ctx.key_hash)
-    rows, capped = _aggregate(
+    aggregate = _aggregate(
         conn,
         tree_hashes=tree_hashes,
         period_start=start_d,
         period_end=end_d,
     )
+    rows = aggregate.rows
 
-    total_requests = sum(r.requests for r in rows)
-    total_billable_units = sum(r.billable_units for r in rows)
+    total_requests = aggregate.total_requests
+    total_billable_units = aggregate.total_billable_units
     total_yen_excl = total_billable_units * _UNIT_PRICE_YEN
     total_yen_incl = _consumption_tax_inclusive_yen(total_yen_excl)
-    untagged_requests = sum(r.requests for r in rows if r.client_tag is None)
-    untagged_yen = sum(r.yen_excl_tax for r in rows if r.client_tag is None)
+    untagged_requests = aggregate.untagged_requests
+    untagged_yen = aggregate.untagged_billable_units * _UNIT_PRICE_YEN
 
     account_id = _resolve_account_id(conn, ctx.key_hash)
 
@@ -491,6 +540,6 @@ def get_client_tag_breakdown(
         ],
         "untagged_requests": untagged_requests,
         "untagged_yen": untagged_yen,
-        "capped_at_max_rows": capped,
+        "capped_at_max_rows": aggregate.capped,
         "_disclaimer": _DISCLAIMER,
     }

@@ -29,7 +29,7 @@ Tuning
 
 Anonymous quota interaction
 ---------------------------
-The 50 req/月 anonymous IP quota is enforced separately by
+The 3 req/日 anonymous IP quota is enforced separately by
 ``api/anon_limit.py::enforce_anon_ip_limit`` as a router-dep (sits inside
 the handler, so it runs *after* this middleware). Order is intentional:
 
@@ -83,7 +83,7 @@ logger = logging.getLogger("jpintel.rate_limit")
 _PAID_RATE_PER_SEC: float = 10.0
 _PAID_BURST: float = 20.0
 
-# Per-anon-IP throttle. 1 req/s, burst 5. The 50 req/月 cap (anon_limit.py)
+# Per-anon-IP throttle. 1 req/s, burst 5. The 3 req/日 cap (anon_limit.py)
 # is the long-term ceiling; this is just the per-second guard.
 _ANON_RATE_PER_SEC: float = 1.0
 _ANON_BURST: float = 5.0

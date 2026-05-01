@@ -1,6 +1,8 @@
+import contextlib
 import hashlib
 import hmac
 import json
+import logging
 import secrets
 import sqlite3
 from collections.abc import Generator
@@ -11,6 +13,8 @@ from fastapi import BackgroundTasks, Depends, Header, HTTPException, Request, st
 
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.session import connect
+
+logger = logging.getLogger("jpintel.usage")
 
 # Endpoints whose query params are safe to hash into a digest. Anything not
 # listed here stores `params_digest = NULL` (PII-carrying endpoints like
@@ -165,6 +169,84 @@ _QUANTITY_MAX: int = 100_000
 TRIAL_UPGRADE_URL = "https://jpcite.com/pricing.html?from=trial#api-paid"
 
 
+def _insert_usage_event(
+    conn: sqlite3.Connection,
+    *,
+    key_hash: str,
+    endpoint: str,
+    status_code: int,
+    metered: bool,
+    digest: str | None,
+    latency_ms: int | None,
+    result_count: int | None,
+    client_tag: str | None,
+    quantity: int,
+    billing_idempotency_key: str | None,
+) -> tuple[int | None, bool]:
+    """Insert usage_events, de-duping logical Idempotency-Key retries.
+
+    Returns ``(usage_event_id, inserted)``. ``inserted=False`` means this
+    logical request was already recorded; callers may retry Stripe sync with
+    the same idempotency key, but must not advance local caps again.
+    """
+    ts = datetime.now(UTC).isoformat()
+    if billing_idempotency_key:
+        try:
+            cur = conn.execute(
+                "INSERT INTO usage_events("
+                "  key_hash, endpoint, ts, status, metered, params_digest,"
+                "  latency_ms, result_count, client_tag, quantity,"
+                "  billing_idempotency_key"
+                ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    key_hash,
+                    endpoint,
+                    ts,
+                    status_code,
+                    1 if metered else 0,
+                    digest,
+                    latency_ms,
+                    result_count,
+                    client_tag,
+                    quantity,
+                    billing_idempotency_key,
+                ),
+            )
+            return cur.lastrowid, True
+        except sqlite3.IntegrityError:
+            row = conn.execute(
+                "SELECT id FROM usage_events "
+                "WHERE key_hash = ? AND billing_idempotency_key = ? "
+                "ORDER BY id ASC LIMIT 1",
+                (key_hash, billing_idempotency_key),
+            ).fetchone()
+            return (int(row[0]) if row else None), False
+        except sqlite3.OperationalError as exc:
+            if "billing_idempotency_key" not in str(exc):
+                raise
+            # Older local DB before migration 122; fall through to legacy insert.
+
+    cur = conn.execute(
+        "INSERT INTO usage_events("
+        "  key_hash, endpoint, ts, status, metered, params_digest,"
+        "  latency_ms, result_count, client_tag, quantity"
+        ") VALUES (?,?,?,?,?,?,?,?,?,?)",
+        (
+            key_hash,
+            endpoint,
+            ts,
+            status_code,
+            1 if metered else 0,
+            digest,
+            latency_ms,
+            result_count,
+            client_tag,
+            quantity,
+        ),
+    )
+    return cur.lastrowid, True
+
+
 def _day_bucket(ts: datetime | None = None) -> str:
     ts = ts or datetime.now(UTC)
     return ts.strftime("%Y-%m-%d")
@@ -278,7 +360,8 @@ async def require_key(
     # implausible but defense-in-depth) cannot auth. Legacy rows have
     # NULL bcrypt and rely on HMAC PRIMARY KEY match alone (already
     # verified above by the row lookup succeeding).
-    bcrypt_hash = row["key_hash_bcrypt"] if "key_hash_bcrypt" in row.keys() else None
+    row_keys = row.keys() if hasattr(row, "keys") else ()
+    bcrypt_hash = row["key_hash_bcrypt"] if "key_hash_bcrypt" in row_keys else None
     if bcrypt_hash and not verify_api_key_bcrypt(raw, bcrypt_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid api key")
 
@@ -362,23 +445,66 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
     if metered:
         return
 
-    # Trial-tier hard cap (Bug 1 from the 2026-04-29 funnel audit).
-    # The advertised promise on homepage / 429 envelope / trial.html /
-    # day-0 email is "14 日 / 200 req"; until 2026-04-29 the 200-req half
-    # was 100% unenforced because ApiContext.metered=False made the
-    # CustomerCapMiddleware skip these rows AND the request path never
-    # incremented api_keys.trial_requests_used. We now read the counter
-    # directly from api_keys (incremented by _record_usage_async post-
-    # response, plus the inline log_usage path for cron tests) and 429
-    # synchronously BEFORE the router runs. The cron sweep at 04:00 JST
-    # is now belt-and-suspenders only.
+    # Trial-tier hard cap. Reserve one request before the router runs so
+    # concurrent calls cannot all pass at 199/200 and overshoot the public
+    # "14 days / 200 requests" promise.
     if ctx.tier == "trial":
         row = conn.execute(
-            "SELECT trial_requests_used FROM api_keys WHERE key_hash = ?",
+            "SELECT trial_expires_at FROM api_keys WHERE key_hash = ?",
             (ctx.key_hash,),
         ).fetchone()
-        used = int(row["trial_requests_used"] or 0) if row else 0
-        if used >= TRIAL_REQUEST_CAP:
+        expires_raw = row["trial_expires_at"] if row else None
+        if expires_raw:
+            try:
+                expires_at = datetime.fromisoformat(
+                    str(expires_raw).replace("Z", "+00:00")
+                )
+            except ValueError:
+                expires_at = None
+            if expires_at is not None and expires_at <= datetime.now(UTC):
+                now_iso = datetime.now(UTC).isoformat()
+                conn.execute(
+                    "UPDATE api_keys SET revoked_at = ? "
+                    "WHERE key_hash = ? AND revoked_at IS NULL",
+                    (now_iso, ctx.key_hash),
+                )
+                raise HTTPException(
+                    status.HTTP_401_UNAUTHORIZED,
+                    detail={
+                        "detail": (
+                            "トライアル期間または上限に達したため API キーは"
+                            "失効しています。"
+                        ),
+                        "upgrade_url": TRIAL_UPGRADE_URL,
+                        "cta_text_ja": "API キー発行で続行 (¥3.30/req)",
+                        "trial_expired": True,
+                    },
+                )
+        txn_started = False
+        try:
+            if not conn.in_transaction:
+                conn.execute("BEGIN IMMEDIATE")
+                txn_started = True
+            cur = conn.execute(
+                "UPDATE api_keys "
+                "SET trial_requests_used = COALESCE(trial_requests_used, 0) + 1 "
+                "WHERE key_hash = ? "
+                "AND COALESCE(trial_requests_used, 0) < ?",
+                (ctx.key_hash, TRIAL_REQUEST_CAP),
+            )
+            row = conn.execute(
+                "SELECT trial_requests_used FROM api_keys WHERE key_hash = ?",
+                (ctx.key_hash,),
+            ).fetchone()
+            used = int(row["trial_requests_used"] or 0) if row else 0
+            if cur.rowcount:
+                if txn_started:
+                    conn.execute("COMMIT")
+                    txn_started = False
+                return
+            if txn_started:
+                conn.execute("ROLLBACK")
+                txn_started = False
             raise HTTPException(
                 status.HTTP_429_TOO_MANY_REQUESTS,
                 detail={
@@ -397,11 +523,16 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
                     ),
                 },
             )
-        # Trial tier shares the daily-limit code path with 'free' below
-        # for the sentinel attribute, but the hard cap above is the
-        # operative gate. Return so we don't double-check a daily bucket
-        # against a setting that doesn't exist.
-        return
+        except HTTPException:
+            if txn_started:
+                with contextlib.suppress(Exception):
+                    conn.execute("ROLLBACK")
+            raise
+        except Exception:
+            if txn_started:
+                with contextlib.suppress(Exception):
+                    conn.execute("ROLLBACK")
+            raise
 
     if limit_key is None:
         return
@@ -463,6 +594,81 @@ def compute_params_digest(endpoint: str, params: dict[str, Any] | None) -> str |
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 
+def _derive_billing_event_idempotency_key(
+    request_key: str,
+    *,
+    event_index: int,
+    endpoint: str,
+    params: dict[str, Any] | None,
+    quantity: int,
+    status_code: int,
+) -> str:
+    """Derive a stable Stripe/local idempotency key for one usage event.
+
+    The HTTP middleware owns one key per logical request, but some endpoints
+    record multiple billable usage_events in one request. This suffix keeps
+    those events distinct while preserving deterministic replay behavior.
+    """
+    payload = json.dumps(
+        {
+            "endpoint": endpoint,
+            "event_index": event_index,
+            "params": params or {},
+            "quantity": quantity,
+            "status": status_code,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        default=str,
+    )
+    suffix = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:24]
+    return f"{request_key}:u{event_index}:{suffix}"
+
+
+def _metered_cap_final_check(
+    conn: sqlite3.Connection,
+    *,
+    key_hash: str | None,
+    metered: bool,
+    status_code: int,
+    quantity: int,
+) -> tuple[bool, bool]:
+    """Serialize final metered billing against the customer monthly cap.
+
+    Returns `(allowed, transaction_started)`. For successful metered calls we
+    start `BEGIN IMMEDIATE`, re-read spend from usage_events, and only then let
+    the caller insert the billable row. This prevents concurrent workers from
+    both seeing the same pre-request count and overbilling past the cap.
+    Failures are fail-closed: the response may already be served, but billing
+    is skipped.
+    """
+    if key_hash is None or not metered or status_code >= 400:
+        return True, False
+    txn_started = False
+    try:
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+            txn_started = True
+        from jpintel_mcp.api.middleware.customer_cap import (
+            metered_charge_within_cap,
+        )
+
+        if metered_charge_within_cap(conn, key_hash, quantity):
+            return True, txn_started
+        if txn_started:
+            conn.execute("ROLLBACK")
+            txn_started = False
+        logger.info("usage_cap_final_check_blocked key_hash=%s", key_hash[:8])
+        return False, False
+    except Exception:  # noqa: BLE001
+        if txn_started:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        logger.exception("usage_cap_final_check_failed")
+        return False, False
+
+
 def _record_usage_async(
     key_hash: str,
     endpoint: str,
@@ -476,6 +682,7 @@ def _record_usage_async(
     client_tag: str | None = None,
     quantity: int = 1,
     audit_seal: dict[str, Any] | None = None,
+    billing_idempotency_key: str | None = None,
 ) -> None:
     """Deferred body of ``log_usage`` — runs after the response is flushed.
 
@@ -524,67 +731,62 @@ def _record_usage_async(
     if quantity > _QUANTITY_MAX:
         quantity = _QUANTITY_MAX
     usage_event_id: int | None = None
+    usage_event_inserted = False
     try:
         conn = connect()
     except Exception:  # noqa: BLE001
         conn = None
     if conn is not None:
+        usage_txn_started = False
         try:
-            cur = conn.execute(
-                "INSERT INTO usage_events("
-                "  key_hash, endpoint, ts, status, metered, params_digest,"
-                "  latency_ms, result_count, client_tag, quantity"
-                ") VALUES (?,?,?,?,?,?,?,?,?,?)",
-                (
-                    key_hash,
-                    endpoint,
-                    datetime.now(UTC).isoformat(),
-                    status_code,
-                    1 if metered else 0,
-                    digest,
-                    latency_ms,
-                    result_count,
-                    client_tag,
-                    quantity,
-                ),
+            allowed, usage_txn_started = _metered_cap_final_check(
+                conn,
+                key_hash=key_hash,
+                metered=metered,
+                status_code=status_code,
+                quantity=quantity,
             )
-            usage_event_id = cur.lastrowid
-            conn.execute(
-                "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
-                (datetime.now(UTC).isoformat(), key_hash),
+            if not allowed:
+                return
+            usage_event_id, usage_event_inserted = _insert_usage_event(
+                conn,
+                key_hash=key_hash,
+                endpoint=endpoint,
+                status_code=status_code,
+                metered=metered,
+                digest=digest,
+                latency_ms=latency_ms,
+                result_count=result_count,
+                client_tag=client_tag,
+                quantity=quantity,
+                billing_idempotency_key=billing_idempotency_key,
             )
-            # Bump the trial counter exactly once per request that
-            # reaches the deferred logger. We tick on every status code
-            # (including 4xx/5xx) so a trial caller cannot drain the API
-            # by making malformed requests — Bug 1 (2026-04-29 funnel
-            # audit) advertised cap is "14 日 / 200 req" with no carve-
-            # out for failed calls. The synchronous gate in
-            # _enforce_quota reads back this counter on the NEXT request.
-            if tier == "trial":
+            if usage_event_inserted:
                 conn.execute(
-                    "UPDATE api_keys "
-                    "SET trial_requests_used = "
-                    "  COALESCE(trial_requests_used, 0) + 1 "
-                    "WHERE key_hash = ?",
-                    (key_hash,),
+                    "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
+                    (datetime.now(UTC).isoformat(), key_hash),
                 )
             # Migration 089: persist audit_seal alongside usage_events for
             # 7-year statutory retention (税理士事務所 bundle). Best-effort
             # — a missing migration 089 is swallowed inside persist_seal.
-            if audit_seal is not None:
+            if audit_seal is not None and usage_event_inserted:
                 try:
                     from jpintel_mcp.api._audit_seal import persist_seal
 
                     persist_seal(conn, seal=audit_seal, api_key_hash=key_hash)
                 except Exception:  # noqa: BLE001
                     pass
+            if usage_txn_started:
+                conn.execute("COMMIT")
+                usage_txn_started = False
         except Exception:  # noqa: BLE001
+            if usage_txn_started:
+                with contextlib.suppress(Exception):
+                    conn.execute("ROLLBACK")
             usage_event_id = None
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 conn.close()
-            except Exception:  # noqa: BLE001
-                pass
 
     # Fire-and-forget Stripe usage_records report for metered ("paid") tier.
     # 4xx/5xx are not billed. Local import prevents a hard dep on stripe
@@ -592,17 +794,49 @@ def _record_usage_async(
     # The usage_event_id is passed so the worker can mark the row as
     # synced (stripe_record_id + stripe_synced_at) on success — required
     # for Fly volume DR replay-from-Stripe (audit a37f6226fe319dc40).
-    if metered and status_code < 400 and stripe_subscription_id:
+    if usage_event_id is not None and usage_event_inserted:
+        _note_customer_cap_cache(
+            key_hash,
+            metered=metered,
+            status_code=status_code,
+            quantity=quantity,
+        )
+    if (
+        metered
+        and status_code < 400
+        and stripe_subscription_id
+        and usage_event_id is not None
+    ):
         try:
             from jpintel_mcp.billing.stripe_usage import report_usage_async
 
-            report_usage_async(
-                stripe_subscription_id,
-                quantity=quantity,
-                usage_event_id=usage_event_id,
-            )
+            stripe_kwargs: dict[str, Any] = {
+                "quantity": quantity,
+                "usage_event_id": usage_event_id,
+            }
+            if billing_idempotency_key is not None:
+                stripe_kwargs["idempotency_key"] = billing_idempotency_key
+            report_usage_async(stripe_subscription_id, **stripe_kwargs)
         except Exception:  # noqa: BLE001
             pass
+
+
+def _note_customer_cap_cache(
+    key_hash: str | None,
+    *,
+    metered: bool,
+    status_code: int,
+    quantity: int,
+) -> None:
+    """Advance the soft monthly-cap cache after a billable success."""
+    if key_hash is None or not metered or status_code >= 400:
+        return
+    try:
+        from jpintel_mcp.api.middleware.customer_cap import note_cap_usage
+
+        note_cap_usage(key_hash, quantity)
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def log_usage(
@@ -669,6 +903,29 @@ def log_usage(
     if client_tag is None and request is not None:
         client_tag = getattr(request.state, "client_tag", None)
 
+    try:
+        from jpintel_mcp.api.idempotency_context import (
+            billing_event_index,
+            billing_idempotency_key,
+        )
+
+        request_billing_key = billing_idempotency_key.get()
+        if request_billing_key is not None:
+            event_index = billing_event_index.get()
+            billing_event_index.set(event_index + 1)
+            billing_key = _derive_billing_event_idempotency_key(
+                request_billing_key,
+                event_index=event_index,
+                endpoint=endpoint,
+                params=params,
+                quantity=quantity,
+                status_code=status_code,
+            )
+        else:
+            billing_key = None
+    except Exception:  # pragma: no cover - defensive import guard
+        billing_key = None
+
     # Migration 089: build the audit_seal envelope for the response IFF the
     # caller opted in (issue_audit_seal=True). Sealing is opt-in because
     # most internal endpoints (dashboard reads, /healthz) carry no audit
@@ -690,8 +947,10 @@ def log_usage(
         except Exception:  # noqa: BLE001
             audit_seal = None
 
-    if background_tasks is not None:
-        # Hot path: defer all writes until after response flush.
+    if background_tasks is not None and billing_key is None:
+        # Hot path: defer all writes until after response flush. Requests
+        # protected by HTTP Idempotency-Key write inline below so the usage row
+        # is durable before the idempotency middleware caches a 2xx response.
         background_tasks.add_task(
             _record_usage_async,
             ctx.key_hash,
@@ -706,68 +965,86 @@ def log_usage(
             client_tag,
             quantity,
             audit_seal,
+            billing_key,
         )
         return audit_seal
 
     # Legacy / non-request path: inline writes on the supplied conn.
-    cur = conn.execute(
-        "INSERT INTO usage_events("
-        "  key_hash, endpoint, ts, status, metered, params_digest,"
-        "  latency_ms, result_count, client_tag, quantity"
-        ") VALUES (?,?,?,?,?,?,?,?,?,?)",
-        (
-            ctx.key_hash,
-            endpoint,
-            datetime.now(UTC).isoformat(),
-            status_code,
-            1 if ctx.metered else 0,
-            digest,
-            latency_ms,
-            result_count,
-            client_tag,
-            quantity,
-        ),
+    usage_txn_started = False
+    allowed, usage_txn_started = _metered_cap_final_check(
+        conn,
+        key_hash=ctx.key_hash,
+        metered=ctx.metered,
+        status_code=status_code,
+        quantity=quantity,
     )
-    usage_event_id = cur.lastrowid
-    conn.execute(
-        "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
-        (datetime.now(UTC).isoformat(), ctx.key_hash),
-    )
-    # Bump the trial cap counter on the inline path too (Bug 1, 2026-04-29).
-    # Tests that drive log_usage directly (without BackgroundTasks) need
-    # the same accounting as the hot path so the synchronous gate in
-    # _enforce_quota fires deterministically against the inline-written
-    # counter rather than against a counter that only updates in the
-    # async branch.
-    if ctx.tier == "trial":
-        conn.execute(
-            "UPDATE api_keys "
-            "SET trial_requests_used = "
-            "  COALESCE(trial_requests_used, 0) + 1 "
-            "WHERE key_hash = ?",
-            (ctx.key_hash,),
+    if not allowed:
+        return audit_seal
+    try:
+        usage_event_id, usage_event_inserted = _insert_usage_event(
+            conn,
+            key_hash=ctx.key_hash,
+            endpoint=endpoint,
+            status_code=status_code,
+            metered=ctx.metered,
+            digest=digest,
+            latency_ms=latency_ms,
+            result_count=result_count,
+            client_tag=client_tag,
+            quantity=quantity,
+            billing_idempotency_key=billing_key,
         )
-    # Migration 089: persist the seal alongside the inline usage_events row.
-    if audit_seal is not None:
-        try:
-            from jpintel_mcp.api._audit_seal import persist_seal
+        if usage_event_inserted:
+            conn.execute(
+                "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
+                (datetime.now(UTC).isoformat(), ctx.key_hash),
+            )
+        # Migration 089: persist the seal alongside the inline usage_events row.
+        if audit_seal is not None and usage_event_inserted:
+            try:
+                from jpintel_mcp.api._audit_seal import persist_seal
 
-            persist_seal(conn, seal=audit_seal, api_key_hash=ctx.key_hash)
-        except Exception:  # noqa: BLE001
-            pass
+                persist_seal(conn, seal=audit_seal, api_key_hash=ctx.key_hash)
+            except Exception:  # noqa: BLE001
+                pass
+        if usage_txn_started:
+            conn.execute("COMMIT")
+            usage_txn_started = False
+    except Exception:
+        if usage_txn_started:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        raise
     # Fire-and-forget Stripe usage_records report for metered ("paid") tier.
     # 4xx/5xx are not billed. Local import prevents a hard dep on stripe
     # during tests that construct ApiContext directly without Stripe env.
     # The usage_event_id is passed so the worker can mark the row as
     # synced (stripe_record_id + stripe_synced_at) on success — required
     # for Fly volume DR replay-from-Stripe (audit a37f6226fe319dc40).
-    if ctx.metered and status_code < 400 and ctx.stripe_subscription_id:
+    if (
+        ctx.metered
+        and status_code < 400
+        and ctx.stripe_subscription_id
+        and usage_event_id is not None
+    ):
         try:
             from jpintel_mcp.billing.stripe_usage import report_usage_async
 
-            report_usage_async(ctx.stripe_subscription_id, usage_event_id=usage_event_id)
+            stripe_kwargs: dict[str, Any] = {
+                "quantity": quantity,
+                "usage_event_id": usage_event_id,
+            }
+            if billing_key is not None:
+                stripe_kwargs["idempotency_key"] = billing_key
+            report_usage_async(ctx.stripe_subscription_id, **stripe_kwargs)
         except Exception:  # noqa: BLE001
             pass
+    _note_customer_cap_cache(
+        ctx.key_hash,
+        metered=ctx.metered,
+        status_code=status_code,
+        quantity=quantity,
+    )
     return audit_seal
 
 
@@ -787,7 +1064,7 @@ def hash_ip_for_telemetry(ip: str | None, day: str | None = None) -> str | None:
     if day is None:
         day = datetime.now(UTC).strftime("%Y-%m-%d")
     salt = settings.api_key_salt or "ip-hash-fallback-salt"
-    payload = f"{ip}|{day}|{salt}".encode("utf-8")
+    payload = f"{ip}|{day}|{salt}".encode()
     return hashlib.sha256(payload).hexdigest()
 
 
@@ -817,7 +1094,7 @@ def log_empty_search(
         if filters
         else None
     )
-    try:
+    with contextlib.suppress(sqlite3.OperationalError):
         conn.execute(
             "INSERT INTO empty_search_log("
             "  query, endpoint, filters_json, ip_hash, created_at"
@@ -830,10 +1107,6 @@ def log_empty_search(
                 datetime.now(UTC).isoformat(),
             ),
         )
-    except sqlite3.OperationalError:
-        # Migration 062 not applied yet — never block the response on
-        # telemetry write failure. Same posture as _emit_query_log.
-        pass
 
 
 ApiContextDep = Annotated[ApiContext, Depends(require_key)]

@@ -26,7 +26,7 @@ These are complementary:
   abuse / DDoS / scraping defence.
 * :class:`CustomerCapMiddleware` is a *long* (per-month) spend ceiling for
   paid customers who set a self-cap; it does not enforce abuse limits.
-* Anonymous IPs additionally hit ``AnonIpLimitDep`` (50 req/月 quota) at the
+* Anonymous IPs additionally hit ``AnonIpLimitDep`` (3 req/日 quota) at the
   router-dep level — the per-second throttle here is the upstream gate.
 """
 from __future__ import annotations
@@ -45,13 +45,18 @@ from jpintel_mcp.api.middleware.customer_cap import (
     CustomerCapMiddleware,
     _reset_cap_cache_state,
     invalidate_cap_cache,
+    invalidate_cap_cache_for_tree,
 )
 from jpintel_mcp.api.middleware.deprecation_warning import (
     DeprecationWarningMiddleware,
 )
+from jpintel_mcp.api.middleware.envelope_adapter import (
+    EnvelopeAdapterMiddleware,
+)
 from jpintel_mcp.api.middleware.host_deprecation import (
     HostDeprecationMiddleware,
 )
+from jpintel_mcp.api.middleware.idempotency import IdempotencyMiddleware
 from jpintel_mcp.api.middleware.kill_switch import (
     KillSwitchMiddleware,
     _reset_kill_switch_state,
@@ -78,7 +83,9 @@ __all__ = [
     "ClientTagMiddleware",
     "CustomerCapMiddleware",
     "DeprecationWarningMiddleware",
+    "EnvelopeAdapterMiddleware",
     "HostDeprecationMiddleware",
+    "IdempotencyMiddleware",
     "KillSwitchMiddleware",
     "OriginEnforcementMiddleware",
     "PerIpEndpointLimitMiddleware",
@@ -90,5 +97,6 @@ __all__ = [
     "_reset_per_ip_endpoint_buckets",
     "_reset_rate_limit_buckets",
     "invalidate_cap_cache",
+    "invalidate_cap_cache_for_tree",
     "validate_client_tag",
 ]

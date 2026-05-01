@@ -5,8 +5,7 @@ Continue / Claude Desktop / Zapier / Make / RPA) pattern-match against.
 Adoption is opt-in for the launch window so legacy consumers (`results: [...]`
 vs `data: [...]` vs raw arrays) keep working untouched. Routes opt in via:
 
-    ?envelope=v2                          # query param, easiest for browsers
-    Accept: application/vnd.jpcite.v2+json  # header, easiest for SDKs
+    Accept: application/vnd.jpcite.v2+json  # explicit media type for SDKs
 
 Pre-existing prior art:
 
@@ -264,7 +263,7 @@ class ResponseMeta(BaseModel):
     latency_ms: int = Field(default=0, ge=0, description="Server-measured wall time, milliseconds.")
     billable_units: int = Field(
         default=1, ge=0,
-        description="Units charged for this call. Anonymous tier deducts from the 50/月 IP quota.",
+        description="Units charged for this call. Anonymous tier deducts from the 3/日 IP quota.",
     )
     client_tag: str | None = Field(
         default=None,
@@ -433,7 +432,7 @@ class StandardError(BaseModel):
         developer_message: str | None = None,
         retry_after: int | None = None,
     ) -> StandardError:
-        """429 sub-case — monthly cap (anonymous 50/月 OR paid customer-set cap)."""
+        """429 sub-case — monthly cap (anonymous 3/日 OR paid customer-set cap)."""
         return cls(
             code="QUOTA_EXCEEDED",
             user_message=user_message or _DEFAULT_USER_MESSAGE["QUOTA_EXCEEDED"],
@@ -761,10 +760,9 @@ class StandardResponse(BaseModel):
         """Return a JSON-serialisable dict with None values dropped.
 
         FastAPI's `JSONResponse(content=...)` auto-jsonifies pydantic
-        models, but we sometimes want the dict form for merging into a
-        legacy response (e.g. `?envelope=v2` adapter that wants to keep
-        legacy keys alongside the v2 shape on the same payload). Always
-        prefer this over `.model_dump()` to avoid leaking None into JSON.
+        models, but we usually want the dict form so optional None values
+        are dropped consistently. Always prefer this over `.model_dump()`
+        to avoid leaking None into JSON.
         """
         return self.model_dump(mode="json", exclude_none=True)
 
@@ -780,23 +778,14 @@ ENVELOPE_V2_MEDIA_TYPE: str = "application/vnd.jpcite.v2+json"
 def wants_envelope_v2(request: Any) -> bool:
     """Return True when the caller opted into the v2 envelope.
 
-    Two paths are honoured (either suffices):
-      1. ``?envelope=v2`` query parameter (case-insensitive value compare).
-      2. ``Accept`` header containing ``application/vnd.jpcite.v2+json``.
+    Opt-in is negotiated through the ``Accept`` header containing
+    ``application/vnd.jpcite.v2+json``. Query-param negotiation was removed
+    before launch because strict routes reject unknown query parameters and
+    public docs now advertise one canonical path.
 
     Soft-fail: any AttributeError on the duck-typed `request` returns
     False (the route falls back to the legacy shape). Never raises.
     """
-    try:
-        # Query param is the cheaper path — single dict lookup.
-        qp = request.query_params
-        if qp is not None:
-            v = qp.get("envelope")
-            if isinstance(v, str) and v.strip().lower() == "v2":
-                return True
-    except Exception:  # noqa: BLE001 — duck-typed request, never raise on opt-in
-        pass
-
     try:
         accept = request.headers.get("accept", "")
         if isinstance(accept, str) and ENVELOPE_V2_MEDIA_TYPE in accept.lower():
