@@ -1,0 +1,37 @@
+name: jpcite subsidy smoke check
+
+on:
+  workflow_dispatch:
+  schedule:
+    # weekly Monday 03:00 UTC = 12:00 JST
+    - cron: '0 3 * * 1'
+
+jobs:
+  check-subsidies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: jpcite — search Tokyo capital-investment subsidies
+        id: subsidy
+        uses: bookyou/jpcite-action@v1
+        with:
+          api_key: ${{ secrets.JPCITE_API_KEY }}
+          query: "東京都 設備投資"
+
+      - name: Print result count
+        run: |
+          echo "Found ${{ steps.subsidy.outputs.count }} programs"
+          echo '${{ steps.subsidy.outputs.result }}' | jq '.results[0:3]' || true
+
+      - name: jpcite — enforcement gate (fail if hits)
+        id: enforcement
+        uses: bookyou/jpcite-action@v1
+        with:
+          api_key: ${{ secrets.JPCITE_API_KEY }}
+          query: "${{ github.repository_owner }}"
+          endpoint: enforcement/search
+        continue-on-error: true
+
+      - name: Warn on enforcement hits
+        if: steps.enforcement.outputs.count != '0'
+        run: |
+          echo "::warning::Enforcement actions matched repo owner — review before release"

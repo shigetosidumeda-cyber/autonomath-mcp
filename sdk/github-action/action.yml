@@ -1,0 +1,115 @@
+name: 'jpcite — Japanese public-program lookup'
+description: 'CI-side lookup of Japanese subsidies, laws, corporate registry, and enforcement actions via the jpcite API.'
+author: 'Bookyou株式会社'
+branding:
+  icon: 'search'
+  color: 'blue'
+
+inputs:
+  api_key:
+    description: 'jpcite API key. Pass via secrets (e.g. ${{ secrets.JPCITE_API_KEY }}). Empty string falls back to the anonymous 3-req/day per-IP tier.'
+    required: false
+    default: ''
+  query:
+    description: 'Search keyword (Japanese or romaji). Example: "東京都 設備投資" or "省エネ 補助金".'
+    required: true
+  endpoint:
+    description: 'API endpoint path under /v1/. Defaults to programs/search. Other examples: laws/search, invoice_registrants/search, enforcement-cases/search.'
+    required: false
+    default: 'programs/search'
+  base_url:
+    description: 'Override the API base URL. Defaults to https://api.jpcite.com.'
+    required: false
+    default: 'https://api.jpcite.com'
+  fail_on_empty:
+    description: 'If true, the step fails when the API returns zero results. Useful for compliance gates.'
+    required: false
+    default: 'false'
+
+outputs:
+  result:
+    description: 'Raw JSON response from the jpcite API.'
+    value: ${{ steps.jpcite-call.outputs.result }}
+  count:
+    description: 'Number of result rows (parsed from response.count or response.results length).'
+    value: ${{ steps.jpcite-call.outputs.count }}
+  http_status:
+    description: 'HTTP status code returned by the API.'
+    value: ${{ steps.jpcite-call.outputs.http_status }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: jpcite-call
+      shell: bash
+      env:
+        JPCITE_API_KEY: ${{ inputs.api_key }}
+        JPCITE_QUERY: ${{ inputs.query }}
+        JPCITE_ENDPOINT: ${{ inputs.endpoint }}
+        JPCITE_BASE_URL: ${{ inputs.base_url }}
+        JPCITE_FAIL_ON_EMPTY: ${{ inputs.fail_on_empty }}
+      run: |
+        set -eu
+
+        # URL-encode query (Japanese safe)
+        encoded_query=$(printf '%s' "$JPCITE_QUERY" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+
+        url="${JPCITE_BASE_URL%/}/v1/${JPCITE_ENDPOINT#/}?q=${encoded_query}"
+
+        auth_header=()
+        if [ -n "$JPCITE_API_KEY" ]; then
+          auth_header=(-H "Authorization: Bearer ${JPCITE_API_KEY}")
+        fi
+
+        tmp_body=$(mktemp)
+        http_status=$(curl -sS -o "$tmp_body" -w "%{http_code}" \
+          -H "User-Agent: jpcite-action/1.0 (+https://github.com/bookyou/jpcite-action)" \
+          -H "Accept: application/json" \
+          "${auth_header[@]}" \
+          "$url" || echo "000")
+
+        body=$(cat "$tmp_body")
+        rm -f "$tmp_body"
+
+        # parse count
+        count=$(printf '%s' "$body" | python3 -c "
+        import json, sys
+        try:
+            data = json.loads(sys.stdin.read())
+        except Exception:
+            print(0); sys.exit(0)
+        if isinstance(data, dict):
+            if 'count' in data and isinstance(data['count'], int):
+                print(data['count'])
+            elif isinstance(data.get('results'), list):
+                print(len(data['results']))
+            elif isinstance(data.get('items'), list):
+                print(len(data['items']))
+            else:
+                print(0)
+        elif isinstance(data, list):
+            print(len(data))
+        else:
+            print(0)
+        ")
+
+        # emit outputs (multiline-safe)
+        {
+          echo "result<<JPCITE_EOF"
+          printf '%s\n' "$body"
+          echo "JPCITE_EOF"
+          echo "count=${count}"
+          echo "http_status=${http_status}"
+        } >> "$GITHUB_OUTPUT"
+
+        echo "jpcite: status=${http_status} count=${count} endpoint=${JPCITE_ENDPOINT}"
+
+        if [ "$http_status" != "200" ]; then
+          echo "::error::jpcite API returned HTTP ${http_status}"
+          exit 1
+        fi
+
+        if [ "$JPCITE_FAIL_ON_EMPTY" = "true" ] && [ "$count" = "0" ]; then
+          echo "::error::jpcite returned 0 results and fail_on_empty=true"
+          exit 1
+        fi
