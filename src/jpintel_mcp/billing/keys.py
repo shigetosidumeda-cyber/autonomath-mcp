@@ -10,6 +10,7 @@ We never store raw keys. SHA256-HMAC with salt.
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 from datetime import UTC, datetime, timedelta
@@ -108,7 +109,7 @@ def issue_key(
     # Structured event for weekly digest + SLO panel. NEVER raises into
     # the webhook handler — telemetry is best-effort. No raw key, no
     # email; key_hash prefix matches the contextvar binding format.
-    try:
+    with contextlib.suppress(Exception):
         _event_log.info(
             json.dumps(
                 {
@@ -121,8 +122,6 @@ def issue_key(
                 }
             )
         )
-    except Exception:
-        pass
     return raw
 
 
@@ -188,7 +187,7 @@ def issue_trial_key(
 
     # Structured event for weekly digest + SLO panel. Tier carries 'trial'
     # so the funnel dashboard can split out conversion to paid.
-    try:
+    with contextlib.suppress(Exception):
         _event_log.info(
             json.dumps(
                 {
@@ -202,8 +201,6 @@ def issue_trial_key(
                 }
             )
         )
-    except Exception:
-        pass
     return raw, key_hash
 
 
@@ -325,7 +322,9 @@ def issue_child_key(
             (parent_key_hash,),
         )
         parent = conn.execute(
-            "SELECT id FROM api_keys WHERE key_hash = ?",
+            "SELECT id, customer_id, tier, stripe_subscription_id, "
+            "monthly_cap_yen, parent_key_id, revoked_at "
+            "FROM api_keys WHERE key_hash = ?",
             (parent_key_hash,),
         ).fetchone()
         parent_id = parent["id"]
@@ -373,7 +372,7 @@ def issue_child_key(
 
     # Structured event for weekly digest + SLO panel. Mirrors the issue_key
     # event channel so dashboards can split out fan-out volume.
-    try:
+    with contextlib.suppress(Exception):
         _event_log.info(
             json.dumps(
                 {
@@ -389,8 +388,6 @@ def issue_child_key(
                 }
             )
         )
-    except Exception:
-        pass
 
     return raw, key_hash
 

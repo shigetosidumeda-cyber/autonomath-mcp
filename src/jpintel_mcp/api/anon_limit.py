@@ -52,6 +52,17 @@ from jpintel_mcp.config import settings
 # `/upgrade.html` skips the redirect hop entirely.
 UPGRADE_URL_BASE = "https://jpcite.com/upgrade.html"
 UPGRADE_URL_FROM_429 = "https://jpcite.com/upgrade.html?from=429"
+# Conversion-friction audit 2026-05-01: direct-to-action URL alongside the
+# `upgrade_url` info-landing. The /upgrade.html → /pricing.html#api-paid hop
+# costs a click + a page load + 3-15 s of read time; sophisticated callers
+# (and the operator-side onboarding tool) can short-circuit to the action
+# page using `direct_checkout_url`. The existing `upgrade_url` is left
+# pointed at /upgrade.html so conservative clients (and existing tests
+# asserting `upgrade_url.startswith("…/upgrade.html")`) keep their contract.
+# pricing.html?from=429 is already wired to surface a "匿名上限に達しました"
+# banner (site/pricing.html L322-342) and the consent + checkout button
+# (L307-318) — no site change needed.
+PRICING_DIRECT_URL_FROM_429 = "https://jpcite.com/pricing.html?from=429#api-paid"
 CTA_TEXT_JA = "API key を発行して制限を解除"
 CTA_TEXT_EN = "Get an API key to remove the limit"
 # Conversion-pathway audit 2026-04-29: alongside the paid upgrade path we
@@ -143,7 +154,7 @@ def _jst_next_day_iso(now: datetime | None = None) -> str:
 
 # ---------------------------------------------------------------------------
 # Monthly-bucket back-compat shims.
-# Pre-2026-04-30 the anon limit was monthly (50 req/月) and `usage.py`
+# Pre-2026-04-30 the anon limit used a legacy monthly bucket and `usage.py`
 # imports the monthly helpers verbatim. The runtime cap is now daily (3
 # req/日) but the monthly helpers remain valid as a separate "month
 # rollover" view used by /v1/usage/me to render quota state. Keeping
@@ -252,7 +263,7 @@ def _normalize_ip_to_prefix(ip: str) -> str:
 # 4 cheap, header-derived axes alongside the IP into a single HMAC. Two
 # requests with the same fingerprint but different IPs share a bucket;
 # two requests with the same IP but different fingerprints stay separate
-# (so a coffee-shop NAT with 5 distinct laptops still gets 5×50/月 not
+# (so a coffee-shop NAT with 5 distinct laptops still gets separate daily buckets, not
 # the limit collapsed to one).
 #
 # The four axes:
@@ -434,12 +445,11 @@ def hash_ip(ip: str, request: Request | None = None) -> str:
 
 
 def _try_increment(
-    conn: sqlite3.Connection, ip_hash: str, month_bucket: str, now_iso: str
+    conn: sqlite3.Connection, ip_hash: str, day_bucket: str, now_iso: str
 ) -> int:
-    """Atomically increment (or insert) the month row, return the NEW count.
+    """Atomically increment (or insert) the JST-day row, return the NEW count.
 
-    `month_bucket` is YYYY-MM-01 (first-of-month JST) — stored in the legacy
-    `date` column whose name predates the 2026-04-23 daily→monthly switch.
+    `day_bucket` is YYYY-MM-DD (JST) — stored in the legacy `date` column.
     Two-statement pattern: INSERT OR IGNORE seeds the row with call_count=0
     if absent; UPDATE then bumps it to the new value. Both statements are
     indexed on (ip_hash, date) via the primary key, so no table-level lock
@@ -449,16 +459,16 @@ def _try_increment(
     conn.execute(
         "INSERT OR IGNORE INTO anon_rate_limit(ip_hash, date, call_count, first_seen, last_seen) "
         "VALUES (?, ?, 0, ?, ?)",
-        (ip_hash, month_bucket, now_iso, now_iso),
+        (ip_hash, day_bucket, now_iso, now_iso),
     )
     conn.execute(
         "UPDATE anon_rate_limit SET call_count = call_count + 1, last_seen = ? "
         "WHERE ip_hash = ? AND date = ?",
-        (now_iso, ip_hash, month_bucket),
+        (now_iso, ip_hash, day_bucket),
     )
     (new_count,) = conn.execute(
         "SELECT call_count FROM anon_rate_limit WHERE ip_hash = ? AND date = ?",
-        (ip_hash, month_bucket),
+        (ip_hash, day_bucket),
     ).fetchone()
     return int(new_count)
 
@@ -466,21 +476,19 @@ def _try_increment(
 async def enforce_anon_ip_limit(request: Request) -> None:
     """Router-level dep: reject anon callers over the monthly per-IP quota.
 
-    Bypasses: presence of X-API-Key / Authorization: Bearer header. We
-    intentionally do NOT validate the key here — that happens in
-    require_key() on the same request. The purpose of this dep is just
-    "does the caller claim to be authed?". A bogus key reaches require_key
-    and 401s there; the anon bucket is untouched for that request.
+    Bypasses only after an active X-API-Key / Authorization: Bearer value
+    validates against `api_keys`. A bogus key is counted as anonymous so
+    public anon-accepting routes cannot be uncapped with a fake header.
     """
     if not settings.anon_rate_limit_enabled:
         return
 
-    # Claimed-auth bypass. Anon = neither header present.
-    if request.headers.get("x-api-key"):
-        return
+    raw_key = (request.headers.get("x-api-key") or "").strip()
     auth = request.headers.get("authorization")
-    if auth and auth.split(None, 1)[0].lower() == "bearer":
-        return
+    if not raw_key and auth:
+        parts = auth.split(None, 1)
+        if len(parts) == 2 and parts[0].lower() == "bearer":
+            raw_key = parts[1].strip()
 
     # Independently open a connection so we do NOT share the DbDep cursor
     # used by the actual endpoint — keeps ordering simple and avoids the
@@ -492,6 +500,32 @@ async def enforce_anon_ip_limit(request: Request) -> None:
     except Exception:  # pragma: no cover — connect() is extremely reliable
         _log.exception("anon_rate_limit: connect() failed; failing open")
         return
+
+    if raw_key:
+        key_hash = hmac.new(
+            settings.api_key_salt.encode("utf-8"),
+            raw_key.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        try:
+            row = anon_conn.execute(
+                "SELECT 1 FROM api_keys WHERE key_hash = ? "
+                "AND revoked_at IS NULL LIMIT 1",
+                (key_hash,),
+            ).fetchone()
+        except sqlite3.Error:
+            _log.exception("anon_rate_limit: key validation failed; failing open")
+            import contextlib
+
+            with contextlib.suppress(Exception):
+                anon_conn.close()
+            return
+        if row is not None:
+            import contextlib
+
+            with contextlib.suppress(Exception):
+                anon_conn.close()
+            return
 
     limit = settings.anon_rate_limit_per_day
     ip = _client_ip(request)
@@ -557,6 +591,12 @@ async def enforce_anon_ip_limit(request: Request) -> None:
                 # ignores headers still surfaces the conversion path to
                 # the human in the loop on the very first refusal.
                 "upgrade_url": UPGRADE_URL_FROM_429,
+                # 2026-05-01 conversion-friction audit: direct-to-action
+                # URL bypasses the /upgrade.html interstitial. Sophisticated
+                # MCP clients / docs can show this to skip 1 click + 1 page
+                # load. `upgrade_url` above stays unchanged so existing
+                # tests + conservative callers keep the curated landing.
+                "direct_checkout_url": PRICING_DIRECT_URL_FROM_429,
                 "cta_text_ja": CTA_TEXT_JA,
                 "cta_text_en": CTA_TEXT_EN,
                 # Conversion-pathway audit 2026-04-29: also surface the
@@ -580,6 +620,10 @@ async def enforce_anon_ip_limit(request: Request) -> None:
                 "X-Anon-Quota-Remaining": "0",
                 "X-Anon-Quota-Reset": resets_at,
                 "X-Anon-Upgrade-Url": UPGRADE_URL_FROM_429,
+                # Mirrors the body's `direct_checkout_url`. curl scripts /
+                # monitoring that follow `Location:`-style header hints can
+                # now jump straight to the consent + checkout page.
+                "X-Anon-Direct-Checkout-Url": PRICING_DIRECT_URL_FROM_429,
                 "X-Anon-Trial-Url": TRIAL_SIGNUP_URL_FROM_429,
             },
         )
@@ -608,6 +652,7 @@ __all__ = [
     "AnonIpLimitDep",
     "CTA_TEXT_EN",
     "CTA_TEXT_JA",
+    "PRICING_DIRECT_URL_FROM_429",
     "TRIAL_CTA_TEXT_EN",
     "TRIAL_CTA_TEXT_JA",
     "TRIAL_SIGNUP_URL_FROM_429",

@@ -18,6 +18,9 @@ import pytest
 if TYPE_CHECKING:
     from fastapi.testclient import TestClient
 
+SUCCESS_URL = "https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}"
+CANCEL_URL = "https://jpcite.com/pricing.html?cancelled=1"
+
 
 class _FakeSession:
     url = "https://checkout.stripe.test/session/abc"
@@ -64,8 +67,8 @@ def test_checkout_enables_automatic_tax_when_flag_on(
     r = client.post(
         "/v1/billing/checkout",
         json={
-            "success_url": "https://example.test/ok",
-            "cancel_url": "https://example.test/no",
+            "success_url": SUCCESS_URL,
+            "cancel_url": CANCEL_URL,
         },
     )
     assert r.status_code == 200, r.text
@@ -83,8 +86,8 @@ def test_checkout_enables_tax_id_collection_when_flag_on(
     r = client.post(
         "/v1/billing/checkout",
         json={
-            "success_url": "https://example.test/ok",
-            "cancel_url": "https://example.test/no",
+            "success_url": SUCCESS_URL,
+            "cancel_url": CANCEL_URL,
         },
     )
     assert r.status_code == 200, r.text
@@ -100,8 +103,8 @@ def test_checkout_requires_billing_address_when_flag_on(
     r = client.post(
         "/v1/billing/checkout",
         json={
-            "success_url": "https://example.test/ok",
-            "cancel_url": "https://example.test/no",
+            "success_url": SUCCESS_URL,
+            "cancel_url": CANCEL_URL,
         },
     )
     assert r.status_code == 200, r.text
@@ -122,8 +125,8 @@ def test_checkout_preserves_subscription_mode_and_tos_consent(
     r = client.post(
         "/v1/billing/checkout",
         json={
-            "success_url": "https://example.test/ok",
-            "cancel_url": "https://example.test/no",
+            "success_url": SUCCESS_URL,
+            "cancel_url": CANCEL_URL,
         },
     )
     assert r.status_code == 200, r.text
@@ -158,8 +161,8 @@ def test_checkout_skips_tax_params_when_flag_off(client: TestClient, monkeypatch
     r = client.post(
         "/v1/billing/checkout",
         json={
-            "success_url": "https://example.test/ok",
-            "cancel_url": "https://example.test/no",
+            "success_url": SUCCESS_URL,
+            "cancel_url": CANCEL_URL,
         },
     )
     assert r.status_code == 200, r.text

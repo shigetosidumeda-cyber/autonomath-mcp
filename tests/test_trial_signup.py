@@ -565,6 +565,63 @@ def test_trial_request_cap_fires_at_200th(
     assert "cta_text_ja" in detail
 
 
+def test_trial_expiry_is_enforced_synchronously(
+    client, seeded_db, email_recorder, welcome_recorder
+):
+    r = _post_signup(client, "expired-sync@example.com")
+    assert r.status_code == 202
+    magic_url = email_recorder[0]["magic_link_url"]
+    from urllib.parse import parse_qs, unquote, urlparse
+
+    qs = parse_qs(urlparse(magic_url).query)
+    r = client.get(
+        f"/v1/signup/verify?email={qs['email'][0]}&token={qs['token'][0]}",
+        follow_redirects=False,
+    )
+    assert r.status_code == 302
+    fragment = r.headers["location"].split("#", 1)[1]
+    raw_key = None
+    for kv in fragment.split("&"):
+        if kv.startswith("api_key="):
+            raw_key = unquote(kv.split("=", 1)[1])
+            break
+    assert raw_key
+
+    expired_at = (datetime.now(UTC) - timedelta(seconds=1)).isoformat()
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.execute(
+            "UPDATE api_keys SET trial_expires_at = ? "
+            "WHERE tier = 'trial' AND trial_email = ?",
+            (expired_at, "expired-sync@example.com"),
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    r = client.get(
+        "/v1/programs/search?q=テスト&limit=1",
+        headers={"X-API-Key": raw_key},
+    )
+    assert r.status_code == 401, r.text
+    detail = r.json().get("detail", {})
+    assert detail.get("trial_expired") is True
+    assert detail.get("upgrade_url") == (
+        "https://jpcite.com/pricing.html?from=trial#api-paid"
+    )
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        revoked_at = c.execute(
+            "SELECT revoked_at FROM api_keys "
+            "WHERE tier = 'trial' AND trial_email = ?",
+            ("expired-sync@example.com",),
+        ).fetchone()[0]
+    finally:
+        c.close()
+    assert revoked_at is not None
+
+
 def test_trial_revoked_key_returns_recovery_envelope(
     client, seeded_db, email_recorder, welcome_recorder
 ):

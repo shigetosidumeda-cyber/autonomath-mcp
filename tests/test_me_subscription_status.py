@@ -17,12 +17,15 @@ from __future__ import annotations
 import json
 import sqlite3
 import time
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from jpintel_mcp.api.deps import hash_api_key
 from jpintel_mcp.billing.keys import issue_key, update_subscription_status
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.fixture()
@@ -174,8 +177,21 @@ def stripe_env(monkeypatch):
 def test_webhook_subscription_created_caches_status(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
-    """customer.subscription.created -> api_keys.stripe_subscription_status='active'."""
+    """customer.subscription.created refreshes status on an already-revealed key."""
+    from jpintel_mcp.billing.keys import issue_key
+
     cpe = int(time.time()) + 30 * 86400
+    conn = sqlite3.connect(seeded_db)
+    try:
+        issue_key(
+            conn,
+            customer_id="cus_status_created",
+            tier="paid",
+            stripe_subscription_id="sub_status_created",
+        )
+        conn.commit()
+    finally:
+        conn.close()
     event = {
         "id": "evt_sub_created_status",
         "type": "customer.subscription.created",
@@ -219,7 +235,7 @@ def test_webhook_subscription_created_caches_status(
 def test_webhook_subscription_updated_writes_past_due(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
-    """customer.subscription.updated with status=past_due -> caches 'past_due'."""
+    """customer.subscription.updated with status=past_due keeps paid access suspended."""
     sub_id = "sub_to_past_due"
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
@@ -252,13 +268,14 @@ def test_webhook_subscription_updated_writes_past_due(
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(
-            "SELECT stripe_subscription_status FROM api_keys "
+            "SELECT tier, stripe_subscription_status FROM api_keys "
             "WHERE stripe_subscription_id = ?",
             (sub_id,),
         ).fetchone()
     finally:
         c.close()
-    assert row[0] == "past_due"
+    assert row[0] == "free"
+    assert row[1] == "past_due"
 
 
 def test_webhook_payment_failed_marks_past_due(

@@ -138,9 +138,12 @@ def test_kill_switch_off_value_other_than_1_does_not_trigger(
     have shipped envs to prod with truthy-string sloppiness in the past
     (memory: feedback_validate_before_apply).
     """
-    for val in ["true", "0", "", "yes"]:
+    for idx, val in enumerate(["true", "0", "", "yes"], start=10):
         monkeypatch.setenv("KILL_SWITCH_GLOBAL", val)
-        r = client.get("/v1/meta")
+        # /v1/meta is anon-quota protected (3/day). Use a distinct test IP for
+        # each switch value so this kill-switch assertion does not exercise the
+        # anonymous daily quota boundary on the 4th request.
+        r = client.get("/v1/meta", headers={"X-Forwarded-For": f"198.51.100.{idx}"})
         assert r.status_code == 200, f"value={val!r} unexpectedly killed"
 
 
@@ -203,7 +206,7 @@ def test_kill_switch_writes_audit_log_on_block(
 
 
 def test_per_ip_endpoint_search_cap_31st_returns_429(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, paid_key: str
 ) -> None:
     """30 req/min cap on /v1/programs/search → the 31st within 60s is
     429 with bucket label ``per-ip:search_programs``.
@@ -212,14 +215,15 @@ def test_per_ip_endpoint_search_cap_31st_returns_429(
     the per-second burst gate doesn't 429 us first.
     """
     # Fire 30 — all should pass under the per-IP cap.
+    headers = {"X-API-Key": paid_key}
     for i in range(30):
-        r = client.get("/v1/programs/search?q=test")
+        r = client.get("/v1/programs/search?q=test", headers=headers)
         assert r.status_code != 429, (
             f"hit per-ip 429 unexpectedly at request {i + 1}: {r.text}"
         )
 
     # 31st must be 429 from PerIpEndpointLimitMiddleware.
-    r = client.get("/v1/programs/search?q=test")
+    r = client.get("/v1/programs/search?q=test", headers=headers)
     assert r.status_code == 429, r.text
     body = r.json()
     assert body["error"]["code"] == "rate_limited"
@@ -229,14 +233,15 @@ def test_per_ip_endpoint_search_cap_31st_returns_429(
 
 
 def test_per_ip_endpoint_cap_disabled_via_env(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, paid_key: str
 ) -> None:
     """``PER_IP_ENDPOINT_LIMIT_DISABLED=1`` short-circuits the middleware
     so 100 calls all pass. Used as an emergency disable lever.
     """
     monkeypatch.setenv("PER_IP_ENDPOINT_LIMIT_DISABLED", "1")
+    headers = {"X-API-Key": paid_key}
     for i in range(35):
-        r = client.get("/v1/programs/search?q=test")
+        r = client.get("/v1/programs/search?q=test", headers=headers)
         assert r.status_code != 429, (
             f"hit 429 at {i + 1} despite disable flag"
         )
@@ -256,8 +261,10 @@ def test_admin_kill_switch_status_off(
     monkeypatch.setenv("ADMIN_API_KEY", "test-admin-key")
     # Force settings reload so the new ADMIN_API_KEY is picked up.
     from jpintel_mcp.config import settings
+    from jpintel_mcp.api import admin as admin_mod
 
     monkeypatch.setattr(settings, "admin_api_key", "test-admin-key")
+    monkeypatch.setattr(admin_mod.settings, "admin_api_key", "test-admin-key")
 
     r = client.get(
         "/v1/admin/kill_switch_status",
@@ -309,13 +316,16 @@ def test_admin_kill_switch_status_requires_admin_key(
     configured but missing X-API-Key, 401.
     """
     from jpintel_mcp.config import settings
+    from jpintel_mcp.api import admin as admin_mod
 
     # No admin key → 503.
     monkeypatch.setattr(settings, "admin_api_key", "")
+    monkeypatch.setattr(admin_mod.settings, "admin_api_key", "")
     r = client.get("/v1/admin/kill_switch_status")
     assert r.status_code == 503, r.text
 
     # Configured admin key but missing header → 401.
     monkeypatch.setattr(settings, "admin_api_key", "test-admin-key")
+    monkeypatch.setattr(admin_mod.settings, "admin_api_key", "test-admin-key")
     r = client.get("/v1/admin/kill_switch_status")
     assert r.status_code == 401, r.text

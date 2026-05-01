@@ -31,6 +31,7 @@ endpoint is hammered. P1 hardening from audit a000834c952c34822.
 from __future__ import annotations
 
 import base64
+import contextlib
 import hashlib
 import hmac
 import logging
@@ -61,9 +62,9 @@ from jpintel_mcp.api.deps import (
     generate_api_key,
     hash_api_key,
     hash_api_key_bcrypt,
+    verify_api_key_bcrypt,
 )
 from jpintel_mcp.config import settings
-from jpintel_mcp.db.session import connect as _db_connect
 from jpintel_mcp.email import get_client as _get_email_client
 
 router = APIRouter(tags=["me"])
@@ -229,7 +230,7 @@ def current_me(
     conn: DbDep,
     am_session: Annotated[str | None, Cookie()] = None,
 ) -> tuple[str, str]:
-    """Return (key_hash, tier) from the signed session cookie, or 401.
+    """Return (key_hash, tier) from session cookie or API-key headers, or 401.
 
     P0-2 (audit a4298e454aab2aa43): after HMAC verification, also check
     `api_keys.revoked_at` so a session cookie bound to a key that has since
@@ -241,9 +242,32 @@ def current_me(
     # FastAPI's Cookie() alias uses the parameter name, but allow override via
     # raw header lookup in case the browser sends an unusual casing.
     cookie = am_session or request.cookies.get(SESSION_COOKIE_NAME)
-    if not cookie:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "no session")
-    key_hash, tier = _verify_cookie(cookie)
+    if cookie:
+        key_hash, tier = _verify_cookie(cookie)
+    else:
+        raw = request.headers.get("x-api-key")
+        if not raw:
+            auth = request.headers.get("authorization")
+            if auth:
+                parts = auth.split(None, 1)
+                if len(parts) == 2 and parts[0].lower() == "bearer":
+                    raw = parts[1].strip()
+        if not raw:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "no session")
+        key_hash = hash_api_key(raw)
+        row = conn.execute(
+            "SELECT tier, revoked_at, key_hash_bcrypt FROM api_keys WHERE key_hash = ?",
+            (key_hash,),
+        ).fetchone()
+        if not row or row["revoked_at"] is not None:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid api key")
+        row_keys = row.keys() if hasattr(row, "keys") else ()
+        stored_bcrypt = (
+            row["key_hash_bcrypt"] if "key_hash_bcrypt" in row_keys else None
+        )
+        if stored_bcrypt and not verify_api_key_bcrypt(raw, stored_bcrypt):
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid api key")
+        return key_hash, row["tier"]
     row = conn.execute(
         "SELECT revoked_at FROM api_keys WHERE key_hash = ?",
         (key_hash,),
@@ -396,7 +420,7 @@ class CapRequest(BaseModel):
         default=None,
         ge=0,
         description=(
-            "JPY hard cap for the calendar month. NULL = unlimited. "
+            "JPY budget cap for the calendar month. NULL means no user-set cap. "
             "Once reached, requests return 503 with cap_reached=true until JST 月初."
         ),
     )
@@ -421,7 +445,7 @@ def _csrf_token_for(key_hash: str) -> str:
     """
     return hmac.new(
         settings.api_key_salt.encode("utf-8"),
-        f"csrf|{key_hash}".encode("utf-8"),
+        f"csrf|{key_hash}".encode(),
         hashlib.sha256,
     ).hexdigest()
 
@@ -440,6 +464,12 @@ def require_csrf(
 
     Constant-time comparison via hmac.compare_digest.
     """
+    if not request.cookies.get(SESSION_COOKIE_NAME):
+        raw = request.headers.get("x-api-key")
+        auth = request.headers.get("authorization")
+        if raw or (auth and auth.lower().startswith("bearer ")):
+            return
+
     cookie_val = am_csrf or request.cookies.get(CSRF_COOKIE_NAME)
     header_val = request.headers.get(CSRF_HEADER_NAME)
     if not cookie_val or not header_val:
@@ -671,19 +701,21 @@ def _aggregate_by_client_tag(
         return []
     placeholders = ",".join("?" * len(tree_hashes))
     rows = conn.execute(
-        f"""SELECT client_tag, COUNT(*) AS n
+        f"""SELECT client_tag,
+                   COUNT(*) AS n,
+                   COALESCE(SUM(COALESCE(quantity, 1)), 0) AS units
               FROM usage_events
              WHERE key_hash IN ({placeholders})
                AND ts >= ?
           GROUP BY client_tag
-          ORDER BY n DESC""",  # noqa: S608 — placeholders only
+          ORDER BY units DESC, n DESC""",  # noqa: S608 — placeholders only
         (*tree_hashes, start_iso),
     ).fetchall()
     out: list[UsageByClientTag] = []
     for r in rows:
         rk = r.keys() if hasattr(r, "keys") else []
         tag = r["client_tag"] if "client_tag" in rk else None
-        n = int(r["n"] if "n" in rk else 0)
+        n = int(r["units"] if "units" in rk else r["n"] if "n" in rk else 0)
         out.append(
             UsageByClientTag(
                 client_tag=tag,
@@ -738,13 +770,16 @@ def get_me_usage(
             },
         )
 
+    tree_hashes = _resolve_tree_key_hashes(conn, key_hash)
+    placeholders = ",".join("?" * len(tree_hashes))
     rows = conn.execute(
-        """SELECT substr(ts, 1, 10) AS d, COUNT(*) AS n
+        f"""SELECT substr(ts, 1, 10) AS d,
+                   COALESCE(SUM(COALESCE(quantity, 1)), 0) AS n
              FROM usage_events
-            WHERE key_hash = ? AND ts >= ?
+            WHERE key_hash IN ({placeholders}) AND ts >= ?
          GROUP BY d
-         ORDER BY d ASC""",
-        (key_hash, start_iso),
+         ORDER BY d ASC""",  # noqa: S608 — placeholders only
+        (*tree_hashes, start_iso),
     ).fetchall()
 
     by_date: dict[str, int] = {r["d"]: r["n"] for r in rows}
@@ -941,7 +976,7 @@ def rotate_key(
     try:
         row = conn.execute(
             "SELECT tier, customer_id, stripe_subscription_id, "
-            "monthly_cap_yen, revoked_at "
+            "monthly_cap_yen, parent_key_id, revoked_at "
             "FROM api_keys WHERE key_hash = ?",
             (key_hash,),
         ).fetchone()
@@ -949,6 +984,15 @@ def rotate_key(
             conn.execute("ROLLBACK")
             raise HTTPException(
                 status.HTTP_401_UNAUTHORIZED, "key not found or revoked"
+            )
+        if row["parent_key_id"] is not None:
+            conn.execute("ROLLBACK")
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                detail={
+                    "error": "child_key_forbidden",
+                    "message": "Child API keys cannot rotate parent credentials.",
+                },
             )
 
         tier = row["tier"]
@@ -993,10 +1037,8 @@ def rotate_key(
     except HTTPException:
         raise
     except Exception:
-        try:
+        with contextlib.suppress(Exception):
             conn.execute("ROLLBACK")
-        except Exception:  # pragma: no cover
-            pass
         raise
 
     # Re-issue the session cookie bound to the NEW key_hash. Without this
@@ -1111,9 +1153,9 @@ def set_monthly_cap(
     # Invalidate the middleware cache so the new cap takes effect on the very
     # next request rather than waiting for the 5-minute TTL to expire.
     try:
-        from jpintel_mcp.api.middleware import invalidate_cap_cache
+        from jpintel_mcp.api.middleware import invalidate_cap_cache_for_tree
 
-        invalidate_cap_cache(ctx.key_hash)
+        invalidate_cap_cache_for_tree(conn, ctx.key_hash)
     except Exception:  # pragma: no cover — cache miss is harmless
         pass
     return CapResponse(ok=True, monthly_cap_yen=payload.monthly_cap_yen)
@@ -1136,9 +1178,17 @@ def billing_portal(
             "billing portal rate limit exceeded (1/minute)",
         )
     row = conn.execute(
-        "SELECT customer_id FROM api_keys WHERE key_hash = ?",
+        "SELECT customer_id, parent_key_id FROM api_keys WHERE key_hash = ?",
         (key_hash,),
     ).fetchone()
+    if row and row["parent_key_id"] is not None:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            detail={
+                "error": "child_key_forbidden",
+                "message": "Child API keys cannot open the billing portal.",
+            },
+        )
     customer_id = row["customer_id"] if row else None
     if not customer_id:
         # Per CLAUDE.md non-negotiable: ¥3/req metered only, no tiers, no
@@ -1175,8 +1225,8 @@ def billing_portal(
     # other detail that is useless to the caller and noisy to log scrapers.
     # Log full exception via logger.exception, return canonical envelope.
     try:
-        session = stripe.billing_portal.Session.create(**portal_kwargs)
-    except stripe.error.StripeError:
+        session = stripe.billing_portal.Session.create(**portal_kwargs)  # type: ignore[arg-type]
+    except stripe.StripeError:
         logger.exception(
             "stripe_billing_portal_create_failed key_hash_prefix=%s",
             key_hash[:8],

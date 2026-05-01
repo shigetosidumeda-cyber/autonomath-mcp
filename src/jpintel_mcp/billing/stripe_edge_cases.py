@@ -263,7 +263,7 @@ def _notify_refund_request(
     "/refund_request",
     response_model=RefundResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Submit a refund request for ¥3/req metered Stripe charges (manual review)",
+    summary="Submit a refund request for ¥3/req metered Stripe charges",
     description=(
         "Customer-initiated intake for refunds against ¥3/req metered Stripe "
         "charges. The operator (Bookyou株式会社) reviews each request "

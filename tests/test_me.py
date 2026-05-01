@@ -10,7 +10,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from jpintel_mcp.billing.keys import issue_key
+from jpintel_mcp.api.deps import hash_api_key as _hash_api_key
+from jpintel_mcp.billing.keys import issue_child_key, issue_key
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -472,6 +473,78 @@ def test_billing_portal_happy_path_mocks_stripe(client, paid_key, monkeypatch):
     assert "/dashboard" in fake_created[0]["return_url"]
 
 
+def test_billing_portal_rejects_child_key(
+    client, paid_key, monkeypatch, seeded_db: Path
+):
+    from jpintel_mcp.api import me as me_mod
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        child_raw, _child_hash = issue_child_key(
+            c,
+            parent_key_hash=_hash_api_key(paid_key),
+            label="tenant-a",
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    called: list[dict] = []
+
+    def _should_not_be_called(**kwargs):  # pragma: no cover — regression only
+        called.append(kwargs)
+        raise AssertionError("child key must not open Stripe billing portal")
+
+    monkeypatch.setattr(
+        me_mod.stripe.billing_portal.Session, "create", _should_not_be_called
+    )
+
+    r = client.post("/v1/session", json={"api_key": child_raw})
+    assert r.status_code == 200, r.text
+    r = client.post("/v1/me/billing-portal", headers=_csrf_headers(client))
+    assert r.status_code == 403, r.text
+    assert r.json()["detail"]["error"] == "child_key_forbidden"
+    assert called == []
+
+
+def test_rotate_key_rejects_child_key(client, paid_key, seeded_db: Path):
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        child_raw, child_hash = issue_child_key(
+            c,
+            parent_key_hash=_hash_api_key(paid_key),
+            label="tenant-a",
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    r = client.post("/v1/session", json={"api_key": child_raw})
+    assert r.status_code == 200, r.text
+    r = client.post("/v1/me/rotate-key", headers=_csrf_headers(client))
+    assert r.status_code == 403, r.text
+    assert r.json()["detail"]["error"] == "child_key_forbidden"
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        child = c.execute(
+            "SELECT parent_key_id, revoked_at FROM api_keys WHERE key_hash = ?",
+            (child_hash,),
+        ).fetchone()
+        parent = c.execute(
+            "SELECT revoked_at FROM api_keys WHERE key_hash = ?",
+            (_hash_api_key(paid_key),),
+        ).fetchone()
+        assert child["parent_key_id"] is not None
+        assert child["revoked_at"] is None
+        assert parent["revoked_at"] is None
+    finally:
+        c.close()
+
+
 # ---------------------------------------------------------------------------
 # Session logout + rate limit
 # ---------------------------------------------------------------------------
@@ -642,6 +715,7 @@ def test_p01_atomic_rotation_insert_failure_keeps_old_key_valid(
     the raw rollback contract without ExceptionGroup wrapping.
     """
     from fastapi import BackgroundTasks
+
     from jpintel_mcp.api import me as me_mod
     from jpintel_mcp.api.deps import hash_api_key
     from jpintel_mcp.db.session import connect as real_connect
@@ -865,6 +939,7 @@ def test_p01_concurrent_rotation_only_creates_one_new_key(
     import threading
 
     from fastapi.testclient import TestClient
+
     from jpintel_mcp.api.deps import hash_api_key
     from jpintel_mcp.api.main import create_app
 

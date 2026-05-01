@@ -8,6 +8,7 @@ from jpintel_mcp.api.deps import hash_api_key as _hash_api_key
 from jpintel_mcp.billing.keys import (
     generate_api_key,
     hash_api_key,
+    issue_child_key,
     issue_key,
     resolve_tier_from_price,
     revoke_key,
@@ -89,6 +90,7 @@ class _FakeCheckoutSession:
         subscription: str = "sub_checkout_1",
         customer_email: str | None = None,
         cd_email: str | None = "buyer@example.com",
+        metadata: dict | None = None,
     ) -> None:
         # Metered subs default to "no_payment_required" (Stripe doesn't
         # charge upfront — first invoice comes from usage_records).
@@ -97,6 +99,7 @@ class _FakeCheckoutSession:
         self.subscription = subscription
         self.customer_email = customer_email
         self.customer_details = _FakeCustomerDetails(cd_email) if cd_email else None
+        self.metadata = metadata or {}
 
 
 class _FakeSubscription(dict):
@@ -110,6 +113,11 @@ def _fake_sub(price_id: str, sub_id: str = "sub_checkout_1") -> _FakeSubscriptio
             "items": {"data": [{"price": {"id": price_id}}]},
         }
     )
+
+
+def _checkout_state_metadata(client, billing_mod, state: str = "checkout-state-test") -> dict:
+    client.cookies.set(billing_mod._CHECKOUT_STATE_COOKIE, state, path="/v1/billing")
+    return {"checkout_state_hash": billing_mod._checkout_state_hash(state)}
 
 
 @pytest.fixture()
@@ -170,6 +178,72 @@ def test_checkout_503_when_price_not_configured(client, monkeypatch):
     err = body.get("error") or {}
     if err:
         assert err.get("code") == "service_unavailable"
+
+
+def test_checkout_rejects_external_success_url(client, stripe_env, monkeypatch):
+    """Checkout redirects must stay on jpcite so session_id cannot leak off-origin."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    called: list[dict] = []
+
+    def _create(**kwargs):  # pragma: no cover - regression guard
+        called.append(kwargs)
+        raise AssertionError("Stripe Checkout must not be created for external URLs")
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "create", _create)
+
+    r = client.post(
+        "/v1/billing/checkout",
+        json={
+            "success_url": "https://evil.example/success?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://jpcite.com/pricing.html?cancelled=1",
+        },
+    )
+    assert r.status_code == 400
+    assert "success_url" in r.json()["detail"]
+    assert called == []
+
+
+def test_checkout_rejects_nonstandard_jpcite_port(client, stripe_env):
+    """jpcite hostnames are allowed only on normal HTTPS, not arbitrary ports."""
+    r = client.post(
+        "/v1/billing/checkout",
+        json={
+            "success_url": "https://jpcite.com:444/success.html?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://jpcite.com/pricing.html?cancelled=1",
+        },
+    )
+    assert r.status_code == 400
+    assert "success_url" in r.json()["detail"]
+
+
+def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch):
+    """English pricing page must be able to create Checkout sessions."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    captured: list[dict] = []
+
+    class _FakeSession:
+        id = "cs_en_ok"
+        url = "https://checkout.stripe.test/en-ok"
+
+    def _create(**kwargs):
+        captured.append(kwargs)
+        return _FakeSession()
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "create", _create)
+
+    r = client.post(
+        "/v1/billing/checkout",
+        json={
+            "success_url": "https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://jpcite.com/en/pricing.html?cancelled=1",
+        },
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["url"] == "https://checkout.stripe.test/en-ok"
+    assert captured[0]["success_url"].startswith("https://jpcite.com/en/success.html")
+    assert captured[0]["cancel_url"].startswith("https://jpcite.com/en/pricing.html")
 
 
 def test_portal_unauthed_returns_401(client, stripe_env, monkeypatch):
@@ -241,12 +315,51 @@ def test_portal_resolves_customer_from_authed_key(
     assert captured[0]["return_url"] == "https://example.test/back"
 
 
+def test_portal_rejects_child_api_key(
+    client, stripe_env, paid_key, monkeypatch, seeded_db: Path
+):
+    """A delegated child key can use data APIs, but cannot manage billing."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        child_raw, _child_hash = issue_child_key(
+            c,
+            parent_key_hash=_hash_api_key(paid_key),
+            label="tenant-a",
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    called: list[dict] = []
+
+    def _should_not_be_called(**kwargs):  # pragma: no cover — regression only
+        called.append(kwargs)
+        raise AssertionError("child key must not open Stripe billing portal")
+
+    monkeypatch.setattr(
+        billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called
+    )
+
+    r = client.post(
+        "/v1/billing/portal",
+        headers={"X-API-Key": child_raw},
+        json={"return_url": "https://example.test/back"},
+    )
+    assert r.status_code == 403, r.text
+    assert called == []
+
+
 def test_issue_from_checkout_402_when_session_not_paid(client, stripe_env, monkeypatch):
     """Refuse key issuance for an unpaid/abandoned Checkout session."""
     from jpintel_mcp.api import billing as billing_mod
 
+    metadata = _checkout_state_metadata(client, billing_mod)
+
     def _retrieve(_sid, **_):
-        return _FakeCheckoutSession(payment_status="unpaid")
+        return _FakeCheckoutSession(payment_status="unpaid", metadata=metadata)
 
     monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve)
 
@@ -255,11 +368,30 @@ def test_issue_from_checkout_402_when_session_not_paid(client, stripe_env, monke
     assert "not paid" in r.json()["detail"].lower()
 
 
+def test_issue_from_checkout_requires_browser_checkout_state(client, stripe_env, monkeypatch):
+    """A stolen/guessed Stripe session_id cannot reveal a key without the checkout cookie."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    def _retrieve(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            metadata={"checkout_state_hash": billing_mod._checkout_state_hash("victim-state")},
+        )
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve)
+
+    r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_stolen"})
+    assert r.status_code == 403
+    assert "checkout state" in r.json()["detail"].lower()
+
+
 def test_issue_from_checkout_returns_raw_key_once_and_persists_hash(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
     """Happy path: metered Checkout → raw API key returned + hashed row in api_keys."""
     from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod)
 
     def _retrieve_session(_sid, **_):
         return _FakeCheckoutSession(
@@ -267,6 +399,7 @@ def test_issue_from_checkout_returns_raw_key_once_and_persists_hash(
             customer="cus_happy",
             subscription="sub_happy",
             cd_email="happy@example.com",
+            metadata=metadata,
         )
 
     def _retrieve_sub(_sub_id, **_):
@@ -300,35 +433,242 @@ def test_issue_from_checkout_returns_raw_key_once_and_persists_hash(
     assert row[3] is None
 
 
-def test_issue_from_checkout_is_idempotent_per_subscription(client, stripe_env, monkeypatch):
-    """Second call for the same subscription returns 409, not a duplicate key.
-
-    Prevents the "customer double-clicks the Checkout success page" failure
-    mode that would mint two valid keys and leave billing desynced.
-    """
+def test_issue_from_checkout_still_returns_key_when_welcome_enqueue_fails(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    """The raw key is only shown once, so welcome-mail enqueue must be best-effort."""
+    from jpintel_mcp.api import _bg_task_queue
     from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod)
 
     def _retrieve_session(_sid, **_):
         return _FakeCheckoutSession(
             payment_status="no_payment_required",
-            customer="cus_dupe",
-            subscription="sub_dupe",
-            cd_email=None,
-            customer_email="dupe@example.com",
+            customer="cus_enqueue_fail",
+            subscription="sub_enqueue_fail",
+            cd_email="enqueue-fail@example.com",
+            metadata=metadata,
         )
 
     def _retrieve_sub(_sub_id, **_):
-        return _fake_sub(price_id="price_metered_test", sub_id="sub_dupe")
+        return _fake_sub(price_id="price_metered_test", sub_id="sub_enqueue_fail")
+
+    def _raise_enqueue(*_args, **_kwargs):
+        raise RuntimeError("queue unavailable")
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+    monkeypatch.setattr(billing_mod.stripe.Subscription, "retrieve", _retrieve_sub)
+    monkeypatch.setattr(_bg_task_queue, "enqueue", _raise_enqueue)
+
+    r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_enqueue_fail"})
+    assert r.status_code == 200, r.text
+    raw_key = r.json()["api_key"]
+    assert raw_key.startswith("am_")
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT customer_id, stripe_subscription_id, revoked_at FROM api_keys "
+            "WHERE key_hash = ?",
+            (_hash_api_key(raw_key),),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row == ("cus_enqueue_fail", "sub_enqueue_fail", None)
+
+
+def test_issue_from_checkout_retry_reissues_usable_key(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    """A lost success-page response must not strand a paid customer without a key."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod, state="retry-state")
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            customer="cus_retry",
+            subscription="sub_retry",
+            cd_email=None,
+            customer_email="retry@example.com",
+            metadata=metadata,
+        )
+
+    def _retrieve_sub(_sub_id, **_):
+        return _fake_sub(price_id="price_metered_test", sub_id="sub_retry")
 
     monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
     monkeypatch.setattr(billing_mod.stripe.Subscription, "retrieve", _retrieve_sub)
 
-    r1 = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_dupe"})
+    r1 = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_retry"})
+    assert r1.status_code == 200, r1.text
+    raw1 = r1.json()["api_key"]
+
+    # Model the browser/network losing the first response before processing
+    # Set-Cookie deletion. The same browser-bound Checkout state is still
+    # allowed to recover by rotating the active key and revealing a fresh one.
+    _checkout_state_metadata(client, billing_mod, state="retry-state")
+    r2 = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_retry"})
+    assert r2.status_code == 200, r2.text
+    raw2 = r2.json()["api_key"]
+    assert raw2.startswith("am_")
+    assert raw2 != raw1
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT key_hash, revoked_at FROM api_keys "
+            "WHERE stripe_subscription_id = ? ORDER BY revoked_at IS NULL",
+            ("sub_retry",),
+        ).fetchall()
+    finally:
+        c.close()
+    assert len(rows) == 2
+    active = [row for row in rows if row[1] is None]
+    revoked = [row for row in rows if row[1] is not None]
+    assert len(active) == 1
+    assert len(revoked) == 1
+    assert active[0][0] == _hash_api_key(raw2)
+
+
+def test_issue_from_checkout_retry_refreshes_pending_welcome_payload(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    """A checkout retry must not leave the welcome queue pointing at an old key."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod, state="retry-welcome-state")
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            customer="cus_retry_welcome",
+            subscription="sub_retry_welcome",
+            cd_email="retry-welcome@example.com",
+            metadata=metadata,
+        )
+
+    def _retrieve_sub(_sub_id, **_):
+        return _fake_sub(price_id="price_metered_test", sub_id="sub_retry_welcome")
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+    monkeypatch.setattr(billing_mod.stripe.Subscription, "retrieve", _retrieve_sub)
+
+    r1 = client.post(
+        "/v1/billing/keys/from-checkout",
+        json={"session_id": "cs_retry_welcome"},
+    )
     assert r1.status_code == 200, r1.text
 
-    r2 = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_dupe"})
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.execute(
+            "UPDATE bg_task_queue SET payload_json = ? WHERE dedup_key = ?",
+            (
+                json.dumps(
+                    {"to": "retry-welcome@example.com", "key_last4": "STALE", "tier": "paid"}
+                ),
+                "welcome:sub_retry_welcome",
+            ),
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    _checkout_state_metadata(client, billing_mod, state="retry-welcome-state")
+    r2 = client.post(
+        "/v1/billing/keys/from-checkout",
+        json={"session_id": "cs_retry_welcome"},
+    )
+    assert r2.status_code == 200, r2.text
+    raw2 = r2.json()["api_key"]
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT payload_json, status FROM bg_task_queue WHERE dedup_key = ?",
+            ("welcome:sub_retry_welcome",),
+        ).fetchall()
+    finally:
+        c.close()
+
+    assert len(rows) == 1
+    payload = json.loads(rows[0][0])
+    assert payload["to"] == "retry-welcome@example.com"
+    assert payload["key_last4"] == raw2[-4:]
+    assert rows[0][1] == "pending"
+
+
+def test_issue_from_checkout_retry_refuses_when_children_exist(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    """A delayed Checkout retry must not revoke active delegated child keys."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod, state="retry-child-state")
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            customer="cus_retry_child",
+            subscription="sub_retry_child",
+            cd_email=None,
+            customer_email="retry-child@example.com",
+            metadata=metadata,
+        )
+
+    def _retrieve_sub(_sub_id, **_):
+        return _fake_sub(price_id="price_metered_test", sub_id="sub_retry_child")
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+    monkeypatch.setattr(billing_mod.stripe.Subscription, "retrieve", _retrieve_sub)
+
+    r1 = client.post(
+        "/v1/billing/keys/from-checkout",
+        json={"session_id": "cs_retry_child"},
+    )
+    assert r1.status_code == 200, r1.text
+    parent_raw = r1.json()["api_key"]
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        child_raw, child_hash = issue_child_key(
+            c,
+            parent_key_hash=_hash_api_key(parent_raw),
+            label="tenant-a",
+        )
+        assert child_raw.startswith("am_")
+        c.commit()
+    finally:
+        c.close()
+
+    _checkout_state_metadata(client, billing_mod, state="retry-child-state")
+    r2 = client.post(
+        "/v1/billing/keys/from-checkout",
+        json={"session_id": "cs_retry_child"},
+    )
     assert r2.status_code == 409, r2.text
-    assert "already issued" in r2.json()["detail"].lower()
+    assert "already issued" in r2.json()["detail"]
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        rows = c.execute(
+            "SELECT key_hash, parent_key_id, revoked_at FROM api_keys "
+            "WHERE stripe_subscription_id = ?",
+            ("sub_retry_child",),
+        ).fetchall()
+    finally:
+        c.close()
+    assert len(rows) == 2
+    assert {row["key_hash"] for row in rows} == {
+        _hash_api_key(parent_raw),
+        child_hash,
+    }
+    assert all(row["revoked_at"] is None for row in rows)
 
 
 # --- webhook -----------------------------------------------------------------
@@ -417,14 +757,13 @@ def test_webhook_no_content_length_still_validates_signature(
     assert r.status_code == 400, r.text
 
 
-def test_webhook_subscription_created_issues_key(
+def test_webhook_subscription_created_does_not_issue_key(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
-    """customer.subscription.created → mint one key for metered subscription.
+    """customer.subscription.created records the event but never reveals a raw key.
 
-    This is the primary issuance moment now — metered subs fire
-    subscription.created immediately on Checkout completion, before any
-    invoice event.
+    Raw key issuance lives on the browser-bound /keys/from-checkout path so
+    a webhook race cannot hide the only copy of the key from the buyer.
     """
     event = {
         "id": "evt_sub_created",
@@ -450,23 +789,25 @@ def test_webhook_subscription_created_issues_key(
 
     c = sqlite3.connect(seeded_db)
     try:
-        row = c.execute(
-            "SELECT tier, customer_id FROM api_keys WHERE stripe_subscription_id = ?",
+        (n_keys,) = c.execute(
+            "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
             ("sub_metered_new",),
+        ).fetchone()
+        event_row = c.execute(
+            "SELECT processed_at FROM stripe_webhook_events WHERE event_id = ?",
+            ("evt_sub_created",),
         ).fetchone()
     finally:
         c.close()
-    assert row is not None
-    assert row[0] == "paid"
+    assert n_keys == 0
+    assert event_row is not None
+    assert event_row[0] is not None
 
 
-def test_webhook_invoice_paid_safety_net_issues_key(
+def test_webhook_invoice_paid_does_not_issue_hidden_key(
     client, stripe_env, monkeypatch, seeded_db: Path
 ):
-    """invoice.paid for a previously-unseen subscription → mint one key.
-
-    Safety-net path when subscription.created was lost in transit.
-    """
+    """invoice.paid must not mint a raw key that the buyer can never see."""
     from jpintel_mcp.api import billing as billing_mod
 
     event = {
@@ -499,20 +840,82 @@ def test_webhook_invoice_paid_safety_net_issues_key(
 
     c = sqlite3.connect(seeded_db)
     try:
-        row = c.execute(
-            "SELECT tier, customer_id FROM api_keys WHERE stripe_subscription_id = ?",
+        (n_keys,) = c.execute(
+            "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
             ("sub_webhook_fallback",),
         ).fetchone()
     finally:
         c.close()
-    assert row is not None
-    assert row[0] == "paid"
+    assert n_keys == 0
+
+
+def test_invoice_paid_before_checkout_does_not_block_key_reveal(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    """If Stripe sends invoice.paid first, success.html can still reveal a key."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    sub_id = "sub_paid_then_checkout"
+    customer_id = "cus_paid_then_checkout"
+    event = {
+        "id": "evt_paid_before_checkout",
+        "type": "invoice.paid",
+        "data": {
+            "object": {
+                "subscription": sub_id,
+                "customer": customer_id,
+                "customer_email": "buyer@example.com",
+            }
+        },
+    }
+    _patch_webhook_construct_event(monkeypatch, event)
+
+    r = client.post(
+        "/v1/billing/webhook",
+        content=json.dumps(event).encode("utf-8"),
+        headers={"stripe-signature": "t=1,v1=xx"},
+    )
+    assert r.status_code == 200, r.text
+
+    metadata = _checkout_state_metadata(client, billing_mod)
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            customer=customer_id,
+            subscription=sub_id,
+            cd_email="buyer@example.com",
+            metadata=metadata,
+        )
+
+    def _retrieve_sub(_sub_id, **_):
+        return _fake_sub(price_id="price_metered_test", sub_id=sub_id)
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+    monkeypatch.setattr(billing_mod.stripe.Subscription, "retrieve", _retrieve_sub)
+
+    r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_after_paid"})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["api_key"].startswith("am_")
+    assert body["customer_id"] == customer_id
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        (n_keys,) = c.execute(
+            "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ? AND revoked_at IS NULL",
+            (sub_id,),
+        ).fetchone()
+    finally:
+        c.close()
+    assert n_keys == 1
 
 
 def test_webhook_is_idempotent_on_replay(client, stripe_env, monkeypatch, seeded_db: Path):
-    """Stripe delivers subscription.created twice (retry) → still one row.
+    """Stripe delivers subscription.created twice (retry) → no key issuance.
 
-    Duplicate webhook deliveries must NEVER mint duplicate keys.
+    Duplicate webhook deliveries must NEVER mint keys; browser checkout state
+    is required to reveal a raw API key.
     """
     event = {
         "id": "evt_replay",
@@ -543,7 +946,7 @@ def test_webhook_is_idempotent_on_replay(client, stripe_env, monkeypatch, seeded
         ).fetchone()
     finally:
         c.close()
-    assert n == 1, f"expected exactly one key row for replayed sub, got {n}"
+    assert n == 0, f"expected no key row for replayed sub, got {n}"
 
 
 def test_webhook_subscription_updated_flips_tier_on_existing_keys(
@@ -792,13 +1195,10 @@ def test_webhook_returns_fast_with_slow_outbound_io(
     fn_names = {name for name, _, _ in skipped}
     assert "_apply_invoice_metadata_safe" in fn_names, fn_names
     assert "_check_b2b_tax_id_safe" in fn_names, fn_names
-    # Welcome email moved to the durable bg_task_queue (P1 credential-leak
-    # fix per audit 2026-04-26) instead of in-memory BackgroundTasks. The
-    # raw API key must never live in BackgroundTasks closures because that
-    # surface is not durable across pod restarts and showing the key in
-    # plaintext in another in-process queue is a leak surface. Verify the
-    # enqueue landed in the persisted bg_task_queue with kind="welcome_email"
-    # instead of asserting `_send_welcome_safe` was passed to add_task.
+    # subscription.created no longer issues the raw key; the browser-bound
+    # /keys/from-checkout path does. Therefore this event must not queue a
+    # welcome email either. The test still proves slow Stripe calls are
+    # scheduled, not run inline.
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(
@@ -808,8 +1208,4 @@ def test_webhook_returns_fast_with_slow_outbound_io(
         ).fetchone()
     finally:
         c.close()
-    assert row is not None, (
-        "welcome email enqueue missing from bg_task_queue — webhook must "
-        "persist the welcome mail through the durable queue, not via "
-        "in-memory BackgroundTasks (audit 2026-04-26)"
-    )
+    assert row is None, "subscription.created must not queue a welcome email"
