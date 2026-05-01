@@ -245,6 +245,16 @@ def test_advisors_match_smoke(client, advisors_table):
     _assert_route_exists(r, path="/v1/advisors/match")
 
 
+def test_advisors_match_accepts_legacy_agri_alias(client, advisors_table):
+    r = client.get("/v1/advisors/match", params={"industry": "agri"})
+    assert r.status_code == 200, r.text
+    canonical = client.get(
+        "/v1/advisors/match", params={"industry": "agriculture_forestry"}
+    )
+    assert canonical.status_code == 200, canonical.text
+    assert r.json()["total"] == canonical.json()["total"]
+
+
 def test_advisors_signup_smoke(client, advisors_table):
     r = client.post("/v1/advisors/signup", json={})
     _assert_route_exists(r, path="/v1/advisors/signup")

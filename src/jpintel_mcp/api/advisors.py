@@ -104,6 +104,14 @@ _INDUSTRY_ALIASES = {
     "agri": "agriculture_forestry",
     "manufacture": "manufacturing",
 }
+_CANONICAL_INDUSTRIES = {
+    "agriculture_forestry",
+    "manufacturing",
+    "it",
+    "service",
+    "construction",
+    "retail",
+}
 
 CommissionModel = Literal["flat", "percent"]
 
@@ -413,15 +421,33 @@ def match_advisors(
         Query(description="都道府県. Accepts canonical, short, or romaji."),
     ] = None,
     specialty: Annotated[Specialty | None, Query()] = None,
-    industry: Annotated[Industry | None, Query()] = None,
+    industry: Annotated[
+        str | None,
+        Query(
+            description=(
+                "Industry slug. Prefer agriculture_forestry or manufacturing; "
+                "legacy agri/manufacture aliases are accepted."
+            )
+        ),
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=10)] = 3,
 ) -> JSONResponse:
     """Top ``limit`` advisors matching the supplied filters.
 
     Returns public advisor profile fields and a deterministic match score.
     """
+    industry_norm = _INDUSTRY_ALIASES.get(industry, industry) if industry else None
+    if industry_norm is not None and industry_norm not in _CANONICAL_INDUSTRIES:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"unsupported industry: {industry}",
+        )
     results = query_matching_advisors(
-        conn, prefecture=prefecture, industry=industry, specialty=specialty, limit=limit
+        conn,
+        prefecture=prefecture,
+        industry=industry_norm,
+        specialty=specialty,
+        limit=limit,
     )
     log_usage(conn, ctx, "advisors.match")
     return JSONResponse(
@@ -611,7 +637,7 @@ def _create_stripe_connect_onboarding(
                 "transfers": {"requested": True},
             },
             business_type="company",
-            metadata={"advisor_id": str(advisor_id), "platform": "AutonoMath"},
+            metadata={"advisor_id": str(advisor_id), "platform": "jpcite"},
         )
 
         link = stripe.AccountLink.create(

@@ -12,6 +12,7 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+from fastapi.responses import Response
 
 from jpintel_mcp.billing.keys import issue_key
 
@@ -124,3 +125,122 @@ def test_create_email_rejects_url(client, saved_search_key):
         },
     )
     assert r.status_code == 422, r.text
+
+
+def _usage_count(db: Path, endpoint: str) -> int:
+    c = sqlite3.connect(db)
+    try:
+        return c.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE endpoint = ?",
+            (endpoint,),
+        ).fetchone()[0]
+    finally:
+        c.close()
+
+
+def test_results_xlsx_replays_saved_filters_before_billing(
+    client, saved_search_key, seeded_db: Path, monkeypatch
+):
+    captured: dict[str, object] = {}
+
+    def _fake_build_search_response(**kwargs):
+        captured["build_kwargs"] = kwargs
+        return {"total": 12, "results": [{"unified_id": "UNI-saved-filter"}]}
+
+    def _fake_render_xlsx(rows, meta):
+        captured["rows"] = rows
+        captured["meta"] = meta
+        return Response(
+            b"xlsx-ok",
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+
+    from jpintel_mcp.api import programs as programs_mod
+    from jpintel_mcp.api.formats import xlsx as xlsx_mod
+
+    monkeypatch.setattr(programs_mod, "_build_search_response", _fake_build_search_response)
+    monkeypatch.setattr(xlsx_mod, "render_xlsx", _fake_render_xlsx)
+
+    r0 = client.post(
+        "/v1/me/saved_searches",
+        headers={"X-API-Key": saved_search_key},
+        json={
+            "name": "filtered export",
+            "query": {
+                "q": "太陽光",
+                "prefecture": "東京都",
+                "authority_level": "national",
+                "target_types": ["sme"],
+                "funding_purpose": ["設備投資"],
+                "amount_min": 1000,
+                "amount_max": 2000,
+                "tier": ["A"],
+                "include_excluded": True,
+            },
+            "frequency": "daily",
+            "notify_email": "test@example.com",
+        },
+    )
+    assert r0.status_code == 201, r0.text
+    saved_id = r0.json()["id"]
+
+    before = _usage_count(seeded_db, "saved_searches.results_xlsx")
+    r = client.get(
+        f"/v1/me/saved_searches/{saved_id}/results.xlsx",
+        headers={"X-API-Key": saved_search_key},
+    )
+    assert r.status_code == 200, r.text
+    assert r.content == b"xlsx-ok"
+
+    kwargs = captured["build_kwargs"]
+    assert kwargs["q"] == "太陽光"
+    assert kwargs["tier"] == ["A"]
+    assert kwargs["prefecture"] == "東京都"
+    assert kwargs["authority_level"] == "national"
+    assert kwargs["target_type"] == ["sme"]
+    assert kwargs["funding_purpose"] == ["設備投資"]
+    assert kwargs["amount_min"] == 1000
+    assert kwargs["amount_max"] == 2000
+    assert kwargs["include_excluded"] is True
+    assert captured["rows"][0]["evidence_packet_endpoint"].endswith(
+        "/v1/evidence/packets/program/UNI-saved-filter"
+    )
+    assert captured["meta"]["license"] == "jpcite evidence export"
+    assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before + 1
+
+
+def test_results_xlsx_renderer_failure_is_not_billed(
+    client, saved_search_key, seeded_db: Path, monkeypatch
+):
+    def _fake_build_search_response(**kwargs):
+        return {"total": 1, "results": [{"unified_id": "UNI-render-fails"}]}
+
+    def _boom(rows, meta):
+        raise RuntimeError("xlsx renderer failed")
+
+    from jpintel_mcp.api import programs as programs_mod
+    from jpintel_mcp.api.formats import xlsx as xlsx_mod
+
+    monkeypatch.setattr(programs_mod, "_build_search_response", _fake_build_search_response)
+    monkeypatch.setattr(xlsx_mod, "render_xlsx", _boom)
+
+    r0 = client.post(
+        "/v1/me/saved_searches",
+        headers={"X-API-Key": saved_search_key},
+        json={
+            "name": "failed export",
+            "query": {"prefecture": "東京都"},
+            "frequency": "daily",
+            "notify_email": "test@example.com",
+        },
+    )
+    assert r0.status_code == 201, r0.text
+    saved_id = r0.json()["id"]
+
+    before = _usage_count(seeded_db, "saved_searches.results_xlsx")
+    with pytest.raises(RuntimeError, match="xlsx renderer failed"):
+        client.get(
+            f"/v1/me/saved_searches/{saved_id}/results.xlsx",
+            headers={"X-API-Key": saved_search_key},
+        )
+    assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before

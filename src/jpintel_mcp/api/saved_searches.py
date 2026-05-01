@@ -529,6 +529,54 @@ def _has_sheet_id_column(conn) -> bool:
     return "sheet_id" in cols
 
 
+def _saved_query_list(value: Any) -> list[str] | None:
+    """Normalize historical scalar saved-query fields to list shape."""
+    if value is None:
+        return None
+    if isinstance(value, list):
+        return [str(item) for item in value if item is not None and str(item)]
+    if isinstance(value, tuple | set):
+        return [str(item) for item in value if item is not None and str(item)]
+    text = str(value)
+    return [text] if text else None
+
+
+def _run_saved_search_query(conn, query: dict[str, Any]) -> tuple[list[dict[str, Any]], int]:
+    """Replay a saved search with identical filters for every output format."""
+    from jpintel_mcp.api.programs import _build_search_response
+
+    body = _build_search_response(
+        conn=conn,
+        q=query.get("q"),
+        tier=_saved_query_list(query.get("tier")),
+        prefecture=query.get("prefecture"),
+        authority_level=query.get("authority_level"),
+        funding_purpose=_saved_query_list(query.get("funding_purpose")),
+        target_type=_saved_query_list(
+            query.get("target_types") or query.get("target_type")
+        ),
+        amount_min=query.get("amount_min"),
+        amount_max=query.get("amount_max"),
+        include_excluded=bool(query.get("include_excluded", False)),
+        limit=int(query.get("limit") or 100),
+        offset=0,
+        fields="default",
+        include_advisors=False,
+        as_of_iso=None,
+    )
+    rows = body.get("results", []) if isinstance(body, dict) else []
+    safe_rows = [row for row in rows if isinstance(row, dict)]
+    for result in safe_rows:
+        program_id = result.get("unified_id")
+        if isinstance(program_id, str) and program_id:
+            result.setdefault(
+                "evidence_packet_endpoint",
+                f"/v1/evidence/packets/program/{program_id}",
+            )
+    total = int(body.get("total", 0)) if isinstance(body, dict) else 0
+    return safe_rows, total
+
+
 class BindSheetRequest(BaseModel):
     sheet_id: str = Field(..., min_length=20, max_length=120)
     sheet_tab_name: str | None = Field(default="jpcite", max_length=64)
@@ -652,44 +700,9 @@ def saved_search_results(
         query = {}
 
     from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
-    from jpintel_mcp.api.programs import _build_search_response
 
-    body = _build_search_response(
-        conn=conn,
-        q=query.get("q"),
-        tier=query.get("tier"),
-        prefecture=query.get("prefecture"),
-        authority_level=query.get("authority_level"),
-        funding_purpose=query.get("funding_purpose"),
-        target_type=query.get("target_types") or query.get("target_type"),
-        amount_min=query.get("amount_min"),
-        amount_max=query.get("amount_max"),
-        include_excluded=bool(query.get("include_excluded", False)),
-        limit=int(query.get("limit") or 100),
-        offset=0,
-        fields="default",
-        include_advisors=False,
-        as_of_iso=None,
-    )
-    rows = body.get("results", []) if isinstance(body, dict) else []
-    for result in rows:
-        if not isinstance(result, dict):
-            continue
-        program_id = result.get("unified_id")
-        if isinstance(program_id, str) and program_id:
-            result.setdefault(
-                "evidence_packet_endpoint",
-                f"/v1/evidence/packets/program/{program_id}",
-            )
-    total = int(body.get("total", 0)) if isinstance(body, dict) else 0
+    rows, total = _run_saved_search_query(conn, query)
     snapshot_id, checksum = compute_corpus_snapshot(conn)
-    log_usage(
-        conn,
-        ctx,
-        "saved_searches.results",
-        params={"saved_search_id": saved_id, "format": format},
-        result_count=total,
-    )
 
     if format == "json":
         from fastapi.responses import JSONResponse
@@ -701,18 +714,26 @@ def saved_search_results(
             "corpus_snapshot_id": snapshot_id,
             "corpus_checksum": checksum,
         }
-        return JSONResponse(
+        response = JSONResponse(
             content=envelope,
             headers={
                 "X-Corpus-Snapshot-Id": snapshot_id,
                 "X-Corpus-Checksum": checksum,
             },
         )
+        log_usage(
+            conn,
+            ctx,
+            "saved_searches.results",
+            params={"saved_search_id": saved_id, "format": format},
+            result_count=len(rows),
+        )
+        return response
 
     from jpintel_mcp.api._format_dispatch import render
 
     meta = {
-        "filename_stem": f"autonomath_saved_{saved_id}",
+        "filename_stem": f"jpcite_saved_{saved_id}",
         "endpoint": "saved_searches.results",
         "saved_search_id": saved_id,
         "total": total,
@@ -722,6 +743,13 @@ def saved_search_results(
     resp = render(rows, format, meta)
     resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
     resp.headers["X-Corpus-Checksum"] = checksum
+    log_usage(
+        conn,
+        ctx,
+        "saved_searches.results",
+        params={"saved_search_id": saved_id, "format": format},
+        result_count=len(rows),
+    )
     return resp
 
 
@@ -771,40 +799,22 @@ def saved_search_results_xlsx(
         query = {}
 
     from jpintel_mcp.api.formats.xlsx import render_xlsx
-    from jpintel_mcp.api.programs import _build_search_response
 
-    body = _build_search_response(
-        conn=conn,
-        q=query.get("q"),
-        tier=None,
-        prefecture=query.get("prefecture"),
-        authority_level=query.get("authority_level"),
-        funding_purpose=query.get("funding_purpose"),
-        target_type=query.get("target_type"),
-        amount_min=None,
-        amount_max=None,
-        include_excluded=False,
-        limit=int(query.get("limit") or 100),
-        offset=0,
-        fields="default",
-        include_advisors=False,
-        as_of_iso=None,
-    )
-    rows = body.get("results", []) if isinstance(body, dict) else []
-    total = int(body.get("total", 0)) if isinstance(body, dict) else 0
-    log_usage(
-        conn,
-        ctx,
-        "saved_searches.results_xlsx",
-        params={"saved_search_id": saved_id, "format": "xlsx"},
-        result_count=total,
-    )
+    rows, total = _run_saved_search_query(conn, query)
     meta = {
         "saved_search_id": saved_id,
         "total": total,
         "license": "jpcite evidence export",
     }
-    return render_xlsx(rows, meta)
+    response = render_xlsx(rows, meta)
+    log_usage(
+        conn,
+        ctx,
+        "saved_searches.results_xlsx",
+        params={"saved_search_id": saved_id, "format": "xlsx"},
+        result_count=len(rows),
+    )
+    return response
 
 
 __all__ = [
