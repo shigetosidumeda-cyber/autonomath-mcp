@@ -33,18 +33,19 @@ Security:
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import logging
 import secrets
 import sqlite3
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 import stripe
 from fastapi import APIRouter, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from jpintel_mcp.api.deps import DbDep, hash_api_key
+from jpintel_mcp.api.deps import DbDep, hash_api_key, hash_api_key_bcrypt
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.device_flow")
@@ -86,6 +87,9 @@ _ALLOWED_COMPLETE_ORIGINS = frozenset(
         "https://www.jpcite.com",
     }
 )
+
+_SESSION_METADATA_DEVICE_CODE = "device_code"
+_SESSION_METADATA_USER_CODE = "user_code"
 
 
 # --------------------------------------------------------------------------- #
@@ -141,13 +145,143 @@ def _expire_stale(conn: sqlite3.Connection) -> None:
     now = _now_utc_iso()
     try:
         conn.execute(
-            "UPDATE device_codes SET status='expired' "
-            "WHERE status='pending' AND expires_at < ?",
+            "UPDATE device_codes SET status='expired' WHERE status='pending' AND expires_at < ?",
             (now,),
         )
     except sqlite3.Error:
         # Fail-open: a broken sweep must not break the poll path.
         logger.warning("device_codes sweep failed", exc_info=True)
+
+
+def _obj_get(obj: Any, key: str, default: Any = None) -> Any:
+    if obj is None:
+        return default
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
+
+
+def _as_dict(value: Any) -> dict[str, Any]:
+    if value is None:
+        return {}
+    if isinstance(value, dict):
+        return value
+    try:
+        return dict(value)
+    except (TypeError, ValueError):
+        return {}
+
+
+def _line_item_data(line_items: Any) -> list[Any]:
+    if line_items is None:
+        return []
+    if isinstance(line_items, list):
+        return line_items
+    data = _obj_get(line_items, "data")
+    if isinstance(data, list):
+        return data
+    return []
+
+
+def _price_ids_from_line_items(line_items: Any) -> set[str]:
+    price_ids: set[str] = set()
+    for item in _line_item_data(line_items):
+        price = _obj_get(item, "price")
+        price_id = price if isinstance(price, str) else _obj_get(price, "id")
+        if price_id:
+            price_ids.add(str(price_id))
+    return price_ids
+
+
+def _checkout_session_price_ids(session_id: str, session: Any) -> set[str]:
+    """Return Checkout line-item price ids from an expanded session.
+
+    `Session.retrieve(..., expand=["line_items"])` is the normal path. The
+    fallback keeps the verification robust if Stripe omits the expansion.
+    """
+    price_ids = _price_ids_from_line_items(_obj_get(session, "line_items"))
+    if price_ids:
+        return price_ids
+    line_items = stripe.checkout.Session.list_line_items(session_id, limit=100)
+    return _price_ids_from_line_items(line_items)
+
+
+def _expected_livemode() -> bool:
+    return settings.env == "prod"
+
+
+def _require_checkout_session_for_device(
+    *,
+    session_id: str,
+    session: Any,
+    expected_device_code: str,
+    expected_user_code: str,
+) -> tuple[str, str]:
+    """Validate the Stripe Checkout session before any paid key is issued."""
+    if _obj_get(session, "id", session_id) != session_id:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "checkout session id mismatch",
+        )
+
+    if _obj_get(session, "status") != "complete":
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            "checkout session not complete",
+        )
+
+    if _obj_get(session, "mode") != "subscription":
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "checkout session is not a subscription",
+        )
+
+    actual_livemode = _obj_get(session, "livemode")
+    if not isinstance(actual_livemode, bool) or actual_livemode != _expected_livemode():
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "checkout session livemode mismatch",
+        )
+
+    metadata = _as_dict(_obj_get(session, "metadata"))
+    metadata_device_code = str(metadata.get(_SESSION_METADATA_DEVICE_CODE) or "")
+    metadata_user_code = str(metadata.get(_SESSION_METADATA_USER_CODE) or "")
+    if not (
+        secrets.compare_digest(metadata_device_code, expected_device_code)
+        and secrets.compare_digest(metadata_user_code, expected_user_code)
+    ):
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "checkout session metadata mismatch",
+        )
+
+    expected_price = settings.stripe_price_per_request
+    if not expected_price:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "billing not configured",
+        )
+    price_ids = _checkout_session_price_ids(session_id, session)
+    if price_ids != {expected_price}:
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            "checkout session price mismatch",
+        )
+
+    if _obj_get(session, "payment_status") not in ("paid", "no_payment_required"):
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            f"checkout session not paid (status={_obj_get(session, 'payment_status')})",
+        )
+
+    customer_id = _obj_get(session, "customer")
+    sub_id = _obj_get(session, "subscription")
+    if not customer_id or not sub_id:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "checkout session missing customer or subscription",
+        )
+    return str(customer_id), str(sub_id)
 
 
 # --------------------------------------------------------------------------- #
@@ -156,7 +290,7 @@ def _expire_stale(conn: sqlite3.Connection) -> None:
 
 
 class AuthorizeRequest(BaseModel):
-    client_id: str = Field(default="autonomath-mcp")
+    client_id: str = Field(default="jpcite-mcp")
     scope: str | None = Field(
         default="api:read api:metered",
         description="Space-delimited scopes. Defaults to 'api:read api:metered'.",
@@ -175,7 +309,7 @@ class AuthorizeResponse(BaseModel):
 class TokenRequest(BaseModel):
     grant_type: str
     device_code: str
-    client_id: str = Field(default="autonomath-mcp")
+    client_id: str = Field(default="jpcite-mcp")
 
 
 class TokenSuccess(BaseModel):
@@ -397,7 +531,9 @@ def complete(
 ) -> CompleteResponse:
     """Called by /go after Stripe Checkout succeeds.
 
-    1. Verifies the Stripe session is paid (or metered — no_payment_required).
+    1. Verifies the Stripe session is complete, subscription-mode,
+       environment-matched, priced correctly, metadata-bound to this device
+       code, and paid (or metered — no_payment_required).
     2. Marks device_code activated.
     3. Issues an api_keys row prefixed 'am_device_' and links it.
     4. Stashes the raw key in the in-process pickup map so the MCP's
@@ -415,14 +551,20 @@ def complete(
         )
 
     row = conn.execute(
-        "SELECT device_code, status, scope FROM device_codes WHERE user_code = ?",
+        """SELECT device_code, user_code, status, scope, stripe_checkout_session_id
+           FROM device_codes WHERE user_code = ?""",
         (payload.user_code,),
     ).fetchone()
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "user_code not found")
 
     if row["status"] == "activated":
-        # Idempotent: a retry after a flaky network should not 500.
+        if row["stripe_checkout_session_id"] != payload.stripe_checkout_session_id:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "device_code already activated with a different checkout session",
+            )
+        # Idempotent: a retry after a flaky network should not re-issue.
         return CompleteResponse(ok=True)
     if row["status"] == "expired":
         raise HTTPException(
@@ -435,10 +577,25 @@ def complete(
             "device_code already denied",
         )
 
+    reused = conn.execute(
+        """SELECT user_code FROM device_codes
+           WHERE stripe_checkout_session_id = ? AND user_code != ?
+           LIMIT 1""",
+        (payload.stripe_checkout_session_id, payload.user_code),
+    ).fetchone()
+    if reused is not None:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "checkout session already used for another device code",
+        )
+
     # Verify the Stripe session server-side.
     _stripe_ready()
     try:
-        session = stripe.checkout.Session.retrieve(payload.stripe_checkout_session_id)
+        session = stripe.checkout.Session.retrieve(
+            payload.stripe_checkout_session_id,
+            expand=["line_items"],
+        )
     except Exception as exc:
         logger.warning(
             "device_complete_stripe_retrieve_failed session=%s err=%s",
@@ -450,50 +607,103 @@ def complete(
             "could not verify Stripe session",
         ) from exc
 
-    if session.payment_status not in ("paid", "no_payment_required"):
-        raise HTTPException(
-            status.HTTP_402_PAYMENT_REQUIRED,
-            f"checkout session not paid (status={session.payment_status})",
-        )
-
-    customer_id = session.customer
-    sub_id = session.subscription
+    customer_id, sub_id = _require_checkout_session_for_device(
+        session_id=payload.stripe_checkout_session_id,
+        session=session,
+        expected_device_code=row["device_code"],
+        expected_user_code=payload.user_code,
+    )
 
     # Issue a device-flow API key. Prefix 'am_device_' so support can
     # distinguish at a glance from regular Checkout-issued keys ('am_').
-    # Hashing + salt reuse api/deps.generate_api_key → hash_api_key for
-    # full parity with require_key() validation.
+    # Store both legacy HMAC and bcrypt hashes so require_key() treats the
+    # key like any other newly issued credential.
     raw_suffix = secrets.token_urlsafe(24)
     raw_key = f"am_device_{raw_suffix}"
     key_hash = hash_api_key(raw_key)
+    bcrypt_hash = hash_api_key_bcrypt(raw_key)
     now = _now_utc_iso()
-
+    txn_started = False
     try:
-        conn.execute(
-            """INSERT INTO api_keys(key_hash, customer_id, tier, stripe_subscription_id, created_at)
-               VALUES (?, ?, 'paid', ?, ?)""",
-            (key_hash, customer_id, sub_id, now),
-        )
-    except sqlite3.IntegrityError:
-        # Extremely unlikely (SHA256 collision on the salt) — treat as
-        # "already issued" and fall through to the pickup handoff.
-        logger.warning("api_key hash collision on device flow; reusing")
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+            txn_started = True
 
-    conn.execute(
-        """UPDATE device_codes
-           SET status='activated', activated_at=?,
-               linked_api_key_id=?, stripe_checkout_session_id=?, stripe_customer_id=?,
-               raw_pickup=?
-           WHERE user_code=?""",
-        (
-            now,
-            key_hash,
-            payload.stripe_checkout_session_id,
-            customer_id,
-            raw_key,
-            payload.user_code,
-        ),
-    )
+        fresh = conn.execute(
+            """SELECT device_code, status, stripe_checkout_session_id
+               FROM device_codes WHERE user_code = ?""",
+            (payload.user_code,),
+        ).fetchone()
+        if fresh is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "user_code not found")
+        if fresh["status"] == "activated":
+            if fresh["stripe_checkout_session_id"] != payload.stripe_checkout_session_id:
+                raise HTTPException(
+                    status.HTTP_409_CONFLICT,
+                    "device_code already activated with a different checkout session",
+                )
+            if txn_started:
+                conn.execute("COMMIT")
+                txn_started = False
+            return CompleteResponse(ok=True)
+        if fresh["status"] == "expired":
+            raise HTTPException(
+                status.HTTP_410_GONE,
+                "device_code expired; restart the device flow",
+            )
+        if fresh["status"] == "denied":
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "device_code already denied",
+            )
+
+        reused = conn.execute(
+            """SELECT user_code FROM device_codes
+               WHERE stripe_checkout_session_id = ? AND user_code != ?
+               LIMIT 1""",
+            (payload.stripe_checkout_session_id, payload.user_code),
+        ).fetchone()
+        if reused is not None:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "checkout session already used for another device code",
+            )
+
+        conn.execute(
+            """INSERT INTO api_keys(
+                   key_hash, customer_id, tier, stripe_subscription_id,
+                   created_at, key_hash_bcrypt, key_last4
+               ) VALUES (?, ?, 'paid', ?, ?, ?, ?)""",
+            (key_hash, customer_id, sub_id, now, bcrypt_hash, raw_key[-4:]),
+        )
+        cur = conn.execute(
+            """UPDATE device_codes
+               SET status='activated', activated_at=?,
+                   linked_api_key_id=?, stripe_checkout_session_id=?, stripe_customer_id=?,
+                   raw_pickup=?
+               WHERE user_code=? AND status='pending'""",
+            (
+                now,
+                key_hash,
+                payload.stripe_checkout_session_id,
+                customer_id,
+                raw_key,
+                payload.user_code,
+            ),
+        )
+        if cur.rowcount != 1:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                "device_code state changed during activation",
+            )
+        if txn_started:
+            conn.execute("COMMIT")
+            txn_started = False
+    except Exception:
+        if txn_started:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        raise
 
     logger.info(
         "device_flow_activated user_code=%s customer=%s sub=%s key_prefix=%s",

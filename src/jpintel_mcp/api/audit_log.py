@@ -9,7 +9,7 @@ which source_url, and compare prev_value / new_value byte-for-byte.
 
 Why public read:
     The diff log IS the moat. Hiding it behind paid auth would defeat the
-    entire purpose ("we run cron, you trust us"). The 50/月 anonymous IP
+    entire purpose ("we run cron, you trust us"). The 3/日 anonymous IP
     quota (applied via ``AnonIpLimitDep`` in main.py) prevents scrape
     abuse; paid keys (¥3/req) bypass the anon ceiling and bill normally.
 
@@ -30,7 +30,7 @@ Filters:
 
 Billing:
     Uses ``log_usage()`` like every other ``/v1/am/*`` endpoint. Anonymous
-    callers (key_hash=None) hit the IP-based 50/月 quota; paid keys are
+    callers (key_hash=None) hit the IP-based 3/日 quota; paid keys are
     metered ¥3/req. No special treatment.
 
 NOT a tax-advice surface:
@@ -118,10 +118,10 @@ def _decode_cursor(cursor: str) -> tuple[str, int]:
         "**Filters:**\n"
         "- `since=YYYY-MM-DD` — UTC date floor on `detected_at`.\n"
         "- `entity_id` — exact match on `am_entities.canonical_id`.\n\n"
-        "**Billing:** anonymous callers hit the 50/月 per-IP quota "
-        "(JST 月初 リセット). Paid keys are metered ¥3/req 税別 "
+        "**Billing:** anonymous callers hit the 3/日 per-IP quota "
+        "(JST 翌日 00:00 リセット). Paid keys are metered ¥3/req 税別 "
         "(税込 ¥3.30) and bypass the anonymous ceiling.\n\n"
-        "**Honesty:** AutonoMath detects field-level diffs from public "
+        "**Honesty:** jpcite detects field-level diffs from public "
         "government sources via daily cron. **検出のみで個別判断は行いません。** "
         "Subscribe to `https://jpcite.com/audit-log.rss` for an RSS "
         "feed of the same data."
