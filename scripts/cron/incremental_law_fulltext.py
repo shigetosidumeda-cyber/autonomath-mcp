@@ -5,8 +5,8 @@ Lifts the 154 / 10,125 (1.5%) full-text coverage one batch at a time. Each
 run picks the top-N catalog-stub laws by SEO importance, fetches their
 full XML from e-Gov 法令 API v2, parses every <Article> element, and
 upserts into ``am_law_article``. Idempotent — laws already loaded are
-skipped, so a weekly cron at 300 laws/run saturates the registered
-egov_lawid pool (≈ 9,955 stubs) in roughly 33 weeks (~7.5 months).
+skipped, so a weekly cron at 600 laws/run saturates the registered
+egov_lawid pool (≈ 9,955 stubs) in roughly 17 weeks (~4 months).
 
 Pace history
 ------------
@@ -17,6 +17,9 @@ Pace history
   fetch we still finish a 300-law batch in ~12-13 min, well under the
   60-min workflow timeout. Saturation accelerates from ~22 months to
   ~7.5 months.
+* 2026-05-01 (B4): bumped default to 600 laws/run. The same polite sleep
+  gives a typical batch time around 25 min, so the workflow timeout is
+  90 min for safer headroom around slow e-Gov responses or Fly I/O waits.
 
 Why this exists
 ---------------
@@ -116,7 +119,7 @@ import ingest_law_articles_egov as _eg  # type: ignore  # noqa: E402
 _LOG = logging.getLogger("autonomath.cron.incremental_law_fulltext")
 _DEFAULT_DB = _REPO_ROOT / "autonomath.db"
 _LOG_FILE = _REPO_ROOT / "data" / "law_load_log.jsonl"
-_DEFAULT_LIMIT = 300  # bumped 2026-04-29 from 100 (see module docstring)
+_DEFAULT_LIMIT = 600  # bumped 2026-05-01 from 300 (see module docstring)
 _RATE_SLEEP_SEC = 1.0  # polite to e-Gov (matches their published budget)
 
 # Heuristic weights (see module docstring).
