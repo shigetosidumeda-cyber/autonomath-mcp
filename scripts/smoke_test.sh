@@ -3,7 +3,7 @@
 #
 # Usage:
 #   BASE_URL=https://jpintel-mcp.fly.dev ./scripts/smoke_test.sh
-#   BASE_URL=https://jpintel-mcp.fly.dev API_KEY=sk_live_... ./scripts/smoke_test.sh
+#   BASE_URL=https://api.jpcite.com API_KEY=am_... ./scripts/smoke_test.sh
 #
 # Exit code 0 = green, non-zero = at least one probe failed.
 # Designed for `flyctl status && scripts/smoke_test.sh` post-deploy.
@@ -30,6 +30,23 @@ check() {
   fi
 }
 
+check_any() {
+  local name="$1"
+  local actual="$2"
+  shift 2
+  local expected
+  for expected in "$@"; do
+    if [[ "$expected" == "$actual" ]]; then
+      printf '  \033[32mPASS\033[0m  %s (HTTP %s)\n' "$name" "$actual"
+      pass=$((pass+1))
+      return 0
+    fi
+  done
+  printf '  \033[31mFAIL\033[0m  %s (expected one of: %s; got %s)\n' "$name" "$*" "$actual"
+  fail=$((fail+1))
+  return 1
+}
+
 hdr() {
   printf '\n\033[1m== %s ==\033[0m\n' "$1"
 }
@@ -38,24 +55,28 @@ hdr "Health"
 status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/healthz")
 check "GET /healthz" 200 "$status"
 
-status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/")
-check "GET /" 200 "$status"
+status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/v1/ping")
+check_any "GET /v1/ping" "$status" 200 429
 
 hdr "Unauthenticated (free tier)"
 status=$(curl -sS -o /tmp/smoke_search.json -w '%{http_code}' --max-time "$TIMEOUT" \
   "$BASE_URL/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=1")
-check "GET /v1/programs/search?q=農業 (anonymous)" 200 "$status"
-total=$(python3 -c "import json; print(json.load(open('/tmp/smoke_search.json')).get('total', -1))" 2>/dev/null || echo -1)
-printf '        -> total=%s\n' "$total"
-if [[ "$total" -le 0 ]]; then
-  printf '        \033[31mWARN\033[0m  no results for 農業 — suspicious\n'
+check_any "GET /v1/programs/search?q=農業 (anonymous)" "$status" 200 429
+if [[ "$status" == "200" ]]; then
+  total=$(python3 -c "import json; print(json.load(open('/tmp/smoke_search.json')).get('total', -1))" 2>/dev/null || echo -1)
+  printf '        -> total=%s\n' "$total"
+  if [[ "$total" -le 0 ]]; then
+    printf '        \033[31mWARN\033[0m  no results for 農業 — suspicious\n'
+  fi
+else
+  printf '        -> anonymous quota already reached; 429 is expected without API_KEY\n'
 fi
 
-status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/v1/exclusions?limit=1")
-check "GET /v1/exclusions?limit=1" 200 "$status"
+status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/v1/exclusions/rules?limit=1")
+check_any "GET /v1/exclusions/rules?limit=1" "$status" 200 429
 
-status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/meta")
-check "GET /meta" 200 "$status"
+status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/v1/meta")
+check_any "GET /v1/meta" "$status" 200 429
 
 if [[ -n "$API_KEY" ]]; then
   hdr "Authenticated (paid tier, API_KEY set)"
@@ -93,7 +114,7 @@ fi
 
 hdr "Invalid key rejection"
 status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" \
-  -H "x-api-key: sk_live_nonexistent_000" "$BASE_URL/v1/programs/search?q=a")
+  -H "x-api-key: am_live_nonexistent_000" "$BASE_URL/v1/programs/search?q=a")
 check "invalid key -> 401" 401 "$status"
 
 hdr "Summary"

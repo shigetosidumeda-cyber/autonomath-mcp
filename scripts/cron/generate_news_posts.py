@@ -59,7 +59,6 @@ from urllib.parse import urlparse
 
 if TYPE_CHECKING:
     import sqlite3
-    from collections.abc import Iterable
 
 # Allow running as a script without `pip install -e .`.
 _REPO = Path(__file__).resolve().parent.parent.parent

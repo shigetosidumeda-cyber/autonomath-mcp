@@ -158,8 +158,8 @@ def run(*, year: int | None = None, quarter: int | None = None,
             if not ok:
                 continue
             rendered += 1
-            _record_metered_pdf(conn, key_hash)
-            billed += 1
+            if _record_metered_pdf(conn, key_hash):
+                billed += 1
         summary = {
             "ran_at": now.isoformat(),
             "year": year,
