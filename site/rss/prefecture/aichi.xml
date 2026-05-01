@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 愛知県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/aichi.xml" rel="self" type="application/rss+xml" />
+  <description>愛知県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>「2026年愛知県窯業事業者燃油価格高騰対策支援金」の申請受付の開始について - 愛知県</title>
+    <link>https://jpcite.com/programs/2026-nen-aichiken-yougyou-jigyousha-nenyu-kakaku-koutou-4337cc.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/yogyoshien-2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-230ae2e734</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>技能継承に関する取組事例2024 - 愛知県</title>
+    <link>https://jpcite.com/programs/ginou-keishou-ni-kansu-ru-torikumi-jirei-2024-aichiken-a6e3de.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/jinzai/ginoukeisyoubansougatashien2024.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-39728bd22c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>技能継承に関する取組事例2025 - 愛知県</title>
+    <link>https://jpcite.com/programs/ginou-keishou-ni-kansu-ru-torikumi-jirei-2025-aichiken-1e3336.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/jinzai/ginoukeisyoubansougatashien2025.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3d4e36d564</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模事業経営支援事業費補助金について - 愛知県</title>
+    <link>https://jpcite.com/programs/shoukibo-jigyou-keiei-shien-jigyou-hi-hojokin-nitsuite-53c5bc.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/higashimikawa/0000033888.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-5c39ee984b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【2023（令和５）年度　受付終了】先進環境対応自動車導入促進費補助金のご案内（導入前申請用） - 愛知県</title>
+    <link>https://jpcite.com/programs/2023-reiwa-5-nendo-uketsuke-shuuryou-senshin-kankyou-taiou-feb014.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/ondanka/0000051821.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-5e46aa33df</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「2025年第2期愛知県窯業事業者燃油価格高騰対策支援金」の申請受付の開始について - 愛知県</title>
+    <link>https://jpcite.com/programs/2025-nen-dai-2-ki-aichiken-yougyou-jigyousha-nenyu-kakaku-07fa24.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/yogyoshien-2025-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6eb6336c67</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2026年度商業振興事業費補助金（地域商業活動活性化事業）の補助対象事業の募集について - 愛知県</title>
+    <link>https://jpcite.com/programs/2026-nendo-shougyou-shinkou-jigyou-hi-hojokin-chiiki-117a98.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy / 上限 90万円 出典: https://www.pref.aichi.jp/press-release/08shougyoushinkou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-70bda930a1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>技能継承に関する取組事例 - 愛知県</title>
+    <link>https://jpcite.com/programs/ginou-keishou-ni-kansu-ru-torikumi-jirei-aichiken-05070b.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/jinzai/ginoukeisyoubansougatashien2023.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-746ec74441</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「第6期愛知県中小企業特別高圧電力価格高騰対策支援金」の申請受付の開始について - 愛知県</title>
+    <link>https://jpcite.com/programs/dai-6-ki-aichiken-chuushoukigyou-tokubetsu-kouatsu-denryoku-b01d17.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/tokko-shien6.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-96497d48ef</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【2023（令和５）年度　受付終了】先進環境対応自動車導入促進費補助金のご案内　（※白・黄ナンバーEV・PHV・FCV（トラック・乗用車）用）） - 愛知県</title>
+    <link>https://jpcite.com/programs/2023-reiwa-5-nendo-uketsuke-shuuryou-senshin-kankyou-taiou-d641c5.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/ondanka/evphvfcv-subsidy2023.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bbe4fc8dea</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業支援 - 愛知県</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-shien-aichiken-2f8835.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/life/sub/2/24/88/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cc33cc67c9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【知事会見】カスタマーハラスメント防止対策に関する 啓発・事業者支援を実施します - 愛知県</title>
+    <link>https://jpcite.com/programs/chiji-kaiken-kasutamaaharasumento-boushitaisaku-ni-kansu-ru-e5a4e6.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/kasuhara-jigyousyashien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cd0b496174</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新あいち創造研究開発補助金とは - 新あいち創造研究開発補助金 - 愛知県</title>
+    <link>https://jpcite.com/programs/shin-aichi-souzou-kenkyuukaihatsu-hojokin-toha-shin-aichi-dc47d2.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/site/shin-aichi/about.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cda18c2d83</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>緊急円高対策「あいち中小企業円高対応支援基金」助成金について - 愛知県</title>
+    <link>https://jpcite.com/programs/kinkyuu-endaka-taisaku-aichi-chuushoukigyou-endaka-taiou-8f4e53.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/sangyoshinko/0000044983.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-dc445e514e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県介護サービス提供体制確保支援事業について - 愛知県</title>
+    <link>https://jpcite.com/programs/aichiken-kaigo-saabisu-teikyou-taisei-kakuho-shien-jigyou-206814.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/korei/kaigo-service-keizoku-shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f0bc54c412</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>県内中小・中堅自動車サプライヤーの国内大規模展示会への出展費用を補助します！ - 愛知県米国関税対策ポータルサイト　　 - 愛知県</title>
+    <link>https://jpcite.com/programs/kennai-chuushou-chuuken-jidousha-sapuraiyaa-no-kokunai-8f8254.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/kanzei-portal/automotive-hojokin2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f100195122</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2026年度「新あいち創造研究開発補助金」の公募について - 新あいち創造研究開発補助金 - 愛知県</title>
+    <link>https://jpcite.com/programs/2026-nendo-shin-aichi-souzou-kenkyuukaihatsu-hojokin-no-4cf76f.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/shin-aichi/koubo2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f7c854ee30</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「第7期愛知県中小企業特別高圧電力価格高騰対策支援金」の申請受付の開始について - 愛知県</title>
+    <link>https://jpcite.com/programs/dai-7-ki-aichiken-chuushoukigyou-tokubetsu-kouatsu-denryoku-a9781c.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/tokko-shien7.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ff7dbd48b1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>みよし市 農業振興事業補助金 地場産業振興</title>
+    <link>https://jpcite.com/programs/miyoshi-shi-nougyou-shinkou-jigyou-hojokin-jibasangyou-742d1b.html</link>
+    <description>Tier S / 愛知県 / 市町村 / subsidy / 上限 10,000万円 出典: https://www1.g-reiki.net/aichi-miyoshi/reiki_honbun/i569RG00000778.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-455a7c3e2d</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2026年度「ロボット未活用領域導入検証補助金」の公募について</title>
+    <link>https://jpcite.com/programs/2026-nendo-robotto-hitsuji-katsuyou-ryouiki-dounyuu-kenshou-723fd7.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/kanzei-portal/26sanrobo-robohojo2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0253a00c5d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「2026年愛知県窯業事業者燃油価格高騰対策支援金及び2026年愛知県繊維事業者燃油価格高騰対策支援金交付業務」の委託事業者を募集します</title>
+    <link>https://jpcite.com/programs/2026-nen-aichiken-yougyou-jigyousha-nenyu-kakaku-koutou-7cc8a5.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/sangyoshinko/yogyo-seni-shien2026.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-06b7ad3df8</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2025年度中小企業デジタル化・ＤＸ支援補助金の採択事業を決定しました</title>
+    <link>https://jpcite.com/programs/2025-nendo-chuushoukigyou-dejitaru-ka-d-x-shien-hojokin-no-abb202.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/site/aichi-pref-iot/dx-grants-saitaku2025.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-10972dd112</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>運営支援課</title>
+    <link>https://jpcite.com/programs/un-ei-shien-ka-ed081d.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/unei-shien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-11d9ecf59f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2024年度ロボット未活用領域導入検証補助金 事業結果報告書 [PDFファイル／6.8MB]</title>
+    <link>https://jpcite.com/programs/2024-nendo-robotto-hitsuji-katsuyou-ryouiki-dounyuu-kenshou-c8ebf5.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/uploaded/attachment/572521.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1dc6968c63</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>競技大会に係る要人の接遇等</title>
+    <link>https://jpcite.com/programs/kyougitaikai-ni-kakaru-youjin-no-setsuguu-nado-f4bdbb.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/unei-shien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2d52ec5db6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新あいち創造研究開発補助金</title>
+    <link>https://jpcite.com/programs/shin-aichi-souzou-kenkyuukaihatsu-hojokin-8d8a2a.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/site/shin-aichi/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-331117b299</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【知事会見】2024年度「ロボット未活用領域導入検証補助金」の採択案件を決定しました</title>
+    <link>https://jpcite.com/programs/chiji-kaiken-2024-nendo-robotto-hitsuji-katsuyou-ryouiki-f1e698.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/robohojyo2024adoption.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-38639ae431</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業のデジタル化・ＤＸに関する補助金</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-no-dejitaru-ka-d-x-ni-kansu-ru-hojokin-b30d3f.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/site/aichi-pref-iot/list649-2302.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4783ea7591</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ロボット未活用領域導入検証補助金による ロボットの導入促進</title>
+    <link>https://jpcite.com/programs/robotto-hitsuji-katsuyou-ryouiki-dounyuu-kenshou-hojokin-4f3c61.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://robot.pref.aichi.jp/field</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-49fab64a8d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「中小企業デジタル化・DX促進補助金」の公募を開始します！</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-dejitaru-ka-dx-sokushin-hojokin-no-koubo-wo-a62e24.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/aichi-pref-iot/digitalhojyokin-koubo2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-654694e077</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2026年度「あいち中小企業応援ファンド新事業展開応援助成金（地場産業枠・農商工連携枠）」の交付先を決定しました</title>
+    <link>https://jpcite.com/programs/2026-nendo-aichi-chuushoukigyou-ouen-fando-shin-jigyou-b3e00c.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/fund20260401.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6820f6433a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「2026年愛知県繊維事業者燃油価格高騰対策支援金」の申請受付の開始について</title>
+    <link>https://jpcite.com/programs/2026-nen-aichiken-sen-i-jigyousha-nenyu-kakaku-koutou-30723f.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/press-release/senishien-2026.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6c155ebe05</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「助成金・補助金」</title>
+    <link>https://jpcite.com/programs/joseikin-hojokin-d72b51.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/life/sub/2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7710c7db10</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2025年度「ロボット未活用領域導入検証補助金」の採択案件を決定しました</title>
+    <link>https://jpcite.com/programs/2025-nendo-robotto-hitsuji-katsuyou-ryouiki-dounyuu-kenshou-4eb439.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/25sanrobo-1robohojosaitaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-902f581c84</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【募集期間を延長しました】「あいち中小企業応援ファンド新事業展開応援助成金（地場産業枠・農商工連携枠）」の募集を開始します</title>
+    <link>https://jpcite.com/programs/boshuukikan-wo-enchou-shimashita-aichi-chuushoukigyou-ouen-fa1692.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/2026fundzibasangyoa-bosyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-90925f1f44</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2024年度「ロボット未活用領域導入検証補助金」を活用したロボット導入に係る好事例を紹介します～国内初！終日無人の博物館ロボットガイドツアーが実現～</title>
+    <link>https://jpcite.com/programs/2024-nendo-robotto-hitsuji-katsuyou-ryouiki-dounyuu-kenshou-05e753.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/25sanrobo-hojojireirobo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a420cae23d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「あいち中小企業応援ファンド新事業展開応援助成金（一般枠）」の募集を開始します</title>
+    <link>https://jpcite.com/programs/aichi-chuushoukigyou-ouen-fando-shin-jigyou-tenkai-ouen-842ad2.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/2025fundippan-bosyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a609ce9332</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別支援学校・特別支援学級の教育課程・生徒指導</title>
+    <link>https://jpcite.com/programs/tokubetsu-shien-gakkou-tokubetsu-shien-gakkyuu-no-137d91.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/tokubetsushienkyoiku/0000041141.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aecbc33e4e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>観客輸送・観客誘導、都市ボランティア、都市装飾</title>
+    <link>https://jpcite.com/programs/kankyaku-yusou-kankyaku-yuudou-toshi-boranteia-toshi-834c4a.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/unei-shien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b5cad48b69</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県介護サービス提供体制確保支援事業について</title>
+    <link>https://jpcite.com/programs/aichiken-kaigo-saabisu-teikyou-taisei-kakuho-shien-jigyou-4d2892.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/korei/kaigo-service-keizoku-shien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cf52867a31</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別支援教育課</title>
+    <link>https://jpcite.com/programs/tokubetsu-shien-kyouikuka-d04562.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/tokubetsushienkyoiku/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d0a7e8ff9e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「あいち中小企業応援ファンド 新事業展開応援助成金（一般枠）」の交付先が決定しました</title>
+    <link>https://jpcite.com/programs/aichi-chuushoukigyou-ouen-fando-shin-jigyou-tenkai-ouen-e1a87e.html</link>
+    <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/press-release/fund20251001.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dd379f63a6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県商工会連合会 補助金・助成金 案内ハブ（愛知県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/aichiken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-96d453.html</link>
+    <description>Tier B / 愛知県 / 愛知県商工会連合会 / directory 出典: https://www.aichipfsci.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-dbe39d422e</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:30 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名商 各種補助金申請支援</title>
+    <link>https://jpcite.com/programs/mei-shou-kakushu-hojokin-shinsei-shien-2cbd68.html</link>
+    <description>Tier B / 愛知県 / 名古屋商工会議所 / support 出典: https://www.nagoya-cci.or.jp/corona/hojokinpage20200422/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-afa1e3b34e</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:21 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名商 マル経融資 (推薦)</title>
+    <link>https://jpcite.com/programs/mei-shou-maru-kei-yuushi-suisen-b5f169.html</link>
+    <description>Tier B / 愛知県 / 名古屋商工会議所 / loan / 上限 2,000万円 出典: https://www.nagoya-cci.or.jp/shikin/yushi_maru.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fc5ff5a6ad</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名商 融資・補助金案内</title>
+    <link>https://jpcite.com/programs/mei-shou-yuushi-hojokin-annai-6bc95f.html</link>
+    <description>Tier B / 愛知県 / 名古屋商工会議所 / support 出典: https://www.nagoya-cci.or.jp/service_ichiran/shikin/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3c18b348d7</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:19 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市 営農継続応援補助金</title>
+    <link>https://jpcite.com/programs/toyohashishi-einou-keizoku-ouen-hojokin-25a0a2.html</link>
+    <description>Tier C / 愛知県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.toyohashi.lg.jp/50225.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-914ed231e9</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 愛知県 子ども食堂推進事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-aichiken-kodomo-shokudou-suishin-jigyou-hi-727472.html</link>
+    <description>Tier C / 愛知県 / 愛知県 (地方自治体) 出典: https://www.pref.aichi.jp/soshiki/jidoukatei/kodomoshokudou-hojokin.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-96f78d3d6b</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2025年度 愛知県 子ども食堂食材費高騰対策支援金</title>
+    <link>https://jpcite.com/programs/2025-nendo-aichiken-kodomo-shokudou-shokuzai-hi-koutou-044912.html</link>
+    <description>Tier C / 愛知県 / 愛知県 (地方自治体) 出典: https://www.pref.aichi.jp/soshiki/jidoukatei/kodomoshokudou-shienkin2025.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b2afee3d2e</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県豊田市 下水道管路施設包括的民間委託</title>
+    <link>https://jpcite.com/programs/aichikentoyodashi-gesuidou-kanro-shisetsu-houkatsuteki-db4eef.html</link>
+    <description>Tier C / 愛知県 / 豊田市 上下水道局 出典: https://www.mlit.go.jp/mizukokudo/sewerage/content/001315520.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b79c4b630a</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>解体工事業登録</title>
+    <link>https://jpcite.com/programs/kaitai-kouji-gyou-touroku-ccc6f9.html</link>
+    <description>Tier C / 愛知県 / 都道府県知事 出典: https://www.pref.aichi.jp/site/kensetsugyo-fudosangyo/kaitaitoroku.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b7c7389a24</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県有料道路運営等事業（有料道路コンセッション）</title>
+    <link>https://jpcite.com/programs/aichiken-yuuryoudouro-un-ei-nado-jigyou-yuuryoudouro-de9b4a.html</link>
+    <description>Tier C / 愛知県 / 愛知県道路公社 / 実施主体：愛知道路コンセッション株式会社（ARC、前田建設工業・森トラスト・大和ハウス工業・大和リース・セントラルハイウェイ・Macquarie） 出典: https://www.pref.aichi.jp/soshiki/douroiji/concession.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c10fed9d60</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県半田市 下水道事業 (衣浦西部流域)</title>
+    <link>https://jpcite.com/programs/aichiken-handa-shi-gesuidou-jigyou-kinuura-seibu-ryuuiki-2dbc99.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / 半田市 出典: https://www.pref.aichi.jp/soshiki/jogesuido/0000020160.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fe790eb1f9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>World Robot Summit 2025（WRS2025 AICHI）</title>
+    <link>https://jpcite.com/programs/world-robot-summit-2025-wrs2025-aichi-55e496.html</link>
+    <description>Tier C / 愛知県 / 経済産業省 / NEDO / 愛知県（愛知モノづくり分野） 出典: https://worldrobotsummit.org/wrs2025/mrc/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b315a8d0f9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:01 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度豊田市産業パワーアップ支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-toyotashi-sangyou-pawaaappu-shien-hojokin-05ae17.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部 / subsidy 出典: https://www.city.toyota.aichi.jp/jigyousha/shogyoshinko/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-08490a61c3</guid>
+    <pubDate>Thu, 23 Apr 2026 14:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊田市買い物困難者支援事業費補助金</title>
+    <link>https://jpcite.com/programs/toyotashi-kaimono-konnan-mono-shien-jigyou-hi-hojokin-a3029e.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部 / subsidy 出典: https://www.city.toyota.aichi.jp/jigyousha/shogyoshinko/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-105d8cb037</guid>
+    <pubDate>Thu, 23 Apr 2026 14:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊田市中小企業団体等事業費補助金</title>
+    <link>https://jpcite.com/programs/toyotashi-chuushoukigyou-dantai-nado-jigyou-hi-hojokin-b84665.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部商業観光課 / subsidy 出典: https://www.city.toyota.aichi.jp/jigyousha/shogyoshinko/hojokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1acc6ac6c3</guid>
+    <pubDate>Thu, 23 Apr 2026 14:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊田市観光振興団体事業補助金</title>
+    <link>https://jpcite.com/programs/toyotashi-kankou-shinkou-dantai-jigyou-hojokin-5d08f9.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部商業観光課 / subsidy 出典: https://www.city.toyota.aichi.jp/shisei/machizukuri/hojo/1005252.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-480190f1e0</guid>
+    <pubDate>Thu, 23 Apr 2026 14:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市企業BCP等策定支援事業費補助金</title>
+    <link>https://jpcite.com/programs/toyohashishi-kigyou-bcp-nado-sakutei-shien-jigyou-hi-hojokin-3b5418.html</link>
+    <description>Tier C / 愛知県 / 豊橋市産業部商工業振興課 / subsidy 出典: https://www.city.toyohashi.lg.jp/37457.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-151cc5e523</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市起業支援事業費補助金</title>
+    <link>https://jpcite.com/programs/toyohashishi-kigyou-shien-jigyou-hi-hojokin-ff37c3.html</link>
+    <description>Tier C / 愛知県 / 豊橋市産業部商工業振興課 / subsidy / 上限 30万円 出典: https://www.city.toyohashi.lg.jp/15738.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-379a4cfa4f</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度名古屋市イノベーション創出促進プログラム</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-nagoyashi-inobeeshon-soushutsu-sokushin-ab7866.html</link>
+    <description>Tier C / 愛知県 / 名古屋市経済局 / support 出典: https://www.city.nagoya.jp/keizai/page/0000176300.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-46d22a100a</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名古屋市中小企業デジタル活用支援補助金</title>
+    <link>https://jpcite.com/programs/nagoyashi-chuushoukigyou-dejitaru-katsuyou-shien-hojokin-3abeee.html</link>
+    <description>Tier C / 愛知県 / 名古屋市経済局 / subsidy 出典: https://www.city.nagoya.jp/jigyou/category/387-1-8-1-0-0-0-0-0-0.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5fbbb0f0f2</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度豊田市経営力強化支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-toyotashi-keiei-chikara-kyouka-shien-hojokin-1ea4f1.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部 / subsidy 出典: https://www.city.toyota.aichi.jp/jigyousha/kigyoyuchi/1063650/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6763cc4321</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度豊田市人材活躍支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-toyotashi-jinzai-katsuyaku-shien-hojokin-54b349.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部 / subsidy 出典: https://www.city.toyota.aichi.jp/jigyousha/kigyoyuchi/1063649/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-74f4214884</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度豊田市働き方改革推進支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-toyotashi-hataraki-hou-kaikaku-suishin-shien-2b2a7d.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部 / subsidy / 上限 50万円 出典: https://www.city.toyota.aichi.jp/jigyousha/kigyoyuchi/1026482/1063651/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-823269c458</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊田市創造産業立地補助金</title>
+    <link>https://jpcite.com/programs/toyotashi-souzou-sangyou-ritchi-hojokin-3064f8.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部 / subsidy 出典: https://www.city.toyota.aichi.jp/jigyousha/kigyoyuchi/1065001/1065002/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-83d5dadaee</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度豊田市新エネルギー活用促進補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-toyotashi-shin-enerugii-katsuyou-sokushin-e5fa96.html</link>
+    <description>Tier C / 愛知県 / 豊田市産業部 / subsidy / 上限 10,000万円 出典: https://www.city.toyota.aichi.jp/jigyousha/kigyoyuchi/1064642.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-88f078fb92</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市新ビジネスチャレンジ応援補助金(デジタル化)</title>
+    <link>https://jpcite.com/programs/toyohashishi-shin-bijinesucharenji-ouen-hojokin-dejitaru-ka-1e044c.html</link>
+    <description>Tier C / 愛知県 / 豊橋市産業部商工業振興課 / subsidy / 上限 50万円 出典: https://www.city.toyohashi.lg.jp/54315.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9898081f96</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市就職サイト等活用事業費補助金</title>
+    <link>https://jpcite.com/programs/toyohashishi-shuushoku-saito-toukatsu-youji-gyou-hi-hojokin-5aab64.html</link>
+    <description>Tier C / 愛知県 / 豊橋市産業部商工業振興課 / subsidy 出典: https://www.city.toyohashi.lg.jp/50162.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a0f26862b1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市中小企業設備投資促進補助金</title>
+    <link>https://jpcite.com/programs/toyohashishi-chuushoukigyou-setsubitoushi-sokushin-hojokin-643f5e.html</link>
+    <description>Tier C / 愛知県 / 豊橋市産業部商工業振興課 / subsidy / 上限 300万円 出典: https://www.city.toyohashi.lg.jp/5444.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b72126ccf5</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度名古屋市スタートアップ企業支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-nagoyashi-sutaatoappu-kigyou-shien-hojokin-63fce4.html</link>
+    <description>Tier C / 愛知県 / 名古屋市経済局産業労働部産業労働課 / subsidy / 上限 100万円 出典: https://www.city.nagoya.jp/jigyou/sangyou/1026356/1035070/1035072/1026817.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-beb87b935c</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市未来産業創出事業補助金</title>
+    <link>https://jpcite.com/programs/toyohashishi-mirai-sangyou-soushutsu-jigyou-hojokin-9d52aa.html</link>
+    <description>Tier C / 愛知県 / 豊橋市産業部商工業振興課 / subsidy 出典: https://www.toyohashi-mirai.com/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dd9aca734a</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊橋市働きやすい職場づくり補助金</title>
+    <link>https://jpcite.com/programs/toyohashishi-hataraki-yasui-shokuba-zukuri-hojokin-e8ee9e.html</link>
+    <description>Tier C / 愛知県 / 豊橋市産業部商工業振興課 / subsidy 出典: https://www.city.toyohashi.lg.jp/32010.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e45892f1f2</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>第7期愛知県中小企業特別高圧電力価格高騰対策支援金</title>
+    <link>https://jpcite.com/programs/dai-7-ki-aichiken-chuushoukigyou-tokubetsu-kouatsu-denryoku-7300c9.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / support_payment / 上限 200万円 出典: https://www.pref.aichi.jp/press-release/tokko-shien7.html</description>
+    <category>support_payment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0ddc56c6ec</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県人材育成支援補助金</title>
+    <link>https://jpcite.com/programs/aichikenjin-zai-ikusei-shien-hojokin-859844.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / subsidy / 上限 30万円 出典: https://www.pref.aichi.jp/life/sub/2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-157122c158</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県中小企業者等応援金</title>
+    <link>https://jpcite.com/programs/aichiken-chuushoukigyou-mono-nado-ouen-kin-013b6f.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / support_payment / 上限 50万円 出典: https://www.pref.aichi.jp/site/covid19-aichi/ouenkin.html</description>
+    <category>support_payment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-16224530b0</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県スタートアップ国際展開支援補助金</title>
+    <link>https://jpcite.com/programs/aichiken-sutaatoappu-kokusai-tenkai-shien-hojokin-0cdfb6.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局スタートアップ推進課 / subsidy / 上限 500万円 出典: https://www.pref.aichi.jp/soshiki/startup/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1737b1a562</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模企業者等設備貸与事業(愛知県)</title>
+    <link>https://jpcite.com/programs/shoukibo-kigyou-mono-nado-setsubi-taiyo-jigyou-aichiken-3ed622.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / loan / 上限 6,000万円 出典: https://www.pref.aichi.jp/soshiki/kinyu/0000006014.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-200b1ce3da</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県ものづくり中小企業支援補助金</title>
+    <link>https://jpcite.com/programs/aichiken-monozukuri-chuushoukigyou-shien-hojokin-80ca47.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / subsidy / 上限 500万円 出典: https://www.pref.aichi.jp/life/sub/2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-33702bc726</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県観光振興補助金</title>
+    <link>https://jpcite.com/programs/aichiken-kankou-shinkou-hojokin-f561ad.html</link>
+    <description>Tier C / 愛知県 / 愛知県観光コンベンション局 / subsidy / 上限 300万円 出典: https://www.pref.aichi.jp/life/sub/2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-41f9000323</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>あいち中小企業応援ファンド新事業展開応援助成金(一般枠)</title>
+    <link>https://jpcite.com/programs/aichi-chuushoukigyou-ouen-fando-shin-jigyou-tenkai-ouen-ac8e84.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / subsidy / 上限 200万円 出典: https://www.aibsc.jp/support/1288/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-48ad99bac1</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>あいち中小企業応援ファンド(地場産業枠)</title>
+    <link>https://jpcite.com/programs/aichi-chuushoukigyou-ouen-fando-jibasangyou-waku-61f18a.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / subsidy / 上限 300万円 出典: https://www.aibsc.jp/support/1288/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7a8657e925</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県企業立地優遇制度</title>
+    <link>https://jpcite.com/programs/aichiken-kigyou-ritchi-yuuguu-seido-fe994b.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / subsidy / 上限 100,000万円 出典: https://www.pref.aichi.jp/soshiki/ricchitsusho/yuuguu-ken.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-84bd12479e</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県脱炭素化設備導入補助金</title>
+    <link>https://jpcite.com/programs/aichiken-dattan-moto-ka-setsubi-dounyuu-hojokin-78353d.html</link>
+    <description>Tier C / 愛知県 / 愛知県環境局 / subsidy / 上限 500万円 出典: https://www.pref.aichi.jp/life/sub/2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9c89dadb4b</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県事業承継補助金</title>
+    <link>https://jpcite.com/programs/aichiken-jigyou-shoukei-hojokin-3aba10.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / subsidy / 上限 200万円 出典: https://www.pref.aichi.jp/life/sub/2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9dbc30d4e9</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2026年度商業振興事業費補助金</title>
+    <link>https://jpcite.com/programs/2026-nendo-shougyou-shinkou-jigyou-hi-hojokin-b79e33.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / subsidy / 上限 300万円 出典: https://www.pref.aichi.jp/press-release/08shougyoushinkou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c89bf3c549</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2025年度小規模事業者経営革新支援事業費補助金</title>
+    <link>https://jpcite.com/programs/2025-nendo-shoukibo-jigyousha-keiei-kakushin-shien-jigyou-076525.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / subsidy / 上限 100万円 出典: https://www.pref.aichi.jp/press-release/shienhojokin2025.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ccf81506ac</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県BCP導入支援補助金</title>
+    <link>https://jpcite.com/programs/aichiken-bcp-dounyuu-shien-hojokin-cd7b2d.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局 / subsidy / 上限 50万円 出典: https://www.pref.aichi.jp/life/sub/2/24/88/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d63c3f6f47</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・中堅自動車サプライヤー販路開拓支援補助金(展示会出展)</title>
+    <link>https://jpcite.com/programs/chuushou-chuuken-jidousha-sapuraiyaa-hanro-kaitaku-shien-e2eb86.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局次世代モビリティ産業課 / subsidy / 上限 50万円 出典: https://www.pref.aichi.jp/press-release/kanzei-portal/automotive-hojokin2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e7772d72b9</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>あいち中小企業応援ファンド(農商工連携枠)</title>
+    <link>https://jpcite.com/programs/aichi-chuushoukigyou-ouen-fando-nou-shoukou-renkei-waku-d98bcb.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / subsidy / 上限 300万円 出典: https://www.aibsc.jp/support/1288/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ecf533719b</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>あいちスタートアップ創業支援事業費補助金(起業支援金)</title>
+    <link>https://jpcite.com/programs/aichi-sutaatoappu-sougyou-shien-jigyou-hi-hojokin-kigyou-8e1783.html</link>
+    <description>Tier C / 愛知県 / 愛知県経済産業局スタートアップ推進課 / subsidy / 上限 200万円 出典: https://www.pref.aichi.jp/soshiki/startup/6-hojo0401.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f916a99195</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊田市過疎地域持続的発展に係る固定資産税課税免除</title>
+    <link>https://jpcite.com/programs/toyotashi-kaso-chiiki-jizokuteki-hatten-ni-kakaru-0a1fa2.html</link>
+    <description>Tier C / 愛知県 / 豊田市 / tax_reduction_by_ordinance 出典: https://www.city.toyota.aichi.jp/kurashi/zeikin/kotei/1046103.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3aebdbbf00</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県 競争入札参加資格 (愛知電子調達共同システム)</title>
+    <link>https://jpcite.com/programs/aichiken-kyousounyuusatsu-sankashikaku-aichi-denshi-20a53a.html</link>
+    <description>Tier C / 愛知県 / 愛知県 + 県内51市町村 (共同運用) / qualification 出典: https://www.pref.aichi.jp/soshiki/chotatsu/shinsei0607.html</description>
+    <category>qualification</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e7500f7a06</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県 農福連携推進事業</title>
+    <link>https://jpcite.com/programs/aichiken-nou-fuku-renkei-suishin-jigyou-d89a1e.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / subsidy 出典: https://noufuku.jp/news/info-20230530-2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0fd498a9b8</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県 中小企業デジタル化・DX促進補助金 (令和8年度)</title>
+    <link>https://jpcite.com/programs/aichiken-chuushoukigyou-dejitaru-ka-dx-sokushin-hojokin-5c8bb9.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / あいち産業振興機構 / subsidy 出典: https://dx-hojo.aibsc.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6c6d535ffb</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛知県 情報セキュリティ対策支援 (診断) 事業</title>
+    <link>https://jpcite.com/programs/aichiken-jouhou-sekyuritei-taisaku-shien-shindan-jigyou-4aabed.html</link>
+    <description>Tier C / 愛知県 / 愛知県 / あいち産業振興機構 / consulting 出典: https://www.pref.aichi.jp/site/aichi-pref-iot/list649-2926.html</description>
+    <category>consulting</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bfbe769456</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名古屋市 優良農地保全利用対策事業</title>
+    <link>https://jpcite.com/programs/nagoyashi-yuuryou-nouchi-hozen-riyou-taisaku-jigyou-e54a54.html</link>
+    <description>Tier C / 愛知県 / 市町村 / subsidy / 上限 200万円 出典: https://www.agri.city.nagoya.jp/for-farmers/support-systems/support-project-183/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-00555e5896</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-232115-001_豊田市_農業チャレンジ推進補助金</title>
+    <link>https://jpcite.com/programs/mun-232115-001-toyotashi-nougyou-charenji-suishin-hojokin-f113c8.html</link>
+    <description>Tier B / 愛知県 / subsidy / 上限 100万円 出典: https://www.city.toyota.aichi.jp/kurashi/nougyou/nougyou/1054030.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-01bbfacdd0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新城市_農地中間管理事業</title>
+    <link>https://jpcite.com/programs/shinjou-shi-nouchi-chuukan-kanri-jigyou-b29d84.html</link>
+    <description>Tier B / 愛知県 / subsidy / 上限 100万円 出典: https://www.city.shinshiro.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-01bdd3afeb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山間地営農等振興事業費補助金</title>
+    <link>https://jpcite.com/programs/sankan-chi-einou-nado-shinkou-jigyou-hi-hojokin-e55789.html</link>
+    <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/nogyo-shinko/0000051974.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-01bfb51fd6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

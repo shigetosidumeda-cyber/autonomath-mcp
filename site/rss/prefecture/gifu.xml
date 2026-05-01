@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 岐阜県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/gifu.xml" rel="self" type="application/rss+xml" />
+  <description>岐阜県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>行政の補助金等 - 岐阜県公式ホームページ（県民生活課）</title>
+    <link>https://jpcite.com/programs/gyousei-no-hojokin-nado-gifuken-koushiki-hoomupeeji-kenmin-d9f5a2.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県 / subsidy / 上限 30万円 出典: https://www.pref.gifu.lg.jp/page/2955.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-05b8a7d31b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県なりわい再建事業補助金について - 岐阜県公式ホームページ（商工労働政策課）</title>
+    <link>https://jpcite.com/programs/gifuken-nariwai-saiken-jigyou-hojokin-nitsuite-gifuken-672306.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/62577.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0ced9f4a12</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「岐阜県地域防災クラブ活動支援事業費補助金」の募集 - 岐阜県公式ホームページ（防災課）</title>
+    <link>https://jpcite.com/programs/gifuken-chiiki-bousai-kurabu-katsudou-shien-jigyou-hi-bedda1.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県 / subsidy / 上限 10万円 出典: https://www.pref.gifu.lg.jp/page/485514.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2a5006d3f6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模事業者パワーアップ応援補助金 - 岐阜県公式ホームページ（商工労働政策課）</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-jigyousha-pawaaappu-ouen-hojokin-gifuken-2636a7.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/146196.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4808d67bcd</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（予告）令和8年度岐阜県の伝統的工芸品導入支援補助金について - 岐阜県公式ホームページ（地域産業課）</title>
+    <link>https://jpcite.com/programs/yokoku-reiwa-8-nendo-gifuken-no-dentouteki-kougeihin-72b088.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県 / subsidy / 上限 300万円 出典: https://www.pref.gifu.lg.jp/page/490445.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8d29a09aa4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度岐阜県プロフェッショナル人材確保補助金 - 岐阜県公式ホームページ（産業人材課）</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-gifuken-purofesshonaru-jinzai-kakuho-hojokin-b59915.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/16850.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b54247bb11</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中心市街地遊休不動産活用事業補助金 - 岐阜県公式ホームページ（商業・金融課）</title>
+    <link>https://jpcite.com/programs/gifuken-chuushin-shigaichi-yuukyuu-fudousan-katsuyou-jigyou-216e33.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/486414.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f2e8093e9b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「岐阜県地域防災クラブ活動支援事業費補助金」の募集</title>
+    <link>https://jpcite.com/programs/gifuken-chiiki-bousai-kurabu-katsudou-shien-jigyou-hi-df4514.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/485514.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0034a2f679</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中心市街地遊休不動産活用事業補助金</title>
+    <link>https://jpcite.com/programs/gifuken-chuushin-shigaichi-yuukyuu-fudousan-katsuyou-jigyou-8f3a1d.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/486414.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0544e6fc49</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・優遇制度の一覧</title>
+    <link>https://jpcite.com/programs/hojokin-yuuguu-seido-no-ichiran-335f56.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/life/sub/10/28/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-22ce7de7c6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「岐阜県生活困窮者就労準備支援金」について</title>
+    <link>https://jpcite.com/programs/gifuken-seikatsu-konkyuu-mono-shuurou-junbi-shien-kin-780ef4.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / support 出典: https://www.pref.gifu.lg.jp/page/263575.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-51c782b719</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県住宅リフォーム支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/gifuken-juutaku-rifoomu-shien-jigyou-hi-hojokin-nitsuite-7a997e.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/483635.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6b05a38c81</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・優遇制度情報</title>
+    <link>https://jpcite.com/programs/hojokin-yuuguu-seido-jouhou-50420d.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/life/sub/10/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-724362a8d0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【受付終了】Web活用型岐阜県内企業情報発信事業費補助金を再募集</title>
+    <link>https://jpcite.com/programs/uketsuke-shuuryou-web-katsuyou-kata-gifuken-nai-kigyou-accf0f.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/26924.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-84c1bd9a49</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度新設「岐阜県産酒米価格高騰等緊急支援事業費補助金」 の募集を開始します</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-shinsetsu-gifuken-san-shumai-kakaku-koutou-d5d352.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/491597.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-84f741a118</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ぎふ企業成長投資補助金の募集開始</title>
+    <link>https://jpcite.com/programs/gifu-kigyou-seichou-toushi-hojokin-no-boshuu-kaishi-c2d619.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/site/pressrelease/491727.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-86b0338216</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度中小企業販路開拓等支援事業費補助金の募集を開始します</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-chuushoukigyou-hanro-kaitaku-nado-shien-a7dc55.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/site/pressrelease/494031.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8ad3140e8e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小企業等脱炭素化促進事業費補助金（省エネ設備導入事業）</title>
+    <link>https://jpcite.com/programs/gifuken-chuushoukigyou-nado-dattan-moto-ka-sokushin-jigyou-d5f2c9.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/492485.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-956dbcbceb</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ストーリーでつなぐ岐阜県観光推進補助金（令和8年度募集）</title>
+    <link>https://jpcite.com/programs/sutoorii-detsunagu-gifuken-kankou-suishin-hojokin-reiwa-8-394fa1.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/308967.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c105a3207d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模事業者パワーアップ応援補助金</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-jigyousha-pawaaappu-ouen-hojokin-f07659.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/146196.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dfe31ae1f0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>消費・安全対策交付金の事後評価</title>
+    <link>https://jpcite.com/programs/shouhi-anzentaisaku-koufukin-no-jigo-hyouka-5577fa.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/16888.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e2c167e051</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（予告）令和8年度岐阜県の伝統的工芸品導入支援補助金について</title>
+    <link>https://jpcite.com/programs/yokoku-reiwa-8-nendo-gifuken-no-dentouteki-kougeihin-d68d6c.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/490445.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ef64332608</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度岐阜県プロフェッショナル人材確保補助金</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-gifuken-purofesshonaru-jinzai-kakuho-hojokin-43edc0.html</link>
+    <description>Tier A / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/16850.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f27c9dfc1c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県商工会連合会 補助金・助成金 案内ハブ（岐阜県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/gifuken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-0a73d6.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県商工会連合会 / directory 出典: https://www.gifushoko.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e495b01eb5</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:28 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜市新卒人材採用ブランディング補助金</title>
+    <link>https://jpcite.com/programs/gifushi-shinsotsu-jinzai-saiyou-burandingu-hojokin-91021d.html</link>
+    <description>Tier C / 岐阜県 / 岐阜市商工観光部 / subsidy / 上限 50万円 出典: https://www.city.gifu.lg.jp/business/roudou/1023136.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-283762e8a1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜市見本市等出展補助金</title>
+    <link>https://jpcite.com/programs/gifushi-mihon-ichi-nado-shutten-hojokin-61be76.html</link>
+    <description>Tier C / 岐阜県 / 岐阜市商工観光部 / subsidy 出典: https://www.city.gifu.lg.jp/business/sangyoushinkou/1005687/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-34eb3fea5e</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜市事業承継サポート補助金</title>
+    <link>https://jpcite.com/programs/gifushi-jigyou-shoukei-sapooto-hojokin-e6bd35.html</link>
+    <description>Tier C / 岐阜県 / 岐阜市商工観光部 / subsidy 出典: https://www.city.gifu.lg.jp/business/sangyoushinkou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b31321f2ff</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小企業等脱炭素化促進事業費補助金</title>
+    <link>https://jpcite.com/programs/gifuken-chuushoukigyou-nado-dattan-moto-ka-sokushin-jigyou-564bc3.html</link>
+    <description>Tier C / 岐阜県 / 岐阜県省エネ・再エネ社会推進課 / subsidy 出典: https://www.pref.gifu.lg.jp/page/287442.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4f4227da2a</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県 農福連携推進活動事業(助成事業)</title>
+    <link>https://jpcite.com/programs/gifuken-nou-fuku-renkei-suishin-katsudou-jigyou-josei-jigyou-cfd767.html</link>
+    <description>Tier C / 岐阜県 / 岐阜県 / subsidy 出典: https://noufuku.jp/news/info-20230530-2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-523bb26268</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小企業融資制度</title>
+    <link>https://jpcite.com/programs/gifuken-chuushoukigyou-yuushi-seido-a6dcb1.html</link>
+    <description>Tier C / 岐阜県 / 岐阜県商工労働政策課 / loan 出典: https://www.pref.gifu.lg.jp/page/9732.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8e18b26504</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小・小規模事業者パワーアップ応援補助金</title>
+    <link>https://jpcite.com/programs/gifuken-chuushou-shoukibo-jigyousha-pawaaappu-ouen-hojokin-5f27ba.html</link>
+    <description>Tier C / 岐阜県 / 岐阜県 / subsidy 出典: https://www.pref.gifu.lg.jp/page/146196.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d21522f13a</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_GAP制度の推進</title>
+    <link>https://jpcite.com/programs/oogaki-shi-gap-seido-no-suishin-7ac5f9.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-01a66f8dc4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成支援（経営開始資金）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-shien-keiei-kaishi-shikin-ffbb05.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県高山市 / subsidy / 上限 1,000万円 出典: https://www.city.takayama.lg.jp/shisei/1000067/1002615/1002621/1020043/1020042.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-042f742d2d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜 ぎふ農業経営者育成発展支援事業</title>
+    <link>https://jpcite.com/programs/gifu-gifu-nougyou-keieisha-ikusei-hatten-shien-jigyou-69f8bc.html</link>
+    <description>Tier C / 岐阜県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/339239.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0640b23ed3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市 新規就農者経営安定支援事業</title>
+    <link>https://jpcite.com/programs/oogaki-shi-shinki-shuunou-mono-keiei-antei-shien-jigyou-97833e.html</link>
+    <description>Tier B / 岐阜県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.ogaki.lg.jp/soshiki/8-3-0-0-0_20.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-084eb1fa1c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_はじめての農業体験（春コース）</title>
+    <link>https://jpcite.com/programs/oogaki-shi-hajimeteno-nougyou-taiken-haru-koosu-c2381e.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0ba3cc470d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_認定農業者・新規就農者などの確保・育成</title>
+    <link>https://jpcite.com/programs/oogaki-shi-nintei-nougyou-mono-shinki-shuunou-mono-nadono-595dbe.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0da76df63a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県副業・兼業新規活用促進事業費補助金</title>
+    <link>https://jpcite.com/programs/gifuken-fukugyou-kengyou-shinki-katsuyou-sokushin-jigyou-hi-5f4e62.html</link>
+    <description>Tier C / 岐阜県 / subsidy / 上限 50万円 出典: https://www.pref.gifu.lg.jp/site/pressrelease/fukugyo-kengyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14188131bd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小企業事業承継支援補助金</title>
+    <link>https://jpcite.com/programs/gifuken-chuushoukigyou-jigyou-shoukei-shien-hojokin-4b4e88.html</link>
+    <description>Tier C / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/site/pressrelease/jigyoshoukei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-142ded4c5a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_おおがき農業ふれあい体験</title>
+    <link>https://jpcite.com/programs/oogaki-shi-oogaki-nougyou-fureai-taiken-dc965e.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1ca9f93afa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜 ぎふ農業経営者育成発展支援事業 経営チャレンジ型</title>
+    <link>https://jpcite.com/programs/gifu-gifu-nougyou-keieisha-ikusei-hatten-shien-jigyou-keiei-cc9d7a.html</link>
+    <description>Tier B / 岐阜県 / 都道府県 / grant / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/339239.html</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-26983e8e2c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域ぐるみでの防止柵設置</title>
+    <link>https://jpcite.com/programs/chiiki-gurumideno-boushi-saku-setchi-738e69.html</link>
+    <description>Tier C / 岐阜県 / 岐阜県山県市 / subsidy 出典: https://www.city.yamagata.gifu.jp/soshiki/norin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-26efd1438b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高山市 農業6次産業化促進支援事業</title>
+    <link>https://jpcite.com/programs/kouzan-shi-nougyou-6-tsugi-sangyouka-sokushin-shien-jigyou-5f4936.html</link>
+    <description>Tier B / 岐阜県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.takayama.lg.jp/shisei/1000067/1002615/1002621/1020039.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2d05512a7c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業6次産業化促進支援事業</title>
+    <link>https://jpcite.com/programs/nougyou-6-tsugi-sangyouka-sokushin-shien-jigyou-0d5fa9.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県高山市 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-38bf7a3d83</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成支援（経営開始資金）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-shien-keiei-kaishi-shikin-488c72.html</link>
+    <description>Tier B / 岐阜県 / （noukaweb 収集） / 上限 1,000万円 出典: https://www.city.takayama.lg.jp/shisei/1000067/1002615/1002621/1020043/1020042.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3a05f083ee</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_定年帰農者・企業などの農業参入促進</title>
+    <link>https://jpcite.com/programs/oogaki-shi-teinen-kinou-mono-kigyou-nadono-nougyou-sannyuu-ac930e.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4565c9c8d5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_病害虫・鳥獣害対策の推進</title>
+    <link>https://jpcite.com/programs/oogaki-shi-byougaichuu-choujuugai-taisaku-no-suishin-23b0c0.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4a3bfee38f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小企業人材確保支援補助金</title>
+    <link>https://jpcite.com/programs/gifuken-chuushoukigyou-jinzai-kakuho-shien-hojokin-b4d7d2.html</link>
+    <description>Tier C / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/site/pressrelease/jinzai-kakuho.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-53705f8729</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小企業脱炭素化支援補助金</title>
+    <link>https://jpcite.com/programs/gifuken-chuushoukigyou-dattan-moto-ka-shien-hojokin-782388.html</link>
+    <description>Tier C / 岐阜県 / subsidy / 上限 200万円 出典: https://www.pref.gifu.lg.jp/site/pressrelease/datsu-tanso.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-56f3fdc939</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中山間地域等直接支払制度</title>
+    <link>https://jpcite.com/programs/chuusankan-chiiki-nado-chokusetsu-shiharai-seido-fc8ade.html</link>
+    <description>Tier C / 岐阜県 / 農林水産省 / subsidy 出典: https://www.city.takayama.lg.jp/_res/projects/default_project/_page_/001/002/663/2023chokusetsu.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-67c4dbfd11</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県中小企業販路開拓等支援事業費補助金</title>
+    <link>https://jpcite.com/programs/gifuken-chuushoukigyou-hanro-kaitaku-nado-shien-jigyou-hi-f916f9.html</link>
+    <description>Tier A / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/site/pressrelease/425200.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-69222f71d6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜 農業6次産業化促進支援事業</title>
+    <link>https://jpcite.com/programs/gifu-nougyou-6-tsugi-sangyouka-sokushin-shien-jigyou-2795d4.html</link>
+    <description>Tier B / 岐阜県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/13537.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6b47735609</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_6次産業化商品の販売促進支援</title>
+    <link>https://jpcite.com/programs/oogaki-shi-6-tsugi-sangyouka-shouhin-no-hanbaisokushin-shien-a5361a.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7621a6addf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_女性・障がい者などの農業への参画促進</title>
+    <link>https://jpcite.com/programs/oogaki-shi-josei-shou-gai-mono-nadono-nougyou-heno-sankaku-4e8ae1.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7d9469e8ab</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高山市東京圏からの移住支援金</title>
+    <link>https://jpcite.com/programs/kouzan-shi-toukyouken-karano-ijuu-shien-kin-4ce544.html</link>
+    <description>Tier C / 岐阜県 / （noukaweb 収集） 出典: https://www.city.takayama.lg.jp/shisei/1015214/1010749.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8d968177e1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜県小規模事業者パワーアップ応援補助金</title>
+    <link>https://jpcite.com/programs/gifuken-shoukibo-jigyousha-pawaaappu-ouen-hojokin-4afb7f.html</link>
+    <description>Tier C / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/site/pressrelease/430569.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-920c4bcc72</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ぎふ地域DX推進補助金</title>
+    <link>https://jpcite.com/programs/gifu-chiiki-dx-suishin-hojokin-1b56a6.html</link>
+    <description>Tier C / 岐阜県 / subsidy / 上限 1,000万円 出典: https://www.pref.gifu.lg.jp/site/pressrelease/gifu-dx-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9a84a3cd92</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>防止柵設置事務費交付事業</title>
+    <link>https://jpcite.com/programs/boushi-saku-setchi-jimuhi-koufu-jigyou-eef64f.html</link>
+    <description>Tier C / 岐阜県 / 岐阜県山県市 / subsidy 出典: https://www.city.yamagata.gifu.jp/soshiki/norin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9ccdc519ae</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高山市東京圏からの移住支援金</title>
+    <link>https://jpcite.com/programs/kouzan-shi-toukyouken-karano-ijuu-shien-kin-01bfb3.html</link>
+    <description>Tier B / 岐阜県 / 岐阜県高山市 / subsidy 出典: https://www.city.takayama.lg.jp/shisei/1015214/1010749.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a7157f38e2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-21-103_岐阜_農業6次産業化促進支援事業</title>
+    <link>https://jpcite.com/programs/pref-21-103-gifu-nougyou-6-tsugi-sangyouka-sokushin-shien-515fbe.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/13537.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-adab1cc52a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-21-102_岐阜_岐阜県新規就農支援資金</title>
+    <link>https://jpcite.com/programs/pref-21-102-gifu-gifuken-shinki-shuunou-shien-shikin-e667fd.html</link>
+    <description>Tier B / 岐阜県 / loan / 上限 150万円 出典: https://www.jabankgifu.or.jp/agri/funds.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b6d5a3c032</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>肥料価格高騰対策事業</title>
+    <link>https://jpcite.com/programs/hiryou-kakaku-koutou-taisaku-jigyou-419ccc.html</link>
+    <description>Tier C / 岐阜県 / 岐阜県各務原市 / subsidy 出典: https://www.city.kakamigahara.lg.jp/_res/projects/default_project/_page_/001/016/581/hiryou2.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-be0fc9dfd1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-212032-001_高山市_農業6次産業化促進支援事業</title>
+    <link>https://jpcite.com/programs/mun-212032-001-kouzan-shi-nougyou-6-tsugi-sangyouka-ef8d49.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.takayama.lg.jp/shisei/1000067/1002615/1002621/1020039.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c2aa686638</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-21-101_岐阜_ぎふ農業経営者育成発展支援事業_経営チャレンジ型</title>
+    <link>https://jpcite.com/programs/pref-21-101-gifu-gifu-nougyou-keieisha-ikusei-hatten-shien-7a5642.html</link>
+    <description>Tier B / 岐阜県 / grant / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/339239.html</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c4cb3f6762</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_耕作放棄地の解消・利活用支援</title>
+    <link>https://jpcite.com/programs/oogaki-shi-kousaku-houki-chi-no-kaishou-rikatsuyou-shien-f8e534.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d133b78dc1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業6次産業化促進支援事業</title>
+    <link>https://jpcite.com/programs/nougyou-6-tsugi-sangyouka-sokushin-shien-jigyou-e5ccc4.html</link>
+    <description>Tier C / 岐阜県 / （noukaweb 収集） 出典: https://www.pref.gifu.lg.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d80ffd28ae</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-212024-001_大垣市_新規就農者経営安定支援事業</title>
+    <link>https://jpcite.com/programs/mun-212024-001-oogaki-shi-shinki-shuunou-mono-keiei-antei-e6e0e0.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 50万円 出典: https://www.city.ogaki.lg.jp/soshiki/8-3-0-0-0_20.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-eec5279490</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_地元農産物の活用促進・高付加価値化支援</title>
+    <link>https://jpcite.com/programs/oogaki-shi-jimoto-nousanbutsu-no-katsuyou-sokushin-taka-c39a64.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f419eb3f24</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_農業生産基盤および農業用施設の改良・整備</title>
+    <link>https://jpcite.com/programs/oogaki-shi-nougyou-seisan-kiban-oyobi-nougyouyou-shisetsu-4d7d96.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f422031885</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岐阜 岐阜県新規就農支援資金</title>
+    <link>https://jpcite.com/programs/gifu-gifuken-shinki-shuunou-shien-shikin-90eb80.html</link>
+    <description>Tier B / 岐阜県 / 都道府県 / loan / 上限 150万円 出典: https://www.jabankgifu.or.jp/agri/funds.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f9295e664f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大垣市_かがやき農業塾</title>
+    <link>https://jpcite.com/programs/oogaki-shi-kagayaki-nougyou-juku-1a85ab.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.ogaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f9ce5c9e78</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高山市_農業融資制度（災害関係）</title>
+    <link>https://jpcite.com/programs/kouzan-shi-nougyou-yuushi-seido-saigai-kankei-d3a619.html</link>
+    <description>Tier B / 岐阜県 / loan / 上限 3,000万円 出典: https://www.city.takayama.lg.jp/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-fcd048e3b0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-21-001_岐阜_ぎふ農業経営者育成発展支援事業</title>
+    <link>https://jpcite.com/programs/pref-21-001-gifu-gifu-nougyou-keieisha-ikusei-hatten-shien-9084b0.html</link>
+    <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/339239.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-fd55c10caf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 東京都 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/tokyo.xml" rel="self" type="application/rss+xml" />
+  <description>東京都 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>タグ詳細検索|都庁総合ホームページ</title>
+    <link>https://jpcite.com/programs/tagu-shousai-kensaku-tochou-sougou-hoomupeeji-98ef01.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.metro.tokyo.lg.jp/search?keyword=&amp;category=163887</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-08e165f738</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>創業支援を受けたい|創業支援|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/sougyou-shien-wo-uke-tai-sougyou-shien-toukyouto-sangyou-f1c165.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/sougyou/sien</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-17aeb43c35</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中小企業者等月次支援給付金（４・５・６月分）|東京都中小企業者等月次支援給付金|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/toukyouto-chuushoukigyou-mono-nado-getsuji-shien-kyuufukin-d4d46b.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/getsuji/4-6</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1aa4620643</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中小企業者等月次支援給付金（９月分）|東京都中小企業者等月次支援給付金|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/toukyouto-chuushoukigyou-mono-nado-getsuji-shien-kyuufukin-679c4d.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/getsuji/9</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-20fad7fbd4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中小企業障害者雇用スタート支援奨励金 | 企業向け奨励金・助成金 | TOKYOはたらくネット</title>
+    <link>https://jpcite.com/programs/toukyouto-chuushoukigyou-shougaisha-koyou-sutaato-shien-7faa72.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.hataraku.metro.tokyo.lg.jp/shogai/josei/start/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3652a75a6b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中小企業者等月次支援給付金（１０月分）|東京都中小企業者等月次支援給付金|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/toukyouto-chuushoukigyou-mono-nado-getsuji-shien-kyuufukin-012b0c.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/getsuji/10</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3c3cda602a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>知的財産保護、活用への助成（知財戦略導入助成事業）|知的財産保護・デザイン活用支援|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/chiteki-zaisan-hogo-katsuyou-heno-josei-chizai-senryaku-706b38.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy / 上限 400万円 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/chizai/jyosei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3f4588317c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成・補助金|目的別|都庁総合ホームページ</title>
+    <link>https://jpcite.com/programs/josei-hojokin-mokutekibetsu-tochou-sougou-hoomupeeji-e95553.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.metro.tokyo.lg.jp/purpose/grant?utm_source=search&amp;utm_medium=internal&amp;utm_id=sidebar</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3f6a3306ad</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商店街に対する助成|地域産業の活性化|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/shoutengai-ni-taisuru-josei-chiiki-sangyou-no-kasseika-c16a1d.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/chiiki/jyosei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-85af49ed8c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都障害者安定雇用奨励金 | 企業向け奨励金・助成金 | TOKYOはたらくネット</title>
+    <link>https://jpcite.com/programs/toukyouto-shougaisha-antei-koyou-shoureikin-kigyou-muke-166246.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.hataraku.metro.tokyo.lg.jp/shogai/josei/antei-koyou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8abf82d17a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>検索結果｜My TOKYO - 東京都公式ポータルサイト</title>
+    <link>https://jpcite.com/programs/kensakukekka-my-tokyo-toukyouto-koushiki-pootarusaito-ffe93b.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.my.metro.tokyo.lg.jp/business/search/?category=188508&amp;utm_source=search&amp;utm_medium=internal&amp;utm_id=sidebar</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8c48e7da7a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「女性の活躍に関する条例（仮称）の基本的な考え方」への御意見を募集|女性活躍|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/josei-no-katsuyaku-ni-kansu-ru-jourei-kashou-no-kihonteki-386d5d.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/basic/sangyo/joseikatsuyakujourei/joseikatsuyakuiken</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9b24b127e2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中小企業障害者雇用支援助成金 | 企業向け奨励金・助成金 | TOKYOはたらくネット</title>
+    <link>https://jpcite.com/programs/toukyouto-chuushoukigyou-shougaisha-koyou-shien-joseikin-8ff735.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.hataraku.metro.tokyo.lg.jp/shogai/josei/chushou_shien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9b71e81f6c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中小企業者等月次支援給付金|商工|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/toukyouto-chuushoukigyou-mono-nado-getsuji-shien-kyuufukin-d24e85.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/getsuji</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a54e9439a4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>デザイン活用支援|知的財産保護・デザイン活用支援|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/dezain-katsuyou-shien-chiteki-zaisan-hogo-dezain-katsuyou-c36fc4.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/chizai/sien</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b5ea277f91</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都難病・がん患者就業支援奨励金 | 企業向け奨励金・助成金 | TOKYOはたらくネット</title>
+    <link>https://jpcite.com/programs/toukyouto-nanbyou-gan-kanja-shuugyou-shien-shoureikin-863480.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.hataraku.metro.tokyo.lg.jp/shogai/josei/nan_gan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c11b5fcd88</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商店街に対する助成|地域産業の活性化|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/shoutengai-ni-taisuru-josei-chiiki-sangyou-no-kasseika-9fabfe.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/chiiki/jyosei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cca377feeb</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業活力向上プロジェクトアドバンス実行委員会|地域産業の活性化|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-katsuryoku-koujou-purojiekutoadobansu-5c44df.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/chiiki/sien/jikkou</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cecfdfa8b2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金交付決定の一部取消し等について|10月|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/hojokin-koufu-kettei-no-ichibu-torikeshi-nado-nitsuite-10-6fb596.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/information/hojokin/20251028</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d10d8d12be</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性活躍|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/josei-katsuyaku-toukyouto-sangyou-roudou-kyoku-56333f.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/josei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d1d9b35f9b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>知的財産保護、活用への助成（知財戦略導入助成事業）|知的財産保護・デザイン活用支援|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/chiteki-zaisan-hogo-katsuyou-heno-josei-chizai-senryaku-cb9484.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy / 上限 400万円 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/chizai/jyosei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d472b536fe</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都雇用・就業分野における女性の活躍を推進する条例|女性活躍|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/toukyouto-koyou-shuugyou-bunya-niokeru-josei-no-katsuyaku-8a9f99.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/basic/sangyo/joseikatsuyakujourei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-da4f650d9c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金等の各種支援事業|観光|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/hojokin-nado-no-kakushu-shien-jigyou-kankou-toukyouto-501d67.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/tourism/kakusyu</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e354f9a853</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模企業等の支援に関すること|地域産業の活性化|東京都産業労働局</title>
+    <link>https://jpcite.com/programs/shoukibo-kigyou-nado-no-shien-ni-kansu-rukoto-chiiki-61bebc.html</link>
+    <description>Tier B / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/shoko/chiiki/sien</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f23504169c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>世代交代・初期投資促進事業（世代交代円滑化タイプ）</title>
+    <link>https://jpcite.com/programs/sedaikoutai-shokitoushi-sokushin-jigyou-sedaikoutai-enkatsu-8a74e9.html</link>
+    <description>Tier S / 東京都 / subsidy / 上限 1,000万円 出典: https://www.maff.go.jp/j/new_farmer/n_syunou/hatten.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0099a6d1b4</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業成長加速化補助金</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-seichou-kasoku-ka-hojokin-126931.html</link>
+    <description>Tier S / 東京都 / subsidy / 上限 50,000万円 出典: https://mirasapo-plus.go.jp/wordpress/wp-content/uploads/2025/12/26100215/2nd_kobo.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14e57fbf79</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（畑作物の直接支払交付金・米の直接支払交付金等）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-hatasaku-mono-no-chokusetsu-a6d026.html</link>
+    <description>Tier S / 東京都 / subsidy / 上限 35,000万円 出典: https://www.city.maniwa.lg.jp/soshiki/42/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17e64b14cf</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>みどりの食料システム戦略推進交付金</title>
+    <link>https://jpcite.com/programs/midorino-shokuryou-shisutemu-senryaku-suishin-koufukin-d443f2.html</link>
+    <description>Tier S / 東京都 / 国（農水省等） / subsidy / 上限 500万円 出典: https://www.maff.go.jp/j/kanbo/kankyo/seisaku/midori/houritsu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1c8f4cd075</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企業版ふるさと納税</title>
+    <link>https://jpcite.com/programs/kigyou-han-furusato-nouzei-5fc048.html</link>
+    <description>Tier S / 東京都 / 内閣府 / tax / 上限 10,000万円 出典: https://www.chisou.go.jp/tiiki/tiikisaisei/kigyou_furusato.html</description>
+    <category>tax</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3a9b7f91e1</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スマート農業技術の開発・実証プロジェクト</title>
+    <link>https://jpcite.com/programs/sumaato-nougyou-gijutsu-no-kaihatsu-jisshou-purojiekuto-257edd.html</link>
+    <description>Tier S / 東京都 / 農林水産省/農研機構 / subsidy / 上限 10,000万円 出典: https://www.naro.go.jp/smart-nogyo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6b32629951</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中山間地域等直接支払交付金</title>
+    <link>https://jpcite.com/programs/chuusankan-chiiki-nado-chokusetsu-shiharai-koufukin-74fc9a.html</link>
+    <description>Tier S / 東京都 / 国（農水省等） / subsidy / 上限 500万円 出典: https://www.maff.go.jp/j/nousin/tyusan/siharai_seido/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6cd67b3342</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雇用就農資金</title>
+    <link>https://jpcite.com/programs/koyou-shuunou-shikin-8f3239.html</link>
+    <description>Tier S / 東京都 / （noukaweb 収集） / 上限 240万円 出典: https://www.maff.go.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-76ff1702bc</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境保全型農業直接支払交付金</title>
+    <link>https://jpcite.com/programs/kankyouhozen-kata-nougyou-chokusetsu-shiharai-koufukin-9300db.html</link>
+    <description>Tier S / 東京都 / 農林水産省/都道府県 / subsidy / 上限 500万円 出典: https://www.maff.go.jp/j/seisan/kankyo/kakyou_chokubarai/mainp.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-795e155ee7</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八王子市_日本政策金融公庫等からの低利融資</title>
+    <link>https://jpcite.com/programs/hachioujishi-nippon-seisaku-kinyuukouko-hitoshika-rano-ca3653.html</link>
+    <description>Tier S / 東京都 / loan / 上限 3,000万円 出典: https://www.city.hachioji.tokyo.jp/kurashi/sangyo/004/001/001/p006558.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-993181f438</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都ゼロエミッション化省エネ設備導入支援事業</title>
+    <link>https://jpcite.com/programs/toukyouto-zeroemisshon-ka-shouene-setsubi-dounyuu-shien-c4f3fb.html</link>
+    <description>Tier S / 東京都 / subsidy / 上限 4,500万円 出典: https://www.tokyo-co2down.jp/subsidy/zeroemi-shoene</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-bca74fc343</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業等事業再構築促進基金</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-nado-jigyou-saikouchiku-sokushin-kikin-e3746a.html</link>
+    <description>Tier S / 東京都 / incentive / 上限 10,000万円 出典: https://jigyou-saikouchiku.go.jp</description>
+    <category>incentive</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c2d0c7502e</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都 家庭のゼロエミッション行動推進事業</title>
+    <link>https://jpcite.com/programs/toukyouto-katei-no-zeroemisshon-koudou-suishin-jigyou-611770.html</link>
+    <description>Tier S / 東京都 / 一般社団法人 環境共創イニシアチブ (SII) / subsidy 出典: https://sii.or.jp/zeroemi/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-60e34ce4df</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和４年度補助金</title>
+    <link>https://jpcite.com/programs/reiwa-4-nendo-hojokin-75d117.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/4hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-028eebcf4b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和元年度補助金一覧</title>
+    <link>https://jpcite.com/programs/reiwa-gannendo-hojokin-ichiran-a22f70.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/1hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-07b540f223</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金等の各種支援事業</title>
+    <link>https://jpcite.com/programs/hojokin-nado-no-kakushu-shien-jigyou-9f9022.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/tourism/kakusyu</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1a937d2e65</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性活躍</title>
+    <link>https://jpcite.com/programs/josei-katsuyaku-476821.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/josei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-261fb4e12a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都雇用・就業分野における女性の活躍を推進する条例</title>
+    <link>https://jpcite.com/programs/toukyouto-koyou-shuugyou-bunya-niokeru-josei-no-katsuyaku-3400a2.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/basic/sangyo/joseikatsuyakujourei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-26d82de410</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>海外作品制作支援事業助成金の申込み受付開始</title>
+    <link>https://jpcite.com/programs/kaigaisakuhin-seisaku-shien-jigyou-joseikin-no-moushikomi-f7195e.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.metro.tokyo.lg.jp/information/press/2026/04/2026041707</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-28c0d3e0dc</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年度補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-hojokin-4f1b5d.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/7hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-32a6760c74</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和６年度補助金</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-hojokin-b5c84f.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/6hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3b4105e1de</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成30年度補助金一覧</title>
+    <link>https://jpcite.com/programs/heisei-30-nendo-hojokin-ichiran-a014c2.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/30hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3f6f1c1650</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「女性の活躍に関する条例（仮称）の基本的な考え方」への御意見を募集</title>
+    <link>https://jpcite.com/programs/josei-no-katsuyaku-ni-kansu-ru-jourei-kashou-no-kihonteki-a0e253.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/basic/sangyo/joseikatsuyakujourei/joseikatsuyakuiken</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3fcf6e57da</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金（財務局）</title>
+    <link>https://jpcite.com/programs/hojokin-zaimu-kyoku-efb477.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4cb8819bd0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ライトアップやイルミネーション 取組支援 助成金募集</title>
+    <link>https://jpcite.com/programs/raitoappu-ya-irumineeshon-torikumi-shien-joseikin-boshuu-2fef8f.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.metro.tokyo.lg.jp/information/press/2026/04/2026042317</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-68eeb21391</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度 河川清掃等ボランティア団体助成金について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-kasen-seisou-nado-boranteia-dantai-joseikin-ae1775.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.my.metro.tokyo.lg.jp/w/000-20260414-252575550</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7075cf10ad</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和２年度補助金一覧</title>
+    <link>https://jpcite.com/programs/reiwa-2-nendo-hojokin-ichiran-641746.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/2hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7d8a017b00</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和５年度補助金</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-hojokin-c535ca.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/5hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cbe390502c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性活躍 トップ</title>
+    <link>https://jpcite.com/programs/josei-katsuyaku-toppu-7988e3.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/josei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d547e331d4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新型コロナウイルス感染症対応地方創生臨時交付金</title>
+    <link>https://jpcite.com/programs/shingata-koronauirusu-kansenshou-taiou-chihou-sousei-rinji-3072fc.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/rinjikoufukin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e43f1013ec</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金交付決定の一部取消し等について</title>
+    <link>https://jpcite.com/programs/hojokin-koufu-kettei-no-ichibu-torikeshi-nado-nitsuite-edf48a.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/information/hojokin/20251028</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fb9a9414f0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和３年度補助金一覧</title>
+    <link>https://jpcite.com/programs/reiwa-3-nendo-hojokin-ichiran-6045be.html</link>
+    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/3hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fe7d0f339a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都商工会連合会 補助金・助成金 案内ハブ（東京都 商工会連合会）</title>
+    <link>https://jpcite.com/programs/toukyouto-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-8f5d61.html</link>
+    <description>Tier B / 東京都 / 東京都商工会連合会 / directory 出典: http://www.shokokai-tokyo.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4e54524c29</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:23 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 都・区などの中小企業向けお知らせ</title>
+    <link>https://jpcite.com/programs/toushou-miyako-ku-nadono-chuushoukigyou-muke-o-shirase-ecba09.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / support 出典: https://www.tokyo-cci.or.jp/support_measures/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-da7c3de118</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:11 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 海外ビジネス相談</title>
+    <link>https://jpcite.com/programs/toushou-kaigai-bijinesu-soudan-86de78.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / consulting 出典: https://www.tokyo-cci.or.jp/soudan/globalsupport/</description>
+    <category>consulting</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8f4229724d</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 価格転嫁支援</title>
+    <link>https://jpcite.com/programs/toushou-kakaku-tenka-shien-625e36.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / support 出典: https://www.tokyo-cci.or.jp/kakaku-support/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-526537ddbf</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:08 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 事業承継ポータル</title>
+    <link>https://jpcite.com/programs/toushou-jigyou-shoukei-pootaru-739243.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / support 出典: https://www.tokyo-cci.or.jp/jigyoshoukeiportal/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ca7a80a480</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:07 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 創業・起業支援</title>
+    <link>https://jpcite.com/programs/toushou-sougyou-kigyou-shien-e7e7c9.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / support 出典: https://www.tokyo-cci.or.jp/entre/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3657662f44</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:06 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 国・東京都の主な補助金・助成金 集約</title>
+    <link>https://jpcite.com/programs/toushou-kuni-toukyouto-no-omona-hojokin-joseikin-shuuyaku-fc5ac5.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / support 出典: https://www.tokyo-cci.or.jp/measures_info/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b577a47a20</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 マル経融資 (推薦)</title>
+    <link>https://jpcite.com/programs/toushou-maru-kei-yuushi-suisen-ec6048.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / loan / 上限 2,000万円 出典: https://www.tokyo-cci.or.jp/marukei/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c2c84df74e</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:03 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東商 小規模事業者持続化補助金 (申請支援)</title>
+    <link>https://jpcite.com/programs/toushou-shoukibo-jigyousha-jizoku-ka-hojokin-shinsei-shien-c65455.html</link>
+    <description>Tier B / 東京都 / 東京商工会議所 / support / 上限 200万円 出典: https://www.tokyo-cci.or.jp/jizokuka/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-222cea1f13</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:02 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都 DX推進サポート事業</title>
+    <link>https://jpcite.com/programs/toukyouto-dx-suishin-sapooto-jigyou-d621fc.html</link>
+    <description>Tier C / 東京都 / 東京都中小企業振興公社 / subsidy / 上限 1,000万円 出典: https://iot-robot.jp/business/dxsubsidy/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-568b58d77b</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都 創業助成事業</title>
+    <link>https://jpcite.com/programs/toukyouto-sougyou-josei-jigyou-a29106.html</link>
+    <description>Tier C / 東京都 / 東京都中小企業振興公社 / subsidy / 上限 400万円 出典: https://www.tokyo-sogyo-net.metro.tokyo.lg.jp/finance/sogyo_josei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-67d456ed49</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都 BCP実践促進助成金</title>
+    <link>https://jpcite.com/programs/toukyouto-bcp-jissen-sokushin-joseikin-acf671.html</link>
+    <description>Tier C / 東京都 / 東京都中小企業振興公社 / subsidy / 上限 1,500万円 出典: https://www.tokyo-kosha.or.jp/support/josei/setsubijosei/bcp.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-cf929e8de4</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>人材開発支援助成金</title>
+    <link>https://jpcite.com/programs/jinzai-kaihatsushien-joseikin-7dddd9.html</link>
+    <description>Tier A / 東京都 / 厚生労働省 / subsidy / 上限 1,000万円 出典: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/kyufukin/d01-1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-08c8a33792</guid>
+    <pubDate>Fri, 24 Apr 2026 08:53:50 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>消防法 危険物製造所・貯蔵所・取扱所 許可</title>
+    <link>https://jpcite.com/programs/shoubouhou-kikenbutsu-seizousho-chozou-tokoro-toriatsukai-0e5072.html</link>
+    <description>Tier C / 東京都 / 市町村長（消防長）。政令指定都市等は消防局 出典: https://www.tfd.metro.tokyo.lg.jp/drs/ss_11/001.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-02e5f2e8f5</guid>
+    <pubDate>Thu, 23 Apr 2026 22:10:42 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>毒物劇物営業者 登録（製造業・輸入業・販売業）</title>
+    <link>https://jpcite.com/programs/dokubutsu-gekibutsu-eigyousha-touroku-seizougyou-yunyuu-addb16.html</link>
+    <description>Tier C / 東京都 / 都道府県（製造業・輸入業は厚生労働大臣） 出典: https://www.hokeniryo.metro.tokyo.lg.jp/anzen/iyaku/sonota/d_g/shiken</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7ccc8c1fff</guid>
+    <pubDate>Thu, 23 Apr 2026 22:10:42 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別法人事業税</title>
+    <link>https://jpcite.com/programs/tokubetsu-houjin-jigyouzei-b534d1.html</link>
+    <description>Tier C / 東京都 / 総務省・国税庁 出典: https://www.tax.metro.tokyo.lg.jp/kazei/work/tokubetsu_houjin</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d7badfa09f</guid>
+    <pubDate>Thu, 23 Apr 2026 22:10:42 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高度管理医療機器等販売業・貸与業許可／管理医療機器等販売業届出</title>
+    <link>https://jpcite.com/programs/koudo-kanri-iryoukiki-nado-hanbai-gyou-taiyo-gyou-kyoka-bd03fc.html</link>
+    <description>Tier C / 東京都 / 都道府県知事／保健所設置市長／特別区長(営業所所在地の保健所) 出典: https://www.hokeniryo.metro.tokyo.lg.jp/anzen/iyaku/sonota/sale_leas/kyoka</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0c70c50ae5</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>団体連携型DX人材育成推進事業</title>
+    <link>https://jpcite.com/programs/dantai-renkei-kata-dx-jinzai-ikusei-suishin-jigyou-b9d34c.html</link>
+    <description>Tier C / 東京都 / 東京都中小企業団体中央会／東京都 / 委託事業 出典: https://www.tokyochuokai.or.jp/sienseido/jyoseijigyou/dxzinzai.html</description>
+    <category>委託事業</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-23f7557c03</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中央卸売市場 DX活用 市場業務効率化プロジェクト</title>
+    <link>https://jpcite.com/programs/toukyouto-chuuou-oroshiuri-shijou-dx-katsuyou-shijou-gyoumu-e90082.html</link>
+    <description>Tier C / 東京都 / 東京都（シン・トセイ 構造改革推進チーム） 出典: https://shintosei.metro.tokyo.lg.jp/leading-project/leading-project-leading-project-59/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-24e12787eb</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都 不燃化特区制度(木密地域不燃化10年プロジェクト後継)</title>
+    <link>https://jpcite.com/programs/toukyouto-funenka-tokku-seido-ki-mitsu-chiiki-funenka-10-7c4ebb.html</link>
+    <description>Tier C / 東京都 / 東京都都市整備局 出典: https://www.funenka.metro.tokyo.lg.jp/initiatives/fireproof-special-zone-system/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-261064da27</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別管理産業廃棄物管理責任者制度</title>
+    <link>https://jpcite.com/programs/tokubetsu-kanri-sangyouhaikibutsu-kanrisekininsha-seido-0e03b9.html</link>
+    <description>Tier C / 東京都 / 環境省 出典: https://www.kankyo.metro.tokyo.lg.jp/resource/industrial_waste/special_management/plan/plan</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2ae9cead10</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>練馬区住宅の耐震改修工事等助成</title>
+    <link>https://jpcite.com/programs/nerimaku-juutaku-no-taishin-kaishuukouji-nado-josei-0de094.html</link>
+    <description>Tier C / 東京都 / 東京都練馬区都市整備部 出典: https://www.city.nerima.tokyo.jp/kurashi/sumai/takuchi/taishin/kodate.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2b09b76dd8</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都ソーシャルファーム認証制度</title>
+    <link>https://jpcite.com/programs/toukyouto-soosharufaamu-ninshou-seido-8f73d5.html</link>
+    <description>Tier C / 東京都 / 東京都 産業労働局 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/documents/d/sangyo-rodo/shishin_2</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3256b2d980</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>登録販売者 (薬機法上の資格)</title>
+    <link>https://jpcite.com/programs/touroku-hanbai-mono-kusuri-kihou-ueno-shikaku-cbc79c.html</link>
+    <description>Tier C / 東京都 / 都道府県 / 厚生労働省 医薬・生活衛生局 出典: https://www.hokeniryo.metro.tokyo.lg.jp/anzen/iyaku/tourokushiken</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3995509b8c</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度 アニメ等コンテンツを活用した誘客促進事業 (東京都)</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-anime-nado-kontentsu-wo-katsuyou-shita-1c2631.html</link>
+    <description>Tier C / 東京都 / 東京都産業労働局観光部振興課 出典: https://www.sangyo-rodo.metro.tokyo.lg.jp/tourism/kakusyu/anime</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3addbf067b</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>密集市街地整備（密集法）/ 防災街区整備地区計画 / 不燃化特区</title>
+    <link>https://jpcite.com/programs/misshuu-shigaichi-seibi-misshuu-hou-bousai-gaiku-seibi-6a608d.html</link>
+    <description>Tier C / 東京都 / 国土交通省 住宅局 市街地建築課 出典: https://www.funenka.metro.tokyo.lg.jp/initiatives/disaster-prevention-block/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-57c1300487</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>台東区 住宅宿泊事業の運営に関する条例</title>
+    <link>https://jpcite.com/programs/taitouku-juutaku-shukuhaku-jigyou-no-un-ei-ni-kansu-ru-daf74c.html</link>
+    <description>Tier C / 東京都 / 台東区 生活衛生課 出典: https://www.city.taito.lg.jp/kenchiku/jutaku/eisei/jutakulaw/minpanku20180613_003.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-690e90188c</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>自転車 ながら運転罰則化 (改正道路交通法)</title>
+    <link>https://jpcite.com/programs/jitensha-nagara-unten-bassoku-ka-kaisei-dourokoutsuuhou-b1ff5e.html</link>
+    <description>Tier C / 東京都 / 警察庁 出典: https://www.seikatubunka.metro.tokyo.lg.jp/tomin_anzen/kotsu/topics-k/0000002520</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6972895ce3</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>違反者講習・停止処分者講習・取消処分者講習</title>
+    <link>https://jpcite.com/programs/ihansha-koushuu-teishishobun-mono-koushuu-torikeshishobun-c0d848.html</link>
+    <description>Tier C / 東京都 / 都道府県公安委員会 出典: https://www.keishicho.metro.tokyo.lg.jp/menkyo/koshu/koshu/koshu04.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6a38891f16</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>団体連携型事業承継支援事業</title>
+    <link>https://jpcite.com/programs/dantai-renkei-kata-jigyou-shoukei-shien-jigyou-568c40.html</link>
+    <description>Tier C / 東京都 / 東京都中小企業団体中央会／東京都 / 委託事業 出典: https://www.tokyochuokai.or.jp/sienseido/jyoseijigyou/dantairenkeigatajigyoshokeisien.html</description>
+    <category>委託事業</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6c1872bb17</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>化粧品製造業許可 (一般区分 / 包装・表示・保管区分)</title>
+    <link>https://jpcite.com/programs/keshouhin-seizougyou-kyoka-ippan-kubun-housou-hyouji-hokan-9197e6.html</link>
+    <description>Tier C / 東京都 / 都道府県薬務主管部 (機能的には厚生労働省医薬・生活衛生局) 出典: https://www.tmiph.metro.tokyo.lg.jp/k_yakuji/i-sinsa/cosmetics/shinsei/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-76dbcd4219</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>深夜酒類提供飲食店営業開始届出</title>
+    <link>https://jpcite.com/programs/shinya-sakerui-teikyou-inshokuten-eigyoukaishi-todokede-676942.html</link>
+    <description>Tier C / 東京都 / 都道府県公安委員会 / 警察署 出典: https://www.keishicho.metro.tokyo.lg.jp/tetsuzuki/fuzoku/style/style3.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7b39523e52</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都中央卸売市場 11市場体制</title>
+    <link>https://jpcite.com/programs/toukyouto-chuuou-oroshiuri-shijou-11-shijou-taisei-860779.html</link>
+    <description>Tier C / 東京都 / 東京都（開設者）、農林水産大臣（認定） 出典: https://www.shijou.metro.tokyo.lg.jp/info</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7f0b7bbfb9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京都水道スマートメータ先行実装プロジェクト (2030年代全戸)</title>
+    <link>https://jpcite.com/programs/toukyouto-suidou-sumaatomeeta-senkou-jissou-purojiekuto-69ee89.html</link>
+    <description>Tier C / 東京都 / 東京都 水道局 出典: https://www.waterworks.metro.tokyo.lg.jp/suidojigyo/torikumi/smartmeter_trialproject.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8cf68ea64a</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 東京都 子供食堂推進事業 (区市町村補助)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-toukyouto-kodomo-shokudou-suishin-jigyou-8c100e.html</link>
+    <description>Tier C / 東京都 / 東京都 (地方自治体) 出典: https://www.fukushi.metro.tokyo.lg.jp/kodomo/kosodate/kodomoshokudou</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8ddc00fc92</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 燃料電池自動車用水素供給設備整備事業 (東京都)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-nenryou-denchi-jidoushayou-suiso-kyoukyuu-866311.html</link>
+    <description>Tier C / 東京都 / 東京都 産業労働局 出典: https://www.tokyo-co2down.jp/subsidy/hydrogen_sup/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-93b797cff4</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>健康サポート薬局 (平成28年告示29号)</title>
+    <link>https://jpcite.com/programs/kenkou-sapooto-yakkyoku-heisei-28-nen-kokuji-29-gou-7eacf8.html</link>
+    <description>Tier C / 東京都 / 厚生労働省 医薬・生活衛生局 出典: https://www.hokeniryo.metro.tokyo.lg.jp/anzen/iyaku/kakaritsuke/support.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-997f469f89</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊洲市場 取扱量（水産・青果）</title>
+    <link>https://jpcite.com/programs/toyosu-shijou-toriatsukai-ryou-suisan-seika-b99a06.html</link>
+    <description>Tier C / 東京都 / 東京都中央卸売市場 豊洲市場 出典: https://www.shijou.metro.tokyo.lg.jp/info/0/toyosu/facility</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a0c253f7f4</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>違反点数制度・行政処分</title>
+    <link>https://jpcite.com/programs/ihan-tensuuseido-gyouseishobun-212114.html</link>
+    <description>Tier C / 東京都 / 都道府県公安委員会 出典: https://www.keishicho.metro.tokyo.lg.jp/menkyo/torishimari/gyosei/seido/gyosei20.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a5670d92a9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新宿区 住宅宿泊事業条例</title>
+    <link>https://jpcite.com/programs/shinjukuku-juutaku-shukuhaku-jigyou-jourei-8dbab8.html</link>
+    <description>Tier C / 東京都 / 新宿区 健康部 衛生課 住宅宿泊事業担当 出典: https://www.city.shinjuku.lg.jp/kenkou/eisei03_002086.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a5ce1b1dfb</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>自転車ヘルメット着用努力義務化 (全国民対象)</title>
+    <link>https://jpcite.com/programs/jitensha-herumetto-chakuyou-doryokugimu-ka-zenkokumin-4b1e19.html</link>
+    <description>Tier C / 東京都 / 警察庁 出典: https://www.keishicho.metro.tokyo.lg.jp/kotsu/jikoboshi/bicycle/menu/helmet.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a696a0b6a4</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>化粧品 全成分表示義務化 (2001年4月)</title>
+    <link>https://jpcite.com/programs/keshouhin-zenseibun-hyoujigimu-ka-2001-nen-4-gatsu-c1a55c.html</link>
+    <description>Tier C / 東京都 / 厚生労働省 医薬・生活衛生局 出典: https://www.tmiph.metro.tokyo.lg.jp/k_yakuji/i-kanshi/c_label/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b046ee9836</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 地域のサステナブル・ツーリズム推進助成金(東京都)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chiiki-no-sasutenaburu-tsuurizumu-suishin-be5ab5.html</link>
+    <description>Tier C / 東京都 / 東京都(観光庁連携) 出典: https://www.tokyotourism-onestop.jp/shien/detail/6_3.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bcc82e34f3</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>明日にチャレンジ中小企業基盤強化事業（小規模企業区分）</title>
+    <link>https://jpcite.com/programs/ashita-ni-charenji-chuushoukigyou-kiban-kyouka-jigyou-03363b.html</link>
+    <description>Tier C / 東京都 / 東京都中小企業団体中央会／東京都 / 助成金 / 上限 1,000万円 出典: https://www.tokyochuokai.or.jp/sienseido/jyoseijigyou/asuchare.html</description>
+    <category>助成金</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bed0694915</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

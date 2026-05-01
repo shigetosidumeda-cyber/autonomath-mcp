@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 岩手県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/iwate.xml" rel="self" type="application/rss+xml" />
+  <description>岩手県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>岩手県 - 中小企業被災資産復旧事業費補助</title>
+    <link>https://jpcite.com/programs/iwateken-chuushoukigyou-hisai-shisan-fukkyuu-jigyou-hi-hojo-4fc0b5.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/sangyoukoyou/sangyoushinkou/shinjigyou/shien/1009043.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-04f1c262c1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 沿岸地域基幹産業人材確保支援事業費補助金（DX推進事業）</title>
+    <link>https://jpcite.com/programs/iwateken-engan-chiiki-kikan-sangyou-jinzai-kakuho-shien-d4c868.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/shinsaifukkou/nariwai/sonota/1053501.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-12733e6fd2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 文化スポーツ部</title>
+    <link>https://jpcite.com/programs/iwateken-bunka-supootsu-bu-908f7f.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/1012253/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1a898e6e51</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 岩手県事業復興型雇用確保助成金【雇入費】（令和7年度版）</title>
+    <link>https://jpcite.com/programs/iwateken-iwateken-jigyou-fukkou-kata-koyou-kakuho-joseikin-7f1eb5.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy / 上限 120万円 出典: https://www.pref.iwate.jp/sangyoukoyou/koyouroudou/koyou/1017342/1081768.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-292ba0d8aa</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 雇用関係の支援</title>
+    <link>https://jpcite.com/programs/iwateken-koyou-kankei-no-shien-e76aa5.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/engan/keiei/1072771/shien/1013971.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-48e0d15df7</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 【終了しました】令和7年度水産加工業連携新活動促進事業費補助金の公募</title>
+    <link>https://jpcite.com/programs/iwateken-shuuryou-shimashita-reiwa-7-nendo-suisan-kakou-f748c2.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/sangyoukoyou/sangyoushinkou/shoku/1074015.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-61e820c43e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 企業経営に関する各種相談窓口</title>
+    <link>https://jpcite.com/programs/iwateken-kigyoukeiei-ni-kansu-ru-kakushu-soudanmadoguchi-2dddb7.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/engan/keiei/1072771/shien/1070039.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-772f740ebb</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 県土整備部</title>
+    <link>https://jpcite.com/programs/iwateken-kendo-seibi-bu-02c85b.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/kendoseibi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-86a0f23ac1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - ふるさと振興部</title>
+    <link>https://jpcite.com/programs/iwateken-furusato-shinkou-bu-0ba329.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/1012245/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8ba08727d5</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 復興防災部</title>
+    <link>https://jpcite.com/programs/iwateken-fukkou-bousai-bu-62dd1d.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/1012306/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8e8d7924bb</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 補助金・助成金</title>
+    <link>https://jpcite.com/programs/iwateken-hojokin-joseikin-21038f.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/engan/keiei/1072771/shien/1013973.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-935109798b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 岩手県事業復興型雇用確保助成金【住宅支援費】（令和7年度版）</title>
+    <link>https://jpcite.com/programs/iwateken-iwateken-jigyou-fukkou-kata-koyou-kakuho-joseikin-e2aa94.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/sangyoukoyou/koyouroudou/koyou/1017342/1085483.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9d8a641265</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 事業者向け支援情報</title>
+    <link>https://jpcite.com/programs/iwateken-jigyousha-muke-shien-jouhou-58992c.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/engan/keiei/1072771/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b1f2734e0c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 環境生活部</title>
+    <link>https://jpcite.com/programs/iwateken-kankyou-seikatsu-bu-194e8b.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/kankyo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b257a90a50</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 岩手県制度融資</title>
+    <link>https://jpcite.com/programs/iwateken-iwateken-seido-yuushi-6d1668.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/engan/keiei/1072771/shien/1013974.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-be15c546a8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 教育委員会事務局</title>
+    <link>https://jpcite.com/programs/iwateken-kyouikuiinkai-jimukyoku-a7c2f0.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/kyouiku/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bfa8fa5059</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 保健福祉部</title>
+    <link>https://jpcite.com/programs/iwateken-hoken-fukushi-bu-2dfec6.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/hokenfukushi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d2f91f17b2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 商工労働観光部</title>
+    <link>https://jpcite.com/programs/iwateken-shoukou-roudou-kankou-bu-2c50ad.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/shoko/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d5309f143e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 補助・融資</title>
+    <link>https://jpcite.com/programs/iwateken-hojo-yuushi-c1d59b.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d8c40f6035</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 - 農林水産部</title>
+    <link>https://jpcite.com/programs/iwateken-nourinsuisan-bu-42d95c.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/nourin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d9f06dd236</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 物価高騰対策賃上げ支援金のお知らせ</title>
+    <link>https://jpcite.com/programs/iwateken-bukkadaka-tou-taisaku-chin-age-shien-kin-noo-ef91aa.html</link>
+    <description>Tier B / 岩手県 / 岩手県 / subsidy / 上限 400万円 出典: https://iwate-bukkakoutoutaisaku.pref.iwate.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e31307807d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域支援制度</title>
+    <link>https://jpcite.com/programs/chiiki-shien-seido-1173f1.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/kurashikankyou/chiiki/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-04978b0c2c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>復興防災部</title>
+    <link>https://jpcite.com/programs/fukkou-bousai-bu-7dd4b1.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/1012306/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-096f976e41</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度インバウンドプロモーション支援事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-inbaundopuromooshon-shien-jigyou-hojokin-fd78e3.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/sangyoukoyou/kankou/1098279.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0cd6593693</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>支援する</title>
+    <link>https://jpcite.com/programs/shien-suru-ae80af.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/shinsaifukkou/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1b36c2400b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>県土整備部</title>
+    <link>https://jpcite.com/programs/kendo-seibi-bu-f56e02.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/kendoseibi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-20d03c5b39</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ふるさと振興部</title>
+    <link>https://jpcite.com/programs/furusato-shinkou-bu-ab272f.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/1012245/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3a3e198192</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境生活部</title>
+    <link>https://jpcite.com/programs/kankyou-seikatsu-bu-2597cc.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/kankyo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3d6eb750db</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いわて若者U・Iターン支援金（令和8年4月開始）について</title>
+    <link>https://jpcite.com/programs/iwate-wakamono-u-i-taan-shien-kin-reiwa-8-nen-4-gatsu-856df1.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/kurashikankyou/1021252/1094831.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-42276c46dc</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助・融資</title>
+    <link>https://jpcite.com/programs/hojo-yuushi-4bd34c.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / loan 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/index.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4ccadce41c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商工労働観光部</title>
+    <link>https://jpcite.com/programs/shoukou-roudou-kankou-bu-3497d5.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/shoko/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4d0006c28e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>保健福祉部</title>
+    <link>https://jpcite.com/programs/hoken-fukushi-bu-d7a68e.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/hokenfukushi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4f8ed72987</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>教育委員会事務局</title>
+    <link>https://jpcite.com/programs/kyouikuiinkai-jimukyoku-26bd43.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/kyouiku/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-907c208940</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>NPO等による復興支援事業</title>
+    <link>https://jpcite.com/programs/npo-nado-niyoru-fukkou-shien-jigyou-1d2b47.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/kurashikankyou/npo/fukkoushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a098cac712</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【県外からU・Iターンする若者を応援！】いわて若者U・Iターン支援金（令和8年4月開始）</title>
+    <link>https://jpcite.com/programs/kengai-kara-u-i-taan-suru-wakamono-wo-ouen-iwate-wakamono-u-4b1424.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/kurashikankyou/1021252/1094831.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b6779a1e43</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住支援金の対象法人を募集しています！【U・Iターン人材をお探しの法人様必見！】</title>
+    <link>https://jpcite.com/programs/ijuu-shien-kin-no-taishou-houjin-wo-boshuu-shiteimasu-u-i-31bd8c.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/kurashikankyou/1021252/1086042.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cfb2f067b8</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子育て支援・制度</title>
+    <link>https://jpcite.com/programs/kosodate-shien-seido-4766b6.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/kurashikankyou/kosodate/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-de57c9f8ec</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（東京23区在勤者向け）移住支援金募集チラシ （PDF 1.6MB）</title>
+    <link>https://jpcite.com/programs/toukyou-23-ku-zaikin-mono-muke-ijuu-shien-kin-boshuu-0388f5.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/_res/projects/default_project/_page_/001/019/670/izyuusiennkinntirashi.pdf</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e57cc2e729</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地方就職支援金の支給</title>
+    <link>https://jpcite.com/programs/chihou-shuushoku-shien-kin-no-shikyuu-6cd2d9.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / support 出典: https://www.pref.iwate.jp/kurashikankyou/1021252/1074823.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e893c58d8a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農林水産部</title>
+    <link>https://jpcite.com/programs/nourinsuisan-bu-8a62b0.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/nourin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ed99865007</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>文化スポーツ部</title>
+    <link>https://jpcite.com/programs/bunka-supootsu-bu-15ff70.html</link>
+    <description>Tier A / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/kensei/tetsuzuki/hojo/1012253/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fb16e9b57a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>JFC 令和8年岩手県大槌町林野火災 災害特例相談</title>
+    <link>https://jpcite.com/programs/jfc-reiwa-8-nen-iwateken-ootsuchi-machi-rinya-kasai-saigai-6e5aa1.html</link>
+    <description>Tier B / 岩手県 / 日本政策金融公庫 (JFC) / consulting 出典: https://www.jfc.go.jp/n/finance/saftynet/202604saigai.html</description>
+    <category>consulting</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-162fcace3a</guid>
+    <pubDate>Sat, 25 Apr 2026 03:48:03 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県商工会連合会 補助金・助成金 案内ハブ（岩手県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/iwateken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-3dac41.html</link>
+    <description>Tier B / 岩手県 / 岩手県商工会連合会 / directory 出典: http://www.shokokai.com/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6779e2d91c</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:18 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>花巻市新規就農者支援事業（初期費用補助）</title>
+    <link>https://jpcite.com/programs/hanamaki-shi-shinki-shuunou-mono-shien-jigyou-shoki-hiyou-9f2376.html</link>
+    <description>Tier C / 岩手県 / 市町村 / subsidy / 上限 80万円 出典: https://www.city.hanamaki.iwate.jp/business/norinchikusan/1019921/1008477/1002376.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3a2d80cf48</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県水道広域化推進プラン (5圏域 1.15兆円赤字見込)</title>
+    <link>https://jpcite.com/programs/iwateken-suidou-kouiki-ka-suishin-puran-5-ken-iki-1-15-427e96.html</link>
+    <description>Tier C / 岩手県 / 岩手県 (環境生活部・保健福祉部) 出典: https://www.pref.iwate.jp/kurashikankyou/anzenanshin/suido/1044336/1060439.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-37fea66462</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県 過疎地域等における県税の課税免除に関する条例</title>
+    <link>https://jpcite.com/programs/iwateken-kaso-chiiki-nado-niokeru-kenzei-no-kazei-menjo-ni-f35591.html</link>
+    <description>Tier C / 岩手県 / 岩手県 / tax_reduction_by_ordinance 出典: https://www.pref.iwate.jp/kensei/zei/genmen/1048172.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cc4be40f5d</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県中小企業者等賃上げ環境整備支援事業費補助金</title>
+    <link>https://jpcite.com/programs/iwateken-chuushoukigyou-mono-nado-chin-age-kankyouseibi-21d098.html</link>
+    <description>Tier C / 岩手県 / 岩手県商工労働観光部経営支援課 / subsidy 出典: https://www.pref.iwate.jp/kensei/nyuusatsu/1010807/1066780.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-324ca7009b</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県物価高騰対策賃上げ支援金</title>
+    <link>https://jpcite.com/programs/iwateken-bukkadaka-tou-taisaku-chin-age-shien-kin-2e31f4.html</link>
+    <description>Tier C / 岩手県 / 岩手県商工労働観光部経営支援課 / subsidy / 上限 400万円 出典: https://iwate-bukkakoutoutaisaku.pref.iwate.jp</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-719114c09a</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さんりく基金助成事業</title>
+    <link>https://jpcite.com/programs/sanriku-kikin-josei-jigyou-064abf.html</link>
+    <description>Tier C / 岩手県 / 岩手県沿岸広域振興局 / subsidy 出典: https://www.pref.iwate.jp/engan/keiei/1096045.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7cb6b09791</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県地球温暖化対策・脱炭素化補助金</title>
+    <link>https://jpcite.com/programs/iwateken-chikyuuondanka-taisaku-dattan-moto-ka-hojokin-1200c9.html</link>
+    <description>Tier C / 岩手県 / 岩手県 / subsidy 出典: https://www.pref.iwate.jp/engan/keiei/1077763/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-80675faaed</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手県中小企業融資制度</title>
+    <link>https://jpcite.com/programs/iwateken-chuushoukigyou-yuushi-seido-f5f613.html</link>
+    <description>Tier C / 岩手県 / 岩手県商工労働観光部経営支援課 / loan 出典: https://www.pref.iwate.jp/engan/keiei/1072771/shien/1013973.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-909988a278</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八幡平市親元就農支援金</title>
+    <link>https://jpcite.com/programs/hachimantai-shi-oyamoto-shuunou-shien-kin-f2fb79.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 50万円 出典: https://www.city.hachimantai.lg.jp/soshiki/nourin/22544.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0100f40d46</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手町農業経営基盤強化資金利子補給補助金交付要綱</title>
+    <link>https://jpcite.com/programs/iwate-machi-nougyou-keiei-kiban-kyouka-shikin-rishi-hokyuu-2a3344.html</link>
+    <description>Tier C / 岩手県 / 岩手県岩手町 / subsidy 出典: https://www.town.iwate.iwate.jp/reiki/reiki_honbun/c117RG00000384.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-08b801f05d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>盛岡市親元就農給付金</title>
+    <link>https://jpcite.com/programs/moriokashi-oyamoto-shuunou-kyuufukin-a93d3c.html</link>
+    <description>Tier B / 岩手県 / subsidy / 上限 150万円 出典: https://www.city.morioka.iwate.jp/jigyousha/1026070/nogyo/1040781.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0bf339b151</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いちのせき子育て農業者応援事業補助金</title>
+    <link>https://jpcite.com/programs/ichinoseki-kosodate-nougyou-mono-ouen-jigyou-hojokin-57cc0a.html</link>
+    <description>Tier A / 岩手県 / subsidy / 上限 250万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/1,1108,c,html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-10ffe70514</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>意欲ある農業担い手支援事業（家賃補助）</title>
+    <link>https://jpcite.com/programs/iyoku-aru-nougyou-ninaite-shien-jigyou-yachinhojo-a4de21.html</link>
+    <description>Tier B / 岩手県 / subsidy / 上限 48万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/1,1152,c,html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17f7f0f78f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手町地域農業マスタープラン実践支援事業補助金</title>
+    <link>https://jpcite.com/programs/iwate-chouchi-iki-nougyou-masutaapuran-jissen-shien-jigyou-047f69.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） 出典: https://www.town.iwate.iwate.jp/reiki/reiki_honbun/c117RG00000922.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-19540a296d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>盛岡市 スマート農業導入促進事業</title>
+    <link>https://jpcite.com/programs/moriokashi-sumaato-nougyou-dounyuu-sokushin-jigyou-bc2696.html</link>
+    <description>Tier B / 岩手県 / 市町村 / subsidy / 上限 120万円 出典: https://www.city.morioka.iwate.jp/jigyousha/1026070/nogyo/1047993/1039717.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1e12e014b9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>陸前高田市特産振興作物生産施設補助</title>
+    <link>https://jpcite.com/programs/rikuzentakata-shi-tokusan-shinkou-sakumotsu-seisan-shisetsu-939a74.html</link>
+    <description>Tier B / 岩手県 / subsidy / 上限 50万円 出典: https://www.city.rikuzentakata.iwate.jp/soshiki/norinka/noseigakari/1/1/2/2579.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-200ba1a79b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八幡平市中干プロジェクト</title>
+    <link>https://jpcite.com/programs/hachimantai-shichuu-kan-purojiekuto-34f099.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.hachimantai.lg.jp/soshiki/norinkabu/nakaboshi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-22457ef553</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業用施設等維持改良事業補助金</title>
+    <link>https://jpcite.com/programs/nougyouyou-shisetsutou-iji-kairyou-jigyou-hojokin-ce54be.html</link>
+    <description>Tier C / 岩手県 / 岩手県盛岡市 / subsidy 出典: https://www.city.morioka.iwate.jp/jigyousha/1026070/nogyo/1008189.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-25836f09a8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>株式会社一戸夢ファーム 新規就農研修プログラム</title>
+    <link>https://jpcite.com/programs/kabushikigaisha-ichinohe-yume-faamu-shinki-shuunou-kenshuu-6c0b6f.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） 出典: https://www.town.ichinohe.iwate.jp/soshikikarasagasu/norinka/nogyoshinkogakari/1_1/793.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-266ce02c77</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>一戸町エネルギー価格高騰対策設備等導入支援補助金</title>
+    <link>https://jpcite.com/programs/ichinohe-machi-enerugii-kakaku-koutou-taisaku-setsubi-nado-34871e.html</link>
+    <description>Tier B / 岩手県 / 岩手県一戸町 / subsidy / 上限 100万円 出典: https://www.town.ichinohe.iwate.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2d6b61c48f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業次世代人材投資事業交付金（経営開始型）</title>
+    <link>https://jpcite.com/programs/nougyou-jisedai-jinzai-toushi-jigyou-koufukin-keiei-kaishi-8ab994.html</link>
+    <description>Tier C / 岩手県 / 岩手県一関市 / subsidy / 上限 150万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/29,70818,84,html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2d90e0a40d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>美食王国もりおかイノベーション事業補助金</title>
+    <link>https://jpcite.com/programs/bishoku-oukoku-morioka-inobeeshon-jigyou-hojokin-a2f246.html</link>
+    <description>Tier C / 岩手県 / 岩手県盛岡市 / subsidy / 上限 240万円 出典: https://www.city.morioka.iwate.jp/_res/projects/default_project/_page_/001/051/230/innovation_yoryo.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-36a736c953</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業者年金</title>
+    <link>https://jpcite.com/programs/nougyou-mono-nenkin-255f29.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.hanamaki.iwate.jp/nougyouiinkai/1002386.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3744fd94a7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>一関市新規学卒者等就農促進支援事業</title>
+    <link>https://jpcite.com/programs/ichinoseki-shi-shinki-gakusotsu-mono-nado-shuunou-sokushin-86c351.html</link>
+    <description>Tier A / 岩手県 / training / 上限 100万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/29,70818,84,841,html</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3e69be6ff3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-032018-002_盛岡市_スマート農業導入促進事業</title>
+    <link>https://jpcite.com/programs/mun-032018-002-moriokashi-sumaato-nougyou-dounyuu-sokushin-8ba0ac.html</link>
+    <description>Tier B / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.morioka.iwate.jp/jigyousha/1026070/nogyo/1047993/1039717.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3f3f4787ca</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>洋野町園芸作物出荷資材価格高騰対策交付金</title>
+    <link>https://jpcite.com/programs/hirono-machi-engei-sakumotsu-shukka-shizai-kakaku-koutou-0e973b.html</link>
+    <description>Tier C / 岩手県 / 岩手県洋野町 / subsidy 出典: https://www.town.hirono.iwate.jp/material/files/group/8/2024engei_shukka.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3fad07c916</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市民農園利用制度</title>
+    <link>https://jpcite.com/programs/shimin-nouen-riyou-seido-54b571.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.miyako.iwate.jp/sangyou/shiminnouen.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-40ad5b0b82</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八幡平市地域協働型有害鳥獣駆除活動費補助金</title>
+    <link>https://jpcite.com/programs/hachimantai-shi-chiiki-kyoudou-kata-yuugai-choujuu-kujo-3102aa.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 250万円 出典: https://www.city.hachimantai.lg.jp/soshiki/norinkabu/chikyo-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-460b907c79</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>森林作業道開設事業補助金</title>
+    <link>https://jpcite.com/programs/shinrin-sagyoudou-kaisetsu-jigyou-hojokin-7bee80.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 250万円 出典: https://www.city.hanamaki.iwate.jp/sangyo/1011097.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4b2cbfff9c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>りんごわい化栽培促進事業</title>
+    <link>https://jpcite.com/programs/ringowai-ka-saibai-sokushin-jigyou-d45feb.html</link>
+    <description>Tier B / 岩手県 / 岩手県盛岡市 / subsidy 出典: https://www.city.morioka.iwate.jp/jigyousha/1026070/nogyo/1008179.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4d53ac05f5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者経営確立支援事業費補助金交付事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-keiei-kakuritsu-shien-jigyou-hi-hojokin-dd55c1.html</link>
+    <description>Tier B / 岩手県 / （noukaweb 収集） / 上限 70万円 出典: https://www.town.ichinohe.iwate.jp/soshikikarasagasu/norinka/nogyoshinkogakari/1_1/780.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4db23c6ad8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市設置型浄化槽事業・個人設置型浄化槽事業</title>
+    <link>https://jpcite.com/programs/shisetsu-chi-kata-joukasou-jigyou-kojin-setchi-kata-8de657.html</link>
+    <description>Tier B / 岩手県 / 岩手県八幡平市 / subsidy / 上限 103万円 出典: https://www.city.hachimantai.lg.jp/soshiki/jogesuika/16777.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4e5b6e3608</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>花巻市農業用ロボット・情報通信技術（スマート農業）機械導入支援事業</title>
+    <link>https://jpcite.com/programs/hanamaki-shi-nougyouyou-robotto-jouhoutsuushin-gijutsu-0ee1fd.html</link>
+    <description>Tier B / 岩手県 / 農林水産省 / subsidy / 上限 100万円 出典: https://www.city.hanamaki.iwate.jp/business/norinchikusan/1000249/1000168/1012522.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4f6a74ab7f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者経営確立支援事業費補助金交付事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-keiei-kakuritsu-shien-jigyou-hi-hojokin-c4be4d.html</link>
+    <description>Tier A / 岩手県 / 岩手県一戸町 / subsidy / 上限 70万円 出典: https://www.town.ichinohe.iwate.jp/soshikikarasagasu/norinka/nogyoshinkogakari/1_1/780.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5ae046752d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-032018-001_盛岡市_親元就農給付金</title>
+    <link>https://jpcite.com/programs/mun-032018-001-moriokashi-oyamoto-shuunou-kyuufukin-1a507f.html</link>
+    <description>Tier B / 岩手県 / subsidy / 上限 150万円 出典: https://www.city.morioka.iwate.jp/jigyousha/1026070/nogyo/1040781.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5c37e16faa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>りんごわい化栽培促進事業</title>
+    <link>https://jpcite.com/programs/ringowai-ka-saibai-sokushin-jigyou-ccde45.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） 出典: https://www.city.morioka.iwate.jp/jigyousha/1026070/nogyo/1008179.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5fa491d55d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>花巻市新規就農者支援事業（初期費用補助）</title>
+    <link>https://jpcite.com/programs/hanamaki-shi-shinki-shuunou-mono-shien-jigyou-shoki-hiyou-62ef5c.html</link>
+    <description>Tier B / 岩手県 / subsidy / 上限 80万円 出典: https://www.maff.go.jp/j/new_farmer</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6126e9e29f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八幡平市新規就農者等支援事業</title>
+    <link>https://jpcite.com/programs/hachimantai-shi-shinki-shuunou-mono-nado-shien-jigyou-c9be4e.html</link>
+    <description>Tier B / 岩手県 / （noukaweb 収集） / 上限 12万円 出典: https://www.city.hachimantai.lg.jp/soshiki/nourin/1797.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6146ea5e95</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>洋野町水洗化支援制度</title>
+    <link>https://jpcite.com/programs/hirono-machi-suisen-ka-shien-seido-19f1bb.html</link>
+    <description>Tier C / 岩手県 / 岩手県洋野町 / subsidy 出典: https://www.town.hirono.iwate.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-61f5665c83</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度一戸町住宅リフォーム支援事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ichinohe-machi-juutaku-rifoomu-shien-jigyou-c6a5e4.html</link>
+    <description>Tier B / 岩手県 / 岩手県一戸町 / subsidy / 上限 20万円 出典: https://www.town.ichinohe.iwate.jp/soshikikarasagasu/chiikiseibika/jutakuseisakukakari/2/711.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-65c33e0711</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市設置型浄化槽事業・個人設置型浄化槽事業</title>
+    <link>https://jpcite.com/programs/shisetsu-chi-kata-joukasou-jigyou-kojin-setchi-kata-583040.html</link>
+    <description>Tier B / 岩手県 / （noukaweb 収集） / 上限 103万円 出典: https://www.city.hachimantai.lg.jp/soshiki/jogesuika/16777.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6774c7dae4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手町産地パワーアップ事業費補助金</title>
+    <link>https://jpcite.com/programs/iwate-machi-sanchi-pawaaappu-jigyou-hi-hojokin-67af29.html</link>
+    <description>Tier C / 岩手県 / 岩手県岩手町 / subsidy 出典: https://www.town.iwate.iwate.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6bb866cd79</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害鳥獣による農作物等の被害防止対策</title>
+    <link>https://jpcite.com/programs/yuugai-choujuu-niyoru-nousakubutsu-nado-no-higai-60d651.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.miyako.iwate.jp/sangyou/yugaichouzyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6e2ae5a1da</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者支援（新規就農者を応援します！）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-shinki-shuunou-mono-wo-ouen-7597b8.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.miyako.iwate.jp/sangyou/shinkijunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6e78cbbd82</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手町米価下落緊急対策事業費補助金交付要綱</title>
+    <link>https://jpcite.com/programs/iwate-machi-beika-geraku-kinkyuutaisaku-jigyou-hi-hojokin-4323c6.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） 出典: https://www.town.iwate.iwate.jp/reiki/reiki_honbun/c117RG00000913.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6ed4d45c9e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>花巻市醸造技術習得支援事業補助金</title>
+    <link>https://jpcite.com/programs/hanamaki-shi-jouzou-gijutsu-shuutoku-shien-jigyou-hojokin-d58755.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 250万円 出典: https://www.city.hanamaki.iwate.jp/sangyo/1011097.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7289c42154</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いちのせき新規就農応援事業</title>
+    <link>https://jpcite.com/programs/ichinoseki-shinki-shuunou-ouen-jigyou-f184c1.html</link>
+    <description>Tier A / 岩手県 / （noukaweb 収集） 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/29,70818,c,html/70818/20230919-180847.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7580888962</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>一関市新規就農支援制度</title>
+    <link>https://jpcite.com/programs/ichinoseki-shi-shinki-shuunou-shien-seido-6fe32e.html</link>
+    <description>Tier C / 岩手県 / 岩手県一関市 / subsidy / 上限 150万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/6,0,41,html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7675abd5c4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手町農業経営基盤強化資金利子補給補助金交付要綱</title>
+    <link>https://jpcite.com/programs/iwate-machi-nougyou-keiei-kiban-kyouka-shikin-rishi-hokyuu-6dbec4.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） 出典: https://www.town.iwate.iwate.jp/reiki/reiki_honbun/c117RG00000384.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-771108670e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>心の復興交流事業補助金</title>
+    <link>https://jpcite.com/programs/kokoro-no-fukkou-kouryuu-jigyou-hojokin-fbd059.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 200万円 出典: https://www.city.rikuzentakata.iwate.jp/site/machizukuri/kokoro-fukko-r7.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7f6a622050</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>耕作放棄地解消支援</title>
+    <link>https://jpcite.com/programs/kousaku-houki-chi-kaishou-shien-01b054.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.miyako.iwate.jp/sangyou/kousaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-81b07d87b4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>陸前高田市農業用機械導入補助</title>
+    <link>https://jpcite.com/programs/rikuzentakata-shi-nougyouyou-kikai-dounyuu-hojo-842abf.html</link>
+    <description>Tier B / 岩手県 / subsidy / 上限 50万円 出典: https://www.city.rikuzentakata.iwate.jp/soshiki/norinka/noseigakari/1/1/2/2579.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-838aa6627b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>多面的機能支払交付金（岩手町）</title>
+    <link>https://jpcite.com/programs/tamenteki-kinou-shiharai-koufukin-iwate-machi-0db086.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） 出典: https://www.town.iwate.iwate.jp/reiki/reiki_honbun/c117RG00000793.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-84f8bc1646</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩手町農林業新規就業者総合支援事業補助金</title>
+    <link>https://jpcite.com/programs/iwate-machi-nouringyou-shinki-shuugyou-mono-sougou-shien-8f09d7.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） / 上限 3万円 出典: https://www.town.iwate.iwate.jp/reiki/reiki_honbun/c117RG00000891.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8c778e3f56</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>花巻市新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/hanamaki-shi-shinki-shuunou-mono-shien-jigyou-02875a.html</link>
+    <description>Tier B / 岩手県 / 岩手県花巻市 / subsidy / 上限 1万円 出典: https://www.city.hanamaki.iwate.jp/business/norinchikusan/1019921/1008477/1002376.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8c901ed391</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害鳥獣被害対策支援事業費補助金</title>
+    <link>https://jpcite.com/programs/yuugai-choujuu-higai-taisaku-shien-jigyou-hi-hojokin-53300e.html</link>
+    <description>Tier B / 岩手県 / 岩手県二戸市 / subsidy / 上限 10万円 出典: https://www.city.ninohe.lg.jp/info/3721</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8cc2864e5f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奥州市環境保全型農業直接支払交付金</title>
+    <link>https://jpcite.com/programs/oushuu-shi-kankyouhozen-kata-nougyou-chokusetsu-shiharai-65bb6e.html</link>
+    <description>Tier C / 岩手県 / （noukaweb 収集） 出典: https://www.city.oshu.iwate.jp/section/reiki_int/reiki_honbun/r204RG00000861.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8d6d79bf72</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 大阪府 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/osaka.xml" rel="self" type="application/rss+xml" />
+  <description>大阪府 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>摘 要</title>
+    <link>https://jpcite.com/programs/teki-you-6ca759.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 0万円 出典: https://www.pref.osaka.lg.jp/documents/27557/hojyokin1.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-366a724465</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>摘 要</title>
+    <link>https://jpcite.com/programs/teki-you-541845.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 3,000万円 出典: https://www.pref.osaka.lg.jp/documents/27557/r8hojokin.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3815d8ed8e</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>を検索していただきますようお願いします。 2</title>
+    <link>https://jpcite.com/programs/wo-kensaku-shiteitadakimasuyouo-negai-shimasu-2-3e85a1.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/documents/61803/r7osusumeshiensaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4909c44ba3</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>摘 要</title>
+    <link>https://jpcite.com/programs/teki-you-54d799.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 0万円 出典: https://www.pref.osaka.lg.jp/documents/27557/r6hojyokin.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-5c5711c482</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>摘 要</title>
+    <link>https://jpcite.com/programs/teki-you-390006.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 0万円 出典: https://www.pref.osaka.lg.jp/documents/27557/hojyokin.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a4b6fe82b0</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>摘 要</title>
+    <link>https://jpcite.com/programs/teki-you-a50e42.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 0万円 出典: https://www.pref.osaka.lg.jp/documents/27557/r7hojyokin.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b12959a979</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 新事業展開テイクオフ支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-shin-jigyou-tenkai-teikuofu-shien-jigyou-25ab2c.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 100万円 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/takeoffr7/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0c2d893ed3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>空の移動革命社会実装大阪ラウンドテーブル／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/sora-no-idou-kakumei-shakai-jissou-oosaka-raundoteeburu-e3724e.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/jisedai/roundtable/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1c1ff47f5e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府特別高圧電力契約者等支援金トップページ／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/oosakafu-tokubetsu-kouatsu-denryoku-keiyakusha-nado-shien-4c4462.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110070/mono/top_tokubetsukouatsu/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1d93ca788f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度 新事業展開テイクオフ支援事業（第2期）／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-shin-jigyou-tenkai-teikuofu-shien-jigyou-dai-f672ce.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/takeoffr5_2/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1e0874bef1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業の賃上げ促進支援について（令和8年度）　／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-no-chin-age-sokushin-shien-nitsuite-reiwa-8-ebf6fe.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 200万円 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/chinagepackage.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1e49ef138d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府DX推進／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/oosakafu-dx-suishin-oosakafu-oosakafu-hoomupeeji-osaka-041a08.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieishien/dxsuishin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-228d9da7b3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>組合の新たな取組み「組合チャレンジ事業」事例集／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/kumiai-no-arata-na-torikumi-kumiai-charenji-jigyou-129cf9.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 100万円 出典: https://www.pref.osaka.lg.jp/o110060/keieishien/senshinjigyou_jirei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3a101b3aeb</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業新商品購入制度／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-shinshouhin-kounyuu-seido-oosakafu-oosakafu-91c644.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieikakushin/shinshouhinkounyuu/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3a2bc6f256</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府副業・兼業人材活用促進補助金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/oosakafu-fukugyou-kengyou-jinzai-katsuyou-sokushin-hojokin-570eb6.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/koyouroudou/koyouroudou/fukugyoukengyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4207da30b8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>休業要請支援金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/kyuugyou-yousei-shien-kin-oosakafu-oosakafu-hoomupeeji-92da6d.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/kyugyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-497b321e32</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雇用促進に資する新サービス等開発支援業務／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/koyou-sokushin-ni-shisu-ru-shin-saabisu-nado-kaihatsushien-d1f2de.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o010010/kaihatsushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4b9a4c25f7</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>その他の取り組み／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/sono-hokano-torikumi-oosakafu-oosakafu-hoomupeeji-osaka-661c78.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieishien/sonohoka/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4f42c47e8f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業等経営強化法に基づく経営革新計画／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-nado-keiei-kyouka-hou-ni-motozu-ku-keiei-0925b4.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieikakushin/keieikyouka/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-5fbc87d8d5</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業カスタマーハラスメント対策促進事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-kasutamaaharasumento-taisaku-sokushin-jigyou-576f87.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/customer.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-63231b1793</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小法人・個人事業者等に対する一時支援金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushou-houjin-kojin-jigyousha-nado-ni-taisuru-ichiji-70e3e3.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieishien/shienkin/tokishienkin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-640113b2e4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度及び令和7年度 大阪代表商品販促事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-oyobi-reiwa-7-nendo-oosaka-daihyou-shouhin-c80e2d.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/daihyo_shohin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-70e40f0598</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>SDGsビジネス創出支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/sdgs-bijinesu-soushutsu-shien-jigyou-oosakafu-oosakafu-e5df6f.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieishien/businesssoushutsushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-786aa3e69b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度 新事業展開テイクオフ支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-shin-jigyou-tenkai-teikuofu-shien-jigyou-538c2b.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/takeoffr5/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7b6d450fe0</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府スキルアップ支援金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/oosakafu-sukiruappu-shien-kin-oosakafu-oosakafu-hoomupeeji-bb9179.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110100/koyotaisaku/skillup3/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7db7fbf8ab</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>V字回復に向けた新事業展開チャレンジ支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/v-ji-kaifuku-ni-muke-ta-shin-jigyou-tenkai-charenji-shien-8d74af.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/challenge/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-95be6e40db</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度 新事業展開テイクオフ支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-shin-jigyou-tenkai-teikuofu-shien-jigyou-8601a9.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 100万円 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/takeoffr6/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a54e280fac</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府運輸事業振興助成補助金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/oosakafu-unyu-jigyou-shinkou-josei-hojokin-oosakafu-19960a.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110060/keieishien/unyuhojo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a670f4d687</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>飲食店等感染症対策備品設置支援金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/inshokuten-nado-kansenshou-taisaku-bihin-setchi-shien-kin-17f1f6.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/kyouryokukin/setti.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-aca2dee49a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度 利益率向上・賃上げ支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-riekiritsu-koujou-chin-age-shien-jigyou-6702fb.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 500万円 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/rieki/riekiritur8.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b3d19a75b7</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業支援／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-shien-oosakafu-oosakafu-hoomupeeji-osaka-b82429.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/kigyoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b7231cfcea</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府スキルアップ支援金について／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/oosakafu-sukiruappu-shien-kin-nitsuite-oosakafu-oosakafu-211c9b.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110100/koyotaisaku/skillup2/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b760f87df0</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>次世代モビリティ／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/jisedai-mobiritei-oosakafu-oosakafu-hoomupeeji-osaka-312f74.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/jisedai/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b9c51184c9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和4年度 新事業展開テイクオフ支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/reiwa-4-nendo-shin-jigyou-tenkai-teikuofu-shien-jigyou-6868da.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/takeoff/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bf0893e805</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業の事業継続計画（BCP）／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-no-jigyou-keizoku-keikaku-bcp-oosakafu-37226b.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/kigyoushien/bcp/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ccbb571fe3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業者のみなさまへ／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-mono-nominasamahe-oosakafu-oosakafu-a7283e.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/kigyoushien/minasamahe/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cf26cb985d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>支援金・補助金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/shien-kin-hojokin-oosakafu-oosakafu-hoomupeeji-osaka-982914.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieishien/shienkin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d6bef3e2fa</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府中小企業従業員人材育成支援補助金について／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/oosakafu-chuushoukigyou-juugyouin-jinzai-ikusei-shien-ed5438.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy / 上限 20万円 出典: https://www.pref.osaka.lg.jp/o110110/01jinzai_jinnzaiikuseisienhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d866044c76</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>おすすめ支援策／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/osusume-shien-saku-oosakafu-oosakafu-hoomupeeji-osaka-5f8bd1.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110010/shokosomu/shiensaku/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e1ea99b4ed</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>休業要請外支援金／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/kyuugyou-yousei-soto-shien-kin-oosakafu-oosakafu-hoomupeeji-4e1bc5.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/kyouryokukin/kyugyogai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f01efbe361</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>デザイン・経営支援メールマガジン／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/dezain-keiei-shien-meerumagajin-oosakafu-oosakafu-05755b.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/mailmaga/design_keieishien_mm.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f5cd6ed723</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模事業経営支援事業／大阪府（おおさかふ）ホームページ [Osaka Prefectural Government]</title>
+    <link>https://jpcite.com/programs/shoukibo-jigyou-keiei-shien-jigyou-oosakafu-oosakafu-2ff1da.html</link>
+    <description>Tier B / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/keieishien/shoukibojigyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f81166d717</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>箕面市経営発展支援事業</title>
+    <link>https://jpcite.com/programs/minoo-shi-keiei-hatten-shien-jigyou-a215c2.html</link>
+    <description>Tier S / 大阪府 / subsidy / 上限 1,000万円 出典: https://www.city.minoh.lg.jp/nousei/shinki_shuunou_shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-245b215ccb</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>家庭支援課</title>
+    <link>https://jpcite.com/programs/katei-shien-ka-f5bd86.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/kateishien2/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-47725797e7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>支援教育課</title>
+    <link>https://jpcite.com/programs/shien-kyouikuka-17ad01.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/shienkyoiku/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-60e956af7e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営支援課</title>
+    <link>https://jpcite.com/programs/keiei-shien-ka-190d12.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/keieishien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6a547dee00</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商業振興課</title>
+    <link>https://jpcite.com/programs/shougyou-shinkou-ka-c0cacc.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/shogyoshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-74d41c1646</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>自立支援課</title>
+    <link>https://jpcite.com/programs/jiritsu-shien-ka-01c393.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/jiritsushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-77f73b1bc4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子育て支援課</title>
+    <link>https://jpcite.com/programs/kosodate-shien-ka-44b14c.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/kosodateshien2/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8ec0965422</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性相談センター</title>
+    <link>https://jpcite.com/programs/josei-soudan-sentaa-6cd1f3.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / subsidy 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/joseisodan/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a9262d38e2</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>介護支援課</title>
+    <link>https://jpcite.com/programs/kaigo-shien-ka-f4c788.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/kaigoshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ce02eddb0c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青少年支援課</title>
+    <link>https://jpcite.com/programs/seishounen-shien-ka-a95ba4.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / support 出典: https://www.pref.osaka.lg.jp/soshikikarasagasu/seisyonenshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dc16faf31e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>制度融資（信用保証付き）</title>
+    <link>https://jpcite.com/programs/seido-yuushi-shinyou-hoshou-tsuki-5f298d.html</link>
+    <description>Tier A / 大阪府 / 大阪府 / loan 出典: https://www.pref.osaka.lg.jp/kinyushien/seido001/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ed27ba6ed5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府商工会連合会 補助金・助成金 案内ハブ（大阪府 商工会連合会）</title>
+    <link>https://jpcite.com/programs/oosakafu-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-705691.html</link>
+    <description>Tier B / 大阪府 / 大阪府商工会連合会 / directory 出典: https://www.osaka-sci.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6d33ef4309</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:33 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大商 専門相談 (税務・法務・労務・知財)</title>
+    <link>https://jpcite.com/programs/daishou-senmon-soudan-zeimu-houmu-roumu-chizai-cefb5d.html</link>
+    <description>Tier B / 大阪府 / 大阪商工会議所 / consulting 出典: https://www.osaka.cci.or.jp/</description>
+    <category>consulting</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d1111079d8</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:18 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大商 ビジネススクール</title>
+    <link>https://jpcite.com/programs/daishou-bijinesusukuuru-d2a435.html</link>
+    <description>Tier B / 大阪府 / 大阪商工会議所 / training 出典: https://www.osaka.cci.or.jp/</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ffeb4c0c39</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:17 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大商 生産性向上プロジェクト</title>
+    <link>https://jpcite.com/programs/daishou-seisansei-koujou-purojiekuto-5f37d2.html</link>
+    <description>Tier B / 大阪府 / 大阪商工会議所 / support 出典: https://www.osaka.cci.or.jp/itsupo/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-873aaaba22</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:16 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大商 マル経融資 (推薦)</title>
+    <link>https://jpcite.com/programs/daishou-maru-kei-yuushi-suisen-3fb96d.html</link>
+    <description>Tier B / 大阪府 / 大阪商工会議所 / loan / 上限 2,000万円 出典: https://www.osaka.cci.or.jp/pj/a/J01010000042.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7c68f57166</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:15 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大商 持続化補助金 創業型 (申請支援)</title>
+    <link>https://jpcite.com/programs/daishou-jizoku-ka-hojokin-sougyou-kata-shinsei-shien-302ca2.html</link>
+    <description>Tier B / 大阪府 / 大阪商工会議所 / support / 上限 200万円 出典: https://www.osaka.cci.or.jp/emergency/sougyou_skjj_hjk.pdf</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1140f4d05c</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大商 持続化補助金 一般型・通常枠 (申請支援)</title>
+    <link>https://jpcite.com/programs/daishou-jizoku-ka-hojokin-ippankei-tsuujou-waku-shinsei-9ca790.html</link>
+    <description>Tier B / 大阪府 / 大阪商工会議所 / support / 上限 50万円 出典: https://www.osaka.cci.or.jp/emergency/ippan_skjj_hjk.pdf</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-07012b0209</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:12 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府 宿泊税</title>
+    <link>https://jpcite.com/programs/oosakafu-shukuhaku-zei-ab2c7f.html</link>
+    <description>Tier C / 大阪府 / 大阪府 財務部 税務局 出典: https://www.pref.osaka.lg.jp/o050040/zei/alacarte/shukuhaku.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-38f8423031</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 大阪府 子ども食堂における食の支援事業 (食品セット配付)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-oosakafu-kodomo-shokudou-niokeru-shokuno-1bc163.html</link>
+    <description>Tier C / 大阪府 / 大阪府 (地方自治体) 出典: https://www.pref.osaka.lg.jp/o090120/kosodateshien2/shokuhinnsetto/index.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7317d31137</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府パートナーシップ宣誓証明制度</title>
+    <link>https://jpcite.com/programs/oosakafu-paatonaashippu-sensei-shoumei-seido-fd2cd1.html</link>
+    <description>Tier C / 大阪府 / 大阪府 人権局 出典: https://www.pref.osaka.lg.jp/o070020/jinken/sogi_partnership/index.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9e8271a453</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪市 特区民泊 新規受付終了</title>
+    <link>https://jpcite.com/programs/oosakashi-tokku-minpaku-shinki-uketsuke-shuuryou-39eb56.html</link>
+    <description>Tier C / 大阪府 / 大阪市 経済戦略局 立地推進部 特区民泊担当 出典: https://www.city.osaka.lg.jp/keizaisenryaku/page/0000664114.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b796fa02cf</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪市中央卸売市場 3場体制</title>
+    <link>https://jpcite.com/programs/oosakashi-chuuou-oroshiuri-shijou-3-ba-taisei-54a178.html</link>
+    <description>Tier C / 大阪府 / 大阪市（開設者）、農林水産大臣（認定） 出典: https://www.city.osaka.lg.jp/shijo/page/0000389088.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c90222b900</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>濫用等のおそれのある医薬品 販売規制強化 (令和5年4月1日)</title>
+    <link>https://jpcite.com/programs/ranyou-nado-noosorenoaru-iyakuhin-hanbai-kiseikyouka-reiwa-290e79.html</link>
+    <description>Tier C / 大阪府 / 厚生労働省 医薬・生活衛生局 出典: https://www.pref.osaka.lg.jp/o100100/yakumu/odshikakumuke.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fd05206a55</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府 大規模展示商談会活用事業 (出展支援事業)</title>
+    <link>https://jpcite.com/programs/oosakafu-daikibo-tenji-shoudan-kai-katsuyou-jigyou-shutten-d01991.html</link>
+    <description>Tier C / 大阪府 / 大阪府 商工労働部 ものづくり支援課 / subsidy 出典: https://www.pref.osaka.lg.jp/o110070/mono/shuttenshien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9a1f9c34f9</guid>
+    <pubDate>Thu, 23 Apr 2026 17:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度大阪市本社機能立地促進助成金</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-oosakashi-honshakinou-ritchi-sokushin-joseikin-dad8d2.html</link>
+    <description>Tier C / 大阪府 / 大阪市経済戦略局 / subsidy / 上限 1,200万円 出典: https://www.city.osaka.lg.jp/keizaisenryaku/page/0000579368.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2cd880edf2</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪市イノベーション創出支援補助金(令和7年度)</title>
+    <link>https://jpcite.com/programs/oosakashi-inobeeshon-soushutsu-shien-hojokin-reiwa-7-nendo-dc6f3c.html</link>
+    <description>Tier C / 大阪府 / 大阪市経済戦略局産学連携部 / subsidy / 上限 200万円 出典: https://www.city.osaka.lg.jp/keizaisenryaku/page/0000642452.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-45e6913adb</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度大阪市補助金支出一覧</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-oosakashi-hojokin-shishutsu-ichiran-1f1855.html</link>
+    <description>Tier C / 大阪府 / 大阪市経済戦略局 / support 出典: https://www.city.osaka.lg.jp/keizaisenryaku/page/0000646454.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-90b36d1d35</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>事業承継・引継ぎ支援センター (商工会議所 運営 地区 多い)</title>
+    <link>https://jpcite.com/programs/jigyou-shoukei-hikitsugi-shien-sentaa-shoukoukaigisho-un-ei-520973.html</link>
+    <description>Tier C / 大阪府 / 中小企業庁 委託 × 商工会議所 (多く が 受託) / consultation 出典: https://www.osaka.cci.or.jp/keiei-soudan/</description>
+    <category>consultation</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-19f86ed675</guid>
+    <pubDate>Thu, 23 Apr 2026 14:10:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪商工会議所 金融 個別相談</title>
+    <link>https://jpcite.com/programs/oosaka-shoukoukaigisho-kinyuu-kobetsusoudan-767bee.html</link>
+    <description>Tier C / 大阪府 / 大阪商工会議所 / consultation 出典: https://www.osaka.cci.or.jp/keiei-soudan/</description>
+    <category>consultation</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b6ecdecb47</guid>
+    <pubDate>Thu, 23 Apr 2026 14:10:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府 経営安定特別相談室 (大阪商工会議所)</title>
+    <link>https://jpcite.com/programs/oosakafu-keiei-antei-tokubetsu-soudanshitsu-oosaka-771cb7.html</link>
+    <description>Tier C / 大阪府 / 大阪商工会議所 / consultation 出典: https://www.osaka.cci.or.jp/keiei-soudan/</description>
+    <category>consultation</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f7ab4b33fb</guid>
+    <pubDate>Thu, 23 Apr 2026 14:10:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度堺市中小企業デジタル化促進補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-sakaishi-chuushoukigyou-dejitaru-ka-sokushin-552eee.html</link>
+    <description>Tier C / 大阪府 / 堺市産業振興局 / subsidy / 上限 100万円 出典: https://www.city.sakai.lg.jp/sangyo/shienyuushi/dx_shien/digitalka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-083170d171</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>堺市中小企業融資制度</title>
+    <link>https://jpcite.com/programs/sakaishi-chuushoukigyou-yuushi-seido-a2cbb5.html</link>
+    <description>Tier C / 大阪府 / 堺市産業振興局 / loan 出典: https://www.city.sakai.lg.jp/sangyo/shienyuushi/chusho/yuushi/seido/index.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-51f1ea79a7</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪市中小企業サポートメニュー</title>
+    <link>https://jpcite.com/programs/oosakashi-chuushoukigyou-sapootomenyuu-6e8811.html</link>
+    <description>Tier C / 大阪府 / 大阪市経済戦略局 / support 出典: https://www.city.osaka.lg.jp/keizaisenryaku/page/0000437149.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5ee6874833</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度堺市中小企業DXリスキリング補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-sakaishi-chuushoukigyou-dx-risukiringu-hojokin-3e6235.html</link>
+    <description>Tier C / 大阪府 / 堺市産業振興局産業戦略部 / subsidy / 上限 20万円 出典: https://www.city.sakai.lg.jp/sangyo/shienyuushi/dx_shien/reskilling.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6af71a4f6d</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度堺市新事業チャレンジ支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-sakaishi-shin-jigyou-charenji-shien-hojokin-0f7d27.html</link>
+    <description>Tier C / 大阪府 / 堺市産業振興局 / subsidy / 上限 300万円 出典: https://www.city.sakai.lg.jp/sangyo/shienyuushi/chusho/proddev/monochalle.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f4b36f2082</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府事業承継補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-jigyou-shoukei-hojokin-179268.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 200万円 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-07b84794c8</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府スキルアップ支援金(その他)</title>
+    <link>https://jpcite.com/programs/oosakafu-sukiruappu-shien-kin-sono-hoka-1e55c2.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部雇用推進室 / subsidy / 上限 20万円 出典: https://www.pref.osaka.lg.jp/o110100/koyotaisaku/skillup3/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1510576830</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府中小企業特別高圧電力価格高騰対策支援金</title>
+    <link>https://jpcite.com/programs/oosakafu-chuushoukigyou-tokubetsu-kouatsu-denryoku-kakaku-22c88b.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / support_payment / 上限 200万円 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/index.html</description>
+    <category>support_payment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-15bece9349</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府DX推進事業費補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-dx-suishin-jigyou-hi-hojokin-7db56a.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 100万円 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-15d81d5319</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度ものづくりイノベーション支援プロジェクト</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-monozukuri-inobeeshon-shien-purojiekuto-c4ca17.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部中小企業支援室 / subsidy / 上限 150万円 出典: https://www.pref.osaka.lg.jp/o110070/mono/sangakukan/monoinnovation07-1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2d3068e417</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府スキルアップ支援金(運輸・建設)</title>
+    <link>https://jpcite.com/programs/oosakafu-sukiruappu-shien-kin-unyu-kensetsu-89ddee.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部雇用推進室 / subsidy 出典: https://www.pref.osaka.lg.jp/o110100/koyotaisaku/skillup3/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-37c287e2fc</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府観光振興事業補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-kankou-shinkou-jigyou-hojokin-a366a8.html</link>
+    <description>Tier C / 大阪府 / 大阪府政策企画部 / subsidy / 上限 300万円 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4b08134ae2</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府中小企業従業員人材育成支援補助金(リスキリング)</title>
+    <link>https://jpcite.com/programs/oosakafu-chuushoukigyou-juugyouin-jinzai-ikusei-shien-0d5f30.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 20万円 出典: https://www.pref.osaka.lg.jp/o110110/01jinzai_jinnzaiikuseisienhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5751070478</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模事業経営支援事業(大阪府)</title>
+    <link>https://jpcite.com/programs/shoukibo-jigyou-keiei-shien-jigyou-oosakafu-560621.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/kokibokoukai/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6c5c273f2d</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>外資系企業等進出促進補助金</title>
+    <link>https://jpcite.com/programs/gaishikei-kigyou-nado-shinshutsu-sokushin-hojokin-ff8646.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 5,000万円 出典: https://www.pref.osaka.lg.jp/o110030/ritchi/treatment/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7041824e37</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>府内投資促進補助金(大阪府)</title>
+    <link>https://jpcite.com/programs/funai-toushi-sokushin-hojokin-oosakafu-a398f0.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 50,000万円 出典: https://www.pref.osaka.lg.jp/o110030/ritchi/treatment/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-75fbe68db4</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府中小企業事業継続支援補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-chuushoukigyou-jigyou-keizoku-shien-hojokin-ac1f8f.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 200万円 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-766f9cf69c</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 新事業展開テイクオフ支援事業(生産性向上枠)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-shin-jigyou-tenkai-teikuofu-shien-jigyou-fb4d6a.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部経営支援課 / subsidy / 上限 150万円 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/takeoffr7/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9751276c42</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府商店街活性化補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-shoutengai-kasseika-hojokin-c0beb5.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 500万円 出典: https://www.pref.osaka.lg.jp/o110010/shokosomu/shiensaku/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a38d7c5d67</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府中小企業人材確保支援事業</title>
+    <link>https://jpcite.com/programs/oosakafu-chuushoukigyou-jinzai-kakuho-shien-jigyou-6059ba.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 50万円 出典: https://www.pref.osaka.lg.jp/o110010/shokosomu/zinzaikakuho2023/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a7053bc14d</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 新事業展開テイクオフ支援事業(新事業枠)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-shin-jigyou-tenkai-teikuofu-shien-jigyou-shin-3472cc.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部経営支援課 / subsidy / 上限 100万円 出典: https://www.pref.osaka.lg.jp/o110050/keieishien/takeoffr7/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c59f2e345f</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府グリーン設備投資促進補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-guriin-setsubitoushi-sokushin-hojokin-5ad63e.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 300万円 出典: https://www.pref.osaka.lg.jp/shigotosangyou/sangyoujouhou/shinenergy/hojokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cb17470d8f</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府起業家支援補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-kigyouka-shien-hojokin-7d5e43.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 200万円 出典: https://www.pref.osaka.lg.jp/shigotosangyou/kigyoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ee0a1bf8ab</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府彩都バイオベンチャー設備費補助金</title>
+    <link>https://jpcite.com/programs/oosakafu-saito-baiobenchaa-setsubihi-hojokin-a6899b.html</link>
+    <description>Tier C / 大阪府 / 大阪府商工労働部 / subsidy / 上限 1,000万円 出典: https://www.pref.osaka.lg.jp/o110030/ritchi/treatment/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fd565f363e</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府宿泊税条例 (2025年9月改定)</title>
+    <link>https://jpcite.com/programs/oosakafu-shukuhaku-zei-jourei-2025-nen-9-gatsu-kaitei-20192b.html</link>
+    <description>Tier C / 大阪府 / 大阪府 / tax_reduction_by_ordinance 出典: https://www.pref.osaka.lg.jp/o050040/zei/alacarte/shukuhakuzei-kaisei.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-132db52b74</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>国際金融都市OSAKA 構想（Web3/FinTech誘致）</title>
+    <link>https://jpcite.com/programs/kokusai-kinyuu-toshi-osaka-kousou-web3-fintech-yuuchi-e35147.html</link>
+    <description>Tier C / 大阪府 / 大阪府・大阪市（国家戦略特区連携） / subsidy 出典: https://global-financial-city-osaka.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1ef4c97153</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大阪府 競争入札参加資格 (物品・委託役務)</title>
+    <link>https://jpcite.com/programs/oosakafu-kyousounyuusatsu-sankashikaku-buppin-itaku-ekimu-9b6dbf.html</link>
+    <description>Tier C / 大阪府 / 大阪府総務部契約局 / qualification 出典: https://www.pref.osaka.lg.jp/o040100/keiyaku_2/e-itaku-shinsei/index.html</description>
+    <category>qualification</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fa6c2208b5</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

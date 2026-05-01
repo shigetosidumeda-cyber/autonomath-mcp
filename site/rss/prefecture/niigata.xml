@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 新潟県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/niigata.xml" rel="self" type="application/rss+xml" />
+  <description>新潟県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>事業概要 類型 補助率 補助上限額</title>
+    <link>https://jpcite.com/programs/jigyou-gaiyou-ruikei-hojo-ritsu-hojo-jougengaku-4e9bf9.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/uploaded/life/822399_2648785_misc.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8dcb0d09ca</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【第８回募集】LPガスを使用している中小企業を支援します（LPガス高騰対策緊急支援補助金） - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/dai-8-kai-boshuu-lp-gasu-wo-shiyoushi-teiru-chuushoukigyou-8bee62.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/lpgashojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-19e101fc08</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企業向けの若者県内就職促進奨学金返還支援事業のご案内 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/kigyou-muke-no-wakamono-kennai-shuushoku-sokushin-3d5c34.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/shigototeijyu/gakushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1d0c4e3394</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模事業経営支援事業費補助金 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/shoukibo-jigyou-keiei-shien-jigyou-hi-hojokin-niigataken-c28cc1.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyo/1224784888172.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-221b55fcfb</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度新潟県雪国型ZEH等導入促進補助金 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-niigataken-yukiguni-kata-zeh-nado-dounyuu-831405.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/kankyoseisaku/0583945.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-236b64df42</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「除雪オペレータ確保・育成支援事業補助金」について令和8年度の募集を開始します - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/josetsu-opereeta-kakuho-ikusei-shien-jigyou-hojokin-e33e91.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/dourokanri/josetsu-daitokuhozyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2774c2340f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>病院経営改善に係る「伴走型コンサルティング活用支援事業補助金」のご案内 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/byouin-keiei-kaizen-ni-kakaru-bansou-kata-konsaruteingu-aadccd.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy / 上限 5,000万円 出典: https://www.pref.niigata.lg.jp/sec/chiikiiryo/consultation2027.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-33311c68c8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県再生可能エネルギー設備導入促進事業補助金の公募を開始します（申請書提出期限:6月12日） - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/niigataken-saiseikanou-enerugii-setsubi-dounyuu-sokushin-58c5d9.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/1356915935143.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3379f7a49e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別高圧電力を使用している中小企業を支援します【令和８年１月～３月使用分支援】（新潟県特別高圧電力利用事業者等支援事業補助金） - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/tokubetsu-kouatsu-denryoku-wo-shiyoushi-teiru-08d54c.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/niigataken-tokubetukouatsu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-34edaeb34e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>優遇制度 &gt; 補助制度等 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/yuuguu-seido-hojo-seido-nado-niigataken-hoomupeeji-0d9abf.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sangyoritchi/hojoseido.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3f399d92c7</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度国及び県の企業向け補助金概要 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-kuni-oyobi-ken-no-kigyou-muke-hojokin-gaiyou-2df215.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/sangyorodo/hojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-41b68e4fef</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特急しらゆき旅行商品造成支援事業補助金のご案内（提出期限：5月15日（金曜日）） - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/tokkyuu-shirayuki-ryokou-shouhin-zousei-shien-jigyou-c96aa3.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/koutsuseisaku/0752434.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-58a9b57b83</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>優遇制度 &gt; 補助制度 &gt; 立地給付金 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/yuuguu-seido-hojo-seido-ritchi-kyuufukin-niigataken-1f05da.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sangyoritchi/1356849602956.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6887d79305</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>男性の育児休業取得促進助成金（パパの育休を応援します） - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/dansei-no-ikuji-kyuugyou-shutoku-sokushin-joseikin-papa-no-1772e0.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/shigototeijyu/1356865510782.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7bf99d5021</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>原子力発電施設周辺地域企業立地支援給付金（F補助金）の募集について - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/genshiryokuhatsuden-shisetsu-shuuhen-chiiki-kigyou-ritchi-25381f.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/sangyoritchi/f-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a313d520d4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>優遇制度 &gt; 未来創造産業立地促進補助金（製造業等立地支援型） - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/yuuguu-seido-mirai-souzou-sangyou-ritchi-sokushin-hojokin-165937.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sangyoritchi/1356849721562.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-acbbc385c9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業連携組織対策事業費補助金 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-renkei-soshiki-taisaku-jigyou-hi-hojokin-4c9e01.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyo/1232482570603.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b289276ddc</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度新潟県建設企業経営革新支援事業補助金の募集について - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-niigataken-kensetsu-kigyoukeiei-kakushin-938b23.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/dobokukanri/1356921387755.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b37d2a3076</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>優遇制度 &gt; 電気料補助金 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/yuuguu-seido-denki-ryou-hojokin-niigataken-hoomupeeji-4dff77.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sangyoritchi/1195575336917.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c62215570d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県地域循環型再生可能エネルギー等形成促進事業補助金の公募を開始します（申請書提出期限：6月12日） - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/niigataken-chiiki-junkan-kata-saiseikanou-enerugii-nado-f7b00d.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/chiikijunkanenekeisei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cdcd352fe5</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・貸付金・各種産業支援 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/hojokin-kashitsuke-kin-kakushusangyou-shien-niigataken-38f7c9.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sangyoseisaku/1211994088184.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e1bfb76981</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>県内中小企業等による省エネルギー設備の導入を支援します。 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/kennai-chuushoukigyou-nado-niyoru-shouene-rugii-setsubi-no-f509b7.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/kakakukoutoushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e774208bf9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>優遇制度 &gt; 補助制度 &gt; F補助金 - 新潟県ホームページ</title>
+    <link>https://jpcite.com/programs/yuuguu-seido-hojo-seido-f-hojokin-niigataken-hoomupeeji-03461f.html</link>
+    <description>Tier B / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sangyoritchi/1356849604770.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f8fe937344</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者への補助事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-heno-hojo-jigyou-8474e4.html</link>
+    <description>Tier S / 新潟県 / 農林水産省 / subsidy / 上限 1,200万円 出典: https://www.city.nagaoka.niigata.jp/sangyou/cate04/ninaite/new-farmer.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a876aa5445</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害福祉従事者処遇改善緊急支援事業について</title>
+    <link>https://jpcite.com/programs/shougai-fukushi-juujisha-shoguu-kaizen-kinkyuu-shien-jigyou-a46888.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / support 出典: https://www.pref.niigata.lg.jp/sec/shougaifukushi/syogukaizen-kinkyushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-04a5e0b31f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【第８回募集】LPガスを使用している中小企業を支援します（LPガス高騰対策緊急支援補助金）</title>
+    <link>https://jpcite.com/programs/dai-8-kai-boshuu-lp-gasu-wo-shiyoushi-teiru-chuushoukigyou-214a20.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/lpgashojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0537f90b06</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県医療機関・社会福祉施設光熱費等高騰対策緊急支援事業補助金の交付申請受付を開始します</title>
+    <link>https://jpcite.com/programs/niigataken-iryoukikan-shakaifukushi-shisetsu-kounetsuhi-a772b1.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/fukushihoken/setubihosyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-08ebcb21fd</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度新潟県雪国型ZEH等導入促進補助金</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-niigataken-yukiguni-kata-zeh-nado-dounyuu-af1423.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/kankyoseisaku/0583945.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0a939d3d91</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金の交付対象者</title>
+    <link>https://jpcite.com/programs/hojokin-no-koufu-taishousha-2abf83.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/kankyoseisaku/0583945.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4eabed7ca1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高濃度PCB廃棄物処理の補助対象が拡大されます</title>
+    <link>https://jpcite.com/programs/kounoudo-pcb-haikibutsu-shori-no-hojo-taishou-ga-kakudai-9f0b13.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/shigenjunkan/pcbhaikibutuhojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7218eb2849</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・貸付金（産業労働部）</title>
+    <link>https://jpcite.com/programs/hojokin-kashitsuke-kin-sangyou-roudou-bu-8fd9f7.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sangyoseisaku/1211994088184.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-78cb8662d6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県雪国型ZEH等導入促進補助金交付申請書（別記第1号様式）</title>
+    <link>https://jpcite.com/programs/niigataken-yukiguni-kata-zeh-nado-dounyuu-sokushin-hojokin-f942f2.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/kankyoseisaku/0583945.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-810844e4f1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県雪国型ZEH等導入促進補助金実績報告書（別記第4号様式）</title>
+    <link>https://jpcite.com/programs/niigataken-yukiguni-kata-zeh-nado-dounyuu-sokushin-hojokin-23a737.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/kankyoseisaku/0583945.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8fe11b46ad</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>多面的機能支払交付金</title>
+    <link>https://jpcite.com/programs/tamenteki-kinou-shiharai-koufukin-097884.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/nousonkankyo/tamentekikinou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a225ed90e0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>次世代型太陽電池実証支援事業補助金</title>
+    <link>https://jpcite.com/programs/jisedai-kata-taiyoudenchi-jisshou-shien-jigyou-hojokin-3d6d27.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/kankyo/fgsolarcells-subsidy.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b39bafb568</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県地域農業構造転換支援事業補助金交付要綱等の制定について</title>
+    <link>https://jpcite.com/programs/niigataken-chiiki-nougyou-kouzou-tenkan-shien-jigyou-35508d.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/chiikinosei/kouzoutenkan.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b47cc776a8</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度 新潟県観光地域づくり支援事業補助金の募集を開始します</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-niigataken-kankouchi-iki-zukuri-shien-jigyou-581127.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/kankokikaku/0723592.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bf05a0060c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>別記第１号様式（補助金交付申請書） [PDFファイル／177KB]</title>
+    <link>https://jpcite.com/programs/bekki-daiichigou-youshiki-hojokin-koufushinseisho-pdf-fairu-53395a.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/uploaded/attachment/493995.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bf56a10263</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>県内中小企業等による省エネルギー設備の導入を支援します。</title>
+    <link>https://jpcite.com/programs/kennai-chuushoukigyou-nado-niyoru-shouene-rugii-setsubi-no-89008b.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / support 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/kakakukoutoushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c667abc890</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県地域循環型再生可能エネルギー等形成促進事業補助金の公募を開始します（申請書提出期限：6月12日）</title>
+    <link>https://jpcite.com/programs/niigataken-chiiki-junkan-kata-saiseikanou-enerugii-nado-088f78.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/chiikijunkanenekeisei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d3239ca2e9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別高圧電力を使用している中小企業を支援します【令和８年１月～３月使用分支援】（新潟県特別高圧電力利用事業者等支援事業補助金）</title>
+    <link>https://jpcite.com/programs/tokubetsu-kouatsu-denryoku-wo-shiyoushi-teiru-0c0d95.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/niigataken-tokubetukouatsu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-de48686ed3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度 新潟県業務用冷凍冷蔵機器常時監視システム導入支援事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-niigataken-gyoumuyou-reitou-reizou-kiki-fab912.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/kankyo/fluorocarbon-monitoring.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ec35553361</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害福祉人材確保・職場環境改善等事業補助金について</title>
+    <link>https://jpcite.com/programs/shougai-fukushi-jinzai-kakuho-shokubakankyou-kaizen-nado-93e0e0.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/shougaifukushi/jinzaikakuho2025.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ef88cecd3f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県再生可能エネルギー設備導入促進事業補助金の公募を開始します（申請書提出期限:6月12日）</title>
+    <link>https://jpcite.com/programs/niigataken-saiseikanou-enerugii-setsubi-dounyuu-sokushin-ac3dba.html</link>
+    <description>Tier A / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyosuishin/1356915935143.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ff81e1281c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県商工会連合会 補助金・助成金 案内ハブ（新潟県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/niigataken-shoukou-kai-rengoukai-hojokin-joseikin-annai-dd3a3b.html</link>
+    <description>Tier B / 新潟県 / 新潟県商工会連合会 / directory 出典: https://www.shinsyoren.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9e8a58402a</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:24 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟市 にいがたagribase 既存施設活用支援</title>
+    <link>https://jpcite.com/programs/niigatashi-niigata-agribase-kizon-shisetsu-katsuyou-shien-3783d5.html</link>
+    <description>Tier C / 新潟県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.niigata.lg.jp/business/norinsuisan/nouringyo/nogyo-sesaku/nogyo-genki/youbou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4891afd86b</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟市 元気な農業応援事業費補助金 ソフト事業</title>
+    <link>https://jpcite.com/programs/niigatashi-genki-na-nougyou-ouen-jigyou-hi-hojokin-sofuto-b30143.html</link>
+    <description>Tier B / 新潟県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.niigata.lg.jp/business/norinsuisan/nouringyo/nogyo-sesaku/nogyo-genki/youbou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8b3089e954</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟市 元気な農業応援事業費補助金 園芸ハード</title>
+    <link>https://jpcite.com/programs/niigatashi-genki-na-nougyou-ouen-jigyou-hi-hojokin-engei-84df05.html</link>
+    <description>Tier C / 新潟県 / 市町村 / subsidy / 上限 108万円 出典: https://www.city.niigata.lg.jp/shisei/gyoseiunei/hojyokin/gyoseikeihi/norinsuisan/hojyokintop/genki/genkikomehard.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a7d2ae1623</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県水道広域化推進プラン (令和5年1月策定)</title>
+    <link>https://jpcite.com/programs/niigataken-suidou-kouiki-ka-suishin-puran-reiwa-5-nen-1-f9bb53.html</link>
+    <description>Tier C / 新潟県 / 新潟県 総務管理部 市町村課 出典: https://www.pref.niigata.lg.jp/sec/shichouson/suido-plan-sakutei.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6739a23d5a</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県観光施設改善資金貸付金 (地方)</title>
+    <link>https://jpcite.com/programs/niigataken-kankou-shisetsu-kaizen-shikin-kashitsuke-kin-9a4d6e.html</link>
+    <description>Tier C / 新潟県 / 新潟県 出典: https://www.pref.niigata.lg.jp/uploaded/attachment/269.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6f67f3d297</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度新潟市デジタルイノベーション創出推進補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-niigatashi-dejitaruinobeeshon-soushutsu-35a7a2.html</link>
+    <description>Tier C / 新潟県 / 新潟市経済部産業政策課 / subsidy / 上限 100万円 出典: https://www.city.niigata.lg.jp/business/growing/digitaltransformatio/jissyo/r7_jissyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2a80e058b1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟市人材育成助成金</title>
+    <link>https://jpcite.com/programs/niigatashi-jinzai-ikusei-joseikin-248c59.html</link>
+    <description>Tier C / 新潟県 / 新潟市経済部 / subsidy 出典: https://www.city.niigata.lg.jp/business/shoko/shokoshien/kigyo_jinzaiikusei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2f8aaa4857</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟市創業サポート事業(店舗)補助金</title>
+    <link>https://jpcite.com/programs/niigatashi-sougyou-sapooto-jigyou-tenpo-hojokin-a499e2.html</link>
+    <description>Tier C / 新潟県 / 新潟市経済部商業振興課 / subsidy / 上限 60万円 出典: https://www.city.niigata.lg.jp/smph/business/shoko/shokoshien/sogyoshien/shogyosougyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8f6c77a6f1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟市創業サポート事業(オフィス)補助金</title>
+    <link>https://jpcite.com/programs/niigatashi-sougyou-sapooto-jigyou-ofisu-hojokin-fd5e4e.html</link>
+    <description>Tier C / 新潟県 / 新潟市経済部産業政策課 / subsidy / 上限 60万円 出典: https://www.city.niigata.lg.jp/business/shoko/shokoshien/sogyoshien/sougyousapotoofisu/seidonitsuite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e9514b6117</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>次世代育成支援対策施設整備交付金(障害児施設)</title>
+    <link>https://jpcite.com/programs/jisedai-ikusei-shien-taisaku-shisetsu-seibi-koufukin-66a7ba.html</link>
+    <description>Tier C / 新潟県 / 厚生労働省 こども家庭庁 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/shougaifukushi/1272582117653.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-45952bf161</guid>
+    <pubDate>Thu, 23 Apr 2026 05:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>医療機関の省エネ設備導入支援(新潟県)</title>
+    <link>https://jpcite.com/programs/iryoukikan-no-shouene-setsubi-dounyuu-shien-niigataken-9c5561.html</link>
+    <description>Tier C / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/chiikiiryo/202212chiikiiryo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9b9cc7f9a8</guid>
+    <pubDate>Thu, 23 Apr 2026 05:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県創業補助金</title>
+    <link>https://jpcite.com/programs/niigataken-sougyou-hojokin-d51366.html</link>
+    <description>Tier C / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sogyo/hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-272c7c195d</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県中小企業制度融資</title>
+    <link>https://jpcite.com/programs/niigataken-chuushoukigyou-seido-yuushi-dd955d.html</link>
+    <description>Tier C / 新潟県 / 新潟県地域振興課 / loan 出典: https://www.pref.niigata.lg.jp/sec/chiikishinko/yuushi-seidoyushi.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5c0298acea</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県企業立地優遇制度補助</title>
+    <link>https://jpcite.com/programs/niigataken-kigyou-ritchi-yuuguu-seido-hojo-2c4900.html</link>
+    <description>Tier C / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/sec/sangyoritchi/hojoseido.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-855b4264e0</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県成長中小企業稼ぐ力強化補助金</title>
+    <link>https://jpcite.com/programs/niigataken-seichou-chuushoukigyou-kasegu-chikara-kyouka-5daaa4.html</link>
+    <description>Tier C / 新潟県 / 新潟県産業労働部 / subsidy 出典: https://www.pref.niigata.lg.jp/site/sangyorodo/kaseguchikara-bosyu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a09c5a6abb</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県中小企業省エネルギー設備導入支援</title>
+    <link>https://jpcite.com/programs/niigataken-chuushoukigyou-shouene-rugii-setsubi-dounyuu-ccdb3e.html</link>
+    <description>Tier C / 新潟県 / 新潟県 / subsidy 出典: https://www.pref.niigata.lg.jp/site/chiikishinko/e-support.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aa7e6ebe3d</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県観光施設改善資金貸付金</title>
+    <link>https://jpcite.com/programs/niigataken-kankou-shisetsu-kaizen-shikin-kashitsuke-kin-9a2c71.html</link>
+    <description>Tier C / 新潟県 / 新潟県 / loan 出典: https://www.pref.niigata.lg.jp/uploaded/attachment/269.pdf</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ab41fb8334</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県 農福連携コーディネーター配置事業</title>
+    <link>https://jpcite.com/programs/niigataken-nou-fuku-renkei-koodineetaa-haichi-jigyou-7de248.html</link>
+    <description>Tier C / 新潟県 / 新潟県 福祉保健部 / coordinator_dispatch 出典: https://www.pref.niigata.lg.jp/sec/shougaifukushi/1274911794199.html</description>
+    <category>coordinator_dispatch</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e92e4a464b</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県中小企業事業承継支援補助金</title>
+    <link>https://jpcite.com/programs/niigataken-chuushoukigyou-jigyou-shoukei-shien-hojokin-314d0f.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 100万円 出典: https://www.nico.or.jp/hojokin</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02c3075962</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>燕市_重点作物補助金（麦・大豆）</title>
+    <link>https://jpcite.com/programs/tsubame-shi-juuten-sakumotsu-hojokin-mugi-daizu-9c2d04.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 100万円 出典: https://www.city.tsubame.niigata.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-039a758b95</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-151009-004_新潟市_にいがたagribase_親元等就農支援</title>
+    <link>https://jpcite.com/programs/mun-151009-004-niigatashi-niigata-agribase-oyamoto-nado-8c363c.html</link>
+    <description>Tier A / 新潟県 / subsidy / 上限 100万円 出典: https://www.city.niigata.lg.jp/business/norinsuisan/nouringyo/sinkisyuno/oyamotosyuunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-04a9b659a7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者等支援事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-nado-shien-jigyou-d3c12a.html</link>
+    <description>Tier B / 新潟県 / 新潟県上越市 / subsidy / 上限 100万円 出典: https://www.city.joetsu.niigata.jp/soshiki/nousei/sinkisyuunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-04b5d2a6b5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>燕市_大豆収量・品質向上加算補助金</title>
+    <link>https://jpcite.com/programs/tsubame-shi-daizu-shuuryou-hinshitsukoujou-kasan-hojokin-b579c2.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 250万円 出典: https://www.city.tsubame.niigata.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-063f39f447</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長岡市 スマートアグリ推進事業補助金</title>
+    <link>https://jpcite.com/programs/nagaokashi-sumaatoaguri-suishin-jigyou-hojokin-4a775b.html</link>
+    <description>Tier A / 新潟県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.nagaoka.niigata.jp/sangyou/cate04/agri-dx/smart-agri.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-07ad5e5756</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-152099-001_十日町市_担い手経営発展支援事業</title>
+    <link>https://jpcite.com/programs/mun-152099-001-tookamachi-shi-ninaite-keiei-hatten-shien-bb7552.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 100万円 出典: https://www.city.tokamachi.lg.jp/shigoto_sangyo/sangyoshinko/nogyo/ikusei/8484.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0ba45d71b3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>U・Iターン者新規就農支援事業補助金</title>
+    <link>https://jpcite.com/programs/u-i-taan-mono-shinki-shuunou-shien-jigyou-hojokin-455c49.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） / 上限 30万円 出典: https://www.city.kashiwazaki.lg.jp/soshikiichiran/sangyoshinkobu/norinsuisanka/2_1/8/35344.html#h_idx_iw_flex_1_9</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0ed1b2dae9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>燕市 チャレンジファーマー支援 規模拡大</title>
+    <link>https://jpcite.com/programs/tsubame-shi-charenjifaamaa-shien-kibo-kakudai-4b2b35.html</link>
+    <description>Tier C / 新潟県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.tsubame.niigata.jp/soshiki/sangyo_shinko/3/4/1094.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0ef6ae363f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-152226-001_南魚沼市_農業用機械整備支援事業</title>
+    <link>https://jpcite.com/programs/mun-152226-001-minamiuonuma-shi-nougyouyou-kikai-seibi-db4791.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 200万円 出典: https://www.city.minamiuonuma.niigata.jp/docs/77473.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-11a9fa195f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>6次産業化・農商工連携支援補助金</title>
+    <link>https://jpcite.com/programs/6-tsugi-sangyouka-nou-shoukou-renkei-shien-hojokin-a8c087.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） / 上限 100万円 出典: https://www.city.niigata.lg.jp/shisei/gyoseiunei/hojyokin/gyoseikeihi/norinsuisan/nogyoken/6ji-hojyo.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1345890e83</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>燕市_水田収益力強化ビジョン推進作物補助金</title>
+    <link>https://jpcite.com/programs/tsubame-shi-suiden-shuueki-chikara-kyouka-bijon-suishin-4756d4.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 150万円 出典: https://www.city.tsubame.niigata.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1642110e68</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長岡市_認定新規就農者制度</title>
+    <link>https://jpcite.com/programs/nagaokashi-nintei-shinki-shuunou-mono-seido-6b2d90.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 100万円 出典: https://www.city.nagaoka.niigata.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1b6c6f2865</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>燕市_園芸作物産地化推進補助金</title>
+    <link>https://jpcite.com/programs/tsubame-shi-engei-sakumotsu-sanchi-ka-suishin-hojokin-de6391.html</link>
+    <description>Tier A / 新潟県 / subsidy / 上限 300万円 出典: https://www.city.tsubame.niigata.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1d31948eb5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長岡市_トライアル拠点「スマートアグリ長岡」（体験・研修）</title>
+    <link>https://jpcite.com/programs/nagaokashi-toraiaru-kyoten-sumaatoaguri-nagaoka-taiken-25e93c.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 100万円 出典: https://www.city.nagaoka.niigata.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1ea792c178</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-152102-001_上越市_新規就農者農業用機械購入事業</title>
+    <link>https://jpcite.com/programs/mun-152102-001-jouetsushi-shinki-shuunou-mono-nougyouyou-db1d3c.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 1万円 出典: https://www.city.joetsu.niigata.jp/soshiki/nousei/sinkisyuunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-205b9e6abb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柏崎ブランド米「米山プリンセス」土づくり支援事業助成金</title>
+    <link>https://jpcite.com/programs/kashiwazaki-burando-kome-yoneyama-purinsesu-tsuchi-zukuri-ed9280.html</link>
+    <description>Tier B / 新潟県 / 新潟県柏崎市 / subsidy 出典: https://www.city.kashiwazaki.lg.jp/sangyo_business/nogyo/nogyoshinko/35408.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-21ebed0a6d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業共済加入促進事業補助金</title>
+    <link>https://jpcite.com/programs/nougyou-kyousai-kanyuu-sokushin-jigyou-hojokin-00bcd5.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） / 上限 30万円 出典: https://www.city.kashiwazaki.lg.jp/soshikiichiran/sangyoshinkobu/norinsuisanka/2_1/8/35344.html#h_idx_iw_flex_1_4</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-220fc78cc2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業経営収入保険加入促進事業補助金 【令和6年度一部改正】</title>
+    <link>https://jpcite.com/programs/nougyou-keiei-shuunyuu-hoken-kanyuu-sokushin-jigyou-hojokin-aa76ee.html</link>
+    <description>Tier B / 新潟県 / 新潟県柏崎市 / subsidy / 上限 15万円 出典: https://www.city.kashiwazaki.lg.jp/soshikiichiran/sangyoshinkobu/norinsuisanka/2_1/8/35344.html#h_idx_iw_flex_1_3</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-221c690f68</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柏崎産米全国コンクール等出品支援補助金【令和6年度一部改正】</title>
+    <link>https://jpcite.com/programs/kashiwazaki-san-kome-zenkoku-konkuuru-nado-shuppin-shien-30795f.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） / 上限 30万円 出典: https://www.city.kashiwazaki.lg.jp/soshikiichiran/sangyoshinkobu/norinsuisanka/2_1/8/35344.html#h_idx_iw_flex_1_6</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-22e2116254</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>胎内市農業経営収入保険加入促進事業補助金</title>
+    <link>https://jpcite.com/programs/tainai-shi-nougyou-keiei-shuunyuu-hoken-kanyuu-sokushin-cc3cc4.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） / 上限 15万円 出典: https://www.city.tainai.niigata.jp/sangyo/nogyo/06syunyuhoken.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-24b992c1a3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-152137-001_燕市_チャレンジファーマー支援_規模拡大</title>
+    <link>https://jpcite.com/programs/mun-152137-001-tsubame-shi-charenjifaamaa-shien-kibo-kakudai-d71dd4.html</link>
+    <description>Tier C / 新潟県 / subsidy / 上限 150万円 出典: https://www.city.tsubame.niigata.jp/soshiki/sangyo_shinko/3/4/1094.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-28e1a093b3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境保全型農業直接支払交付金事業費補助金</title>
+    <link>https://jpcite.com/programs/kankyouhozen-kata-nougyou-chokusetsu-shiharai-koufukin-ea6599.html</link>
+    <description>Tier C / 新潟県 / 新潟県新潟市 / subsidy 出典: https://www.city.niigata.lg.jp/kurashi/nogyo/nogyo/hojo/kankyohozen.files/torihikikijun.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-29ba6389b9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境保全型農業直接支払制度</title>
+    <link>https://jpcite.com/programs/kankyouhozen-kata-nougyou-chokusetsu-shiharai-seido-072c7a.html</link>
+    <description>Tier C / 新潟県 / 農林水産省 / subsidy 出典: https://www.maff.go.jp/j/seisan/kankyo/hozen_keikaku/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2c114a525b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度国補正予算「担い手確保・経営強化支援事業」</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-kuni-hoseiyosan-ninaite-kakuho-keiei-kyouka-dec365.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） 出典: https://www.city.nagaoka.niigata.jp/sangyou/cate04/ninaite/bearer.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2d80aaca85</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長岡市_経営管理権集積計画（森林経営管理制度）</title>
+    <link>https://jpcite.com/programs/nagaokashi-keieikanri-ken-shuuseki-keikaku-shinrin-63ed38.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 100万円 出典: https://www.city.nagaoka.niigata.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2e8a3038fb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-151009-001_新潟市_元気な農業応援事業費補助金_園芸ハード</title>
+    <link>https://jpcite.com/programs/mun-151009-001-niigatashi-genki-na-nougyou-ouen-jigyou-hi-9301cc.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 108万円 出典: https://www.maff.go.jp/j/new_farmer</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-37ce60481e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>6次産業化・農商工連携支援補助金</title>
+    <link>https://jpcite.com/programs/6-tsugi-sangyouka-nou-shoukou-renkei-shien-hojokin-da0188.html</link>
+    <description>Tier B / 新潟県 / 新潟県新潟市 / subsidy / 上限 100万円 出典: https://www.city.niigata.lg.jp/shisei/gyoseiunei/hojyokin/gyoseikeihi/norinsuisan/nogyoken/6ji-hojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-38748f296c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>六次産業化支援事業補助金</title>
+    <link>https://jpcite.com/programs/roku-tsugi-sangyouka-shien-jigyou-hojokin-0ba234.html</link>
+    <description>Tier B / 新潟県 / 新潟県柏崎市 / subsidy / 上限 30万円 出典: https://www.city.kashiwazaki.lg.jp/soshikiichiran/sangyoshinkobu/norinsuisanka/2_1/8/35344.html#h_idx_iw_flex_1_2</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3a93114323</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者定着促進事業補助金（担い手育成総合発展支援事業）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-teichaku-sokushin-jigyou-hojokin-e0e20e.html</link>
+    <description>Tier B / 新潟県 / 新潟県新発田市 / subsidy / 上限 100万円 出典: https://www.city.shibata.lg.jp/_res/projects/default_project/_page_/001/013/225/shinkisyuno_youryo.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3c9a1764ff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度国補正予算「担い手確保・経営強化支援事業」</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-kuni-hoseiyosan-ninaite-kakuho-keiei-kyouka-8f6864.html</link>
+    <description>Tier C / 新潟県 / 農林水産省 / subsidy 出典: https://www.city.nagaoka.niigata.jp/sangyou/cate04/ninaite/bearer.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3e9c842f0a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新潟県研究開発・販路開拓支援補助金</title>
+    <link>https://jpcite.com/programs/niigataken-kenkyuukaihatsu-hanro-kaitaku-shien-hojokin-a74008.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 300万円 出典: https://www.nico.or.jp/rd/subsidy</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3efd2bf88b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>電気柵購入費の補助</title>
+    <link>https://jpcite.com/programs/denki-saku-kounyuuhi-no-hojo-1e67f2.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） / 上限 8万円 出典: https://www.city.tainai.niigata.jp/sangyo/nogyo/denkisakuhojo.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-456f7f0af9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>伝統野菜等作付拡大支援事業奨励金</title>
+    <link>https://jpcite.com/programs/dentou-yasai-nado-sakutsuke-kakudai-shien-jigyou-shoureikin-f7d8c7.html</link>
+    <description>Tier B / 新潟県 / （noukaweb 収集） / 上限 30万円 出典: https://www.city.kashiwazaki.lg.jp/soshikiichiran/sangyoshinkobu/norinsuisanka/2_1/8/35344.html#h_idx_iw_flex_1_10</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-493dd5a04c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柏崎市_農業用施設補修・改修資材支給</title>
+    <link>https://jpcite.com/programs/kashiwazaki-shi-nougyouyou-shisetsu-hoshuu-kaishuu-shizai-ab0161.html</link>
+    <description>Tier B / 新潟県 / subsidy / 上限 100万円 出典: https://www.city.kashiwazaki.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4af10c3268</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>村上市認定新規就農者制度・就農支援事業補助金</title>
+    <link>https://jpcite.com/programs/murakami-shi-nintei-shinki-shuunou-mono-seido-shuunou-shien-cbed96.html</link>
+    <description>Tier B / 新潟県 / 農林水産省 / subsidy / 上限 150万円 出典: https://www.city.murakami.lg.jp/uploaded/attachment/xxxx.xlsx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4b5aeee648</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鳥獣捕獲の担い手支援</title>
+    <link>https://jpcite.com/programs/choujuu-hokaku-no-ninaite-shien-df7ad9.html</link>
+    <description>Tier B / 新潟県 / 新潟県上越市 / subsidy / 上限 5万円 出典: https://www.city.joetsu.niigata.jp/soshiki/tyuusannkannnougyou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4e19e57abe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

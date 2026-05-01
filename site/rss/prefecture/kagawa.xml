@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 香川県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/kagawa.xml" rel="self" type="application/rss+xml" />
+  <description>香川県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>令和７年度</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-c243e6.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy / 上限 500万円 出典: https://www.pref.kagawa.lg.jp/documents/19896/ichiran20260226.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e72bcb35c9</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県事業者の未来への投資を応援する総合補助金について｜香川県</title>
+    <link>https://jpcite.com/programs/kagawaken-jigyousha-no-mirai-heno-toushi-wo-ouen-suru-15996f.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/miraitoshi/r7bosyu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-29e591dcda</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県事業者の未来への投資を応援する総合補助金活用事例の公表について｜香川県</title>
+    <link>https://jpcite.com/programs/kagawaken-jigyousha-no-mirai-heno-toushi-wo-ouen-suru-2ecf49.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/miraitoshi/r6katuyojirei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3ebfd69d6a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>各種研究会・フォーラム｜香川県</title>
+    <link>https://jpcite.com/programs/kakushu-kenkyuukai-fooramu-kagawaken-957397.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/gijyutsushien/forum.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-5cbef1e06c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県新規産業創出支援センター（ネクスト香川）｜香川県</title>
+    <link>https://jpcite.com/programs/kagawaken-shinki-sangyou-soushutsu-shien-sentaa-nekusuto-26ba13.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/gijyutsushien/04.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-767aed5c2d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>技術・開発支援｜香川県</title>
+    <link>https://jpcite.com/programs/gijutsu-kaihatsushien-kagawaken-ad83b7.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/gijyutsushien/kfvn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-781d85adc6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>かがわ次世代ものづくり研究会｜香川県</title>
+    <link>https://jpcite.com/programs/kagawa-jisedai-monozukuri-kenkyuukai-kagawaken-ee3d1d.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/gijyutsushien/forum/07.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8ad47f918a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>産学官共同研究｜香川県</title>
+    <link>https://jpcite.com/programs/sangakukan-kyoudoukenkyuu-kagawaken-aa7adb.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/gijyutsushien/02.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8f16461cd6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商工労働部支援制度（補助金等）一覧｜香川県</title>
+    <link>https://jpcite.com/programs/shoukou-roudou-bu-shien-seido-hojokin-nado-ichiran-kagawaken-da2ad1.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/zigyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9a4b4c03e4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県事業者の未来への投資を応援する総合補助金（未来投資応援補助金）｜香川県</title>
+    <link>https://jpcite.com/programs/kagawaken-jigyousha-no-mirai-heno-toushi-wo-ouen-suru-7861ea.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/miraitoshi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ba30c09f08</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>産業技術センター｜香川県</title>
+    <link>https://jpcite.com/programs/sangyou-gijutsu-sentaa-kagawaken-8c691b.html</link>
+    <description>Tier B / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/gijyutsushien/01.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f3f8e60cad</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川 農畜水産業者未来チャレンジ支援補助金</title>
+    <link>https://jpcite.com/programs/kagawa-nouchikusuisan-gyousha-mirai-charenji-shien-hojokin-f7435d.html</link>
+    <description>Tier S / 香川県 / 都道府県 / subsidy / 上限 2,000万円 出典: https://www.pref.kagawa.lg.jp/nouki/tisan/tyarennji_sinnseisyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-96ca0b02be</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県事業者の未来への投資を応援する総合補助金（未来投資応援補助金）</title>
+    <link>https://jpcite.com/programs/kagawaken-jigyousha-no-mirai-heno-toushi-wo-ouen-suru-7e6871.html</link>
+    <description>Tier A / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/miraitoshi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-218e0ae4e3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>相談・支援制度</title>
+    <link>https://jpcite.com/programs/soudan-shien-seido-4f7e38.html</link>
+    <description>Tier A / 香川県 / 香川県 / support 出典: https://www.pref.kagawa.lg.jp/shogaifukushi/sodan_shien/kfvn.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-56ca4b319a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>技術・開発支援</title>
+    <link>https://jpcite.com/programs/gijutsu-kaihatsushien-7f555a.html</link>
+    <description>Tier A / 香川県 / 香川県 / support 出典: https://www.pref.kagawa.lg.jp/sangyo/gijyutsushien/kfvn.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5d005e0674</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ほ場整備</title>
+    <link>https://jpcite.com/programs/ho-ba-seibi-a412d0.html</link>
+    <description>Tier A / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/tosantochikai/hojouseibi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6a768a68f5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県前向きに頑張る事業者を応援する総合補助金</title>
+    <link>https://jpcite.com/programs/kagawaken-maemuki-ni-ganbaru-jigyousha-wo-ouen-suru-sougou-29fc50.html</link>
+    <description>Tier A / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/chiiki/hojokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-873cff266e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商工労働部支援制度（補助金等）一覧</title>
+    <link>https://jpcite.com/programs/shoukou-roudou-bu-shien-seido-hojokin-nado-ichiran-d28e47.html</link>
+    <description>Tier A / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/sangyo/zigyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8d18e2fa58</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就労支援・工賃向上</title>
+    <link>https://jpcite.com/programs/shuurou-shien-kouchin-koujou-c3b748.html</link>
+    <description>Tier A / 香川県 / 香川県 / support 出典: https://www.pref.kagawa.lg.jp/shogaifukushi/shuroshien/kfvn.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ce5e2e520c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>多面的機能支払交付金制度</title>
+    <link>https://jpcite.com/programs/tamenteki-kinou-shiharai-koufukin-seido-9098ae.html</link>
+    <description>Tier A / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/nosonseibi/tamen/kfvn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d3ec045e47</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>困難な問題を抱える女性への支援</title>
+    <link>https://jpcite.com/programs/konnan-na-mondai-wo-kakae-ru-josei-heno-shien-3cc5ea.html</link>
+    <description>Tier A / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/kodomokatei/josei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e14b675866</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県商工会連合会 補助金・助成金 案内ハブ（香川県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/kagawaken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-b26823.html</link>
+    <description>Tier B / 香川県 / 香川県商工会連合会 / directory 出典: http://www.shokokai-kagawa.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-84a1c3f9b3</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:42 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県広域水道企業団 (全国初の全県一水道)</title>
+    <link>https://jpcite.com/programs/kagawaken-kouiki-suidou-kigyou-dan-zenkokuhatsu-no-zenken-0775d7.html</link>
+    <description>Tier C / 香川県 / 香川県広域水道企業団 出典: https://union.suido-kagawa.lg.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f015b0e2df</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市事業高度化等支援補助金</title>
+    <link>https://jpcite.com/programs/takamatsushi-jigyou-koudoka-nado-shien-hojokin-ac33eb.html</link>
+    <description>Tier C / 香川県 / 高松市産業振興課 / subsidy / 上限 30万円 出典: https://www.city.takamatsu.kagawa.jp/jigyosha/sangyou/shoukougyou/seityousokushin/koudoka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1a378c0bc0</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>たかまつイノベーション創出支援補助金(研究開発)</title>
+    <link>https://jpcite.com/programs/takamatsu-inobeeshon-soushutsu-shien-hojokin-kenkyuukaihatsu-31b2ba.html</link>
+    <description>Tier C / 香川県 / 高松市産業振興課 / subsidy / 上限 300万円 出典: https://www.city.takamatsu.kagawa.jp/jigyosha/sangyou/shoukougyou/seityousokushin/kennkyuukaihatsu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2f0cb03ca1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市中小企業等賃金引上げ奨励金</title>
+    <link>https://jpcite.com/programs/takamatsushi-chuushoukigyou-nado-chingin-hikiage-ge-5232d8.html</link>
+    <description>Tier C / 香川県 / 高松市産業振興課 / subsidy 出典: https://www.city.takamatsu.kagawa.jp/jigyosha/shien_josei/shiki/tinnginnhikiage.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-53cce72197</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市中小企業ITパスポート等取得支援補助金</title>
+    <link>https://jpcite.com/programs/takamatsushi-chuushoukigyou-it-pasupooto-nado-shutoku-shien-adea2d.html</link>
+    <description>Tier C / 香川県 / 高松市産業振興課 / subsidy / 上限 20万円 出典: https://www.city.takamatsu.kagawa.jp/smph/jigyosha/sangyou/shoukougyou/seityousokushin/ITpass.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-715530e2bd</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市中小企業等省エネ化・コスト削減機器等導入事業補助金</title>
+    <link>https://jpcite.com/programs/takamatsushi-chuushoukigyou-nado-shouene-ka-kosuto-sakugen-2c19fe.html</link>
+    <description>Tier C / 香川県 / 高松市産業振興課 / subsidy 出典: https://www.city.takamatsu.kagawa.jp/jigyosha/shien_josei/syouko_syouene.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a66711d163</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市中小企業等人材育成事業補助金(社員スキルアップサポート)</title>
+    <link>https://jpcite.com/programs/takamatsushi-chuushoukigyou-nado-jinzai-ikusei-jigyou-f5eadd.html</link>
+    <description>Tier C / 香川県 / 高松市産業振興課 / subsidy / 上限 5万円 出典: https://www.city.takamatsu.kagawa.jp/jigyosha/sangyou/shoukougyou/seityousokushin/jinzaiikusei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d7cb6f237d</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県中小企業BCP策定支援</title>
+    <link>https://jpcite.com/programs/kagawaken-chuushoukigyou-bcp-sakutei-shien-e0063b.html</link>
+    <description>Tier C / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/keiei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-184802c259</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県中小企業融資制度</title>
+    <link>https://jpcite.com/programs/kagawaken-chuushoukigyou-yuushi-seido-c0d06a.html</link>
+    <description>Tier C / 香川県 / 香川県 / loan 出典: https://www.pref.kagawa.lg.jp/sangyo/zigyou/index.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-60890b1407</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県農畜水産業者未来チャレンジ支援補助金</title>
+    <link>https://jpcite.com/programs/kagawaken-nouchikusuisan-gyousha-mirai-charenji-shien-b1ad30.html</link>
+    <description>Tier C / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/nouki/tisan/tyarennji_sinnseisyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7089852634</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県事業承継支援</title>
+    <link>https://jpcite.com/programs/kagawaken-jigyou-shoukei-shien-418193.html</link>
+    <description>Tier C / 香川県 / 香川県 / subsidy 出典: https://www.pref.kagawa.lg.jp/keiei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b462897210</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町農業経営継続安定化対策事業補助金</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-nougyou-keiei-keizoku-anteika-taisaku-jigyou-ca3817.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 20万円 出典: https://www.town.ayagawa.lg.jp/category/bunya/sangyo/nogyo/more@docs-group@g_001</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0168c8d940</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町鳥獣被害防止計画（鳥獣被害対策）</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-choujuu-higai-boushi-keikaku-choujuu-higai-c7db59.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 100万円 出典: https://www.town.ayagawa.lg.jp/category/bunya/sangyo/nogyo/more@docs-group@g_001</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-09f722f3dc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市 スマート農業推進事業</title>
+    <link>https://jpcite.com/programs/takamatsushi-sumaato-nougyou-suishin-jigyou-556de4.html</link>
+    <description>Tier B / 香川県 / 市町村 / subsidy 出典: https://www.city.takamatsu.kagawa.jp/smph/jigyosha/sangyou/nogyo/shuunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0b4264f8e0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>丸亀市 新規就農者経営発展支援</title>
+    <link>https://jpcite.com/programs/marugameshi-shinki-shuunou-mono-keiei-hatten-shien-bb4b08.html</link>
+    <description>Tier B / 香川県 / equipment / 上限 100万円 出典: https://www.city.marugame.lg.jp/page/15085.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0d20483cb1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-37-001_香川_農畜水産業者未来チャレンジ支援補助金</title>
+    <link>https://jpcite.com/programs/pref-37-001-kagawa-nouchikusuisan-gyousha-mirai-charenji-cc0d67.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 2,000万円 出典: https://www.pref.kagawa.lg.jp/nouki/tisan/tyarennji_sinnseisyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0e3d4ecb46</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>三豊市 認定新規就農者支援（経営開始資金）</title>
+    <link>https://jpcite.com/programs/mitoyo-shi-nintei-shinki-shuunou-mono-shien-keiei-kaishi-3548c8.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 150万円 出典: https://www.city.mitoyo.lg.jp/kakuka/nousei/norin/2/1712.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-11d170436c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>観音寺市 新規就農者サポート事業</title>
+    <link>https://jpcite.com/programs/kan-onji-shi-shinki-shuunou-mono-sapooto-jigyou-1954b5.html</link>
+    <description>Tier B / 香川県 / equipment / 上限 200万円 出典: https://www.city.kanonji.kagawa.jp/site/ijyu/6941.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1731c72ff9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>観音寺市有害鳥獣対策事業補助金（電気柵等防除機具及び駆除用猟具）</title>
+    <link>https://jpcite.com/programs/kan-onji-shiyuu-gaichou-kemono-taisaku-jigyou-hojokin-denki-695157.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 250万円 出典: https://www.city.kanonji.kagawa.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1fe2851507</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>観音寺市 新規就農者定住支援事業</title>
+    <link>https://jpcite.com/programs/kan-onji-shi-shinki-shuunou-mono-teijuu-shien-jigyou-632acf.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 200万円 出典: https://www.city.kanonji.kagawa.jp/site/ijyu/6941.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f508b0a37</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町 新規就農者サポート事業費補助金（農業経営承継支援事業）</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-shinki-shuunou-mono-sapooto-jigyou-hi-hojokin-525fa4.html</link>
+    <description>Tier B / 香川県 / training / 上限 200万円 出典: https://www.town.ayagawa.lg.jp/reiki02/reiki_honbun/r263RG00000831.html</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-328723acc2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町 新規就農者サポート事業費補助金（経営発展支援事業）</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-shinki-shuunou-mono-sapooto-jigyou-hi-hojokin-4ed4b3.html</link>
+    <description>Tier B / 香川県 / equipment / 上限 200万円 出典: https://www.town.ayagawa.lg.jp/reiki02/reiki_honbun/r263RG00000831.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-351d4aae7a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>元気な島づくり団体支援事業補助金</title>
+    <link>https://jpcite.com/programs/genki-na-shima-zukuri-dantai-shien-jigyou-hojokin-d9d9c3.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 250万円 出典: https://www.city.marugame.lg.jp/page/15085.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-364e71646b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市 農福連携スタートアップ事業</title>
+    <link>https://jpcite.com/programs/takamatsushi-nou-fuku-renkei-sutaatoappu-jigyou-05fe74.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 100万円 出典: https://www.city.takamatsu.kagawa.jp/smph/jigyosha/sangyou/nogyo/nourin20240604.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-36b2ac20f1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東かがわ市 青年等就農計画制度</title>
+    <link>https://jpcite.com/programs/higashi-kagawa-shi-seinen-nado-shuunou-keikaku-seido-378680.html</link>
+    <description>Tier C / 香川県 / 市町村 / subsidy / 上限 150万円 出典: https://www.higashikagawa.jp/soshikikarasagasu/norinsuisanka/gyomuannai/nougyou/4051.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-372dd3962f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>土地改良事業の補助制度（単独県費・市単独・原材料支給）</title>
+    <link>https://jpcite.com/programs/tochi-kairyou-jigyou-no-hojo-seido-tandoku-kenhi-shi-37d588.html</link>
+    <description>Tier C / 香川県 / 香川県三豊市 / subsidy 出典: https://www.city.mitoyo.lg.jp/material/files/group/14/tochikairyo_hojo.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-44b6355b6b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定農業者等への支援施策（国・県等の補助金）</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-nado-heno-shien-shisaku-kuni-ken-nado-008646.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 250万円 出典: https://www.city.marugame.lg.jp/page/15085.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-44ed7cd6f6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香川県畜産農家緊急支援事業</title>
+    <link>https://jpcite.com/programs/kagawaken-chikusannouka-kinkyuu-shien-jigyou-40c145.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 100万円 出典: https://www.town.ayagawa.lg.jp/category/bunya/sangyo/nogyo/more@docs-group@g_001</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4699c17735</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東かがわ市企業立地促進補助金</title>
+    <link>https://jpcite.com/programs/higashi-kagawa-shi-kigyou-ritchi-sokushin-hojokin-e7debf.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 250万円 出典: https://www.higashikagawa.jp/soshikikarasagasu/chiikisoseika/hojokin_joseikin/in</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-46b3b16175</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町原油価格高騰対策緊急支援事業補助金</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-genyukakaku-koutou-taisaku-kinkyuu-shien-510bb4.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 250万円 出典: https://www.town.ayagawa.lg.jp/category/bunya/sangyo/nogyo/more@docs-group@g_001</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-48848849e1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>観音寺市中小企業融資制度（小口融資）</title>
+    <link>https://jpcite.com/programs/kan-onji-shichuu-shoukigyou-yuushi-seido-koguchi-yuushi-181855.html</link>
+    <description>Tier B / 香川県 / loan / 上限 3,000万円 出典: https://www.city.kanonji.kagawa.jp/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4d1eb859ef</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>丸亀市 大型特殊免許等取得補助事業</title>
+    <link>https://jpcite.com/programs/marugameshi-oogata-tokushu-menkyo-nado-shutoku-hojo-jigyou-cb3e9f.html</link>
+    <description>Tier B / 香川県 / 市町村 / subsidy 出典: https://www.city.marugame.lg.jp/page/15085.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5a61435132</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町 新規就農者サポート事業費補助金（のれん分け就農促進事業）</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-shinki-shuunou-mono-sapooto-jigyou-hi-hojokin-5eecb8.html</link>
+    <description>Tier B / 香川県 / 市町村 / subsidy / 上限 200万円 出典: https://www.town.ayagawa.lg.jp/reiki02/reiki_honbun/r263RG00000831.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5bad16e6df</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町農林水産業振興事業費補助金</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-nourinsuisangyou-shinkou-jigyou-hi-hojokin-d447b5.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 200万円 出典: https://www.town.ayagawa.lg.jp/reiki02/reiki_honbun/r263RG00000831.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5bc4ae50e9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-37-101_香川_農畜水産業者未来チャレンジ支援補助金</title>
+    <link>https://jpcite.com/programs/pref-37-101-kagawa-nouchikusuisan-gyousha-mirai-charenji-6f388d.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 2,000万円 出典: https://www.pref.kagawa.lg.jp/nouki/tisan/tyarennji_sinnseisyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5bc7739016</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定新規就農者制度（青年等就農計画制度）</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-seinen-nado-shuunou-a8b031.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 100万円 出典: https://www.city.mitoyo.lg.jp/kakuka/nousei/norin/2/1712.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5de5057475</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東かがわ市育児休業取得促進事業補助金</title>
+    <link>https://jpcite.com/programs/higashi-kagawa-shi-ikuji-kyuugyou-shutoku-sokushin-jigyou-e36e28.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 250万円 出典: https://www.higashikagawa.jp/soshikikarasagasu/chiikisoseika/hojokin_joseikin/in</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-600a897fbf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>三豊市オーガニックビレッジ宣言</title>
+    <link>https://jpcite.com/programs/mitoyo-shi-ooganikkubirejji-sengen-a62910.html</link>
+    <description>Tier B / 香川県 / 香川県三豊市 / subsidy 出典: https://www.city.mitoyo.lg.jp/kakuka/nousei/norin/3/12655.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6cf12429df</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>三豊市地域農業担い手活性化支援事業</title>
+    <link>https://jpcite.com/programs/mitoyo-shi-chiiki-nougyou-ninaite-kasseika-shien-jigyou-e7a6ab.html</link>
+    <description>Tier C / 香川県 / 香川県三豊市 / subsidy 出典: https://www.city.mitoyo.lg.jp/kakuka/nousei/norin/2/hojilyojigilyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-750d6b8fba</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市農作物被害防止用侵入防止柵設置補助制度</title>
+    <link>https://jpcite.com/programs/takamatsushi-nousakubutsu-higai-boushiyou-shinnyuu-boushi-8a0a7b.html</link>
+    <description>Tier B / 香川県 / 香川県高松市 / subsidy / 上限 5万円 出典: https://www.city.takamatsu.kagawa.jp/smph/jigyosha/sangyou/choujuugai/hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-752e5d918c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>丸亀市離島空き家リフォーム補助金</title>
+    <link>https://jpcite.com/programs/marugameshi-ri-shima-akiya-rifoomu-hojokin-c43e3c.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 250万円 出典: https://www.city.marugame.lg.jp/page/15085.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7da2472bdd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東かがわ市設備投資及び創業等支援補助金</title>
+    <link>https://jpcite.com/programs/higashi-kagawa-shisetsu-bi-toushi-oyobi-sougyou-nado-shien-87edbe.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 250万円 出典: https://www.higashikagawa.jp/soshikikarasagasu/chiikisoseika/hojokin_joseikin/in</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9b8e43a216</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>土地改良事業</title>
+    <link>https://jpcite.com/programs/tochi-kairyou-jigyou-24facd.html</link>
+    <description>Tier C / 香川県 / 香川県高松市 / subsidy 出典: https://www.city.takamatsu.kagawa.jp/kurashi/shinotorikumi/nogyo/totikairyo/kyokuiki.files/kyokuiki.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9c042687fe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策補償制度</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-hoshouseido-b0a567.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 100万円 出典: https://www.city.mitoyo.lg.jp/kakuka/nousei/norin/2/1712.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a45177672b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高松市 多様な農業人材支援事業</title>
+    <link>https://jpcite.com/programs/takamatsushi-tayou-na-nougyou-jinzai-shien-jigyou-6d301d.html</link>
+    <description>Tier B / 香川県 / 市町村 / subsidy 出典: https://www.city.takamatsu.kagawa.jp/smph/jigyosha/sangyou/nogyo/nourin20240604.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-be5b4e5e6a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業振興関係補助金（丸亀市）</title>
+    <link>https://jpcite.com/programs/nougyou-shinkou-kankei-hojokin-marugameshi-bd89b6.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 250万円 出典: https://www.city.marugame.lg.jp/page/15085.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-cf731f8a84</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>三豊市オーガニックビレッジ宣言</title>
+    <link>https://jpcite.com/programs/mitoyo-shi-ooganikkubirejji-sengen-fca37a.html</link>
+    <description>Tier C / 香川県 / （noukaweb 収集） 出典: https://www.city.mitoyo.lg.jp/kakuka/nousei/norin/3/12655.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-dd290f8b89</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東かがわ市未来創生就業定住促進事業助成金（就労奨励金）</title>
+    <link>https://jpcite.com/programs/higashi-kagawa-shi-mirai-sousei-shuugyou-teijuu-sokushin-f145ff.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 5万円 出典: https://www.higashikagawa.jp/soshikikarasagasu/chiikisoseika/hojokin_joseikin/in</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f0ab0b5ad1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東かがわ市をプチ体験！お試し暮らし滞在助成制度</title>
+    <link>https://jpcite.com/programs/higashi-kagawa-shi-wo-puchi-taiken-o-tameshi-kurashi-taizai-4a4991.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 100万円 出典: https://www.higashikagawa.jp/soshikikarasagasu/chiikisoseika/hojokin_joseikin/in</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f2f6e02a30</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町畜産農家経営継続支援事業支援金</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-chikusannouka-keiei-keizoku-shien-jigyou-e55065.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 10万円 出典: https://www.town.ayagawa.lg.jp/category/bunya/sangyo/nogyo/more@docs-group@g_001</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f31d0733a8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東かがわ市未来創生就業定住促進事業助成金（奨学金償還支援）</title>
+    <link>https://jpcite.com/programs/higashi-kagawa-shi-mirai-sousei-shuugyou-teijuu-sokushin-4a3331.html</link>
+    <description>Tier C / 香川県 / subsidy / 上限 36万円 出典: https://www.higashikagawa.jp/soshikikarasagasu/chiikisoseika/hojokin_joseikin/in</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f60a839b4c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾川町新規就農者サポート事業費補助金</title>
+    <link>https://jpcite.com/programs/ayakawa-machi-shinki-shuunou-mono-sapooto-jigyou-hi-hojokin-1976f9.html</link>
+    <description>Tier B / 香川県 / subsidy / 上限 200万円 出典: https://www.town.ayagawa.lg.jp/reiki02/reiki_honbun/r263RG00000831.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ffc45fb5dd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

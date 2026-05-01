@@ -1,0 +1,58 @@
+{
+  "_about": "Machine-readable RSS feed registry for jpcite.com. Used by data-freshness.html and external aggregators.",
+  "publisher": {
+    "name": "jpcite",
+    "site": "https://jpcite.com/"
+  },
+  "feeds": [
+    {
+      "id": "announcements",
+      "title": "jpcite お知らせ",
+      "url": "https://jpcite.com/rss.xml",
+      "scope": "release notes / data ingest / migrations",
+      "max_items": 50,
+      "update_frequency": "ad-hoc"
+    },
+    {
+      "id": "audit-log",
+      "title": "jpcite 変更履歴",
+      "url": "https://jpcite.com/audit-log.rss",
+      "scope": "am_amendment_diff (full field set)",
+      "max_items": 50,
+      "update_frequency": "weekly"
+    },
+    {
+      "id": "programs-tier-s",
+      "title": "jpcite Tier S 制度",
+      "url": "https://jpcite.com/rss/programs-tier-s.xml",
+      "scope": "Tier S programs (補助金 / 融資 / 税制 / 認定 high-trust)",
+      "max_items": 100,
+      "update_frequency": "weekly"
+    },
+    {
+      "id": "amendments",
+      "title": "jpcite 制度改正検出ログ",
+      "url": "https://jpcite.com/rss/amendments.xml",
+      "scope": "am_amendment_diff (programs-only filter)",
+      "max_items": 100,
+      "update_frequency": "monthly"
+    }
+  ],
+  "prefecture_feeds": {
+    "_about": "47 都道府県別 program feeds. Each capped at 100 items (Tier S+A+B+C newest first by source_fetched_at).",
+    "url_pattern": "https://jpcite.com/rss/prefecture/{slug}.xml",
+    "max_items_per_feed": 100,
+    "update_frequency": "weekly",
+    "slugs": [
+      "hokkaido", "aomori", "iwate", "miyagi", "akita", "yamagata", "fukushima",
+      "ibaraki", "tochigi", "gunma", "saitama", "chiba", "tokyo", "kanagawa",
+      "niigata", "toyama", "ishikawa", "fukui", "yamanashi", "nagano",
+      "gifu", "shizuoka", "aichi", "mie",
+      "shiga", "kyoto", "osaka", "hyogo", "nara", "wakayama",
+      "tottori", "shimane", "okayama", "hiroshima", "yamaguchi",
+      "tokushima", "kagawa", "ehime", "kochi",
+      "fukuoka", "saga", "nagasaki", "kumamoto", "oita", "miyazaki", "kagoshima",
+      "okinawa"
+    ]
+  }
+}

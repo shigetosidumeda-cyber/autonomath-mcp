@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 福岡県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/fukuoka.xml" rel="self" type="application/rss+xml" />
+  <description>福岡県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>地域中小企業支援協議会について - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/chiiki-chuushoukigyou-shien-kyougikai-nitsuite-fukuokaken-7deb71.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/shienkyougikai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1b8ac0791a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県トラック運転手確保対策助成事業 - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/fukuokaken-torakku-untenshu-kakuho-taisaku-josei-jigyou-795a60.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/torakkuuntensyu-hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-210b737d25</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年８月９日からの大雨により被災した中小企業の皆様へ - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nen-8-gatsu-9-nichi-karano-ooame-niyori-hisai-shita-265b33.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/070809kinyuushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-50d25b6571</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>原油価格・物価高騰に関する農林漁業者の支援制度について - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/genyukakaku-bukkadaka-tou-ni-kansu-ru-nouringyogyou-mono-no-475b34.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/shiensaku20220608.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-5f77bda93c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>水産業競争力強化緊急施設整備事業に係る事後評価の結果について - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/suisan-gyou-kyousouryoku-kyouka-kinkyuu-shisetsu-seibi-5eba7e.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/kyokashien-jigohyoka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8c8123e68f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>音声読み上げ機能の説明 - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/onsei-yomiage-kinou-no-setsumei-fukuokaken-chou-hoomupeeji-b362f5.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/this-site-etsuranshien-setsumei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a30500374e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>８月９日からの大雨に関する農林漁業者への支援制度と相談窓口について - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/8-gatsu-9-nichi-karano-ooame-ni-kansu-ru-nouringyogyou-mono-bb1dc0.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/hisaishashien-nourinsuisan202508.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d0cc8b74d4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模事業者の新商品開発や販路開拓を応援！～国の小規模事業者持続化補助金＜一般型・通常枠＞の事業者負担を軽減します～ - 福岡県庁ホームページ</title>
+    <link>https://jpcite.com/programs/shoukibo-jigyousha-no-shinshouhin-kaihatsu-ya-hanro-kaitaku-3d9789.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/syoukibojigyousya-kasegutikarakyouka-hojyokinn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-dee1fc41ad</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県相談支援従事者等専門コース別研修事業者について</title>
+    <link>https://jpcite.com/programs/fukuokaken-soudan-shien-juujisha-nado-senmon-koosu-betsu-aaa6e8.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/soudanshiensenmon.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-100fca2bd3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県地域福祉支援計画</title>
+    <link>https://jpcite.com/programs/fukuokaken-chiiki-fukushi-shien-keikaku-d08448.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/chiiki-fukushi-shien-keikaku.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-11aa43b213</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「こども支援オフィス」経済的にお困りで様々な悩みや不安を抱える子育て世帯にワンストップで相談対応します！</title>
+    <link>https://jpcite.com/programs/kodomo-shien-ofisu-keizaiteki-nio-komari-de-samazamana-21fcf1.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/kodomoshienoffice.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-133967c0de</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障がいのある児童等に対する療育支援について</title>
+    <link>https://jpcite.com/programs/shou-gainoaru-jidou-nado-ni-taisuru-ryouiku-shien-nitsuite-d5c33c.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/syougaiziryouikushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2d18572df5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>音声よみあげ</title>
+    <link>https://jpcite.com/programs/onsei-yomiage-c934cb.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/this-site-etsuranshien-setsumei.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-35ecd7758b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市町村の学習支援事業について</title>
+    <link>https://jpcite.com/programs/shichouson-no-gakushuu-shien-jigyou-nitsuite-5a3485.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/shochugakuseigakushushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-378774ca85</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県障がい福祉サービス事業所勤務環境改善促進費補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-shou-gai-fukushi-saabisu-jigyousho-kinmu-cc08dd.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/syougai-kinmukankyou-kaizen.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3a78da550e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県障がい福祉従業者処遇改善緊急支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/fukuokaken-shou-gai-fukushi-juugyou-mono-shoguu-kaizen-742a41.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/syogu-kinnkyu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3ba7a07707</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>テレワーク支援</title>
+    <link>https://jpcite.com/programs/terewaaku-shien-964d0d.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/telework-shien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4d8bd91c0e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県サイクルスタンド整備等補助金について</title>
+    <link>https://jpcite.com/programs/fukuokaken-saikurusutando-seibinado-hojokin-nitsuite-9b1a6e.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/cycle-hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9a95485d54</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>支援プログラムの作成・公表及び公表内容等の届出について</title>
+    <link>https://jpcite.com/programs/shien-puroguramu-no-sakusei-kouhyou-oyobi-kouhyou-2d7a5c.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/shienprogram.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ac4edfad01</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>医療分野における業務効率化・職場環境改善支援事業（県事業名：医療勤務環境DX支援事業）</title>
+    <link>https://jpcite.com/programs/iryou-bunya-niokeru-gyoumu-kouritsuka-shokubakankyou-kaizen-ca05dd.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/dxshien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b830c4d17e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>指定自立支援医療機関（育成医療・更生医療）の申請について</title>
+    <link>https://jpcite.com/programs/shitei-jiritsu-shien-iryoukikan-ikusei-iryou-kousei-iryou-887129.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/ziritushien28.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-babb142c54</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「働く女性のハンドブック」 働くあなたの「知りたい」、「聞きたい」にお答えします</title>
+    <link>https://jpcite.com/programs/hataraku-josei-no-handobukku-hataraku-anatano-shiri-tai-35d95e.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/hatarakujosei-handbook.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c0ce483218</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（4月16日更新）福岡県介護事業所等に対するサービス継続支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/4-gatsu-16-nichi-koushin-fukuokaken-kaigo-jigyousho-nado-ni-c0e215.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/keizokushien2025.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ccfef32810</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県社会福祉施設等物価高騰対策支援金（障がい福祉サービス事業所等分）について</title>
+    <link>https://jpcite.com/programs/fukuokaken-shakaifukushi-shisetsutou-bukkadaka-tou-taisaku-dc85f2.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/shogai-bukka.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d428e0ea25</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度福岡県介護福祉士養成施設教育充実費補助金に関する活用調査について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-fukuokaken-kaigo-fukushi-samurai-b59a28.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/youseisisetsu-kyouikujuujitu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-da3df99a4a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>主任介護支援専門員にかかる各種研修の実施</title>
+    <link>https://jpcite.com/programs/shunin-kaigo-shien-senmon-in-nikakaru-kakushu-kenshuu-no-00940e.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / support 出典: https://www.pref.fukuoka.lg.jp/contents/syuninnkaigoshiennsennmonninn.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dd33adfa25</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【喀痰吸引等研修（３号研修）】福岡県医療的ケア児支援人材育成研修費補助金のご案内</title>
+    <link>https://jpcite.com/programs/kakutan-kyuuin-nado-kenshuu-3-gou-kenshuu-fukuokaken-iryou-dff646.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/3-kakutan.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dfcaf9c95b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県副業・兼業人材活用促進事業費補助金のご案内</title>
+    <link>https://jpcite.com/programs/fukuokaken-fukugyou-kengyou-jinzai-katsuyou-sokushin-jigyou-6647da.html</link>
+    <description>Tier A / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/hukugyoukengyou-subsidy.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ff5550ea0e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県商工会連合会 補助金・助成金 案内ハブ（福岡県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/fukuokaken-shoukou-kai-rengoukai-hojokin-joseikin-annai-203985.html</link>
+    <description>Tier B / 福岡県 / 福岡県商工会連合会 / directory 出典: http://www2.shokokai.ne.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-78d3eadad5</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:45 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 福岡労働局 助成金一覧 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-fukuoka-roudou-kyoku-joseikin-d48666.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / portal_information 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>portal_information</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7ca696692a</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 J-Net21 補助金・助成金ポータル (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-j-net21-hojokin-joseikin-pootaru-b65ac1.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / portal_information 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>portal_information</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f6b98d76af</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:55 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 業務改善助成金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-gyoumu-kaizen-joseikin-annai-1b08d9.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support / 上限 600万円 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-df9b0ed193</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:54 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 ものづくり補助金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-monozukuri-hojokin-annai-746f5d.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4308c4891f</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:52 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 事業再構築補助金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-jigyou-saikouchiku-hojokin-annai-6003a7.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-df03097651</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:50 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 中小企業経営革新・賃上げ緊急支援補助金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-chuushoukigyou-keiei-kakushin-chin-3a7675.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support / 上限 135万円 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-afd099482a</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 中小企業新事業進出促進補助金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-chuushoukigyou-shin-jigyou-d90286.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-78218af64c</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:46 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 中小企業省力化投資補助金 一般型 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-chuushoukigyou-shouryokuka-toushi-c8ee79.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support / 上限 10,000万円 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fbe50db123</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:44 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 福岡県 IT 導入・賃上げ緊急支援補助金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-fukuokaken-it-dounyuu-chin-age-19ce55.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7b790ae4d0</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 デジタル化・AI 導入補助金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-dejitaru-ka-ai-dounyuu-hojokin-annai-100ded.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support / 上限 450万円 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cc4a4b5a34</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:41 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 小規模事業者賃上げ稼ぐ力強化支援補助金 (案内)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-shoukibo-jigyousha-chin-age-kasegu-c88bf6.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-774b5a6928</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:39 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 持続化補助金 創業型 (申請支援)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-jizoku-ka-hojokin-sougyou-kata-4da7e9.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support / 上限 200万円 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a157c5f706</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:37 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡商工会議所 持続化補助金 一般型 通常枠 (申請支援)</title>
+    <link>https://jpcite.com/programs/fukuoka-shoukoukaigisho-jizoku-ka-hojokin-ippankei-tsuujou-fc1277.html</link>
+    <description>Tier B / 福岡県 / 福岡商工会議所 / support / 上限 50万円 出典: https://www.fukunet.or.jp/keieisodan/subsidy</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7804a1a879</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:35 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡市中央卸売市場 3場体制</title>
+    <link>https://jpcite.com/programs/fukuokashi-chuuou-oroshiuri-shijou-3-ba-taisei-0f84c5.html</link>
+    <description>Tier C / 福岡県 / 福岡市（開設者）、農林水産大臣（認定） 出典: https://www.city.fukuoka.lg.jp/nosui/shijo/life/documents/R6shijogaiyo.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-042ffd5784</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 福岡県 こども食堂物価高騰対策支援金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-fukuokaken-kodomo-shokudou-bukkadaka-tou-e28ada.html</link>
+    <description>Tier C / 福岡県 / 福岡県 (地方自治体) 出典: https://www.pref.fukuoka.lg.jp/contents/kodomosyokudou-shien.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3a7069cfc6</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県水道広域化推進プラン (令和5年3月策定)</title>
+    <link>https://jpcite.com/programs/fukuokaken-suidou-kouiki-ka-suishin-puran-reiwa-5-nen-3-c8e067.html</link>
+    <description>Tier C / 福岡県 / 福岡県 出典: https://www.pref.fukuoka.lg.jp/contents/suidoukouikikasuisinnplanken.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6a3a2b3a1a</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 福岡市次世代自動車の普及に向けた支援事業 (充電設備)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-fukuokashi-jisedai-jidousha-no-fukyuu-ni-muke-811419.html</link>
+    <description>Tier C / 福岡県 / 福岡市 環境局 出典: https://www.city.fukuoka.lg.jp/kankyo/j-suishin/hp/ev_hojo.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-74cda3c1d8</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県パートナーシップ宣誓制度・九州地域広域連携</title>
+    <link>https://jpcite.com/programs/fukuokaken-paatonaashippu-sensei-seido-kyuushuu-chiiki-66a9d0.html</link>
+    <description>Tier C / 福岡県 / 福岡県 人権・同和対策局 出典: https://www.pref.fukuoka.lg.jp/contents/fukuokapartnership.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9c8f97b1a3</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特定生物由来製品の薬局管理 (記録20年保存)</title>
+    <link>https://jpcite.com/programs/tokutei-seibutsu-yurai-seihin-no-yakkyoku-kanri-kiroku-20-b1f3b3.html</link>
+    <description>Tier C / 福岡県 / 厚生労働省 / PMDA 出典: https://www.pref.fukuoka.lg.jp/contents/tokuteiseibutu-qa.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f906b7cec2</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡市 見本市等開催助成金 / 地元ファッション海外展開・EC強化支援</title>
+    <link>https://jpcite.com/programs/fukuokashi-mihon-ichi-nado-kaisai-joseikin-jimoto-fasshon-6dfe55.html</link>
+    <description>Tier C / 福岡県 / 福岡市経済観光文化局 / subsidy / 上限 1,000万円 出典: https://www.city.fukuoka.lg.jp/keizai/contents/business/kaigaitennkaieckyouka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b22ef884cb</guid>
+    <pubDate>Thu, 23 Apr 2026 17:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡市 グローバル創業・雇用創出特区</title>
+    <link>https://jpcite.com/programs/fukuokashi-guroobaru-sougyou-koyou-soushutsu-tokku-70d45b.html</link>
+    <description>Tier C / 福岡県 / 内閣府 / 福岡市 / regulatory_sandbox 出典: https://www.city.fukuoka.lg.jp/soki/kikaku/fukuoka_tokku_top.html</description>
+    <category>regulatory_sandbox</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-67b2c03173</guid>
+    <pubDate>Thu, 23 Apr 2026 14:15:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北九州市クールオフィス・サポートプロジェクト助成金</title>
+    <link>https://jpcite.com/programs/kitakyuushuushi-kuuruofisu-sapootopurojiekuto-joseikin-f4968b.html</link>
+    <description>Tier C / 福岡県 / 北九州市産業経済局 / subsidy 出典: https://www.city.kitakyushu.lg.jp/san-kei/10700001.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0a4ef01e3f</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度福岡市地域経済循環創造事業補助金(ローカル10,000プロジェクト)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-fukuokashi-chiiki-keizai-junkan-souzou-jigyou-f51761.html</link>
+    <description>Tier C / 福岡県 / 福岡市総務企画局企画調整部 / subsidy 出典: https://www.city.fukuoka.lg.jp/soki/kikaku/shisei/local10000_project/2025boshu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-103227daac</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度福岡市研究開発型スタートアップ成長支援事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-fukuokashi-kenkyuukaihatsu-kata-sutaatoappu-70cccc.html</link>
+    <description>Tier C / 福岡県 / 福岡市経済観光文化局 / subsidy 出典: https://www.city.fukuoka.lg.jp/keizai/sangakurenkei/business/kenkyukaihatsu_hojokin_2025.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-19350fa93d</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度福岡市新規創業促進補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-fukuokashi-shinki-sougyou-sokushin-hojokin-80658b.html</link>
+    <description>Tier C / 福岡県 / 福岡市経済観光文化局 / subsidy 出典: https://www.city.fukuoka.lg.jp/keizai/r-support/business/tokutei-sougyou-sientoujigyou_07.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-65a15fb782</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北九州市環境未来ビジネス創出助成</title>
+    <link>https://jpcite.com/programs/kitakyuushuushi-kankyou-mirai-bijinesu-soushutsu-josei-0859d5.html</link>
+    <description>Tier C / 福岡県 / 北九州市環境局 / subsidy 出典: https://www.city.kitakyushu.lg.jp/contents/924_11329.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6b5f569bc4</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度福岡市事業所の省エネ設備導入支援事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-fukuokashi-jigyousho-no-shouene-setsubi-b92dd2.html</link>
+    <description>Tier C / 福岡県 / 福岡市環境局 / subsidy 出典: https://www.city.fukuoka.lg.jp/kankyo/j-suishin/hp/shoenesetsubi_reiwa_6.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7efcde9a2b</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北九州市スポットワーク人材確保補助金</title>
+    <link>https://jpcite.com/programs/kitakyuushuushi-supottowaaku-jinzai-kakuho-hojokin-5ddff0.html</link>
+    <description>Tier C / 福岡県 / 北九州市産業経済局 / subsidy 出典: https://www.city.kitakyushu.lg.jp/contents/09801348_00001.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8bf449a955</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度北九州市生産性向上・賃金引上げ応援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kitakyuushuushi-seisansei-koujou-chingin-4dc8aa.html</link>
+    <description>Tier C / 福岡県 / 北九州市産業経済局中小企業振興課 / subsidy 出典: https://www.city.kitakyushu.lg.jp/contents/09801348.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9da01abd9a</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北九州市地域中核企業等成長促進トライアル補助金</title>
+    <link>https://jpcite.com/programs/kitakyuushuushi-chiiki-chuukaku-kigyou-nado-seichou-6f273a.html</link>
+    <description>Tier C / 福岡県 / 北九州市産業経済局 / subsidy 出典: https://www.city.kitakyushu.lg.jp/contents/099_00002.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c3ccd01687</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北九州市従業員エンゲージメント職場環境づくり応援助成金</title>
+    <link>https://jpcite.com/programs/kitakyuushuushi-juugyouin-engeejimento-shokubakankyou-f10b5b.html</link>
+    <description>Tier C / 福岡県 / 北九州市産業経済局 / subsidy 出典: https://www.city.kitakyushu.lg.jp/contents/10700001.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f4a922f9f2</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業省エネ設備導入補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-shouene-setsubi-dounyuu-hojokin-a2c232.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 500万円 出典: https://www.pref.fukuoka.lg.jp/life/4/32/134/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0455fce0fa</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業M&amp;A支援事業</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-m-a-shien-jigyou-61076b.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 100万円 出典: https://www.pref.fukuoka.lg.jp/life/4/32/134/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-05470f2a85</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業生産性向上・賃上げ緊急支援補助金(大規模30-60円)</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-seisansei-koujou-chin-age-kinkyuu-c66419.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部中小企業技術振興課 / subsidy / 上限 2,250万円 出典: https://www.pref.fukuoka.lg.jp/contents/productivity-improvement-subsidy-2025-26.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-20b560ab2c</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業経営革新・賃上げ緊急支援補助金(30-60円)</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-keiei-kakushin-chin-age-kinkyuu-42fb8c.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部スタートアップ推進課 / subsidy / 上限 120万円 出典: https://www.pref.fukuoka.lg.jp/contents/fukuoka-chinage.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-243be6124f</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業生産性向上・賃上げ緊急支援補助金(小規模)</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-seisansei-koujou-chin-age-kinkyuu-1c278b.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部中小企業技術振興課 / subsidy / 上限 225万円 出典: https://www.pref.fukuoka.lg.jp/contents/productivity-improvement-subsidy-2025-26.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-24987a89b3</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県観光振興補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-kankou-shinkou-hojokin-ea302a.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部観光政策課 / subsidy / 上限 300万円 出典: https://www.pref.fukuoka.lg.jp/life/4/32/134/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-721d49a4c8</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県トラック運転手確保対策助成事業</title>
+    <link>https://jpcite.com/programs/fukuokaken-torakku-untenshu-kakuho-taisaku-josei-jigyou-1cbac8.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 60万円 出典: https://www.pref.fukuoka.lg.jp/contents/torakkuuntensyu-hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-86817a452e</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県働き方改革推進助成金</title>
+    <link>https://jpcite.com/programs/fukuokaken-hataraki-hou-kaikaku-suishin-joseikin-6d4a8e.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 50万円 出典: https://hatarakikatakaeru.pref.fukuoka.lg.jp/support/subsidy.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-884122221d</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県金融機関進出促進補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-kinyuukikan-shinshutsu-sokushin-hojokin-d1951c.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 1,000万円 出典: https://www.kigyorichi.pref.fukuoka.lg.jp/preferentiall/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9615e1c3c2</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県企業立地促進補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-kigyou-ritchi-sokushin-hojokin-df0b68.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 50,000万円 出典: https://www.kigyorichi.pref.fukuoka.lg.jp/preferentiall/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aa690fdfd6</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業技術開発支援補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-gijutsukaihatsu-shien-hojokin-7ea5cb.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部中小企業技術振興課 / subsidy / 上限 500万円 出典: https://www.pref.fukuoka.lg.jp/soshiki/9101223/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aee8d5dda0</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県女性活躍推進補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-josei-katsuyaku-suishin-hojokin-d5c589.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 30万円 出典: https://www.pref.fukuoka.lg.jp/life/4/32/134/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b3a9bec704</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県DX推進補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-dx-suishin-hojokin-3fb1ad.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 100万円 出典: https://www.pref.fukuoka.lg.jp/life/4/32/134/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b4e3d6ad3c</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業IT導入・賃上げ緊急支援補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-it-dounyuu-chin-age-kinkyuu-shien-d93483.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 100万円 出典: https://www.pref.fukuoka.lg.jp/contents/tyusyoukigyou-itdounyu-tinage-kinkyusien-hojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c1069de346</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業生産性向上・賃上げ緊急支援補助金(大規模60円以上)</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-seisansei-koujou-chin-age-kinkyuu-d033df.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部中小企業技術振興課 / subsidy / 上限 2,250万円 出典: https://www.pref.fukuoka.lg.jp/contents/productivity-improvement-subsidy-2025-26.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d00a5ea772</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県小規模事業者持続化補助金(県負担分)</title>
+    <link>https://jpcite.com/programs/fukuokaken-shoukibo-jigyousha-jizoku-ka-hojokin-ken-futan-88efb8.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 50万円 出典: https://www.pref.fukuoka.lg.jp/contents/syoukibojigyousya-kasegutikarakyouka-hojyokinn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d059d760a8</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県商店街活性化補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-shoutengai-kasseika-hojokin-ac4825.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 500万円 出典: https://www.pref.fukuoka.lg.jp/life/4/32/134/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f114908e72</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業事業承継支援補助金</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-jigyou-shoukei-shien-hojokin-09debd.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部 / subsidy / 上限 100万円 出典: https://www.pref.fukuoka.lg.jp/life/4/32/134/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f75529c5e2</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県中小企業経営革新・賃上げ緊急支援補助金(60円以上)</title>
+    <link>https://jpcite.com/programs/fukuokaken-chuushoukigyou-keiei-kakushin-chin-age-kinkyuu-c9c08e.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部スタートアップ推進課 / subsidy / 上限 135万円 出典: https://www.pref.fukuoka.lg.jp/contents/fukuoka-chinage.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f998f836f9</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県起業支援金</title>
+    <link>https://jpcite.com/programs/fukuokaken-kigyou-shien-kin-1aebad.html</link>
+    <description>Tier C / 福岡県 / 福岡県商工部スタートアップ推進課 / subsidy / 上限 200万円 出典: https://www.pref.fukuoka.lg.jp/soshiki/601820/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fabe3ffb9d</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡市宿泊税条例</title>
+    <link>https://jpcite.com/programs/fukuokashi-shukuhaku-zei-jourei-f5415e.html</link>
+    <description>Tier C / 福岡県 / 福岡市 / tax_reduction_by_ordinance 出典: https://www.city.fukuoka.lg.jp/zaisei/zeisei/life/syuku001.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-29e899db17</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県 競争入札参加資格 (物品・サービス関係)</title>
+    <link>https://jpcite.com/programs/fukuokaken-kyousounyuusatsu-sankashikaku-buppin-saabisu-7d22b6.html</link>
+    <description>Tier C / 福岡県 / 福岡県総務部財産活用課 / qualification 出典: https://www.pref.fukuoka.lg.jp/contents/nyuusatusannkasikakubuppinn.html</description>
+    <category>qualification</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a1a0c501f1</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡市 Web3 国家戦略特区提案</title>
+    <link>https://jpcite.com/programs/fukuokashi-web3-kokkasenryaku-tokku-teian-279052.html</link>
+    <description>Tier C / 福岡県 / 福岡市・内閣府 地方創生推進事務局 / sandbox 出典: https://www.city.fukuoka.lg.jp/keizai/r-support/business/web3.html</description>
+    <category>sandbox</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fa7063552d</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡県 サイバーセキュリティ確保方針</title>
+    <link>https://jpcite.com/programs/fukuokaken-saibaasekyuritei-kakuho-houshin-ca1fed.html</link>
+    <description>Tier C / 福岡県 / 福岡県 / policy 出典: https://www.pref.fukuoka.lg.jp/contents/cybersecurity.html</description>
+    <category>policy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cc6351ce15</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農産物輸出支援</title>
+    <link>https://jpcite.com/programs/nousanbutsu-yushutsu-shien-0bf1a7.html</link>
+    <description>Tier B / 福岡県 / subsidy / 上限 100万円 出典: https://www.city.kurume.fukuoka.jp/1090sangyou/2070nourin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-04a92e7060</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北九州市 農業機械設備等購入補助制度</title>
+    <link>https://jpcite.com/programs/kitakyuushuushi-nougyou-kikai-setsubi-nado-kounyuu-hojo-adc586.html</link>
+    <description>Tier B / 福岡県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.kitakyushu.lg.jp/contents/109_00005.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-09f1e70d59</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>家族経営協定支援</title>
+    <link>https://jpcite.com/programs/kazoku-keiei-kyoutei-shien-7bfa06.html</link>
+    <description>Tier C / 福岡県 / subsidy / 上限 100万円 出典: https://www.city.yame.fukuoka.jp/soshiki/nougyou_ringyo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0a1c39218f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-40-101_福岡_園芸版DXスマート農業機械導入支援</title>
+    <link>https://jpcite.com/programs/pref-40-101-fukuoka-engei-han-dx-sumaato-nougyou-kikai-1a4b9c.html</link>
+    <description>Tier B / 福岡県 / subsidy / 上限 500万円 出典: https://www.pref.fukuoka.lg.jp/contents/agri-guide1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0ee05ddbbe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-40-102_福岡_6次産業化推進事業費補助金</title>
+    <link>https://jpcite.com/programs/pref-40-102-fukuoka-6-tsugi-sangyouka-suishin-jigyou-hi-1f63b9.html</link>
+    <description>Tier C / 福岡県 / subsidy / 上限 100万円 出典: https://www.pref.fukuoka.lg.jp/contents/6jikashouhin-sec5.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0fc832ffcc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>水田農業DX推進事業（福岡県）</title>
+    <link>https://jpcite.com/programs/suiden-nougyou-dx-suishin-jigyou-fukuokaken-3c3186.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/agri-guide1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-10bca6eefa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>強い農業構造確立推進事業</title>
+    <link>https://jpcite.com/programs/tsuyoi-nougyou-kouzou-kakuritsu-suishin-jigyou-69d0ea.html</link>
+    <description>Tier B / 福岡県 / subsidy / 上限 100万円 出典: https://www.city.kurume.fukuoka.jp/1090sangyou/2070nourin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-115583e66b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度大川市がんばる農業支援事業（園芸施設整備支援事業）</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-ookawa-shi-ganbaru-nougyou-shien-jigyou-engei-78f8c8.html</link>
+    <description>Tier B / 福岡県 / （noukaweb 収集） / 上限 150万円 出典: https://www.city.okawa.lg.jp/s039/010/010/120/20230511174612.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-138b140f17</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高能力牛群改良推進事業 博多和牛ブランド強化対策事業（福岡県）</title>
+    <link>https://jpcite.com/programs/kounou-chikara-gyuugun-kairyou-suishin-jigyou-hakata-wagyuu-ed9fd9.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/agri-guide1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-152971914b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福岡 スマート農業機械等導入支援 地域型サービス支援</title>
+    <link>https://jpcite.com/programs/fukuoka-sumaato-nougyou-kikai-nado-dounyuu-shien-chiiki-e56c69.html</link>
+    <description>Tier A / 福岡県 / 都道府県 / subsidy / 上限 5,000万円 出典: https://www.pref.fukuoka.lg.jp/contents/sien-service.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17414f2b6e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八女市農地銀行</title>
+    <link>https://jpcite.com/programs/yame-shi-nouchi-ginkou-2bac5d.html</link>
+    <description>Tier C / 福岡県 / subsidy / 上限 100万円 出典: https://www.city.yame.fukuoka.jp/soshiki/nougyou_ringyo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-189f2cf4a6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者の支援事業 経営開始資金</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-no-shien-jigyou-keiei-kaishi-shikin-e90617.html</link>
+    <description>Tier C / 福岡県 / 農林水産省 / subsidy / 上限 150万円 出典: https://www.city.asakura.lg.jp/www/contents/1688091607537/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1a58c02c00</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-40-103_福岡_スマート農業機械等導入支援_地域型サービス支援</title>
+    <link>https://jpcite.com/programs/pref-40-103-fukuoka-sumaato-nougyou-kikai-nado-dounyuu-8420fd.html</link>
+    <description>Tier B / 福岡県 / subsidy / 上限 1,500万円 出典: https://www.pref.fukuoka.lg.jp/contents/sien-service.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1f79536e53</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害鳥獣対策支援</title>
+    <link>https://jpcite.com/programs/yuugai-choujuu-taisaku-shien-d9e6ef.html</link>
+    <description>Tier B / 福岡県 / subsidy / 上限 100万円 出典: https://www.city.kurume.fukuoka.jp/1090sangyou/2070nourin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1f8fdb26e8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定農業者の認定申請</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-no-nintei-shinsei-9a2e4d.html</link>
+    <description>Tier C / 福岡県 / subsidy / 上限 100万円 出典: https://www.city.yame.fukuoka.jp/soshiki/nougyou_ringyo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2045dac6ce</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年等就農計画認定制度（認定新規就農者）</title>
+    <link>https://jpcite.com/programs/seinen-nado-shuunou-keikaku-ninteiseido-nintei-shinki-7c128b.html</link>
+    <description>Tier B / 福岡県 / 福岡県糸島市 / subsidy 出典: https://www.city.itoshima.lg.jp/s024/050/080/ninnteishinki.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2293683c44</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

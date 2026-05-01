@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 奈良県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/nara.xml" rel="self" type="application/rss+xml" />
+  <description>奈良県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>奈良県公式ホームページ</title>
+    <link>https://jpcite.com/programs/naraken-koushiki-hoomupeeji-92a6d6.html</link>
+    <description>Tier B / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/kenseijouhou/chiikishinkou/shichousonshien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-108934d114</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県公式ホームページ</title>
+    <link>https://jpcite.com/programs/naraken-koushiki-hoomupeeji-7713d3.html</link>
+    <description>Tier B / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/shigoto/roudou/shien/shigotoicenter/narashigotoicenter/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1632d82fb2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県公式ホームページ</title>
+    <link>https://jpcite.com/programs/naraken-koushiki-hoomupeeji-bf9e34.html</link>
+    <description>Tier B / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/kenseijouhou/chiikishinkou/shichousonshien/zeisei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-50273ae7d4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県公式ホームページ</title>
+    <link>https://jpcite.com/programs/naraken-koushiki-hoomupeeji-4f2d67.html</link>
+    <description>Tier B / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/shigoto/roudou/shien/shigotoicenter/narashigotoicenter/seminar/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-711ca39a69</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県公式ホームページ</title>
+    <link>https://jpcite.com/programs/naraken-koushiki-hoomupeeji-9bcfc3.html</link>
+    <description>Tier B / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/n107/66466.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-88ca4ecab9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県公式ホームページ</title>
+    <link>https://jpcite.com/programs/naraken-koushiki-hoomupeeji-92e596.html</link>
+    <description>Tier B / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/kenseijouhou/chiikishinkou/shichousonshien/zaisei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a661d66d65</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県公式ホームページ</title>
+    <link>https://jpcite.com/programs/naraken-koushiki-hoomupeeji-11a8a8.html</link>
+    <description>Tier B / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/shigoto/roudou/shien/shigotoicenter/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-edad359949</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害者手帳・手当・助成</title>
+    <link>https://jpcite.com/programs/shougaisha-techou-teate-josei-728528.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.lg.jp/kenkou/shougaifukushi/josei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-47823410a7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>金融支援</title>
+    <link>https://jpcite.com/programs/kinyuu-shien-63711d.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / support 出典: https://www.pref.nara.lg.jp/shigoto/sangyoushinkou/kinyuushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5ddc60300b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害者支援</title>
+    <link>https://jpcite.com/programs/shougaisha-shien-0b285e.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / support 出典: https://www.pref.nara.lg.jp/kenkou/shougaifukushi/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-779393506d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>創業・起業支援</title>
+    <link>https://jpcite.com/programs/sougyou-kigyou-shien-a6c918.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / support 出典: https://www.pref.nara.lg.jp/shigoto/sangyoushinkou/kigyoushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7c46c7087a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就業支援</title>
+    <link>https://jpcite.com/programs/shuugyou-shien-379ab9.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / support 出典: https://www.pref.nara.lg.jp/shigoto/roudou/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7f6178ce57</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>技術支援</title>
+    <link>https://jpcite.com/programs/gijutsushien-1c8cdd.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / support 出典: https://www.pref.nara.lg.jp/shigoto/sangyoushinkou/gijutsushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a251e2687c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>住宅支援</title>
+    <link>https://jpcite.com/programs/juutaku-shien-5084f7.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / support 出典: https://www.pref.nara.lg.jp/kurashi/juutaku/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-afd109283b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>芸術団体支援</title>
+    <link>https://jpcite.com/programs/geijutsu-dantai-shien-30fda9.html</link>
+    <description>Tier A / 奈良県 / 奈良県 / support 出典: https://www.pref.nara.lg.jp/kankou/bunka/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b3d5ac7469</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県商工会連合会 補助金・助成金 案内ハブ（奈良県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/naraken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-d9d964.html</link>
+    <description>Tier B / 奈良県 / 奈良県商工会連合会 / directory 出典: http://www.shokoren-nara.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-075f2a6b89</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:36 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県広域水道企業団 (令和7年4月統合)</title>
+    <link>https://jpcite.com/programs/naraken-kouiki-suidou-kigyou-dan-reiwa-7-nen-4-gatsu-tougou-1623ad.html</link>
+    <description>Tier C / 奈良県 / 奈良県広域水道企業団 出典: https://www.union.nara-water.lg.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-822c10f664</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良市海外販路拡大支援事業</title>
+    <link>https://jpcite.com/programs/narashi-kaigai-hanro-kakudai-shien-jigyou-dc44f8.html</link>
+    <description>Tier C / 奈良県 / 奈良市産業政策課 / subsidy 出典: https://www.city.nara.lg.jp/site/jigyosyashien/list932.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-078baad5bc</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良市中小企業等新たな挑戦支援補助金</title>
+    <link>https://jpcite.com/programs/narashi-chuushoukigyou-nado-arata-na-chousen-shien-hojokin-352a65.html</link>
+    <description>Tier C / 奈良県 / 奈良市産業政策課 / subsidy / 上限 30万円 出典: https://www.city.nara.lg.jp/soshiki/109/180941.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0d7e0200cd</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良市中小商業者等にぎわい創出事業補助金</title>
+    <link>https://jpcite.com/programs/narashi-chuushou-shougyou-mono-nado-nigiwai-soushutsu-e337d8.html</link>
+    <description>Tier C / 奈良県 / 奈良市産業政策課 / subsidy / 上限 50万円 出典: https://www.city.nara.lg.jp/soshiki/109/180563.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8ce1a30bb9</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県中小企業省力化・生産性向上設備投資支援補助金</title>
+    <link>https://jpcite.com/programs/naraken-chuushoukigyou-shouryokuka-seisansei-koujou-1bd419.html</link>
+    <description>Tier C / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/69203.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-04663bb5dd</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県観光振興補助金</title>
+    <link>https://jpcite.com/programs/naraken-kankou-shinkou-hojokin-359483.html</link>
+    <description>Tier C / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/66466.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0d287834bd</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県プロフェッショナル人材確保支援補助金</title>
+    <link>https://jpcite.com/programs/naraken-purofesshonaru-jinzai-kakuho-shien-hojokin-39a161.html</link>
+    <description>Tier C / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/47179.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-10160dbb74</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県起業家支援事業</title>
+    <link>https://jpcite.com/programs/naraken-kigyouka-shien-jigyou-888fc7.html</link>
+    <description>Tier C / 奈良県 / 奈良県 / subsidy / 上限 200万円 出典: https://www.pref.nara.jp/68792.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-802aa52d86</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良県中小企業等再起支援事業補助金</title>
+    <link>https://jpcite.com/programs/naraken-chuushoukigyou-nado-saiki-shien-jigyou-hojokin-233ad7.html</link>
+    <description>Tier C / 奈良県 / 奈良県 / subsidy 出典: https://www.pref.nara.jp/55842.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b52b79fc2e</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇陀市農地・農業用施設維持管理に伴う重機借上げ補助金</title>
+    <link>https://jpcite.com/programs/uda-shi-nouchi-nougyouyou-shisetsu-ijikanri-ni-tomonau-e7990a.html</link>
+    <description>Tier B / 奈良県 / subsidy / 上限 4万円 出典: https://www.city.uda.lg.jp/soshiki/24/2655.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-33c71db0c5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇陀市雨除けハウス設置事業補助金</title>
+    <link>https://jpcite.com/programs/uda-shi-ame-nozoke-hausu-setchi-jigyou-hojokin-ba7574.html</link>
+    <description>Tier B / 奈良県 / subsidy / 上限 50万円 出典: https://www.city.uda.lg.jp/soshiki/24/2655.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-47f41c0075</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良市スマート農業推進補助金事業</title>
+    <link>https://jpcite.com/programs/narashi-sumaato-nougyou-suishin-hojokin-jigyou-641868.html</link>
+    <description>Tier B / 奈良県 / equipment / 上限 150万円 出典: https://www.city.nara.lg.jp/site/newfarmer/201359.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-571e65000a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>五條市新規雇用就農者応援補助金</title>
+    <link>https://jpcite.com/programs/gojou-shi-shinki-koyou-shuunou-mono-ouen-hojokin-fcc9fb.html</link>
+    <description>Tier A / 奈良県 / 奈良県五條市 / subsidy / 上限 30万円 出典: https://www.city.gojo.lg.jp/soshiki/sangyoshinko/2_2/12055.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8f8e5caa4d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>五條市新規雇用就農者応援補助金</title>
+    <link>https://jpcite.com/programs/gojou-shi-shinki-koyou-shuunou-mono-ouen-hojokin-b91b74.html</link>
+    <description>Tier B / 奈良県 / （noukaweb 収集） 出典: https://www.city.gojo.lg.jp/soshiki/sangyoshinko/2_2/12055.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-97bf1913c5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良市 スマート農業推進補助金</title>
+    <link>https://jpcite.com/programs/narashi-sumaato-nougyou-suishin-hojokin-361119.html</link>
+    <description>Tier A / 奈良県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.nara.lg.jp/soshiki/110/206008.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-97d0f28956</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奈良 なら農商工連携ファンド事業助成金</title>
+    <link>https://jpcite.com/programs/nara-nara-nou-shoukou-renkei-fando-jigyou-joseikin-73ac5b.html</link>
+    <description>Tier C / 奈良県 / 都道府県 / grant / 上限 400万円 出典: https://www.pref.nara.jp/7452.htm</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-aeeb053f09</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-292010-001_奈良市_スマート農業推進補助金</title>
+    <link>https://jpcite.com/programs/mun-292010-001-narashi-sumaato-nougyou-suishin-hojokin-3ac777.html</link>
+    <description>Tier A / 奈良県 / subsidy / 上限 100万円 出典: https://www.city.nara.lg.jp/soshiki/110/206008.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b37fa76f3e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-29-201_奈良_なら農商工連携ファンド事業助成金</title>
+    <link>https://jpcite.com/programs/pref-29-201-nara-nara-nou-shoukou-renkei-fando-jigyou-7f9001.html</link>
+    <description>Tier C / 奈良県 / grant / 上限 400万円 出典: https://www.pref.nara.jp/7452.htm</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b45bf6158d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度三宅町水稲病害虫防除事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-miyake-machi-suitou-byougaichuu-boujo-jigyou-a71fc3.html</link>
+    <description>Tier C / 奈良県 / 奈良県三宅町 / subsidy 出典: https://www.town.miyake.lg.jp/assets/%E4%B8%89%E5%AE%85%E7%94%BA%E6%B0%B4%E7%A8%B2%E7%97%85%E5%AE%B3%E8%99%AB%E9%98%B2%E9%99%A4%E4%BA%8B%E6%A5%AD%E8%A3%9C%E5%8A%A9%E9%87%91%E4%BA%A4%E4%BB%98%E8%A6%81%E7%B6%B1_1.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ca708c2e30</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇陀市暗渠排水設置事業補助金</title>
+    <link>https://jpcite.com/programs/uda-shi-ankyo-haisui-setchi-jigyou-hojokin-adc299.html</link>
+    <description>Tier B / 奈良県 / subsidy / 上限 250万円 出典: https://www.city.uda.lg.jp/soshiki/24/2655.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d4055accad</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

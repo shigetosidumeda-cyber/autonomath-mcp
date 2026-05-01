@@ -174,7 +174,11 @@ def _is_publicly_attributable(target_name: str | None, houjin_bangou: str | None
     return any(suffix in target_name for suffix in HOUJIN_SUFFIXES)
 
 
-def _load_autonomath_rows(con: sqlite3.Connection) -> list[EnforcementRow]:
+def _load_autonomath_rows(
+    con: sqlite3.Connection,
+    *,
+    max_issuance_date: str,
+) -> list[EnforcementRow]:
     """Pull the publicly-attributable subset of am_enforcement_detail."""
     cur = con.execute(
         """
@@ -187,8 +191,10 @@ def _load_autonomath_rows(con: sqlite3.Connection) -> list[EnforcementRow]:
         WHERE source_url IS NOT NULL
           AND source_url != ''
           AND issuance_date IS NOT NULL
+          AND issuance_date <= ?
         ORDER BY issuance_date DESC, enforcement_id DESC
-        """
+        """,
+        (max_issuance_date,),
     )
     rows: list[EnforcementRow] = []
     for r in cur:
@@ -229,9 +235,21 @@ def _load_autonomath_rows(con: sqlite3.Connection) -> list[EnforcementRow]:
     return rows
 
 
-def _summary_counts(con: sqlite3.Connection) -> dict[str, object]:
+def _summary_counts(
+    con: sqlite3.Connection,
+    *,
+    max_issuance_date: str,
+) -> dict[str, object]:
     """Roll-up counts for the index page (run on the FULL 22,258 corpus)."""
-    cur = con.execute("SELECT count(*) FROM am_enforcement_detail")
+    cur = con.execute(
+        """
+        SELECT count(*)
+        FROM am_enforcement_detail
+        WHERE issuance_date IS NOT NULL
+          AND issuance_date <= ?
+        """,
+        (max_issuance_date,),
+    )
     total = int(cur.fetchone()[0])
     by_authority = dict(
         con.execute(
@@ -239,10 +257,13 @@ def _summary_counts(con: sqlite3.Connection) -> dict[str, object]:
             SELECT issuing_authority, count(*) c
             FROM am_enforcement_detail
             WHERE issuing_authority IS NOT NULL AND issuing_authority != ''
+              AND issuance_date IS NOT NULL
+              AND issuance_date <= ?
             GROUP BY issuing_authority
             ORDER BY c DESC
             LIMIT 20
-            """
+            """,
+            (max_issuance_date,),
         ).fetchall()
     )
     by_kind = dict(
@@ -251,9 +272,12 @@ def _summary_counts(con: sqlite3.Connection) -> dict[str, object]:
             SELECT enforcement_kind, count(*) c
             FROM am_enforcement_detail
             WHERE enforcement_kind IS NOT NULL
+              AND issuance_date IS NOT NULL
+              AND issuance_date <= ?
             GROUP BY enforcement_kind
             ORDER BY c DESC
-            """
+            """,
+            (max_issuance_date,),
         ).fetchall()
     )
     by_year = dict(
@@ -262,23 +286,39 @@ def _summary_counts(con: sqlite3.Connection) -> dict[str, object]:
             SELECT substr(issuance_date, 1, 4) y, count(*) c
             FROM am_enforcement_detail
             WHERE issuance_date IS NOT NULL
+              AND issuance_date <= ?
             GROUP BY y
             ORDER BY y DESC
             LIMIT 12
-            """
+            """,
+            (max_issuance_date,),
         ).fetchall()
     )
     cur = con.execute(
         "SELECT count(*) FROM am_enforcement_detail "
-        "WHERE houjin_bangou IS NOT NULL AND length(houjin_bangou)=13"
+        "WHERE houjin_bangou IS NOT NULL AND length(houjin_bangou)=13 "
+        "AND issuance_date IS NOT NULL AND issuance_date <= ?",
+        (max_issuance_date,),
     )
     with_bangou = int(cur.fetchone()[0])
+    range_row = con.execute(
+        """
+        SELECT MIN(substr(issuance_date, 1, 4)) AS min_year,
+               MAX(substr(issuance_date, 1, 4)) AS max_year
+        FROM am_enforcement_detail
+        WHERE issuance_date IS NOT NULL
+          AND issuance_date <= ?
+        """,
+        (max_issuance_date,),
+    ).fetchone()
     return {
         "total": total,
         "by_authority": by_authority,
         "by_kind": by_kind,
         "by_year": by_year,
         "with_bangou": with_bangou,
+        "min_year": range_row[0] if range_row else None,
+        "max_year": range_row[1] if range_row else None,
     }
 
 
@@ -385,8 +425,8 @@ _HEAD_TEMPLATE = """<!DOCTYPE html>
 <meta name="theme-color" content="#ffffff">
 <title>{title}</title>
 <meta name="description" content="{description}">
-<meta name="author" content="Bookyou株式会社">
-<meta name="publisher" content="Bookyou株式会社">
+<meta name="author" content="jpcite">
+<meta name="publisher" content="jpcite">
 <meta name="robots" content="{robots}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{description}">
@@ -432,15 +472,14 @@ _FOOTER_TEMPLATE = """
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">
  <a href="/tos.html">利用規約</a>
  <a href="/privacy.html">プライバシー</a>
  <a href="/tokushoho.html">特定商取引法</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ <a href="/about.html">運営情報</a>
  </nav>
- <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ <p class="footer-copy">&copy; 2026 jpcite</p>
  <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
  </div>
 </footer>
@@ -462,6 +501,8 @@ def _render_index(
     by_authority = summary["by_authority"]
     by_kind = summary["by_kind"]
     by_year = summary["by_year"]
+    min_year = summary.get("min_year") or "不明"
+    max_year = summary.get("max_year") or "不明"
 
     description = (
         f"日本の行政処分 {total:,} 件の公開記録を一次資料 URL 付きで集計。"
@@ -484,7 +525,7 @@ def _render_index(
     parts.append(
         f'<article><header><h1>行政処分 公開記録 サマリー</h1>'
         f'<p class="byline"><span class="updated">生成日時: {generated_at}</span>'
-        f' <span class="sep">/</span> <span class="author">Bookyou株式会社 (梅田茂利)</span></p>'
+        f' <span class="sep">/</span> <span class="author">jpcite</span></p>'
         f"</header>"
     )
     # Honest disclaimer prominently at the top of the body.
@@ -503,7 +544,8 @@ def _render_index(
         "(個人事業主・特定個人は除外)</li>"
         f"<li>静的詳細ページ生成数: <strong>{detail_count:,}</strong> 件 "
         "(残りは API 経由 — 匿名 3 req/日 無料)</li>"
-        f"<li>収録対象期間: 1998年〜2030年 (公表済み処分日ベース)</li>"
+        f"<li>収録対象期間: {_esc(str(min_year))}年〜{_esc(str(max_year))}年 "
+        "(公表済み処分日ベース)</li>"
         f"</ul>"
         "</section>"
     )
@@ -621,7 +663,7 @@ def _render_detail(
         f'<span class="source">出典: <a href="{_esc(row.source_url)}" '
         'rel="external nofollow noopener">公式プレスリリース</a></span>'
         '<span class="sep">/</span> '
-        '<span class="author">Bookyou株式会社 (梅田茂利)</span>'
+        '<span class="author">jpcite</span>'
         "</p>"
         '<p class="byline-note muted">※公表時点の記録です。'
         "現在は撤回・取消・期間満了している可能性があります。"
@@ -789,12 +831,13 @@ def _build(
     today_iso = today_iso or datetime.now(UTC).strftime("%Y-%m-%d")
     generated_at = generated_at or datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
-    # Connect read-only.
+    # Connect read-only. Future-dated rows can appear from source OCR or
+    # upstream data entry drift; do not publish them as current records.
     am_uri = f"file:{autonomath_db}?mode=ro"
     con = sqlite3.connect(am_uri, uri=True)
     try:
-        summary = _summary_counts(con)
-        all_rows = _load_autonomath_rows(con)
+        summary = _summary_counts(con, max_issuance_date=today_iso)
+        all_rows = _load_autonomath_rows(con, max_issuance_date=today_iso)
     finally:
         con.close()
 

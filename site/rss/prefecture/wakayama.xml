@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 和歌山県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/wakayama.xml" rel="self" type="application/rss+xml" />
+  <description>和歌山県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>平成２６年度わかやま中小企業元気ファンド助成事業採択一覧</title>
+    <link>https://jpcite.com/programs/heisei-2-6-nendo-wakayama-chuushoukigyou-genki-fando-josei-2875c3.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H26_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-04d54868cb</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２１年度 第２回 わかやま中小企業元気ファンド助成事業一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-1-nendo-daini-kai-wakayama-chuushoukigyou-genki-240063.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H21_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-05612638e2</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成３０年度わかやま中小企業元気ファンド助成事業採択事業一覧</title>
+    <link>https://jpcite.com/programs/heisei-3-0-nendo-wakayama-chuushoukigyou-genki-fando-josei-66e488.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H30_genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-333373d3e8</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２６年度 第２回 わかやま中小企業元気ファンド助成事業採択一覧</title>
+    <link>https://jpcite.com/programs/heisei-2-6-nendo-daini-kai-wakayama-chuushoukigyou-genki-5eef39.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H26_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3335c08034</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２１年度 わかやま中小企業元気ファンド助成事業一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-1-nendo-wakayama-chuushoukigyou-genki-fando-josei-c501c4.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H21_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3a8efcd9ca</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２８年度 第２回 わかやま中小企業元気ファンド助成事業採択一覧</title>
+    <link>https://jpcite.com/programs/heisei-2-8-nendo-daini-kai-wakayama-chuushoukigyou-genki-db5cde.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H28_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3e5219debd</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２５年度 第１回 わかやま中小企業元気ファンド助成事業採択一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-5-nendo-daiikkai-wakayama-chuushoukigyou-genki-f01239.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H25_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-57784cf48c</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２８年度 わかやま中小企業元気ファンド助成事業 追加分 採択一覧</title>
+    <link>https://jpcite.com/programs/heisei-2-8-nendo-wakayama-chuushoukigyou-genki-fando-josei-0a1103.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H28_04genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6843fd8374</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２８年度 第３回 わかやま中小企業元気ファンド助成事業採択一覧</title>
+    <link>https://jpcite.com/programs/heisei-2-8-nendo-daisankai-wakayama-chuushoukigyou-genki-af3e54.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H28_03genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6bf96f240b</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域資源活用支援事業Ａ</title>
+    <link>https://jpcite.com/programs/chiiki-shigen-katsuyou-shien-jigyou-a-cd4e3f.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H20_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6c887a4342</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２９年度 わかやま中小企業元気ファンド助成事業 採択一覧</title>
+    <link>https://jpcite.com/programs/heisei-2-9-nendo-wakayama-chuushoukigyou-genki-fando-josei-a16183.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H29_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-77fb5a6967</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２２年度 第２回 わかやま中小企業元気ファンド助成事業一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-2-nendo-daini-kai-wakayama-chuushoukigyou-genki-67acfc.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H22_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7c52df2b9f</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>２０１９年度わかやま中小企業元気ファンド助成事業採択事業一覧</title>
+    <link>https://jpcite.com/programs/2-0-1-9-nendo-wakayama-chuushoukigyou-genki-fando-josei-e4baa3.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H31_genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-80a6bf1e32</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成23年度 第１回 わかやま中小企業元気ファンド助成事業採択一覧表</title>
+    <link>https://jpcite.com/programs/heisei-23-nendo-daiikkai-wakayama-chuushoukigyou-genki-e69fc6.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H23_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8fd46162d4</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２２年度 わかやま中小企業元気ファンド助成事業一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-2-nendo-wakayama-chuushoukigyou-genki-fando-josei-31fb70.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H22_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9e27ee92e3</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２５年度 第２回 わかやま中小企業元気ファンド助成事業採択一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-5-nendo-daini-kai-wakayama-chuushoukigyou-genki-b2a626.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H25_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a2807dab53</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平平平平成成成成２２２２７７７７年年年年度度度度 第第第第２２２２回回回回 わわわわかかかかややややまままま中中中中小小小小企企企企業業業業元元元元気気気気フフフファァァァンンンンドドドド助助助助成成成成事事事事業業業業採採採採択択択択一一一一覧覧覧覧</title>
+    <link>https://jpcite.com/programs/heihei-heihei-sei-sei-sei-sei-2-2-2-2-7-7-7-7-nennen-nennen-634c2a.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H27_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ae2474a81a</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>２０２０年度わかやま中小企業元気ファンド助成事業 採択事業一覧</title>
+    <link>https://jpcite.com/programs/2-0-2-0-nendo-wakayama-chuushoukigyou-genki-fando-josei-163aa5.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/R2_genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b3402c6211</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２４年度 第２回 わかやま中小企業元気ファンド助成事業採択一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-4-nendo-daini-kai-wakayama-chuushoukigyou-genki-932a16.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H24_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c6aefca501</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２４年度 第１回 わかやま中小企業元気ファンド助成事業採択一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-4-nendo-daiikkai-wakayama-chuushoukigyou-genki-627ed2.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H24_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c9bf137b31</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２２年度 第３回 わかやま中小企業元気ファンド助成事業一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-2-nendo-daisankai-wakayama-chuushoukigyou-genki-e5e96c.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H22_03genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ce00f2e007</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２３年度 第２回 わかやま中小企業元気ファンド助成事業採択一覧表</title>
+    <link>https://jpcite.com/programs/heisei-2-3-nendo-daini-kai-wakayama-chuushoukigyou-genki-881743.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H23_02genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e483af6abc</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平平平平成成成成２２２２７７７７年年年年度度度度 第第第第１１１１回回回回 わわわわかかかかややややまままま中中中中小小小小企企企企業業業業元元元元気気気気フフフファァァァンンンンドドドド助助助助成成成成事事事事業業業業採採採採択択択択一一一一覧覧覧覧</title>
+    <link>https://jpcite.com/programs/heihei-heihei-sei-sei-sei-sei-2-2-2-2-7-7-7-7-nennen-nennen-4b1dfb.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H27_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-fa0c8b09ed</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平成２８年度 第１回 わかやま中小企業元気ファンド助成事業採択一覧</title>
+    <link>https://jpcite.com/programs/heisei-2-8-nendo-daiikkai-wakayama-chuushoukigyou-genki-9f7766.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund_d/fil/H28_01genkifund.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-fdf940175d</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山 次世代につなぐ果樹産地づくり事業</title>
+    <link>https://jpcite.com/programs/wakayama-jisedai-nitsunagu-kaju-sanchi-zukuri-jigyou-20c644.html</link>
+    <description>Tier S / 和歌山県 / 都道府県 / subsidy / 上限 2,000万円 出典: https://www.pref.wakayama.lg.jp/prefg/070300/kajyusantisaisei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8d754d9e9d</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県大学生等進学支援金・和歌山県大学生等進学給付金</title>
+    <link>https://jpcite.com/programs/wakayamaken-daigakusei-nado-shingaku-shien-kin-wakayamaken-0b3d10.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / support 出典: https://www.pref.wakayama.lg.jp/prefg/500600/d00153480.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0543d3a69b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域少子化対策重点推進交付金の活用について</title>
+    <link>https://jpcite.com/programs/chiiki-shoushi-ka-taisaku-juuten-suishin-koufukin-no-c746a1.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/040200/toppeji2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1c106e2191</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>https://www.pref.wakayama.lg.jp/prefg/060300/gyoumu/kinyuu/sangyoushien.html</title>
+    <link>https://jpcite.com/programs/https-www-pref-wakayama-lg-jp-prefg-060300-gyoumu-kinyuu-cf6b8f.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / support 出典: https://www.pref.wakayama.lg.jp/prefg/060300/gyoumu/kinyuu/sangyoushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5123c8db20</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県脱炭素経営に向けた計画策定支援事業費補助金</title>
+    <link>https://jpcite.com/programs/wakayamaken-dattan-moto-keiei-ni-muke-ta-keikaku-sakutei-2bb3a5.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/063100/carbonneutral/r6keikakuhojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5c606b1ff0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>わかやま農林水産業支援ナビ</title>
+    <link>https://jpcite.com/programs/wakayama-nourinsuisangyou-shien-nabi-454fd5.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / support 出典: https://www.pref.wakayama.lg.jp/prefg/070100/shiensaku/navi.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6117c98df0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>●和歌山県中小企業成長促進補助金交付要綱</title>
+    <link>https://jpcite.com/programs/wakayamaken-chuushoukigyou-seichou-sokushin-hojokin-koufu-43e869.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/060100/d00221813_d/fil/seichosokushin.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6bc1ad1767</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度省エネ診断・排出量見える化等支援事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-shouene-shindan-haishutsuryou-mie-ru-ka-nado-fd961b.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/063100/carbonneutral/d00222092.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8c06f19d74</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県農林水産品販促ツール作成支援事業（補助金）</title>
+    <link>https://jpcite.com/programs/wakayamaken-nourinsuisan-hin-hansoku-tsuuru-sakuseishien-f03894.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/071700/kokunai/d00206974.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9f26644324</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>進学助成金 ※令和9年4月入学者向けの募集は令和8年10月上旬頃開始予定です。</title>
+    <link>https://jpcite.com/programs/shingaku-joseikin-reiwa-9-nen-4-gatsu-nyuugakusha-muke-no-8dc6b3.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/500600/d00153388.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a1a415ad5d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和4年度補正和歌山県ものづくり生産力高度化事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-4-nendo-hosei-wakayamaken-monozukuri-seisanryoku-867f42.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/063100/seisanryokukoudoka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a50327010a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>肝炎治療に対する医療費助成について</title>
+    <link>https://jpcite.com/programs/kan-en-chiryou-ni-taisuru-iryouhi-josei-nitsuite-87a91a.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/041200/h_sippei/kanentiryonitaisuruiryohijosei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b54b3035b1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「和歌山県中小企業融資制度のご案内（P.9）」</title>
+    <link>https://jpcite.com/programs/wakayamaken-chuushoukigyou-yuushi-seido-nogo-annai-p-9-ab7b20.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / loan 出典: https://www.pref.wakayama.lg.jp/prefg/060300/gyoumu/kinyuu/sangyoushien.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cbb0f18414</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>●和歌山県原材料費高騰対応経営支援補助金交付要綱</title>
+    <link>https://jpcite.com/programs/wakayamaken-genzairyouhi-koutou-taiou-keiei-shien-hojokin-ba58cc.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/060100/d00221813_d/fil/genzairyohikoto.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d951c85bd0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>在宅人工呼吸器使用患者支援事業</title>
+    <link>https://jpcite.com/programs/zaitaku-jinkoukokyuuki-shiyou-kanja-shien-jigyou-51c851.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / support 出典: https://www.pref.wakayama.lg.jp/prefg/041200/h_sippei/zaitakujinkoukokyukishien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ea60f79beb</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和2年度和歌山県県内中小企業者等省力化促進事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-2-nendo-wakayamaken-kennai-chuushoukigyou-mono-nado-60c71d.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/063100/shouryokuka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f935cb2a50</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県商工会連合会 補助金・助成金 案内ハブ（和歌山県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/wakayamaken-shoukou-kai-rengoukai-hojokin-joseikin-annai-dd80a8.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県商工会連合会 / directory 出典: http://www2.w-shokokai.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6ccb1681d9</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:36 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南紀白浜空港 民間活力導入事業</title>
+    <link>https://jpcite.com/programs/nankishirahama-kuukou-minkan-katsuryoku-dounyuu-jigyou-e7d18c.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県 / 実施主体：株式会社南紀白浜エアポート（経営共創基盤・みちのりHD・白浜館） 出典: https://www.pref.wakayama.lg.jp/prefg/080500/minkankaturyokudounyuu/minkankaturyokudounyujigyou.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1cca195800</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県 組合特定問題講習会（全額中央会負担）</title>
+    <link>https://jpcite.com/programs/wakayamaken-kumiai-tokutei-mondai-koushuukai-zengaku-chuuou-d7b185.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県中小企業団体中央会 / 支援事業 / 上限 7万円 出典: https://www.chuokai-wakayama.or.jp/jyosei</description>
+    <category>支援事業</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-936211652d</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県 地域問題実態調査事業（全額中央会負担）</title>
+    <link>https://jpcite.com/programs/wakayamaken-chiiki-mondai-jittaichousa-jigyou-zengaku-5e11f1.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県中小企業団体中央会 / 支援事業 / 上限 27万円 出典: https://www.chuokai-wakayama.or.jp/jyosei</description>
+    <category>支援事業</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a651e2f6ca</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県 個別専門指導事業（全額中央会負担）</title>
+    <link>https://jpcite.com/programs/wakayamaken-kobetsu-senmon-shidou-jigyou-zengaku-chuuou-kai-8ab373.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県中小企業団体中央会 / 支援事業 / 上限 2万円 出典: https://www.chuokai-wakayama.or.jp/jyosei</description>
+    <category>支援事業</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c6581183db</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スペースポート紀伊 企業誘致／串本町 ロケット推進事業（企業版ふるさと納税）</title>
+    <link>https://jpcite.com/programs/supeesupooto-kii-kigyou-yuuchi-kushimoto-machi-roketto-30b691.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県串本町 産業課／スペースポート紀伊周辺地域協議会（和歌山県・那智勝浦町・古座川町等） / municipal_support 出典: https://www.town.kushimoto.wakayama.jp/sangyo/rocket/2021-1108-1334-11.html</description>
+    <category>municipal_support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e42245aa6b</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県 地域未来投資促進法+過疎・半島振興法連動 県税優遇</title>
+    <link>https://jpcite.com/programs/wakayamaken-chiiki-mirai-toushi-sokushin-hou-kaso-han-shima-2487f9.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県 / tax_reduction_by_ordinance 出典: https://ritti.pref.wakayama.jp/guide/syoureikin/yuuguu/</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e342a822b2</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県観光振興補助金</title>
+    <link>https://jpcite.com/programs/wakayamaken-kankou-shinkou-hojokin-a5db87.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県 / subsidy 出典: https://www.pref.wakayama.lg.jp/prefg/061000/fund/fund.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-47324da967</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>わかやま中小企業元気ファンド事業</title>
+    <link>https://jpcite.com/programs/wakayama-chuushoukigyou-genki-fando-jigyou-cdc8d2.html</link>
+    <description>Tier C / 和歌山県 / 公益財団法人わかやま産業振興財団 / subsidy / 上限 600万円 出典: https://www.wakayama-sangyo.com/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b99d27bdb6</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山県中小企業融資制度</title>
+    <link>https://jpcite.com/programs/wakayamaken-chuushoukigyou-yuushi-seido-18c443.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県 / loan 出典: https://www.pref.wakayama.lg.jp/prefg/060300/gyoumu/kinyuu/sangyoushien.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d0960726c5</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有田市遊休農地解消支援事業</title>
+    <link>https://jpcite.com/programs/arida-shi-yuukyuu-nouchi-kaishou-shien-jigyou-efe463.html</link>
+    <description>Tier A / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.arida.lg.jp/sangyoshigoto/nogyo/1004459.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-01cb445d6e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>橋本市経営継承支援事業</title>
+    <link>https://jpcite.com/programs/hashimoto-shi-keiei-keishou-shien-jigyou-9d3de4.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.hashimoto.lg.jp/guide/keizaisuisinbu/norinshinko/nougyousinkou-jyourei/17970.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02067333df</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地方創生加速化交付金（みなべ町関連事業）</title>
+    <link>https://jpcite.com/programs/chihou-sousei-kasoku-ka-koufukin-minabe-machi-kanren-jigyou-4e02c6.html</link>
+    <description>Tier C / 和歌山県 / （noukaweb 収集） 出典: https://www.town.minabe.lg.jp/tyousei/12/2016052500014.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-05bd89d54a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市6次産業化支援事業</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-6-tsugi-sangyouka-shien-jigyou-968b32.html</link>
+    <description>Tier A / 和歌山県 / subsidy / 上限 50万円 出典: https://www.city.kinokawa.lg.jp/028/shinkisyuno.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0eb5ccd149</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市 親元就農助成金</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-oyamoto-shuunou-joseikin-36eb6e.html</link>
+    <description>Tier B / 和歌山県 / 市町村 / subsidy / 上限 120万円 出典: https://www1.g-reiki.net/kinokawa/reiki_honbun/r252RG00001198.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-119e67c23a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山 野菜花き産地強化事業</title>
+    <link>https://jpcite.com/programs/wakayama-yasai-hana-ki-sanchi-kyouka-jigyou-51ed81.html</link>
+    <description>Tier B / 和歌山県 / 都道府県 / subsidy / 上限 1,500万円 出典: https://www.pref.wakayama.lg.jp/prefg/070300/sougoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14d481a0fc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有田市AGRI-LINK IN ARIDA研修プログラム</title>
+    <link>https://jpcite.com/programs/arida-shi-agri-link-in-arida-kenshuu-puroguramu-cc8092.html</link>
+    <description>Tier B / 和歌山県 / training / 上限 100万円 出典: https://www.city.arida.lg.jp/sangyoshigoto/nogyo/1002519/1001130.html</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-181ae34be4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業集落排水事業 加入分担金</title>
+    <link>https://jpcite.com/programs/nougyou-shuuraku-haisui-jigyou-kanyuu-buntankin-5a9501.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県みなべ町 / subsidy 出典: https://www.town.minabe.lg.jp/kurashi/05/02/2013091300360.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1b64d51522</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>橋本市収入保険・果樹共済加入事業</title>
+    <link>https://jpcite.com/programs/hashimoto-shi-shuunyuu-hoken-kaju-kyousai-kanyuu-jigyou-c6cc60.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.hashimoto.lg.jp/guide/keizaisuisinbu/norinshinko/nougyousinkou-jyourei/17970.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1c350c205f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-30-104_和歌山_野菜花き産地強化事業</title>
+    <link>https://jpcite.com/programs/pref-30-104-wakayama-yasai-hana-ki-sanchi-kyouka-jigyou-040d08.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 150万円 出典: https://www.pref.wakayama.lg.jp/prefg/070300/sougoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-204c6d6796</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山 経営継承応援資金</title>
+    <link>https://jpcite.com/programs/wakayama-keiei-keishou-ouen-shikin-0f4b50.html</link>
+    <description>Tier B / 和歌山県 / 都道府県 / grant / 上限 50万円 出典: https://www.pref.wakayama.lg.jp/prefg/070900/keisho-ohen/keisho-ohen.html</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-25542699ed</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>橋本市県農産物産地化補助金活用促進事業</title>
+    <link>https://jpcite.com/programs/hashimoto-shiken-nousanbutsu-sanchi-ka-hojokin-katsuyou-00f5f8.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.hashimoto.lg.jp/guide/keizaisuisinbu/norinshinko/nougyousinkou-jyourei/17970.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2bad58de52</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新たな就農支援スキーム「Agri-Link in Arida」</title>
+    <link>https://jpcite.com/programs/arata-na-shuunou-shien-sukiimu-agri-link-in-arida-30cc43.html</link>
+    <description>Tier C / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.arida.wakayama.jp/soshiki/19/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-37371331ca</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市農業複合経営支援事業</title>
+    <link>https://jpcite.com/programs/tanabe-shi-nougyou-fukugou-keiei-shien-jigyou-681c31.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県田辺市 / subsidy / 上限 50万円 出典: https://www.city.tanabe.lg.jp/nougyou/2023-0307-1438-41.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-39b0d39b76</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-30-103_和歌山_次世代につなぐ果樹産地づくり事業</title>
+    <link>https://jpcite.com/programs/pref-30-103-wakayama-jisedai-nitsunagu-kaju-sanchi-zukuri-911a32.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 200万円 出典: https://www.pref.wakayama.lg.jp/prefg/070300/kajyusantisaisei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-406d145774</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>みなべ町危険木伐採事業補助金</title>
+    <link>https://jpcite.com/programs/minabe-machi-kiken-ki-bassai-jigyou-hojokin-1eec71.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県みなべ町 / subsidy / 上限 10万円 出典: https://www.town.minabe.lg.jp/shigoto/02/06/2023040300037.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4479e87e7d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>みなべ町危険木伐採事業補助金</title>
+    <link>https://jpcite.com/programs/minabe-machi-kiken-ki-bassai-jigyou-hojokin-1298be.html</link>
+    <description>Tier B / 和歌山県 / （noukaweb 収集） / 上限 10万円 出典: https://www.town.minabe.lg.jp/shigoto/02/06/2023040300037.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4759879c61</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有田市みかん農業求人情報発信事業</title>
+    <link>https://jpcite.com/programs/arida-shi-mikan-nougyou-kyuujinjouhou-hasshin-jigyou-5588ec.html</link>
+    <description>Tier C / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.arida.wakayama.jp/soshiki/19/1003039.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4e5ab5b55d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市施設園芸等支援事業</title>
+    <link>https://jpcite.com/programs/tanabe-shi-shisetsu-engei-nado-shien-jigyou-8a7e20.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県田辺市 / subsidy / 上限 150万円 出典: https://www.city.tanabe.lg.jp/nougyou/sisetuengeisogousien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4ee96e3ea8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有田川町耕作放棄地再生事業補助金</title>
+    <link>https://jpcite.com/programs/aridagawa-machi-kousaku-houki-chi-saisei-jigyou-hojokin-bb6e75.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県有田川町 / subsidy / 上限 50万円 出典: https://www.town.aridagawa.lg.jp/top/kakuka/kanaya/4/nouti/7405.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5911f834cb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/tanabe-shi-shinki-shuunou-mono-shien-jigyou-95c60b.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県田辺市 / subsidy / 上限 1,000万円 出典: https://www.city.tanabe.lg.jp/nougyou/shinkisyuno.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5dbed7569a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>生ごみ処理機の購入費助成制度</title>
+    <link>https://jpcite.com/programs/nama-gomi-shori-kino-kounyuuhi-josei-seido-64c167.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県みなべ町 / subsidy 出典: https://www.town.minabe.lg.jp/kurashi/09/02/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-605cb8a4ca</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有田市援農者宿舎改修事業</title>
+    <link>https://jpcite.com/programs/arida-shi-ennou-mono-shukusha-kaishuu-jigyou-598eaa.html</link>
+    <description>Tier C / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.arida.wakayama.jp/soshiki/19/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-623c88b8ef</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>和歌山 青年リーダー育成支援</title>
+    <link>https://jpcite.com/programs/wakayama-seinen-riidaa-ikusei-shien-99feec.html</link>
+    <description>Tier B / 和歌山県 / 都道府県 / subsidy / 上限 165万円 出典: https://www.pref.wakayama.lg.jp/prefg/070100/shiensaku/d00155006.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-65cf8887c0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川アグリカレッジ</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-agurikarejji-70d085.html</link>
+    <description>Tier B / 和歌山県 / 市町村 / subsidy / 上限 150万円 出典: https://kinokawa-agri-college.com/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-661ae9e461</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市新規就農者育成支援事業</title>
+    <link>https://jpcite.com/programs/tanabe-shi-shinki-shuunou-mono-ikusei-shien-jigyou-f58c50.html</link>
+    <description>Tier C / 和歌山県 / subsidy / 上限 132万円 出典: https://www.city.tanabe.lg.jp/material/files/group/28/ssp20020601a.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6c61c31855</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市ハウス整備支援事業補助金</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-hausu-seibi-shien-jigyou-hojokin-184530.html</link>
+    <description>Tier B / 和歌山県 / 市町村 / subsidy / 上限 1,000万円 出典: https://www.city.kinokawa.lg.jp/028/shinkisyuno.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7248569f4f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市親元就農助成金</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-oyamoto-shuunou-joseikin-20bf74.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 1,000万円 出典: https://www.city.kinokawa.lg.jp/028/shinkisyuno.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-752d3bfa14</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市農業経営管理合理化推進事業補助金</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-nougyou-keieikanri-gourika-suishin-jigyou-86bf44.html</link>
+    <description>Tier B / 和歌山県 / equipment / 上限 1,000万円 出典: https://www.city.kinokawa.lg.jp/028/shinkisyuno.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7d19c02cd3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市 6次産業化支援事業</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-6-tsugi-sangyouka-shien-jigyou-c8c44b.html</link>
+    <description>Tier B / 和歌山県 / 市町村 / subsidy / 上限 1,000万円 出典: https://www.city.kinokawa.lg.jp/028/shinkisyuno.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8360854c5e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害獣被害防止対策事業補助金</title>
+    <link>https://jpcite.com/programs/yuugai-kemono-higai-boushitaisaku-jigyou-hojokin-ce1ad7.html</link>
+    <description>Tier C / 和歌山県 / （noukaweb 収集） 出典: https://www.city.kinokawa.lg.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-88623b4f3b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有田市ドローン農薬散布実施支援補助金</title>
+    <link>https://jpcite.com/programs/arida-shi-doroon-nouyaku-sanpu-jisshi-shien-hojokin-2a913a.html</link>
+    <description>Tier C / 和歌山県 / subsidy / 上限 250万円 出典: https://www.city.arida.wakayama.jp/soshiki/19/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a0e1c73896</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-30-101_和歌山_青年リーダー育成支援</title>
+    <link>https://jpcite.com/programs/pref-30-101-wakayama-seinen-riidaa-ikusei-shien-2a4ca6.html</link>
+    <description>Tier B / 和歌山県 / grant / 上限 165万円 出典: https://www.pref.wakayama.lg.jp/prefg/070100/shiensaku/d00155006.html</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a2c736c547</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田原市鳥獣被害防止対策補助金</title>
+    <link>https://jpcite.com/programs/tahara-shichou-kemono-higai-boushitaisaku-hojokin-1596c0.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県田辺市 / subsidy / 上限 15万円 出典: https://www.city.tanabe.lg.jp/nougyou/yuugaityoujuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a4670ead7b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-302082-001_紀の川市_親元就農助成金</title>
+    <link>https://jpcite.com/programs/mun-302082-001-ki-no-kawa-shi-oyamoto-shuunou-joseikin-6a885d.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 60万円 出典: https://www1.g-reiki.net/kinokawa/reiki_honbun/r252RG00001198.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a4d5b68edd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市新規就農者農機具購入支援事業</title>
+    <link>https://jpcite.com/programs/tanabe-shi-shinki-shuunou-mono-noukigu-kounyuu-shien-jigyou-6c23b3.html</link>
+    <description>Tier C / 和歌山県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.tanabe.lg.jp/nougyou/shinkisyuno.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a93f26d21b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-30-001_和歌山_青年リーダー育成支援</title>
+    <link>https://jpcite.com/programs/pref-30-001-wakayama-seinen-riidaa-ikusei-shien-099468.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 165万円 出典: https://www.pref.wakayama.lg.jp/prefg/070100/shiensaku/d00155006.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-aac46651fb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市施設園芸総合支援事業</title>
+    <link>https://jpcite.com/programs/tanabe-shi-shisetsu-engei-sougou-shien-jigyou-4f8547.html</link>
+    <description>Tier C / 和歌山県 / subsidy / 上限 150万円 出典: https://www.city.tanabe.lg.jp/material/files/group/28/ssp20020601a.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b494efcbc3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市DX推進支援補助金</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-dx-suishin-shien-hojokin-a5b371.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県紀の川市 / subsidy / 上限 50万円 出典: https://www.city.kinokawa.lg.jp/031/2023-0526-1442-45.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-bc24e91596</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-30-102_和歌山_経営継承応援資金</title>
+    <link>https://jpcite.com/programs/pref-30-102-wakayama-keiei-keishou-ouen-shikin-993899.html</link>
+    <description>Tier B / 和歌山県 / grant / 上限 50万円 出典: https://www.pref.wakayama.lg.jp/prefg/070900/keisho-ohen/keisho-ohen.html</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-bd103b5542</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策（経営発展支援事業・経営開始資金）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-keiei-hatten-9420d0.html</link>
+    <description>Tier S / 和歌山県 / 和歌山県田辺市 / subsidy / 上限 1,000万円 出典: https://www.city.tanabe.lg.jp/nougyou/ssist.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-bdea97be24</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市ブロック塀等耐震対策事業補助金</title>
+    <link>https://jpcite.com/programs/tanabe-shi-burokku-hei-nado-taishin-taisaku-jigyou-hojokin-5be75a.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県田辺市 / subsidy / 上限 20万円 出典: https://www.city.tanabe.lg.jp/bousai/documents/youkou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c134a37673</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>浄化槽設置補助金</title>
+    <link>https://jpcite.com/programs/joukasou-setchi-hojokin-f0a370.html</link>
+    <description>Tier B / 和歌山県 / （noukaweb 収集） 出典: https://www.town.minabe.lg.jp/kurashi/05/02/2013091300391.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c2623d743b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地方創生加速化交付金（みなべ町関連事業）</title>
+    <link>https://jpcite.com/programs/chihou-sousei-kasoku-ka-koufukin-minabe-machi-kanren-jigyou-32c3b1.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県みなべ町 / subsidy 出典: https://www.kantei.go.jp/jp/singi/sousei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c4656e0c39</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害獣被害防止対策事業補助金</title>
+    <link>https://jpcite.com/programs/yuugai-kemono-higai-boushitaisaku-jigyou-hojokin-d2ef88.html</link>
+    <description>Tier B / 和歌山県 / 和歌山県紀の川市 / subsidy / 上限 20万円 出典: https://www.city.kinokawa.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c8177c8657</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>田辺市新規就農者経営継承等支援金事業</title>
+    <link>https://jpcite.com/programs/tanabe-shi-shinki-shuunou-mono-keiei-keishou-nado-shien-kin-f152a4.html</link>
+    <description>Tier C / 和歌山県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.tanabe.lg.jp/nougyou/keieikeisyousyatousienkin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-cbb1075351</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農支援</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-shien-6b5ab6.html</link>
+    <description>Tier A / 和歌山県 / 和歌山県有田川町 / subsidy / 上限 450万円 出典: https://www.town.aridagawa.lg.jp/top/kakuka/kanaya/4/shinkisyuunoushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ce2004c523</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>紀の川市がん患者のためのアピアランスケア助成事業</title>
+    <link>https://jpcite.com/programs/ki-no-kawa-shi-gan-kanja-notameno-apiaransukea-josei-jigyou-07760e.html</link>
+    <description>Tier C / 和歌山県 / 和歌山県紀の川市 / subsidy / 上限 2万円 出典: https://www.city.kinokawa.lg.jp/kenko/appearancecarechirashi.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d84c0ed790</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有田市認定みかん制度（有田市原産地呼称管理制度）</title>
+    <link>https://jpcite.com/programs/arida-shi-nintei-mikan-seido-arida-ichihara-sanchi-koshou-cea232.html</link>
+    <description>Tier C / 和歌山県 / subsidy / 上限 100万円 出典: https://www.city.arida.wakayama.jp/soshiki/18/1001170.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e14ba90fd0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-302082-002_紀の川市_6次産業化支援事業</title>
+    <link>https://jpcite.com/programs/mun-302082-002-ki-no-kawa-shi-6-tsugi-sangyouka-shien-jigyou-0a2d48.html</link>
+    <description>Tier B / 和歌山県 / subsidy / 上限 1,000万円 出典: https://www.city.kinokawa.lg.jp/028/shinkisyuno.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e20baf8d92</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 青森県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/aomori.xml" rel="self" type="application/rss+xml" />
+  <description>青森県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>令和８年度 中小企業・小規模事業者等が活用できる主な補助金等一覧</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-chuushoukigyou-shoukibo-jigyousha-nado-ga-2e60d8.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy / 上限 530万円 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/files/02_hojyokin_itiran_R8.4.8.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a44dae6eb5</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県 経済産業部 地域企業支援課</title>
+    <link>https://jpcite.com/programs/aomoriken-keizai-sangyou-bu-chiiki-kigyou-shien-ka-a3dff2.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/files/01_hojyokin_tirasi_R8.4.8.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-dcd63554bd</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【実施予告】「中小企業者等LPガス・特別高圧電気価格高騰対策支援金（第5弾）」実施のお知らせについて（令和8年1月分～3月分） - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/jisshi-yokoku-chuushoukigyou-mono-nado-lp-gasu-tokubetsu-284237.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/r8_lpgas_shien_5dan_yokoku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-03d37f2fce</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県結婚活動支援事業を実施しています - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/aomoriken-kekkon-katsudou-shien-jigyou-wo-jisshi-shiteimasu-15ab8c.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy / 上限 10万円 出典: https://www.pref.aomori.lg.jp/soshiki/kodomo/kodomo/R7_kekkonnshienn_04.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1ac3ec092d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県介護事業所等及び介護施設等に対するサービス継続支援事業費補助金 - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/aomoriken-kaigo-jigyousho-nado-oyobi-kaigo-shisetsutou-ni-f9bb1c.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/koreihoken/servicekeizoku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1b7e6b9bff</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県電子処方箋の活用・普及促進事業費補助金 - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/aomoriken-denshi-shohousen-no-katsuyou-fukyuu-sokushin-78d8cb.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/iryo/denshisyohousen.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-225ce51764</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年度青森県商店街等次世代リーダー創出実践事業費補助金について - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-aomoriken-shoutengai-nado-jisedai-riidaa-89eac2.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy / 上限 30万円 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/R7shoutengai-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-26b3c601ec</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度医療機関等における賃上げ・物価上昇に対する支援事業について - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-iryoukikan-nado-niokeru-chin-age-bukka-959a61.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/iryo/tinnage_bukkajyousyou_sienjigyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3341b52fcd</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【実施予告】「事業用自家消費型太陽光発電設備等導入支援事業費補助金」実施のお知らせ - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/jisshi-yokoku-jigyou-you-jikashouhi-kata-taiyoukouhatsuden-5e6473.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy / 上限 500万円 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/r8_jigyou_taiyoukou_hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-47999d8387</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度青森県産業DXモデル創出支援事業費補助金の募集を開始しました - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-aomoriken-sangyou-dx-moderu-soushutsu-shien-283492.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/seisaku/dxsuishin/r8_degi_hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-543098afc8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「令和8年1月21日からの大雪による災害」に関する中小企業者支援について - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nen-1-gatsu-21-nichi-karano-ooyuki-niyoru-saigai-ni-3967dc.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/sangyo/20260130_R7_oyuki_chushokigyousha_shien_00.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-5f2fbdf05b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農山漁村女性起業のための補助金を交付します - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/nousangyoson-josei-kigyou-notameno-hojokin-wo-koufu-shimasu-01059e.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy / 上限 50万円 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/nosui/R8challenge.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7412ad9163</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東京圏から青森への就職活動に参加するための交通費を支援します～地方就職学生支援事業～ - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/toukyouken-kara-aomori-heno-shuushokukatsudou-ni-sanka-9af565.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy / 上限 1万円 出典: https://www.pref.aomori.lg.jp/soshiki/kodomo/wakamono/chihousyusyokushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-80d0239da4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・助成金｜青森県庁ウェブサイト Aomori Prefectural Government</title>
+    <link>https://jpcite.com/programs/hojokin-joseikin-aomoriken-chou-uebusaito-aomori-379685.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a7b478974d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度青森県産業DXモデル創出支援事業費補助金の成果報告会を開催しました - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-aomoriken-sangyou-dx-moderu-soushutsu-shien-0d44b6.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/seisaku/dxsuishin/r7_degi_hojo_seika.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cacb92688f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害福祉従事者処遇改善緊急支援事業費補助金 - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/shougai-fukushi-juujisha-shoguu-kaizen-kinkyuu-shien-jigyou-596dc1.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/syofuku/syougaifukusijuujisyasyoguukaizenkinkyusien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cf36c1157b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「中小企業者等LPガス・特別高圧電気価格高騰対策支援金（第5弾）」実施のお知らせについて（令和8年1月分～3月分） - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-mono-nado-lp-gasu-tokubetsu-kouatsu-denki-80ee12.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/r8_lpgas_shien_5dan.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e0df01a90e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>強い農業づくり総合支援交付金等の事業概要及び事業評価結果を公表します - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/tsuyoi-nougyou-zukuri-sougou-shien-koufukin-nado-no-jigyou-ae9a11.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/nosui/tsuyoinougyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e1274afc93</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【申請受付終了】「中小企業者等LPガス・特別高圧電気価格高騰対策支援金（第4弾）」実施のお知らせについて（令和7年7月分～9月分） - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/shinseiuketsuke-shuuryou-chuushoukigyou-mono-nado-lp-gasu-b51ba8.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/chikikigyo/r7_lpgas_shien_4dan.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e93d9349e7</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県結婚活動支援事業を実施します - 青森県庁ホームページ</title>
+    <link>https://jpcite.com/programs/aomoriken-kekkon-katsudou-shien-jigyou-wo-jisshi-shimasu-10acca.html</link>
+    <description>Tier B / 青森県 / 青森県 / subsidy / 上限 10万円 出典: https://www.pref.aomori.lg.jp/soshiki/kodomo/kodomo/R7_kekkonnshienn_03.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f4664fae5a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営発展支援事業</title>
+    <link>https://jpcite.com/programs/keiei-hatten-shien-jigyou-69b70a.html</link>
+    <description>Tier S / 青森県 / 青森県つがる市 / subsidy / 上限 1,000万円 出典: https://www.city.tsugaru.aomori.jp/soshiki/keizai/nourin/nogyo/7299.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0e2daaa865</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>原子力立地対策 原子力発電所や原子燃料サイクル、電源三法交付金などの情報を掲載しています。</title>
+    <link>https://jpcite.com/programs/genshiryoku-ritchi-taisaku-genshiryokuhatsudensho-ya-genshi-7aa43b.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/sangyo/g-richi/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0994027eed</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【受付終了しました】介護事業所等に対するサービス継続支援事業に係る計画書の提出について 高齢福祉保険課 [2026年04月20日] new 申請見込額を正確に把握するため、対象事業所等の開設者は、本補助金の申請を予定している場合は計画書を提出してください。なお、…</title>
+    <link>https://jpcite.com/programs/uketsuke-shuuryou-shimashita-kaigo-jigyousho-nado-ni-1e8244.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/koreihoken/kaigozigyousyo_servicekeizoku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0a6d24234c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・助成金</title>
+    <link>https://jpcite.com/programs/hojokin-joseikin-f34295.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-144bd19e2b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・助成金の新着情報一覧</title>
+    <link>https://jpcite.com/programs/hojokin-joseikin-no-shinchaku-jouhou-ichiran-64e06f.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/hojokin/index_1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-25feb9d6bb</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県介護事業所等及び介護施設等に対するサービス継続支援事業費補助金（高齢福祉保険課）</title>
+    <link>https://jpcite.com/programs/aomoriken-kaigo-jigyousho-nado-oyobi-kaigo-shisetsutou-ni-e378da.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/koreihoken/servicekeizoku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-66c2cd260f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県介護事業所等及び介護施設等に対するサービス継続支援事業費補助金 高齢福祉保険課 [2026年04月20日] new １．計画書の提出について（受付終了しました）本補助金を申請予定の場合は以下のページから「介護施設等」「介護事業所等」それぞ…</title>
+    <link>https://jpcite.com/programs/aomoriken-kaigo-jigyousho-nado-oyobi-kaigo-shisetsutou-ni-b72d51.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/koreihoken/servicekeizoku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-87a2e83e45</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度青森県産業DXモデル創出支援事業費補助金の募集を開始しました DX推進課 [2026年04月17日] new 目的及び概要県では、県内産業のDXを牽引するロールモデルを創出し、県内企業へのDXの波及効果を高めるため、県内の中小企業者が行…</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-aomoriken-sangyou-dx-moderu-soushutsu-shien-dfc567.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/seisaku/dxsuishin/r8_degi_hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9ac3ad01d9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害福祉従事者処遇改善緊急支援事業費補助金（障がい福祉課）</title>
+    <link>https://jpcite.com/programs/shougai-fukushi-juujisha-shoguu-kaizen-kinkyuu-shien-jigyou-586b77.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/syofuku/syougaifukusijuujisyasyoguukaizenkinkyusien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a0aef092e2</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県地域福祉支援計画（第4次）（案）</title>
+    <link>https://jpcite.com/programs/aomoriken-chiiki-fukushi-shien-keikaku-dai-4-tsugi-an-33fd0c.html</link>
+    <description>Tier A / 青森県 / 青森県 / support 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/kkenkofu/chiikifukushishienkeikaku_dai4_ikenbosyuukekka.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aba1b7a18c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農山漁村女性起業のための補助金を交付します 農林水産政策課 [2026年04月16日] new 農山漁村の女性による農林水産物の加工、直売、農漁家レストラン等の起業は、農林水産物の付加価値向上のみならず、道の駅の魅力向…</title>
+    <link>https://jpcite.com/programs/nousangyoson-josei-kigyou-notameno-hojokin-wo-koufu-shimasu-4817a1.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/nosui/R8challenge.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b7d1186919</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【受付終了しました】介護施設等に対するサービス継続支援事業に係る計画書の提出について 高齢福祉保険課 [2026年04月20日] new 計画書の提出について申請見込額を正確に把握するため、対象施設等の開設者は、本補助金の申請希望の有無に関わらず計画書を提出し…</title>
+    <link>https://jpcite.com/programs/uketsuke-shuuryou-shimashita-kaigo-shisetsutou-ni-taisuru-c15b96.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/koreihoken/kaigoshisetsu_servicekeizoku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-de5e3d5bd2</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>介護分野の職員の賃上げ・職場環境改善支援事業費補助金について（高齢福祉保険課）</title>
+    <link>https://jpcite.com/programs/kaigo-bunya-no-shokuin-no-chin-age-shokubakankyou-kaizen-dd86c6.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/kenko/koreihoken/kaigo_chinage_kankyou_hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e5d5306330</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>労働・雇用に関する助成制度</title>
+    <link>https://jpcite.com/programs/roudou-koyou-ni-kansu-ru-josei-seido-bc8371.html</link>
+    <description>Tier A / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/shoko/roseinoryoku/josei-top.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e8b3184d93</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県商工会連合会 補助金・助成金 案内ハブ（青森県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/aomoriken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-f18f2f.html</link>
+    <description>Tier B / 青森県 / 青森県商工会連合会 / directory 出典: http://www.aomorishokoren.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4f073edade</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:17 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八戸圏域水道企業団 (広域水道の先行事例)</title>
+    <link>https://jpcite.com/programs/hachinohe-ken-iki-suidou-kigyou-dan-kouiki-suidou-no-senkou-35a089.html</link>
+    <description>Tier C / 青森県 / 八戸圏域水道企業団 出典: https://www.water-supply.hachinohe.aomori.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-124431831f</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県水道広域化推進プラン (令和11年度まで検討期間)</title>
+    <link>https://jpcite.com/programs/aomoriken-suidou-kouiki-ka-suishin-puran-reiwa-11-nendo-2bbee5.html</link>
+    <description>Tier C / 青森県 / 青森県 総務部 市町村課 出典: https://www.pref.aomori.lg.jp/soshiki/zaimu/shichoson/suido_kouikika_plan.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4cb7a0fd07</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県創業支援補助金</title>
+    <link>https://jpcite.com/programs/aomoriken-sougyou-shien-hojokin-ebf55e.html</link>
+    <description>Tier C / 青森県 / 青森県経済産業部地域企業支援課 / subsidy 出典: https://www.pref.aomori.lg.jp/soshiki/sangyo/richi/support_for_startup.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7dfd74e21e</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県観光振興事業補助金</title>
+    <link>https://jpcite.com/programs/aomoriken-kankou-shinkou-jigyou-hojokin-706838.html</link>
+    <description>Tier C / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-801e7a3627</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県 IT導入補助金 セキュリティ対策推進枠 (県紹介)</title>
+    <link>https://jpcite.com/programs/aomoriken-it-dounyuu-hojokin-sekyuritei-taisaku-suishin-660a09.html</link>
+    <description>Tier C / 青森県 / 青森県 (国補助の紹介・案内) / subsidy_info / 上限 150万円 出典: https://jigyosya-shien.pref.aomori.lg.jp/detail.php?s2=283&amp;n=1</description>
+    <category>subsidy_info</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8bdcec97f9</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スマート農業・農業支援サービス事業導入総合サポート緊急対策</title>
+    <link>https://jpcite.com/programs/sumaato-nougyou-nougyou-shien-saabisu-jigyou-dounyuu-sougou-ee37dd.html</link>
+    <description>Tier C / 青森県 / 青森県 / subsidy 出典: https://www.pref.aomori.lg.jp/hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8e1efde728</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県エネルギー価格高騰対策中小企業者負担軽減補助金</title>
+    <link>https://jpcite.com/programs/aomoriken-enerugii-kakaku-koutou-taisaku-chuushoukigyou-96ddf3.html</link>
+    <description>Tier C / 青森県 / 青森県経済産業部地域企業支援課 / subsidy 出典: https://www.pref.aomori.lg.jp/hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-99d254179c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県中小企業振興融資</title>
+    <link>https://jpcite.com/programs/aomoriken-chuushoukigyou-shinkou-yuushi-0d6990.html</link>
+    <description>Tier C / 青森県 / 青森県 / loan 出典: https://www.pref.aomori.lg.jp/hojokin/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f4a7633ed8</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業雪害対策緊急支援事業</title>
+    <link>https://jpcite.com/programs/nougyou-setsugai-taisaku-kinkyuu-shien-jigyou-6c9505.html</link>
+    <description>Tier C / 青森県 / 青森県平川市 / subsidy / 上限 1万円 出典: https://www.city.hirakawa.lg.jp/material/files/group/7/yukigai2024chirashi.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02abecca3c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>黒石市グランファーム応援事業補助金</title>
+    <link>https://jpcite.com/programs/kuroishi-shi-guranfaamu-ouen-jigyou-hojokin-806f79.html</link>
+    <description>Tier B / 青森県 / 市町村 / subsidy / 上限 60万円 出典: http://www.city.kuroishi.aomori.jp/sangyou/nougyou/g-farm-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-040db2cf4d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>合併処理浄化槽設置整備事業費補助金</title>
+    <link>https://jpcite.com/programs/gappeishori-joukasou-setchi-seibi-jigyou-hi-hojokin-a35068.html</link>
+    <description>Tier B / 青森県 / 青森県東北町 / subsidy / 上限 39万円 出典: https://www.town.tohoku.lg.jp/kurashi/life/gesui_09.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-096a6e3566</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>五戸町青少年就農ステップアップ支援事業</title>
+    <link>https://jpcite.com/programs/gonohe-machi-seishounen-shuunou-suteppuappu-shien-jigyou-0352e8.html</link>
+    <description>Tier C / 青森県 / 青森県五戸町 / subsidy / 上限 60万円 出典: https://www.town.gonohe.aomori.jp/kurashi/norin/stepup_yoko.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-11484100cc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>十和田市認定新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/towada-shi-nintei-shinki-shuunou-mono-shien-jigyou-b17be1.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 150万円 出典: https://www.city.towada.lg.jp/sangyo/nourin/nougyou/2022-0714-0923-124.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-134fa02a1d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八戸市_被害届出証明書の発行</title>
+    <link>https://jpcite.com/programs/hachinohe-shi-higaitodoke-shutsu-shoumeisho-no-hakkou-938174.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 100万円 出典: https://www.city.hachinohe.aomori.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-165adced5f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策うち経営開始資金</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-uchi-keiei-kaishi-bcb021.html</link>
+    <description>Tier C / 青森県 / （noukaweb 収集） 出典: https://www.city.hirakawa.lg.jp/shigoto/nourin/nougyou/keieikaishishikin.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-16ebbca207</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>五戸町安全安心住宅リフォーム促進支援事業</title>
+    <link>https://jpcite.com/programs/gonohe-machi-anzen-anshin-juutaku-rifoomu-sokushin-shien-9ad077.html</link>
+    <description>Tier C / 青森県 / 青森県五戸町 / subsidy / 上限 60万円 出典: https://www.town.gonohe.aomori.jp/material/files/group/2/jutakureformyoukou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1871a730c5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八戸市農業者収入保険加入促進事業補助金</title>
+    <link>https://jpcite.com/programs/hachinohe-shi-nougyou-mono-shuunyuu-hoken-kanyuu-sokushin-239e78.html</link>
+    <description>Tier C / 青森県 / 青森県八戸市 / subsidy 出典: https://www.city.hachinohe.aomori.jp/soshikikarasagasu/nogyokeieishinkocenter/sangyo/1/22668.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-18e5c8b678</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>りんご樹雪害対策農道等除雪事業</title>
+    <link>https://jpcite.com/programs/ringo-ki-setsugai-taisaku-noudou-nado-josetsu-jigyou-15c216.html</link>
+    <description>Tier C / 青森県 / 青森県弘前市 / subsidy 出典: https://www.city.hirosaki.aomori.jp/sangyo/nogyo/files/R5Shien0210_005.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1f648ace2f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>合併処理浄化槽の設置費補助金</title>
+    <link>https://jpcite.com/programs/gappeishori-joukasou-no-setchi-hi-hojokin-b654d4.html</link>
+    <description>Tier C / 青森県 / （noukaweb 収集） 出典: https://www.town.aomori-nanbu.lg.jp/page/2012.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-23ffd4bd38</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>十和田市新規就農者農業機械導入支援事業</title>
+    <link>https://jpcite.com/programs/towada-shi-shinki-shuunou-mono-nougyou-kikai-dounyuu-shien-e7d66a.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 150万円 出典: https://www.city.towada.lg.jp/sangyo/nourin/nougyou/2022-0714-0923-124.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-24f503f87d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平川市新規就農者支援事業（農地賃借料補助）</title>
+    <link>https://jpcite.com/programs/hirakawa-shi-shinki-shuunou-mono-shien-jigyou-nouchi-d359af.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 250万円 出典: https://www.maff.go.jp/j/new_farmer</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-25cd088bcf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策うち経営開始資金</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-uchi-keiei-kaishi-0699de.html</link>
+    <description>Tier B / 青森県 / 青森県平川市 / subsidy / 上限 150万円 出典: https://www.city.hirakawa.lg.jp/shigoto/nourin/nougyou/keieikaishishikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-261e271cf6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平川市農業人材マッチング事業</title>
+    <link>https://jpcite.com/programs/hirakawa-shi-nougyou-jinzai-matchingu-jigyou-51b635.html</link>
+    <description>Tier C / 青森県 / 市町村 / subsidy</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-271623e575</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>持続可能な農業経営確立事業</title>
+    <link>https://jpcite.com/programs/jizoku-kanouna-nougyou-keiei-kakuritsu-jigyou-1dcd4f.html</link>
+    <description>Tier A / 青森県 / 青森県弘前市 / subsidy / 上限 10万円 出典: https://www.city.hirosaki.aomori.jp/sangyo/nogyo/2023-0126-2030-36.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2bf38e170f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八戸市_災害廃棄物（災害ごみ）処分手数料の減免措置</title>
+    <link>https://jpcite.com/programs/hachinohe-shi-saigai-haikibutsu-saigai-gomi-shobun-dc93af.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 100万円 出典: https://www.city.hachinohe.aomori.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31310c4576</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>つがる市新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/tsugaru-shi-shinki-shuunou-mono-shien-jigyou-012fb7.html</link>
+    <description>Tier C / 青森県 / （noukaweb 収集） 出典: https://www.city.tsugaru.aomori.jp/soshiki/keizai/nourin/3145.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31c4dd8ed7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>十和田市新規就農者農業機械等導入支援事業</title>
+    <link>https://jpcite.com/programs/towada-shi-shinki-shuunou-mono-nougyou-kikai-nado-dounyuu-fb62fe.html</link>
+    <description>Tier C / 青森県 / subsidy / 上限 100万円 出典: https://www.city.towada.lg.jp/sangyo/norin/nogyo/shinkijunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-385fbd2ffb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>野菜等産地力強化支援事業</title>
+    <link>https://jpcite.com/programs/yasai-nado-sanchi-chikara-kyouka-shien-jigyou-a09549.html</link>
+    <description>Tier B / 青森県 / 青森県三沢市 / subsidy 出典: https://www.city.misawa.lg.jp/index.cfm/10,51209,40,337,html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3a034ac287</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>弘前市移住支援金</title>
+    <link>https://jpcite.com/programs/hirosakishi-ijuu-shien-kin-0f4c86.html</link>
+    <description>Tier B / 青森県 / 青森県弘前市 / subsidy / 上限 100万円 出典: https://www.city.hirosaki.aomori.jp/sangyo/2019-0611-1417-39.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3fddeb9464</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年就農給付金（経営開始型）</title>
+    <link>https://jpcite.com/programs/seinen-shuunou-kyuufukin-keiei-kaishi-kata-02b0df.html</link>
+    <description>Tier B / 青森県 / 農林水産省 / subsidy / 上限 150万円 出典: https://www.town.gonohe.aomori.jp/sangyo/norin_seinensyuunou_kaishi00.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-413dc20825</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森県 新規就農者確保育成事業</title>
+    <link>https://jpcite.com/programs/aomoriken-shinki-shuunou-mono-kakuho-ikusei-jigyou-a5ed1f.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 12万円 出典: https://www.maff.go.jp/j/new_farmer</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-451f0dd0d5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>横浜町合併処理浄化槽設置整備事業補助金</title>
+    <link>https://jpcite.com/programs/yokohama-machi-gappeishori-joukasou-setchi-seibi-jigyou-224c99.html</link>
+    <description>Tier C / 青森県 / 青森県横浜町 / subsidy / 上限 58万円 出典: https://www.town.yokohama.lg.jp/index.cfm/6,999,18,134,html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-47b67cba4a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東北町自然にやさしい住宅リフォーム支援事業補助金</title>
+    <link>https://jpcite.com/programs/touhoku-machi-shizen-niyasashii-juutaku-rifoomu-shien-49b4e1.html</link>
+    <description>Tier B / 青森県 / 青森県東北町 / subsidy / 上限 7万円 出典: https://www.town.tohoku.lg.jp/kurashi/life/gesui_15.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4a3acdd61c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>五所川原市施設園芸参入応援事業費補助金</title>
+    <link>https://jpcite.com/programs/goshogawara-shi-shisetsu-engei-sannyuu-ouen-jigyou-hi-004406.html</link>
+    <description>Tier B / 青森県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.goshogawara.lg.jp/shigoto/nousui/2022-0906-1055-722.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4eff6d8ed8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平川市経営開始資金（市独自分）</title>
+    <link>https://jpcite.com/programs/hirakawa-shi-keiei-kaishi-shikin-shi-dokuji-fun-760a49.html</link>
+    <description>Tier B / 青森県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.hirakawa.lg.jp/shigoto/nourin/nougyou/keieikaishishikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-52cb8cb569</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南部町創業事業費補助金</title>
+    <link>https://jpcite.com/programs/nanbu-machi-sougyou-jigyou-hi-hojokin-e46d74.html</link>
+    <description>Tier B / 青森県 / （noukaweb 収集） / 上限 100万円 出典: https://www.town.aomori-nanbu.lg.jp/page/1561.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-538e17a445</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-02-102_青森_県外人材雇用受入環境整備支援事業</title>
+    <link>https://jpcite.com/programs/pref-02-102-aomori-kengai-jinzai-koyou-ukeire-kankyouseibi-1df5d2.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 150万円 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/kozoseisaku/R7kengaijinzaikoyouukeire.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-53f3d9daa7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八戸市_日本政策金融公庫 災害復旧貸付</title>
+    <link>https://jpcite.com/programs/hachinohe-shi-nippon-seisaku-kinyuukouko-saigai-fukkyuu-212b23.html</link>
+    <description>Tier A / 青森県 / loan / 上限 15,000万円 出典: https://www.city.hachinohe.aomori.jp/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-572204711a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住就農支援事業（引越代支援）</title>
+    <link>https://jpcite.com/programs/ijuu-shuunou-shien-jigyou-hikkoshi-dai-shien-2e12aa.html</link>
+    <description>Tier C / 青森県 / 青森県青森市 / subsidy / 上限 25万円 出典: https://www.city.aomori.aomori.jp/nogyo-seisaku/ijyusyunousien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5b70a1be8c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年度 弘前市農業労働力雇用環境整備事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-hirosakishi-nougyou-roudouryoku-koyou-926ccd.html</link>
+    <description>Tier B / 青森県 / （noukaweb 収集） / 上限 10万円 出典: https://www.city.hirosaki.aomori.jp/sangyo/nogyo/koyoukankyouseibi.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-61333d42e9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>合併処理浄化槽の設置費補助金</title>
+    <link>https://jpcite.com/programs/gappeishori-joukasou-no-setchi-hi-hojokin-d788b0.html</link>
+    <description>Tier B / 青森県 / 青森県南部町 / subsidy / 上限 66万円 出典: https://www.town.aomori-nanbu.lg.jp/page/2012.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-64ffee236c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森 所得向上プログラム実践支援事業</title>
+    <link>https://jpcite.com/programs/aomori-shotoku-koujou-puroguramu-jissen-shien-jigyou-650712.html</link>
+    <description>Tier A / 青森県 / 都道府県 / subsidy / 上限 50万円 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/nosui/syotokukouzyoushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6aa0d9f0d0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地中間管理事業（農地の貸借）</title>
+    <link>https://jpcite.com/programs/nouchi-chuukan-kanri-jigyou-nouchi-no-taishaku-47b62f.html</link>
+    <description>Tier C / 青森県 / subsidy / 上限 100万円 出典: https://www.city.kuroishi.aomori.jp/soshiki/norin/1408.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6db82ce7e9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八戸市_セーフティネット保証4号（突発的災害）</title>
+    <link>https://jpcite.com/programs/hachinohe-shi-seefuteinetto-hoshou-4-gou-toppatsuteki-saigai-e5d4c5.html</link>
+    <description>Tier B / 青森県 / loan / 上限 5,000万円 出典: https://www.city.hachinohe.aomori.jp/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6ee1019694</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策（経営開始資金）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-keiei-kaishi-e4a398.html</link>
+    <description>Tier B / 青森県 / 青森県八戸市 / subsidy / 上限 150万円 出典: https://www.city.hachinohe.aomori.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-79d42b4d14</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青森 県外人材雇用受入環境整備支援事業</title>
+    <link>https://jpcite.com/programs/aomori-kengai-jinzai-koyou-ukeire-kankyouseibi-shien-jigyou-94c5e5.html</link>
+    <description>Tier B / 青森県 / 都道府県 / subsidy / 上限 150万円 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/kozoseisaku/R7kengaijinzaikoyouukeire.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7a2e34001a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>持続可能な農業経営確立事業</title>
+    <link>https://jpcite.com/programs/jizoku-kanouna-nougyou-keiei-kakuritsu-jigyou-3939d4.html</link>
+    <description>Tier B / 青森県 / （noukaweb 収集） / 上限 10万円 出典: https://www.city.hirosaki.aomori.jp/sangyo/nogyo/2023-0126-2030-36.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-821dfe9493</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>五所川原市農業収益力向上支援事業</title>
+    <link>https://jpcite.com/programs/goshogawara-shi-nougyou-shuueki-chikara-koujou-shien-jigyou-6599d1.html</link>
+    <description>Tier B / 青森県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.goshogawara.lg.jp/shigoto/nousui/2025-0507-1408-424.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8290cc72f4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>つがる市新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/tsugaru-shi-shinki-shuunou-mono-shien-jigyou-b627d0.html</link>
+    <description>Tier B / 青森県 / 青森県つがる市 / subsidy 出典: https://www.city.tsugaru.aomori.jp/soshiki/keizai/nourin/3145.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8646b12e5d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度農業関連補助事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-nougyou-kanren-hojo-jigyou-0aacec.html</link>
+    <description>Tier C / 青森県 / （noukaweb 収集） 出典: https://www.city.hirakawa.lg.jp/shigoto/nourin/2022-0412-1059-57.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-868372edce</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住・就業支援金</title>
+    <link>https://jpcite.com/programs/ijuu-shuugyou-shien-kin-5fcad4.html</link>
+    <description>Tier C / 青森県 / subsidy / 上限 100万円 出典: https://www.city.kuroishi.aomori.jp/soshiki/sangyo/ijyu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8be96195e2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スマート農業関連支援事業費補助金</title>
+    <link>https://jpcite.com/programs/sumaato-nougyou-kanren-shien-jigyou-hi-hojokin-95fb8f.html</link>
+    <description>Tier B / 青森県 / 青森県東北町 / subsidy / 上限 100万円 出典: https://www.town.tohoku.lg.jp/covid19/support-09.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8fc6e8c8e5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八戸市農業者収入保険加入促進事業補助金</title>
+    <link>https://jpcite.com/programs/hachinohe-shi-nougyou-mono-shuunyuu-hoken-kanyuu-sokushin-2da9c4.html</link>
+    <description>Tier A / 青森県 / （noukaweb 収集） 出典: https://www.city.hachinohe.aomori.jp/soshikikarasagasu/nogyokeieishinkocenter/sangyo/1/22668.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-978b0e3bc3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-02-003_青森_施設園芸等支援タイプ</title>
+    <link>https://jpcite.com/programs/pref-02-003-aomori-shisetsu-engei-nado-shien-taipu-63f377.html</link>
+    <description>Tier C / 青森県 / subsidy / 上限 625万円 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/noen/shisetsuengeishientaipu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9829d515e2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東北町自然にやさしい住宅リフォーム支援事業補助金</title>
+    <link>https://jpcite.com/programs/touhoku-machi-shizen-niyasashii-juutaku-rifoomu-shien-6c10db.html</link>
+    <description>Tier C / 青森県 / （noukaweb 収集） / 上限 7万円 出典: https://www.town.tohoku.lg.jp/kurashi/life/gesui_15.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9a763a65d0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業経営収入保険の保険料の一部を補助</title>
+    <link>https://jpcite.com/programs/nougyou-keiei-shuunyuu-hoken-no-hokenryou-no-ichibu-wo-hojo-d6087e.html</link>
+    <description>Tier B / 青森県 / （noukaweb 収集） / 上限 10万円 出典: https://www.city.towada.lg.jp/sangyo/nourin/syunyuhokenhojokin.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9e86db5d63</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年度 弘前市農業労働力雇用環境整備事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-hirosakishi-nougyou-roudouryoku-koyou-76e631.html</link>
+    <description>Tier A / 青森県 / 青森県弘前市 / subsidy / 上限 10万円 出典: https://www.city.hirosaki.aomori.jp/sangyo/nogyo/koyoukankyouseibi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9e89c70718</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業経営収入保険の保険料の一部を補助</title>
+    <link>https://jpcite.com/programs/nougyou-keiei-shuunyuu-hoken-no-hokenryou-no-ichibu-wo-hojo-292829.html</link>
+    <description>Tier B / 青森県 / 青森県十和田市 / subsidy / 上限 10万円 出典: https://www.city.towada.lg.jp/sangyo/nourin/syunyuhokenhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a144d2dbba</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平川市スマート農業導入支援事業</title>
+    <link>https://jpcite.com/programs/hirakawa-shi-sumaato-nougyou-dounyuu-shien-jigyou-5a72b4.html</link>
+    <description>Tier C / 青森県 / 青森県平川市 / subsidy 出典: https://www.city.hirakawa.lg.jp/shigoto/nourin/nougyou/katuyoujirei_smart.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a464d0f04d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-02-001_青森_所得向上プログラム実践支援事業</title>
+    <link>https://jpcite.com/programs/pref-02-001-aomori-shotoku-koujou-puroguramu-jissen-shien-7cf96b.html</link>
+    <description>Tier A / 青森県 / subsidy / 上限 50万円 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/nosui/syotokukouzyoushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a55421fe48</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東北町農業経営体質強化対策機械等導入支援事業</title>
+    <link>https://jpcite.com/programs/touhoku-machi-nougyou-keieitaishitsu-kyouka-taisaku-kikai-6f375c.html</link>
+    <description>Tier B / 青森県 / 青森県東北町 / subsidy / 上限 100万円 出典: https://www.town.tohoku.lg.jp/chousei/info/info_yakuba_05-03.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a56aad1851</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>野菜等産地力強化支援事業</title>
+    <link>https://jpcite.com/programs/yasai-nado-sanchi-chikara-kyouka-shien-jigyou-67d7fd.html</link>
+    <description>Tier C / 青森県 / （noukaweb 収集） 出典: https://www.city.misawa.lg.jp/index.cfm/10,51209,40,337,html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a77d606920</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南部町創業事業費補助金</title>
+    <link>https://jpcite.com/programs/nanbu-machi-sougyou-jigyou-hi-hojokin-866ddd.html</link>
+    <description>Tier B / 青森県 / 青森県南部町 / subsidy / 上限 100万円 出典: https://www.town.aomori-nanbu.lg.jp/page/1561.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a7bfcf87f6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平川市地域産業支援事業補助金</title>
+    <link>https://jpcite.com/programs/hirakawa-shi-chiiki-sangyou-shien-jigyou-hojokin-0820d8.html</link>
+    <description>Tier B / 青森県 / （noukaweb 収集） / 上限 6万円 出典: https://www.city.hirakawa.lg.jp/shigoto/shoukougyou/shien/chiikisangyousienjigyou.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-aa778c4484</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住起業等支援事業費補助金</title>
+    <link>https://jpcite.com/programs/ijuu-kigyou-nado-shien-jigyou-hi-hojokin-c93b9d.html</link>
+    <description>Tier B / 青森県 / 青森県東北町 / subsidy / 上限 30万円 出典: https://www.town.tohoku.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ab53e22d4c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

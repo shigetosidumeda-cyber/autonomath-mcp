@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 長崎県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/nagasaki.xml" rel="self" type="application/rss+xml" />
+  <description>長崎県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>電気工事士免状の交付申請 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/denkikoujishi-menjou-no-koufu-shinsei-nagasakiken-hoomupeeji-6f4863.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/denkikojishi/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0ead2e64e1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>海外ビジネス展開の支援 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/kaigai-bijinesu-tenkai-no-shien-nagasakiken-hoomupeeji-1e3a0d.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/jigyoshashien/kaigai/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0f2544bc51</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営支援課 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/keiei-shien-ka-nagasakiken-hoomupeeji-c9100c.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/organization/sangyorodobu/k-shien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1ae0c093d2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【R7.1月公表】特別高圧電力高騰対策支援事業費補助金 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/r7-1-gatsu-kouhyou-tokubetsu-kouatsu-denryoku-koutou-263441.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/hojokin/cat-204bcf/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-223b7f5d45</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県工業用LPガス補助金（長崎県事業者向けLPガス価格高騰緊急対策支援事業費補助金） -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/nagasakiken-kougyouyou-lp-gasu-hojokin-nagasakiken-29c724.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/hojokin/kougyouyoulpg/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-22dcb842d8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>電気工事業の登録申請・届出 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/denkikouji-gyou-no-touroku-shinsei-todokede-nagasakiken-579853.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/denkikojigyou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-41e7483afc</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金等各種支援制度の活用や申請書等作成のための相談窓口を設置しています -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/hojokin-nado-kakushu-shien-seido-no-katsuyou-ya-shinseisho-340cc4.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/jigyoshashien/keieishienka-koronashien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-468731806f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>佐世保こども・女性・障害者支援センター -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/sasebo-kodomo-josei-shougaisha-shien-sentaa-nagasakiken-c911ad.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/organization/fukushihokenbu/sa-shien-c/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-50db6950d3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県AI活用力向上支援事業費補助金 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/nagasakiken-ai-katsuyou-chikara-koujou-shien-jigyou-hi-f992d9.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/hojokin/ai-katsuyou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6adbf6f9cd</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別支援教育課 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/tokubetsu-shien-kyouikuka-nagasakiken-hoomupeeji-485c97.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/organization/edu/edu-sien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-719f7e9d33</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業向け制度融資 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-muke-seido-yuushi-nagasakiken-hoomupeeji-a2f6eb.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/jigyoshashien/yuushiseido/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-745ad34c90</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>事業承継に対する支援 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/jigyou-shoukei-ni-taisuru-shien-nagasakiken-hoomupeeji-164e33.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/jigyoshashien/jigyousyoukei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7a8625913b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>制度・計画 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/seido-keikaku-nagasakiken-hoomupeeji-9af925.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-88eb8bf221</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>産業支援・企業誘致 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/sangyou-shien-kigyou-yuuchi-nagasakiken-hoomupeeji-d6b4b5.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/sangyoshien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-92c13e5362</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営支援課のセミナー情報 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/keiei-shien-ka-no-seminaa-jouhou-nagasakiken-hoomupeeji-ab865f.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/jigyoshashien/keiei-seminar/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a1adb6381a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ながさき産業振興プラン -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/nagasaki-sangyou-shinkou-puran-nagasakiken-hoomupeeji-699856.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/sangyoshinkoplan2025/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a8b1eba1b0</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業経営革新支援（経営革新計画） -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-keiei-kakushin-shien-keiei-kakushin-keikaku-1e23b1.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/keieikakushin-chushokigyoshien-kinyu/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ada9a354b6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>事業者支援 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/jigyousha-shien-nagasakiken-hoomupeeji-0cf48c.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/jigyoshashien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c3da46ab6f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スマート県庁推進課 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/sumaato-kenchou-suishinka-nagasakiken-hoomupeeji-15798d.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/organization/somubu/josei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ca3a34d264</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎こども・女性・障害者支援センター -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/nagasaki-kodomo-josei-shougaisha-shien-sentaa-nagasakiken-2a9f3b.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/organization/fukushihokenbu/na-shien-c/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d9ca42f796</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県中小企業・小規模企業の振興に関する条例 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/nagasakiken-chuushoukigyou-shoukibo-kigyou-no-shinkou-ni-7e07ab.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/shinkou-jyourei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e134dd0530</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>エンジェル税制 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/enjieru-zeisei-nagasakiken-hoomupeeji-5d462c.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/angel-sangyoshien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ea32b58ab0</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>デジタル力向上に対する支援 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/dejitaru-chikara-koujou-ni-taisuru-shien-nagasakiken-9e2261.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/digitalryoku/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ec1b89f397</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>その他中小企業支援機関等 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/sono-hoka-chuushoukigyou-shien-kikan-nado-nagasakiken-2a4948.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/seito-keikaku/shienseido-chushokigyoshien-kinyu/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f53f68438f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業支援・金融 -  長崎県ホームページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-shien-kinyuu-nagasakiken-hoomupeeji-2823d4.html</link>
+    <description>Tier B / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/chushokigyoshien-kinyu/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f8e3252087</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎市_農業経営発展支援事業</title>
+    <link>https://jpcite.com/programs/nagasakishi-nougyou-keiei-hatten-shien-jigyou-e2c84f.html</link>
+    <description>Tier S / 長崎県 / 市町村 / subsidy / 上限 1,000万円 出典: https://www.city.nagasaki.lg.jp/page/5942.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02499eec66</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>佐世保こども・女性・障害者支援センター</title>
+    <link>https://jpcite.com/programs/sasebo-kodomo-josei-shougaisha-shien-sentaa-d7a083.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / support 出典: https://www.pref.nagasaki.jp/organization/fukushihokenbu/sa-shien-c/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0652e261e4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>男女参画・女性活躍推進室関係リンク集</title>
+    <link>https://jpcite.com/programs/danjo-sankaku-josei-katsuyaku-suishinshitsu-kankei-rinku-8a0a13.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/linku2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-13362508d6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>看護職員等への就業に関する支援事業</title>
+    <link>https://jpcite.com/programs/kango-shokuin-nado-heno-shuugyou-ni-kansu-ru-shien-jigyou-ae3823.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / support 出典: https://www.pref.nagasaki.jp/bunrui/hukushi-hoken/hoken-iryo/iryojinzai/shuugyou-shien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-168e8cfd5d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スマート県庁推進課</title>
+    <link>https://jpcite.com/programs/sumaato-kenchou-suishinka-a8335b.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/organization/somubu/josei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1e12a55710</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>物価高騰対応重点支援地方創生臨時交付金 実施計画掲載事業一覧</title>
+    <link>https://jpcite.com/programs/bukkadaka-tou-taiou-juuten-shien-chihou-sousei-rinji-327aae.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / support 出典: https://www.pref.nagasaki.jp/doc/page-649248.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2836451b00</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>男女共同参画推進センター</title>
+    <link>https://jpcite.com/programs/danjotomo-dousan-ga-suishin-sentaa-7bc8dd.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/senter/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4307065653</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>男女共同参画・女性活躍推進</title>
+    <link>https://jpcite.com/programs/danjotomo-dousan-ga-josei-katsuyaku-suishin-6179b7.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5178a178b4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性活躍の推進</title>
+    <link>https://jpcite.com/programs/josei-katsuyaku-no-suishin-80ae03.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/jyoseinokatuyakusuisin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-66d59bb754</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>共家事・共育て</title>
+    <link>https://jpcite.com/programs/tomo-kaji-kyouiku-te-58e8ef.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/tomokajitomosodate/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-68a1b3c5c3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>男女共同参画の推進</title>
+    <link>https://jpcite.com/programs/danjotomo-dousan-ga-no-suishin-b88b72.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/danjyosannkakunosuishin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7a5bf20640</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>男女共同参画に関するデータ</title>
+    <link>https://jpcite.com/programs/danjotomo-dousan-ga-ni-kansu-ru-deeta-bedcc0.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/data/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8387d809bb</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度デジタル力向上支援事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-dejitaru-chikara-koujou-shien-jigyou-hi-230a67.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/doc/page-721123.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-83c19fb6b5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎こども・女性・障害者支援センター</title>
+    <link>https://jpcite.com/programs/nagasaki-kodomo-josei-shougaisha-shien-sentaa-a1f70f.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / support 出典: https://www.pref.nagasaki.jp/organization/fukushihokenbu/na-shien-c/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-986ee082e6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>医療機関への補助事業（看護関係）</title>
+    <link>https://jpcite.com/programs/iryoukikan-heno-hojo-jigyou-kango-kankei-d6292b.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/hukushi-hoken/hoken-iryo/iryojinzai/hojo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-987619886f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>SDGsテーマ5 ジェンダー平等を実現しよう</title>
+    <link>https://jpcite.com/programs/sdgs-teema-5-jiendaa-byoudou-wo-jitsugen-shiyou-6d1b64.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/danjokyodosankaku-jinkenkeihatsu/danjokyodosankaku-joseikatsuyakusuishin/bc0b31/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c3c3fdd32f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>産業支援・企業誘致</title>
+    <link>https://jpcite.com/programs/sangyou-shien-kigyou-yuuchi-562a63.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / support 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/sangyoshien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c4bb49f413</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度長崎県デジタル力向上支援事業費補助金の申請様式等</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-nagasakiken-dejitaru-chikara-koujou-shien-d147cc.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/doc/page-721115.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cc18f58c3b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成制度のご案内</title>
+    <link>https://jpcite.com/programs/josei-seido-nogo-annai-9edb39.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/hukushi-hoken/hoken-iryo/riryotaisaku/hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e5cc912521</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営支援課</title>
+    <link>https://jpcite.com/programs/keiei-shien-ka-3207f6.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / support 出典: https://www.pref.nagasaki.jp/organization/sangyorodobu/k-shien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e66803e747</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性医師等就労支援事業</title>
+    <link>https://jpcite.com/programs/josei-ishi-nado-shuurou-shien-jigyou-45bb5b.html</link>
+    <description>Tier A / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/hukushi-hoken/hoken-iryo/iryojinzai/joseiisi/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ea933498b7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県商工会連合会 補助金・助成金 案内ハブ（長崎県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/nagasakiken-shoukou-kai-rengoukai-hojokin-joseikin-annai-ca18ba.html</link>
+    <description>Tier B / 長崎県 / 長崎県商工会連合会 / directory 出典: http://www.shokokai-nagasaki.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3672864962</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:45 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県 地域振興県税軽減制度 (過疎・半島・離島・企業立地促進)</title>
+    <link>https://jpcite.com/programs/nagasakiken-chiiki-shinkou-kenzei-keigen-seido-kaso-han-c93668.html</link>
+    <description>Tier C / 長崎県 / 長崎県 / tax_reduction_by_ordinance 出典: https://www.pref.nagasaki.jp/bunrui/kurashi-kankyo/zeikin/genmenseido/tiikisinkou/</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-10d0a65c26</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県社会的起業家スタートアップ支援</title>
+    <link>https://jpcite.com/programs/nagasakiken-shakaiteki-kigyouka-sutaatoappu-shien-620ed4.html</link>
+    <description>Tier C / 長崎県 / 長崎県 / subsidy / 上限 200万円 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/sangyoshien/hojokin-sangyoshien/kokkyorito-hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3dc209a130</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県離島企業誘致補助金</title>
+    <link>https://jpcite.com/programs/nagasakiken-ri-shima-kigyou-yuuchi-hojokin-61f8fb.html</link>
+    <description>Tier C / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/sangyoshien/yuuchi/ritou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-50ec1951a6</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県離島漁業再生支援交付金</title>
+    <link>https://jpcite.com/programs/nagasakiken-ri-shima-gyogyou-saisei-shien-koufukin-58dc96.html</link>
+    <description>Tier C / 長崎県 / 長崎県 / grant 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/suisangho/rito-kohukin/</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7cb5926824</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県国境離島地域起業・事業拡大事業費補助金</title>
+    <link>https://jpcite.com/programs/nagasakiken-kokkyou-ri-shima-chiiki-kigyou-jigyou-kakudai-a08b5d.html</link>
+    <description>Tier C / 長崎県 / 長崎県 / subsidy / 上限 1,200万円 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/sangyoshien/hojokin-sangyoshien/kokkyorito-hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9cd214ada0</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎県国境離島農水産品輸送費補助</title>
+    <link>https://jpcite.com/programs/nagasakiken-kokkyou-ri-shima-nousuisan-hin-yusouhi-hojo-fdeb18.html</link>
+    <description>Tier C / 長崎県 / 長崎県 / subsidy 出典: https://www.pref.nagasaki.jp/bunrui/kenseijoho/kennokeikaku-project/kokkyoritou/kokkyo-shien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ddd4893095</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業就業者確保育成対策事業</title>
+    <link>https://jpcite.com/programs/nougyou-shuugyou-mono-kakuho-ikusei-taisaku-jigyou-3ae9b5.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-04ccaaa080</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農林水産業振興事業補助金</title>
+    <link>https://jpcite.com/programs/nourinsuisangyou-shinkou-jigyou-hojokin-f3bb70.html</link>
+    <description>Tier C / 長崎県 / （noukaweb 収集） 出典: https://www.city.shimabara.lg.jp/page18380.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0af5143409</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平戸市_経営開始支援事業</title>
+    <link>https://jpcite.com/programs/hirado-shi-keiei-kaishi-shien-jigyou-89ba2f.html</link>
+    <description>Tier B / 長崎県 / 市町村 / subsidy / 上限 120万円 出典: https://www.hirado-nova.com/support/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0c46420ba1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農林水産業振興事業補助金</title>
+    <link>https://jpcite.com/programs/nourinsuisangyou-shinkou-jigyou-hojokin-3f6d33.html</link>
+    <description>Tier B / 長崎県 / 長崎県島原市 / subsidy 出典: https://www.city.shimabara.lg.jp/page18380.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0faf1069fd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者支援事業補助金</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-jigyou-hojokin-4e17f5.html</link>
+    <description>Tier B / 長崎県 / 長崎県南島原市 / subsidy / 上限 150万円 出典: https://www.city.minamishimabara.lg.jp/kiji0038583/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-10cf9caf85</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者移住促進事業（担い手育成支援事業）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ijuu-sokushin-jigyou-ninaite-ikusei-28e29f.html</link>
+    <description>Tier C / 長崎県 / 長崎県雲仙市 / subsidy / 上限 150万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-13b3aaa06e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>島原市UIターン農業研修支援事業補助金</title>
+    <link>https://jpcite.com/programs/shimabara-shi-ui-taan-nougyou-kenshuu-shien-jigyou-hojokin-1127f9.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 250万円 出典: https://www.city.shimabara.lg.jp/reiki/H428902500077/H428902500077_j.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-147df1e2e5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新たな就農者支援事業（営農生活支援）－親元就農者等（50歳未満）</title>
+    <link>https://jpcite.com/programs/arata-na-shuunou-mono-shien-jigyou-einou-seikatsu-shien-dabbf6.html</link>
+    <description>Tier C / 長崎県 / subsidy / 上限 60万円 出典: https://www.city.saikai.nagasaki.jp/soshiki/nourin/1_1/oshirase/1_1_1/2026/0128_1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14cb8d81ec</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>対馬市農業後継者育成支援事業</title>
+    <link>https://jpcite.com/programs/tsushima-shi-nougyou-koukeisha-ikusei-shien-jigyou-b0c75f.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.tsushima.nagasaki.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-15fb377c1e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平戸式もうかる農業実現支援事業 経営開始支援事業補助金</title>
+    <link>https://jpcite.com/programs/hirado-shiki-moukaru-nougyou-jitsugen-shien-jigyou-keiei-87c2bd.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 240万円 出典: https://www.hirado-nova.com/support/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-177b2c4785</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-42-001_長崎_農林業農山村構造改善加速化事業</title>
+    <link>https://jpcite.com/programs/pref-42-001-nagasaki-nouringyou-nousanson-kouzou-kaizen-754f04.html</link>
+    <description>Tier A / 長崎県 / subsidy / 上限 1,000万円 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/nogyo/shinkisyunou/shien-seido/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17ed647643</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>後継者給付金</title>
+    <link>https://jpcite.com/programs/koukeisha-kyuufukin-812d34.html</link>
+    <description>Tier B / 長崎県 / （noukaweb 収集） / 上限 150万円 出典: https://www.city.minamishimabara.lg.jp/kiji0038583/index.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-186f66cb12</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-422011-002_長崎市_中高年新規就農者給付金</title>
+    <link>https://jpcite.com/programs/mun-422011-002-nagasakishi-chuukounen-shinki-shuunou-mono-9766e2.html</link>
+    <description>Tier C / 長崎県 / subsidy / 上限 75万円 出典: https://www.city.nagasaki.lg.jp/page/3873.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1879cf3179</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>獣害対策事業（耕作放棄地対策事業）</title>
+    <link>https://jpcite.com/programs/juugai-taisaku-jigyou-kousaku-houki-chitai-saku-jigyou-cbb804.html</link>
+    <description>Tier C / 長崎県 / 長崎県雲仙市 / subsidy / 上限 20万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-26ab70768a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雲仙市獣害・鳥害対策事業</title>
+    <link>https://jpcite.com/programs/unzen-shi-juugai-chougai-taisaku-jigyou-2b5031.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2c6f4ae4d1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>みどりの食料システム戦略に基づくみどり認定支援</title>
+    <link>https://jpcite.com/programs/midorino-shokuryou-shisutemu-senryaku-ni-motozu-kumidori-5e1611.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2d2347e4b5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎市_各種資金利子補給補助制度</title>
+    <link>https://jpcite.com/programs/nagasakishi-kakushu-shikin-rishi-hokyuu-hojo-seido-c69856.html</link>
+    <description>Tier A / 長崎県 / 市町村 / loan / 上限 1,500万円 出典: https://www.city.nagasaki.lg.jp/page/2593.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2ef9ebe3ec</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業研修支援事業補助金</title>
+    <link>https://jpcite.com/programs/nougyou-kenshuu-shien-jigyou-hojokin-1d6ccd.html</link>
+    <description>Tier B / 長崎県 / 長崎県南島原市 / subsidy / 上限 150万円 出典: https://www.city.minamishimabara.lg.jp/kiji0038583/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f91c72a9c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業施設整備事業（担い手育成支援事業）</title>
+    <link>https://jpcite.com/programs/nougyou-shisetsu-seibi-jigyou-ninaite-ikusei-shien-jigyou-25607a.html</link>
+    <description>Tier C / 長崎県 / 長崎県雲仙市 / subsidy / 上限 200万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-309885a734</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎市_農業新規参入促進事業</title>
+    <link>https://jpcite.com/programs/nagasakishi-nougyou-shinkisannyuu-sokushin-jigyou-6d6cd7.html</link>
+    <description>Tier C / 長崎県 / 市町村 / subsidy / 上限 400万円 出典: https://www.city.nagasaki.lg.jp/page/2588.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-32976a4ce7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度西海市農林業振興事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-saikai-shi-nouringyou-shinkou-jigyou-hi-fb3165.html</link>
+    <description>Tier C / 長崎県 / 長崎県西海市 / subsidy 出典: https://www.city.saikai.nagasaki.jp/material/files/group/7/nourinshin.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3519f0d13d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雲仙市スマート農業機械購入事業</title>
+    <link>https://jpcite.com/programs/unzen-shi-sumaato-nougyou-kikai-kounyuu-jigyou-ef72ea.html</link>
+    <description>Tier C / 長崎県 / （noukaweb 収集） 出典: https://www.maff.go.jp/j/kanbo/smart/smart_agri_technology/smartagri_catalog.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3ad1284ebd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>島原市農林水産業振興事業補助金</title>
+    <link>https://jpcite.com/programs/shimabara-shi-nourinsuisangyou-shinkou-jigyou-hojokin-a1922c.html</link>
+    <description>Tier B / 長崎県 / 長崎県島原市 / subsidy / 上限 25万円 出典: https://www.city.shimabara.lg.jp/reiki/H358902500036/H358902500036_j.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3bb297117c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>佐世保市新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/saseboshi-shinki-shuunou-mono-shien-jigyou-13a0ea.html</link>
+    <description>Tier B / 長崎県 / 長崎県佐世保市 / subsidy 出典: https://www.city.sasebo.lg.jp/nourinsuisan/nouchiku/hajimetaikata.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3d3d5b3f06</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雲仙市スマート農業機械導入事業</title>
+    <link>https://jpcite.com/programs/unzen-shi-sumaato-nougyou-kikai-dounyuu-jigyou-fbea44.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-428334a27f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ドローン資格取得支援事業</title>
+    <link>https://jpcite.com/programs/doroon-shikaku-shutoku-shien-jigyou-984850.html</link>
+    <description>Tier C / 長崎県 / 農林水産省 / subsidy / 上限 15万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-42f6e0b892</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柑橘マルチ資材高騰緊急支援事業</title>
+    <link>https://jpcite.com/programs/kankitsu-maruchi-shizai-koutou-kinkyuu-shien-jigyou-d6ddf1.html</link>
+    <description>Tier C / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.saikai.nagasaki.jp/soshiki/nourin/1_1/oshirase/1_1_1/2025/0120_1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-473993ba31</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雲仙市耕作放棄地再生事業</title>
+    <link>https://jpcite.com/programs/unzen-shi-kousaku-houki-chi-saisei-jigyou-68e507.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4c24bdbf16</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>畜産業経営支援事業</title>
+    <link>https://jpcite.com/programs/chikusan-gyou-keiei-shien-jigyou-fcf8b8.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4ecc439729</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>対馬市_第1次産業プラス副業支援事業補助金</title>
+    <link>https://jpcite.com/programs/tsushima-shi-dai-1-tsugi-sangyou-purasu-fukugyou-shien-fdf977.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 250万円 出典: https://www.city.tsushima.nagasaki.jp/gyousei/mokuteki/10/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4f8c148822</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>平戸市_就農準備支援事業</title>
+    <link>https://jpcite.com/programs/hirado-shi-shuunou-junbi-shien-jigyou-abb013.html</link>
+    <description>Tier B / 長崎県 / 市町村 / subsidy / 上限 120万円 出典: https://www.hirado-nova.com/support/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-50d1f58682</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>堆肥流通促進事業（畜産環境衛生保全事業）</title>
+    <link>https://jpcite.com/programs/taihi-ryuutsuu-sokushin-jigyou-chikusan-kankyou-eisei-hozen-cc235b.html</link>
+    <description>Tier C / 長崎県 / 長崎県雲仙市 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-51950c79ea</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業参入企業等支援事業</title>
+    <link>https://jpcite.com/programs/nougyou-sannyuu-kigyou-nado-shien-jigyou-124b82.html</link>
+    <description>Tier A / 長崎県 / 長崎県佐世保市 / subsidy / 上限 1,000万円 出典: https://www.city.sasebo.lg.jp/nourinsuisan/nouchiku/nougyousannnyuukigyousienn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-523025be56</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定農業者等育成事業</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-nado-ikusei-jigyou-e248df.html</link>
+    <description>Tier B / 長崎県 / （noukaweb 収集） / 上限 200万円 出典: https://www.city.isahaya.nagasaki.jp/soshiki/43/1646.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-569b078cda</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎 農林業農山村構造改善加速化事業</title>
+    <link>https://jpcite.com/programs/nagasaki-nouringyou-nousanson-kouzou-kaizen-kasoku-ka-jigyou-ed9e15.html</link>
+    <description>Tier A / 長崎県 / 都道府県 / subsidy / 上限 2,500万円 出典: https://www.pref.nagasaki.jp/bunrui/shigoto-sangyo/nogyo/shinkisyunou/shien-seido/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-570db8f180</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>佐世保市新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/saseboshi-shinki-shuunou-mono-shien-jigyou-ad8a9a.html</link>
+    <description>Tier C / 長崎県 / （noukaweb 収集） 出典: https://www.city.sasebo.lg.jp/nourinsuisan/nouchiku/hajimetaikata.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-585b141ee6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ながさき農林業・農山村構造改善加速化事業</title>
+    <link>https://jpcite.com/programs/nagasaki-nouringyou-nousanson-kouzou-kaizen-kasoku-ka-jigyou-b4249b.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5bb010f81e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長崎市 農業活性化特別支援資金 新規就農者育成</title>
+    <link>https://jpcite.com/programs/nagasakishi-nougyou-kasseika-tokubetsu-shien-shikin-shinki-699825.html</link>
+    <description>Tier A / 長崎県 / 市町村 / loan / 上限 1,000万円 出典: https://www.city.nagasaki.lg.jp/page/2593.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5e6ccd782d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-422011-003_長崎市_農業活性化特別支援資金_認定農業者育成</title>
+    <link>https://jpcite.com/programs/mun-422011-003-nagasakishi-nougyou-kasseika-tokubetsu-shien-077c87.html</link>
+    <description>Tier A / 長崎県 / loan / 上限 1,000万円 出典: https://www.city.nagasaki.lg.jp/page/2593.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5fbbb1fce8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営簿記ソフト購入事業（担い手育成支援事業）</title>
+    <link>https://jpcite.com/programs/keiei-boki-sofuto-kounyuu-jigyou-ninaite-ikusei-shien-jigyou-36e7de.html</link>
+    <description>Tier C / 長崎県 / 長崎県雲仙市 / subsidy / 上限 6万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6172be719f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地・農業用施設災害復旧事業</title>
+    <link>https://jpcite.com/programs/nouchi-nougyouyou-shisetsu-saigai-fukkyuu-jigyou-4fa785.html</link>
+    <description>Tier C / 長崎県 / 長崎県佐世保市 / subsidy 出典: https://www.city.sasebo.lg.jp/kankyo/nosei/documents/nougyousaigai.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-622465db92</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>降ひょう被害からの早期生産回復緊急対策事業</title>
+    <link>https://jpcite.com/programs/kou-hyou-higai-karano-souki-seisan-kaifuku-kinkyuutaisaku-269a11.html</link>
+    <description>Tier B / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/list00220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-62bcde74ea</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有機栽培推進対策事業（環境負荷軽減対策事業）</title>
+    <link>https://jpcite.com/programs/yuuki-saibai-suishin-taisaku-jigyou-kankyou-fukakeigen-877ff9.html</link>
+    <description>Tier C / 長崎県 / 長崎県雲仙市 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-656dd7df12</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農産物等販売力強化対策事業</title>
+    <link>https://jpcite.com/programs/nousanbutsu-nado-hanbai-chikara-kyouka-taisaku-jigyou-310d00.html</link>
+    <description>Tier C / 長崎県 / subsidy / 上限 100万円 出典: https://www.city.saikai.nagasaki.jp/soshiki/nourin/1_1/oshirase/1_1_1/2025/0120_1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6911c8da1d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-52c67b.html</link>
+    <description>Tier A / 長崎県 / 農林水産省 / subsidy / 上限 1,000万円 出典: https://www.maff.go.jp/j/new_farmer/ninaite/keieihatten.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6c07496e41</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営簿記ソフト購入事業（担い手育成支援事業）</title>
+    <link>https://jpcite.com/programs/keiei-boki-sofuto-kounyuu-jigyou-ninaite-ikusei-shien-jigyou-fb7128.html</link>
+    <description>Tier B / 長崎県 / （noukaweb 収集） / 上限 6万円 出典: https://www.city.unzen.nagasaki.jp/kiji0032374/3_2374_7275_up_6stpbakq.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-70f85e6714</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雲仙市スマート農業機械導入事業</title>
+    <link>https://jpcite.com/programs/unzen-shi-sumaato-nougyou-kikai-dounyuu-jigyou-99491f.html</link>
+    <description>Tier B / 長崎県 / 長崎県雲仙市 / subsidy / 上限 100万円 出典: https://www.city.unzen.nagasaki.jp/kiji0035038/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-71ff012043</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

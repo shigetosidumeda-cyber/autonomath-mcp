@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 茨城県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/ibaraki.xml" rel="self" type="application/rss+xml" />
+  <description>茨城県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>共生の地域づくり助成事業</title>
+    <link>https://jpcite.com/programs/kyousei-no-chiiki-zukuri-josei-jigyou-8c63e2.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0604_soumu.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-00e3124bcc</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>電源立地地域対策交付金</title>
+    <link>https://jpcite.com/programs/dengen-ritchi-chiiki-taisaku-koufukin-d32d96.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0603_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0527ac3386</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（まちなか再生事業） 企画調整G</title>
+    <link>https://jpcite.com/programs/machinaka-saisei-jigyou-kikaku-chousei-g-25ffbc.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0615_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2b4e1cf698</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>(活力ある地域づくり助成事業) 企画調整G</title>
+    <link>https://jpcite.com/programs/katsuryoku-aru-chiiki-zukuri-josei-jigyou-kikaku-chousei-g-b4a66d.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0611_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2cb20d09da</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企画調整G</title>
+    <link>https://jpcite.com/programs/kikaku-chousei-g-567474.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0610_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-32c329168b</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>デジタル田園都市国家構想交付金 地方創生G</title>
+    <link>https://jpcite.com/programs/dejitaru-den-entoshi-kokka-kousou-koufukin-chihou-sousei-g-9ad9e6.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy / 上限 6,000万円 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0606_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-37933c4fae</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>(ふるさと再生事業) 企画調整G</title>
+    <link>https://jpcite.com/programs/furusato-saisei-jigyou-kikaku-chousei-g-b158d6.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0614_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3bfd2f8f52</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>電源立地地域対策交付金</title>
+    <link>https://jpcite.com/programs/dengen-ritchi-chiiki-taisaku-koufukin-a3d4f6.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0601_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3d01896dea</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高度無線環境整備推進事業 3</title>
+    <link>https://jpcite.com/programs/koudo-musen-kankyouseibi-suishin-jigyou-3-fedad7.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0621_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-57ff61ea80</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企画調整G</title>
+    <link>https://jpcite.com/programs/kikaku-chousei-g-827eb8.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0612_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7390a825fa</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新たな移動サービス導入等支援事業 地域交通G</title>
+    <link>https://jpcite.com/programs/arata-na-idou-saabisu-dounyuu-nado-shien-jigyou-chiiki-783d8a.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy / 上限 500万円 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0619_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-78b648bb68</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>社会保障・税番号制度システム整備費補助金</title>
+    <link>https://jpcite.com/programs/shakaihoshou-zei-bangou-seido-shisutemu-seibihi-hojokin-4538d1.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0603_soumu.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9262527ab0</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>(外部専門家短期派遣事業) 企画調整G</title>
+    <link>https://jpcite.com/programs/gaibu-senmonka-tanki-haken-jigyou-kikaku-chousei-g-a977be.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0613_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-95981810ba</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企画調整G</title>
+    <link>https://jpcite.com/programs/kikaku-chousei-g-663b3a.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0616_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9854d3fa4e</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>原子力地域振興事業費補助 調整G</title>
+    <link>https://jpcite.com/programs/genshiryoku-chiiki-shinkou-jigyou-hi-hojo-chousei-g-eeb012.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0604_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a29f3fe0b9</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新市町村づくり支援事業</title>
+    <link>https://jpcite.com/programs/shin-ichi-chouson-zukuri-shien-jigyou-c5aa1c.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0601_soumu_1.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a5e2930f4c</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企画調整G</title>
+    <link>https://jpcite.com/programs/kikaku-chousei-g-b9bfda.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0608_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-afd1ad914a</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企画調整G</title>
+    <link>https://jpcite.com/programs/kikaku-chousei-g-f3026f.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0617_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b2b0c9180b</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企画調整G</title>
+    <link>https://jpcite.com/programs/kikaku-chousei-g-c27e3f.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0607_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bbeeed31d2</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企画調整G</title>
+    <link>https://jpcite.com/programs/kikaku-chousei-g-4f92f5.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0609_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bf58947cb3</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>事業内容 事業主体 補助率</title>
+    <link>https://jpcite.com/programs/jigyounaiyou-jigyounushi-karada-hojo-ritsu-bb027d.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0620_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d8afe9e78a</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>マイナンバーカード交付事務費補助金</title>
+    <link>https://jpcite.com/programs/mainanbaakaado-koufu-jimuhi-hojokin-526124.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0602_soumu.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-daaee682fe</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域交通G</title>
+    <link>https://jpcite.com/programs/chiiki-koutsuu-g-cfa0cd.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0618_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ec0f2a1905</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（原子力発電施設等周辺地域交付金相当部</title>
+    <link>https://jpcite.com/programs/genshiryokuhatsuden-shisetsutou-shuuhen-chiiki-koufukin-b9c38d.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/somu/shichoson/zaisei/joseiseido/documents/0602_seisakukikaku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f1aaf76b41</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>金融・経営支援／茨城県</title>
+    <link>https://jpcite.com/programs/kinyuu-keiei-shien-ibarakiken-3e2743.html</link>
+    <description>Tier B / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/tsukuru/shokogyo/kinyu-keieishien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ce2bd4967e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>男女共同参画</title>
+    <link>https://jpcite.com/programs/danjotomo-dousan-ga-702dd2.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/manabu/danjokyodosankaku-josei-seishonen/danjokyodosankaku/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0a19aa8470</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>住宅関連助成制度</title>
+    <link>https://jpcite.com/programs/juutaku-kanren-josei-seido-e8f6a4.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/doboku/jutaku/minkan/06kodate/joseiseido/h26joseiseido.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-26f6ac2d7e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成・支援金</title>
+    <link>https://jpcite.com/programs/josei-shien-kin-59220e.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/joseikinshienkin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-28f680f71f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>自立支援医療費（精神通院）制度とは</title>
+    <link>https://jpcite.com/programs/jiritsu-shien-iryouhi-seishin-tsuuin-seido-toha-156b33.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / support 出典: https://www.pref.ibaraki.jp/hokenfukushi/seiho/seishin/seishin/homepage.file/04tsuuin/04tsuuin/jiritsushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-29951cf29b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>科学の甲子園全国大会</title>
+    <link>https://jpcite.com/programs/kagaku-no-koushien-zenkokutaikai-58f8c5.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / support 出典: https://www.pref.ibaraki.jp/kikaku/kagaku/kagakugizyutu/koushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2ed79cf9a5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「女性のためのこころのオンライン相談＠いばらき」にご相談ください</title>
+    <link>https://jpcite.com/programs/josei-notamenokokorono-onrain-soudan-ibaraki-nigo-soudan-13176e.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/hokenfukushi/shofuku/seishin/joseionline.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3e0ad6cd76</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年度いばらきカーボンニュートラル産業拠点創出に向けた実行可能性調査費補助金の交付決定について</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ibaraki-kaabonnyuutoraru-sangyou-kyoten-9a4b7f.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/kikaku/chikei/keikaku/cnpj/reiwa7hojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3ea030a140</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地方創生臨時交付金を活用した本県事業の実施状況</title>
+    <link>https://jpcite.com/programs/chihou-sousei-rinji-koufukin-wo-katsuyou-shita-honken-204bf0.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/kikaku/kikaku/chihousousei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-56187325d6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>金融・共済</title>
+    <link>https://jpcite.com/programs/kinyuu-kyousai-6b1937.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/tsukuru/norinsuisangyo/kinyu-kyosai-hojojigyo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5c97bae8ca</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新しい地方経済・生活環境創生交付金</title>
+    <link>https://jpcite.com/programs/atarashii-chihou-keizai-seikatsukankyou-sousei-koufukin-af0442.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/kikaku/keikaku/chiho/degiden.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6596857536</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度働く世代のスポーツ活動支援事業費補助金の2次募集について</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-hataraku-sedai-no-supootsu-katsudou-shien-18c87a.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/seikatsukankyo/sports/kiakku/hatarakusedai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-72adfec384</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城県被災者生活再建支援補助事業</title>
+    <link>https://jpcite.com/programs/ibarakiken-hisaisha-seikatsu-saiken-shien-hojo-jigyou-19d4fb.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/seikatsukankyo/bousaikiki/kiki/seikatsusaikenhojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8a3bb6e2a9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>人権・男女共同参画</title>
+    <link>https://jpcite.com/programs/jinken-danjotomo-dousan-ga-06ee7f.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/kurasu/danjokyodosankaku-josei-seishonen/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8bcfeb85b7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城県困難な問題を抱える女性支援基本計画の策定について</title>
+    <link>https://jpcite.com/programs/ibarakiken-konnan-na-mondai-wo-kakae-ru-josei-shien-kihon-178785.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/hokenfukushi/seisyonen/seisyonen/joseisien-plan.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-adb3f58f4c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>自立・分散型エネルギー設備（家庭用蓄電池）導入促進事業費補助金</title>
+    <link>https://jpcite.com/programs/jiritsu-bunsangata-enerugii-setsubi-kateiyou-chikudenchi-6759be.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/seikatsukankyo/kansei/chikyu/jiritsubunsan.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bf9f02ed0e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>電源三法交付金</title>
+    <link>https://jpcite.com/programs/dengen-san-hou-koufukin-43743c.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/kikaku/seisaku/tyosei/dengen.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c70b23dc47</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就労・採用支援</title>
+    <link>https://jpcite.com/programs/shuurou-saiyou-shien-966c9d.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / support 出典: https://www.pref.ibaraki.jp/tsukuru/shigoto-koyo/shuro-saiyoshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c7c4886652</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>避難行動要支援者対策</title>
+    <link>https://jpcite.com/programs/hinan-koudou-you-shien-mono-taisaku-b28ef9.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / support 出典: https://www.pref.ibaraki.jp/hokenfukushi/fukushi/chiiki/hinan-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cf04eb9e60</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度茨城県幼児教育・保育施設物価高騰対策支援金について</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ibarakiken-youji-kyouiku-hoikushisetsu-4b90e8.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / support 出典: https://www.pref.ibaraki.jp/hokenfukushi/kodomo/2025bukkakoutou.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-da60935583</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域公共交通経営改善支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/chiiki-koukyoukoutsuu-keiei-kaizen-shien-jigyou-hi-hojokin-3154c4.html</link>
+    <description>Tier A / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/kikaku/kotsuseisaku/chiikikoutsu/kikaku3-kotsu/bus/2025shien/202504.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e0cd598464</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>つくば市 農業機械等整備支援事業補助金</title>
+    <link>https://jpcite.com/programs/tsukuba-shi-nougyou-kikai-nado-seibi-shien-jigyou-hojokin-f4d578.html</link>
+    <description>Tier C / 茨城県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.tsukuba.lg.jp/soshikikarasagasu/keizaibunogyoseisakuka/gyomuannai/4/1/20174.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d17146a53b</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>自動車税 (種別割) のグリーン化特例</title>
+    <link>https://jpcite.com/programs/jidoushazei-shubetsu-wari-no-guriin-ka-tokurei-65ec01.html</link>
+    <description>Tier C / 茨城県 / 総務省 自治税務局 出典: https://www.pref.ibaraki.jp/somu/zeimu/fuka/jidousha/guri.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0dafd3c6b9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城県守谷市 上下水道 ウォーターPPP (レベル3.5 管理・更新一体)</title>
+    <link>https://jpcite.com/programs/ibarakiken-moriya-shi-jougesuidou-uootaa-ppp-reberu-3-5-e779a1.html</link>
+    <description>Tier C / 茨城県 / 守谷市 / ウォーターエージェンシー代表JV 出典: https://water-agency.com/news-city-moriya-jyougesuidou/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9de035893f</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いばらきパートナーシップ宣誓制度 (全国初の都道府県制度)</title>
+    <link>https://jpcite.com/programs/ibaraki-paatonaashippu-sensei-seido-zenkokuhatsu-no-08d6b6.html</link>
+    <description>Tier C / 茨城県 / 茨城県 ダイバーシティ推進センター 出典: https://www.pref.ibaraki.jp/hokenfukushi/fukushi/jinken/ibarakipartner.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d2da961af9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スーパーシティ特区 つくば市</title>
+    <link>https://jpcite.com/programs/suupaashitei-tokku-tsukuba-shi-1e3ea9.html</link>
+    <description>Tier C / 茨城県 / 内閣府 / つくば市 / regulatory_sandbox 出典: https://www.city.tsukuba.lg.jp/soshikikarasagasu/seisakuinnovationbustartupsuishinshitsu/gyomuannai/2/1/21170.html</description>
+    <category>regulatory_sandbox</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ca293b07aa</guid>
+    <pubDate>Thu, 23 Apr 2026 14:15:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地方活力向上地域等における県税の特別措置 (茨城県)</title>
+    <link>https://jpcite.com/programs/chihou-katsuryoku-koujou-chiiki-nado-niokeru-kenzei-no-6dfca4.html</link>
+    <description>Tier C / 茨城県 / 茨城県 / tax_reduction_by_ordinance 出典: https://www.pref.ibaraki.jp/somu/zeimu/fuka/chihoukaturyoku.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ae51b9a756</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就労継続支援B型事業所作業用品等整備事業費補助金(茨城県例)</title>
+    <link>https://jpcite.com/programs/shuurou-keizoku-shien-b-kata-jigyousho-sagyouyou-hintou-d15321.html</link>
+    <description>Tier C / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/hokenfukushi/shofuku/kikaku/sagyouyouhinhojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3aabc0bc7b</guid>
+    <pubDate>Thu, 23 Apr 2026 05:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城県中小規模事業所省エネ対策設備導入補助金</title>
+    <link>https://jpcite.com/programs/ibarakiken-chuushou-kibo-jigyousho-shouene-taisaku-setsubi-e5fec3.html</link>
+    <description>Tier C / 茨城県 / 茨城県生活環境部 / subsidy 出典: https://www.pref.ibaraki.jp/seikatsukankyo/kansei/chikyu/hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-47089199f4</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城県中小物流事業者業務効率化補助事業</title>
+    <link>https://jpcite.com/programs/ibarakiken-chuushou-butsuryuu-jigyousha-gyoumu-kouritsuka-56c6db.html</link>
+    <description>Tier C / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/shokorodo/chusho/keiei/buturyuugyoumukourituka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5334e08f25</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いばらきチャレンジ基金事業</title>
+    <link>https://jpcite.com/programs/ibaraki-charenji-kikin-jigyou-744697.html</link>
+    <description>Tier C / 茨城県 / 茨城県 / subsidy 出典: https://www.pref.ibaraki.jp/shokorodo/chusho/keiei/challengefund/top.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-815de4b63c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城県新分野進出等支援融資</title>
+    <link>https://jpcite.com/programs/ibarakiken-shin-bunya-shinshutsu-nado-shien-yuushi-ac4ad1.html</link>
+    <description>Tier C / 茨城県 / 茨城県産業戦略部 / loan 出典: https://www.pref.ibaraki.jp/shokorodo/sansei/kinyu/shosei/yushi/kakushin.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d453c73ab3</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>つくば市_つくば市内の農業者・就農希望者向け交流セミナー</title>
+    <link>https://jpcite.com/programs/tsukuba-shi-tsukuba-shinai-no-nougyou-mono-shuunou-kibousha-81ed58.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 100万円 出典: https://www.city.tsukuba.lg.jp/kankobunka/kankojoho/nourin/1001437.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02a8273fe7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度農業用使用済みプラスチック回収事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-nougyouyou-shiyouzumi-purasuchikku-kaishuu-db99cf.html</link>
+    <description>Tier C / 茨城県 / 茨城県坂東市 / subsidy 出典: https://www.city.bando.lg.jp/page/page010018.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0438baf1f8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-08-101_茨城_ニューファーマー育成研修助成事業</title>
+    <link>https://jpcite.com/programs/pref-08-101-ibaraki-nyuufaamaa-ikusei-kenshuu-josei-jigyou-b93317.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 120万円 出典: https://www.pref.ibaraki.jp/nourinsuisan/hokunourin/kikaku/somu/syunousien/sienzigyousyoukai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-05643c6ddf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那珂市認定新規就農者農業用機械等補助金</title>
+    <link>https://jpcite.com/programs/naka-shi-nintei-shinki-shuunou-mono-nougyouyou-kikai-nado-349eeb.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 50万円 出典: https://www.city.naka.lg.jp/section.php?code=29</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-05a5ae832c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>稲作カメムシ防除対策支援</title>
+    <link>https://jpcite.com/programs/inasaku-kamemushi-boujo-taisaku-shien-21725d.html</link>
+    <description>Tier C / 茨城県 / （noukaweb 収集） 出典: https://www.city.tsukubamirai.lg.jp/section.php?code=9</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-078cb76c82</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>桜川市_桜川市荒廃農地解消事業補助金</title>
+    <link>https://jpcite.com/programs/sakuragawa-shi-sakuragawa-shi-kouhai-nouchi-kaishou-jigyou-3f61f8.html</link>
+    <description>Tier A / 茨城県 / subsidy / 上限 250万円 出典: https://www.city.sakuragawa.lg.jp/shisei/nouringyou/page008836.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-086115c283</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>行方市（公共下水道・農業集落排水）排水設備接続支援補助金</title>
+    <link>https://jpcite.com/programs/namegata-shi-koukyou-gesuidou-nougyou-shuuraku-haisui-5590ff.html</link>
+    <description>Tier C / 茨城県 / （noukaweb 収集） 出典: https://www.city.namegata.ibaraki.jp/section.php?code=14</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-090825286a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-082201-001_つくば市_新規就農者経営支援補助金</title>
+    <link>https://jpcite.com/programs/mun-082201-001-tsukuba-shi-shinki-shuunou-mono-keiei-shien-a085c8.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 150万円 出典: https://www1.g-reiki.net/tsukuba/reiki_honbun/e019RG00000967.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0967b4fb9e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成緊急対策【経営開始資金】（旧農業次世代人材投資資金【経営開始型】）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-kinkyuutaisaku-keiei-kaishi-654d32.html</link>
+    <description>Tier B / 茨城県 / 茨城県筑西市 / subsidy / 上限 150万円 出典: https://www.city.chikusei.lg.jp/shurou-sangyou/nougyou/page001445.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0a2560819f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業用ハウス被覆資材張替事業費補助金</title>
+    <link>https://jpcite.com/programs/nougyouyou-hausu-hifuku-shizai-harikai-jigyou-hi-hojokin-643f95.html</link>
+    <description>Tier C / 茨城県 / （noukaweb 収集） 出典: https://www.city.kamisu.ibaraki.jp/business/maff/1012045/index.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0a5d8798dc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定農業者育成確保資金利子助成金・農業経営基盤強化資金利子助成金</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-ikusei-kakuho-shikin-rishi-joseikin-b7c5c0.html</link>
+    <description>Tier C / 茨城県 / （noukaweb 収集） 出典: https://www.city.ibaraki-koga.lg.jp/soshiki/nousei/8/1972.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0d448fff68</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>坂東市_環境保全型農業支援補助金</title>
+    <link>https://jpcite.com/programs/bandou-shi-kankyouhozen-kata-nougyou-shien-hojokin-22e1c6.html</link>
+    <description>Tier C / 茨城県 / subsidy / 上限 10万円 出典: https://www.city.bando.lg.jp/data/doc/1408928266_doc_59_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0dad7c3fa5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>かんしょ生産拡大支援事業</title>
+    <link>https://jpcite.com/programs/kansho-seisan-kakudai-shien-jigyou-724f60.html</link>
+    <description>Tier A / 茨城県 / 茨城県かすみがうら市 / subsidy / 上限 5万円 出典: https://www.city.kasumigaura.lg.jp/sp/page/page018067.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0db6caf2d2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城町就業者移住支援金</title>
+    <link>https://jpcite.com/programs/ibaraki-machi-shuugyou-mono-ijuu-shien-kin-e15dea.html</link>
+    <description>Tier B / 茨城県 / 茨城県茨城町 / subsidy / 上限 20万円 出典: https://www.town.ibaraki.lg.jp/gyousei/gyousei/machinotorikumi/002746.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0f47112dd9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>行方市（公共下水道・農業集落排水）排水設備接続支援補助金</title>
+    <link>https://jpcite.com/programs/namegata-shi-koukyou-gesuidou-nougyou-shuuraku-haisui-1f3fdd.html</link>
+    <description>Tier B / 茨城県 / 茨城県行方市 / subsidy / 上限 40万円 出典: https://www.city.namegata.ibaraki.jp/section.php?code=14</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-10adcceb43</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>桜川市_認定農業者制度</title>
+    <link>https://jpcite.com/programs/sakuragawa-shi-nintei-nougyou-mono-seido-52170a.html</link>
+    <description>Tier C / 茨城県 / subsidy / 上限 100万円 出典: https://www.city.sakuragawa.lg.jp/shisei/nouringyou/page008836.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14e34452a6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度蓄電システム（蓄電池）導入補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chikuden-shisutemu-chikudenchi-dounyuu-hojokin-ac83ed.html</link>
+    <description>Tier B / 茨城県 / 茨城県下妻市 / subsidy / 上限 5万円 出典: https://www.city.shimotsuma.lg.jp/data/doc/1711434417_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1980e09865</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公共下水道・農業集落排水の接続支援補助制度</title>
+    <link>https://jpcite.com/programs/koukyou-gesuidou-nougyou-shuuraku-haisui-no-setsuzoku-shien-713286.html</link>
+    <description>Tier A / 茨城県 / 茨城県龍ケ崎市 / subsidy / 上限 41万円 出典: https://www.city.ryugasaki.ibaraki.jp/kurashi/seikatsu/suido/setsuzokushienhojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-19f992bff4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公共下水道受益者負担金制度</title>
+    <link>https://jpcite.com/programs/koukyou-gesuidou-juekishafutan-kin-seido-3e31dd.html</link>
+    <description>Tier C / 茨城県 / （noukaweb 収集） / 上限 10万円 出典: https://www.town.ibaraki-yachiyo.lg.jp/page/page001238.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1ae4b457c4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>坂東市_食と農のチャレンジ事業費補助金</title>
+    <link>https://jpcite.com/programs/bandou-shi-kutto-nou-no-charenji-jigyou-hi-hojokin-0a35cd.html</link>
+    <description>Tier C / 茨城県 / subsidy / 上限 50万円 出典: https://www.city.bando.lg.jp/data/doc/1408928266_doc_59_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1c37394e49</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>常陸太田市_軽貨物車両購入支援事業</title>
+    <link>https://jpcite.com/programs/hitachiootashi-kei-kamotsusharyou-kounyuu-shien-jigyou-9a0449.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 50万円 出典: https://www.city.hitachiota.ibaraki.jp/data/doc/1650355980_doc_173_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1d4910d2e1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公共下水道・農業集落排水の接続支援補助制度</title>
+    <link>https://jpcite.com/programs/koukyou-gesuidou-nougyou-shuuraku-haisui-no-setsuzoku-shien-9dee4b.html</link>
+    <description>Tier B / 茨城県 / （noukaweb 収集） / 上限 41万円 出典: https://www.city.ryugasaki.ibaraki.jp/kurashi/seikatsu/suido/setsuzokushienhojo.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1e890a2d95</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>笠間市樹園地継承支援事業補助金</title>
+    <link>https://jpcite.com/programs/kasama-shi-juen-chi-keishou-shien-jigyou-hojokin-156e5a.html</link>
+    <description>Tier B / 茨城県 / 市町村 / subsidy 出典: https://www.city.kasama.lg.jp/page/dir001768.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1fc568d840</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>常陸大宮市農地流動化借り手助成金</title>
+    <link>https://jpcite.com/programs/hitachioomiya-shi-nouchi-ryuudouka-karite-joseikin-b5d1fa.html</link>
+    <description>Tier C / 茨城県 / 市町村 / subsidy 出典: https://www.city.hitachiomiya.lg.jp/page/page000140.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-20674d78af</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>下水道等接続工事費補助金</title>
+    <link>https://jpcite.com/programs/gesuidou-nado-setsuzoku-koujihi-hojokin-45fc81.html</link>
+    <description>Tier B / 茨城県 / （noukaweb 収集） / 上限 35万円 出典: https://www.city.hokota.lg.jp/page/page004984.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2154b87135</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>常陸大宮市新規就農者経営助成金</title>
+    <link>https://jpcite.com/programs/hitachioomiya-shi-shinki-shuunou-mono-keiei-joseikin-f8abc7.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 180万円 出典: https://www.city.hitachiomiya.lg.jp/kurashi_gyousei/business/nouti/nougyou/page007044.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-23c8a961e7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年就農給付金</title>
+    <link>https://jpcite.com/programs/seinen-shuunou-kyuufukin-dc2e1d.html</link>
+    <description>Tier C / 茨城県 / （noukaweb 収集） 出典: https://www.town.ibaraki.lg.jp/city-promotion/ibarakimatikurasi/work/002627.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2433838df1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鉾田市_令和7年度農林関係の各種支援事業（補助・助成等）</title>
+    <link>https://jpcite.com/programs/hokota-shi-reiwa-7-nendo-nourin-kankei-no-kakushu-shien-d7be5f.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 100万円 出典: https://www.city.hokota.lg.jp/data/doc/1714558617_doc_99_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-25455bc229</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>笠間市新規就農者定着事業</title>
+    <link>https://jpcite.com/programs/kasama-shi-shinki-shuunou-mono-teichaku-jigyou-caf3ea.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 180万円 出典: https://www.city.kasama.lg.jp/page/dir001768.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-271d94b80f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城町就業者移住支援金</title>
+    <link>https://jpcite.com/programs/ibaraki-machi-shuugyou-mono-ijuu-shien-kin-ff9a27.html</link>
+    <description>Tier C / 茨城県 / （noukaweb 収集） 出典: https://www.town.ibaraki.lg.jp/gyousei/gyousei/machinotorikumi/002746.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-277cd45587</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>茨城町農地集積加速化事業（補助事業）</title>
+    <link>https://jpcite.com/programs/ibaraki-machi-nouchi-shuuseki-kasoku-ka-jigyou-hojo-jigyou-6f014a.html</link>
+    <description>Tier C / 茨城県 / 茨城県茨城町 / subsidy 出典: https://www.town.ibaraki.lg.jp/data/doc/1607661828_doc_20_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-27aaca2291</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>桜川市農業者育成支援事業補助金</title>
+    <link>https://jpcite.com/programs/sakuragawa-shi-nougyou-mono-ikusei-shien-jigyou-hojokin-4a0537.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 60万円 出典: https://www.city.sakuragawa.lg.jp/gyousei/reiki_int/reiki_honbun/r211RG00001167.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2a0eb081b8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鉾田市_電源立地地域対策補助金（旭スポーツセンター野球場バックネット設備更新）</title>
+    <link>https://jpcite.com/programs/hokota-shi-dengen-ritchi-chiiki-taisaku-hojokin-asahi-e6d681.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 250万円 出典: https://www.city.hokota.lg.jp/data/doc/1714558617_doc_99_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2ad7ce74e6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿嶋市農家等生活資金利子助成補助金</title>
+    <link>https://jpcite.com/programs/kashima-shi-nouka-nado-seikatsu-shikin-rishi-josei-hojokin-a17387.html</link>
+    <description>Tier B / 茨城県 / 市町村 / loan / 上限 200万円 出典: https://city.kashima.ibaraki.jp/13reiki/reiki_honbun/e021RG00000732.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2c53e39a7b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年就農給付金</title>
+    <link>https://jpcite.com/programs/seinen-shuunou-kyuufukin-c9416e.html</link>
+    <description>Tier B / 茨城県 / 茨城県茨城町 / subsidy 出典: https://www.town.ibaraki.lg.jp/city-promotion/ibarakimatikurasi/work/002627.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2de381260a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新商品開発支援等事業費補助金</title>
+    <link>https://jpcite.com/programs/shinshouhin-kaihatsushien-nado-jigyou-hi-hojokin-cf5fb4.html</link>
+    <description>Tier B / 茨城県 / 茨城県つくばみらい市 / subsidy / 上限 100万円 出典: https://www.city.tsukubamirai.lg.jp/data/doc/1686184282_doc_21_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2eea6f77bc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>スマート農業全国展開導入支援事業</title>
+    <link>https://jpcite.com/programs/sumaato-nougyou-zenkokutenkai-dounyuu-shien-jigyou-d858b8.html</link>
+    <description>Tier C / 茨城県 / 茨城県坂東市 / subsidy 出典: https://www.city.bando.lg.jp/page/page008366.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-35090c2627</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>耕作放棄地再生事業補助金</title>
+    <link>https://jpcite.com/programs/kousaku-houki-chi-saisei-jigyou-hojokin-9604d0.html</link>
+    <description>Tier C / 茨城県 / 茨城県稲敷市 / subsidy / 上限 4万円 出典: https://www.city.maibara.lg.jp/_res/projects/default_project/_page_/001/003/456/youkou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-35437238c4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>常陸大宮市_高収益作物次期作支援交付金</title>
+    <link>https://jpcite.com/programs/hitachioomiya-shi-taka-shuueki-sakumotsu-jiki-saku-shien-c6b244.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 100万円 出典: https://www.city.hitachiomiya.lg.jp/data/doc/1599712040_doc_1_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-372633d74a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>排水設備設置工事資金助成制度</title>
+    <link>https://jpcite.com/programs/haisui-setsubi-setchi-kouji-shikin-josei-seido-2999a4.html</link>
+    <description>Tier B / 茨城県 / （noukaweb 収集） / 上限 35万円 出典: https://www.city.omitama.lg.jp/0017/info-0000007009-0.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3b22a341f2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>神栖市魅力ある産地づくり支援事業費補助金</title>
+    <link>https://jpcite.com/programs/kamisu-shi-miryoku-aru-sanchi-zukuri-shien-jigyou-hi-hojokin-89a00a.html</link>
+    <description>Tier C / 茨城県 / 茨城県神栖市 / subsidy / 上限 50万円 出典: https://www.city.kamisu.ibaraki.jp/_res/projects/default_project/_page_/001/002/745/1002745.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3e648679e2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八千代町省エネ家電製品購入費補助金</title>
+    <link>https://jpcite.com/programs/yachiyo-machi-shouene-kadenseihin-kounyuuhi-hojokin-ef4715.html</link>
+    <description>Tier C / 茨城県 / 茨城県八千代町 / subsidy / 上限 5万円 出典: https://www.town.yachiyo.lg.jp/data/doc/2024041500010.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3e994ee93f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>常陸太田市_UIJターン就農奨励金</title>
+    <link>https://jpcite.com/programs/hitachiootashi-uij-taan-shuunou-shoureikin-9675cb.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 20万円 出典: https://www.city.hitachiota.ibaraki.jp/data/doc/1650355980_doc_173_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-405701fb03</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定農業者制度（鉾田市）</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-seido-hokota-shi-329a13.html</link>
+    <description>Tier B / 茨城県 / 農林水産省 / subsidy 出典: https://www.city.hokota.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4399934109</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

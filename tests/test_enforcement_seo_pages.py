@@ -39,6 +39,7 @@ def _build_autonomath_db(path: Path) -> None:
 
       - 株式会社 SEO Sample :  publicly attributable, recent
       - 医療法人 ヘルス :       publicly attributable, older
+      - 株式会社 Future :        future-dated public row — must be excluded
       - 田中 太郎 :             individual (no suffix) — must be excluded
       - 株式会社 NoSource :     no source_url — must be excluded
     """
@@ -102,6 +103,21 @@ def _build_autonomath_db(path: Path) -> None:
                 None,
                 None,
                 "https://www.mhlw.go.jp/test/another.html",
+                "2026-04-25T07:04:15Z",
+            ),
+            (
+                "AM-ENF-TEST-FUTURE",
+                "1111111111111",
+                "株式会社 Future",
+                "business_improvement",
+                "金融庁",
+                "2030-01-01",
+                None,
+                None,
+                "未来日付のテストデータ。",
+                None,
+                None,
+                "https://www.fsa.go.jp/test/future.html",
                 "2026-04-25T07:04:15Z",
             ),
             (
@@ -187,6 +203,8 @@ def test_generator_writes_index_and_detail_pages(fixture_paths: dict[str, Path])
     assert "<title>行政処分 公開記録 サマリー — jpcite</title>" in index_text
     assert "株式会社 SEO Sample" in index_text
     assert "医療法人 ヘルスケア" in index_text
+    assert "収録対象期間: 2024年〜2026年" in index_text
+    assert "収録対象期間: 2024年〜2030年" not in index_text
 
 
 def test_pii_gate_excludes_individuals_and_sourceless_rows(
@@ -211,6 +229,9 @@ def test_pii_gate_excludes_individuals_and_sourceless_rows(
     # Sourceless company MUST NOT appear.
     assert "株式会社 NoSource" not in bodies
     assert "株式会社 NoSource" not in index_text
+    # Future-dated rows MUST NOT appear on public SEO pages.
+    assert "株式会社 Future" not in bodies
+    assert "株式会社 Future" not in index_text
     # Two surviving slugs.
     assert len(detail_files) == 2
 
@@ -236,6 +257,10 @@ def test_disclaimer_appears_on_every_page(fixture_paths: dict[str, Path]) -> Non
         assert needle_quals in text, f"missing 有資格者 disclaimer on {p.name}"
         # bookmarklet CTA must be on every page (jpcite primary growth surface).
         assert "/bookmarklet.html" in text, f"missing bookmarklet CTA on {p.name}"
+        # Public SEO pages should not expose operator-internal identifiers.
+        assert "T8010001213708" not in text, f"operator invoice id leaked on {p.name}"
+        assert "梅田茂利" not in text, f"individual operator name leaked on {p.name}"
+        assert "info@bookyou.net" not in text, f"operator email leaked on {p.name}"
 
 
 def test_sitemap_structure_is_well_formed(fixture_paths: dict[str, Path]) -> None:

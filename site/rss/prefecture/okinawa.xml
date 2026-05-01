@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 沖縄県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/okinawa.xml" rel="self" type="application/rss+xml" />
+  <description>沖縄県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>企業支援</title>
+    <link>https://jpcite.com/programs/kigyou-shien-3777ac.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / support 出典: https://www.pref.okinawa.lg.jp/shigoto/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-15697a0892</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>産業高度化・事業革新促進計画 平成24年度実施状況報告の公表</title>
+    <link>https://jpcite.com/programs/sangyou-koudoka-jigyou-kakushin-sokushin-keikaku-heisei-24-5c6718.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / support 出典: https://www.pref.okinawa.lg.jp/shigoto/shien/1010198.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-22a17d8359</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度赤土等流出防止支援事業補助金の公募について（2次公募）</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-shakudo-nado-ryuushutsu-boushi-shien-jigyou-beeb54.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/1034780.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-23c3bea745</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公募・補助金等（職業能力開発）</title>
+    <link>https://jpcite.com/programs/koubo-hojokin-nado-shokugyou-nouryoku-kaihatsu-551e9d.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/ability/1012141/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2c93aa097d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公募・補助金等（環境保全）</title>
+    <link>https://jpcite.com/programs/koubo-hojokin-nado-kankyouhozen-e4bfcb.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4245da570f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金等（農業）</title>
+    <link>https://jpcite.com/programs/hojokin-nado-nougyou-ba038c.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/nogyo/1010579/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-66350d6550</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県産業廃棄物発生抑制・リサイクル等推進事業費補助金対象事業の募集</title>
+    <link>https://jpcite.com/programs/okinawaken-sangyouhaikibutsu-hassei-yokusei-risaikuru-nado-142b82.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/gomirecycle/1004144/1026606.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-675083d9c3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成金・補助金</title>
+    <link>https://jpcite.com/programs/joseikin-hojokin-ae6c4f.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/search_tetsuzuki.html?keyword=&amp;w20=20</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-68961ae515</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>適正な価格転嫁応援プロジェクト</title>
+    <link>https://jpcite.com/programs/tekisei-na-kakaku-tenka-ouen-purojiekuto-90ed33.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / support 出典: https://www.pref.okinawa.lg.jp/shigoto/shien/1037827.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6cd60b32b5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住支援金対象法人の登録</title>
+    <link>https://jpcite.com/programs/ijuu-shien-kin-taishou-houjin-no-touroku-fb2093.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / certification 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/iju/1023707.html</description>
+    <category>certification</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8b323e82e7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度赤土等流出防止支援事業補助金の公募について（1次公募）</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-shakudo-nado-ryuushutsu-boushi-shien-jigyou-8594dc.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/1039582.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9da04deff4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公募・補助金等（産業）</title>
+    <link>https://jpcite.com/programs/koubo-hojokin-nado-sangyou-424286.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/keizai/1009879/1010143/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9ff6d719d3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>賃上げ・生産性向上緊急支援事業</title>
+    <link>https://jpcite.com/programs/chin-age-seisansei-koujou-kinkyuu-shien-jigyou-6c0e84.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / support 出典: https://www.pref.okinawa.lg.jp/shigoto/shien/1037826.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a7a3fdb26c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度赤土等流出防止支援事業補助金の公募について（1次公募）</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-shakudo-nado-ryuushutsu-boushi-shien-jigyou-5e732c.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/1034395.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ac5bdaaa67</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>低炭素島しょ社会実現に向けた地球温暖化防止対策等事業補助金</title>
+    <link>https://jpcite.com/programs/tei-tanso-shima-sho-shakai-jitsugen-ni-muke-ta-2d5b02.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/1004687.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b52af649fc</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>おきなわ型省エネ設備等普及事業補助金</title>
+    <link>https://jpcite.com/programs/okinawa-kata-shouene-setsubi-nado-fukyuu-jigyou-hojokin-428ef2.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/1004529.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b76737dcc5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公募・補助金等（経済）</title>
+    <link>https://jpcite.com/programs/koubo-hojokin-nado-keizai-57a57f.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/keizai/1011892/1011910/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bb5507edff</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害児者福祉施設整備補助事業（施設整備補助金）</title>
+    <link>https://jpcite.com/programs/shougaiji-mono-fukushi-shisetsu-seibi-hojo-jigyou-shisetsu-84cafd.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kyoiku/shogaifukushi/1007022/1034388/1034427.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bb7ed9bfb2</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公募・補助金等（医療）</title>
+    <link>https://jpcite.com/programs/koubo-hojokin-nado-iryou-eac028.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/iryokenko/iryo/1005869/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bb9fefe33c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【東京圏から移住をお考えの皆様へ】移住支援金制度のご案内！</title>
+    <link>https://jpcite.com/programs/toukyouken-kara-ijuu-woo-kangae-no-minasama-he-ijuu-shien-ead8cc.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / support 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/iju/1023708.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bd282d6b0a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>観光施設等の総合的エコ化促進事業補助金</title>
+    <link>https://jpcite.com/programs/kankou-shisetsutou-no-sougouteki-eko-ka-sokushin-jigyou-321699.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/1004685.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c7fec241a0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農道草刈り作業（多面的機能支払交付金事業）【平成27年11月13日】</title>
+    <link>https://jpcite.com/programs/noudou-kusakari-sagyou-tamenteki-kinou-shiharai-koufukin-14b520.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004439/1019664.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d06556cc1d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県海岸漂着物等地域対策推進事業費補助金</title>
+    <link>https://jpcite.com/programs/okinawaken-kaigan-hyouchaku-mono-nado-chiiki-taisaku-0133dc.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004212/1004213.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d5aae9e50f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度赤土等流出防止支援事業補助金の公募について（3次公募）</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-shakudo-nado-ryuushutsu-boushi-shien-jigyou-203692.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kurashikankyo/kankyo/1004684/1036315.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e11fad015b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公募・補助金・支援事業等（子育て）</title>
+    <link>https://jpcite.com/programs/koubo-hojokin-shien-jigyou-nado-kosodate-9c3790.html</link>
+    <description>Tier A / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kyoiku/kosodate/1008226/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e9ea5fd4a5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県商工会連合会 補助金・助成金 案内ハブ（沖縄県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/okinawaken-shoukou-kai-rengoukai-hojokin-joseikin-annai-75337c.html</link>
+    <description>Tier B / 沖縄県 / 沖縄県商工会連合会 / directory 出典: https://www.oki-shokoren.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3da4c9846f</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:51 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄漁業基金事業</title>
+    <link>https://jpcite.com/programs/okinawa-gyogyou-kikin-jigyou-42c41d.html</link>
+    <description>Tier C / 沖縄県 / 農林水産省 水産庁 / 公益財団法人沖縄県漁業振興基金 / subsidy_okinawa_fisheries 出典: https://www.jfa.maff.go.jp/j/kanri/index.html</description>
+    <category>subsidy_okinawa_fisheries</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8df6d03375</guid>
+    <pubDate>Thu, 23 Apr 2026 14:20:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度那覇市人手不足対応支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-naha-ichibito-te-fusoku-taiou-shien-hojokin-315cf8.html</link>
+    <description>Tier C / 沖縄県 / 那覇市経済観光部 / subsidy / 上限 100万円 出典: https://www.city.naha.okinawa.jp/business/kigyouricchi/kigyoushien/KSYOU00120250526151638244.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-36c0486dc0</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度那覇市中小企業者販路拡大支援事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-naha-shichuu-shoukigyou-mono-hanro-kakudai-ba04fb.html</link>
+    <description>Tier C / 沖縄県 / 那覇市経済観光部商工農水課 / subsidy 出典: https://www.city.naha.okinawa.jp/business/kigyouricchi/kigyoushien/R7hanrokakudai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cf472d9550</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>なはし社会地域課題解決型起業支援事業</title>
+    <link>https://jpcite.com/programs/nahashi-shakai-chiiki-kadai-kaiketsu-kata-kigyou-shien-875081.html</link>
+    <description>Tier C / 沖縄県 / 那覇市経済観光部 / subsidy 出典: https://www.city.naha.okinawa.jp/business/kigyoaogyo/kigyosogyosien/socialbusiness_naha.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-de1a411eb0</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県離島振興税制 (旅館業等・畜産業・水産業)</title>
+    <link>https://jpcite.com/programs/okinawaken-ri-shima-shinkou-zeisei-ryokan-gyou-nado-bc7dce.html</link>
+    <description>Tier C / 沖縄県 / 沖縄県 / tax_reduction_by_ordinance 出典: https://www.pref.okinawa.lg.jp/kensei/shinko/1017087/1017118/1017141.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3f5f75aea5</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄振興公共投資交付金（ハード交付金）</title>
+    <link>https://jpcite.com/programs/okinawa-shinkou-koukyoutoushi-koufukin-haado-koufukin-72b5f5.html</link>
+    <description>Tier C / 沖縄県 / 内閣府 / 国土交通省 / 農林水産省 / 沖縄県 / subsidy 出典: https://www.mlit.go.jp/page/kanbo05_hy_000228.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-293f2f51c8</guid>
+    <pubDate>Thu, 23 Apr 2026 05:13:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄振興特別推進交付金（ソフト交付金）</title>
+    <link>https://jpcite.com/programs/okinawa-shinkou-tokubetsu-suishin-koufukin-sofuto-koufukin-7eef37.html</link>
+    <description>Tier C / 沖縄県 / 内閣府沖縄担当部局 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/kensei/yosan/1015205/1015210/1033312/1033313.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fa6bda073a</guid>
+    <pubDate>Thu, 23 Apr 2026 05:13:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県中小企業等経営革新強化支援事業費補助金</title>
+    <link>https://jpcite.com/programs/okinawaken-chuushoukigyou-nado-keiei-kakushin-kyouka-shien-bc1757.html</link>
+    <description>Tier C / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/shien/1010056/1022723/1010107.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-167667ddb4</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県健康食品ブランド力向上促進事業補助金</title>
+    <link>https://jpcite.com/programs/okinawaken-kenkoushokuhin-burando-chikara-koujou-sokushin-a9716b.html</link>
+    <description>Tier C / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/keizai/1009879/1010143/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3f6574d186</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県起業家ビジネス展開支援事業補助金</title>
+    <link>https://jpcite.com/programs/okinawaken-kigyouka-bijinesu-tenkai-shien-jigyou-hojokin-4c7180.html</link>
+    <description>Tier C / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.jp/shigoto/shien/1010056/1022724/1010103.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-847d835ff3</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県観光事業者収益力向上サポート事業補助金</title>
+    <link>https://jpcite.com/programs/okinawaken-kankoujigyou-mono-shuueki-chikara-koujou-sapooto-b4ab0b.html</link>
+    <description>Tier C / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/kankotokusan/1011671/1011783/1028889.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-91504b3333</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県産業振興基金事業補助金</title>
+    <link>https://jpcite.com/programs/okinawaken-sangyou-shinkou-kikin-jigyou-hojokin-4f06e5.html</link>
+    <description>Tier C / 沖縄県 / 公益財団法人沖縄県産業振興公社 / subsidy 出典: https://okinawa-ric.jp/service/subsidy.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a546ee3c94</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県離島再生可能エネルギー導入促進事業</title>
+    <link>https://jpcite.com/programs/okinawaken-ri-shima-saiseikanou-enerugii-dounyuu-sokushin-fe0b71.html</link>
+    <description>Tier C / 沖縄県 / 沖縄県 / subsidy 出典: https://www.pref.okinawa.lg.jp/shigoto/nyusatsukeiyaku/1015342/1025075/1026048/1029151.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fba8732aa6</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄市スマート農業推進事業補助金</title>
+    <link>https://jpcite.com/programs/okinawashi-sumaato-nougyou-suishin-jigyou-hojokin-24cec4.html</link>
+    <description>Tier B / 沖縄県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/37456.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-00ff270951</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>土づくり推進事業（土壌改良資材補助）</title>
+    <link>https://jpcite.com/programs/tsuchi-zukuri-suishin-jigyou-dojou-kairyou-shizai-hojo-8b5c05.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/37456.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0119efd8e6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県農業担い手育成支援事業</title>
+    <link>https://jpcite.com/programs/okinawaken-nougyou-ninaite-ikusei-shien-jigyou-34b669.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.pref.okinawa.jp/site/norin/nosei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-061313f108</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-47-104_沖縄_6次産業化県産農林水産物活用連携支援事業</title>
+    <link>https://jpcite.com/programs/pref-47-104-okinawa-6-tsugi-sangyouka-kensan-nourinsuisan-33a4eb.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.pref.okinawa.jp/shigoto/nogyo/1010390/1023790/1019590.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0d20847a5b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農計画作成サポート</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-keikaku-sakusei-sapooto-42a23f.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.uruma.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1047197aae</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮古島市6次産業化・地産地消支援事業補助金</title>
+    <link>https://jpcite.com/programs/miyako-shima-shi-6-tsugi-sangyouka-chisan-chishou-shien-4453bf.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 200万円 出典: https://www.city.miyakojima.lg.jp/soshiki/shityo/sangyoushikou/sangyoushinko/oshirase/2024-0716-1119-309.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-122dc0f155</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名護市農業振興対策事業補助金</title>
+    <link>https://jpcite.com/programs/nago-shi-nougyou-shinkou-taisaku-jigyou-hojokin-9fe55b.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www.city.nago.okinawa.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-12b8fe4805</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>畜産生産奨励事業補助金（子牛生産奨励補助）</title>
+    <link>https://jpcite.com/programs/chikusan-seisan-shourei-jigyou-hojokin-koushi-seisan-598d10.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 30万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/38364.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-19c3560bc0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄 特定地域経営支援対策事業</title>
+    <link>https://jpcite.com/programs/okinawa-tokuteichiiki-keiei-shien-taisaku-jigyou-f37266.html</link>
+    <description>Tier B / 沖縄県 / 都道府県 / subsidy / 上限 500万円 出典: https://www.pref.okinawa.lg.jp/shigoto/nogyo/1010390/1010395/1010400.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-205b2a3299</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>うるま市頑張る農業を応援します事業補助金</title>
+    <link>https://jpcite.com/programs/uruma-shi-ganbaru-nougyou-wo-ouen-shimasu-jigyou-hojokin-bcdaf2.html</link>
+    <description>Tier B / 沖縄県 / 市町村 / subsidy 出典: https://www1.g-reiki.net/uruma/reiki_honbun/r170RG00001688.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-281842993c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>堆肥購入費の補助</title>
+    <link>https://jpcite.com/programs/taihi-kounyuuhi-no-hojo-cf880d.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www.city.ishigaki.okinawa.jp/soshiki/nosei_keizai/1_1/7366.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-287f9e35f9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地利用集積（利用権設定等促進事業）</title>
+    <link>https://jpcite.com/programs/nouchi-riyou-shuuseki-riyouken-setteinado-sokushin-jigyou-88a837.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.miyakojima.lg.jp/soshiki/nougyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3301c10ada</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>園芸振興事業（果樹苗木補助）</title>
+    <link>https://jpcite.com/programs/engei-shinkou-jigyou-kaju-naegi-hojo-761740.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/37456.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-354b8e0bc2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄市耕種農業生産振興対策事業補助金</title>
+    <link>https://jpcite.com/programs/okinawashi-koushu-nougyou-seisan-shinkou-taisaku-jigyou-655094.html</link>
+    <description>Tier B / 沖縄県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/3836838485.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-378b7f4028</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄 おきなわ農林水産物県外出荷促進事業</title>
+    <link>https://jpcite.com/programs/okinawa-okinawa-nourinsuisan-mono-kengai-shukka-sokushin-51fc96.html</link>
+    <description>Tier B / 沖縄県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.okinawa.jp/shigoto/nogyo/1010390/1010499.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-45b2d096fa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>相続税・贈与税の納税猶予制度（農地特例）</title>
+    <link>https://jpcite.com/programs/souzokuzei-zouyozei-no-nouzei-yuuyo-seido-nouchi-tokurei-141d68.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.miyakojima.lg.jp/soshiki/nougyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4b3ea7e6c8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業近代化促進事業（栽培施設補助）</title>
+    <link>https://jpcite.com/programs/nougyou-kindaika-sokushin-jigyou-saibai-shisetsu-hojo-679e82.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 150万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/37456.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4c32aaba0e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>糖業振興対策事業（古株更新補助）</title>
+    <link>https://jpcite.com/programs/tougyou-shinkou-taisaku-jigyou-furukabu-koushin-hojo-8db939.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/37456.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4c4fdffaef</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>家畜伝染病予防助成補助金</title>
+    <link>https://jpcite.com/programs/kachiku-densenbyou-yobou-josei-hojokin-0f078d.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/37456.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5098880065</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮古島市農畜産物処理加工施設の活用支援</title>
+    <link>https://jpcite.com/programs/miyako-shima-shi-nouchikusan-mono-shori-kakou-shisetsu-no-bd67dc.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.miyakojima.lg.jp/soshiki/nougyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5392e5513a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>水産業振興対策事業補助金</title>
+    <link>https://jpcite.com/programs/suisan-gyou-shinkou-taisaku-jigyou-hojokin-492ded.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/37456.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6d396bab9d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄振興特別推進交付金（一括交付金）農業関連事業</title>
+    <link>https://jpcite.com/programs/okinawa-shinkou-tokubetsu-suishin-koufukin-ikkatsu-koufukin-f883ab.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.nago.okinawa.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7181919dfe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度石垣市高齢繁殖母牛早期淘汰促進事業（一括交付金）</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-ishigakishi-kourei-hanshoku-hahaushi-souki-646374.html</link>
+    <description>Tier C / 沖縄県 / 沖縄県石垣市 / subsidy / 上限 2万円 出典: https://www.city.ishigaki.okinawa.jp/soshiki/chikusan/chikusangyou/ikkatukoufukinjigyou/7945.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7d0966f8ee</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>Scope3排出量削減支援事業（バリューチェーン脱炭素化事業）</title>
+    <link>https://jpcite.com/programs/scope3-haishutsuryou-sakugen-shien-jigyou-baryuucheen-f9b3f7.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 1,000万円 出典: https://www.env.go.jp/earth/earth/ondanka/enetoku/2026</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7e414fc14b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄 農業近代化資金 県利子補給</title>
+    <link>https://jpcite.com/programs/okinawa-nougyou-kindaika-shikin-ken-rishi-hokyuu-7e1caa.html</link>
+    <description>Tier B / 沖縄県 / 都道府県 / loan / 上限 1,800万円 出典: https://www.pref.okinawa.jp/shigoto/nogyo/1010390/1010413/1010416.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-810e772e51</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-47-102_沖縄_特定地域経営支援対策事業</title>
+    <link>https://jpcite.com/programs/pref-47-102-okinawa-tokuteichiiki-keiei-shien-taisaku-jigyou-4a9daa.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 500万円 出典: https://www.pref.okinawa.lg.jp/shigoto/nogyo/1010390/1010395/1010400.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-83334b20b9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄 6次産業化県産農林水産物活用連携支援事業</title>
+    <link>https://jpcite.com/programs/okinawa-6-tsugi-sangyouka-kensan-nourinsuisan-mono-katsuyou-3cf6eb.html</link>
+    <description>Tier B / 沖縄県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.okinawa.jp/shigoto/nogyo/1010390/1023790/1019590.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8e62814849</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄 荒廃農地利用加速化事業</title>
+    <link>https://jpcite.com/programs/okinawa-kouhai-nouchi-riyou-kasoku-ka-jigyou-684b77.html</link>
+    <description>Tier A / 沖縄県 / 都道府県 / subsidy / 上限 50万円 出典: https://www.pref.okinawa.lg.jp/shigoto/nogyo/1010488/1010559.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9be753fd52</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業経営基盤強化促進法に基づく認定農業者支援</title>
+    <link>https://jpcite.com/programs/nougyou-keiei-kiban-kyouka-sokushin-hou-ni-motozu-ku-nintei-4c8fc5.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.miyakojima.lg.jp/soshiki/nougyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9d259650ad</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-47-101_沖縄_農業近代化資金_県利子補給</title>
+    <link>https://jpcite.com/programs/pref-47-101-okinawa-nougyou-kindaika-shikin-ken-rishi-hokyuu-d19265.html</link>
+    <description>Tier B / 沖縄県 / loan / 上限 1,800万円 出典: https://www.pref.okinawa.jp/shigoto/nogyo/1010390/1010413/1010416.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ae6f5e8a77</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮古島市園芸施設設置補助事業</title>
+    <link>https://jpcite.com/programs/miyako-shima-shi-engei-shisetsu-setchi-hojo-jigyou-619f43.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 450万円 出典: https://www.city.miyakojima.lg.jp/soshiki/shityo/nourin/nousei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b76b32772c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>畜産生産奨励事業補助金（雌牛・種豚購入補助）</title>
+    <link>https://jpcite.com/programs/chikusan-seisan-shourei-jigyou-hojokin-meushi-tanebuta-1e70c0.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 30万円 出典: https://www.city.okinawa.okinawa.jp/k033-002/sangyou/shinkou/nourinsuisangyou/38364.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-bd354a8c8a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>おきなわ農林水産物県外出荷促進事業（北部・離島地域振興対策）</title>
+    <link>https://jpcite.com/programs/okinawa-nourinsuisan-mono-kengai-shukka-sokushin-jigyou-ca4671.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.city.ishigaki.okinawa.jp/soshiki/nosei_keizai/1_1/7366.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ca70226826</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-47-105_沖縄_荒廃農地利用加速化事業</title>
+    <link>https://jpcite.com/programs/pref-47-105-okinawa-kouhai-nouchi-riyou-kasoku-ka-jigyou-0036c0.html</link>
+    <description>Tier A / 沖縄県 / subsidy / 上限 50万円 出典: https://www.pref.okinawa.lg.jp/shigoto/nogyo/1010488/1010559.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d4a0f5ab8e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-47-103_沖縄_おきなわ農林水産物県外出荷促進事業</title>
+    <link>https://jpcite.com/programs/pref-47-103-okinawa-okinawa-nourinsuisan-mono-kengai-shukka-ae39db.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.pref.okinawa.jp/shigoto/nogyo/1010390/1010499.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-da3e505e31</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮古島市農業生産力向上および農家所得アップ支援事業補助金</title>
+    <link>https://jpcite.com/programs/miyako-shima-shi-nougyou-seisanryoku-koujou-oyobi-nouka-09ab88.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www.city.miyakojima.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-dfc509b64e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業共済（NOSAI沖縄）</title>
+    <link>https://jpcite.com/programs/nougyou-kyousai-nosai-okinawa-4b5bd5.html</link>
+    <description>Tier C / 沖縄県 / subsidy / 上限 100万円 出典: https://www.nosai-okinawa.or.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ebe24d05a4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>うるま市新規就農一貫支援事業補助金</title>
+    <link>https://jpcite.com/programs/uruma-shi-shinki-shuunou-ikkan-shien-jigyou-hojokin-6c0d25.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 250万円 出典: https://www1.g-reiki.net/uruma/reiki_honbun/r170RG00001722.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-fe6ef58fd4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沖縄県新規就農者育成総合対策</title>
+    <link>https://jpcite.com/programs/okinawaken-shinki-shuunou-mono-ikusei-sougou-taisaku-ba60fb.html</link>
+    <description>Tier B / 沖縄県 / subsidy / 上限 100万円 出典: https://www.pref.okinawa.jp/site/norin/nosei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-fe71faac76</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

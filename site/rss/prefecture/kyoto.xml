@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 京都府 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/kyoto.xml" rel="self" type="application/rss+xml" />
+  <description>京都府 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>京都府公衆浴場設備改善事業補助金について（令和8年度受付終了）／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kyoutofu-koushuuyokujou-setsubi-kaizen-jigyou-hojokin-11291b.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/yokujo_hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4e0e58e635</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府社会福祉施設等省エネ推進緊急対策事業費補助金／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kyoutofu-shakaifukushi-shisetsutou-shouene-suishin-4bb5dc.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/shogaishien/news/syouenehojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4fb6bf9b3a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府外国人留学生緊急生活支援事業費補助金の募集の開始について／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kyoutofu-gaikokujinryuugakusei-kinkyuu-seikatsu-shien-f59ddc.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/kokusai/news/ryuugakusei-hojokinn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-59e865b9b9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度京都府伝統産業産地支援事業費補助金の募集について（令和８年４月２日 募集要領一部修正）／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-kyoutofu-dentou-sangyou-sanchi-shien-jigyou-31876e.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/senshoku/news/r8santisien/r8santisien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-66d2d03e9a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>伝統産業産地振興拠点創出事業費補助金（新商品開発・新市場開拓補助金）の募集について／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/dentou-sangyou-sanchi-shinkou-kyoten-soushutsu-jigyou-hi-e92e3c.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/senshoku/news/r8sinsyouhinsinsizyou/r8sinsyouhinsinsizyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7d64f51a8d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府障害者雇用施設整備事業等事業費補助金（令和8年度分）／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kyoutofu-shougaisha-koyou-shisetsu-seibi-jigyou-nado-jigyou-cf7491.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/koyou/news/shisetuhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-90a1e6319e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（京もの伝統食品向け）令和8年度京都府伝統産業生産基盤支援事業費補助金の募集について／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kyou-mono-dentou-shokuhin-muke-reiwa-8-nendo-kyoutofu-5dae55.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/shoku-sangyo/news/r8_dentosangyoseibi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9a4f7cb4f2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府ベビーケアルーム設置促進事業補助金／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kyoutofu-bebiikearuumu-setchi-sokushin-jigyou-hojokin-3ee29f.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/kosodate/news/babycareroom0401.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9cd5bf2843</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>各種助成金制度のお知らせ／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kakushu-joseikin-seido-noo-shirase-kyoutofu-hoomupeeji-9864a1.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/jobpark/business_josei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a8b6828dab</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度スマート農林水産業実装チャレンジ事業補助金のご案内について＊＊令和8年度の募集は終了しました＊＊／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-sumaato-nourinsuisangyou-jissou-charenji-59f81d.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/brand/news/2025zissou_charenge.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cbc2852d53</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>きょうとこどもの城づくり事業（きょうと子ども食堂）支援事業の令和８年度募集について／京都府ホームページ</title>
+    <link>https://jpcite.com/programs/kyoutokodomono-shiro-zukuri-jigyou-kyouto-kodomo-shokudou-528e88.html</link>
+    <description>Tier B / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/kateishien/news/kodomosyokudou/r7boshu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f519fa8d3e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府地方就職学生支援事業補助金交付要領（PDF：192KB）</title>
+    <link>https://jpcite.com/programs/kyoutofu-chihou-shuushoku-gakusei-shien-jigyou-hojokin-ee1672.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/jobpark/documents/r8_sankou_koufu_youryou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-07b5c5cb68</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【参考様式1】地方就職支援金交付申請書（交通費及び移転費分）（エクセル：18KB）</title>
+    <link>https://jpcite.com/programs/sankou-youshiki-1-chihou-shuushoku-shien-kin-a75a64.html</link>
+    <description>Tier A / 京都府 / 京都府 / support 出典: https://www.pref.kyoto.jp/jobpark/documents/01_shinseisyo_koustuu_iten.xlsx</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1924d2f2ee</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>様式の記入例（PDF：195KB）</title>
+    <link>https://jpcite.com/programs/youshiki-no-kinyuurei-pdf-195kb-6f2cb7.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youshiki-kisairei.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-19301d57be</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府庁職員福利厚生センター3階第2・3会議室（京都市上京区下立売通新町西入薮ノ内町）（PDF：307KB）</title>
+    <link>https://jpcite.com/programs/kyoutofu-chou-shokuin-fukurikousei-sentaa-3-kai-dai-2-3-5e742a.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-r8setsumeikai-kaijo.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-29ae4ffc12</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府公衆浴場設備改善事業補助金について（令和8年度受付終了）</title>
+    <link>https://jpcite.com/programs/kyoutofu-koushuuyokujou-setsubi-kaizen-jigyou-hojokin-189b9b.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/yokujo_hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4076024ac2</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府サービス管理責任者等研修について</title>
+    <link>https://jpcite.com/programs/kyoutofu-saabisu-kanrisekininsha-nado-kenshuu-nitsuite-3409d3.html</link>
+    <description>Tier A / 京都府 / 京都府 / support 出典: https://www.pref.kyoto.jp/shogaishien/news/kenshu/sabikantou.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4b54b3fd98</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府公衆浴場設備改善事業補助金交付要綱（本文）（PDF：184KB）</title>
+    <link>https://jpcite.com/programs/kyoutofu-koushuuyokujou-setsubi-kaizen-jigyou-hojokin-koufu-f6c849.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youkou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5a6000fb94</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【参考様式4】京都府地方就職学生支援事業に係る地方就職支援金の交付決定通知書（ワード：22KB）</title>
+    <link>https://jpcite.com/programs/sankou-youshiki-4-kyoutofu-chihou-shuushoku-gakusei-shien-3fe0bd.html</link>
+    <description>Tier A / 京都府 / 京都府 / support 出典: https://www.pref.kyoto.jp/jobpark/documents/04_koufu_kettei_tsuuchi.docx</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-640edfc3d3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金交付申請書（第2号様式）（ワード：21KB）</title>
+    <link>https://jpcite.com/programs/hojokin-koufushinseisho-dai-2-gou-youshiki-waado-21kb-df651b.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youshiki02-shinsei.docx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6eeca64ad9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府公衆浴場設備改善事業補助金交付要綱（様式）（PDF：198KB）</title>
+    <link>https://jpcite.com/programs/kyoutofu-koushuuyokujou-setsubi-kaizen-jigyou-hojokin-koufu-4299e0.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youkou-youshiki.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-709386a973</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>介護施設等職員処遇改善等推進事業費補助金（介護分野の職員の賃上げ・職場環境改善支援事業）</title>
+    <link>https://jpcite.com/programs/kaigo-shisetsutou-shokuin-shoguu-kaizen-nado-suishin-jigyou-7f833f.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/jigyousho/20260115hokenjigyouhihojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-786f0e3d7b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【参考様式1】地方就職支援金交付申請書（交通費分）（エクセル：23KB）</title>
+    <link>https://jpcite.com/programs/sankou-youshiki-1-chihou-shuushoku-shien-kin-78a904.html</link>
+    <description>Tier A / 京都府 / 京都府 / support 出典: https://www.pref.kyoto.jp/jobpark/documents/01_shinseisyo_koutsuuhi.xlsx</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8f6fbba002</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金事前着手届（第1号様式） （交付決定前に着手したい方のみ） （ワード：20KB）</title>
+    <link>https://jpcite.com/programs/hojokin-jizen-chakushu-todoke-dai-1-gou-youshiki-koufu-b6111f.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youshiki01-jizen.docx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-985cb5e1f1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度京都府公衆浴場設備改善事業補助金エントリーシート及び別紙（所要額調書・事業計画概要書）（ワード：27KB）</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-kyoutofu-koushuuyokujou-setsubi-kaizen-jigyou-a01344.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-r8entrysheet.docx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9c7c48b6a0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【参考様式2】就業証明書（地方就職学生支援金の申請用）（エクセル：21KB）</title>
+    <link>https://jpcite.com/programs/sankou-youshiki-2-shuugyou-shoumeisho-chihou-shuushoku-020bab.html</link>
+    <description>Tier A / 京都府 / 京都府 / support 出典: https://www.pref.kyoto.jp/jobpark/documents/02_syugyosyomeisyo_shinsei.xlsx</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a119ebd6c1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>消費税及び地方消費税に係る免税事業者申立書 （免税事業者のみ） （ワード：13KB）</title>
+    <link>https://jpcite.com/programs/shouhizei-oyobi-chihou-shouhizei-ni-kakaru-menzei-jigyousha-1bf1e3.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youshiki-menzei.docx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a6717ed66c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【参考様式1】地方就職支援金交付申請書（移転費分）（エクセル：17KB）</title>
+    <link>https://jpcite.com/programs/sankou-youshiki-1-chihou-shuushoku-shien-kin-1e0876.html</link>
+    <description>Tier A / 京都府 / 京都府 / support 出典: https://www.pref.kyoto.jp/jobpark/documents/01_shinseisyo_itenhi.xlsx</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aaa66d7988</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府ベビーケアルーム設置促進事業補助金</title>
+    <link>https://jpcite.com/programs/kyoutofu-bebiikearuumu-setchi-sokushin-jigyou-hojokin-426b25.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/kosodate/news/babycareroom0401.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b3dfcfc2d9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>暴力団排除に係る誓約書（ワード：19KB）</title>
+    <link>https://jpcite.com/programs/bouryokudan-haijo-ni-kakaru-seiyakusho-waado-19kb-873edd.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-youshiki-seiyakusho.docx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c0ff3f6169</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府障害者雇用施設整備事業等事業費補助金（令和8年度分）</title>
+    <link>https://jpcite.com/programs/kyoutofu-shougaisha-koyou-shisetsu-seibi-jigyou-nado-jigyou-13cc61.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/koyou/news/shisetuhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c1eb815b04</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>公衆浴場設備改善事業補助金概要（PDF：265KB）</title>
+    <link>https://jpcite.com/programs/koushuuyokujou-setsubi-kaizen-jigyou-hojokin-gaiyou-pdf-8e6fe1.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-r8gaiyou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cead1c9e65</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>説明会資料（PDF：329KB）</title>
+    <link>https://jpcite.com/programs/setsumeikai-shiryou-pdf-329kb-a47db5.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-r8setsumeikai-shiryo.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d278226995</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府地方就職学生支援事業補助金交付要領施行細則（PDF：124KB）</title>
+    <link>https://jpcite.com/programs/kyoutofu-chihou-shuushoku-gakusei-shien-jigyou-hojokin-6e968a.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/jobpark/documents/r8_sankou_shikousaisoku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d76a8b6835</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>参考様式1 別紙1】地方就職支援金の交付申請に関する誓約事項（ワード：18KB）</title>
+    <link>https://jpcite.com/programs/sankou-youshiki-1-besshi-1-chihou-shuushoku-shien-kin-no-e72528.html</link>
+    <description>Tier A / 京都府 / 京都府 / support 出典: https://www.pref.kyoto.jp/jobpark/documents/01_besshi1_seiyaujikou.docx</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-eb78db77e9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>様式の記入例（PDF：147KB）</title>
+    <link>https://jpcite.com/programs/youshiki-no-kinyuurei-pdf-147kb-4a7174.html</link>
+    <description>Tier A / 京都府 / 京都府 / subsidy 出典: https://www.pref.kyoto.jp/seikatsu/news/documents/yokujo-hojo-r8entrysheet-kisairei.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ec7b89a8e0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府商工会連合会 補助金・助成金 案内ハブ（京都府 商工会連合会）</title>
+    <link>https://jpcite.com/programs/kyoutofu-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-6d18e4.html</link>
+    <description>Tier B / 京都府 / 京都府商工会連合会 / directory 出典: http://www.kyoto-fsci.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-215362b06d</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:32 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都商工会議所 補助金情報集約</title>
+    <link>https://jpcite.com/programs/kyouto-shoukoukaigisho-hojokin-jouhou-shuuyaku-6aa224.html</link>
+    <description>Tier B / 京都府 / 京都商工会議所 / portal_information 出典: https://www.kyo.or.jp/s/121346</description>
+    <category>portal_information</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f15429b595</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:02 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都商工会議所 中小企業応援隊</title>
+    <link>https://jpcite.com/programs/kyouto-shoukoukaigisho-chuushoukigyou-ouen-tai-3bd080.html</link>
+    <description>Tier B / 京都府 / 京都商工会議所 / consulting 出典: https://www.kyo.or.jp/kyoto/finance/support.html</description>
+    <category>consulting</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bf825b534b</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:01 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都商工会議所 資金調達・融資案内</title>
+    <link>https://jpcite.com/programs/kyouto-shoukoukaigisho-shikinchoutatsu-yuushi-annai-532880.html</link>
+    <description>Tier B / 京都府 / 京都商工会議所 / loan 出典: https://www.kyo.or.jp/kyoto/management/index_shikin.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1397df7355</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:59 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都商工会議所 マル経融資 (推薦)</title>
+    <link>https://jpcite.com/programs/kyouto-shoukoukaigisho-maru-kei-yuushi-suisen-5c921c.html</link>
+    <description>Tier B / 京都府 / 京都商工会議所 / loan / 上限 2,000万円 出典: https://www.kyo.or.jp/kyoto/finance/marukei.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4f93ff3fa3</guid>
+    <pubDate>Sat, 25 Apr 2026 03:29:58 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市 農業経営向上支援事業補助金</title>
+    <link>https://jpcite.com/programs/kyoutoshi-nougyou-keiei-koujou-shien-jigyou-hojokin-722f9a.html</link>
+    <description>Tier C / 京都府 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.kyoto.lg.jp/sankan/page/0000250139.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-06e5d19cc2</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 京都府 きょうとこどもの城づくり事業 (きょうと子ども食堂支援事業)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kyoutofu-kyoutokodomono-shiro-zukuri-jigyou-172878.html</link>
+    <description>Tier C / 京都府 / 京都府 (地方自治体) 出典: https://www.pref.kyoto.jp/kateishien/news/kodomosyokudou/r7boshu.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-36e162ba90</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府組合青年部・女性部研修会・研究会支援</title>
+    <link>https://jpcite.com/programs/kyoutofu-kumiai-seinenbu-josei-bu-kenshuukai-kenkyuukai-3df0c5.html</link>
+    <description>Tier C / 京都府 / 京都府中小企業団体中央会／京都府 / 補助金 出典: https://www.chuokai-kyoto.or.jp/guide/josei/</description>
+    <category>補助金</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7f7c993f77</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市委託 中小企業活性化支援事業（販路拡大・商品開発等）</title>
+    <link>https://jpcite.com/programs/kyoutoshi-itaku-chuushoukigyou-kasseika-shien-jigyou-hanro-ac9ec3.html</link>
+    <description>Tier C / 京都府 / 京都府中央会／京都市 / 委託事業 / 上限 5万円 出典: https://www.chuokai-kyoto.or.jp/guide/josei/</description>
+    <category>委託事業</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-89f70d78d2</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市 宿泊税 （令和8年3月1日改正前の現行制度）</title>
+    <link>https://jpcite.com/programs/kyoutoshi-shukuhaku-zei-reiwa-8-nen-3-gatsu-1-nichi-17f66a.html</link>
+    <description>Tier C / 京都府 / 京都市 行財政局 税務部 出典: https://www.city.kyoto.lg.jp/gyozai/page/0000236942.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a3fb76b3fe</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府個別テーマに絞った課題解決（専門家派遣）</title>
+    <link>https://jpcite.com/programs/kyoutofu-kobetsu-teema-ni-shibotsu-ta-kadai-kaiketsu-709603.html</link>
+    <description>Tier C / 京都府 / 京都府中小企業団体中央会／京都府 / 補助金 / 上限 3万円 出典: https://www.chuokai-kyoto.or.jp/guide/josei/</description>
+    <category>補助金</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bfa71eefeb</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市 宿泊税 令和8年3月1日改正</title>
+    <link>https://jpcite.com/programs/kyoutoshi-shukuhaku-zei-reiwa-8-nen-3-gatsu-1-nichi-kaisei-496a62.html</link>
+    <description>Tier C / 京都府 / 京都市 行財政局 税務部 出典: https://www.city.kyoto.lg.jp/gyozai/page/0000345893.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d12d9b8964</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府組合員研修支援事業</title>
+    <link>https://jpcite.com/programs/kyoutofu-kumiaiin-kenshuu-shien-jigyou-638f9d.html</link>
+    <description>Tier C / 京都府 / 京都府中小企業団体中央会／京都府 / 補助金 出典: https://www.chuokai-kyoto.or.jp/guide/josei/</description>
+    <category>補助金</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-de01799c99</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市 住宅宿泊事業の独自ルール</title>
+    <link>https://jpcite.com/programs/kyoutoshi-juutaku-shukuhaku-jigyou-no-dokuji-ruuru-8179bb.html</link>
+    <description>Tier C / 京都府 / 京都市医療衛生センター (075-748-1313) 出典: https://www.city.kyoto.lg.jp/hokenfukushi/page/0000233644.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ecd9a2f5aa</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都ブランド・新分野開拓事業（地域ブランド確立、地元産品活用、地域活性化の特産品開発）</title>
+    <link>https://jpcite.com/programs/kyouto-burando-shin-bunya-kaitaku-jigyou-chiiki-burando-5ab8f8.html</link>
+    <description>Tier C / 京都府 / 京都府中小企業団体中央会／京都府 / 補助金 出典: https://www.chuokai-kyoto.or.jp/guide/josei/</description>
+    <category>補助金</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fb0853d57a</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度京都市商店街エネルギー環境整備事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kyoutoshi-shoutengai-enerugii-kankyouseibi-0fca41.html</link>
+    <description>Tier C / 京都府 / 京都市産業観光局 / subsidy 出典: https://www.city.kyoto.lg.jp/sankan/page/0000339020.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-78586fe645</guid>
+    <pubDate>Thu, 23 Apr 2026 14:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度京都市商店街等環境整備事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kyoutoshi-shoutengai-nado-kankyouseibi-jigyou-d38f93.html</link>
+    <description>Tier C / 京都府 / 京都市産業観光局 / subsidy / 上限 500万円 出典: https://www.city.kyoto.lg.jp/sankan/page/0000339020.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-83371044d0</guid>
+    <pubDate>Thu, 23 Apr 2026 14:40:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市中小企業ひと・しごと環境魅力向上支援事業補助金</title>
+    <link>https://jpcite.com/programs/kyoutoshi-chuushoukigyou-hito-shigoto-kankyou-miryoku-1a7ee4.html</link>
+    <description>Tier C / 京都府 / 京都市産業観光局 / subsidy 出典: https://www.city.kyoto.lg.jp/sankan/page/0000339356.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1127c3f1a9</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度京都市デジタル化推進プロジェクト</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kyoutoshi-dejitaru-ka-suishin-purojiekuto-17ea05.html</link>
+    <description>Tier C / 京都府 / 京都市産業観光局 / support 出典: https://www.city.kyoto.lg.jp/sankan/page/0000339111.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4b68ad67c1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度京都市中小事業者の高効率機器導入促進事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kyoutoshi-chuushou-jigyousha-no-koukouritsu-23c876.html</link>
+    <description>Tier C / 京都府 / 京都市環境政策局 / subsidy / 上限 200万円 出典: https://www.city.kyoto.lg.jp/kankyo/page/0000342199.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5334227c9f</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市市内初進出支援制度</title>
+    <link>https://jpcite.com/programs/kyoutoshi-shinai-hatsushinshutsu-shien-seido-ef427f.html</link>
+    <description>Tier C / 京都府 / 京都市産業観光局 / subsidy / 上限 5,000万円 出典: https://www.city.kyoto.lg.jp/sankan/page/0000296639.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8819c872a5</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市屋外広告物条例 (新景観条例)</title>
+    <link>https://jpcite.com/programs/kyoutoshi-okugai-koukoku-mono-jourei-shin-keikan-jourei-8fbae6.html</link>
+    <description>Tier C / 京都府 / 京都市 / regulation 出典: https://www.city.kyoto.lg.jp/tokei/page/0000056450.html</description>
+    <category>regulation</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-08f29882b6</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市宿泊税条例 (2026年3月改定)</title>
+    <link>https://jpcite.com/programs/kyoutoshi-shukuhaku-zei-jourei-2026-nen-3-gatsu-kaitei-b8e585.html</link>
+    <description>Tier C / 京都府 / 京都市 / tax_reduction_by_ordinance 出典: https://www.city.kyoto.lg.jp/gyozai/page/0000345893.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-42f67fa040</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府生産性向上・人手不足対策事業費補助金</title>
+    <link>https://jpcite.com/programs/kyoutofu-seisansei-koujou-hitodebusoku-taisaku-jigyou-hi-a65432.html</link>
+    <description>Tier C / 京都府 / 京都府 / subsidy 出典: https://www.ki21.jp/subsidy/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1199813499</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都朝・夜観光推進事業補助金</title>
+    <link>https://jpcite.com/programs/kyouto-asa-yoru-kankou-suishin-jigyou-hojokin-f28ed7.html</link>
+    <description>Tier C / 京都府 / 京都府 / subsidy / 上限 300万円 出典: https://www.pref.kyoto.jp/rosei/keiei/gaiyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-34164bed9b</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府中小企業制度融資</title>
+    <link>https://jpcite.com/programs/kyoutofu-chuushoukigyou-seido-yuushi-07e9a2.html</link>
+    <description>Tier C / 京都府 / 京都府 / loan / 上限 20,000万円 出典: https://www.pref.kyoto.jp/kinyu/seido.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-55e34e2b03</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都式農福連携補助金</title>
+    <link>https://jpcite.com/programs/kyouto-shiki-nou-fuku-renkei-hojokin-7affb7.html</link>
+    <description>Tier C / 京都府 / 京都府 / subsidy 出典: https://noufuku.jp/news/info-20230530-2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-893ed53f92</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府中小企業経営基盤強化推進事業費補助金・奨励金</title>
+    <link>https://jpcite.com/programs/kyoutofu-chuushoukigyou-keiei-kiban-kyouka-suishin-jigyou-7aba2c.html</link>
+    <description>Tier C / 京都府 / 京都府 / subsidy / 上限 500万円 出典: https://www.pref.kyoto.jp/rosei/keiei/gaiyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8deed341c9</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府 サイバーレジリエンス強化対策事業 (情報セキュリティ専門家派遣)</title>
+    <link>https://jpcite.com/programs/kyoutofu-saibaarejiriensu-kyouka-taisaku-jigyou-jouhou-2d52c7.html</link>
+    <description>Tier C / 京都府 / 京都府 / expert_dispatch 出典: https://www.pref.kyoto.jp/sangyo-sien/news/zyouhousecurity2023.html</description>
+    <category>expert_dispatch</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bf207eba5c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府伝統産業支援補助金</title>
+    <link>https://jpcite.com/programs/kyoutofu-dentou-sangyou-shien-hojokin-a4a5dd.html</link>
+    <description>Tier C / 京都府 / 京都府 / subsidy 出典: https://www.ki21.jp/subsidy/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f8e7aee867</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-26-101_京都_スマート農林水産業実装チャレンジ事業補助金</title>
+    <link>https://jpcite.com/programs/pref-26-101-kyouto-sumaato-nourinsuisangyou-jissou-charenji-ac9398.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 400万円 出典: https://www.pref.kyoto.jp/brand/news/2025zissou_charenge.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-01885b43ef</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市農業経営発展支援事業助成金</title>
+    <link>https://jpcite.com/programs/kyoutoshi-nougyou-keiei-hatten-shien-jigyou-joseikin-10b803.html</link>
+    <description>Tier A / 京都府 / equipment / 上限 1,000万円 出典: https://www.city.kyoto.lg.jp/sankan/page/0000344531.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0b6714a772</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府開業・経営承継支援資金（制度融資）</title>
+    <link>https://jpcite.com/programs/kyoutofu-kaigyou-keiei-shoukei-shien-shikin-seido-yuushi-edbe6c.html</link>
+    <description>Tier B / 京都府 / loan / 上限 3,500万円 出典: https://www.pref.kyoto.jp/kinyu/seido.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0dc7554e78</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>亀岡市担い手養成実践農場整備支援事業</title>
+    <link>https://jpcite.com/programs/kameoka-shi-ninaite-yousei-jissen-noujou-seibi-shien-jigyou-731ea4.html</link>
+    <description>Tier B / 京都府 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.kameoka.kyoto.jp/soshiki/30/3634.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-118135bc9b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地中間管理事業（機構集積協力金）</title>
+    <link>https://jpcite.com/programs/nouchi-chuukan-kanri-jigyou-kikou-shuuseki-kyouryoku-kin-9d6b88.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 100万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-18fa19dafc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南丹市担い手養成実践農場整備支援事業</title>
+    <link>https://jpcite.com/programs/nantan-shi-ninaite-yousei-jissen-noujou-seibi-shien-jigyou-336c49.html</link>
+    <description>Tier B / 京都府 / training / 上限 150万円 出典: https://www.city.nantan.kyoto.jp/www/town/125/001/000/index_1012121.html</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1cae7cb556</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南丹市新規就農者育成総合対策事業（経営開始資金）</title>
+    <link>https://jpcite.com/programs/nantan-shi-shinki-shuunou-mono-ikusei-sougou-taisaku-jigyou-e629cc.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 150万円 出典: https://www.city.nantan.kyoto.jp/www/town/125/001/000/index_1012121.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1f90023bff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福知山市農業者販路開拓事業補助金</title>
+    <link>https://jpcite.com/programs/fukuchiyama-shi-nougyou-mono-hanro-kaitaku-jigyou-hojokin-9c7a1f.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 25万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/51368.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1ff1e9396e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福知山市水稲渇水対策支援事業</title>
+    <link>https://jpcite.com/programs/fukuchiyama-shisui-ine-kassui-taisaku-shien-jigyou-c89752.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 100万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-21aa3d93df</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都 スマート農林水産業実装チャレンジ事業補助金</title>
+    <link>https://jpcite.com/programs/kyouto-sumaato-nourinsuisangyou-jissou-charenji-jigyou-231d13.html</link>
+    <description>Tier B / 京都府 / 都道府県 / subsidy / 上限 400万円 出典: https://www.pref.kyoto.jp/brand/news/2025zissou_charenge.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-22dce0c736</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福知山市稼げる農業者育成講座</title>
+    <link>https://jpcite.com/programs/fukuchiyama-shi-kasege-ru-nougyou-mono-ikusei-kouza-c82e7a.html</link>
+    <description>Tier B / 京都府 / training / 上限 100万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2987138028</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>安全・安心のエコ農業推進事業（農産物生産支援）</title>
+    <link>https://jpcite.com/programs/anzen-anshin-no-eko-nougyou-suishin-jigyou-nousanbutsu-b4f2c2.html</link>
+    <description>Tier C / 京都府 / subsidy / 上限 100万円 出典: https://www.city.kameoka.kyoto.jp/soshiki/30/49901.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2e38ce8c76</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都市中小事業者高効率機器導入促進事業補助金</title>
+    <link>https://jpcite.com/programs/kyoutoshi-chuushou-jigyousha-koukouritsu-kiki-dounyuu-192d30.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 200万円 出典: https://www.city.kyoto.lg.jp/kankyo/page/0000342199.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-348a3434d8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府 一般資金</title>
+    <link>https://jpcite.com/programs/kyoutofu-ippan-shikin-1fc2d9.html</link>
+    <description>Tier A / 京都府 / loan / 上限 20,000万円 出典: https://www.pref.kyoto.jp/kinyu/documents/25ippan.pdf</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3951c2d7fc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福知山市有機JAS認証新規取得支援事業補助金</title>
+    <link>https://jpcite.com/programs/fukuchiyama-shiyuu-ki-jas-ninshou-shinki-shutoku-shien-d06a86.html</link>
+    <description>Tier A / 京都府 / subsidy / 上限 4万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3aacf3cb97</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府 脱炭素経営促進資金</title>
+    <link>https://jpcite.com/programs/kyoutofu-dattan-moto-keiei-sokushin-shikin-df05a2.html</link>
+    <description>Tier A / 京都府 / loan / 上限 20,000万円 出典: https://www.pref.kyoto.jp/kinyu/documents/42datsutanso.pdf</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-403c868f5a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府中小企業事業承継支援補助金</title>
+    <link>https://jpcite.com/programs/kyoutofu-chuushoukigyou-jigyou-shoukei-shien-hojokin-f1a2a2.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 50万円 出典: https://www.ki21.jp/subsidy</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4a836eabda</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-26-103_京都_農企業者経営力強化事業</title>
+    <link>https://jpcite.com/programs/pref-26-103-kyouto-nou-kigyou-mono-keiei-chikara-kyouka-953a04.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 300万円 出典: https://www.pref.kyoto.jp/nougyo-business/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4b52d08422</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業経営チャレンジ支援事業（担い手養成実践農場整備支援事業）</title>
+    <link>https://jpcite.com/programs/nougyou-keiei-charenji-shien-jigyou-ninaite-yousei-jissen-34bddb.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 150万円 出典: https://www.city.nantan.kyoto.jp/www/town/125/001/000/index_1012121.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-598e5f8456</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-261009-001_京都市_農業経営向上支援事業補助金</title>
+    <link>https://jpcite.com/programs/mun-261009-001-kyoutoshi-nougyou-keiei-koujou-shien-jigyou-1c3e11.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 150万円 出典: https://www.maff.go.jp/j/new_farmer</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-65aff20e2e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都 農企業者経営力強化事業</title>
+    <link>https://jpcite.com/programs/kyouto-nou-kigyou-mono-keiei-chikara-kyouka-jigyou-e3c4fe.html</link>
+    <description>Tier B / 京都府 / 都道府県 / subsidy / 上限 300万円 出典: https://www.pref.kyoto.jp/nougyo-business/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6ccfd13d58</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地法第3条の許可による農地貸借</title>
+    <link>https://jpcite.com/programs/nouchi-hou-dai-3-jou-no-kyoka-niyoru-nouchi-taishaku-8ec664.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 100万円 出典: https://www.city.uji.kyoto.jp/soshiki/79/94450.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-76d5a4babe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福知山市環境にやさしい米づくり支援事業</title>
+    <link>https://jpcite.com/programs/fukuchiyama-shi-kankyou-niyasashii-kome-zukuri-shien-jigyou-517e9e.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 100万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7ae4b68e56</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府中小企業人材確保支援補助金</title>
+    <link>https://jpcite.com/programs/kyoutofu-chuushoukigyou-jinzai-kakuho-shien-hojokin-17a3f4.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 100万円 出典: https://www.ki21.jp/subsidy</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7ea0859c97</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-26-102_京都_農業経営基盤強化（高温対策等）事業</title>
+    <link>https://jpcite.com/programs/pref-26-102-kyouto-nougyou-keiei-kiban-kyouka-kouon-taisaku-91f7c3.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 250万円 出典: https://www.pref.kyoto.jp/nosan/news/2025kouon.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8196a63d70</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府 開業・経営承継支援資金（創業（開業）型）</title>
+    <link>https://jpcite.com/programs/kyoutofu-kaigyou-keiei-shoukei-shien-shikin-sougyou-kaigyou-7ee3b9.html</link>
+    <description>Tier C / 京都府 / loan / 上限 3,500万円 出典: https://www.pref.kyoto.jp/kinyu/documents/36sougyou.pdf</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-84a7ba0da7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福知山市国際水準GAP認証取得支援事業補助金</title>
+    <link>https://jpcite.com/programs/fukuchiyama-shi-kokusai-suijun-gap-ninshou-shutoku-shien-eb3e46.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 250万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-870db398a9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度土壌診断費支援事業</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-dojou-shindan-hi-shien-jigyou-685b02.html</link>
+    <description>Tier C / 京都府 / 京都府宇治市 / subsidy / 上限 5万円 出典: https://www.city.uji.kyoto.jp/uploaded/life/65425_148424_misc.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-888a87432c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業生産性等向上支援事業補助金</title>
+    <link>https://jpcite.com/programs/nougyou-seisansei-nado-koujou-shien-jigyou-hojokin-eb3349.html</link>
+    <description>Tier C / 京都府 / subsidy / 上限 20万円 出典: https://www.city.uji.kyoto.jp/uploaded/attachment/44637.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8fa52e253e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都 農業経営基盤強化（高温対策等）事業</title>
+    <link>https://jpcite.com/programs/kyouto-nougyou-keiei-kiban-kyouka-kouon-taisaku-nado-jigyou-ada099.html</link>
+    <description>Tier B / 京都府 / 都道府県 / subsidy / 上限 250万円 出典: https://www.pref.kyoto.jp/nosan/news/2025kouon.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-972f443c2b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府 開業・経営承継支援資金（経営承継一般型）</title>
+    <link>https://jpcite.com/programs/kyoutofu-kaigyou-keiei-shoukei-shien-shikin-keiei-shoukei-b53a7a.html</link>
+    <description>Tier A / 京都府 / loan / 上限 28,000万円 出典: https://www.pref.kyoto.jp/kinyu/documents/37keieisyokei_1.pdf</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9cbd3556fd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府あんしん借換資金（制度融資）</title>
+    <link>https://jpcite.com/programs/kyoutofu-anshin-karikae-shikin-seido-yuushi-8fa23c.html</link>
+    <description>Tier A / 京都府 / loan / 上限 20,000万円 出典: https://www.pref.kyoto.jp/kinyu/seido.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a1415e597d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>耕作放棄地解消事業</title>
+    <link>https://jpcite.com/programs/kousaku-houki-chi-kaishou-jigyou-661165.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 150万円 出典: https://www.city.nantan.kyoto.jp/www/town/125/001/000/index_1012121.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a7162a3c5f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府ものづくり中小企業等販路開拓支援事業補助金</title>
+    <link>https://jpcite.com/programs/kyoutofu-monozukuri-chuushoukigyou-nado-hanro-kaitaku-shien-39d6d0.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 50万円 出典: https://www.ki21.jp/subsidy/kobo-r5-kaikaku</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b2432821b9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 宮崎県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/miyazaki.xml" rel="self" type="application/rss+xml" />
+  <description>宮崎県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>経営・技術支援</title>
+    <link>https://jpcite.com/programs/keiei-gijutsushien-6e63fc.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/shigoto/chushokigyo/shien-02/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-00986995a4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>創業・取引支援</title>
+    <link>https://jpcite.com/programs/sougyou-torihiki-shien-927025.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/shigoto/chushokigyo/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-085eb9f310</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度「出逢い・子育て環境づくり支援事業費補助金」活用事業の募集</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-deai-kosodate-kankyou-zukuri-shien-jigyou-hi-b74ad9.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/kodomo-seisaku/kyoikukosodate/kodomo/20260416095353.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-095ed34439</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商工政策課経営金融支援室</title>
+    <link>https://jpcite.com/programs/shoukou-seisaku-ka-keiei-kinyuu-shien-shitsu-930515.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/keieikinyushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-11eb249952</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>生活・協働・男女参画課女性活躍推進室</title>
+    <link>https://jpcite.com/programs/seikatsu-kyoudou-danjo-sankaku-ka-josei-katsuyaku-76fd06.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/joseikatsuyaku/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-31ba7300c0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就労支援</title>
+    <link>https://jpcite.com/programs/shuurou-shien-2d4c8a.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/kurashi/shogaisha/shuroshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-486a958941</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>進学支援</title>
+    <link>https://jpcite.com/programs/shingaku-shien-1bc300.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/kyoikukosodate/kyoiku/shingakushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4dbbae6a47</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>各種申請・手続き・補助金</title>
+    <link>https://jpcite.com/programs/kakushu-shinsei-tetsuzuki-hojokin-6043f0.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/kense/shinse-todokede/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-502eaa4168</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【質問回答追加】令和7年度女性活躍推進に関する動画制作・放映業務委託に係る企画提案競技を実施します</title>
+    <link>https://jpcite.com/programs/shitsumon-kaitou-tsuika-reiwa-7-nendo-josei-katsuyaku-de662f.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/joseikatsuyaku/kense/chotatsu/20250723131311.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-58df8aa820</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別支援教育</title>
+    <link>https://jpcite.com/programs/tokubetsu-shien-kyouiku-be4e05.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/kyoikukosodate/kyoiku/tokubetsushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-629960aa38</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「ひなたゼロカーボン加速化事業補助金」補助事業者（執行団体）の公募について</title>
+    <link>https://jpcite.com/programs/hinata-zerokaabon-kasoku-ka-jigyou-hojokin-hojo-jigyousha-2388de.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/kankyoshinrin/kense/chotatsu/20260409170809.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-85333fa105</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度宮崎県プロフェッショナル人材戦略拠点運営業務委託に関する企画提案競技の実施について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-miyazakiken-purofesshonaru-jinzai-senryaku-de5ec0.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/keieikinyushien/kense/chotatsu/20250217093639.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a0c811aa07</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【質問回答追加】令和7年度女性活躍推進に関する広報・啓発活動業務委託に係る企画提案競技を実施します</title>
+    <link>https://jpcite.com/programs/shitsumon-kaitou-tsuika-reiwa-7-nendo-josei-katsuyaku-b0ffc4.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/joseikatsuyaku/kense/chotatsu/20250729104537.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ac3a88dc0d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>介護事業所等及び介護施設等に対するサービス継続支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/kaigo-jigyousho-nado-oyobi-kaigo-shisetsutou-ni-taisuru-f758dd.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/choju/kurashi/koresha/20260415223957.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b6b46f523b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別支援教育課</title>
+    <link>https://jpcite.com/programs/tokubetsu-shien-kyouikuka-4427cf.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/ky-tokubetsushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d2b420a65a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業普及技術課</title>
+    <link>https://jpcite.com/programs/nougyou-fukyuu-gijutsuka-8a12a4.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/nogyokeieishien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d9106216b9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【令和8年度受付開始】県外からの就職活動にかかる交通費・宿泊費を補助「宮崎県UIJターン就活応援補助金」</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-uketsukekaishi-kengai-karano-e1da03.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/rodoseisaku/shigoto/rodo/miyazaki_shukatsu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e30eca78fe</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域生活・自立支援</title>
+    <link>https://jpcite.com/programs/chiikiseikatsu-jiritsu-shien-4ab4a8.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/kurashi/shogaisha/jiritsushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ebe33bb471</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子育て支援事業</title>
+    <link>https://jpcite.com/programs/kosodate-shien-jigyou-f6a47c.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / support 出典: https://www.pref.miyazaki.lg.jp/kyoikukosodate/kodomo/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ecc9ef909e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>県内企業等への就職に伴う、県外からの引っ越しにかかる交通費・運送費を補助！「宮崎県UIJターン引っ越し補助金」</title>
+    <link>https://jpcite.com/programs/kennai-kigyou-nado-heno-shuushoku-ni-tomonau-kengai-karano-473855.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/rodoseisaku/shigoto/rodo/uijhikkoshi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f54984c701</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎県商工会連合会 補助金・助成金 案内ハブ（宮崎県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/miyazakiken-shoukou-kai-rengoukai-hojokin-joseikin-annai-72d056.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県商工会連合会 / directory 出典: http://www.miya-shoko.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8757f6710a</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>延岡市 園芸産地づくり推進 パイプハウス新設</title>
+    <link>https://jpcite.com/programs/nobeoka-shi-engei-sanchi-zukuri-suishin-paipuhausu-shinsetsu-15d1d2.html</link>
+    <description>Tier C / 宮崎県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.nobeoka.miyazaki.jp/soshiki/37/20606.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-48fd4ccd5e</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>都城市 六次産業化総合対策事業</title>
+    <link>https://jpcite.com/programs/tomishiro-shi-roku-tsugi-sangyouka-sougou-taisaku-jigyou-9e96ea.html</link>
+    <description>Tier C / 宮崎県 / 市町村 / subsidy / 上限 300万円 出典: https://www.city.miyakonojo.miyazaki.jp/life/4/35/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-77b5cdbb86</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎県地域課題解決型起業支援事業費補助金</title>
+    <link>https://jpcite.com/programs/miyazakiken-chiiki-kadai-kaiketsu-kata-kigyou-shien-jigyou-397ece.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/shokoseisaku/shigoto/chushokigyo/20220406194910.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3352c5531b</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎県再生計画策定補助金</title>
+    <link>https://jpcite.com/programs/miyazakiken-saisei-keikaku-sakutei-hojokin-23bfd5.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / subsidy / 上限 50万円 出典: https://www.pref.miyazaki.lg.jp/keieikinyushien/shigoto/chushokigyo/20241121140008.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-336534e72d</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎県産業デジタル実装支援事業費補助金</title>
+    <link>https://jpcite.com/programs/miyazakiken-sangyou-dejitaru-jissou-shien-jigyou-hi-hojokin-e71225.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/sangyoseisaku/kense/johotsushin/20240312131344.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-46f1da3924</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎県中小企業融資制度</title>
+    <link>https://jpcite.com/programs/miyazakiken-chuushoukigyou-yuushi-seido-3b5c71.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / loan 出典: https://www.pref.miyazaki.lg.jp/contents/org/shoko/seisaku/chyusyo_portal/index.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ad045a640c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎県企業省エネ取組支援補助金</title>
+    <link>https://jpcite.com/programs/miyazakiken-kigyou-shouene-torikumi-shien-hojokin-2c1350.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/kankyoshinrin/kurashi/shizen/20240308160928.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c7bd6e8a98</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（水田活用の直接支払交付金 戦略作物助成）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-suiden-katsuyou-no-chokusetsu-888b76.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県小林市 / subsidy 出典: https://www.city.kobayashi.lg.jp/shigoto_sangyo/sangyo/noringyo/1/2842.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-015cc0898a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>日向市新規就農者育成総合対策事業費補助金</title>
+    <link>https://jpcite.com/programs/hyuuga-shi-shinki-shuunou-mono-ikusei-sougou-taisaku-jigyou-3caa13.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県日向市 / subsidy / 上限 750万円 出典: https://www.hyugacity.jp/reiki_new/reiki_honbun/q607RG00002393.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-01c92b01c8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小林市 農業後継者支援事業</title>
+    <link>https://jpcite.com/programs/kobayashi-shi-nougyou-koukeisha-shien-jigyou-46e0fb.html</link>
+    <description>Tier A / 宮崎県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.kobayashi.lg.jp/soshikikarasagasu/keizaibunogyoshinkoka/noringyo/1/5647.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-047916ca51</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（畑作物の直接支払交付金）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-hatasaku-mono-no-chokusetsu-86ee88.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県小林市 / subsidy 出典: https://www.city.kobayashi.lg.jp/shigoto_sangyo/sangyo/noringyo/1/2842.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-07fe7099e5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>日向市新規就農者育成総合対策事業費補助金</title>
+    <link>https://jpcite.com/programs/hyuuga-shi-shinki-shuunou-mono-ikusei-sougou-taisaku-jigyou-f10cd9.html</link>
+    <description>Tier B / 宮崎県 / （noukaweb 収集） / 上限 750万円 出典: https://www.hyugacity.jp/reiki_new/reiki_honbun/q607RG00002393.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0829299195</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営発展支援事業</title>
+    <link>https://jpcite.com/programs/keiei-hatten-shien-jigyou-ea2767.html</link>
+    <description>Tier A / 宮崎県 / 農林水産省 / subsidy / 上限 500万円 出典: https://www.maff.go.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0a0b53ae56</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>都城市アグリチャレンジ！トラサポ事業費補助金</title>
+    <link>https://jpcite.com/programs/tomishiro-shi-aguricharenji-torasapo-jigyou-hi-hojokin-638c30.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 200万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10105.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0bc2bf8986</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有機JAS認証取得支援助成金</title>
+    <link>https://jpcite.com/programs/yuuki-jas-ninshou-shutoku-shien-joseikin-1aea74.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県宮崎市 / subsidy / 上限 10万円 出典: https://www.city.miyazaki.miyazaki.jp/_res/projects/default_project/_page_/001/007/123/2024jasitiran.xlsx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0c9f8b010f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎 農業水利施設電気料金高騰対策・省エネルギー化事業補助金</title>
+    <link>https://jpcite.com/programs/miyazaki-nougyou-suiri-shisetsu-denkiryoukin-koutou-taisaku-983f24.html</link>
+    <description>Tier B / 宮崎県 / 都道府県 / subsidy / 上限 200万円 出典: https://www.pref.miyazaki.lg.jp/nosonseibi/shigoto/nogyo/202508denkiriyoukoutou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0d71ae3caa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>アグリチャレンジ！「トラサポ」事業費補助金</title>
+    <link>https://jpcite.com/programs/aguricharenji-torasapo-jigyou-hi-hojokin-24296f.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10105.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0e394691df</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>日向市農業次世代人材投資事業費補助金</title>
+    <link>https://jpcite.com/programs/hyuuga-shi-nougyou-jisedai-jinzai-toushi-jigyou-hi-hojokin-33fcaf.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県日向市 / subsidy / 上限 225万円 出典: https://www.hyugacity.jp/reiki_new/reiki_honbun/q607RG00002087.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0e63c1c2fa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-45-209_宮崎_農業水利施設電気料金高騰対策・省エネルギー化事業補助金</title>
+    <link>https://jpcite.com/programs/pref-45-209-miyazaki-nougyou-suiri-shisetsu-denkiryoukin-dda343.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 200万円 出典: https://www.pref.miyazaki.lg.jp/nosonseibi/shigoto/nogyo/202508denkiriyoukoutou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-11be3936d0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小林市農業後継者支援事業</title>
+    <link>https://jpcite.com/programs/kobayashi-shi-nougyou-koukeisha-shien-jigyou-793036.html</link>
+    <description>Tier A / 宮崎県 / subsidy / 上限 100万円 出典: https://www.city.kobayashi.lg.jp/soshikikarasagasu/keizaibunogyoshinkoka/noringyo/1/5647.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14463105d9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西都市トレーニングセンター・ハウス団地リース事業</title>
+    <link>https://jpcite.com/programs/saito-shi-toreeningusentaa-hausu-danchi-riisu-jigyou-a32a03.html</link>
+    <description>Tier B / 宮崎県 / 市町村 / subsidy / 上限 100万円 出典: https://www.saito-hajimeru.com/support/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-145f5eb57a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>簡易基盤整備事業</title>
+    <link>https://jpcite.com/programs/kan-i-kiban-seibi-jigyou-607917.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / subsidy 出典: https://www.pref.miyazaki.lg.jp/documents/76609/76609_20230516093226-1.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14f7e90750</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（水田活用の直接支払交付金 産地交付金）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-suiden-katsuyou-no-chokusetsu-fc071d.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.city.kobayashi.lg.jp/shigoto_sangyo/sangyo/noringyo/1/2842.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-19b4183e1d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地に堆積した河川からの流入物の撤去費用補助</title>
+    <link>https://jpcite.com/programs/nouchi-ni-taiseki-shita-kasen-karano-ryuunyuu-mono-no-dfad75.html</link>
+    <description>Tier A / 宮崎県 / subsidy / 上限 250万円 出典: https://www.city.nobeoka.miyazaki.jp/soshiki/36/index-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1bafce46a9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎 被覆資材等価格高騰対策緊急支援事業</title>
+    <link>https://jpcite.com/programs/miyazaki-hifuku-shizai-toukakaku-koutou-taisaku-kinkyuu-4974ce.html</link>
+    <description>Tier C / 宮崎県 / 都道府県 / subsidy / 上限 50万円 出典: https://hinatamafin.pref.miyazaki.lg.jp/soshiki/nogyohukyugijutuka/1517.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1c95475eee</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境にやさしい農業等普及支援事業</title>
+    <link>https://jpcite.com/programs/kankyou-niyasashii-nougyou-nado-fukyuu-shien-jigyou-2b1506.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県延岡市 / subsidy / 上限 15万円 出典: https://www.city.nobeoka.miyazaki.jp/soshiki/5.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1ea510f9db</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎市地域を担う農業後継者支援事業</title>
+    <link>https://jpcite.com/programs/miyazaki-shi-chiiki-wo-ninau-nougyou-koukeisha-shien-jigyou-1a1403.html</link>
+    <description>Tier A / 宮崎県 / subsidy / 上限 100万円 出典: https://www.city.miyazaki.miyazaki.jp/business/agriculture_and_fisheries/agriculture/360084.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1eb4d75ea2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-452025-003_都城市_六次産業化総合対策事業</title>
+    <link>https://jpcite.com/programs/mun-452025-003-tomishiro-shi-roku-tsugi-sangyouka-sougou-2f69ba.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 300万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/49</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-204959024e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域おこし協力隊（農業枠）</title>
+    <link>https://jpcite.com/programs/chiiki-okoshi-kyouryoku-tai-nougyou-waku-4e6031.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 200万円 出典: https://www.city.kushima.lg.jp/main/business/cat2/cat5/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-205d51f0ae</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-9abbd4.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県小林市 / subsidy / 上限 10万円 出典: https://www.city.kobayashi.lg.jp/soshikikarasagasu/keizaibunogyoshinkoka/noringyo/1/967.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2403fbff55</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業用廃プラスチック適正処理収集事業</title>
+    <link>https://jpcite.com/programs/nougyouyou-hai-purasuchikku-tekisei-shori-shuushuu-jigyou-99cdee.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.town.aya.miyazaki.jp/soshiki/nourinsinkou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-252a42839b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>えびの市農業用中古施設バンク事業</title>
+    <link>https://jpcite.com/programs/ebino-shi-nougyouyou-chuuko-shisetsu-banku-jigyou-6a8e49.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.city.ebino.lg.jp/soshiki/chikusannosei/1/1/2/1703.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2612bc8a42</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（水田活用の直接支払交付金 産地交付金）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-suiden-katsuyou-no-chokusetsu-5e26de.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県小林市 / subsidy 出典: https://www.city.kobayashi.lg.jp/shigoto_sangyo/sangyo/noringyo/1/2842.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2c8b797b42</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-452017-001_宮崎市_新規就農者経営発展事業</title>
+    <link>https://jpcite.com/programs/mun-452017-001-miyazaki-shi-shinki-shuunou-mono-keiei-77d02e.html</link>
+    <description>Tier A / 宮崎県 / subsidy / 上限 1,500万円 出典: https://www.city.miyazaki.miyazaki.jp/business/agriculture_and_fisheries/newly_farming/409438.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2d2a8a4692</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策(就農準備資金)</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-shuunou-junbi-888986.html</link>
+    <description>Tier B / 宮崎県 / （noukaweb 収集） / 上限 150万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10106.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2e40ab3143</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境にやさしい農業等普及支援事業</title>
+    <link>https://jpcite.com/programs/kankyou-niyasashii-nougyou-nado-fukyuu-shien-jigyou-e84558.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.city.nobeoka.miyazaki.jp/soshiki/5.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f6b652558</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 宮崎市産農林水産物活用商品認定事業／宮崎市産農林水産物活用商品開発事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-miyazaki-shi-san-nourinsuisan-mono-katsuyou-4267a9.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県宮崎市 / subsidy 出典: https://www.city.miyazaki.miyazaki.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-304c56b181</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策(経営開始資金)</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-keiei-kaishi-27a69e.html</link>
+    <description>Tier B / 宮崎県 / 農林水産省 / subsidy / 上限 150万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10106.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31ac459a96</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>アグリチャレンジ！「トラサポ」事業費補助金</title>
+    <link>https://jpcite.com/programs/aguricharenji-torasapo-jigyou-hi-hojokin-dcef1c.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県都城市 / subsidy / 上限 200万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10105.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-32e9a93659</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ひなたGAP認証制度</title>
+    <link>https://jpcite.com/programs/hinata-gap-ninshou-seido-cc72aa.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.town.aya.miyazaki.jp/soshiki/nourinsinkou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3313e1f20a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎 畜産経営強化資金 当初5年無利子</title>
+    <link>https://jpcite.com/programs/miyazaki-chikusan-keiei-kyouka-shikin-tousho-5-nen-murishi-f03c5b.html</link>
+    <description>Tier A / 宮崎県 / 都道府県 / loan / 上限 5,000万円 出典: https://www.pref.miyazaki.lg.jp/shinsei-chikusan/shigoto/nogyo/index12.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-374f4f955f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾町水田収益力強化ビジョン</title>
+    <link>https://jpcite.com/programs/aya-machi-suiden-shuueki-chikara-kyouka-bijon-e26d30.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.town.aya.miyazaki.jp/soshiki/nourinsinkou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-39f27dbb61</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-452025-002_都城市_アグリチャレンジ_トラサポ事業</title>
+    <link>https://jpcite.com/programs/mun-452025-002-tomishiro-shi-aguricharenji-torasapo-jigyou-bdae32.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 200万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10105.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3e85aeb323</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策(就農準備資金)</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-shuunou-junbi-d4edfb.html</link>
+    <description>Tier B / 宮崎県 / 農林水産省 / subsidy / 上限 150万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10106.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3fc2065c02</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>都城市農業後継者等支援事業</title>
+    <link>https://jpcite.com/programs/tomishiro-shi-nougyou-koukeisha-nado-shien-jigyou-1d9bf4.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県都城市 / subsidy / 上限 240万円 出典: https://www.city.miyakonojo.miyazaki.jp/uploaded/attachment/15029.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3fe8ffbd61</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度宮崎県新規就農者育成総合対策就農準備資金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-miyazakiken-shinki-shuunou-mono-ikusei-sougou-28d52d.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.city.nichinan.lg.jp/soshikikarasagasu/noseika/2/1/index.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-40b2f6a35a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>えびの市農業用中古施設バンク事業</title>
+    <link>https://jpcite.com/programs/ebino-shi-nougyouyou-chuuko-shisetsu-banku-jigyou-99e046.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県えびの市 / subsidy 出典: https://www.city.ebino.lg.jp/soshiki/chikusannosei/1/1/2/1703.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-49f8d9011b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>魅力あるふるさと環境づくり事業</title>
+    <link>https://jpcite.com/programs/miryoku-arufurusato-kankyou-zukuri-jigyou-154c12.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / subsidy 出典: https://hinatamafin.pref.miyazaki.lg.jp/soshiki/noseikikakuka/noseikeikaku/konnatokinihadouzo/1402.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4a0b98006b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業者の大型特殊およびけん引免許取得に係る経費助成</title>
+    <link>https://jpcite.com/programs/nougyou-mono-no-oogata-tokushu-oyobiken-hiki-menkyoshutoku-f877d6.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.city.nobeoka.miyazaki.jp/soshiki/36/index-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4cd7230a9c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎 畜産経営体質強化資金</title>
+    <link>https://jpcite.com/programs/miyazaki-chikusan-keieitaishitsu-kyouka-shikin-1cede2.html</link>
+    <description>Tier A / 宮崎県 / 都道府県 / loan / 上限 3,000万円 出典: https://www.pref.miyazaki.lg.jp/shinsei-chikusan/shigoto/nogyo/index12.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4d8994e4ba</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎市新規就農者定着支援事業</title>
+    <link>https://jpcite.com/programs/miyazaki-shi-shinki-shuunou-mono-teichaku-shien-jigyou-de4661.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.city.miyazaki.miyazaki.jp/business/agriculture_and_fisheries/agriculture/360084.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-506799e117</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>都城市 農業後継者等支援 新規参入者</title>
+    <link>https://jpcite.com/programs/tomishiro-shi-nougyou-koukeisha-nado-shien-shinkisannyuusha-7b127c.html</link>
+    <description>Tier A / 宮崎県 / 市町村 / subsidy / 上限 240万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10104.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-50def55340</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（水田活用の直接支払交付金 戦略作物助成）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-suiden-katsuyou-no-chokusetsu-d8cec9.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.city.kobayashi.lg.jp/shigoto_sangyo/sangyo/noringyo/1/2842.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-517445910e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宮崎市 新規就農者経営発展事業</title>
+    <link>https://jpcite.com/programs/miyazaki-shi-shinki-shuunou-mono-keiei-hatten-jigyou-335639.html</link>
+    <description>Tier A / 宮崎県 / 市町村 / subsidy / 上限 1,500万円 出典: https://www.city.miyazaki.miyazaki.jp/business/agriculture_and_fisheries/newly_farming/409438.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5752cf6459</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 みやざきの輸出力強化支援事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-miyazakino-yushutsu-chikara-kyouka-shien-1febfe.html</link>
+    <description>Tier B / 宮崎県 / （noukaweb 収集） / 上限 20万円 出典: https://www.city.miyazaki.miyazaki.jp/business/agriculture_and_fisheries/agriculture/380512.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5986c2f5cc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>都城市農業後継者等支援事業補助金</title>
+    <link>https://jpcite.com/programs/tomishiro-shi-nougyou-koukeisha-nado-shien-jigyou-hojokin-990015.html</link>
+    <description>Tier A / 宮崎県 / 宮崎県都城市 / subsidy / 上限 120万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10104.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5b02308d6c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定農業者制度</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-seido-a8d130.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/4227.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5b0f654278</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>綾オーガニックスクール</title>
+    <link>https://jpcite.com/programs/aya-ooganikkusukuuru-4e0669.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.town.aya.miyazaki.jp/soshiki/nourinsinkou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-60a324563f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>人・農地プラン関連支援事業</title>
+    <link>https://jpcite.com/programs/nin-nouchi-puran-kanren-shien-jigyou-da7bf2.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県川南町 / subsidy / 上限 150万円 出典: https://www.town.kawaminami.miyazaki.jp/soshiki/8/1089.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-63ff4d48bb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>川南町収入保険加入支援事業補助金</title>
+    <link>https://jpcite.com/programs/kawaminami-machi-shuunyuu-hoken-kanyuu-shien-jigyou-hojokin-2c2ffc.html</link>
+    <description>Tier A / 宮崎県 / （noukaweb 収集） / 上限 20万円 出典: https://www.town.kawaminami.miyazaki.jp/soshiki/7/7321.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-66e0b55258</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有機JAS認証支援（有機JAS認証事業者一覧公表）</title>
+    <link>https://jpcite.com/programs/yuuki-jas-ninshou-shien-yuuki-jas-ninshou-jigyousha-ichiran-0fa019.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.town.aya.miyazaki.jp/soshiki/nourinsinkou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-67ac81dd34</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-45-103_宮崎_畜産飼料高騰対策緊急支援事業</title>
+    <link>https://jpcite.com/programs/pref-45-103-miyazaki-chikusan-shiryou-koutou-taisaku-22040b.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 50万円 出典: https://hinatamafin.pref.miyazaki.lg.jp/soshiki/chikusanshinkoka/2655.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6b508f896c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>串間市農業委員会による農地あっせん・貸借支援</title>
+    <link>https://jpcite.com/programs/kushima-shi-nougyou-iinkai-niyoru-nouchi-assen-taishaku-c3f74d.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.city.kushima.lg.jp/main/business/cat2/cat5/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6bb453f432</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-452050-001_小林市_農業後継者支援事業</title>
+    <link>https://jpcite.com/programs/mun-452050-001-kobayashi-shi-nougyou-koukeisha-shien-jigyou-4490e4.html</link>
+    <description>Tier A / 宮崎県 / subsidy / 上限 50万円 出典: https://www.city.kobayashi.lg.jp/soshikikarasagasu/keizaibunogyoshinkoka/noringyo/1/5647.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7386185029</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中山間地域直接支払制度</title>
+    <link>https://jpcite.com/programs/chuusankan-chiiki-chokusetsu-shiharai-seido-f42022.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/54/68121.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7558526d30</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小規模農業用施設整備事業補助金</title>
+    <link>https://jpcite.com/programs/shoukibo-nougyouyou-shisetsu-seibi-jigyou-hojokin-fcc7f3.html</link>
+    <description>Tier C / 宮崎県 / （noukaweb 収集） 出典: https://www.hyugacity.jp/display.php?cont=160928132342</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-75ce43a809</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-45-106_宮崎_園芸振興対策事業_ハウス導入支援</title>
+    <link>https://jpcite.com/programs/pref-45-106-miyazaki-engei-shinkou-taisaku-jigyou-hausu-f27be2.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 250万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/54/3641.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-760b5edc57</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「都城の食品」販路開拓支援事業</title>
+    <link>https://jpcite.com/programs/tomishiro-no-shokuhin-hanro-kaitaku-shien-jigyou-e8ca8a.html</link>
+    <description>Tier C / 宮崎県 / 農林水産省 / subsidy / 上限 100万円 出典: https://www.city.miyakonojo.miyazaki.jp/uploaded/attachment/27934.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-76e1ae6a15</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者支援</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-030bef.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県日向市 / subsidy / 上限 150万円 出典: https://www.hyugacity.jp/sp/display.php?cont=200907131215</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-776497a0f7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-45-205_宮崎_家畜疾病経営維持資金</title>
+    <link>https://jpcite.com/programs/pref-45-205-miyazaki-kachiku-shippei-keiei-iji-shikin-bc1486.html</link>
+    <description>Tier B / 宮崎県 / loan / 上限 2,000万円 出典: https://www.pref.miyazaki.lg.jp/shinsei-chikusan/shigoto/nogyo/index12.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-79cf88bd8d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>串間市地域おこし協力隊（農業部門）</title>
+    <link>https://jpcite.com/programs/kushima-shi-chiiki-okoshi-kyouryoku-tai-nougyou-bumon-5748ab.html</link>
+    <description>Tier B / 宮崎県 / training / 上限 100万円 出典: https://smout.jp/plans/1253</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7ec2b01dbb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度畑地化促進事業</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-hatachi-ka-sokushin-jigyou-09e23f.html</link>
+    <description>Tier B / 宮崎県 / subsidy / 上限 100万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/54/68121.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-84b2354244</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住支援金制度</title>
+    <link>https://jpcite.com/programs/ijuu-shien-kin-seido-47cf86.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県えびの市 / subsidy / 上限 100万円 出典: https://www.city.ebino.lg.jp/soshiki/kikaku/3/1/1465.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8b111a4abe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-45-104_宮崎_畜産経営体質強化資金</title>
+    <link>https://jpcite.com/programs/pref-45-104-miyazaki-chikusan-keieitaishitsu-kyouka-shikin-eed4a5.html</link>
+    <description>Tier B / 宮崎県 / loan / 上限 2,000万円 出典: https://www.pref.miyazaki.lg.jp/shinsei-chikusan/shigoto/nogyo/index12.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8b8d7a81a5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-45-105_宮崎_畜産経営強化資金_当初5年無利子</title>
+    <link>https://jpcite.com/programs/pref-45-105-miyazaki-chikusan-keiei-kyouka-shikin-tousho-5-d03ebd.html</link>
+    <description>Tier B / 宮崎県 / loan / 上限 2,000万円 出典: https://www.pref.miyazaki.lg.jp/shinsei-chikusan/shigoto/nogyo/index12.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8d57aac89e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定農業者制度</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-seido-31ce05.html</link>
+    <description>Tier B / 宮崎県 / 宮崎県都城市 / subsidy 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/4227.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9302f81f96</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>都城市農業後継者等支援事業補助金</title>
+    <link>https://jpcite.com/programs/tomishiro-shi-nougyou-koukeisha-nado-shien-jigyou-hojokin-af48e0.html</link>
+    <description>Tier A / 宮崎県 / subsidy / 上限 240万円 出典: https://www.city.miyakonojo.miyazaki.jp/soshiki/2/10104.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-93d45d06e6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>川南町小規模基盤整備支援事業補助金</title>
+    <link>https://jpcite.com/programs/kawaminami-machi-shoukibo-kiban-seibi-shien-jigyou-hojokin-20eb6c.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県川南町 / subsidy / 上限 50万円 出典: https://www.town.kawaminami.miyazaki.jp/soshiki/8/9931.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-973fb5a806</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>県単独土地改良事業</title>
+    <link>https://jpcite.com/programs/ken-tandoku-tochi-kairyou-jigyou-acaf4f.html</link>
+    <description>Tier C / 宮崎県 / 宮崎県 / subsidy 出典: https://hinatamafin.pref.miyazaki.lg.jp/soshiki/noseikikakuka/noseikeikaku/konnatokinihadouzo/1402.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-990899f121</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

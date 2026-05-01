@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 北海道 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/hokkaido.xml" rel="self" type="application/rss+xml" />
+  <description>北海道 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>中小・小規模事業者賃上げ環境整備支援補助金の募集について（事前告知） - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-jigyousha-chin-age-kankyouseibi-shien-07cd58.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/249117.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0dd841147c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営持続化臨時特別支援金について【受付終了】 - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/keiei-jizoku-ka-rinji-tokubetsu-shien-kin-nitsuite-uketsuke-3a1584.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/keieijizokukarinjitokubetsushienkin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0f6f3058f9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>国の中小企業支援施策 - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/kuni-no-chuushoukigyou-shien-shisaku-keizaibu-chiiki-keizai-e4a033.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0004/shien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0f895428fb</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【申請受付は終了しました】中小・小規模企業省エネルギー環境整備緊急対策事業助成金について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/shinseiuketsuke-ha-shuuryou-shimashita-chuushou-shoukibo-c2318a.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy / 上限 100万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/180081.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-19afe38a35</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金等の交付に係る内容の公表について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/hojokin-nado-no-koufu-ni-kakaru-naiyou-no-kouhyou-nitsuite-bbb5c6.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/hojyokinkoukai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-408df546b6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新型コロナウイルス感染症対策小規模事業者緊急支援事業補助金【受付終了】 - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/shingata-koronauirusu-kansenshou-taisaku-shoukibo-jigyousha-f83af4.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/200430_covid-19_hojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-851b7c7bf0</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>起業支援金 - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/kigyou-shien-kin-keizaibu-chiiki-keizai-kyokuchuu-989662.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0006/b0003/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8e13533412</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>物価高騰対応重点支援地方創生臨時交付金を活用した事業の実施状況及び効果検証について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/bukkadaka-tou-taiou-juuten-shien-chihou-sousei-rinji-022ddf.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/250835.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-91e540b94a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「休業協力・感染リスク低減支援金」について【受付終了】 - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/kyuugyou-kyouryoku-kansen-risuku-teigen-shien-kin-nitsuite-796037.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/sienkin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-921f4ff05b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・助成金・支援金 - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/hojokin-joseikin-shien-kin-keizaibu-chiiki-keizai-kyokuchuu-6d7f50.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ad251233e4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【募集終了】令和５年度　中小・小規模企業新事業展開・販売促進支援補助金について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/boshuu-shuuryou-reiwa-5-nendo-chuushou-shoukibo-kigyou-shin-b1bfc5.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/shinjigyotenkai-r5.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ade97f00aa</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>飲食事業者等感染防止対策補助金の自主返還について（お知らせ） - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/inshoku-jigyousha-nado-kansen-boushitaisaku-hojokin-no-fedb15.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/125072.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-afd294d880</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【受付終了】飲食事業者等感染防止対策補助金について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/uketsuke-shuuryou-inshoku-jigyousha-nado-kansen-39de22.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/66701.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b0af088b70</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【募集終了】中小・小規模企業新事業展開・販売促進支援補助金について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/boshuu-shuuryou-chuushou-shoukibo-kigyou-shin-jigyou-tenkai-474b36.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/shinjigyotenkai-hojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c810d54f9b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模企業省エネ・デジタル環境整備緊急対策事業費補助金（デジタル技術導入）について（R5-6年度事業） - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-kigyou-shouene-dejitaru-kankyouseibi-8843a9.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/178533.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d71d7b5f63</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新型コロナウイルス感染症対応地方創生臨時交付金を活用した事業の実施状況及び効果検証について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/shingata-koronauirusu-kansenshou-taiou-chihou-sousei-rinji-e3fbb5.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/rinjikouhukin_kouhyo_chushokigyoka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e9c09ec419</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【事業終了】道特別支援金について（トップページ） - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/jigyou-shuuryou-michi-tokubetsu-shien-kin-nitsuite-60def4.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/tokubetsushienkin/01top.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f177e0504f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模企業デジタル技術導入等緊急支援事業費補助金の募集について - 経済部地域経済局中小企業課</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-kigyou-dejitaru-gijutsu-dounyuu-nado-b6e983.html</link>
+    <description>Tier B / 北海道 / 北海道 / subsidy / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/213220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f825103f4e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度補助金等交付一覧（額の確定）</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-hojokin-nado-koufu-ichiran-hitai-no-kakutei-1d0fbf.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/7/2/3/2/0/3/_/%E3%80%90%E5%85%AC%E9%96%8B%E7%94%A8%E3%80%91R5%E8%A3%9C%E5%8A%A9%E9%87%91%E5%85%AC%E8%A1%A8%E6%A7%98%E5%BC%8F20240521up.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-04ac2d30e7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度補助金等交付一覧（額の確定）</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-hojokin-nado-koufu-ichiran-hitai-no-kakutei-2c63d5.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/7/2/3/2/0/4/_/%E3%80%90%E5%85%AC%E9%96%8B%E7%94%A8%E3%80%91R6%E8%A3%9C%E5%8A%A9%E9%87%91%E5%85%AC%E8%A1%A8%E6%A7%98%E5%BC%8F202500610up.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-08d74ee749</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模企業デジタル技術導入等緊急支援事業費補助金</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-kigyou-dejitaru-gijutsu-dounyuu-nado-6d21fe.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/213220.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0c1613e392</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>デジタル技術導入等緊急支援事業費補助金交付要綱 (PDF 234KB)</title>
+    <link>https://jpcite.com/programs/dejitaru-gijutsu-dounyuu-nado-kinkyuu-shien-jigyou-hi-0df8dd.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/9/5/3/9/0/8/_/%E3%80%90%E7%A2%BA%E5%AE%9A%E3%80%91%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E6%8A%80%E8%A1%93%E5%B0%8E%E5%85%A5%E7%AD%89%E7%B7%8A%E6%80%A5%E6%94%AF%E6%8F%B4%E4%BA%8B%E6%A5%AD%E8%B2%BB%E8%A3%9C%E5%8A%A9%E9%87%91%E4%BA%A4%E4%BB%98%E8%A6%81%E7%B6%B1.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0d286c0a17</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模企業賃上げ環境整備等支援事業費補助金交付要綱 (PDF 235KB)</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-kigyou-chin-age-kankyouseibi-nado-shien-491925.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/3/1/0/1/5/7/5/_/%E4%B8%AD%E5%B0%8F%E3%83%BB%E5%B0%8F%E8%A6%8F%E6%A8%A1%E4%BC%81%E6%A5%AD%E8%B3%83%E4%B8%8A%E3%81%92%E7%92%B0%E5%A2%83%E6%95%B4%E5%82%99%E7%AD%89%E6%94%AF%E6%8F%B4%E4%BA%8B%E6%A5%AD%E8%B2%BB%E8%A3%9C%E5%8A%A9%E9%87%91%E4%BA%A4%E4%BB%98%E8%A6%81%E7%B6%B1.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-13fb0f9590</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>デジタル技術導入補助金2025リーフレット (PDF 915KB)</title>
+    <link>https://jpcite.com/programs/dejitaru-gijutsu-dounyuu-hojokin-2025-riifuretto-pdf-915kb-fd7755.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/9/5/3/9/0/7/_/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E6%8A%80%E8%A1%93%E5%B0%8E%E5%85%A5%E8%A3%9C%E5%8A%A9%E9%87%912025_%E3%83%81%E3%83%A9%E3%82%B7.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1c0732f993</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成制度</title>
+    <link>https://jpcite.com/programs/josei-seido-34873d.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/news/joseiseido/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3e1504b50e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和元年度補助金等交付一覧（額の確定）</title>
+    <link>https://jpcite.com/programs/reiwa-gannendo-hojokin-nado-koufu-ichiran-hitai-no-kakutei-b72844.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/7/2/3/1/9/9/_/r1hojyokin_koukai.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-45fc5eb05b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模企業賃上げ環境整備等支援事業費補助金</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-kigyou-chin-age-kankyouseibi-nado-shien-c96cd4.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/249117.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-460e922743</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>メインコンテンツへ移動</title>
+    <link>https://jpcite.com/programs/meinkontentsu-he-idou-0cf1f2.html</link>
+    <description>Tier A / 北海道 / 北海道 / support 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0004/shien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5500ebc2f7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・助成金・支援金</title>
+    <link>https://jpcite.com/programs/hojokin-joseikin-shien-kin-35c1be.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6e18dfb7cd</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>page top</title>
+    <link>https://jpcite.com/programs/page-top-187768.html</link>
+    <description>Tier A / 北海道 / 北海道 / support 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0004/shien/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-78211f54e0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和4年度補助金等交付一覧（額の確定）</title>
+    <link>https://jpcite.com/programs/reiwa-4-nendo-hojokin-nado-koufu-ichiran-hitai-no-kakutei-dce9ae.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/7/2/3/2/0/2/_/%E3%80%90%E5%85%AC%E9%96%8B%E7%94%A8%E3%80%91R4%E8%A3%9C%E5%8A%A9%E9%87%91%E5%85%AC%E8%A1%A8%E6%A7%98%E5%BC%8F230519up.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-785a9ba8d9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度補助金等交付一覧（額の確定）</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-hojokin-nado-koufu-ichiran-hitai-no-kakutei-165f64.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/3/1/2/4/6/1/0/_/%E3%80%90%E5%85%AC%E9%96%8B%E7%94%A8%E3%80%91R7%E8%A3%9C%E5%8A%A9%E9%87%91%E5%85%AC%E8%A1%A8%E6%A7%98%E5%BC%8F20260417up.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7e26cc9cfa</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和3年度補助金等交付一覧（額の確定）</title>
+    <link>https://jpcite.com/programs/reiwa-3-nendo-hojokin-nado-koufu-ichiran-hitai-no-kakutei-e49619.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/7/2/3/2/0/1/_/%E3%80%90%E5%85%AC%E9%96%8B%E7%94%A8%E3%80%91R3%E8%A3%9C%E5%8A%A9%E9%87%91%E5%85%AC%E8%A1%A8%E6%A7%98%E5%BC%8F%E3%80%90220614up%E3%80%91R4.6.14%E5%85%AC%E8%A1%A8.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8095dad733</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金等の交付に係る内容の公表について</title>
+    <link>https://jpcite.com/programs/hojokin-nado-no-koufu-ni-kakaru-naiyou-no-kouhyou-nitsuite-ef10f7.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/hojyokinkoukai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-81fe4f7ca3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>物価高騰対応重点支援地方創生臨時交付金を活用した事業の実施状況及び効果検証について</title>
+    <link>https://jpcite.com/programs/bukkadaka-tou-taiou-juuten-shien-chihou-sousei-rinji-1c5252.html</link>
+    <description>Tier A / 北海道 / 北海道 / support 出典: https://www.pref.hokkaido.lg.jp/kz/csk/250835.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-af5c269f01</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和2年度補助金等交付一覧（額の確定）</title>
+    <link>https://jpcite.com/programs/reiwa-2-nendo-hojokin-nado-koufu-ichiran-hitai-no-kakutei-036909.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/fs/1/1/7/2/3/2/0/0/_/%E3%80%90%E5%85%AC%E9%96%8B%E7%94%A8%E3%80%91R2%E8%A3%9C%E5%8A%A9%E9%87%91%E5%85%AC%E8%A1%A8%E6%A7%98%E5%BC%8F%E3%80%90220330up%E3%80%91.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b678495071</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>起業支援金</title>
+    <link>https://jpcite.com/programs/kigyou-shien-kin-35e5cb.html</link>
+    <description>Tier A / 北海道 / 北海道 / support 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0006/b0003/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cdf9b4b7bd</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模事業者賃上げ環境整備支援補助金の募集について（事前告知）</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-jigyousha-chin-age-kankyouseibi-shien-471cd9.html</link>
+    <description>Tier A / 北海道 / 北海道 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/csk/249117.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fb089fc2a0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道商工会連合会 補助金・助成金 案内ハブ（北海道 商工会連合会）</title>
+    <link>https://jpcite.com/programs/hokkaidou-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-69728b.html</link>
+    <description>Tier B / 北海道 / 北海道商工会連合会 / directory 出典: https://www.do-shokoren.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ab1c259c67</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:16 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>札幌商工会議所 経営相談・資金支援</title>
+    <link>https://jpcite.com/programs/sapporo-shoukoukaigisho-keiei-soudan-shikin-shien-5deb68.html</link>
+    <description>Tier B / 北海道 / 札幌商工会議所 / consulting 出典: https://www.sapporo-cci.or.jp/web/purpose/04/</description>
+    <category>consulting</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ae94141590</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:03 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名寄市経営準備支援助成金</title>
+    <link>https://jpcite.com/programs/nayoro-shi-keiei-junbi-shien-joseikin-62d14f.html</link>
+    <description>Tier C / 北海道 / 市町村 / subsidy / 上限 240万円 出典: https://www.city.nayoro.lg.jp/section/noumu/vdh2d10000000joz.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0fe7fbf7bb</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名寄市経営自立安定補助金</title>
+    <link>https://jpcite.com/programs/nayoro-shi-keiei-jiritsu-antei-hojokin-f860f8.html</link>
+    <description>Tier C / 北海道 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.nayoro.lg.jp/section/noumu/vdh2d10000000joz.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-34bf997d70</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名寄市農業指導助成金</title>
+    <link>https://jpcite.com/programs/nayoro-shi-nougyou-shidou-joseikin-16c3ed.html</link>
+    <description>Tier C / 北海道 / 市町村 / subsidy / 上限 252万円 出典: https://www.city.nayoro.lg.jp/section/noumu/vdh2d10000000joz.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-47886a7bd1</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>住民投票制度（憲法95条・地方自治法・特別法・条例）</title>
+    <link>https://jpcite.com/programs/juumin-touhyouseido-kenpou-95-jou-chihoujichi-hou-tokubetsu-32a74e.html</link>
+    <description>Tier C / 北海道 / 総務省 自治行政局・地方自治体 出典: https://www.city.tomakomai.hokkaido.jp/files/00007400/00007477/05-03sankou.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5c4ab60854</guid>
+    <pubDate>Thu, 23 Apr 2026 22:10:42 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千歳市 企業立地促進補助金（工業等振興条例）</title>
+    <link>https://jpcite.com/programs/chitose-shi-kigyou-ritchi-sokushin-hojokin-kougyou-nado-5479af.html</link>
+    <description>Tier C / 北海道 / 千歳市 産業振興部 産業支援室 企業振興課 / subsidy / 上限 23,000万円 出典: https://www.chitose-yuuchi.jp/chitose/support.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-02ce56d870</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道次世代半導体拠点（産総研 先端半導体研究拠点）</title>
+    <link>https://jpcite.com/programs/hokkaidou-jisedai-handoutai-kyoten-sansouken-sentan-45d795.html</link>
+    <description>Tier C / 北海道 / 経済産業省／産業技術総合研究所 / subsidy_fund / 上限 10,000,000万円 出典: https://www.hkd.meti.go.jp/hokcm/semiconductor/index.htm</description>
+    <category>subsidy_fund</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-181f99320a</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道スペースポート（HOSPO）立地企業支援／企業版ふるさと納税</title>
+    <link>https://jpcite.com/programs/hokkaidou-supeesupooto-hospo-ritchi-kigyou-shien-kigyou-han-a20502.html</link>
+    <description>Tier C / 北海道 / 北海道大樹町 航空宇宙推進室／SPACE COTAN株式会社（指定管理者） / municipal_support_subsidy / 上限 120,000万円 出典: https://www.town.taiki.hokkaido.jp/soshiki/kokuuchusuishinshitsu/1/850.html</description>
+    <category>municipal_support_subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1f60e47cf6</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道 次世代半導体関連産業立地補助金（15億円枠）</title>
+    <link>https://jpcite.com/programs/hokkaidou-jisedai-handoutai-kanren-sangyou-ritchi-hojokin-6d47b6.html</link>
+    <description>Tier C / 北海道 / 北海道 経済部 AI・DX推進局 次世代半導体戦略室 / subsidy / 上限 150,000万円 出典: https://www.pref.hokkaido.lg.jp/kz/zhs/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-28d5a33cdd</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道アドベンチャートラベル推進連携会議</title>
+    <link>https://jpcite.com/programs/hokkaidou-adobenchaatoraberu-suishin-renkei-kaigi-3f4304.html</link>
+    <description>Tier C / 北海道 / 北海道経済部観光局 × 観光庁 出典: https://visit-hokkaido.jp/adventure-travel/traveltrade-press/atws/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-44cf6a29cd</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道水道広域連携推進プラン (令和5年3月策定)</title>
+    <link>https://jpcite.com/programs/hokkaidou-suidou-kouiki-renkei-suishin-puran-reiwa-5-nen-3-3f4240.html</link>
+    <description>Tier C / 北海道 / 北海道 環境生活部 環境保全局 環境政策課 出典: https://www.pref.hokkaido.lg.jp/ks/ksk/kouikika.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6641c8daa1</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道企業立地促進費補助金（産業振興条例）</title>
+    <link>https://jpcite.com/programs/hokkaidou-kigyou-ritchi-sokushin-hi-hojokin-sangyou-shinkou-feb3c6.html</link>
+    <description>Tier C / 北海道 / 北海道 経済部 産業振興局 / subsidy 出典: https://www.pref.hokkaido.lg.jp/kz/ssg/sgr/yugu/sinhojoseido.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-75c11792f1</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>水源地域保全条例 (全国21道府県、R7.10時点)</title>
+    <link>https://jpcite.com/programs/suigenchi-iki-hozen-jourei-zenkoku-21-doufuken-r7-10-jiten-b4aca7.html</link>
+    <description>Tier C / 北海道 / 各都道府県 (北海道が先行) 出典: https://www.rilg.or.jp/htdocs/img/reiki/042_conservation_of_water_source_area.htm</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-83ecb0d0fa</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>海のハローワーク (船員職業安定窓口) / 海のハローワークネット</title>
+    <link>https://jpcite.com/programs/umi-no-haroowaaku-sen-in-shokugyou-antei-madoguchi-umi-no-b8289e.html</link>
+    <description>Tier C / 北海道 / 国土交通省 海事局 / 地方運輸局 (北海道・東北・関東・北陸信越・中部・近畿・中国・四国・九州) + 沖縄総合事務局 出典: https://www.mlit.go.jp/maritime/maritime_tk4_000012.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8e487bfce9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道内7空港 一括特定運営事業等（新千歳・函館・釧路・稚内・旭川・帯広・女満別）</title>
+    <link>https://jpcite.com/programs/hokkaidou-nai-7-kuukou-ikkatsu-tokutei-un-ei-jigyou-nado-519f8f.html</link>
+    <description>Tier C / 北海道 / 国土交通省 航空局 / 北海道・旭川市・帯広市・女満別町 / 実施主体：北海道エアポート株式会社（HAP） 出典: https://www.mlit.go.jp/koku/koku_tk5_000008.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d08131b7cf</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道内7空港 特定運営事業 (北海道エアポート)</title>
+    <link>https://jpcite.com/programs/hokkaidou-nai-7-kuukou-tokutei-un-ei-jigyou-hokkaidou-fd08a0.html</link>
+    <description>Tier C / 北海道 / 北海道エアポート株式会社 出典: https://www.mlit.go.jp/koku/koku_tk5_000037.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4dc5b57093</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:32 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さっぽろ新規創業促進補助金</title>
+    <link>https://jpcite.com/programs/sapporo-shinki-sougyou-sokushin-hojokin-bc3a14.html</link>
+    <description>Tier C / 北海道 / 札幌市経済観光局 / subsidy / 上限 7万円 出典: https://www.city.sapporo.jp/keizai/center/sinkisougyouhojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-16db92f2d1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>札幌市スタートアップ助成</title>
+    <link>https://jpcite.com/programs/sapporoshi-sutaatoappu-josei-e572a7.html</link>
+    <description>Tier C / 北海道 / 札幌市市民文化局 / subsidy 出典: https://www.city.sapporo.jp/shimin/support/kikin/josei/jyoseishinsei-start.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-30b38eb930</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>札幌市オリジナルコンテンツ制作(IP)補助金</title>
+    <link>https://jpcite.com/programs/sapporoshi-orijinarukontentsu-seisaku-ip-hojokin-baf839.html</link>
+    <description>Tier C / 北海道 / 札幌市経済観光局 / subsidy / 上限 1,000万円 出典: https://www.city.sapporo.jp/keizai/tokku/jyoseikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-66304336b0</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>札幌市地域資源映像化補助金</title>
+    <link>https://jpcite.com/programs/sapporoshi-chiiki-shigen-eizouka-hojokin-709bbc.html</link>
+    <description>Tier C / 北海道 / 札幌市経済観光局 / subsidy / 上限 1,000万円 出典: https://www.city.sapporo.jp/keizai/tokku/jyoseikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a0499c515e</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>札幌市企業DX推進補助金(仮称)</title>
+    <link>https://jpcite.com/programs/sapporoshi-kigyou-dx-suishin-hojokin-kashou-6bada3.html</link>
+    <description>Tier C / 北海道 / 札幌市経済観光局イノベーション推進課 / subsidy 出典: https://www.city.sapporo.jp/keizai/top/topics/it/kigyoudx.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d303c8cf20</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>J-Startup HOKKAIDO</title>
+    <link>https://jpcite.com/programs/j-startup-hokkaido-100c2a.html</link>
+    <description>Tier C / 北海道 / 経済産業省 北海道経済産業局 / certification_meta 出典: https://www.hkd.meti.go.jp/information/venture/startup.htm</description>
+    <category>certification_meta</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-58533332ef</guid>
+    <pubDate>Thu, 23 Apr 2026 14:15:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>札幌市先端設備等導入促進補助金</title>
+    <link>https://jpcite.com/programs/sapporoshi-sentan-setsubi-nado-dounyuu-sokushin-hojokin-f444e3.html</link>
+    <description>Tier C / 北海道 / 札幌市経済観光局 / subsidy 出典: https://www.city.sapporo.jp/keizai/chusho/r8sentanhojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4122dd68e2</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北大ビジネス・スプリング賃料補助</title>
+    <link>https://jpcite.com/programs/hokudai-bijinesu-supuringu-chinryou-hojo-387ae3.html</link>
+    <description>Tier C / 北海道 / 札幌市経済観光局 / subsidy 出典: https://www.city.sapporo.jp/keizai/hokudaibs/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-44a501e875</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>札幌市中小企業融資制度</title>
+    <link>https://jpcite.com/programs/sapporoshi-chuushoukigyou-yuushi-seido-b4b172.html</link>
+    <description>Tier C / 北海道 / 札幌市経済観光局中小企業支援センター / loan 出典: https://www.city.sapporo.jp/keizai/center/index.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c3c5abd75e</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道新商品・新技術開発支援補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-shinshouhin-shingijutsukaihatsu-shien-hojokin-9a7100.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 500万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-01d2e118a9</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道伝統工芸品産業振興補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-dentoukougei-hin-sangyou-shinkou-hojokin-cbdf62.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 100万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-09d0a5b86d</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道地域課題解決型起業支援事業</title>
+    <link>https://jpcite.com/programs/hokkaidou-chiiki-kadai-kaiketsu-kata-kigyou-shien-jigyou-8a9334.html</link>
+    <description>Tier C / 北海道 / 北海道経済部地域経済局中小企業課 / subsidy / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/sougyou/149177.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0a09bf56d8</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道女性・若者起業家支援補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-josei-wakamono-kigyouka-shien-hojokin-93c780.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 100万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0006/b0003/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1e3df5c4af</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模事業者賃上げ環境整備支援補助金(北海道)</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-jigyousha-chin-age-kankyouseibi-shien-bc0eea.html</link>
+    <description>Tier C / 北海道 / 北海道経済部地域経済局中小企業課 / subsidy / 上限 300万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/249117.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-203b3e374c</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道再生可能エネルギー導入補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-saiseikanou-enerugii-dounyuu-hojokin-9265e6.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 500万円 出典: https://www.pref.hokkaido.lg.jp/category/d011/c067/s312/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3cdae07477</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道食関連産業振興補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-shoku-kanren-sangyou-shinkou-hojokin-7c6093.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 500万円 出典: https://www.pref.hokkaido.lg.jp/category/d011/c067/s312/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4c1d9ef987</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道中小企業省力化投資補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-chuushoukigyou-shouryokuka-toushi-hojokin-56fd0e.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 500万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5185271ae2</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道観光振興機構補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-kankou-shinkou-kikou-hojokin-41d4c1.html</link>
+    <description>Tier C / 北海道 / 北海道経済部観光局 / subsidy / 上限 500万円 出典: https://www.pref.hokkaido.lg.jp/category/d002/c005/s007/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6ea92eb087</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道地域おこし協力隊支援事業</title>
+    <link>https://jpcite.com/programs/hokkaidou-chiiki-okoshi-kyouryoku-tai-shien-jigyou-e5c560.html</link>
+    <description>Tier C / 北海道 / 北海道総合政策部 / subsidy / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/category/d002/c005/s007/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-76c2ff2a82</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道起業支援金</title>
+    <link>https://jpcite.com/programs/hokkaidou-kigyou-shien-kin-7a8c70.html</link>
+    <description>Tier C / 北海道 / 北海道経済部地域経済局中小企業課 / subsidy / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0006/b0003/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-81e4f4d8cf</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模企業新事業展開・販売促進支援補助金</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-kigyou-shin-jigyou-tenkai-hanbaisokushin-9b9843.html</link>
+    <description>Tier C / 北海道 / 北海道経済部地域経済局中小企業課 / subsidy / 上限 300万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/shinjigyotenkai-hojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-86ecd863bd</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道特別高圧電力利用事業者緊急支援事業</title>
+    <link>https://jpcite.com/programs/hokkaidou-tokubetsu-kouatsu-denryoku-riyou-jigyousha-69fd30.html</link>
+    <description>Tier C / 北海道 / 北海道経済部地域経済局中小企業課 / support_payment / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/243189.html</description>
+    <category>support_payment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a8697c7164</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道中小企業総合振興資金</title>
+    <link>https://jpcite.com/programs/hokkaidou-chuushoukigyou-sougou-shinkou-shikin-ae644e.html</link>
+    <description>Tier C / 北海道 / 北海道経済部地域経済局中小企業課 / loan / 上限 28,000万円 出典: https://www.pref.hokkaido.lg.jp/category/d011/c067/s312/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d260b765f8</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小・小規模企業省エネルギー環境整備緊急対策事業助成金</title>
+    <link>https://jpcite.com/programs/chuushou-shoukibo-kigyou-shouene-rugii-kankyouseibi-a4bad7.html</link>
+    <description>Tier C / 北海道 / 北海道経済部地域経済局中小企業課 / subsidy / 上限 100万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/180081.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d731a015de</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道企業立地促進費補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-kigyou-ritchi-sokushin-hi-hojokin-3ca6cd.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 50,000万円 出典: https://www.pref.hokkaido.lg.jp/category/d011/c067/s312/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e3149af9e9</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道農業法人経営支援補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-nougyou-houjin-keiei-shien-hojokin-4b09ca.html</link>
+    <description>Tier C / 北海道 / 北海道農政部 / subsidy / 上限 500万円 出典: https://www.pref.hokkaido.lg.jp/category/d011/c067/s312/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e4b1839c41</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道事業承継支援事業補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-jigyou-shoukei-shien-jigyou-hojokin-b17742.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 200万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f8d942b830</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道DX推進支援補助金</title>
+    <link>https://jpcite.com/programs/hokkaidou-dx-suishin-shien-hojokin-9c7074.html</link>
+    <description>Tier C / 北海道 / 北海道経済部 / subsidy / 上限 300万円 出典: https://www.pref.hokkaido.lg.jp/kz/csk/a0009/b0006/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fed034e1e6</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長谷川産業株式会社 景表法措置命令 (2025-02-28)</title>
+    <link>https://jpcite.com/programs/hasegawa-sangyou-kabushikigaisha-keihyou-hou-sochi-meirei-95592a.html</link>
+    <description>Tier C / 北海道 / 公正取引委員会北海道事務所 / regulation 出典: https://www.jftc.go.jp/houdou/pressrelease/2025/feb/250228_hokkaido_keihyo.html</description>
+    <category>regulation</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-29c433d399</guid>
+    <pubDate>Thu, 23 Apr 2026 08:17:54 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道 競争入札参加資格 (物品等)</title>
+    <link>https://jpcite.com/programs/hokkaidou-kyousounyuusatsu-sankashikaku-buppin-nado-e071b2.html</link>
+    <description>Tier C / 北海道 / 北海道出納局 財務指導課 / qualification 出典: https://www.pref.hokkaido.lg.jp/st/kns/sikaku_m/sikaku_main.html</description>
+    <category>qualification</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5087baa3d0</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道GX推進税制 (GX事業者 道税課税免除)</title>
+    <link>https://jpcite.com/programs/hokkaidou-gx-suishin-zeisei-gx-jigyousha-michi-zei-kazei-562d3f.html</link>
+    <description>Tier C / 北海道 / 北海道 / tax_reduction_by_ordinance 出典: https://www.pref.hokkaido.lg.jp/kz/gxs/205750.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6c098cc58d</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ニセコ町宿泊税条例 (2026年11月 定率制転換)</title>
+    <link>https://jpcite.com/programs/niseko-machi-shukuhaku-zei-jourei-2026-nen-11-gatsu-516760.html</link>
+    <description>Tier C / 北海道 / ニセコ町 / tax_reduction_by_ordinance 出典: https://www.town.niseko.lg.jp/kurashi/tax/syukuhakuzei</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d8b51e90be</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>倶知安町宿泊税条例 (定率制)</title>
+    <link>https://jpcite.com/programs/kutchan-machi-shukuhaku-zei-jourei-teiritsu-sei-f1fdcf.html</link>
+    <description>Tier C / 北海道 / 倶知安町 / tax_reduction_by_ordinance 出典: https://www.town.kutchan.hokkaido.jp/town_administration/AccommodationTax/3108/</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f1af4ade93</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大型特殊免許取得支援（国・北海道）</title>
+    <link>https://jpcite.com/programs/oogata-tokushu-menkyoshutoku-shien-kuni-hokkaidou-7ac348.html</link>
+    <description>Tier C / 北海道 / subsidy / 上限 100万円 出典: https://www.city.iwamizawa.hokkaido.jp/site/nogyo/7412.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0077f9b318</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>狩猟免許及び猟銃等所持許可取得等補助金</title>
+    <link>https://jpcite.com/programs/shuryou-menkyo-oyobi-ryoujuu-nado-shoji-kyoka-shutoku-nado-4b0949.html</link>
+    <description>Tier B / 北海道 / 北海道幕別町 / subsidy / 上限 10万円 出典: https://www.pref.hokkaido.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02220740ac</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北海道 農業近代化資金（道費利子補給）</title>
+    <link>https://jpcite.com/programs/hokkaidou-nougyou-kindaika-shikin-michi-hi-rishi-hokyuu-c97d50.html</link>
+    <description>Tier A / 北海道 / 都道府県 / loan / 上限 1,800万円 出典: https://www.pref.hokkaido.lg.jp/ns/kei/kinyu/sikin.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02a94786f5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大空町起業化支援事業補助金</title>
+    <link>https://jpcite.com/programs/oozora-machi-kigyou-ka-shien-jigyou-hojokin-7fe74a.html</link>
+    <description>Tier C / 北海道 / （noukaweb 収集） 出典: https://www.town.ozora.hokkaido.jp/section/reiki_int/reiki_honbun/r348RG00001064.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-032c76c709</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業次世代人材投資事業（準備型）</title>
+    <link>https://jpcite.com/programs/nougyou-jisedai-jinzai-toushi-jigyou-junbi-kata-887a60.html</link>
+    <description>Tier C / 北海道 / subsidy / 上限 137万円 出典: https://www.town.shintoku.hokkaido.jp/soshiki/sangyo/nogyo/ladiesfarmschool/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0395be2004</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>名寄市農用地取得借入金利子補給金</title>
+    <link>https://jpcite.com/programs/nayoro-shi-nouyou-chi-shutoku-kariirekin-rishi-hokyuu-kin-0cf7bd.html</link>
+    <description>Tier B / 北海道 / subsidy / 上限 150万円 出典: https://www.city.nayoro.lg.jp/section/noumu/vdh2d10000000jxr.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-03b2e9edbd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農支援（営農資材・借入金利息・賃貸料補助）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-shien-einou-shizai-kariirekin-risoku-chintai-6f3ec8.html</link>
+    <description>Tier B / 北海道 / subsidy / 上限 1,000万円 出典: https://www.town.honbetsu.hokkaido.jp/site/nouringyou/shinkijunou-shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-03b45f1781</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>湧別町牧野運営事業補助金</title>
+    <link>https://jpcite.com/programs/yuubetsu-machi-makino-un-ei-jigyou-hojokin-c4fda2.html</link>
+    <description>Tier C / 北海道 / （noukaweb 収集） 出典: https://www.town.yubetsu.lg.jp/administration/reiki/reiki_honbun/r383RG00000647.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0417c47ebd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新得町施設リース料補助</title>
+    <link>https://jpcite.com/programs/shintoku-machi-shisetsu-riisu-ryou-hojo-76b3b3.html</link>
+    <description>Tier B / 北海道 / 市町村 / subsidy / 上限 500万円 出典: https://www.shintoku-town.jp/sangyou_kankou/nougyou/sinkisyuunou_sien/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0500a4a6fc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>音更町事業承継支援事業補助金</title>
+    <link>https://jpcite.com/programs/otoshinachou-jigyou-shoukei-shien-jigyou-hojokin-23916e.html</link>
+    <description>Tier C / 北海道 / subsidy / 上限 50万円 出典: https://www.town.otofuke.hokkaido.jp/sangyo_keizai/jigyosha/joseiyu-shi/jigyo-shokei-hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-05ef32bf7d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岩見沢市住宅取得支援</title>
+    <link>https://jpcite.com/programs/iwamizawa-shi-juutaku-shutoku-shien-f33bc2.html</link>
+    <description>Tier B / 北海道 / subsidy / 上限 12万円 出典: https://www.city.iwamizawa.hokkaido.jp/sangyo_business/sangyo/nogyo_ringyo/2/1/7412.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0617dc5625</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業体験旅費補助</title>
+    <link>https://jpcite.com/programs/nougyou-taiken-ryohi-hojo-0eee10.html</link>
+    <description>Tier B / 北海道 / subsidy / 上限 5万円 出典: https://www.town.honbetsu.hokkaido.jp/site/nouringyou/shinkijunou-shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-061be25dcf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

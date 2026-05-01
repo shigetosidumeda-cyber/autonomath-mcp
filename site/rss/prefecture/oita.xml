@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 大分県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/oita.xml" rel="self" type="application/rss+xml" />
+  <description>大分県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>大分県森林由来J-クレジット創出費用補助金について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/ooitaken-shinrin-yurai-j-kurejitto-soushutsu-hiyou-hojokin-a1ef5a.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/13090/shinrinj-creditshien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-11b37c3bb3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度ドローン関連個別商談会出展事業費補助金の募集について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-doroon-kanren-kobetsu-shoudan-kai-shutten-fb6549.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/14270/tenjikaisyutten.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-131c7c1863</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度経営革新加速化支援事業費補助金の募集について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-keiei-kakushin-kasoku-ka-shien-jigyou-hi-18f268.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/14040/r8-kasokuka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-136ce0c39f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県建設産業ＤＸ加速化事業（ＩＣＴ建機、ＩＣＴ機器導入補助）について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/ooitaken-kensetsu-sangyou-d-x-kasoku-ka-jigyou-i-c-t-kenki-f81374.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/18700/kensetsudx-r8hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-281891fed4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【おおいたグリーン事業者（脱プラスチック部門）向け】大分県プラスチック削減事業費補助金について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/ooita-guriin-jigyousha-datsu-purasuchikku-bumon-muke-c9d129.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/13400/plasakugen-hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4c6b8329b1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害福祉従事者処遇改善緊急支援事業について（補助金） - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/shougai-fukushi-juujisha-shoguu-kaizen-kinkyuu-shien-jigyou-68c0d6.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/12500/syoguukaizenkinnkyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-551974c7ad</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度大分県ドローン産業研究開発事業費補助金の募集について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-ooitaken-doroon-sangyou-kenkyuukaihatsu-ddd12e.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/14270/dronekenkyukaihatsuhojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-65256d42e6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成金・補助金 - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/joseikin-hojokin-ooitaken-hoomupeeji-84c28a.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/life/sub/6/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-655f2694d2</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県の子育て支援について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/ooitaken-no-kosodate-shien-nitsuite-ooitaken-hoomupeeji-e22694.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy / 上限 10万円 出典: https://www.pref.oita.jp/soshiki/12520/kosodatessshienn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-911970db1f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>私立高等学校等の授業料支援制度 - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/shiritsu-koutougakkou-nado-no-jugyouryou-shien-seido-0aa04f.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy / 上限 0万円 出典: https://www.pref.oita.jp/soshiki/11830/syugakushienkin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9e1d58dadd</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度自然環境保全活動事業費補助金の募集について - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-shizenkankyou-hozen-katsudou-jigyou-hi-6dca50.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/13070/shizenkankyouhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ae1d234dff</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金関係 - おおいた商工労働ポータル - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/hojokin-kankei-ooita-shoukou-roudou-pootaru-ooitaken-653e9d.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/site/sme/list21659.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d9dd86c3a3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金（業種全般） - おおいた商工労働ポータル - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/hojokin-gyoushu-zenpan-ooita-shoukou-roudou-pootaru-0a6b58.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/site/sme/list21659-25674.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-df90987604</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「令和８年度大分県ものづくり循環経済推進事業費補助金」 - 大分県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-ooitaken-monozukuri-junkan-keizai-suishin-d0894e.html</link>
+    <description>Tier B / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/14340/monodukuri-r8.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ffe34ae050</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度県産加工食品等海外展開サポート事業費補助金のご案内</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-kensan-kakou-shokuhin-nado-kaigaitenkai-8a5eb0.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/14300/r8-export-support-subsidy.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1f99f269cc</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中央児童相談所</title>
+    <link>https://jpcite.com/programs/chuuou-jidou-soudansho-e43a56.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/site/kodomojosei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-234c3f6d49</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県建設産業ＤＸ加速化事業（ＩＣＴ建機、ＩＣＴ機器導入補助）について</title>
+    <link>https://jpcite.com/programs/ooitaken-kensetsu-sangyou-d-x-kasoku-ka-jigyou-i-c-t-kenki-f7c837.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/18700/kensetsudx-r8hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2aa7837596</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>こども・女性相談支援センター</title>
+    <link>https://jpcite.com/programs/kodomo-josei-soudan-shien-sentaa-e2e32c.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/site/kodomojosei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3837788bc1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度大分県ドローン産業研究開発事業費補助金の募集について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-ooitaken-doroon-sangyou-kenkyuukaihatsu-f648e1.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/14270/dronekenkyukaihatsuhojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5857136429</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年大分市佐賀関の大規模火災に係る被災者支援情報</title>
+    <link>https://jpcite.com/programs/reiwa-7-nen-ooita-shi-saganoseki-no-daikibo-kasai-ni-kakaru-c15265.html</link>
+    <description>Tier A / 大分県 / 大分県 / support 出典: https://www.pref.oita.jp/soshiki/10400/saganosekikasaishien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9ab12727c6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成金・補助金</title>
+    <link>https://jpcite.com/programs/joseikin-hojokin-e703f8.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/life/sub/6/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a1d5ce0076</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度「大分県おおいたキャリエール認証企業応援補助金」の申請募集について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-ooitaken-ooita-kyarieeru-ninshou-kigyou-ouen-92c2ce.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/site/iness-jyosei/kyarieruhojyokin-r8.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cc617df14c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度ドローン関連個別商談会出展事業費補助金の募集について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-doroon-kanren-kobetsu-shoudan-kai-shutten-9c05da.html</link>
+    <description>Tier A / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/soshiki/14270/tenjikaisyutten.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ef7c58c19b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和６年能登半島地震に関する情報について</title>
+    <link>https://jpcite.com/programs/reiwa-6-nen-noto-han-shima-jishin-ni-kansu-ru-jouhou-5fc37c.html</link>
+    <description>Tier A / 大分県 / 大分県 / support 出典: https://www.pref.oita.jp/soshiki/10400/r6notohantojisin-shien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f5f44ab9d3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県商工会連合会 補助金・助成金 案内ハブ（大分県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/ooitaken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-f37139.html</link>
+    <description>Tier B / 大分県 / 大分県商工会連合会 / directory 出典: http://www.oita-shokokai.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6cf0f5f976</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:46 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県水平型宇宙港（大分空港スペースポート）企業誘致</title>
+    <link>https://jpcite.com/programs/ooitaken-suihei-kata-uchuu-minato-ooita-kuukou-supeesupooto-15e34a.html</link>
+    <description>Tier C / 大分県 / 大分県 商工観光労働部 先端技術挑戦課（TEL:097-506-2475） / municipal_support 出典: https://www.pref.oita.jp/soshiki/14270/spceport00.html</description>
+    <category>municipal_support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8f743b9b36</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県産業振興条例 適用工場等の県税免除</title>
+    <link>https://jpcite.com/programs/ooitaken-sangyou-shinkou-jourei-tekiyou-koujou-nado-no-90474f.html</link>
+    <description>Tier C / 大分県 / 大分県 / tax_reduction_by_ordinance 出典: https://www.pref.oita.jp/soshiki/14050/tekiyoukoujyou.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-57688853fd</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県観光振興補助金</title>
+    <link>https://jpcite.com/programs/ooitaken-kankou-shinkou-hojokin-08d7f2.html</link>
+    <description>Tier C / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/life/sub/6/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2db7f370cd</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県省力化・生産性向上支援補助金</title>
+    <link>https://jpcite.com/programs/ooitaken-shouryokuka-seisansei-koujou-shien-hojokin-26b619.html</link>
+    <description>Tier C / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/site/tyusyodx/dxhojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4e3bd9d0c2</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県起業・スタートアップ支援補助金</title>
+    <link>https://jpcite.com/programs/ooitaken-kigyou-sutaatoappu-shien-hojokin-650e37.html</link>
+    <description>Tier C / 大分県 / 大分県 / subsidy 出典: https://oita-chusho.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8ba3e6515c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県経営革新加速化支援事業費補助金</title>
+    <link>https://jpcite.com/programs/ooitaken-keiei-kakushin-kasoku-ka-shien-jigyou-hi-hojokin-49bd13.html</link>
+    <description>Tier C / 大分県 / 大分県 / subsidy 出典: https://www.pref.oita.jp/life/sub/6/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-cc7513e556</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県中小企業制度融資</title>
+    <link>https://jpcite.com/programs/ooitaken-chuushoukigyou-seido-yuushi-608d7c.html</link>
+    <description>Tier C / 大分県 / 大分県 / loan 出典: https://www.pref.oita.jp/life/sub/6/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dc1395923b</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>日田市農福連携整備事業補助金</title>
+    <link>https://jpcite.com/programs/hita-shi-nou-fuku-renkei-seibi-jigyou-hojokin-11ed7c.html</link>
+    <description>Tier C / 大分県 / 大分県日田市 / subsidy / 上限 75万円 出典: https://www.city.hita.oita.jp/material/files/group/7/noufukurenkei_flow.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-00856c5562</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>梨学校（新規就農者向け農業研修）</title>
+    <link>https://jpcite.com/programs/nashi-gakkou-shinki-shuunou-mono-muke-nougyou-kenshuu-6e0284.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city-nakatsu.jp/doc/2022091500021/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02554e343a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分 中高年移住就農給付金</title>
+    <link>https://jpcite.com/programs/ooita-chuukounen-ijuu-shuunou-kyuufukin-1336c7.html</link>
+    <description>Tier B / 大分県 / 都道府県 / subsidy / 上限 100万円 出典: https://nourinsui-start.oita.jp/chukounen/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-047d72ce8f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定新規就農者制度</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-a83960.html</link>
+    <description>Tier B / 大分県 / 大分県日田市 / subsidy 出典: https://www.city.hita.oita.jp/soshiki/norinshinkobu/nogyoshinkoka/ninaite/sangyo/nogyo/14261.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-05248dda19</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県親元就農給付金事業</title>
+    <link>https://jpcite.com/programs/ooitaken-oyamoto-shuunou-kyuufukin-jigyou-2726c3.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 75万円 出典: https://www.city.usa.oita.jp/sougo/soshiki/13/nosei/1/2_1/8879.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0648bfcde2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分市ファーマーズカレッジ研修生給付金</title>
+    <link>https://jpcite.com/programs/ooita-shi-faamaazukarejji-kenshuusei-kyuufukin-ca2149.html</link>
+    <description>Tier B / 大分県 / incentive / 上限 150万円 出典: https://nourinsui-start.oita.jp/training/item01/</description>
+    <category>incentive</category>
+    <guid isPermaLink="false">jpcite:program:UNI-079eafa793</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>水田収益力強化ビジョン（令和7年度）</title>
+    <link>https://jpcite.com/programs/suiden-shuueki-chikara-kyouka-bijon-reiwa-7-nendo-b14a38.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city.kunisaki.oita.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-15ef6237ff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度竹田市農業再生協議会「水田収益力強化ビジョン」</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-takedashi-nougyou-saisei-kyougikai-suiden-84dfde.html</link>
+    <description>Tier C / 大分県 / （noukaweb 収集） 出典: https://www.city.taketa.oita.jp/soshiki/noseika/8802.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17753916e0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中津市森林づくり活動支援事業補助金</title>
+    <link>https://jpcite.com/programs/nakatsu-shi-shinrin-zukuri-katsudou-shien-jigyou-hojokin-0195be.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 250万円 出典: https://www.city-nakatsu.jp/doc/2022091500021/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-216e04197d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊後大野市インキュベーションファーム事業</title>
+    <link>https://jpcite.com/programs/bungooono-shi-inkyubeeshonfaamu-jigyou-cb4959.html</link>
+    <description>Tier B / 大分県 / training / 上限 150万円 出典: https://incubation-farm.jp/</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2221bb3086</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>佐伯市活き活き農業支援事業補助金</title>
+    <link>https://jpcite.com/programs/saeki-shi-iki-iki-nougyou-shien-jigyou-hojokin-fabd7a.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 250万円 出典: https://www.city.saiki.oita.jp/reiki/reiki_honbun/r159RG00001255.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-29f920a92b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>畑地化促進事業（令和7年度）</title>
+    <link>https://jpcite.com/programs/hatachi-ka-sokushin-jigyou-reiwa-7-nendo-adba6a.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city.usa.oita.jp/sougo/soshiki/13/nosei/2/hojyokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-30bf8c19bb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>国東半島宇佐地域世界農業遺産「地域活力支援事業」</title>
+    <link>https://jpcite.com/programs/kunisaki-han-shima-usa-chiiki-sekai-nougyou-isan-chiiki-3786b5.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city.kunisaki.oita.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-323651b818</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>国東市新規就農者支援事業（償還助成）</title>
+    <link>https://jpcite.com/programs/kunisaki-shi-shinki-shuunou-mono-shien-jigyou-shoukan-josei-1c5946.html</link>
+    <description>Tier B / 大分県 / 市町村 / subsidy 出典: https://www.city.kunisaki.oita.jp/soshiki/nosei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-36ffc461ee</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地バンク（農地中間管理機構）</title>
+    <link>https://jpcite.com/programs/nouchi-banku-nouchi-chuukan-kanrikikou-1d39e5.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city.kunisaki.oita.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3704719ef4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度竹田市農業再生協議会「水田収益力強化ビジョン」</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-takedashi-nougyou-saisei-kyougikai-suiden-15d467.html</link>
+    <description>Tier B / 大分県 / 大分県竹田市 / subsidy 出典: https://www.city.taketa.oita.jp/soshiki/noseika/8802.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3f7dab6303</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-44-001_大分_中高年移住就農給付金</title>
+    <link>https://jpcite.com/programs/pref-44-001-ooita-chuukounen-ijuu-shuunou-kyuufukin-454119.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://nourinsui-start.oita.jp/chukounen/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-46f8eef12c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>佐伯市ファーマーズスクール</title>
+    <link>https://jpcite.com/programs/saeki-shi-faamaazusukuuru-686665.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.pref.oita.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4cc5cdb9c4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地及び農業用施設の市単小規模災害復旧事業補助金</title>
+    <link>https://jpcite.com/programs/nouchi-oyobi-nougyouyou-shisetsu-no-shi-tan-shoukibo-saigai-a99600.html</link>
+    <description>Tier C / 大分県 / 大分県日田市 / subsidy / 上限 100万円 出典: https://www.city.hita.oita.jp/material/files/group/15/hojyokin_kisoku.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-58ed2e555b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊後大野市新規就農支援交付金</title>
+    <link>https://jpcite.com/programs/bungooono-shi-shinki-shuunou-shien-koufukin-b26a50.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 1,000万円 出典: https://www.bungo-ohno.jp/docs/2015031200020/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6129000ab6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県新規就農者育成総合対策</title>
+    <link>https://jpcite.com/programs/ooitaken-shinki-shuunou-mono-ikusei-sougou-taisaku-89e88d.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.pref.oita.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6872cd05cb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>耕地災害復旧事業</title>
+    <link>https://jpcite.com/programs/kouchi-saigai-fukkyuu-jigyou-9c40c7.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 1,000万円 出典: https://www.bungo-ohno.jp/docs/2015031200020/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6ac45dc48a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇佐市青年就農準備資金交付事業</title>
+    <link>https://jpcite.com/programs/usa-shi-seinen-shuunou-junbi-shikin-koufu-jigyou-1da228.html</link>
+    <description>Tier B / 大分県 / incentive / 上限 150万円 出典: https://www.city.usa.oita.jp/sougo/soshiki/13/nosei/1/2_1/8879.html</description>
+    <category>incentive</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6b7efecae7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊後大野市親元就農給付金（開始型）</title>
+    <link>https://jpcite.com/programs/bungooono-shi-oyamoto-shuunou-kyuufukin-kaishi-kata-5ed76d.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 1,000万円 出典: https://www.bungo-ohno.jp/docs/2015031200020/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-725d2e5005</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>おおいた園芸産地づくり支援事業</title>
+    <link>https://jpcite.com/programs/ooita-engei-sanchi-zukuri-shien-jigyou-1eed4c.html</link>
+    <description>Tier A / 大分県 / subsidy / 上限 1,000万円 出典: https://www.city-nakatsu.jp/doc/2022091500021/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7472461cd5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>味一ねぎ（小ねぎ）トレーニングファーム</title>
+    <link>https://jpcite.com/programs/aji-ichi-negi-shou-negi-toreeningufaamu-c3bdf4.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city.usa.oita.jp/sougo/soshiki/13/nosei/1/2_1/8879.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-797c75b761</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-44-102_大分_新規就農者負担軽減対策事業_所得安定対策</title>
+    <link>https://jpcite.com/programs/pref-44-102-ooita-shinki-shuunou-mono-futan-keigen-taisaku-963326.html</link>
+    <description>Tier B / 大分県 / grant / 上限 150万円 出典: https://nourinsui-start.oita.jp/support/nougyou_support/</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7ad2a45682</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊後大野市生涯現役世代育成支援交付金（新規就農支援交付金）</title>
+    <link>https://jpcite.com/programs/bungooono-shi-shougaigen-eki-sedai-ikusei-shien-koufukin-cdda9b.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 1,000万円 出典: https://www.bungo-ohno.jp/docs/2015031200020/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-848461d1eb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊後大野市中高年移住就農給付金</title>
+    <link>https://jpcite.com/programs/bungooono-shichuu-kounen-ijuu-shuunou-kyuufukin-a9bf47.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 1,000万円 出典: https://www.bungo-ohno.jp/docs/2015031200020/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8508792986</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中津市自立経営農家育成資金貸付事業</title>
+    <link>https://jpcite.com/programs/nakatsu-shi-jiritsu-keiei-nouka-ikusei-shikin-kashitsuke-ba28f5.html</link>
+    <description>Tier C / 大分県 / 市町村 / loan / 上限 300万円</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9158bdec88</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地・農業用施設の農業災害復旧事業</title>
+    <link>https://jpcite.com/programs/nouchi-nougyouyou-shisetsu-no-nougyou-saigai-fukkyuu-jigyou-1991d2.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city.kunisaki.oita.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-97d9b61abe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分県新規就農者支援制度</title>
+    <link>https://jpcite.com/programs/ooitaken-shinki-shuunou-mono-shien-seido-91af5b.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city-nakatsu.jp/doc/2022091500021/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a59e8361e9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>気象災害農業用施設等被災支援（報告・復旧補助）</title>
+    <link>https://jpcite.com/programs/kishou-saigai-nougyouyou-shisetsutou-hisai-shien-houkoku-58a03a.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 250万円 出典: https://www.city.usa.oita.jp/sougo/soshiki/13/nosei/2/hojyokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ac73074733</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分 親元就農給付金 開始型</title>
+    <link>https://jpcite.com/programs/ooita-oyamoto-shuunou-kyuufukin-kaishi-kata-9beec9.html</link>
+    <description>Tier B / 大分県 / 都道府県 / grant / 上限 150万円 出典: https://nourinsui-start.oita.jp/support/nougyou_support/</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-afad1890f9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分 新規就農者負担軽減対策事業 所得安定対策</title>
+    <link>https://jpcite.com/programs/ooita-shinki-shuunou-mono-futan-keigen-taisaku-jigyou-1edc96.html</link>
+    <description>Tier B / 大分県 / 都道府県 / grant / 上限 150万円 出典: https://nourinsui-start.oita.jp/support/nougyou_support/</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b12b40621c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ぶどうファーマーズスクール</title>
+    <link>https://jpcite.com/programs/budou-faamaazusukuuru-bf26b7.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 100万円 出典: https://www.city.usa.oita.jp/sougo/soshiki/13/nosei/1/2_1/8879.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-cb8e4d5357</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大分 親元就農給付金事業</title>
+    <link>https://jpcite.com/programs/ooita-oyamoto-shuunou-kyuufukin-jigyou-6fbfbb.html</link>
+    <description>Tier B / 大分県 / 都道府県 / subsidy / 上限 165万円 出典: https://www.city.hita.oita.jp/soshiki/norinshinkobu/nogyoshinkoka/ninaite/sangyo/nogyo/14162.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-cd98d5b409</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>豊後大野市親元就農給付金（準備型）</title>
+    <link>https://jpcite.com/programs/bungooono-shi-oyamoto-shuunou-kyuufukin-junbi-kata-b498de.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 1,000万円 出典: https://www.bungo-ohno.jp/docs/2015031200020/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e2cfdd6b6b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-44-002_大分_親元就農給付金事業</title>
+    <link>https://jpcite.com/programs/pref-44-002-ooita-oyamoto-shuunou-kyuufukin-jigyou-3aceef.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 165万円 出典: https://www.city.hita.oita.jp/soshiki/norinshinkobu/nogyoshinkoka/ninaite/sangyo/nogyo/14162.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e5bd1aef49</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業労災保険特別加入</title>
+    <link>https://jpcite.com/programs/nougyou-rousai-hoken-tokubetsu-kanyuu-15ac2c.html</link>
+    <description>Tier B / 大分県 / subsidy / 上限 1,000万円 出典: https://www.bungo-ohno.jp/docs/2015031200020/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-eab0511879</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-44-101_大分_親元就農給付金_開始型</title>
+    <link>https://jpcite.com/programs/pref-44-101-ooita-oyamoto-shuunou-kyuufukin-kaishi-kata-48fbad.html</link>
+    <description>Tier B / 大分県 / grant / 上限 150万円 出典: https://nourinsui-start.oita.jp/support/nougyou_support/</description>
+    <category>grant</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ff0343f62f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 千葉県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/chiba.xml" rel="self" type="application/rss+xml" />
+  <description>千葉県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>千葉県特別高圧電気料金高騰対策事業支援金（令和7年度冬分）の申請受付開始について／千葉県</title>
+    <link>https://jpcite.com/programs/chibaken-tokubetsu-kouatsu-denkiryoukin-koutou-taisaku-0d4a86.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/bukkakoutoushien/tokkou/chiba-tokkou5.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-119ab2b372</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県中小企業復旧支援補助金の交付を受けた補助事業者の皆様へ／千葉県</title>
+    <link>https://jpcite.com/programs/chibaken-chuushoukigyou-fukkyuu-shien-hojokin-no-koufu-wo-d94dba.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/zigyouzissigojoukyouhoukokusyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-12c24d5d34</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ベンチャー育成支援／千葉県</title>
+    <link>https://jpcite.com/programs/benchaa-ikusei-shien-chibaken-31ae10.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/sougyoushien/ventsure/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1a6b56366e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>立地企業への優遇制度／千葉県</title>
+    <link>https://jpcite.com/programs/ritchi-kigyou-heno-yuuguu-seido-chibaken-68c2bf.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 1万円 出典: https://www.pref.chiba.lg.jp/rich/ashisuto/yuuguuseido/yuuguu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2454b07a2c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「千葉県貨物運送事業者物価高騰対策支援金（第5弾）」の申請受付開始について／千葉県</title>
+    <link>https://jpcite.com/programs/chibaken-kamotsu-unsou-jigyousha-bukkadaka-tou-taisaku-507624.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/bukkakoutoushien/kamotsu/kamotsu5.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-29369c24d9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県酒米高騰対策支援事業支援金について／千葉県</title>
+    <link>https://jpcite.com/programs/chibaken-shumai-koutou-taisaku-shien-jigyou-shien-kin-5e2cdf.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/bukkakoutoushien/sake/chiba-sake1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2fd3c6ff33</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業成長促進補助金(第3弾)／千葉県</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-seichou-sokushin-hojokin-dai-3-dan-chibaken-3e3550.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/chiba-seichohojyo3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-43908414fd</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ちば中小企業生産性向上・設備投資補助金（令和5年度9月補正「中小企業生産性向上・設備投資促進補助金」）【申請受付終了】／千葉県</title>
+    <link>https://jpcite.com/programs/chiba-chuushoukigyou-seisansei-koujou-setsubitoushi-hojokin-49cf99.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/seisanseikoujou-setsubitoushisokushin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-491d5af0a4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>被害状況・被災者支援／千葉県</title>
+    <link>https://jpcite.com/programs/higaijoukyou-hisaisha-shien-chibaken-129dec.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-49714640e8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>インキュベーション施設／千葉県</title>
+    <link>https://jpcite.com/programs/inkyubeeshon-shisetsu-chibaken-d9e011.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/sougyoushien/inkyube-shon/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-53a73dbec1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度千葉県医療機器等開発支援補助事業について／千葉県</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-chibaken-iryoukiki-nado-kaihatsushien-hojo-e4ae9d.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 1,000万円 出典: https://www.pref.chiba.lg.jp/sanshin/kenkou/kobo/hojokin3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-550a7464c1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度千葉県中小事業者等次世代自動車用設備補助金【中小事業者等向け】※受付を終了しました／千葉県</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chibaken-chuushou-jigyousha-nado-jisedai-5d7887.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/ontai/hojo/infra-hojo-index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-62120db368</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業成長促進補助金（第2弾）／千葉県</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-seichou-sokushin-hojokin-dai-2-dan-chibaken-ddc5f3.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/seicho2/seicho2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-71b34387cf</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度千葉県地域交通等次世代自動車導入促進補助金【地域交通事業者等向け】※受付を終了しました／千葉県</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chibaken-chiiki-koutsuu-nado-jisedai-jidousha-1ccafd.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/ontai/hojo/koutsu-hojo-index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a7caee192b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度千葉県デジタル人材マッチング支援事業補助金／千葉県</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-chibaken-dejitaru-jinzai-matchingu-shien-50865d.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/koyou/projinzai/hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bf18cf7642</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度「ちば地域産業創出実証プロジェクト補助金」の公募開始について／千葉県</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chiba-chiiki-sangyou-soushutsu-jisshou-a92e14.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 1,000万円 出典: https://www.pref.chiba.lg.jp/keisei/press/2025/koubo07.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c1f08fec83</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度「農商工連携による新商品開発等助成事業・地域資源活用開発助成事業」の募集について／千葉県</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-nou-shoukou-renkei-niyoru-shinshouhin-65102a.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/sanshin/renkei/chiikishigen/josei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-dad43ec4c8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業者向け助成金／千葉県</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-mono-muke-joseikin-chibaken-90a6e4.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 150万円 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-dec23ad1ca</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「ちば地域課題解決実証プロジェクト補助金」の公募開始について【募集終了】／千葉県</title>
+    <link>https://jpcite.com/programs/chiba-chiiki-kadai-kaiketsu-jisshou-purojiekuto-hojokin-no-384b65.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 1,000万円 出典: https://www.pref.chiba.lg.jp/keisei/jisshoujikkenn/r5hojokin/koubo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e9b9d25cd3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度「ちば地域産業創出実証プロジェクト補助金」の公募開始について／千葉県</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-chiba-chiiki-sangyou-soushutsu-jisshou-8b22f0.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 1,000万円 出典: https://www.pref.chiba.lg.jp/keisei/press/2025/koubo08.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-fcc6a63ad1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>飼料用米等拡大支援事業のうち飼料用米等生産支援事業</title>
+    <link>https://jpcite.com/programs/shiryou-you-kome-nado-kakudai-shien-jigyou-nouchi-shiryou-011619.html</link>
+    <description>Tier S / 千葉県 / （noukaweb 収集） / 上限 30,000万円 出典: https://www.pref.chiba.lg.jp/seisan/kinyuu/seisanhanbai.html#shiryoumaikakudai</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d33f08a683</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>金融・経営支援</title>
+    <link>https://jpcite.com/programs/kinyuu-keiei-shien-d59bbb.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/keieishien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-09d6e4b5d6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>企業立地支援・誘致政策</title>
+    <link>https://jpcite.com/programs/kigyou-ritchi-shien-yuuchi-seisaku-003404.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/ssk/kigyouyuuchi/ritchishien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-101ba324ac</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>教育振興部 特別支援教育課</title>
+    <link>https://jpcite.com/programs/kyouiku-shinkou-bu-tokubetsu-shien-kyouikuka-5a139e.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/kyouiku/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1f8031ef8c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「ちば減災プロジェクト」について</title>
+    <link>https://jpcite.com/programs/chiba-gensai-purojiekuto-nitsuite-224518.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-24c30646f0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度千葉県介護分野の職員の賃上げ・職場環境改善支援事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chibaken-kaigo-bunya-no-shokuin-no-chin-age-aa0615.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/hoken/tetsuzuki/kaigo/r7chinagehojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-34906f90e7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>被災者支援</title>
+    <link>https://jpcite.com/programs/hisaisha-shien-e636fa.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-39943fa5af</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>最近の災害の被害状況と支援情報</title>
+    <link>https://jpcite.com/programs/saikin-no-saigai-no-higaijoukyou-to-shien-jouhou-6b0017.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-40c3791c71</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商業振興</title>
+    <link>https://jpcite.com/programs/shougyou-shinkou-4347af.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/shoukou-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-461c48c5d6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大規模小売店舗立地法について(届出状況等)</title>
+    <link>https://jpcite.com/programs/daikibo-kouriten-ho-ritchi-hou-nitsuite-todokede-joukyou-aaf03c.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/shoukou-shien/daikibo/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4e4e8ac6d2</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業者向け助成金</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-mono-muke-joseikin-f9620a.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-80be43babc</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>被害状況・被災者支援</title>
+    <link>https://jpcite.com/programs/higaijoukyou-hisaisha-shien-61eaee.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8a3836cabd</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業への金融・経営支援</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-heno-kinyuu-keiei-shien-d1449f.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/keieishien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-96ed9da5d0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>帰宅困難者対策</title>
+    <link>https://jpcite.com/programs/kitaku-konnan-mono-taisaku-9f5fc7.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/kitaku/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9702892499</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県大規模小売店舗立地審議会</title>
+    <link>https://jpcite.com/programs/chibaken-daikibo-kouriten-ho-ritchi-shingikai-a734f7.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/shoukou-shien/daikibo/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9db8b2b23f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>災害派遣等従事車両証明書の発行について</title>
+    <link>https://jpcite.com/programs/saigai-haken-nado-juuji-sharyou-shoumeisho-no-hakkou-540d0d.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a79c020aa1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>このページの本文へ移動</title>
+    <link>https://jpcite.com/programs/kono-peeji-no-honbun-he-idou-ba415e.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e2f668a7ca</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県災害時保健活動ガイドライン</title>
+    <link>https://jpcite.com/programs/chibaken-saigaiji-hoken-katsudou-gaidorain-f03c57.html</link>
+    <description>Tier A / 千葉県 / 千葉県 / support 出典: https://www.pref.chiba.lg.jp/cate/baa/higai-shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e8a957f19d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県商工会連合会 補助金・助成金 案内ハブ（千葉県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/chibaken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-372300.html</link>
+    <description>Tier B / 千葉県 / 千葉県商工会連合会 / directory 出典: https://www.chibaken.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2182c1e81a</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>不在者投票制度（滞在地・指定施設・郵便）</title>
+    <link>https://jpcite.com/programs/fuzaishatouhyou-seido-taizai-chi-shitei-shisetsu-yuubin-93ce7c.html</link>
+    <description>Tier C / 千葉県 / 総務省 自治行政局 選挙部 出典: https://www.pref.chiba.lg.jp/senkan/senkyokanri/kijitsumae/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-91c50e6132</guid>
+    <pubDate>Thu, 23 Apr 2026 22:10:42 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉市 特区民泊 認定</title>
+    <link>https://jpcite.com/programs/chibashi-tokku-minpaku-nintei-bea676.html</link>
+    <description>Tier C / 千葉県 / 千葉市 保健所 環境衛生課 出典: https://www.city.chiba.jp/hokenfukushi/iryoeisei/hokenjo/kankyo/30tokku-minnpaku.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0ecf57d0c9</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県水道広域化推進プラン (令和5年3月策定、9ブロック)</title>
+    <link>https://jpcite.com/programs/chibaken-suidou-kouiki-ka-suishin-puran-reiwa-5-nen-3-gatsu-32e35d.html</link>
+    <description>Tier C / 千葉県 / 千葉県 水道局 出典: https://www.pref.chiba.lg.jp/suisei/suidoukouikikaplan/sakutei.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-16c3aaf3b7</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県地域組合等活動支援事業（地域懇談会・個別訪問）</title>
+    <link>https://jpcite.com/programs/chibaken-chiiki-kumiai-toukatsu-dou-shien-jigyou-chiiki-246187.html</link>
+    <description>Tier C / 千葉県 / 千葉県中小企業団体中央会 / 支援事業 出典: https://www.chuokai-chiba.or.jp/chuokai/wp-content/uploads/2026/04/6e1ab43f867f759d8bace1ce2f955ba9.pdf</description>
+    <category>支援事業</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6c23f764b4</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 千葉県 子どもの居場所づくり応援事業助成金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chibaken-kodomo-no-ibasho-zukuri-ouen-jigyou-cd5a42.html</link>
+    <description>Tier C / 千葉県 / 千葉県社会福祉協議会 (千葉県経由間接補助) 出典: https://www.pref.chiba.lg.jp/jika/boshi/kodomosyokudou/kodomosyokudou.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-781b579f84</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県商店街若手リーダー養成事業</title>
+    <link>https://jpcite.com/programs/chibaken-shoutengai-wakate-riidaa-yousei-jigyou-a9fa95.html</link>
+    <description>Tier C / 千葉県 / 千葉県中小企業団体中央会／千葉県 / 補助金 出典: https://www.chuokai-chiba.or.jp/chuokai/?page_id=43</description>
+    <category>補助金</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c8e9a833dc</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県中小企業連携組織対策事業</title>
+    <link>https://jpcite.com/programs/chibaken-chuushoukigyou-renkei-soshiki-taisaku-jigyou-9790fe.html</link>
+    <description>Tier C / 千葉県 / 千葉県中小企業団体中央会／千葉県 / 補助金 出典: https://www.chuokai-chiba.or.jp/chuokai/?page_id=43</description>
+    <category>補助金</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ebfb221785</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>船橋市エネルギー料金高騰対策助成金</title>
+    <link>https://jpcite.com/programs/funabashishi-enerugii-ryoukin-koutou-taisaku-joseikin-2d5bfc.html</link>
+    <description>Tier C / 千葉県 / 船橋市経済部商工振興課 / subsidy 出典: https://www.city.funabashi.lg.jp/shisei/jouhoukoukai/005/p053616.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1fd7234596</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉市中小企業者エネルギー価格等高騰対策支援金</title>
+    <link>https://jpcite.com/programs/chibashi-chuushoukigyou-mono-enerugii-kakakutou-koutou-6af9e7.html</link>
+    <description>Tier C / 千葉県 / 千葉市経済農政局産業支援課 / subsidy 出典: https://www.city.chiba.jp/keizainosei/keizai/sangyo/energy-sienkin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1ff04e70d1</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉市創業支援補助金</title>
+    <link>https://jpcite.com/programs/chibashi-sougyou-shien-hojokin-a1dc00.html</link>
+    <description>Tier C / 千葉県 / 千葉市経済農政局経済部産業支援課 / subsidy / 上限 30万円 出典: https://www.city.chiba.jp/keizainosei/keizai/sangyo/2021sougyousiennhozyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-31b55282fd</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柏市中小企業資金融資</title>
+    <link>https://jpcite.com/programs/kashiwashi-chuushoukigyou-shikin-yuushi-e089d7.html</link>
+    <description>Tier C / 千葉県 / 柏市経済産業部商工観光課 / loan 出典: https://www.city.kashiwa.lg.jp/sangyoseisaku/jigyosha/finance/shikinyushi.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-596f644c45</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柏市スタートアップ事業化応援補助金</title>
+    <link>https://jpcite.com/programs/kashiwashi-sutaatoappu-jigyou-ka-ouen-hojokin-8f80b8.html</link>
+    <description>Tier C / 千葉県 / 柏市経済産業部産業振興課 / subsidy / 上限 100万円 出典: https://www.city.kashiwa.lg.jp/sangyoseisaku/startup/jigyouka-ouen.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6aa4584c2e</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度千葉市中小企業者採用活動支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-chibashi-chuushoukigyou-mono-saiyou-katsudou-9a784b.html</link>
+    <description>Tier C / 千葉県 / 千葉市経済農政局雇用推進課 / subsidy 出典: https://www.city.chiba.jp/keizainosei/keizai/koyosuishin/chushokigyo-saiyoukatsudoushien-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6cae8ba676</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>船橋市事業再構築・設備投資促進補助金</title>
+    <link>https://jpcite.com/programs/funabashishi-jigyou-saikouchiku-setsubitoushi-sokushin-a11e0f.html</link>
+    <description>Tier C / 千葉県 / 船橋市経済部商工振興課 / subsidy 出典: https://www.city.funabashi.lg.jp/jigyou/shoukou/002/p108501.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-772fc5e97c</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>船橋市商店街消費活性化支援事業補助金</title>
+    <link>https://jpcite.com/programs/funabashishi-shoutengai-shouhi-kasseika-shien-jigyou-hojokin-9afc7f.html</link>
+    <description>Tier C / 千葉県 / 船橋市経済部商工振興課 / subsidy 出典: https://www.city.funabashi.lg.jp/shisei/jouhoukoukai/005/p053616.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7ab20f58c9</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柏市実証実験サポート補助金</title>
+    <link>https://jpcite.com/programs/kashiwashi-jisshou-jikken-sapooto-hojokin-84487c.html</link>
+    <description>Tier C / 千葉県 / 柏市経済産業部産業振興課 / subsidy 出典: https://www.city.kashiwa.lg.jp/sangyoseisaku/startup/jisshou-jikken-support.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-90279ac6a3</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>船橋市展示会等出展支援事業補助金</title>
+    <link>https://jpcite.com/programs/funabashishi-tenjikai-nado-shutten-shien-jigyou-hojokin-1483d3.html</link>
+    <description>Tier C / 千葉県 / 船橋市経済部商工振興課 / subsidy 出典: https://www.city.funabashi.lg.jp/jigyou/shoukou/002/p043964.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9c0bef0f4d</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度柏市チャレンジ支援補助金(ゼロカーボン事業)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kashiwashi-charenji-shien-hojokin-zerokaabon-043885.html</link>
+    <description>Tier C / 千葉県 / 柏市環境部 / subsidy 出典: https://www.city.kashiwa.lg.jp/zerocarbon/ecosite/ondanka/zerocarbonhozyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a99bd1e8dc</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度柏市チャレンジ支援補助金(新商品開発・賑わい創出)</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-kashiwashi-charenji-shien-hojokin-shinshouhin-64da16.html</link>
+    <description>Tier C / 千葉県 / 柏市経済産業部商工観光課 / subsidy / 上限 25万円 出典: https://www.city.kashiwa.lg.jp/shoko/jigyosha/finance/r7challenge.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d56dc5cc37</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉市中小事業者向け省エネルギー設備導入促進事業補助金</title>
+    <link>https://jpcite.com/programs/chibashi-chuushou-jigyousha-muke-shouene-rugii-setsubi-0b63f9.html</link>
+    <description>Tier C / 千葉県 / 千葉市環境局脱炭素推進課 / subsidy 出典: https://www.city.chiba.jp/kankyo/kankyohozen/datsutanso/tyusyo_hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ed762b1a7b</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>船橋市工業振興支援事業補助金</title>
+    <link>https://jpcite.com/programs/funabashishi-kougyou-shinkou-shien-jigyou-hojokin-9bc74d.html</link>
+    <description>Tier C / 千葉県 / 船橋市経済部商工振興課 / subsidy / 上限 100万円 出典: https://www.city.funabashi.lg.jp/jigyou/shoukou/002/p075232.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fce969523d</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>船橋市空き店舗対策事業補助金</title>
+    <link>https://jpcite.com/programs/funabashishi-aki-tenpo-taisaku-jigyou-hojokin-4134f4.html</link>
+    <description>Tier C / 千葉県 / 船橋市経済部商工振興課 / subsidy / 上限 100万円 出典: https://www.city.funabashi.lg.jp/jigyou/shoukou/002/p048619.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fea15631e7</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県産業人材確保支援補助金</title>
+    <link>https://jpcite.com/programs/chibaken-sangyou-jinzai-kakuho-shien-hojokin-1e0752.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 100万円 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-071d645ffc</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県中小企業省エネ設備導入補助金</title>
+    <link>https://jpcite.com/programs/chibaken-chuushoukigyou-shouene-setsubi-dounyuu-hojokin-116d34.html</link>
+    <description>Tier C / 千葉県 / 千葉県環境生活部 / subsidy / 上限 500万円 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-08528733aa</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新商品・新技術開発助成金(千葉県元気づくり基金)</title>
+    <link>https://jpcite.com/programs/shinshouhin-shingijutsukaihatsu-joseikin-chibaken-genki-d06cb2.html</link>
+    <description>Tier C / 千葉県 / 千葉県産業振興センター / subsidy / 上限 250万円 出典: https://www.pref.chiba.lg.jp/keisei/genkist/kikin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0bf762f492</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県中小企業振興資金</title>
+    <link>https://jpcite.com/programs/chibaken-chuushoukigyou-shinkou-shikin-18561f.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / loan / 上限 8,000万円 出典: https://www.pref.chiba.lg.jp/cate/ssk/shoukougyou/keieishien/chuushou-yuushi/index.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0c20fe9c7a</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県デジタル人材マッチング支援事業補助金</title>
+    <link>https://jpcite.com/programs/chibaken-dejitaru-jinzai-matchingu-shien-jigyou-hojokin-059dbd.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 150万円 出典: https://www.pref.chiba.lg.jp/koyou/projinzai/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-138a5fc85d</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>事業承継支援助成金(千葉県)</title>
+    <link>https://jpcite.com/programs/jigyou-shoukei-shien-joseikin-chibaken-695e18.html</link>
+    <description>Tier C / 千葉県 / 千葉県産業振興センター / subsidy / 上限 50万円 出典: https://www.pref.chiba.lg.jp/keisei/genkist/kikin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-38516b6648</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域資源活用開発助成金</title>
+    <link>https://jpcite.com/programs/chiiki-shigen-katsuyou-kaihatsu-joseikin-0891bc.html</link>
+    <description>Tier C / 千葉県 / 千葉県産業振興センター / subsidy / 上限 150万円 出典: https://www.pref.chiba.lg.jp/sanshin/renkei/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3e1da51c6e</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ちば地域産業創出実証プロジェクト補助金</title>
+    <link>https://jpcite.com/programs/chiba-chiiki-sangyou-soushutsu-jisshou-purojiekuto-hojokin-545b58.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 1,000万円 出典: https://www.pref.chiba.lg.jp/keisei/press/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-46252f77dd</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ちば創業応援助成金</title>
+    <link>https://jpcite.com/programs/chiba-sougyou-ouen-joseikin-a9ec89.html</link>
+    <description>Tier C / 千葉県 / 千葉県産業振興センター / subsidy / 上限 100万円 出典: https://www.ccjc-net.or.jp/contents_detail.php?co=cat&amp;frmId=3636</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-51fc17ff52</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県企業立地補助金</title>
+    <link>https://jpcite.com/programs/chibaken-kigyou-ritchi-hojokin-77f32e.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 50,000万円 出典: https://www.pref.chiba.lg.jp/rich/ashisuto/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6176409083</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県事業継続力強化計画支援</title>
+    <link>https://jpcite.com/programs/chibaken-jigyou-keizoku-chikara-kyouka-keikaku-shien-27dbe4.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / support 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6bdbbe029a</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業成長促進補助金(第3弾)</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-seichou-sokushin-hojokin-dai-3-dan-9344a7.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部経済政策課 / subsidy / 上限 3,000万円 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/chiba-seichohojyo3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8aadf82a7e</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県中小企業DX・IT導入支援補助金</title>
+    <link>https://jpcite.com/programs/chibaken-chuushoukigyou-dx-it-dounyuu-shien-hojokin-82ec36.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 200万円 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8bbd21a1f5</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県観光振興補助金</title>
+    <link>https://jpcite.com/programs/chibaken-kankou-shinkou-hojokin-3d2875.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部観光政策課 / subsidy / 上限 300万円 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9c1aab9e01</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県地域課題解決型起業支援事業補助金</title>
+    <link>https://jpcite.com/programs/chibaken-chiiki-kadai-kaiketsu-kata-kigyou-shien-jigyou-148b05.html</link>
+    <description>Tier C / 千葉県 / 千葉県産業振興センター / subsidy / 上限 200万円 出典: https://www.ccjc-net.or.jp/contents_detail.php?co=cat&amp;frmId=3638</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a55e7284db</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業成長促進補助金(第2弾)</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-seichou-sokushin-hojokin-dai-2-dan-d917fb.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 3,000万円 出典: https://www.pref.chiba.lg.jp/keisei/seicho2/seicho2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a6dbebfcdf</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県医療機器等開発支援補助金</title>
+    <link>https://jpcite.com/programs/chibaken-iryoukiki-nado-kaihatsushien-hojokin-02a261.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 1,000万円 出典: https://www.pref.chiba.lg.jp/sanshin/kenkou/kobo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ba78a0db23</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域発イノベーション創出研究開発助成金</title>
+    <link>https://jpcite.com/programs/chiiki-hatsu-inobeeshon-soushutsu-kenkyuukaihatsu-joseikin-d2195f.html</link>
+    <description>Tier C / 千葉県 / 千葉県産業振興センター / subsidy / 上限 1,000万円 出典: https://www.pref.chiba.lg.jp/keisei/genkist/kikin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-db80729a34</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県働き方改革支援補助金</title>
+    <link>https://jpcite.com/programs/chibaken-hataraki-hou-kaikaku-shien-hojokin-80a314.html</link>
+    <description>Tier C / 千葉県 / 千葉県商工労働部 / subsidy / 上限 50万円 出典: https://www.pref.chiba.lg.jp/keisei/zaisei/shiensaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dd13c24eb4</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市場開拓助成金(千葉県元気づくり基金)</title>
+    <link>https://jpcite.com/programs/shijou-kaitaku-joseikin-chibaken-genki-zukuri-kikin-64867e.html</link>
+    <description>Tier C / 千葉県 / 千葉県産業振興センター / subsidy / 上限 100万円 出典: https://www.pref.chiba.lg.jp/keisei/genkist/kikin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f4f5f0d900</guid>
+    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>狩猟免許取得補助金</title>
+    <link>https://jpcite.com/programs/shuryou-menkyoshutoku-hojokin-3e6404.html</link>
+    <description>Tier B / 千葉県 / 千葉県南房総市 / subsidy / 上限 3万円 出典: https://www.city.minamiboso.chiba.jp/0000018528.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0315392dd0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-122173-001_柏市_新規就農者育成事業補助金</title>
+    <link>https://jpcite.com/programs/mun-122173-001-kashiwashi-shinki-shuunou-mono-ikusei-jigyou-b09441.html</link>
+    <description>Tier B / 千葉県 / subsidy / 上限 60万円 出典: https://kgfarm.net/noukasatooya</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-05051249be</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山武市_過疎地域における事業用設備等の国税の特別償却</title>
+    <link>https://jpcite.com/programs/sanbu-shi-kaso-chiiki-niokeru-jigyou-you-setsubi-nado-no-44b090.html</link>
+    <description>Tier B / 千葉県 / tax_deduction / 上限 100万円 出典: https://www.city.sammu.lg.jp/</description>
+    <category>tax_deduction</category>
+    <guid isPermaLink="false">jpcite:program:UNI-062994ecef</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山武市_先端設備等導入計画</title>
+    <link>https://jpcite.com/programs/sanbu-shi-sentan-setsubi-nado-dounyuu-keikaku-2e9a2e.html</link>
+    <description>Tier B / 千葉県 / subsidy / 上限 100万円 出典: https://www.city.sammu.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-07db2d5940</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉 農業経営多角化支援事業</title>
+    <link>https://jpcite.com/programs/chiba-nougyou-keiei-takakuka-shien-jigyou-943621.html</link>
+    <description>Tier B / 千葉県 / 都道府県 / subsidy / 上限 300万円 出典: https://www.pref.chiba.lg.jp/ninaite/kinyuu/ninaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-09bec4cef4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県中小企業成長促進補助金（第2弾）</title>
+    <link>https://jpcite.com/programs/chibaken-chuushoukigyou-seichou-sokushin-hojokin-dai-2-dan-4ab6d2.html</link>
+    <description>Tier B / 千葉県 / subsidy / 上限 3,000万円 出典: https://www.pref.chiba.lg.jp/keisei/seicho2/seicho2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0b32fb5ea7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>銚子市_地域計画策定による国の補助・支援（農業経営基盤強化促進法に基づく支援）</title>
+    <link>https://jpcite.com/programs/choushishi-chiiki-keikaku-sakutei-niyoru-kuni-no-hojo-shien-bf6a8c.html</link>
+    <description>Tier B / 千葉県 / subsidy / 上限 250万円 出典: https://www.city.choshi.chiba.jp/business/page1301_00006.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0bda9f1a22</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県 観光施設資金</title>
+    <link>https://jpcite.com/programs/chibaken-kankou-shisetsu-shikin-756f88.html</link>
+    <description>Tier B / 千葉県 / loan / 上限 10,000万円 出典: https://www.pref.chiba.lg.jp/keishi/chuushou-yuushi/yuushiseido/chuushou/documents/yushishiori2504.pdf</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0f8d51143b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八街市農作物被害防止電気柵設置事業補助金</title>
+    <link>https://jpcite.com/programs/yachimata-shi-nousakubutsu-higai-boushi-denki-saku-setchi-e1abd3.html</link>
+    <description>Tier C / 千葉県 / 千葉県八街市 / subsidy / 上限 2万円 出典: https://www.city.yachimata.lg.jp/material/files/group/7/denkisasuyoukou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-100fb914a2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ちばの酪農夏季生産性向上対策普及事業</title>
+    <link>https://jpcite.com/programs/chibano-rakunou-kaki-seisansei-koujou-taisaku-fukyuu-jigyou-6f8619.html</link>
+    <description>Tier C / 千葉県 / （noukaweb 収集） 出典: https://www.pref.chiba.lg.jp/chikusan/jigyou.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-13e2c45a15</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県肥料価格高騰緊急支援事業</title>
+    <link>https://jpcite.com/programs/chibaken-hiryou-kakaku-koutou-kinkyuu-shien-jigyou-665111.html</link>
+    <description>Tier C / 千葉県 / 千葉県香取市 / subsidy 出典: https://www.city.katori.lg.jp/nogyo_sangyo/shikin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-15758f3e8d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>飼料用米等拡大支援事業のうち飼料用米等生産支援事業</title>
+    <link>https://jpcite.com/programs/shiryou-you-kome-nado-kakudai-shien-jigyou-nouchi-shiryou-07bc1e.html</link>
+    <description>Tier C / 千葉県 / 千葉県 / subsidy 出典: https://www.pref.chiba.lg.jp/seisan/kinyuu/seisanhanbai.html#shiryoumaikakudai</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1625398553</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>柏市 新規就農者育成事業補助金</title>
+    <link>https://jpcite.com/programs/kashiwashi-shinki-shuunou-mono-ikusei-jigyou-hojokin-f5f7ef.html</link>
+    <description>Tier B / 千葉県 / 市町村 / subsidy / 上限 60万円 出典: https://kgfarm.net/noukasatooya</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17d430ad3e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「輝け！ちばの園芸」次世代産地整備支援事業園芸施設リフォーム支援型</title>
+    <link>https://jpcite.com/programs/kagayake-chibano-engei-jisedai-sanchi-seibi-shien-jigyou-b21e7c.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 3,000万円 出典: https://www.pref.chiba.lg.jp/seisan/kinyuu/seisanhanbai.html#chibanoengei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1b06c708fa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>成田市 新規就農者等就農支援補助金</title>
+    <link>https://jpcite.com/programs/naritashi-shinki-shuunou-mono-nado-shuunou-shien-hojokin-6b2e5a.html</link>
+    <description>Tier A / 千葉県 / 市町村 / subsidy / 上限 40万円 出典: https://www.city.narita.chiba.jp/anshin/page0138_00099.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1bd16d2395</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>千葉県経営体育成支援事業のうち積載車導入支援</title>
+    <link>https://jpcite.com/programs/chibaken-keieitai-ikusei-shien-jigyou-nouchi-sekisai-kuruma-20eb1f.html</link>
+    <description>Tier B / 千葉県 / 千葉県 / subsidy / 上限 300万円 出典: https://www.pref.chiba.lg.jp/ninaite/kinyuu/ninaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1ebcb5e33e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-121002-001_千葉市_未来の千葉市農業創造事業補助金</title>
+    <link>https://jpcite.com/programs/mun-121002-001-chibashi-mirai-no-chibashi-nougyou-souzou-26946e.html</link>
+    <description>Tier B / 千葉県 / subsidy / 上限 2,000万円 出典: https://www.city.chiba.jp/keizainosei/nosei/nochikatsuyo/nougyouseisanryokukyoukasienjigyougroupsannyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-203cc3917a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-12-102_千葉_農業経営多角化支援事業</title>
+    <link>https://jpcite.com/programs/pref-12-102-chiba-nougyou-keiei-takakuka-shien-jigyou-122a96.html</link>
+    <description>Tier B / 千葉県 / subsidy / 上限 300万円 出典: https://www.pref.chiba.lg.jp/ninaite/kinyuu/ninaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-22a8d7ca95</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南房総市_帰農者等支援事業補助金</title>
+    <link>https://jpcite.com/programs/minamibousou-shi-kinou-mono-nado-shien-jigyou-hojokin-2872c4.html</link>
+    <description>Tier C / 千葉県 / subsidy / 上限 30万円 出典: https://www.city.minamiboso.chiba.jp/cmsfiles/contents/0000014/14904/goannai.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-22b38892e3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 富山県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/toyama.xml" rel="self" type="application/rss+xml" />
+  <description>富山県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>称等 詳細情報・条件等 募集期間 問合せ先 リンク先</title>
+    <link>https://jpcite.com/programs/shou-nado-shousaijouhou-jouken-nado-boshuukikan-toiawase-5cdb89.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 1,000万円 出典: https://www.pref.toyama.jp/documents/34994/chusyokigyosienjyoho.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4993ee31e3</guid>
+    <pubDate>Wed, 29 Apr 2026 09:15:04 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／荷主企業奨励金の交付について【申請期限：令和７年12月26日（金）】</title>
+    <link>https://jpcite.com/programs/toyamaken-ninushi-kigyou-shoureikin-no-koufu-nitsuite-035e8c.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130121/richitsusho/20241025.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-026549b07d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／事業所内保育施設推進事業補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-jigyoushonai-hoikushisetsu-suishin-jigyou-hojokin-d7f678.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130331/kurashi/kyouiku/kosodate/shienshisetsu/kj00000185.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-05ffedc792</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県脱炭素サプライチェーン構築支援事業費補助金の取組事例集について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-dattan-moto-sapuraicheen-kouchiku-shien-60265c.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1301/20240913.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-08f1067312</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和8年度「とやまの中小企業支援情報」パンフレットをご覧ください</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-8-nendo-toyamano-chuushoukigyou-shien-664fa5.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130002/tyuusyoukigyousiennzyouhou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-09666626c1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／外国人材入国前日本語教育等支援事業費補助金のご案内</title>
+    <link>https://jpcite.com/programs/toyamaken-gaikokujin-zai-nyuukokumae-nihongo-kyouiku-nado-a7dafb.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/140631/gaikokujinzai/gaikokujinzaikatuyouteityakusokusin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0a1dc03947</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和7年度働き方改革・女性活躍サポート事業費補助金のご案内</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-7-nendo-hataraki-hou-kaikaku-josei-cb2cb9.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130331/kurashi/kyousei/zyoseikatsuyaku/2024hatarakikatajoseikatuyaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-12ceda01c8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和5年度富山県タイ・ベトナム現地展示会等出展事業費補助金の募集について</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-5-nendo-toyamaken-tai-betonamu-genchi-54f6e4.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1307/richitsusho/20230306.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1d9b4cb961</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県商店街災害復旧等事業費補助金（商店街災害復旧事業）の申請受付について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-shoutengai-saigai-fukkyuu-nado-jigyou-924dae.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/2024syoutenngaihukkyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-21b5ddd159</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県住宅省エネ改修推進モデル事業（空き家フルリノベ）</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-juutaku-shouene-kaishuu-suishin-moderu-9798f2.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 100万円 出典: https://www.pref.toyama.jp/1507/kurashi/seikatsu/sumai/shoene/hojo-01.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-239fbd8194</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／【2次募集】富山県中小企業特別高圧電気料金負担軽減支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/toyamaken-2-tsugi-boshuu-toyamaken-chuushoukigyou-tokubetsu-71676f.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 1,032万円 出典: https://www.pref.toyama.jp/130131/20251031.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2c7969e3e3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／【採択結果】令和4年度富山県オンライン海外販路開拓支援補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-saitaku-kekka-reiwa-4-nendo-toyamaken-onrain-849105.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 50万円 出典: https://www.pref.toyama.jp/1307/richitsusho/2205301.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2d1429a2f6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県男性の育児休業取得促進補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-dansei-no-ikuji-kyuugyou-shutoku-5ae859.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130331/sangyou/roudou/roudoukoyou/ikukyuhojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3392f90d6b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県介護事業所等に対するサービス継続支援事業費補助金（備品等購入費等）</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-kaigo-jigyousho-nado-ni-taisuru-saabisu-b08003.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1211/kurashi/kenkou/iryou/kaigobihin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-363ba7aad4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／助成・補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-josei-hojokin-4de2f9.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/hojokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3902b9e1d1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／「富山県中小企業トランスフォーメーション補助金（第3次募集）」について※2月27日募集開始！</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-chuushoukigyou-toransufoomeeshon-ef67b7.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/transformation.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-395e3e876a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和6年度富山県児童養護施設等食材料費高騰対策緊急支援事業費補助金（繰越分）について</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-6-nendo-toyamaken-jidou-yougo-shisetsutou-144b22.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/120102/kounetsuhi/syokuzairyouhi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3b78396e77</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県事業承継支援方針の改訂について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-jigyou-shoukei-shien-houshin-no-kaitei-a14e98.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/zigyousyoukeisienhousin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3f5f80e8db</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／【R8.4.22まで】令和8年度伝統工芸品産業支援事業費補助金の募集について</title>
+    <link>https://jpcite.com/programs/toyamaken-r8-4-22-made-reiwa-8-nendo-dentoukougei-hin-4df91b.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130002/sangyou/shoukoukensetsu/shoukougyou/densan20220401.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4a39ffd475</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／電子処方箋補助金に係る消費税及び地方消費税の仕入れ控除税額報告</title>
+    <link>https://jpcite.com/programs/toyamaken-denshi-shohousen-hojokin-ni-kakaru-shouhizei-efbf8d.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1208/densisyohousenshohizei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4cfbd92576</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和５年度富山県オンライン海外販路開拓支援補助金の募集について【随時、受付中】</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-5-nendo-toyamaken-onrain-kaigai-hanro-58f63c.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 50万円 出典: https://www.pref.toyama.jp/1307/richitsusho/r50613.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4ddf72339e</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県中小企業特別高圧電気料金負担軽減支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-chuushoukigyou-tokubetsu-kouatsu-bc5acc.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 648万円 出典: https://www.pref.toyama.jp/130131/20260424.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6098722415</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県介護施設等に対するサービス継続支援事業費補助金（食料品費等購入費等）</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-kaigo-shisetsutou-ni-taisuru-saabisu-609dbc.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1211/kurashi/kenkou/iryou/kaigoshokuhi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-619752baa1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／新型コロナウイルス感染症対応地方創生臨時交付金を活用した基金事業について</title>
+    <link>https://jpcite.com/programs/toyamaken-shingata-koronauirusu-kansenshou-taiou-chihou-d4069e.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/kikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-628fc4b54d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／「富山県事業承継つなぐサポート事業費補助金」の公募について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-jigyou-shoukei-tsunagu-sapooto-jigyou-58f9a7.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/tunagusupport.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6a59aba64f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山型高性能住宅推進事業費補助金について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyama-kata-kouseinou-juutaku-suishin-jigyou-hi-5a0cc9.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1507/kurashi/seikatsu/sumai/shoene/kouseinou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-806c1bd139</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和8年度「価格転嫁サポート補助金」の募集について</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-8-nendo-kakaku-tenka-sapooto-hojokin-no-1e82c1.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/kakakutenka_support_hojokin_2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a0195e07d0</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／「富山県賃上げサポート補助金」のご案内</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-chin-age-sapooto-hojokin-nogo-annai-0100e6.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130321/sangyou/roudou/roudoukoyou/chinagesupport.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a22717cc9a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県脱炭素化モデル中小企業育成事業費補助金の実施について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-dattan-moto-ka-moderu-chuushoukigyou-457078.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130131/2025moderu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ad40198e09</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県物流効率化支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-butsuryuu-kouritsuka-shien-jigyou-hi-f662e6.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 200万円 出典: https://www.pref.toyama.jp/1307/richitsusho/20230701.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b2bf9a98be</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／「富山県事業承継つなぐサポート事業費補助金」の補助事業者の皆様へ</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-jigyou-shoukei-tsunagu-sapooto-jigyou-7bd70b.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/tunagusupport2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b63d422909</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／融資・ファンド</title>
+    <link>https://jpcite.com/programs/toyamaken-yuushi-fando-a5b004.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/yushi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b6f666fef3</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／【受付終了】富山県中小企業特別高圧電気料金負担軽減支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/toyamaken-uketsuke-shuuryou-toyamaken-chuushoukigyou-466150.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 1,032万円 出典: https://www.pref.toyama.jp/1301/denkishien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bb733e4438</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／関係人口1,000万人協働促進事業について</title>
+    <link>https://jpcite.com/programs/toyamaken-kankei-jinkou-1-000-bannin-kyoudou-sokushin-f02a9c.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1711/kenminkyodo/hojokin/kankeijinko/04032401.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c284732287</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／小規模法人のネットワーク化による協働推進事業費補助金について</title>
+    <link>https://jpcite.com/programs/toyamaken-shoukibo-houjin-no-nettowaaku-ka-niyoru-kyoudou-f1a61d.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 320万円 出典: https://www.pref.toyama.jp/1200/kurashi/kenkou/fukushi/kj00040411.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-c9a06df5a8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／支援・相談</title>
+    <link>https://jpcite.com/programs/toyamaken-shien-soudan-016545.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-cb378a70be</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和7年度「価格転嫁サポート補助金」の募集について</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-7-nendo-kakaku-tenka-sapooto-hojokin-no-2acdaa.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/kakakutenka_support_hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ce531d7bf1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／外国人材定着総合支援補助金制度のご案内</title>
+    <link>https://jpcite.com/programs/toyamaken-gaikokujin-zai-teichaku-sougou-shien-hojokinseido-a3eca1.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/140631/gaikokujinzai/teicyakuhojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d2ced745be</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／助成・融資</title>
+    <link>https://jpcite.com/programs/toyamaken-josei-yuushi-6f99ad.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/mokutekibetsu/joseiyushi/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d34c33d313</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県光熱費等高騰対策緊急支援事業費補助金（介護分）</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-kounetsuhi-toukou-tou-taisaku-kinkyuu-7f30ca.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1211/kurashi/kenkou/iryou/konetuhi_kototaisaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d548b24412</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／国内輸送費助成補助金について【申請期限：令和７年12月26日（金）】</title>
+    <link>https://jpcite.com/programs/toyamaken-kokunai-yusouhi-josei-hojokin-nitsuite-shinsei-2328ba.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130121/richitsusho/202410251.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-da26efd083</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／令和7年度富山県オンライン海外販路開拓支援補助金の募集について</title>
+    <link>https://jpcite.com/programs/toyamaken-reiwa-7-nendo-toyamaken-onrain-kaigai-hanro-935078.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 50万円 出典: https://www.pref.toyama.jp/130121/richitsusho/070611.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e24a02c092</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／フリースクール等通所児童生徒支援事業（令和7年4月改訂）</title>
+    <link>https://jpcite.com/programs/toyamaken-furiisukuuru-nado-tsuusho-jidou-seito-shien-c12407.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/3002/freeschooltsuusyosienr7.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ec3b5011b6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県なりわい再建支援補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-nariwai-saiken-shien-hojokin-006066.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 30,000万円 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/nariwai/nariwai_top.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ef10f9b45d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／富山県老人福祉施設等整備費補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-toyamaken-roujin-fukushi-shisetsutou-seibihi-e87ed7.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1211/kurashi/kenkou/iryou/kj00006615.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ef59dcb226</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／「生活支援・消費喚起プロジェクト支援補助金」の募集について</title>
+    <link>https://jpcite.com/programs/toyamaken-seikatsu-shien-shouhi-kanki-purojiekuto-shien-f8703b.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy / 上限 5,000万円 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/202601syouhikanki.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f1542c2280</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県／中小企業の皆様への支援制度（国・富山県）</title>
+    <link>https://jpcite.com/programs/toyamaken-chuushoukigyou-no-minasama-heno-shien-seido-kuni-0ec2bf.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/shien0507.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-fd9717bd90</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年能登半島地震による被災者支援パッケージ</title>
+    <link>https://jpcite.com/programs/reiwa-6-nen-noto-han-shima-jishin-niyoru-hisaisha-shien-761c7a.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/1902/bousaianzen/noto_jishin_shien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-08e21bc30c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>支援・相談</title>
+    <link>https://jpcite.com/programs/shien-soudan-61e931.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-09c7b9fdf5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県中小企業トランスフォーメーション補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-chuushoukigyou-toransufoomeeshon-hojokin-c797c7.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/transformation.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-19b6069570</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県人材確保・活躍推進本部</title>
+    <link>https://jpcite.com/programs/toyamaken-jinzai-kakuho-katsuyaku-suishinhonbu-92cca5.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/sangyou/roudou/roudoukoyou/koyoshien/suishin/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-24fa17c835</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県賃上げ応援補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-chin-age-ouen-hojokin-0988cc.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1303/r7tinageouenhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-253a91bc9e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県賃上げサポート補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-chin-age-sapooto-hojokin-ff515c.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130321/sangyou/roudou/roudoukoyou/chinagesupport.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-28c2ee7547</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度「富山で合宿！」誘致事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-toyama-de-gasshuku-yuuchi-jigyou-hi-hojokin-c7fc71.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/140406/miryokukankou/bunka/geijutsu/kj00008047.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2dabed9092</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>とやま人材リスキリング補助金</title>
+    <link>https://jpcite.com/programs/toyama-jinzai-risukiringu-hojokin-b70871.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1303/risukiringu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3565f34be5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年能登半島地震関連</title>
+    <link>https://jpcite.com/programs/reiwa-6-nen-noto-han-shima-jishin-kanren-4b59d2.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/1902/bousaianzen/noto_jishin_shien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-41869c7e60</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>価格転嫁サポート補助金</title>
+    <link>https://jpcite.com/programs/kakaku-tenka-sapooto-hojokin-4fa708.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1300/sangyou/shoukoukensetsu/shoukougyou/kakakutenka_support_hojokin_2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-41d57a416d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>労働者支援</title>
+    <link>https://jpcite.com/programs/roudousha-shien-6f9fa1.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/sangyou/roudou/roudoukoyou/rodoshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-432c260a77</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【申請受付終了！】「食事提供施設」新型コロナウイルス感染防止緊急対策事業費助成金について</title>
+    <link>https://jpcite.com/programs/shinseiuketsuke-shuuryou-shokuji-teikyou-shisetsu-shingata-c7d1d5.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1307/sangyou/shoukoukensetsu/shoukougyou/kj00022006.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-685f6f3460</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就職・就労支援</title>
+    <link>https://jpcite.com/programs/shuushoku-shuurou-shien-9ffc24.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/sangyou/roudou/roudoukoyou/shushokushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6be3a14a09</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成・融資</title>
+    <link>https://jpcite.com/programs/josei-yuushi-9eeb49.html</link>
+    <description>Tier A / 富山県 / 富山県 / loan 出典: https://www.pref.toyama.jp/mokutekibetsu/joseiyushi/index.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8f99a429c0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>診療所（医科・歯科）</title>
+    <link>https://jpcite.com/programs/shinryoujo-ika-shika-40f14a.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/1204/kurashi/kenkou/iryou/shienkin/080130tinagebukkashienkin.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ad8c5dedea</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県中小企業特別高圧電気料金負担軽減支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/toyamaken-chuushoukigyou-tokubetsu-kouatsu-denkiryoukin-596198.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130131/20260424.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b9bce9d14a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>厳しい経営環境にある事業者の皆様への支援制度</title>
+    <link>https://jpcite.com/programs/ikameshii-keiei-kankyou-niaru-jigyousha-no-minasama-heno-d5cf2a.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/1300/shien0507.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c21414cec0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雇用支援</title>
+    <link>https://jpcite.com/programs/koyou-shien-8c4d8d.html</link>
+    <description>Tier A / 富山県 / 富山県 / support 出典: https://www.pref.toyama.jp/sangyou/roudou/roudoukoyou/koyoshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c862030b86</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県キャリアアップ奨励金</title>
+    <link>https://jpcite.com/programs/toyamaken-kyariaappu-shoureikin-3459c0.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130321/sangyou/roudou/roudoukoyou/career_up_syourei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e23d6e389d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害福祉職員処遇改善等緊急支援事業</title>
+    <link>https://jpcite.com/programs/shougai-fukushi-shokuin-shoguu-kaizen-nado-kinkyuu-shien-fca1e4.html</link>
+    <description>Tier A / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1209/kurashi/kenkou/shougaisha/jigyousha/syoguukaizenhojokin/shinseiannai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f6860390f1</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県商工会連合会 補助金・助成金 案内ハブ（富山県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/toyamaken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-1e119a.html</link>
+    <description>Tier B / 富山県 / 富山県商工会連合会 / directory 出典: http://www.shokoren-toyama.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0302d086a1</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:24 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県水道広域化推進プラン (令和5年3月策定)</title>
+    <link>https://jpcite.com/programs/toyamaken-suidou-kouiki-ka-suishin-puran-reiwa-5-nen-3-0480d7.html</link>
+    <description>Tier C / 富山県 / 富山県 厚生部 生活衛生課 出典: https://www.pref.toyama.jp/140403/suidoukouikika.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-71fc7b4ff7</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県 eスポーツ関係人口創出事業補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-e-supootsu-kankei-jinkou-soushutsu-jigyou-hojokin-1f449b.html</link>
+    <description>Tier C / 富山県 / 富山県 出典: https://jesu.or.jp/contents/initiative/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9dbfb49dc5</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県オンライン海外販路開拓支援補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-onrain-kaigai-hanro-kaitaku-shien-hojokin-983ca3.html</link>
+    <description>Tier C / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/hojokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-38e918005d</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県中小企業特別高圧電気料金負担軽減支援事業</title>
+    <link>https://jpcite.com/programs/toyamaken-chuushoukigyou-tokubetsu-kouatsu-denkiryoukin-46fa7b.html</link>
+    <description>Tier C / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/hojokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-49003cb4bf</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県中小企業変革補助金</title>
+    <link>https://jpcite.com/programs/toyamaken-chuushoukigyou-henkaku-hojokin-00ea38.html</link>
+    <description>Tier C / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/sangyou/shoukoukensetsu/shoukougyou/shien/hojokin/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-790d3ea42c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県地域資源ブラッシュアップ支援事業</title>
+    <link>https://jpcite.com/programs/toyamaken-chiiki-shigen-burasshuappu-shien-jigyou-849ae3.html</link>
+    <description>Tier C / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1605/kensei/kouhou/houdou/2026/chiikisigen20260401.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9e78deb4ed</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山県中小企業脱炭素モデル企業育成事業</title>
+    <link>https://jpcite.com/programs/toyamaken-chuushoukigyou-dattan-moto-moderu-kigyou-ikusei-d2abf9.html</link>
+    <description>Tier C / 富山県 / 富山県 / subsidy 出典: https://www.carbon-neutral-toyama.jp/citizen/support-citizen</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b6fdaeaff8</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南砺市_民間賃貸住宅家賃支援事業補助金（南砺市農業人材活躍促進重点事業）</title>
+    <link>https://jpcite.com/programs/nanto-shi-minkan-chintaijuutaku-yachin-shien-jigyou-hojokin-113f82.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 24万円 出典: https://www.city.nanto.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-00ced3a7e3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高岡市_認定農業者制度</title>
+    <link>https://jpcite.com/programs/takaokashi-nintei-nougyou-mono-seido-a1e69e.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 100万円 出典: https://www.city.takaoka.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-024124433b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南砺市_継業奨励事業補助金（南砺市農業人材活躍促進重点事業）</title>
+    <link>https://jpcite.com/programs/nanto-shi-keigyou-shourei-jigyou-hojokin-nanto-shi-nougyou-6bff96.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 100万円 出典: https://www.city.nanto.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02a655b84e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>小矢部市6次産業化等支援事業補助金</title>
+    <link>https://jpcite.com/programs/oyabe-shi-6-tsugi-sangyouka-nado-shien-jigyou-hojokin-128c5f.html</link>
+    <description>Tier C / 富山県 / 富山県小矢部市 / subsidy / 上限 70万円 出典: https://www.city.oyabe.toyama.jp/_res/projects/default_project/_page_/001/004/964/6ji_hojyoyoukou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0608680ddd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山 6次産業化チャレンジ支援事業</title>
+    <link>https://jpcite.com/programs/toyama-6-tsugi-sangyouka-charenji-shien-jigyou-a79404.html</link>
+    <description>Tier B / 富山県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.toyama.jp/1605/sangyou/nourinsuisan/nougyou/kj00022487/kj00022487-004-01.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-13eceadddd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有機農業栽培推進事業費補助金</title>
+    <link>https://jpcite.com/programs/yuuki-nougyou-saibai-suishin-jigyou-hi-hojokin-519bf0.html</link>
+    <description>Tier B / 富山県 / 富山県上市町 / subsidy 出典: https://www.town.kamiichi.toyama.jp/page/7691.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-19639ffaff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有機農業栽培推進事業費補助金</title>
+    <link>https://jpcite.com/programs/yuuki-nougyou-saibai-suishin-jigyou-hi-hojokin-3048d8.html</link>
+    <description>Tier C / 富山県 / （noukaweb 収集） 出典: https://www.town.kamiichi.toyama.jp/page/7691.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-24c1af481a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山市 経営発展支援事業</title>
+    <link>https://jpcite.com/programs/toyamashi-keiei-hatten-shien-jigyou-4245f8.html</link>
+    <description>Tier A / 富山県 / 市町村 / subsidy / 上限 30万円 出典: https://www.city.toyama.lg.jp/shisei/1012172/1012173.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2b0261671a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-16-003_富山_新規就農者等定着促進対策事業</title>
+    <link>https://jpcite.com/programs/pref-16-003-toyama-shinki-shuunou-mono-nado-teichaku-9aa9be.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 150万円 出典: https://taff.or.jp/nou/syunou-navi/know/funds/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-34144c2e23</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有機JAS認証継続検査費補助金</title>
+    <link>https://jpcite.com/programs/yuuki-jas-ninshou-keizokukensa-hi-hojokin-e572ae.html</link>
+    <description>Tier C / 富山県 / （noukaweb 収集） 出典: https://www.town.kamiichi.toyama.jp/page/7691.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-38b646c296</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山 とやま型集落営農スマート農機導入事業</title>
+    <link>https://jpcite.com/programs/toyama-toyama-kata-shuuraku-einou-sumaato-nouki-dounyuu-6cdd2b.html</link>
+    <description>Tier A / 富山県 / 都道府県 / subsidy / 上限 450万円 出典: https://www.pref.toyama.jp/1611/sangyou/nourinsuisan/nougyou/keieitaisien/kikaiseibi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-40b870e768</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高岡市_水田活用の直接支払交付金（水活）</title>
+    <link>https://jpcite.com/programs/takaokashi-suiden-katsuyou-no-chokusetsu-shiharai-koufukin-9cd4e0.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 100万円 出典: https://www.city.takaoka.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4490557a0c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山市企業等農業参入支援事業補助金</title>
+    <link>https://jpcite.com/programs/toyamashi-kigyou-nado-nougyou-sannyuu-shien-jigyou-hojokin-904f3f.html</link>
+    <description>Tier A / 富山県 / 市町村 / subsidy / 上限 30万円 出典: https://www.city.toyama.lg.jp/shisei/1012172/1012173.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-44cbf04719</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-16-103_富山_新規就農者等定着促進対策事業</title>
+    <link>https://jpcite.com/programs/pref-16-103-toyama-shinki-shuunou-mono-nado-teichaku-39947f.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 150万円 出典: https://taff.or.jp/nou/syunou-navi/know/funds/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-47dd6526b0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南砺市_集落営農組織・新規就農者連携支援事業補助金（南砺市農業人材活躍促進重点事業）</title>
+    <link>https://jpcite.com/programs/nanto-shi-shuuraku-einou-soshiki-shinki-shuunou-mono-renkei-835437.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 75万円 出典: https://www.city.nanto.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-54ed383ee1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-16-101_富山_新規就農者機械導入支援事業</title>
+    <link>https://jpcite.com/programs/pref-16-101-toyama-shinki-shuunou-mono-kikai-dounyuu-shien-937bc9.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 100万円 出典: https://www.pref.toyama.jp/1611/sangyou/nourinsuisan/nougyou/keieitaisien/kikaiseibi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5679d4d2de</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成対策事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-taisaku-jigyou-75464b.html</link>
+    <description>Tier C / 富山県 / 富山県富山市 / subsidy 出典: https://www.city.toyama.toyama.jp/_res/projects/default_project/_page_/001/005/883/1005883.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5a20c15e21</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山市経営継承・発展等支援事業</title>
+    <link>https://jpcite.com/programs/toyamashi-keiei-keishou-hatten-nado-shien-jigyou-036efa.html</link>
+    <description>Tier A / 富山県 / subsidy / 上限 30万円 出典: https://www.city.toyama.lg.jp/shisei/1012172/1012173.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-722a2d8f7e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有機JAS認証継続検査費補助金</title>
+    <link>https://jpcite.com/programs/yuuki-jas-ninshou-keizokukensa-hi-hojokin-9d000e.html</link>
+    <description>Tier B / 富山県 / 富山県上市町 / subsidy / 上限 3万円 出典: https://www.town.kamiichi.toyama.jp/page/7691.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-72bf4f9aff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>美しい農村景観整備事業（富山県）</title>
+    <link>https://jpcite.com/programs/utsukushii-nouson-keikan-seibi-jigyou-toyamaken-6af87f.html</link>
+    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1605/sangyou/nourinsuisan/nousangyoson/kj00021444/kj00021444-001-01.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7dc41bd217</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>未来の担い手育成支援事業</title>
+    <link>https://jpcite.com/programs/mirai-no-ninaite-ikusei-shien-jigyou-c4a1dc.html</link>
+    <description>Tier C / 富山県 / 富山県富山市 / subsidy / 上限 5万円 出典: https://www.city.toyama.toyama.jp/_res/projects/default_project/_page_/001/005/893/1005893.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8118c28a67</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南砺市ブラッシュアップ農業導入促進重点事業補助金</title>
+    <link>https://jpcite.com/programs/nanto-shi-burasshuappu-nougyou-dounyuu-sokushin-juuten-a291dd.html</link>
+    <description>Tier C / 富山県 / subsidy / 上限 250万円 出典: https://www.city.nanto.toyama.jp/cms-sypher/www/service/detail.jsp?id=27379</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8efbae1595</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高岡市_畑作物の直接支払交付金（ゲタ対策）</title>
+    <link>https://jpcite.com/programs/takaokashi-hatasaku-mono-no-chokusetsu-shiharai-koufukin-976c29.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 100万円 出典: https://www.city.takaoka.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-92b03c9c8a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南砺市_認定農業者制度</title>
+    <link>https://jpcite.com/programs/nanto-shi-nintei-nougyou-mono-seido-634a43.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 100万円 出典: https://www.city.nanto.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-92fed9a0ff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>未来の担い手育成支援事業</title>
+    <link>https://jpcite.com/programs/mirai-no-ninaite-ikusei-shien-jigyou-da87a2.html</link>
+    <description>Tier A / 富山県 / （noukaweb 収集） / 上限 5万円 出典: https://www.city.toyama.toyama.jp/_res/projects/default_project/_page_/001/005/893/1005893.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-958009cbc2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 山形県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/yamagata.xml" rel="self" type="application/rss+xml" />
+  <description>山形県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>令和7年度新規狩猟免許取得者助成制度について | 山形県</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-shinki-shuryou-menkyoshutoku-mono-josei-seido-43ff02.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/050011/kurashi/shizen/seibutsu/about_hunting/jyoseiseidoitiran.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1e993b8522</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営・起業支援 | 山形県</title>
+    <link>https://jpcite.com/programs/keiei-kigyou-shien-yamagataken-89da73.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/sangyo/jigyousha/shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1faf8ce3f8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成・支援制度 | 山形県</title>
+    <link>https://jpcite.com/programs/josei-shien-seido-yamagataken-a9f8ae.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/joseishien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2dfe69c56a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>村山地域入退院支援について | 山形県</title>
+    <link>https://jpcite.com/programs/murayama-chiiki-nyuutaiin-shien-nitsuite-yamagataken-9bf0b6.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/301023/kenfuku/kenko/hokenjo/murayamahokenjo/iryoujouhou/nyuutaiinnsienn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-352d7832c1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【募集】山形県循環型産業施設整備事業費補助金（令和8年度） | 山形県</title>
+    <link>https://jpcite.com/programs/boshuu-yamagataken-junkan-kata-sangyoushisetsu-seibi-jigyou-f53c1a.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/050010/kurashi/kankyo/recycle/shisetsuseibi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3aa127a3ae</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>肝がん・重度肝硬変治療に係る医療費助成 | 山形県</title>
+    <link>https://jpcite.com/programs/kimo-gan-juudo-kankouhen-chiryou-ni-kakaru-iryouhi-josei-0f83b8.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/090001/kenfuku/iryo/gan/kanganjosei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-407ca6260d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>各種補助金 | 山形県</title>
+    <link>https://jpcite.com/programs/kakushu-hojokin-yamagataken-f0c850.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/kurashi/kankyo/energy/hojo/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-50e6c7d4f1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【令和7年度募集終了】山形県働き盛り世代の健康UPサポート事業費補助金（令和7年4月1日） | 山形県</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-boshuu-shuuryou-yamagataken-hataraki-mori-d78da5.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/090015/kenfuku/kenko/kenko/walk/hatarakizakari1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6e06c9d246</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>教育・進学支援 | 山形県</title>
+    <link>https://jpcite.com/programs/kyouiku-shingaku-shien-yamagataken-21e1a3.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/bunkyo/kyoiku/shingakushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8c82c5fa19</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成・補助金等 | 山形県</title>
+    <link>https://jpcite.com/programs/josei-hojokin-nado-yamagataken-1cae55.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/sangyo/jigyousha/joseikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9729581fdd</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>支援・助成 | 山形県</title>
+    <link>https://jpcite.com/programs/shien-josei-yamagataken-db07d9.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/bosai/kochibou/bousaijouhou/shienjosei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-97b53c80e6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>住宅(支援制度等)  | 山形県</title>
+    <link>https://jpcite.com/programs/juutaku-shien-seido-nado-yamagataken-4c4202.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/kurashi/sumai/jutakushien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ac343bdbd8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域づくり活動への支援 | 山形県</title>
+    <link>https://jpcite.com/programs/chiiki-zukuri-katsudou-heno-shien-yamagataken-6852bf.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/325045/sangyo/nourinsuisangyou/nogyo/nosangyoson/nousonkeikaku/tiiki-dukuri-sien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b0a8b6259d</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ウイルス性肝炎治療に係る医療費助成 | 山形県</title>
+    <link>https://jpcite.com/programs/uirusu-sei-kan-en-chiryou-ni-kakaru-iryouhi-josei-6ebcef.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/090001/kenfuku/iryo/kansen/kansenshou/iryouhijosei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b3e3d5f366</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子育て支援  | 山形県</title>
+    <link>https://jpcite.com/programs/kosodate-shien-yamagataken-82f73f.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/kenfuku/kosodate/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d2c7617f87</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障がい者支援 | 山形県</title>
+    <link>https://jpcite.com/programs/shou-gai-mono-shien-yamagataken-ebdd04.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/kenfuku/shogai/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-da6f803c6b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>支援を受けたい方へ | 山形県</title>
+    <link>https://jpcite.com/programs/shien-wo-uke-tai-hou-he-yamagataken-a68941.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/020070/kurashi/npo/kikin/shakaikouken/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-dcc9f96c82</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住者支援 | 山形県</title>
+    <link>https://jpcite.com/programs/ijuusha-shien-yamagataken-fee2f2.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/kurashi/chiiki/ijuushashien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-ed97a60831</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年度山形県保育インターン等旅費支援補助金 | 山形県</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-yamagataken-hoiku-intaan-nado-ryohi-shien-c5cf7a.html</link>
+    <description>Tier B / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/010001/kenfuku/kosodate/hoikushi/internhojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f70a9844ba</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形 園芸やまがた産地発展サポート事業</title>
+    <link>https://jpcite.com/programs/yamagata-engei-yamagata-sanchi-hatten-sapooto-jigyou-861b4f.html</link>
+    <description>Tier S / 山形県 / 都道府県 / subsidy / 上限 3,000万円 出典: https://www.pref.yamagata.jp/140001/sangyo/nourinsuisangyou/nogyo/keikakukaigiyosan/gyakubiki/r7gyakubikirinougyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4ab082bde9</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形 さくらんぼ温暖化対応技術導入推進事業</title>
+    <link>https://jpcite.com/programs/yamagata-sakuranbo-ondanka-taiou-gijutsu-dounyuu-suishin-13b4ea.html</link>
+    <description>Tier S / 山形県 / 都道府県 / subsidy / 上限 3,000万円 出典: https://www.pref.yamagata.jp/140001/sangyo/nourinsuisangyou/nogyo/keikakukaigiyosan/gyakubiki/r7gyakubikirinougyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-70bbd090cd</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>教育・進学支援</title>
+    <link>https://jpcite.com/programs/kyouiku-shingaku-shien-70e422.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/bunkyo/kyoiku/shingakushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-003dae585c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>やまがた社会貢献基金の支援を受けるには</title>
+    <link>https://jpcite.com/programs/yamagata-shakai-kouken-kikin-no-shien-wo-ukeru-niha-3d7733.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/020070/kurashi/npo/kikin/shakaikouken/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0bf78d8cf6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県身体障がい者等用駐車施設利用証制度に施設管理者の皆様のご協力をお願いします</title>
+    <link>https://jpcite.com/programs/yamagataken-shintai-shou-gai-mono-nado-you-chuusha-shisetsu-5d023c.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/090014/kenfuku/shogai/shien/shienservice/shisetsuriyoushou/parking_manager.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-10f03699f0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ウイルス性肝炎治療に係る医療費助成</title>
+    <link>https://jpcite.com/programs/uirusu-sei-kan-en-chiryou-ni-kakaru-iryouhi-josei-07363f.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/090001/kenfuku/iryo/kansen/kansenshou/iryouhijosei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-36df01196b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>肝がん・重度肝硬変治療に係る入院医療費助成</title>
+    <link>https://jpcite.com/programs/kimo-gan-juudo-kankouhen-chiryou-ni-kakaru-nyuuin-iryouhi-ee6a11.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/090001/kenfuku/iryo/gan/kanganjosei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-38e8f1b081</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営・起業支援</title>
+    <link>https://jpcite.com/programs/keiei-kigyou-shien-2f118c.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/sangyo/jigyousha/shien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-553ea2112d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>災害に関する支援・助成</title>
+    <link>https://jpcite.com/programs/saigai-ni-kansu-ru-shien-josei-7ab5ff.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/bosai/kochibou/bousaijouhou/shienjosei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-79a4156096</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>住宅(支援制度等)</title>
+    <link>https://jpcite.com/programs/juutaku-shien-seido-nado-1cb17c.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/kurashi/sumai/jutakushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7b4d4d4465</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県XRビジネス実証事業費補助金の募集を開始します</title>
+    <link>https://jpcite.com/programs/yamagataken-xr-bijinesu-jisshou-jigyou-hi-hojokin-no-boshuu-1988c2.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/110002/sangyo/gijutsu/xr/r8xr_hojokin1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8865d494a4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【エネルギー政策推進課】やまがた未来くるエネルギー補助金（山形県再生可能エネルギー等設備導入促進事業）</title>
+    <link>https://jpcite.com/programs/enerugii-seisaku-suishinka-yamagata-mirai-kuru-enerugii-6a275a.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/050016/kurashi/kankyo/energy/saiseikanou/saiseikanou_hojo_h31.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8e453503c7</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度山形県保育インターン等旅費支援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-yamagataken-hoiku-intaan-nado-ryohi-shien-bb0248.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/010001/kenfuku/kosodate/hoikushi/internhojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8e6f31ccda</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障がい者支援</title>
+    <link>https://jpcite.com/programs/shou-gai-mono-shien-b8a2c6.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/kenfuku/shogai/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9b076587da</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【エネルギー政策推進課】令和8年度山形県再生可能エネルギー(小水力発電)事業可能性調査事業費補助金</title>
+    <link>https://jpcite.com/programs/enerugii-seisaku-suishinka-reiwa-8-nendo-yamagataken-d6abb3.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/050016/kurashi/kankyo/energy/saiseikanou/ryuryouchousahojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a041e2c0db</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県版BCPモデル</title>
+    <link>https://jpcite.com/programs/yamagataken-han-bcp-moderu-bb9edd.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/110013/sangyo/shokogyo/shien/bcp.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a4efd9b8b9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障がい者支援事業</title>
+    <link>https://jpcite.com/programs/shou-gai-mono-shien-jigyou-bdb807.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/kenfuku/shogai/shienjigyou/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-abffa327d4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>助成・支援制度</title>
+    <link>https://jpcite.com/programs/josei-shien-seido-f27829.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/joseishien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ba3be577c6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>難病支援</title>
+    <link>https://jpcite.com/programs/nanbyou-shien-4be9ed.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/kenfuku/iryo/kansen/nambyoushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c8797a3a68</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子育て支援</title>
+    <link>https://jpcite.com/programs/kosodate-shien-69b8ff.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/kenfuku/kosodate/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d7f7206b49</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住者支援</title>
+    <link>https://jpcite.com/programs/ijuusha-shien-bd7b7c.html</link>
+    <description>Tier A / 山形県 / 山形県 / support 出典: https://www.pref.yamagata.jp/kurashi/chiiki/ijuushashien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dfe9737c19</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>事業者向けの助成・支援制度</title>
+    <link>https://jpcite.com/programs/jigyousha-muke-no-josei-shien-seido-60ba85.html</link>
+    <description>Tier A / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/sangyo/jigyousha/joseikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ea77472585</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県商工会連合会 補助金・助成金 案内ハブ（山形県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/yamagataken-shoukou-kai-rengoukai-hojokin-joseikin-annai-83371d.html</link>
+    <description>Tier B / 山形県 / 山形県商工会連合会 / directory 出典: https://www.shokokai-yamagata.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-aa6ac16e1f</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:19 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県水道広域化推進プラン (4圏域: 村山・最上・置賜・庄内)</title>
+    <link>https://jpcite.com/programs/yamagataken-suidou-kouiki-ka-suishin-puran-4-ken-iki-f6f175.html</link>
+    <description>Tier C / 山形県 / 山形県 防災くらし安心部 食品安全衛生課 出典: https://www.pref.yamagata.jp/020071/bosai/shokuhinanzen/suidou/suishinplan.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9b4ad9fe50</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県被災中小企業支援事業費補助金</title>
+    <link>https://jpcite.com/programs/yamagataken-hisai-chuushoukigyou-shien-jigyou-hi-hojokin-67014a.html</link>
+    <description>Tier C / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/110013/sangyo/shokogyo/shinko/hisai-chusho.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-37abae68c5</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県BCP実践促進補助金</title>
+    <link>https://jpcite.com/programs/yamagataken-bcp-jissen-sokushin-hojokin-05f2e1.html</link>
+    <description>Tier C / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/sangyo/jigyousha/joseikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7d0eb1b238</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県LED照明省エネルギー促進補助金</title>
+    <link>https://jpcite.com/programs/yamagataken-led-shoumei-shouene-rugii-sokushin-hojokin-524e02.html</link>
+    <description>Tier C / 山形県 / 山形県 / subsidy / 上限 1,500万円 出典: https://www.pref.yamagata.jp/sangyo/jigyousha/joseikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a61c8fbb17</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県中小企業まるっとサポート補助金</title>
+    <link>https://jpcite.com/programs/yamagataken-chuushoukigyou-marutto-sapooto-hojokin-849426.html</link>
+    <description>Tier C / 山形県 / 山形県産業労働部 / subsidy 出典: https://www.pref.yamagata.jp/110013/sangyo/shokogyo/shinko/marusapo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c6214068cc</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県創業・事業承継支援</title>
+    <link>https://jpcite.com/programs/yamagataken-sougyou-jigyou-shoukei-shien-5216ff.html</link>
+    <description>Tier C / 山形県 / 山形県 / subsidy 出典: https://www.pref.yamagata.jp/sangyo/jigyousha/joseikin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f6c3e2630c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>酒田市小規模農地等災害緊急復旧事業費補助金</title>
+    <link>https://jpcite.com/programs/sakata-shi-shoukibo-nouchi-nado-saigai-kinkyuu-fukkyuu-211375.html</link>
+    <description>Tier B / 山形県 / 山形県酒田市 / subsidy 出典: https://www.city.sakata.lg.jp/sangyo/nogyo/R60725_nogyo_shien/norinsyoukibo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0454e34b5d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形 未来を育む農業担い手育成支援事業 多様な人材の活躍促進</title>
+    <link>https://jpcite.com/programs/yamagata-mirai-wo-hagukumu-nougyou-ninaite-ikusei-shien-052bc2.html</link>
+    <description>Tier C / 山形県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.yamagata.jp/140034/sangyo/nourinsuisangyou/nogyo/shien/r7miraininaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-13c591d83c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>寒河江市新規就農者定住促進支援事業（住宅支援）</title>
+    <link>https://jpcite.com/programs/sagae-shi-shinki-shuunou-mono-teijuu-sokushin-shien-jigyou-0a8b35.html</link>
+    <description>Tier B / 山形県 / subsidy / 上限 150万円 出典: https://www.city.sagae.yamagata.jp/jigyou/nougyou/shunoshashien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-150b2f3145</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鶴岡市つるおか新規就農者育成プロジェクト支援事業</title>
+    <link>https://jpcite.com/programs/tsuruokashi-tsuruoka-shinki-shuunou-mono-ikusei-purojiekuto-577d0a.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 600万円 出典: https://www.city.tsuruoka.lg.jp/sangyo/agri-ninaite/sinkisyunosyaikusei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-197e6b9037</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>寒河江市担い手新規就農支援事業（機械等購入支援）</title>
+    <link>https://jpcite.com/programs/sagae-shi-ninaite-shinki-shuunou-shien-jigyou-kikai-nado-724568.html</link>
+    <description>Tier B / 山形県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.sagae.yamagata.jp/jigyou/nougyou/shunoshashien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1989962459</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年等就農計画制度（認定新規就農者制度）</title>
+    <link>https://jpcite.com/programs/seinen-nado-shuunou-keikaku-seido-nintei-shinki-shuunou-af472b.html</link>
+    <description>Tier C / 山形県 / 山形県東根市 / subsidy 出典: https://www.city.higashine.yamagata.jp/section_list/section011/513</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1a7cb51f2c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大雨災害に係る農林水産物等災害対策補助金</title>
+    <link>https://jpcite.com/programs/ooame-saigai-ni-kakaru-nourinsuisan-mono-nado-saigai-b8ad77.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.sakata.lg.jp/_res/projects/default_project/_page_/001/003/456/menu1.pdf</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1d6ba1d4ef</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鶴岡市狩猟免許取得支援事業</title>
+    <link>https://jpcite.com/programs/tsuruokashi-shuryou-menkyoshutoku-shien-jigyou-2f7b4f.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.tsuruoka.lg.jp/sangyo/tyuusankan/nousei0120150507.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-205a8c04db</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就農移住者支援事業（燃料費支援）</title>
+    <link>https://jpcite.com/programs/shuunou-ijuusha-shien-jigyou-nenryouhi-shien-5f8240.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 1万円 出典: https://www.city.obanazawa.yamagata.jp/soshiki/nourin/nousei/shien/syunou-iju/1650.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-207bbaa388</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形 未来を育む農業担い手育成支援事業 営農定着の取組み</title>
+    <link>https://jpcite.com/programs/yamagata-mirai-wo-hagukumu-nougyou-ninaite-ikusei-shien-0ca569.html</link>
+    <description>Tier C / 山形県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.yamagata.jp/140034/sangyo/nourinsuisangyou/nogyo/shien/r7miraininaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-20d49297d1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>酒田市小規模農地等災害緊急復旧事業費補助金</title>
+    <link>https://jpcite.com/programs/sakata-shi-shoukibo-nouchi-nado-saigai-kinkyuu-fukkyuu-1e087e.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.sakata.lg.jp/sangyo/nogyo/R60725_nogyo_shien/norinsyoukibo.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-273374f373</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就農移住者支援事業</title>
+    <link>https://jpcite.com/programs/shuunou-ijuusha-shien-jigyou-a8031d.html</link>
+    <description>Tier B / 山形県 / 山形県尾花沢市 / subsidy / 上限 216万円 出典: https://www.city.obanazawa.yamagata.jp/sangyo/nogyo/499</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2bac077a4b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>村山市6次産業化施設整備等支援事業費補助金</title>
+    <link>https://jpcite.com/programs/murayama-shi-6-tsugi-sangyouka-shisetsu-seibinado-shien-253e8e.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 50万円 出典: https://www.city.murayama.lg.jp/kurashi/noringyou/noringyou/hojojigyou/6jisangyouka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2cdbac73ac</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>合併処理浄化槽設置整備事業費補助金・浄化槽整備促進事業費補助金</title>
+    <link>https://jpcite.com/programs/gappeishori-joukasou-setchi-seibi-jigyou-hi-hojokin-356301.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.obanazawa.yamagata.jp/kurashi/kankyo/suido-gesuido/370</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f73cdb34f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>園芸やまがた産地発展サポート事業（持続できる園芸産地緊急支援事業）－共同利用施設における省エネルギー・省力化設備等緊急支援事業</title>
+    <link>https://jpcite.com/programs/engei-yamagata-sanchi-hatten-sapooto-jigyou-jizoku-dekiru-cdd5ad.html</link>
+    <description>Tier B / 山形県 / subsidy / 上限 2,000万円 出典: https://www.city.sagae.yamagata.jp/sangyo/nogyo/noka/r8_engeiyamagata_kinkyushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3038120c2d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>園芸やまがた産地発展サポート事業（持続できる園芸産地緊急支援事業）－園芸ハウス導入緊急支援事業</title>
+    <link>https://jpcite.com/programs/engei-yamagata-sanchi-hatten-sapooto-jigyou-jizoku-dekiru-595f24.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.sagae.yamagata.jp/sangyo/nogyo/noka/r8_engeiyamagata_kinkyushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3892ef753a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大雨災害に係る農機具被害特別支援事業</title>
+    <link>https://jpcite.com/programs/ooame-saigai-ni-kakaru-noukigu-higai-tokubetsu-shien-jigyou-392e18.html</link>
+    <description>Tier B / 山形県 / 山形県酒田市 / subsidy / 上限 200万円 出典: https://www.city.sakata.lg.jp/sangyo/nogyo/R60725_nogyo_shien/nosei052024110614472.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3d2215f7ac</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形 未来を育む農業担い手育成支援事業 組織的な取組み</title>
+    <link>https://jpcite.com/programs/yamagata-mirai-wo-hagukumu-nougyou-ninaite-ikusei-shien-a2dcb8.html</link>
+    <description>Tier C / 山形県 / 都道府県 / subsidy / 上限 240万円 出典: https://www.pref.yamagata.jp/140034/sangyo/nourinsuisangyou/nogyo/shien/r7miraininaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3df1857a39</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農林業関係の補助金など</title>
+    <link>https://jpcite.com/programs/nouringyou-kankei-no-hojokin-nado-51d247.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 250万円 出典: https://www.city.tendo.yamagata.jp/soshiki/nouringyou/hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-434634e049</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-06-301_山形_園芸やまがた産地発展サポート事業</title>
+    <link>https://jpcite.com/programs/pref-06-301-yamagata-engei-yamagata-sanchi-hatten-sapooto-9ebe73.html</link>
+    <description>Tier B / 山形県 / subsidy / 上限 3,000万円 出典: https://www.pref.yamagata.jp/140001/sangyo/nourinsuisangyou/nogyo/keikakukaigiyosan/gyakubiki/r7gyakubikirinougyou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4488e0af3a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>水田活用直接支払交付金</title>
+    <link>https://jpcite.com/programs/suiden-katsuyou-chokusetsu-shiharai-koufukin-09122e.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.yonezawa.yamagata.jp/item/470.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4b1d176244</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>尾花沢市就農移住者支援事業</title>
+    <link>https://jpcite.com/programs/obanazawa-shi-shuunou-ijuusha-shien-jigyou-424192.html</link>
+    <description>Tier B / 山形県 / 市町村 / subsidy / 上限 216万円 出典: https://www.city.obanazawa.yamagata.jp/sangyo/nogyo/499</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4cc28a05ff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>園芸やまがた産地発展サポート事業（持続できる園芸産地緊急支援事業）－生産現場における省エネルギー・省力化設備等緊急支援事業</title>
+    <link>https://jpcite.com/programs/engei-yamagata-sanchi-hatten-sapooto-jigyou-jizoku-dekiru-d1d16f.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.sagae.yamagata.jp/sangyo/nogyo/noka/r8_engeiyamagata_kinkyushien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4ef1a8f069</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就農移住者支援事業（活動用車両賃貸借料支援）</title>
+    <link>https://jpcite.com/programs/shuunou-ijuusha-shien-jigyou-katsudou-you-sharyou-940357.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 4万円 出典: https://www.city.obanazawa.yamagata.jp/soshiki/nourin/nousei/shien/syunou-iju/1650.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-50ca059e91</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-06-306_山形_未来を育む農業担い手育成支援事業_多様な人材の活躍促進</title>
+    <link>https://jpcite.com/programs/pref-06-306-yamagata-mirai-wo-hagukumu-nougyou-ninaite-30cc4f.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.pref.yamagata.jp/140034/sangyo/nourinsuisangyou/nogyo/shien/r7miraininaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-523e8673b0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形 未来を育む農業担い手育成支援事業 経営発展の取組み</title>
+    <link>https://jpcite.com/programs/yamagata-mirai-wo-hagukumu-nougyou-ninaite-ikusei-shien-880ea0.html</link>
+    <description>Tier C / 山形県 / 都道府県 / subsidy / 上限 250万円 出典: https://www.pref.yamagata.jp/140034/sangyo/nourinsuisangyou/nogyo/shien/r7miraininaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-57cce9295f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>尾花沢市資格取得促進助成金</title>
+    <link>https://jpcite.com/programs/obanazawa-shi-shikaku-shutoku-sokushin-joseikin-b1cda8.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.obanazawa.yamagata.jp/sangyo/joseikin-hojokin/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5caed00deb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>村山市6次産業化商品開発等支援事業費補助金</title>
+    <link>https://jpcite.com/programs/murayama-shi-6-tsugi-sangyouka-shouhinkaihatsu-nado-shien-f33add.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 20万円 出典: https://www.city.murayama.lg.jp/kurashi/noringyou/noringyou/hojojigyou/6jisangyouka.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5cf162e7a6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（米・畑作物の収入減少影響緩和対策／ナラシ）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-kome-hatasaku-mono-no-shuunyuu-b0cd49.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.tendo.yamagata.jp/soshiki/nouringyou/shinkijunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5e5e6f5fee</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-06-305_山形_未来を育む農業担い手育成支援事業_組織的な取組み</title>
+    <link>https://jpcite.com/programs/pref-06-305-yamagata-mirai-wo-hagukumu-nougyou-ninaite-7216bd.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 240万円 出典: https://www.pref.yamagata.jp/140034/sangyo/nourinsuisangyou/nogyo/shien/r7miraininaite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5f1bb2a00a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年産「農家のみなさんへ」「環境保全型農業直接支払交付金」</title>
+    <link>https://jpcite.com/programs/reiwa-7-nensan-nouka-nominasanhe-kankyouhozen-kata-nougyou-e41ad3.html</link>
+    <description>Tier B / 山形県 / 山形県鶴岡市 / subsidy 出典: https://www.city.tsuruoka.lg.jp/sangyo/nourinsuisan/noukanominasanhe.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5fb7ebe967</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山形県 新規就農者定着支援事業</title>
+    <link>https://jpcite.com/programs/yamagataken-shinki-shuunou-mono-teichaku-shien-jigyou-fad45f.html</link>
+    <description>Tier B / 山形県 / subsidy / 上限 60万円 出典: https://www.maff.go.jp/j/new_farmer</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-641b833aaa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就農移住者支援事業</title>
+    <link>https://jpcite.com/programs/shuunou-ijuusha-shien-jigyou-c02687.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） / 上限 216万円 出典: https://www.city.obanazawa.yamagata.jp/sangyo/nogyo/499</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6514886f79</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定新規就農者制度（青年等就農計画認定制度）</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-seinen-nado-shuunou-055547.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.tendo.yamagata.jp/soshiki/nouringyou/shinkijunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6d0800b0a6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年住宅リフォーム支援事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nen-juutaku-rifoomu-shien-jigyou-hi-hojokin-5cec27.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.obanazawa.yamagata.jp/kurashi/sumai/taishin-reform/1</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6edb6a8e5c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>村山市いっくど農業ねっづぐプログラム（移住研修者生活支援）</title>
+    <link>https://jpcite.com/programs/murayama-shi-ikkudo-nougyou-nezzugu-puroguramu-ijuu-kenshuu-2e23a0.html</link>
+    <description>Tier B / 山形県 / 市町村 / subsidy / 上限 120万円 出典: https://www.city.murayama.lg.jp/kurashi/nou_syou_kou/norin/nouringyoukannkeihoj/nourin-ikkudoneddug.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-712a60c574</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年住宅リフォーム支援事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nen-juutaku-rifoomu-shien-jigyou-hi-hojokin-b7f59f.html</link>
+    <description>Tier B / 山形県 / 山形県尾花沢市 / subsidy 出典: https://www.city.obanazawa.yamagata.jp/kurashi/sumai/taishin-reform/1</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7201225ec2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>親元就農支援交付金</title>
+    <link>https://jpcite.com/programs/oyamoto-shuunou-shien-koufukin-a0e844.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 20万円 出典: https://www.city.yonezawa.yamagata.jp/item/2314.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7eca7bbe18</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>尾花沢市資格取得促進助成金</title>
+    <link>https://jpcite.com/programs/obanazawa-shi-shikaku-shutoku-sokushin-joseikin-c7f6db.html</link>
+    <description>Tier B / 山形県 / 山形県尾花沢市 / subsidy 出典: https://www.city.obanazawa.yamagata.jp/sangyo/joseikin-hojokin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-812c6b3a1c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営所得安定対策（ナラシ・ゲタ対策）</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-narashi-geta-taisaku-2fa6da.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.yonezawa.yamagata.jp/item/470.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-82797c7d20</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>6次産業化ファーストステップ推進支援事業</title>
+    <link>https://jpcite.com/programs/6-tsugi-sangyouka-faasutosuteppu-suishin-shien-jigyou-f983e7.html</link>
+    <description>Tier B / 山形県 / 山形県鶴岡市 / subsidy / 上限 15万円 出典: https://www.city.tsuruoka.lg.jp/sangyo/6jisangyouka/first_step.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8725bb79c9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年等就農計画制度（認定新規就農者制度）</title>
+    <link>https://jpcite.com/programs/seinen-nado-shuunou-keikaku-seido-nintei-shinki-shuunou-aaf20d.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.higashine.yamagata.jp/section_list/section011/513</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8b1700eeb3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくらんぼ等労働力確保事業</title>
+    <link>https://jpcite.com/programs/sakuranbo-nado-roudouryoku-kakuho-jigyou-c8a822.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.tendo.yamagata.jp/soshiki/nouringyou/sakuranbo_roudou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8b91520fd8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境保全型農業直接支払交付金</title>
+    <link>https://jpcite.com/programs/kankyouhozen-kata-nougyou-chokusetsu-shiharai-koufukin-b03156.html</link>
+    <description>Tier B / 山形県 / 山形県酒田市 / subsidy 出典: https://www.city.sakata.lg.jp/sangyo/nogyo/news/nosei05202303301435.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8f67a1bf67</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>商工業地域活性化支援事業費補助金</title>
+    <link>https://jpcite.com/programs/shoukougyou-chiiki-kasseika-shien-jigyou-hi-hojokin-759f6c.html</link>
+    <description>Tier C / 山形県 / 山形県米沢市 / subsidy / 上限 30万円 出典: https://www.city.yonezawa.yamagata.jp/material/files/group/20/26230420.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9c8e75667a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>6次産業化ファーストステップ推進支援事業</title>
+    <link>https://jpcite.com/programs/6-tsugi-sangyouka-faasutosuteppu-suishin-shien-jigyou-228453.html</link>
+    <description>Tier B / 山形県 / （noukaweb 収集） / 上限 15万円 出典: https://www.city.tsuruoka.lg.jp/sangyo/6jisangyouka/first_step.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a049cb8e78</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市外からの移住就農研修者支援（村山市独自）</title>
+    <link>https://jpcite.com/programs/shigai-karano-ijuu-shuunou-kenshuu-mono-shien-murayama-shi-1532db.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 120万円 出典: https://www.city.murayama.lg.jp/kurashi/noringyou/noringyou/hojojigyou/stepup.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a263244877</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定新規就農者制度</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-9861fc.html</link>
+    <description>Tier C / 山形県 / 農林水産省 / subsidy 出典: https://www.maff.go.jp/j/new_farmer/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a76a16081f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年産「農家のみなさんへ」「環境保全型農業直接支払交付金」</title>
+    <link>https://jpcite.com/programs/reiwa-7-nensan-nouka-nominasanhe-kankyouhozen-kata-nougyou-0d4be2.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.tsuruoka.lg.jp/sangyo/nourinsuisan/noukanominasanhe.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ab61f227b9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者移住・定住促進事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ijuu-teijuu-sokushin-jigyou-d0364c.html</link>
+    <description>Tier C / 山形県 / subsidy / 上限 100万円 出典: https://www.city.tendo.yamagata.jp/soshiki/nouringyou/shinkijunou_ijuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b225a02e43</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大雨災害に係る農機具被害特別支援事業</title>
+    <link>https://jpcite.com/programs/ooame-saigai-ni-kakaru-noukigu-higai-tokubetsu-shien-jigyou-014267.html</link>
+    <description>Tier C / 山形県 / （noukaweb 収集） 出典: https://www.city.sakata.lg.jp/sangyo/nogyo/R60725_nogyo_shien/nosei052024110614472.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b40976656a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>合併処理浄化槽設置整備事業費補助金・浄化槽整備促進事業費補助金</title>
+    <link>https://jpcite.com/programs/gappeishori-joukasou-setchi-seibi-jigyou-hi-hojokin-5fff96.html</link>
+    <description>Tier C / 山形県 / 山形県尾花沢市 / subsidy / 上限 66万円 出典: https://www.yamagata-suishitsu.or.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-bcf564c79e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

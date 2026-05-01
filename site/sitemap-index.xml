@@ -7,7 +7,7 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>https://jpcite.com/sitemap.xml</loc>
-    <lastmod>2026-04-30</lastmod>
+    <lastmod>2026-05-01</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://jpcite.com/sitemap-programs.xml</loc>
@@ -39,6 +39,10 @@
   </sitemap>
   <sitemap>
     <loc>https://jpcite.com/docs/sitemap.xml</loc>
-    <lastmod>2026-04-30</lastmod>
+    <lastmod>2026-05-01</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/sitemap-enforcement.xml</loc>
+    <lastmod>2026-05-01</lastmod>
   </sitemap>
 </sitemapindex>

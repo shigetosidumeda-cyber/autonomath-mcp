@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 徳島県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/tokushima.xml" rel="self" type="application/rss+xml" />
+  <description>徳島県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>「中小企業等GX促進事業費補助金」の募集について（R8.4.6追記）｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-nado-gx-sokushin-jigyou-hi-hojokin-no-boshuu-1f24b7.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy / 上限 2,000万円 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7310065/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0bb2ac1ce5</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「賃上げ応援！生産性向上投資促進事業費補助金」について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/chin-age-ouen-seisansei-koujou-toushi-sokushin-jigyou-hi-2f3808.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7243722/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-1179612bff</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度ディープテック・イノベーション創出支援費補助金の公募について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-diiputekku-inobeeshon-soushutsu-shien-hi-37b435.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7307018/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-15f1ff5317</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>補助金・助成金｜起業・創業ポータルサイト</title>
+    <link>https://jpcite.com/programs/hojokin-joseikin-kigyou-sougyou-pootarusaito-9455df.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy / 上限 5,000万円 出典: https://www.pref.tokushima.lg.jp/entrepreneur/policy/funds/subsidy/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2266d07d50</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「徳島県 新時代イノベーション創出支援費補助金」の募集について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-shinjidai-inobeeshon-soushutsu-shien-hi-1d3276.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7310681/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3f95a8048c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「徳島県生産性革命投資促進事業費補助金」について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-seisansei-kakumei-toushi-sokushin-jigyou-hi-c4f131.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7236126/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4c1843c0b8</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「物流高度化支援事業費補助金」の募集について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/butsuryuu-koudoka-shien-jigyou-hi-hojokin-no-boshuu-88c8ac.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7312267/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-6fcb8af9be</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「徳島県 生産性向上・成長力強化支援事業費補助金」の交付決定時期について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-seisansei-koujou-seichou-chikara-kyouka-207f5c.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7309846/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-8953f962b4</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度「徳島県中小企業特別高圧電力料金補助金」の募集について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-toku-shima-kenchuu-shoukigyou-tokubetsu-20608a.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7306116/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a9d441e6d6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「とくしま創業促進費補助金（スタートアップ枠・一般枠）」の募集開始について｜徳島県ホームページ</title>
+    <link>https://jpcite.com/programs/tokushima-sougyou-sokushin-hi-hojokin-sutaatoappu-waku-cf8633.html</link>
+    <description>Tier B / 徳島県 / 徳島県 / subsidy / 上限 200万円 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shokogyo/7238596/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-eeb1b6cfec</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5/7〆】介護実務者・同行援護研修科1（6/1開講・6か月訓練）受講生募集中！</title>
+    <link>https://jpcite.com/programs/5-7-sime-kaigo-jitsumusha-doukou-engo-kenshuu-ka-1-6-1-4abfaf.html</link>
+    <description>Tier S / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312389/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0b587e268c</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5/12〆】はじめて学ぶIT技能科1（6/10開講・3か月訓練）受講生募集中！</title>
+    <link>https://jpcite.com/programs/5-12-sime-hajimete-manabu-it-ginou-ka-1-6-10-kaikou-3-ka-85bf45.html</link>
+    <description>Tier S / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312407/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2458e5ecd4</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>★募集中の公共職業訓練など★（テクノスクール注目情報）</title>
+    <link>https://jpcite.com/programs/boshuuchuu-no-koukyou-shokugyoukunren-nado-tekunosukuuru-87f719.html</link>
+    <description>Tier S / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7301358/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-29593c9151</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5/1〆】基礎から応用まで学べるIT技能科（西部地区）（5/25開講・3か月訓練）受講生募集中！</title>
+    <link>https://jpcite.com/programs/5-1-sime-kiso-kara-ouyou-made-manabe-ru-it-ginou-ka-seibu-e85fbe.html</link>
+    <description>Tier S / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7311401/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2a1f24434a</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5/7〆】造園科（5/27開講・6か月訓練）受講生募集中！</title>
+    <link>https://jpcite.com/programs/5-7-sime-zouen-ka-5-27-kaikou-6-ka-gatsu-kunren-jukousei-0480f5.html</link>
+    <description>Tier S / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312388/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-537bb1a5cc</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【全国枠】令和7年度徳島県奨学金返還支援制度「助成候補者」募集終了＜★全国の大学生等及び既卒者対象★＞</title>
+    <link>https://jpcite.com/programs/zenkoku-waku-reiwa-7-nendo-toku-shima-ken-shougakukin-d20f82.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/5048099/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-08962da9e3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「中小企業等GX促進事業費補助金」の募集について（R8.4.6追記）</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-nado-gx-sokushin-jigyou-hi-hojokin-no-boshuu-345db3.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7310065/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1526aa7a4c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【準備中】令和8年度徳島県地域脱炭素移行・再エネ推進事業補助金（県民向け太陽光発電設備・蓄電池補助事業）について</title>
+    <link>https://jpcite.com/programs/junbichuu-reiwa-8-nendo-toku-shima-kenchi-iki-dattan-moto-936018.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/ippannokata/kurashi/shizen/7241363/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-276b826517</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度徳島県地域脱炭素移行・再エネ推進事業補助金（事業者向け太陽光発電設備・蓄電池補助事業）の募集について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-toku-shima-kenchi-iki-dattan-moto-ikou-sai-158be1.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/ippannokata/kurashi/shizen/7312332/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2fa4d06c09</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【前期募集の開始！】食料品や日用品の配布を行う団体を補助します！（家計支援・地域つながり力強化事業費補助金）</title>
+    <link>https://jpcite.com/programs/zenki-boshuu-no-kaishi-shokuryouhin-ya-nichiyouhin-no-haifu-5ab044.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/ippannokata/kenko/chiikifukushi/7312313/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-31e70638cc</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子どもはぐくみ医療費市町村制度の概要</title>
+    <link>https://jpcite.com/programs/kodomo-hagukumi-iryouhi-shichouson-seido-no-gaiyou-0712d8.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/kenko/kosodateshien/2008032500022</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-406f863654</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5月15日締切】AIを学ぶWEBシステムエンジニア科（6か月訓練）の訓練生募集</title>
+    <link>https://jpcite.com/programs/5-gatsu-15-nichi-shimekiri-ai-wo-manabu-web-1c5311.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312473/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-51d7813b26</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>UIJターン就職をお考えの方へ</title>
+    <link>https://jpcite.com/programs/uij-taan-shuushoku-woo-kangae-no-hou-he-478ef6.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/2014071700316</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5fb20aac1b</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>「令和8年度徳島県にぎわい創出推進補助金（にぎわい創出推進事業）」交付対象事業について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-toku-shima-ken-nigiwai-soushutsu-suishin-24a7c2.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/kyoiku/kanko/7312189/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-63c8b1dfb4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度にし阿波養鶏業インターンシップ研修生募集！</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-nishi-awa-youkei-gyou-intaanshippu-kenshuusei-665bbd.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/shien/mima/7304790/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-65f7675977</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5月7日締切】介護実務者・同行援護研修科1（6か月訓練）の訓練生募集</title>
+    <link>https://jpcite.com/programs/5-gatsu-7-nichi-shimekiri-kaigo-jitsumusha-doukou-engo-1200e9.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312389/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-711057f929</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5月7日締切】造園科（6か月訓練）の訓練生募集</title>
+    <link>https://jpcite.com/programs/5-gatsu-7-nichi-shimekiri-zouen-ka-6-ka-gatsu-kunren-no-7bf06f.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312388/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7241fa2638</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【5月12日締切】はじめて学ぶIT技能科1（3か月訓練）の訓練生募集</title>
+    <link>https://jpcite.com/programs/5-gatsu-12-nichi-shimekiri-hajimete-manabu-it-ginou-ka-1-3-8b836e.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/7312407/</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8018898e07</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【県内枠】令和7年度徳島県奨学金返還支援制度「助成候補者」募集終了＜★県内の高校3年生等対象★＞</title>
+    <link>https://jpcite.com/programs/kennai-waku-reiwa-7-nendo-toku-shima-ken-shougakukin-henkan-2008b6.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/ippannokata/sangyo/shushokushien/5048096/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e4258ab6c3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高等学校等就学支援金について</title>
+    <link>https://jpcite.com/programs/koutougakkou-nado-shuugaku-shien-kin-nitsuite-249c09.html</link>
+    <description>Tier A / 徳島県 / 徳島県 / support 出典: https://www.pref.tokushima.lg.jp/ippannokata/kyoiku/gakkokyoiku/5025670</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f56d1a2f22</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県商工会連合会 補助金・助成金 案内ハブ（徳島県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-shoukou-kai-rengoukai-hojokin-joseikin-annai-9d2720.html</link>
+    <description>Tier B / 徳島県 / 徳島県商工会連合会 / directory 出典: http://www.tsci.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-175dccfaa9</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:40 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県水道広域化推進プラン (令和5年3月策定)</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-suidou-kouiki-ka-suishin-puran-reiwa-5-nen-3-1c064e.html</link>
+    <description>Tier C / 徳島県 / 徳島県 出典: https://www.pref.tokushima.lg.jp/ippannokata/kurashi/seikatsueisei/7215102/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3109062611</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県過疎地域内における県税の課税免除に関する条例</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-kaso-chiikinai-niokeru-kenzei-no-kazei-menjo-ac18cd.html</link>
+    <description>Tier C / 徳島県 / 徳島県 / tax_reduction_by_ordinance 出典: https://reiki.pref.tokushima.lg.jp/reiki_honbun/o001RG00000246.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b6dfc0577d</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県小規模企業者成長型M&amp;A促進応援金</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-shoukibo-kigyou-mono-seichou-kata-m-a-c3c047.html</link>
+    <description>Tier C / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7302058/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0ba3f92102</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県起業・創業支援補助金</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-kigyou-sougyou-shien-hojokin-6a85bd.html</link>
+    <description>Tier C / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/entrepreneur/policy/funds/subsidy/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-40738d3a76</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県BCP策定支援補助金</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-bcp-sakutei-shien-hojokin-cabb36.html</link>
+    <description>Tier C / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/mokuteki/zyoseiyushi/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7dc1f7d736</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県生産性向上・成長力強化支援事業費補助金</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-seisansei-koujou-seichou-chikara-kyouka-d7201a.html</link>
+    <description>Tier C / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/shokogyo/7309846/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-99de7e7866</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島県企業立地補助制度</title>
+    <link>https://jpcite.com/programs/toku-shima-ken-kigyou-ritchi-hojo-seido-76cc7f.html</link>
+    <description>Tier C / 徳島県 / 徳島県 / subsidy 出典: https://www.pref.tokushima.lg.jp/promoting/industrial-location/kigyohojo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aac81328e7</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ドローン防除導入支援（木頭ゆず産地向けスマート農業実証）</title>
+    <link>https://jpcite.com/programs/doroon-boujo-dounyuu-shien-kitou-yuzu-sanchi-muke-sumaato-a289b1.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0861d74197</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島市 新規就農者育成総合対策（経営開始資金）</title>
+    <link>https://jpcite.com/programs/toku-shima-shi-shinki-shuunou-mono-ikusei-sougou-taisaku-44c23e.html</link>
+    <description>Tier B / 徳島県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.tokushima.tokushima.jp/smph/shisei/keizai/nousui/nogyo/shien/keieikaisi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1af8acba11</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度阿波市有機JAS認証取得支援事業</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-awa-shiyuu-ki-jas-ninshou-shutoku-shien-jigyou-dfffa8.html</link>
+    <description>Tier C / 徳島県 / 徳島県阿波市 / subsidy / 上限 5万円 出典: https://www.city.awa.lg.jp/docs/2025052700058/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-23ce685f45</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市民農園利用者募集</title>
+    <link>https://jpcite.com/programs/shimin-nouen-riyousha-boshuu-20ff68.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-26872130a1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>上板町鳥獣被害防止計画に基づく有害鳥獣捕獲事業（猟友会委託・報償費支給）</title>
+    <link>https://jpcite.com/programs/ageita-machi-choujuu-higai-boushi-keikaku-ni-motozu-ku-b72b5e.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.townkamiita.jp/category/bunya/sangyo/nogyo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-29fbb1e857</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>吉野川市 新規就農者育成総合対策（経営開始資金）</title>
+    <link>https://jpcite.com/programs/yoshinogawa-shi-shinki-shuunou-mono-ikusei-sougou-taisaku-6fdd47.html</link>
+    <description>Tier B / 徳島県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.yoshinogawa.lg.jp/docs/2021042800036/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3464232141</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>畑作物産地形成促進事業（旧水田リノベ）</title>
+    <link>https://jpcite.com/programs/hatasaku-bussan-chikei-sei-sokushin-jigyou-kyuu-suiden-bab589.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-376ad04eec</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鳴門市 認定新規就農者制度・経営開始資金</title>
+    <link>https://jpcite.com/programs/naruto-shi-nintei-shinki-shuunou-mono-seido-keiei-kaishi-c08aa4.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 150万円 出典: https://www.city.naruto.lg.jp/jigyosha/sangyo/nogyo/nintei_shinki.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4172a98eeb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策（経営発展支援事業）地域計画早期実現支援枠</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-keiei-hatten-88d986.html</link>
+    <description>Tier C / 徳島県 / 農林水産省 / subsidy / 上限 600万円 出典: https://www.maff.go.jp/j/new_farmer/attach/pdf/index-47.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-45d682797b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 魅力と活力で次世代につなぐ阿波市農業振興事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-miryoku-to-katsuryoku-de-jisedai-nitsunagu-1d6b89.html</link>
+    <description>Tier C / 徳島県 / 徳島県阿波市 / subsidy / 上限 100万円 出典: https://www.city.awa.lg.jp/docs/2025041100043/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-54ad72afbe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>けんなんニューファーマー育成講座</title>
+    <link>https://jpcite.com/programs/kennan-nyuufaamaa-ikusei-kouza-6dd0f8.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-552891628e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>阿南市 認定新規就農者制度（経営開始資金等）</title>
+    <link>https://jpcite.com/programs/anan-shi-nintei-shinki-shuunou-mono-seido-keiei-kaishi-a3f1b0.html</link>
+    <description>Tier B / 徳島県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.anan.tokushima.jp/docs/2014103100015/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5cb4538235</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>上板町 スマート農業推進事業</title>
+    <link>https://jpcite.com/programs/ageita-machi-sumaato-nougyou-suishin-jigyou-04edbd.html</link>
+    <description>Tier B / 徳島県 / equipment / 上限 100万円 出典: https://www.townkamiita.jp/category/bunya/sangyo/nogyo/</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5f383a7831</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>勝浦町 新規就農者支援事業給付金</title>
+    <link>https://jpcite.com/programs/katsuura-machi-shinki-shuunou-mono-shien-jigyou-kyuufukin-8195a0.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 250万円 出典: https://www.town.katsuura.lg.jp/docs/2023071400034/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5f78d0b26e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島 とくしま農山漁村緊急投資事業 園芸産地重点支援</title>
+    <link>https://jpcite.com/programs/toku-shima-tokushima-nousangyoson-kinkyuu-toushi-jigyou-83029b.html</link>
+    <description>Tier B / 徳島県 / 都道府県 / subsidy / 上限 1,000万円 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/nogyo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-66544887b6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ドローンによる農薬空中散布安全ガイドライン（勝浦町版）</title>
+    <link>https://jpcite.com/programs/doroon-niyoru-nouyaku-kuuchuu-sanpu-anzen-gaidorain-4d5122.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 250万円 出典: https://www.town.katsuura.lg.jp/docs/2023071400034/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6849fd5d25</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農の里づくり事業（阿南・那賀未来の農業づくり協議会）</title>
+    <link>https://jpcite.com/programs/nou-no-sato-zukuri-jigyou-anan-naka-mirai-no-nougyou-zukuri-2e49fb.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6d0eb79722</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>吉野川市つづける農業応援給付金事業</title>
+    <link>https://jpcite.com/programs/yoshinogawa-shi-tsuzukeru-nougyou-ouen-kyuufukin-jigyou-014d57.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 5万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-721af9f50e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-36-101_徳島_とくしま農山漁村緊急投資事業_園芸産地重点支援</title>
+    <link>https://jpcite.com/programs/pref-36-101-toku-shima-tokushima-nousangyoson-kinkyuu-6e9c5c.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 1,000万円 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/nogyo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7c7c72208d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>吉野川市有害鳥獣侵入防止柵設置補助金</title>
+    <link>https://jpcite.com/programs/yoshinogawa-shiyuu-gaichou-kemono-shinnyuu-boushi-saku-547588.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 250万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-850c79bd00</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>親方制度（マンツーマン指導）</title>
+    <link>https://jpcite.com/programs/oyakata-seido-mantsuuman-shidou-0761ed.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-852f56a67a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島 とくしま農山漁村未来投資事業</title>
+    <link>https://jpcite.com/programs/toku-shima-tokushima-nousangyoson-mirai-toushi-jigyou-389ad0.html</link>
+    <description>Tier A / 徳島県 / 都道府県 / subsidy / 上限 3,000万円 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/nogyo/7240188/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8669b29c1b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>IPM技術導入支援（施設園芸の生産安定）</title>
+    <link>https://jpcite.com/programs/ipm-gijutsu-dounyuu-shien-shisetsu-engei-no-seisan-antei-d35d99.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8b93552a94</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>吉野川市有害鳥獣侵入防止柵貸与事業</title>
+    <link>https://jpcite.com/programs/yoshinogawa-shiyuu-gaichou-kemono-shinnyuu-boushi-saku-3926f1.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-95b1128c3d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度阿波市がんばる企業応援補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-awa-shi-ganbaru-kigyou-ouen-hojokin-334945.html</link>
+    <description>Tier C / 徳島県 / 徳島県阿波市 / subsidy / 上限 40万円 出典: https://www.city.awa.lg.jp/docs/2024031800018/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-afcd3a4092</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業経営相談所による専門家派遣</title>
+    <link>https://jpcite.com/programs/nougyou-keiei-soudansho-niyoru-senmonka-haken-ebc57e.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b7e4916da2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>勝浦町新規就農者支援事業給付金（経営支援型）</title>
+    <link>https://jpcite.com/programs/katsuura-machi-shinki-shuunou-mono-shien-jigyou-kyuufukin-a83444.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 250万円 出典: https://www.town.katsuura.lg.jp/docs/2023071400034/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c44fa3b805</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>狩猟免許取得補助事業</title>
+    <link>https://jpcite.com/programs/shuryou-menkyoshutoku-hojo-jigyou-630373.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 250万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c8bf0003d3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-36-102_徳島_とくしま農山漁村未来投資事業</title>
+    <link>https://jpcite.com/programs/pref-36-102-toku-shima-tokushima-nousangyoson-mirai-toushi-3c9d34.html</link>
+    <description>Tier A / 徳島県 / subsidy / 上限 3,000万円 出典: https://www.pref.tokushima.lg.jp/jigyoshanokata/sangyo/nogyo/7240188/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-cc5f747aa2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>徳島市 新規就農者育成総合対策（経営発展支援事業）</title>
+    <link>https://jpcite.com/programs/toku-shima-shi-shinki-shuunou-mono-ikusei-sougou-taisaku-883ded.html</link>
+    <description>Tier A / 徳島県 / 市町村 / subsidy / 上限 1,000万円 出典: https://www.city.tokushima.tokushima.jp/smph/shisei/keizai/nousui/nogyo/shien/keieihatten.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-de55d74a1c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>吉野川市農地バンク（農地中間管理事業）</title>
+    <link>https://jpcite.com/programs/yoshinogawa-shi-nouchi-banku-nouchi-chuukan-kanri-jigyou-1d0223.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-de60509f00</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年等就農計画作成支援</title>
+    <link>https://jpcite.com/programs/seinen-nado-shuunou-keikaku-sakuseishien-dcb0c5.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e2267222a4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業簿記相談講座</title>
+    <link>https://jpcite.com/programs/nougyou-boki-soudan-kouza-327710.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 100万円 出典: https://www.pref.tokushima.lg.jp/shien/anan/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ead2902d12</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>森林作業機械購入補助事業</title>
+    <link>https://jpcite.com/programs/shinrin-sagyoukikai-kounyuu-hojo-jigyou-f82cc1.html</link>
+    <description>Tier B / 徳島県 / subsidy / 上限 250万円 出典: https://www.city.yoshinogawa.lg.jp/soshiki/sangyokeizaib/noushin/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f3d6b43db4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

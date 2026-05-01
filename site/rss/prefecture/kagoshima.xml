@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 鹿児島県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/kagoshima.xml" rel="self" type="application/rss+xml" />
+  <description>鹿児島県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>垂水市新規就農者機械・施設整備事業</title>
+    <link>https://jpcite.com/programs/tarumizushi-shinki-shuunou-mono-kikai-shisetsu-seibi-jigyou-eb367f.html</link>
+    <description>Tier S / 鹿児島県 / subsidy / 上限 250万円 出典: https://www.city.tarumizu.lg.jp/nosei/kurashi/sangyo/nogyo/sien/syuunousya_sien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-074c19fc26</guid>
+    <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営支援</title>
+    <link>https://jpcite.com/programs/keiei-shien-8a0306.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/syoko/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0f718fe738</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害者就労支援</title>
+    <link>https://jpcite.com/programs/shougaisha-shuurou-shien-5e28c2.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/kenko-fukushi/syogai-syakai/shuroshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-24b71553fd</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>産業支援</title>
+    <link>https://jpcite.com/programs/sangyou-shien-7351f1.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/sangyoshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2f3c131e1a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子ども・子育て支援施策</title>
+    <link>https://jpcite.com/programs/kodomo-kosodate-shien-shisaku-3e14b6.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/kenko-fukushi/kodomo/kosodate/shiensesaku_index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3455d49b91</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性の活躍推進</title>
+    <link>https://jpcite.com/programs/josei-no-katsuyaku-suishin-ed4114.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / subsidy 出典: https://www.pref.kagoshima.jp/kurashi-kankyo/jinken/josei/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-34c2e796ba</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>県庁18階コワーキングスペース「かごゆいテラス」</title>
+    <link>https://jpcite.com/programs/kenchou-18-kai-kowaakingusupeesu-kagoyui-terasu-7f34e3.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/syoko/shien/kagoyui/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-51dfd88c1d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害者総合支援法</title>
+    <link>https://jpcite.com/programs/shougaisha-sougou-shien-hou-1c3fae.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/ae07/kenko-fukushi/syogai-syakai/ziritushien/ziritushien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-554fb0d8d3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>生活支援体制整備事業</title>
+    <link>https://jpcite.com/programs/seikatsu-shien-taisei-seibi-jigyou-da02e0.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/kenko-fukushi/koreisya/seikatushientaisei_seibijigyou/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-67b7625321</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業者等向け支援事業統合ページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-mono-nado-muke-shien-jigyou-tougou-peeji-52fa7d.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/af02/sangyo-rodo/tyusyoukigyou/shien_sesaku/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-67f4394baf</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>困難な問題を抱える女性への支援</title>
+    <link>https://jpcite.com/programs/konnan-na-mondai-wo-kakae-ru-josei-heno-shien-4e146f.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / subsidy 出典: https://www.pref.kagoshima.jp/ab15/konnan-josei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6a470255ed</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>保育士・子育て支援員</title>
+    <link>https://jpcite.com/programs/hoiku-samurai-kosodate-shien-in-3dc0db.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/kenko-fukushi/kodomo/hoikushi_kosodateshienin/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-878e7ce231</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ライフステージ別（子育て支援）</title>
+    <link>https://jpcite.com/programs/raifusuteeji-betsu-kosodate-shien-bd9438.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/kenko-fukushi/kodomo/kosodate/shien.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-978b6ab15e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>雇用支援</title>
+    <link>https://jpcite.com/programs/koyou-shien-7c1a6f.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/rodo/koyoshien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a077588c26</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>起業家・ベンチャー企業支援</title>
+    <link>https://jpcite.com/programs/kigyouka-benchaa-kigyou-shien-89035b.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/syoko/shien/kigyo/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a5c4591029</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>IT産業支援</title>
+    <link>https://jpcite.com/programs/it-sangyou-shien-9dcfa1.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/syoko/shien/it/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ac250e2ba6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>創業・新分野進出等支援</title>
+    <link>https://jpcite.com/programs/sougyou-shin-bunya-shinshutsu-nado-shien-1cd867.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/syoko/shien/sougyou/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-bcdd0bbfe6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>IoT・AI等活用・導入支援</title>
+    <link>https://jpcite.com/programs/iot-ai-toukatsu-you-dounyuu-shien-be5dd3.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/syoko/shien/iot/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c1b985c105</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新連携事業・地域資源活用事業・農商工等連携事業</title>
+    <link>https://jpcite.com/programs/shin-renkei-jigyou-chiiki-shigen-katsuyou-jigyou-nou-786dc1.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/sangyo-rodo/syoko/shien/renkei/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ddbbcb4823</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子どもの生活支援（制度と相談窓口）</title>
+    <link>https://jpcite.com/programs/kodomo-no-seikatsu-shien-seido-to-soudanmadoguchi-1c9e3f.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/kenko-fukushi/kodomo/kodomoseikatushien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e079067b47</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>買物弱者への支援について</title>
+    <link>https://jpcite.com/programs/kaimono-jakusha-heno-shien-nitsuite-b9e8d0.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県 / support 出典: https://www.pref.kagoshima.jp/kurashi-kankyo/chiiki/kaimonojyakusha_shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fb481dab37</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島県商工会連合会 補助金・助成金 案内ハブ（鹿児島県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/kako-shima-ken-shoukou-kai-rengoukai-hojokin-joseikin-annai-4f433e.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県商工会連合会 / directory 出典: https://www.kashoren.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0efa2b9d80</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>曽於市 新規就農者支援対策事業</title>
+    <link>https://jpcite.com/programs/so-oichi-shinki-shuunou-mono-shien-taisaku-jigyou-b6ab69.html</link>
+    <description>Tier C / 鹿児島県 / 市町村 / subsidy / 上限 360万円 出典: https://www.city.soo.kagoshima.jp/sangyou_business/nourinngyou/shinnkisyuunousyashienn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-663d39d33e</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>霧島市 新規就農者育成投資資金</title>
+    <link>https://jpcite.com/programs/kiri-shima-shi-shinki-shuunou-mono-ikusei-toushi-shikin-fdb0da.html</link>
+    <description>Tier C / 鹿児島県 / 市町村 / subsidy / 上限 432万円 出典: https://www.city-kirishima.jp/nouchiku/machizukuri/nogyo/shinkishuno/nougyoujisedai_shitan.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7f98b6b1fe</guid>
+    <pubDate>Fri, 24 Apr 2026 09:37:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>離島地域の税制優遇措置 (鹿児島県)</title>
+    <link>https://jpcite.com/programs/ri-shima-chiiki-no-zeisei-yuuguusochi-kako-shima-ken-51d873.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県 / tax_reduction_by_ordinance 出典: http://www.pref.kagoshima.jp/ac07/pr/shima/zei/ritouzeiseii.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ae43e9038f</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>奄美群島振興交付金</title>
+    <link>https://jpcite.com/programs/amami-gun-shima-shinkou-koufukin-151764.html</link>
+    <description>Tier C / 鹿児島県 / 国土交通省 / 鹿児島県 / subsidy 出典: http://www.pref.kagoshima.jp/ac07/20250902_amashin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d86b9d196a</guid>
+    <pubDate>Thu, 23 Apr 2026 05:13:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>障害福祉(障害児支援)人材確保・職場環境改善等事業</title>
+    <link>https://jpcite.com/programs/shougai-fukushi-shougaiji-shien-jinzai-kakuho-c865c2.html</link>
+    <description>Tier C / 鹿児島県 / 厚生労働省 社会・援護局 障害保健福祉部 / subsidy 出典: https://www.pref.kagoshima.jp/ae07/sisetsu/r7jinzaikakuho.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-86be1d61fe</guid>
+    <pubDate>Thu, 23 Apr 2026 05:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島県中小企業経営革新支援事業費補助金</title>
+    <link>https://jpcite.com/programs/kako-shima-kenchuu-shoukigyou-keiei-kakushin-shien-jigyou-812f99.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県 / subsidy 出典: https://www.pref.kagoshima.jp/af02/keieikakushin/jigyouhishienhojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-3e21381b79</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島県中小企業DX推進人材育成支援事業</title>
+    <link>https://jpcite.com/programs/kako-shima-kenchuu-shoukigyou-dx-suishin-jinzai-ikusei-ebe389.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県 / subsidy 出典: http://www.pref.kagoshima.jp/af22/2026digital_jinzai.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-4351a00102</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島県 農福連携推進事業</title>
+    <link>https://jpcite.com/programs/kako-shima-ken-nou-fuku-renkei-suishin-jigyou-bcbcd4.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県 / subsidy 出典: https://noufuku.jp/news/info-20230530-2/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-568a549cb4</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島県食品関連製造業生産工程自動化・省力化等支援事業</title>
+    <link>https://jpcite.com/programs/kako-shima-ken-shokuhin-kanren-seizougyou-seisan-koutei-730dd5.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県 / subsidy 出典: https://syokuhinkanrenseizo.pref.kagoshima.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-82d8318870</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島県ものづくり中核企業生産革新支援事業</title>
+    <link>https://jpcite.com/programs/kako-shima-ken-monozukuri-chuukaku-kigyou-seisan-kakushin-4f729a.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県 / subsidy 出典: https://monodukurityukaku.pref.kagoshima.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e747da732d</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島県サービス業生産性向上支援事業費補助金</title>
+    <link>https://jpcite.com/programs/kako-shima-ken-saabisu-goushou-san-seikou-ue-shien-jigyou-ac71d8.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県 / subsidy 出典: https://kagoshima-pref-service-support.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f7e5cb48f6</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>遊休農地解消対策奨励金</title>
+    <link>https://jpcite.com/programs/yuukyuu-nouchi-kaishou-taisaku-shoureikin-21b174.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 200万円 出典: https://www.city.minamisatsuma.lg.jp/mokuteki/post-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-016f86c70f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南さつま市キバレ海の担い手支援事業</title>
+    <link>https://jpcite.com/programs/minami-satsuma-shi-kibare-umi-no-ninaite-shien-jigyou-2e51cf.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.minamisatsuma.lg.jp/mokuteki/post-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-02754e9769</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿屋市移住・定住者就農支援事業</title>
+    <link>https://jpcite.com/programs/kanoya-shi-ijuu-teijuu-mono-shuunou-shien-jigyou-c3067a.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.kanoya.lg.jp/aguri/shiensakuitiran.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-05018f6e45</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南九州市新規就農奨励金（後継者・一括支給）</title>
+    <link>https://jpcite.com/programs/minamikyuushuu-shi-shinki-shuunou-shoureikin-koukeisha-533b67.html</link>
+    <description>Tier C / 鹿児島県 / subsidy / 上限 150万円 出典: https://nankyu-farming.jp/flow/support/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-06c6b09e07</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>垂水市新規就農者施設等整備事業</title>
+    <link>https://jpcite.com/programs/tarumizushi-shinki-shuunou-mono-shisetsutou-seibi-jigyou-bb0fc9.html</link>
+    <description>Tier A / 鹿児島県 / subsidy / 上限 200万円 出典: https://www.city.tarumizu.lg.jp/nosei/kurashi/sangyo/nogyo/sien/syuunousya_sien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0a7fa001da</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業用施設・機械導入の支援事業</title>
+    <link>https://jpcite.com/programs/nougyouyou-shisetsu-kikai-dounyuu-no-shien-jigyou-d8eb5b.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県志布志市 / subsidy / 上限 1,000万円 出典: https://www.city.shibushi.lg.jp/soshiki/10/23290.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0bcaabeaa6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南さつま市漁船エンジン整備支援事業</title>
+    <link>https://jpcite.com/programs/minami-satsuma-shi-gyosen-enjin-seibi-shien-jigyou-bb1a46.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.minamisatsuma.lg.jp/mokuteki/post-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0e3ae0adf5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>わな猟免許初心者講習会受講料の助成</title>
+    <link>https://jpcite.com/programs/wana-ryou-menkyo-shoshinsha-koushuukai-jukouryou-no-josei-cd2c3a.html</link>
+    <description>Tier C / 鹿児島県 / （noukaweb 収集） 出典: https://www.pref.kagoshima.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0f5235631f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大崎町新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/oosaki-machi-shinki-shuunou-mono-shien-jigyou-51fa3c.html</link>
+    <description>Tier C / 鹿児島県 / （noukaweb 収集） 出典: https://www.town.kagoshima-osaki.lg.jp/ns_einousuishin/sangyo/nogyo/nougyoujosei/sinkisyuunou.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0fcf181b2c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>垂水市新規就農者支援事業（機械・施設）</title>
+    <link>https://jpcite.com/programs/tarumizushi-shinki-shuunou-mono-shien-jigyou-kikai-shisetsu-3982b9.html</link>
+    <description>Tier A / 鹿児島県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.tarumizu.lg.jp/nosei/kurashi/sangyo/nogyo/sien/syuunousya_sien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1236b9340f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>住宅リフォーム促進事業補助金</title>
+    <link>https://jpcite.com/programs/juutaku-rifoomu-sokushin-jigyou-hojokin-ba02a8.html</link>
+    <description>Tier B / 鹿児島県 / （noukaweb 収集） / 上限 15万円 出典: https://www.town.kinko.lg.jp/seisaku-h/kurashi/tochi/shisaku/jutakunitsuite.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-129d15973e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>日置市農林漁業新規就業支援事業費補助金</title>
+    <link>https://jpcite.com/programs/hioki-shi-nouringyogyou-shinki-shuugyou-shien-jigyou-hi-170815.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 144万円 出典: https://www.city.hioki.kagoshima.jp/kouho/sangyo-business/sangyo/nogyo/nogyo-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-12cc1ed1f3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南さつま市新規就農者就農研修支援事業補助金</title>
+    <link>https://jpcite.com/programs/minami-satsuma-shi-shinki-shuunou-mono-shuunou-kenshuu-448f80.html</link>
+    <description>Tier C / 鹿児島県 / （noukaweb 収集） 出典: https://www.city.minamisatsuma.lg.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-13ce783848</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南さつま市漁獲共済補助事業</title>
+    <link>https://jpcite.com/programs/minami-satsuma-shi-gyokaku-kyousai-hojo-jigyou-6221b3.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 250万円 出典: https://www.city.minamisatsuma.lg.jp/mokuteki/post-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-143f6e70d0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南九州市新規就農者育成確保対策事業（参入者）</title>
+    <link>https://jpcite.com/programs/minamikyuushuu-shi-shinki-shuunou-mono-ikusei-kakuho-1dcf59.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 10万円 出典: https://www.kagoshima-iju.jp/contribute/minamikyusyu/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14c5eb1b1a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-462195-001_志布志市_新規就農支援金</title>
+    <link>https://jpcite.com/programs/mun-462195-001-shibushi-shi-shinki-shuunou-shien-kin-7ddb4f.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 150万円 出典: https://www.city.shibushi.lg.jp/soshiki/10/23139.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-15a930b146</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地災害の復旧に関する補助金</title>
+    <link>https://jpcite.com/programs/nouchi-saigai-no-fukkyuu-ni-kansu-ru-hojokin-e83957.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 250万円 出典: https://www.city.satsumasendai.lg.jp/gyoseijoho/hojokin/1/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1750044e0f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南さつま市漁船省エネ対策事業</title>
+    <link>https://jpcite.com/programs/minami-satsuma-shi-gyosen-shouene-taisaku-jigyou-68c3fa.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.minamisatsuma.lg.jp/mokuteki/post-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17577be18f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>出水市農業者就農資金償還助成金事業</title>
+    <link>https://jpcite.com/programs/shussui-shi-nougyou-mono-shuunou-shikin-shoukan-joseikin-3f4d75.html</link>
+    <description>Tier B / 鹿児島県 / （noukaweb 収集） / 上限 100万円 出典: https://www.city.kagoshima-izumi.lg.jp/page/page_01547.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-189eb71020</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>姶良市畜産振興資金利子補給事業</title>
+    <link>https://jpcite.com/programs/aira-shi-chikusan-shinkou-shikin-rishi-hokyuu-jigyou-df5b3e.html</link>
+    <description>Tier A / 鹿児島県 / subsidy / 上限 3,000万円 出典: https://www.city.aira.lg.jp/chikusan/sangyo/nosei/chikusan/rishi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-193c194722</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>曽於市新規就農者支援対策事業</title>
+    <link>https://jpcite.com/programs/so-oichi-shinki-shuunou-mono-shien-taisaku-jigyou-89b399.html</link>
+    <description>Tier B / 鹿児島県 / incentive / 上限 36万円 出典: https://www.city.soo.kagoshima.jp/sangyou_business/nourinngyou/shinnkisyuunousyashienn.html</description>
+    <category>incentive</category>
+    <guid isPermaLink="false">jpcite:program:UNI-19d7274319</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島市移住支援金制度</title>
+    <link>https://jpcite.com/programs/kako-shima-shi-ijuu-shien-kin-seido-37af3e.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県鹿児島市 / subsidy / 上限 100万円 出典: https://www.city.kashima.ibaraki.jp/data/doc/1707455742_doc_1_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1a39017b70</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>日置市農林漁業後継者就業支援事業費補助金</title>
+    <link>https://jpcite.com/programs/hioki-shi-nouringyogyou-koukeisha-shuugyou-shien-jigyou-hi-16a68e.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 120万円 出典: https://www.city.hioki.kagoshima.jp/kouho/sangyo-business/sangyo/nogyo/nogyo-hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1a55535278</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>住宅リフォーム促進事業補助金</title>
+    <link>https://jpcite.com/programs/juutaku-rifoomu-sokushin-jigyou-hojokin-25345b.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県錦江町 / subsidy / 上限 15万円 出典: https://www.town.kinko.lg.jp/seisaku-h/kurashi/tochi/shisaku/jutakunitsuite.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1bd2ad2251</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>多面的機能の発揮の促進に関する計画</title>
+    <link>https://jpcite.com/programs/tamenteki-kinou-no-hakki-no-sokushin-ni-kansu-ru-keikaku-0a8660.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.nishinoomote.lg.jp/admin/sangyou/nougyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1d57c60fba</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>みどり投資促進税制</title>
+    <link>https://jpcite.com/programs/midori-toushi-sokushin-zeisei-b2776b.html</link>
+    <description>Tier B / 鹿児島県 / tax_deduction / 上限 100万円 出典: https://www.maff.go.jp/j/kanbo/kankyo/seisaku/midori/midorihou_kibann.html</description>
+    <category>tax_deduction</category>
+    <guid isPermaLink="false">jpcite:program:UNI-20e42adb8e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>加工施設等の利用支援（笠沙生活改善センター等）</title>
+    <link>https://jpcite.com/programs/kakou-shisetsutou-no-riyou-shien-kasasa-seikatsu-kaizen-b944a3.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.minamisatsuma.lg.jp/business/shigoto-sangyo/noringyo/e016899.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-23d81a00b3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いちき串木野市新規就農者支援金</title>
+    <link>https://jpcite.com/programs/ichiki-kushikino-shi-shinki-shuunou-mono-shien-kin-46a620.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 20万円 出典: https://www.kagoshima-iju.jp/contribute/ichikikushikino/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2422ac1db7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者向けの支援事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-muke-no-shien-jigyou-dbbf9d.html</link>
+    <description>Tier A / 鹿児島県 / 農林水産省 / subsidy / 上限 1,000万円 出典: https://www.maff.go.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2465654a45</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>志布志市 新規就農支援金</title>
+    <link>https://jpcite.com/programs/shibushi-shi-shinki-shuunou-shien-kin-e1975b.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.shibushi.lg.jp/soshiki/10/23139.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-288ba92164</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特産品検証育成事業</title>
+    <link>https://jpcite.com/programs/tokusanhin-kenshou-ikusei-jigyou-a0703f.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県さつま町 / subsidy / 上限 30万円 出典: https://www.satsuma-net.jp/soshiki/yakuba/1010/2/hontai_site/nogyo_nogyoiinkai/josei/8360.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2a0a7dc6cf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>霧島市農業再生協議会水田収益力強化ビジョン</title>
+    <link>https://jpcite.com/programs/kiri-shima-shi-nougyou-saisei-kyougikai-suiden-shuueki-c990bd.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県霧島市 / subsidy 出典: https://www.city.kirishima.lg.jp/_res/projects/default_project/_page_/001/012/345/suiden_shuekiryo_kyoka_vision.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2d47adfaf4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害鳥獣対策事業補助金</title>
+    <link>https://jpcite.com/programs/yuugai-choujuu-taisaku-jigyou-hojokin-656b6e.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県さつま町 / subsidy 出典: https://www.satsuma-net.jp/shigoto_sangyo/nogyo_nogyoiinkai/1/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f5c5fb94d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>姶良市新規就農者奨励金事業（参入）</title>
+    <link>https://jpcite.com/programs/aira-shi-shinki-shuunou-mono-shoureikin-jigyou-sannyuu-b2365e.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 100万円 出典: https://www.kagoshima-iju.jp/contribute/aira/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f8abf935f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業関係補助金等事業一覧</title>
+    <link>https://jpcite.com/programs/nougyou-kankei-hojokin-nado-jigyou-ichiran-e5dfea.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 250万円 出典: https://www.city.minamisatsuma.lg.jp/mokuteki/post-2.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-301d5b6a84</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>垂水市新規就農者支援事業（施設等整備）</title>
+    <link>https://jpcite.com/programs/tarumizushi-shinki-shuunou-mono-shien-jigyou-shisetsutou-9f1fcf.html</link>
+    <description>Tier A / 鹿児島県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.tarumizu.lg.jp/nosei/kurashi/sangyo/nogyo/sien/syuunousya_sien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-30618be67f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>肝付町新規就農研修生支援事業</title>
+    <link>https://jpcite.com/programs/kimotsuki-machi-shinki-shuunou-kenshuusei-shien-jigyou-0e474c.html</link>
+    <description>Tier B / 鹿児島県 / training / 上限 100万円 出典: https://www.kagoshima-iju.jp/contribute/kimotsuki/</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31707dd70c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境保全型農業直接支払交付金制度</title>
+    <link>https://jpcite.com/programs/kankyouhozen-kata-nougyou-chokusetsu-shiharai-koufukin-seido-4fd69d.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県霧島市 / subsidy 出典: https://www.city-kirishima.jp/nouchiku/machizukuri/nogyo/shien/kofukinsedo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31d4d7e649</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島 農業近代化資金 県利子補給</title>
+    <link>https://jpcite.com/programs/kako-shima-nougyou-kindaika-shikin-ken-rishi-hokyuu-370802.html</link>
+    <description>Tier A / 鹿児島県 / 都道府県 / loan / 上限 1,800万円 出典: https://www.pref.kagoshima.jp/ag03/sangyo-rodo/nogyo/keiei/nouseisikin.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31f138b1fc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業者経営所得安定対策推進事業</title>
+    <link>https://jpcite.com/programs/nougyou-mono-keiei-shotoku-antei-taisaku-suishin-jigyou-76951c.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.hioki.kagoshima.jp/nousei/sangyo-business/sangyo/nogyo/shisaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-333e4aad3f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>遊休農地再生事業補助金</title>
+    <link>https://jpcite.com/programs/yuukyuu-nouchi-saisei-jigyou-hojokin-0f0589.html</link>
+    <description>Tier A / 鹿児島県 / 鹿児島県指宿市 / subsidy / 上限 3万円 出典: https://www.city.ibusuki.lg.jp/main/machi/nouchiku/iinnkai/page027176.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-34d8c17e3f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南さつま市産業おこし部関係補助金等交付要綱</title>
+    <link>https://jpcite.com/programs/minami-satsuma-shi-sangyou-okoshi-bu-kankei-hojokin-nado-217074.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県南さつま市 / subsidy / 上限 1,000万円 出典: https://www.city.minamisatsuma.lg.jp/reiki_int/reiki_honbun/r356RG00000457.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-350b357c82</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害鳥獣対策事業補助金（町単独事業）</title>
+    <link>https://jpcite.com/programs/yuugai-choujuu-taisaku-jigyou-hojokin-machi-tandoku-jigyou-72feab.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県さつま町 / subsidy / 上限 7万円 出典: https://www.satsuma-net.jp/soshiki/yakuba/1010/2/hontai_site/nogyo_nogyoiinkai/yugaichoju_taisaku/6632.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3620266d1c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>垂水市就農前研修受入事業</title>
+    <link>https://jpcite.com/programs/tarumizushi-shuunou-mae-kenshuu-ukeire-jigyou-2b8a44.html</link>
+    <description>Tier A / 鹿児島県 / subsidy / 上限 200万円 出典: https://www.city.tarumizu.lg.jp/nosei/kurashi/sangyo/nogyo/sien/syuunousya_sien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3831936696</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>合併処理浄化槽設置補助金</title>
+    <link>https://jpcite.com/programs/gappeishori-joukasou-setchi-hojokin-6a87b9.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県さつま町 / subsidy / 上限 54万円 出典: https://www.satsuma-net.jp/soshiki/yakuba/1006/2/suido_seikatsuhaisui/jokaso/227.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3ab7f68466</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南九州市新規就農奨励金（新規参入者・単身）</title>
+    <link>https://jpcite.com/programs/minamikyuushuu-shi-shinki-shuunou-shoureikin-20524d.html</link>
+    <description>Tier C / 鹿児島県 / subsidy / 上限 150万円 出典: https://nankyu-farming.jp/flow/support/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3b0463cca4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大崎町嗣元就農者確保対策事業</title>
+    <link>https://jpcite.com/programs/oosaki-machi-tsugu-motonari-nou-mono-kakuho-taisaku-jigyou-213687.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県大崎町 / subsidy / 上限 120万円 出典: https://www.town.kagoshima-osaki.lg.jp/ns_einousuishin/sangyo/nogyo/nougyoujosei/oyamotosyuunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3b70294506</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>姶良市畜産活性化事業補助金</title>
+    <link>https://jpcite.com/programs/aira-shi-chikusan-kasseika-jigyou-hojokin-46b265.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 250万円 出典: https://www.city.aira.lg.jp/sangyo/nogyo</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3b9fb595af</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>遊休農地再生事業補助金</title>
+    <link>https://jpcite.com/programs/yuukyuu-nouchi-saisei-jigyou-hojokin-b21c38.html</link>
+    <description>Tier B / 鹿児島県 / （noukaweb 収集） 出典: https://www.city.ibusuki.lg.jp/main/machi/nouchiku/iinnkai/page027176.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3bd063f419</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東串良町スマート産業化推進事業</title>
+    <link>https://jpcite.com/programs/higashikushira-machi-sumaato-sangyouka-suishin-jigyou-2ed8c2.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 115万円 出典: https://www.kagoshima-iju.jp/contribute/higashikushira/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3c3ad9a907</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者就農支援事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-shuunou-shien-jigyou-14d057.html</link>
+    <description>Tier C / 鹿児島県 / 鹿児島県鹿屋市 / subsidy / 上限 50万円 出典: https://www.city.kanoya.lg.jp/norinshoko/nogyo/shinkishuno/documents/shien.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3cf0757f8a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業振興地域制度</title>
+    <link>https://jpcite.com/programs/nougyou-shinkou-chiiki-seido-95be43.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.nishinoomote.lg.jp/admin/sangyou/nougyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3f8736ea24</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>霧島市担い手経営発展等支援事業</title>
+    <link>https://jpcite.com/programs/kiri-shima-shi-ninaite-keiei-hatten-nado-shien-jigyou-676022.html</link>
+    <description>Tier A / 鹿児島県 / subsidy / 上限 200万円 出典: https://www.city-kirishima.jp/nouchiku/nousei/20190601.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-40c6a6af0e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>霧島市新規就農支援センター</title>
+    <link>https://jpcite.com/programs/kiri-shima-shi-shinki-shuunou-shien-sentaa-cdcc17.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city-kirishima.jp/hisyokouhou/machizukuri/nogyo/shinkishuno/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-412571075a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西之表市農業簿記ソフト購入助成</title>
+    <link>https://jpcite.com/programs/nishinoomote-shi-nougyou-boki-sofuto-kounyuu-josei-648ba0.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 2万円 出典: https://www.kagoshima-iju.jp/contribute/nishinoomote/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4527844e4a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大崎町嗣元就農者確保対策事業</title>
+    <link>https://jpcite.com/programs/oosaki-machi-tsugu-motonari-nou-mono-kakuho-taisaku-jigyou-3bc3bf.html</link>
+    <description>Tier C / 鹿児島県 / （noukaweb 収集） 出典: https://www.town.kagoshima-osaki.lg.jp/ns_einousuishin/sangyo/nogyo/nougyoujosei/oyamotosyuunou.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-48c3432439</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南さつま市みらい農業サポート事業補助金</title>
+    <link>https://jpcite.com/programs/minami-satsuma-shi-mirai-nougyou-sapooto-jigyou-hojokin-0777f1.html</link>
+    <description>Tier C / 鹿児島県 / （noukaweb 収集） / 上限 100万円 出典: https://www.city.minamisatsuma.lg.jp/reiki_int/reiki_honbun/r356RG00001453.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-493c92fec5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-462187-001_霧島市_新規就農者育成投資資金</title>
+    <link>https://jpcite.com/programs/mun-462187-001-kiri-shima-shi-shinki-shuunou-mono-ikusei-97a67a.html</link>
+    <description>Tier C / 鹿児島県 / subsidy / 上限 432万円 出典: https://www.city-kirishima.jp/nousei</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4bf41e79cc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-462179-001_曽於市_新規就農者支援対策事業</title>
+    <link>https://jpcite.com/programs/mun-462179-001-so-oichi-shinki-shuunou-mono-shien-taisaku-19a066.html</link>
+    <description>Tier A / 鹿児島県 / subsidy / 上限 360万円 出典: https://www.city.soo.kagoshima.jp/sangyo/nogyo</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4c54f8e232</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>肝付町就農者経営支援事業補助金</title>
+    <link>https://jpcite.com/programs/kimotsuki-machi-shuunou-mono-keiei-shien-jigyou-hojokin-3d5ff9.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 100万円 出典: https://www.kagoshima-iju.jp/contribute/kimotsuki/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4ca7c8a463</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>薩摩川内市新規就農支援金補助金（資金）</title>
+    <link>https://jpcite.com/programs/satsumasendai-shi-shinki-shuunou-shien-kin-hojokin-shikin-e8b983.html</link>
+    <description>Tier B / 鹿児島県 / incentive / 上限 700万円 出典: https://www.city.satsumasendai.lg.jp/soshiki/1036/2/1/1/15299.html</description>
+    <category>incentive</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4d62c9fcc7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>姶良市優良生産素牛保留事業</title>
+    <link>https://jpcite.com/programs/aira-shi-yuuryou-seisan-moto-ushi-horyuu-jigyou-3e5691.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.aira.lg.jp/sangyo/nogyo</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4d9c070916</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者育成総合対策（経営開始資金）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-sougou-taisaku-keiei-kaishi-ab9319.html</link>
+    <description>Tier B / 鹿児島県 / 鹿児島県出水市 / subsidy / 上限 150万円 出典: https://www.city.kagoshima-izumi.lg.jp/page/page_01554.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4dfd2645e6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿児島 農業経営負担軽減支援資金</title>
+    <link>https://jpcite.com/programs/kako-shima-nougyou-keiei-futan-keigen-shien-shikin-ced88e.html</link>
+    <description>Tier B / 鹿児島県 / 都道府県 / loan / 上限 1,000万円 出典: https://www.pref.kagoshima.jp/ag03/sangyo-rodo/nogyo/keiei/nouseisikin7.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4f4b9a065c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿屋市耕種生産パワーアップ事業</title>
+    <link>https://jpcite.com/programs/kanoya-shi-koushu-seisan-pawaaappu-jigyou-f1c66f.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.kanoya.lg.jp/aguri/shiensakuitiran.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-57deff9b9b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-462217-001_南九州市_新規参入者奨励金</title>
+    <link>https://jpcite.com/programs/mun-462217-001-minamikyuushuu-shi-shinkisannyuusha-b3588e.html</link>
+    <description>Tier C / 鹿児島県 / subsidy / 上限 150万円 出典: https://nankyu-farming.jp/flow/support/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5a218eb7b4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>東串良町新規参入者生活支援事業</title>
+    <link>https://jpcite.com/programs/higashikushira-machi-shinkisannyuusha-seikatsu-shien-jigyou-d05df4.html</link>
+    <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 115万円 出典: https://www.kagoshima-iju.jp/contribute/higashikushira/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5b2f1cabaf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

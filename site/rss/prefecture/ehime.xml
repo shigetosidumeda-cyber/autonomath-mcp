@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 愛媛県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/ehime.xml" rel="self" type="application/rss+xml" />
+  <description>愛媛県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>【募集終了】省エネルギー対応設備更新等緊急支援補助金の公募について - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/boshuu-shuuryou-shouene-rugii-taiou-setsubi-koushin-nado-b2552b.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/4692.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-01c73f2e53</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度松山空港国内線チャーター便運航事業費補助金について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-matsuyama-kuukou-kokunaisen-chaataa-bin-unkou-56ae69.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/108631.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0bb969227b</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度えひめ業務改善応援金について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ehime-gyoumu-kaizen-ouen-kin-nitsuite-shien-7a1d2d.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy / 上限 5万円 出典: https://www.pref.ehime.jp/site/madoguchi/131248.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-0d47b2e593</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>中小企業者収益力強化補助金の公募について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/chuushoukigyou-mono-shuueki-chikara-kyouka-hojokin-no-koubo-04a6b6.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/140529.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2aa07dbb16</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度松山空港国内線新規路線等需要調査・創出事業費補助金について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-matsuyama-kuukou-kokunaisen-shinkirosen-nado-dca67d.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/2645.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-3b6b14d6c6</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度松山空港国内線路線再開等需要調査等チャーター便運航事業費補助金について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-matsuyama-kuukou-kokunaisen-rosen-saikai-nado-98b1f7.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/2644.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-43987e1dcd</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>生産性向上設備等投資支援補助金（2次）の公募について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/seisansei-koujou-setsubi-nado-toushi-shien-hojokin-2-tsugi-eab8f5.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/132941.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-4df95c7ffb</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県新型コロナウイルス感染症対策緊急地域雇用維持助成金のご案内 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/ehimeken-shingata-koronauirusu-kansenshou-taisaku-kinkyuu-2f41df.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/5678.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-512363e826</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度松山空港国内線路線再開等需要調査等チャーター便運航事業費補助金について - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-matsuyama-kuukou-kokunaisen-rosen-saikai-nado-609b05.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/2644.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-682937b682</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度愛媛県産業DXモデル横展開事業費補助金に係る補助対象事業者の公募について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ehimeken-sangyou-dx-moderu-yoko-tenkai-jigyou-875a59.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/106162.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9157639170</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県 えひめの女性おしごと応援プロジェクト</title>
+    <link>https://jpcite.com/programs/ehimeken-ehimeno-josei-oshigoto-ouen-purojiekuto-4d1886.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://ehime-joseikoyoushien.pref.ehime.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9ba046f835</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【申請受付は終了しました】IT人材獲得支援事業費補助金の申請受付を開始しました - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/shinseiuketsuke-ha-shuuryou-shimashita-it-jinzai-bd2f03.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/72865.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9cb4e585ac</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【募集は終了しました】令和7年度農商工ビジネス商品開発事業費補助金の募集について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/boshuu-ha-shuuryou-shimashita-reiwa-7-nendo-nou-shoukou-1bdd51.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy / 上限 100万円 出典: https://www.pref.ehime.jp/site/madoguchi/109109.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-9dd513079a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>しっかり守ろう！-給付金の交付を受けた法人の寄附制限-(愛媛県選挙管理委員会) - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/shikkari-mamoro-u-kyuufukin-no-koufu-wo-uke-ta-houjin-no-519070.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/12372.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-a6d231906a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度愛媛県脱炭素型ビジネススタイル転換促進事業費補助金 | 補助金・支援 | えひめ脱炭素ポータルサイト みんなでかんがえよう愛媛のこれから</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ehimeken-dattan-moto-kata-bijinesusutairu-fb650d.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://zero-carbon.pref.ehime.jp/supports/detail/ad9046d2-fa5f-4972-9ee3-eb06b34f7102</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-af03009c03</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2025年度（令和7年度）ひめボス宣言事業所認証・奨励金制度 - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/2025-nendo-reiwa-7-nendo-hime-bosu-sengen-jigyousho-ninshou-e28823.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/7177.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b40193690f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県造船・舶用工業緊急基盤強化事業の実施について（公募受付終了） - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/ehimeken-zousen-hakuyou-kougyou-kinkyuu-kiban-kyouka-jigyou-f4daa2.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/141053.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-b64247ceab</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県介護事業所等及び介護施設等に対するサービス継続支援事業費補助金 - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/ehimeken-kaigo-jigyousho-nado-oyobi-kaigo-shisetsutou-ni-518b8a.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/145327.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-be6e62871a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>強い農業づくり総合支援交付金関係事業について - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/tsuyoi-nougyou-zukuri-sougou-shien-koufukin-kankei-jigyou-583088.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/11461.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-bfa8096f41</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【募集終了】省エネルギー対応設備更新等緊急支援補助金の公募について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/boshuu-shuuryou-shouene-rugii-taiou-setsubi-koushin-nado-32295f.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/4692.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d9177a47b9</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度愛媛県産業DXモデル横展開事業費補助金（フラグシップモデル導入型）に係る補助対象事業者の追加公募について - 支援の窓口 - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ehimeken-sangyou-dx-moderu-yoko-tenkai-jigyou-674cab.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/111993.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-eb8480d1aa</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度松山空港国内線新規路線等需要調査・創出事業費補助金について - 愛媛県庁公式ホームページ</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-matsuyama-kuukou-kokunaisen-shinkirosen-nado-86383e.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/2645.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-fbe40346fa</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度松山空港国内線路線再開等需要調査等チャーター便運航事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-matsuyama-kuukou-kokunaisen-rosen-saikai-nado-3ff161.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/2644.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0b0309e533</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県地域運営組織経営力強化支援補助金について</title>
+    <link>https://jpcite.com/programs/ehimeken-chiiki-un-ei-soshiki-keiei-chikara-kyouka-shien-33ce6f.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/129847.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-23b8dce4e8</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>（追加募集）令和7年度愛媛県ｅスポーツ機器導入支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/tsuika-boshuu-reiwa-7-nendo-ehimeken-e-supootsu-kiki-9206a5.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/118475.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2b5b098246</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度松山空港国内線新規路線等需要調査・創出事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-matsuyama-kuukou-kokunaisen-shinkirosen-nado-9d5989.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/2645.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-2b9b5e0852</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度松山空港国内線チャーター便運航事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-matsuyama-kuukou-kokunaisen-chaataa-bin-unkou-b3e80a.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/108631.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-30ebbd6773</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度スポーツ振興関連補助金事前エントリーの募集について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-supootsu-shinkou-kanren-hojokin-jizen-entorii-d03d5c.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/106030.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-45c9263a83</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和６年度愛媛県脱炭素型ビジネススタイル転換促進事業費補助金の公募について</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-ehimeken-dattan-moto-kata-bijinesusutairu-06b9b7.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/96366.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-47492e334e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和6年度愛媛県電気自動車普及拡大支援事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-6-nendo-ehimeken-denkijidousha-fukyuu-kakudai-shien-fe45ea.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/76880.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-557feddca8</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛マンダリンパイレーツ スタジアムナイトヨガ・始球式イベントの実施について（令和6年度愛媛県プロスポーツ若年層女性ファン獲得支援事業費補助金活用事業）</title>
+    <link>https://jpcite.com/programs/ehime-mandarinpaireetsu-sutajiamunaitoyoga-shikyuu-shiki-d85b50.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/73115.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-6c45ebefa0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>高等学校等就学支援金制度について</title>
+    <link>https://jpcite.com/programs/koutougakkou-nado-shuugaku-shien-kin-seido-nitsuite-29dff3.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / support 出典: https://www.pref.ehime.jp/page/5118.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-725acd8da3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域脱炭素移行・再エネ推進交付金(重点対策加速化事業)について</title>
+    <link>https://jpcite.com/programs/chiiki-dattan-moto-ikou-sai-ene-suishin-koufukin-juuten-3eddac.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/74466.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8973e47a72</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新しい地方経済・生活環境創生交付金（第2世代交付金）等について</title>
+    <link>https://jpcite.com/programs/atarashii-chihou-keizai-seikatsukankyou-sousei-koufukin-dai-2f51af.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/50114.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a0ab3f0024</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>2025年度（令和7年度）ひめボス宣言事業所認証・奨励金制度</title>
+    <link>https://jpcite.com/programs/2025-nendo-reiwa-7-nendo-hime-bosu-sengen-jigyousho-ninshou-0db791.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/site/madoguchi/7177.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a567a618e2</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度愛媛県プロスポーツ若年層女性ファン獲得支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ehimeken-purosupootsu-jakunensou-josei-fan-3af1a6.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/114858.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-aaf62d29f3</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和5年度脱炭素型ビジネススタイル転換促進事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-5-nendo-dattan-moto-kata-bijinesusutairu-tenkan-bdc0e5.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/50567.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b05a0db543</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>トップアスリート強化支援金制度について</title>
+    <link>https://jpcite.com/programs/toppuasuriito-kyouka-shien-kin-seido-nitsuite-835c86.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / support 出典: https://www.pref.ehime.jp/page/2148.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-b1fe66457a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和8年度愛媛県RX設備導入支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-ehimeken-rx-setsubi-dounyuu-shien-jigyou-hi-54af0d.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/143111.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c2840a13db</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県ウクライナ避難民生活支援金の募集開始（ふるさと納税）</title>
+    <link>https://jpcite.com/programs/ehimeken-ukuraina-hinan-minsei-katsu-shien-kin-no-boshuu-48a0b2.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / support 出典: https://www.pref.ehime.jp/page/2451.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c4bce0cdc0</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>えひめ人口減少対策総合交付金の県内各市町の取組み状況について</title>
+    <link>https://jpcite.com/programs/ehime-jinkou-genshou-taisaku-sougou-koufukin-no-kennai-e62865.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/82178.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c77022be9a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>えひめ人口減少対策総合交付金に係る市町からの要望を踏まえた見直しに関する記者発表の要旨について</title>
+    <link>https://jpcite.com/programs/ehime-jinkou-genshou-taisaku-sougou-koufukin-ni-kakaru-d6a587.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/83608.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d77a3331d9</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和７年度愛媛県脱炭素型ビジネススタイル転換促進事業費補助金の公募について</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-ehimeken-dattan-moto-kata-bijinesusutairu-4dca3e.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/130740.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dd95c9f86f</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度愛媛県ｅスポーツ機器導入支援事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-ehimeken-e-supootsu-kiki-dounyuu-shien-jigyou-322482.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/142132.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-f4ad0a4f13</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和８年度愛媛県ｅスポーツ交流イベント促進事業費補助金について</title>
+    <link>https://jpcite.com/programs/reiwa-8-nendo-ehimeken-e-supootsu-kouryuu-ibento-sokushin-3abe53.html</link>
+    <description>Tier A / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/140497.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fa63a0fa8c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県商工会連合会 補助金・助成金 案内ハブ（愛媛県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/ehimeken-shoukou-kai-rengoukai-hojokin-joseikin-annai-habu-62af31.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県商工会連合会 / directory 出典: https://ehime-sci.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0d683f0270</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:43 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県水道広域化推進プラン (20市町+2水道企業団)</title>
+    <link>https://jpcite.com/programs/ehimeken-suidou-kouiki-ka-suishin-puran-20-shichou-2-suidou-a60395.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県 県民環境部 生活衛生課 出典: https://www.pref.ehime.jp/h10800/suidou/kouikika.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-95210bb169</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県中小企業融資制度</title>
+    <link>https://jpcite.com/programs/ehimeken-chuushoukigyou-yuushi-seido-b42994.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県経営支援課 / loan 出典: https://www.pref.ehime.jp/soshiki/68/</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-1b302ea5a3</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県生産性向上設備等投資支援補助金</title>
+    <link>https://jpcite.com/programs/ehimeken-seisansei-koujou-setsubi-nado-toushi-shien-hojokin-798513.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県経営支援課 / subsidy 出典: https://www.pref.ehime.jp/page/4649.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-570e0ed6cb</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県脱炭素設備導入支援</title>
+    <link>https://jpcite.com/programs/ehimeken-dattan-moto-setsubi-dounyuu-shien-946fec.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/61933.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-64ab005afe</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県中小企業者研究開発・販路開拓助成金</title>
+    <link>https://jpcite.com/programs/ehimeken-chuushoukigyou-mono-kenkyuukaihatsu-hanro-kaitaku-f23b59.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/4595.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-79a9fbb68d</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県創業者新製品・新役務助成金</title>
+    <link>https://jpcite.com/programs/ehimeken-sougyousha-shinseihin-shinyaku-tsutomu-joseikin-9537ad.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県 / subsidy 出典: https://www.pref.ehime.jp/page/4595.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8329cf9d00</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農総合支援事業（経営発展支援事業）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-sougou-shien-jigyou-keiei-hatten-shien-jigyou-0640f3.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-011ebc8d43</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>久万高原町機械施設導入補助</title>
+    <link>https://jpcite.com/programs/kumakougen-machi-kikai-shisetsu-dounyuu-hojo-ea86e6.html</link>
+    <description>Tier B / 愛媛県 / equipment / 上限 300万円 出典: https://enk.or.jp/shien/shuno/todo/shienrei.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0172041f69</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大洲市移住就農者機械施設導入補助</title>
+    <link>https://jpcite.com/programs/oozu-shi-ijuu-shuunou-mono-kikai-shisetsu-dounyuu-hojo-9b4f36.html</link>
+    <description>Tier B / 愛媛県 / equipment / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>equipment</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0c204804c8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年就農給付金制度</title>
+    <link>https://jpcite.com/programs/seinen-shuunou-kyuufukin-seido-319cdb.html</link>
+    <description>Tier C / 愛媛県 / 農林水産省 / subsidy 出典: https://www.maff.go.jp/j/new_farmer/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1107495751</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>今治市農業生産被害対策費補助金</title>
+    <link>https://jpcite.com/programs/imabari-shi-nougyou-seisan-higai-taisakuhi-hojokin-3b7215.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県今治市 / subsidy / 上限 5万円 出典: https://www.city.imabari.ehime.jp/nourin/yugai-tyozyu/hojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-115d4d11c7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>内子町農林業施設整備事業</title>
+    <link>https://jpcite.com/programs/uchiko-machi-nouringyou-shisetsu-seibi-jigyou-14077f.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.town.uchiko.ehime.jp/site/agricome/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1171fac4cc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ハゼの実生産振興事業</title>
+    <link>https://jpcite.com/programs/haze-no-mishou-san-shinkou-jigyou-8adbc9.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1374ff9f37</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇和島市農業新規就業者支援事業</title>
+    <link>https://jpcite.com/programs/uwa-shima-shi-nougyou-shinki-shuugyou-mono-shien-jigyou-ff2fa3.html</link>
+    <description>Tier B / 愛媛県 / （noukaweb 収集） / 上限 10万円 出典: https://www.city.uwajima.ehime.jp/soshiki/21/nougyou-sinnki.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14910344d7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>久万高原町水田畦整備事業</title>
+    <link>https://jpcite.com/programs/kumakougen-machi-suiden-aze-seibi-jigyou-9c62f3.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.kumakogen.jp/soshiki/5/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14bd2743c0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農総合支援事業（準備資金）</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-sougou-shien-jigyou-junbi-shikin-0ae204.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 3,000万円 出典: https://www.town.uchiko.ehime.jp/site/agricome/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1902db6dab</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>森林環境譲与税を活用した林業支援</title>
+    <link>https://jpcite.com/programs/shinrin-kankyou-jouyo-zei-wo-katsuyou-shita-ringyou-shien-ff5b4a.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.yawatahama.ehime.jp/doc/2023101800018/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1b7307318e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>有害鳥獣侵入防止施設整備事業</title>
+    <link>https://jpcite.com/programs/yuugai-choujuu-shinnyuu-boushi-shisetsu-seibi-jigyou-9807cd.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.town.uchiko.ehime.jp/site/agricome/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-26eb4eea7d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鳥獣被害防止総合対策事業</title>
+    <link>https://jpcite.com/programs/choujuu-higai-boushi-sougou-taisaku-jigyou-d717dd.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-284af2ff55</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西予市地域貢献研究事業補助金</title>
+    <link>https://jpcite.com/programs/seiyo-shi-chiiki-kouken-kenkyuu-jigyou-hojokin-dddc4d.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県西予市 / subsidy / 上限 50万円 出典: https://www.city.seiyo.ehime.jp/kakuka/seisaku_kikaku/seisakusuishin/daigakurenkai/15388.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-295b9b2d79</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鳥獣害防止施設整備強化事業</title>
+    <link>https://jpcite.com/programs/choujuugai-boushi-shisetsu-seibi-kyouka-jigyou-e89ed4.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-29f1910737</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農村起業家育成セミナー</title>
+    <link>https://jpcite.com/programs/nouson-kigyouka-ikusei-seminaa-1e4664.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.saijo.ehime.jp/soshiki/nosuishinko/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2e86594b6b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西予市農業研修生サポート事業補助金</title>
+    <link>https://jpcite.com/programs/seiyo-shi-nougyou-kenshuusei-sapooto-jigyou-hojokin-dc6541.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県西予市 / subsidy / 上限 72万円 出典: https://www.city.seiyo.ehime.jp/material/files/group/8/20210827_nougyoukensyuusei_youkou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f4a4b8436</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>今治市有機農業推進事業費補助金</title>
+    <link>https://jpcite.com/programs/imabari-shiyuu-ki-nougyou-suishin-jigyou-hi-hojokin-b029d7.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県今治市 / subsidy 出典: https://www.city.imabari.ehime.jp/organic/pdf/organic_village.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31542fac84</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西予市明浜地区柑橘農業就農支援事業</title>
+    <link>https://jpcite.com/programs/seiyo-shi-akehama-chiku-kankitsu-nougyou-shuunou-shien-37dfb7.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県西予市 / subsidy / 上限 6万円 出典: https://www.city.seiyo.ehime.jp/material/files/group/7/akihama_kankitsu_handbook.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-335eca6a43</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>６次産業化等推進事業</title>
+    <link>https://jpcite.com/programs/6-tsugi-sangyouka-nado-suishin-jigyou-2233de.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-35f4dedc8a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度 今治市地域特産物振興対策関連補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-imabari-shi-chiiki-tokusanbutsu-shinkou-3b2692.html</link>
+    <description>Tier C / 愛媛県 / （noukaweb 収集） 出典: https://www.city.imabari.ehime.jp/nourin/tokusan/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-405ab80762</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農作業を支援しています（アグリサポート事業）</title>
+    <link>https://jpcite.com/programs/nousagyou-wo-shien-shiteimasu-agurisapooto-jigyou-dc6775.html</link>
+    <description>Tier C / 愛媛県 / （noukaweb 収集） 出典: https://www.city.seiyo.ehime.jp/kakuka/sangyo_kensetsu/nogyo_suisan/nogyou/farmer/16402.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-431a5d64e5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八幡浜市新規就農者育成総合対策（経営開始資金）</title>
+    <link>https://jpcite.com/programs/yawatahama-shi-shinki-shuunou-mono-ikusei-sougou-taisaku-3dbb68.html</link>
+    <description>Tier B / 愛媛県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.yawatahama.ehime.jp/doc/2023122500027/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-45da2a2edc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>今治市農業生産被害対策費補助金</title>
+    <link>https://jpcite.com/programs/imabari-shi-nougyou-seisan-higai-taisakuhi-hojokin-36c827.html</link>
+    <description>Tier C / 愛媛県 / （noukaweb 収集） / 上限 5万円 出典: https://www.city.imabari.ehime.jp/nourin/yugai-tyozyu/hojokin.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4f853acf2f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>青年等就農計画（認定新規就農者）制度</title>
+    <link>https://jpcite.com/programs/seinen-nado-shuunou-keikaku-nintei-shinki-shuunou-mono-seido-bf98ef.html</link>
+    <description>Tier C / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.seiyo.ehime.jp/kakuka/sangyo_kensetsu/nogyo_suisan/nogyou/newfa</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-51a628b267</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大洲市林業就業者支援給付金給付事業</title>
+    <link>https://jpcite.com/programs/oozu-shi-ringyou-shuugyou-mono-shien-kyuufukin-kyuufu-jigyou-0cabde.html</link>
+    <description>Tier C / 愛媛県 / （noukaweb 収集） 出典: https://www.city.ozu.ehime.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5727014239</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>今治市有機農業就農サポート事業</title>
+    <link>https://jpcite.com/programs/imabari-shiyuu-ki-nougyou-shuunou-sapooto-jigyou-d61a6c.html</link>
+    <description>Tier B / 愛媛県 / （noukaweb 収集） / 上限 75万円 出典: https://www.city.imabari.ehime.jp/nourin/tisan_tisyo/yuki_syunou/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-595ac7d00f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西予市農業研究修生サポート事業補助金</title>
+    <link>https://jpcite.com/programs/seiyo-shi-nougyou-kenkyuu-shuusei-sapooto-jigyou-hojokin-5971fa.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県西予市 / subsidy 出典: https://www.city.seiyo.ehime.jp/kakuka/sangyo_kensetsu/nogyo_suisan/nogyou/newfarmer/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5c5ae480ce</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>WAGO AGRI COLLEGE（WAC）</title>
+    <link>https://jpcite.com/programs/wago-agri-college-wac-bf367b.html</link>
+    <description>Tier A / 愛媛県 / subsidy / 上限 25万円 出典: https://www.city.saijo.ehime.jp/soshiki/nosuishinko/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5c6502cb55</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大洲市担い手経営発展等支援事業</title>
+    <link>https://jpcite.com/programs/oozu-shi-ninaite-keiei-hatten-nado-shien-jigyou-b348f2.html</link>
+    <description>Tier B / 愛媛県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5dc07be543</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>特別栽培農産物等認証制度</title>
+    <link>https://jpcite.com/programs/tokubetsu-saibai-nousanbutsu-nado-ninshou-seido-e0e19d.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.town.uchiko.ehime.jp/site/agricome/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-61c261253f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住者機械等支援事業</title>
+    <link>https://jpcite.com/programs/ijuusha-kikai-nado-shien-jigyou-e34723.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.city.ozu.ehime.jp/soshiki/nourin/16551.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-632851e8c3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>八幡浜市若年移住者等家賃補助事業</title>
+    <link>https://jpcite.com/programs/yawatahama-shi-jakunen-ijuusha-nado-yachinhojo-jigyou-01b93a.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県八幡浜市 / subsidy / 上限 1万円 出典: https://www.city.yawatahama.ehime.jp/doc/2022052700033/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6781aca79e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>内子町担い手総合支援事業（シニア世代農業者就農支援）</title>
+    <link>https://jpcite.com/programs/uchiko-machi-ninaite-sougou-shien-jigyou-shinia-sedai-6d3c55.html</link>
+    <description>Tier B / 愛媛県 / training / 上限 15万円 出典: https://www1.g-reiki.net/town.uchiko/reiki_honbun/r062RG00001311.html</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-68427c8c61</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>久万高原町鳥獣被害防止事業</title>
+    <link>https://jpcite.com/programs/kumakougen-machi-choujuu-higai-boushi-jigyou-511a94.html</link>
+    <description>Tier A / 愛媛県 / subsidy / 上限 3万円 出典: https://www.kumakogen.jp/soshiki/5/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-69fa94dbe5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>内子町狩猟免許取得補助金</title>
+    <link>https://jpcite.com/programs/uchiko-machi-shuryou-menkyoshutoku-hojokin-5116fb.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 250万円 出典: https://www.town.uchiko.ehime.jp/site/agricome/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6d32702ee4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西予市農業研修サポート事業補助金</title>
+    <link>https://jpcite.com/programs/seiyo-shi-nougyou-kenshuu-sapooto-jigyou-hojokin-6f3ad0.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県西予市 / subsidy 出典: https://www.city.seiyo.ehime.jp/kurashi/shigoto_sangyou/nougyou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-707ca3b182</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>今治市有機農業就農サポート事業</title>
+    <link>https://jpcite.com/programs/imabari-shiyuu-ki-nougyou-shuunou-sapooto-jigyou-97b7d5.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県今治市 / subsidy / 上限 75万円 出典: https://www.city.imabari.ehime.jp/nourin/tisan_tisyo/yuki_syunou/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-71f5dbb96b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>内子町担い手総合支援事業（シニア世代農業者就農支援）</title>
+    <link>https://jpcite.com/programs/uchiko-machi-ninaite-sougou-shien-jigyou-shinia-sedai-ab239f.html</link>
+    <description>Tier B / 愛媛県 / 市町村 / subsidy / 上限 100万円 出典: https://www1.g-reiki.net/town.uchiko/reiki_honbun/r062RG00001311.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-737d1d672a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-38-101_愛媛_農林漁業共同化資金</title>
+    <link>https://jpcite.com/programs/pref-38-101-ehime-nouringyogyou-kyoudou-ka-shikin-0b883b.html</link>
+    <description>Tier B / 愛媛県 / loan / 上限 1,800万円 出典: https://www.pref.ehime.jp/page/5732.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-74f6a98997</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西予市農業設備投資事業補助金</title>
+    <link>https://jpcite.com/programs/seiyo-shi-nougyou-setsubitoushi-jigyou-hojokin-3cc479.html</link>
+    <description>Tier C / 愛媛県 / subsidy / 上限 25万円 出典: https://www.city.seiyo.ehime.jp/kakuka/sangyo_kensetsu/nogyo_suisan/nogyou/newfa</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-76725bc521</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度みかんアルバイター等確保支援事業費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-mikan-arubaitaa-nado-kakuho-shien-jigyou-hi-ebe8f1.html</link>
+    <description>Tier C / 愛媛県 / 愛媛県八幡浜市 / subsidy / 上限 2万円 出典: https://www.city.yawatahama.ehime.jp/doc/2025040400045/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-77c8947461</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農山漁村活性化プロジェクト交付金</title>
+    <link>https://jpcite.com/programs/nousangyoson-kasseika-purojiekuto-koufukin-6cadf8.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 100万円 出典: https://www.kumakogen.jp/soshiki/5/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-781c2a6158</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>愛媛県 新規就農者定着支援事業</title>
+    <link>https://jpcite.com/programs/ehimeken-shinki-shuunou-mono-teichaku-shien-jigyou-a06deb.html</link>
+    <description>Tier B / 愛媛県 / subsidy / 上限 60万円 出典: https://www.maff.go.jp/j/new_farmer</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7a6c1e8147</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>内子町親元就農支援事業給付金</title>
+    <link>https://jpcite.com/programs/uchiko-machi-oyamoto-shuunou-shien-jigyou-kyuufukin-676234.html</link>
+    <description>Tier A / 愛媛県 / subsidy / 上限 260万円 出典: https://www.town.uchiko.ehime.jp/soshiki/8/134825.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7d9a42d079</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定新規就農者制度</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-747ed0.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県松山市 / subsidy / 上限 1,000万円 出典: https://www.city.matsuyama.ehime.jp/kurashi/sangyo/noringyo/ninaite/nougyoukoukeisha.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-80b2e2ab05</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西条市独自施策 緊張る農家支援事業</title>
+    <link>https://jpcite.com/programs/saijou-shi-dokuji-shisaku-kinchou-ru-nouka-shien-jigyou-059985.html</link>
+    <description>Tier B / 愛媛県 / （noukaweb 収集） / 上限 30万円 出典: https://www.city.saijo.ehime.jp/soshiki/nosuishinko/ganbarunoka.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-811230abfb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>大洲市林業就業者支援給付金給付事業</title>
+    <link>https://jpcite.com/programs/oozu-shi-ringyou-shuugyou-mono-shien-kyuufukin-kyuufu-jigyou-f3009a.html</link>
+    <description>Tier B / 愛媛県 / 愛媛県大洲市 / subsidy / 上限 132万円 出典: https://www.city.ozu.ehime.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-81b26fcfb6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>

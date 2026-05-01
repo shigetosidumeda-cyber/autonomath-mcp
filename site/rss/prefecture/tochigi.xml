@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>jpcite — 栃木県 制度フィード</title>
+  <link>https://jpcite.com/</link>
+  <atom:link href="https://jpcite.com/rss/prefecture/tochigi.xml" rel="self" type="application/rss+xml" />
+  <description>栃木県 内で検索可能な制度 (補助金/融資/税制/認定、Tier S+A+B+C、最大 100 件)。公式出典 URL を優先し、地域別に講読できます。</description>
+  <language>ja</language>
+  <copyright>(C) 2026 jpcite</copyright>
+  <generator>jpcite site</generator>
+  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+
+  <item>
+    <title>栃木県／うちエコ診断士資格試験受験料を助成します</title>
+    <link>https://jpcite.com/programs/tochigiken-uchi-eko-shindan-samurai-shikaku-shiken-faeff8.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/uchieco/r7jyosei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-269807bf24</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県／子育て世帯等住宅断熱化支援事業</title>
+    <link>https://jpcite.com/programs/tochigiken-kosodate-setai-nado-juutaku-dannetsu-ka-shien-7a3a03.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy / 上限 10万円 出典: https://www.pref.tochigi.lg.jp/d02/kouhou/r7kosodatesienn.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-2778cde4b0</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県／令和8年度「地域課題解決型創業支援補助金」について</title>
+    <link>https://jpcite.com/programs/tochigiken-reiwa-8-nendo-chiiki-kadai-kaiketsu-kata-sougyou-ee1681.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy / 上限 200万円 出典: https://www.pref.tochigi.lg.jp/f03/chiikikadai_hojo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-54624a62c7</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県／地域脱炭素移行・再エネ推進交付金（重点対策加速化事業）の採択について</title>
+    <link>https://jpcite.com/programs/tochigiken-chiiki-dattan-moto-ikou-sai-ene-suishin-koufukin-69f0bd.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/carbonneutral/saienekouhukin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-575f9c806a</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県／「子育て世帯等住宅断熱化支援事業」と【フラット35】の連携について</title>
+    <link>https://jpcite.com/programs/tochigiken-kosodate-setai-nado-juutaku-dannetsu-ka-shien-154487.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/kouhou/r7kosodatesienn-rennkei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-7166c541e1</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県／融資・補助金</title>
+    <link>https://jpcite.com/programs/tochigiken-yuushi-hojokin-91d38c.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/saieneshouene/yuushihojyokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-d44621156f</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県／【事業者向け】省CO2設備の更新等に係る補助金</title>
+    <link>https://jpcite.com/programs/tochigiken-jigyousha-muke-shou-co2-setsubi-no-koushin-nado-52e706.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/kouhou/datsutansohojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-e6ec1a20ab</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県／【事業者向けZEV(EV・FCV・PHV)導入補助金】災害時電源ZEV導入促進事業について</title>
+    <link>https://jpcite.com/programs/tochigiken-jigyousha-muke-zev-ev-fcv-phv-dounyuu-hojokin-893f54.html</link>
+    <description>Tier B / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/eco/kankyou/sesaku/saigaijidengen_ev-phv.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-pref-f0ab996a5c</guid>
+    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>女性の活躍</title>
+    <link>https://jpcite.com/programs/josei-no-katsuyaku-83d58e.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/kurashi/jinkendanjyo/josei-katsudou/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0297c8dbe4</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>＜最大750万円＞サーキュラーエコノミー型ビジネスモデル構築支援事業補助金について</title>
+    <link>https://jpcite.com/programs/saidai-750-man-en-saakyuraaekonomii-kata-bijinesumoderu-599920.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d05/circuler_business.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-0ebf2d90c6</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>里親・養子縁組</title>
+    <link>https://jpcite.com/programs/satooya-youshiengumi-c3b49d.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/fukushi/kodomo/youshiengumi-satooya/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-25b6f555ef</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域づくり支援</title>
+    <link>https://jpcite.com/programs/chiiki-zukuri-shien-dcc4d4.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/kurashi/chiikishinkou/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-57e4c2468d</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ケアラー支援に関する県の取組</title>
+    <link>https://jpcite.com/programs/kearaa-shien-ni-kansu-ru-ken-no-torikumi-ad1d0d.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/e12/carershien_tochigiken.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5efea4fea5</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>会計年度任用職員（業務支援員）を募集します（監査委員事務局）</title>
+    <link>https://jpcite.com/programs/kaikei-nendo-ninyou-shokuin-gyoumu-shien-in-wo-boshuu-4a8740.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/k03/houdou/20260420kainenjimuhojoin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-754828660c</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>子育て支援情報</title>
+    <link>https://jpcite.com/programs/kosodate-shien-jouhou-fd1215.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/fukushi/kodomo/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-7a13cfc298</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>被害者支援</title>
+    <link>https://jpcite.com/programs/higaisha-shien-eb1b0b.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/kurashi/bouhan/higaishashien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-8d1b8a5f5a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>生活困窮者支援</title>
+    <link>https://jpcite.com/programs/seikatsu-konkyuu-mono-shien-2f916f.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/fukushi/shakaifukushi/shien/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9a0f66fdbb</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ケアする人・ケアされる人のための総合サポート「保健福祉ポータルサイト」</title>
+    <link>https://jpcite.com/programs/kea-suru-nin-kea-sareru-nin-notameno-sougou-sapooto-hoken-4103a9.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/e12/carer-shien_tochimaru-portal-site.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a23afdba5a</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>【事業者向け】省CO2設備の更新等に係る補助金</title>
+    <link>https://jpcite.com/programs/jigyousha-muke-shou-co2-setsubi-no-koushin-nado-ni-kakaru-d113ad.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/kouhou/datsutansohojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-fdb202955e</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地域の子育て支援・遊び場</title>
+    <link>https://jpcite.com/programs/chiiki-no-kosodate-shien-asobiba-adb139.html</link>
+    <description>Tier A / 栃木県 / 栃木県 / support 出典: https://www.pref.tochigi.lg.jp/fukushi/kodomo/tiikinokosodateshien_asobiba/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-ff82c6c9d8</guid>
+    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県商工会連合会 補助金・助成金 案内ハブ（栃木県 商工会連合会）</title>
+    <link>https://jpcite.com/programs/tochigiken-shoukou-kai-rengoukai-hojokin-joseikin-annai-802b1f.html</link>
+    <description>Tier B / 栃木県 / 栃木県商工会連合会 / directory 出典: https://www.shokokai-tochigi.or.jp/</description>
+    <category>directory</category>
+    <guid isPermaLink="false">jpcite:program:UNI-c5f9b99f28</guid>
+    <pubDate>Sat, 25 Apr 2026 03:30:21 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市創業支援等事業計画</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-sougyou-shien-nado-jigyoukeikaku-16b35a.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市経済部 / support 出典: https://www.city.utsunomiya.lg.jp/sangyo/kigyo/venture/1006896.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-081d546ddc</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市起業家・ベンチャー企業支援</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-kigyouka-benchaa-kigyou-shien-fae8cd.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市経済部 / support 出典: https://www.city.utsunomiya.lg.jp/sangyo/kigyo/venture/index.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-a9d02f55d5</guid>
+    <pubDate>Thu, 23 Apr 2026 14:30:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市中小企業運転資金</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-chuushoukigyou-unten-shikin-d96022.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市経済部 / loan 出典: https://www.city.utsunomiya.tochigi.jp/sangyo/sangyo/chushokigyo/1006835.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-34756e7b2f</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度宇都宮市中小企業向け脱炭素化促進事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-utsunomiyashi-chuushoukigyou-muke-dattan-moto-1c80ff.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市環境部 / subsidy / 上限 50万円 出典: https://www.city.utsunomiya.lg.jp/kurashi/kankyo/1034535/1040440.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-366ffca8f6</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市ICT利活用促進助成制度</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-ict-rikatsuyou-sokushin-josei-seido-c042cd.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市経済部産業政策課 / subsidy / 上限 30万円 出典: https://www.city.utsunomiya.lg.jp/sangyo/sangyo/chushokigyo/1015751.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-5d4fee0107</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>うつのみや中小企業応援プラン</title>
+    <link>https://jpcite.com/programs/utsunomiya-chuushoukigyou-ouen-puran-e68899.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市経済部 / support 出典: https://www.city.utsunomiya.tochigi.jp/sangyo/sangyo/chushokigyo/1018917.html</description>
+    <category>support</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-76051464a7</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市中小企業設備資金</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-chuushoukigyou-setsubi-shikin-f8445c.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市経済部 / loan 出典: https://www.city.utsunomiya.tochigi.jp/sangyo/sangyo/chushokigyo/1006834.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9d3843f1d6</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市小規模企業支援資金</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-shoukibo-kigyou-shien-shikin-69e49c.html</link>
+    <description>Tier C / 栃木県 / 宇都宮市経済部 / loan 出典: https://www.city.utsunomiya.tochigi.jp/sangyo/sangyo/chushokigyo/1006841.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-dd26ff6c16</guid>
+    <pubDate>Thu, 23 Apr 2026 14:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須町宿泊税条例 (2026年10月施行)</title>
+    <link>https://jpcite.com/programs/nasu-machi-shukuhaku-zei-jourei-2026-nen-10-gatsu-shikou-e4ae43.html</link>
+    <description>Tier C / 栃木県 / 那須町 / tax_reduction_by_ordinance 出典: https://www.town.nasu.lg.jp/0040/info-0000004060-1.html</description>
+    <category>tax_reduction_by_ordinance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-d663ff051d</guid>
+    <pubDate>Thu, 23 Apr 2026 08:12:20 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県訪問介護事業者経営改善支援事業費補助金</title>
+    <link>https://jpcite.com/programs/tochigiken-houmon-kaigo-jigyousha-keiei-kaizen-shien-jigyou-8aa773.html</link>
+    <description>Tier C / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/e03/welfare/koureisha/kaigohoken/houmonkaigo_keieikaizen.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-00bde20791</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県ものづくり産業生産性向上支援補助金</title>
+    <link>https://jpcite.com/programs/tochigiken-monozukuri-sangyou-seisansei-koujou-shien-hojokin-c85c60.html</link>
+    <description>Tier C / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/f02/r8_monodukuri_seisannsei.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-90aeb5d35d</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県企業立地補助金</title>
+    <link>https://jpcite.com/programs/tochigiken-kigyou-ritchi-hojokin-f1b732.html</link>
+    <description>Tier C / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/kogyo/treatment/subsidy.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-9b7179df39</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県省CO2設備更新補助金</title>
+    <link>https://jpcite.com/programs/tochigiken-shou-co2-setsubi-koushin-hojokin-039ff2.html</link>
+    <description>Tier C / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/d02/kouhou/datsutansohojokin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c6a7df46b2</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木県インフラDXはじめの一歩補助金</title>
+    <link>https://jpcite.com/programs/tochigiken-infura-dx-hajimeno-ippo-hojokin-3edd3c.html</link>
+    <description>Tier C / 栃木県 / 栃木県 / subsidy 出典: https://www.pref.tochigi.lg.jp/h02/hojokin/2026.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-e75f36d32c</guid>
+    <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須塩原市次世代農業チャレンジ事業補助金</title>
+    <link>https://jpcite.com/programs/nasushiobara-ichiji-sedai-nougyou-charenji-jigyou-hojokin-85b1ad.html</link>
+    <description>Tier B / 栃木県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.nasushiobara.tochigi.jp/soshikikarasagasu/nomuchikusanka/nogyo/3/14019.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-010ae00927</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ユニバーサル農業支援事業</title>
+    <link>https://jpcite.com/programs/yunibaasaru-nougyou-shien-jigyou-114d28.html</link>
+    <description>Tier C / 栃木県 / 栃木県下野市 / subsidy / 上限 25万円 出典: https://www.city.shimotsuke.lg.jp/0381/info-0000007939-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0240fcafa8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>上三川町_環境測定装置導入事業（スマート農業技術導入支援事業）</title>
+    <link>https://jpcite.com/programs/kaminokawa-machi-kankyou-sokuteisouchi-dounyuu-jigyou-8d182d.html</link>
+    <description>Tier A / 栃木県 / subsidy / 上限 10万円 出典: https://www.town.kaminokawa.lg.jp/0028/info-0000002672-0.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-028e03c617</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須烏山市営農費用助成</title>
+    <link>https://jpcite.com/programs/nasukarasuyama-shiei-nou-hiyou-josei-8f06e1.html</link>
+    <description>Tier C / 栃木県 / subsidy / 上限 150万円 出典: https://www.city.nasukarasuyama.lg.jp/page/page000597.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-043196cb61</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いちご新規就農者研修制度</title>
+    <link>https://jpcite.com/programs/ichigo-shinki-shuunou-mono-kenshuu-seido-2e486c.html</link>
+    <description>Tier B / 栃木県 / （noukaweb 収集） / 上限 300万円 出典: https://www.city.kanuma.tochigi.jp/0481/info-0000005197-1.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-04ecbb1055</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木 とちぎ農産物戦略的輸出拡大事業費補助金</title>
+    <link>https://jpcite.com/programs/tochigi-tochigi-nousanbutsu-senryakuteki-yushutsu-kakudai-9bdb79.html</link>
+    <description>Tier B / 栃木県 / 都道府県 / subsidy / 上限 500万円 出典: https://www.pref.tochigi.lg.jp/g03/r7yusyutu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-06107c24ff</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者支援</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-21e430.html</link>
+    <description>Tier C / 栃木県 / 栃木県宇都宮市 / subsidy / 上限 120万円 出典: https://www.city.utsunomiya.tochigi.jp/_res/projects/default_project/_page_/001/006/926/panf.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-092e6c61d5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-092011-004_宇都宮市_担い手育成金制度</title>
+    <link>https://jpcite.com/programs/mun-092011-004-utsunomiyashi-ninaite-ikusei-kin-seido-d3227f.html</link>
+    <description>Tier A / 栃木県 / subsidy / 上限 120万円 出典: https://www.city.utsunomiya.lg.jp/sangyo/nougyou/shuno/1006926.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0ae43f0076</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>真岡市RTKシステム利用者向けスマート農業機械導入支援事業補助金</title>
+    <link>https://jpcite.com/programs/mookashi-rtk-shisutemu-riyousha-muke-sumaato-nougyou-kikai-5470a9.html</link>
+    <description>Tier C / 栃木県 / 栃木県真岡市 / subsidy 出典: https://www.city.moka.lg.jp/material/files/group/16/RTKsystem_application.docx</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0bb172b005</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定新規就農者制度</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-4d01f8.html</link>
+    <description>Tier C / 栃木県 / 栃木県那須烏山市 / subsidy 出典: https://www.city.nasukarasuyama.lg.jp/sp/page/page004990.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0e0bc7bf35</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須町園芸作物推進支援事業</title>
+    <link>https://jpcite.com/programs/nasu-machi-engei-sakumotsu-suishin-shien-jigyou-2c0b8d.html</link>
+    <description>Tier C / 栃木県 / （noukaweb 収集） / 上限 50万円 出典: https://www.town.nasu.lg.jp/0188/info-0000000080-1.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-13e10d5986</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくら市農産物売上向上対策総合支援事業費補助金（機械等導入）</title>
+    <link>https://jpcite.com/programs/sakura-shi-nousanbutsu-uriage-koujou-taisaku-sougou-shien-b5aeff.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-14fb609171</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木 経営資源有効活用リフォーム支援事業</title>
+    <link>https://jpcite.com/programs/tochigi-keiei-shigen-yuukoukatsuyou-rifoomu-shien-jigyou-61f87e.html</link>
+    <description>Tier B / 栃木県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.tochigi.lg.jp/g04/keigi_sinkisyuunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-17161fb991</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者支援事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-jigyou-71b15a.html</link>
+    <description>Tier A / 栃木県 / 栃木県真岡市 / subsidy / 上限 1,000万円 出典: https://www.city.moka.lg.jp/material/files/group/19/hojyochirashi2025.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1738a01452</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>足利市_利子補給事業（足利市独自）</title>
+    <link>https://jpcite.com/programs/ashikaga-shi-rishi-hokyuu-jigyou-ashikaga-shi-dokuji-3485dd.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.ashikaga.tochigi.jp/industory/000059/000316/000723/p005528.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-179b88c1ce</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>里山林危険木伐採支援事業補助金</title>
+    <link>https://jpcite.com/programs/satoyama-hayashi-kiken-ki-bassai-shien-jigyou-hojokin-aef2ac.html</link>
+    <description>Tier B / 栃木県 / 栃木県下野市 / subsidy 出典: https://www.city.shimotsuke.lg.jp/0381/info-0000008356-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-19896994df</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>下野市_下野市農業研修者受入支援事業</title>
+    <link>https://jpcite.com/programs/shimotsuke-shi-shimotsuke-shi-nougyou-kenshuu-mono-ukeire-e5520e.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 3万円 出典: https://www.city.shimotsuke.lg.jp/0056/info-0000008247-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1a130337ac</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>上三川町_水田水管理システム導入事業（スマート農業技術導入支援事業）</title>
+    <link>https://jpcite.com/programs/kaminokawa-machi-suiden-suikan-ri-shisutemu-dounyuu-jigyou-ff547c.html</link>
+    <description>Tier A / 栃木県 / subsidy / 上限 10万円 出典: https://www.town.kaminokawa.lg.jp/0028/info-0000002672-0.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1cfd0567d8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業用機械等導入支援事業（農産物売上向上対策総合支援事業費補助金）</title>
+    <link>https://jpcite.com/programs/nougyouyou-kikai-nado-dounyuu-shien-jigyou-nousanbutsu-3a629b.html</link>
+    <description>Tier A / 栃木県 / 栃木県さくら市 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html#c98a-187c-7d94-eea8-a34f2ae92e84289c</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1d86e4fa7b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木 園芸大国とちぎフル加速総合対策事業</title>
+    <link>https://jpcite.com/programs/tochigi-engei-taikoku-tochigi-furu-kasoku-sougou-taisaku-9a7717.html</link>
+    <description>Tier B / 栃木県 / 都道府県 / subsidy / 上限 500万円 出典: https://www.pref.tochigi.lg.jp/g05/kouzou/h29engeitaikoku_suisinhoshin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1dab1b0482</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>足利市次世代農業強化支援事業</title>
+    <link>https://jpcite.com/programs/ashikaga-ichiji-sedai-nougyou-kyouka-shien-jigyou-2b2843.html</link>
+    <description>Tier B / 栃木県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.ashikaga.tochigi.jp/industory/000059/000316/000723/p006330.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1de7c0f336</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>いちご及び園芸作物の生産施設整備（パイプハウス等）に伴う補助金</title>
+    <link>https://jpcite.com/programs/ichigo-oyobi-engei-sakumotsu-no-seisan-shisetsu-seibi-d92335.html</link>
+    <description>Tier C / 栃木県 / （noukaweb 収集） 出典: https://www.city.moka.lg.jp/</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1e8eb7b5b4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>電気柵設置費補助制度・狩猟免許取得費用補助制度</title>
+    <link>https://jpcite.com/programs/denki-saku-setchi-hi-hojo-seido-shuryou-menkyoshutoku-hiyou-36b515.html</link>
+    <description>Tier C / 栃木県 / 栃木県那須烏山市 / subsidy 出典: https://www.city.nasukarasuyama.lg.jp/page/page000031.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1e98cc7408</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規導入作物種子・種苗代助成事業（農産物売上向上対策総合支援事業費補助金）</title>
+    <link>https://jpcite.com/programs/shinki-dounyuu-sakumotsu-shushi-shubyou-daisuke-sei-jigyou-fd3518.html</link>
+    <description>Tier A / 栃木県 / 栃木県さくら市 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html#c98a-187c-7d94-eea8-a34f2ae92e84289c</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1e9f0727a5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市 グリーン農業支援 スマート農業機械</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-guriin-nougyou-shien-sumaato-nougyou-kikai-d01c92.html</link>
+    <description>Tier B / 栃木県 / 市町村 / subsidy / 上限 20万円 出典: https://www.city.utsunomiya.lg.jp/sangyo/nougyou/oshirase/1040574.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1edb2b0d8a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-09-304_栃木_経営資源有効活用リフォーム支援事業</title>
+    <link>https://jpcite.com/programs/pref-09-304-tochigi-keiei-shigen-yuukoukatsuyou-rifoomu-f3b522.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.pref.tochigi.lg.jp/g04/keigi_sinkisyuunou.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-20c9b07278</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市新規就農者生活資金貸付制度</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-shinki-shuunou-mono-seikatsu-shikin-6bb2d4.html</link>
+    <description>Tier A / 栃木県 / loan / 上限 120万円 出典: https://www.city.utsunomiya.lg.jp/sangyo/nougyou/shuno/1006926.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-21f0382dd6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくら市_新規就農育成総合対策「経営発展支援事業」</title>
+    <link>https://jpcite.com/programs/sakura-shi-shinki-shuunou-ikusei-sougou-taisaku-keiei-526899.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2782cae980</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくら市農産物売上向上対策総合支援事業費補助金（振興作物推進）</title>
+    <link>https://jpcite.com/programs/sakura-shi-nousanbutsu-uriage-koujou-taisaku-sougou-shien-2b206b.html</link>
+    <description>Tier B / 栃木県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-280b86874c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>認定新規就農者制度</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-e5879b.html</link>
+    <description>Tier B / 栃木県 / 栃木県栃木市 / subsidy 出典: https://www.city.tochigi.lg.jp/soshiki/34/62454.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2accde9202</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度雨水貯留・浸透施設設置補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-amamizu-choryuu-shintou-shisetsu-setchi-906668.html</link>
+    <description>Tier B / 栃木県 / 栃木県栃木市 / subsidy / 上限 3万円 出典: https://www.city.tochigi.lg.jp/site/suidou/379.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2dda81516c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-09-305_栃木_魅力ある中山間地域づくり事業</title>
+    <link>https://jpcite.com/programs/pref-09-305-tochigi-miryoku-aru-chuusankan-chiiki-zukuri-4b965a.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 400万円 出典: https://www.pref.tochigi.lg.jp/b01/r07yosann.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2df848f659</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>壬生町_畑作物産地形成促進事業（水田活用の直接支払交付金）</title>
+    <link>https://jpcite.com/programs/mibu-machi-hatasaku-bussan-chikei-sei-sokushin-jigyou-ca6bb5.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.town.mibu.tochigi.jp/docs/2023050200013/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2df9101866</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>PREF-09-302_栃木_土地利用型園芸産地新たなチャレンジ支援事業</title>
+    <link>https://jpcite.com/programs/pref-09-302-tochigi-tochi-riyou-kata-engei-sanchi-arata-na-2e1b74.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 500万円 出典: https://www.pref.tochigi.lg.jp/g05/kouzou/h29engeitaikoku_suisinhoshin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2e341e5dc2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>産地パワーアップ事業</title>
+    <link>https://jpcite.com/programs/sanchi-pawaaappu-jigyou-b27b3a.html</link>
+    <description>Tier C / 栃木県 / （noukaweb 収集） 出典: https://www.town.nasu.lg.jp/0188/info-0000000078-1.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f2808d11a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>乳用牛基礎雌牛導入促進事業</title>
+    <link>https://jpcite.com/programs/nyuuyou-ushi-kiso-meushi-dounyuu-sokushin-jigyou-3cfc60.html</link>
+    <description>Tier C / 栃木県 / 栃木県下野市 / subsidy 出典: https://www.city.shimotsuke.lg.jp/0381/info-0000007939-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2f7fbbab11</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>真岡市_農業施設バンク</title>
+    <link>https://jpcite.com/programs/mookashi-nougyou-shisetsu-banku-cac5a6.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.moka.lg.jp/kakuka/nosei/gyomu/nogyo/shuno_shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-31e5402d89</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>真岡市_スマート農業機械導入支援事業費補助金（令和7年度）</title>
+    <link>https://jpcite.com/programs/mookashi-sumaato-nougyou-kikai-dounyuu-shien-jigyou-hi-2e461f.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 30万円 出典: https://www.city.moka.lg.jp/kakuka/nosei/gyomu/nogyo/shuno_shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-320810afc7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>MUN-092011-001_宇都宮市_園芸作物生産施設等整備_パイプハウス</title>
+    <link>https://jpcite.com/programs/mun-092011-001-utsunomiyashi-engei-sakumotsu-seisan-bf4f57.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.utsunomiya.lg.jp/sangyo/nougyou/oshirase/1029358.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3231ab3aed</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>にら新規就農者研修</title>
+    <link>https://jpcite.com/programs/nira-shinki-shuunou-mono-kenshuu-0518c1.html</link>
+    <description>Tier B / 栃木県 / （noukaweb 収集） / 上限 300万円 出典: https://www.city.kanuma.tochigi.jp/0481/info-0000005859-1.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-350a63e8fc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>上三川町_水田活用の直接支払交付金</title>
+    <link>https://jpcite.com/programs/kaminokawa-machi-suiden-katsuyou-no-chokusetsu-shiharai-a9d329.html</link>
+    <description>Tier A / 栃木県 / subsidy / 上限 10万円 出典: https://www.town.kaminokawa.lg.jp/0028/info-0000002672-0.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-35bea514f0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須烏山市_中山間直接支払交付金</title>
+    <link>https://jpcite.com/programs/nasukarasuyama-shi-chuusankan-chokusetsu-shiharai-koufukin-1d2a59.html</link>
+    <description>Tier C / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.nasukarasuyama.lg.jp/page/page000122.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3647372a63</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>栃木 土地利用型園芸産地新たなチャレンジ支援事業</title>
+    <link>https://jpcite.com/programs/tochigi-tochi-riyou-kata-engei-sanchi-arata-na-charenji-b3fa75.html</link>
+    <description>Tier B / 栃木県 / 都道府県 / subsidy / 上限 500万円 出典: https://www.pref.tochigi.lg.jp/g05/kouzou/h29engeitaikoku_suisinhoshin.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-38139b2b01</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須塩原市_チャレンジファーマー事業 おためしコース</title>
+    <link>https://jpcite.com/programs/nasushiobara-shi-charenjifaamaa-jigyou-otameshi-koosu-f6048d.html</link>
+    <description>Tier A / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.nasushiobara.tochigi.jp/shigoto_sangyo/nogyo/nogyowohajimetaikatahe_shinkishuno/10267.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-38616d2558</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業研修者受入支援助成金交付事業</title>
+    <link>https://jpcite.com/programs/nougyou-kenshuu-mono-ukeire-shien-joseikin-koufu-jigyou-2556ca.html</link>
+    <description>Tier C / 栃木県 / 栃木県下野市 / subsidy 出典: https://www.city.shimotsuke.lg.jp/0381/info-0000007939-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-38ba36fda3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくら市_農道等普請原材料費助成事業</title>
+    <link>https://jpcite.com/programs/sakura-shi-noudou-nado-fushin-genzairyouhi-josei-jigyou-0495c9.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3976c7c34a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>足利市新規就農塾事業</title>
+    <link>https://jpcite.com/programs/ashikaga-shi-shinki-shuunou-juku-jigyou-55c050.html</link>
+    <description>Tier B / 栃木県 / training / 上限 2万円 出典: https://www.city.ashikaga.tochigi.jp/industory/000059/000316/000724/p002780.html</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3b114a078f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>共進会支援事業</title>
+    <link>https://jpcite.com/programs/kyoushin-kai-shien-jigyou-d6862b.html</link>
+    <description>Tier C / 栃木県 / 栃木県下野市 / subsidy 出典: https://www.city.shimotsuke.lg.jp/0381/info-0000007939-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-408866490d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくら市農産物売上向上対策総合支援事業費補助金（スマート農業推進）</title>
+    <link>https://jpcite.com/programs/sakura-shi-nousanbutsu-uriage-koujou-taisaku-sougou-shien-d65a90.html</link>
+    <description>Tier B / 栃木県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-417ab7b2ea</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>真岡市_認定農業者制度</title>
+    <link>https://jpcite.com/programs/mookashi-nintei-nougyou-mono-seido-5a8c9a.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.moka.lg.jp/kakuka/nosei/gyomu/nogyo/shuno_shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4326574d42</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>畜産飼料供給支援事業</title>
+    <link>https://jpcite.com/programs/chikusan-shiryou-kyoukyuu-shien-jigyou-9df6d8.html</link>
+    <description>Tier C / 栃木県 / 栃木県下野市 / subsidy 出典: https://www.city.shimotsuke.lg.jp/0381/info-0000007939-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-43ac2011d2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須烏山市_那須烏山市親元就農者支援（新規就農祝い金）</title>
+    <link>https://jpcite.com/programs/nasukarasuyama-shi-nasukarasuyama-shi-oyamoto-shuunou-mono-e2ec99.html</link>
+    <description>Tier C / 栃木県 / subsidy / 上限 10万円 出典: https://www.city.nasukarasuyama.lg.jp/page/page000122.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-43df487c39</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須烏山市_那須烏山市新規就農者支援</title>
+    <link>https://jpcite.com/programs/nasukarasuyama-shi-nasukarasuyama-shi-shinki-shuunou-mono-452667.html</link>
+    <description>Tier C / 栃木県 / subsidy / 上限 50万円 出典: https://www.city.nasukarasuyama.lg.jp/page/page000122.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-45592d5f77</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須塩原市_チャレンジファーマー事業 応用コース</title>
+    <link>https://jpcite.com/programs/nasushiobara-shi-charenjifaamaa-jigyou-ouyou-koosu-6cf8a1.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.nasushiobara.tochigi.jp/shigoto_sangyo/nogyo/nogyowohajimetaikatahe_shinkishuno/10267.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-487a727d96</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>真岡市_環境保全型農業支援</title>
+    <link>https://jpcite.com/programs/mookashi-kankyouhozen-kata-nougyou-shien-370cec.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.moka.lg.jp/kakuka/nosei/gyomu/nogyo/shuno_shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-48fc38485a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>真岡市_真岡市RTKシステム利用支援</title>
+    <link>https://jpcite.com/programs/mookashi-mookashi-rtk-shisutemu-riyou-shien-f6ee14.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 100万円 出典: https://www.city.moka.lg.jp/kakuka/nosei/gyomu/nogyo/shuno_shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-49f21b1b57</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>下野市親元就農者支援事業（R6.4～）</title>
+    <link>https://jpcite.com/programs/shimotsuke-shi-oyamoto-shuunou-mono-shien-jigyou-r6-4-55444c.html</link>
+    <description>Tier C / 栃木県 / （noukaweb 収集） 出典: https://www.city.shimotsuke.lg.jp/0056/info-0000009139-3.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4bf4d1e4ef</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>上三川町_農業用ドローン技術認定取得事業（スマート農業技術導入支援事業）</title>
+    <link>https://jpcite.com/programs/kaminokawa-machi-nougyouyou-doroon-gijutsunintei-shutoku-46dadd.html</link>
+    <description>Tier A / 栃木県 / subsidy / 上限 10万円 出典: https://www.town.kaminokawa.lg.jp/0028/info-0000002672-0.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-50c52fe3c5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくら市_さくら市畜産臭気等環境対策事業</title>
+    <link>https://jpcite.com/programs/sakura-shi-sakura-shi-chikusan-shuuki-nado-kankyoutaisaku-aeb40e.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-525e29b662</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>下野市新規就農者向け園芸作物生産施設・機械導入事業</title>
+    <link>https://jpcite.com/programs/shimotsuke-shi-shinki-shuunou-mono-muke-engei-sakumotsu-ac10e7.html</link>
+    <description>Tier B / 栃木県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.shimotsuke.lg.jp/0381/info-0000009001-3.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-569342a09b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>那須町園芸作物推進支援事業</title>
+    <link>https://jpcite.com/programs/nasu-machi-engei-sakumotsu-suishin-shien-jigyou-17f055.html</link>
+    <description>Tier B / 栃木県 / 栃木県那須町 / subsidy / 上限 50万円 出典: https://www.town.nasu.lg.jp/0188/info-0000000080-1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-572e9a2f3a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業後継者支援事業</title>
+    <link>https://jpcite.com/programs/nougyou-koukeisha-shien-jigyou-c5262a.html</link>
+    <description>Tier C / 栃木県 / 栃木県那須町 / subsidy / 上限 100万円 出典: https://www.town.nasu.lg.jp/material/files/group/7/koukeisya_leaflet.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5761d5b4b5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>下野市農業研修者受入支援事業（R5.4～）</title>
+    <link>https://jpcite.com/programs/shimotsuke-shi-nougyou-kenshuu-mono-ukeire-shien-jigyou-r5-4-eed37e.html</link>
+    <description>Tier C / 栃木県 / （noukaweb 収集） 出典: https://www.city.shimotsuke.lg.jp/0056/info-0000008247-3.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5ac328318d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>宇都宮市 園芸作物生産施設等整備 パイプハウス</title>
+    <link>https://jpcite.com/programs/utsunomiyashi-engei-sakumotsu-seisan-shisetsutou-seibi-ac046d.html</link>
+    <description>Tier B / 栃木県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.utsunomiya.lg.jp/sangyo/nougyou/oshirase/1029358.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5b98a32bec</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>振興作物推進事業（農産物売上向上対策総合支援事業費補助金）</title>
+    <link>https://jpcite.com/programs/shinkou-sakumotsu-suishin-jigyou-nousanbutsu-uriage-koujou-9522f7.html</link>
+    <description>Tier A / 栃木県 / 栃木県さくら市 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html#c98a-187c-7d94-eea8-a34f2ae92e84289c</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5c6764860c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+</channel>
+</rss>
