@@ -1,30 +1,5 @@
 <!DOCTYPE html>
-<!--
-  site/go.html — device-flow activation page (RFC 8628 §3.3).
-
-  Flow:
-    1. MCP server mints a device_code on /v1/device/authorize and tells the
-       user to open /go/ABCD-1234 (or /go?code=ABCD-1234).
-    2. This page pre-fills the user_code from the path/query, asks for the
-       user's email, then POSTs /v1/billing/checkout to get a Stripe
-       Checkout URL (Apple Pay + Google Pay + card — the "payment methods
-       dashboard" in Stripe has both enabled by default).
-    3. Stripe Checkout's success_url redirects back to this page with
-       ?session_id=cs_... &code=ABCD-1234. The JS then POSTs
-       /v1/device/complete with user_code + session_id. On 200 we show
-       "✅ 有効化完了 — Claude に戻ってください".
-    4. The MCP poller (already running) sees status=activated on its next
-       /v1/device/token poll and stores the api_key in the OS keychain.
-
-  Stripe Checkout pitfall (from CLAUDE.md): do NOT pass
-  consent_collection={"terms_of_service": "required"}. We reuse the
-  existing /v1/billing/checkout endpoint which already handles this via
-  custom_text.submit.message.
-
-  Routing: Cloudflare Pages serves this at /go.html. site/_redirects
-  rewrites /go and /go/:code to this file. The page reads the code from
-  either the query string (?code=...) or the path (/go/ABCD-1234).
--->
+<!-- Device activation page. -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -350,9 +325,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -364,7 +338,7 @@
   (function() {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || '';
+    var API_BASE = (typeof window !== 'undefined' && window.JPCITE_API_BASE) || '';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -502,6 +476,7 @@
 
       fetch(api('/v1/billing/checkout'), {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
           success_url: successUrl,

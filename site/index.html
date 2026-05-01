@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — 日本の制度を AI から検索できる REST + MCP API。</title>
-<meta name="description" content="日本の制度 (補助金 11,684 + 法令本文 154 + 法令メタデータ 9,484 + 判例 2,065 + 税制 50 + 適格事業者 13,801 + 採択事例 2,286 + 行政処分 1,185) を検索する REST + MCP API。一次資料 URL 付き。¥3/リクエスト 完全従量、 匿名 3/日 無料。">
+<meta name="description" content="AI が回答を書く前に一次資料 URL・取得時刻・根拠項目を取得する Evidence prefetch API。日本の制度、法令、判例、税制、適格事業者、採択事例、行政処分を REST + MCP で検索。¥3/リクエスト、匿名 3/日 無料。">
 
 <meta property="og:title" content="jpcite — 日本の制度データを 5 つの形で">
 <meta property="og:description" content="API + MCP / LINE bot / 法令改正アラート / 埋込ウィジェット / 士業 案件紹介。 日本の公的制度 14,472 件を用途別に。">
@@ -31,19 +31,7 @@
 <link type="text/plain" rel="author" href="/humans.txt">
 <link rel="alternate" type="application/rss+xml" title="jpcite お知らせ" href="/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="jpcite Announcements (English)" href="/en/rss.xml">
-<!-- Preconnect to the API origin so the prescreen demo's first POST
-     (TLS handshake + DNS) overlaps with HTML parse instead of blocking
-     LCP. crossorigin is required because /v1/programs/prescreen runs
-     under fetch with credentials='omit' but the browser still treats
-     this as a CORS-like preconnect; matching the request mode is what
-     keeps the warmed connection reusable. -->
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<!-- Preconnect to fonts.gstatic.com (woff2 binary origin) and fonts.googleapis.com
-     (CSS origin) so Noto Sans JP / Noto Serif JP / JetBrains Mono download in
-     parallel with HTML parse. crossorigin is REQUIRED on gstatic — woff2 uses
-     anonymous CORS; without it the warmed connection is discarded and the font
-     fetches re-handshake. font-display:swap is in the CSS URL so the system-font
-     fallback paints first and webfont swaps in without blocking LCP. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -62,7 +50,7 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "jpcite",
-  "alternateName": "税務会計AI",
+  "alternateName": "jpcite",
   "description": "日本の公的制度 (補助金・融資・税制・認定制度) を 5 つの形 (API + MCP / LINE bot / 法令改正アラート / 埋込ウィジェット / 士業 案件紹介) で提供。 制度 14,472 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185、 排他ルール 181 本、 99% 以上の行に一次資料 URL と取得時刻を付与。",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio, LINE, Web, Email)",
@@ -70,8 +58,8 @@
   "inLanguage": "ja",
   "offers": [
     {"@type": "Offer", "name": "API + MCP", "price": "3", "priceCurrency": "JPY", "description": "1 リクエスト ¥3 (税込 ¥3.30)。 匿名で 3 req/日 まで無料"},
-    {"@type": "Offer", "name": "LINE bot", "price": "3", "priceCurrency": "JPY", "description": "1 質問 ¥3 (税込 ¥3.30)。 月 10 件まで無料"},
-    {"@type": "Offer", "name": "法令改正アラート", "price": "3", "priceCurrency": "JPY", "description": "1 通知 ¥3 (税込 ¥3.30)。 月次サマリーは無料"},
+    {"@type": "Offer", "name": "LINE bot", "price": "3", "priceCurrency": "JPY", "description": "1 質問 ¥3 (税込 ¥3.30)。 無料枠は 1 日 3 件まで"},
+    {"@type": "Offer", "name": "法令改正アラート", "price": "3", "priceCurrency": "JPY", "description": "1 通知 ¥3 (税込 ¥3.30)。 通知ごとの完全従量"},
     {"@type": "Offer", "name": "埋込ウィジェット", "price": "3", "priceCurrency": "JPY", "description": "1 検索 ¥3 (税込 ¥3.30)。 サイト訪問者の検索ごと従量"},
     {"@type": "Offer", "name": "士業 案件紹介", "price": "0", "priceCurrency": "JPY", "description": "利用無料。 成約時に専門家が ¥3,300 を支払う"}
   ],
@@ -85,34 +73,22 @@
 }
 </script>
 
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://jpcite.com/#publisher across all pages). All other
-  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
-  the Organization inline. sameAs URLs marked TODO(user-action) are
-  placeholders until the user creates them per
-  docs/runbook/social_profile_setup.md.
--->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "taxID": "T8010001213708",
   "foundingDate": "2025-05-12",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
     "addressRegion": "東京都",
-    "addressLocality": "文京区",
-    "streetAddress": "小日向 2-22-1"
+    "addressLocality": "文京区"
   },
   "founder": {
     "@type": "Person",
@@ -125,8 +101,7 @@
     "availableLanguage": ["ja", "en"]
   },
   "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+    "https://www.bookyou.net/"
   ]
 }
 </script>
@@ -136,7 +111,7 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "jpcite",
-  "alternateName": ["オートノマス", "税務会計AI"],
+  "alternateName": ["jpcite"],
   "url": "https://jpcite.com/",
   "publisher": {"@id": "https://jpcite.com/#publisher"},
   "potentialAction": {
@@ -195,7 +170,7 @@
     {
       "@type": "PropertyValue",
       "name": "MCP tools",
-      "value": 69
+      "value": 93
     }
   ]
 }
@@ -206,7 +181,7 @@
   "@context": "https://schema.org",
   "@type": "WebAPI",
   "name": "jpcite REST + MCP API",
-  "description": "日本の公的制度データの REST + MCP API。93 MCP ツール、7 REST API 経路、MCP プロトコル 2025-06-18。",
+  "description": "日本の公的制度データの REST + MCP API。93 MCP ツール、178 REST API 経路、MCP プロトコル 2025-06-18。",
   "documentation": "https://jpcite.com/docs/",
   "termsOfService": "https://jpcite.com/tos.html",
   "provider": {"@id": "https://jpcite.com/#publisher"},
@@ -233,7 +208,7 @@
       "description": "93 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/req 税別 (税込 ¥3.30)、匿名 3 req/日 free"}
+      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/req 税別 (税込 ¥3.30)、匿名 3 req/日 無料"}
     },
     {
       "@type": "Product",
@@ -241,7 +216,7 @@
       "description": "LINE 上で補助金・融資を自然言語検索。SME 経営者 / 士業向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/line.html",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/質問 税別 (税込 ¥3.30)、月 10 件まで無料、完全従量"}
+      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/質問 税別 (税込 ¥3.30)、無料枠は 1 日 3 件まで、完全従量"}
     },
     {
       "@type": "Product",
@@ -249,7 +224,7 @@
       "description": "インボイス・電帳法等の法令改正を E メールで通知。士業 / 経理担当向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/alerts.html",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "1 通知 ¥3 (税込 ¥3.30)、月次ダイジェスト無料"}
+      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "1 通知 ¥3 (税込 ¥3.30)、完全従量"}
     },
     {
       "@type": "Product",
@@ -309,74 +284,44 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
- <!-- CRO Fix 5 (2026-04-29): Stripe/Vercel/Linear/Anthropic-grade hero
-           rewrite. 1-line punch H1 (≤16 chars), 1-line sub, 1 visual (curl
-           snippet), 1 primary CTA (single), 1 secondary link. Designed to be
-           understood in 200ms. Numbers row + early-access detail relocated
-           below the fold so the visitor hits punch + visual + CTA first. -->
- <h1 id="hero-title">日本の制度データを、 AI が信頼できる形で。</h1>
- <p class="hero-sub">11,684 制度 + 採択事例・融資・判例・法令を、一次資料 URL 付きで返す REST + MCP API。 1 リクエスト ¥3、 匿名 3 req/日 無料。</p>
+ <h1 id="hero-title">補助金 11,684 + 法令 9,484 + 法人 167K を、REST + MCP で横断。</h1>
+ <p class="hero-sub">日本の公的制度を REST + MCP で。 多くのレコードに一次資料 URL + 取得時刻 + content_hash。 ¥3.30/リクエスト 完全従量、 匿名 3 リクエスト/日 はカード登録不要から始められます。</p>
 
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">「IT導入」と検索すれば、適合する制度名・品質ランク・出典 URL・更新日がそろって返ります。Claude / ChatGPT / Cursor に聞く前に、コンパクトで出典リンク付きの文脈を事前取得できるため、繰り返しの Web 検索や文脈詰め込みを減らせるケースを実測できます。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 出典の鮮度は 中央値 7 日。 Claude / ChatGPT / Cursor から呼び出して、 制度名・品質ランク・一次資料リンクをまとめて取得できます。</p>
 
  <div class="cta-row">
- <a class="btn btn-primary" href="#trial" data-cta-variant="hero-trial">API キーを取得 →</a>
- <a href="/docs/" style="align-self:center;font-size:15px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">ドキュメントを見る →</a>
+ <a class="btn btn-primary" href="#trial" data-cta-variant="hero-trial-c2">無料で 3 リクエスト試す (登録不要) →</a>
+ <a href="#trial" data-cta-variant="hero-key-issue-c2" style="align-self:center;font-size:15px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">API キー発行 (¥3.30/req) →</a>
  </div>
- <!-- 5-min promise badge (2026-04-29 onboarding hardening). Makes the
-           "30 秒 → APIキー / 5 分 → 最初のAPI call" promise explicit so
-           evaluators know exactly what to expect before they click. -->
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">5 秒</span>匿名 curl で動作確認 (登録不要) ·
  <span class="chip-success">30 秒</span>email で APIキー (カード不要) ·
  <span class="chip-success">5 分</span>Claude Desktop / Cursor / Cline / ChatGPT で稼働
  </p>
- <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_month">3</span> リクエスト/日まで無料、 LINE は月 10 件まで無料、 法令アラートは月次サマリー無料。 最低金額・契約期間なし、 いつでも解約可能。</p>
- <!-- Discreet trust strip. Plain HTML so it works with JS off; only
-           the freshness date is JS-fetched from /v1/meta. No fake counts —
-           if /v1/meta is unreachable the build-time fallback stays. Early
-           access uses <details> so the dismissal is browser-native and
-           cookie-free. -->
-<!-- Conversion-grade trust strip 2026-04-29. Three discrete tokens
-           after 2026-04-29 cleanup (PCI DSS / DDoS-CDN removed as
-           "of-course" infrastructure per user feedback). Each fact is
-           a single line surfacing a verifiable third party. -->
+ <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用、LINE、法令アラート、ウィジェットは ¥3/リクエスト (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
  <li>出典は省庁・自治体・公庫の一次資料 99% 以上 (補助金まとめサイトは除外)</li>
  <li>税理士法 §52・弁護士法 §72 への注意書きを全 API レスポンスに同梱</li>
- <li>適格請求書発行事業者登録番号付きで請求書発行</li>
+ <li>適格請求書に対応</li>
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
- <summary style="cursor:pointer;color:var(--text);">早期アクセス受付中 (匿名 3 リクエスト/日 / LINE 月 10 件は本日から無料)</summary>
- <p style="margin:6px 0 0;">登録不要の無料枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a> · <a href="line.html">LINE bot</a>)。¥3/リクエスト 完全従量の本番開始は <a href="dashboard.html">ダッシュボード</a> でカード登録のみ。</p>
+ <summary style="cursor:pointer;color:var(--text);">登録不要で匿名 3 リクエスト/日まで利用できます</summary>
+ <p style="margin:6px 0 0;">匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a> · <a href="line.html">LINE bot</a>)。継続利用は <a href="dashboard.html">ダッシュボード</a> で API キーを発行し、¥3/リクエスト (税込 ¥3.30) の完全従量で利用できます。</p>
  </details>
 
- <!--
-       Conversion-pathway audit 2026-04-29: email-only trial form. Captures
-       evaluator emails before they bounce (anon visitors otherwise leave no
-       contact info today). 14 days / 200 req hard cap, NO card required —
-        not a "Free tier" SKU; pricing stays ¥3/req metered post-trial.
-        See src/jpintel_mcp/api/signup.py for the full design rationale.
-        ADD-only block; do not modify the rest of the hero / index.html.
-      -->
  <section id="trial" aria-labelledby="trial-title" style="margin:24px 0 0;padding:18px 20px;background:var(--bg-alt,#f6f7f9);border:1px solid var(--border,#e5e7eb);border-radius:8px;">
- <h2 id="trial-title" style="font-size:17px;margin:0 0 8px;line-height:1.4;">カードなしで試す (14 日 / 200 リクエスト)</h2>
- <p style="font-size:13px;color:var(--text-muted,#555);margin:0 0 12px;line-height:1.6;">メールアドレスだけで API キーを発行。カード登録不要、想定外の請求なし。期限到来で自動失効します。</p>
+ <h2 id="trial-title" style="font-size:17px;margin:0 0 8px;line-height:1.4;">登録不要で 3 リクエスト/日まで試せます</h2>
+ <p style="font-size:13px;color:var(--text-muted,#555);margin:0 0 12px;line-height:1.6;">匿名枠で動作確認できます。継続利用する場合はメールアドレスで API キーを発行し、¥3/リクエスト (税込 ¥3.30) の完全従量で利用できます。</p>
  <form id="trial-signup-form" action="/v1/signup" method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">
  <label for="trial-email" class="visually-hidden" style="position:absolute;width:1px;height:1px;clip:rect(0 0 0 0);overflow:hidden;">メールアドレス</label>
  <input id="trial-email" name="email" type="email" required placeholder="you@example.com" autocomplete="email" inputmode="email" style="flex:1 1 240px;min-width:200px;padding:10px 12px;border:1px solid var(--border,#d1d5db);border-radius:6px;font-size:14px;">
- <button type="submit" class="btn btn-primary" style="padding:10px 20px;font-size:14px;white-space:nowrap;">マジックリンクを送る</button>
+ <button type="submit" class="btn btn-primary" style="padding:10px 20px;font-size:14px;white-space:nowrap;">API キー発行リンクを送る</button>
  </form>
  <p id="trial-signup-result" role="status" aria-live="polite" style="margin:10px 0 0;font-size:13px;color:var(--text-muted,#555);min-height:1em;"></p>
  <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted,#555);line-height:1.6;">
  税理士法 §52 / 弁護士法 §72 該当業務はおこないません。詳細は <a href="tos.html">利用規約</a> · <a href="privacy.html">プライバシー</a>。
  </p>
  <script>
-          // Progressive enhancement: if JS is enabled, submit via fetch so
-          // the user stays on the homepage. Without JS the plain HTML form
-          // posts to /v1/signup and the API returns JSON (graceful degrade —
-          // shows raw 202 response in the browser, which is honest enough
-          // for the no-JS minority).
           (function() {
             'use strict';
             var form = document.getElementById('trial-signup-form');
@@ -456,7 +401,7 @@
  <article class="card" aria-labelledby="trust-lineage">
  <h3 id="trust-lineage">一次資料 99%以上</h3>
  <p class="card-lead">出典 URL と更新日を 99%以上の行に付与</p>
- <p>出典は省庁 (経産省、農水省、中小企業庁) と政府系金融 (日本政策金融公庫) と自治体の公式 URL のみ。二次情報源は最初から除外する設計。法改正の即時反映を前提に運用しています。</p>
+ <p>出典は省庁 (経産省、農水省、中小企業庁) と政府系金融 (日本政策金融公庫) と自治体の公式 URL のみ。二次情報源は最初から除外する設計。法改正の差分検知と再取得状況を継続的に追跡しています。</p>
  <ul class="card-list">
  <li>毎晩、出典 URL の生存確認を自動実行</li>
  <li>出典・更新日列を監査項目として保持</li>
@@ -466,7 +411,7 @@
  <article class="card" aria-labelledby="trust-rules">
  <h3 id="trust-rules">併用不可・前提条件のルールを 181 本 機械判定</h3>
  <p class="card-lead">「補助金 A と B は併用不可」を AI に推論させずデータで返す</p>
- <p>制度 ID を渡すと併用失格・前提制度の不足を即時に検出します。AI の「それっぽい」推論ではなく、データ化済みのルールで判定するので、申請後に「気づいたら失格」を回避できます。</p>
+ <p>制度 ID を渡すと併用失格・前提制度の不足を即時に検出します。AI の「それっぽい」推論ではなく、データ化済みのルールで判定するので、申請前に確認すべき併用リスクを見つけやすくします。</p>
  <ul class="card-list">
  <li>併用不可ルール 125 本 + 前提制度ルール 17 本</li>
  <li>絶対要件 15 本 + その他 24 本</li>
@@ -487,10 +432,10 @@
  <article class="card" aria-labelledby="pillar-api">
  <h3 id="pillar-api">API + MCP</h3>
  <p class="card-lead">AI 開発者 / 大規模 RAG 用途</p>
- <p><span data-fact="mcp_tools_total">93</span> MCP ツール を AI から直接呼び出し。REST も OpenAPI 3.1 準拠。stdio 接続、SDK 不要。</p>
+ <p><span data-fact="mcp_tools_total">93</span> MCP ツール を AI から直接呼び出し。回答生成前に一次資料 URL 付き Evidence Packet を先読みできます。</p>
  <ul class="card-list">
  <li>¥<span data-fact="price_per_req">3</span>/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>)</li>
- <li>匿名 <span data-fact="anonymous_quota_per_month">3</span> リクエスト/日 (IP 単位) 無料</li>
+ <li>匿名 <span data-fact="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
  <li>Claude Desktop / Cursor / ChatGPT 対応</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="/docs/getting-started/">ドキュメントを読む →</a></p>
@@ -502,7 +447,7 @@
  <p>スマホの LINE で 30 秒、補助金を自然言語で発見。友だち追加するだけ、アプリ不要。</p>
  <ul class="card-list">
  <li>1 通知 ¥3 (税込 ¥3.30)</li>
- <li>月 10 件まで無料</li>
+ <li>無料枠は 1 日 3 件まで</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="line.html">LINE bot を使う →</a></p>
  </article>
@@ -513,8 +458,8 @@
  <p>インボイス・電帳法・労基法など、関心分野の法令改正を E メールで通知。見逃し事故を防ぐ。</p>
  <ul class="card-list">
  <li>1 通知 ¥3 (税込 ¥3.30)</li>
- <li>月次ダイジェストは無料</li>
- <li>即時通知は有償</li>
+ <li>通知ごとの完全従量</li>
+ <li>最低金額・契約期間なし</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="alerts.html">アラートを設定 →</a></p>
  </article>
@@ -569,11 +514,11 @@
  <article class="card audience-card" aria-labelledby="aud-vc">
  <h3 id="aud-vc">M&amp;A / VC 専門家</h3>
  <p class="card-lead audience-context">投資先デューデリ + 法人ウォッチ</p>
- <p class="audience-pitch">投資・買収候補の法人番号 1 件で、行政処分歴・補助金採択歴・適格請求書発行事業者登録・関連制度を一括取得。 並列処理の上限なし (例: 100 件まとめて = 500 リクエスト = ¥1,500 税別)。 法人情報の変更は Webhook で即時通知できます。</p>
+ <p class="audience-pitch">投資・買収候補の法人番号 1 件で、行政処分歴・補助金採択歴・適格請求書発行事業者登録・関連制度を一括取得。 API のレート制限内でまとめて処理できます (例: 100 件まとめて = 500 リクエスト = ¥1,500 税別)。 法人情報の変更は Webhook で通知できます。</p>
  <ul class="card-list">
  <li>行政処分 <span data-fact="enforcement_cases_total">1,185</span> + 採択 <span data-fact="case_studies_total">2,286</span> + 適格事業者 <span data-fact="invoice_registrants_total">13,801</span></li>
  <li>1 案件あたり ¥15〜50、 並列規模に応じてスケール (例: 50 件 = ¥1,500)</li>
- <li>利用量制限なし、 月額固定なし</li>
+ <li>月額固定なし、必要な分だけ利用</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/vc.html">M&amp;A / VC 向け詳細 →</a></p>
  </article>
@@ -585,7 +530,7 @@
  <ul class="card-list">
  <li>税制ルール <span data-fact="tax_rulesets_total">50</span> 件 (措置法・通達リンク付き)</li>
  <li>顧問先 1 社あたり月 ¥30〜60 (顧問先数に応じてスケール)</li>
- <li>法令改正アラート (月次ダイジェスト無料、 即時通知 1 通知 ¥3 従量)</li>
+ <li>法令改正アラート (1 通知 ¥3 従量)</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/tax-advisor.html">税理士向け詳細 →</a></p>
  </article>
@@ -617,10 +562,10 @@
  <article class="card audience-card" aria-labelledby="aud-consultant">
  <h3 id="aud-consultant">補助金コンサルタント</h3>
  <p class="card-lead audience-context">顧問先 横展開 + 採択後の進捗追跡</p>
- <p class="audience-pitch">顧問先 1 社 &times; 月 10 リクエスト &times; ¥3 = <strong>¥30/社/月</strong>。 顧問先数に応じてスケール (例: 200 社 ¥6,000/月 + 事前リサーチ ¥600 = ¥6,600/月)。 既存サービス navit (¥1,000/月、 静的 ウェブ画面 のみ) と違い、 API + Slack Webhook で AI に自動連携できます。 採択後の日程通知も即日 配信できます。</p>
+ <p class="audience-pitch">顧問先 1 社 &times; 月 10 リクエスト &times; ¥3 = <strong>¥30/社/月</strong>。 顧問先数に応じてスケール (例: 200 社 ¥6,000/月 + 事前リサーチ ¥600 = ¥6,600/月)。 API + Slack Webhook で既存の業務フローに連携でき、採択後の日程通知も即日 配信できます。</p>
  <ul class="card-list">
  <li>1 顧問先 = ¥30/月 (10 リクエスト × ¥3)</li>
- <li>併用ルール <span data-fact="exclusion_rules_total">181</span> 本で 「気付いたら失格」 を機械検出</li>
+ <li>併用ルール <span data-fact="exclusion_rules_total">181</span> 本で申請前の確認リスクを機械検出</li>
  <li>CSV 一括判定 + 保存検索の月次自動実行</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/subsidy-consultant.html">補助金コンサル向け →</a></p>
@@ -629,11 +574,11 @@
  <article class="card audience-card" aria-labelledby="aud-smb">
  <h3 id="aud-smb">中小企業 (LINE)</h3>
  <p class="card-lead audience-context">スマホ LINE で自然言語</p>
- <p class="audience-pitch">小規模事業向け LINE bot。月 10 件まで無料、11 件目以降は 1 質問 ¥3。アプリ不要・設定不要で、合う認定支援機関に繋ぐ機能も付いています。</p>
+ <p class="audience-pitch">小規模事業向け LINE bot。無料枠は 1 日 3 件まで、4 件目以降は 1 質問 ¥3 (税込 ¥3.30)。アプリ不要・設定不要で、合う認定支援機関に繋ぐ機能も付いています。</p>
  <ul class="card-list">
  <li>友だち追加のみ、 アプリ不要</li>
- <li>月 10 件まで無料 (公開 2026-05-06)</li>
- <li>11 件目以降 1 質問 ¥<span data-fact="price_per_req">3</span> (税別)</li>
+ <li>無料枠は 1 日 3 件まで (JST 翌日リセット)</li>
+ <li>4 件目以降 1 質問 ¥<span data-fact="price_per_req">3</span> (税別)</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/smb.html">中小企業 向け詳細 →</a></p>
  </article>
@@ -664,8 +609,8 @@
 
  <article class="card audience-card" aria-labelledby="aud-dev" style="background:var(--bg-alt);border-color:var(--accent);">
  <h3 id="aud-dev">AI 開発者 (横断利用)</h3>
- <p class="card-lead audience-context">REST + MCP、 89 機能、 SDK 不要</p>
- <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠 (Claude Desktop / Cursor / ChatGPT で即動作)、 uvx 1 行で起動。 事前計算済みの根拠を返すため、削減できるトークン量・Web 検索量はワークロードとモデルごとに測定できます。</p>
+ <p class="card-lead audience-context">REST + MCP、 93 機能、 SDK 不要</p>
+ <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠、 uvx 1 行で起動。 Evidence Packet で事前に根拠を渡し、ヒット率・追加検索回数・トークン量への影響を自社ベンチマークで測定できます。</p>
  <ul class="card-list">
  <li>AI から呼べる機能 <span data-fact="mcp_tools_total">93</span> 個 / REST 経路 194 本</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
@@ -678,18 +623,10 @@
  </div>
  </section>
 
- <!-- CRO Fix 2 (2026-04-29): copy-pasteable curl block above the prescreen
-       form. Devs hit the curl first (5-second test, no signup), SMB owners
-       scroll past it to the form below. Source-of-truth lives in
-       site/_data/curl_examples.json — keep this HTML in sync if the API
-       surface changes. The §72/§52/§1 disclaimer (formerly above CTA, "we
-       won't help you" before the user saw value) was relocated to sit just
-       under the curl block, so it shows up only after the visitor has
-       already seen the working API. -->
  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
  <div class="container">
  <h2 id="curl-title" class="section-title">登録不要で試す</h2>
- <p class="demo-lead" style="margin:-16px 0 16px;"><span data-fact="anonymous_quota_per_month">3</span> 回/日まで無料。 検索キーワードを入れるだけで、制度名・品質ランク・出典 URL・更新日が返ります。</p>
+ <p class="demo-lead" style="margin:-16px 0 16px;"><span data-fact="anonymous_quota_per_day">3</span> 回/日まで無料。 検索キーワードを入れるだけで、制度名・品質ランク・出典 URL・更新日が返ります。</p>
  <div class="curl-try" style="margin:0 0 16px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
  <pre style="flex:1 1 auto;min-width:0;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5;"><code id="curl-snippet">curl 'https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'</code></pre>
  <button id="curl-copy-btn" type="button" class="btn-ghost" data-copy-target="curl-snippet" style="flex:0 0 auto;">コピー</button>
@@ -701,23 +638,14 @@
  </div>
  </section>
  <script>
-  // CRO Fix 2: vanilla copy-button. No deps, no fetch, no analytics.
-  // Falls back to a textarea selectAll on browsers without
-  // navigator.clipboard. Status text is an aria-live="polite" span so
-  // screen readers announce "コピー完了" without a visible toast.
   (function() {
     var btn = document.getElementById('curl-copy-btn');
     if (!btn) return;
     var srcEl = document.getElementById(btn.getAttribute('data-copy-target'));
     var status = document.getElementById('curl-copy-status');
     btn.addEventListener('click', function() {
-      // The pre/code block contains the literal "$ " prompt we want to
-      // strip before copying so the user can paste straight into a shell.
       var raw = srcEl ? srcEl.textContent : '';
       var lines = raw.split(/\r?\n/);
-      // Only strip the leading "$ " from the first non-empty line; the
-      // rest of the block (JSON response) stays so the user sees what
-      // they're pasting matches the docs.
       for (var i = 0; i < lines.length; i++) {
         if (lines[i].length > 0) {
           lines[i] = lines[i].replace(/^\$\s+/, '');
@@ -759,7 +687,6 @@
  <h2 id="ps-title" class="section-title">制度プレスクリーン — 3 問で 上位 5 件</h2>
  <p class="prescreen-sub">都道府県・事業形態・予定投資額を入れるだけで、<strong>11,684 制度</strong>から適合度の高い<strong>上位 5 件</strong>を表示します。無料・登録不要・匿名 3 リクエスト/日/IP。 入力 1 回で結果が返ります。</p>
  <style>
-        /* prescreen a11y polish — scoped, additive only */
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
         .ps-required-mark { color:#c0392b; margin-left:4px; font-weight:bold; }
         .ps-field-help code { background:#f4f6f8; padding:1px 4px; border-radius:3px; font-size:0.95em; }
@@ -805,14 +732,7 @@
  </div>
  <button class="ps-submit" type="submit" id="ps-submit">上位 5 件を見る</button>
  </form>
- <p class="ps-hint">回答は AI ではなく、制度データベースから規則ベースでマッチングします (prefecture + target_types + amount_fit)。出典 URL は一次資料のみ。送信内容は保存しません。レート制限のため IP ハッシュのみ記録 (JST 翌日リセット)。</p>
- <!-- Live-region split (a11y): announce only the short
-             status summary (e.g. "5 件の制度が見つかりました"), not the
-             entire rendered HTML. JAWS / NVDA / VoiceOver previously
-             re-announced the full result HTML on each render which was
-             noisy and lost focus. The visible card list lives in a
-             non-live region; prescreen-demo.js writes a short summary
-             into #ps-status-live for assistive tech. -->
+ <p class="ps-hint">回答は AI ではなく、制度データベースから規則ベースでマッチングします (prefecture + target_types + amount_fit)。出典 URL は一次資料を優先。送信内容は保存しません。レート制限のため IP ハッシュのみ記録 (JST 翌日リセット)。</p>
  <p id="ps-status-live" role="status" aria-live="polite" aria-atomic="true" class="visually-hidden"></p>
  <div class="ps-results" id="ps-results" aria-live="polite" aria-atomic="false" aria-busy="false"></div>
  </div>
@@ -821,61 +741,73 @@
 
  <section class="features" aria-labelledby="vs-llm-title" id="vs-llm">
  <div class="container">
- <h2 id="vs-llm-title" class="section-title">ChatGPT に聞けば済む話では?</h2>
- <p class="demo-lead" style="margin:-16px 0 28px;">短答: いいえ。3 つの理由で 事実水準 の制度判定には使えません。</p>
+ <h2 id="vs-llm-title" class="section-title">ChatGPT / Claude と何が違う?</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">AI は文章を作れます。jpcite は回答を作るのではなく、AI に渡す根拠・出典・既知の欠落を短い資料パケットとして返します。</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card" aria-labelledby="vs-llm-cutoff">
- <h3 id="vs-llm-cutoff">学習日が古い (知識の打ち切り日問題)</h3>
- <p class="card-lead">時間軸が合わない</p>
- <p>ChatGPT / Claude の学習データは数ヶ月〜1 年前で固定です。補助金は「公募締切=昨日」のような時間軸で動くため、AI 単独では「今申請できるか」が判断しづらい場面があります。jpcite は検索対象行に取得時刻を持ちます。</p>
+ <h3 id="vs-llm-cutoff">検索前に根拠が整っている</h3>
+ <p class="card-lead">URL・取得時刻・スナップショット ID</p>
+ <p>AI の Web 検索は探索に向いています。一方、制度判断では「どの一次資料を、いつ取得したデータで見たか」が重要です。jpcite は source_url、source_fetched_at、content_hash、corpus_snapshot_id をまとめて返し、後から同じ根拠を追跡できます。</p>
  </article>
 
  <article class="card" aria-labelledby="vs-llm-halluc">
- <h3 id="vs-llm-halluc">出典の捏造 (幻覚リスク)</h3>
- <p class="card-lead">誤判定 = 受給機会の損失</p>
- <p>AI は「存在しない補助金 ID」や「実在しない URL」を生成することがあります。¥300 万〜¥3,000 万規模の制度判断では、出典確認なしの誤判定が申請失敗・依頼者トラブルにつながります。jpcite は 99% 以上の行に出典 URL と取得時刻を付与し、一次資料ベースで確認できる形にしています。</p>
+ <h3 id="vs-llm-halluc">渡す根拠を先に絞り込める</h3>
+ <p class="card-lead">PDF 全文投入の前段に置く</p>
+ <p>公募要領や関連ページをそのまま LLM に読ませると入力が膨らみます。jpcite は制度名、対象、金額、締切、出典、既知の欠落を先に構造化して返すため、LLM には必要な根拠だけを渡せます。削減率はモデルと質問に依存するため固定保証はしません。</p>
  </article>
 
  <article class="card" aria-labelledby="vs-llm-rules">
- <h3 id="vs-llm-rules">構造化されていない (併用可否を機械判定できない)</h3>
- <p class="card-lead">併用可否は推論で決まらない</p>
- <p>AI は「補助金 A と B の併用可否」や「同一事業者の他案件との重複」を構造的に判定できません。jpcite は 181 本の 併用不可 / 前提制度 ルールで併用可否を機械判定します。</p>
+ <h3 id="vs-llm-rules">併用可否を同じ形で返す</h3>
+ <p class="card-lead">推論ではなくルール照合</p>
+ <p>「補助金 A と B を同時に使えるか」は文章のうまさでは決まりません。jpcite は 181 本の 併用不可 / 前提制度 ルールを照合し、同じ入力には同じ結果と根拠を返します。</p>
  </article>
 
  </div>
- <p class="demo-lead" style="margin:28px 0 0;">つまり: <strong>AI + jpcite = 速度 (AI) × 正確性 (一次資料 + ルール判定)</strong>。jpcite は AI の代替ではなく、AI が信頼できる出力を出すための事実層。</p>
+ <p class="demo-lead" style="margin:28px 0 0;">つまり: <strong>AI が書く。jpcite が裏取り材料を渡す。</strong> 文章生成はお使いの AI に任せ、出典・取得時刻・ルール判定・既知の欠落を jpcite が短く返します。</p>
  </div>
  </section>
 
  <section class="code-demo" aria-labelledby="why-title">
  <div class="container">
- <h2 id="why-title" class="section-title">なぜ jpcite か</h2>
- <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+ <h2 id="why-title" class="section-title">なぜ jpcite か — ¥3/リクエストの中身</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">1 リクエスト ¥3 (税込 ¥3.30) は、 (a) 複数 DB の横断取得 + (b) 一次資料エビデンス + (c) 鮮度メタデータ をワンコールで提供する対価です。 自前で同等のものを組むと、 公開サイトのスクレイピング・正規化・差分検出・出典管理を継続運用する必要があります。</p>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card">
- <h3>集約サイトを採用しない</h3>
- <p class="card-lead">情報精度の確保</p>
- <p>noukaweb・補助金ポータル・biz.stayway 等の二次情報源には、「掲載中の制度が既に終了」「上限金額が古い」「存在しない要件を追記」といった事例が複数報告されています。これを根拠に申請して不採択となれば、事務所への信頼喪失や苦情に直結します。jpcite はこれらを出典に登録しません (<strong>禁止</strong>)。出典は省庁 (METI / MAFF / 中企庁)・都道府県・政府系金融 (JFC / SMRJ / NEDO)・商工会の一次 URL のみ。14,472 件の 99%以上で一次 URL を保有し、残る 12 件 (小規模自治体) は「一次 URL 不足」と明示します。出典 URL と取得時刻がある行では、「なぜこの補助金がヒットしたか」を顧客・監督官庁・訴訟相手に客観的に提示できる監査ログを生成できます。詳細は <a href="/transparency.html">透明性レポート</a> を参照。</p>
+ <h3>(a) 複数 DB を 1 コール で統合</h3>
+ <p class="card-lead">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
+ <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (差分、 月次フル取り込み 4M 行)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 93 MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
- <h3>一次資料に限定 (99%+ カバー、取得日: 2026-04-30)</h3>
- <p class="card-lead">毎日 定期処理 で出典 URL の生存確認</p>
- <p>全制度に出典 URL と更新日を付与。 出典更新日は透明に開示します (「最終更新」のような誤誘導はしません)。 毎晩、出典 URL の死活監視を実施し、 法改正の差分も日次で走査する仕組みを実装済みです (差分の蓄積は初回フル走査後)。</p>
+ <h3>(b) 出典 URL + 取得時刻 + content_hash 付エビデンス</h3>
+ <p class="card-lead">99% 以上の行に一次資料 URL と取得時刻 (出典取得)</p>
+ <p>出典は省庁・都道府県・政府系金融機関・商工会などの一次 URL のみ。 二次集約サイトは出典に登録しません。 出典 URL + 取得時刻 + content_hash がそろうため、 「なぜこの制度がヒットしたか」を顧客・監督官庁・相手方に客観的に示せる監査ログが生成できます。 14,472 件の 99% 以上で一次 URL を保有、 残る 12 件は「一次 URL 不足」を明示。 詳細は <a href="/transparency.html">透明性レポート</a>。</p>
  </article>
 
  <article class="card">
- <h3>排他ルールを内部化</h3>
- <p class="card-lead">併用失格を事前検出</p>
- <p>181 本の 併用不可 / 前提制度 / 絶対要件 ルールを構造化。「AI が気づかず併用申請 → 後日失格」という事故を、 制度ID 一覧を投げた時点で検出します。</p>
+ <h3>(c) 鮮度メタデータ — 中央値 7 日 / 半減期 7 日未満</h3>
+ <p class="card-lead">毎日 出典 URL 死活監視 + 法令差分日次走査</p>
+ <p>出典の最終取得日は中央値 7 日 (50% の行は直近 7 日以内に再取得)、 鮮度の半減期は 7 日未満。 「最終更新」のような誤誘導はせず、 取得した日 (出典取得) として開示します。 毎晩、 出典 URL の死活監視を自動実行し、 法改正の差分は日次走査。 締切間近の制度・廃止された URL は鮮度メタデータで識別できます。 鮮度の現状は <a href="/data-freshness.html">データ鮮度ページ</a> で公開。</p>
  </article>
 
  <article class="card">
- <h3>データセット横断連結</h3>
- <p class="card-lead">1 リクエストで制度→法令→判例→処分</p>
- <p>拡張データセットを現在も提供: 法令 (e-Gov CC-BY、本文 154 件 + メタデータ 9,484 件、本文ロード継続中)・税務 ルールセット (インボイス/電帳法・研究開発税制 等 50 件)・国税庁適格事業者 (PDL v1.0、13,801 件 差分)・判例 (2,065 件)。</p>
- <p>関係抽出データベース (50 万件超のエンティティ / 600 万件超の事実 / 17 万件超の関係) も 50 ツールで公開。<code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> 等を含む 93 MCP ツールで横断解決できます。</p>
+ <h3>排他ルールを機械判定 (¥3 に同梱)</h3>
+ <p class="card-lead">181 本の 併用不可 / 前提制度 / 絶対要件 を機械判定</p>
+ <p>制度 ID 一覧を投げた時点で、 併用失格・前提不足を即時検出。 AI の「それっぽい」推論ではなく、 構造化済みルール 181 本 (併用不可 125 + 前提 17 + 絶対要件 15 + その他 24) で判定します。申請前に確認すべき併用リスクを見つけやすくします。</p>
+ </article>
+
+ <article class="card">
+ <h3>横断連結を 1 リクエストで</h3>
+ <p class="card-lead">制度 → 法令 → 判例 → 行政処分 → 適格事業者</p>
+ <p><code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> など 93 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。</p>
+ </article>
+
+ <article class="card">
+ <h3>自前運用を減らす</h3>
+ <p class="card-lead">スクレイパ・正規化・差分検出・出典管理</p>
+ <p>同等のデータ層を自前で組むには、 省庁・自治体・公庫の公開ページのスクレイパ運用、 スキーマ正規化、 法令改正の差分検出、 出典 URL の生存監視、 集約サイト誤掲載の排除を、 継続して維持する必要があります。 jpcite は ¥3/リクエスト の従量で、 開発・運用工数を肩代わりします。</p>
  </article>
 
  </div>
@@ -896,7 +828,7 @@
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">中小企業経営者</h3>
  <p class="card-lead">推奨: LINE bot + 士業 案件紹介</p>
- <p>自社が使える補助金を知りたい、申請まで相談したい。LINE で発見 → 合う認定支援機関/税理士に繋ぐ。月 10 件まで無料、11 件目以降は 1 質問 ¥3 (税込 ¥3.30)、月額固定なし。</p>
+ <p>自社が使える補助金を知りたい、申請まで相談したい。LINE で発見 → 合う認定支援機関/税理士に繋ぐ。無料枠は 1 日 3 件まで、4 件目以降は 1 質問 ¥3 (税込 ¥3.30)、月額固定なし。</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
@@ -932,19 +864,19 @@
  <tbody>
  <tr>
  <th scope="row">API + MCP</th>
- <td><span data-fact="anonymous_quota_per_month">3</span> req/日 per IP</td>
+ <td><span data-fact="anonymous_quota_per_day">3</span> req/日 per IP</td>
  <td>¥<span data-fact="price_per_req">3</span> / req (税別)</td>
  <td>¥<span data-fact="price_per_req_inc_tax">3.30</span> / req</td>
  </tr>
  <tr>
  <th scope="row">LINE bot</th>
- <td>月 10 件まで</td>
+ <td>1 日 3 件まで</td>
  <td>¥3 / 質問 (税別)</td>
  <td>¥3.30 / 質問</td>
  </tr>
  <tr>
  <th scope="row">法令改正アラート</th>
- <td>月次サマリー</td>
+ <td>なし</td>
  <td>¥3 / 通知 (税別)</td>
  <td>¥3.30 / 通知</td>
  </tr>
@@ -1012,9 +944,9 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+ <a href="https://github.com/shigetosidumeda-cyber" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -1022,8 +954,8 @@
 <script src="/assets/feedback-widget.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', function() {
-  if (window.税務会計AIFeedback) {
-    window.税務会計AIFeedback.mount('body', { position: 'bottom-right' });
+  if (window.jpciteFeedback) {
+    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
   }
 });
 </script>

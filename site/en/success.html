@@ -307,7 +307,7 @@
  <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20Account%20deletion%20request" style="text-decoration:none;">Account deletion request</a>
  </div>
  <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
- <strong>Security tips:</strong> Enable two-factor authentication (2FA) in the Stripe Customer Portal, and store your API key as an environment variable (<code>AUTONOMATH_API_KEY</code>). If you suspect the key has leaked, rotate it immediately from the Dashboard.
+ <strong>Security tips:</strong> Enable two-factor authentication (2FA) in the Stripe Customer Portal, and store your API key as an environment variable (<code>JPCITE_API_KEY</code>). If you suspect the key has leaked, rotate it immediately from the Dashboard.
  </p>
  </div>
  </div>
@@ -373,7 +373,7 @@
  <a href="tokushoho.html">Legal (JP)</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>
@@ -382,11 +382,11 @@
   // success.html — vanilla ES2020. CSP-safe (inline, no external).
   // Posts the Stripe session_id to /v1/billing/keys/from-checkout and
   // reveals the one-time API key. Pre-auth (no cookie); same-origin by
-  // default, override via window.AUTONOMATH_API_BASE if split host.
+  // default, override via window.JPCITE_API_BASE if split host.
   (function () {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || '';
+    var API_BASE = (typeof window !== 'undefined' && window.JPCITE_API_BASE) || '';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -531,6 +531,7 @@
       try {
         var resp = await fetch(api('/v1/billing/keys/from-checkout'), {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

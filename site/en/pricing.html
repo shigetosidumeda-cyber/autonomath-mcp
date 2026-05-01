@@ -4,8 +4,7 @@
   - API + MCP only. ¥3/req tax exclusive (¥3.30 tax inclusive).
   - 3 req/day per IP anonymous (JST next-day 00:00 reset).
   - No tier SKU, no seat fee, no fixed monthly, no cancellation fee.
-  - 100% organic acquisition; no paid CTA, no reseller, no commission.
-  - Operator: Bookyou株式会社 (T8010001213708, Stripe Tax invoicing).
+  - API + MCP pricing page.
   USD figures are approximate at ¥150/$; card network handles FX.
 -->
 <html lang="en">
@@ -14,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Pricing — ¥3/req, that's it — jpcite</title>
-<meta name="description" content="jpcite pricing — ¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly, no contracts, no cancellation fee. 3 req/day per IP free. Stripe billing + qualified Japanese invoice (T8010001213708).">
+<meta name="description" content="jpcite pricing — ¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly, no contracts, no cancellation fee. 3 req/day per IP free. Stripe billing + qualified Japanese invoice.">
 
 <meta property="og:title" content="Pricing — ¥3/req, that's it — jpcite">
 <meta property="og:description" content="¥3/req fully metered (¥3.30 tax inclusive). No tiers, no fixed monthly, no cancellation fee. 3 req/day per IP free.">
@@ -47,12 +46,11 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/",
     "publisher": {
       "@type": "Organization",
       "name": "Bookyou株式会社",
-      "identifier": "T8010001213708",
       "email": "info@bookyou.net",
       "url": "https://jpcite.com/"
     }
@@ -107,7 +105,6 @@
       "seller": {
         "@type": "Organization",
         "name": "Bookyou株式会社",
-        "identifier": "T8010001213708",
         "email": "info@bookyou.net",
         "url": "https://jpcite.com/"
       },
@@ -135,7 +132,6 @@
       "seller": {
         "@type": "Organization",
         "name": "Bookyou株式会社",
-        "identifier": "T8010001213708",
         "email": "info@bookyou.net",
         "url": "https://jpcite.com/"
       },
@@ -150,8 +146,7 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
-  "identifier": "T8010001213708",
+  "alternateName": ["jpcite"],
   "url": "https://jpcite.com/",
   "email": "info@bookyou.net"
 }
@@ -166,11 +161,11 @@
     {"@type": "Question", "name": "Volume discount for high usage?", "acceptedAnswer": {"@type": "Answer", "text": "No. Whether you do 100 req/month or 1,000,000 req/month, the price is ¥3/req (¥3.30 tax inclusive). No sales negotiation, no custom quotes — the public price applies to every customer."}},
     {"@type": "Question", "name": "Is signup required?", "acceptedAnswer": {"@type": "Answer", "text": "No. The first 3 req/day per IP are usable without signup (resets at JST next-day 00:00). After the anonymous allowance, issue an API key + register a card in Stripe."}},
     {"@type": "Question", "name": "Cancellation procedure?", "acceptedAnswer": {"@type": "Answer", "text": "Just delete the API key in the dashboard, or remove the card in Stripe Customer Portal. No cancellation fee, no notice period, no retention call. The account reverts to the anonymous 3 req/day allowance immediately."}},
-    {"@type": "Question", "name": "Stripe auto-billing? Qualified Japanese invoice?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. End-of-month metered usage is auto-charged to the registered card on day 1 of the following month. Stripe Tax issues a qualified Japanese invoice (registration number T8010001213708, Bookyou株式会社) that meets the input-tax-credit requirements."}},
-    {"@type": "Question", "name": "Corporations and sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Both. Same ¥3/req for taxable / tax-exempt entities, corporations, and sole proprietors. Every invoice carries the registration number T8010001213708 — taxable entities can claim the input-tax credit."}},
+    {"@type": "Question", "name": "Stripe auto-billing? Qualified Japanese invoice?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. End-of-month metered usage is auto-charged to the registered card on day 1 of the following month. Stripe Tax issues a qualified Japanese invoice that meets the input-tax-credit requirements."}},
+    {"@type": "Question", "name": "Corporations and sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Both. Same ¥3/req for taxable / tax-exempt entities, corporations, and sole proprietors. Every invoice carries the qualified Japanese invoice registration — taxable entities can claim the input-tax credit."}},
     {"@type": "Question", "name": "Can I set a monthly spend cap?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set monthly_cap_yen from the dashboard (or POST /v1/me/cap). Once hit, the API returns 503 with cap_reached until the next JST monthly billing cycle. Default is uncapped."}},
     {"@type": "Question", "name": "How is 1 request defined?", "acceptedAnswer": {"@type": "Answer", "text": "1 HTTP or 1 MCP tool call = 1 req. A response with 100 hits still counts as 1 req. /v1/healthz and /v1/me/* meta endpoints are uncounted."}},
-    {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications; 11,684 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition, 1,185 enforcement actions, 154 statutes full-text + 9,484 catalog stubs, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned."}}
+    {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications; 11,684 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition, 1,185 enforcement actions, 154 statutes full-text + 9,484 law metadata records, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned."}}
   ]
 }
 </script>
@@ -197,7 +192,6 @@
  <a href="getting-started.html">Docs</a>
  <a href="pricing.html" aria-current="page">Pricing</a>
  <a href="audiences/">Audiences</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../pricing.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -261,7 +255,7 @@
  </div>
 
  <ul class="trust-strip-blocks" style="display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:24px 0 28px;font-size:12px;line-height:1.5;">
- <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">Bookyou Inc. — operator</li>
+ <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">Japanese operator disclosure</li>
  <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">Stripe billing (PCI DSS Level 1)</li>
  <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">Cloudflare delivery (DDoS / WAF)</li>
  <li style="border:1px solid var(--border,#e5e7eb);border-radius:6px;padding:6px 10px;color:var(--text-muted);">税理士法 §52 disclaimer on every response</li>
@@ -278,7 +272,7 @@
  <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
  <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);">99%</p>
  <p style="margin:6px 0 0;font-weight:600;">Primary-source links (ministries, prefectures, JFC)</p>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">Aggregators (noukaweb / hojokin-portal etc.) are <strong>banned</strong>. Direct links to ministry / prefecture / 政策金融公庫 only.</p>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">Second-tier aggregator pages are not used as sources. Direct links to ministry / prefecture / 政策金融公庫 only.</p>
  </article>
  <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
  <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);"><span data-fact="total_programs">14,472</span></p>
@@ -286,14 +280,14 @@
  <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">+ <span data-fact="case_studies_total">2,286</span> case studies + <span data-fact="enforcement_cases_total">1,185</span> enforcement + 13,801 invoice registrants + 9,484 statutes.</p>
  </article>
  <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
- <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);">89</p>
+ <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);">93</p>
  <p style="margin:6px 0 0;font-weight:600;">MCP tools</p>
  <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">, all at ¥3/req. Industry packs / composition tools / due-diligence tools — same flat rate.</p>
  </article>
  <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px;">
- <p style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);"></p>
- <p style="margin:6px 0 0;font-weight:600;">Qualified issuer (Bookyou Inc.)</p>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">Taxable entities can claim the input-tax credit. Every invoice carries the registration number; Stripe Tax auto-issues.</p>
+ <p style="margin:0;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:var(--accent);">Invoice</p>
+ <p style="margin:6px 0 0;font-weight:600;">Qualified invoice support</p>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.6;">Taxable entities can claim the input-tax credit. Stripe Tax auto-issues invoices with the required issuer details.</p>
  </article>
  </div>
  <p style="margin:8px 0 0;color:var(--text-muted);font-size:14px;line-height:1.7;max-width:760px;">
@@ -377,7 +371,7 @@
  </table>
  </div>
  <p style="margin-top:14px;font-size:13px;color:var(--text-muted);line-height:1.7;">
- We carry <strong>no tier and no seat fee</strong>. Past 33 req/month (¥110), you fall below most aggregators' fixed plans. Even at 10,000 req/month it is ¥33,000 — no quote, no negotiation.
+ We carry <strong>no tier and no seat fee</strong>. For workloads that would otherwise require a fixed monthly data plan, pay-per-request billing can be cheaper at low volume; compare against your actual alternatives. Even at 10,000 req/month it is ¥33,000 — no quote, no negotiation.
  </p>
  </section>
 
@@ -394,7 +388,7 @@
  <h2 id="api-free">Anonymous</h2>
  <p class="tier-desc">Evaluation / personal trials</p>
  <p class="price">¥0</p>
- <p class="price-unit"><span data-fact="anonymous_quota_per_month">3</span> req / day per IP (resets at JST next-day 00:00)</p>
+ <p class="price-unit"><span data-fact="anonymous_quota_per_day">3</span> req / day per IP (resets at JST next-day 00:00)</p>
  <ul class="feats">
  <li>No card, no signup — start instantly via device flow</li>
  <li>All fields readable (fields=default)</li>
@@ -410,7 +404,7 @@
  <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ req (tax incl.)</small></p>
  <p class="price-unit">¥<span data-fact="price_per_req">3</span>.00 tax exclusive + 10% JCT, Stripe metered</p>
  <ul class="feats">
- <li><strong>No throughput throttling</strong> — never returns 429 mid-spike; the same ¥3/req rate holds up to 1M req/month.</li>
+ <li><strong>No published paid daily quota.</strong> Protective rate limits may apply during abnormal bursts; sustained high-volume use remains billed at the public ¥3/req rate unless otherwise announced.</li>
  <li><strong>Self-set monthly spend cap.</strong> Set <code>monthly_cap_yen</code> in the Customer Portal or via <code>POST /v1/me/cap</code>. Once hit, the API returns 503 with <code>cap_reached</code> until the next JST monthly billing cycle. Default = uncapped.</li>
  <li>fields=full (enriched + source_mentions + lineage)</li>
  <li>Months with 0 req cost ¥0</li>
@@ -423,7 +417,7 @@
  <li><strong>¥<span data-fact="price_per_req_inc_tax">3.30</span> tax inclusive</strong> per request (¥<span data-fact="price_per_req">3</span> tax exclusive + 10% JCT).</li>
  <li><strong>1 request = 1 HTTP / MCP tool call.</strong> A response with 100 hits still counts as 1 req. <code>/v1/healthz</code> and <code>/v1/me/*</code> are uncounted.</li>
  <li>Usage from JST 00:00 on day 1 to 23:59 on the last day of the month is auto-charged on day 1 of the following month.</li>
- <li>No minimum term, no cancellation fee. Removing the card returns the account to the anonymous <span data-fact="anonymous_quota_per_month">3</span> req/day allowance immediately.</li>
+ <li>No minimum term, no cancellation fee. Removing the card returns the account to the anonymous <span data-fact="anonymous_quota_per_day">3</span> req/day allowance immediately.</li>
  <li>Information service only; no document drafting, no legal advice, no tax advice.</li>
  </ul>
  </details>
@@ -441,7 +435,7 @@
  <h3 style="margin:0 0 12px;font-size:16px;">Monthly estimate</h3>
  <label for="reqInput" style="display:block;font-size:14px;margin-bottom:6px;">Requests per month:</label>
  <input id="reqInput" type="number" value="100" min="0" style="width:140px;padding:6px 10px;font-size:14px;border:1px solid var(--border,#d1d5db);border-radius:6px;">
- <p style="margin:12px 0 0;font-size:14px;">Bill: <strong id="costOut">¥165</strong> / month (¥<span id="netOut">150</span> tax exclusive)</p>
+ <p style="margin:12px 0 0;font-size:14px;">Bill: <strong id="costOut">¥330</strong> / month (¥<span id="netOut">300</span> tax exclusive)</p>
  </div>
  <script>
         (function() {
@@ -451,7 +445,7 @@
           if (!r || !c || !n) return;
           function recompute() {
             var num = Math.max(0, parseInt(r.value || '0', 10));
-            var paid = Math.max(0, num - 50);
+            var paid = Math.max(0, num);
             var net = paid * 3;
             var tax = Math.round(net * 0.1);
             var total = net + tax;
@@ -513,10 +507,11 @@
             var ctrl = new AbortController();
             var timer = setTimeout(function() { ctrl.abort(); }, 15000);
             try {
-              var r = await fetch('/v1/billing/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({
+	              var r = await fetch('https://api.jpcite.com/v1/billing/checkout', {
+	                method: 'POST',
+	                credentials: 'include',
+	                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+	                body: JSON.stringify({
                   success_url: 'https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}',
                   cancel_url: 'https://jpcite.com/en/pricing.html?cancelled=1'
                 }),
@@ -564,7 +559,7 @@
  <p style="margin:0 0 14px;color:var(--text-muted);line-height:1.7;">jpcite is an <strong>information-only</strong> service. If any of the following apply, please use a different option.</p>
  <ul style="margin:0 0 0 20px;padding:0;line-height:1.9;color:var(--text);font-size:15px;">
  <li><strong>You need tax representation, tax advice, or filing on your behalf</strong> — prohibited under 税理士法 §52. Please consult a registered <a href="advisors.html">tax accountant or 社労士</a>.</li>
- <li><strong>You need real-time statute updates</strong> — ingestion is cron-based with up to 24 hours of latency. For instant amendment reflection, refer to e-Gov or 官報 directly.</li>
+ <li><strong>You need real-time statute updates</strong> — source updates are scheduled and can lag by up to 24 hours. For instant amendment reflection, refer to e-Gov or 官報 directly.</li>
  <li><strong>You want adoption-rate guarantees</strong> — we display the rates that public agencies publish; we do not predict or guarantee adoption. The application decision rests with the applicant.</li>
  <li><strong>You require custom contracts or quotes</strong> — fully self-serve only. The published price applies to every customer equally.</li>
  </ul>
@@ -576,7 +571,7 @@
  <article class="card">
  <h3>Qualified invoice (インボイス)</h3>
  <p class="card-lead"></p>
- <p>Stripe Tax auto-issues a Japanese qualified invoice for Bookyou株式会社. Itemised per period: req count × unit price + 10% JCT. Tax-exclusive presentation.</p>
+ <p>Stripe Tax auto-issues a Japanese qualified invoice. Itemised per period: req count × unit price + 10% JCT. Tax-exclusive presentation.</p>
  </article>
  <article class="card">
  <h3>Cancel anytime</h3>
@@ -618,11 +613,11 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Stripe auto-billing? Qualified Japanese invoice?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Yes. End-of-month metered usage is auto-charged on day 1 of the following month. Stripe Tax issues a qualified Japanese invoice (registration number <strong></strong>, Bookyou株式会社) that meets the input-tax-credit requirements.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Yes. End-of-month metered usage is auto-charged on day 1 of the following month. Stripe Tax issues a qualified Japanese invoice with the required issuer details.</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Corporations and sole proprietors?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Both. Same ¥3/req for taxable / tax-exempt entities, corporations, and sole proprietors. Every invoice carries — taxable entities can claim the input-tax credit.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Both. Same ¥3/req for taxable / tax-exempt entities, corporations, and sole proprietors. Every invoice carries the required qualified-invoice details for input-tax-credit handling.</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Can I set a monthly spend cap?</summary>
@@ -634,7 +629,7 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Data coverage?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">As of April 2026: <span data-fact="total_programs">14,472</span> Japanese public programs (<span data-fact="searchable_programs_total">11,684</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs (three-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, 154 statutes full-text + 9,484 catalog stubs, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">As of April 2026: <span data-fact="total_programs">14,472</span> Japanese public programs (<span data-fact="searchable_programs_total">11,684</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs (three-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, 154 statutes full-text + 9,484 law metadata records, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
  </details>
  </div>
  </section>
@@ -671,10 +666,9 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

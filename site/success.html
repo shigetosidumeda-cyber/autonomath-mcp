@@ -320,10 +320,10 @@
  <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">完全セルフサーブです。最低利用期間・解約違約金はありません。Stripe Customer Portal からサブスクリプションをキャンセルすると以後の課金は停止し、匿名 3 リクエスト/日 per IP の利用に戻ります。</p>
  <div class="btn-row">
  <a class="btn btn-secondary" href="dashboard.html" style="text-decoration:none;">Dashboard を開く (Stripe ポータル / 解約)</a>
- <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20削除請求" style="text-decoration:none;">アカウント削除請求</a>
+ <a class="btn-ghost" href="mailto:info@bookyou.net?subject=jpcite%20-%20削除請求" style="text-decoration:none;">アカウント削除請求</a>
  </div>
  <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
- <strong>セキュリティのご推奨:</strong> Stripe Customer Portal で 2 要素認証 (2FA) を有効化し、API キーは環境変数 (<code>AUTONOMATH_API_KEY</code>) で管理することを強く推奨します。鍵の流出に気付いた場合は Dashboard から即時ローテーションしてください。
+ <strong>セキュリティのご推奨:</strong> Stripe Customer Portal で 2 要素認証 (2FA) を有効化し、API キーは環境変数 (<code>JPCITE_API_KEY</code>) で管理することを強く推奨します。鍵の流出に気付いた場合は Dashboard から即時ローテーションしてください。
  </p>
  </div>
  </div>
@@ -392,9 +392,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -403,11 +402,11 @@
   // success.html — vanilla ES2020. CSP-safe (inline, no external).
   // Posts the Stripe session_id to /v1/billing/keys/from-checkout and
   // reveals the one-time API key. Pre-auth (no cookie); same-origin by
-  // default, override via window.AUTONOMATH_API_BASE if split host.
+  // default, override via window.JPCITE_API_BASE if split host.
   (function() {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || 'https://api.jpcite.com';
+    var API_BASE = (typeof window !== 'undefined' && window.JPCITE_API_BASE) || 'https://api.jpcite.com';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -512,7 +511,7 @@
 
       // tier field intentionally not rendered. Business model is fully metered
       // ¥3/req — no tier SKUs are exposed to users. The API still emits a
-      // legacy `tier` for internal logging/billing routing only.
+      // legacy `tier` is kept for API compatibility only.
 
       var custEl = $('meta-customer');
       if (custEl) custEl.textContent = customerId;
@@ -552,6 +551,7 @@
       try {
         var resp = await fetch(api('/v1/billing/keys/from-checkout'), {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

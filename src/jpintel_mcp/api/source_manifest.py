@@ -20,7 +20,7 @@ Provenance comes from the autonomath.db view `v_program_source_manifest`
 a `UNI-...` unified_id OR an `am_canonical_id` like `program:...`) to the
 underlying entity, then reads the view + per-fact JOIN once.
 
-Pricing: ¥3/req metered (1 unit). Anonymous tier shares the 50/月 IP cap
+Pricing: ¥3/req metered (1 unit). Anonymous tier shares the 3/日 IP cap
 via AnonIpLimitDep on the router mount in `api/main.py`.
 
 §52 / data-honesty envelope: every 2xx body carries a `_disclaimer`
@@ -425,17 +425,15 @@ def _build_manifest(
     "/{program_id}",
     summary="Per-program source manifest (Evidence Graph)",
     description=(
-        "Surface the full provenance manifest for one program: every fact "
-        "with a populated `am_entity_facts.source_id` plus the entity-level "
-        "rollup from `am_entity_source`.\n\n"
-        "**Pricing:** ¥3/call (1 unit). Anonymous callers share the 50/月 "
-        "per-IP cap (JST 月初 00:00 リセット).\n\n"
+        "Surface the full provenance manifest for one program: fact-level "
+        "and entity-level source references in one response.\n\n"
+        "**Pricing:** ¥3/call (1 unit). Anonymous callers share the 3/日 "
+        "per-IP cap (JST 翌日 00:00 リセット).\n\n"
         "**program_id** accepts:\n"
-        "* a unified_id (`UNI-...`) — resolved via `entity_id_map`;\n"
-        "* an am_canonical_id (`program:...`) — matched on "
-        "`am_entities.canonical_id` directly.\n\n"
+        "* a unified_id (`UNI-...`);\n"
+        "* a stable program identifier (`program:...`).\n\n"
         "**Sparse-data honesty:** the per-fact provenance signal is "
-        "currently empty for the program cohort (cron not yet started). "
+        "currently partial for some program cohorts. "
         "The endpoint returns `fact_provenance=[]` and "
         "`fact_provenance_coverage_pct=0.0` rather than fabricating a "
         "richer view. The `_disclaimer` field is required reading for any "
@@ -452,13 +450,12 @@ def _build_manifest(
         },
         404: {
             "description": (
-                "Unknown program_id (no row in entity_id_map / "
-                "am_entities / jpi_programs)."
+                "Unknown program_id in the current public corpus."
             )
         },
         503: {
             "description": (
-                "autonomath.db unreachable (partial deploy / file missing)."
+                "Source manifest data is temporarily unavailable."
             ),
         },
     },

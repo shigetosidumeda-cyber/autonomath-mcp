@@ -3,18 +3,18 @@
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "jpcite Pricing",
-  "description": "Free (匿名 3 req/日、IP ベース、JST 翌日リセット) + Paid (完全従量 ¥3/req 税別、税込 ¥3.30、無上限)。Starter / Pro / Enterprise tier は存在しない。契約・最低金額なし、いつでもカード登録/解除で開始/停止。",
+  "description": "Free (匿名 3 req/日、IP ベース、JST 翌日リセット) + Paid (完全従量 ¥3/req 税別、税込 ¥3.30)。Starter / Pro / Enterprise tier は存在しない。契約・最低金額なし、いつでもカード登録/解除で開始/停止。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-29",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/about.html"
+    "name": "jpcite",
+    "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "Bookyou株式会社",
+    "name": "jpcite",
     "logo": {
       "@type": "ImageObject",
       "url": "https://jpcite.com/og/default.png"
@@ -29,12 +29,12 @@
 
 # Pricing
 
-完全従量。tier プラン無し、最低額無し、契約無し。
+完全従量。tier プラン無し、最低額無し、契約無し。必要に応じて利用側で月次上限を設定してください。
 
 | Plan | 単価 (税別) | Quota |
 |------|-------------|-------|
 | **Free** | ¥0 | 3 req/日 (匿名、IP ベース、JST 翌日 00:00 リセット) |
-| **Paid** | **¥3 / req** (税込 ¥3.30) | 無制限 (Stripe metered) |
+| **Paid** | **¥3 / req** (税込 ¥3.30) | 従量課金 |
 
 ## ¥3/req とは
 
@@ -50,25 +50,25 @@
 1. Free で試す (カード登録なし、IP ベース 3 req/日)
 2. [Stripe Checkout](https://jpcite.com/pricing.html) でカード登録
 3. `X-API-Key` を投げるだけで Paid に切替
-4. カードを外せば Free に戻る (Stripe Customer Portal、`POST /v1/billing/portal`)
+4. ダッシュボードから Customer Portal を開き、カード削除または停止が可能
 
 ## Rate limit 仕様
 
 - **Free (匿名):** 1 IP あたり 3 req/日、**JST 翌日 00:00** リセット
   - 超過時: `429`、body `{"detail":"anon rate limit exceeded","limit":3,"resets_at":"<翌日 JST 00:00>"}`
   - API key を投げない call が Free 扱い
-- **Paid:** hard cap なし、Stripe 従量。**メーター集計は UTC 0 時基準** (subscription anchor date)
+- **Paid:** 従量課金。利用量は請求期間ごとに集計
 
 ## 請求書 / 適格請求書
 
 - 決済: Visa / MasterCard / JCB / AmEx
-- Stripe が自動で 適格請求書 (登録番号 **T8010001213708**) を発行・送付
+- Stripe が自動でインボイス制度対応の適格請求書を発行・送付
 - 領収書: Stripe hosted invoice PDF をダウンロード可
 
 ## 解約・返金
 
 - **停止:** Stripe Customer Portal でカード除去 or サブスクリプション停止 → 以降の請求 ¥0
-- **返金:** デジタル役務のため原則不可。SLA breach 時は個別対応 ([sla.md](./sla.md))
+- **返金:** 誤課金や障害が疑われる場合は、利用状況を確認して個別対応します ([sla.md](./sla.md))
 
 ## 特定商取引法に基づく表記
 
@@ -80,4 +80,4 @@
 - カードを外せば即 Free に戻る
 - API key は複数発行可 (Customer Portal)
 - 契約書 / 個別 SLA は提供せず (完全セルフサーブ方針)
-- 大量に叩いても ¥3/req は変わらない
+- リクエスト単価は ¥3/req で固定

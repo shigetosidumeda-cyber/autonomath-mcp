@@ -3,8 +3,6 @@
   site/en/go.html — English mirror of site/go.html (device-flow activation,
   RFC 8628 §3.3). Same JS, English-translated UI. JA at ../go.html.
 
-  Routing: Cloudflare Pages serves this at /en/go.html. The bare /go path
-  (and /go/:code) still routes to the JA site/go.html via site/_redirects.
   Direct EN entry: /en/go.html or /en/go.html?code=ABCD-1234.
 -->
 <html lang="en">
@@ -47,16 +45,14 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/",
-    "email": "info@bookyou.net",
-    "identifier": "T8010001213708"
+    "email": "info@bookyou.net"
   }
 }
 </script>
@@ -312,7 +308,7 @@
  </p>
  <p class="cta-sub">
  View usage or change cards from the <a href="dashboard.html">Dashboard</a>.
- To cancel, simply remove your card via the Stripe Customer Portal &mdash; you'll fall back to the free 3 req/daynth tier immediately.
+ To cancel, simply remove your card via the Stripe Customer Portal &mdash; you'll fall back to the free 3 req/day tier immediately.
  </p>
  </div>
 
@@ -332,7 +328,7 @@
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
  <p class="footer-tag">Japanese public-program API</p>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708)</p>
+ <p class="footer-entity">Operated by Bookyou Inc.</p>
  </div>
  <nav class="footer-nav" aria-label="Footer">
  <a href="tos.html">Terms</a>
@@ -352,7 +348,7 @@
   (function () {
     'use strict';
 
-    var API_BASE = (typeof window !== 'undefined' && window.AUTONOMATH_API_BASE) || '';
+    var API_BASE = (typeof window !== 'undefined' && window.JPCITE_API_BASE) || '';
     var api = function (p) { return String(API_BASE).replace(/\/$/, '') + p; };
 
     var $ = function (id) { return document.getElementById(id); };

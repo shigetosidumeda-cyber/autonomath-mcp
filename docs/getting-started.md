@@ -9,12 +9,12 @@
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
-    "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/about.html"
+    "name": "jpcite",
+    "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "Bookyou株式会社",
+    "name": "jpcite",
     "logo": {
       "@type": "ImageObject",
       "url": "https://jpcite.com/og/default.png"
@@ -31,6 +31,8 @@
 
 5 分で最初のリクエストを通す。料金詳細は [pricing.md](./pricing.md)。
 
+jpcite は ChatGPT / Claude / Cursor が文章を生成する前に使う、証拠取得・provenance・pre-fetch レイヤーです。制度候補、一次資料 URL、取得時刻、provenance、併用ルールを構造化して返し、AI クライアント側ではその根拠を引用しながら説明を作れます。API 料金は **1 request ¥3 税別**で、LLM のトークン量やモデル選択には連動しません。
+
 ## 1. インストール
 
 ### REST + MCP サーバー (Python)
@@ -39,14 +41,9 @@
 pip install autonomath-mcp
 ```
 
-### SDK (pre-release、git 直)
+### SDK
 
-```bash
-pip install "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp#subdirectory=sdk/python"
-npm install "github:AutonoMath/autonomath-mcp#main" --prefix ./sdk/typescript
-```
-
-PyPI: `autonomath-mcp` v0.3.2 公開済。それまでは HTTP 直叩き or `autonomath-mcp` の MCP サーバー利用。
+SDK は公開 package 化の準備中です。現時点では HTTP 直叩き、または `autonomath-mcp` の MCP サーバー利用が最短です。
 
 ## 2. API key
 
@@ -72,7 +69,7 @@ curl -X POST https://api.jpcite.com/v1/billing/checkout \
 curl -X POST https://api.jpcite.com/v1/billing/keys/from-checkout \
   -H "Content-Type: application/json" \
   -d '{"session_id": "cs_live_..."}'
-# => {"api_key": "am_xxxxxxxxxxxxxxxx", "tier": "paid", "customer_id": "cus_..."}
+# => {"api_key": "am_xxxxxxxxxxxxxxxx", "tier": "paid"}
 ```
 
 **API key は発行時 1 回だけ返る** — 紛失時は Stripe Customer Portal で解約 → 再発行。
@@ -122,7 +119,7 @@ Protocol: `2025-06-18`。`~/Library/Application Support/Claude/claude_desktop_co
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }
@@ -132,10 +129,12 @@ Protocol: `2025-06-18`。`~/Library/Application Support/Claude/claude_desktop_co
 
 - `uv` 未導入なら `brew install uv` か `pip install uv`
 - `pip install autonomath-mcp` 済みなら `"command": "autonomath-mcp"`
-- ワンクリック: [autonomath-mcp.mcpb](/downloads/autonomath-mcp.mcpb) を Claude Desktop で開く
-- 再起動後、93 ツール at default gates が有効。Cursor / Gemini / ChatGPT (MCP 対応版) も同設定で動作
+- ワンクリック: [jpcite MCP bundle](/downloads/autonomath-mcp.mcpb) を Claude Desktop で開く
+- 再起動後、標準構成で 93 ツールが有効。Cursor / Gemini / ChatGPT (MCP 対応版) も同設定で動作
 
 ツール一覧: [mcp-tools.md](./mcp-tools.md)。
+
+出典付きで回答させたい場合は、検索後に `get_evidence_packet` を呼び、一次資料 URL・取得時刻・provenance・ルール判定を先に AI クライアントへ渡します。トークン量や追加検索回数への影響は、モデル・プロンプト・質問内容・キャッシュ状態に依存します。
 
 ## 7. 5 秒スモークテスト
 

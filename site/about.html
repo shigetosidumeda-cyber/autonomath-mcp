@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>jpcite とは — Bookyou株式会社</title>
-<meta name="description" content="jpcite は Bookyou株式会社 (T8010001213708) が運営する、日本の公的制度の出典付き検証 API + MCP サービス。AI が書く。jpcite が裏取りする。一次資料に限定 (99%+ カバー、取得日: 2026-04-30)。">
+<title>jpcite とは</title>
+<meta name="description" content="jpcite は、日本の公的制度の出典付き検証 API + MCP サービス。AI が書く。jpcite が裏取りする。一次資料に限定 (99%+ カバー、取得日: 2026-04-30)。">
 
-<meta property="og:title" content="jpcite とは — Bookyou株式会社">
-<meta property="og:description" content="なぜ作ったか、誰が運営しているか、出典方針について。">
+<meta property="og:title" content="jpcite とは">
+<meta property="og:description" content="なぜ作ったか、どの出典に限定しているか、AI からどう使えるか。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/about.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -18,8 +18,8 @@
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="jpcite とは — Bookyou株式会社">
-<meta name="twitter:description" content="なぜ作ったか・誰が運営しているか・一次資料原則・AI による正規化と運用自動化。">
+<meta name="twitter:title" content="jpcite とは">
+<meta name="twitter:description" content="なぜ作ったか・一次資料原則・AI から使える検索 API / MCP。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/about.html">
@@ -35,31 +35,23 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://jpcite.com/#publisher across all pages).
-  See docs/runbook/social_profile_setup.md for sameAs URL backfills.
--->
+<!-- Canonical publisher Organization. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "taxID": "T8010001213708",
   "foundingDate": "2025-05-12",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
     "addressRegion": "東京都",
-    "addressLocality": "文京区",
-    "streetAddress": "小日向 2-22-1"
+    "addressLocality": "文京区"
   },
   "founder": {
     "@type": "Person",
@@ -72,8 +64,7 @@
     "availableLanguage": ["ja", "en"]
   },
   "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+    "https://www.bookyou.net/"
   ]
 }
 </script>
@@ -82,14 +73,14 @@
 {
   "@context": "https://schema.org",
   "@type": "AboutPage",
-  "name": "jpcite とは — Bookyou株式会社",
-  "description": "税務会計AI は Bookyou株式会社 (T8010001213708) が運営する、日本の公的制度 11,684 件の API + MCP サービス。一次資料 99%+、データ正規化は AI で自動化。",
+  "name": "jpcite とは",
+  "description": "jpcite は、日本の公的制度 11,684 件の API + MCP サービス。一次資料 99%+、データ正規化は AI で自動化。",
   "url": "https://jpcite.com/about.html",
   "inLanguage": "ja",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "mainEntity": {"@id": "https://jpcite.com/#publisher"}
@@ -162,24 +153,21 @@
  </nav>
 
  <h1>jpcite とは</h1>
- <p class="lead">日本の制度を AI から検索できるサービス。 Bookyou株式会社が運営しています。</p>
+ <p class="lead">日本の制度を AI から検索できるサービス。</p>
 
  <div class="cta-row" style="margin:0 0 24px;">
  <a class="btn btn-primary" href="index.html#trial" data-cta-variant="about-trial">サービスを試す →</a>
  <a href="pricing.html" style="align-self:center;font-size:15px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金 →</a>
  </div>
 
- <!-- Above-fold trust strip 2026-04-29. Numbers row + entity verification
-         line so the first impression carries (a) canonical scale (b) Bookyou
-         株式会社 法人格 (c) freshness in one glance. Numbers stay in sync
-         with CLAUDE.md authoritative counts; if they drift, update both. -->
+ <!-- Above-fold trust strip. -->
  <ul class="trust-stats" aria-label="jpcite 主要数値">
  <li><span class="num">11,684</span><span class="lbl">検索できる制度の数</span></li>
  <li><span class="num">2,286</span><span class="lbl">補助金 採択事例</span></li>
  <li><span class="num">108</span><span class="lbl">融資商品 (担保・保証人で分類)</span></li>
  <li><span class="num">1,185</span><span class="lbl">行政処分 公表記録</span></li>
  <li><span class="num">9,484</span><span class="lbl">法令 (うち本文収録 154 件)</span></li>
- <li><span class="num">89</span><span class="lbl">AI から呼べる検索機能</span></li>
+ <li><span class="num">93</span><span class="lbl">AI から呼べる検索機能</span></li>
  <li><span class="num">99%+</span><span class="lbl">一次資料の出典 URL を付与</span></li>
  </ul>
 
@@ -242,9 +230,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
