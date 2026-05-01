@@ -27,21 +27,16 @@
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite", "jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "taxID": "T8010001213708",
   "foundingDate": "2025-05-12",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
     "addressRegion": "東京都",
-    "addressLocality": "文京区",
-    "streetAddress": "小日向 2-22-1"
-  },
+    "addressLocality": "文京区"},
   "founder": {"@type": "Person", "name": "梅田茂利"},
   "contactPoint": {
     "@type": "ContactPoint",
@@ -49,7 +44,7 @@
     "contactType": "customer support",
     "availableLanguage": ["ja", "en"]
   },
-  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber/autonomath-mcp"]
+  "sameAs": ["https://www.bookyou.net/"]
 }
 </script>
 
@@ -106,6 +101,7 @@
 <span aria-current="page">OpenAI Custom GPT</span>
 </nav>
 <h1 style="margin-bottom:0.2em;">OpenAI Custom GPT と連携する</h1>
+<p>Custom GPT は自然文の説明を作る場所、jpcite は根拠データを取りに行く場所として分けると安定します。制度 PDF や自治体ページを毎回 GPT に長文投入する代わりに、jpcite が制度 metadata、出典 URL、取得時点、注意点を短い JSON で返します。これにより、GPT の出力は引用可能な根拠に寄せやすくなります。トークン量や読み込み待ちへの効果は、モデル、プロンプト、検索設定、キャッシュ状態によって変わります。</p>
 
 <h2 id="action">Action 設定</h2>
 <p>ChatGPT GPT エディタの Configure → Actions → Import from URL に以下を貼り付けます。</p>
@@ -116,7 +112,7 @@
 </div>
 
 <h2 id="auth">認証</h2>
-<p>本番運用は <strong>Authentication → API キー → Bearer</strong> に <code>sk_...</code> を貼り付けます。匿名利用枠は認証なしで動作します。</p>
+<p>本番運用は <strong>Authentication → API キー → Bearer</strong> に <code>am_...</code> を貼り付けます。匿名利用枠は認証なしで動作します。</p>
 
 <h2 id="privacy">プライバシーポリシー URL</h2>
 <div class="code-block" data-code="https://jpcite.com/privacy.html">
@@ -127,10 +123,23 @@
 <h2 id="verify">動作確認</h2>
 <p>プレビュー欄でプロンプトを送り、Action 承認後にレスポンスが返れば接続完了です。</p>
 
+<h2 id="evidence-prompt">Evidence Packet 用の指示文</h2>
+<p>Custom GPT の Instructions には、次のように「回答前に根拠を取る」ルールを入れます。</p>
+<div class="code-block" data-code="日本の補助金・制度・税制について答える前に、必要に応じてjpcite Actionsを使ってください。回答では source_url、source_fetched_at、corpus_snapshot_id を併記してください。Evidence Packet の compression は参考推定であり、トークン削減や費用削減を保証する表現は避けてください。">
+<pre><code>日本の補助金・制度・税制について答える前に、必要に応じてjpcite Actionsを使ってください。
+回答では source_url、source_fetched_at、corpus_snapshot_id を併記してください。
+Evidence Packet の compression は参考推定であり、トークン削減や費用削減を保証する表現は避けてください。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
+<h2 id="context-estimate">PDFを読む前の比較</h2>
+<p>長いPDFをGPTへ投入する前に、jpciteのEvidence Packetを取得できます。比較対象のPDFページ数が分かる場合だけ、<code>source_tokens_basis=pdf_pages</code> と <code>source_pdf_pages</code> を渡します。これは文脈量の参考推定であり、providerの請求token数ではありません。</p>
+
 <h2 id="next">次のステップ</h2>
 <ul>
 <li><a href="/pricing.html">料金</a></li>
 <li><a href="/docs/">ドキュメント</a></li>
+<li><a href="/qa/llm-evidence/context-savings.html">文脈トークン削減の条件</a></li>
 <li><a href="/integrations/">他の連携ガイド</a></li>
 </ul>
 
@@ -150,9 +159,8 @@
  <a href="../tos.html">利用規約</a>
  <a href="../privacy.html">プライバシー</a>
  <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -167,25 +175,25 @@
 </style>
 <script>
   document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
-    btn.addEventListener('click', function{
+    btn.addEventListener('click', function(){
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
-      var done = function{
+      var done = function(){
         btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(function{ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function{
+        navigator.clipboard.writeText(text).then(done, function(){
           var ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta); ta.select;
-          try { document.execCommand('copy'); done; } catch(e) {}
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
           document.body.removeChild(ta);
         });
       } else {
         var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select;
-        try { document.execCommand('copy'); done; } catch(e) {}
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
         document.body.removeChild(ta);
       }
     });

@@ -40,8 +40,10 @@ composer appends a code to ``quality.known_gaps`` and continues.
 from __future__ import annotations
 
 import logging
+import re
 import sqlite3
 import time
+import unicodedata
 import uuid
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
@@ -93,6 +95,118 @@ _DISCLAIMER: dict[str, Any] = {
 #: Always-populated freshness endpoint reference.
 _FRESHNESS_ENDPOINT: str = "/v1/meta/freshness"
 
+_PREFECTURE_ALIASES: tuple[tuple[str, str], ...] = (
+    ("北海道", "北海道"),
+    ("青森県", "青森県"),
+    ("岩手県", "岩手県"),
+    ("宮城県", "宮城県"),
+    ("秋田県", "秋田県"),
+    ("山形県", "山形県"),
+    ("福島県", "福島県"),
+    ("茨城県", "茨城県"),
+    ("栃木県", "栃木県"),
+    ("群馬県", "群馬県"),
+    ("埼玉県", "埼玉県"),
+    ("千葉県", "千葉県"),
+    ("東京都", "東京都"),
+    ("東京", "東京都"),
+    ("神奈川県", "神奈川県"),
+    ("新潟県", "新潟県"),
+    ("富山県", "富山県"),
+    ("石川県", "石川県"),
+    ("福井県", "福井県"),
+    ("山梨県", "山梨県"),
+    ("長野県", "長野県"),
+    ("岐阜県", "岐阜県"),
+    ("静岡県", "静岡県"),
+    ("愛知県", "愛知県"),
+    ("三重県", "三重県"),
+    ("滋賀県", "滋賀県"),
+    ("京都府", "京都府"),
+    ("京都", "京都府"),
+    ("大阪府", "大阪府"),
+    ("大阪", "大阪府"),
+    ("兵庫県", "兵庫県"),
+    ("奈良県", "奈良県"),
+    ("和歌山県", "和歌山県"),
+    ("鳥取県", "鳥取県"),
+    ("島根県", "島根県"),
+    ("岡山県", "岡山県"),
+    ("広島県", "広島県"),
+    ("山口県", "山口県"),
+    ("徳島県", "徳島県"),
+    ("香川県", "香川県"),
+    ("愛媛県", "愛媛県"),
+    ("高知県", "高知県"),
+    ("福岡県", "福岡県"),
+    ("佐賀県", "佐賀県"),
+    ("長崎県", "長崎県"),
+    ("熊本県", "熊本県"),
+    ("大分県", "大分県"),
+    ("宮崎県", "宮崎県"),
+    ("鹿児島県", "鹿児島県"),
+    ("沖縄県", "沖縄県"),
+)
+
+_QUERY_KEYWORDS: tuple[str, ...] = tuple(
+    sorted(
+        {
+            "IT導入",
+            "DX",
+            "GX",
+            "ものづくり",
+            "省力化",
+            "省エネ",
+            "脱炭素",
+            "設備投資",
+            "設備",
+            "投資",
+            "補助金",
+            "助成金",
+            "交付金",
+            "融資",
+            "税制",
+            "税額控除",
+            "特別償却",
+            "認定",
+            "創業",
+            "事業承継",
+            "小規模",
+            "中小企業",
+            "スタートアップ",
+            "農業",
+            "観光",
+            "人材",
+            "雇用",
+            "賃上げ",
+            "研究開発",
+            "インボイス",
+            "電子帳簿",
+        },
+        key=len,
+        reverse=True,
+    )
+)
+
+_ASCII_TERM_RE = re.compile(r"[A-Za-z0-9]{2,}")
+_CORPORATE_NUMBER_RE = re.compile(r"T?([0-9０-９]{13})")
+_FALLBACK_SPLIT_RE = re.compile(r"[\s、。,.?？!！/／・:：（）()「」『』【】\[\]]+")
+_FALLBACK_PARTICLE_RE = re.compile(
+    r"^(?:の|は|を|に|で|と|が|から|まで)+|"
+    r"(?:について|教えてください|ください|ですか)+$"
+)
+_NON_PROGRAM_INTENT_RE = re.compile(
+    r"法人番号|適格請求書|行政処分|業務停止|営業停止|免許取消|業務改善命令|"
+    r"漏洩|報告義務|個人情報保護法|電子帳簿|インボイス|消費税|簡易課税|"
+    r"仕入率|固定資産税|税制|税額控除"
+)
+_ENFORCEMENT_INTENT_RE = re.compile(
+    r"行政処分|業務停止|営業停止|免許取消|業務改善命令"
+)
+_TAX_INTENT_RE = re.compile(
+    r"消費税|簡易課税|仕入率|固定資産税|税制|税額控除|インボイス|電子帳簿"
+)
+
 
 # ---------------------------------------------------------------------------
 # In-memory cache (process-local).
@@ -119,6 +233,24 @@ def _cache_put(key: str, body: dict[str, Any]) -> None:
 def _reset_cache_for_tests() -> None:
     """Test helper. Drops the process-local packet cache."""
     _CACHE.clear()
+
+
+def _attach_known_gaps_inventory(envelope: dict[str, Any]) -> None:
+    """Attach packet-shape gap detection (A8) to the envelope.
+
+    Reads ``services.known_gaps.detect_gaps`` lazily so the import
+    stays cheap and the composer module's no-LLM contract is unaffected.
+    The legacy ``quality.known_gaps`` (``list[str]``) is preserved as-is;
+    the new richer report lives in ``quality.known_gaps_inventory``
+    (``list[dict]`` of ``{kind, message, affected_records}``).
+    """
+    try:
+        from jpintel_mcp.services.known_gaps import detect_gaps
+        inventory = detect_gaps(envelope)
+    except Exception:  # pragma: no cover - defensive fail-open surface
+        return
+    quality = envelope.setdefault("quality", {})
+    quality["known_gaps_inventory"] = inventory
 
 
 # ---------------------------------------------------------------------------
@@ -490,6 +622,8 @@ class EvidencePacketComposer:
         *,
         source_url: str | None,
         input_token_price_jpy_per_1m: float | None,
+        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_pdf_pages: int | None = None,
     ) -> None:
         """Attach a deterministic TokenCompressionEstimator block fail-open."""
         try:
@@ -505,7 +639,8 @@ class EvidencePacketComposer:
             envelope["compression"] = TokenCompressionEstimator().compose(
                 packet_for_estimate,
                 source_url=source_url,
-                source_basis="unknown",
+                source_basis=source_tokens_basis,
+                pdf_pages=source_pdf_pages,
                 input_price_jpy_per_1m=input_token_price_jpy_per_1m,
             )
         except Exception:  # pragma: no cover - defensive fail-open surface
@@ -569,8 +704,8 @@ class EvidencePacketComposer:
     # Cache key + envelope build.
     # ------------------------------------------------------------------
 
-    @staticmethod
     def _make_cache_key(
+        self,
         subject_kind: str,
         subject_id: str,
         *,
@@ -579,10 +714,14 @@ class EvidencePacketComposer:
         include_compression: bool,
         fields: str,
         input_token_price_jpy_per_1m: float | None,
+        source_tokens_basis: Literal["unknown", "pdf_pages"],
+        source_pdf_pages: int | None,
         corpus_snapshot_id: str,
     ) -> str:
         return "|".join(
             [
+                str(self.jpintel_db),
+                str(self.autonomath_db),
                 subject_kind,
                 subject_id,
                 str(include_facts),
@@ -590,6 +729,8 @@ class EvidencePacketComposer:
                 str(include_compression),
                 fields,
                 str(input_token_price_jpy_per_1m or ""),
+                source_tokens_basis,
+                str(source_pdf_pages or ""),
                 corpus_snapshot_id,
             ]
         )
@@ -601,6 +742,559 @@ class EvidencePacketComposer:
     @staticmethod
     def _now_jst_iso() -> str:
         return datetime.now(_JST).isoformat(timespec="seconds")
+
+    @staticmethod
+    def _normalise_free_text_query(query_text: str) -> str:
+        return unicodedata.normalize("NFKC", query_text or "").strip()
+
+    @staticmethod
+    def _detect_prefecture(query_text: str) -> str | None:
+        text = EvidencePacketComposer._normalise_free_text_query(query_text)
+        for needle, prefecture in _PREFECTURE_ALIASES:
+            if needle in text:
+                return prefecture
+        return None
+
+    @staticmethod
+    def _query_terms(query_text: str) -> list[str]:
+        """Extract coarse Japanese search terms without tokenizer deps.
+
+        Evidence packets should handle natural LLM/user questions like
+        "東京都の設備投資補助金は?" rather than requiring exact title
+        substrings. This deliberately stays dictionary-light and
+        deterministic: no MeCab, no LLM, no network.
+        """
+        text = EvidencePacketComposer._normalise_free_text_query(query_text)
+        if not text:
+            return []
+
+        terms: list[str] = []
+        seen: set[str] = set()
+
+        def add(term: str) -> None:
+            term = term.strip()
+            if len(term) < 2 or term in seen:
+                return
+            seen.add(term)
+            terms.append(term)
+
+        for keyword in _QUERY_KEYWORDS:
+            if keyword in text:
+                add(keyword)
+        for match in _ASCII_TERM_RE.finditer(text):
+            add(match.group(0))
+
+        if not terms:
+            for chunk in _FALLBACK_SPLIT_RE.split(text):
+                chunk = _FALLBACK_PARTICLE_RE.sub("", chunk)
+                if 2 <= len(chunk) <= 20:
+                    add(chunk)
+
+        # Keep the SQL compact and predictable.
+        return terms[:8]
+
+    @staticmethod
+    def _prefers_non_program_context(query_text: str) -> bool:
+        text = EvidencePacketComposer._normalise_free_text_query(query_text)
+        return _NON_PROGRAM_INTENT_RE.search(text) is not None
+
+    @staticmethod
+    def _extract_corporate_number(query_text: str) -> str | None:
+        text = EvidencePacketComposer._normalise_free_text_query(query_text)
+        match = _CORPORATE_NUMBER_RE.search(text)
+        return match.group(1) if match else None
+
+    @staticmethod
+    def _non_program_context_order(query_text: str) -> tuple[str, ...]:
+        text = EvidencePacketComposer._normalise_free_text_query(query_text)
+        if _ENFORCEMENT_INTENT_RE.search(text):
+            return ("enforcement", "law", "tax")
+        if _TAX_INTENT_RE.search(text):
+            return ("tax", "law", "enforcement")
+        return ("law", "tax", "enforcement")
+
+    @staticmethod
+    def _table_columns(conn: sqlite3.Connection, table: str) -> set[str]:
+        try:
+            rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
+        except sqlite3.OperationalError:
+            return set()
+        return {str(row["name"]) for row in rows}
+
+    def _discover_program_ids_for_query(
+        self,
+        am_conn: sqlite3.Connection,
+        query_text: str,
+        filters: dict[str, Any],
+        *,
+        limit: int,
+    ) -> list[str]:
+        """Return candidate program ids for exact or natural-language query."""
+        cap = min(limit, MAX_RECORDS_PER_PACKET) + 1
+        clauses: list[str] = []
+        params: list[Any] = []
+        q = self._normalise_free_text_query(query_text)
+        if q:
+            clauses.append("primary_name LIKE ?")
+            params.append(f"%{q}%")
+        pref = filters.get("prefecture")
+        if pref:
+            clauses.append("prefecture = ?")
+            params.append(pref)
+        tier = filters.get("tier")
+        if tier:
+            clauses.append("tier = ?")
+            params.append(tier)
+        where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
+        sql = f"SELECT unified_id FROM jpi_programs{where} ORDER BY tier ASC LIMIT ?"
+        try:
+            rows = am_conn.execute(sql, [*params, cap]).fetchall()
+        except sqlite3.OperationalError:
+            rows = []
+        subject_ids = [r["unified_id"] for r in rows if r["unified_id"]]
+        if len(subject_ids) >= cap or not q:
+            return subject_ids
+
+        terms = self._query_terms(q)
+        if not terms:
+            return subject_ids
+
+        cols = self._table_columns(am_conn, "jpi_programs")
+        search_cols = [
+            col
+            for col in (
+                "primary_name",
+                "aliases_json",
+                "program_kind",
+                "funding_purpose_json",
+                "target_types_json",
+                "equipment_category",
+                "authority_name",
+            )
+            if col in cols
+        ]
+        if not search_cols:
+            return subject_ids
+
+        detected_prefecture = None if pref else self._detect_prefecture(q)
+        fallback_clauses: list[str] = []
+        fallback_params: list[Any] = []
+        term_clauses: list[str] = []
+        for term in terms:
+            term_clause = " OR ".join(f"{col} LIKE ?" for col in search_cols)
+            term_clauses.append(f"({term_clause})")
+            fallback_params.extend([f"%{term}%"] * len(search_cols))
+        if term_clauses:
+            fallback_clauses.append(f"({' OR '.join(term_clauses)})")
+        if tier:
+            fallback_clauses.append("tier = ?")
+            fallback_params.append(tier)
+        if pref:
+            fallback_clauses.append("prefecture = ?")
+            fallback_params.append(pref)
+        elif detected_prefecture:
+            fallback_clauses.append("(prefecture = ? OR prefecture IS NULL OR prefecture = '')")
+            fallback_params.append(detected_prefecture)
+
+        score_parts: list[str] = []
+        score_params: list[Any] = []
+        for term in terms:
+            score_parts.append("CASE WHEN primary_name LIKE ? THEN 10 ELSE 0 END")
+            score_params.append(f"%{term}%")
+            if "program_kind" in cols:
+                score_parts.append("CASE WHEN program_kind LIKE ? THEN 2 ELSE 0 END")
+                score_params.append(f"%{term}%")
+            if "funding_purpose_json" in cols:
+                score_parts.append(
+                    "CASE WHEN funding_purpose_json LIKE ? THEN 2 ELSE 0 END"
+                )
+                score_params.append(f"%{term}%")
+        if detected_prefecture or pref:
+            score_parts.append("CASE WHEN prefecture = ? THEN 3 ELSE 0 END")
+            score_params.append(pref or detected_prefecture)
+        score_expr = " + ".join(score_parts) if score_parts else "0"
+        fallback_sql = (
+            "SELECT unified_id, "
+            f"({score_expr}) AS _score "
+            "FROM jpi_programs "
+            f"WHERE {' AND '.join(fallback_clauses)} "
+            "ORDER BY _score DESC, tier ASC, updated_at DESC "
+            "LIMIT ?"
+        )
+        try:
+            rows = am_conn.execute(
+                fallback_sql,
+                [*score_params, *fallback_params, cap],
+            ).fetchall()
+        except sqlite3.OperationalError:
+            return subject_ids
+
+        seen = set(subject_ids)
+        for row in rows:
+            uid = row["unified_id"]
+            if uid and uid not in seen:
+                seen.add(uid)
+                subject_ids.append(uid)
+        return subject_ids
+
+    def _discover_non_program_records_for_query(
+        self,
+        am_conn: sqlite3.Connection,
+        query_text: str,
+        *,
+        limit: int,
+    ) -> list[dict[str, Any]]:
+        """Return compact non-program records for law/tax/enforcement intents."""
+        terms = self._query_terms(query_text)
+        if not terms:
+            return []
+        remaining = max(0, min(limit, MAX_RECORDS_PER_PACKET))
+        if remaining == 0:
+            return []
+
+        records: list[dict[str, Any]] = []
+        seen: set[tuple[str, str]] = set()
+
+        def add_record(record: dict[str, Any]) -> None:
+            key = (str(record.get("record_kind")), str(record.get("entity_id")))
+            if key in seen or len(records) >= remaining:
+                return
+            seen.add(key)
+            records.append(record)
+
+        text = self._normalise_free_text_query(query_text)
+        bangou = self._extract_corporate_number(text)
+
+        def add_structured_miss(
+            *,
+            entity_id: str,
+            primary_name: str,
+            source_url: str | None,
+            lookup: dict[str, Any],
+        ) -> None:
+            add_record(
+                {
+                    "entity_id": entity_id,
+                    "primary_name": primary_name,
+                    "record_kind": "structured_miss",
+                    "source_url": source_url,
+                    "lookup": lookup,
+                }
+            )
+
+        if bangou and _ENFORCEMENT_INTENT_RE.search(text):
+            exact_match_found = False
+            checked_tables: list[str] = []
+            am_cols = self._table_columns(am_conn, "am_enforcement_detail")
+            if {
+                "enforcement_id",
+                "houjin_bangou",
+                "target_name",
+            }.issubset(am_cols):
+                checked_tables.append("am_enforcement_detail")
+                try:
+                    rows = am_conn.execute(
+                        """SELECT enforcement_id, entity_id, houjin_bangou,
+                                  target_name, enforcement_kind,
+                                  issuing_authority, issuance_date,
+                                  reason_summary, source_url
+                             FROM am_enforcement_detail
+                            WHERE houjin_bangou = ?
+                         ORDER BY issuance_date DESC
+                            LIMIT ?""",
+                        (bangou, remaining - len(records)),
+                    ).fetchall()
+                except sqlite3.OperationalError:
+                    rows = []
+                for row in rows:
+                    exact_match_found = True
+                    add_record(
+                        {
+                            "entity_id": row["entity_id"] or row["enforcement_id"],
+                            "primary_name": row["target_name"],
+                            "record_kind": "enforcement",
+                            "source_url": row["source_url"],
+                            "houjin_bangou": row["houjin_bangou"],
+                            "enforcement_kind": row["enforcement_kind"],
+                            "issuing_authority": row["issuing_authority"],
+                            "issuance_date": row["issuance_date"],
+                            "reason_summary": row["reason_summary"],
+                        }
+                    )
+
+            case_cols = self._table_columns(am_conn, "jpi_enforcement_cases")
+            if {
+                "case_id",
+                "recipient_houjin_bangou",
+                "recipient_name",
+            }.issubset(case_cols):
+                checked_tables.append("jpi_enforcement_cases")
+                try:
+                    rows = am_conn.execute(
+                        """SELECT case_id, recipient_houjin_bangou,
+                                  recipient_name, event_type, ministry,
+                                  disclosed_date, legal_basis, reason_excerpt,
+                                  source_url
+                             FROM jpi_enforcement_cases
+                            WHERE recipient_houjin_bangou = ?
+                         ORDER BY disclosed_date DESC
+                            LIMIT ?""",
+                        (bangou, remaining - len(records)),
+                    ).fetchall()
+                except sqlite3.OperationalError:
+                    rows = []
+                for row in rows:
+                    exact_match_found = True
+                    add_record(
+                        {
+                            "entity_id": row["case_id"],
+                            "primary_name": row["recipient_name"]
+                            or row["case_id"],
+                            "record_kind": "enforcement_case",
+                            "source_url": row["source_url"],
+                            "houjin_bangou": row["recipient_houjin_bangou"],
+                            "event_type": row["event_type"],
+                            "ministry": row["ministry"],
+                            "disclosed_date": row["disclosed_date"],
+                            "legal_basis": row["legal_basis"],
+                            "reason_excerpt": row["reason_excerpt"],
+                        }
+                    )
+
+            if not exact_match_found:
+                add_structured_miss(
+                    entity_id=f"structured_miss:enforcement:{bangou}",
+                    primary_name=f"法人番号 {bangou} 行政処分ローカル照合",
+                    source_url=None,
+                    lookup={
+                        "kind": "enforcement_by_houjin_bangou",
+                        "houjin_bangou": bangou,
+                        "status": (
+                            "not_found_in_local_mirror"
+                            if checked_tables
+                            else "mirror_unavailable"
+                        ),
+                        "checked_tables": checked_tables,
+                        "official_absence_proven": False,
+                        "note": (
+                            "ローカルミラーで法人番号完全一致の行政処分を検出"
+                            "できませんでした。これは公式に処分が存在しない"
+                            "ことの証明ではありません。due diligence では一次"
+                            "資料または公式検索で再確認してください。"
+                        ),
+                    },
+                )
+
+        if bangou and "採択" in text:
+            try:
+                rows = am_conn.execute(
+                    """SELECT id, houjin_bangou, program_name_raw, company_name_raw,
+                              round_label, announced_at, prefecture, source_url,
+                              fetched_at
+                         FROM jpi_adoption_records
+                        WHERE houjin_bangou = ?
+                     ORDER BY announced_at DESC
+                        LIMIT ?""",
+                    (bangou, remaining),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                rows = []
+            for row in rows:
+                title = " / ".join(
+                    part
+                    for part in (
+                        row["company_name_raw"],
+                        row["program_name_raw"],
+                        row["round_label"],
+                    )
+                    if part
+                )
+                add_record(
+                    {
+                        "entity_id": f"adoption:{row['id']}",
+                        "primary_name": title or row["houjin_bangou"],
+                        "record_kind": "adoption_record",
+                        "source_url": row["source_url"],
+                        "houjin_bangou": row["houjin_bangou"],
+                        "announced_at": row["announced_at"],
+                        "prefecture": row["prefecture"],
+                        "fetched_at": row["fetched_at"],
+                    }
+                )
+
+        if bangou and "適格請求書" in text:
+            checked_tables: list[str] = []
+            exact_match_found = False
+            try:
+                if self._table_columns(am_conn, "jpi_invoice_registrants"):
+                    checked_tables.append("jpi_invoice_registrants")
+                rows = am_conn.execute(
+                    """SELECT invoice_registration_number, houjin_bangou,
+                              normalized_name, registered_date, prefecture,
+                              source_url, fetched_at
+                         FROM jpi_invoice_registrants
+                        WHERE invoice_registration_number IN (?, ?)
+                           OR houjin_bangou = ?
+                        LIMIT ?""",
+                    (f"T{bangou}", bangou, bangou, remaining - len(records)),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                rows = []
+            for row in rows:
+                exact_match_found = True
+                add_record(
+                    {
+                        "entity_id": row["invoice_registration_number"],
+                        "primary_name": row["normalized_name"],
+                        "record_kind": "invoice_registrant",
+                        "source_url": row["source_url"],
+                        "houjin_bangou": row["houjin_bangou"],
+                        "registered_date": row["registered_date"],
+                        "prefecture": row["prefecture"],
+                        "fetched_at": row["fetched_at"],
+                    }
+                )
+            if not exact_match_found:
+                add_structured_miss(
+                    entity_id=f"structured_miss:invoice:T{bangou}",
+                    primary_name=f"T{bangou} インボイス登録ローカル照合",
+                    source_url="https://www.invoice-kohyo.nta.go.jp/",
+                    lookup={
+                        "kind": "invoice_registration_number",
+                        "invoice_registration_number": f"T{bangou}",
+                        "houjin_bangou": bangou,
+                        "status": (
+                            "not_found_in_local_mirror"
+                            if checked_tables
+                            else "mirror_unavailable"
+                        ),
+                        "checked_tables": checked_tables,
+                        "official_absence_proven": False,
+                        "note": (
+                            "ローカルの国税庁インボイス公表ミラーでは完全一致"
+                            "しませんでした。登録日の確定には国税庁の公式"
+                            "公表サイトで再確認してください。"
+                        ),
+                    },
+                )
+
+        def run_like_query(
+            *,
+            table: str,
+            id_col: str,
+            name_col: str,
+            source_col: str,
+            record_kind: str,
+            search_cols: tuple[str, ...],
+            extra_select: tuple[str, ...] = (),
+        ) -> None:
+            if len(records) >= remaining:
+                return
+            cols = self._table_columns(am_conn, table)
+            required = {id_col, name_col}
+            if not required.issubset(cols):
+                return
+            usable_search_cols = [col for col in search_cols if col in cols]
+            if not usable_search_cols:
+                return
+            selected = [id_col, name_col]
+            if source_col in cols:
+                selected.append(source_col)
+            selected.extend(col for col in extra_select if col in cols)
+            selected_sql = ", ".join(selected)
+
+            term_clauses: list[str] = []
+            where_params: list[Any] = []
+            score_parts: list[str] = []
+            score_params: list[Any] = []
+            for term in terms:
+                term_clauses.append(
+                    "("
+                    + " OR ".join(f"{col} LIKE ?" for col in usable_search_cols)
+                    + ")"
+                )
+                where_params.extend([f"%{term}%"] * len(usable_search_cols))
+                score_parts.append(f"CASE WHEN {name_col} LIKE ? THEN 10 ELSE 0 END")
+                score_params.append(f"%{term}%")
+            sql = (
+                f"SELECT {selected_sql}, ({' + '.join(score_parts)}) AS _score "
+                f"FROM {table} "
+                f"WHERE {' OR '.join(term_clauses)} "
+                "ORDER BY _score DESC "
+                "LIMIT ?"
+            )
+            try:
+                rows = am_conn.execute(
+                    sql, [*score_params, *where_params, remaining - len(records)]
+                ).fetchall()
+            except sqlite3.OperationalError:
+                return
+            for row in rows:
+                row_keys = set(row.keys())
+                record: dict[str, Any] = {
+                    "entity_id": row[id_col],
+                    "primary_name": row[name_col],
+                    "record_kind": record_kind,
+                    "source_url": row[source_col] if source_col in row_keys else None,
+                }
+                for col in extra_select:
+                    if col in row_keys and row[col]:
+                        record[col] = row[col]
+                add_record(record)
+
+        query_specs: dict[str, dict[str, Any]] = {
+            "law": {
+                "table": "jpi_laws",
+                "id_col": "unified_id",
+                "name_col": "law_title",
+                "source_col": "source_url",
+                "record_kind": "law",
+                "search_cols": (
+                    "law_title",
+                    "law_short_title",
+                    "summary",
+                    "subject_areas_json",
+                ),
+                "extra_select": ("law_short_title", "ministry"),
+            },
+            "tax": {
+                "table": "jpi_tax_rulesets",
+                "id_col": "unified_id",
+                "name_col": "ruleset_name",
+                "source_col": "source_url",
+                "record_kind": "tax_ruleset",
+                "search_cols": (
+                    "ruleset_name",
+                    "tax_category",
+                    "eligibility_conditions",
+                    "filing_requirements",
+                    "source_excerpt",
+                ),
+                "extra_select": ("tax_category", "authority", "rate_or_amount"),
+            },
+            "enforcement": {
+                "table": "am_enforcement_detail",
+                "id_col": "enforcement_id",
+                "name_col": "target_name",
+                "source_col": "source_url",
+                "record_kind": "enforcement",
+                "search_cols": (
+                    "target_name",
+                    "enforcement_kind",
+                    "issuing_authority",
+                    "reason_summary",
+                    "related_law_ref",
+                ),
+                "extra_select": (
+                    "enforcement_kind",
+                    "issuing_authority",
+                    "issuance_date",
+                ),
+            },
+        }
+        for kind in self._non_program_context_order(query_text):
+            run_like_query(**query_specs[kind])
+        return records
 
     # ------------------------------------------------------------------
     # Public composer entry points.
@@ -615,6 +1309,8 @@ class EvidencePacketComposer:
         include_compression: bool = False,
         fields: str = "default",
         input_token_price_jpy_per_1m: float | None = None,
+        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_pdf_pages: int | None = None,
     ) -> dict[str, Any] | None:
         """Compose a single-record packet for one program.
 
@@ -629,6 +1325,8 @@ class EvidencePacketComposer:
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            source_tokens_basis=source_tokens_basis,
+            source_pdf_pages=source_pdf_pages,
         )
 
     def compose_for_houjin(
@@ -640,6 +1338,8 @@ class EvidencePacketComposer:
         include_compression: bool = False,
         fields: str = "default",
         input_token_price_jpy_per_1m: float | None = None,
+        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_pdf_pages: int | None = None,
     ) -> dict[str, Any] | None:
         """Compose a single-record packet for one 法人番号.
 
@@ -654,6 +1354,8 @@ class EvidencePacketComposer:
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            source_tokens_basis=source_tokens_basis,
+            source_pdf_pages=source_pdf_pages,
         )
 
     def compose_for_query(
@@ -667,6 +1369,8 @@ class EvidencePacketComposer:
         include_compression: bool = False,
         fields: str = "default",
         input_token_price_jpy_per_1m: float | None = None,
+        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_pdf_pages: int | None = None,
     ) -> dict[str, Any]:
         """Compose a multi-record packet for a search query.
 
@@ -683,6 +1387,8 @@ class EvidencePacketComposer:
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            source_tokens_basis=source_tokens_basis,
+            source_pdf_pages=source_pdf_pages,
             corpus_snapshot_id=snapshot_id,
         )
         cached = _cache_get(cache_key)
@@ -694,30 +1400,12 @@ class EvidencePacketComposer:
         am = None
         try:
             am = self._open_ro(self.autonomath_db)
-            sql_clauses: list[str] = []
-            params: list[Any] = []
-            if query_text:
-                sql_clauses.append("primary_name LIKE ?")
-                params.append(f"%{query_text}%")
-            pref = filters.get("prefecture")
-            if pref:
-                sql_clauses.append("prefecture = ?")
-                params.append(pref)
-            tier = filters.get("tier")
-            if tier:
-                sql_clauses.append("tier = ?")
-                params.append(tier)
-            where = (" WHERE " + " AND ".join(sql_clauses)) if sql_clauses else ""
-            sql = (
-                "SELECT unified_id FROM jpi_programs"
-                f"{where} ORDER BY tier ASC LIMIT ?"
+            subject_ids = self._discover_program_ids_for_query(
+                am,
+                query_text,
+                filters,
+                limit=limit,
             )
-            params.append(min(limit, MAX_RECORDS_PER_PACKET) + 1)
-            try:
-                rows = am.execute(sql, params).fetchall()
-                subject_ids = [r["unified_id"] for r in rows if r["unified_id"]]
-            except sqlite3.OperationalError:
-                subject_ids = []
         except FileNotFoundError:
             subject_ids = []
         finally:
@@ -738,6 +1426,8 @@ class EvidencePacketComposer:
                 include_compression=False,
                 fields=fields,
                 input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+                source_tokens_basis="unknown",
+                source_pdf_pages=None,
             )
             if inner is None:
                 continue
@@ -747,6 +1437,45 @@ class EvidencePacketComposer:
             for g in inner.get("quality", {}).get("known_gaps", []):
                 if g not in gaps:
                     gaps.append(g)
+
+        preferred_non_program = self._prefers_non_program_context(query_text)
+        remaining = min(limit, MAX_RECORDS_PER_PACKET) - len(records)
+        non_program_limit = (
+            min(limit, MAX_RECORDS_PER_PACKET)
+            if preferred_non_program
+            else remaining
+        )
+        if non_program_limit > 0 and query_text:
+            am = None
+            try:
+                am = self._open_ro(self.autonomath_db)
+                non_program_records = self._discover_non_program_records_for_query(
+                    am,
+                    query_text,
+                    limit=non_program_limit,
+                )
+                if preferred_non_program and non_program_records:
+                    merged: list[dict[str, Any]] = []
+                    seen_records: set[tuple[str, str]] = set()
+                    for rec in [*non_program_records, *records]:
+                        key = (
+                            str(rec.get("record_kind")),
+                            str(rec.get("entity_id")),
+                        )
+                        if key in seen_records:
+                            continue
+                        seen_records.add(key)
+                        merged.append(rec)
+                        if len(merged) >= min(limit, MAX_RECORDS_PER_PACKET):
+                            break
+                    records = merged
+                else:
+                    records.extend(non_program_records)
+            except FileNotFoundError:
+                pass
+            finally:
+                if am is not None:
+                    am.close()
 
         coverage_score = self._coverage_score(records)
         envelope: dict[str, Any] = {
@@ -791,8 +1520,11 @@ class EvidencePacketComposer:
                 envelope,
                 source_url=None,
                 input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+                source_tokens_basis=source_tokens_basis,
+                source_pdf_pages=source_pdf_pages,
             )
 
+        _attach_known_gaps_inventory(envelope)
         _cache_put(cache_key, envelope)
         return envelope
 
@@ -821,6 +1553,8 @@ class EvidencePacketComposer:
         include_compression: bool,
         fields: str,
         input_token_price_jpy_per_1m: float | None,
+        source_tokens_basis: Literal["unknown", "pdf_pages"],
+        source_pdf_pages: int | None,
     ) -> dict[str, Any] | None:
         # 1. Cache check (snapshot_id is part of the key — re-derived per
         #    call, cheap because _corpus_snapshot has its own 5min cache).
@@ -833,6 +1567,8 @@ class EvidencePacketComposer:
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            source_tokens_basis=source_tokens_basis,
+            source_pdf_pages=source_pdf_pages,
             corpus_snapshot_id=snapshot_id,
         )
         cached = _cache_get(cache_key)
@@ -977,8 +1713,11 @@ class EvidencePacketComposer:
                 envelope,
                 source_url=record.get("source_url"),
                 input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+                source_tokens_basis=source_tokens_basis,
+                source_pdf_pages=source_pdf_pages,
             )
 
+        _attach_known_gaps_inventory(envelope)
         _cache_put(cache_key, envelope)
         return envelope
 

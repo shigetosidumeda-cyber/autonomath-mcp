@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>jpciteはChatGPT/Claudeの文脈トークンを減らせますか? | jpcite</title>
+<meta name="description" content="jpciteのEvidence Packetが、長いPDFや検索結果をLLMへ渡す前の文脈量を小さくできる条件と限界を説明します。">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://jpcite.com/qa/llm-evidence/context-savings.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "jpciteはChatGPTやClaudeのトークンを必ず減らしますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "いいえ。短い質問をモデル知識だけで答える場合、jpciteは追加の入力になります。効果が出やすいのは、長いPDF、自治体ページ、複数の検索結果をLLMへ読ませる前に、出典付きの小さなEvidence Packetへ置き換える場合です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "どのくらい小さくなりますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "2026-05-02のoffline probeでは、30件のbenchmark queryに対するEvidence Packetは推定338〜1,352 tokens、中央値566 tokensでした。これはpacketサイズの測定であり、LLM料金削減の保証ではありません。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a href="#main" class="skip-link">本文へスキップ</a>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="jpcite ホーム"><span class="brand-name">jpcite</span></a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/docs/">Docs</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/playground.html">Playground</a>
+    </nav>
+  </div>
+</header>
+<main id="main" class="program-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="パンくず"><a href="/">ホーム</a> &rsaquo; <a href="/qa/">Q&amp;A</a> &rsaquo; <a href="/qa/llm-evidence/">LLM証拠レイヤー</a> &rsaquo; <span aria-current="page">文脈トークン削減</span></nav>
+    <article>
+      <header class="program-header">
+        <h1>jpciteはChatGPT/Claudeの文脈トークンを減らせますか?</h1>
+        <p class="byline-note muted">最終確認日: 2026年5月2日</p>
+      </header>
+
+      <section>
+        <h2>短い答え</h2>
+        <p>条件付きで減らせます。jpciteは回答文を生成するサービスではなく、AIが回答を書く前に、出典URL、取得時刻、content hash、provenance、既知の欠落を含むEvidence Packetを返すサービスです。</p>
+        <p>長いPDFや検索結果をそのままLLMに渡す代わりに、Evidence Packetを渡す場合、入力文脈は小さくなりやすいです。一方、短い質問をGPT/Claudeがモデル知識だけで答える場合、jpciteを呼ぶと入力は増えます。</p>
+      </section>
+
+      <section>
+        <h2>実測できていること</h2>
+        <p>2026-05-02のoffline probeでは、30件のbenchmark queryに対して、jpciteは全件で非空のpacketを返しました。packet token estimateは338〜1,352、中央値566でした。12/30 queryでは少なくとも1件のprecomputed recordを含みました。</p>
+        <p>これはpacketサイズとlookup coverageの測定です。LLMの最終料金、回答品質、検索回数削減を保証するものではありません。</p>
+      </section>
+
+      <section>
+        <h2>得になりやすい場面</h2>
+        <ul>
+          <li>公募要領PDFや自治体ページをLLMへ丸ごと読ませている</li>
+          <li>GPT/Claudeが毎回web検索して複数URLを開いている</li>
+          <li>出典URL、取得時刻、制度ID、既知の欠落を回答に残したい</li>
+          <li>同じ制度調査を複数顧客・複数案件で繰り返す</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>APIで比較する例</h2>
+        <p>たとえば「30ページのPDFをLLMに読ませる代わりにjpcite packetを渡す」前提なら、比較対象を明示して呼びます。</p>
+        <pre><code>curl -X POST https://api.jpcite.com/v1/evidence/packets/query \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: am_..." \
+  -d '{
+    "query_text": "省力化 補助金 中小企業",
+    "limit": 5,
+    "include_compression": true,
+    "source_tokens_basis": "pdf_pages",
+    "source_pdf_pages": 30,
+    "input_token_price_jpy_per_1m": 300
+  }'</code></pre>
+        <p><code>source_pdf_pages</code>はユーザーが渡す比較対象です。jpciteはURLだけから勝手にページ数や削減額を推定しません。</p>
+      </section>
+
+      <section>
+        <h2>AIに渡すプロンプト例</h2>
+        <pre><code>この質問に答える前に jpcite の Evidence Packet を取得してください。
+回答では source_url、source_fetched_at、corpus_snapshot_id を併記してください。
+packet の compression は推定値なので、削減保証としては表現しないでください。</code></pre>
+      </section>
+
+      <p class="disclaimer">本ページは製品仕様と測定方法の説明です。トークン量、外部LLM API料金、検索回数への影響は、モデル、プロンプト、キャッシュ、検索設定、質問内容によって変わります。</p>
+    </article>
+  </div>
+</main>
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <p class="footer-brand">jpcite</p>
+    <nav class="footer-nav" aria-label="フッター"><a href="/docs/">Docs</a><a href="/pricing.html">Pricing</a><a href="/privacy.html">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>

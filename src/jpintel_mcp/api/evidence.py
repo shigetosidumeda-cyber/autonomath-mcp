@@ -14,7 +14,7 @@ Endpoints
 Pricing posture
 ---------------
 
-¥3/req per packet (1 unit). Anonymous tier shares the 50/月 IP cap via
+¥3/req per packet (1 unit). Anonymous tier shares the 3/日 IP cap via
 ``AnonIpLimitDep`` on the router mount.
 
 Response formats
@@ -31,7 +31,9 @@ NO LLM imports. Pure SQLite + Python via the composer.
 from __future__ import annotations
 
 import logging
+import os
 import time
+from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -40,6 +42,11 @@ from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
+from jpintel_mcp.api._license_gate import (
+    REDISTRIBUTABLE_LICENSES,
+    annotate_attribution,
+    filter_redistributable,
+)
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.config import settings
 from jpintel_mcp.services.evidence_packet import (
@@ -53,16 +60,28 @@ router = APIRouter(prefix="/v1/evidence", tags=["evidence"])
 
 
 _composer: EvidencePacketComposer | None = None
+_composer_paths: tuple[str, str] | None = None
+
+
+def _current_composer_paths() -> tuple[str, str]:
+    jpintel_db = Path(os.environ.get("JPINTEL_DB_PATH") or settings.db_path)
+    autonomath_db = Path(
+        os.environ.get("AUTONOMATH_DB_PATH") or settings.autonomath_db_path
+    )
+    return (str(jpintel_db), str(autonomath_db))
 
 
 def _get_composer() -> EvidencePacketComposer:
-    global _composer
-    if _composer is None:
+    global _composer, _composer_paths
+    paths = _current_composer_paths()
+    if _composer is None or _composer_paths != paths:
+        jpintel_db, autonomath_db = (Path(p) for p in paths)
         try:
             _composer = EvidencePacketComposer(
-                jpintel_db=settings.db_path,
-                autonomath_db=settings.autonomath_db_path,
+                jpintel_db=jpintel_db,
+                autonomath_db=autonomath_db,
             )
+            _composer_paths = paths
         except FileNotFoundError as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -79,8 +98,9 @@ def _get_composer() -> EvidencePacketComposer:
 
 def reset_composer() -> None:
     """Drop the cached composer. Tests call this after monkeypatching paths."""
-    global _composer
+    global _composer, _composer_paths
     _composer = None
+    _composer_paths = None
 
 
 # ---------------------------------------------------------------------------
@@ -88,15 +108,216 @@ def reset_composer() -> None:
 # ---------------------------------------------------------------------------
 
 
+def _record_license_tuple(rec: dict[str, Any]) -> dict[str, Any]:
+    """Derive (license, publisher, source_url, fetched_at) for a packet record.
+
+    Evidence Packet records carry their primary license on
+    ``record.facts[*].source.license`` (one license per fact source). For
+    the export gate we lift a representative license up onto the record
+    so `filter_redistributable` can decide allow/block at the row level.
+
+    Selection policy:
+
+      * If ANY fact source carries a license value in
+        `REDISTRIBUTABLE_LICENSES`, the record's license is set to that
+        allowed value (most-common allowed license wins; ties broken
+        lexically). Rationale: a record whose provenance includes at
+        least one redistributable source CAN be redistributed under
+        that source's terms — the export carries the matching
+        attribution line per CC-BY 4.0 §3 / PDL v1.0.
+      * Else, fall back to the most-common license seen on the facts
+        (which will be a non-allow-listed value — `gov_standard_v2.0`,
+        `proprietary`, etc. — and the gate will correctly block).
+      * If no facts have a `source.license` at all, the record's license
+        is ``"unknown"`` (safe-block default).
+
+    The returned dict is suitable as input to `filter_redistributable` /
+    `annotate_attribution`. We do NOT mutate `rec`.
+    """
+    facts = rec.get("facts") or []
+    licenses: dict[str, int] = {}
+    publisher: str | None = None
+    source_url: str | None = rec.get("source_url")
+    fetched_at: str | None = None
+    # Track per-license publisher / url / fetched_at so attribution
+    # reflects the WINNING license source, not a random earlier source.
+    per_license_meta: dict[str, dict[str, Any]] = {}
+    for f in facts:
+        src = f.get("source") or {}
+        lic = src.get("license")
+        if isinstance(lic, str) and lic:
+            licenses[lic] = licenses.get(lic, 0) + 1
+            meta = per_license_meta.setdefault(lic, {})
+            if "publisher" not in meta and src.get("publisher"):
+                meta["publisher"] = src.get("publisher")
+            if "url" not in meta and src.get("url"):
+                meta["url"] = src.get("url")
+            if "fetched_at" not in meta and src.get("fetched_at"):
+                meta["fetched_at"] = src.get("fetched_at")
+        if publisher is None and src.get("publisher"):
+            publisher = src.get("publisher")
+        if fetched_at is None and src.get("fetched_at"):
+            fetched_at = src.get("fetched_at")
+        if source_url is None and src.get("url"):
+            source_url = src.get("url")
+
+    chosen: str = "unknown"
+    if licenses:
+        # Prefer redistributable licenses. If any allowed license appears
+        # on the facts, pick the most-common allowed one (ties lexical).
+        allowed_present = {
+            k: v for k, v in licenses.items() if k in REDISTRIBUTABLE_LICENSES
+        }
+        if allowed_present:
+            chosen = sorted(
+                allowed_present.items(),
+                key=lambda kv: (-kv[1], kv[0]),
+            )[0][0]
+        else:
+            chosen = sorted(
+                licenses.items(),
+                key=lambda kv: (-kv[1], kv[0]),
+            )[0][0]
+    # Prefer the chosen-license's own attribution metadata when we have it.
+    chosen_meta = per_license_meta.get(chosen) or {}
+    return {
+        "entity_id": rec.get("entity_id"),
+        "license": chosen,
+        "publisher": chosen_meta.get("publisher") or publisher,
+        "source_url": chosen_meta.get("url") or source_url,
+        "fetched_at": chosen_meta.get("fetched_at") or fetched_at,
+    }
+
+
+def _apply_license_gate(envelope: dict[str, Any]) -> tuple[
+    dict[str, Any], dict[str, Any]
+]:
+    """Filter the envelope's records[] through the license export gate.
+
+    Implements `docs/_internal/value_maximization_plan_no_llm_api.md` §24
+    + §28.9 No-Go #5 — `license in ('proprietary','unknown')` MUST NOT
+    leave the operator's perimeter, even via CSV/MD/JSON exports.
+
+    Per-record license is derived via `_record_license_tuple` (lifts the
+    dominant fact-level license up to the record level) and then passed
+    through `filter_redistributable` (allow-list policy). Allowed records
+    keep their place in the new envelope; blocked records are dropped
+    and surface only via the rollup in `envelope["license_gate"]`.
+
+    Each allowed record gains a top-level `_attribution` line via
+    `annotate_attribution` so downstream auditors can preserve CC-BY 4.0
+    §3 attribution when redistributing.
+
+    Returns (gated_envelope, gate_summary) where `gated_envelope` is a
+    fresh dict (the input is not mutated) and `gate_summary` carries
+    allowed_count / blocked_count / blocked_reasons / redistributable
+    licenses for response-header / body-mirror surfacing.
+    """
+    records = envelope.get("records") or []
+    # Build (proxy, original) pairs so we can map allow-list verdicts
+    # back to the originals.
+    proxies = [_record_license_tuple(r) for r in records]
+    allowed_proxies, blocked_proxies = filter_redistributable(proxies)
+    allowed_ids = {p.get("entity_id") for p in allowed_proxies}
+
+    blocked_reasons: dict[str, int] = {}
+    for p in blocked_proxies:
+        v = p.get("license")
+        key = v if isinstance(v, str) and v else "unknown"
+        blocked_reasons[key] = blocked_reasons.get(key, 0) + 1
+
+    gate_summary: dict[str, Any] = {
+        "allowed_count": len(allowed_proxies),
+        "blocked_count": len(blocked_proxies),
+        "blocked_reasons": blocked_reasons,
+        "redistributable_licenses": sorted(REDISTRIBUTABLE_LICENSES),
+    }
+
+    # Re-build records[] with attribution annotations on the allowed set.
+    # Lookup by entity_id; fall back to positional match for records
+    # missing entity_id (defensive — records always carry it in practice).
+    proxy_by_id = {p.get("entity_id"): p for p in proxies if p.get("entity_id")}
+    new_records: list[dict[str, Any]] = []
+    for r in records:
+        eid = r.get("entity_id")
+        if eid not in allowed_ids:
+            continue
+        proxy = proxy_by_id.get(eid) or {}
+        ann = annotate_attribution(proxy)
+        out = dict(r)
+        out["_attribution"] = ann.get("_attribution")
+        out["license"] = proxy.get("license")
+        new_records.append(out)
+
+    gated_envelope = dict(envelope)
+    gated_envelope["records"] = new_records
+    gated_envelope["license_gate"] = gate_summary
+    return gated_envelope, gate_summary
+
+
 def _dispatch_format(
     envelope: dict[str, Any], fmt: str
 ) -> Response:
-    if fmt == "csv":
-        body = EvidencePacketComposer.to_csv(envelope)
-        return PlainTextResponse(content=body, media_type="text/csv")
-    if fmt == "md":
-        body = EvidencePacketComposer.to_markdown(envelope)
-        return PlainTextResponse(content=body, media_type="text/markdown")
+    """Serialize the packet envelope; gate CSV/MD redistribution paths.
+
+    JSON responses are the per-request conversational surface — paid
+    customers see the full envelope as composed (license info is already
+    inline on every fact via `facts[].source.license`, and the customer
+    is bound by the API ToS not to redistribute the per-request body).
+
+    CSV and MD exports, by contrast, are bulk-redistribution shapes that
+    leave the operator's perimeter as a self-contained file the customer
+    can hand to a third party. Per
+    `docs/_internal/value_maximization_plan_no_llm_api.md` §24 + §28.9
+    No-Go #5 these paths funnel records[] through `filter_redistributable`
+    (allow-list policy on `REDISTRIBUTABLE_LICENSES`) so any record whose
+    dominant fact-source license is `proprietary` / `unknown` / a
+    non-allow-listed value (e.g. `gov_standard_v2.0` while the constant
+    is the canonical `gov_standard`) is dropped from the output bytes.
+    Allowed records each gain an `_attribution` line via
+    `annotate_attribution` so downstream auditors preserve CC-BY 4.0 §3.
+
+    Both gated responses surface the gate rollup via the
+    `X-License-Gate-Allowed` / `X-License-Gate-Blocked` headers (mirrors
+    `api/ma_dd.py` audit-bundle export semantics).
+
+    The textual reference to `filter_redistributable` is also what
+    `tests/test_license_gate_no_bypass.py` asserts to keep this function
+    in the "wired" set — the AST scanner walks every export-shaped
+    function under `api/` and fails CI if the gate token is absent.
+    """
+    if fmt in ("csv", "md"):
+        gated, gate_summary = _apply_license_gate(envelope)
+
+        # Defense-in-depth post-condition: re-run `filter_redistributable`
+        # over the gated records[] using the lifted top-level `license`
+        # field that `_apply_license_gate` injected. ANY non-empty
+        # `_blocked` here means the gate's allow-list logic regressed —
+        # fail closed by dropping the offending rows from the output. In
+        # practice this is always a no-op (the upstream gate already
+        # filtered) but keeps the invariant local + auditable in the
+        # export path itself.
+        _allowed, _blocked = filter_redistributable(gated.get("records") or [])
+        if _blocked:
+            gated["records"] = _allowed
+            gate_summary["allowed_count"] = len(_allowed)
+            gate_summary["blocked_count"] = (
+                gate_summary.get("blocked_count", 0) + len(_blocked)
+            )
+
+        headers = {
+            "X-License-Gate-Allowed": str(gate_summary["allowed_count"]),
+            "X-License-Gate-Blocked": str(gate_summary["blocked_count"]),
+        }
+        if fmt == "csv":
+            body = EvidencePacketComposer.to_csv(gated)
+            return PlainTextResponse(
+                content=body, media_type="text/csv", headers=headers,
+            )
+        body = EvidencePacketComposer.to_markdown(gated)
+        return PlainTextResponse(
+            content=body, media_type="text/markdown", headers=headers,
+        )
     return JSONResponse(content=envelope)
 
 
@@ -157,8 +378,30 @@ def get_evidence_packet(
         Query(
             description=(
                 "Optional caller's input-token price (JPY per 1M tokens). "
-                "Echoed back in the envelope so the customer can compare "
-                "packet cost vs LLM-only ingest cost."
+                "Echoed back only as an optional reference comparison hint; "
+                "no token, cost, or savings reduction is guaranteed."
+            ),
+        ),
+    ] = None,
+    source_tokens_basis: Annotated[
+        Literal["unknown", "pdf_pages"],
+        Query(
+            description=(
+                "Optional caller-supplied baseline for context comparison. "
+                "`unknown` (default) returns packet size only. `pdf_pages` "
+                "uses source_pdf_pages * 700 tokens/page as an estimate. "
+                "This is input-context estimation only, not a savings guarantee."
+            ),
+        ),
+    ] = "unknown",
+    source_pdf_pages: Annotated[
+        int | None,
+        Query(
+            ge=1,
+            le=1000,
+            description=(
+                "PDF page count the caller would otherwise paste/fetch into "
+                "the LLM. Used only when source_tokens_basis=pdf_pages."
             ),
         ),
     ] = None,
@@ -185,6 +428,8 @@ def get_evidence_packet(
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            source_tokens_basis=source_tokens_basis,
+            source_pdf_pages=source_pdf_pages,
         )
     else:
         envelope = composer.compose_for_houjin(
@@ -194,6 +439,8 @@ def get_evidence_packet(
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            source_tokens_basis=source_tokens_basis,
+            source_pdf_pages=source_pdf_pages,
         )
 
     if envelope is None:
@@ -232,6 +479,8 @@ def get_evidence_packet(
             "format": output_format,
             "include_facts": include_facts,
             "include_rules": include_rules,
+            "source_tokens_basis": source_tokens_basis,
+            "source_pdf_pages": source_pdf_pages,
         },
     )
     # §17.D audit seal on paid JSON responses. CSV/MD outputs skip the
@@ -243,6 +492,8 @@ def get_evidence_packet(
             request_params={
                 "subject_kind": subject_kind,
                 "subject_id": subject_id,
+                "source_tokens_basis": source_tokens_basis,
+                "source_pdf_pages": source_pdf_pages,
             },
             api_key_hash=ctx.key_hash,
             conn=conn,
@@ -289,6 +540,8 @@ class EvidencePacketQueryBody(BaseModel):
     include_compression: bool = False
     fields: str = "default"
     input_token_price_jpy_per_1m: float | None = None
+    source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown"
+    source_pdf_pages: Annotated[int | None, Field(ge=1, le=1000)] = None
 
 
 @router.post(
@@ -320,6 +573,8 @@ def post_evidence_packet_query(
         include_compression=payload.include_compression,
         fields=payload.fields,
         input_token_price_jpy_per_1m=payload.input_token_price_jpy_per_1m,
+        source_tokens_basis=payload.source_tokens_basis,
+        source_pdf_pages=payload.source_pdf_pages,
     )
     latency_ms = int((time.perf_counter() - _t0) * 1000)
     log_usage(
@@ -333,6 +588,8 @@ def post_evidence_packet_query(
             "filter_keys": (
                 sorted(payload.filters.keys()) if payload.filters else []
             ),
+            "source_tokens_basis": payload.source_tokens_basis,
+            "source_pdf_pages": payload.source_pdf_pages,
         },
     )
     # §17.D audit seal — JSON only (see evidence.packet.get above).
@@ -346,6 +603,8 @@ def post_evidence_packet_query(
                 "filter_keys": (
                     sorted(payload.filters.keys()) if payload.filters else []
                 ),
+                "source_tokens_basis": payload.source_tokens_basis,
+                "source_pdf_pages": payload.source_pdf_pages,
             },
             api_key_hash=ctx.key_hash,
             conn=conn,

@@ -96,12 +96,16 @@ def test_emit_generates_three_lines_per_query() -> None:
             assert rec["prefetch_url"] is None
         elif rec["arm"] == "jpcite_packet":
             assert rec["tools_enabled"] == []
+            assert rec["prefetch_method"] == "POST"
             assert rec["prefetch_url"] is not None
-            assert rec["prefetch_url"].startswith(
-                "https://api.jpcite.com/v1/evidence/packets/query?q="
+            assert rec["prefetch_url"] == (
+                "https://api.jpcite.com/v1/evidence/packets/query"
             )
+            assert rec["prefetch_body"]["query_text"] == rec["query_text"]
+            assert rec["prefetch_body"]["include_compression"] is True
         elif rec["arm"] == "jpcite_precomputed_intelligence":
             assert rec["tools_enabled"] == []
+            assert rec["prefetch_method"] == "GET"
             assert rec["prefetch_url"] is not None
             assert rec["prefetch_url"].startswith(
                 "https://api.jpcite.com/v1/intelligence/precomputed/query?q="
@@ -235,6 +239,8 @@ def test_aggregate_computes_correct_medians(fixture_results_csv: Path) -> None:
     assert dw["input_tokens"]["n"] == 3
     assert dw["web_searches"]["p50"] == 5.0
     assert dw["jpcite_requests"]["p50"] == 0.0
+    assert summary["optional_numeric_metrics"] == []
+    assert "records_returned" not in dw
 
     # jpcite_packet medians
     jp = summary["arms"]["jpcite_packet"]
@@ -250,6 +256,127 @@ def test_aggregate_computes_correct_medians(fixture_results_csv: Path) -> None:
     assert summary["median_delta_pct"]["input_tokens"] == 90.0
     # No-baseline edge case: web_searches direct_web=5, jpcite=0 -> 100.0
     assert summary["median_delta_pct"]["web_searches"] == 100.0
+
+
+def test_aggregate_includes_optional_prefetch_metrics_when_present(
+    tmp_path: Path,
+) -> None:
+    """New prefetch metrics are aggregated only when the CSV includes them."""
+    path = tmp_path / "bench_results_with_prefetch_metrics.csv"
+    rows = [
+        {
+            "query_id": 1,
+            "query_text": "Q1",
+            "arm": "direct_web",
+            "model": "claude-sonnet-4-6",
+            "input_tokens": 10000,
+            "output_tokens": 500,
+            "reasoning_tokens": 0,
+            "web_searches": 3,
+            "jpcite_requests": 0,
+            "yen_cost_per_answer": 12.0,
+            "latency_seconds": 8.0,
+            "citation_rate": 0.6,
+            "hallucination_rate": 0.2,
+            "records_returned": "",
+            "precomputed_record_count": "",
+            "packet_tokens_estimate": "",
+            "source_tokens_estimate": "",
+            "corpus_snapshot_id": "",
+            "packet_id": "",
+            "notes": "",
+        },
+        {
+            "query_id": 2,
+            "query_text": "Q2",
+            "arm": "direct_web",
+            "model": "claude-sonnet-4-6",
+            "input_tokens": 20000,
+            "output_tokens": 800,
+            "reasoning_tokens": 0,
+            "web_searches": 5,
+            "jpcite_requests": 0,
+            "yen_cost_per_answer": 18.0,
+            "latency_seconds": 12.0,
+            "citation_rate": 0.7,
+            "hallucination_rate": 0.15,
+            "records_returned": "",
+            "precomputed_record_count": "",
+            "packet_tokens_estimate": "",
+            "source_tokens_estimate": "",
+            "corpus_snapshot_id": "",
+            "packet_id": "",
+            "notes": "",
+        },
+        {
+            "query_id": 1,
+            "query_text": "Q1",
+            "arm": "jpcite_packet",
+            "model": "claude-sonnet-4-6",
+            "input_tokens": 1000,
+            "output_tokens": 400,
+            "reasoning_tokens": 0,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 5.0,
+            "latency_seconds": 3.0,
+            "citation_rate": 0.95,
+            "hallucination_rate": 0.05,
+            "records_returned": 4,
+            "precomputed_record_count": 10,
+            "packet_tokens_estimate": 1200,
+            "source_tokens_estimate": 5000,
+            "corpus_snapshot_id": "corpus-2026-04-29",
+            "packet_id": "evp_x1",
+            "notes": "",
+        },
+        {
+            "query_id": 2,
+            "query_text": "Q2",
+            "arm": "jpcite_packet",
+            "model": "claude-sonnet-4-6",
+            "input_tokens": 2000,
+            "output_tokens": 600,
+            "reasoning_tokens": 0,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 6.0,
+            "latency_seconds": 3.5,
+            "citation_rate": 0.92,
+            "hallucination_rate": 0.06,
+            "records_returned": 8,
+            "precomputed_record_count": 12,
+            "packet_tokens_estimate": 1800,
+            "source_tokens_estimate": 7000,
+            "corpus_snapshot_id": "corpus-2026-04-29",
+            "packet_id": "evp_x2",
+            "notes": "",
+        },
+    ]
+    fieldnames = list(rows[0].keys())
+    with path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    res = _run_harness("--mode", "aggregate", "--results-csv", str(path))
+    assert res.returncode == 0, res.stderr
+    summary = json.loads(res.stdout)
+
+    assert summary["optional_numeric_metrics"] == [
+        "records_returned",
+        "precomputed_record_count",
+        "packet_tokens_estimate",
+        "source_tokens_estimate",
+    ]
+    packet = summary["arms"]["jpcite_packet"]
+    assert packet["records_returned"]["p50"] == 6.0
+    assert packet["records_returned"]["n"] == 2
+    assert packet["precomputed_record_count"]["p50"] == 11.0
+    assert packet["packet_tokens_estimate"]["p50"] == 1500.0
+    assert packet["source_tokens_estimate"]["p50"] == 6000.0
+    assert summary["arms"]["direct_web"]["records_returned"]["n"] == 0
+    assert summary["median_delta_pct"]["records_returned"] is None
 
 
 def test_aggregate_computes_three_arm_pairing_and_deltas(tmp_path: Path) -> None:

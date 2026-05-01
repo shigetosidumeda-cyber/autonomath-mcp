@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Evidence Pre-fetchとは何ですか? | jpcite</title>
+<meta name="description" content="ChatGPTやClaudeが回答を書く前に、jpciteが出典付きの根拠packetを取得するEvidence Pre-fetchの使い方。">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://jpcite.com/qa/llm-evidence/evidence-prefetch.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+</head>
+<body>
+<a href="#main" class="skip-link">本文へスキップ</a>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="jpcite ホーム"><span class="brand-name">jpcite</span></a>
+    <nav class="site-nav" aria-label="主要ナビゲーション"><a href="/docs/">Docs</a><a href="/integrations/">Integrations</a><a href="/pricing.html">Pricing</a></nav>
+  </div>
+</header>
+<main id="main" class="program-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="パンくず"><a href="/">ホーム</a> &rsaquo; <a href="/qa/">Q&amp;A</a> &rsaquo; <a href="/qa/llm-evidence/">LLM証拠レイヤー</a> &rsaquo; <span aria-current="page">Evidence Pre-fetch</span></nav>
+    <article>
+      <header class="program-header">
+        <h1>Evidence Pre-fetchとは何ですか?</h1>
+        <p class="byline-note muted">ChatGPT / Claude / Cursorが回答を書く前に、根拠だけを先に取るワークフローです。</p>
+      </header>
+
+      <section>
+        <h2>定義</h2>
+        <p>Evidence Pre-fetchは、LLMが文章を書く前に、制度候補、出典URL、取得時刻、content hash、provenance、併用ルール、既知の欠落を取得する手順です。jpciteは回答文を作らず、AIが引用できる入力packetを返します。</p>
+      </section>
+
+      <section>
+        <h2>jpciteが返すもの</h2>
+        <ul>
+          <li><code>records[]</code>: 制度・法人・出典の構造化record</li>
+          <li><code>source_url</code> / <code>source_fetched_at</code>: 出典と取得時刻</li>
+          <li><code>corpus_snapshot_id</code>: どのデータ状態で答えたか</li>
+          <li><code>quality.known_gaps[]</code>: 未接続・未検証の情報</li>
+          <li><code>compression</code>: packetの推定token数と、caller supplied baselineがある場合の参考比較</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>推奨tool chain</h2>
+        <ol>
+          <li><code>search_programs</code>で候補を絞る</li>
+          <li><code>get_program</code>または<code>batch_get_programs</code>で詳細を取る</li>
+          <li><code>get_evidence_packet</code>でAIに渡す根拠packetを作る</li>
+          <li>AI側では<code>source_url</code>と<code>source_fetched_at</code>を回答に併記する</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>限界</h2>
+        <p>jpciteは外部LLM APIを呼びません。packetのtoken estimateはheuristicであり、各providerの請求token数ではありません。削減効果は、ユーザーが本来どの資料をLLMへ渡していたかによって変わります。</p>
+      </section>
+
+      <section>
+        <h2>最初に試す</h2>
+        <p><a href="/playground.html?flow=evidence3">Playgroundで3回の無料ライブ検証</a>を使い、候補検索、出典確認、Evidence Packetの順に試してください。</p>
+      </section>
+    </article>
+  </div>
+</main>
+<footer class="site-footer" role="contentinfo"><div class="container footer-inner"><p class="footer-brand">jpcite</p><nav class="footer-nav" aria-label="フッター"><a href="/docs/">Docs</a><a href="/pricing.html">Pricing</a></nav></div></footer>
+</body>
+</html>

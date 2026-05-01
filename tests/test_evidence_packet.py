@@ -445,6 +445,40 @@ def test_compose_include_compression_returns_real_block(fixture_db: Path) -> Non
     assert env["_token_pricing_input_jpy_per_1m"] == 300.0
 
 
+def test_compose_compression_pdf_pages_baseline_returns_context_estimate(
+    fixture_db: Path,
+) -> None:
+    """Caller-supplied PDF pages make the comparison concrete but not guaranteed."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(
+        jpintel_db=settings.db_path, autonomath_db=fixture_db
+    )
+    env = composer.compose_for_program(
+        "UNI-evp-p1",
+        include_compression=True,
+        input_token_price_jpy_per_1m=300.0,
+        source_tokens_basis="pdf_pages",
+        source_pdf_pages=10,
+    )
+
+    assert env is not None
+    compression = env["compression"]
+    assert compression["source_tokens_basis"] == "pdf_pages"
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["source_pdf_pages"] == 10
+    assert compression["source_tokens_estimate"] == 7000
+    assert isinstance(compression["packet_tokens_estimate"], int)
+    assert compression["avoided_tokens_estimate"] == max(
+        0, 7000 - compression["packet_tokens_estimate"]
+    )
+    assert compression["compression_ratio"] is not None
+    assert compression["estimate_scope"] == "input_context_only"
+    assert compression["savings_claim"] == "estimate_not_guarantee"
+    assert compression["cost_savings_estimate"]["jpcite_cost_jpy_ex_tax"] == 3
+
+
 def test_compose_includes_precomputed_program_summary(fixture_db: Path) -> None:
     """am_program_summary rows surface as compact precomputed basis data."""
     from jpintel_mcp.config import settings
@@ -557,6 +591,44 @@ def test_rest_get_evidence_packet_json(client: TestClient) -> None:
     body = r.json()
     assert body["api_version"] == "v1"
     assert body["records"][0]["primary_name"] == "EVP テスト P1 補助金"
+
+
+def test_rest_get_evidence_packet_pdf_pages_compression(client: TestClient) -> None:
+    r = client.get(
+        "/v1/evidence/packets/program/UNI-evp-p1",
+        params={
+            "include_compression": "true",
+            "source_tokens_basis": "pdf_pages",
+            "source_pdf_pages": "10",
+            "input_token_price_jpy_per_1m": "300",
+        },
+    )
+    assert r.status_code == 200, r.text
+    compression = r.json()["compression"]
+    assert compression["source_tokens_estimate"] == 7000
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["savings_claim"] == "estimate_not_guarantee"
+
+
+def test_rest_post_evidence_packet_query_pdf_pages_compression(
+    client: TestClient,
+) -> None:
+    r = client.post(
+        "/v1/evidence/packets/query",
+        json={
+            "query_text": "EVP",
+            "limit": 1,
+            "include_compression": True,
+            "source_tokens_basis": "pdf_pages",
+            "source_pdf_pages": 10,
+            "input_token_price_jpy_per_1m": 300,
+        },
+    )
+    assert r.status_code == 200, r.text
+    compression = r.json()["compression"]
+    assert compression["source_tokens_estimate"] == 7000
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["estimate_scope"] == "input_context_only"
 
 
 def test_rest_get_evidence_packet_404(client: TestClient) -> None:

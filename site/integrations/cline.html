@@ -27,21 +27,16 @@
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite", "jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "taxID": "T8010001213708",
   "foundingDate": "2025-05-12",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
     "addressRegion": "東京都",
-    "addressLocality": "文京区",
-    "streetAddress": "小日向 2-22-1"
-  },
+    "addressLocality": "文京区"},
   "founder": {"@type": "Person", "name": "梅田茂利"},
   "contactPoint": {
     "@type": "ContactPoint",
@@ -49,7 +44,7 @@
     "contactType": "customer support",
     "availableLanguage": ["ja", "en"]
   },
-  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber/autonomath-mcp"]
+  "sameAs": ["https://www.bookyou.net/"]
 }
 </script>
 
@@ -139,7 +134,7 @@
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
-<p style="font-size:0.92em;color:#555;">本番運用は <code>"env": {"AUTONOMATH_API_KEY": "sk_..."}</code> を追加します。</p>
+<p style="font-size:0.92em;color:#555;">本番運用は <code>"env": {"JPCITE_API_KEY": "am_..."}</code> を追加します。</p>
 
 <h2 id="verify">動作確認</h2>
 <p>保存後、MCP Servers タブの <code>jpcite</code> 行に緑のドットが付けば接続完了です。</p>
@@ -172,9 +167,8 @@
  <a href="../tos.html">利用規約</a>
  <a href="../privacy.html">プライバシー</a>
  <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -189,25 +183,25 @@
 </style>
 <script>
   document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
-    btn.addEventListener('click', function{
+    btn.addEventListener('click', function(){
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
-      var done = function{
+      var done = function(){
         btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(function{ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function{
+        navigator.clipboard.writeText(text).then(done, function(){
           var ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta); ta.select;
-          try { document.execCommand('copy'); done; } catch(e) {}
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
           document.body.removeChild(ta);
         });
       } else {
         var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select;
-        try { document.execCommand('copy'); done; } catch(e) {}
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
         document.body.removeChild(ta);
       }
     });

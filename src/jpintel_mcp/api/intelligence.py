@@ -41,6 +41,8 @@ def _annotate_precomputed_bundle(envelope: dict[str, Any]) -> dict[str, Any]:
             "answer_basis": (
                 "precomputed" if precomputed_count else "metadata_only"
             ),
+            "records_returned": len(records),
+            "precomputed_record_count": precomputed_count,
             "precomputed": {
                 "available": precomputed_count > 0,
                 "basis_tables": ["am_program_summary"],
@@ -117,7 +119,30 @@ def get_precomputed_intelligence_query(
         Query(
             description=(
                 "Optional caller input-token price in JPY per 1M tokens. "
-                "Used only when an honest savings estimate is possible."
+                "Used only for an optional reference comparison; no savings "
+                "or cost reduction is guaranteed."
+            ),
+        ),
+    ] = None,
+    source_tokens_basis: Annotated[
+        Literal["unknown", "pdf_pages"],
+        Query(
+            description=(
+                "Optional caller-supplied baseline for context comparison. "
+                "`unknown` returns packet size only. `pdf_pages` uses "
+                "source_pdf_pages * 700 tokens/page as an estimate. "
+                "This is input-context estimation only, not a guarantee."
+            ),
+        ),
+    ] = "unknown",
+    source_pdf_pages: Annotated[
+        int | None,
+        Query(
+            ge=1,
+            le=1000,
+            description=(
+                "PDF page count the caller would otherwise paste/fetch into "
+                "the LLM. Used only when source_tokens_basis=pdf_pages."
             ),
         ),
     ] = None,
@@ -143,6 +168,8 @@ def get_precomputed_intelligence_query(
         include_compression=include_compression,
         fields="default",
         input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+        source_tokens_basis=source_tokens_basis,
+        source_pdf_pages=source_pdf_pages,
     )
     envelope = _annotate_precomputed_bundle(envelope)
 
@@ -157,6 +184,8 @@ def get_precomputed_intelligence_query(
             "q": q,
             "limit": limit,
             "filter_keys": sorted(filters),
+            "source_tokens_basis": source_tokens_basis,
+            "source_pdf_pages": source_pdf_pages,
         },
     )
     attach_seal_to_body(
@@ -166,6 +195,8 @@ def get_precomputed_intelligence_query(
             "q": q,
             "limit": limit,
             "filter_keys": sorted(filters),
+            "source_tokens_basis": source_tokens_basis,
+            "source_pdf_pages": source_pdf_pages,
         },
         api_key_hash=ctx.key_hash,
         conn=conn,

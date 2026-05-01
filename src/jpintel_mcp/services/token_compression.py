@@ -1,7 +1,8 @@
 """Token compression estimator for the Evidence Packet ``compression`` block.
 
-Implements the ``Token Cost Shield`` heuristic from §9.1 of
-``docs/_internal/llm_resilient_business_plan_2026-04-30.md``.
+Implements the Evidence Packet prefetch estimator used by the public
+``compression`` block. The estimate is intentionally workload-dependent and
+never presented as a guaranteed token-cost saving.
 
 Goals
 -----
@@ -224,7 +225,8 @@ class TokenCompressionEstimator:
 
         basis = source_basis if source_basis is not None else "unknown"
         source_tokens: int | None = None
-        if source_url is not None or source_text is not None:
+        has_caller_pdf_baseline = basis == "pdf_pages" and pdf_pages is not None
+        if source_url is not None or source_text is not None or has_caller_pdf_baseline:
             source_tokens = self.estimate_source_tokens(
                 source_url or "",
                 source_text=source_text,
@@ -249,6 +251,15 @@ class TokenCompressionEstimator:
             "estimate_method": ESTIMATE_METHOD,
             "estimate_disclaimer": ESTIMATE_DISCLAIMER,
             "source_tokens_basis": basis,
+            "source_tokens_input_source": (
+                "caller_supplied"
+                if source_tokens is not None
+                and (source_text is not None or has_caller_pdf_baseline)
+                else "unknown"
+            ),
+            "source_pdf_pages": pdf_pages if basis == "pdf_pages" else None,
+            "estimate_scope": "input_context_only",
+            "savings_claim": "estimate_not_guarantee",
         }
 
         savings = self.compute_savings(

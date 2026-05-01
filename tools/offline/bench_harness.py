@@ -23,7 +23,7 @@ Per `docs/bench_methodology.md`, the default emission MUST cover:
 
   - Arm `direct_web`: pass query alone, web_search ENABLED.
   - Arm `jpcite_packet`: prefetch
-    `GET /v1/evidence/packets/query?q=<urlencoded>`, then pass
+    `POST /v1/evidence/packets/query`, then pass
     `{query + packet}` with web_search DISABLED.
   - Arm `jpcite_precomputed_intelligence`: prefetch the operator-owned
     precomputed intelligence bundle, then pass `{query + bundle}` with
@@ -163,14 +163,22 @@ def build_instruction(
         }
 
     if arm == PACKET_ARM:
-        encoded = urllib.parse.quote(qtxt, safe="")
-        prefetch = f"{jpcite_base_url.rstrip('/')}/v1/evidence/packets/query?q={encoded}"
+        prefetch = f"{jpcite_base_url.rstrip('/')}/v1/evidence/packets/query"
+        prefetch_body = {
+            "query_text": qtxt,
+            "limit": 5,
+            "include_facts": True,
+            "include_rules": False,
+            "include_compression": True,
+        }
         text = (
-            f"Fetch {prefetch} ; pass the user query AND the returned "
-            f"Evidence Packet (pretty-printed JSON) to {model} with "
-            f"web_search DISABLED. Record same metrics + corpus_snapshot_id "
-            f"and packet_id from the prefetched packet. jpcite_requests "
-            f"counts every billable jpcite call on this arm (≥1)."
+            f"POST {prefetch} with JSON body "
+            f"{json.dumps(prefetch_body, ensure_ascii=False)} ; pass the "
+            f"user query AND the returned Evidence Packet (pretty-printed "
+            f"JSON) to {model} with web_search DISABLED. Record same "
+            f"metrics + corpus_snapshot_id and packet_id from the "
+            f"prefetched packet. jpcite_requests counts every billable "
+            f"jpcite call on this arm (>=1)."
         )
         return {
             "query_id": qid,
@@ -179,7 +187,9 @@ def build_instruction(
             "model": model,
             "query_text": qtxt,
             "tools_enabled": [],
+            "prefetch_method": "POST",
             "prefetch_url": prefetch,
+            "prefetch_body": prefetch_body,
             "system_prompt": (
                 "Answer using ONLY the provided evidence packet. Do not "
                 "web-search. Cite the source_url, fetched_at, and "
@@ -209,7 +219,9 @@ def build_instruction(
             "model": model,
             "query_text": qtxt,
             "tools_enabled": [],
+            "prefetch_method": "GET",
             "prefetch_url": prefetch,
+            "prefetch_body": None,
             "system_prompt": (
                 "Answer using ONLY the provided precomputed jpcite "
                 "intelligence bundle. Do not web-search. Cite source_url, "

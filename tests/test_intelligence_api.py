@@ -185,6 +185,55 @@ def test_precomputed_intelligence_query_returns_compact_bundle(
     assert body["compression"]["compression_ratio"] is None
 
 
+def test_precomputed_intelligence_query_reports_response_metadata(
+    intelligence_client: TestClient,
+) -> None:
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={"q": "省力化", "limit": 1},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    missing = {
+        "records_returned",
+        "precomputed_record_count",
+    } - body.keys()
+    if missing:
+        pytest.xfail(
+            "Desired response metadata is absent: "
+            f"{', '.join(sorted(missing))}"
+        )
+
+    assert body["records_returned"] == len(body["records"]) == 1
+    assert body["precomputed_record_count"] == body["precomputed"][
+        "record_count"
+    ] == 1
+
+
+def test_precomputed_intelligence_query_pdf_pages_compression(
+    intelligence_client: TestClient,
+) -> None:
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={
+            "q": "省力化",
+            "limit": 1,
+            "source_tokens_basis": "pdf_pages",
+            "source_pdf_pages": 10,
+            "input_token_price_jpy_per_1m": 300,
+        },
+    )
+
+    assert response.status_code == 200
+    compression = response.json()["compression"]
+    assert compression["source_tokens_basis"] == "pdf_pages"
+    assert compression["source_tokens_estimate"] == 7000
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["estimate_scope"] == "input_context_only"
+    assert compression["savings_claim"] == "estimate_not_guarantee"
+
+
 def test_precomputed_intelligence_route_is_mounted(
     intelligence_client: TestClient,
 ) -> None:

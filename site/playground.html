@@ -10,8 +10,8 @@
     Funnel: blog/SEO → playground → /upgrade.html (gentle nudge after 10
     successful requests) → /pricing.html#api-paid → Stripe Checkout.
 
-  How it works (vanilla JS, zero deps, 100% static — Cloudflare Pages OK):
-    1. Endpoint dropdown lists 10 highest-leverage GET routes (search +
+  How it works (vanilla JS, zero deps, static page):
+    1. Endpoint dropdown lists the highest-leverage GET routes (search +
        lookup across programs / am / invoice_registrants / laws /
        court-decisions / case-studies / tax_rulesets).
     2. Param form is rendered from a hard-coded local schema (mirrors
@@ -34,15 +34,7 @@
     7. Successful-request counter (sessionStorage) shows a "気に入ったら
        API キー発行 →" banner after the 10th success. Dismissable.
 
-  Not on this page (deliberate):
-    * No backend. Everything is client-side fetch + DOM. Static-asset only.
-    * No POST endpoints. Prescreen / batch / device-flow have side effects
-      and need POST bodies — they belong on the homepage demo and /go,
-      not here. Read-only GET keeps the playground safe to share.
-    * No auth wall. We never persist the bearer token (no localStorage,
-      no cookie). Pasted keys live in DOM only and die on tab close.
-    * No tier badges, no plan ladder, no "Free / Pro" gating UI — that
-      would violate the ¥3/req-only constraint in CLAUDE.md.
+  Static API playground. Requests are sent directly from the browser.
 
   CSP note: this page ships a single inline <script> block (the playground
   controller). _headers already permits 'unsafe-inline' on script-src for
@@ -59,10 +51,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>API Playground — jpcite を今すぐ試す</title>
-<meta name="description" content="ブラウザから直接 https://api.jpcite.com/v1/* を叩ける対話型 playground。匿名 3 req/日 まで無料、API キーなしで起動。10 主要エンドポイント、パラメータ自動補完、curl コピー。">
+<meta name="description" content="ブラウザから直接 https://api.jpcite.com/v1/* を叩ける対話型 playground。匿名 3 req/日 まで無料、API キーなしで起動。主要エンドポイント、パラメータ自動補完、curl コピー。">
 
 <meta property="og:title" content="API Playground — jpcite">
-<meta property="og:description" content="登録不要、API キー不要、ブラウザ完結。10 主要エンドポイントを今すぐ試す。匿名 3 req/日 無料。">
+<meta property="og:description" content="登録不要、API キー不要、ブラウザ完結。主要エンドポイントを今すぐ試す。匿名 3 req/日 無料。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/playground.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -494,13 +486,12 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "url": "https://jpcite.com/",
     "email": "info@bookyou.net"
   },
@@ -565,6 +556,10 @@
  <strong>本番 API です。</strong> リクエストは即時 <code>api.jpcite.com</code> に届き、 匿名クォータ (3/日) を消費します。 リセットは <strong>JST 翌日 00:00</strong>。 残量は下のインジケータで確認できます。
  </div>
 
+ <div class="pg-banner" id="pg-flow-hint" role="note" hidden>
+ <strong>3回の無料ライブ検証:</strong> まず Evidence Packet を返すエンドポイントを選択済みです。1回目はこのまま送信、2回目は <code>source_pdf_pages</code> を変えて文脈量の差を確認、3回目は自社の質問に差し替えてください。表示される compression は参考推定であり、削減保証ではありません。
+ </div>
+
  <div class="pg-quota" id="pg-quota" data-state="ok" aria-live="polite">
  <span>匿名クォータ</span>
  <span class="pg-quota-num"><span id="pg-quota-remaining">--</span> / <span data-fact="anonymous_quota_per_month">3</span></span>
@@ -579,7 +574,7 @@
 
  <div class="pg-field">
  <label for="pg-endpoint">エンドポイント
- <span class="pg-hint">10 主要 GET routes</span>
+ <span class="pg-hint">主要 GET routes</span>
  </label>
  <select id="pg-endpoint" aria-describedby="pg-endpoint-desc"></select>
  <p id="pg-endpoint-desc" class="pg-hint" style="margin:6px 0 0;"></p>
@@ -589,9 +584,9 @@
 
  <div class="pg-field">
  <label for="pg-bearer">APIキー (任意)
- <span class="pg-hint">未入力なら匿名 (3 リクエスト/日)。 <code>sk_live_...</code> をペーストすると ¥3.30/リクエスト で送信</span>
+            <span class="pg-hint">未入力なら匿名 (3 リクエスト/日)。 <code>am_...</code> をペーストすると ¥3.30/リクエスト で送信</span>
  </label>
- <input type="password" id="pg-bearer" autocomplete="off" spellcheck="false" placeholder="sk_live_..." />
+            <input type="password" id="pg-bearer" autocomplete="off" spellcheck="false" placeholder="am_..." />
  </div>
  </section>
 
@@ -610,7 +605,7 @@
 
  <!-- Conversion nudge after 10 successful requests in session -->
  <aside class="pg-nudge" id="pg-nudge" role="region" aria-label="API キー発行のおすすめ">
- <span>気に入りましたか? API キーを発行すると ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト で無制限に叩けます。</span>
+ <span>気に入りましたか? API キーを発行すると ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト で継続利用できます。</span>
  <span>
  <a href="pricing.html#api-paid" data-cta="playground-nudge">API キー発行 →</a>
  <button type="button" class="pg-nudge-dismiss" id="pg-nudge-dismiss" aria-label="閉じる">×</button>
@@ -666,9 +661,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -704,13 +698,31 @@
 'use strict';
 
 (function() {
-  // ----- 1. Local OpenAPI mirror (10 priority endpoints) ------------------
+  // ----- 1. Local OpenAPI mirror (priority endpoints) ---------------------
   // Mirrors /v1/openapi.json paths verbatim (verified against prod
   // 2026-04-29 dump). Adding params here only — never inventing names
   // that the API does not accept (validation would 422 and confuse the
   // visitor). Defaults chosen for "good first impression" (a query that
   // reliably returns rows and demonstrates the §52 disclaimer 法令注記の付与).
   const ENDPOINTS = [
+    {
+      id: 'intelligence.precomputed.query',
+      method: 'GET',
+      path: '/v1/intelligence/precomputed/query',
+      title: 'Evidence Packet / 文脈量見積もり',
+      desc: '回答前に出典付き evidence bundle を取得。PDFページ数を渡すと入力文脈量の参考比較を返す。',
+      params: [
+        { name: 'q', type: 'text', label: '質問', placeholder: '東京都の設備投資補助金は?', defaultValue: '東京都の設備投資補助金は?' },
+        { name: 'prefecture', type: 'text', label: '都道府県', placeholder: '東京都' },
+        { name: 'tier', type: 'enum', label: 'tier', options: ['', 'S', 'A', 'B', 'C'] },
+        { name: 'limit', type: 'number', label: 'limit', defaultValue: '5' },
+        { name: 'include_facts', type: 'checkbox', label: 'raw facts も含める' },
+        { name: 'include_compression', type: 'checkbox', label: 'compression estimate を含める', defaultChecked: true },
+        { name: 'source_tokens_basis', type: 'enum', label: '比較対象', options: ['unknown', 'pdf_pages'], defaultValue: 'pdf_pages' },
+        { name: 'source_pdf_pages', type: 'number', label: 'LLMに読ませる予定だったPDFページ数', placeholder: '30', defaultValue: '30' },
+        { name: 'input_token_price_jpy_per_1m', type: 'number', label: '入力token単価の参考値 (円 / 100万token)', placeholder: '300', defaultValue: '300' },
+      ],
+    },
     {
       id: 'programs.search',
       method: 'GET',
@@ -748,7 +760,7 @@
       method: 'GET',
       path: '/v1/am/tax_incentives',
       title: '税制特例検索 (特別償却・税額控除・繰越欠損金)',
-      desc: 'autonomath.db am_tax_rule (~285 rows)。 _disclaimer エンベロープあり。',
+      desc: '税制特例・税額控除・特別償却などの一次資料付き検索。',
       params: [
         { name: 'query',         type: 'text',   label: 'キーワード',     placeholder: '中小企業 投資', defaultValue: '中小企業' },
         { name: 'authority',     type: 'enum',   label: '所管庁',         options: ['', '国税庁', '財務省', '経済産業省', '中小企業庁', '農林水産省', '総務省', '国土交通省', '厚生労働省', '自治体'] },
@@ -852,7 +864,7 @@
       title: '採択事例検索 (2,286 rows)',
       desc: '実際に補助金を獲得した法人 / 個人事業主の事例。 法人番号一部付き。',
       params: [
-        { name: 'q',              type: 'text',   label: 'キーワード',         placeholder: '農業 DX', defaultValue: '農業' },
+        { name: 'q',              type: 'text',   label: 'キーワード',         placeholder: 'IT導入', defaultValue: 'IT導入' },
         { name: 'prefecture',     type: 'text',   label: '都道府県',           placeholder: '北海道' },
         { name: 'industry_jsic',  type: 'text',   label: 'JSIC コード prefix', placeholder: 'A' },
         { name: 'houjin_bangou',  type: 'text',   label: '法人番号 (13桁)',    placeholder: '' },
@@ -912,6 +924,7 @@
     quotaCta: $('pg-quota-cta'),
     nudge: $('pg-nudge'),
     nudgeDismiss: $('pg-nudge-dismiss'),
+    flowHint: $('pg-flow-hint'),
     copyCurl: $('pg-copy-curl'),
     openPostman: $('pg-open-postman'),
     openHttpie: $('pg-open-httpie'),
@@ -1224,6 +1237,17 @@
   // ----- 6. Wire-up ------------------------------------------------------
   function init() {
     renderEndpointSelect();
+    const qs = new URLSearchParams(window.location.search || '');
+    if (qs.get('flow') === 'evidence3') {
+      const idx = ENDPOINTS.findIndex(function(ep) {
+        return ep.id === 'intelligence.precomputed.query';
+      });
+      if (idx >= 0) {
+        currentEndpoint = ENDPOINTS[idx];
+        els.endpoint.value = String(idx);
+        if (els.flowHint) els.flowHint.hidden = false;
+      }
+    }
     renderParams();
 
     els.endpoint.addEventListener('change', function() {

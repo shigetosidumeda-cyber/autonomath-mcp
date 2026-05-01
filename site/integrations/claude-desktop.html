@@ -27,21 +27,16 @@
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite", "jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "taxID": "T8010001213708",
   "foundingDate": "2025-05-12",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
     "addressRegion": "東京都",
-    "addressLocality": "文京区",
-    "streetAddress": "小日向 2-22-1"
-  },
+    "addressLocality": "文京区"},
   "founder": {"@type": "Person", "name": "梅田茂利"},
   "contactPoint": {
     "@type": "ContactPoint",
@@ -49,7 +44,7 @@
     "contactType": "customer support",
     "availableLanguage": ["ja", "en"]
   },
-  "sameAs": ["https://www.bookyou.net/", "https://github.com/shigetosidumeda-cyber/autonomath-mcp"]
+  "sameAs": ["https://www.bookyou.net/"]
 }
 </script>
 
@@ -106,6 +101,7 @@
 <span aria-current="page">Claude Desktop</span>
 </nav>
 <h1 style="margin-bottom:0.2em;">Claude Desktop と連携する</h1>
+<p>Claude Desktop には文章化や比較を任せ、jpcite には一次資料ベースの検索と根拠取得を任せます。長い募集要項 PDF を都度 Claude に読ませる前に、MCP tool から制度 metadata、併給制限、出典 URL、取得時点を短く返せます。少ない文脈量で確認可能な回答を作れる場合がありますが、効果は質問内容、モデル、キャッシュ、検索設定によって変わります。</p>
 
 <h2 id="install">インストール</h2>
 <div class="code-block" data-code="uvx autonomath-mcp">
@@ -139,7 +135,7 @@
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
-<p style="font-size:0.92em;color:#555;">本番運用は <code>"env": {"AUTONOMATH_API_KEY": "sk_..."}</code> を追加します。</p>
+<p style="font-size:0.92em;color:#555;">本番運用は <code>"env": {"JPCITE_API_KEY": "am_..."}</code> を追加します。</p>
 
 <h2 id="verify">動作確認</h2>
 <p>Claude Desktop を再起動し、入力欄左下にハンマーアイコンが表示されれば接続完了です。</p>
@@ -149,10 +145,20 @@
 <div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder]</div>
 </figure>
 
+<h2 id="first-prompt">Evidence prefetch の最初のプロンプト</h2>
+<div class="code-block" data-code="東京都の設備投資補助金を探す前に、jpcite MCPでsearch_programsを実行し、候補が出たらget_evidence_packetでsource_url、source_fetched_at、corpus_snapshot_idを取得してください。回答ではその3点を併記してください。">
+<pre><code>東京都の設備投資補助金を探す前に、jpcite MCPで search_programs を実行し、
+候補が出たら get_evidence_packet で source_url、source_fetched_at、
+corpus_snapshot_id を取得してください。
+回答ではその3点を併記してください。</code></pre>
+<button class="copy-btn" type="button" aria-label="コピー">Copy</button>
+</div>
+
 <h2 id="next">次のステップ</h2>
 <ul>
 <li><a href="/pricing.html">料金</a></li>
 <li><a href="/docs/">ドキュメント</a></li>
+<li><a href="/qa/llm-evidence/evidence-prefetch.html">Evidence Pre-fetchとは</a></li>
 <li><a href="/integrations/">他の連携ガイド</a></li>
 </ul>
 
@@ -172,9 +178,8 @@
  <a href="../tos.html">利用規約</a>
  <a href="../privacy.html">プライバシー</a>
  <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -189,25 +194,25 @@
 </style>
 <script>
   document.querySelectorAll('.code-block .copy-btn').forEach(function(btn){
-    btn.addEventListener('click', function{
+    btn.addEventListener('click', function(){
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
-      var done = function{
+      var done = function(){
         btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(function{ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+        setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function{
+        navigator.clipboard.writeText(text).then(done, function(){
           var ta = document.createElement('textarea');
-          ta.value = text; document.body.appendChild(ta); ta.select;
-          try { document.execCommand('copy'); done; } catch(e) {}
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
           document.body.removeChild(ta);
         });
       } else {
         var ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta); ta.select;
-        try { document.execCommand('copy'); done; } catch(e) {}
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
         document.body.removeChild(ta);
       }
     });

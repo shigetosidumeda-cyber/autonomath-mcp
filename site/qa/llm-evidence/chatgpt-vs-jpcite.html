@@ -37,13 +37,11 @@
       "@id": "https://jpcite.com/#publisher",
       "name": "jpcite",
       "alternateName": [
-        "税務会計AI",
-        "AutonoMath",
+        "jpcite",
+        "jpcite",
         "Bookyou株式会社"
       ],
       "url": "https://jpcite.com/",
-      "legalName": "Bookyou株式会社",
-      "taxID": "T8010001213708",
       "founder": {
         "@type": "Person",
         "name": "梅田茂利"
@@ -192,12 +190,12 @@
           "name": "出典はどの程度入っていますか?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、93 MCP tools を掲示しています。一次資料URLと取得時刻は99%以上の行で保持し、欠落や保留行は正本側で明示します。"
+            "text": "公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、93 MCP tools を掲示しています。一次資料URLと取得時刻は99%以上の行で保持し、欠落や保留行はファクトシート側で明示します。"
           }
         },
         {
           "@type": "Question",
-          "name": "Token Cost Shield という訴求は使いますか?",
+          "name": "コスト削減はどう表現しますか?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "見出し訴求としては使いません。LLM API価格はモデル・キャッシュ・Batch・検索無料枠で条件が変わるため、jpcite の価値は「常に安い」ではなく「高額LLMにPDFや制度ページを長文投入する前の Evidence Pre-fetch Layer」として説明します。"
@@ -233,9 +231,7 @@
  </ul>
  </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="/_templates/qa.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
- <span class="sep" aria-hidden="true">/</span>
- <a href="/en/_templates/qa.html" lang="en" hreflang="en">EN</a>
+ <a href="/qa/llm-evidence/chatgpt-vs-jpcite.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
  </span>
  </nav>
  </div>
@@ -259,7 +255,7 @@
  <span class="sep">/</span>
  <span class="source">出典取得: 2026年4月30日</span>
  <span class="sep">/</span>
- <span class="author">Bookyou株式会社 (梅田茂利)</span>
+ <span class="author">jpcite</span>
  </p>
  <p class="byline-note muted">※一次資料は頻繁に改訂されます。最新は出典の公式ページをご確認ください。</p>
  </header>
@@ -275,7 +271,7 @@
  <dd>文章として似た回答は作れます。ただし、制度ID、一次資料URL、取得時刻、排他ルール、MCP tool schema を同じ形式で安定返却するには、検索対象の正規化データが別に必要です。jpcite はその証拠レイヤーを提供します。</dd> <dt>jpciteはLLMの代替ですか?</dt>
  <dd>いいえ。jpcite は回答生成モデルではありません。Claude / ChatGPT / Cursor などが呼び出す REST + MCP の retrieval surface です。AI が書く前に、制度候補・出典・更新日を取りに行くために使います。</dd> <dt>何がGEO上の差別化になりますか?</dt>
  <dd>LLMが引用しやすい短いQ&amp;A、FAQPage JSON-LD、facts.html、llms.txt、OpenAPI、MCP tool schema を同じ数字でそろえます。これにより「jpcite = Japanese public-program evidence layer」として認識されやすくなります。</dd> <dt>出典はどの程度入っていますか?</dt>
- <dd>公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、93 MCP tools を掲示しています。一次資料URLと取得時刻は99%以上の行で保持し、欠落や保留行は正本側で明示します。</dd> <dt>Token Cost Shield という訴求は使いますか?</dt>
+ <dd>公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、93 MCP tools を掲示しています。一次資料URLと取得時刻は99%以上の行で保持し、欠落や保留行はファクトシート側で明示します。</dd> <dt>コスト削減はどう表現しますか?</dt>
  <dd>見出し訴求としては使いません。LLM API価格はモデル・キャッシュ・Batch・検索無料枠で条件が変わるため、jpcite の価値は「常に安い」ではなく「高額LLMにPDFや制度ページを長文投入する前の Evidence Pre-fetch Layer」として説明します。</dd> </dl>
  </section> <section aria-labelledby="facts-title">
  <h2 id="facts-title">主要事実</h2>
@@ -305,7 +301,7 @@
  <h2 id="api-title">API で取得</h2>
  <p>このトピックに関連する制度・税務 ruleset・法令データは REST API および MCP で取得できます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
- "https://api.jpcite.com/v1/programs?q=ChatGPT%20Claude%20%E8%A3%9C%E5%8A%A9%E9%87%91%20%E5%87%BA%E5%85%B8"</code></pre>
+ "https://api.jpcite.com/v1/programs/search?q=ChatGPT%20Claude%20%E8%A3%9C%E5%8A%A9%E9%87%91%20%E5%87%BA%E5%85%B8"</code></pre>
  <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>search_programs(q="ChatGPT Claude 補助金 出典")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
  <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
  </section>
@@ -320,7 +316,7 @@
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ <p class="footer-entity">運営: Bookyou株式会社</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">
  <a href="/tos.html">利用規約</a>
