@@ -283,7 +283,7 @@ def run(
     dry_run: bool = True,
     query_log_rows: list[dict[str, Any]] | None = None,
     out_path: Path | None = None,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Refresh per-customer personalized cache.
 
     Args:

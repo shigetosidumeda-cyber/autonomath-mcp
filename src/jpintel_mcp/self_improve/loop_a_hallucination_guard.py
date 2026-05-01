@@ -114,7 +114,7 @@ def summarize() -> dict[str, Any]:
     }
 
 
-def run(*, dry_run: bool = True) -> dict[str, int]:
+def run(*, dry_run: bool = True) -> dict[str, Any]:
     """Scan feedback and propose hallucination_guard rows.
 
     Launch v1: report the seeded YAML row count as `scanned`. Real

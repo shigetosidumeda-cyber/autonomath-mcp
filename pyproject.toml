@@ -7,7 +7,21 @@ authors = [
     { name = "Bookyou株式会社", email = "info@bookyou.net" },
 ]
 readme = "README.md"
-keywords = ["mcp", "japan", "subsidy", "government", "claude", "llm", "rest-api"]
+keywords = [
+    "mcp",
+    "mcp-server",
+    "japan",
+    "japanese",
+    "subsidy",
+    "government",
+    "legal-tech",
+    "tax",
+    "evidence",
+    "citation",
+    "rag",
+    "agent-tools",
+    "claude",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -115,7 +129,7 @@ jpintel-ingest = "jpintel_mcp.ingest.canonical:run"
 [project.urls]
 Homepage = "https://jpcite.com"
 Documentation = "https://jpcite.com/docs/"
-# TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
+# TODO(org-claim): switch back to github.com/jpcite/autonomath-mcp once the jpcite GitHub org is claimed.
 Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
 Issues = "https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues"
 
@@ -159,11 +173,14 @@ exclude = [
     "data/",
     "overrides/",
     "content/",
+    "src/jpintel_mcp/_archive/",
 ]
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+force-exclude = true
+extend-exclude = ["src/jpintel_mcp/_archive"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "TCH"]

@@ -285,7 +285,7 @@ def run(
     miss_queries: list[str] | None = None,
     db_path: Path | None = None,
     out_path: Path | None = None,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Mine alias candidates from miss queries.
 
     Args:

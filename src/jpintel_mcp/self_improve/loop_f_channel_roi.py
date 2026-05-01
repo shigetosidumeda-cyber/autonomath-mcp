@@ -287,7 +287,7 @@ def run(
     billing_events: list[dict[str, Any]] | None = None,
     out_path: Path | None = None,
     window_days: int = 28,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Aggregate channel ROI for the trailing window.
 
     Args:

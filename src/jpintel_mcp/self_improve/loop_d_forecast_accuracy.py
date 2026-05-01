@@ -291,7 +291,7 @@ def run(
     predictions: list[dict[str, Any]] | None = None,
     out_path: Path | None = None,
     drift_delta: float = DRIFT_DELTA,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Score forecast predictions and emit the operator review report.
 
     Args:
