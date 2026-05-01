@@ -1,0 +1,6 @@
+Setting,Value
+APIKey,
+EnvFallback,JPCITE_API_KEY
+Endpoint,https://api.jpcite.com
+PriceJpyPerReq,3
+Operator,Bookyou株式会社 (T8010001213708)

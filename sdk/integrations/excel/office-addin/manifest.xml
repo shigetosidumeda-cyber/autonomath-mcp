@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+  xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+  xsi:type="TaskPaneApp">
+
+  <Id>4b7a52f0-9a7e-4d1b-a8e3-7c0a1e5b1a62</Id>
+  <Version>0.3.2</Version>
+  <ProviderName>Bookyou株式会社 (T8010001213708)</ProviderName>
+  <DefaultLocale>ja-JP</DefaultLocale>
+
+  <DisplayName DefaultValue="jpcite — 日本公的制度・法人 API"/>
+  <Description DefaultValue="セルから =JPCITE_HOUJIN / =JPCITE_PROGRAMS / =JPCITE_LAW / =JPCITE_ENFORCEMENT を呼び出し、法人番号・補助金・法令・行政処分を Excel に取り込む (¥3/req metered, https://jpcite.com)"/>
+  <IconUrl DefaultValue="https://jpcite.com/static/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://jpcite.com/static/icon-64.png"/>
+  <SupportUrl DefaultValue="https://jpcite.com/support"/>
+
+  <AppDomains>
+    <AppDomain>https://jpcite.com</AppDomain>
+    <AppDomain>https://api.jpcite.com</AppDomain>
+  </AppDomains>
+
+  <Hosts>
+    <Host Name="Workbook"/>
+  </Hosts>
+
+  <Requirements>
+    <Sets DefaultMinVersion="1.4">
+      <Set Name="CustomFunctionsRuntime" MinVersion="1.4"/>
+    </Sets>
+  </Requirements>
+
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://jpcite.com/excel-addin/taskpane.html"/>
+  </DefaultSettings>
+
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Workbook">
+        <Runtimes>
+          <Runtime resid="JPCITE.Runtime.Url" lifetime="long"/>
+        </Runtimes>
+        <AllFormFactors>
+          <ExtensionPoint xsi:type="CustomFunctions">
+            <Script>
+              <SourceLocation resid="JPCITE.Functions.Script.Url"/>
+            </Script>
+            <Page>
+              <SourceLocation resid="JPCITE.Functions.Page.Url"/>
+            </Page>
+            <Metadata>
+              <SourceLocation resid="JPCITE.Functions.Metadata.Url"/>
+            </Metadata>
+            <Namespace resid="JPCITE.Namespace"/>
+          </ExtensionPoint>
+        </AllFormFactors>
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title resid="JPCITE.GetStarted.Title"/>
+            <Description resid="JPCITE.GetStarted.Description"/>
+            <LearnMoreUrl resid="JPCITE.GetStarted.LearnMore.Url"/>
+          </GetStarted>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="JPCITE.Group">
+                <Label resid="JPCITE.Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="JPCITE.Icon.16"/>
+                  <bt:Image size="32" resid="JPCITE.Icon.32"/>
+                  <bt:Image size="80" resid="JPCITE.Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="JPCITE.OpenTaskpane">
+                  <Label resid="JPCITE.OpenTaskpane.Label"/>
+                  <Supertip>
+                    <Title resid="JPCITE.OpenTaskpane.Label"/>
+                    <Description resid="JPCITE.OpenTaskpane.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="JPCITE.Icon.16"/>
+                    <bt:Image size="32" resid="JPCITE.Icon.32"/>
+                    <bt:Image size="80" resid="JPCITE.Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>JPCITE.Taskpane</TaskpaneId>
+                    <SourceLocation resid="JPCITE.Taskpane.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="JPCITE.Icon.16" DefaultValue="https://jpcite.com/static/icon-16.png"/>
+        <bt:Image id="JPCITE.Icon.32" DefaultValue="https://jpcite.com/static/icon-32.png"/>
+        <bt:Image id="JPCITE.Icon.80" DefaultValue="https://jpcite.com/static/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="JPCITE.Taskpane.Url" DefaultValue="https://jpcite.com/excel-addin/taskpane.html"/>
+        <bt:Url id="JPCITE.Functions.Script.Url" DefaultValue="https://jpcite.com/excel-addin/functions.js"/>
+        <bt:Url id="JPCITE.Functions.Page.Url" DefaultValue="https://jpcite.com/excel-addin/functions.html"/>
+        <bt:Url id="JPCITE.Functions.Metadata.Url" DefaultValue="https://jpcite.com/excel-addin/functions.json"/>
+        <bt:Url id="JPCITE.Runtime.Url" DefaultValue="https://jpcite.com/excel-addin/runtime.html"/>
+        <bt:Url id="JPCITE.GetStarted.LearnMore.Url" DefaultValue="https://jpcite.com/excel-addin"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="JPCITE.Namespace" DefaultValue="JPCITE"/>
+        <bt:String id="JPCITE.GetStarted.Title" DefaultValue="jpcite を Excel から呼ぶ"/>
+        <bt:String id="JPCITE.Group.Label" DefaultValue="jpcite"/>
+        <bt:String id="JPCITE.OpenTaskpane.Label" DefaultValue="jpcite パネル"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="JPCITE.GetStarted.Description" DefaultValue="セルから法人番号・制度・法令・行政処分を取得 (¥3/req)。再計算でセル数 × 再計算回数 × ¥3 が課金されるため大量範囲の volatile 化に注意。"/>
+        <bt:String id="JPCITE.OpenTaskpane.Tooltip" DefaultValue="API キー設定と検索フォームを開く"/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

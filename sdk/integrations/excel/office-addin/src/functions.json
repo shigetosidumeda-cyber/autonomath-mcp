@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/office-js/custom-functions.schema.json",
+  "functions": [
+    {
+      "id": "HOUJIN",
+      "name": "HOUJIN",
+      "description": "法人番号から法人名+住所を取得 (¥3/req)",
+      "helpUrl": "https://jpcite.com/excel-addin#houjin",
+      "result": {
+        "type": "string",
+        "dimensionality": "scalar"
+      },
+      "parameters": [
+        {
+          "name": "houjinBangou",
+          "description": "13 桁の法人番号 (例: 8010001213708)",
+          "type": "string",
+          "dimensionality": "scalar"
+        }
+      ]
+    },
+    {
+      "id": "HOUJIN_FULL",
+      "name": "HOUJIN_FULL",
+      "description": "法人番号の全フィールドを JSON 文字列で返す (¥3/req)",
+      "helpUrl": "https://jpcite.com/excel-addin#houjin-full",
+      "result": {
+        "type": "string",
+        "dimensionality": "scalar"
+      },
+      "parameters": [
+        {
+          "name": "houjinBangou",
+          "description": "13 桁の法人番号",
+          "type": "string",
+          "dimensionality": "scalar"
+        }
+      ]
+    },
+    {
+      "id": "PROGRAMS",
+      "name": "PROGRAMS",
+      "description": "制度検索: 上位 N 件の名称を改行で連結 (¥3/req)",
+      "helpUrl": "https://jpcite.com/excel-addin#programs",
+      "result": {
+        "type": "string",
+        "dimensionality": "scalar"
+      },
+      "parameters": [
+        {
+          "name": "query",
+          "description": "検索キーワード (例: 東京都 設備投資)",
+          "type": "string",
+          "dimensionality": "scalar"
+        },
+        {
+          "name": "limit",
+          "description": "返却件数 (1-20、既定 5)",
+          "type": "number",
+          "dimensionality": "scalar",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "LAW",
+      "name": "LAW",
+      "description": "法令ID から名称+効力日 (¥3/req)",
+      "helpUrl": "https://jpcite.com/excel-addin#law",
+      "result": {
+        "type": "string",
+        "dimensionality": "scalar"
+      },
+      "parameters": [
+        {
+          "name": "lawId",
+          "description": "e-Gov 法令 ID (例: LAW-360AC0000000034)",
+          "type": "string",
+          "dimensionality": "scalar"
+        }
+      ]
+    },
+    {
+      "id": "ENFORCEMENT",
+      "name": "ENFORCEMENT",
+      "description": "法人番号の行政処分有無を返す (¥3/req)",
+      "helpUrl": "https://jpcite.com/excel-addin#enforcement",
+      "result": {
+        "type": "string",
+        "dimensionality": "scalar"
+      },
+      "parameters": [
+        {
+          "name": "houjinBangou",
+          "description": "13 桁の法人番号",
+          "type": "string",
+          "dimensionality": "scalar"
+        }
+      ]
+    }
+  ]
+}
