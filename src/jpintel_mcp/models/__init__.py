@@ -86,8 +86,7 @@ class Program(BaseModel):
         description=(
             "Site-relative path to the per-program SEO page on "
             "jpcite.com (`/programs/{slug}-{sha1-6}.html`). "
-            "Generated from `primary_name` + `unified_id` via "
-            "`jpintel_mcp.utils.slug.program_static_url`. Use this to "
+            "Generated from `primary_name` + `unified_id`. Use this to "
             "deep-link result cards / share URLs / mailto bodies into "
             "the static site instead of constructing `/programs/{unified_id}.html` "
             "(no such file exists; that pattern returns 404)."

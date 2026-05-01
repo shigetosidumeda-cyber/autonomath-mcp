@@ -19,7 +19,6 @@ from __future__ import annotations
 import os
 import sqlite3
 from pathlib import Path
-from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -45,7 +44,6 @@ from jpintel_mcp.mcp import server  # noqa: F401, E402
 from jpintel_mcp.mcp.autonomath_tools.rule_engine_tool import (  # noqa: E402
     _rule_engine_check_impl,
 )
-
 
 # ---------------------------------------------------------------------------
 # Test data discovery — find real (program_a_id, program_b_id) pairs by status
@@ -165,9 +163,13 @@ def test_rule_engine_rules_conflict_returns_explicit_error():
             return [deny_row, allow_row]
         return []
 
-    with patch(
-        "jpintel_mcp.mcp.autonomath_tools.rule_engine_tool._fetch_rules_for_pair",
-        side_effect=fake_fetch,
+    # Patch the function object's own globals, not just the import path.
+    # The full suite reloads some MCP modules; path-based patching can hit
+    # the reloaded module while this imported function still points at the
+    # original globals dict.
+    with patch.dict(
+        _rule_engine_check_impl.__globals__,
+        {"_fetch_rules_for_pair": fake_fetch},
     ):
         res = _rule_engine_check_impl(
             program_id=pa, alongside_programs=[pb]

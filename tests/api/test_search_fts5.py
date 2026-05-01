@@ -547,12 +547,18 @@ def test_q_single_kanji_does_not_crash(client: TestClient) -> None:
     assert r.status_code == 200
 
 
-def test_q_punctuation_only_does_not_crash(client: TestClient) -> None:
+def test_q_punctuation_only_does_not_crash(
+    client: TestClient, paid_key: str
+) -> None:
     """``q="**"`` / ``q=":;"`` — punctuation-only. Tokenizer returns
     empty; LIKE path takes over with the literal substring (which
     matches 0 in practice)."""
     for q in ["**", ":;", "()", ",,"]:
-        r = client.get("/v1/programs/search", params={"q": q, "limit": 3})
+        r = client.get(
+            "/v1/programs/search",
+            params={"q": q, "limit": 3},
+            headers={"X-API-Key": paid_key},
+        )
         assert r.status_code == 200, (
             f"q={q!r} crashed: status={r.status_code} body={r.text[:200]}"
         )

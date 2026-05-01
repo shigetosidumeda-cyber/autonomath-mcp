@@ -281,9 +281,6 @@ def check_enforcement(houjin_bangou=None, target_name=None, as_of_date="today"):
 
 # ======== Tests ========
 def _run_tests():
-    import json
-
-    failures = []
 
     # Test 1: no input -> error
     r = check_enforcement()

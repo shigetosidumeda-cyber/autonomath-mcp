@@ -35,7 +35,7 @@ Transport-agnostic wiring: this module exposes a pure Python registry
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable
 
 
@@ -86,17 +86,17 @@ class PromptMeta:
                 if arg.type == "integer":
                     try:
                         v = int(v)
-                    except (TypeError, ValueError):
+                    except (TypeError, ValueError) as e:
                         raise ValueError(
                             f"argument '{arg.name}' must be integer, got {v!r}"
-                        )
+                        ) from e
                 elif arg.type == "number":
                     try:
                         v = float(v)
-                    except (TypeError, ValueError):
+                    except (TypeError, ValueError) as e:
                         raise ValueError(
                             f"argument '{arg.name}' must be number, got {v!r}"
-                        )
+                        ) from e
                 elif arg.type == "boolean":
                     v = str(v).lower() in ("1", "true", "yes", "on")
                 else:

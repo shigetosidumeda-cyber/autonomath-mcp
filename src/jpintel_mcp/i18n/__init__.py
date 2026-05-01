@@ -252,8 +252,8 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
 
     # -- common error.user_message ------------------------------------
     "error.rate_limit": {
-        "ja": "リクエスト上限を超えました。匿名は月 50 件、API キーは契約上限までご利用いただけます。",
-        "en": "Request limit exceeded. Anonymous tier allows 50/month; API-key tier allows up to your subscription limit.",
+        "ja": "リクエスト上限を超えました。匿名は 3 req/日、API キーは契約上限までご利用いただけます。",
+        "en": "Request limit exceeded. Anonymous tier allows 3 requests/day; API-key tier allows up to your subscription limit.",
     },
     "error.invalid_param": {
         "ja": "パラメータが不正です。docs/api-reference.md の該当ツール項目をご確認ください。",
@@ -290,8 +290,8 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "en": "tier='X' is the quarantine row. Always filter tier IN ('S','A','B','C') in search paths.",
     },
     "tips.jst_reset": {
-        "ja": "匿名 50 req/月 は JST 月初 00:00 にリセットされます。API キーの日次クォータは UTC 0:00 (毎日) にリセットされます。",
-        "en": "Anonymous 50 req/month resets at JST month-start (00:00). API-key daily quotas reset at UTC midnight (every day).",
+        "ja": "匿名 3 req/日 は JST 翌日 00:00 にリセットされます。API キーの日次クォータは UTC 0:00 (毎日) にリセットされます。",
+        "en": "Anonymous 3 requests/day resets at JST next-day 00:00. API-key daily quotas reset at UTC midnight (every day).",
     },
     "tips.pricing": {
         "ja": "従量課金は ¥3/req (税込 ¥3.30) のみ、tier 無し・年間最低保証無し・席数課金無しです。",

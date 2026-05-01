@@ -5,7 +5,7 @@ editing, zero copy-paste. Used by the stdio MCP server to:
 
   1. Read the stored api_key from the OS keychain on startup
      (`ensure_authenticated()`). If none is present we run in anonymous
-     mode — the user's first request uses the 50/month free quota.
+     mode — the user's first request uses the 3 req/day free quota.
 
   2. On HTTP 429 from the REST API (anon quota exceeded) the tool wrapper
      calls `handle_quota_exceeded()`, which:
@@ -56,7 +56,11 @@ _DEFAULT_API_BASE = "https://api.jpcite.com"
 
 
 def _api_base() -> str:
-    base = os.environ.get("AUTONOMATH_API_BASE") or _DEFAULT_API_BASE
+    base = (
+        os.environ.get("JPCITE_API_BASE")
+        or os.environ.get("AUTONOMATH_API_BASE")
+        or _DEFAULT_API_BASE
+    )
     return base.rstrip("/")
 
 
@@ -317,14 +321,14 @@ def _extract_error_code(body: dict[str, Any]) -> str | None:
 
 def ensure_authenticated() -> None:
     """Call at MCP startup. Currently a no-op if no token is present —
-    anonymous mode is legal (50 req/month). We log the state so the
+    anonymous mode is legal (3 req/day). We log the state so the
     operator can sanity-check whether the keychain handoff is working.
     """
     token = get_stored_token()
     if token:
         logger.info("mcp_auth_ready prefix=%s", token[:12])
     else:
-        logger.info("mcp_auth_anonymous — no token stored; anon 50/month applies")
+        logger.info("mcp_auth_anonymous — no token stored; anon 3/day applies")
 
 
 def handle_quota_exceeded() -> str:
@@ -370,7 +374,7 @@ def handle_quota_exceeded() -> str:
 
     minutes = max(1, expires_in // 60)
     return (
-        "無料枠 (50 req/月) に到達しました。\n\n"
+        "無料枠 (3 req/日) に到達しました。\n\n"
         f"続けるには次の URL を開いて Apple Pay / Google Pay / カードでお支払いください "
         f"(約 {minutes} 分以内):\n\n"
         f"  {verification_uri_complete or verification_uri}\n\n"
@@ -379,7 +383,7 @@ def handle_quota_exceeded() -> str:
         "以降の課金 (¥3/req 税別) は自動的に紐付きます。設定ファイルの編集や "
         "再起動は不要です。\n\n"
         "---\n\n"
-        f"Free quota exhausted (50 req/month). Open {verification_uri_complete or verification_uri} "
+        f"Free quota exhausted (3 req/day). Open {verification_uri_complete or verification_uri} "
         f"to pay via Apple Pay / Google Pay / card (within ~{minutes} min). "
         f"Recovery code: {user_code}. Re-ask your question after payment — "
         "the MCP server picks up the new credentials automatically. No config "

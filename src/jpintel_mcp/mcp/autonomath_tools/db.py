@@ -183,10 +183,18 @@ def connect_autonomath(
             f"(got {mode!r}). Write access must go through the ingest "
             f"pipeline in /tmp/autonomath_infra_2026-04-24/ingest/."
         )
+    path = Path(os.environ.get("AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_PATH)))
     conn = getattr(_local, "autonomath", None)
-    if conn is None:
-        conn = _open_ro(AUTONOMATH_DB_PATH)
+    conn_path = getattr(_local, "autonomath_path", None)
+    if conn is None or conn_path != path:
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:  # pragma: no cover
+                pass
+        conn = _open_ro(path)
         _local.autonomath = conn
+        _local.autonomath_path = path
         logger.debug("opened autonomath.db RO connection on thread %s",
                      threading.current_thread().name)
     return conn
@@ -200,10 +208,18 @@ def connect_graph(
         raise ValueError(
             f"connect_graph: only mode='ro' supported in Wave 3 (got {mode!r})."
         )
+    path = Path(os.environ.get("AUTONOMATH_GRAPH_DB_PATH", str(GRAPH_DB_PATH)))
     conn = getattr(_local, "graph", None)
-    if conn is None:
-        conn = _open_ro(GRAPH_DB_PATH)
+    conn_path = getattr(_local, "graph_path", None)
+    if conn is None or conn_path != path:
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:  # pragma: no cover
+                pass
+        conn = _open_ro(path)
         _local.graph = conn
+        _local.graph_path = path
         logger.debug("opened graph.sqlite RO connection on thread %s",
                      threading.current_thread().name)
     return conn
@@ -219,6 +235,7 @@ def close_all() -> None:
             except Exception:  # pragma: no cover
                 pass
             setattr(_local, attr, None)
+            setattr(_local, f"{attr}_path", None)
 
 
 # ---------------------------------------------------------------------------
