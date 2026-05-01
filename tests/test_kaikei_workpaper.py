@@ -29,6 +29,7 @@ from pathlib import Path
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
 from jpintel_mcp.billing.keys import issue_key
 
 _REPO = Path(__file__).resolve().parent.parent
@@ -274,13 +275,77 @@ def test_workpaper_unknown_ruleset_404(client, kaikei_key):
             "business_profile": {},
         },
     )
-    # The endpoint returns 200 with empty results (since the ids check
-    # passes the regex but the row isn't loaded). Either 200 with 0 rows
-    # or a 404 is acceptable; the contract is "no crash".
-    assert r.status_code == 200
+    assert r.status_code == 404
     body = r.json()
-    assert body["ruleset_count"] == 1
-    assert body["results"] == []
+    assert body["detail"]["error"] == "ruleset_not_found"
+    assert body["detail"]["missing_ids"] == ["TAX-deadbeef00"]
+
+
+def test_workpaper_records_full_quantity_in_usage_events(client, kaikei_key, seeded_db):
+    """Cold workpaper billing must be one usage_events row with quantity=N."""
+    r = client.post(
+        "/v1/audit/workpaper",
+        headers={"X-API-Key": kaikei_key},
+        json={
+            "client_id": "client-quantity-001",
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa", "TAX-bbbbbbbbbb"],
+            "business_profile": {"annual_revenue_yen": 30_000_000},
+            "report_format": "md",
+            "audit_period": "2026-Q3",
+        },
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["billing"]["units"] == 12
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT endpoint, quantity, metered FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'audit.workpaper' "
+            "ORDER BY id DESC LIMIT 1",
+            (hash_api_key(kaikei_key),),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row == ("audit.workpaper", 12, 1)
+
+
+def test_workpaper_multi_unit_cap_rejects_before_billing(client, kaikei_key, seeded_db):
+    """Monthly caps must price the whole audit bundle, not just 1 request."""
+    key_hash = hash_api_key(kaikei_key)
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.execute(
+            "UPDATE api_keys SET monthly_cap_yen = ? WHERE key_hash = ?",
+            (3, key_hash),
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    r = client.post(
+        "/v1/audit/workpaper",
+        headers={"X-API-Key": kaikei_key},
+        json={
+            "client_id": "client-cap-001",
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+            "business_profile": {"annual_revenue_yen": 30_000_000},
+            "report_format": "md",
+            "audit_period": "2026-Q4",
+        },
+    )
+    assert r.status_code == 503, r.text
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        count = c.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'audit.workpaper'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        c.close()
+    assert count == 0
 
 
 # ---------------------------------------------------------------------------
@@ -340,6 +405,37 @@ def test_batch_evaluate_5_clients_billing(client, kaikei_key):
             assert kf["audit_risk"]["level"] in {"low", "medium", "high"}
     # §47条の2 envelope rendered JSON-side.
     assert "47条の2" in body["_disclaimer"]
+
+
+def test_batch_evaluate_records_fanout_quantity(client, kaikei_key, seeded_db):
+    """11 profile/ruleset evaluations ceil to quantity=2, not 1+direct Stripe."""
+    profiles = [
+        {"client_id": f"batch-q-{i:03d}", "profile": {"annual_revenue_yen": 1_000_000}}
+        for i in range(11)
+    ]
+    r = client.post(
+        "/v1/audit/batch_evaluate",
+        headers={"X-API-Key": kaikei_key},
+        json={
+            "audit_firm_id": "firm-quantity-1",
+            "profiles": profiles,
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+        },
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["billing"]["units"] == 2
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT endpoint, quantity, metered FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'audit.batch_evaluate' "
+            "ORDER BY id DESC LIMIT 1",
+            (hash_api_key(kaikei_key),),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row == ("audit.batch_evaluate", 2, 1)
 
 
 def test_batch_evaluate_anomaly_detection(client, kaikei_key):

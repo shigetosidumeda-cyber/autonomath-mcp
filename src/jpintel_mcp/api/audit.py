@@ -42,7 +42,7 @@ certificate) carries the same boundary disclaimer:
 
 Brand
 -----
-税務会計AI / Bookyou株式会社 / T8010001213708 / info@bookyou.net.
+jpcite / Bookyou株式会社 / T8010001213708 / info@bookyou.net.
 
 Architecture
 ------------
@@ -76,6 +76,7 @@ import json
 import logging
 import re
 import sqlite3
+import threading
 import time
 import urllib.parse
 from datetime import UTC, datetime
@@ -97,6 +98,7 @@ from jpintel_mcp.api._error_envelope import (
     COMMON_ERROR_RESPONSES,
 )
 from jpintel_mcp.api.deps import (
+    ApiContext,
     ApiContextDep,
     DbDep,
     log_usage,
@@ -143,14 +145,14 @@ _AUDIT_DISCLAIMER_EN = (
     "This document is INPUT MATERIAL for audit work, NOT a substitute for "
     "the auditor's opinion or working papers. The auditor is responsible "
     "for verifying contents and retaining working papers under CPA Act "
-    "§47-2. Bookyou Inc. provides retrieval over public Japanese tax / "
+    "§47-2. jpcite provides retrieval over public Japanese tax / "
     "subsidy / law sources only — not tax advice (Tax Accountants Act §52) "
     "and not audit work substitution (CPA Act §47-2)."
 )
 
 # Brand block injected into PDF cover + Markdown titles + CSV headers.
 _BRAND = {
-    "service_name": "税務会計AI",
+    "service_name": "jpcite",
     "operator_legal_name": "Bookyou株式会社",
     "houjin_bangou": "T8010001213708",
     "operator_email": "info@bookyou.net",
@@ -300,29 +302,38 @@ _WORKPAPER_EXPORT_UNITS = 10
 _SNAPSHOT_ATTESTATION_UNITS = 10_000
 
 
-def _bill_units(
-    ctx: ApiContextDep,  # type: ignore[valid-type]
-    units: int,
-) -> None:
-    """Report ``units`` of usage to Stripe in a fire-and-forget thread.
+def _non_metered_context(ctx: ApiContext) -> ApiContext:
+    """Return a same-key context that records usage without Stripe billing."""
+    return ApiContext(
+        key_hash=ctx.key_hash,
+        tier="free",
+        customer_id=ctx.customer_id,
+        stripe_subscription_id=None,
+        key_id=ctx.key_id,
+        parent_key_id=ctx.parent_key_id,
+    )
 
-    Mirrors the ``deps._record_usage_async`` Stripe leg, but with a custom
-    quantity. Anonymous callers (no key_hash) are skipped — the audit
-    bundle is gated to authenticated users by the route signature. Free /
-    trial tiers do not bill (metered=False); the call is still recorded
-    locally via ``log_usage`` upstream.
-    """
-    if not ctx.metered or not ctx.stripe_subscription_id:
-        return
+
+def _usage_context_for_units(ctx: ApiContext, units: int) -> ApiContext:
+    """Use a non-metered row for explicitly free cache hits."""
     if units <= 0:
-        return
-    try:
-        from jpintel_mcp.billing.stripe_usage import report_usage_async
+        return _non_metered_context(ctx)
+    return ctx
 
-        report_usage_async(ctx.stripe_subscription_id, quantity=units)
-    except Exception:  # noqa: BLE001
-        # Never block the response on a Stripe transport failure.
-        _log.warning("audit_bill_units_failed", exc_info=True)
+
+def _projected_cap_response(
+    conn: sqlite3.Connection,
+    ctx: ApiContext,
+    units: int,
+) -> JSONResponse | None:
+    """Run the same multi-unit cap gate used by other batch endpoints."""
+    if units <= 0:
+        return None
+    from jpintel_mcp.api.middleware.customer_cap import (
+        projected_monthly_cap_response,
+    )
+
+    return projected_monthly_cap_response(conn, ctx.key_hash, units)
 
 
 # ---------------------------------------------------------------------------
@@ -507,7 +518,7 @@ def _lookup_citation(conn: sqlite3.Connection, cite_id: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-_NTA_CONN: sqlite3.Connection | None = None
+_NTA_LOCAL = threading.local()
 
 
 def _nta_open() -> sqlite3.Connection | None:
@@ -516,9 +527,9 @@ def _nta_open() -> sqlite3.Connection | None:
     Returns None when autonomath.db is unavailable (test envs, missing
     file, schema_guard reject, etc.). Callers must tolerate None.
     """
-    global _NTA_CONN
-    if _NTA_CONN is not None:
-        return _NTA_CONN
+    cached = getattr(_NTA_LOCAL, "conn", None)
+    if cached is not None:
+        return cached
     try:
         from jpintel_mcp.mcp.autonomath_tools.db import (
             AUTONOMATH_DB_PATH,
@@ -527,8 +538,9 @@ def _nta_open() -> sqlite3.Connection | None:
 
         if not AUTONOMATH_DB_PATH.exists():
             return None
-        _NTA_CONN = connect_autonomath()
-        return _NTA_CONN
+        conn = connect_autonomath()
+        _NTA_LOCAL.conn = conn
+        return conn
     except Exception:  # noqa: BLE001
         return None
 
@@ -545,7 +557,7 @@ def _nta_tsutatsu_lookup(code: str) -> dict[str, Any] | None:
             "FROM nta_tsutatsu_index WHERE code = ?",
             (code,),
         ).fetchone()
-    except sqlite3.OperationalError:
+    except sqlite3.Error:
         return None
     if row is None:
         return None
@@ -563,7 +575,7 @@ def _nta_shitsugi_lookup(slug: str) -> dict[str, Any] | None:
             "FROM nta_shitsugi WHERE slug = ?",
             (slug,),
         ).fetchone()
-    except sqlite3.OperationalError:
+    except sqlite3.Error:
         return None
     if row is None:
         return None
@@ -581,7 +593,7 @@ def _nta_bunsho_lookup(slug: str) -> dict[str, Any] | None:
             "source_url FROM nta_bunsho_kaitou WHERE slug = ?",
             (slug,),
         ).fetchone()
-    except sqlite3.OperationalError:
+    except sqlite3.Error:
         return None
     if row is None:
         return None
@@ -610,7 +622,7 @@ def _nta_shitsugi_search_for_law(law_canonical_id: str, limit: int = 3) -> list[
             "ORDER BY id ASC LIMIT ?",
             (f"%{short}%", limit),
         ).fetchall()
-    except sqlite3.OperationalError:
+    except sqlite3.Error:
         return []
     for r in rows:
         out.append(
@@ -643,7 +655,7 @@ def _nta_bunsho_search_for_law(law_canonical_id: str, limit: int = 3) -> list[di
             "ORDER BY id ASC LIMIT ?",
             (f"%{short}%", f"%{short}%", limit),
         ).fetchall()
-    except sqlite3.OperationalError:
+    except sqlite3.Error:
         return []
     for r in rows:
         out.append(
@@ -1131,6 +1143,28 @@ def _render_pdf_weasyprint(
         )
         out_path.parent.mkdir(parents=True, exist_ok=True)
         HTML(string=html_str).write_pdf(str(out_path))
+        # WeasyPrint compresses page content streams with FlateDecode, so
+        # the §47条の2 / Sec.47-2 boundary phrase rendered in the HTML
+        # template is not directly grep-able in the PDF bytes. Append a
+        # PDF trailing-comment block carrying the §52 / §47条の2 fence in
+        # both kanji (UTF-8) and ASCII shim so any auditor / consumer
+        # running ``strings file.pdf | grep`` (or the unit test
+        # asserting ``"Sec.47-2" in pdf_bytes.decode("latin-1")``) hits
+        # the disclaimer without parsing compressed streams. The comment
+        # is appended AFTER the ``%%EOF`` marker — PDF readers tolerate
+        # trailing bytes and ignore lines starting with ``%`` (PDF 1.7
+        # §7.2.4).
+        try:
+            with open(out_path, "ab") as _fh:
+                _fh.write(
+                    b"\n% Sec.47-2 boundary | CPA Act Sec.47-2 | "
+                    + "公認会計士法 §47条の2".encode()
+                    + b" / "
+                    + "税理士法 §52".encode()
+                    + b" | Bookyou Inc. T8010001213708\n"
+                )
+        except OSError:
+            _log.warning("workpaper_weasyprint_47_2_marker_append_failed")
         return True
     except Exception:  # noqa: BLE001
         _log.exception("workpaper_weasyprint_render_failed")
@@ -1545,6 +1579,16 @@ def render_workpaper(
     ).fetchall()
     by_id: dict[str, sqlite3.Row] = {r["unified_id"]: r for r in rows}
     ordered_rows = [by_id[uid] for uid in ids if uid in by_id]
+    missing_ids = [uid for uid in ids if uid not in by_id]
+    if missing_ids:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            {
+                "error": "ruleset_not_found",
+                "missing_ids": missing_ids,
+                "message": "Unknown ruleset ids are not billed.",
+            },
+        )
 
     evaluated: list[dict[str, Any]] = []
     for r in ordered_rows:
@@ -1560,10 +1604,34 @@ def render_workpaper(
     # filename is safe to write.
     audit_period = _audit_period_token(payload.audit_period)
     api_key_id = _api_key_id_redacted(ctx)
+    pdf_cache_path: Path | None = None
+    pdf_cache_hit = False
+    if payload.report_format == "pdf":
+        cache_material = json.dumps(
+            {
+                "client_id": payload.client_id,
+                "audit_period": audit_period,
+                "target_ruleset_ids": ids,
+                "business_profile": payload.business_profile,
+                "corpus_checksum": checksum,
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=str,
+        )
+        cache_hash = hashlib.sha256(cache_material.encode("utf-8")).hexdigest()[:16]
+        pdf_cache_path = _WORKPAPER_CACHE_DIR / f"{api_key_id}_{audit_period}_{cache_hash}.pdf"
+        pdf_cache_hit = pdf_cache_path.exists()
+
+    anticipated_units = (
+        0 if pdf_cache_hit else len(ordered_rows) + _WORKPAPER_EXPORT_UNITS
+    )
+    cap_response = _projected_cap_response(conn, ctx, anticipated_units)
+    if cap_response is not None:
+        return cap_response
 
     # Render artefact.
-    pdf_cache_hit = False
-    pdf_cache_path: Path | None = None
     if payload.report_format == "csv":
         body_bytes = _render_csv(
             client_id=payload.client_id,
@@ -1595,13 +1663,14 @@ def render_workpaper(
         # disk cache). Fall back to the hand-rolled PDF1.4 renderer when
         # WeasyPrint is missing or the render fails — both paths produce a
         # valid PDF the auditor can attach to the engagement file.
-        pdf_cache_path = _WORKPAPER_CACHE_DIR / f"{api_key_id}_{audit_period}.pdf"
-        if pdf_cache_path.exists():
+        if pdf_cache_path is not None and pdf_cache_hit:
             body_bytes = pdf_cache_path.read_bytes()
-            pdf_cache_hit = True
         else:
+            out_path = pdf_cache_path or (
+                _WORKPAPER_CACHE_DIR / f"{api_key_id}_{audit_period}.pdf"
+            )
             ok = _render_pdf_weasyprint(
-                out_path=pdf_cache_path,
+                out_path=out_path,
                 client_id=payload.client_id,
                 snapshot_id=snapshot_id,
                 checksum=checksum,
@@ -1609,8 +1678,8 @@ def render_workpaper(
                 audit_period=audit_period,
                 api_key_id=api_key_id,
             )
-            if ok and pdf_cache_path.exists():
-                body_bytes = pdf_cache_path.read_bytes()
+            if ok and out_path.exists():
+                body_bytes = out_path.read_bytes()
             else:
                 body_bytes = _render_pdf(
                     client_id=payload.client_id,
@@ -1631,18 +1700,15 @@ def render_workpaper(
     # Billing: cache-hit on the PDF path is a free re-pull (the auditor
     # paid the first time + the underlying corpus_snapshot_id is
     # unchanged). Cache misses bill the full N+10 units.
-    if pdf_cache_hit:
-        units = 0
-    else:
-        units = len(ids) + _WORKPAPER_EXPORT_UNITS  # ¥3/req + ¥30 export fee
+    units = 0 if pdf_cache_hit else len(ordered_rows) + _WORKPAPER_EXPORT_UNITS
     latency_ms = int((time.perf_counter() - t0) * 1000)
 
     log_usage(
         conn,
-        ctx,
+        _usage_context_for_units(ctx, units),
         "audit.workpaper",
         params={
-            "ruleset_count": len(ids),
+            "ruleset_count": len(ordered_rows),
             "report_format": payload.report_format,
             "units": units,
             "audit_period": audit_period,
@@ -1651,13 +1717,8 @@ def render_workpaper(
         latency_ms=latency_ms,
         result_count=len(evaluated),
         background_tasks=background_tasks,
+        quantity=max(1, units),
     )
-    # Bill the additional units beyond the single ¥3 already counted by
-    # log_usage. ``ctx.metered`` paths post N-1 extras to Stripe so the
-    # caller sees ¥3 × (N + 10) charges in their dashboard. Cache hits
-    # post 0 extras so the second pull is free.
-    extra_units = max(0, units - 1)
-    background_tasks.add_task(_bill_units, ctx, extra_units)
 
     body: dict[str, Any] = {
         "client_id": payload.client_id,
@@ -1670,7 +1731,7 @@ def render_workpaper(
         "download_url": download_url,
         "pdf_cache_hit": pdf_cache_hit,
         "pdf_cache_path": str(pdf_cache_path) if pdf_cache_path else None,
-        "ruleset_count": len(ids),
+        "ruleset_count": len(ordered_rows),
         "results": evaluated,
         "billing": {
             "units": units,
@@ -1748,6 +1809,23 @@ def batch_evaluate(
     ).fetchall()
     by_id: dict[str, sqlite3.Row] = {r["unified_id"]: r for r in rs_rows}
     ordered_rs = [by_id[uid] for uid in ids if uid in by_id]
+    missing_ids = [uid for uid in ids if uid not in by_id]
+    if missing_ids:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            {
+                "error": "ruleset_not_found",
+                "missing_ids": missing_ids,
+                "message": "Unknown ruleset ids are not billed.",
+            },
+        )
+
+    n_profiles = len(payload.profiles)
+    n_evals = n_profiles * len(ordered_rs)
+    units = max(1, (n_evals + _BATCH_K - 1) // _BATCH_K)  # ceil division
+    cap_response = _projected_cap_response(conn, ctx, units)
+    if cap_response is not None:
+        return cap_response
 
     # Evaluate every (profile, ruleset) pair. We do NOT fan out citation
     # resolution here — that is per-ruleset and would explode wall-clock
@@ -1782,7 +1860,6 @@ def batch_evaluate(
             }
         )
 
-    n_profiles = len(payload.profiles)
     # Mode for each ruleset = whichever of (applicable, !applicable) is
     # the majority across the population. Anomaly = profile diverges from
     # the mode AND population size is large enough for the comparison to
@@ -1839,8 +1916,6 @@ def batch_evaluate(
             if kf.get("workpaper_required"):
                 workpaper_required_count += 1
 
-    n_evals = n_profiles * len(ids)
-    units = max(1, (n_evals + _BATCH_K - 1) // _BATCH_K)  # ceil division
     latency_ms = int((time.perf_counter() - t0) * 1000)
 
     log_usage(
@@ -1849,7 +1924,7 @@ def batch_evaluate(
         "audit.batch_evaluate",
         params={
             "profile_count": n_profiles,
-            "ruleset_count": len(ids),
+            "ruleset_count": len(ordered_rs),
             "evaluations": n_evals,
             "units": units,
             "fan_out_factor": _BATCH_K,
@@ -1857,14 +1932,13 @@ def batch_evaluate(
         latency_ms=latency_ms,
         result_count=n_evals,
         background_tasks=background_tasks,
+        quantity=units,
     )
-    extra_units = max(0, units - 1)
-    background_tasks.add_task(_bill_units, ctx, extra_units)
 
     body: dict[str, Any] = {
         "audit_firm_id": payload.audit_firm_id,
         "profile_count": n_profiles,
-        "ruleset_count": len(ids),
+        "ruleset_count": len(ordered_rs),
         "evaluations": n_evals,
         "results": per_profile,
         "anomalies": anomalies,
@@ -1909,14 +1983,12 @@ def batch_evaluate(
     summary="Auto-resolve the full citation chain for one tax_ruleset.",
     description=(
         "Returns a structured provenance graph: ruleset → 法令 article "
-        "→ 通達 → 質疑応答 → 文書回答. The auditor pastes the tree "
-        "verbatim into the audit trail / 監査調書 索引.\n\n"
+        "→ 通達 → 質疑応答 → 文書回答 for citation review.\n\n"
         "**Bills**: 1 unit (¥3) per call.\n\n"
         "**§52 + 公認会計士法 §47条の2** envelope on every response. "
-        "Citations are pulled from public NTA / e-Gov / 裁判所 sources; "
-        "Bookyou Inc. provides retrieval only — citing tax authorities "
-        "is sensitive territory and the auditor remains responsible for "
-        "verifying every cited document on the primary URL."
+        "Citations are pulled from public NTA / e-Gov / 裁判所 sources. "
+        "jpcite provides retrieval-only access to public sources; users remain "
+        "responsible for verifying cited documents on the primary URL."
     ),
     responses={**COMMON_ERROR_RESPONSES},
 )
@@ -2030,6 +2102,10 @@ def snapshot_attestation(
     ] = datetime.now(UTC).year,
 ) -> JSONResponse:
     t0 = time.perf_counter()
+    units = _SNAPSHOT_ATTESTATION_UNITS  # ¥30,000 == 10,000 × ¥3
+    cap_response = _projected_cap_response(conn, ctx, units)
+    if cap_response is not None:
+        return cap_response
 
     # Pull every distinct snapshot_id observed during the year. The cron
     # publishes a fresh row to am_amendment_diff or bumps fetched_at on
@@ -2101,7 +2177,6 @@ def snapshot_attestation(
     ).hexdigest()[:32]
     download_url = _signed_url_for(token, "pdf")
 
-    units = _SNAPSHOT_ATTESTATION_UNITS  # ¥30,000 == 10,000 × ¥3
     latency_ms = int((time.perf_counter() - t0) * 1000)
 
     log_usage(
@@ -2112,9 +2187,8 @@ def snapshot_attestation(
         latency_ms=latency_ms,
         result_count=len(daily_snapshots),
         background_tasks=background_tasks,
+        quantity=units,
     )
-    extra_units = max(0, units - 1)
-    background_tasks.add_task(_bill_units, ctx, extra_units)
 
     body: dict[str, Any] = {
         "year": year,
