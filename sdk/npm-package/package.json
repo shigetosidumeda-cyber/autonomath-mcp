@@ -1,0 +1,77 @@
+{
+  "name": "@bookyou/jpcite",
+  "version": "0.1.0",
+  "description": "Minimal TypeScript client for jpcite — Japanese institutional programs (補助金 / 融資 / 税制 / 認定) + 法令 + 法人 + コンプライアンス. ¥3/req metered, anonymous 3 req/day free.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "jpcite",
+    "japan",
+    "subsidy",
+    "subsidies",
+    "loans",
+    "tax",
+    "tax-incentives",
+    "compliance",
+    "law",
+    "houjin",
+    "mcp",
+    "model-context-protocol",
+    "rag",
+    "rest-api",
+    "cursor",
+    "continue",
+    "vscode",
+    "japanese-government",
+    "補助金",
+    "融資",
+    "税制",
+    "法令"
+  ],
+  "homepage": "https://jpcite.com",
+  "bugs": {
+    "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues",
+    "email": "info@bookyou.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shigetosidumeda-cyber/autonomath-mcp.git",
+    "directory": "sdk/npm-package"
+  },
+  "author": {
+    "name": "Bookyou株式会社 (T8010001213708)",
+    "email": "info@bookyou.net",
+    "url": "https://jpcite.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.1.0"
+  }
+}
