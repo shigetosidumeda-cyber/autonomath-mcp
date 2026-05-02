@@ -28,6 +28,7 @@ on:
         description: "Lookback window in minutes (default 30)"
         required: false
         default: "30"
+        type: string
 
 concurrency:
   group: same-day-push-cron
@@ -47,10 +48,16 @@ jobs:
       - name: Run same_day_push
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
-          WINDOW_MIN: ${{ inputs.window_minutes || '30' }}
+          DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
+          WINDOW_MIN_INPUT: ${{ github.event.inputs.window_minutes }}
         run: |
           set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN is not set; skipping same_day_push."
+            exit 0
+          fi
+          DRY_RUN="${DRY_RUN_INPUT:-false}"
+          WINDOW_MIN="${WINDOW_MIN_INPUT:-30}"
           FLAGS="--window-minutes ${WINDOW_MIN}"
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
