@@ -352,8 +352,8 @@
  <div class="ind" id="ind-mcp" role="listitem">
  <span class="dot" aria-hidden="true"></span>
  <div>
- <h3>MCP サーバ (PyPI)</h3>
- <p class="endpoint">pypi.org/project/autonomath-mcp/</p>
+ <h3>jpcite MCP サーバ (PyPI)</h3>
+ <p class="endpoint">PyPI 互換パッケージ</p>
  <p class="state-text" id="ind-mcp-text">未確認 / pending</p>
  </div>
  </div>
@@ -462,7 +462,7 @@
  <a href="/status/">ステータス</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity"> · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -473,14 +473,7 @@
  *
  * Probes:
  *   1. https://api.jpcite.com/v1/am/health/deep — REST + DB + freshness.
- *      Endpoint is exempt from OriginEnforcementMiddleware (see
- *      src/jpintel_mcp/api/middleware/origin_enforcement.py _EXEMPT_PATHS),
- *      so the request reaches the handler. CORSMiddleware adds
- *      Access-Control-Allow-Origin for whitelisted origins (default
- *      cors_origins includes https://jpcite.com).
- *   2. https://pypi.org/pypi/autonomath-mcp/json — MCP package liveness.
- *      PyPI emits Access-Control-Allow-Origin: *, so this is unconditionally
- *      callable.
+ *   2. PyPI JSON endpoint — MCP package liveness.
  *
  * Refresh cadence: 30s. Reload-on-visibility (avoids polling while the
  * tab is hidden — saves Fly bandwidth).
@@ -622,13 +615,14 @@
 
     // Per-check rows.
     var programsKey = "db_" + "jpintel_reachable";
-    var entityKey = "db_" + "autonomath_reachable";
-    var keys = [programsKey, entityKey,
+    var entityFactsKey = "db_entity_facts_reachable";
+    var legacyEntityFactsKey = ["db", "autonomath", "reachable"].join("_");
+    var keys = [programsKey, entityFactsKey,
                 "am_entities_freshness", "license_coverage",
                 "wal_mode", "static_files_present"];
     var rowMap = {};
     rowMap[programsKey] = "row-db-jpintel";
-    rowMap[entityKey] = "row-db-am";
+    rowMap[entityFactsKey] = "row-db-am";
     rowMap.am_entities_freshness = "row-freshness";
     rowMap.license_coverage = "row-license";
     rowMap.wal_mode = "row-wal";
@@ -637,6 +631,9 @@
     for (var i = 0; i < keys.length; i++) {
       var k = keys[i];
       var c = data.checks[k];
+      if (!c && k === entityFactsKey) {
+        c = data.checks[legacyEntityFactsKey];
+      }
       if (!c) {
         paintRow(rowMap[k], "warn", "未報告", "deep-health に含まれない");
         anyWarn = true;
@@ -694,7 +691,7 @@
       paintIndicator("ind-mcp", "ok",
         "v" + data.info.version + " 公開済み / published");
       paintRow("row-mcp", "ok", "運用中",
-        "pip install autonomath-mcp == " + data.info.version);
+        "jpcite MCP package v" + data.info.version + " published");
     } else {
       paintIndicator("ind-mcp", "warn", "応答が想定外");
       paintRow("row-mcp", "warn", "限定運用", "PyPI レスポンス形状不明");

@@ -57,9 +57,7 @@
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://jpcite.com/en/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/en/"},
   "audience": {
     "@type": "Audience",
     "audienceType": "Tax advisors and tax corporations (zeirishi-houjin)"
@@ -93,7 +91,7 @@
   "inLanguage": "en",
   "mainEntity": [
     {"@type": "Question", "name": "What's the request volume for a firm with 80 clients (60 corporate / 20 individual)?", "acceptedAnswer": {"@type": "Answer", "text": "Roughly 5-10 inquiries per client per month &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 (tax exclusive). The March filing season spikes; budget ¥3-5,000/month as the upper bound."}},
-    {"@type": "Question", "name": "How much tax law is covered?", "acceptedAnswer": {"@type": "Answer", "text": "tax_rulesets are 35 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 154 full-text-indexed laws + 9,484 catalog stubs (body-text load incremental; name resolver covers all 9,484, full-text search covers the 154). See the API reference for details."}},
+    {"@type": "Question", "name": "How much tax law is covered?", "acceptedAnswer": {"@type": "Answer", "text": "tax_rulesets are 35 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 154 full-text-indexed laws + 9,484 law metadata records (full-text coverage varies by record; name resolver covers all 9,484, full-text search covers the 154). See the API reference for details."}},
     {"@type": "Question", "name": "Are circulars and Q&A precedents available?", "acceptedAnswer": {"@type": "Answer", "text": "For now, statute text (e-Gov, CC-BY) and tax rulesets (NTA primary source) are available. Circulars and Q&A precedents have the schema in place but are still being loaded."}},
     {"@type": "Question", "name": "How detailed are the law-revision alerts?", "acceptedAnswer": {"@type": "Answer", "text": "Statute name, revised article, effective date, and related program IDs are delivered by email and RSS. Monthly digests are free; real-time notifications are ¥3/notification. Bodies are summaries only — primary-source URLs are always attached."}},
     {"@type": "Question", "name": "Can I take inquiries via the professional-advisor affiliate?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Advisor signup is free; you only pay ¥3,000 per closed introduction (tax exclusive). List your specialty, region, and rate card in the profile, and SMB inquiries route in via the LINE bot."}},
@@ -115,7 +113,6 @@
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/tax-advisor.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -134,7 +131,7 @@
  </nav>
  <h1 id="hero-title">jpcite for tax advisors (zeirishi)</h1>
  <p class="hero-sub">Special Measures Act search + tax incentives + e-bookkeeping / invoice-system revision alerts. Stand up an in-firm RAG for 80 client engagements in 30 minutes.</p>
- <p class="hero-tag">Sized for a 5-person firm with ~80 SMB clients. Wire the MCP server into Claude Desktop or your in-house RAG and search across 50 tax rulesets, 154 laws full-text + 9,484 law catalog stubs, and 14,472 programs. Revision alerts keep e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law changes from slipping past you.</p>
+ <p class="hero-tag">Sized for a 5-person firm with ~80 SMB clients. Wire the MCP server into Claude Desktop or your in-house RAG and search across 50 tax rulesets, 154 laws full-text + 9,484 law metadata records, and 14,472 programs. Revision alerts keep e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law changes from slipping past you.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -221,15 +218,15 @@
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card">
- <h3>curl (anonymous, 50 free/mo)</h3>
+ <h3>curl (anonymous, 3/day)</h3>
  <pre class="code-block"><code>curl 'https://api.jpcite.com/v1/programs/search?q=賃上げ促進税制&amp;tier=S,A&amp;limit=5'</code></pre>
- <p class="demo-note">No signup, JST first-of-month reset. Check remaining quota via <code>X-RateLimit-Remaining</code>.</p>
+ <p class="demo-note">No signup, JST daily reset. Check remaining quota via <code>X-RateLimit-Remaining</code>.</p>
  </article>
 
  <article class="card">
  <h3>Python (commercial, ¥3/req)</h3>
  <pre class="code-block"><code>import httpx
-H = {"X-API-Key": "sk_..."}
+H = {"X-API-Key": "am_..."}
 # 1. Search NTA-sourced tax rulesets
 r = httpx.get(
  "https://api.jpcite.com/v1/tax_rulesets/search",
@@ -244,7 +241,7 @@ r2 = httpx.get(
  params={"limit": 10}, headers=H)
 for row in r2.json["items"]:
  print(row["name"], row.get("sunset_at"))</code></pre>
- <p class="demo-note">tax_rulesets/search is jpintel core (35 rows); am/tax_incentives is autonomath-sourced. Issue API keys from your dashboard.</p>
+ <p class="demo-note">Use tax rulesets for source-backed tax references and structured entity tools for connected evidence. Issue API keys from your dashboard.</p>
  </article>
 
  <article class="card">
@@ -253,10 +250,10 @@ for row in r2.json["items"]:
 // Claude/claude_desktop_config.json
 {
  "mcpServers": {
- "autonomath": {
+ "jpcite": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"AUTONOMATH_API_KEY": "sk_..."}
+ "env": {"JPCITE_API_KEY": "am_..."}
  }
  }
 }</code></pre>
@@ -284,14 +281,13 @@ for row in r2.json["items"]:
  </thead>
  <tbody>
  <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row">Law-revision alerts</th><td>Monthly digest</td><td>¥500 / mo (real-time)</td><td>¥550 / mo</td></tr>
- <tr><th scope="row">Embedded widget — Standard (optional)</th><td>-</td><td>¥10,000 / mo (10,000 req included)</td><td>¥11,000 / mo</td></tr>
- <tr><th scope="row">Embedded widget — Whitelabel (optional)</th><td>-</td><td>¥30,000 / mo (30,000 req included, no logo)</td><td>¥33,000 / mo</td></tr>
+<tr><th scope="row">Law-revision alerts</th><td>Monthly digest</td><td>¥3 / notification</td><td>¥3.30 / notification</td></tr>
+<tr><th scope="row">Embedded widget (optional)</th><td>3 req/day per IP</td><td>¥3 / search</td><td>¥3.30 / search</td></tr>
  <tr><th scope="row">Professional-advisor affiliate (optional)</th><td>Free signup</td><td>¥3,000 / closed intro</td><td>¥3,300 / closed intro</td></tr>
  </tbody>
  </table>
  </div>
- <p class="pricing-note">Estimate: 80 clients &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400/month. Plan ¥5,000/month as the March filing-season ceiling. <a href="../pricing.html">Full pricing &rarr;</a></p>
+ <p class="pricing-note">Estimate: 80 clients &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 tax exclusive. <a href="../pricing.html">Full pricing &rarr;</a></p>
  </div>
  </section>
 
@@ -299,9 +295,9 @@ for row in r2.json["items"]:
  <div class="container">
  <h2 id="faq-title" class="section-title">FAQ (tax advisors)</h2>
  <h3 style="font-size:16px;margin:18px 0 6px;">What's the request volume for a firm with 80 clients (60 corporate / 20 individual)?</h3>
- <p>Roughly 5-10 inquiries per client per month &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 (tax exclusive). The March filing season spikes; budget ¥3-5,000/month as the upper bound.</p>
+ <p>Roughly 5-10 inquiries per client per month &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 (tax exclusive). The March filing season can spike; use the spend cap if you want a hard ceiling.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How much tax law is covered?</h3>
- <p>tax_rulesets are 35 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 154 full-text-indexed laws + 9,484 catalog stubs (body-text load incremental; name resolver covers all 9,484, full-text search covers the 154). See the API reference.</p>
+ <p>tax_rulesets are 35 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 154 full-text-indexed laws + 9,484 law metadata records (full-text coverage varies by record; name resolver covers all 9,484, full-text search covers the 154). See the API reference.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Are circulars and Q&amp;A precedents available?</h3>
  <p>For now, statute text (e-Gov, CC-BY) and tax rulesets (NTA primary source) are available. Circulars and Q&amp;A precedents have the schema in place; data load is in progress.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How detailed are the law-revision alerts?</h3>
@@ -322,10 +318,10 @@ for row in r2.json["items"]:
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="smb.html"><strong>SMB owner page (understand the client)</strong></a> &mdash; See how clients use jpcite themselves. LINE-bot self-research &rarr; tax-advisor consultation is the natural inbound path.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="admin-scrivener.html"><strong>Administrative scrivener page (collaborator)</strong></a> &mdash; Useful when partnering with scriveners on permit cases. Tax + permit-succession DD overlap on M&amp;A and business succession.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#tax-rulesets"><strong>REST API: /v1/tax_rulesets/search (35 rows)</strong></a> &mdash; Query NTA-primary tax incentives (wage-hike, income-expansion, business-strengthening, etc.). Conditions and applicability checked mechanically.</li>
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#laws"><strong>REST API: /v1/laws/search (154 full-text + 9,484 catalog stubs, body-text load incremental)</strong></a> &mdash; e-Gov CC-BY statute search. Full-text search covers 154 currently; the rest serve as a name / 法令番号 / e-Gov-link resolver.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#laws"><strong>REST API: /v1/laws/search (154 full-text + 9,484 law metadata records, full-text coverage varies by record)</strong></a> &mdash; e-Gov CC-BY statute search. Full-text search covers 154 currently; the rest serve as a name / 法令番号 / e-Gov-link resolver.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../alerts.html"><strong>Subscribe to revision alerts</strong></a> &mdash; Statute name, revised article, effective date by email + RSS. Monthly digest free; real-time ¥3/notification. Summaries with primary-source URLs.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction.</li>
- <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 3 req/daynth covers 5-10 clients per month at zero cost.</li>
+ <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Anonymous 3 req/day is available for evaluation.</li>
  </ul>
  </div>
  </section>
@@ -338,9 +334,8 @@ for row in r2.json["items"]:
  <a class="btn btn-secondary" href="../dashboard.html">Get an API key (Free 3 req/day)</a>
  <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
- <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" rel="noopener">GitHub</a>
  </div>
- <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
+ <p class="hero-note" style="margin-top:14px;">Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
  </div>
  </section>
 
@@ -361,10 +356,9 @@ for row in r2.json["items"]:
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>
