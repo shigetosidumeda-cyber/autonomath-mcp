@@ -98,9 +98,15 @@ def _get_composer() -> EvidencePacketComposer:
 
 def _validate_compression_baseline(
     source_tokens_basis: Literal["unknown", "pdf_pages", "token_count"],
+    source_pdf_pages: int | None,
     source_token_count: int | None,
 ) -> None:
     """Reject incomplete caller-supplied token baselines."""
+    if source_tokens_basis == "pdf_pages" and source_pdf_pages is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=("source_pdf_pages is required when source_tokens_basis=pdf_pages."),
+        )
     if source_tokens_basis == "token_count" and source_token_count is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
@@ -449,7 +455,11 @@ def get_evidence_packet(
     ] = "json",
 ) -> Response:
     _t0 = time.perf_counter()
-    _validate_compression_baseline(source_tokens_basis, source_token_count)
+    _validate_compression_baseline(
+        source_tokens_basis,
+        source_pdf_pages,
+        source_token_count,
+    )
     composer = _get_composer()
 
     if subject_kind == "program":
@@ -670,6 +680,7 @@ def post_evidence_packet_query(
     _t0 = time.perf_counter()
     _validate_compression_baseline(
         payload.source_tokens_basis,
+        payload.source_pdf_pages,
         payload.source_token_count,
     )
     composer = _get_composer()

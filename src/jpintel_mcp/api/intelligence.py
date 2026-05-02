@@ -279,7 +279,11 @@ def get_precomputed_intelligence_query(
     ] = "json",
 ) -> Response:
     _t0 = time.perf_counter()
-    _validate_compression_baseline(source_tokens_basis, source_token_count)
+    _validate_compression_baseline(
+        source_tokens_basis,
+        source_pdf_pages,
+        source_token_count,
+    )
     filters: dict[str, Any] = {}
     if prefecture:
         filters["prefecture"] = prefecture

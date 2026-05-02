@@ -872,6 +872,20 @@ def test_rest_get_evidence_packet_token_count_requires_count(
     assert "source_token_count is required" in r.text
 
 
+def test_rest_get_evidence_packet_pdf_pages_requires_pages(
+    client: TestClient,
+) -> None:
+    r = client.get(
+        "/v1/evidence/packets/program/UNI-evp-p1",
+        params={
+            "include_compression": "true",
+            "source_tokens_basis": "pdf_pages",
+        },
+    )
+    assert r.status_code == 422
+    assert "source_pdf_pages is required" in r.text
+
+
 def test_rest_post_evidence_packet_query_pdf_pages_compression(
     client: TestClient,
 ) -> None:
@@ -929,6 +943,21 @@ def test_rest_post_evidence_packet_query_token_count_requires_count(
     )
     assert r.status_code == 422
     assert "source_token_count is required" in r.text
+
+
+def test_rest_post_evidence_packet_query_pdf_pages_requires_pages(
+    client: TestClient,
+) -> None:
+    r = client.post(
+        "/v1/evidence/packets/query",
+        json={
+            "query_text": "EVP",
+            "include_compression": True,
+            "source_tokens_basis": "pdf_pages",
+        },
+    )
+    assert r.status_code == 422
+    assert "source_pdf_pages is required" in r.text
 
 
 def test_rest_get_evidence_packet_404(client: TestClient) -> None:

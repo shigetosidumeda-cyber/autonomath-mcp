@@ -97,8 +97,7 @@ def _build_intelligence_db(path: Path) -> None:
             ("UNI-pci-1", "program:pci:1", "exact_name", 1.0),
         )
         con.execute(
-            "INSERT INTO am_amendment_diff(entity_id, field_name, detected_at) "
-            "VALUES (?,?,?)",
+            "INSERT INTO am_amendment_diff(entity_id, field_name, detected_at) VALUES (?,?,?)",
             ("program:pci:1", "summary_200", "2026-04-29T00:00:00"),
         )
         con.execute(
@@ -125,9 +124,7 @@ def _build_intelligence_db(path: Path) -> None:
 
 
 @pytest.fixture()
-def intelligence_client(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> TestClient:
+def intelligence_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     db_path = tmp_path / "autonomath.db"
     _build_intelligence_db(db_path)
 
@@ -206,15 +203,10 @@ def test_precomputed_intelligence_query_reports_response_metadata(
         "precomputed_record_count",
     } - body.keys()
     if missing:
-        pytest.xfail(
-            "Desired response metadata is absent: "
-            f"{', '.join(sorted(missing))}"
-        )
+        pytest.xfail(f"Desired response metadata is absent: {', '.join(sorted(missing))}")
 
     assert body["records_returned"] == len(body["records"]) == 1
-    assert body["precomputed_record_count"] == body["precomputed"][
-        "record_count"
-    ] == 1
+    assert body["precomputed_record_count"] == body["precomputed"]["record_count"] == 1
 
 
 def test_precomputed_intelligence_query_pdf_pages_compression(
@@ -282,6 +274,22 @@ def test_precomputed_intelligence_query_token_count_requires_count(
 
     assert response.status_code == 422
     assert "source_token_count is required" in response.text
+
+
+def test_precomputed_intelligence_query_pdf_pages_requires_pages(
+    intelligence_client: TestClient,
+) -> None:
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={
+            "q": "省力化",
+            "limit": 1,
+            "source_tokens_basis": "pdf_pages",
+        },
+    )
+
+    assert response.status_code == 422
+    assert "source_pdf_pages is required" in response.text
 
 
 def test_precomputed_intelligence_route_is_mounted(
