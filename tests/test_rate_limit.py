@@ -238,6 +238,34 @@ def test_authorization_bearer_treated_as_paid_bucket(
         assert r.status_code == 200, f"request {i} failed: {r.text}"
 
 
+def test_invalid_api_keys_share_auth_ip_bucket(client: TestClient) -> None:
+    """Rotating bogus API keys must not create unlimited fresh paid buckets.
+
+    The middleware cannot know whether a key is valid without hitting the
+    auth DB, so every auth-shaped request also burns a higher per-IP bucket.
+    This caps invalid-key spray while leaving ordinary paid-key usage governed
+    by the per-key bucket.
+    """
+    from jpintel_mcp.api.middleware.rate_limit import (
+        _AUTH_IP_BURST,
+        _AUTH_IP_RATE_PER_SEC,
+        _take_token,
+    )
+
+    bucket_key = "auth-ip:testclient"
+    for _ in range(int(_AUTH_IP_BURST)):
+        allowed, _ = _take_token(
+            bucket_key, _AUTH_IP_RATE_PER_SEC, _AUTH_IP_BURST
+        )
+        assert allowed
+
+    r = client.get("/v1/meta", headers={"X-API-Key": "am_bogus_rotated_999"})
+    assert r.status_code == 429, r.text
+    body = r.json()
+    assert body["error"]["bucket"] == "auth-ip"
+    assert "Retry-After" in r.headers
+
+
 # --- retry-after correctness ------------------------------------------------
 
 

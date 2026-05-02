@@ -17,6 +17,9 @@ to prevent a runaway agent loop from turning into accidental DoS.
 Tuning
 ------
 * **Paid keys**: 10 req/sec, burst 20. Bucket fills at 10 tokens/sec.
+* **Auth-shaped traffic per IP**: 20 req/sec, burst 40. This additional
+  guard catches invalid-key spray where each bogus key would otherwise
+  create a fresh paid-key bucket before the DB auth layer rejects it.
 * **Anonymous IPs**: 1 req/sec, burst 5. Bucket fills at 1 token/sec.
 * **Whitelist**: ``/healthz`` ``/readyz`` ``/v1/billing/webhook`` and the
   preflight ``OPTIONS`` are skipped — same posture as the anon-quota dep.
@@ -83,6 +86,14 @@ logger = logging.getLogger("jpintel.rate_limit")
 _PAID_RATE_PER_SEC: float = 10.0
 _PAID_BURST: float = 20.0
 
+# Per-IP guard for requests that carry an auth-shaped header. Valid paid
+# callers still get the per-key bucket above; this second bucket prevents
+# rotated invalid keys from bypassing the anonymous IP burst and hammering
+# the auth DB lookup path. Kept higher than the paid per-key limit so one
+# normal customer key is governed by the key bucket, not the IP guard.
+_AUTH_IP_RATE_PER_SEC: float = 20.0
+_AUTH_IP_BURST: float = 40.0
+
 # Per-anon-IP throttle. 1 req/s, burst 5. The 3 req/日 cap (anon_limit.py)
 # is the long-term ceiling; this is just the per-second guard.
 _ANON_RATE_PER_SEC: float = 1.0
@@ -117,6 +128,7 @@ class _Bucket:
 
 # Process-local bucket store. Keyed by:
 #   "k:<hex16>"   for an authed key (first 16 hex of HMAC(salt, raw_key))
+#   "auth-ip:<addr>" for any request carrying an auth header
 #   "ip:<addr>"   for an anon caller (already normalised to /32 or /64)
 _buckets: dict[str, _Bucket] = {}
 _buckets_lock = threading.Lock()
@@ -194,6 +206,12 @@ def _bucket_key_for(request: Request) -> tuple[str, float, float]:
     ip = _client_ip(request)
     norm = _normalize_ip_to_prefix(ip)
     return f"ip:{norm}", _ANON_RATE_PER_SEC, _ANON_BURST
+
+
+def _auth_ip_bucket_key_for(request: Request) -> str:
+    ip = _client_ip(request)
+    norm = _normalize_ip_to_prefix(ip)
+    return f"auth-ip:{norm}"
 
 
 def _take_token(bucket_key: str, rate: float, burst: float) -> tuple[bool, float]:
@@ -286,6 +304,24 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         if _is_disabled():
             return await call_next(request)
+
+        has_auth_header = _extract_raw_key(request) is not None
+        if has_auth_header:
+            auth_ip_key = _auth_ip_bucket_key_for(request)
+            try:
+                auth_ip_allowed, auth_ip_retry_after_s = _take_token(
+                    auth_ip_key, _AUTH_IP_RATE_PER_SEC, _AUTH_IP_BURST
+                )
+            except Exception:  # pragma: no cover — defensive fail-open
+                logger.exception("rate_limit_auth_ip_take_failed")
+                return await call_next(request)
+            if not auth_ip_allowed:
+                ra_int = max(1, int(auth_ip_retry_after_s + 0.999))
+                return JSONResponse(
+                    status_code=429,
+                    content=_build_throttled_body(ra_int, bucket="auth-ip"),
+                    headers={"Retry-After": str(ra_int)},
+                )
 
         try:
             bucket_key, rate, burst = _bucket_key_for(request)

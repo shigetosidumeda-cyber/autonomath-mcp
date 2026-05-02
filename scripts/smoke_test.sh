@@ -13,6 +13,10 @@ set -uo pipefail
 BASE_URL="${BASE_URL:-http://localhost:8080}"
 API_KEY="${API_KEY:-}"
 TIMEOUT="${TIMEOUT:-10}"
+AUTH_CURL_ARGS=()
+if [[ -n "$API_KEY" ]]; then
+  AUTH_CURL_ARGS=(-H "x-api-key: $API_KEY")
+fi
 
 pass=0
 fail=0
@@ -58,18 +62,36 @@ check "GET /healthz" 200 "$status"
 status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/v1/ping")
 check_any "GET /v1/ping" "$status" 200 429
 
+status=$(curl -sS -o /tmp/smoke_deep_health.json -w '%{http_code}' --max-time "$TIMEOUT" \
+  "$BASE_URL/v1/am/health/deep?fail_on_unhealthy=true")
+check_any "GET /v1/am/health/deep?fail_on_unhealthy=true" "$status" 200 429
+if [[ "$status" == "200" ]]; then
+  deep_status=$(python3 -c "import json; print(json.load(open('/tmp/smoke_deep_health.json')).get('status', ''))" 2>/dev/null || echo "")
+  if [[ "$deep_status" != "ok" ]]; then
+    printf '        \033[31mWARN\033[0m  deep health status=%s\n' "$deep_status"
+  fi
+fi
+
 hdr "Unauthenticated (free tier)"
 status=$(curl -sS -o /tmp/smoke_search.json -w '%{http_code}' --max-time "$TIMEOUT" \
-  "$BASE_URL/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=1")
-check_any "GET /v1/programs/search?q=農業 (anonymous)" "$status" 200 429
+  "$BASE_URL/v1/programs/search?q=%E8%A3%9C%E5%8A%A9%E9%87%91&limit=1")
+check_any "GET /v1/programs/search?q=補助金 (anonymous)" "$status" 200 429
 if [[ "$status" == "200" ]]; then
   total=$(python3 -c "import json; print(json.load(open('/tmp/smoke_search.json')).get('total', -1))" 2>/dev/null || echo -1)
   printf '        -> total=%s\n' "$total"
   if [[ "$total" -le 0 ]]; then
-    printf '        \033[31mWARN\033[0m  no results for 農業 — suspicious\n'
+    printf '        \033[31mWARN\033[0m  no results for 補助金 — suspicious\n'
   fi
 else
   printf '        -> anonymous quota already reached; 429 is expected without API_KEY\n'
+fi
+
+status=$(curl -sS -o /tmp/smoke_enforcement_detail.json -w '%{http_code}' --max-time "$TIMEOUT" \
+  "${AUTH_CURL_ARGS[@]}" "$BASE_URL/v1/enforcement-cases/details/search?limit=1")
+check_any "GET /v1/enforcement-cases/details/search?limit=1" "$status" 200 429
+if [[ "$status" == "200" ]]; then
+  detail_summary=$(python3 -c "import json; d=json.load(open('/tmp/smoke_enforcement_detail.json')); print(f\"table={d.get('source_table')} total={d.get('total', -1)}\")" 2>/dev/null || echo "table= total=-1")
+  printf '        -> %s\n' "$detail_summary"
 fi
 
 status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE_URL/v1/exclusions/rules?limit=1")

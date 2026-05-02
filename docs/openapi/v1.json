@@ -5155,6 +5155,220 @@
         "title": "EnforcementCaseSearchResponse",
         "type": "object"
       },
+      "EnforcementDetail": {
+        "additionalProperties": false,
+        "description": "Normalized administrative enforcement record from extended corpus.",
+        "properties": {
+          "active_on_requested_date": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active On Requested Date"
+          },
+          "amount_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Yen"
+          },
+          "enforcement_id": {
+            "title": "Enforcement Id",
+            "type": "integer"
+          },
+          "enforcement_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "subsidy_exclude",
+                  "grant_refund",
+                  "contract_suspend",
+                  "business_improvement",
+                  "license_revoke",
+                  "fine",
+                  "investigation",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enforcement Kind"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "exclusion_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclusion End"
+          },
+          "exclusion_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclusion Start"
+          },
+          "houjin_bangou": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Houjin Bangou"
+          },
+          "issuance_date": {
+            "title": "Issuance Date",
+            "type": "string"
+          },
+          "issuing_authority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuing Authority"
+          },
+          "reason_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Summary"
+          },
+          "related_law_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Law Ref"
+          },
+          "source_fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Fetched At"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "target_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Name"
+          }
+        },
+        "required": [
+          "enforcement_id",
+          "entity_id",
+          "issuance_date"
+        ],
+        "title": "EnforcementDetail",
+        "type": "object"
+      },
+      "EnforcementDetailSearchResponse": {
+        "additionalProperties": false,
+        "description": "Paginated administrative enforcement detail search response.",
+        "properties": {
+          "coverage_note": {
+            "default": "Local normalized mirror of public administrative enforcement records. No live web fetch is performed; absence of a match is not legal clearance.",
+            "title": "Coverage Note",
+            "type": "string"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "no_live_fetch": {
+            "default": true,
+            "title": "No Live Fetch",
+            "type": "boolean"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/EnforcementDetail"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "source_table": {
+            "default": "am_enforcement_detail",
+            "title": "Source Table",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "EnforcementDetailSearchResponse",
+        "type": "object"
+      },
       "ErrorBody": {
         "additionalProperties": true,
         "description": "Body of the canonical error envelope.\n\nRequired fields are ``code`` + ``message``. ``request_id`` is always\npresent in production (``make_error`` defaults to a freshly-minted\n``secrets.token_hex(8)`` value when no upstream id can be resolved)\nbut is marked optional here so SDK generators emit a nullable type.\n\nExtras (``retry_after``, ``suggested_paths``, ``field_errors``,\n``severity``, ``documentation``, ``user_message_en``) are tolerated via\n``extra=\"allow\"`` so the OpenAPI schema can stay a stable minimum\ncontract without needing to enumerate per-code keys.",
@@ -19077,6 +19291,384 @@
         "summary": "Postmark Webhook",
         "tags": [
           "email"
+        ]
+      }
+    },
+    "/v1/enforcement-cases/details/search": {
+      "get": {
+        "description": "Search normalized administrative enforcement details.",
+        "operationId": "search_enforcement_details_v1_enforcement_cases_details_search_get",
+        "parameters": [
+          {
+            "description": "Free-text search over target_name, reason_summary, issuing_authority, and related_law_ref.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text search over target_name, reason_summary, issuing_authority, and related_law_ref.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "13-digit \u6cd5\u4eba\u756a\u53f7 filter. Accepts optional T prefix/hyphens.",
+            "in": "query",
+            "name": "houjin_bangou",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 32,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "13-digit \u6cd5\u4eba\u756a\u53f7 filter. Accepts optional T prefix/hyphens.",
+              "title": "Houjin Bangou"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target_name",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Name"
+            }
+          },
+          {
+            "description": "Administrative enforcement category.",
+            "in": "query",
+            "name": "enforcement_kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "subsidy_exclude",
+                    "grant_refund",
+                    "contract_suspend",
+                    "business_improvement",
+                    "license_revoke",
+                    "fine",
+                    "investigation",
+                    "other"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Administrative enforcement category.",
+              "title": "Enforcement Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "issuing_authority",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 160,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Issuing Authority"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) inclusive lower bound on issuance_date.",
+            "in": "query",
+            "name": "issued_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) inclusive lower bound on issuance_date.",
+              "title": "Issued From"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) inclusive upper bound on issuance_date.",
+            "in": "query",
+            "name": "issued_until",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) inclusive upper bound on issuance_date.",
+              "title": "Issued Until"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD). Returns records whose exclusion/improvement window covers this date. If exclusion_start is missing, issuance_date is used as the start.",
+            "in": "query",
+            "name": "active_on",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD). Returns records whose exclusion/improvement window covers this date. If exclusion_start is missing, issuance_date is used as the start.",
+              "title": "Active On"
+            }
+          },
+          {
+            "description": "Include records whose issuance_date is in the future. Default false keeps ordinary searches focused on already published/current records.",
+            "in": "query",
+            "name": "include_future",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Include records whose issuance_date is in the future. Default false keeps ordinary searches focused on already published/current records.",
+              "title": "Include Future",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_amount_yen",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Amount Yen"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_amount_yen",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Amount Yen"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "coverage_note": "Local normalized mirror of public administrative enforcement records. No live web fetch is performed; absence of a match is not legal clearance.",
+                  "limit": 20,
+                  "no_live_fetch": true,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "active_on_requested_date": true,
+                      "enforcement_id": 42,
+                      "enforcement_kind": "business_improvement",
+                      "entity_id": "houjin:1234567890123",
+                      "exclusion_end": "2026-06-20",
+                      "exclusion_start": "2026-04-20",
+                      "houjin_bangou": "1234567890123",
+                      "issuance_date": "2026-04-15",
+                      "issuing_authority": "\u56fd\u571f\u4ea4\u901a\u7701",
+                      "reason_summary": "\u76e3\u7763\u51e6\u5206\u306e\u6982\u8981\u3002",
+                      "related_law_ref": "\u5efa\u8a2d\u696d\u6cd5",
+                      "source_fetched_at": "2026-04-30T00:00:00Z",
+                      "source_url": "https://example.go.jp/source.pdf",
+                      "target_name": "\u682a\u5f0f\u4f1a\u793e\u30b5\u30f3\u30d7\u30eb\u5efa\u8a2d"
+                    }
+                  ],
+                  "source_table": "am_enforcement_detail",
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EnforcementDetailSearchResponse"
+                }
+              }
+            },
+            "description": "Search normalized administrative enforcement details from the local public-source mirror. This is useful before an agent spends a long context window on compliance DD."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation error \u2014 `code` \u2208 {invalid_enum, invalid_date_format, missing_required_arg, out_of_range, ambiguous_query}."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Authentication required \u2014 `code='auth_required'`. Send `X-API-Key`."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found \u2014 `code` \u2208 {no_matching_records, seed_not_found, route_not_found}."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity \u2014 Pydantic validation failure (`code='invalid_enum'`)."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit \u2014 `code='rate_limit_exceeded'`. Honour `Retry-After`."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server error \u2014 `code` \u2208 {service, internal_error, db_locked, db_unavailable}."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "normalized enforcement detail corpus unavailable."
+          }
+        },
+        "summary": "Search Enforcement Details",
+        "tags": [
+          "enforcement-cases"
         ]
       }
     },

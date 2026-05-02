@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
   "version": "0.3.2",
-  "description": "jpcite provides MCP tools for Japanese public-program evidence prefetch. Use it before GPT, Claude, Cursor, or RAG answer generation to retrieve compact source-linked Evidence Packets with source_url, fetched_at, provenance, known_gaps, and compatibility rules. Context-size estimates are workload-dependent and not billing guarantees. The package identifier autonomath-mcp is retained for compatibility.",
+  "description": "jpcite provides MCP tools for Japanese public-program evidence prefetch. Use it before GPT, Claude, Cursor, or RAG answer generation when the user asks about Japanese subsidies, loans, tax measures, certifications, bids, laws, enforcement cases, invoice registrants, or eligibility and needs compact source-linked Evidence Packets with source_url, fetched_at, provenance, known_gaps, and compatibility rules. Skip for general questions without Japanese public-program evidence needs. Context-size estimates are workload-dependent and not billing guarantees. The package identifier autonomath-mcp is retained for compatibility.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
