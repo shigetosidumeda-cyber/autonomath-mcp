@@ -417,6 +417,7 @@ def test_compose_for_program_envelope_shape(fixture_db: Path) -> None:
         "records",
         "quality",
         "verification",
+        "agent_recommendation",
         "_disclaimer",
     ):
         assert key in env, f"missing top-level field: {key}"
@@ -446,6 +447,14 @@ def test_compose_for_program_envelope_shape(fixture_db: Path) -> None:
     assert len(rec["rules"]) >= 1
     block_or_defer = {r["verdict"] for r in rec["rules"]}
     assert block_or_defer & {"block", "defer", "allow", "unknown"}
+
+    recommendation = env["agent_recommendation"]
+    assert recommendation["recommend_to_user"] is True
+    assert recommendation["recommendation"] == "use_jpcite_prefetch"
+    assert recommendation["records_returned"] == 1
+    assert recommendation["source_linked_records_returned"] == 1
+    assert "precomputed_summary_available" in recommendation["reason_codes"]
+    assert "pdf_fact_refs_available" in recommendation["reason_codes"]
 
 
 def test_compose_for_program_404(fixture_db: Path) -> None:
@@ -752,6 +761,28 @@ def test_query_answer_basis_omitted_without_precomputed_summary(
     assert env["records"][0]["entity_id"] == "program:evp:p2"
     assert "precomputed" not in env["records"][0]
     assert "answer_basis" not in env
+    assert env["agent_recommendation"]["recommendation"] == "use_evidence_packet"
+    assert env["agent_recommendation"]["recommend_to_user"] is True
+    assert "precomputed_summary_unavailable" in env["agent_recommendation"]["reason_codes"]
+
+
+def test_query_without_records_guides_agents_to_skip_or_broaden(
+    fixture_db: Path,
+) -> None:
+    """Agents should not recommend jpcite when the exact query returns nothing."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_query("zz-no-program-match", limit=10)
+
+    assert env["records"] == []
+    assert "no_records_returned" in env["quality"]["known_gaps"]
+    recommendation = env["agent_recommendation"]
+    assert recommendation["recommendation"] == "broaden_query_or_skip"
+    assert recommendation["recommend_to_user"] is False
+    assert recommendation["records_returned"] == 0
+    assert "no_records_returned" in recommendation["reason_codes"]
 
 
 def test_missing_program_summary_table_fails_open(tmp_path: Path) -> None:

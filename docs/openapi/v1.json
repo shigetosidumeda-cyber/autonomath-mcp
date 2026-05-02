@@ -5576,6 +5576,19 @@
           }
         },
         "properties": {
+          "agent_recommendation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Machine-readable guidance for LLM/tool agents deciding whether to recommend or skip this jpcite route.",
+            "title": "Agent Recommendation"
+          },
           "answer_not_included": {
             "default": true,
             "title": "Answer Not Included",
@@ -7964,14 +7977,14 @@
           "records",
           "quality",
           "verification",
+          "agent_recommendation",
           "bundle_kind",
           "bundle_id",
           "answer_basis",
           "records_returned",
           "precomputed_record_count",
           "precomputed",
-          "usage",
-          "agent_recommendation"
+          "usage"
         ],
         "title": "PrecomputedIntelligenceBundle",
         "type": "object"

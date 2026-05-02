@@ -320,6 +320,13 @@ class EvidencePacketEnvelope(BaseModel):
     quality: EvidencePacketQuality
     verification: EvidencePacketVerification
     compression: EvidencePacketCompression | None = None
+    agent_recommendation: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Machine-readable guidance for LLM/tool agents deciding whether "
+            "to recommend or skip this jpcite route."
+        ),
+    )
 
 
 class PrecomputedMetadata(BaseModel):
