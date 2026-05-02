@@ -82,7 +82,7 @@ The most common 0-hit cause is hallucinated filter values. Always probe the live
 
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Try the prescreen widget](https://jpcite.com/index.html#try)
-- [API Playground (interactive try-it surface)](https://jpcite.com/playground.html): browser-based REST API explorer for the highest-leverage GET routes, including `/v1/intelligence/precomputed/query`, `/v1/programs/search`, `/v1/programs/{unified_id}`, `/v1/am/tax_incentives`, `/v1/am/loans`, `/v1/invoice_registrants/search`, `/v1/invoice_registrants/{T-number}`, `/v1/laws/search`, `/v1/court-decisions/search`, `/v1/case-studies/search`, and `/v1/tax_rulesets/search`. Auto-generated parameter forms, live URL preview, syntax-highlighted JSON response, anonymous quota indicator, copy-as-curl. No registration, no API key required — anonymous 3 req/day per IP. Suited for evaluating response shape + §52 法令注記の付与 before issuing a key.
+- [API Playground (interactive try-it surface)](https://jpcite.com/playground.html): browser-based REST API explorer for the highest-leverage GET routes, including `/v1/intelligence/precomputed/query`, `/v1/programs/search`, `/v1/programs/{unified_id}`, `/v1/am/tax_incentives`, `/v1/am/loans`, `/v1/invoice_registrants/search`, `/v1/invoice_registrants/{T-number}`, `/v1/laws/search`, `/v1/court-decisions/search`, `/v1/case-studies/search`, and `/v1/tax_rulesets/search`. Auto-generated parameter forms, live URL preview, syntax-highlighted JSON response, anonymous quota indicator, copy-as-curl. Current anonymous evaluation limits are published on Pricing. Suited for evaluating response shape + §52 法令注記の付与 before issuing a key.
 
 ## MCP server
 
@@ -118,7 +118,7 @@ A curated subset of the 93 tools — pick the right entry point on the first cal
 - `dd_profile_am` — 法人番号 1 本で entity + 採択履歴 + invoice + enforcement を束ねる due-diligence.
 - `combined_compliance_check` — cross-dataset 横断棚卸し: 法令 / 判例 / 税務 / 入札 を 1 コール.
 - `trace_program_to_law` / `find_cases_by_law` — 制度 ↔ 根拠法 ↔ 行政処分 の三角索引.
-- `pack_construction` / `pack_manufacturing` / `pack_real_estate` — JSIC major D / E / K に閉じた業種別 starter (top 10 制度 + up to 5 国税不服審判所裁決 + up to 3 通達). 1 call ¥3.
+- `pack_construction` / `pack_manufacturing` / `pack_real_estate` — JSIC major D / E / K に閉じた業種別 starter (top 10 制度 + up to 5 国税不服審判所裁決 + up to 3 通達). One billable API/MCP call; see Pricing.
 - `graph_traverse` — heterogeneous 1-3 hop knowledge graph walk over `am_relation` (177,381 edges). 5-7 calls collapsed into 1 SQL.
 - `unified_lifecycle_calendar` / `program_lifecycle` — 制度ライフサイクル 8 段階 (active / sunset_imminent / amended / abolished 等) + 月次/半期 merge カレンダー.
 - `prerequisite_chain` — 前提認定の依存チェーン (取得時間 + 費用付き).

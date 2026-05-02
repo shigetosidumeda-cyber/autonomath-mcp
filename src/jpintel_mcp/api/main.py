@@ -504,10 +504,10 @@ def _sanitize_openapi_public_text(text: str) -> str:
         flags=re.S,
     )
     replacements = [
-        (r"info@bookyou\.net", "support contact"),
-        (r"Bookyou株式会社", "support team"),
-        (r"Bookyou Inc\.", "support team"),
-        (r"T8010001213708", "support contact"),
+        (r"info@bookyou\.net", "jpcite support"),
+        (r"Bookyou株式会社", "jpcite operator"),
+        (r"Bookyou Inc\.", "jpcite operator"),
+        (r"T8010001213708", "jpcite legal identifier"),
         (r"usage_events", "usage records"),
         (r"jpintel\.db", "indexed corpus"),
         (r"autonomath\.db", "extended corpus"),
@@ -1682,7 +1682,7 @@ def create_app() -> FastAPI:
         # generated docs (Stainless, Mintlify, ReDoc) and SDK readmes.
         schema["info"]["contact"] = {
             "name": "jpcite Support",
-            "email": "info@bookyou.net",
+            "url": "https://jpcite.com/tokushoho.html",
         }
         schema["info"]["termsOfService"] = "https://jpcite.com/tos.html"
         schema["info"]["license"] = {
