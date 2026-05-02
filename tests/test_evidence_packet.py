@@ -831,6 +831,20 @@ def test_missing_program_summary_table_fails_open(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 
 
+def _usage_count(db_path: Path, raw_key: str, endpoint: str) -> int:
+    from jpintel_mcp.api.deps import hash_api_key
+
+    conn = sqlite3.connect(db_path)
+    try:
+        row = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (hash_api_key(raw_key), endpoint),
+        ).fetchone()
+    finally:
+        conn.close()
+    return int(row[0] if row else 0)
+
+
 def test_rest_get_evidence_packet_json(client: TestClient) -> None:
     """GET /v1/evidence/packets/program/{id} returns the JSON envelope."""
     r = client.get("/v1/evidence/packets/program/UNI-evp-p1")
@@ -1015,6 +1029,61 @@ def test_rest_get_evidence_packet_md(client: TestClient) -> None:
     assert "# Evidence Packet" in body
     assert "## Records" in body
     assert "EVP テスト P1 補助金" in body
+
+
+def test_rest_get_evidence_packet_renderer_failure_does_not_bill(
+    client: TestClient,
+    paid_key: str,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A failed Evidence Packet export renderer must not create usage."""
+    from fastapi.testclient import TestClient
+
+    from jpintel_mcp.api import evidence as evidence_api
+
+    def _boom(*_args: object, **_kwargs: object) -> None:
+        raise RuntimeError("renderer boom")
+
+    monkeypatch.setattr(evidence_api, "_dispatch_format", _boom)
+    safe_client = TestClient(client.app, raise_server_exceptions=False)
+
+    r = safe_client.get(
+        "/v1/evidence/packets/program/UNI-evp-p1",
+        params={"output_format": "csv"},
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 500
+    assert _usage_count(seeded_db, paid_key, "evidence.packet.get") == 0
+
+
+def test_rest_post_evidence_packet_renderer_failure_does_not_bill(
+    client: TestClient,
+    paid_key: str,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A failed query export renderer must not create usage."""
+    from fastapi.testclient import TestClient
+
+    from jpintel_mcp.api import evidence as evidence_api
+
+    def _boom(*_args: object, **_kwargs: object) -> None:
+        raise RuntimeError("renderer boom")
+
+    monkeypatch.setattr(evidence_api, "_dispatch_format", _boom)
+    safe_client = TestClient(client.app, raise_server_exceptions=False)
+
+    r = safe_client.post(
+        "/v1/evidence/packets/query",
+        params={"output_format": "md"},
+        json={"query_text": "EVP", "limit": 1},
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 500
+    assert _usage_count(seeded_db, paid_key, "evidence.packet.query") == 0
 
 
 # ---------------------------------------------------------------------------

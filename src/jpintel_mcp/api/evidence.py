@@ -511,6 +511,23 @@ def get_evidence_packet(
             },
         )
 
+    # §17.D audit seal on paid JSON responses. CSV/MD outputs skip the
+    # seal (the wire shape has no place to embed JSON inside flat text).
+    if output_format == "json":
+        attach_seal_to_body(
+            envelope,
+            endpoint="evidence.packet.get",
+            request_params={
+                "subject_kind": subject_kind,
+                "subject_id": subject_id,
+                "source_tokens_basis": source_tokens_basis,
+                "source_pdf_pages": source_pdf_pages,
+                "source_token_count": source_token_count,
+            },
+            api_key_hash=ctx.key_hash,
+            conn=conn,
+        )
+    response = _dispatch_format(envelope, output_format)
     latency_ms = int((time.perf_counter() - _t0) * 1000)
     log_usage(
         conn,
@@ -528,23 +545,7 @@ def get_evidence_packet(
             "source_token_count": source_token_count,
         },
     )
-    # §17.D audit seal on paid JSON responses. CSV/MD outputs skip the
-    # seal (the wire shape has no place to embed JSON inside flat text).
-    if output_format == "json":
-        attach_seal_to_body(
-            envelope,
-            endpoint="evidence.packet.get",
-            request_params={
-                "subject_kind": subject_kind,
-                "subject_id": subject_id,
-                "source_tokens_basis": source_tokens_basis,
-                "source_pdf_pages": source_pdf_pages,
-                "source_token_count": source_token_count,
-            },
-            api_key_hash=ctx.key_hash,
-            conn=conn,
-        )
-    return _dispatch_format(envelope, output_format)
+    return response
 
 
 # ---------------------------------------------------------------------------
@@ -697,21 +698,6 @@ def post_evidence_packet_query(
         source_pdf_pages=payload.source_pdf_pages,
         source_token_count=payload.source_token_count,
     )
-    latency_ms = int((time.perf_counter() - _t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "evidence.packet.query",
-        latency_ms=latency_ms,
-        params={
-            "limit": payload.limit,
-            "format": output_format,
-            "filter_keys": (sorted(payload.filters.keys()) if payload.filters else []),
-            "source_tokens_basis": payload.source_tokens_basis,
-            "source_pdf_pages": payload.source_pdf_pages,
-            "source_token_count": payload.source_token_count,
-        },
-    )
     # §17.D audit seal — JSON only (see evidence.packet.get above).
     if output_format == "json":
         attach_seal_to_body(
@@ -728,7 +714,23 @@ def post_evidence_packet_query(
             api_key_hash=ctx.key_hash,
             conn=conn,
         )
-    return _dispatch_format(envelope, output_format)
+    response = _dispatch_format(envelope, output_format)
+    latency_ms = int((time.perf_counter() - _t0) * 1000)
+    log_usage(
+        conn,
+        ctx,
+        "evidence.packet.query",
+        latency_ms=latency_ms,
+        params={
+            "limit": payload.limit,
+            "format": output_format,
+            "filter_keys": (sorted(payload.filters.keys()) if payload.filters else []),
+            "source_tokens_basis": payload.source_tokens_basis,
+            "source_pdf_pages": payload.source_pdf_pages,
+            "source_token_count": payload.source_token_count,
+        },
+    )
+    return response
 
 
 __all__ = [
