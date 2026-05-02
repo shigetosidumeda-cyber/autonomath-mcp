@@ -65,18 +65,8 @@ jobs:
           if [ -s data/jpintel.db ]; then
             echo "data/jpintel.db already present in checkout."
           else
-            echo "Creating a consistent seed snapshot from the production Fly volume."
-            remote_seed="/tmp/jpintel-ci-seed.db"
-            cleanup_remote_seed() {
-              flyctl ssh console -a autonomath-api -q -C "rm -f ${remote_seed}" >/dev/null || true
-            }
-            trap cleanup_remote_seed EXIT
-
-            flyctl ssh console -a autonomath-api -q -C \
-              "rm -f ${remote_seed} && sqlite3 /data/jpintel.db \".backup ${remote_seed}\""
-            flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db
-            cleanup_remote_seed
-            trap - EXIT
+            echo "Hydrating the Docker seed DB from the production image seed."
+            flyctl ssh sftp get -a autonomath-api -q /seed/jpintel.db data/jpintel.db
           fi
 
           bytes="$(wc -c < data/jpintel.db | tr -d ' ')"
