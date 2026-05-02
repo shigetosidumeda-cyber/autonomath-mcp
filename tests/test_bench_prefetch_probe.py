@@ -114,12 +114,32 @@ def _install_offline_composer_stub(tmp_path: Path) -> Path:
                         if idx < precomputed_count:
                             rec["precomputed"] = {"basis": "fixture"}
                         records.append(rec)
+                    packet_tokens = 1000 + marker
+                    source_token_count = kwargs.get("source_token_count")
+                    compression = {
+                        "packet_tokens_estimate": packet_tokens,
+                        "source_tokens_basis": kwargs.get("source_tokens_basis"),
+                        "source_tokens_estimate": source_token_count,
+                        "avoided_tokens_estimate": (
+                            max(0, source_token_count - packet_tokens)
+                            if source_token_count else None
+                        ),
+                    }
+                    price = kwargs.get("input_token_price_jpy_per_1m")
+                    if source_token_count and price:
+                        avoided = max(0, source_token_count - packet_tokens)
+                        break_even = int((3 / (price / 1_000_000)) + 0.999999)
+                        compression["cost_savings_estimate"] = {
+                            "break_even_avoided_tokens": break_even,
+                            "break_even_met": avoided >= break_even,
+                            "net_savings_jpy_ex_tax": round(
+                                avoided * (price / 1_000_000) - 3, 1
+                            ),
+                        }
                     return {
                         "packet_id": f"evp_{marker}",
                         "records": records,
-                        "compression": {
-                            "packet_tokens_estimate": 1000 + marker,
-                        },
+                        "compression": compression,
                     }
             """
         ),
@@ -172,6 +192,7 @@ def test_probe_reads_canonical_queries_and_writes_summary_and_rows(
     assert {call["autonomath_db"] for call in calls} == {"stub-autonomath.sqlite"}
     assert all(call["kwargs"].get("include_compression") is True for call in calls)
     assert all(call["kwargs"].get("include_rules") is False for call in calls)
+    assert all(call["kwargs"].get("source_tokens_basis") == "unknown" for call in calls)
 
     with rows_csv.open("r", encoding="utf-8", newline="") as f:
         output_rows = list(csv.DictReader(f))
@@ -224,6 +245,54 @@ def test_probe_can_emit_json_summary_without_rows_csv(tmp_path: Path) -> None:
         int(row["precomputed_record_count"]) for row in summary["rows"]
     )
     assert all(row["packet_tokens_estimate"] for row in summary["rows"])
+
+
+def test_probe_computes_break_even_when_source_token_baseline_is_supplied(
+    tmp_path: Path,
+) -> None:
+    queries_csv = tmp_path / "queries.csv"
+    queries_csv.write_text(
+        "\n".join([
+            "query_id,domain,query_text,source_token_count",
+            "1,subsidy,長い公募要領を読む,25000",
+            "2,tax,短い根拠を確認,1200",
+        ])
+        + "\n",
+        encoding="utf-8",
+    )
+    rows_csv = tmp_path / "prefetch_rows.csv"
+    call_log = tmp_path / "composer_calls.jsonl"
+    stub_path = _install_offline_composer_stub(tmp_path)
+
+    result = _run_probe(
+        "--queries-csv",
+        str(queries_csv),
+        "--rows-csv",
+        str(rows_csv),
+        "--input-token-price-jpy-per-1m",
+        "300",
+        pythonpath=stub_path,
+        call_log=call_log,
+    )
+
+    assert result.returncode == 0, result.stderr
+    summary = json.loads(result.stdout)
+    assert summary["queries_with_source_token_baseline"] == 2
+    assert summary["break_even_queries"] == 1
+    assert summary["break_even_rate"] == 0.5
+    assert summary["avoided_tokens_total"] > 0
+    assert summary["net_savings_jpy_ex_tax_total"] is not None
+
+    with rows_csv.open("r", encoding="utf-8", newline="") as f:
+        output_rows = list(csv.DictReader(f))
+    assert output_rows[0]["source_tokens_basis"] == "token_count"
+    assert output_rows[0]["break_even_met"] == "True"
+    assert output_rows[1]["break_even_met"] == "False"
+
+    with call_log.open("r", encoding="utf-8") as f:
+        calls = [json.loads(line) for line in f if line.strip()]
+    assert calls[0]["kwargs"]["source_token_count"] == 25000
+    assert calls[0]["kwargs"]["input_token_price_jpy_per_1m"] == 300.0
 
 
 def test_probe_file_has_no_llm_or_network_imports() -> None:
