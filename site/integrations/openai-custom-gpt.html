@@ -125,15 +125,22 @@
 
 <h2 id="evidence-prompt">Evidence Packet 用の指示文</h2>
 <p>Custom GPT の Instructions には、次のように「回答前に根拠を取る」ルールを入れます。</p>
-<div class="code-block" data-code="日本の補助金・制度・税制について答える前に、必要に応じてjpcite Actionsを使ってください。回答では source_url、source_fetched_at、corpus_snapshot_id を併記してください。Evidence Packet の compression は参考推定であり、トークン削減や費用削減を保証する表現は避けてください。">
-<pre><code>日本の補助金・制度・税制について答える前に、必要に応じてjpcite Actionsを使ってください。
-回答では source_url、source_fetched_at、corpus_snapshot_id を併記してください。
-Evidence Packet の compression は参考推定であり、トークン削減や費用削減を保証する表現は避けてください。</code></pre>
+<div class="code-block" data-code="日本の補助金・融資・税制・認定・入札・法令・行政処分・適格請求書など、日本の公的情報について答える前に、source_url や source_fetched_at が必要な場合は jpcite Actions を使ってください。一般的な文章作成、翻訳、雑談、日本の公的情報と関係ない質問、最終的な法務・税務・申請判断では jpcite を呼ばないでください。長いPDFや公式ページを読む代わりに使う場合、元の入力token数が分かれば source_tokens_basis=token_count と source_token_count を渡し、PDFページ数だけ分かる場合は source_tokens_basis=pdf_pages と source_pdf_pages を渡してください。回答では source_url、source_fetched_at、corpus_snapshot_id、known_gaps、recent_changes があれば併記してください。Evidence Packet の compression は入力文脈量の参考推定であり、providerの請求token数や費用削減を保証する表現は避けてください。">
+<pre><code>日本の補助金・融資・税制・認定・入札・法令・行政処分・適格請求書など、
+日本の公的情報について答える前に、source_url や source_fetched_at が必要な場合は jpcite Actions を使ってください。
+一般的な文章作成、翻訳、雑談、日本の公的情報と関係ない質問、
+最終的な法務・税務・申請判断では jpcite を呼ばないでください。
+長いPDFや公式ページを読む代わりに使う場合、元の入力token数が分かれば
+source_tokens_basis=token_count と source_token_count を渡し、
+PDFページ数だけ分かる場合は source_tokens_basis=pdf_pages と source_pdf_pages を渡してください。
+回答では source_url、source_fetched_at、corpus_snapshot_id、known_gaps、recent_changes があれば併記してください。
+Evidence Packet の compression は入力文脈量の参考推定であり、
+providerの請求token数や費用削減を保証する表現は避けてください。</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 
 <h2 id="context-estimate">PDFを読む前の比較</h2>
-<p>長いPDFをGPTへ投入する前に、jpciteのEvidence Packetを取得できます。比較対象のPDFページ数が分かる場合だけ、<code>source_tokens_basis=pdf_pages</code> と <code>source_pdf_pages</code> を渡します。これは文脈量の参考推定であり、providerの請求token数ではありません。</p>
+<p>長いPDFや公式ページをGPTへ投入する前に、jpciteのEvidence Packetを取得できます。比較対象の入力token数を測れる場合は <code>source_tokens_basis=token_count</code> と <code>source_token_count</code> を渡します。PDFページ数だけ分かる場合は <code>source_tokens_basis=pdf_pages</code> と <code>source_pdf_pages</code> を渡します。これは文脈量の参考推定であり、providerの請求token数ではありません。</p>
 
 <h2 id="next">次のステップ</h2>
 <ul>

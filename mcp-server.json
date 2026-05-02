@@ -410,7 +410,7 @@
     }
   ],
   "requirements": {
-    "api_key": "https://jpcite.com/pricing — anonymous tier 3 calls/day per IP free (no key, JST next-day reset); metered paid tier ¥3/req tax-exclusive (¥3.30 tax-inclusive) requires a key"
+    "api_key": "https://jpcite.com/pricing — current public pricing, anonymous limits, and metered billing terms. Paid usage requires an API key."
   },
   "language": "ja-JP",
   "categories": [
