@@ -31,31 +31,11 @@ jobs:
           pip install -e ".[dev,site]"
 
       - name: Dump /openapi.json
-        # Import the FastAPI app in-process; no uvicorn boot needed for schema generation.
+        # Use the stable exporter so ordering matches the committed schema.
         run: |
           mkdir -p docs/openapi
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          from jpintel_mcp.api.main import app
-          schema = app.openapi()
-          Path("docs/openapi/v1.json").write_text(
-              json.dumps(schema, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          PY
+          python scripts/export_openapi.py --out docs/openapi/v1.json
 
-      - name: Open PR if schema changed
-        # peter-evans/create-pull-request is a no-op when the working tree is clean.
-        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
-        with:
-          commit-message: "docs(openapi): refresh v1.json"
-          title: "docs(openapi): refresh v1.json"
-          body: |
-            Automated OpenAPI schema refresh from `main`.
-
-            Source: `jpintel_mcp.api.main:app.openapi()`
-          branch: bot/openapi-refresh
-          delete-branch: true
-          add-paths: |
-            docs/openapi/v1.json
+      - name: Verify committed schema is current
+        run: |
+          git diff --exit-code docs/openapi/v1.json
