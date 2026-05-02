@@ -4,8 +4,9 @@
 Workflow
 --------
 1. Resolve target backup key (latest if --backup-key omitted).
-2. Pre-backup: take a snapshot of the *current* live DB to /data/backups/
-   under a `pre-restore-<ts>.db.gz` name. Restore is reversible.
+2. Pre-backup: take a snapshot of the *current* live DB to the DB-specific
+   pre-restore directory under a `pre-restore-<ts>.db.gz` name. Restore is
+   reversible unless the free-space gate fails.
 3. Download the chosen backup from R2 into /tmp/.
 4. Verify SHA256 against the sidecar.
 5. PRAGMA integrity_check on the decompressed file.
@@ -24,7 +25,7 @@ Examples
 
     # Restore a specific autonomath snapshot:
     python scripts/restore_db.py --db autonomath \\
-        --backup-key autonomath/autonomath-20260428-040000.db.gz
+        --backup-key autonomath-api/autonomath-db/jpintel-20260428-040000.db.gz
 
     # Local dry-run (no R2, use a local file):
     python scripts/restore_db.py --db jpintel \\
@@ -57,17 +58,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from cron._r2_client import R2ConfigError, download, list_keys  # type: ignore
 
 _LOG = logging.getLogger("jpintel.restore_db")
+_FREE_SPACE_MARGIN_BYTES = 512 * 1024 * 1024
 
 _DB_DEFAULTS = {
     "jpintel": {
         "live_path": "/data/jpintel.db",
         "prefix": "jpintel/",
         "name_glob": "jpintel-",
+        "pre_backup_dir": "/data/backups/pre-restore",
     },
     "autonomath": {
         "live_path": "/data/autonomath.db",
-        "prefix": "autonomath/",
-        "name_glob": "autonomath-",
+        # weekly-backup-autonomath.yml stores autonomath snapshots under this
+        # prefix but backup.py currently emits jpintel-*.db.gz filenames for any
+        # source DB. The separate prefix disambiguates the database.
+        "prefix": "autonomath-api/autonomath-db/",
+        "name_glob": "jpintel-",
+        "pre_backup_dir": "/data/backups-autonomath/pre-restore",
     },
 }
 
@@ -116,11 +123,35 @@ def _integrity(db: Path) -> None:
     _LOG.info("integrity_ok %s", db)
 
 
+def _require_free_space(path: Path, required_bytes: int, label: str) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+    free = shutil.disk_usage(path).free
+    if free < required_bytes:
+        raise RuntimeError(
+            f"insufficient free space for {label}: free={free} required={required_bytes} path={path}"
+        )
+    _LOG.info(
+        "free_space_ok label=%s path=%s free=%d required=%d",
+        label,
+        path,
+        free,
+        required_bytes,
+    )
+
+
 def _pre_backup(live: Path, out_dir: Path) -> Path | None:
     if not live.is_file():
         _LOG.warning("pre_backup_skip live=%s not present", live)
         return None
     out_dir.mkdir(parents=True, exist_ok=True)
+    # sqlite backup writes a raw DB, then gzip writes a second file before the
+    # raw file is removed. Require 2x live size plus margin so the safety copy
+    # cannot fill the volume halfway through restore.
+    _require_free_space(
+        out_dir,
+        live.stat().st_size * 2 + _FREE_SPACE_MARGIN_BYTES,
+        "pre-restore backup",
+    )
     ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     dst = out_dir / f"pre-restore-{live.stem}-{ts}.db"
     sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -135,6 +166,11 @@ def _pre_backup(live: Path, out_dir: Path) -> Path | None:
 
 def _atomic_swap(src: Path, live: Path) -> None:
     live.parent.mkdir(parents=True, exist_ok=True)
+    _require_free_space(
+        live.parent,
+        src.stat().st_size + _FREE_SPACE_MARGIN_BYTES,
+        "restore swap tmp",
+    )
     tmp = live.with_suffix(live.suffix + ".restore-tmp")
     shutil.copyfile(src, tmp)
     with tmp.open("rb") as f:
@@ -221,11 +257,18 @@ def main() -> int:
             return 1
 
         if not args.no_pre_backup:
-            pb_dir = Path(os.environ.get("RESTORE_PRE_BACKUP_DIR", "/data/backups/pre-restore"))
+            pb_dir = Path(
+                os.environ.get("RESTORE_PRE_BACKUP_DIR", str(cfg["pre_backup_dir"]))
+            )
             try:
                 _pre_backup(live, pb_dir)
             except Exception as exc:
-                _LOG.warning("pre_backup_failed err=%s (continuing -- restore may not be reversible)", exc)
+                _LOG.error(
+                    "pre_backup_failed err=%s "
+                    "(restore aborted; use --no-pre-backup only after manual snapshot)",
+                    exc,
+                )
+                return 4
 
         try:
             _atomic_swap(decompressed, live)

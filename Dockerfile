@@ -80,9 +80,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     VIRTUAL_ENV=/opt/venv
 
 # Runtime system deps. sqlite3 CLI kept for on-box debugging / backup.py.
-# curl kept for entrypoint R2 bootstrap.
+# curl kept for entrypoint R2 bootstrap; rclone is used by restore_db.py and
+# the shared Cloudflare R2 helper for operator restores.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        curl ca-certificates sqlite3 \
+        curl ca-certificates sqlite3 rclone \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /data /app /models /opt
 
