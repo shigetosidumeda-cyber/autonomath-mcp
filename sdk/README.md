@@ -1,18 +1,18 @@
-# AutonoMath SDKs
+# jpcite SDKs
 
-Official client SDKs for the AutonoMath REST API.
+Official client SDKs for the jpcite REST API.
 
 | Language   | Package               | Path                                         |
 | ---------- | --------------------- | -------------------------------------------- |
-| Python     | `autonomath-client`   | [`sdk/python`](./python)                     |
-| TypeScript | `@autonomath/client`  | [`sdk/typescript`](./typescript)             |
+| Python     | `autonomath`          | [`sdk/python`](./python)                     |
+| TypeScript | `@autonomath/sdk`     | [`sdk/typescript`](./typescript)             |
 
-## Current status (Week 2)
+## Current status
 
-Both SDKs are **hand-written** to get `pip install autonomath-client` and
-`npm install @autonomath/client` demoable for the landing page. One method per
-endpoint, no query builders, no client-side caching. Scope matches the server
-surface:
+Both SDKs are hand-written wrappers over `https://api.jpcite.com`. Python is
+currently installed from `sdk/python`; TypeScript is packaged as
+`@autonomath/sdk` and mirrors the REST + optional MCP helper surface. The
+minimal endpoint coverage is:
 
 - `GET /meta`, `GET /healthz`
 - `GET /v1/programs/search`
@@ -26,7 +26,7 @@ Shared behavior:
 - Retries: `429` respects `Retry-After`, `5xx` exponential backoff (max 3 retries).
 - Typed models (Pydantic on Python, TypeScript interfaces on TS).
 - Sync + async in Python; async-only in TS (fetch is async by nature).
-- User-Agent: `autonomath-python/{ver}` / `autonomath-typescript/{ver}`.
+- User-Agent: `autonomath-python/{ver}` / `@autonomath/sdk/{ver}`.
 
 ## Future: OpenAPI-generated SDKs
 
@@ -41,7 +41,7 @@ Planned pipeline:
 datamodel-code-generator --input openapi.json --output sdk/python/jpintel/_generated.py
 
 # TypeScript
-npx openapi-typescript http://localhost:8080/openapi.json -o sdk/typescript/src/_generated.ts
+npx openapi-typescript https://api.jpcite.com/v1/openapi.json -o sdk/typescript/src/_generated.ts
 # (optionally openapi-fetch on top for a typed request helper)
 ```
 
