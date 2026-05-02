@@ -1207,30 +1207,34 @@ def search_programs(
 
     total = int(response_body.get("total", 0))
     _latency_ms = int((time.perf_counter() - _t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "programs.search",
-        params={
-            "q": q,
-            "tier": sorted(tier) if tier else None,
-            "prefecture": prefecture,
-            "authority_level": authority_level,
-            "funding_purpose": sorted(funding_purpose) if funding_purpose else None,
-            "target_type": sorted(target_type) if target_type else None,
-            "amount_min": amount_min,
-            "amount_max": amount_max,
-        },
-        latency_ms=_latency_ms,
-        result_count=total,
-    )
 
-    # Empty-search log (migration 062). Capture queries that returned 0
-    # results and are non-trivial (>1 char, not pure whitespace) so the
-    # operator can drive ingest prioritization off real demand. We only
-    # store rows where `q` is set — pure filter combinations that miss
-    # don't tell us about a missing program, just an over-narrow filter.
-    if total == 0 and q is not None:
+    def _record_success_usage() -> None:
+        log_usage(
+            conn,
+            ctx,
+            "programs.search",
+            params={
+                "q": q,
+                "tier": sorted(tier) if tier else None,
+                "prefecture": prefecture,
+                "authority_level": authority_level,
+                "funding_purpose": sorted(funding_purpose) if funding_purpose else None,
+                "target_type": sorted(target_type) if target_type else None,
+                "amount_min": amount_min,
+                "amount_max": amount_max,
+            },
+            latency_ms=_latency_ms,
+            result_count=total,
+        )
+
+    def _log_empty_search_if_needed() -> None:
+        # Empty-search log (migration 062). Capture queries that returned 0
+        # results and are non-trivial (>1 char, not pure whitespace) so the
+        # operator can drive ingest prioritization off real demand. We only
+        # store rows where `q` is set — pure filter combinations that miss
+        # don't tell us about a missing program, just an over-narrow filter.
+        if total != 0 or q is None:
+            return
         _q_clean_for_log = q.strip()
         if len(_q_clean_for_log) > 1:
             log_empty_search(
@@ -1253,7 +1257,7 @@ def search_programs(
     # already-built envelope to the format dispatcher. The corpus snapshot
     # is attached to meta so renderers (DOCX lineage table, ICS X-WR-CALID,
     # CSV comment row) can embed it for auditor reproducibility. Single
-    # ¥3 charge already counted via log_usage above (no per-row multiply).
+    # billing unit is recorded only after the renderer succeeds.
     if format != "json":
         from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
         from jpintel_mcp.api._format_dispatch import render
@@ -1273,6 +1277,8 @@ def search_programs(
         # auditors can grep request logs without parsing the body.
         resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
         resp.headers["X-Corpus-Checksum"] = checksum
+        _record_success_usage()
+        _log_empty_search_if_needed()
         return resp  # type: ignore[return-value]
 
     # v2 response envelope for AI/agent clients. The legacy body is copied
@@ -1342,10 +1348,14 @@ def search_programs(
             env = StandardResponse.rich(rows, **common_kwargs)
         headers = snapshot_headers(conn)
         headers["X-Envelope-Version"] = "v2"
+        _record_success_usage()
+        _log_empty_search_if_needed()
         return JSONResponse(content=env.to_wire(), headers=headers)
 
     # Mirror the snapshot pair into headers on the JSON path too — same
     # auditor log-grep workflow as the format-non-JSON branch.
+    _record_success_usage()
+    _log_empty_search_if_needed()
     return JSONResponse(content=response_body, headers=snapshot_headers(conn))
 
 
@@ -2252,7 +2262,9 @@ def get_program(
     # snapshot pair use `fields=default` or `fields=full`.
     if isinstance(body, dict) and fields != "minimal":
         attach_corpus_snapshot(body, conn)
-    log_usage(conn, ctx, "programs.get", params={"unified_id": unified_id})
+
+    def _record_success_usage() -> None:
+        log_usage(conn, ctx, "programs.get", params={"unified_id": unified_id})
 
     # Format dispatch — single-row payload routed through the 6-pack
     # renderer surface. DOCX is the natural unit of work here (one program
@@ -2275,6 +2287,8 @@ def get_program(
         resp = render([body], format, meta_out)
         resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
         resp.headers["X-Corpus-Checksum"] = checksum
+        _record_success_usage()
         return resp  # type: ignore[return-value]
 
+    _record_success_usage()
     return JSONResponse(content=body, headers=snapshot_headers(conn))

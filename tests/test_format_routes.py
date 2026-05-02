@@ -22,6 +22,7 @@ Each test asserts:
   3. Body parses with the canonical lib for that format
   4. Snapshot pair (X-Corpus-Snapshot-Id / X-Corpus-Checksum) is present
 """
+
 from __future__ import annotations
 
 import csv
@@ -32,6 +33,7 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 
 from jpintel_mcp.billing.keys import issue_key
 
@@ -76,8 +78,7 @@ def _seed_deadline_and_saved_search(seeded_db: Path):
         cols = {row[1] for row in c.execute("PRAGMA table_info(saved_searches)")}
         if "channel_format" not in cols:
             c.execute(
-                "ALTER TABLE saved_searches ADD COLUMN channel_format "
-                "TEXT NOT NULL DEFAULT 'email'"
+                "ALTER TABLE saved_searches ADD COLUMN channel_format TEXT NOT NULL DEFAULT 'email'"
             )
         if "channel_url" not in cols:
             c.execute("ALTER TABLE saved_searches ADD COLUMN channel_url TEXT")
@@ -88,12 +89,9 @@ def _seed_deadline_and_saved_search(seeded_db: Path):
         # api/programs.py) — we seed a future end_date so the ICS
         # renderer sees a valid VEVENT-bearing row.
         c.execute(
-            "UPDATE programs SET application_window_json = ? "
-            "WHERE unified_id = ?",
+            "UPDATE programs SET application_window_json = ? WHERE unified_id = ?",
             (
-                json.dumps(
-                    {"end_date": "2026-12-31"}, ensure_ascii=False
-                ),
+                json.dumps({"end_date": "2026-12-31"}, ensure_ascii=False),
                 "UNI-test-s-1",
             ),
         )
@@ -134,6 +132,45 @@ def test_programs_search_csv(client, fmt_key):
     assert any(row.get("unified_id") == "UNI-test-s-1" for row in parsed), parsed
 
 
+def _usage_count(seeded_db: Path, raw_key: str, endpoint: str) -> int:
+    from jpintel_mcp.api.deps import hash_api_key
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (hash_api_key(raw_key), endpoint),
+        ).fetchone()
+    finally:
+        c.close()
+    return int(row[0] if row else 0)
+
+
+def test_programs_search_renderer_failure_does_not_bill(
+    client,
+    fmt_key,
+    seeded_db: Path,
+    monkeypatch,
+):
+    """A failed non-JSON renderer must not create a metered usage row."""
+    import jpintel_mcp.api._format_dispatch as dispatch
+
+    def _boom(*_args, **_kwargs):
+        raise RuntimeError("renderer boom")
+
+    monkeypatch.setattr(dispatch, "render", _boom)
+    safe_client = TestClient(client.app, raise_server_exceptions=False)
+
+    r = safe_client.get(
+        "/v1/programs/search",
+        params={"prefecture": "東京都", "format": "csv"},
+        headers={"X-API-Key": fmt_key},
+    )
+
+    assert r.status_code == 500
+    assert _usage_count(seeded_db, fmt_key, "programs.search") == 0
+
+
 # ---------------------------------------------------------------------------
 # 2. /v1/programs/{id}?format=docx-application — §1 行政書士法 marker.
 # ---------------------------------------------------------------------------
@@ -160,6 +197,31 @@ def test_program_get_docx_application(client, fmt_key):
     assert "{{customer_name}}" in full_text, "placeholder must stay unfilled"
     # §52 also reprinted on cover.
     assert "§52" in full_text
+
+
+def test_program_get_renderer_failure_does_not_bill(
+    client,
+    fmt_key,
+    seeded_db: Path,
+    monkeypatch,
+):
+    """A failed single-program renderer must not create a metered usage row."""
+    import jpintel_mcp.api._format_dispatch as dispatch
+
+    def _boom(*_args, **_kwargs):
+        raise RuntimeError("renderer boom")
+
+    monkeypatch.setattr(dispatch, "render", _boom)
+    safe_client = TestClient(client.app, raise_server_exceptions=False)
+
+    r = safe_client.get(
+        "/v1/programs/UNI-test-s-1",
+        params={"format": "docx-application"},
+        headers={"X-API-Key": fmt_key},
+    )
+
+    assert r.status_code == 500
+    assert _usage_count(seeded_db, fmt_key, "programs.get") == 0
 
 
 # ---------------------------------------------------------------------------
@@ -236,8 +298,7 @@ def test_saved_search_results_json_default(client, fmt_key, seeded_db: Path):
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(
-            "SELECT metered, result_count, quantity "
-            "FROM usage_events WHERE endpoint = ?",
+            "SELECT metered, result_count, quantity FROM usage_events WHERE endpoint = ?",
             ("saved_searches.results",),
         ).fetchone()
     finally:
@@ -284,9 +345,7 @@ def test_programs_search_csv_freee(client, fmt_key):
     assert r.headers["content-type"].startswith("text/csv")
     assert r.headers.get("X-AutonoMath-Format") == "csv-freee"
     # Vendor-template URL header is the unique freee marker.
-    assert "support.freee.co.jp" in (
-        r.headers.get("X-AutonoMath-Vendor-Template") or ""
-    )
+    assert "support.freee.co.jp" in (r.headers.get("X-AutonoMath-Vendor-Template") or "")
     text = r.content.decode("utf-8")
     lines = text.splitlines()
     header_idx = next(i for i, ln in enumerate(lines) if not ln.startswith("#"))
