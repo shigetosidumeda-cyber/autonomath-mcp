@@ -75,6 +75,37 @@ SubjectKind = Literal["program", "houjin", "query"]
 #: Caller-supplied baselines accepted by the compression estimator.
 CompressionSourceBasis = Literal["unknown", "pdf_pages", "token_count"]
 
+#: User-facing amendment fields that are safe to expose as compact recent
+#: changes. Internal audit/projection fields stay hidden from Evidence Packet
+#: callers.
+_RECENT_CHANGE_FIELDS: frozenset[str] = frozenset(
+    {
+        "amount_max_yen",
+        "amount_min_yen",
+        "deadline",
+        "primary_name",
+        "source_fetched_at",
+        "source_url",
+        "status",
+        "subsidy_rate",
+        "subsidy_rate_max",
+    }
+)
+
+_RECENT_CHANGE_FIELD_LABELS: dict[str, str] = {
+    "amount_max_yen": "上限額",
+    "amount_min_yen": "下限額",
+    "deadline": "締切",
+    "primary_name": "制度名",
+    "source_fetched_at": "出典取得日",
+    "source_url": "出典URL",
+    "status": "募集状態",
+    "subsidy_rate": "補助率",
+    "subsidy_rate_max": "最大補助率",
+}
+
+_RECENT_CHANGE_CAP: int = 5
+
 #: Cache TTL — same posture as _corpus_snapshot._CACHE.
 _CACHE_TTL_SEC: float = 600.0
 
@@ -203,12 +234,8 @@ _NON_PROGRAM_INTENT_RE = re.compile(
     r"漏洩|報告義務|個人情報保護法|電子帳簿|インボイス|消費税|簡易課税|"
     r"仕入率|固定資産税|税制|税額控除"
 )
-_ENFORCEMENT_INTENT_RE = re.compile(
-    r"行政処分|業務停止|営業停止|免許取消|業務改善命令"
-)
-_TAX_INTENT_RE = re.compile(
-    r"消費税|簡易課税|仕入率|固定資産税|税制|税額控除|インボイス|電子帳簿"
-)
+_ENFORCEMENT_INTENT_RE = re.compile(r"行政処分|業務停止|営業停止|免許取消|業務改善命令")
+_TAX_INTENT_RE = re.compile(r"消費税|簡易課税|仕入率|固定資産税|税制|税額控除|インボイス|電子帳簿")
 
 
 # ---------------------------------------------------------------------------
@@ -249,6 +276,7 @@ def _attach_known_gaps_inventory(envelope: dict[str, Any]) -> None:
     """
     try:
         from jpintel_mcp.services.known_gaps import detect_gaps
+
         inventory = detect_gaps(envelope)
     except Exception:  # pragma: no cover - defensive fail-open surface
         return
@@ -315,17 +343,13 @@ class EvidencePacketComposer:
         if am_conn is None:
             return today_stamp
         try:
-            row = am_conn.execute(
-                "SELECT MAX(detected_at) FROM am_amendment_diff"
-            ).fetchone()
+            row = am_conn.execute("SELECT MAX(detected_at) FROM am_amendment_diff").fetchone()
             if row is not None and row[0]:
                 return f"corpus-{str(row[0])[:10]}"
         except sqlite3.OperationalError:
             pass
         try:
-            row = am_conn.execute(
-                "SELECT MAX(last_verified) FROM am_source"
-            ).fetchone()
+            row = am_conn.execute("SELECT MAX(last_verified) FROM am_source").fetchone()
             if row is not None and row[0]:
                 return f"corpus-{str(row[0])[:10]}"
         except sqlite3.OperationalError:
@@ -350,6 +374,7 @@ class EvidencePacketComposer:
         if kind == "json" and json_val is not None:
             try:
                 import json as _json
+
                 return _json.loads(json_val)
             except (TypeError, ValueError):
                 return json_val
@@ -506,6 +531,63 @@ class EvidencePacketComposer:
 
         return precomputed if len(precomputed) > 1 else None
 
+    def _fetch_recent_changes(
+        self,
+        am_conn: sqlite3.Connection,
+        canonical_id: str,
+        cap: int = _RECENT_CHANGE_CAP,
+    ) -> list[dict[str, Any]]:
+        """Return compact, user-facing recent changes for a program.
+
+        The append-only ``am_amendment_diff`` table also contains internal
+        projection/debug fields. Evidence Packets only expose fields that a
+        user can act on directly, and omit raw before/after payloads to keep
+        the packet short and non-operational.
+        """
+        if not canonical_id or cap <= 0:
+            return []
+        cols = self._table_columns(am_conn, "am_amendment_diff")
+        required = {"entity_id", "field_name", "detected_at"}
+        if not required.issubset(cols):
+            return []
+
+        select_cols = ["field_name", "detected_at"]
+        if "source_url" in cols:
+            select_cols.append("source_url")
+
+        visible_fields = sorted(_RECENT_CHANGE_FIELDS)
+        placeholders = ",".join("?" for _ in visible_fields)
+        sql = (
+            f"SELECT {', '.join(select_cols)} "
+            "FROM am_amendment_diff "
+            f"WHERE entity_id = ? AND field_name IN ({placeholders}) "
+            "ORDER BY detected_at DESC "
+            "LIMIT ?"
+        )
+        try:
+            rows = am_conn.execute(sql, (canonical_id, *visible_fields, int(cap))).fetchall()
+        except sqlite3.OperationalError:
+            return []
+
+        changes: list[dict[str, Any]] = []
+        for row in rows:
+            row_keys = set(row.keys())
+            field_name = str(row["field_name"] or "")
+            if field_name not in _RECENT_CHANGE_FIELDS:
+                continue
+            detected_at = row["detected_at"]
+            if not detected_at:
+                continue
+            change: dict[str, Any] = {
+                "field_name": field_name,
+                "label": _RECENT_CHANGE_FIELD_LABELS.get(field_name, field_name),
+                "detected_at": str(detected_at),
+            }
+            if "source_url" in row_keys and row["source_url"]:
+                change["source_url"] = row["source_url"]
+            changes.append(change)
+        return changes
+
     def _fetch_rules_for_program(
         self,
         canonical_id: str,
@@ -563,6 +645,7 @@ class EvidencePacketComposer:
                 from jpintel_mcp.services.funding_stack_checker import (
                     FundingStackChecker,
                 )
+
                 self._funding_stack_checker = FundingStackChecker(
                     jpintel_db=self.jpintel_db,
                     autonomath_db=self.autonomath_db,
@@ -636,9 +719,7 @@ class EvidencePacketComposer:
             )
 
             packet_for_estimate = {
-                k: v
-                for k, v in envelope.items()
-                if k not in {"compression", "_compression_hint"}
+                k: v for k, v in envelope.items() if k not in {"compression", "_compression_hint"}
             }
             envelope["compression"] = TokenCompressionEstimator().compose(
                 packet_for_estimate,
@@ -664,7 +745,7 @@ class EvidencePacketComposer:
         """Map ``corpus-YYYY-MM-DD`` to a freshness bucket."""
         if not snapshot_id.startswith("corpus-"):
             return "unknown"
-        date_part = snapshot_id[len("corpus-"):]
+        date_part = snapshot_id[len("corpus-") :]
         try:
             ts = datetime.fromisoformat(date_part).replace(tzinfo=UTC)
         except ValueError:
@@ -696,9 +777,7 @@ class EvidencePacketComposer:
         return round(sum(scores) / len(scores), 3)
 
     @staticmethod
-    def _human_review_required(
-        records: list[dict[str, Any]], coverage_score: float
-    ) -> bool:
+    def _human_review_required(records: list[dict[str, Any]], coverage_score: float) -> bool:
         for rec in records:
             for rule in rec.get("rules") or []:
                 if rule.get("verdict") in {"defer", "block", "unknown"}:
@@ -912,9 +991,7 @@ class EvidencePacketComposer:
                 score_parts.append("CASE WHEN program_kind LIKE ? THEN 2 ELSE 0 END")
                 score_params.append(f"%{term}%")
             if "funding_purpose_json" in cols:
-                score_parts.append(
-                    "CASE WHEN funding_purpose_json LIKE ? THEN 2 ELSE 0 END"
-                )
+                score_parts.append("CASE WHEN funding_purpose_json LIKE ? THEN 2 ELSE 0 END")
                 score_params.append(f"%{term}%")
         if detected_prefecture or pref:
             score_parts.append("CASE WHEN prefecture = ? THEN 3 ELSE 0 END")
@@ -1055,8 +1132,7 @@ class EvidencePacketComposer:
                     add_record(
                         {
                             "entity_id": row["case_id"],
-                            "primary_name": row["recipient_name"]
-                            or row["case_id"],
+                            "primary_name": row["recipient_name"] or row["case_id"],
                             "record_kind": "enforcement_case",
                             "source_url": row["source_url"],
                             "houjin_bangou": row["recipient_houjin_bangou"],
@@ -1077,9 +1153,7 @@ class EvidencePacketComposer:
                         "kind": "enforcement_by_houjin_bangou",
                         "houjin_bangou": bangou,
                         "status": (
-                            "not_found_in_local_mirror"
-                            if checked_tables
-                            else "mirror_unavailable"
+                            "not_found_in_local_mirror" if checked_tables else "mirror_unavailable"
                         ),
                         "checked_tables": checked_tables,
                         "official_absence_proven": False,
@@ -1171,9 +1245,7 @@ class EvidencePacketComposer:
                         "invoice_registration_number": f"T{bangou}",
                         "houjin_bangou": bangou,
                         "status": (
-                            "not_found_in_local_mirror"
-                            if checked_tables
-                            else "mirror_unavailable"
+                            "not_found_in_local_mirror" if checked_tables else "mirror_unavailable"
                         ),
                         "checked_tables": checked_tables,
                         "official_absence_proven": False,
@@ -1216,9 +1288,7 @@ class EvidencePacketComposer:
             score_params: list[Any] = []
             for term in terms:
                 term_clauses.append(
-                    "("
-                    + " OR ".join(f"{col} LIKE ?" for col in usable_search_cols)
-                    + ")"
+                    "(" + " OR ".join(f"{col} LIKE ?" for col in usable_search_cols) + ")"
                 )
                 where_params.extend([f"%{term}%"] * len(usable_search_cols))
                 score_parts.append(f"CASE WHEN {name_col} LIKE ? THEN 10 ELSE 0 END")
@@ -1426,7 +1496,7 @@ class EvidencePacketComposer:
                 am.close()
 
         truncated = len(subject_ids) > min(limit, MAX_RECORDS_PER_PACKET)
-        subject_ids = subject_ids[:min(limit, MAX_RECORDS_PER_PACKET)]
+        subject_ids = subject_ids[: min(limit, MAX_RECORDS_PER_PACKET)]
 
         records: list[dict[str, Any]] = []
         gaps: list[str] = []
@@ -1455,9 +1525,7 @@ class EvidencePacketComposer:
         preferred_non_program = self._prefers_non_program_context(query_text)
         remaining = min(limit, MAX_RECORDS_PER_PACKET) - len(records)
         non_program_limit = (
-            min(limit, MAX_RECORDS_PER_PACKET)
-            if preferred_non_program
-            else remaining
+            min(limit, MAX_RECORDS_PER_PACKET) if preferred_non_program else remaining
         )
         if non_program_limit > 0 and query_text:
             am = None
@@ -1507,14 +1575,11 @@ class EvidencePacketComposer:
                 "freshness_bucket": self._freshness_bucket(snapshot_id),
                 "coverage_score": coverage_score,
                 "known_gaps": gaps,
-                "human_review_required": self._human_review_required(
-                    records, coverage_score
-                ),
+                "human_review_required": self._human_review_required(records, coverage_score),
             },
             "verification": {
                 "replay_endpoint": (
-                    f"/v1/programs/search?q={query_text}"
-                    if query_text else "/v1/programs/search"
+                    f"/v1/programs/search?q={query_text}" if query_text else "/v1/programs/search"
                 ),
                 "provenance_endpoint": "",
                 "freshness_endpoint": _FRESHNESS_ENDPOINT,
@@ -1526,9 +1591,7 @@ class EvidencePacketComposer:
         if any(rec.get("precomputed") for rec in records):
             envelope["answer_basis"] = "precomputed"
         if input_token_price_jpy_per_1m is not None:
-            envelope["_token_pricing_input_jpy_per_1m"] = (
-                input_token_price_jpy_per_1m
-            )
+            envelope["_token_pricing_input_jpy_per_1m"] = input_token_price_jpy_per_1m
         if include_compression:
             self._attach_compression_block(
                 envelope,
@@ -1598,13 +1661,12 @@ class EvidencePacketComposer:
         try:
             am = self._open_ro(self.autonomath_db)
         except FileNotFoundError:
-            logger.warning(
-                "evidence_packet: autonomath.db missing at %s", self.autonomath_db
-            )
+            logger.warning("evidence_packet: autonomath.db missing at %s", self.autonomath_db)
             return None
 
         gaps: list[str] = []
         precomputed_summary: dict[str, Any] | None = None
+        recent_changes: list[dict[str, Any]] = []
         try:
             base: dict[str, Any]
             canonical_id = ""
@@ -1638,13 +1700,17 @@ class EvidencePacketComposer:
                 gaps.append("provenance_unavailable")
 
             # Verify am_amendment_diff is reachable for honesty signal.
+            amendment_diff_available = True
             try:
                 am.execute("SELECT 1 FROM am_amendment_diff LIMIT 1").fetchone()
             except sqlite3.OperationalError:
+                amendment_diff_available = False
                 gaps.append("amendment_diff_unavailable")
 
             if subject_kind == "program":
                 precomputed_summary = self._fetch_program_summary(am, canonical_id)
+                if amendment_diff_available:
+                    recent_changes = self._fetch_recent_changes(am, canonical_id)
         finally:
             am.close()
 
@@ -1680,6 +1746,8 @@ class EvidencePacketComposer:
             record["rules"] = rules
         if precomputed_summary is not None:
             record["precomputed"] = precomputed_summary
+        if recent_changes:
+            record["recent_changes"] = recent_changes
 
         coverage_score = self._coverage_score([record])
 
@@ -1698,18 +1766,12 @@ class EvidencePacketComposer:
                 "freshness_bucket": self._freshness_bucket(snapshot_id),
                 "coverage_score": coverage_score,
                 "known_gaps": gaps,
-                "human_review_required": self._human_review_required(
-                    [record], coverage_score
-                ),
+                "human_review_required": self._human_review_required([record], coverage_score),
             },
             "verification": {
-                "replay_endpoint": self._replay_endpoint(
-                    subject_kind, subject_id
-                ),
+                "replay_endpoint": self._replay_endpoint(subject_kind, subject_id),
                 "provenance_endpoint": (
-                    f"/v1/am/provenance/{canonical_id}"
-                    if canonical_id
-                    else ""
+                    f"/v1/am/provenance/{canonical_id}" if canonical_id else ""
                 ),
                 "freshness_endpoint": _FRESHNESS_ENDPOINT,
             },
@@ -1722,9 +1784,7 @@ class EvidencePacketComposer:
             envelope["answer_basis"] = "precomputed"
 
         if input_token_price_jpy_per_1m is not None:
-            envelope["_token_pricing_input_jpy_per_1m"] = (
-                input_token_price_jpy_per_1m
-            )
+            envelope["_token_pricing_input_jpy_per_1m"] = input_token_price_jpy_per_1m
         if include_compression:
             self._attach_compression_block(
                 envelope,
@@ -1845,9 +1905,7 @@ class EvidencePacketComposer:
         lines.append(f"# Evidence Packet `{envelope.get('packet_id', '')}`")
         lines.append("")
         lines.append(f"- generated_at: `{envelope.get('generated_at', '')}`")
-        lines.append(
-            f"- corpus_snapshot_id: `{envelope.get('corpus_snapshot_id', '')}`"
-        )
+        lines.append(f"- corpus_snapshot_id: `{envelope.get('corpus_snapshot_id', '')}`")
         lines.append(f"- api_version: `{envelope.get('api_version', '')}`")
         q = envelope.get("query", {}) or {}
         if q.get("user_intent"):
@@ -1858,10 +1916,7 @@ class EvidencePacketComposer:
         lines.append("")
         lines.append(f"- freshness_bucket: `{quality.get('freshness_bucket', '')}`")
         lines.append(f"- coverage_score: {quality.get('coverage_score', 0.0)}")
-        lines.append(
-            f"- human_review_required: "
-            f"`{quality.get('human_review_required', False)}`"
-        )
+        lines.append(f"- human_review_required: `{quality.get('human_review_required', False)}`")
         gaps = quality.get("known_gaps") or []
         if gaps:
             lines.append("- known_gaps:")
@@ -1873,9 +1928,7 @@ class EvidencePacketComposer:
         lines.append("## Records")
         lines.append("")
         for rec in envelope.get("records", []):
-            lines.append(
-                f"### `{rec.get('entity_id', '')}` — {rec.get('primary_name', '')}"
-            )
+            lines.append(f"### `{rec.get('entity_id', '')}` — {rec.get('primary_name', '')}")
             lines.append("")
             lines.append(f"- record_kind: `{rec.get('record_kind', '')}`")
             if rec.get("source_url"):

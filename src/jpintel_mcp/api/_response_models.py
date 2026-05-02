@@ -248,6 +248,13 @@ class EvidencePacketRecord(BaseModel):
         default=None,
         description="Optional deterministic precomputed summary payload.",
     )
+    recent_changes: list[dict[str, Any]] | None = Field(
+        default=None,
+        description=(
+            "Optional compact user-facing amendment changes for this record. "
+            "Internal diff/debug fields are not exposed."
+        ),
+    )
 
 
 class EvidencePacketQuality(BaseModel):

@@ -17,6 +17,7 @@ All assertions exercise the public composer entry points (the REST
 endpoint, the MCP tool, and the underlying class). We do NOT mock the
 DB — we build a real-shaped one.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -116,6 +117,9 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 diff_id      INTEGER PRIMARY KEY AUTOINCREMENT,
                 entity_id    TEXT NOT NULL,
                 field_name   TEXT NOT NULL,
+                prev_value   TEXT,
+                new_value    TEXT,
+                source_url   TEXT,
                 detected_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
             CREATE TABLE am_program_summary (
@@ -284,6 +288,29 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 0.91,
             ),
         )
+        con.executemany(
+            "INSERT INTO am_amendment_diff("
+            "entity_id, field_name, prev_value, new_value, source_url, detected_at) "
+            "VALUES (?,?,?,?,?,?)",
+            [
+                (
+                    "program:evp:p1",
+                    "amount_max_yen",
+                    "1000000",
+                    "2000000",
+                    "https://www.maff.go.jp/policy/evp1.html",
+                    "2026-04-30T00:00:00",
+                ),
+                (
+                    "program:evp:p1",
+                    "projection_regression_candidate",
+                    None,
+                    '{"internal": true}',
+                    "https://www.maff.go.jp/policy/evp1.html",
+                    "2026-05-01T00:00:00",
+                ),
+            ],
+        )
         con.commit()
     finally:
         con.close()
@@ -303,9 +330,7 @@ def fixture_db(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 @pytest.fixture(autouse=True)
-def _override_paths(
-    fixture_db: Path, monkeypatch: pytest.MonkeyPatch
-) -> Iterator[None]:
+def _override_paths(fixture_db: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     """Point both REST + MCP composers at the fixture autonomath.db, and
     reset their module-level singletons + cache.
     """
@@ -343,9 +368,7 @@ def test_compose_for_program_envelope_shape(fixture_db: Path) -> None:
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_program("UNI-evp-p1")
     assert env is not None, "composer returned None for known UNI-id"
     # Top-level required fields per spec §6.
@@ -395,9 +418,7 @@ def test_compose_for_program_404(fixture_db: Path) -> None:
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_program("UNI-evp-pmissing")
     assert env is None
 
@@ -407,9 +428,7 @@ def test_compose_includes_disclaimer_and_known_gaps(fixture_db: Path) -> None:
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_program("UNI-evp-p1")
     assert env is not None
     assert env["_disclaimer"]["type"] == "information_only"
@@ -422,9 +441,7 @@ def test_compose_include_compression_returns_real_block(fixture_db: Path) -> Non
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_program(
         "UNI-evp-p1",
         include_compression=True,
@@ -452,9 +469,7 @@ def test_compose_compression_pdf_pages_baseline_returns_context_estimate(
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_program(
         "UNI-evp-p1",
         include_compression=True,
@@ -486,9 +501,7 @@ def test_compose_compression_token_count_baseline_returns_context_estimate(
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_program(
         "UNI-evp-p1",
         include_compression=True,
@@ -516,9 +529,7 @@ def test_compose_includes_precomputed_program_summary(fixture_db: Path) -> None:
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_program("UNI-evp-p1")
     assert env is not None
     assert env["answer_basis"] == "precomputed"
@@ -533,6 +544,33 @@ def test_compose_includes_precomputed_program_summary(fixture_db: Path) -> None:
     assert precomputed["source_quality"] == 0.91
 
 
+def test_compose_includes_only_user_facing_recent_changes(
+    fixture_db: Path,
+) -> None:
+    """Recent changes expose useful fields while hiding internal diff rows."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_program("UNI-evp-p1")
+    assert env is not None
+
+    recent_changes = env["records"][0]["recent_changes"]
+    assert recent_changes == [
+        {
+            "field_name": "amount_max_yen",
+            "label": "上限額",
+            "detected_at": "2026-04-30T00:00:00",
+            "source_url": "https://www.maff.go.jp/policy/evp1.html",
+        }
+    ]
+    assert all(
+        change["field_name"] != "projection_regression_candidate" for change in recent_changes
+    )
+    assert "prev_value" not in recent_changes[0]
+    assert "new_value" not in recent_changes[0]
+
+
 def test_query_records_include_precomputed_program_summary(
     fixture_db: Path,
 ) -> None:
@@ -540,9 +578,7 @@ def test_query_records_include_precomputed_program_summary(
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_query(
         "EVP",
         limit=2,
@@ -577,9 +613,7 @@ def test_query_answer_basis_omitted_without_precomputed_summary(
     from jpintel_mcp.config import settings
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
     env = composer.compose_for_query("P2", limit=10)
 
     assert len(env["records"]) == 1
@@ -787,9 +821,7 @@ def test_compose_cache_hit_avoids_upstream_query(
     from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
     _evp._reset_cache_for_tests()
-    composer = EvidencePacketComposer(
-        jpintel_db=settings.db_path, autonomath_db=fixture_db
-    )
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
 
     # Counter wraps _fetch_facts_for_entity so we can assert it runs ONCE.
     call_count = {"n": 0}
@@ -805,9 +837,7 @@ def test_compose_cache_hit_avoids_upstream_query(
     env2 = composer.compose_for_program("UNI-evp-p1")
     assert env1 is not None
     assert env2 is not None
-    assert call_count["n"] == 1, (
-        f"expected single upstream call, got {call_count['n']}"
-    )
+    assert call_count["n"] == 1, f"expected single upstream call, got {call_count['n']}"
     # Cache hit yields identical envelope (same packet_id — cached object).
     assert env1["packet_id"] == env2["packet_id"]
 
@@ -817,9 +847,7 @@ def test_compose_cache_hit_avoids_upstream_query(
 # ---------------------------------------------------------------------------
 
 
-def test_mcp_and_rest_emit_identical_envelopes(
-    fixture_db: Path, client: TestClient
-) -> None:
+def test_mcp_and_rest_emit_identical_envelopes(fixture_db: Path, client: TestClient) -> None:
     """The MCP tool and the REST endpoint emit identical packets for the
     same subject (modulo packet_id which is regenerated on the MCP side
     only when the cache is cold).
@@ -836,9 +864,7 @@ def test_mcp_and_rest_emit_identical_envelopes(
     )
 
     _reset_composer()
-    mcp_env = _impl_get_evidence_packet(
-        subject_kind="program", subject_id="UNI-evp-p1"
-    )
+    mcp_env = _impl_get_evidence_packet(subject_kind="program", subject_id="UNI-evp-p1")
     # Drop volatile fields + REST-only middleware decorations and compare
     # structure. `_meta` is appended by the AnonQuotaHeaderMiddleware /
     # ResponseSanitizer pipeline; the MCP tool returns the raw composer
@@ -847,8 +873,7 @@ def test_mcp_and_rest_emit_identical_envelopes(
         rest_env.pop(k, None)
         mcp_env.pop(k, None)
     assert rest_env == mcp_env, (
-        "MCP and REST envelope drift "
-        f"(rest={list(rest_env.keys())}, mcp={list(mcp_env.keys())})"
+        f"MCP and REST envelope drift (rest={list(rest_env.keys())}, mcp={list(mcp_env.keys())})"
     )
 
 
@@ -871,12 +896,7 @@ def test_evidence_packet_module_has_zero_llm_imports() -> None:
     paths = [
         repo / "src" / "jpintel_mcp" / "services" / "evidence_packet.py",
         repo / "src" / "jpintel_mcp" / "api" / "evidence.py",
-        repo
-        / "src"
-        / "jpintel_mcp"
-        / "mcp"
-        / "autonomath_tools"
-        / "evidence_packet_tools.py",
+        repo / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "evidence_packet_tools.py",
     ]
     forbidden = {
         "anthropic",
@@ -891,15 +911,9 @@ def test_evidence_packet_module_has_zero_llm_imports() -> None:
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     head = alias.name.split(".")[0]
-                    assert head not in forbidden, (
-                        f"forbidden LLM import in {p}: {alias.name}"
-                    )
+                    assert head not in forbidden, f"forbidden LLM import in {p}: {alias.name}"
             elif isinstance(node, ast.ImportFrom):
                 mod = node.module or ""
                 head = mod.split(".")[0]
-                assert head not in forbidden, (
-                    f"forbidden LLM import in {p}: {mod}"
-                )
-                assert mod != "google.generativeai", (
-                    f"forbidden LLM import in {p}: {mod}"
-                )
+                assert head not in forbidden, f"forbidden LLM import in {p}: {mod}"
+                assert mod != "google.generativeai", f"forbidden LLM import in {p}: {mod}"
