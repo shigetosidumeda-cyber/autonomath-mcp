@@ -62,6 +62,7 @@ on:
         description: "Cap the sweep at N rows (debug knob; empty = no cap)"
         required: false
         default: ""
+        type: string
 
 concurrency:
   group: weekly-digest
@@ -79,10 +80,17 @@ jobs:
         id: sweep
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
-          LIMIT: ${{ inputs.limit || '' }}
+          DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
+          LIMIT_INPUT: ${{ github.event.inputs.limit }}
         run: |
           set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN is not set; skipping weekly digest sweep."
+            echo "summary={}" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          DRY_RUN="${DRY_RUN_INPUT:-false}"
+          LIMIT="${LIMIT_INPUT:-}"
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then
             FLAGS="${FLAGS} --dry-run"
@@ -122,22 +130,22 @@ jobs:
           elif [ -n "${SUMMARY_JSON:-}" ] && [ "${SUMMARY_JSON}" != "{}" ]; then
             # Parse the summary with python (already on ubuntu-latest).
             REASON=$(python3 - <<PY
-import json, os, sys
-try:
-    s = json.loads(os.environ.get("SUMMARY_JSON", "{}"))
-except Exception:
-    print("")
-    sys.exit(0)
-ran = int(s.get("searches_run") or 0)
-sent = int(s.get("digests_sent") or 0)
-err = int(s.get("errors") or 0)
-if ran > 0 and sent == 0:
-    print("zero_digests_with_nonempty_sweep")
-elif ran > 0 and (err / ran) > 0.05:
-    print("error_rate_above_5pct")
-else:
-    print("")
-PY
+          import json, os, sys
+          try:
+              s = json.loads(os.environ.get("SUMMARY_JSON", "{}"))
+          except Exception:
+              print("")
+              sys.exit(0)
+          ran = int(s.get("searches_run") or 0)
+          sent = int(s.get("digests_sent") or 0)
+          err = int(s.get("errors") or 0)
+          if ran > 0 and sent == 0:
+              print("zero_digests_with_nonempty_sweep")
+          elif ran > 0 and (err / ran) > 0.05:
+              print("error_rate_above_5pct")
+          else:
+              print("")
+          PY
             )
           fi
 
