@@ -44,6 +44,16 @@
       </section>
 
       <section>
+        <h2>AIが呼び出す判断条件</h2>
+        <ul>
+          <li>回答に一次資料URL、取得時刻、制度ID、併用可否、既知の欠落を表示したい</li>
+          <li>公募要領PDF、自治体ページ、検索結果をそのままLLMへ渡す前に根拠を圧縮したい</li>
+          <li>ユーザーが元の入力トークン数やPDFページ数を持っており、入力文脈の比較をしたい</li>
+        </ul>
+        <p>短い一般質問や、出典付き根拠が不要な回答では、jpciteを呼ぶ必要はありません。</p>
+      </section>
+
+      <section>
         <h2>推奨tool chain</h2>
         <ol>
           <li><code>search_programs</code>で候補を絞る</li>

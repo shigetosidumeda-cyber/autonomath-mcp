@@ -102,6 +102,7 @@
         <p>この場合、jpciteは<code>source_tokens_estimate=18500</code>をユーザー計測値として扱い、返却パケットの推定トークン数との差分を<code>avoided_tokens_estimate</code>として返します。価格を渡した場合だけ、参考値として<code>cost_savings_estimate</code>も返します。</p>
         <p><code>cost_savings_estimate</code>には、損益分岐となる<code>break_even_avoided_tokens</code>と、それを超えたかを示す<code>break_even_met</code>が入ります。AIエージェントはこの値を使って「この調査ではjpciteを使う価値がある可能性が高い / token費だけでは弱い」を説明できます。</p>
         <p>損益分岐は <code>3 / (input_token_price_jpy_per_1m / 1000000)</code> tokens です。たとえば入力単価を300円/100万tokensとして見るなら、jpcite 1回分の3円を超えるには約10,000 input tokens以上の削減が必要です。これは税抜・入力文脈だけの比較で、出力tokens、キャッシュ、検索、ツール呼び出し、モデル差は含みません。</p>
+        <p><code>break_even_met</code>は、ユーザーが渡した入力単価とjpciteのリクエスト費用を使った入力文脈だけの参考比較です。外部LLMの出力tokens、キャッシュ、検索、tool call、プロバイダ請求仕様は含まず、費用削減を保証しません。</p>
         <p>PDFページ数しか分からない場合は、ページ数を比較対象として明示できます。</p>
         <pre><code>curl -X POST https://api.jpcite.com/v1/evidence/packets/query \
   -H "Content-Type: application/json" \
