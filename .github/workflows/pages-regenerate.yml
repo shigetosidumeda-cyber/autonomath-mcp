@@ -4,7 +4,7 @@
 # on its next deploy.
 #
 # Why we commit static HTML instead of generating at request time:
-#   - autonomath.ai is a static site on Cloudflare Pages; no server runtime.
+#   - jpcite.com is a static site on Cloudflare Pages; no server runtime.
 #   - Per-program pages are the SEO/GEO surface area (≈10k rows). Crawlers
 #     need addressable URLs with prerendered JSON-LD, not SPA placeholders.
 #   - Idempotent generator (`_write_if_changed`) keeps the diff minimal.
@@ -101,7 +101,7 @@ jobs:
           python scripts/generate_program_pages.py \
             --db data/jpintel.db \
             --out site/programs \
-            --domain autonomath.ai \
+            --domain jpcite.com \
             --sitemap site/sitemap-programs.xml \
             --verbose
 
@@ -113,7 +113,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Only stage the regenerated artefacts; never commit the pulled DB.
-          git add site/programs/ site/sitemap-programs.xml site/sitemap-programs-*.xml 2>/dev/null || true
+          git add site/programs/ site/structured/ site/sitemap-programs.xml site/sitemap-programs-*.xml site/sitemap-structured.xml 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No changes to commit (regeneration was idempotent)."
             exit 0
