@@ -2,15 +2,19 @@ name: news-pipeline-cron
 
 # Daily news + RSS regeneration pipeline.
 #
-# Composes 4 cron scripts that share a producer/consumer relationship:
+# Composes 5 cron scripts that share a producer/consumer relationship:
 #   1. refresh_amendment_diff.py          — append-only diff log refresher
-#                                           (feeds the next 3 jobs).
+#                                           (feeds the next 4 jobs).
 #   2. generate_news_posts.py             — emits site/news/*.html from new
 #                                           am_amendment_diff rows.
 #   3. regenerate_rss.py                  — site/rss.xml + site/en/rss.xml
 #                                           from site/news/*.html.
 #   4. regenerate_audit_log_rss.py        — site/audit-log.rss from
 #                                           am_amendment_diff (separate feed).
+#   5. generate_program_rss_feeds.py      — site/rss/programs-tier-s.xml,
+#                                           site/rss/amendments.xml, and
+#                                           site/rss/prefecture/{slug}.xml × 47
+#                                           (organic SEO discovery surface).
 #
 # Sequence matters: (1) populates the diff log, (2) reads diffs and writes
 # news posts, (3) reads news posts and writes the public news RSS, (4)
@@ -47,7 +51,7 @@ on:
           - "true"
           - "false"
       stage:
-        description: "Run one stage only (diff/news/rss/audit-rss, blank = all)"
+        description: "Run one stage only (diff/news/rss/audit-rss/program-feeds, blank = all)"
         required: false
         default: ""
         type: choice
@@ -57,6 +61,7 @@ on:
           - "news"
           - "rss"
           - "audit-rss"
+          - "program-feeds"
 
 concurrency:
   group: news-pipeline-cron
@@ -120,6 +125,18 @@ jobs:
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
             "/app/.venv/bin/python /app/scripts/cron/regenerate_audit_log_rss.py ${FLAGS}"
+
+      - name: Generate program RSS feeds (Tier S + amendments + 47 prefectures)
+        if: inputs.stage == '' || inputs.stage == 'program-feeds'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/app/.venv/bin/python /app/scripts/etl/generate_program_rss_feeds.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()
