@@ -69,6 +69,8 @@ For `jpcite_precomputed_intelligence` only:
 | median_context_reduction_rate | ...% |
 | context_reduction_rate_p25-p75 | ...% - ...% |
 | break_even_rate | ...% |
+| baseline_source_method_breakdown | `<caller_token_count: ..., pdf_pages_estimate: ...>` |
+| break_even_rate_by_price | `<¥100/1M: ..., ¥300/1M: ..., ¥1000/1M: ...>` |
 | zero_result_rate | ...% |
 
 Use `records_returned` as the per-query returned-record count or as the
@@ -77,7 +79,9 @@ of precomputed-arm queries where `records_returned = 0`.
 `packet_tokens_estimate` is an estimate of context size, not a measured
 LLM billing token count. `median_context_reduction_rate` and
 `break_even_rate` are input-context estimates from the probe; they are
-not provider billing guarantees.
+not provider billing guarantees. `break_even_rate_by_price` is a
+sensitivity table only; keep measured token-count baselines separate
+from PDF-page estimates when writing the result narrative.
 
 ### Cost-per-answer distribution
 
@@ -150,12 +154,15 @@ python tools/offline/bench_harness.py \
 python tools/offline/bench_prefetch_probe.py \
     --queries-csv tools/offline/bench_queries_2026_04_30.csv \
     --rows-csv bench_prefetch_probe.csv \
-    --input-token-price-jpy-per-1m 300
+    --input-token-price-jpy-per-1m 300 \
+    --price-scenarios 100,300,1000
 
 # Copy records_returned, precomputed_record_count, packet_tokens_estimate,
 # baseline_source_method, source_tokens_estimate, input_context_reduction_rate,
 # break_even_source_tokens_estimate, and break_even_met from
 # bench_prefetch_probe.csv into the matching jpcite rows when present.
+# Copy baseline_source_method_breakdown and break_even_rate_by_price from
+# the JSON summary into the aggregate table/disclosure when present.
 # Leave fields empty when the probe cannot measure them.
 
 # 3. Operator runs each instruction line manually against their LLM

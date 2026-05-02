@@ -292,6 +292,14 @@ def test_probe_computes_break_even_when_source_token_baseline_is_supplied(
     assert summary["context_reduction_rate_p75"] is not None
     assert summary["break_even_rate_by_domain"]["subsidy"]["break_even_rate"] == 1.0
     assert summary["break_even_rate_by_domain"]["tax"]["break_even_rate"] == 0.0
+    assert (
+        summary["baseline_source_method_breakdown"]["caller_token_count"][
+            "queries_with_source_token_baseline"
+        ]
+        == 2
+    )
+    assert summary["price_scenarios_jpy_per_1m"] == [300.0]
+    assert summary["break_even_rate_by_price"]["300"]["break_even_rate"] == 0.5
     assert summary["net_savings_jpy_ex_tax_total"] is not None
 
     with rows_csv.open("r", encoding="utf-8", newline="") as f:
@@ -311,6 +319,51 @@ def test_probe_computes_break_even_when_source_token_baseline_is_supplied(
         calls = [json.loads(line) for line in f if line.strip()]
     assert calls[0]["kwargs"]["source_token_count"] == 25000
     assert calls[0]["kwargs"]["input_token_price_jpy_per_1m"] == 300.0
+
+
+def test_probe_emits_price_sensitivity_without_per_row_price(
+    tmp_path: Path,
+) -> None:
+    queries_csv = tmp_path / "queries.csv"
+    queries_csv.write_text(
+        "\n".join(
+            [
+                "query_id,domain,query_text,source_token_count",
+                "1,subsidy,長い公募要領を読む,25000",
+                "2,tax,短い根拠を確認,1200",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    call_log = tmp_path / "composer_calls.jsonl"
+    stub_path = _install_offline_composer_stub(tmp_path)
+
+    result = _run_probe(
+        "--queries-csv",
+        str(queries_csv),
+        "--price-scenarios",
+        "100,300,1000",
+        pythonpath=stub_path,
+        call_log=call_log,
+    )
+
+    assert result.returncode == 0, result.stderr
+    summary = json.loads(result.stdout)
+    assert summary["queries_with_source_token_baseline"] == 2
+    assert summary["queries_with_break_even_inputs"] == 0
+    assert summary["price_scenarios_jpy_per_1m"] == [100.0, 300.0, 1000.0]
+    assert summary["break_even_rate_by_price"]["100"]["break_even_rate"] == 0.0
+    assert summary["break_even_rate_by_price"]["300"]["break_even_rate"] == 0.5
+    assert summary["break_even_rate_by_price"]["1000"]["break_even_rate"] == 0.5
+    assert (
+        summary["baseline_source_method_breakdown"]["caller_token_count"]["source_tokens_total"]
+        == 26200
+    )
+
+    with call_log.open("r", encoding="utf-8") as f:
+        calls = [json.loads(line) for line in f if line.strip()]
+    assert all(call["kwargs"]["input_token_price_jpy_per_1m"] is None for call in calls)
 
 
 def test_probe_computes_break_even_when_pdf_page_baseline_is_supplied(

@@ -136,7 +136,8 @@ Typical sequence:
 python tools/offline/bench_prefetch_probe.py \
     --queries-csv tools/offline/bench_queries_2026_04_30.csv \
     --rows-csv bench_prefetch_probe.csv \
-    --input-token-price-jpy-per-1m 300
+    --input-token-price-jpy-per-1m 300 \
+    --price-scenarios 100,300,1000
 ```
 
 Use the probe output to fill, for each applicable jpcite row:
@@ -161,6 +162,11 @@ Use the probe output to fill, for each applicable jpcite row:
   the supplied input-token price.
 - `break_even_met`: only when both a source baseline and
   `--input-token-price-jpy-per-1m` are supplied.
+- `baseline_source_method_breakdown`: summary grouping that keeps
+  measured token counts separate from PDF-page estimates.
+- `break_even_rate_by_price`: summary-only sensitivity table for the
+  prices supplied with `--price-scenarios`. It does not create per-row
+  provider-billing claims.
 
 Leave a field empty when the prefetch response or probe cannot measure
 it. Do not substitute an assumed value. If the operator changes the
@@ -349,8 +355,10 @@ python tools/offline/bench_harness.py \
 #    Copy measured records_returned, precomputed_record_count, and
 #    packet_tokens_estimate into the matching bench_results.csv rows.
 python tools/offline/bench_prefetch_probe.py \
-    --instructions-jsonl bench_instructions.jsonl \
-    --output-csv bench_prefetch_probe.csv
+    --queries-csv tools/offline/bench_queries_2026_04_30.csv \
+    --rows-csv bench_prefetch_probe.csv \
+    --input-token-price-jpy-per-1m 300 \
+    --price-scenarios 100,300,1000
 
 # 3. Operator runs each instruction line manually against their LLM
 #    provider and writes results to bench_results.csv with the columns

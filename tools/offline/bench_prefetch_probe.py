@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from jpintel_mcp.config import settings
 from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
 
 DEFAULT_QUERIES_CSV = Path("tools/offline/bench_queries_2026_04_30.csv")
+JPCITE_BILLABLE_UNIT_JPY_EX_TAX = 3
 
 ROW_FIELDNAMES: tuple[str, ...] = (
     "query_id",
@@ -163,7 +165,48 @@ def _probe_row(
     }
 
 
-def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+def _price_key(price: float) -> str:
+    return str(int(price)) if float(price).is_integer() else str(price)
+
+
+def _break_even_for_price(rows: list[dict[str, Any]], price: float) -> dict[str, Any]:
+    eligible = [
+        row
+        for row in rows
+        if row.get("source_tokens_estimate") not in (None, "")
+        and row.get("packet_tokens_estimate") not in (None, "")
+    ]
+    if price <= 0 or not eligible:
+        return {
+            "queries_with_source_token_baseline": len(eligible),
+            "break_even_queries": 0,
+            "break_even_rate": 0.0,
+            "break_even_avoided_tokens": None,
+        }
+    break_even_tokens = math.ceil(JPCITE_BILLABLE_UNIT_JPY_EX_TAX / (price / 1_000_000))
+    met = 0
+    net_values: list[float] = []
+    for row in eligible:
+        source_tokens = int(row["source_tokens_estimate"])
+        packet_tokens = int(row["packet_tokens_estimate"])
+        avoided = max(0, source_tokens - packet_tokens)
+        if avoided >= break_even_tokens:
+            met += 1
+        net_values.append(round(avoided * price / 1_000_000 - JPCITE_BILLABLE_UNIT_JPY_EX_TAX, 4))
+    return {
+        "queries_with_source_token_baseline": len(eligible),
+        "break_even_queries": met,
+        "break_even_rate": round(met / len(eligible), 4),
+        "break_even_avoided_tokens": break_even_tokens,
+        "net_savings_jpy_ex_tax_total": round(sum(net_values), 4),
+    }
+
+
+def _summary(
+    rows: list[dict[str, Any]],
+    *,
+    price_scenarios_jpy_per_1m: list[float] | None = None,
+) -> dict[str, Any]:
     total = len(rows)
     zero = sum(1 for row in rows if int(row["records_returned"]) == 0)
     with_precomputed = sum(1 for row in rows if int(row["precomputed_record_count"]) > 0)
@@ -235,6 +278,45 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             else 0.0,
             "median_context_reduction_rate": median(bucket["context_reduction_rates"]),
         }
+
+    by_baseline_method: dict[str, dict[str, Any]] = {}
+    for row in with_source_tokens:
+        method = str(row.get("baseline_source_method") or "unknown")
+        bucket = by_baseline_method.setdefault(
+            method,
+            {
+                "queries_with_source_token_baseline": 0,
+                "break_even_queries": 0,
+                "context_reduction_rates": [],
+                "source_tokens_total": 0,
+            },
+        )
+        bucket["queries_with_source_token_baseline"] += 1
+        bucket["source_tokens_total"] += int(row["source_tokens_estimate"] or 0)
+        if str(row.get("break_even_met")).lower() == "true":
+            bucket["break_even_queries"] += 1
+        if row.get("input_context_reduction_rate") not in (None, ""):
+            bucket["context_reduction_rates"].append(float(row["input_context_reduction_rate"]))
+    baseline_source_method_breakdown = {}
+    for method, bucket in sorted(by_baseline_method.items()):
+        baseline_count = int(bucket["queries_with_source_token_baseline"])
+        break_even_count = int(bucket["break_even_queries"])
+        baseline_source_method_breakdown[method] = {
+            "queries_with_source_token_baseline": baseline_count,
+            "source_tokens_total": int(bucket["source_tokens_total"]),
+            "break_even_queries": break_even_count,
+            "break_even_rate": round(break_even_count / baseline_count, 4)
+            if baseline_count
+            else 0.0,
+            "median_context_reduction_rate": median(bucket["context_reduction_rates"]),
+        }
+
+    price_scenarios = price_scenarios_jpy_per_1m or []
+    break_even_rate_by_price = {
+        _price_key(price): _break_even_for_price(rows, price)
+        for price in price_scenarios
+        if price > 0
+    }
     return {
         "total_queries": total,
         "zero_result_queries": zero,
@@ -269,6 +351,9 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             round(max(context_reduction_values), 4) if context_reduction_values else None
         ),
         "break_even_rate_by_domain": break_even_rate_by_domain,
+        "baseline_source_method_breakdown": baseline_source_method_breakdown,
+        "price_scenarios_jpy_per_1m": price_scenarios,
+        "break_even_rate_by_price": break_even_rate_by_price,
         "net_savings_jpy_ex_tax_total": (
             round(sum(net_savings_values), 1) if net_savings_values else None
         ),
@@ -315,12 +400,38 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--price-scenarios",
+        default="",
+        help=(
+            "Optional comma-separated JPY-per-1M input-token prices for "
+            "summary-only break-even sensitivity, for example 100,300,1000."
+        ),
+    )
+    parser.add_argument(
         "--rows-csv",
         type=Path,
         default=None,
         help="Optional path to write per-query metrics as CSV",
     )
     return parser.parse_args(argv)
+
+
+def _parse_price_scenarios(raw: str) -> list[float]:
+    prices: list[float] = []
+    seen: set[float] = set()
+    for part in raw.split(","):
+        text = part.strip()
+        if not text:
+            continue
+        try:
+            price = float(text)
+        except ValueError:
+            continue
+        if price <= 0 or price in seen:
+            continue
+        seen.add(price)
+        prices.append(price)
+    return prices
 
 
 def main(argv: list[str] | None = None, out=sys.stdout) -> int:
@@ -345,8 +456,22 @@ def main(argv: list[str] | None = None, out=sys.stdout) -> int:
     ]
     if args.rows_csv is not None:
         _write_rows_csv(args.rows_csv, rows)
+    price_scenarios = _parse_price_scenarios(args.price_scenarios)
+    if (
+        args.input_token_price_jpy_per_1m is not None
+        and args.input_token_price_jpy_per_1m > 0
+        and args.input_token_price_jpy_per_1m not in set(price_scenarios)
+    ):
+        price_scenarios.append(args.input_token_price_jpy_per_1m)
     try:
-        out.write(json.dumps(_summary(rows), ensure_ascii=False, indent=2) + "\n")
+        out.write(
+            json.dumps(
+                _summary(rows, price_scenarios_jpy_per_1m=price_scenarios),
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n"
+        )
     except BrokenPipeError:
         return 0
     return 0
