@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation & FAQ
-    url: https://zeimu-kaikei.ai/docs/
+    url: https://jpcite.com/docs/
     about: Quickstart, MCP setup, REST API reference, pricing, and known limitations. Most questions are answered here.
   - name: Support (email)
     url: mailto:info@bookyou.net

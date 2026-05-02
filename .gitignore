@@ -15,6 +15,7 @@ venv/
 *.db-journal
 data/jpintel.db
 data/*.sqlite*
+data/workpapers/
 # Root-level graph + sqlite working files (analysis_wave18 KG scratch).
 # Side files (-wal/-shm) covered by *.db-wal / *.db-shm above don't apply
 # to .sqlite siblings — name them explicitly.

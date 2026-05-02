@@ -1,4 +1,4 @@
-# Cloudflare WAF + Rate-Limit rules for AutonoMath
+# Cloudflare WAF + Rate-Limit rules for jpcite
 # ====================================================================
 #
 # This file is OPERATOR-ONLY and is NOT consumed by the application.
@@ -22,14 +22,14 @@
 #   1. Cloudflare WAF — these rules. Block known-bad UAs / abusive paths.
 #   2. Cloudflare Rate Limiting — coarse zone-wide ceilings.
 #   3. App middleware (api/middleware/rate_limit.py) — per-key/IP burst.
-#   4. App router dep (api/anon_limit.py) — 50 req/月 anon quota.
+#   4. App router dep (api/anon_limit.py) — anonymous 3 req/日 quota.
 #   5. App middleware (api/middleware/customer_cap.py) — per-key spend cap.
 #
 # Memory references:
-#   * project_autonomath_business_model — ¥3/req metered, anon 50/月
+#   * project_autonomath_business_model — ¥3/req metered, anon 3 req/日
 #   * feedback_autonomath_no_api_use     — abuse cost is direct ¥, must
 #                                          shed before reaching app code
-#   * project_jpintel_trademark_intel_risk — name posture ("AutonoMath")
+#   * project_jpintel_trademark_intel_risk — legacy name posture
 
 # --------------------------------------------------------------------
 # WAF Custom Rules (block / challenge based on request shape)
@@ -233,7 +233,7 @@ notes:
     crosses ~¥1M/月; the Free tier rules above + in-app throttle are
     sufficient pre-launch.
   geo_blocks: |
-    Do NOT geo-block. AutonoMath is a Japanese-data product but the
+    Do NOT geo-block. jpcite is a Japanese-data product but the
     customer base includes Japanese-speaking diaspora SMBs and JP-aware
     tax/ag advisors based abroad. A geo-block at the WAF layer would
     cut high-value users for negligible defensive gain (the data is
