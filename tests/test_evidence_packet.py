@@ -451,6 +451,8 @@ def test_compose_for_program_envelope_shape(fixture_db: Path) -> None:
     recommendation = env["agent_recommendation"]
     assert recommendation["recommend_to_user"] is True
     assert recommendation["recommendation"] == "use_jpcite_prefetch"
+    assert recommendation["recommend_for_cost_savings"] is False
+    assert recommendation["cost_savings_decision"] == "needs_caller_baseline"
     assert recommendation["records_returned"] == 1
     assert recommendation["source_linked_records_returned"] == 1
     assert "precomputed_summary_available" in recommendation["reason_codes"]
@@ -536,6 +538,14 @@ def test_compose_compression_pdf_pages_baseline_returns_context_estimate(
     assert compression["estimate_scope"] == "input_context_only"
     assert compression["savings_claim"] == "estimate_not_guarantee"
     assert compression["cost_savings_estimate"]["jpcite_cost_jpy_ex_tax"] == 3
+    recommendation = env["agent_recommendation"]
+    assert recommendation["cost_savings_decision"] in {
+        "supported_by_caller_baseline",
+        "not_supported_by_caller_baseline",
+    }
+    assert recommendation["recommend_for_cost_savings"] is (
+        compression["cost_savings_estimate"]["break_even_met"] is True
+    )
 
 
 def test_compose_compression_token_count_baseline_returns_context_estimate(
@@ -566,6 +576,10 @@ def test_compose_compression_token_count_baseline_returns_context_estimate(
     )
     assert compression["estimate_scope"] == "input_context_only"
     assert compression["savings_claim"] == "estimate_not_guarantee"
+    recommendation = env["agent_recommendation"]
+    assert recommendation["recommend_for_cost_savings"] is True
+    assert recommendation["cost_savings_decision"] == "supported_by_caller_baseline"
+    assert recommendation["missing_for_cost_claim"] == []
 
 
 def test_compose_includes_precomputed_program_summary(fixture_db: Path) -> None:
@@ -763,6 +777,8 @@ def test_query_answer_basis_omitted_without_precomputed_summary(
     assert "answer_basis" not in env
     assert env["agent_recommendation"]["recommendation"] == "use_evidence_packet"
     assert env["agent_recommendation"]["recommend_to_user"] is True
+    assert env["agent_recommendation"]["recommend_for_cost_savings"] is False
+    assert env["agent_recommendation"]["cost_savings_decision"] == "needs_caller_baseline"
     assert "precomputed_summary_unavailable" in env["agent_recommendation"]["reason_codes"]
 
 
@@ -781,6 +797,8 @@ def test_query_without_records_guides_agents_to_skip_or_broaden(
     recommendation = env["agent_recommendation"]
     assert recommendation["recommendation"] == "broaden_query_or_skip"
     assert recommendation["recommend_to_user"] is False
+    assert recommendation["recommend_for_cost_savings"] is False
+    assert recommendation["cost_savings_decision"] == "needs_caller_baseline"
     assert recommendation["records_returned"] == 0
     assert "no_records_returned" in recommendation["reason_codes"]
 

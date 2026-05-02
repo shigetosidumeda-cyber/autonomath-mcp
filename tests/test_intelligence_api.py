@@ -171,6 +171,9 @@ def test_precomputed_intelligence_query_returns_compact_bundle(
     recommendation = body["agent_recommendation"]
     assert recommendation["recommendation"] == "use_jpcite_prefetch"
     assert recommendation["recommend_to_user"] is True
+    assert recommendation["recommend_for_cost_savings"] is False
+    assert recommendation["cost_savings_decision"] == "needs_caller_baseline"
+    assert "source_pdf_pages_or_source_token_count" in recommendation["missing_for_cost_claim"]
     assert recommendation["route"] == "/v1/intelligence/precomputed/query"
     assert "precomputed_summary_available" in recommendation["reason_codes"]
     assert "context_savings_baseline_needed" in recommendation["reason_codes"]
@@ -257,6 +260,9 @@ def test_precomputed_intelligence_query_token_count_compression(
     recommendation = response.json()["agent_recommendation"]
     assert recommendation["context_savings"]["evaluated"] is True
     assert recommendation["context_savings"]["break_even_met"] is True
+    assert recommendation["recommend_for_cost_savings"] is True
+    assert recommendation["cost_savings_decision"] == "supported_by_caller_baseline"
+    assert recommendation["missing_for_cost_claim"] == []
     assert "caller_baseline_break_even_met" in recommendation["reason_codes"]
 
 
@@ -307,3 +313,5 @@ def test_precomputed_intelligence_route_is_mounted(
     assert "precomputed_summary_unavailable" in body["quality"]["known_gaps"]
     assert body["agent_recommendation"]["recommendation"] == "broaden_query_or_skip"
     assert body["agent_recommendation"]["recommend_to_user"] is False
+    assert body["agent_recommendation"]["recommend_for_cost_savings"] is False
+    assert body["agent_recommendation"]["cost_savings_decision"] == "needs_caller_baseline"

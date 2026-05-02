@@ -1100,6 +1100,40 @@ class EvidencePacketComposer:
         return summary
 
     @staticmethod
+    def _cost_savings_decision(context_savings: dict[str, Any] | None) -> dict[str, Any]:
+        """Tell agents whether a cost-savings recommendation is justified."""
+        if not context_savings or context_savings.get("evaluated") is not True:
+            return {
+                "recommend_for_cost_savings": False,
+                "cost_savings_decision": "needs_caller_baseline",
+                "missing_for_cost_claim": [
+                    "source_tokens_basis",
+                    "source_pdf_pages_or_source_token_count",
+                    "input_token_price_jpy_per_1m",
+                ],
+            }
+
+        if context_savings.get("break_even_met") is True:
+            return {
+                "recommend_for_cost_savings": True,
+                "cost_savings_decision": "supported_by_caller_baseline",
+                "missing_for_cost_claim": [],
+            }
+
+        if context_savings.get("break_even_met") is False:
+            return {
+                "recommend_for_cost_savings": False,
+                "cost_savings_decision": "not_supported_by_caller_baseline",
+                "missing_for_cost_claim": [],
+            }
+
+        return {
+            "recommend_for_cost_savings": False,
+            "cost_savings_decision": "needs_input_token_price",
+            "missing_for_cost_claim": ["input_token_price_jpy_per_1m"],
+        }
+
+    @staticmethod
     def _source_linked_record_count(records: list[dict[str, Any]]) -> int:
         count = 0
         for rec in records:
@@ -1147,6 +1181,7 @@ class EvidencePacketComposer:
                     "the query or use a more specific endpoint."
                 ),
                 "context_savings": context_savings,
+                **cls._cost_savings_decision(context_savings),
             }
 
         reason_codes = ["source_linked_records_returned"]
@@ -1185,6 +1220,7 @@ class EvidencePacketComposer:
                     "packet lacks source-linked evidence."
                 ),
                 "context_savings": context_savings,
+                **cls._cost_savings_decision(context_savings),
             }
 
         if precomputed_count > 0:
@@ -1201,6 +1237,7 @@ class EvidencePacketComposer:
                     "source-linked context without a request-time LLM call."
                 ),
                 "context_savings": context_savings,
+                **cls._cost_savings_decision(context_savings),
             }
 
         return {
@@ -1215,6 +1252,7 @@ class EvidencePacketComposer:
                 "savings as unproven until a comparable baseline is supplied."
             ),
             "context_savings": context_savings,
+            **cls._cost_savings_decision(context_savings),
         }
 
     @classmethod

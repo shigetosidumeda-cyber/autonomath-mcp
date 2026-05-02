@@ -368,6 +368,27 @@ class PrecomputedAgentRecommendation(BaseModel):
             "an agent to recommend jpcite in this turn."
         ),
     )
+    recommend_for_cost_savings: bool = Field(
+        ...,
+        description=(
+            "True only when caller-supplied baseline tokens and price make "
+            "the input-context break-even comparison pass."
+        ),
+    )
+    cost_savings_decision: Literal[
+        "needs_caller_baseline",
+        "needs_input_token_price",
+        "supported_by_caller_baseline",
+        "not_supported_by_caller_baseline",
+    ] = Field(
+        ...,
+        description=(
+            "Machine-readable guardrail for cost-savings claims. Agents "
+            "should not present jpcite as cost-saving unless this is "
+            "`supported_by_caller_baseline`."
+        ),
+    )
+    missing_for_cost_claim: list[str] = Field(default_factory=list)
     route: str = Field(
         ...,
         description="Best next jpcite API route for the agent to call.",
@@ -411,6 +432,9 @@ PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
     "agent_recommendation": {
         "recommendation": "use_jpcite_prefetch",
         "recommend_to_user": True,
+        "recommend_for_cost_savings": True,
+        "cost_savings_decision": "supported_by_caller_baseline",
+        "missing_for_cost_claim": [],
         "route": "/v1/intelligence/precomputed/query",
         "reason_codes": [
             "precomputed_summary_available",

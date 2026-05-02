@@ -958,6 +958,9 @@ curl -H "X-API-Key: am_..." \
 | `compression.source_tokens_input_source` | string | `caller_supplied` の場合のみ、caller が渡した baseline に基づく比較であることを示す |
 | `compression.savings_claim` | string | 常に `estimate_not_guarantee`。保証値ではなく参考推定であることを示す |
 | `agent_recommendation.recommendation` | string | AI agent 向けの次アクション。`use_jpcite_prefetch` / `use_evidence_packet` / `broaden_query_or_skip` |
+| `agent_recommendation.recommend_for_cost_savings` | bool | `true` のときだけ、caller が渡した baseline と token 単価で break-even を満たしたことを示す |
+| `agent_recommendation.cost_savings_decision` | string | `supported_by_caller_baseline` のときだけ、AI は「この条件ならコスト削減の可能性がある」と説明できる |
+| `agent_recommendation.missing_for_cost_claim` | array | コスト削減として説明するために不足している caller 入力 |
 | `agent_recommendation.context_savings` | object | caller baseline がある場合だけ、`break_even_met` や `avoided_tokens_estimate` を機械可読にまとめる |
 
 ---

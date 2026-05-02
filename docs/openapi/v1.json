@@ -7759,10 +7759,28 @@
             "description": "Break-even and avoided-token estimate when the caller supplied a comparable source-token baseline.",
             "title": "Context Savings"
           },
+          "cost_savings_decision": {
+            "description": "Machine-readable guardrail for cost-savings claims. Agents should not present jpcite as cost-saving unless this is `supported_by_caller_baseline`.",
+            "enum": [
+              "needs_caller_baseline",
+              "needs_input_token_price",
+              "supported_by_caller_baseline",
+              "not_supported_by_caller_baseline"
+            ],
+            "title": "Cost Savings Decision",
+            "type": "string"
+          },
           "message": {
             "description": "Short human-readable explanation for the recommendation.",
             "title": "Message",
             "type": "string"
+          },
+          "missing_for_cost_claim": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing For Cost Claim",
+            "type": "array"
           },
           "reason_codes": {
             "items": {
@@ -7770,6 +7788,11 @@
             },
             "title": "Reason Codes",
             "type": "array"
+          },
+          "recommend_for_cost_savings": {
+            "description": "True only when caller-supplied baseline tokens and price make the input-context break-even comparison pass.",
+            "title": "Recommend For Cost Savings",
+            "type": "boolean"
           },
           "recommend_to_user": {
             "description": "True when the response contains enough source-linked value for an agent to recommend jpcite in this turn.",
@@ -7794,6 +7817,8 @@
         "required": [
           "recommendation",
           "recommend_to_user",
+          "recommend_for_cost_savings",
+          "cost_savings_decision",
           "route",
           "message"
         ],
@@ -7812,13 +7837,16 @@
               "savings_claim": "estimate_not_guarantee",
               "source_tokens_basis": "pdf_pages"
             },
+            "cost_savings_decision": "supported_by_caller_baseline",
             "message": "Use this bundle before sending long Japanese public-program sources to an LLM; it provides compact, source-linked context.",
+            "missing_for_cost_claim": [],
             "reason_codes": [
               "precomputed_summary_available",
               "source_linked_records_returned",
               "no_request_time_llm",
               "no_live_web_search"
             ],
+            "recommend_for_cost_savings": true,
             "recommend_to_user": true,
             "recommendation": "use_jpcite_prefetch",
             "route": "/v1/intelligence/precomputed/query"
@@ -21546,13 +21574,16 @@
                       "savings_claim": "estimate_not_guarantee",
                       "source_tokens_basis": "pdf_pages"
                     },
+                    "cost_savings_decision": "supported_by_caller_baseline",
                     "message": "Use this bundle before sending long Japanese public-program sources to an LLM; it provides compact, source-linked context.",
+                    "missing_for_cost_claim": [],
                     "reason_codes": [
                       "precomputed_summary_available",
                       "source_linked_records_returned",
                       "no_request_time_llm",
                       "no_live_web_search"
                     ],
+                    "recommend_for_cost_savings": true,
                     "recommend_to_user": true,
                     "recommendation": "use_jpcite_prefetch",
                     "route": "/v1/intelligence/precomputed/query"
