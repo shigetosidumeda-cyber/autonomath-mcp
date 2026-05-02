@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — 日本の制度を AI から検索できる REST + MCP API。</title>
-<meta name="description" content="GPT/Claude/Cursor が回答を書く前に、日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得する REST + MCP API。文脈サイズ比較は条件依存、¥3/リクエスト。">
+<meta name="description" content="GPT/Claude/Cursor が回答を書く前に、日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得する REST + MCP API。文脈サイズ比較は条件依存。現在の公開料金はPricingに掲載。">
 
 <meta property="og:title" content="jpcite — 日本の制度根拠を AI に渡す Evidence API">
 <meta property="og:description" content="長いPDFや公式ページをLLMへ渡す前に、一次資料URL・取得時刻・既知の欠落を短いEvidence Packetで取得。文脈サイズ比較は条件依存。">
@@ -58,11 +58,11 @@
   "url": "https://jpcite.com/",
   "inLanguage": "ja",
   "offers": [
-    {"@type": "Offer", "name": "API + MCP", "price": "3", "priceCurrency": "JPY", "description": "1 リクエスト ¥3 (税込 ¥3.30)。 匿名で 3 req/日 まで無料"},
-    {"@type": "Offer", "name": "LINE bot", "price": "3", "priceCurrency": "JPY", "description": "1 質問 ¥3 (税込 ¥3.30)。 無料枠は 1 日 3 件まで"},
-    {"@type": "Offer", "name": "法令改正アラート", "price": "3", "priceCurrency": "JPY", "description": "1 通知 ¥3 (税込 ¥3.30)。 通知ごとの完全従量"},
-    {"@type": "Offer", "name": "埋込ウィジェット", "price": "3", "priceCurrency": "JPY", "description": "1 検索 ¥3 (税込 ¥3.30)。 サイト訪問者の検索ごと従量"},
-    {"@type": "Offer", "name": "士業 案件紹介", "price": "0", "priceCurrency": "JPY", "description": "利用無料。 成約時に専門家が ¥3,300 を支払う"}
+    {"@type": "Offer", "name": "API + MCP", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "LINE bot", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "法令改正アラート", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "埋込ウィジェット", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "士業 案件紹介", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
   ],
   "featureList": [
     "制度 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
@@ -194,9 +194,8 @@
   "isAccessibleForFree": true,
   "offers": {
     "@type": "Offer",
-    "price": "3",
-    "priceCurrency": "JPY",
-    "description": "¥3/req 税別 (税込 ¥3.30)、匿名 3 req/日 per IP 無料 (JST 翌日リセット)"
+    "url": "https://jpcite.com/pricing.html",
+    "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"
   }
 }
 </script>
@@ -211,7 +210,7 @@
       "description": "93 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/req 税別 (税込 ¥3.30)、匿名 3 req/日 無料"}
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
@@ -219,7 +218,7 @@
       "description": "LINE 上で補助金・融資を自然言語検索。SME 経営者 / 士業向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/line.html",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "¥3/質問 税別 (税込 ¥3.30)、無料枠は 1 日 3 件まで、完全従量"}
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
@@ -227,7 +226,7 @@
       "description": "インボイス・電帳法等の法令改正を E メールで通知。士業 / 経理担当向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/alerts.html",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "1 通知 ¥3 (税込 ¥3.30)、完全従量"}
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
@@ -235,7 +234,7 @@
       "description": "自社サイトに 1 行で補助金検索を埋め込み。税理士 HP / 商工会議所 / 士業事務所向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/widget.html",
-      "offers": {"@type": "Offer", "price": "3", "priceCurrency": "JPY", "description": "1 検索 ¥3 税別 (税込 ¥3.30)、 サイト訪問者の検索ごと従量"}
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
@@ -243,7 +242,7 @@
       "description": "認定支援機関 / 税理士 / 社労士 / 中小企業診断士が案件紹介を受ける marketplace。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/advisors.html",
-      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "JPY", "description": "利用無料、成約時に 専門家が成約時に ¥3,300 を支払う"}
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     }
   ]
 }
