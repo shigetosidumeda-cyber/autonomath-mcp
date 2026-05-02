@@ -657,6 +657,36 @@ class EvidencePacketComposer:
         )
         return health
 
+    @staticmethod
+    def _build_short_summary(precomputed: dict[str, Any] | None) -> dict[str, Any] | None:
+        """Lift the smallest deterministic summary into an easy-to-use field."""
+        if not precomputed:
+            return None
+        summaries = precomputed.get("summaries")
+        if not isinstance(summaries, dict):
+            return None
+        token_estimates = precomputed.get("token_estimates")
+        if not isinstance(token_estimates, dict):
+            token_estimates = {}
+        for size in ("50", "200", "800"):
+            text = summaries.get(size)
+            if not isinstance(text, str) or not text.strip():
+                continue
+            summary: dict[str, Any] = {
+                "text": text.strip(),
+                "basis": precomputed.get("basis", "am_program_summary"),
+                "size": size,
+            }
+            token_estimate = token_estimates.get(size)
+            if token_estimate is not None:
+                summary["token_estimate"] = token_estimate
+            if precomputed.get("source_quality") is not None:
+                summary["source_quality"] = precomputed["source_quality"]
+            if precomputed.get("generated_at"):
+                summary["generated_at"] = precomputed["generated_at"]
+            return summary
+        return None
+
     def _fetch_rules_for_program(
         self,
         canonical_id: str,
@@ -1823,6 +1853,9 @@ class EvidencePacketComposer:
             record["rules"] = rules
         if precomputed_summary is not None:
             record["precomputed"] = precomputed_summary
+            short_summary = self._build_short_summary(precomputed_summary)
+            if short_summary is not None:
+                record["short_summary"] = short_summary
         if recent_changes:
             record["recent_changes"] = recent_changes
         if source_health is not None:

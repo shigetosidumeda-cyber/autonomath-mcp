@@ -251,6 +251,12 @@ class EvidencePacketRecord(BaseModel):
     rules: list[dict[str, Any]] | None = Field(
         default=None, description="Optional compatibility/exclusion rules."
     )
+    short_summary: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Optional smallest deterministic precomputed summary lifted for LLM context prefetch."
+        ),
+    )
     precomputed: dict[str, Any] | None = Field(
         default=None,
         description="Optional deterministic precomputed summary payload.",

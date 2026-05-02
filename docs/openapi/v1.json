@@ -5925,6 +5925,19 @@
             "description": "Optional compatibility/exclusion rules.",
             "title": "Rules"
           },
+          "short_summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional smallest deterministic precomputed summary lifted for LLM context prefetch.",
+            "title": "Short Summary"
+          },
           "source_fetched_at": {
             "anyOf": [
               {

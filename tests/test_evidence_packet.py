@@ -542,6 +542,14 @@ def test_compose_includes_precomputed_program_summary(fixture_db: Path) -> None:
     assert precomputed["token_estimates"] == {"50": 24, "200": 52, "800": 78}
     assert precomputed["generated_at"] == "2026-04-29T00:00:00"
     assert precomputed["source_quality"] == 0.91
+    assert env["records"][0]["short_summary"] == {
+        "text": "EVP P1 補助金。一次資料に基づく短縮要約。",
+        "basis": "am_program_summary",
+        "size": "50",
+        "token_estimate": 24,
+        "source_quality": 0.91,
+        "generated_at": "2026-04-29T00:00:00",
+    }
 
 
 def test_compose_includes_only_user_facing_recent_changes(
