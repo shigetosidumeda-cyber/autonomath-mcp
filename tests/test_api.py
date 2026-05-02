@@ -116,6 +116,8 @@ def test_post_idempotency_key_replays_without_second_usage_event(
 ):
     import sqlite3
 
+    from jpintel_mcp.api.deps import hash_api_key
+
     body = {"unified_ids": ["UNI-test-s-1", "UNI-test-a-1"]}
     headers = {
         "X-API-Key": paid_key,
@@ -136,8 +138,10 @@ def test_post_idempotency_key_replays_without_second_usage_event(
         rows = c.execute(
             "SELECT quantity FROM usage_events "
             "WHERE endpoint = 'programs.get' "
+            "AND key_hash = ? "
             "AND params_digest IS NOT NULL "
-            "ORDER BY id DESC LIMIT 10"
+            "ORDER BY id DESC LIMIT 10",
+            (hash_api_key(paid_key),),
         ).fetchall()
     finally:
         c.close()

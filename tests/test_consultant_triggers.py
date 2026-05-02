@@ -197,7 +197,7 @@ def test_bulk_evaluate_commit_bills_and_returns_zip(
 ):
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
-        headers={"X-API-Key": consultant_key},
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
         files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
         data={
             "commit": "true",
@@ -246,7 +246,7 @@ def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
 
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
-        headers={"X-API-Key": consultant_key},
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
         files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
         data={
             "commit": "true",
@@ -269,6 +269,40 @@ def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
     assert rows == []
 
 
+def test_bulk_evaluate_commit_requires_cost_cap(
+    client, consultant_key,
+):
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={
+            "commit": "true",
+            "idempotency_key": "missing-cost-cap",
+        },
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"]["code"] == "cost_cap_required"
+
+
+def test_bulk_evaluate_commit_rejects_low_cost_cap(
+    client, consultant_key,
+):
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "14"},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={
+            "commit": "true",
+            "idempotency_key": "low-cost-cap",
+        },
+    )
+    assert r.status_code == 402
+    body = r.json()
+    assert body["detail"]["code"] == "cost_cap_exceeded"
+    assert body["detail"]["predicted_yen"] == 15
+
+
 def test_bulk_evaluate_commit_requires_idempotency_key(
     client, consultant_key,
 ):
@@ -288,7 +322,7 @@ def test_bulk_evaluate_idempotent_replay(
     # First call — should bill 5.
     r1 = client.post(
         "/v1/me/clients/bulk_evaluate",
-        headers={"X-API-Key": consultant_key},
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
         files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
         data={"commit": "true", "idempotency_key": "replay-key"},
     )
@@ -315,6 +349,76 @@ def test_bulk_evaluate_idempotent_replay(
     # Still 1 audit row with quantity=5 (only first call billed; the replay
     # short-circuits before log_usage). Single-row + quantity=N is the
     # post-Wave-21 contract — see test_bulk_evaluate_commit_bills_and_returns_zip.
+    assert len(rows) == 1, rows
+    assert int(rows[0][0]) == 5, rows
+
+
+def test_bulk_evaluate_idempotency_rejects_payload_mismatch(
+    client, consultant_key,
+):
+    r1 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={"commit": "true", "idempotency_key": "payload-mismatch"},
+    )
+    assert r1.status_code == 200, r1.text
+
+    changed_csv = SAMPLE_CSV.replace("株式会社A商事", "別法人")
+    r2 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
+        files={"file": ("clients.csv", changed_csv.encode("utf-8"))},
+        data={"commit": "true", "idempotency_key": "payload-mismatch"},
+    )
+    assert r2.status_code == 409
+    assert r2.json()["detail"]["code"] == "idempotency_payload_mismatch"
+
+
+def test_bulk_evaluate_idempotency_reservation_prevents_cache_failure_overbill(
+    client, consultant_key, seeded_db, monkeypatch,
+):
+    import jpintel_mcp.api.bulk_evaluate as bulk_module
+
+    monkeypatch.setattr(bulk_module, "_idem_store", lambda *args, **kwargs: None)
+
+    headers = {"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"}
+    data = {"commit": "true", "idempotency_key": "reserved-only"}
+
+    r1 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers=headers,
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data=data,
+    )
+    assert r1.status_code == 200, r1.text
+
+    r2 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers=headers,
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data=data,
+    )
+    assert r2.status_code == 200, r2.text
+
+    changed_csv = SAMPLE_CSV.replace("株式会社A商事", "別法人")
+    r3 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers=headers,
+        files={"file": ("clients.csv", changed_csv.encode("utf-8"))},
+        data=data,
+    )
+    assert r3.status_code == 409
+    assert r3.json()["detail"]["code"] == "idempotency_payload_mismatch"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE endpoint = 'clients.bulk_evaluate'"
+        ).fetchall()
+    finally:
+        c.close()
     assert len(rows) == 1, rows
     assert int(rows[0][0]) == 5, rows
 

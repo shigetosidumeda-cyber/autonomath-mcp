@@ -51,11 +51,12 @@ import io
 import json
 import logging
 import re
+import sqlite3
 import zipfile
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, Form, Header, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from jpintel_mcp.api.deps import (  # noqa: TC001
@@ -68,6 +69,7 @@ from jpintel_mcp.api.idempotency_context import (
     billing_event_index,
     billing_idempotency_key,
 )
+from jpintel_mcp.api.middleware.cost_cap import _parse_cap_header
 
 logger = logging.getLogger("jpintel.bulk_evaluate")
 
@@ -327,6 +329,32 @@ def _build_zip(
     return buf.getvalue()
 
 
+def _zip_stream_response(
+    zip_bytes: bytes,
+    idem_key: str,
+    *,
+    replay: bool = False,
+    row_count: int | None = None,
+    billed_yen: int | None = None,
+) -> StreamingResponse:
+    headers = {
+        "Content-Disposition": (
+            f"attachment; filename=bulk_evaluate_{idem_key}.zip"
+        ),
+    }
+    if replay:
+        headers["X-Idempotent-Replay"] = "1"
+    if row_count is not None:
+        headers["X-Row-Count"] = str(row_count)
+    if billed_yen is not None:
+        headers["X-Billed-Yen"] = str(billed_yen)
+    return StreamingResponse(
+        io.BytesIO(zip_bytes),
+        media_type="application/zip",
+        headers=headers,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Idempotency cache wrappers (am_idempotency_cache, migration 087)
 # ---------------------------------------------------------------------------
@@ -346,6 +374,47 @@ def _idem_cache_key(key_hash: str, idem_key: str) -> str:
     h.update(b":/v1/me/clients/bulk_evaluate:")
     h.update(idem_key.encode("utf-8"))
     return h.hexdigest()
+
+
+def _payload_signature(raw_bytes: bytes, *, program_filter: str, row_count: int) -> str:
+    h = hashlib.sha256()
+    h.update(raw_bytes)
+    h.update(b":program_filter:")
+    h.update(program_filter.strip().lower().encode("utf-8"))
+    h.update(b":row_count:")
+    h.update(str(row_count).encode("ascii"))
+    return h.hexdigest()
+
+
+def _check_commit_cost_cap(raw_header: str | None, predicted_yen: int) -> None:
+    cap_yen = _parse_cap_header(raw_header)
+    if cap_yen is None:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            {
+                "code": "cost_cap_required",
+                "message": (
+                    "X-Cost-Cap-JPY is required when commit=true. "
+                    f"Predicted cost is ¥{predicted_yen}."
+                ),
+                "predicted_yen": predicted_yen,
+                "unit_price_yen": PRICE_PER_ROW_YEN,
+            },
+        )
+    if predicted_yen > cap_yen:
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            {
+                "code": "cost_cap_exceeded",
+                "message": (
+                    f"Predicted cost ¥{predicted_yen} exceeds "
+                    f"X-Cost-Cap-JPY ¥{cap_yen}."
+                ),
+                "predicted_yen": predicted_yen,
+                "cost_cap_yen": cap_yen,
+                "unit_price_yen": PRICE_PER_ROW_YEN,
+            },
+        )
 
 
 def _idem_lookup(
@@ -387,6 +456,62 @@ def _idem_lookup(
         return json.loads(blob)
     except (TypeError, ValueError):
         return None
+
+
+def _idem_reserve_payload(
+    conn: Any,
+    key_hash: str,
+    idem_key: str,
+    *,
+    payload_signature: str,
+    program_filter: str,
+    row_count: int,
+) -> bool:
+    """Durably bind an idempotency key to one payload before billing."""
+    cache_key = _idem_cache_key(key_hash, idem_key)
+    expires_at = (
+        datetime.now(UTC) + timedelta(hours=_BULK_EVAL_CACHE_TTL_HOURS)
+    ).isoformat()
+    created_at = datetime.now(UTC).isoformat()
+    payload = {
+        "payload_signature": payload_signature,
+        "program_filter": program_filter,
+        "row_count": row_count,
+        "reserved": True,
+        "generated_at": created_at,
+    }
+    try:
+        conn.execute(
+            "INSERT INTO am_idempotency_cache("
+            "  cache_key, response_blob, expires_at, created_at"
+            ") VALUES (?,?,?,?)",
+            (
+                cache_key,
+                json.dumps(payload, ensure_ascii=False),
+                expires_at,
+                created_at,
+            ),
+        )
+        return True
+    except sqlite3.IntegrityError:
+        # A racing request reserved the same key. The caller re-reads below;
+        # billing remains protected by the stable billing idempotency key.
+        return False
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(
+            "idem cache reserve failed key_hash=%s idem=%s",
+            key_hash[:8] if key_hash else None, idem_key,
+        )
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            {
+                "code": "idempotency_cache_unavailable",
+                "message": (
+                    "Could not safely reserve idempotency_key before billing. "
+                    "Retry with the same idempotency_key."
+                ),
+            },
+        ) from exc
 
 
 def _idem_store(
@@ -435,13 +560,15 @@ async def bulk_evaluate_clients(
     commit: Annotated[bool, Form()] = False,
     program_filter: Annotated[str, Form()] = "all",
     idempotency_key: Annotated[str | None, Form()] = None,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> Any:
     """Pre-evaluate program eligibility for ALL clients in a CSV batch.
 
     When `commit=false` (default): returns JSON cost preview only. NO billing.
     When `commit=true`: bills ¥3 × N rows, returns a ZIP archive (one CSV
         per client + manifest.json). `idempotency_key` REQUIRED on commit
-        so accidental retries don't double-bill.
+        so accidental retries don't double-bill. `X-Cost-Cap-JPY` REQUIRED
+        on commit so callers explicitly approve the predicted charge.
 
     Returns:
         - JSON {"row_count": N, "estimated_yen": 3*N, "preview": true}
@@ -450,7 +577,9 @@ async def bulk_evaluate_clients(
 
     Errors:
         - 401 if anon (no key to bill).
-        - 400 on missing required columns / bad encoding / row cap.
+        - 400 on missing required columns / bad encoding / row cap /
+              missing X-Cost-Cap-JPY on commit.
+        - 402 if predicted charge exceeds X-Cost-Cap-JPY.
         - 409 if commit=true but idempotency_key already used with a
               different payload signature.
     """
@@ -463,6 +592,11 @@ async def bulk_evaluate_clients(
     raw_bytes = await file.read()
     rows = _parse_csv_rows(raw_bytes)
     n = len(rows)
+    payload_signature = _payload_signature(
+        raw_bytes,
+        program_filter=program_filter,
+        row_count=n,
+    )
 
     if not commit:
         # Cost preview path. FREE — no usage_event, no Stripe report.
@@ -473,7 +607,8 @@ async def bulk_evaluate_clients(
             "program_filter": program_filter,
             "next_step": (
                 "POST again with commit=true and idempotency_key=<uuid> "
-                "to actually evaluate and bill."
+                "and X-Cost-Cap-JPY>=estimated_yen to actually evaluate "
+                "and bill."
             ),
         })
 
@@ -485,29 +620,78 @@ async def bulk_evaluate_clients(
             status.HTTP_400_BAD_REQUEST,
             "idempotency_key is required when commit=true",
         )
+    idem_key = idempotency_key.strip()
 
-    cached = _idem_lookup(conn, ctx.key_hash, idempotency_key.strip())
+    cached = _idem_lookup(conn, ctx.key_hash, idem_key)
     if cached is not None:
-        # Replay path — return cached ZIP (base64 in cache) without
-        # re-billing. The cache stores meta only; we re-build the ZIP
-        # from cached results to avoid blowing up the cache size.
-        try:
-            cached_rows = cached.get("rows", [])
-            cached_results = cached.get("results", [])
-            cached_ts = cached.get("generated_at", datetime.now(UTC).isoformat())
-            zip_bytes = _build_zip(cached_rows, cached_results, cached_ts)
-            return StreamingResponse(
-                io.BytesIO(zip_bytes),
-                media_type="application/zip",
-                headers={
-                    "Content-Disposition": (
-                        f"attachment; filename=bulk_evaluate_{idempotency_key.strip()}.zip"
+        cached_signature = cached.get("payload_signature")
+        if cached_signature and cached_signature != payload_signature:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                {
+                    "code": "idempotency_payload_mismatch",
+                    "message": (
+                        "This idempotency_key was already used with a "
+                        "different CSV payload or program_filter."
                     ),
-                    "X-Idempotent-Replay": "1",
                 },
             )
-        except Exception:  # noqa: BLE001
-            logger.warning("idem replay failed; falling through to live eval")
+        if "rows" not in cached or "results" not in cached:
+            logger.info("idem key reserved without final result; re-evaluating")
+        else:
+            # Replay path — return cached ZIP without re-billing.
+            try:
+                cached_rows = cached.get("rows", [])
+                cached_results = cached.get("results", [])
+                cached_ts = cached.get(
+                    "generated_at", datetime.now(UTC).isoformat()
+                )
+                zip_bytes = _build_zip(cached_rows, cached_results, cached_ts)
+                return _zip_stream_response(zip_bytes, idem_key, replay=True)
+            except Exception:  # noqa: BLE001
+                logger.warning("idem replay failed; falling through to live eval")
+    else:
+        reserved = _idem_reserve_payload(
+            conn,
+            ctx.key_hash,
+            idem_key,
+            payload_signature=payload_signature,
+            program_filter=program_filter,
+            row_count=n,
+        )
+        if not reserved:
+            cached = _idem_lookup(conn, ctx.key_hash, idem_key)
+            if cached is None:
+                raise HTTPException(
+                    status.HTTP_409_CONFLICT,
+                    {
+                        "code": "idempotency_key_in_use",
+                        "message": (
+                            "This idempotency_key is already being processed. "
+                            "Retry with the same CSV payload."
+                        ),
+                    },
+                )
+            cached_signature = cached.get("payload_signature")
+            if cached_signature and cached_signature != payload_signature:
+                raise HTTPException(
+                    status.HTTP_409_CONFLICT,
+                    {
+                        "code": "idempotency_payload_mismatch",
+                        "message": (
+                            "This idempotency_key was already used with a "
+                            "different CSV payload or program_filter."
+                        ),
+                    },
+                )
+            if "rows" in cached and "results" in cached:
+                cached_rows = cached.get("rows", [])
+                cached_results = cached.get("results", [])
+                cached_ts = cached.get(
+                    "generated_at", datetime.now(UTC).isoformat()
+                )
+                zip_bytes = _build_zip(cached_rows, cached_results, cached_ts)
+                return _zip_stream_response(zip_bytes, idem_key, replay=True)
 
     from jpintel_mcp.api.middleware.customer_cap import (
         projected_monthly_cap_response,
@@ -516,6 +700,7 @@ async def bulk_evaluate_clients(
     cap_response = projected_monthly_cap_response(conn, ctx.key_hash, n)
     if cap_response is not None:
         return cap_response
+    _check_commit_cost_cap(x_cost_cap_jpy, PRICE_PER_ROW_YEN * n)
 
     # Live eval path.
     results: list[list[dict[str, Any]]] = []
@@ -533,7 +718,7 @@ async def bulk_evaluate_clients(
     # with quantity=1 — same dollar total but N rows + N Stripe POSTs +
     # N idempotency keys, which fragmented the reconciliation surface and
     # increased the risk of partial-success Stripe outages.
-    billing_key = f"{ENDPOINT_LABEL}:{ctx.key_hash}:{idempotency_key.strip()}"
+    billing_key = f"{ENDPOINT_LABEL}:{ctx.key_hash}:{idem_key}"
     billing_key_token = billing_idempotency_key.set(billing_key)
     billing_event_token = billing_event_index.set(0)
     try:
@@ -565,20 +750,22 @@ async def bulk_evaluate_clients(
 
     # Stash idempotency so retries reuse the same evaluation.
     _idem_store(
-        conn, ctx.key_hash, idempotency_key.strip(),
-        {"rows": rows, "results": results, "generated_at": timestamp},
+        conn, ctx.key_hash, idem_key,
+        {
+            "rows": rows,
+            "results": results,
+            "generated_at": timestamp,
+            "payload_signature": payload_signature,
+            "program_filter": program_filter,
+            "row_count": n,
+        },
     )
 
-    return StreamingResponse(
-        io.BytesIO(zip_bytes),
-        media_type="application/zip",
-        headers={
-            "Content-Disposition": (
-                f"attachment; filename=bulk_evaluate_{idempotency_key.strip()}.zip"
-            ),
-            "X-Row-Count": str(n),
-            "X-Billed-Yen": str(PRICE_PER_ROW_YEN * n),
-        },
+    return _zip_stream_response(
+        zip_bytes,
+        idem_key,
+        row_count=n,
+        billed_yen=PRICE_PER_ROW_YEN * n,
     )
 
 

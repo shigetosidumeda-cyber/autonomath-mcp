@@ -22715,9 +22715,25 @@
     },
     "/v1/me/clients/bulk_evaluate": {
       "post": {
-        "description": "Pre-evaluate program eligibility for ALL clients in a CSV batch.\n\nWhen `commit=false` (default): returns JSON cost preview only. no billing charge.\nWhen `commit=true`: bills \u00a53 \u00d7 N records, returns a ZIP archive (one CSV\n    per client + manifest.json). `idempotency_key` REQUIRED on commit\n    so accidental retries don't double-bill.\n\nReturns:\n    - JSON {\"row_count\": N, \"estimated_yen\": 3*N, \"preview\": true}\n      when commit=false.\n    - application/zip stream when commit=true.\n\nErrors:\n    - 401 if anon (no key to bill).\n    - 400 on missing required columns / bad encoding / record cap.\n    - 409 if commit=true but idempotency_key already used with a\n          different payload signature.",
+        "description": "Pre-evaluate program eligibility for ALL clients in a CSV batch.\n\nWhen `commit=false` (default): returns JSON cost preview only. no billing charge.\nWhen `commit=true`: bills \u00a53 \u00d7 N records, returns a ZIP archive (one CSV\n    per client + manifest.json). `idempotency_key` REQUIRED on commit\n    so accidental retries don't double-bill. `X-Cost-Cap-JPY` REQUIRED\n    on commit so callers explicitly approve the predicted charge.\n\nReturns:\n    - JSON {\"row_count\": N, \"estimated_yen\": 3*N, \"preview\": true}\n      when commit=false.\n    - application/zip stream when commit=true.\n\nErrors:\n    - 401 if anon (no key to bill).\n    - 400 on missing required columns / bad encoding / record cap /\n          missing X-Cost-Cap-JPY on commit.\n    - 402 if predicted charge exceeds X-Cost-Cap-JPY.\n    - 409 if commit=true but idempotency_key already used with a\n          different payload signature.",
         "operationId": "bulk_evaluate_clients_v1_me_clients_bulk_evaluate_post",
         "parameters": [
+          {
+            "in": "header",
+            "name": "X-Cost-Cap-JPY",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Cost-Cap-Jpy"
+            }
+          },
           {
             "in": "header",
             "name": "X-API-Key",
