@@ -37,7 +37,7 @@ Design notes
 """
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -117,6 +117,166 @@ class ActionResponse(BaseModel):
     id: str | int | None = None
     data: dict[str, Any] | None = None
     error: dict[str, Any] | None = None
+
+
+# ---------------------------------------------------------------------------
+# Evidence Packet / LLM prefetch surfaces
+# ---------------------------------------------------------------------------
+
+
+class EvidencePacketCompression(BaseModel):
+    """Context-size estimate block for compact Evidence Packets."""
+
+    model_config = _ALLOW_EXTRA
+
+    packet_tokens_estimate: int = Field(
+        ..., description="Estimated tokens in the returned Evidence Packet."
+    )
+    source_tokens_estimate: int | None = Field(
+        default=None,
+        description=(
+            "Estimated tokens in the source context the caller would "
+            "otherwise send to an LLM."
+        ),
+    )
+    avoided_tokens_estimate: int | None = Field(
+        default=None,
+        description="Estimated input-context tokens avoided by using the packet.",
+    )
+    compression_ratio: float | None = Field(
+        default=None,
+        description="packet_tokens_estimate / source_tokens_estimate when known.",
+    )
+    estimate_method: str | None = None
+    estimate_disclaimer: str | None = Field(
+        default=None,
+        description="Human-readable disclaimer for context/cost estimates.",
+    )
+    source_tokens_basis: Literal["unknown", "pdf_pages", "token_count"] = "unknown"
+    source_tokens_input_source: str | None = None
+    source_pdf_pages: int | None = None
+    source_token_count: int | None = None
+    estimate_scope: str = Field(
+        default="input_context_only",
+        description=(
+            "The estimate compares input context size only; it is not an "
+            "external provider billing guarantee."
+        ),
+    )
+    savings_claim: str = Field(
+        default="estimate_not_guarantee",
+        description="Machine-readable reminder that savings are estimates.",
+    )
+    cost_savings_estimate: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Optional caller-price comparison, including break_even_met when "
+            "the caller supplied an input token price."
+        ),
+    )
+
+
+class EvidencePacketRecord(BaseModel):
+    """One source-linked record inside an Evidence Packet."""
+
+    model_config = _ALLOW_EXTRA
+
+    entity_id: str = Field(..., description="Stable program/houjin/entity id.")
+    primary_name: str | None = None
+    record_kind: str | None = None
+    source_url: str | None = Field(
+        default=None, description="Primary source URL when known."
+    )
+    authority_name: str | None = None
+    prefecture: str | None = None
+    tier: str | None = None
+    facts: list[dict[str, Any]] | None = Field(
+        default=None, description="Optional source-linked fact rows."
+    )
+    rules: list[dict[str, Any]] | None = Field(
+        default=None, description="Optional compatibility/exclusion rules."
+    )
+    precomputed: dict[str, Any] | None = Field(
+        default=None,
+        description="Optional deterministic precomputed summary payload.",
+    )
+
+
+class EvidencePacketEnvelope(BaseModel):
+    """Compact source-linked packet for LLM evidence prefetch."""
+
+    model_config = ConfigDict(
+        extra="allow",
+        json_schema_extra={
+            "example": {
+                "packet_id": "evp_example",
+                "generated_at": "2026-05-02T12:00:00+09:00",
+                "api_version": "v1",
+                "corpus_snapshot_id": "snap_20260502",
+                "query": {
+                    "user_intent": "Tokyo manufacturer subsidy evidence",
+                    "normalized_filters": {"prefecture": "Tokyo"},
+                },
+                "answer_not_included": True,
+                "records": [
+                    {
+                        "entity_id": "program:example",
+                        "primary_name": "Example public program",
+                        "record_kind": "program",
+                        "source_url": "https://example.go.jp/program",
+                        "authority_name": "Example authority",
+                        "precomputed": {
+                            "basis": "am_program_summary",
+                            "summaries": {
+                                "200": "Short source-linked evidence summary."
+                            },
+                        },
+                    }
+                ],
+                "quality": {
+                    "freshness_bucket": "current",
+                    "coverage_score": 0.86,
+                    "known_gaps": [],
+                    "human_review_required": False,
+                },
+                "verification": {
+                    "replay_endpoint": "/v1/programs/search?q=...",
+                    "freshness_endpoint": "/v1/meta/freshness",
+                },
+                "compression": {
+                    "packet_tokens_estimate": 566,
+                    "source_tokens_estimate": 14000,
+                    "source_tokens_basis": "pdf_pages",
+                    "source_pdf_pages": 20,
+                    "estimate_scope": "input_context_only",
+                    "savings_claim": "estimate_not_guarantee",
+                },
+            }
+        },
+    )
+
+    packet_id: str
+    generated_at: str
+    api_version: str
+    corpus_snapshot_id: str
+    query: dict[str, Any]
+    answer_not_included: bool = True
+    records: list[EvidencePacketRecord] = Field(default_factory=list)
+    quality: dict[str, Any] = Field(default_factory=dict)
+    verification: dict[str, Any] = Field(default_factory=dict)
+    compression: EvidencePacketCompression | None = None
+
+
+class PrecomputedIntelligenceBundle(EvidencePacketEnvelope):
+    """Evidence Packet envelope annotated with precomputed-intelligence usage."""
+
+    bundle_kind: Literal["precomputed_intelligence"]
+    bundle_id: str
+    answer_basis: str
+    records_returned: int
+    precomputed_record_count: int
+    precomputed: dict[str, Any]
+    usage: dict[str, Any]
 
 
 # ---------------------------------------------------------------------------

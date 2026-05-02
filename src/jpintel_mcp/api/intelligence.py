@@ -12,6 +12,7 @@ from typing import Annotated, Any, Literal
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse, Response
 
+from jpintel_mcp.api._response_models import PrecomputedIntelligenceBundle
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.api.evidence import _get_composer, _validate_compression_baseline
@@ -67,10 +68,13 @@ def _annotate_precomputed_bundle(envelope: dict[str, Any]) -> dict[str, Any]:
     "/precomputed/query",
     summary="Precomputed Intelligence Bundle — query prefetch",
     description=(
-        "Returns a compact precomputed intelligence bundle for a query. "
-        "No LLM call, no live web search. Used by the offline benchmark "
-        "arm `jpcite_precomputed_intelligence`."
+        "Returns a compact precomputed intelligence bundle for LLM context "
+        "prefetch. Use when an agent needs short source-linked Japanese "
+        "public-program evidence before answering, without live web search "
+        "or a request-time LLM call. Optional compression fields are "
+        "input-context estimates, not external provider billing guarantees."
     ),
+    responses={200: {"model": PrecomputedIntelligenceBundle}},
 )
 def get_precomputed_intelligence_query(
     q: Annotated[

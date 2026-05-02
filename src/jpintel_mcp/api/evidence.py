@@ -41,6 +41,7 @@ from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
+from jpintel_mcp.api._response_models import EvidencePacketEnvelope
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._license_gate import (
     REDISTRIBUTABLE_LICENSES,
@@ -345,14 +346,18 @@ def _dispatch_format(
     "/packets/{subject_kind}/{subject_id}",
     summary="Evidence Packet — single-subject composer (program / houjin)",
     description=(
-        "1 packet = 1 billable unit (¥3 / 税込 ¥3.30). NO LLM. Bundles "
-        "primary metadata + per-fact provenance + compat-matrix rule "
-        "verdicts (program only) into a single envelope.\n\n"
+        "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG "
+        "answer generation. 1 packet = 1 billable unit (¥3 / 税込 ¥3.30). "
+        "NO LLM call. Bundles primary metadata + per-fact provenance + "
+        "compat-matrix rule verdicts (program only) into a compact envelope.\n\n"
         "**subject_kind** ∈ `program` / `houjin`. For multi-record query "
         "packets, POST /v1/evidence/packets/query.\n\n"
         "Response is fail-open: any upstream failure surfaces as a code "
-        "in `quality.known_gaps[]`; the packet still renders."
+        "in `quality.known_gaps[]`; the packet still renders. Optional "
+        "compression fields are input-context estimates, not external "
+        "provider billing guarantees."
     ),
+    responses={200: {"model": EvidencePacketEnvelope}},
 )
 def get_evidence_packet(
     subject_kind: Annotated[
@@ -582,10 +587,16 @@ class EvidencePacketQueryBody(BaseModel):
     "/packets/query",
     summary="Evidence Packet — multi-record query composer",
     description=(
-        "1 packet = 1 billable unit (¥3 / 税込 ¥3.30). The packet bundles "
-        "up to `limit` records (hard cap 500). Truncation surfaces "
-        "`_warning=\"truncated\"`."
+        "Use this endpoint as source-linked evidence prefetch before GPT, "
+        "Claude, Cursor, or RAG answer generation. It returns a compact "
+        "Evidence Packet instead of a final narrative answer, so callers can "
+        "avoid pasting long PDFs, official pages, or search snippets into "
+        "the model. 1 packet = 1 billable unit (¥3 / 税込 ¥3.30). The packet "
+        "bundles up to `limit` records (hard cap 500). Truncation surfaces "
+        "`_warning=\"truncated\"`. Optional compression fields are "
+        "input-context estimates, not external provider billing guarantees."
     ),
+    responses={200: {"model": EvidencePacketEnvelope}},
 )
 def post_evidence_packet_query(
     payload: EvidencePacketQueryBody,

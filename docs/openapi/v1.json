@@ -5357,6 +5357,263 @@
         "title": "EvaluateResult",
         "type": "object"
       },
+      "EvidencePacketCompression": {
+        "additionalProperties": true,
+        "description": "Context-size estimate block for compact Evidence Packets.",
+        "properties": {
+          "avoided_tokens_estimate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated input-context tokens avoided by using the packet.",
+            "title": "Avoided Tokens Estimate"
+          },
+          "compression_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "packet_tokens_estimate / source_tokens_estimate when known.",
+            "title": "Compression Ratio"
+          },
+          "cost_savings_estimate": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional caller-price comparison, including break_even_met when the caller supplied an input token price.",
+            "title": "Cost Savings Estimate"
+          },
+          "estimate_disclaimer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Human-readable disclaimer for context/cost estimates.",
+            "title": "Estimate Disclaimer"
+          },
+          "estimate_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate Method"
+          },
+          "estimate_scope": {
+            "default": "input_context_only",
+            "description": "The estimate compares input context size only; it is not an external provider billing guarantee.",
+            "title": "Estimate Scope",
+            "type": "string"
+          },
+          "packet_tokens_estimate": {
+            "description": "Estimated tokens in the returned Evidence Packet.",
+            "title": "Packet Tokens Estimate",
+            "type": "integer"
+          },
+          "savings_claim": {
+            "default": "estimate_not_guarantee",
+            "description": "Machine-readable reminder that savings are estimates.",
+            "title": "Savings Claim",
+            "type": "string"
+          },
+          "source_pdf_pages": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Pdf Pages"
+          },
+          "source_token_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Token Count"
+          },
+          "source_tokens_basis": {
+            "default": "unknown",
+            "enum": [
+              "unknown",
+              "pdf_pages",
+              "token_count"
+            ],
+            "title": "Source Tokens Basis",
+            "type": "string"
+          },
+          "source_tokens_estimate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Estimated tokens in the source context the caller would otherwise send to an LLM.",
+            "title": "Source Tokens Estimate"
+          },
+          "source_tokens_input_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Tokens Input Source"
+          }
+        },
+        "required": [
+          "packet_tokens_estimate"
+        ],
+        "title": "EvidencePacketCompression",
+        "type": "object"
+      },
+      "EvidencePacketEnvelope": {
+        "additionalProperties": true,
+        "description": "Compact source-linked packet for LLM evidence prefetch.",
+        "example": {
+          "answer_not_included": true,
+          "api_version": "v1",
+          "compression": {
+            "estimate_scope": "input_context_only",
+            "packet_tokens_estimate": 566,
+            "savings_claim": "estimate_not_guarantee",
+            "source_pdf_pages": 20,
+            "source_tokens_basis": "pdf_pages",
+            "source_tokens_estimate": 14000
+          },
+          "corpus_snapshot_id": "snap_20260502",
+          "generated_at": "2026-05-02T12:00:00+09:00",
+          "packet_id": "evp_example",
+          "quality": {
+            "coverage_score": 0.86,
+            "freshness_bucket": "current",
+            "human_review_required": false,
+            "known_gaps": []
+          },
+          "query": {
+            "normalized_filters": {
+              "prefecture": "Tokyo"
+            },
+            "user_intent": "Tokyo manufacturer subsidy evidence"
+          },
+          "records": [
+            {
+              "authority_name": "Example authority",
+              "entity_id": "program:example",
+              "precomputed": {
+                "basis": "am_program_summary",
+                "summaries": {
+                  "200": "Short source-linked evidence summary."
+                }
+              },
+              "primary_name": "Example public program",
+              "record_kind": "program",
+              "source_url": "https://example.go.jp/program"
+            }
+          ],
+          "verification": {
+            "freshness_endpoint": "/v1/meta/freshness",
+            "replay_endpoint": "/v1/programs/search?q=..."
+          }
+        },
+        "properties": {
+          "answer_not_included": {
+            "default": true,
+            "title": "Answer Not Included",
+            "type": "boolean"
+          },
+          "api_version": {
+            "title": "Api Version",
+            "type": "string"
+          },
+          "compression": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidencePacketCompression"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "corpus_snapshot_id": {
+            "title": "Corpus Snapshot Id",
+            "type": "string"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "packet_id": {
+            "title": "Packet Id",
+            "type": "string"
+          },
+          "quality": {
+            "additionalProperties": true,
+            "title": "Quality",
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": true,
+            "title": "Query",
+            "type": "object"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/EvidencePacketRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "verification": {
+            "additionalProperties": true,
+            "title": "Verification",
+            "type": "object"
+          }
+        },
+        "required": [
+          "packet_id",
+          "generated_at",
+          "api_version",
+          "corpus_snapshot_id",
+          "query"
+        ],
+        "title": "EvidencePacketEnvelope",
+        "type": "object"
+      },
       "EvidencePacketQueryBody": {
         "properties": {
           "fields": {
@@ -5459,6 +5716,134 @@
           "query_text"
         ],
         "title": "EvidencePacketQueryBody",
+        "type": "object"
+      },
+      "EvidencePacketRecord": {
+        "additionalProperties": true,
+        "description": "One source-linked record inside an Evidence Packet.",
+        "properties": {
+          "authority_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authority Name"
+          },
+          "entity_id": {
+            "description": "Stable program/houjin/entity id.",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "facts": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional source-linked fact records.",
+            "title": "Facts"
+          },
+          "precomputed": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional deterministic precomputed summary payload.",
+            "title": "Precomputed"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefecture"
+          },
+          "primary_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Name"
+          },
+          "record_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Record Kind"
+          },
+          "rules": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional compatibility/exclusion rules.",
+            "title": "Rules"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Primary source URL when known.",
+            "title": "Source Url"
+          },
+          "tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier"
+          }
+        },
+        "required": [
+          "entity_id"
+        ],
+        "title": "EvidencePacketRecord",
         "type": "object"
       },
       "ExampleProfileDetail": {
@@ -7122,6 +7507,158 @@
           "return_url"
         ],
         "title": "PortalRequest",
+        "type": "object"
+      },
+      "PrecomputedIntelligenceBundle": {
+        "additionalProperties": true,
+        "description": "Evidence Packet envelope annotated with precomputed-intelligence usage.",
+        "example": {
+          "answer_not_included": true,
+          "api_version": "v1",
+          "compression": {
+            "estimate_scope": "input_context_only",
+            "packet_tokens_estimate": 566,
+            "savings_claim": "estimate_not_guarantee",
+            "source_pdf_pages": 20,
+            "source_tokens_basis": "pdf_pages",
+            "source_tokens_estimate": 14000
+          },
+          "corpus_snapshot_id": "snap_20260502",
+          "generated_at": "2026-05-02T12:00:00+09:00",
+          "packet_id": "evp_example",
+          "quality": {
+            "coverage_score": 0.86,
+            "freshness_bucket": "current",
+            "human_review_required": false,
+            "known_gaps": []
+          },
+          "query": {
+            "normalized_filters": {
+              "prefecture": "Tokyo"
+            },
+            "user_intent": "Tokyo manufacturer subsidy evidence"
+          },
+          "records": [
+            {
+              "authority_name": "Example authority",
+              "entity_id": "program:example",
+              "precomputed": {
+                "basis": "am_program_summary",
+                "summaries": {
+                  "200": "Short source-linked evidence summary."
+                }
+              },
+              "primary_name": "Example public program",
+              "record_kind": "program",
+              "source_url": "https://example.go.jp/program"
+            }
+          ],
+          "verification": {
+            "freshness_endpoint": "/v1/meta/freshness",
+            "replay_endpoint": "/v1/programs/search?q=..."
+          }
+        },
+        "properties": {
+          "answer_basis": {
+            "title": "Answer Basis",
+            "type": "string"
+          },
+          "answer_not_included": {
+            "default": true,
+            "title": "Answer Not Included",
+            "type": "boolean"
+          },
+          "api_version": {
+            "title": "Api Version",
+            "type": "string"
+          },
+          "bundle_id": {
+            "title": "Bundle Id",
+            "type": "string"
+          },
+          "bundle_kind": {
+            "const": "precomputed_intelligence",
+            "title": "Bundle Kind",
+            "type": "string"
+          },
+          "compression": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidencePacketCompression"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "corpus_snapshot_id": {
+            "title": "Corpus Snapshot Id",
+            "type": "string"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "packet_id": {
+            "title": "Packet Id",
+            "type": "string"
+          },
+          "precomputed": {
+            "additionalProperties": true,
+            "title": "Precomputed",
+            "type": "object"
+          },
+          "precomputed_record_count": {
+            "title": "Precomputed Record Count",
+            "type": "integer"
+          },
+          "quality": {
+            "additionalProperties": true,
+            "title": "Quality",
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": true,
+            "title": "Query",
+            "type": "object"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/EvidencePacketRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "records_returned": {
+            "title": "Records Returned",
+            "type": "integer"
+          },
+          "usage": {
+            "additionalProperties": true,
+            "title": "Usage",
+            "type": "object"
+          },
+          "verification": {
+            "additionalProperties": true,
+            "title": "Verification",
+            "type": "object"
+          }
+        },
+        "required": [
+          "packet_id",
+          "generated_at",
+          "api_version",
+          "corpus_snapshot_id",
+          "query",
+          "bundle_kind",
+          "bundle_id",
+          "answer_basis",
+          "records_returned",
+          "precomputed_record_count",
+          "precomputed",
+          "usage"
+        ],
+        "title": "PrecomputedIntelligenceBundle",
         "type": "object"
       },
       "PrescreenMatch": {
@@ -18580,7 +19117,7 @@
     },
     "/v1/evidence/packets/query": {
       "post": {
-        "description": "1 packet = 1 billable unit (\u00a53 / \u7a0e\u8fbc \u00a53.30). The packet bundles up to `limit` records (hard cap 500). Truncation surfaces `_warning=\"truncated\"`.",
+        "description": "Use this endpoint as source-linked evidence prefetch before GPT, Claude, Cursor, or RAG answer generation. It returns a compact Evidence Packet instead of a final narrative answer, so callers can avoid pasting long PDFs, official pages, or search snippets into the model. 1 packet = 1 billable unit (\u00a53 / \u7a0e\u8fbc \u00a53.30). The packet bundles up to `limit` records (hard cap 500). Truncation surfaces `_warning=\"truncated\"`. Optional compression fields are input-context estimates, not external provider billing guarantees.",
         "operationId": "post_evidence_packet_query_v1_evidence_packets_query_post",
         "parameters": [
           {
@@ -18647,7 +19184,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/EvidencePacketEnvelope"
+                }
               }
             },
             "description": "Successful Response"
@@ -18671,7 +19210,7 @@
     },
     "/v1/evidence/packets/{subject_kind}/{subject_id}": {
       "get": {
-        "description": "1 packet = 1 billable unit (\u00a53 / \u7a0e\u8fbc \u00a53.30). NO LLM. Bundles primary metadata + per-fact provenance + compat-matrix rule verdicts (program only) into a single envelope.\n\n**subject_kind** \u2208 `program` / `houjin`. For multi-record query packets, POST /v1/evidence/packets/query.\n\nResponse is fail-open: any upstream failure surfaces as a code in `quality.known_gaps[]`; the packet still renders.",
+        "description": "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG answer generation. 1 packet = 1 billable unit (\u00a53 / \u7a0e\u8fbc \u00a53.30). NO LLM call. Bundles primary metadata + per-fact provenance + compat-matrix rule verdicts (program only) into a compact envelope.\n\n**subject_kind** \u2208 `program` / `houjin`. For multi-record query packets, POST /v1/evidence/packets/query.\n\nResponse is fail-open: any upstream failure surfaces as a code in `quality.known_gaps[]`; the packet still renders. Optional compression fields are input-context estimates, not external provider billing guarantees.",
         "operationId": "get_evidence_packet_v1_evidence_packets__subject_kind___subject_id__get",
         "parameters": [
           {
@@ -18879,7 +19418,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/EvidencePacketEnvelope"
+                }
               }
             },
             "description": "Successful Response"
@@ -20250,7 +20791,7 @@
     },
     "/v1/intelligence/precomputed/query": {
       "get": {
-        "description": "Returns a compact precomputed intelligence bundle for a query. No LLM call, no live web search. Used by the offline benchmark arm `jpcite_precomputed_intelligence`.",
+        "description": "Returns a compact precomputed intelligence bundle for LLM context prefetch. Use when an agent needs short source-linked Japanese public-program evidence before answering, without live web search or a request-time LLM call. Optional compression fields are input-context estimates, not external provider billing guarantees.",
         "operationId": "get_precomputed_intelligence_query_v1_intelligence_precomputed_query_get",
         "parameters": [
           {
@@ -20465,7 +21006,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/PrecomputedIntelligenceBundle"
+                }
               }
             },
             "description": "Successful Response"
