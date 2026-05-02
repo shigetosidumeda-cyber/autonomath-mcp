@@ -5863,6 +5863,22 @@
             "description": "Optional source-linked fact records.",
             "title": "Facts"
           },
+          "pdf_fact_refs": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional compact references to high-value facts sourced from PDF documents, so agents can cite without reading entire PDFs first.",
+            "title": "Pdf Fact Refs"
+          },
           "precomputed": {
             "anyOf": [
               {

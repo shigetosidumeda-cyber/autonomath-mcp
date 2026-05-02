@@ -117,6 +117,19 @@ _ALIAS_KIND_PRIORITY: dict[str, int] = {
     "listed": 6,
 }
 
+_PDF_FACT_REF_CAP: int = 5
+_PDF_FACT_REF_FIELDS: frozenset[str] = frozenset(
+    {
+        "amount_max_yen",
+        "amount_min_yen",
+        "deadline",
+        "required_documents",
+        "source_excerpt",
+        "subsidy_rate",
+        "subsidy_rate_max",
+    }
+)
+
 #: Cache TTL — same posture as _corpus_snapshot._CACHE.
 _CACHE_TTL_SEC: float = 600.0
 
@@ -478,6 +491,102 @@ class EvidencePacketComposer:
         except sqlite3.OperationalError:
             total_facts = len(facts)
         return facts, total_facts, with_source
+
+    @staticmethod
+    def _compact_pdf_fact_value(value: Any) -> Any:
+        if isinstance(value, str):
+            return value.strip()[:500]
+        return value
+
+    def _fetch_pdf_fact_refs(
+        self,
+        am_conn: sqlite3.Connection,
+        canonical_id: str,
+        cap: int = _PDF_FACT_REF_CAP,
+    ) -> list[dict[str, Any]]:
+        """Return compact references to high-value facts sourced from PDFs.
+
+        This is deliberately a local catalog lookup. It does not fetch PDFs;
+        it gives downstream LLMs a short list of PDF-backed fields worth
+        citing before they spend tokens on a whole application guide.
+        """
+        if not canonical_id or cap <= 0:
+            return []
+
+        fact_cols = self._table_columns(am_conn, "am_entity_facts")
+        source_cols = self._table_columns(am_conn, "am_source")
+        required_fact_cols = {
+            "entity_id",
+            "field_name",
+            "field_kind",
+            "field_value_text",
+            "field_value_json",
+            "field_value_numeric",
+            "source_id",
+        }
+        required_source_cols = {"id", "source_url"}
+        if not required_fact_cols.issubset(fact_cols) or not required_source_cols.issubset(
+            source_cols
+        ):
+            return []
+
+        select_cols = [
+            "f.field_name AS field_name",
+            "f.field_kind AS field_kind",
+            "f.field_value_text AS text_val",
+            "f.field_value_json AS json_val",
+            "f.field_value_numeric AS num_val",
+            "s.source_url AS source_url",
+        ]
+        optional_source_cols = {
+            "content_hash": "checksum",
+            "last_verified": "last_verified",
+            "license": "license",
+            "domain": "domain",
+            "source_type": "source_type",
+        }
+        for col, alias in optional_source_cols.items():
+            if col in source_cols:
+                select_cols.append(f"s.{col} AS {alias}")
+
+        pdf_clause = "LOWER(COALESCE(s.source_url, '')) LIKE '%.pdf%'"
+        if "is_pdf" in source_cols:
+            pdf_clause = f"(s.is_pdf = 1 OR {pdf_clause})"
+
+        visible_fields = sorted(_PDF_FACT_REF_FIELDS)
+        placeholders = ",".join("?" for _ in visible_fields)
+        sql = (
+            f"SELECT {', '.join(select_cols)} "
+            "FROM am_entity_facts f "
+            "JOIN am_source s ON s.id = f.source_id "
+            f"WHERE f.entity_id = ? AND f.field_name IN ({placeholders}) "
+            f"AND {pdf_clause} "
+            "ORDER BY f.field_name ASC, f.id ASC "
+            "LIMIT ?"
+        )
+        try:
+            rows = am_conn.execute(sql, (canonical_id, *visible_fields, int(cap))).fetchall()
+        except sqlite3.OperationalError:
+            return []
+
+        refs: list[dict[str, Any]] = []
+        for row in rows:
+            value = self._coerce_fact_value(
+                row["field_kind"], row["text_val"], row["json_val"], row["num_val"]
+            )
+            if value is None:
+                continue
+            row_keys = set(row.keys())
+            ref: dict[str, Any] = {
+                "field_name": str(row["field_name"]),
+                "value": self._compact_pdf_fact_value(value),
+                "source_url": row["source_url"],
+            }
+            for key in ("checksum", "last_verified", "license", "domain", "source_type"):
+                if key in row_keys and row[key]:
+                    ref[key] = row[key]
+            refs.append(ref)
+        return refs
 
     def _fetch_program_summary(
         self,
@@ -1896,6 +2005,7 @@ class EvidencePacketComposer:
         recent_changes: list[dict[str, Any]] = []
         source_health: dict[str, Any] | None = None
         aliases: list[dict[str, Any]] = []
+        pdf_fact_refs: list[dict[str, Any]] = []
         try:
             base: dict[str, Any]
             canonical_id = ""
@@ -1951,6 +2061,8 @@ class EvidencePacketComposer:
                     base.get("program_id"),
                     base.get("primary_name"),
                 )
+                if include_facts:
+                    pdf_fact_refs = self._fetch_pdf_fact_refs(am, canonical_id)
         finally:
             am.close()
 
@@ -1997,6 +2109,8 @@ class EvidencePacketComposer:
             record["source_health"] = source_health
         if aliases:
             record["aliases"] = aliases
+        if pdf_fact_refs:
+            record["pdf_fact_refs"] = pdf_fact_refs
 
         coverage_score = self._coverage_score([record])
 

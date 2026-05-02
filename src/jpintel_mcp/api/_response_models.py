@@ -249,6 +249,13 @@ class EvidencePacketRecord(BaseModel):
         default=None,
         description="Optional user-facing aliases, abbreviations, and old names.",
     )
+    pdf_fact_refs: list[dict[str, Any]] | None = Field(
+        default=None,
+        description=(
+            "Optional compact references to high-value facts sourced from PDF "
+            "documents, so agents can cite without reading entire PDFs first."
+        ),
+    )
     facts: list[dict[str, Any]] | None = Field(
         default=None, description="Optional source-linked fact rows."
     )

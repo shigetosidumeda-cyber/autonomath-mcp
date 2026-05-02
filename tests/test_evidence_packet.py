@@ -637,6 +637,39 @@ def test_compose_includes_source_health_without_live_fetch(fixture_db: Path) -> 
     }
 
 
+def test_compose_includes_pdf_fact_refs(fixture_db: Path) -> None:
+    """PDF-backed key facts are exposed as compact references, not full PDFs."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_program("UNI-evp-p1")
+    assert env is not None
+
+    assert env["records"][0]["pdf_fact_refs"] == [
+        {
+            "field_name": "amount_min_yen",
+            "value": "P1-value-1",
+            "source_url": "https://www.meti.go.jp/policy/evp1.pdf",
+            "checksum": "sha256:evp1bbbb",
+            "last_verified": "2026-04-28T00:00:00",
+            "license": "pdl_v1.0",
+            "domain": "www.meti.go.jp",
+            "source_type": "secondary",
+        },
+        {
+            "field_name": "subsidy_rate",
+            "value": "P1-value-3",
+            "source_url": "https://www.meti.go.jp/policy/evp1.pdf",
+            "checksum": "sha256:evp1bbbb",
+            "last_verified": "2026-04-28T00:00:00",
+            "license": "pdl_v1.0",
+            "domain": "www.meti.go.jp",
+            "source_type": "secondary",
+        },
+    ]
+
+
 def test_compose_includes_user_facing_aliases(fixture_db: Path) -> None:
     """Aliases help LLMs resolve abbreviations while hiding ID-like aliases."""
     from jpintel_mcp.config import settings
