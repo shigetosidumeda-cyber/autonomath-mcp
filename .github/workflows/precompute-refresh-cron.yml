@@ -75,7 +75,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/precompute_refresh.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/precompute_refresh.py ${FLAGS}"
 
       - name: Warm L4 cache
         if: inputs.stage == '' || inputs.stage == 'l4'
@@ -87,7 +87,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/l4_cache_warm.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/l4_cache_warm.py ${FLAGS}"
 
       - name: Update confidence snapshot
         if: inputs.stage == '' || inputs.stage == 'confidence'
@@ -99,7 +99,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/confidence_update.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/confidence_update.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

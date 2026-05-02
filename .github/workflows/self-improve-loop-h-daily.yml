@@ -67,7 +67,7 @@ jobs:
             FLAGS="${FLAGS} --no-write"
           fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/self_improve_orchestrator.py ${FLAGS}" \
+            "/opt/venv/bin/python /app/scripts/self_improve_orchestrator.py ${FLAGS}" \
             > loop_h_run.json
           # Tag with the JST date for the artifact filename + operator log.
           DATE_TAG="$(TZ=Asia/Tokyo date +%Y-%m-%d)"

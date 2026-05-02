@@ -61,7 +61,7 @@ jobs:
           # delete week-old autonomath snapshots before this weekly job
           # has a chance to capture the next one. Keep them isolated.
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/backup.py \
+            "/opt/venv/bin/python /app/scripts/backup.py \
               --db /data/autonomath.db \
               --out /data/backups-autonomath \
               --keep 28 \

@@ -103,7 +103,7 @@ jobs:
 
           set +e
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/ingest_nta_invoice_bulk.py \
+            "/opt/venv/bin/python /app/scripts/cron/ingest_nta_invoice_bulk.py \
               --db /data/jpintel.db \
               --mode ${MODE} \
               --cache-dir /data/_cache/nta_invoice \

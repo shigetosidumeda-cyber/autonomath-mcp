@@ -47,7 +47,7 @@ jobs:
         run: |
           set -euo pipefail
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/backup.py \
+            "/opt/venv/bin/python /app/scripts/backup.py \
               --db /data/jpintel.db \
               --out /data/backups \
               --keep 14 \

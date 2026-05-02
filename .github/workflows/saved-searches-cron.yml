@@ -94,11 +94,11 @@ jobs:
           fi
           # `flyctl ssh console -C "<cmd>"` runs <cmd> non-interactively
           # in the autonomath-api machine. The python entry uses the
-          # baked-in /app/.venv interpreter so we inherit JPINTEL_DB_PATH
+          # baked-in /opt/venv interpreter so we inherit JPINTEL_DB_PATH
           # / AUTONOMATH_DB_PATH / POSTMARK_API_TOKEN / STRIPE_SECRET_KEY
           # / api_key_salt from the Fly secret store.
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/run_saved_searches.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/run_saved_searches.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

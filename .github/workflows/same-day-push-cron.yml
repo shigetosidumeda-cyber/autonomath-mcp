@@ -61,7 +61,7 @@ jobs:
           FLAGS="--window-minutes ${WINDOW_MIN}"
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/same_day_push.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/same_day_push.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

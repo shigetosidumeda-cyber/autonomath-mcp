@@ -59,7 +59,7 @@ jobs:
             FLAGS="--rematch"
           fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/adoption_program_join.py ${FLAGS}" \
+            "/opt/venv/bin/python /app/scripts/cron/adoption_program_join.py ${FLAGS}" \
             > join_run.json
           DATE_TAG="$(TZ=Asia/Tokyo date +%Y-%m-%d)"
           mkdir -p analysis_wave18/adoption_join

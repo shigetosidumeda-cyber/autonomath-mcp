@@ -88,7 +88,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/stripe_reconcile.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/stripe_reconcile.py ${FLAGS}"
 
       - name: Stripe usage backfill (NULL stripe_synced_at heal)
         if: inputs.stage == '' || inputs.stage == 'backfill'
@@ -100,7 +100,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/stripe_usage_backfill.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/stripe_usage_backfill.py ${FLAGS}"
 
       - name: Predictive billing alert
         if: inputs.stage == '' || inputs.stage == 'predictive'
@@ -112,7 +112,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/predictive_billing_alert.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/predictive_billing_alert.py ${FLAGS}"
 
       - name: Stripe cost alert
         if: inputs.stage == '' || inputs.stage == 'cost'
@@ -124,7 +124,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/stripe_cost_alert.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/stripe_cost_alert.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

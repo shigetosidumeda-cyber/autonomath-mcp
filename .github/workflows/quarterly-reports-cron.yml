@@ -76,7 +76,7 @@ jobs:
             FLAGS="${FLAGS} --dry-run"
           fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/generate_quarterly_reports.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/generate_quarterly_reports.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

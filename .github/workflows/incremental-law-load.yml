@@ -76,7 +76,7 @@ jobs:
 
           set +e
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/incremental_law_fulltext.py \
+            "/opt/venv/bin/python /app/scripts/cron/incremental_law_fulltext.py \
               --db /data/autonomath.db \
               --limit ${LIMIT} \
               --log-file /data/law_load_log.jsonl \

@@ -71,7 +71,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/webhook_health.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/webhook_health.py ${FLAGS}"
 
       - name: Send daily KPI digest
         env:
@@ -82,7 +82,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/send_daily_kpi_digest.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/send_daily_kpi_digest.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

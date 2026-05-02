@@ -101,7 +101,7 @@ jobs:
           set +e
           flyctl ssh console -a autonomath-api -C \
             "env SENTRY_RELEASE=${SENTRY_RELEASE} \
-              /app/.venv/bin/python /app/scripts/ingest_tier.py $ARGS" \
+              /opt/venv/bin/python /app/scripts/ingest_tier.py $ARGS" \
             | tee ingest.out
           rc=$?
           set -e

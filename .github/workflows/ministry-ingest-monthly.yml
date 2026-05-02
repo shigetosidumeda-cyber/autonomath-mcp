@@ -88,7 +88,7 @@ jobs:
             echo "::group::ingest_$m"
             flyctl ssh console -a autonomath-api -C \
               "env SENTRY_RELEASE=${SENTRY_RELEASE} \
-                /app/.venv/bin/python /app/scripts/ingest_${m}.py ${DRY_FLAG}" \
+                /opt/venv/bin/python /app/scripts/ingest_${m}.py ${DRY_FLAG}" \
               | tee "ingest_${m}.out"
             rc=$?
             if [ "$rc" -ne 0 ]; then

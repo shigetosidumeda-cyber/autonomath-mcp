@@ -100,11 +100,11 @@ jobs:
           fi
           # `flyctl ssh console -C "<cmd>"` runs <cmd> non-interactively
           # in the autonomath-api machine. The python entry uses the
-          # baked-in /app/.venv interpreter so we inherit JPINTEL_DB_PATH
+          # baked-in /opt/venv interpreter so we inherit JPINTEL_DB_PATH
           # / AUTONOMATH_DB_PATH / POSTMARK_API_TOKEN / api_key_salt
           # from the Fly secret store.
           OUTPUT=$(flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/weekly_digest.py ${FLAGS}" 2>&1 | tail -200)
+            "/opt/venv/bin/python /app/scripts/cron/weekly_digest.py ${FLAGS}" 2>&1 | tail -200)
           echo "${OUTPUT}"
           # Capture the LAST JSON-looking line for the alert step. The
           # script's final stdout line is the summary JSON.

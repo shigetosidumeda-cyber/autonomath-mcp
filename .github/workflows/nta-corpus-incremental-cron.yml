@@ -89,7 +89,7 @@ jobs:
 
           set +e
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/ingest_nta_corpus_incremental.py \
+            "/opt/venv/bin/python /app/scripts/cron/ingest_nta_corpus_incremental.py \
               --autonomath-db /data/autonomath.db \
               --jpintel-db /data/jpintel.db \
               --target ${TARGET} \

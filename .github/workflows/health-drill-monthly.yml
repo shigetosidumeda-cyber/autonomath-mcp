@@ -67,7 +67,7 @@ jobs:
           FLAGS=""
           if [ -n "${ONLY}" ]; then FLAGS="--only ${ONLY}"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/health_drill.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/health_drill.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

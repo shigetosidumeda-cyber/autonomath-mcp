@@ -88,7 +88,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/refresh_amendment_diff.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/refresh_amendment_diff.py ${FLAGS}"
 
       - name: Generate news posts
         if: inputs.stage == '' || inputs.stage == 'news'
@@ -100,7 +100,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/generate_news_posts.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/generate_news_posts.py ${FLAGS}"
 
       - name: Regenerate news RSS (ja + en)
         if: inputs.stage == '' || inputs.stage == 'rss'
@@ -112,7 +112,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/regenerate_rss.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/regenerate_rss.py ${FLAGS}"
 
       - name: Regenerate audit-log RSS
         if: inputs.stage == '' || inputs.stage == 'audit-rss'
@@ -124,7 +124,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/cron/regenerate_audit_log_rss.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/cron/regenerate_audit_log_rss.py ${FLAGS}"
 
       - name: Generate program RSS feeds (Tier S + amendments + 47 prefectures)
         if: inputs.stage == '' || inputs.stage == 'program-feeds'
@@ -136,7 +136,7 @@ jobs:
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/etl/generate_program_rss_feeds.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/etl/generate_program_rss_feeds.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

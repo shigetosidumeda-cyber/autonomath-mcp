@@ -140,7 +140,7 @@ jobs:
         run: |
           set -euo pipefail
           flyctl ssh console -a autonomath-api -C \
-            "/app/.venv/bin/python /app/scripts/url_integrity_scan.py \
+            "/opt/venv/bin/python /app/scripts/url_integrity_scan.py \
               --db /data/jpintel.db \
               --report /data/url_integrity_scan_ci.md \
               --json /data/url_integrity_scan_ci.json"
