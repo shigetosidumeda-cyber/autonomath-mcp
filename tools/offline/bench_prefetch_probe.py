@@ -35,7 +35,11 @@ ROW_FIELDNAMES: tuple[str, ...] = (
     "source_tokens_estimate",
     "avoided_tokens_estimate",
     "compression_ratio",
+    "input_context_reduction_rate",
+    "input_token_price_jpy_per_1m",
+    "gross_input_savings_jpy_ex_tax",
     "break_even_avoided_tokens",
+    "break_even_source_tokens_estimate",
     "break_even_met",
     "net_savings_jpy_ex_tax",
     "corpus_snapshot_id",
@@ -103,6 +107,21 @@ def _probe_row(
     records = env.get("records") or []
     compression = env.get("compression") or {}
     savings = compression.get("cost_savings_estimate") or {}
+    packet_tokens = compression.get("packet_tokens_estimate")
+    source_tokens = compression.get("source_tokens_estimate")
+    avoided_tokens = compression.get("avoided_tokens_estimate")
+    break_even_avoided = savings.get("break_even_avoided_tokens")
+    input_context_reduction_rate = None
+    if source_tokens not in (None, "", 0) and avoided_tokens not in (None, ""):
+        input_context_reduction_rate = round(float(avoided_tokens) / float(source_tokens), 4)
+    gross_input_savings = None
+    if input_token_price_jpy_per_1m is not None and avoided_tokens not in (None, ""):
+        gross_input_savings = round(
+            float(avoided_tokens) * input_token_price_jpy_per_1m / 1_000_000, 4
+        )
+    break_even_source_tokens = None
+    if packet_tokens not in (None, "") and break_even_avoided not in (None, ""):
+        break_even_source_tokens = int(packet_tokens) + int(break_even_avoided)
     return {
         "query_id": row["query_id"],
         "domain": row.get("domain", ""),
@@ -116,7 +135,11 @@ def _probe_row(
         "source_tokens_estimate": compression.get("source_tokens_estimate"),
         "avoided_tokens_estimate": compression.get("avoided_tokens_estimate"),
         "compression_ratio": compression.get("compression_ratio"),
+        "input_context_reduction_rate": input_context_reduction_rate,
+        "input_token_price_jpy_per_1m": input_token_price_jpy_per_1m,
+        "gross_input_savings_jpy_ex_tax": gross_input_savings,
         "break_even_avoided_tokens": savings.get("break_even_avoided_tokens"),
+        "break_even_source_tokens_estimate": break_even_source_tokens,
         "break_even_met": savings.get("break_even_met"),
         "net_savings_jpy_ex_tax": savings.get("net_savings_jpy_ex_tax"),
         "corpus_snapshot_id": env.get("corpus_snapshot_id"),
@@ -141,6 +164,49 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         for row in rows
         if row.get("net_savings_jpy_ex_tax") not in (None, "")
     ]
+    context_reduction_values = [
+        float(row["input_context_reduction_rate"])
+        for row in with_source_tokens
+        if row.get("input_context_reduction_rate") not in (None, "")
+    ]
+
+    def median(values: list[float]) -> float | None:
+        if not values:
+            return None
+        ordered = sorted(values)
+        mid = len(ordered) // 2
+        if len(ordered) % 2:
+            return round(ordered[mid], 4)
+        return round((ordered[mid - 1] + ordered[mid]) / 2, 4)
+
+    by_domain: dict[str, dict[str, Any]] = {}
+    for row in with_source_tokens:
+        domain = str(row.get("domain") or "unknown")
+        bucket = by_domain.setdefault(
+            domain,
+            {
+                "queries_with_source_token_baseline": 0,
+                "break_even_queries": 0,
+                "context_reduction_rates": [],
+            },
+        )
+        bucket["queries_with_source_token_baseline"] += 1
+        if str(row.get("break_even_met")).lower() == "true":
+            bucket["break_even_queries"] += 1
+        if row.get("input_context_reduction_rate") not in (None, ""):
+            bucket["context_reduction_rates"].append(float(row["input_context_reduction_rate"]))
+    break_even_rate_by_domain = {}
+    for domain, bucket in sorted(by_domain.items()):
+        baseline_count = int(bucket["queries_with_source_token_baseline"])
+        break_even_count = int(bucket["break_even_queries"])
+        break_even_rate_by_domain[domain] = {
+            "queries_with_source_token_baseline": baseline_count,
+            "break_even_queries": break_even_count,
+            "break_even_rate": round(break_even_count / baseline_count, 4)
+            if baseline_count
+            else 0.0,
+            "median_context_reduction_rate": median(bucket["context_reduction_rates"]),
+        }
     return {
         "total_queries": total,
         "zero_result_queries": zero,
@@ -155,6 +221,9 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             round(len(break_even_rows) / len(with_source_tokens), 4) if with_source_tokens else 0.0
         ),
         "avoided_tokens_total": avoided_tokens_total,
+        "rows_missing_source_token_baseline": total - len(with_source_tokens),
+        "median_context_reduction_rate": median(context_reduction_values),
+        "break_even_rate_by_domain": break_even_rate_by_domain,
         "net_savings_jpy_ex_tax_total": (
             round(sum(net_savings_values), 1) if net_savings_values else None
         ),

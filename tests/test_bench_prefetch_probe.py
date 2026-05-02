@@ -283,11 +283,21 @@ def test_probe_computes_break_even_when_source_token_baseline_is_supplied(
     assert summary["break_even_queries"] == 1
     assert summary["break_even_rate"] == 0.5
     assert summary["avoided_tokens_total"] > 0
+    assert summary["rows_missing_source_token_baseline"] == 0
+    assert summary["median_context_reduction_rate"] is not None
+    assert summary["break_even_rate_by_domain"]["subsidy"]["break_even_rate"] == 1.0
+    assert summary["break_even_rate_by_domain"]["tax"]["break_even_rate"] == 0.0
     assert summary["net_savings_jpy_ex_tax_total"] is not None
 
     with rows_csv.open("r", encoding="utf-8", newline="") as f:
         output_rows = list(csv.DictReader(f))
     assert output_rows[0]["source_tokens_basis"] == "token_count"
+    assert output_rows[0]["input_token_price_jpy_per_1m"] == "300.0"
+    assert float(output_rows[0]["input_context_reduction_rate"]) > 0.9
+    assert float(output_rows[0]["gross_input_savings_jpy_ex_tax"]) > 0
+    assert int(output_rows[0]["break_even_source_tokens_estimate"]) > int(
+        output_rows[0]["packet_tokens_estimate"]
+    )
     assert output_rows[0]["break_even_met"] == "True"
     assert output_rows[1]["break_even_met"] == "False"
 
@@ -330,12 +340,15 @@ def test_probe_computes_break_even_when_pdf_page_baseline_is_supplied(
     summary = json.loads(result.stdout)
     assert summary["queries_with_source_token_baseline"] == 1
     assert summary["break_even_queries"] == 1
+    assert summary["rows_missing_source_token_baseline"] == 0
 
     with rows_csv.open("r", encoding="utf-8", newline="") as f:
         output_rows = list(csv.DictReader(f))
     assert output_rows[0]["source_tokens_basis"] == "pdf_pages"
     assert output_rows[0]["source_pdf_pages"] == "30"
     assert int(output_rows[0]["source_tokens_estimate"]) == 21_000
+    assert float(output_rows[0]["input_context_reduction_rate"]) > 0.9
+    assert int(output_rows[0]["break_even_source_tokens_estimate"]) > 0
 
     with call_log.open("r", encoding="utf-8") as f:
         calls = [json.loads(line) for line in f if line.strip()]
@@ -373,6 +386,9 @@ def test_probe_does_not_treat_output_source_tokens_estimate_as_input_baseline(
     assert result.returncode == 0, result.stderr
     summary = json.loads(result.stdout)
     assert summary["queries_with_source_token_baseline"] == 0
+    assert summary["rows_missing_source_token_baseline"] == 1
+    assert summary["median_context_reduction_rate"] is None
+    assert summary["break_even_rate_by_domain"] == {}
 
     with call_log.open("r", encoding="utf-8") as f:
         calls = [json.loads(line) for line in f if line.strip()]

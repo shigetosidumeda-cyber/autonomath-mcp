@@ -150,6 +150,12 @@ Use the probe output to fill, for each applicable jpcite row:
 - `source_tokens_estimate`: only when the input CSV includes
   `baseline_source_tokens` / `source_token_count` or
   `baseline_source_pdf_pages` / `source_pdf_pages`.
+- `input_context_reduction_rate`: the share of caller-supplied source
+  context avoided by the packet estimate. This is an input-context
+  comparison, not a provider billing claim.
+- `break_even_source_tokens_estimate`: the estimated source-context size
+  needed for the packet to clear the configured jpcite request cost at
+  the supplied input-token price.
 - `break_even_met`: only when both a source baseline and
   `--input-token-price-jpy-per-1m` are supplied.
 
@@ -183,6 +189,10 @@ add extras but cannot drop these.
 | `records_returned` | int | precomputed arm only | number of records returned by natural-language lookup; empty for other arms |
 | `precomputed_record_count` | int | precomputed arm only | total records in the searched precomputed index/snapshot; empty for other arms |
 | `packet_tokens_estimate` | int | jpcite arms only | approximate token count of the prefetched packet/bundle supplied to the LLM; empty when not measured |
+| `source_tokens_estimate` | int | prefetch probe | caller-supplied source-token baseline or PDF-page estimate; empty when not supplied |
+| `input_context_reduction_rate` | float | prefetch probe | `(source_tokens_estimate - packet_tokens_estimate) / source_tokens_estimate`; input-context estimate only |
+| `break_even_source_tokens_estimate` | int | prefetch probe | estimated source-context size needed to clear the configured jpcite request cost at the supplied input-token price |
+| `break_even_met` | bool | prefetch probe | true only when caller baseline and token price make the input-context comparison clear the jpcite request cost |
 | `notes` | str | operator | freeform |
 
 Token-cost computation (¥):

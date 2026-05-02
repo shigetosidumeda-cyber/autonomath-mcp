@@ -27,7 +27,11 @@ lookup coverage: `records_returned`, `precomputed_record_count`, and
 `zero_result_rate`. Before operator LLM calls, run
 `tools/offline/bench_prefetch_probe.py` and use its output to fill
 `records_returned`, `precomputed_record_count`, and
-`packet_tokens_estimate` where the probe can measure them.
+`packet_tokens_estimate` where the probe can measure them. If the query
+CSV includes `baseline_source_tokens` / `source_token_count` or
+`baseline_source_pdf_pages` / `source_pdf_pages`, also record
+`source_tokens_estimate`, `input_context_reduction_rate`,
+`break_even_source_tokens_estimate`, and `break_even_met`.
 
 ### Per-arm medians
 
@@ -57,13 +61,19 @@ For `jpcite_precomputed_intelligence` only:
 | records_returned | ... |
 | precomputed_record_count | ... |
 | packet_tokens_estimate | ... |
+| queries_with_source_token_baseline | ... |
+| rows_missing_source_token_baseline | ... |
+| median_context_reduction_rate | ...% |
+| break_even_rate | ...% |
 | zero_result_rate | ...% |
 
 Use `records_returned` as the per-query returned-record count or as the
 reported aggregate specified in `notes`. `zero_result_rate` is the share
 of precomputed-arm queries where `records_returned = 0`.
 `packet_tokens_estimate` is an estimate of context size, not a measured
-LLM billing token count.
+LLM billing token count. `median_context_reduction_rate` and
+`break_even_rate` are input-context estimates from the probe; they are
+not provider billing guarantees.
 
 ### Cost-per-answer distribution
 
@@ -138,12 +148,11 @@ python tools/offline/bench_prefetch_probe.py \
     --rows-csv bench_prefetch_probe.csv \
     --input-token-price-jpy-per-1m 300
 
-# Copy records_returned, precomputed_record_count, and
-# packet_tokens_estimate from bench_prefetch_probe.csv into the matching
-# jpcite rows in bench_results.csv. If your query CSV contains
-# baseline_source_tokens/source_token_count or
-# baseline_source_pdf_pages/source_pdf_pages, also copy the break-even
-# fields. Leave fields empty when the probe cannot measure them.
+# Copy records_returned, precomputed_record_count, packet_tokens_estimate,
+# source_tokens_estimate, input_context_reduction_rate,
+# break_even_source_tokens_estimate, and break_even_met from
+# bench_prefetch_probe.csv into the matching jpcite rows when present.
+# Leave fields empty when the probe cannot measure them.
 
 # 3. Operator runs each instruction line manually against their LLM
 #    provider, writes bench_results.csv with the columns listed in
