@@ -15,13 +15,15 @@ PII posture (INV-21):
   * usage exposes only daily aggregate request counts; key_hash is never
     looked at and never returned.
 """
+
 from __future__ import annotations
 
+import contextlib
 import sqlite3
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Path
 from fastapi.responses import RedirectResponse
 
 from jpintel_mcp.api._response_models import (
@@ -33,11 +35,16 @@ from jpintel_mcp.api._response_models import (
 from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (FastAPI Depends resolution)
 from jpintel_mcp.api.uncertainty import score_fact
 from jpintel_mcp.cache.l4 import canonical_cache_key, get_or_compute, invalidate_tool
+from jpintel_mcp.config import settings
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
 router = APIRouter(prefix="/v1/stats", tags=["stats", "transparency"])
+
+_ESTAT_INDUSTRY_TOPIC = "18_estat_industry_distribution"
+_ESTAT_SOURCE_LABEL = "総務省・経済産業省 経済センサス活動調査 R3 (2021), e-Stat"
+_ESTAT_LICENSE = "gov_standard_v2.0"
 
 
 # ---------------------------------------------------------------------------
@@ -96,9 +103,7 @@ def _ensure_l4_table() -> None:
         conn.close()
 
 
-def _cache_get_or_compute(
-    key: str, compute: Callable[[], dict[str, Any]]
-) -> dict[str, Any]:
+def _cache_get_or_compute(key: str, compute: Callable[[], dict[str, Any]]) -> dict[str, Any]:
     """Thin shim over ``cache.l4.get_or_compute`` for the stats endpoints.
 
     `key` is a short endpoint label (coverage / freshness / usage). It is
@@ -146,6 +151,245 @@ def _reset_stats_cache() -> None:
             raise
         _ensure_l4_table()
         invalidate_tool(_STATS_TOOL_NAME)
+
+
+# ---------------------------------------------------------------------------
+# /v1/stats/benchmark/industry/{jsic}/region/{region} — e-Stat surface
+# ---------------------------------------------------------------------------
+#
+# This endpoint promotes the already-ingested e-Stat Economic Census cells in
+# autonomath.db into a small public benchmark surface. It performs no network
+# fetch and no LLM call; it only reshapes local EAV facts into a cited summary.
+
+
+def _table_columns(conn: sqlite3.Connection, table: str) -> set[str]:
+    try:
+        rows = conn.execute(f"PRAGMA table_info({table})").fetchall()  # noqa: S608
+    except sqlite3.OperationalError:
+        return set()
+    return {str(row["name"]) for row in rows}
+
+
+def _open_autonomath_ro() -> sqlite3.Connection:
+    db_path = settings.autonomath_db_path
+    if not db_path.exists():
+        raise FileNotFoundError(str(db_path))
+    conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=5.0)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _num_or_none(value: Any) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _int_or_none(value: float | None) -> int | None:
+    if value is None:
+        return None
+    return int(round(value))
+
+
+def _industry_benchmark_rows(
+    conn: sqlite3.Connection,
+    *,
+    jsic_code_major: str,
+    region_code: str,
+) -> list[sqlite3.Row]:
+    entity_cols = _table_columns(conn, "am_entities")
+    fact_cols = _table_columns(conn, "am_entity_facts")
+    if not {"canonical_id", "record_kind"}.issubset(entity_cols):
+        return []
+    required_fact_cols = {
+        "entity_id",
+        "field_name",
+        "field_value_text",
+        "field_value_numeric",
+    }
+    if not required_fact_cols.issubset(fact_cols):
+        return []
+
+    topic_clause = (
+        f"AND e.source_topic = '{_ESTAT_INDUSTRY_TOPIC}'" if "source_topic" in entity_cols else ""
+    )
+    source_url_select = "e.source_url" if "source_url" in entity_cols else "NULL"
+    fetched_at_select = "e.fetched_at" if "fetched_at" in entity_cols else "NULL"
+
+    sql = f"""
+        WITH candidate_cells AS (
+            SELECT e.canonical_id,
+                   {source_url_select} AS source_url,
+                   {fetched_at_select} AS fetched_at
+              FROM am_entities e
+              JOIN am_entity_facts f_jsic
+                ON f_jsic.entity_id = e.canonical_id
+               AND f_jsic.field_name = 'jsic_code_major'
+               AND f_jsic.field_value_text = ?
+              JOIN am_entity_facts f_region
+                ON f_region.entity_id = e.canonical_id
+               AND f_region.field_name = 'region_code'
+               AND f_region.field_value_text = ?
+             WHERE e.record_kind = 'statistic'
+               {topic_clause}
+        ),
+        wide AS (
+            SELECT c.canonical_id AS cell_id,
+                   MAX(c.source_url) AS source_url,
+                   MAX(c.fetched_at) AS fetched_at,
+                   MAX(CASE WHEN f.field_name = 'jsic_name_major'
+                            THEN f.field_value_text END) AS jsic_name_major,
+                   MAX(CASE WHEN f.field_name = 'jsic_code_medium'
+                            THEN f.field_value_text END) AS jsic_code_medium,
+                   MAX(CASE WHEN f.field_name = 'jsic_name_medium'
+                            THEN f.field_value_text END) AS jsic_name_medium,
+                   MAX(CASE WHEN f.field_name = 'region_name'
+                            THEN f.field_value_text END) AS region_name,
+                   MAX(CASE WHEN f.field_name = 'scale_code'
+                            THEN f.field_value_text END) AS scale_code,
+                   MAX(CASE WHEN f.field_name = 'scale_bucket'
+                            THEN f.field_value_text END) AS scale_bucket,
+                   MAX(CASE WHEN f.field_name = 'temporal.statistic.raw'
+                            THEN f.field_value_text END) AS period_raw,
+                   MAX(CASE WHEN f.field_name = 'statistic_source_title'
+                            THEN f.field_value_text END) AS statistic_source_title,
+                   MAX(CASE WHEN f.field_name = 'statistic.establishment_count'
+                            THEN f.field_value_numeric END) AS establishment_count,
+                   MAX(CASE WHEN f.field_name = 'statistic.employee_count_total'
+                            THEN f.field_value_numeric END) AS employee_count_total,
+                   MAX(CASE WHEN f.field_name = 'statistic.regular_employee_total'
+                            THEN f.field_value_numeric END) AS regular_employee_total
+              FROM candidate_cells c
+              LEFT JOIN am_entity_facts f ON f.entity_id = c.canonical_id
+             GROUP BY c.canonical_id
+        )
+        SELECT * FROM wide
+         ORDER BY COALESCE(scale_code, ''), cell_id
+    """
+    return conn.execute(sql, (jsic_code_major, region_code)).fetchall()
+
+
+def _build_industry_benchmark_payload(
+    rows: list[sqlite3.Row],
+    *,
+    jsic_code_major: str,
+    region_code: str,
+) -> dict[str, Any]:
+    if not rows:
+        raise HTTPException(404, "industry benchmark not found")
+
+    excluded_buckets = {"総数", "出向・派遣従業者のみ"}
+    usable_rows = [row for row in rows if (row["scale_bucket"] or "") not in excluded_buckets]
+    if not usable_rows:
+        usable_rows = rows
+
+    establishments_total = sum(
+        value for row in usable_rows if (value := _num_or_none(row["establishment_count"]))
+    )
+    employees_total = sum(
+        value for row in usable_rows if (value := _num_or_none(row["employee_count_total"]))
+    )
+    secrecy_cells = sum(
+        1
+        for row in usable_rows
+        if row["establishment_count"] is None or row["employee_count_total"] is None
+    )
+
+    distribution: dict[str, dict[str, Any]] = {}
+    for row in usable_rows:
+        bucket_name = row["scale_bucket"] or "unknown"
+        bucket = distribution.setdefault(
+            bucket_name,
+            {
+                "scale_bucket": bucket_name,
+                "scale_code": row["scale_code"],
+                "cell_count": 0,
+                "establishments": 0,
+                "employees_total": 0,
+                "secrecy_cells": 0,
+            },
+        )
+        bucket["cell_count"] += 1
+        est = _num_or_none(row["establishment_count"])
+        emp = _num_or_none(row["employee_count_total"])
+        if est is None or emp is None:
+            bucket["secrecy_cells"] += 1
+        if est is not None:
+            bucket["establishments"] += int(round(est))
+        if emp is not None:
+            bucket["employees_total"] += int(round(emp))
+
+    first = rows[0]
+    avg = round(employees_total / establishments_total, 2) if establishments_total > 0 else None
+    return {
+        "benchmark_kind": "industry_region",
+        "jsic_code_major": jsic_code_major,
+        "jsic_name_major": first["jsic_name_major"],
+        "region_code": region_code,
+        "region_name": first["region_name"],
+        "period": first["period_raw"] or "令和3年(2021)",
+        "establishments": _int_or_none(establishments_total),
+        "employees_total": _int_or_none(employees_total),
+        "avg_employees_per_establishment": avg,
+        "scale_distribution": list(distribution.values()),
+        "metadata": {
+            "source": _ESTAT_SOURCE_LABEL,
+            "source_title": first["statistic_source_title"],
+            "source_url": first["source_url"],
+            "fetched_at": first["fetched_at"],
+            "license": _ESTAT_LICENSE,
+            "sample_cells": len(usable_rows),
+            "secrecy_cells": secrecy_cells,
+            "secrecy_note": (
+                "Cells with suppressed e-Stat values are counted in secrecy_cells "
+                "and are never treated as zero."
+            ),
+        },
+        "_disclaimer": (
+            "This is a public-statistics benchmark derived from local e-Stat "
+            "facts. It is not market, legal, tax, or grant-application advice."
+        ),
+    }
+
+
+@router.get(
+    "/benchmark/industry/{jsic_code_major}/region/{region_code}",
+    summary="Industry × region benchmark from e-Stat",
+    description=(
+        "Returns a compact industry-size benchmark from the local e-Stat "
+        "Economic Census corpus. No live fetch and no LLM call are performed."
+    ),
+)
+def stats_industry_region_benchmark(
+    jsic_code_major: Annotated[
+        str,
+        Path(pattern=r"^[A-Z]$", description="JSIC major code, e.g. D, E, G, K."),
+    ],
+    region_code: Annotated[
+        str,
+        Path(pattern=r"^[0-9]{5}$", description="e-Stat region code, e.g. 13000."),
+    ],
+) -> dict[str, Any]:
+    try:
+        conn = _open_autonomath_ro()
+    except FileNotFoundError as exc:
+        raise HTTPException(503, "statistics corpus unavailable") from exc
+    try:
+        rows = _industry_benchmark_rows(
+            conn,
+            jsic_code_major=jsic_code_major,
+            region_code=region_code,
+        )
+    finally:
+        conn.close()
+    return _build_industry_benchmark_payload(
+        rows,
+        jsic_code_major=jsic_code_major,
+        region_code=region_code,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -242,9 +486,7 @@ def _parse_iso(val: str | None) -> datetime | None:
             return None
 
 
-def _source_freshness(
-    conn: sqlite3.Connection, table: str, column: str | None
-) -> dict[str, Any]:
+def _source_freshness(conn: sqlite3.Connection, table: str, column: str | None) -> dict[str, Any]:
     if column is None:
         return {"min": None, "max": None, "count": 0, "avg_interval_days": None}
     try:
@@ -281,10 +523,7 @@ def stats_freshness(conn: DbDep) -> dict[str, Any]:
         return {
             "sources": sources,
             "generated_at": (
-                datetime.now(UTC)
-                .replace(microsecond=0)
-                .isoformat()
-                .replace("+00:00", "Z")
+                datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
             ),
         }
 
@@ -301,10 +540,9 @@ def stats_freshness(conn: DbDep) -> dict[str, Any]:
 # Output is the daily count + the cumulative sum, suitable for a
 # brand-transparency chart.
 
+
 def _date_buckets(today: datetime, days: int) -> list[str]:
-    return [
-        (today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(days - 1, -1, -1)
-    ]
+    return [(today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(days - 1, -1, -1)]
 
 
 @router.get("/usage", response_model=UsageResponse)
@@ -334,9 +572,7 @@ def stats_usage(conn: DbDep) -> dict[str, Any]:
             "until": today.strftime("%Y-%m-%d"),
             "daily": daily,
             "total": cumulative,
-            "generated_at": (
-                today.replace(microsecond=0).isoformat().replace("+00:00", "Z")
-            ),
+            "generated_at": (today.replace(microsecond=0).isoformat().replace("+00:00", "Z")),
         }
 
     return _cache_get_or_compute("usage", _compute)
@@ -393,6 +629,7 @@ def _open_autonomath_conn() -> sqlite3.Connection | None:
     """
     try:
         from jpintel_mcp.config import settings
+
         path = settings.autonomath_db_path
         c = sqlite3.connect(str(path))
         c.row_factory = sqlite3.Row
@@ -430,21 +667,16 @@ def _am_source_fallback_aggregates(
             " GROUP BY COALESCE(license, 'null_source')"
         ).fetchall()
         license_hist = {
-            (r["lic"] if "lic" in r.keys() else r[0]):
-                int(r["n"] if "n" in r.keys() else r[1])
+            (r["lic"] if "lic" in r else r[0]): int(r["n"] if "n" in r else r[1])
             for r in license_rows
         }
         total_sources = sum(license_hist.values())
 
         # freshness — bucket on days since first_seen
-        fresh_hist: dict[str, int] = {
-            label: 0 for label, _ in _FRESHNESS_BUCKETS
-        }
+        fresh_hist: dict[str, int] = {label: 0 for label, _ in _FRESHNESS_BUCKETS}
         fresh_hist["unknown"] = 0
         today = datetime.now(UTC).date()
-        fresh_cursor = am_conn.execute(
-            "SELECT first_seen FROM am_source"
-        )
+        fresh_cursor = am_conn.execute("SELECT first_seen FROM am_source")
         for row in fresh_cursor:
             try:
                 first_seen = row["first_seen"]
@@ -498,9 +730,7 @@ def _data_quality_is_empty(out: dict[str, Any]) -> bool:
         return False
     # label_histogram is initialised with zeros; non-zero only if facts.
     label_hist = out.get("label_histogram") or {}
-    if any(int(v or 0) > 0 for v in label_hist.values()):
-        return False
-    return True
+    return not any(int(v or 0) > 0 for v in label_hist.values())
 
 
 @router.get("/data_quality", response_model=DataQualityResponse)
@@ -510,12 +740,13 @@ def stats_data_quality() -> Any:
         # well-shaped JSON. Honest disclosure: missing view also lands
         # here via the OperationalError catch below.
         label_hist: dict[str, int] = {
-            "high": 0, "medium": 0, "low": 0, "unknown": 0,
+            "high": 0,
+            "medium": 0,
+            "low": 0,
+            "unknown": 0,
         }
         license_hist: dict[str, int] = {}
-        fresh_hist: dict[str, int] = {
-            label: 0 for label, _ in _FRESHNESS_BUCKETS
-        }
+        fresh_hist: dict[str, int] = {label: 0 for label, _ in _FRESHNESS_BUCKETS}
         fresh_hist["unknown"] = 0
         kind_acc: dict[str, dict[str, float]] = {}
 
@@ -549,10 +780,7 @@ def stats_data_quality() -> Any:
                     "signal page."
                 ),
                 "generated_at": (
-                    datetime.now(UTC)
-                    .replace(microsecond=0)
-                    .isoformat()
-                    .replace("+00:00", "Z")
+                    datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
                 ),
             }
         try:
@@ -569,10 +797,13 @@ def stats_data_quality() -> Any:
                     n_sources = row["n_sources"]
                     agreement = row["agreement"]
                 except (TypeError, IndexError):
-                    field_kind, license_value, days_since_fetch, \
-                        n_sources, agreement = (
-                            row[0], row[1], row[2], row[3], row[4]
-                        )
+                    field_kind, license_value, days_since_fetch, n_sources, agreement = (
+                        row[0],
+                        row[1],
+                        row[2],
+                        row[3],
+                        row[4],
+                    )
                 # Score the fact via the same pure-math helper used by
                 # the envelope wrapper. This guarantees the rollup and
                 # the per-fact `_uncertainty` field stay numerically
@@ -581,9 +812,7 @@ def stats_data_quality() -> Any:
                     field_kind=field_kind,
                     license_value=license_value,
                     days_since_fetch=(
-                        int(days_since_fetch)
-                        if days_since_fetch is not None
-                        else None
+                        int(days_since_fetch) if days_since_fetch is not None else None
                     ),
                     n_sources=int(n_sources or 0),
                     agreement=int(agreement or 0),
@@ -594,9 +823,7 @@ def stats_data_quality() -> Any:
                 lic_key = license_value or "null_source"
                 license_hist[lic_key] = license_hist.get(lic_key, 0) + 1
                 fresh_label = _freshness_bucket_for(
-                    int(days_since_fetch)
-                    if days_since_fetch is not None
-                    else None
+                    int(days_since_fetch) if days_since_fetch is not None else None
                 )
                 fresh_hist[fresh_label] = fresh_hist.get(fresh_label, 0) + 1
                 kk = field_kind or "unknown"
@@ -629,10 +856,8 @@ def stats_data_quality() -> Any:
             else:
                 if fallback_reason is None:
                     fallback_reason = "am_source_missing"
-        try:
+        with contextlib.suppress(Exception):
             am_conn.close()
-        except Exception:
-            pass
 
         kind_breakdown: dict[str, dict[str, Any]] = {}
         for k, agg in kind_acc.items():
@@ -643,15 +868,11 @@ def stats_data_quality() -> Any:
                 "mean_score": round(mean, 4),
             }
 
-        agreement_rate = (
-            (n_pairs_agree / n_pairs_multi) if n_pairs_multi > 0 else 0.0
-        )
+        agreement_rate = (n_pairs_agree / n_pairs_multi) if n_pairs_multi > 0 else 0.0
 
         out: dict[str, Any] = {
             "fact_count_total": fact_count,
-            "mean_score": (
-                round(score_sum / fact_count, 4) if fact_count > 0 else None
-            ),
+            "mean_score": (round(score_sum / fact_count, 4) if fact_count > 0 else None),
             "label_histogram": label_hist,
             "license_breakdown": license_hist,
             "freshness_buckets": fresh_hist,
@@ -663,10 +884,7 @@ def stats_data_quality() -> Any:
             },
             "model": "beta_posterior_v1",
             "generated_at": (
-                datetime.now(UTC)
-                .replace(microsecond=0)
-                .isoformat()
-                .replace("+00:00", "Z")
+                datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
             ),
         }
         if fallback_reason is not None:

@@ -27782,6 +27782,67 @@
         ]
       }
     },
+    "/v1/stats/benchmark/industry/{jsic_code_major}/region/{region_code}": {
+      "get": {
+        "description": "Returns a compact industry-size benchmark from the local e-Stat Economic Census corpus. No live fetch and no LLM call are performed.",
+        "operationId": "stats_industry_region_benchmark_v1_stats_benchmark_industry__jsic_code_major__region__region_code__get",
+        "parameters": [
+          {
+            "description": "JSIC major code, e.g. D, E, G, K.",
+            "in": "path",
+            "name": "jsic_code_major",
+            "required": true,
+            "schema": {
+              "description": "JSIC major code, e.g. D, E, G, K.",
+              "pattern": "^[A-Z]$",
+              "title": "Jsic Code Major",
+              "type": "string"
+            }
+          },
+          {
+            "description": "e-Stat region code, e.g. 13000.",
+            "in": "path",
+            "name": "region_code",
+            "required": true,
+            "schema": {
+              "description": "e-Stat region code, e.g. 13000.",
+              "pattern": "^[0-9]{5}$",
+              "title": "Region Code",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Stats Industry Region Benchmark V1 Stats Benchmark Industry  Jsic Code Major  Region  Region Code  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Industry \u00d7 region benchmark from e-Stat",
+        "tags": [
+          "stats",
+          "transparency"
+        ]
+      }
+    },
     "/v1/stats/confidence": {
       "get": {
         "description": "Live Bayesian Discovery + Use posteriors per tool, last 30 days.",
