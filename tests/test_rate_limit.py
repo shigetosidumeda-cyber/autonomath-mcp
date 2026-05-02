@@ -8,6 +8,7 @@ clears the `anon_rate_limit` table via the autouse fixture in
 `tests/conftest.py` so the burst throttle and the daily quota don't
 contaminate each other.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -175,16 +176,24 @@ def test_paid_key_bucket_exhaustion_returns_429(client: TestClient, paid_key: st
     assert "Retry-After" in r.headers
 
 
-def test_paid_key_uses_separate_bucket_from_anon(
-    client: TestClient, paid_key: str
-) -> None:
+def test_paid_key_uses_separate_bucket_from_anon(client: TestClient, paid_key: str) -> None:
     """The paid-key bucket is keyed on the key hash, NOT the IP — so an
     anon caller from the same IP that has burned its 5/sec is unaffected
     by paid-key activity (and vice versa)."""
-    # First, burn the anon burst from the test client IP.
-    for _ in range(5):
-        r = client.get("/v1/meta")
-        assert r.status_code == 200
+    from jpintel_mcp.api.middleware.rate_limit import (
+        _ANON_BURST,
+        _ANON_RATE_PER_SEC,
+        _take_token,
+    )
+
+    # First, burn the anon burst from the test client IP. Drain the bucket
+    # directly so the assertion does not depend on how quickly CI serves
+    # five HTTP requests relative to the 1 token/sec refill.
+    bucket_key = "ip:testclient"
+    for _ in range(int(_ANON_BURST)):
+        allowed, _ = _take_token(bucket_key, _ANON_RATE_PER_SEC, _ANON_BURST)
+        assert allowed
+
     blocked = client.get("/v1/meta")
     assert blocked.status_code == 429
 
@@ -227,9 +236,7 @@ def test_options_preflight_is_whitelisted(client: TestClient) -> None:
         assert r.status_code != 429, f"OPTIONS got throttled: {r.text}"
 
 
-def test_authorization_bearer_treated_as_paid_bucket(
-    client: TestClient, paid_key: str
-) -> None:
+def test_authorization_bearer_treated_as_paid_bucket(client: TestClient, paid_key: str) -> None:
     """`Authorization: Bearer …` is the second auth header form. It must
     route to the paid bucket (burst=20), not the anon bucket (burst=5)."""
     headers = {"Authorization": f"Bearer {paid_key}"}
@@ -254,9 +261,7 @@ def test_invalid_api_keys_share_auth_ip_bucket(client: TestClient) -> None:
 
     bucket_key = "auth-ip:testclient"
     for _ in range(int(_AUTH_IP_BURST)):
-        allowed, _ = _take_token(
-            bucket_key, _AUTH_IP_RATE_PER_SEC, _AUTH_IP_BURST
-        )
+        allowed, _ = _take_token(bucket_key, _AUTH_IP_RATE_PER_SEC, _AUTH_IP_BURST)
         assert allowed
 
     r = client.get("/v1/meta", headers={"X-API-Key": "am_bogus_rotated_999"})
