@@ -57,7 +57,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, Header, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -725,6 +725,7 @@ def post_dd_batch(
     payload: DdBatchRequest,
     ctx: ApiContextDep,
     conn: DbDep,
+    background_tasks: BackgroundTasks,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> JSONResponse:
     require_metered_api_key(ctx, "dd_batch")
@@ -819,9 +820,9 @@ def post_dd_batch(
             with contextlib_suppress(sqlite3.Error):
                 am_conn.close()
 
-    # 5. Per-id metering. Each houjin = one billable event. We reuse the
-    #    existing log_usage helper so dashboards / Stripe usage_records all
-    #    reconcile against `endpoint='am.dd_batch.row'`.
+    # 5. Per-id metering. Each houjin = one billable event. Defer the write
+    #    until after the response is flushed so a render/transport failure
+    #    cannot leave the customer with partial billing and no packet.
     for hj in normalized:
         log_usage(
             conn,
@@ -829,6 +830,7 @@ def post_dd_batch(
             endpoint="am.dd_batch.row",
             params={"houjin_bangou": hj, "depth": payload.depth},
             result_count=1,
+            background_tasks=background_tasks,
         )
 
     # 6. NDJSON stream when batch is large. Each profile gets its own line +
@@ -1632,6 +1634,7 @@ def post_dd_export(
     payload: DdExportRequest,
     ctx: ApiContextDep,
     conn: DbDep,
+    background_tasks: BackgroundTasks,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> JSONResponse:
     require_metered_api_key(ctx, "audit bundle export")
@@ -1737,7 +1740,9 @@ def post_dd_export(
     # as a SINGLE usage_event with `quantity=bundle_units` so the Stripe
     # usage_record posts ONE line for the bundle (not N parallel POSTs).
     # Same ¥-total as the legacy loop (`bundle_units × ¥3`) but with one
-    # idempotency key per export → cleaner reconciliation surface.
+    # idempotency key per export → cleaner reconciliation surface. Writes are
+    # deferred until after the response is flushed to avoid partial billing on
+    # response construction failures.
     for hj in normalized:
         log_usage(
             conn,
@@ -1745,6 +1750,7 @@ def post_dd_export(
             endpoint="am.dd_export.row",
             params={"houjin_bangou": hj, "deal_id": payload.deal_id},
             result_count=1,
+            background_tasks=background_tasks,
         )
     # Bundle fee — single row, quantity = bundle_units.
     log_usage(
@@ -1758,6 +1764,7 @@ def post_dd_export(
         },
         quantity=bundle_units,
         result_count=bundle_units,
+        background_tasks=background_tasks,
     )
 
     body = {
