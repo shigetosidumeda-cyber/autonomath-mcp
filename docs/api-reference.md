@@ -919,8 +919,9 @@ LLM context prefetch 用に、事前計算済みの evidence bundle をコンパ
 | `include_facts` | bool | no | `true` で raw facts も含める。default `false` |
 | `include_compression` | bool | no | context-size estimate を含める。default `true` |
 | `input_token_price_jpy_per_1m` | number | no | caller 側の input token 単価。参考比較が可能な場合のみ使用し、削減額を保証しない |
-| `source_tokens_basis` | string | no | `unknown` / `pdf_pages`。`pdf_pages` は caller が比較対象のページ数を渡した場合だけ source estimate を出す |
+| `source_tokens_basis` | string | no | `unknown` / `pdf_pages` / `token_count`。caller が比較対象を渡した場合だけ source estimate を出す |
 | `source_pdf_pages` | int | no | LLM にそのまま読ませる予定だった PDF ページ数。`source_tokens_basis=pdf_pages` のときだけ使用 |
+| `source_token_count` | int | no | caller が自分のモデル UI / tokenizer で測った入力 token 数。`source_tokens_basis=token_count` のときだけ使用 |
 | `output_format` | string | no | 現在は `json` のみ対応 |
 
 **Example:**
@@ -939,6 +940,13 @@ curl -H "X-API-Key: am_..." \
 
 `source_pdf_pages` は caller が知っている比較対象を明示する値です。jpcite は URL から勝手にページ数やトークン数を推定しません。
 
+すでに自分の LLM 画面や tokenizer で比較対象の token 数が分かっている場合:
+
+```bash
+curl -H "X-API-Key: am_..." \
+  "https://api.jpcite.com/v1/intelligence/precomputed/query?q=省力化&limit=5&source_tokens_basis=token_count&source_token_count=18500&input_token_price_jpy_per_1m=300"
+```
+
 **Key response fields:**
 
 | field | type | description |
@@ -949,6 +957,8 @@ curl -H "X-API-Key: am_..." \
 | `compression` | object | context-size estimate。実測 savings や将来の cost reduction を保証しない |
 | `compression.source_tokens_input_source` | string | `caller_supplied` の場合のみ、caller が渡した baseline に基づく比較であることを示す |
 | `compression.savings_claim` | string | 常に `estimate_not_guarantee`。保証値ではなく参考推定であることを示す |
+| `agent_recommendation.recommendation` | string | AI agent 向けの次アクション。`use_jpcite_prefetch` / `use_evidence_packet` / `broaden_query_or_skip` |
+| `agent_recommendation.context_savings` | object | caller baseline がある場合だけ、`break_even_met` や `avoided_tokens_estimate` を機械可読にまとめる |
 
 ---
 
