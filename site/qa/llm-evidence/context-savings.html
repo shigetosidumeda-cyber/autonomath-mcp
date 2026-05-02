@@ -29,6 +29,14 @@
         "@type": "Answer",
         "text": "2026-05-02のoffline probeでは、30件のbenchmark queryに対するEvidence Packetは推定338〜1,352 tokens、中央値566 tokensでした。これはpacketサイズの測定であり、LLM料金削減の保証ではありません。"
       }
+    },
+    {
+      "@type": "Question",
+      "name": "課金しても元が取れるかはどう判断しますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "元の入力トークン数、jpciteのpacket推定トークン数、ユーザー自身の入力単価を使って比較します。jpciteはsource_tokens_basis=token_countでユーザー計測値を受け取り、avoided_tokens_estimateとcost_savings_estimateを返します。これは入力文脈の見積もりであり、請求額削減を保証しません。"
+      }
     }
   ]
 }
@@ -79,7 +87,21 @@
 
       <section>
         <h2>APIで比較する例</h2>
-        <p>たとえば「30ページのPDFをLLMに読ませる代わりにjpcite packetを渡す」前提なら、比較対象を明示して呼びます。</p>
+        <p>一番分かりやすい比較は、ユーザー自身がGPT/Claude側のUIやtokenizerで測った「元の入力トークン数」をそのまま渡す方法です。</p>
+        <pre><code>curl -X POST https://api.jpcite.com/v1/evidence/packets/query \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: am_..." \
+  -d '{
+    "query_text": "省力化 補助金 中小企業",
+    "limit": 5,
+    "include_compression": true,
+    "source_tokens_basis": "token_count",
+    "source_token_count": 18500,
+    "input_token_price_jpy_per_1m": 300
+  }'</code></pre>
+        <p>この場合、jpciteは<code>source_tokens_estimate=18500</code>をユーザー計測値として扱い、返却パケットの推定トークン数との差分を<code>avoided_tokens_estimate</code>として返します。価格を渡した場合だけ、参考値として<code>cost_savings_estimate</code>も返します。</p>
+        <p>損益分岐は <code>3 / (input_token_price_jpy_per_1m / 1000000)</code> tokens です。たとえば入力単価を300円/100万tokensとして見るなら、jpcite 1回分の3円を超えるには約10,000 input tokens以上の削減が必要です。これは税抜・入力文脈だけの比較で、出力tokens、キャッシュ、検索、ツール呼び出し、モデル差は含みません。</p>
+        <p>PDFページ数しか分からない場合は、ページ数を比較対象として明示できます。</p>
         <pre><code>curl -X POST https://api.jpcite.com/v1/evidence/packets/query \
   -H "Content-Type: application/json" \
   -H "X-API-Key: am_..." \
@@ -91,7 +113,7 @@
     "source_pdf_pages": 30,
     "input_token_price_jpy_per_1m": 300
   }'</code></pre>
-        <p><code>source_pdf_pages</code>はユーザーが渡す比較対象です。jpciteはURLだけから勝手にページ数や削減額を推定しません。</p>
+        <p><code>source_token_count</code>や<code>source_pdf_pages</code>はユーザーが渡す比較対象です。jpciteはURLだけから勝手にページ数や削減額を推定しません。</p>
       </section>
 
       <section>
