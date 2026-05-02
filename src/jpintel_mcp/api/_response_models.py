@@ -231,6 +231,13 @@ class EvidencePacketRecord(BaseModel):
         default=None,
         description="Fetch timestamp for the primary source when known.",
     )
+    source_health: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "Optional source freshness/licensing metadata from the local "
+            "source catalog. No live URL fetch is performed."
+        ),
+    )
     fact_provenance_coverage_pct: float | None = Field(
         default=None,
         description="Share of included facts that carry source provenance.",

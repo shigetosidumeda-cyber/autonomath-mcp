@@ -571,6 +571,29 @@ def test_compose_includes_only_user_facing_recent_changes(
     assert "new_value" not in recent_changes[0]
 
 
+def test_compose_includes_source_health_without_live_fetch(fixture_db: Path) -> None:
+    """Primary-source freshness/licensing metadata is read from am_source."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_program("UNI-evp-p1")
+    assert env is not None
+
+    record = env["records"][0]
+    assert record["source_fetched_at"] == "2026-04-25T00:00:00"
+    assert record["source_health"] == {
+        "source_url": "https://www.maff.go.jp/policy/evp1.html",
+        "source_fetched_at": "2026-04-25T00:00:00",
+        "source_type": "primary",
+        "domain": "www.maff.go.jp",
+        "checksum": "sha256:evp1aaaa",
+        "last_verified": "2026-04-28T00:00:00",
+        "license": "gov_standard_v2.0",
+        "verification_status": "verified",
+    }
+
+
 def test_query_records_include_precomputed_program_summary(
     fixture_db: Path,
 ) -> None:

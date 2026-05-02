@@ -588,6 +588,75 @@ class EvidencePacketComposer:
             changes.append(change)
         return changes
 
+    def _fetch_source_health(
+        self,
+        am_conn: sqlite3.Connection,
+        source_url: str | None,
+        *,
+        source_fetched_at: str | None = None,
+    ) -> dict[str, Any] | None:
+        """Return read-only source freshness/licensing metadata.
+
+        This never verifies URLs live. It only reflects the local source
+        catalog so agents can decide whether the packet is cite-ready or
+        should be followed by a citation-verification call.
+        """
+        if not source_url:
+            return None
+
+        health: dict[str, Any] = {"source_url": source_url}
+        if source_fetched_at:
+            health["source_fetched_at"] = source_fetched_at
+
+        cols = self._table_columns(am_conn, "am_source")
+        if "source_url" not in cols:
+            if source_fetched_at:
+                health["verification_status"] = "metadata_only"
+                return health
+            return None
+
+        requested_cols = [
+            "source_type",
+            "domain",
+            "content_hash",
+            "last_verified",
+            "license",
+            "canonical_status",
+            "is_pdf",
+        ]
+        select_cols = ["source_url", *(col for col in requested_cols if col in cols)]
+        try:
+            row = am_conn.execute(
+                f"SELECT {', '.join(select_cols)} FROM am_source WHERE source_url = ? LIMIT 1",
+                (source_url,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            row = None
+
+        if row is None:
+            health["verification_status"] = "metadata_only"
+            return health
+
+        row_keys = set(row.keys())
+        if "source_type" in row_keys and row["source_type"]:
+            health["source_type"] = row["source_type"]
+        if "domain" in row_keys and row["domain"]:
+            health["domain"] = row["domain"]
+        if "content_hash" in row_keys and row["content_hash"]:
+            health["checksum"] = row["content_hash"]
+        if "last_verified" in row_keys and row["last_verified"]:
+            health["last_verified"] = row["last_verified"]
+        if "license" in row_keys and row["license"]:
+            health["license"] = row["license"]
+        if "canonical_status" in row_keys and row["canonical_status"]:
+            health["canonical_status"] = row["canonical_status"]
+        if "is_pdf" in row_keys and row["is_pdf"] is not None:
+            health["is_pdf"] = bool(row["is_pdf"])
+        health["verification_status"] = (
+            "verified" if health.get("last_verified") else "cataloged_unverified"
+        )
+        return health
+
     def _fetch_rules_for_program(
         self,
         canonical_id: str,
@@ -1667,6 +1736,7 @@ class EvidencePacketComposer:
         gaps: list[str] = []
         precomputed_summary: dict[str, Any] | None = None
         recent_changes: list[dict[str, Any]] = []
+        source_health: dict[str, Any] | None = None
         try:
             base: dict[str, Any]
             canonical_id = ""
@@ -1711,6 +1781,11 @@ class EvidencePacketComposer:
                 precomputed_summary = self._fetch_program_summary(am, canonical_id)
                 if amendment_diff_available:
                     recent_changes = self._fetch_recent_changes(am, canonical_id)
+                source_health = self._fetch_source_health(
+                    am,
+                    base.get("primary_source_url"),
+                    source_fetched_at=base.get("source_fetched_at"),
+                )
         finally:
             am.close()
 
@@ -1731,6 +1806,8 @@ class EvidencePacketComposer:
             "record_kind": subject_kind,
             "source_url": base.get("primary_source_url"),
         }
+        if base.get("source_fetched_at"):
+            record["source_fetched_at"] = base["source_fetched_at"]
         if base.get("authority_name"):
             record["authority_name"] = base["authority_name"]
         if base.get("prefecture"):
@@ -1748,6 +1825,8 @@ class EvidencePacketComposer:
             record["precomputed"] = precomputed_summary
         if recent_changes:
             record["recent_changes"] = recent_changes
+        if source_health is not None:
+            record["source_health"] = source_health
 
         coverage_score = self._coverage_score([record])
 

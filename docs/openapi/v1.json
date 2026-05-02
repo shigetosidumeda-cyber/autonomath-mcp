@@ -5929,6 +5929,19 @@
             "description": "Fetch timestamp for the primary source when known.",
             "title": "Source Fetched At"
           },
+          "source_health": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional source freshness/licensing metadata from the local source catalog. No live URL fetch is performed.",
+            "title": "Source Health"
+          },
           "source_url": {
             "anyOf": [
               {
