@@ -102,6 +102,7 @@ from jpintel_mcp.api.deps import (
     ApiContextDep,
     DbDep,
     log_usage,
+    require_metered_api_key,
 )
 from jpintel_mcp.api.tax_rulesets import (
     _UNIFIED_ID_RE as _TAX_UNIFIED_ID_RE,
@@ -1552,6 +1553,7 @@ def render_workpaper(
       6. Bill ``len(target_ruleset_ids) + 10`` units (¥3 each).
     """
     t0 = time.perf_counter()
+    require_metered_api_key(ctx, "audit workpaper")
 
     if payload.report_format not in _REPORT_FORMATS:
         raise HTTPException(
@@ -1789,6 +1791,7 @@ def batch_evaluate(
     background_tasks: BackgroundTasks,
 ) -> JSONResponse:
     t0 = time.perf_counter()
+    require_metered_api_key(ctx, "audit batch evaluation")
 
     ids = list(dict.fromkeys(payload.target_ruleset_ids))
     for uid in ids:
@@ -2102,6 +2105,7 @@ def snapshot_attestation(
     ] = datetime.now(UTC).year,
 ) -> JSONResponse:
     t0 = time.perf_counter()
+    require_metered_api_key(ctx, "audit snapshot attestation")
     units = _SNAPSHOT_ATTESTATION_UNITS  # ¥30,000 == 10,000 × ¥3
     cap_response = _projected_cap_response(conn, ctx, units)
     if cap_response is not None:

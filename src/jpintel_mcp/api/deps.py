@@ -297,6 +297,25 @@ class ApiContext:
         return self.parent_key_id if self.parent_key_id is not None else self.key_id
 
 
+def require_metered_api_key(ctx: ApiContext, feature: str) -> None:
+    """Require an authenticated paid key before running a billable workflow."""
+    if ctx.key_hash is None:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            f"{feature} requires an authenticated API key",
+        )
+    if not ctx.metered:
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            detail={
+                "detail": f"{feature} requires a paid metered API key",
+                "required_tier": "paid",
+                "current_tier": ctx.tier,
+                "upgrade_url": TRIAL_UPGRADE_URL,
+            },
+        )
+
+
 async def require_key(
     request: Request,
     conn: Annotated[sqlite3.Connection, Depends(get_db)],
@@ -1039,12 +1058,13 @@ def log_usage(
             report_usage_async(ctx.stripe_subscription_id, **stripe_kwargs)
         except Exception:  # noqa: BLE001
             pass
-    _note_customer_cap_cache(
-        ctx.key_hash,
-        metered=ctx.metered,
-        status_code=status_code,
-        quantity=quantity,
-    )
+    if usage_event_inserted:
+        _note_customer_cap_cache(
+            ctx.key_hash,
+            metered=ctx.metered,
+            status_code=status_code,
+            quantity=quantity,
+        )
     return audit_seal
 
 

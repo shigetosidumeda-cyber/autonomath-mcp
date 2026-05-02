@@ -69,7 +69,12 @@ from jpintel_mcp.api._license_gate import (
     annotate_attribution,
     filter_redistributable,
 )
-from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
+from jpintel_mcp.api.deps import (
+    ApiContextDep,
+    DbDep,
+    log_usage,
+    require_metered_api_key,
+)
 
 logger = logging.getLogger("jpintel.api.ma_dd")
 
@@ -708,6 +713,8 @@ def post_dd_batch(
         str | None, Header(alias="X-Cost-Cap-JPY")
     ] = None,
 ) -> JSONResponse:
+    require_metered_api_key(ctx, "dd_batch")
+
     # 1. Normalize + dedup (preserve order). Reject the request if any
     #    individual id can't normalize to 13 digits — the boutique caller
     #    passed bad input and we don't want a silent partial.
@@ -1612,11 +1619,7 @@ def post_dd_export(
         str | None, Header(alias="X-Cost-Cap-JPY")
     ] = None,
 ) -> JSONResponse:
-    if ctx.key_hash is None:
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED,
-            "audit bundle export requires an authenticated API key",
-        )
+    require_metered_api_key(ctx, "audit bundle export")
     if payload.format != "zip":
         # PDF mode is reserved for a future signed PDF audit-pack; the spec
         # only mandates ZIP today. Return a clear 400 so callers don't

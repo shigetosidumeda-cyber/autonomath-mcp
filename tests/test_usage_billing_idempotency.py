@@ -16,7 +16,12 @@ def test_request_idempotency_key_distinguishes_multiple_usage_events(
             """
             CREATE TABLE api_keys (
                 key_hash TEXT PRIMARY KEY,
-                last_used_at TEXT
+                last_used_at TEXT,
+                tier TEXT DEFAULT 'paid',
+                monthly_cap_yen INTEGER,
+                id INTEGER,
+                parent_key_id INTEGER,
+                revoked_at TEXT
             );
             CREATE TABLE usage_events (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,3 +84,86 @@ def test_request_idempotency_key_distinguishes_multiple_usage_events(
     assert {row[1] for row in rows} == {None}
     assert len({row[2] for row in rows}) == 2
     assert all(str(row[2]).startswith("idem_multi:u") for row in rows)
+
+
+def test_duplicate_billing_idempotency_does_not_advance_cap_cache(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    db_path = tmp_path / "usage_idempotency_cap.db"
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    noted: list[tuple[str | None, int]] = []
+    try:
+        conn.executescript(
+            """
+            CREATE TABLE api_keys (
+                key_hash TEXT PRIMARY KEY,
+                last_used_at TEXT,
+                tier TEXT DEFAULT 'paid',
+                monthly_cap_yen INTEGER,
+                id INTEGER,
+                parent_key_id INTEGER,
+                revoked_at TEXT
+            );
+            CREATE TABLE usage_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key_hash TEXT NOT NULL,
+                endpoint TEXT NOT NULL,
+                ts TEXT NOT NULL,
+                status INTEGER,
+                metered INTEGER DEFAULT 0,
+                params_digest TEXT,
+                latency_ms INTEGER,
+                result_count INTEGER,
+                client_tag TEXT,
+                quantity INTEGER NOT NULL DEFAULT 1,
+                billing_idempotency_key TEXT
+            );
+            CREATE UNIQUE INDEX idx_usage_events_billing_idempotency
+                ON usage_events(key_hash, billing_idempotency_key)
+                WHERE billing_idempotency_key IS NOT NULL;
+            """
+        )
+        conn.execute(
+            "INSERT INTO api_keys(key_hash, last_used_at, tier, id) "
+            "VALUES (?, NULL, 'paid', 1)",
+            ("kh_paid",),
+        )
+        ctx = ApiContext(
+            key_hash="kh_paid",
+            tier="paid",
+            customer_id="cus_paid",
+            stripe_subscription_id=None,
+        )
+
+        def fake_note_cap_usage(key_hash: str | None, quantity: int = 1) -> None:
+            noted.append((key_hash, quantity))
+
+        monkeypatch.setattr(
+            "jpintel_mcp.api.middleware.customer_cap.note_cap_usage",
+            fake_note_cap_usage,
+        )
+
+        idem = import_module("jpintel_mcp.api.idempotency_context")
+        for _ in range(2):
+            key_token = idem.billing_idempotency_key.set("idem_once")
+            index_token = idem.billing_event_index.set(0)
+            try:
+                log_usage(
+                    conn,
+                    ctx,
+                    "programs.get",
+                    params={"id": "P-1"},
+                    quantity=7,
+                )
+            finally:
+                idem.billing_event_index.reset(index_token)
+                idem.billing_idempotency_key.reset(key_token)
+
+        row_count = conn.execute("SELECT COUNT(*) FROM usage_events").fetchone()[0]
+    finally:
+        conn.close()
+
+    assert row_count == 1
+    assert noted == [("kh_paid", 7)]

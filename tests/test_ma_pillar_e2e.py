@@ -38,6 +38,8 @@ from pathlib import Path
 
 import pytest
 
+from jpintel_mcp.billing.keys import issue_key
+
 _FIVE_HOUJIN: tuple[str, ...] = (
     "1010001000001",
     "2010001000002",
@@ -45,6 +47,16 @@ _FIVE_HOUJIN: tuple[str, ...] = (
     "4010001000004",
     "5010001000005",
 )
+
+
+@pytest.fixture()
+def trial_key(seeded_db: Path) -> str:
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    raw = issue_key(c, customer_id="cus_ma_trial", tier="trial")
+    c.commit()
+    c.close()
+    return raw
 
 
 @pytest.fixture(autouse=True)
@@ -205,6 +217,24 @@ def test_dd_batch_5_houjin_summary(client, paid_key):
     # checksum prefix is acceptable). Required for re-pull reproducibility.
     assert body["corpus_snapshot_id"]
     assert body["corpus_checksum"]
+
+
+def test_dd_batch_requires_paid_key(client, trial_key):
+    r = client.post(
+        "/v1/am/dd_batch",
+        headers={"X-API-Key": trial_key},
+        json={"houjin_bangous": list(_FIVE_HOUJIN[:1])},
+    )
+    assert r.status_code == 402
+    assert r.json()["detail"]["required_tier"] == "paid"
+
+
+def test_dd_batch_requires_auth(client):
+    r = client.post(
+        "/v1/am/dd_batch",
+        json={"houjin_bangous": list(_FIVE_HOUJIN[:1])},
+    )
+    assert r.status_code == 401
 
 
 def test_dd_batch_invalid_houjin_returns_422(client, paid_key):
@@ -534,6 +564,19 @@ def test_dd_export_bundle_class_standard_default(client, paid_key):
     assert body["bundle_units"] == 333
     # 1 × ¥3 + 333 × ¥3 = ¥3 + ¥999 = ¥1,002.
     assert body["metered_yen"] == 1 * 3 + 333 * 3
+
+
+def test_dd_export_requires_paid_key(client, trial_key):
+    r = client.post(
+        "/v1/am/dd_export",
+        headers={"X-API-Key": trial_key},
+        json={
+            "deal_id": "MA-E2E-TRIAL-BLOCKED",
+            "houjin_bangous": list(_FIVE_HOUJIN[:1]),
+        },
+    )
+    assert r.status_code == 402
+    assert r.json()["detail"]["required_tier"] == "paid"
 
 
 def test_dd_export_bundle_class_invalid_returns_422(client, paid_key):

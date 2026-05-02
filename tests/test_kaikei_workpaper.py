@@ -56,6 +56,16 @@ def kaikei_key(seeded_db: Path) -> str:
     return raw
 
 
+@pytest.fixture()
+def kaikei_trial_key(seeded_db: Path) -> str:
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    raw = issue_key(c, customer_id="cus_kaikei_trial", tier="trial")
+    c.commit()
+    c.close()
+    return raw
+
+
 @pytest.fixture(autouse=True)
 def _seed_tax_rulesets(seeded_db: Path):
     """Seed two tax_rulesets onto the test DB so audit endpoints have
@@ -159,6 +169,43 @@ def _seed_tax_rulesets(seeded_db: Path):
 # ---------------------------------------------------------------------------
 # 1. Workpaper PDF
 # ---------------------------------------------------------------------------
+
+
+def test_audit_metered_routes_reject_anonymous(client):
+    workpaper_payload = {
+        "client_id": "client-anon-blocked",
+        "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+        "business_profile": {"annual_revenue_yen": 30_000_000},
+        "report_format": "pdf",
+        "audit_period": "2026-Q1",
+    }
+    r = client.post("/v1/audit/workpaper", json=workpaper_payload)
+    assert r.status_code == 401
+
+    batch_payload = {
+        "audit_firm_id": "firm-anon-blocked",
+        "profiles": [
+            {
+                "client_id": "client-anon-001",
+                "profile": {"annual_revenue_yen": 30_000_000},
+            }
+        ],
+        "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+    }
+    r = client.post("/v1/audit/batch_evaluate", json=batch_payload)
+    assert r.status_code == 401
+
+    r = client.get("/v1/audit/snapshot_attestation?year=2026")
+    assert r.status_code == 401
+
+
+def test_audit_metered_routes_reject_trial_key(client, kaikei_trial_key):
+    r = client.get(
+        "/v1/audit/snapshot_attestation?year=2026",
+        headers={"X-API-Key": kaikei_trial_key},
+    )
+    assert r.status_code == 402
+    assert r.json()["detail"]["required_tier"] == "paid"
 
 
 def test_workpaper_pdf_contains_47_2_wording(client, kaikei_key):

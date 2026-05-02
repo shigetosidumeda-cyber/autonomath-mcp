@@ -62,6 +62,7 @@ from jpintel_mcp.api.deps import (  # noqa: TC001
     ApiContextDep,
     DbDep,
     log_usage,
+    require_metered_api_key,
 )
 
 logger = logging.getLogger("jpintel.bulk_evaluate")
@@ -471,6 +472,8 @@ async def bulk_evaluate_clients(
                 "to actually evaluate and bill."
             ),
         })
+
+    require_metered_api_key(ctx, "bulk_evaluate commit")
 
     # commit=true — billing path requires idempotency.
     if not idempotency_key or not idempotency_key.strip():

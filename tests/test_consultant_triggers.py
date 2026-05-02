@@ -52,6 +52,16 @@ def consultant_key(seeded_db: Path) -> str:
     return raw
 
 
+@pytest.fixture()
+def trial_consultant_key(seeded_db: Path) -> str:
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    raw = issue_key(c, customer_id="cus_consultant_trial", tier="trial")
+    c.commit()
+    c.close()
+    return raw
+
+
 @pytest.fixture(autouse=True)
 def _ensure_trigger_tables(seeded_db: Path):
     """Apply migrations 087/096/098 onto the test DB."""
@@ -164,6 +174,22 @@ def test_bulk_evaluate_preview_returns_cost(client, consultant_key):
     assert body["row_count"] == 5
     assert body["estimated_yen"] == 15  # 5 × ¥3
     assert body["program_filter"] == "all"
+
+
+def test_bulk_evaluate_commit_requires_paid_key(client, trial_consultant_key):
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": trial_consultant_key},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={
+            "commit": "true",
+            "idempotency_key": "trial-commit-blocked",
+        },
+    )
+    assert r.status_code == 402
+    body = r.json()
+    assert body["detail"]["required_tier"] == "paid"
+    assert body["detail"]["current_tier"] == "trial"
 
 
 def test_bulk_evaluate_commit_bills_and_returns_zip(
