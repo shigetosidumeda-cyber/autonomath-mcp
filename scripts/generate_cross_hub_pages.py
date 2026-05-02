@@ -30,8 +30,8 @@ Selection
 If a prefecture has fewer than 10 matches, the page lists what we have and
 declares the actual count honestly. No padding.
 
-Operator entity: Bookyou株式会社 (T8010001213708). The footer disclaimer
-lives in the embedded HTML below and matches the rest of the static site.
+The footer disclaimer lives in the embedded HTML below and matches the rest
+of the static site.
 """
 
 from __future__ import annotations
@@ -40,11 +40,13 @@ import argparse
 import html
 import json
 import logging
+import re
 import sqlite3
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
@@ -84,14 +86,52 @@ KIND_JA = {
 
 SELECT_SQL = """
 SELECT unified_id, primary_name, prefecture, program_kind,
-       amount_max_man_yen, amount_min_man_yen, tier, source_url
+       amount_max_man_yen, amount_min_man_yen, tier, source_url,
+       authority_name
 FROM programs
 WHERE excluded = 0
   AND tier IN ('S','A')
   AND source_url IS NOT NULL
   AND source_url <> ''
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//wikipedia.org%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.wikipedia.org%'
 """
+
+_PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
+_PREF_HOST_RE = re.compile(r"(?:^|\.)pref\.([a-z]+)\.(?:lg\.jp|jp)$")
+_CITY_HOST_RE = re.compile(r"(?:^|\.)city\.[a-z0-9-]+\.([a-z]+)\.(?:lg\.jp|jp)$")
+_PREF_KEY_TO_JA = dict(PREFECTURES)
+
+
+def _public_program_name(name: str | None) -> str:
+    return _PUBLIC_ID_PREFIX_RE.sub("", (name or "").strip())
+
+
+def _source_prefecture(row: dict[str, Any]) -> str | None:
+    try:
+        host = (urlparse(row.get("source_url") or "").hostname or "").lower()
+    except Exception:
+        return None
+    if host.startswith("www."):
+        host = host[4:]
+    for pattern in (_PREF_HOST_RE, _CITY_HOST_RE):
+        m = pattern.search(host)
+        if m:
+            return _PREF_KEY_TO_JA.get(m.group(1))
+    return None
 
 
 def _today_jst_iso() -> str:
@@ -125,6 +165,14 @@ def _matches_pref(row_pref: str | None, target_ja: str) -> bool:
     return str(row_pref).strip() == target_ja
 
 
+def _matches_pref_strict(row: dict[str, Any], target_ja: str) -> bool:
+    row_pref = row.get("prefecture")
+    if not _matches_pref(row_pref, target_ja):
+        return False
+    source_pref = _source_prefecture(row)
+    return source_pref is None or source_pref == target_ja
+
+
 def _rank_key(r: dict[str, Any]) -> tuple[int, float, str]:
     tier_rank = 0 if (r.get("tier") or "") == "S" else 1
     amt = -float(r.get("amount_max_man_yen") or 0)  # DESC via negation
@@ -134,7 +182,7 @@ def _rank_key(r: dict[str, Any]) -> tuple[int, float, str]:
 def _select_top_for_pref(
     rows: list[dict[str, Any]], pref_ja: str, top_n: int
 ) -> list[dict[str, Any]]:
-    matched = [r for r in rows if _matches_pref(r.get("prefecture"), pref_ja)]
+    matched = [r for r in rows if _matches_pref_strict(r, pref_ja)]
     matched.sort(key=_rank_key)
     return matched[:top_n]
 
@@ -155,13 +203,13 @@ def _render_hub(
         kind = KIND_JA.get(r.get("program_kind") or "subsidy", "公的支援制度")
         amt = _amount_line(r.get("amount_max_man_yen"), r.get("amount_min_man_yen"))
         tier = (r.get("tier") or "A").upper()
-        name_esc = html.escape(r["primary_name"] or "")
+        name_esc = html.escape(_public_program_name(r["primary_name"] or ""))
         src = html.escape(r.get("source_url") or "")
         lis.append(
             "      <li class=\"cross-program\">\n"
             f"        <a class=\"cross-program-name\" href=\"/programs/{slug}.html\">{name_esc}</a>\n"
             f"        <span class=\"cross-program-meta\">tier {tier} ・ {kind} ・ {amt}</span>\n"
-            f"        <a class=\"cross-program-source\" href=\"{src}\" rel=\"noopener noreferrer\">一次資料を開く</a>\n"
+            f"        <a class=\"cross-program-source\" href=\"{src}\" rel=\"noopener noreferrer\">出典ページを開く</a>\n"
             "      </li>"
         )
     if not lis:
@@ -173,8 +221,8 @@ def _render_hub(
     inline_html = "\n".join(lis)
     title = f"{pref_ja} 補助金・税制 主要{len(top)}件 | jpcite"
     desc = (
-        f"{pref_ja}の主要な補助金・助成金・融資・税制を tier S/A の上位 {len(top)} 件で集約。"
-        "各制度は一次資料 URL に直接リンク。AutonoMath API/MCP で同等データ取得可。"
+        f"{pref_ja}から確認されやすい全国制度・広域制度・地域制度の候補を tier S/A の上位 {len(top)} 件で集約。"
+        "対象地域・申請者要件は出典ページで確認が必要です。jpcite API/MCP で同等データ取得可。"
     )
     json_ld = {
         "@context": "https://schema.org",
@@ -183,10 +231,7 @@ def _render_hub(
                 "@type": "Organization",
                 "@id": f"https://{domain}/#publisher",
                 "name": "jpcite",
-                "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
                 "url": f"https://{domain}/",
-                "legalName": "Bookyou株式会社",
-                "taxID": "T8010001213708",
             },
             {
                 "@type": "BreadcrumbList",
@@ -205,7 +250,7 @@ def _render_hub(
                     {
                         "@type": "ListItem",
                         "position": i + 1,
-                        "name": r["primary_name"] or "",
+                        "name": _public_program_name(r["primary_name"] or ""),
                         "url": f"https://{domain}/programs/{program_static_slug(r['primary_name'] or '', r['unified_id'])}.html",
                     }
                     for i, r in enumerate(top)
@@ -221,8 +266,8 @@ def _render_hub(
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
-<meta name="author" content="Bookyou株式会社">
-<meta name="publisher" content="Bookyou株式会社">
+<meta name="author" content="jpcite">
+<meta name="publisher" content="jpcite">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
@@ -265,9 +310,10 @@ def _render_hub(
     <span aria-current="page">{html.escape(pref_ja)}</span>
   </nav>
   <h1>{html.escape(pref_ja)} 補助金・税制 主要{len(top)}件</h1>
-  <p class="lede">{html.escape(region_ja)}・{html.escape(pref_ja)} の事業者が活用しやすい
-  tier S/A の主要制度を、補助金額の大きい順に上位{len(top)}件まで集約しました。
-  各制度名は AutonoMath の制度詳細ページに、出典は一次資料 URL に直接リンクしています。</p>
+  <p class="lede">この一覧は、{html.escape(region_ja)}・{html.escape(pref_ja)}から確認されやすい
+  全国制度・広域制度・地域制度の候補を、tier S/A と金額情報をもとに上位{len(top)}件まで集約したものです。
+  掲載制度には地域外自治体や特定地域向けの制度が含まれる場合があります。申請前に、対象地域・所在地要件・業種要件を一次資料で必ず確認してください。
+  各制度名は jpcite の制度詳細ページに、出典は一次資料 URL に直接リンクしています。</p>
   <section class="cross-section" aria-label="主要制度一覧">
     <h2>主要制度（tier S/A）</h2>
     <ul class="cross-list">
@@ -278,22 +324,21 @@ def _render_hub(
     <h2>関連リンク</h2>
     <ul>
       <li><a href="/prefectures/{pref_slug}.html">{html.escape(pref_ja)} 一次資料・地域制度ハイライト</a></li>
-      <li><a href="/programs/">全制度を検索する（API/SSG 横断）</a></li>
+      <li><a href="/programs/">全制度を検索する</a></li>
       <li><a href="/dashboard.html">条件指定で検索（事業類型・金額・締切）</a></li>
     </ul>
   </section>
   <section class="cross-disclaimer" aria-label="免責">
     <h2>免責</h2>
-    <p>本ページは AutonoMath（運営: Bookyou株式会社、適格請求書発行事業者番号 T8010001213708、
-    info@bookyou.net）が公開する一次資料ベースの集約結果です。tier 判定は
-    実データ充足ベースの内部スコアであり、申請可否や採択を保証するものではありません。
+    <p>本ページは jpcite が公開する一次資料ベースの集約結果です。掲載内容は
+    出典確認状況に基づいて整理しており、申請可否や採択を保証するものではありません。
     最新の公募要領・申請期間・対象要件は必ず一次資料 URL でご確認ください。
     最終取得日: <time datetime="{today}">{today}</time>。</p>
   </section>
 </main>
 <footer class="site-footer" role="contentinfo">
   <div class="container">
-    <p>&copy; 2026 Bookyou株式会社 (T8010001213708) ・
+    <p>&copy; 2026 jpcite ・
     <a href="/about.html">運営者情報</a> ・
     <a href="/privacy.html">プライバシーポリシー</a> ・
     <a href="/tokushoho.html">特定商取引法に基づく表記</a></p>

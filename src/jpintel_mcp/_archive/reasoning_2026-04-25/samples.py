@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List
 
 from . import query_types
-from .match import match, MatchResult
+from .match import match
 from .precompute import load_cache
 
 PKG_ROOT = Path(__file__).resolve().parent

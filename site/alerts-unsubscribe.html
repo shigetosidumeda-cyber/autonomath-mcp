@@ -25,22 +25,21 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "配信停止 — 税務会計AI 法令改正アラート",
-  "description": "税務会計AI 法令改正メールアラートの配信停止確認ページ。Bookyou株式会社が運営。",
+  "name": "配信停止 — jpcite 法令改正アラート",
+	  "description": "jpcite 法令改正メールアラートの配信停止確認ページ。",
   "url": "https://jpcite.com/alerts-unsubscribe.html",
   "inLanguage": "ja",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "alternateName": ["税務会計AI", "jpcite"],
+    "alternateName": ["jpcite", "jpcite"],
     "url": "https://jpcite.com/",
-    "identifier": "T8010001213708",
     "email": "info@bookyou.net"
   }
 }
@@ -130,7 +129,7 @@
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ <p class="footer-entity">運営: Bookyou株式会社</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="tos.html">利用規約</a>
@@ -169,7 +168,7 @@
       btn.disabled = true;
       status.className = "status";
       status.textContent = "送信中...";
-      var apiBase = window.AUTONOMATH_API_BASE || "https://api.jpcite.com";
+      var apiBase = window.JPCITE_API_BASE || "https://api.jpcite.com";
       fetch(apiBase + "/v1/compliance/unsubscribe/" + encodeURIComponent(token), {
         method: "POST",
         headers: { "Accept": "text/html" }

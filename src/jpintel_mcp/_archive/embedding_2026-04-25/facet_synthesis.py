@@ -30,7 +30,7 @@ import sqlite3
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from .config import DB_PATH, TIER_B_MAX_CHARS, TIERS
 from .db import connect

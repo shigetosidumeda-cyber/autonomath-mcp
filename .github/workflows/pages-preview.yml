@@ -10,24 +10,14 @@
 #                  Create at https://dash.cloudflare.com/profile/api-tokens
 #   CF_ACCOUNT_ID  Cloudflare account ID (right sidebar of any CF dashboard page)
 #
-# Project name: autonomath-fallback
-#   This workflow targets the Cloudflare Pages project "autonomath-fallback".
+# Project name: autonomath
+#   This workflow targets the Cloudflare Pages project "autonomath".
 #   Must match the Project Name configured in Cloudflare Pages dashboard.
 #
-# TODO (operator — manual dashboard steps required before launch):
-#   1. In the Cloudflare Pages dashboard, create a new project named exactly:
-#        autonomath-fallback
-#      Connect it to this GitHub repo, build command: `mkdocs build --strict`,
-#      output directory: `site`.
-#   2. If a custom domain is needed, configure it in the new project's
-#      "Custom domains" settings (e.g. fallback.autonomath.ai → CNAME to
-#      autonomath-fallback.pages.dev).
-#   3. Transfer any DNS CNAME entries that currently point to
-#      jpintel-mcp-fallback.pages.dev to autonomath-fallback.pages.dev.
-#   4. Verify a deployment completes successfully from the new project.
-#   5. Delete the old project "jpintel-mcp-fallback" from the dashboard.
-#   The old project name "jpintel-mcp-fallback" exposed the deprecated brand
-#   in preview URLs (jpintel-mcp-fallback.pages.dev) — do not recreate it.
+# Dashboard reality verified 2026-05-01:
+#   Existing project: autonomath
+#   Domains: autonomath.pages.dev, jpcite.com, www.jpcite.com,
+#            zeimu-kaikei.ai, www.zeimu-kaikei.ai
 #
 # No dependencies on Fly secrets; this workflow is independent of deploy.yml.
 
@@ -86,13 +76,19 @@ jobs:
         # This is the primary quality gate against [text](link.md) drift.
         run: mkdocs build --strict
 
+      - name: Prepare public artifact
+        run: |
+          rm -rf dist/site
+          mkdir -p dist
+          rsync -a --delete --exclude '_templates/' site/ dist/site/
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: autonomath-fallback
-          directory: site
+          projectName: autonomath
+          directory: dist/site
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           # Branch name drives Pages' preview vs production routing:
           #   main        → production (fallback.<domain>)

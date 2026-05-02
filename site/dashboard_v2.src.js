@@ -18,9 +18,7 @@
 (() => {
   'use strict';
 
-  const API_BASE = (typeof window !== 'undefined' && (
-    window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE
-  )) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'jpcite.com'
+  const API_BASE = (typeof window !== 'undefined' && window.JPCITE_API_BASE) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'jpcite.com'
     ? 'https://api.jpcite.com'
     : '');
   const api = (p) => API_BASE.replace(/\/$/, '') + p;
@@ -341,7 +339,7 @@
           `単価 ¥${data.unit_price_yen}/req 税別。リセット: 翌月 1 日 00:00 JST。`;
       } else {
         note.textContent =
-          `今月: ¥${mtd.toLocaleString()} (上限なし)。月次予算を設定すると 503 で自動停止します。`;
+          `今月: ¥${mtd.toLocaleString()}。月次予算 cap 未設定の場合は利用量に応じて課金されます。`;
       }
     }
     // Pre-fill cap input

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-label="jpintel-mcp terminal demo: curl search then exclusions check">
-  <title>jpintel-mcp 15s demo — curl /v1/programs/search then /v1/exclusions/check</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-label="jpcite terminal demo: curl search then exclusions check">
+  <title>jpcite 15s demo — curl /v1/programs/search then /v1/exclusions/check</title>
   <desc>Terminal-style animated demo cycling every 15 seconds.</desc>
   <defs>
     <style>
@@ -50,7 +50,7 @@
   <circle class="dot dot-r" cx="16" cy="14" r="6"/>
   <circle class="dot dot-y" cx="34" cy="14" r="6"/>
   <circle class="dot dot-g" cx="52" cy="14" r="6"/>
-  <text class="title" x="360" y="18" text-anchor="middle">jpintel-mcp — 15s demo</text>
+  <text class="title" x="360" y="18" text-anchor="middle">jpcite — 15s demo</text>
 
   <g id="s1" class="step">
     <text class="t" x="16" y="58">
@@ -62,7 +62,7 @@
       <tspan> \</tspan>
     </text>
     <text class="t" x="36" y="76">
-      <tspan class="str">"https://&lt;DOMAIN_PLACEHOLDER&gt;/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5"</tspan>
+      <tspan class="str">"https://jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5"</tspan>
     </text>
   </g>
 
@@ -127,7 +127,7 @@
       <tspan> curl </tspan>
       <tspan class="flag">-X POST</tspan>
       <tspan> </tspan>
-      <tspan class="str">"https://&lt;DOMAIN_PLACEHOLDER&gt;/v1/exclusions/check"</tspan>
+      <tspan class="str">"https://jpcite.com/v1/exclusions/check"</tspan>
       <tspan> \</tspan>
     </text>
     <text class="t" x="36" y="282">

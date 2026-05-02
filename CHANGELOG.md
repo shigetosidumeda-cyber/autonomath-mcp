@@ -227,6 +227,95 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
   dropping the filter without telling the caller
   (`regulatory_prep_pack` was). +2 tests, 531 passing.
 
+## [v0.3.2] - 2026-05-01
+
+### Added
+
+- **`am_amendment_diff` cron live** —改正イベント feed の基盤として
+  `am_amendment_diff` populator が production cron で稼働開始。
+  `am_amendment_snapshot` の v1/v2 ペアを scan し eligibility / amount /
+  deadline 軸の差分を materialize する。Tier 3 alert subscription
+  surface (migration 038) と直結し、launch 後の amendment alert を
+  empty-feed でなく実データで起動可能にする。
+- **`programs.aliases_json` + prefecture/municipality backfill tools** —
+  `aliases_json` non-empty 行が **82 → 9,996** へ伸長 (法令 alias
+  抽出 + JSIC 同義語 + 既存 alias_table merge)。新スクリプト
+  `scripts/etl/backfill_program_aliases.py` +
+  `scripts/etl/extract_prefecture_municipality.py`。後者は
+  `programs.prefecture` / `programs.municipality` を `source_url`
+  ホスト + 本文 N-gram から抽出し、検索 facet の精度を底上げ。
+- **HF dataset cards (4 データセット)** — `hf/datasets/` 配下に
+  `programs` / `case_studies` / `enforcement_cases` / `loan_programs`
+  の README + LICENSE review queue を追加。`docs/_internal/hf_publish_plan.md`
+  にライセンス互換チェック手順を記録 (PDL v1.0 / CC-BY 4.0 / 政府標準
+  利用規約 を個別レビュー)。launch 直後ではなく review queue が
+  green になったタイミングで HF publish CLI を別タスクで実行する。
+- **5 untested critical files にテスト追加** — 14 件の新規テストを
+  `tests/test_search_ranking.py` / `tests/test_amendment_diff.py` /
+  `tests/test_aliases_backfill.py` / `tests/test_prefecture_extractor.py` /
+  `tests/test_content_hash_verifier.py` に分散。これまで coverage
+  ゼロだった 5 ファイル (search ranking helpers / amendment diff
+  populator / aliases backfill / prefecture extractor / content hash
+  verifier) を最低 happy-path + bad-input でカバー。
+
+### Changed
+
+- **検索 ranking 改善** — `search_programs` の bm25 ranker で
+  `primary_name` matchを **5×** weight、tokenize miss 時の
+  LIKE fallback を `primary_name` / `aliases_json` / `enriched_text`
+  に拡大。tier prior を再 calibration (S=1.0 / A=0.85 / B=0.55 /
+  C=0.30, 旧 0.25 / 0.20 / 0.15 / 0.10) し、Tier S/A の体感ヒット率を
+  改善。FTS 結果が 0 件でも LIKE fallback で 1 件以上返る確率が
+  上昇 (regression risk → 既存 ranking テスト 12 件の baseline は
+  全て pass)。
+- **価値命題の書き直し** — README / homepage / pricing 系コピーで
+  「token cost shield」フレーミングを廃止し「evidence-first context
+  layer」に統一。ユーザーが LLM agent に渡す前に primary-source
+  citation 付きで context を組み立てる layer、という positioning。
+  旧フレーミング (token cost を削るだけ) は AutoNoMath EC SaaS と
+  混同を招くため撤去。
+- **anon rate limit `50 req/月` → `3 req/日`** — 匿名ユーザの quota
+  reset 単位を月初 JST → 翌日 00:00 JST に変更 (DAU 目的の daily 化、
+  AutoNoMath 本体ビジネスモデル v4 と整合)。
+  `src/jpintel_mcp/api/middleware/ratelimit.py` の anon bucket と
+  `anon_quota_header.py` の警告本文も更新。月初 reset 系コピーは
+  `dashboard.html` / `pricing.html` / `docs/ratelimit.md` 全てで
+  日次 reset 表記に置換。
+- **brand: AutonoMath → jpcite** — user-facing surfaces (site copy /
+  README headlines / OG metadata) の `AutonoMath` を `jpcite` に
+  rename。PyPI package `autonomath-mcp` と import path
+  `jpintel_mcp` は consumer 互換性のため不変。`zeimu-kaikei.ai`
+  apex は 301 redirect で SEO 認証を引き継ぐ。
+
+### Fixed
+
+- **`am_source.content_hash` NULL 281 → 0** — 補完 + last_verified
+  検証器を追加 (`scripts/etl/fill_content_hash.py` +
+  `scripts/cron/verify_last_verified.py`)。content_hash が NULL の
+  281 行を実 fetch + sha256 で埋め、`last_verified` の改ざん検出
+  cron が 1 日 1 回 sample をかける運用に。
+- **`programs.aliases_json` non-empty 82 → 9,996** — 上記 backfill
+  ETL の Fixed 効果。検索 query が alias hit に依存していた採択事例
+  / 法令交差 query で recall が改善。
+
+### Removed
+
+- **99 GB の DB rollback バックアップ削除** — `data/jpintel.db.bak.*`
+  系列のうち 30 日以上経過した snapshot を整理し、バックアップ
+  ストレージを **113 GB → 12 GB** に縮小。直近 7 日の snapshot は
+  保持 (R2 weekly backup + 直近 daily の二段構え)。
+- **token cost shield フレーミング撤去** — 上記 Changed と対応。
+  「LLM token cost を削減する layer」という旧 pitch を README /
+  homepage / pricing から完全に除去。
+
+### Notes
+
+- 内部メモは [`docs/_internal/`](docs/_internal/) 配下を参照
+  (HF publish plan / SEO GEO strategy / brand migration log 等)。
+- semver bump (`pyproject.toml` / `server.json` / `mcp-server.json` /
+  `dxt/manifest.json` / `smithery.yaml`) は version-bump CLI が
+  別タスクで実行する。本エントリは CHANGELOG のみ。
+
 ## [0.3.1] — 2026-04-29 — Wave 30 disclaimer hardening + launch-blocker batch
 
 ### Added
@@ -489,7 +578,11 @@ Dual ESM + CJS output with bundled `.d.ts`. Exponential backoff on
 
 ---
 
-[Unreleased]: {{REPO_URL}}/compare/v0.1.0...HEAD
+[Unreleased]: {{REPO_URL}}/compare/v0.3.2...HEAD
+[v0.3.2]: {{REPO_URL}}/compare/v0.3.1...v0.3.2
+[0.3.1]: {{REPO_URL}}/compare/v0.3.0...v0.3.1
+[0.3.0]: {{REPO_URL}}/compare/v0.2.0...v0.3.0
+[0.2.0]: {{REPO_URL}}/compare/v0.1.0...v0.2.0
 [0.1.0]: {{REPO_URL}}/releases/tag/v0.1.0
 
 © 2026 Bookyou株式会社 (T8010001213708).

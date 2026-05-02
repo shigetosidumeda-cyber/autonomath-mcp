@@ -144,7 +144,7 @@
   }
 
   // Tax Accountant Act §52 disclaimer: the program list returned by
-  // 税務会計AI is a mechanical primary-source candidate set, not advice
+  // jpcite is a mechanical primary-source candidate set, not advice
   // on whether to apply or how to file. Always append this note in the
   // mail body footer.
   function _mailtoBody(results) {
@@ -154,7 +154,7 @@
     return [
       "Hello,",
       "",
-      "I ran a 税務会計AI prescreen for our company and got the following " + n + " candidate program(s).",
+      "I ran a jpcite prescreen for our company and got the following " + n + " candidate program(s).",
       "Could you please review and advise whether we should apply?",
       "",
       blocks,
@@ -165,14 +165,14 @@
       "Whether we are eligible to apply, and how to file, is the judgment",
       "of a licensed 税理士 / 行政書士.",
       "",
-      "Source: 税務会計AI (Bookyou株式会社, corporate number T8010001213708)",
+      "Source: jpcite",
       origin + "/",
     ].join("\n");
   }
 
   function _openMailToTaxAdvisor() {
     if (!lastResults || !lastResults.length) return;
-    var subject = "[税務会計AI] " + lastResults.length + " candidate program(s) for review";
+    var subject = "[jpcite] " + lastResults.length + " candidate program(s) for review";
     var body = _mailtoBody(lastResults);
     // mailto: limits vary across clients (Gmail web ~2KB, Outlook ~2083 chars,
     // Apple Mail ~64KB). Trim defensively at 1900 chars so the most common

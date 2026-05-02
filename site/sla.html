@@ -4,12 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<!-- Auto-poll: refresh every 5 minutes so an open tab stays current.
-     We poll the JSON via fetch (below) for the metrics, but the meta
-     refresh is the safety net for stale browser tabs. -->
 <meta http-equiv="refresh" content="300">
 <title>SLA — jpcite</title>
-<meta name="description" content="jpcite API の稼働率 (uptime) と p95 レイテンシ — 7日ローリング window. Bookyou株式会社 (T8010001213708).">
+<meta name="description" content="jpcite API の稼働率 (uptime) と p95 レイテンシ — 7日ローリング window. Bookyou株式会社.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://jpcite.com/sla.html">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
@@ -109,11 +106,10 @@
  <tr><td>p95 latency</td><td>&lt; 1500 ms</td><td>1時間ローリング</td></tr>
  <tr><td>5xx エラー率</td><td>&lt; 0.5%</td><td>1時間ローリング</td></tr>
  </table>
- <p class="muted">内部 SLO は 99.5% で運用。詳細は <code>monitoring/sla_targets.md</code>。
- プラットフォーム障害（Cloudflare / Fly 公開ステータス記載分）と 48h 前事前告知メンテは breach 計算から除外します。</p>
+	 <p class="muted">プラットフォーム障害 (Cloudflare / Fly の公開ステータス記載分) と、48 時間前までに告知した計画メンテナンスは breach 計算から除外します。</p>
 
- <h2>API API 経路</h2>
- <p>このページは <code>GET /v1/health/sla</code> を polling しています。</p>
+	 <h2>API 経路</h2>
+	 <p>このページは <code>GET /v1/health/sla</code> から取得した値を表示しています。</p>
  <pre><code>$ curl https://api.jpcite.com/v1/health/sla?window=7d</code></pre>
 
  <h2>関連リンク</h2>
@@ -146,27 +142,24 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
- </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+	 </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
 
 <script>
-  // Vanilla JS — no framework. Polls /v1/health/sla every 5 min.
-  // Intentionally simple to satisfy the "no complex JS" CLAUDE.md rule.
-  function fmtPct(n) {
+	  function fmtPct(n) {
     if (n === null || n === undefined) return "—";
     return Number(n).toFixed(2) + "%";
   }
   function fmtMs(n) {
     if (n === null || n === undefined) return "n/a";
-    return Number(n).toLocaleString + " ms";
+	    return Number(n).toLocaleString() + " ms";
   }
   function classify(uptime, p95) {
     var u = (uptime === null || uptime === undefined) ? null
-            : (uptime >= 99.5 ? "ok" : (uptime >= 99.0 ? "warn" : "down"));
+            : (uptime >= 99.0 ? "ok" : (uptime >= 98.5 ? "warn" : "down"));
     var p = (p95 === null || p95 === undefined) ? null
             : (p95 < 1500 ? "ok" : (p95 < 3000 ? "warn" : "down"));
     return { u: u, p: p };

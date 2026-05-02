@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
 
   <item>
     <title>動画メニュー</title>
@@ -589,7 +589,7 @@
   <item>
     <title>かがやき新規就農者応援給付金</title>
     <link>https://jpcite.com/programs/kagayaki-shinki-shuunou-mono-ouen-kyuufukin-e1b368.html</link>
-    <description>Tier C / 群馬県 / （noukaweb 収集） 出典: https://www.city.takasaki.gunma.jp/page/1394.html</description>
+    <description>Tier C / 群馬県 出典: https://www.city.takasaki.gunma.jp/page/1394.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-013dce44ce</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -616,7 +616,7 @@
   <item>
     <title>浄化槽設置整備事業補助金</title>
     <link>https://jpcite.com/programs/joukasou-setchi-seibi-jigyou-hojokin-c435d4.html</link>
-    <description>Tier B / 群馬県 / （noukaweb 収集） / 上限 30万円 出典: https://www.city.kiryu.lg.jp/kurashi/suido/gesui/1004591.html</description>
+    <description>Tier B / 群馬県 / 上限 30万円 出典: https://www.city.kiryu.lg.jp/kurashi/suido/gesui/1004591.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-035dc1dfc1</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -652,14 +652,14 @@
   <item>
     <title>認定農業者制度・桐生市第6次産業化等推進事業補助金</title>
     <link>https://jpcite.com/programs/nintei-nougyou-mono-seido-kiryuu-shi-dai-6-tsugi-sangyouka-a7ed07.html</link>
-    <description>Tier B / 群馬県 / （noukaweb 収集） / 上限 100万円 出典: https://www.city.kiryu.lg.jp/sangyou/nougyoushinko/nougyou/1002531.html</description>
+    <description>Tier B / 群馬県 / 上限 100万円 出典: https://www.city.kiryu.lg.jp/sangyou/nougyoushinko/nougyou/1002531.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-07d8f4409e</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
   <item>
-    <title>PREF-10-001_群馬_農業経営力向上事業_新規就農者支援</title>
+    <title>群馬_農業経営力向上事業_新規就農者支援</title>
     <link>https://jpcite.com/programs/pref-10-001-gunma-nougyou-keiei-chikara-koujou-jigyou-666b95.html</link>
     <description>Tier B / 群馬県 / subsidy / 上限 200万円 出典: https://www.pref.gunma.jp/page/204829.html</description>
     <category>subsidy</category>
@@ -706,14 +706,14 @@
   <item>
     <title>町単小規模土地改良事業</title>
     <link>https://jpcite.com/programs/machi-tan-shoukibo-tochi-kairyou-jigyou-6bfc11.html</link>
-    <description>Tier C / 群馬県 / （noukaweb 収集） / 上限 25万円 出典: https://www.town.higashiagatsuma.gunma.jp/www/contents/1204051620179/index.html</description>
+    <description>Tier C / 群馬県 / 上限 25万円 出典: https://www.town.higashiagatsuma.gunma.jp/www/contents/1204051620179/index.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-12ccd2a6c4</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
   <item>
-    <title>PREF-10-103_群馬_農業経営力向上事業_企業等参入支援</title>
+    <title>群馬_農業経営力向上事業_企業等参入支援</title>
     <link>https://jpcite.com/programs/pref-10-103-gunma-nougyou-keiei-chikara-koujou-jigyou-db15c8.html</link>
     <description>Tier B / 群馬県 / subsidy / 上限 200万円 出典: https://www.pref.gunma.jp/page/204829.html</description>
     <category>subsidy</category>
@@ -769,7 +769,7 @@
   <item>
     <title>公共下水道・農業集落排水への接続工事における補助制度</title>
     <link>https://jpcite.com/programs/koukyou-gesuidou-nougyou-shuuraku-haisui-heno-setsuzoku-ad4b0b.html</link>
-    <description>Tier C / 群馬県 / （noukaweb 収集） / 上限 50万円 出典: https://www.city.isesaki.lg.jp/soshiki/suidokyo/gesui_seibi/haisui/2024.html</description>
+    <description>Tier C / 群馬県 / 上限 50万円 出典: https://www.city.isesaki.lg.jp/soshiki/suidokyo/gesui_seibi/haisui/2024.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-2b074c03fa</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -778,7 +778,7 @@
   <item>
     <title>農業者を支援する助成制度</title>
     <link>https://jpcite.com/programs/nougyou-mono-wo-shien-suru-josei-seido-f384be.html</link>
-    <description>Tier C / 群馬県 / （noukaweb 収集） 出典: https://www.city.takasaki.gunma.jp/page/5841.html</description>
+    <description>Tier C / 群馬県 出典: https://www.city.takasaki.gunma.jp/page/5841.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-2c8e16ea5a</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -823,7 +823,7 @@
   <item>
     <title>農業制度資金</title>
     <link>https://jpcite.com/programs/nougyou-seido-shikin-6861d7.html</link>
-    <description>Tier B / 群馬県 / （noukaweb 収集） / 上限 3,000万円 出典: https://www.city.ota.gunma.jp/page/4612.html</description>
+    <description>Tier B / 群馬県 / 上限 3,000万円 出典: https://www.city.ota.gunma.jp/page/4612.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-31585ed15e</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -850,7 +850,7 @@
   <item>
     <title>令和7年度「沼田市農産物ブランド化支援事業費補助金」</title>
     <link>https://jpcite.com/programs/reiwa-7-nendo-numata-shi-nousanbutsu-burando-ka-shien-28728d.html</link>
-    <description>Tier C / 群馬県 / （noukaweb 収集） 出典: https://www.city.numata.gunma.jp/jigyosha/nourin/nougyou/1003741/index.html</description>
+    <description>Tier C / 群馬県 出典: https://www.city.numata.gunma.jp/jigyosha/nourin/nougyou/1003741/index.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-372e408213</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -886,7 +886,7 @@
   <item>
     <title>太田市農業機械購入助成事業補助金</title>
     <link>https://jpcite.com/programs/ootashi-nougyou-kikai-kounyuu-josei-jigyou-hojokin-b78bc5.html</link>
-    <description>Tier C / 群馬県 / （noukaweb 収集） 出典: https://www.city.ota.gunma.jp/page/1045567.html</description>
+    <description>Tier C / 群馬県 出典: https://www.city.ota.gunma.jp/page/1045567.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-3990715af7</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -904,7 +904,7 @@
   <item>
     <title>令和6年度前橋市農業再生協議会 水田収益力強化ビジョン関連補助事業</title>
     <link>https://jpcite.com/programs/reiwa-6-nendo-maebashishi-nougyou-saisei-kyougikai-suiden-2da02c.html</link>
-    <description>Tier C / 群馬県 / （noukaweb 収集） 出典: https://www.city.maebashi.gunma.jp/soshiki/noseibu/nosei/oshirase/33075.html</description>
+    <description>Tier C / 群馬県 出典: https://www.city.maebashi.gunma.jp/soshiki/noseibu/nosei/oshirase/33075.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-3a8b0bcd1c</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>

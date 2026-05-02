@@ -1,4 +1,4 @@
-# AutonoMath (Bookyou株式会社) — responsible disclosure
+# jpcite (Bookyou株式会社) — responsible disclosure
 # RFC 9116 (https://www.rfc-editor.org/rfc/rfc9116)
 # Please report security issues privately. Do not file public GitHub issues.
 

@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>jpcite と他の補助金検索サービスの比較 — Bookyou株式会社</title>
-<meta name="description" content="jpcite と noukaweb / hojyokin-portal / biz.stayway / J-Net21 / ミラサポplus の機能比較。データ件数、一次資料リンク、API/MCP、価格、無料枠、全文検索などを 2026-04-26 時点の公開情報で並べた中立比較表。">
+<title>jpcite と他の補助金検索サービスの比較 — jpcite</title>
+<meta name="description" content="jpcite と主要な補助金検索サービス・公的支援ポータルの機能比較。データ件数、一次資料リンク、API/MCP、価格、無料枠、全文検索などを 2026-04-26 時点の公開情報で並べた中立比較表。">
 
 <meta property="og:title" content="jpcite と他の補助金検索サービスの比較">
 <meta property="og:description" content="API/MCP、一次資料、価格モデル、無料枠などを 2026-04-26 時点の公開情報で並べた中立比較表。">
@@ -35,35 +35,23 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://jpcite.com/#publisher across all pages). All other
-  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
-  the Organization inline. sameAs URLs marked TODO(user-action) are
-  placeholders until the user creates them per
-  docs/runbook/social_profile_setup.md.
--->
+<!-- Canonical publisher Organization. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite", "jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "taxID": "T8010001213708",
   "foundingDate": "2025-05-12",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
     "addressRegion": "東京都",
-    "addressLocality": "文京区",
-    "streetAddress": "小日向 2-22-1"
-  },
+    "addressLocality": "文京区"},
   "founder": {
     "@type": "Person",
     "name": "梅田茂利"
@@ -75,8 +63,7 @@
     "availableLanguage": ["ja", "en"]
   },
   "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+    "https://www.bookyou.net/"
   ]
 }
 </script>
@@ -87,7 +74,7 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "jpcite と他の補助金検索サービスの比較",
-  "description": "jpcite、noukaweb、hojyokin-portal.jp、biz.stayway.jp、J-Net21、ミラサポplus、TDB、TSR の 8 サービスを、データ件数・一次資料リンク・API/MCP・価格・無料枠・全文検索など 14 軸で並べた中立な機能比較。2026-04-26 時点の各社公開情報に基づく。",
+  "description": "jpcite と主要な補助金検索サービス、公的支援ポータル、信用調査サービスを、データ件数・一次資料リンク・API/MCP・価格・無料枠・全文検索など 14 軸で並べた中立な機能比較。2026-04-26 時点の各社公開情報に基づく。",
   "url": "https://jpcite.com/compare.html",
   "datePublished": "2026-04-26",
   "dateModified": "2026-04-26",
@@ -170,9 +157,9 @@
  <div class="container">
 
  <h1>jpcite と他の補助金検索サービスの比較</h1>
- <p class="lead">「補助金検索 API」「noukaweb 比較」「ミラサポ plus API」等で辿り着いた方向けに、jpcite と主要な補助金・助成金検索サービスを 13 軸で並べた中立比較表です。各社の公開情報のみで構成し、未公開項目は「公開情報非公表」と表記しています。月次で見直します。</p>
+ <p class="lead">「補助金検索 API」「公的制度データ API」「ミラサポ plus API」等で辿り着いた方向けに、jpcite と主要な補助金・助成金検索サービスを 13 軸で並べた中立比較表です。各社の公開情報のみで構成し、未公開項目は「公開情報非公表」と表記しています。月次で見直します。</p>
 
- <p class="compare-note">比較対象 8 サービス: <strong>jpcite</strong> (本サイト) / <a href="https://noukaweb.com" rel="noopener nofollow" target="_blank">noukaweb</a> (農家 web 補助金データベース) / <a href="https://hojyokin-portal.jp" rel="noopener nofollow" target="_blank">hojyokin-portal.jp</a> (補助金ポータル) / <a href="https://biz.stayway.jp" rel="noopener nofollow" target="_blank">biz.stayway.jp</a> (Stayway Biz) / <a href="https://j-net21.smrj.go.jp" rel="noopener" target="_blank">J-Net21</a> (中小機構) / <a href="https://mirasapo-plus.go.jp" rel="noopener" target="_blank">ミラサポ plus</a> (中小企業庁) / <a href="https://www.tdb.co.jp/" rel="noopener nofollow" target="_blank">帝国データバンク (TDB)</a> (信用調査) / <a href="https://www.tsr-net.co.jp/" rel="noopener nofollow" target="_blank">東京商工リサーチ (TSR)</a> (信用調査)。詳細な 2 軸比較は <a href="/compare/tdb/">TDB 個別ページ</a> · <a href="/compare/tsr/">TSR 個別ページ</a>。</p>
+ <p class="compare-note">比較対象: <strong>jpcite</strong> (本サイト) / 補助金検索サイト / 公的支援ポータル / 記事型データベース / J-Net21 / ミラサポ plus / 帝国データバンク (TDB) / 東京商工リサーチ (TSR)。詳細な 2 軸比較は <a href="/compare/tdb/">TDB 個別ページ</a> · <a href="/compare/tsr/">TSR 個別ページ</a>。</p>
  <p class="compare-note compare-note-callout" style="padding:12px 16px;border-radius:6px;margin:0 0 24px;">
  <strong>住み分けの率直な開示:</strong> TDB / TSR のコア商品は<strong>信用調査評点・代表者経歴・親族関係</strong>で、jpcite は提供しません (<strong>この軸は TDB / TSR の独占領域</strong>)。一方、当社のコアは<strong>制度 DB (補助金・融資・税制・認定)・法令・判例・行政処分・適格請求書発行事業者の機械可読 API / MCP</strong>で、TDB / TSR の対象外領域です。「どちらか」ではなく「目的別の併用」が現実解です。
  </p>
@@ -185,9 +172,9 @@
  <tr>
  <th scope="col">比較軸</th>
  <th scope="col" class="col-us">jpcite</th>
- <th scope="col">noukaweb</th>
- <th scope="col">hojyokin-portal</th>
- <th scope="col">biz.stayway</th>
+ <th scope="col">補助金検索サイト</th>
+ <th scope="col">支援ポータル</th>
+ <th scope="col">記事型データベース</th>
  <th scope="col">J-Net21</th>
  <th scope="col">ミラサポ plus</th>
  <th scope="col">帝国データバンク (TDB)</th>
@@ -197,8 +184,8 @@
  <tbody>
  <tr>
  <th scope="row">1. データ件数 (公的制度)</th>
- <td class="col-us">11,684 件 検索可能 (公開保留含む全件は 14,472 件)</td>
- <td class="unknown">公開情報非公表 (農業領域に特化)</td>
+ <td class="col-us">11,684 件 検索可能 (検索対象は 11,684 件)</td>
+ <td class="unknown">公開情報非公表</td>
  <td class="unknown">公開情報非公表</td>
  <td class="unknown">公開情報非公表 (記事中心)</td>
  <td class="unknown">公開情報非公表 (掲載中の制度を都度更新)</td>
@@ -353,7 +340,7 @@
  </table>
  </div>
 
- <p class="compare-note">凡例 — <span class="yes">緑</span>: 公開情報で確認済 / <span class="partial">茶</span>: 部分的にあり / <span class="no">灰 (公開情報なし)</span>: 公式サイトに記載なし / <span class="unknown">灰斜体 (公開情報非公表)</span>: 確認できず。「公開情報なし」「公開情報非公表」は「機能が無い」を断定するものではありません。各社 TOS 改訂や新規機能追加で変わります。誤りがあれば <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> までご連絡ください。48 時間以内に修正します。</p>
+ <p class="compare-note">凡例 — <span class="yes">緑</span>: 公開情報で確認済 / <span class="partial">茶</span>: 部分的にあり / <span class="no">灰 (公開情報なし)</span>: 公式サイトに記載なし / <span class="unknown">灰斜体 (公開情報非公表)</span>: 確認できず。「公開情報なし」「公開情報非公表」は「機能が無い」を断定するものではありません。各社 TOS 改訂や新規機能追加で変わります。誤りがあれば <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> までご連絡ください。確認し、必要に応じて反映します。</p>
 
  <h2>選び方</h2>
  <p>用途別の素直な推奨です。jpcite が常に最適ではありません。</p>
@@ -376,8 +363,8 @@
  <div class="pick-card">
  <p class="pick-tag">開発者 / AI Agent 構築</p>
  <h3>API/MCP が必須なら選択肢は実質一つ</h3>
- <p>noukaweb・hojyokin-portal・biz.stayway・J-Net21・ミラサポ plus は、いずれも公開 API や MCP サーバーを提供していません (2026-04-26 時点)。AI から呼ぶには HTML スクレイピング + 個別 TOS 確認が必要です。</p>
- <p class="pick-rec"><strong>jpcite</strong> は REST + MCP + OpenAPI 仕様書 + 89 機能 が公開時点で揃います。匿名 3 リクエスト/日で評価でき、本番は ¥3/リクエスト 完全従量、SDK 不要です。</p>
+ <p>主要な補助金検索サイト・支援ポータルの多くは、公開 API や MCP サーバーを提供していません (2026-04-26 時点)。AI から呼ぶには HTML スクレイピング + 個別 TOS 確認が必要です。</p>
+ <p class="pick-rec"><strong>jpcite</strong> は REST + MCP + OpenAPI 仕様書 + 93 機能 が公開時点で揃います。匿名 3 リクエスト/日で評価でき、本番は ¥3/リクエスト 完全従量、SDK 不要です。</p>
  </div>
  </div>
 
@@ -385,15 +372,15 @@
  <ul>
  <li><strong>更新頻度</strong>: 月次レビュー。各社の公開ページを再取得し、変更があれば即反映します。</li>
  <li><strong>追記方針</strong>: 比較対象外のサービスでも「ユーザーが Google から辿り着くもの」は段階的に追加します (例: jGrants, J-LIS, J-Startup 等)。</li>
- <li><strong>誤り報告</strong>: 各社担当者・利用者からの修正提案を歓迎します。<a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> 直行 (代表)。出典 URL を添えていただければ 48 時間以内に判断します。</li>
- <li><strong>誇張禁止</strong>: 当社についても「業界最大」「No.1」等の主張はしません。jpcite の数字は <a href="about.html#現状の数字">about.html の数字</a> および 内部 DB の SQL 検証で常時裏取りできます。</li>
+ <li><strong>誤り報告</strong>: 各社担当者・利用者からの修正提案を歓迎します。<a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> 直行 (代表)。出典 URL を添えていただければ確認します。</li>
+ <li><strong>誇張禁止</strong>: 当社についても「業界最大」「No.1」等の主張はしません。jpcite の数字は <a href="about.html#現状の数字">about.html の数字</a> および定期的なデータ検証で裏取りしています。</li>
  </ul>
 
  <h2>関連ページ</h2>
  <ul>
  <li><a href="about.html">jpcite とは</a> — なぜ集約サイトを使わないか、誰が運営しているか</li>
  <li><a href="pricing.html">料金</a> — 5 インターフェース (API / MCP / LINE / Widget / 士業 案件紹介) 詳細</li>
- <li><a href="facts.html">Facts</a> — 数字の出所と検証 SQL</li>
+ <li><a href="facts.html">Facts</a> — 数字の出所と検証方法</li>
  <li><a href="confidence.html">Confidence</a> — 品質判定ロジックと 排他ルール 181 本</li>
  <li><a href="getting-started.html">5 分 クイックスタート</a> — REST + MCP の初回呼出</li>
  <li><a href="/compare/tdb/">jpcite vs 帝国データバンク (TDB)</a> — 信用調査と制度 DB の住み分け、15 軸詳細比較</li>
@@ -428,9 +415,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>

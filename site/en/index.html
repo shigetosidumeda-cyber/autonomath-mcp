@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — Search Japanese institutional data via REST + MCP API.</title>
-<meta name="description" content="Search Japanese institutional data (11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records) via REST + MCP API. Primary source URL included, ¥3/request fully metered, anon 3/day free.">
+<meta name="description" content="Evidence prefetch for AI agents working with Japanese public-program data. Search subsidies, laws, court decisions, tax rulesets, invoice registrants, adoption cases, and enforcement records via REST + MCP API with primary-source URLs. ¥3/request, anon 3/day free.">
 
 <meta property="og:title" content="jpcite — Japanese public programs, one API.">
 <meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (93 tools, 2025-06-18). Primary-source lineage on 99%+ of rows.">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite — Japanese public programs, one API.">
-<meta name="twitter:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + laws (154 full-text + 9,484 catalog stubs, body-text load incremental) + tax rulesets (50 rows) + invoice registrants (13,801 rows live delta-only) + entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations). Exclusion-aware. MCP-native (93 tools, protocol 2025-06-18). Court 2,065 + bids 362 rows live.">
+<meta name="twitter:description" content="Evidence prefetch for AI agents: primary-source URLs, fetched_at, facts, and compatibility rules over Japanese public-program data. REST + MCP, 93 tools, ¥3/request.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/">
@@ -44,8 +44,8 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "jpcite",
-  "alternateName": "税務会計AI",
-  "description": "REST + MCP API over 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications) + 2,286 case studies (採択事例) + 108 loan programs (three-axis collateral / personal-guarantor / third-party-guarantor decomposition) + 1,185 enforcement cases + laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental) + tax rulesets (インボイス / 電帳法; 50 rows) + court decisions (2,065 rows) + bids (362 rows) + invoice registrants (NTA PDL v1.0; 13,801 rows live delta-only mirror, monthly full bulk pending) + an entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance). 181-rule exclusion + prerequisite checker. 99%+ rows: primary-source URL + fetched_at. MCP protocol 2025-06-18, 93 tools at default gates.",
+  "alternateName": "jpcite",
+  "description": "Evidence prefetch layer for AI agents working with Japanese public-program data. REST + MCP API over subsidies, loans, tax incentives, certifications, case studies, enforcement records, laws, court decisions, bids, invoice registrants, and structured entity facts. Responses include primary-source URLs, fetched_at metadata, and compatibility rules where available. MCP protocol 2025-06-18, 93 tools at standard configuration.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio)",
   "url": "https://jpcite.com/en/",
@@ -57,7 +57,7 @@
   "featureList": [
     "Cross-source search (programs + case_studies + loan_programs + enforcement_cases, unified schema)",
     "Exclusion + prerequisite rules (181 — 125 exclude + 17 prerequisite + 15 absolute + 24 other)",
-    "MCP-native (93 tools at default gates, protocol 2025-06-18 — across program / case-study / loan / enforcement search, laws + tax rulesets + court decisions + bids + invoice registrants expansion, the entity-fact DB, metadata tools (annotations / validation / provenance), static dataset tools (resources / profiles / health), and DD-support tools (lifecycle / abstract / prerequisite / graph traversal / rule engine / related programs))",
+    "MCP-native (93 tools at standard configuration, protocol 2025-06-18 — across program / case-study / loan / enforcement search, laws + tax rulesets + court decisions + bids + invoice registrants expansion, the structured entity facts, metadata tools (annotations / validation / provenance), static dataset tools (resources / profiles / health), and DD-support tools (lifecycle / abstract / prerequisite / graph traversal / rule engine / related programs))",
     "全文検索インデックス (3-gram) Japanese search",
     "Tier classification S/A/B/C/X",
     "Three-axis loan decomposition (collateral / personal guarantor / third-party guarantor)",
@@ -71,11 +71,10 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite", "jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "info@bookyou.net",
@@ -90,7 +89,7 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "jpcite",
-  "alternateName": "税務会計AI",
+  "alternateName": "jpcite",
   "url": "https://jpcite.com/en/",
   "publisher": {
     "@type": "Organization",
@@ -114,12 +113,11 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite — Japanese Public Programs Dataset",
-  "description": "14,472 subsidies + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 154 laws full-text + 9,484 law catalog stubs + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
+  "description": "14,472 subsidies + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 154 laws full-text + 9,484 law law metadata records + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
   "url": "https://jpcite.com/en/",
   "creator": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "email": "info@bookyou.net",
     "url": "https://jpcite.com/"
   },
@@ -132,7 +130,7 @@
     {"@type": "PropertyValue", "name": "loan programs", "value": 108},
     {"@type": "PropertyValue", "name": "enforcement records", "value": 1185},
     {"@type": "PropertyValue", "name": "laws", "value": 9484},
-    {"@type": "PropertyValue", "name": "tax rulesets", "value": 35},
+    {"@type": "PropertyValue", "name": "tax rulesets", "value": 50},
     {"@type": "PropertyValue", "name": "court decisions", "value": 2065},
     {"@type": "PropertyValue", "name": "bids", "value": 362},
     {"@type": "PropertyValue", "name": "invoice registrants", "value": 13801},
@@ -157,7 +155,6 @@
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "url": "https://jpcite.com/",
     "email": "info@bookyou.net"
   },
@@ -190,7 +187,6 @@
  <li><a href="../audit-log.html">Audit Log</a></li>
  </ul>
  </details>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../index.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -204,12 +200,7 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
- <!-- CRO Fix 4 (2026-04-29): hero copy sharpened. Old H1 = "Search
-           Japanese institutional data via REST + MCP API."; old sub = the
-           7-dataset count list (now demoted to "Data & quality" lower on
-           the page). The §72/§52/§1 disclaimer used to sit directly below
-           the H1 — relocated to BELOW the curl block (CRO Fix 2) so the
-           visitor hits the working curl first. Footer §52 remains. -->
+ <!-- Primary hero copy. -->
  <h1 id="hero-title">Search Japanese subsidies &amp; tax rules with one line of AI.</h1>
  <p class="hero-sub">¥3.30/req (tax incl.) · 3 req/day free, no signup. Drop into Claude / Cursor / curl and run.</p>
  <div class="cta-row">
@@ -227,28 +218,28 @@
 
  <article class="card" aria-labelledby="trust-counts">
  <h3 id="trust-counts">503,930 entities + 6.12M facts</h3>
- <p class="card-lead">9 datasets + entity-fact DB, one query surface</p>
+ <p class="card-lead">9 datasets + structured entity facts, one query surface</p>
  <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The entity-fact layer carries entities and facts across 12 record kinds. The full-text search index (3-gram) lets you query Japanese as written, no romanization required.</p>
  <ul class="card-list">
- <li>programs · 14,472 (11,684 searchable = Tier S 114 + A 1,340 + B 4,186 + C 6,044; 2,788 held back for secondary review)</li>
+ <li>programs · 14,472 (11,684 searchable = Tier S 114 + A 1,340 + B 4,186 + C 6,044; 2,788 excluded from public search)</li>
  <li>case_studies · 2,286</li>
  <li>loan_programs · 108 (collateral / personal-guarantor / third-party-guarantor decomposed)</li>
  <li>enforcement_cases · 1,185</li>
- <li>laws · 154 full-text indexed + 9,484 catalog stubs (e-Gov, CC-BY; body-text load incremental, name resolver covers all 9,484)</li>
- <li>tax_rulesets · 35</li>
+ <li>laws · 154 full-text indexed + 9,484 law metadata records (e-Gov, CC-BY; full-text coverage varies by record, name resolver covers all 9,484)</li>
+ <li>tax_rulesets · 50</li>
  <li>court_decisions · 2,065</li>
  <li>bids · 362</li>
  <li>invoice_registrants · 13,801 (NTA PDL v1.0 delta; full monthly bulk pending)</li>
- <li>entity-fact DB · 503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases</li>
+ <li>structured entity facts · 503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases</li>
  </ul>
  </article>
 
  <article class="card" aria-labelledby="trust-lineage">
  <h3 id="trust-lineage">99%+ primary source</h3>
  <p class="card-lead">source_url + fetched_at on 99%+ of rows</p>
- <p>Sourced directly from METI, MAFF, the SME Agency, Japan Finance Corporation, prefectures, and municipalities. Aggregator sites are excluded by policy. Designed so amendments propagate through immediately.</p>
+ <p>Sourced directly from METI, MAFF, the SME Agency, Japan Finance Corporation, prefectures, and municipalities. Aggregator sites are excluded by policy. Designed to track amendment signals and refetch status continuously.</p>
  <ul class="card-list">
- <li>noukaweb / hojyokin-portal etc. excluded</li>
+ <li>second-tier aggregators excluded</li>
  <li>Nightly source-URL liveness scan</li>
  <li>Lineage columns tracked for searchable rows</li>
  </ul>
@@ -261,7 +252,7 @@
  <ul class="card-list">
  <li>125 exclude + 17 prerequisite</li>
  <li>15 absolute + 24 other</li>
- <li>Tier S/A/B/C = data-completeness ranks; X = quarantine</li>
+ <li>Tier S/A/B/C = data-completeness ranks; X = review-held</li>
  </ul>
  </article>
 
@@ -278,7 +269,7 @@
  <article class="card" aria-labelledby="pillar-api">
  <h3 id="pillar-api"><span aria-hidden="true">🔌</span> API + MCP</h3>
  <p class="card-lead">AI developers / enterprise RAG</p>
- <p>Call 93 MCP tools directly from an agent. REST is OpenAPI 3.1. stdio transport, no SDK.</p>
+ <p>Call 93 MCP tools directly from an agent. Prefetch Evidence Packets with primary-source URLs before answer generation.</p>
  <ul class="card-list">
  <li>¥3/req tax exclusive (¥3.30 tax inclusive)</li>
  <li>Anonymous 3 req/day per IP free</li>
@@ -292,8 +283,8 @@
  <p class="card-lead">SMB owners / professional advisors</p>
  <p>Discover subsidies in 30 seconds, in plain Japanese, on the LINE app you already have. Add as a friend, no app install.</p>
  <ul class="card-list">
- <li>¥3/notification tax exclusive (¥550 tax inclusive)</li>
- <li>Up to 10 questions/month free</li>
+ <li>¥3/notification tax exclusive (¥3.30 tax inclusive)</li>
+ <li>Anonymous 3 questions/day free</li>
  <li>Apple Pay / Google Pay supported</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="line.html">Use the LINE bot &rarr;</a></p>
@@ -304,7 +295,7 @@
  <p class="card-lead">Tax / labor / compliance professionals</p>
  <p>Email notifications on amendments to invoice law, electronic-bookkeeping law, labor standards, and other tracked domains. Catch changes before deadlines bite.</p>
  <ul class="card-list">
- <li>¥3/notification tax exclusive (¥550 tax inclusive)</li>
+ <li>¥3/notification tax exclusive (¥3.30 tax inclusive)</li>
  <li>Monthly digest is free</li>
  <li>Real-time notifications are paid</li>
  </ul>
@@ -384,10 +375,10 @@
  <article class="card audience-card" aria-labelledby="aud-smb">
  <h3 id="aud-smb"><span aria-hidden="true">📱</span> SMB owners</h3>
  <p class="card-lead audience-context">Small business — owner, spouse, one bookkeeper</p>
- <p class="audience-pitch">Just ask on LINE: "are there subsidies for my industry?" Up to 10 questions/month free, ¥3 per question after that. Zero setup.</p>
+ <p class="audience-pitch">Just ask on LINE: "are there subsidies for my industry?" Anonymous 3 questions/day free, ¥3 per question after that. Zero setup.</p>
  <ul class="card-list">
  <li>LINE bot — add as friend, that's it</li>
- <li>Up to 10 questions/month free</li>
+ <li>Anonymous 3 questions/day free</li>
  <li>¥3 per question (tax exclusive) after</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/smb.html">SMB details &rarr;</a> · <a href="line.html">LINE bot</a></p>
@@ -396,11 +387,11 @@
  <article class="card audience-card" aria-labelledby="aud-vc">
  <h3 id="aud-vc"><span aria-hidden="true">📊</span> VC / M&amp;A advisors</h3>
  <p class="card-lead audience-context">Investors / acquirers running a DD pipeline</p>
- <p class="audience-pitch">From a corporate number, fetch 5 years of enforcement history, 10 years of adoption history, and invoice-registrant status in one query. Drop straight into your DD pipeline. ¥3/req metered, no scale ceiling.</p>
+ <p class="audience-pitch">From a corporate number, fetch 5 years of enforcement history, 10 years of adoption history, and invoice-registrant status in one query. Drop straight into your DD pipeline. ¥3/req metered, batch-friendly within API rate limits.</p>
  <ul class="card-list">
  <li>One query keyed on corporate number</li>
  <li>Enforcement 1,185 / adoptions 2,286 / invoice 13,801</li>
- <li>¥3/req fully metered, no scale limits</li>
+ <li>¥3/req fully metered, budget caps and rate limits apply</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/vc.html">VC / DD details &rarr;</a></p>
  </article>
@@ -433,12 +424,7 @@
  </div>
  </section>
 
- <!-- CRO Fix 2 (2026-04-29): copy-pasteable curl block above the prescreen
-       form. The previous block here required "Authorization: Bearer
-       YOUR_API_KEY" — that hid the fact that anon works without one and
-       added an obvious friction step ("get a key first"). Replaced with
-       the no-auth version that runs as-is against api.jpcite.com.
-       Source-of-truth lives in site/_data/curl_examples.json. -->
+ <!-- Copy-pasteable curl block. -->
  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
  <div class="container">
  <h2 id="curl-title" class="section-title">Try in 5 seconds (no signup)</h2>
@@ -458,7 +444,7 @@
  </div>
  </section>
  <script>
-  // CRO Fix 2: vanilla copy-button. No deps, no fetch, no analytics.
+  // Vanilla copy-button. No dependencies.
   // Falls back to a hidden textarea + execCommand on browsers without
   // navigator.clipboard. Status is announced via aria-live="polite".
   (function() {
@@ -584,7 +570,7 @@
  <article class="card" aria-labelledby="vs-llm-halluc">
  <h3 id="vs-llm-halluc">Source fabrication &amp; aggregator drift</h3>
  <p class="card-lead">Misidentification = misrepresentation liability</p>
- <p>Aggregator sites (noukaweb, hojyokin-portal, biz.stayway, etc.) are documented to list expired programs as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+ <p>Second-tier aggregator pages can list expired programs as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
  <p>jpcite <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
  <p>99%+ of rows carry <code>source_url</code> + <code>fetched_at</code>, so you can show your client / regulator / opposing counsel exactly <em>why</em> this program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
  </article>
@@ -596,7 +582,7 @@
  </article>
 
  </div>
- <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>LLM agent + jpcite = LLM speed &times; primary-source accuracy</strong>. jpcite isn't an LLM replacement — it's the fact layer that makes LLM output trustworthy.</p>
+ <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>LLM agent + jpcite = LLM speed &times; primary-source accuracy</strong>. jpcite isn't an LLM replacement — it's the fact layer that makes LLM output easier to cite and audit.</p>
  </div>
  </section>
 
@@ -608,14 +594,14 @@
  <article class="card">
  <h3>No aggregator sources</h3>
  <p class="card-lead">Misrepresentation-liability avoidance</p>
- <p>Aggregator sites such as noukaweb, hojyokin-portal, and biz.stayway have been documented to keep expired programs listed as active, mis-state ceiling amounts, and add eligibility requirements that aren't in the primary notice. Filing on that basis and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+ <p>Second-tier aggregator pages can keep expired programs listed as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Filing on that basis and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
  <p>jpcite's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
  <p>Because 99%+ of rows carry <code>source_url</code> + <code>fetched_at</code>, you can show your client, the regulator, or opposing counsel exactly <em>why</em> a program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
  </article>
 
  <article class="card">
  <h3>Primary source, end to end</h3>
- <p class="card-lead">Amendments propagate immediately</p>
+ <p class="card-lead">Fetch dates and liveness are explicit</p>
  <p>99%+ of returned rows carry <code>source_url</code> + <code>fetched_at</code>. The fetch date is shown verbatim — never relabeled as "last updated" (which would falsely imply we re-verified currency). Nightly liveness scans flag dead URLs.</p>
  </article>
 
@@ -628,7 +614,7 @@
  <article class="card">
  <h3>Cross-dataset glue</h3>
  <p class="card-lead">One call: program → law → court decision → enforcement</p>
- <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 catalog stubs, body-text load incremental, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 50 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus the autonomath entity-fact DB (503,930 entities / 6.12M facts / 23,805 relations) exposed via 30 tools. The 93-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>reason_answer</code> for cross-domain resolution.</p>
+ <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 law metadata records, full-text coverage varies by record, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 50 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus structured entity facts (503,930 entities / 6.12M facts / 378,342 relations). The 93-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>rule_engine_check</code> for cross-domain resolution.</p>
  </article>
 
  </div>
@@ -643,13 +629,13 @@
  <article class="card" aria-labelledby="who-dev">
  <h3 id="who-dev">Developers / AI engineers</h3>
  <p class="card-lead">Recommended: API + MCP</p>
- <p>For embedding into agents, RAG pipelines, or your own SaaS. OpenAPI 3.1, stdio MCP, ¥3/req metered, anonymous 3 req/day for evaluation with no signup.</p>
+ <p>For agents, RAG pipelines, or your own SaaS. OpenAPI 3.1, stdio MCP, and Evidence Packets for citation-first workflows; token and cost impact is workload-dependent.</p>
  </article>
 
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">SMB owners</h3>
  <p class="card-lead">Recommended: LINE bot + advisor affiliate</p>
- <p>Want to know what your business is eligible for, and to be routed to someone who can file it. Discover via LINE, get matched with a certified support institution or licensed tax advisor. The first 10 questions/month are free; ¥3/question (¥3.30 tax incl.) thereafter — no fixed monthly fee.</p>
+ <p>Want to know what your business is eligible for, and to be routed to someone who can file it. Discover via LINE, get matched with a certified support institution or licensed tax advisor. Anonymous 3 questions/day are free; ¥3/question tax exclusive (¥3.30 tax inclusive) thereafter — no fixed monthly fee.</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
@@ -691,22 +677,22 @@
  </tr>
  <tr>
  <th scope="row">LINE bot</th>
- <td>10 questions/month</td>
+ <td>3 questions/day per IP</td>
  <td>¥3 / question (tax excl.)</td>
  <td>¥3.30 / question</td>
  </tr>
- <tr>
- <th scope="row">Law-amendment alerts</th>
- <td>Monthly digest</td>
- <td>¥500 / month (tax excl.)</td>
- <td>¥550 / month</td>
- </tr>
- <tr>
- <th scope="row">Embeddable widget</th>
- <td>—</td>
- <td>¥10,000 / month (10,000 req included)</td>
- <td>¥11,000 / month</td>
- </tr>
+<tr>
+<th scope="row">Law-amendment alerts</th>
+<td>Monthly digest</td>
+<td>¥3 / notification (tax excl.)</td>
+<td>¥3.30 / notification</td>
+</tr>
+<tr>
+<th scope="row">Embeddable widget</th>
+<td>3 req/day per IP</td>
+<td>¥3 / search (tax excl.)</td>
+<td>¥3.30 / search</td>
+</tr>
  <tr>
  <th scope="row">Advisor affiliate</th>
  <td>Free for end users</td>
@@ -716,7 +702,7 @@
  </tbody>
  </table>
  </div>
- <p class="pricing-note"><a href="pricing.html">Full pricing details &rarr;</a> · Auto-issued tax invoice , Stripe Tax handled, cancel anytime. Billing is JPY; 10% JCT added at invoice; your card network handles FX.</p>
+ <p class="pricing-note"><a href="pricing.html">Full pricing details &rarr;</a> · Auto-issued qualified invoice via Stripe Tax; cancel anytime. Billing is JPY; 10% JCT added at invoice; your card network handles FX.</p>
  </div>
  </section>
 
@@ -737,10 +723,9 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a><a href="privacy.html">Privacy</a>
  <a href="tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

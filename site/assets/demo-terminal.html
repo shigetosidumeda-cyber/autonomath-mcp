@@ -4,26 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>AutonoMath demo terminal (standalone preview)</title>
-<meta name="description" content="AutonoMath 動くデモ (60 秒) のスタンドアロンプレビュー。同一マークアップはトップページにインライン埋め込み済み。">
+<title>jpcite demo terminal (standalone preview)</title>
+<meta name="description" content="jpcite 動くデモ (60 秒) のスタンドアロンプレビュー。同一マークアップはトップページにインライン埋め込み済み。">
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://jpcite.com/assets/demo-terminal.html">
 <link rel="stylesheet" href="demo-terminal.css">
 </head>
 <body>
 
-<!--
-  Standalone preview / reproduction of the embedded demo.
-  The same markup is inlined into ../index.html above the pricing CTA.
-  Pure HTML + CSS (no JS, no CDN). prefers-reduced-motion honored.
--->
-
 <main>
   <section class="jp-demo" aria-labelledby="jp-demo-title">
     <h2 id="jp-demo-title">動くデモ (60 秒)</h2>
     <p class="jp-demo-lead">3 つの呼び出しを順に: <code>/v1/programs/search</code> → <code>/v1/programs/{id}</code> → Claude Desktop の MCP tool。</p>
 
-    <div class="jp-term" role="img" aria-label="ターミナルで AutonoMath の 3 コマンドを順に実行するデモアニメーション">
+    <div class="jp-term" role="img" aria-label="ターミナルで jpcite の 3 コマンドを順に実行するデモアニメーション">
       <div class="jp-term-bar" aria-hidden="true">
         <span class="jp-term-dot jp-term-dot--r"></span>
         <span class="jp-term-dot jp-term-dot--y"></span>
@@ -61,7 +55,7 @@ claude &gt; 青森県の A-tier 補助金は 7 件、上位 3 件はこちらで
 
     <details class="jp-demo-more">
       <summary>どう動いてる？ (データの出どころ)</summary>
-      <p>3 件とも DB の生データ。unified_id <code>UNI-6aa0d9f0d0</code> / <code>UNI-2bf38e170f</code> / <code>UNI-9e89c70718</code>、source_url は青森県 / 弘前市の一次資料ページを保持。API ホストは rebrand 待ちのため <code>API</code> と placeholder 表記。</p>
+      <p>3 件とも DB の生データ。unified_id <code>UNI-6aa0d9f0d0</code> / <code>UNI-2bf38e170f</code> / <code>UNI-9e89c70718</code>、source_url は青森県 / 弘前市の一次資料ページを保持。API ホストは <code>api.jpcite.com</code> です。</p>
     </details>
 
     <aside class="jp-demo-transcript" role="complementary" aria-labelledby="jp-demo-transcript-title">
@@ -95,7 +89,7 @@ claude &gt; 青森県の A-tier 補助金は 7 件、上位 3 件はこちらで
          3. 令和７年度 弘前市農業労働力雇用環境整備事業費補助金 (上限 10 万円)
          併用判定は check_exclusions で続けて確認できます。</code></pre>
 
-      <p class="jp-demo-transcript-foot"><code>API</code> は launch 時の正式ホスト名に置き換わります (rebrand 進行中)。unified_id は 2026-04-23 時点の DB から。</p>
+      <p class="jp-demo-transcript-foot"><code>API</code> は <code>api.jpcite.com</code> を表します。unified_id は 2026-04-23 時点の DB から。</p>
     </aside>
   </section>
 </main>

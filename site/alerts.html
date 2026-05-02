@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>法令改正アラート — jpcite</title>
-<meta name="description" content="インボイス・電子帳簿保存法・補助金・融資・行政処分の変更を、24時間以内にメールで通知。月次サマリー無料、リアルタイム通知は1通あたり ¥3 (税込 ¥3.30) 完全従量。Bookyou株式会社運営。">
+<meta name="description" content="インボイス・電子帳簿保存法・補助金・融資・行政処分の変更をメールで通知。月次サマリー無料、リアルタイム通知は1通あたり ¥3 (税込 ¥3.30) 完全従量。">
 
 <meta property="og:title" content="法令改正アラート — インボイス・電帳法・補助金の変更を見逃さない">
-<meta property="og:description" content="24時間以内にメール通知。月次サマリー無料 / リアルタイム 1通 ¥3 (税込 ¥3.30) 完全従量。一次資料の URL 付き。">
+<meta property="og:description" content="制度変更をメール通知。月次サマリー無料 / リアルタイム 1通 ¥3 (税込 ¥3.30) 完全従量。一次資料の URL 付き。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/alerts.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="法令改正アラート — jpcite">
-<meta name="twitter:description" content="インボイス・電帳法・補助金の変更を24時間以内にメール通知。1通 ¥3 (税込 ¥3.30) 完全従量。">
+<meta name="twitter:description" content="インボイス・電帳法・補助金の変更をメール通知。1通 ¥3 (税込 ¥3.30) 完全従量。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/alerts.html">
@@ -56,7 +56,7 @@
       "name": "リアルタイム通知 (¥3/通知 完全従量)",
       "price": "3",
       "priceCurrency": "JPY",
-      "description": "1通あたり ¥3 税別 (税込 ¥3.30)、変更検出から24時間以内にメール配信。月額固定なし、配信が0件の月は ¥0。",
+      "description": "1通あたり ¥3 税別 (税込 ¥3.30)、検出した変更をメール配信。月額固定なし、配信が0件の月は ¥0。",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
         "price": "3",
@@ -114,9 +114,7 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
-  "identifier": "T8010001213708",
+  "alternateName": ["jpcite", "jpcite"],
   "email": "info@bookyou.net",
   "url": "https://jpcite.com/",
   "inLanguage": "ja",
@@ -178,11 +176,6 @@
   .preview-card ul.items .s { color: var(--text-muted); font-size: 12px; line-height: 1.55; margin: 2px 0 2px; }
   .preview-card ul.items .u { font-size: 11px; color: var(--text-muted); }
   .preview-card ul.items .u a { color: var(--accent); }
-  /* Mockup-only label: the email preview shows what subscribers receive,
-     but the per-program detail link inside the preview is a placeholder
-     until the live email-sending pipeline ships. Render as plain muted text
-     so the visitor cannot misread it as a working link (Trust Audit fix
-     2026-04-29). */
   .preview-card ul.items .u .mock-link { color: var(--text-muted); cursor: not-allowed; text-decoration: line-through dotted; text-decoration-thickness: 1px; }
 
   .faq { padding: 48px 0 64px; border-top: 1px solid var(--border); }
@@ -241,7 +234,7 @@
  <div class="container">
  <h1>法令改正アラート — インボイス・電帳法・補助金の変更を見逃さない</h1>
  <p class="lead">
- あなたの業種・都道府県・関心領域に絞って、制度の変更を24時間以内にメールでお届けします。
+ あなたの業種・都道府県・関心領域に絞って、検出した制度変更をメールでお届けします。
  すべて一次資料 (省庁・公庫・e-Gov・国税庁・裁判所) の URL 付き。
  </p>
  <p class="tag">月次サマリーは無料。リアルタイム通知は 1通あたり ¥3 (税込 ¥3.30) 完全従量。配信が0件の月は ¥0。</p>
@@ -251,7 +244,6 @@
 <div class="container">
  <div class="alerts-grid">
 
- <!-- =========================== Sign up form =========================== -->
  <form class="signup-card" id="alerts-signup" novalidate>
  <h2>アラートを受け取る</h2>
 
@@ -322,7 +314,7 @@
  <label id="plan-paid-label">
  <input type="radio" name="plan" value="paid">
  <span class="plan-price">リアルタイム通知 — 1通 ¥3 (税込 ¥3.30) 完全従量</span>
- <div class="plan-desc">変更検出から24時間以内、関心領域のみ。 配信が0件の月は ¥0。</div>
+ <div class="plan-desc">検出した変更を関心領域に絞って配信。 配信が0件の月は ¥0。</div>
  </label>
  </fieldset>
 
@@ -335,7 +327,6 @@
  </p>
  </form>
 
- <!-- =========================== Email preview =========================== -->
  <aside class="preview-card" aria-labelledby="preview-title">
  <div class="preview-head">From: jpcite &lt;no-reply@jpcite.com&gt; — Subject: 【jpcite】法令改正アラート: 3件の変更があります</div>
  <div class="preview-body">
@@ -450,15 +441,13 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
 
 <script>
-  // 47 都道府県 — MUST match PREFECTURES tuple in src/jpintel_mcp/api/compliance.py.
   (function() {
     var PREFS = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
     var sel = document.getElementById("prefecture");
@@ -475,7 +464,6 @@
     var status = document.getElementById("signup-status");
     if (!form) return;
 
-    // Highlight selected plan card.
     var planInputs = form.querySelectorAll('input[name=plan]');
     var freeLabel = document.getElementById("plan-free-label");
     var paidLabel = document.getElementById("plan-paid-label");
@@ -521,7 +509,7 @@
       var submitBtn = form.querySelector('button[type=submit], input[type=submit]');
       if (submitBtn) submitBtn.disabled = true;
 
-      var apiBase = window.AUTONOMATH_API_BASE || "https://api.jpcite.com";
+      var apiBase = window.JPCITE_API_BASE || "https://api.jpcite.com";
       var ctrl = new AbortController();
       var timer = setTimeout(function() { ctrl.abort(); }, 15000);
       fetch(apiBase + "/v1/compliance/subscribe", {

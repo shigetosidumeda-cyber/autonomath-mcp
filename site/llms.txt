@@ -72,7 +72,7 @@ The most common 0-hit cause is hallucinated filter values. Always probe the live
 
 - `prefecture`: `北海道` / `青森県` / ... / `沖縄県` (47 都道府県、JIS X 0401 形式、`東京` も `東京都` に正規化)
 - `target_industry` (JSIC major): `A`=農林水産業 / `D`=建設業 / `E`=製造業 / `F`=電気・ガス / `G`=情報通信 / `K`=不動産業 / `M`=宿泊・飲食 / `P`=医療・福祉 等
-- `tier`: `S` (官公庁直接) / `A` (一次資料リンク済) / `B` (要確認項目あり) / `C` (補完確認対象) — 公開検索では公開対象の行だけを返します
+- `tier`: `S` (官公庁直接) / `A` (公式出典あり) / `B` (要確認項目あり) / `C` (補完確認対象) — 公開検索では公開対象の行だけを返します
 - `funding_purpose`: `business_restructuring` / `equipment` / `it_introduction` / `gx` / `r_and_d` / `human_resources` / `business_succession` 等
 - `program_kind`: `subsidy` / `grant` / `loan` / `tax_incentive` / `certification` / `mutual_insurance`
 - `loan_collateral` / `loan_personal_guarantor` / `loan_third_party_guarantor`: `required` / `not_required` / `negotiable` / `unknown` (3 軸独立 enum)

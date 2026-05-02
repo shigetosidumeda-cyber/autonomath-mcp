@@ -50,11 +50,8 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from urllib.parse import urlparse
-
-if TYPE_CHECKING:
-    from collections.abc import Iterable
 
 try:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -80,7 +77,8 @@ _JST = timezone(timedelta(hours=9))
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 try:
-    from _pref_slugs import PREFECTURES, JA_TO_SLUG as _PREF_JA_TO_SLUG  # type: ignore
+    from _pref_slugs import JA_TO_SLUG as _PREF_JA_TO_SLUG  # type: ignore
+    from _pref_slugs import PREFECTURES
 except ImportError:  # pragma: no cover
     PREFECTURES = []
     _PREF_JA_TO_SLUG = {}
@@ -509,16 +507,8 @@ def _org_node(domain: str) -> dict[str, Any]:
     return {
         "@type": "Organization",
         "@id": ORG_NODE_ID,
-        "name": "AutonoMath",
+        "name": "jpcite",
         "url": f"https://{domain}/",
-        "legalName": OPERATOR_NAME,
-        "taxID": OPERATOR_CORPORATE_NUMBER,
-        "founder": {"@type": "Person", "name": OPERATOR_REP},
-        "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "JP",
-            "addressLocality": OPERATOR_ADDRESS_JP,
-        },
         "contactPoint": {
             "@type": "ContactPoint",
             "email": OPERATOR_EMAIL,

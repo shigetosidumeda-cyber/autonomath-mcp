@@ -37,13 +37,11 @@
       "@id": "https://jpcite.com/#publisher",
       "name": "jpcite",
       "alternateName": [
-        "税務会計AI",
-        "AutonoMath",
+        "jpcite",
+        "jpcite",
         "Bookyou株式会社"
       ],
       "url": "https://jpcite.com/",
-      "legalName": "Bookyou株式会社",
-      "taxID": "T8010001213708",
       "founder": {
         "@type": "Person",
         "name": "梅田茂利"
@@ -198,7 +196,7 @@
           "name": "ツール数はいくつですか?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "公開ファクトシート上の正本では、default gates で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。"
+            "text": "公開ファクトシート上の最新値では、standard configuration で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。"
           }
         },
         {
@@ -247,9 +245,7 @@
  </ul>
  </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="/_templates/qa.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
- <span class="sep" aria-hidden="true">/</span>
- <a href="/en/_templates/qa.html" lang="en" hreflang="en">EN</a>
+ <a href="/qa/mcp/what-can-jpcite-mcp-do.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
  </span>
  </nav>
  </div>
@@ -273,7 +269,7 @@
  <span class="sep">/</span>
  <span class="source">出典取得: 2026年4月30日</span>
  <span class="sep">/</span>
- <span class="author">Bookyou株式会社 (梅田茂利)</span>
+ <span class="author">jpcite</span>
  </p>
  <p class="byline-note muted">※一次資料は頻繁に改訂されます。最新は出典の公式ページをご確認ください。</p>
  </header>
@@ -288,7 +284,7 @@
  <dl class="qa-list"> <dt>jpcite MCPは何をするサーバーですか?</dt>
  <dd>日本の補助金・融資・税制・認定・法令・判例・行政処分・適格請求書発行事業者を、AIクライアントから tool call で検索する MCP server です。</dd> <dt>どのAIクライアントで使えますか?</dt>
  <dd>MCP stdio に対応した Claude Desktop、Cursor、Cline、Continue などで使えます。ChatGPTやCustom GPTではREST/OpenAPI経由の組み込みが主経路になります。</dd> <dt>ツール数はいくつですか?</dt>
- <dd>公開ファクトシート上の正本では、default gates で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。</dd> <dt>匿名で試せますか?</dt>
+ <dd>公開ファクトシート上の最新値では、standard configuration で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。</dd> <dt>匿名で試せますか?</dt>
  <dd>はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、¥3/req 税別 (税込 ¥3.30) の完全従量で使います。</dd> <dt>LLMが直接Web検索する場合との違いは?</dt>
  <dd>Web検索はページ単位の候補を返します。jpcite MCPは制度ID単位の構造化レコード、一次資料URL、取得時刻、排他ルール、schemaを返すため、AI agent が後続処理に渡しやすい形になります。</dd> </dl>
  </section> <section aria-labelledby="facts-title">
@@ -322,7 +318,7 @@
  <h2 id="api-title">API で取得</h2>
  <p>このトピックに関連する制度・税務 ruleset・法令データは REST API および MCP で取得できます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
- "https://api.jpcite.com/v1/programs?q=jpcite%20MCP%20Claude%20Desktop"</code></pre>
+ "https://api.jpcite.com/v1/programs/search?q=jpcite%20MCP%20Claude%20Desktop"</code></pre>
  <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>search_programs(q="jpcite MCP Claude Desktop")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
  <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
  </section>
@@ -337,7 +333,7 @@
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ <p class="footer-entity">運営: Bookyou株式会社</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">
  <a href="/tos.html">利用規約</a>

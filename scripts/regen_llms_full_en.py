@@ -5,8 +5,7 @@ Mirrors `regen_llms_full.py` (the Japanese flagship), but the structural
 sections (header / overview / pricing / audience / coverage / footer) are
 written in English. Program names, law titles, and case-study fields stay
 in Japanese — translating them mechanically would invent canonical names
-that do not exist (memory `feedback_no_fake_data` / fraud-risk vector
-per `feedback_autonomath_fraud_risk`).
+that do not exist.
 
 Why a separate file:
   - LLM crawlers (GPTBot, ClaudeBot, PerplexityBot, ...) handle multilingual
@@ -26,7 +25,7 @@ Output (atomic write, UTF-8, LF):
 
 Sections, in order:
   1. Title + abstract (English)
-  2. About AutonoMath (English)
+  2. About jpcite (English)
   3. Pricing (English, ¥3/req metered)
   4. Five canonical audiences (English)
   5. Coverage statistics (English, derived from live SQL counts)
@@ -57,17 +56,51 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import os
+import re
 import sqlite3
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import urlparse
+
+_PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
 
 # ---------------------------------------------------------------------------
-# SQL — every query filters out the quarantine tier ('X') and excluded rows.
+# SQL — every query filters out non-public review rows and excluded rows.
 # Same invariants as the Japanese flagship; see CLAUDE.md non-negotiables.
 # ---------------------------------------------------------------------------
+_BANNED_SOURCE_HOSTS = frozenset(
+    {
+        "smart-hojokin.jp",
+        "noukaweb.jp",
+        "noukaweb.com",
+        "hojyokin-portal.jp",
+        "hojokin-portal.jp",
+        "biz.stayway.jp",
+        "biz-stayway.jp",
+        "stayway.jp",
+        "subsidymap.jp",
+        "navit-j.com",
+        "hojyokin.jp",
+        "hojokin.jp",
+        "creabiz.co.jp",
+        "yorisoi.jp",
+        "aichihojokin.com",
+        "activation-service.jp",
+        "jsearch.jp",
+        "judgit.net",
+        "news.mynavi.jp",
+        "news.yahoo.co.jp",
+        "shien-39.jp",
+        "tamemap.net",
+        "tokyo-np.co.jp",
+        "yayoi-kk.co.jp",
+        "jiji.com",
+    }
+)
 
 PROGRAMS_SQL = """
 SELECT
@@ -137,6 +170,10 @@ def _sanitize(value: object) -> str:
     return " ".join(s.split())
 
 
+def _public_program_name(value: str | None) -> str:
+    return _PUBLIC_ID_PREFIX_RE.sub("", _sanitize(value or ""))
+
+
 def _format_amount_man_yen(amount: float | int | None) -> str:
     """Format ``amount_max_man_yen`` (in 万円) compactly."""
     if amount is None:
@@ -193,6 +230,22 @@ def _safe_rows(con: sqlite3.Connection, sql: str) -> list[sqlite3.Row]:
         return []
 
 
+def _source_host_allowed(source_url: str | None) -> bool:
+    if not source_url:
+        return True
+    try:
+        hostname = urlparse(str(source_url).strip()).hostname
+    except ValueError:
+        return True
+    if not hostname:
+        return True
+    host = hostname.lower().rstrip(".")
+    return not any(
+        host == banned or host.endswith(f".{banned}")
+        for banned in _BANNED_SOURCE_HOSTS
+    )
+
+
 # ---------------------------------------------------------------------------
 # Section builders — English structural prose. ~150 lines total.
 # ---------------------------------------------------------------------------
@@ -200,11 +253,13 @@ def _safe_rows(con: sqlite3.Connection, sql: str) -> list[sqlite3.Row]:
 
 def _section_header(programs: int, laws: int, cases: int, generated_at: str) -> list[str]:
     return [
-        "# AutonoMath - Japanese public-program database (English LLM index)",
+        "# jpcite - Japanese public-program database (English LLM index)",
         "",
-        f"> Cross-search of Japanese public programs (subsidies, loans, tax measures, certifications): {programs:,} programs + {laws:,} laws + {cases:,} adoption case studies.",
-        "> llms-full.en.txt is the English-language LLM crawler dump. Program names, law titles, and case fields stay in Japanese - they are legal entity names and must not be machine-translated.",
-        "> Operator: Bookyou Inc. (適格請求書発行事業者番号 T8010001213708) / Canonical: https://jpcite.com",
+        f"> Evidence pre-fetch index for Japanese public programs: {programs:,} source-allowed program rows + {laws:,} laws + {cases:,} adoption case studies.",
+        "> Use this before answer generation to retrieve cited facts, source URLs, fetched_at metadata, provenance, and compatibility-rule context. It is not an answer generator.",
+        "> Token and cost impact is workload-dependent; jpcite API pricing is fixed at ¥3/request.",
+        "> Program names, law titles, and case fields stay in Japanese where applicable.",
+        "> Publisher: jpcite / Canonical: https://jpcite.com",
         f"> Generated: {generated_at}",
         "",
         "---",
@@ -214,15 +269,15 @@ def _section_header(programs: int, laws: int, cases: int, generated_at: str) -> 
 
 def _section_about() -> list[str]:
     return [
-        "## About AutonoMath",
+        "## About jpcite",
         "",
-        "AutonoMath is a developer platform that exposes Japanese public-program data (subsidies, loans, tax measures, certifications, agricultural support) as a REST API and an MCP (Model Context Protocol) server. It is built for AI application developers and enterprise RAG teams that need to ground answers about Japanese public funding in primary-source data.",
+        "jpcite is an Evidence Pre-fetch Layer that exposes Japanese public-program data (subsidies, loans, tax measures, certifications, and related public records) as a REST API and an MCP (Model Context Protocol) server. It is built for AI application developers and enterprise RAG teams that need to ground answers about Japanese public funding in source-linked data.",
         "",
-        "Programs are scored on a Tier S/A/B/C/X quality ladder; Tier X is a quarantine tier and is hard-excluded from every search path. Each row cites a primary government source (ministry, prefecture, Japan Finance Corporation, and so on). Aggregator URLs are banned at ingest time to avoid second-hand misinformation.",
+        "Public search returns source-linked rows that have passed jpcite's publication checks. Rows cite government or official institutional sources where available.",
         "",
-        "MCP exposes 93 tools at default gates. The MCP server runs over stdio (protocol 2025-06-18) and is compatible with Claude Desktop, Cursor, and ChatGPT (Plus and above).",
+        "MCP exposes 93 tools in the standard configuration. The MCP server runs over stdio (protocol 2025-06-18) and is compatible with Claude Desktop, Cursor, and ChatGPT (Plus and above).",
         "",
-        "Direct end users (sole proprietors, tax accountants, certified administrative scriveners) are NOT the primary audience. AutonoMath is an API; downstream callers build the UIs.",
+        "jpcite is an API-first service; downstream callers build their own product workflows and UIs.",
         "",
         "---",
         "",
@@ -236,9 +291,9 @@ def _section_pricing() -> list[str]:
         "Fully metered: ¥3 per request (¥3.30 tax-included). No tier SKUs, no seat fees, no annual minimums.",
         "",
         "- Anonymous tier: 3 requests per day per IP, free. Resets at JST next-day 00:00.",
-        "- Authenticated tier: ¥3 per request, billed monthly via Stripe. Reset at UTC month-start.",
-        "- Acquisition: 100% organic. No paid ads, no sales calls, no cold outreach.",
-        "- Operations: solo, zero-touch. No DPA / MSA negotiation, no Slack Connect, no phone support.",
+        "- Authenticated tier: ¥3 per request, billed monthly via Stripe. Monthly budget caps and protective rate limits may apply.",
+        "- jpcite pricing is per billable API/MCP request. External LLM token, search, cache, and tool costs depend on the caller's model and prompt settings.",
+        "- Support and enterprise terms are described in the public documentation.",
         "",
         "Sign up at https://jpcite.com/pricing.html. API keys are issued once at Stripe checkout success and shown verbatim in the response - keep the key safe; the only re-issue path is to cancel the subscription via the billing portal and re-checkout.",
         "",
@@ -251,11 +306,11 @@ def _section_audiences() -> list[str]:
     return [
         "## Five canonical audiences",
         "",
-        "AutonoMath is shaped around five concrete user shapes. Each has a representative cost ceiling and a representative MCP tool path.",
+        "jpcite is shaped around five concrete user shapes. Each has a representative MCP tool path.",
         "",
-        "1. Tax accountants (税理士) - Claude Desktop + AutonoMath API. Roughly ¥1,000 per month metered. Primary tools: search_tax_incentives, evaluate_tax_applicability, list_tax_sunset_alerts.",
+        "1. Tax accountants (税理士) - Claude Desktop + jpcite API. Primary tools: search_tax_incentives, evaluate_tax_applicability, list_tax_sunset_alerts.",
         "2. Certified administrative scriveners (行政書士) - one MCP call resolves subsidy + loan + permit eligibility. Primary tools: search_programs, search_loans_am, search_certifications.",
-        "3. SMB owners (中小企業経営者) - LINE chatbot frontends. 10 questions per month free, ¥3 per question after. Primary tools: smb_starter_pack, subsidy_combo_finder, deadline_calendar.",
+        "3. SMB owners (中小企業経営者) - LINE chatbot frontends and internal assistants. Anonymous usage is limited to 3 requests per day per IP; authenticated usage is ¥3/request.",
         "4. VC and M&A advisors - one query by 法人番号 returns enforcement history + adoption track record + invoice-registrant status. Primary tools: search_enforcement_cases, search_acceptance_stats_am, search_invoice_registrants.",
         "5. AI agent developers - 93 MCP tools, ¥3 per request, 3 anonymous requests per day. Primary tools: full surface area; see https://jpcite.com/docs/mcp-tools/.",
         "",
@@ -268,12 +323,12 @@ def _section_coverage(programs: int, laws: int, cases: int) -> list[str]:
     return [
         "## Coverage statistics",
         "",
-        f"- Programs: {programs:,} active rows (excluded=0, tier in S/A/B/C). Tier X is the quarantine tier and is excluded everywhere.",
+        f"- Programs: {programs:,} source-allowed public-search rows.",
         f"- Laws: {laws:,} rows in the laws table (e-Gov / ministry primary sources, current + superseded + repealed).",
         f"- Case studies: {cases:,} adoption case studies (採択事例). Each row is a real adopting entity, with 法人番号 when public.",
         "- Loans: 108 rows in loan_programs (担保 / 個人保証人 / 第三者保証人 split into three independent enumerations).",
         "- Enforcement: 1,185 行政処分 cases (enforcement_cases).",
-        "- Exclusion rules: 181 hand-seeded + auto-extracted exclusivity rules (補助金併用不可 / prerequisite chains).",
+        "- Exclusion rules: 181 registered compatibility checks for duplicate use, prerequisites, and related caveats.",
         "",
         "Update cadence: programs daily; laws delta-loaded continuously from e-Gov; case studies monthly; enforcement weekly.",
         "",
@@ -286,9 +341,9 @@ def _section_programs(rows: list[sqlite3.Row]) -> list[str]:
     """Compact pipe-delimited program inventory. Japanese names preserved."""
     count = len(rows)
     out: list[str] = [
-        f"## All Programs ({count:,} entries, compact)",
+        f"## All Programs ({count:,} source-allowed entries, compact)",
         "",
-        "Filter: excluded=0 AND tier IN (S,A,B,C). Tier X (quarantine) is excluded.",
+        "Generated from the current public jpcite dataset.",
         "Format: <unified_id> | <primary_name> | <program_kind> | <amount_max_man_yen> | <source_url> | <source_fetched_at>",
         "amount_max_man_yen is denominated in 万円 (10,000 JPY); 0 means unspecified or none. Program names are kept verbatim in Japanese - do not translate.",
         "",
@@ -297,7 +352,7 @@ def _section_programs(rows: list[sqlite3.Row]) -> list[str]:
         out.append(
             " | ".join([
                 _sanitize(row["unified_id"]),
-                _sanitize(row["primary_name"]),
+                _public_program_name(row["primary_name"]),
                 _sanitize(row["program_kind"]),
                 _format_amount_man_yen(row["amount_max_man_yen"]),
                 _sanitize(row["source_url"]),
@@ -366,8 +421,8 @@ def _section_footer() -> list[str]:
         "",
         "## License and attribution",
         "",
-        "Operator: Bookyou Inc. (適格請求書発行事業者番号 T8010001213708), 代表取締役 梅田茂利, info@bookyou.net.",
-        "Product: AutonoMath. Canonical domain: https://jpcite.com. PyPI package: autonomath-mcp.",
+        "Publisher: jpcite. Contact: https://jpcite.com/docs/compliance/tokushoho/.",
+        "Product: jpcite. Canonical domain: https://jpcite.com. MCP installation is documented at https://jpcite.com/docs/mcp-tools/.",
         "",
         "Data attribution:",
         "- Programs and laws cite their primary government source on each row (source_url).",
@@ -380,7 +435,7 @@ def _section_footer() -> list[str]:
         "- The Japanese-language sibling is at https://jpcite.com/llms-full.txt.",
         "- The shorter index file is at https://jpcite.com/llms.en.txt.",
         "",
-        "No machine translation of program names, law titles, or case fields. They are Japanese legal entity names; inventing English names would be a fraud-risk vector. See https://jpcite.com/docs/i18n_strategy/ for the canonical bilingual policy.",
+        "No machine translation of program names, law titles, or case fields. Use the original Japanese labels unless an official English name is published. See https://jpcite.com/docs/i18n_strategy/ for the canonical bilingual policy.",
         "",
     ]
 
@@ -395,7 +450,7 @@ def build_full_en(
     laws: list[sqlite3.Row],
     cases: list[sqlite3.Row],
 ) -> str:
-    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    generated_at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     out: list[str] = []
     out.extend(_section_header(len(programs), len(laws), len(cases), generated_at))
@@ -419,10 +474,8 @@ def atomic_write(path: Path, content: str) -> None:
             fh.write(content)
         os.replace(tmp_name, path)
     except Exception:
-        try:
+        with contextlib.suppress(OSError):
             os.unlink(tmp_name)
-        except OSError:
-            pass
         raise
 
 
@@ -452,7 +505,11 @@ def main(argv: list[str] | None = None) -> int:
     out_path: Path = args.out.resolve()
 
     with _connect_ro(db_path) as con:
-        programs = _safe_rows(con, PROGRAMS_SQL)
+        programs = [
+            row
+            for row in _safe_rows(con, PROGRAMS_SQL)
+            if _source_host_allowed(row["source_url"])
+        ]
         laws = _safe_rows(con, LAWS_SQL)
         cases = _safe_rows(con, CASES_SQL)
 

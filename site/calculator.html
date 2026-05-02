@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!--
-  ROI calculator (2026-04-29 新規). 顧問先数 / 月の補助金 review 件数 /
-  平均 review 時間 / 平均報酬 を入力すると、 月額 API コスト (¥3 × N
-  税別、 税込 ¥3.30/req) / 削減時間 / 機会発見の expected value を
-  client-side で計算します。 Pure JS、 LLM 呼出しなし、 fetch なし。
+  Coverage explorer (2026-04-30 リフレーム). 「削減時間 / saving 推定 /
+  AI コスト x% 削減」 系のフレームは撤去。 圧縮率 0.59 / 削減 ¥0.01/req
+  という実測のもと、 ¥3/req 課金は trick ではなく 「複数 DB を 1 リクエスト
+  で join + 一次資料の出典付き + 鮮度 SLO」 に対する従量料金として開示。
 
-  入力値 default は placeholder のみ — 顧客が自分の使い方で再計算
-  するための template。 計算ロジック透過のため、 各係数は HTML
-  data-* attribute で開示。
+  顧問先数 / 月の確認 件数 を入力すると、 月額 API コスト (¥3 × N 税別、
+  税込 ¥3.30/req) と、 1 リクエストで実際に走る join (DB / 出典数 / 鮮度
+  日数) を提示します。 Pure JS、 LLM 呼出しなし、 fetch なし。
 
   Design system: site/styles.css の token (--accent / --text / --border
   等) をそのまま流用。 dashboard と同じ tabular-nums + radius-md。
@@ -17,12 +17,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>ROI 試算 — jpcite</title>
-<meta name="description" content="jpcite ROI 試算。顧問先数 / 月次 確認 件数 / 削減時間 / 平均報酬を入力すると、月額 API コスト (¥3/リクエスト 税別、税込 ¥3.30) と時間削減 / 機会発見の期待値を即座に試算。Pure JS、LLM 呼び出しなし。">
+<title>カバレッジ試算 — jpcite</title>
+<meta name="description" content="jpcite カバレッジ試算。顧問先数 / 月次 確認 件数 を入力すると、月額 API コスト (¥3/リクエスト 税別、税込 ¥3.30) と、1 リクエストで join される DB 数・出典本数・鮮度日数を即提示。トークン量や AI コストの増減は workload 依存のため本ツールでは扱いません。Pure JS、LLM 呼び出しなし。">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="ROI 試算 — jpcite">
-<meta property="og:description" content="顧問先数 × 月次 確認 × 削減時間 × 平均報酬で API ¥3/リクエスト の回収期間を即試算。">
+<meta property="og:title" content="カバレッジ試算 — jpcite">
+<meta property="og:description" content="¥3/リクエスト で何が join されるか — 複数 DB + 出典 + 鮮度の内訳を即提示。トークン量や AI コストの増減は workload 依存のため本ツールでは扱いません。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/calculator.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -32,8 +32,8 @@
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ROI 試算 — jpcite">
-<meta name="twitter:description" content="顧問先数 × 月次 確認 × 削減時間 × 平均報酬で API ¥3/リクエスト の回収期間を即試算。">
+<meta name="twitter:title" content="カバレッジ試算 — jpcite">
+<meta name="twitter:description" content="¥3/リクエスト で何が join されるか — 複数 DB + 出典 + 鮮度の内訳を即提示。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/calculator.html">
@@ -49,20 +49,20 @@
 <link rel="stylesheet" href="/styles.css?v=20260428a">
 <script defer src="analytics.js"></script>
 
-<!-- SoftwareApplication JSON-LD: ROI calc は client-side で動く application
-     なので Google が「ツール」として理解できるよう SoftwareApplication +
-     applicationCategory: BusinessApplication を宣言。 offers は ¥3/req に
-     pin、 operatingSystem は browser. -->
+<!-- SoftwareApplication JSON-LD: coverage explorer は client-side で
+     動く application なので Google が「ツール」として理解できるよう
+     SoftwareApplication + applicationCategory: BusinessApplication を
+     宣言。 offers は ¥3/req に pin、 operatingSystem は browser. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "jpcite ROI calculator",
+  "name": "jpcite coverage explorer",
   "applicationCategory": "BusinessApplication",
   "applicationSubCategory": "TaxAccountingTool",
   "operatingSystem": "Web Browser",
   "url": "https://jpcite.com/calculator.html",
-  "description": "税理士・会計士・補助金 consultant 向けの ROI 試算ツール。顧問先数 / 月次 review / 削減時間 / 平均報酬から税務会計AI API (¥3/req 税別、税込 ¥3.30) の月次 payback を client-side で算定。",
+  "description": "税理士・会計士・補助金 consultant 向けのカバレッジ試算ツール。顧問先数 / 月次 確認 件数 から jpcite API (¥3/req 税別、税込 ¥3.30) の月額コストを client-side で算定し、1 リクエストで join される複数 DB / 出典本数 / 鮮度日数の内訳を提示する。",
   "browserRequirements": "JavaScript",
   "isAccessibleForFree": true,
   "publisher": {
@@ -93,9 +93,7 @@
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "url": "https://jpcite.com/",
-  "identifier": "T8010001213708"
-}
+  "url": "https://jpcite.com/"}
 </script>
 
 <style>
@@ -193,9 +191,8 @@
     letter-spacing: 0;
     line-height: 1.5;
   }
-  .calc-output dd.savings { color: var(--success); }
-  .calc-output dd.cost    { color: var(--text); }
-  .calc-output dd.net     { color: var(--accent); }
+  .calc-output dd.cost     { color: var(--text); }
+  .calc-output dd.coverage { color: var(--accent); }
 
   .calc-summary {
     border: 1px solid var(--border);
@@ -206,8 +203,8 @@
   }
   .calc-summary p { margin: 0 0 8px; font-size: 15px; line-height: 1.7; }
   .calc-summary p:last-child { margin-bottom: 0; color: var(--text-muted); font-size: 13px; }
-  .calc-summary strong.payback {
-    color: var(--success);
+  .calc-summary strong.coverage-figure {
+    color: var(--accent);
     font-size: 18px;
     font-variant-numeric: tabular-nums;
   }
@@ -301,22 +298,28 @@
  <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
  <a href="/">ホーム</a> <span aria-hidden="true">›</span>
  <a href="/pricing.html">料金</a> <span aria-hidden="true">›</span>
- <span aria-current="page">月額シミュレーター</span>
+ <span aria-current="page">カバレッジ試算</span>
  </nav>
 
- <h1>ROI 試算</h1>
+ <h1>カバレッジ試算</h1>
  <p class="lead">
- 顧問先数 / 月次 確認 件数 / 1 件あたり削減時間 / 平均時間報酬 を入力すると、
- jpcite API (¥3/リクエスト 税別、税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>) の月額コストと、
- 時間削減 + 機会発見の期待値を <strong>ブラウザ内で</strong> 計算します。
+ jpcite API は ¥3/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>) の従量料金です。
+ 顧問先数 / 月次 確認 件数 を入力すると、 月額 API コストと、
+ <strong>1 リクエストで実際に join される複数 DB ・出典本数・鮮度日数</strong> を <strong>ブラウザ内で</strong> 提示します。
  入力値はブラウザから外に出ません (送信なし、 LLM 呼び出しなし)。
+ </p>
+ <p class="lead" style="margin-top:-12px;font-size:14px;">
+ ※ 本ツールは「トークン削減 / コスト x% 削減」を保証するものではありません。
+ 削減効果はモデル・プロンプト・キャッシュ・クエリ分布で大きく変動するため、
+ 計測手順は <a href="/docs/bench_methodology/">ベンチ方法論</a> をご参照ください。
+ ここでは jpcite が <em>1 リクエストで何を join するか</em> のみを開示します。
  </p>
 
  <div class="calc-shell">
 
  <!-- Input ----------------------------------------------------- -->
  <form class="calc-form" id="roi-form" autocomplete="off" novalidate
- aria-label="ROI 試算 入力フォーム">
+ aria-label="カバレッジ試算 入力フォーム">
  <h2>入力</h2>
 
  <div class="field">
@@ -336,45 +339,11 @@
  <span class="unit">件 / 顧問先 / 月</span>
  </div>
 
- <div class="field">
- <label for="minutes">1 件あたり削減時間</label>
- <span class="hint">人手 確認 (制度文書 + 一次資料の突合) を AI に置き換えた時の短縮分。</span>
- <input id="minutes" name="minutes" type="number" min="0" step="1"
- value="30" inputmode="numeric">
- <span class="unit">分 / 件</span>
- </div>
-
- <div class="field">
- <label for="hourly">平均時間報酬</label>
- <span class="hint">税理士 / 担当者の請求単価または機会費用 (時給換算)。</span>
- <input id="hourly" name="hourly" type="number" min="0" step="100"
- value="10000" inputmode="numeric">
- <span class="unit">円 / 時間</span>
- </div>
-
- <div class="field">
- <label for="missrate">機会発見率</label>
- <span class="hint">確認 した制度のうち <em>本来適用できたが見落としていた</em> 確率。
- 業界平均は 1〜5%、 ここでは 2% を初期値。</span>
- <input id="missrate" name="missrate" type="number" min="0" max="100" step="0.5"
- value="2" inputmode="decimal">
- <span class="unit">%</span>
- </div>
-
- <div class="field">
- <label for="missvalue">機会 1 件あたり期待値</label>
- <span class="hint">見落としを 1 件捕捉した時の顧問先側の交付決定額 平均値。
- 補助金 1 件 ¥1〜3M が標準、 初期値は保守的に ¥500,000。</span>
- <input id="missvalue" name="missvalue" type="number" min="0" step="10000"
- value="500000" inputmode="numeric">
- <span class="unit">円 / 件</span>
- </div>
-
  </form>
 
  <!-- Output ---------------------------------------------------- -->
  <aside class="calc-output" aria-live="polite" aria-atomic="true"
- aria-label="ROI 試算 結果">
+ aria-label="カバレッジ試算 結果">
  <h2>試算結果 (月次)</h2>
  <dl>
  <div>
@@ -386,16 +355,16 @@
  <dd id="out-cost" class="cost">¥—<span class="secondary" id="out-cost-net">税別 ¥— + 消費税 10%</span></dd>
  </div>
  <div>
- <dt>削減時間</dt>
- <dd id="out-hours" class="savings">— 時間<span class="secondary" id="out-hours-yen">時給換算 ¥—</span></dd>
+ <dt>1 リクエストで join される DB</dt>
+ <dd id="out-dbs" class="coverage">— DB<span class="secondary" id="out-dbs-detail">programs + 採択 + 融資 + 法令 + 税制 + 行政処分 + 適格事業者 + 入札</span></dd>
  </div>
  <div>
- <dt>機会発見 期待値</dt>
- <dd id="out-opp" class="savings">¥—<span class="secondary" id="out-opp-detail">機会発見率 × 期待値 × 確認 件数</span></dd>
+ <dt>1 リクエストで返る出典本数 (中央値)</dt>
+ <dd id="out-sources" class="coverage">— 本<span class="secondary" id="out-sources-detail">一次資料の URL を返却 (官公庁 / 公庫 等)</span></dd>
  </div>
  <div>
- <dt>純便益 (削減 + 機会 − コスト)</dt>
- <dd id="out-net" class="net">¥—<span class="secondary" id="out-net-mult">API コストに対する倍率 —</span></dd>
+ <dt>データ鮮度 (出典最終取得)</dt>
+ <dd id="out-freshness" class="coverage">— 日<span class="secondary" id="out-freshness-detail">毎日 nightly で URL liveness を再確認</span></dd>
  </div>
  </dl>
  </aside>
@@ -404,7 +373,7 @@
  <!-- Plain-language summary -->
  <div class="calc-summary" aria-live="polite">
  <p id="summary-line">入力に応じて要約が更新されます。</p>
- <p>※ 削減時間 + 機会発見 = 月次 <strong class="payback" id="summary-payback">¥—</strong> の便益、 API コスト (税込) との比は <span id="summary-ratio">—</span> 倍。</p>
+ <p>※ ¥3/リクエストの内訳: <strong class="coverage-figure" id="summary-coverage">— DB join</strong> + 出典付き返却 + 鮮度 SLO。 トークン量や AI 全体コストの増減は <a href="/docs/bench_methodology/">ベンチ方法論</a> をご参照ください。</p>
  </div>
 
  <!-- Assumption disclosure -->
@@ -435,9 +404,19 @@
  <td>結果が 100 件返っても 1 リクエスト</td>
  </tr>
  <tr>
- <th scope="row">機会 期待値 計算式</th>
- <td class="num">確認 × 発見率 × 1 件期待値</td>
- <td>確率 × 価値 (機会の単純期待値)</td>
+ <th scope="row">統合データベース数</th>
+ <td class="num">8 DB</td>
+ <td>programs / 採択 / 融資 / 法令 / 税制 / 行政処分 / 適格事業者 / 入札 (<a href="/sources.html">出典一覧</a>)</td>
+ </tr>
+ <tr>
+ <th scope="row">出典付与ポリシー</th>
+ <td class="num">100% 一次資料</td>
+ <td>aggregator 出典は禁止 (<a href="/sources.html">/sources.html</a>)</td>
+ </tr>
+ <tr>
+ <th scope="row">鮮度 SLO</th>
+ <td class="num">nightly liveness</td>
+ <td><a href="/data-freshness.html">/data-freshness.html</a> — `source_fetched_at` を毎日再確認</td>
  </tr>
  </tbody>
  </table>
@@ -450,7 +429,10 @@
 
  <p class="calc-disclaimer">
  <strong>本試算は情報提供目的の参考値です。</strong>
- 実際の便益は顧問先構成・案件複雑度・制度改正頻度・本サービスの該当性により変動します。
+ 「1 リクエストで join される DB / 出典本数 / 鮮度日数」 はカタログ値であり、
+ 個別クエリの返却件数は対象制度・地域・キーワードにより変動します。
+ トークン削減・AI コスト全体の増減はモデル・プロンプト・キャッシュ・クエリ分布で大きく変動するため、
+ 当社ベンチ範囲外への外挿はできません ( <a href="/docs/bench_methodology/">ベンチ方法論</a> 参照)。
  jpcite は税理士法 §52 / §72 の遵守のため、 個別税務助言は提供せず、 一次資料の検索・整理に限定します。
  税理士業務 / 会計士業務 の判断は必ず資格者にご相談ください。
  </p>
@@ -474,9 +456,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -485,13 +466,23 @@
 (function() {
   "use strict";
 
-  // Pure client-side ROI calc. NO fetch, NO LLM, NO network. We do not
-  // even read query params here — the form values are the only state.
-  // Intentionally avoids ES2015+ features beyond const/let/arrow so it
-  // executes in older browsers without a transpile step.
+  // Pure client-side coverage calc. NO fetch, NO LLM, NO network. We do
+  // not even read query params here — the form values are the only
+  // state. Intentionally avoids ES2015+ features beyond const/let/arrow
+  // so it executes in older browsers without a transpile step.
+  //
+  // 2026-04-30 リフレーム: 「saving 推定」「expected value」 系の計算は
+  // 撤去し、 月次 API コスト + カバレッジ (DB / 出典 / 鮮度) のみを提示。
   var TAX_RATE = 0.10;
   var PRICE_NET = 3; // ¥/req 税別
-  var FREE_QUOTA = 50; // req / 月 / IP — anonymous tier; subtracted once
+  var FREE_QUOTA = 90; // approximate 30-day value for 3 req/day anonymous tier
+
+  // Coverage catalog values — keep in sync with sources.html.
+  // Joining means: a single API request fan-outs across these tables on
+  // the server side and returns merged results with citations.
+  var DB_JOIN_COUNT = 8; // programs + 採択 + 融資 + 法令 + 税制 + 行政処分 + 適格事業者 + 入札
+  var SOURCES_PER_REQUEST_MEDIAN = 4; // primary-source URLs returned per typical request (catalog median)
+  var FRESHNESS_DAYS = 1; // nightly liveness scan re-fetches source_url
 
   function $(id) { return document.getElementById(id); }
   function num(el) {
@@ -511,32 +502,16 @@
   }
 
   function recompute() {
-    var clients   = num($("clients"));
-    var reviews   = num($("reviews"));
-    var minutes   = num($("minutes"));
-    var hourly    = num($("hourly"));
-    var missrate  = num($("missrate")); // %
-    var missvalue = num($("missvalue"));
+    var clients = num($("clients"));
+    var reviews = num($("reviews"));
 
-    // 1) Request volume — 1 review = 1 API request (conservative; some
-    //    workflows may chain calls, others may cache). 顧客が後で調整できる.
+    // Request volume — 1 confirmation = 1 API request (conservative;
+    // some workflows may chain calls, others may cache).
     var totalReviews = clients * reviews;
     var billable = Math.max(0, totalReviews - FREE_QUOTA);
     var costNet  = billable * PRICE_NET;
     var costTax  = costNet * TAX_RATE;
     var costInc  = costNet + costTax;
-
-    // 2) Time savings (in hours and yen).
-    var hoursSaved = (totalReviews * minutes) / 60;
-    var yenSaved   = hoursSaved * hourly;
-
-    // 3) Opportunity expected value: review × discovery rate × per-event value.
-    var oppValue = totalReviews * (missrate / 100) * missvalue;
-
-    // 4) Net benefit + ratio against tax-inclusive API cost.
-    var benefit = yenSaved + oppValue;
-    var net     = benefit - costInc;
-    var ratio   = costInc > 0 ? (benefit / costInc) : 0;
 
     // ---------------------------------------------------------------
     // Render
@@ -545,7 +520,7 @@
     var reqsSecondary = $("out-reqs").querySelector(".secondary");
     if (reqsSecondary) {
       reqsSecondary.textContent =
-        "顧問先 " + fmtNum(clients) + " × review " + fmtNum(reviews) +
+        "顧問先 " + fmtNum(clients) + " × 確認 " + fmtNum(reviews) +
         " 件 (うち無料枠 " + fmtNum(Math.min(totalReviews, FREE_QUOTA)) + " req)";
     }
 
@@ -554,38 +529,25 @@
       "税別 " + fmtYen(costNet) + " + 消費税 " + fmtYen(costTax) +
       " (請求 " + fmtNum(billable) + " req × ¥3.00)";
 
-    $("out-hours").firstChild.nodeValue = fmtNum(hoursSaved, 1) + " 時間";
-    $("out-hours-yen").textContent =
-      "時給 " + fmtYen(hourly) + " 換算で " + fmtYen(yenSaved);
+    // Coverage outputs — these are catalog values, not estimates.
+    $("out-dbs").firstChild.nodeValue = fmtNum(DB_JOIN_COUNT) + " DB";
+    $("out-sources").firstChild.nodeValue = fmtNum(SOURCES_PER_REQUEST_MEDIAN) + " 本";
+    $("out-freshness").firstChild.nodeValue = fmtNum(FRESHNESS_DAYS) + " 日以内";
 
-    $("out-opp").firstChild.nodeValue = fmtYen(oppValue);
-    $("out-opp-detail").textContent =
-      "review " + fmtNum(totalReviews) + " 件 × 発見率 " + fmtNum(missrate, 1) +
-      "% × 1 件 " + fmtYen(missvalue);
-
-    $("out-net").firstChild.nodeValue = fmtYen(net);
-    var netDD = $("out-net");
-    netDD.classList.toggle("savings", net >= 0);
-    netDD.classList.toggle("net", net < 0 ? false : true);
-    $("out-net-mult").textContent =
-      "API コスト (税込) " + fmtYen(costInc) +
-      " に対する倍率 " + fmtNum(ratio, 1) + "x";
-
-    // Plain-language summary.
+    // Plain-language summary — coverage framing, not saving framing.
     var s = $("summary-line");
     if (s) {
       s.innerHTML =
         "顧問先 <strong>" + fmtNum(clients) + " 社</strong> × 月次 <strong>" + fmtNum(reviews) +
-        " 件</strong> review × <strong>" + fmtNum(minutes) +
-        " 分</strong> 削減 × 時給 <strong>" + fmtYen(hourly) +
-        "</strong> = 月 <strong>" + fmtYen(yenSaved) + "</strong> の時間削減" +
-        (oppValue > 0
-          ? " + 機会発見 <strong>" + fmtYen(oppValue) + "</strong>"
-          : "") +
-        " vs API コスト 月 <strong>" + fmtYen(costInc) + "</strong> (税込)。";
+        " 件</strong> 確認 = 月 <strong>" + fmtNum(totalReviews) + " req</strong>、 " +
+        "API コスト (税込) <strong>" + fmtYen(costInc) + "</strong>。 " +
+        "1 リクエストで <strong>" + fmtNum(DB_JOIN_COUNT) + " 個の公的 DB</strong> を join し、 " +
+        "中央値 <strong>" + fmtNum(SOURCES_PER_REQUEST_MEDIAN) + " 本</strong> の一次資料 URL を返却します。";
     }
-    $("summary-payback").textContent = fmtYen(benefit);
-    $("summary-ratio").textContent = fmtNum(ratio, 1);
+    var coverageEl = $("summary-coverage");
+    if (coverageEl) {
+      coverageEl.textContent = fmtNum(DB_JOIN_COUNT) + " DB join";
+    }
   }
 
   // Wire all inputs to recompute on every change. `input` event fires on
@@ -593,7 +555,7 @@
   // back. We prefer `input` for sub-second responsiveness — the entire
   // calc is O(1) so there is no debounce concern.
   document.addEventListener("DOMContentLoaded", function() {
-    var ids = ["clients", "reviews", "minutes", "hourly", "missrate", "missvalue"];
+    var ids = ["clients", "reviews"];
     ids.forEach(function (id) {
       var el = $(id);
       if (!el) return;
@@ -602,7 +564,7 @@
     });
     recompute();
   });
-});
+})();
 </script>
 
 </body>

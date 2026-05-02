@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#ffffff">
 <title>{{ page_title }}</title>
 <meta name="description" content="{{ meta_description }}">
-<meta name="author" content="Bookyou株式会社">
-<meta name="publisher" content="Bookyou株式会社">
+<meta name="author" content="jpcite">
+<meta name="publisher" content="jpcite">
 <meta name="robots" content="index, follow, max-image-preview:large">
 
 <meta property="og:title" content="{{ page_title }}">
@@ -85,7 +85,7 @@
  <p class="byline">
  <span class="updated">出典取得: {{ generated_ja }}</span>
  <span class="sep">/</span>
- <span class="author">Bookyou株式会社 (梅田茂利)</span>
+ <span class="author">jpcite</span>
  </p>
  <p class="byline-note muted">
  {{ pref_ja }}向けの公的支援制度 ({{ programs_count }}件)、採択事例 ({{ cases_count }}件)、政策金融融資 ({{ loans_count }}件)、行政処分公示 ({{ enforcements_count }}件) を jpcite が集約。
@@ -108,7 +108,7 @@
  {% if programs %}
  <section aria-labelledby="programs-title">
  <h2 id="programs-title">{{ pref_ja }}の補助金・助成金 ({{ programs_count }}件)</h2>
- <p>{{ pref_ja }}で利用可能な補助金・助成金・交付金のうち、jpcite が tier S/A 優先で抽出した上位 {{ programs_count }} 件です。各制度の詳細ページでは公募要領・対象者・金額上限・出典の一次資料リンクをご確認いただけます。</p>
+ <p>{{ pref_ja }}で確認しやすい補助金・助成金・交付金のうち、jpcite が出典確認状況と金額情報をもとに抽出した上位 {{ programs_count }} 件です。各制度の詳細ページでは公募要領・対象者・金額上限・出典リンクをご確認いただけます。</p>
  <ol class="program-list">
  {%- for p in programs %}
  <li class="program-card">
@@ -219,7 +219,7 @@
  <h2 id="api-title">{{ pref_ja }}データを API / MCP で取得</h2>
  <p>本ページに掲載した {{ pref_ja }}の制度・採択・融資・処分データは、すべて jpcite の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / ChatGPT などの MCP クライアントから即時に呼び出せます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
- "https://api.{{ DOMAIN }}/v1/programs?prefecture={{ pref_ja | urlencode }}&amp;tier=S,A&amp;limit=20"</code></pre>
+ "https://api.{{ DOMAIN }}/v1/programs/search?prefecture={{ pref_ja | urlencode }}&amp;tier=S,A&amp;limit=20"</code></pre>
  <p>MCP からは <code>search_programs(prefecture="{{ pref_ja }}", tier=["S","A"], limit=20)</code> で同等の検索が可能です。詳細は <a href="/docs/api-reference">API reference</a> および <a href="/docs/mcp-tools">MCP ツール</a> をご参照ください。</p>
  </section>
 
@@ -239,13 +239,13 @@
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ <p class="footer-entity">制度データ提供: jpcite</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">
  <a href="/tos.html">利用規約</a>
  <a href="/privacy.html">プライバシー</a>
  <a href="/tokushoho.html">特定商取引法</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ <a href="/docs/faq/">ヘルプ</a>
  </nav>
  <nav class="footer-nav footer-nav-axes" aria-label="フッター 横断軸">
  <a href="/industries/" hreflang="ja">業種別</a>
@@ -253,7 +253,7 @@
  <a href="/compare.html" hreflang="ja">比較</a>
  <a href="/prefectures/" hreflang="ja">都道府県別</a>
  </nav>
- <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ <p class="footer-copy">&copy; 2026 jpcite</p>
  <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
  </div>
 </footer>

@@ -238,7 +238,7 @@
       1. Remove "active" from the current state.
       2. Add "active" to the new state (ok / warn / down).
       3. Update "最終更新 / Last updated" below.
-      4. Commit + push; Cloudflare Pages redeploys in <30s.
+      4. Publish the updated static page.
     Default = ok.
   -->
 
@@ -275,17 +275,17 @@
  </p>
 
  <p class="fallback-note">
- 本ページが表示されている場合、ランディングはフォールバック経由で提供されている可能性があります。
- API (<code>api.jpcite.com</code>) の復旧後、DNS を通常系へ戻します。
+ 本ページが表示されている場合、ランディングは一時的な代替ページとして提供されている可能性があります。
+ API (<code>api.jpcite.com</code>) の復旧後、通常表示へ戻します。
  <br>
- If you are seeing this page, the landing may be served from the Cloudflare Pages
- fallback. DNS will revert to Fly once the API is healthy.
+ If you are seeing this page, the landing may be served from a temporary
+ fallback. Normal serving will resume once the API is healthy.
  </p>
 
  <p class="fallback-note">
- 透明性のため記載しています。インシデント発生時、過負荷や悪用パターンを検知した場合に API アクセスを一時的に停止することがあります。停止・復旧の状況は本ページで 5 分以内に更新します。
+ 透明性のため記載しています。インシデント発生時、過負荷や悪用パターンを検知した場合に API アクセスを一時的に停止することがあります。停止・復旧の状況は本ページでできるだけ速やかに更新します。
  <br>
- For transparency: during an incident or abuse pattern, we may temporarily pause API access. Status updates here within 5 minutes.
+ For transparency: during an incident or abuse pattern, we may temporarily pause API access. Status updates are posted here as soon as practical.
  </p>
 
  <p class="links">
@@ -309,9 +309,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>

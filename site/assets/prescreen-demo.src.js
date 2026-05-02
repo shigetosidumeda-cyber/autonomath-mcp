@@ -137,7 +137,7 @@
     return lines.join("\n");
   }
 
-  // 税理士法 §52 の確認: 税務会計AI が返す制度一覧は一次資料を機械的に
+  // 税理士法 §52 の確認: jpcite が返す制度一覧は一次資料を機械的に
   // 検索した「候補」であって、申請可否・税務処理の助言ではない。本文末
   // にこの注記を必ず添える。
   function _mailtoBody(results) {
@@ -147,24 +147,24 @@
     return [
       "お疲れ様です。",
       "",
-      "税務会計AI で当社向けの制度を検索した結果、 以下 " + n + " 件 が候補として出てきました。",
+      "jpcite で当社向けの制度を検索した結果、 以下 " + n + " 件 が候補として出てきました。",
       "ご検討の上、 申請可否をご助言いただけますと幸いです。",
       "",
       blocks,
       "",
       "----",
       "§52 税理士法 disclaimer:",
-      "本一覧は 税務会計AI が一次資料に基づいて検索した候補です。",
+      "本一覧は jpcite が一次資料に基づいて検索した候補です。",
       "具体的な申請可否・税務処理は資格を有する税理士・行政書士の判断によります。",
       "",
-      "出典: 税務会計AI (Bookyou株式会社 適格請求書発行事業者番号 T8010001213708)",
+      "出典: jpcite",
       origin + "/",
     ].join("\n");
   }
 
   function _openMailToTaxAdvisor() {
     if (!lastResults || !lastResults.length) return;
-    var subject = "[税務会計AI] 検討候補制度 " + lastResults.length + "件";
+    var subject = "[jpcite] 検討候補制度 " + lastResults.length + "件";
     var body = _mailtoBody(lastResults);
     // mailto: limits vary across clients (Gmail web ~2KB, Outlook ~2083 chars,
     // Apple Mail ~64KB). Trim defensively at 1900 chars so the most common

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  税務会計AI 用語集 — 5 つのコア用語 (補助金 / 助成金 / 融資 / 税制優遇 / 認定制度) の定義。
+  jpcite 用語集 — 5 つのコア用語 (補助金 / 助成金 / 融資 / 税制優遇 / 認定制度) の定義。
   SEO audit P0: 5 audience (税理士 / 行政書士 / SMB / VC / dev) 全員が
   最初の 30 秒で「補助金 vs 助成金」「融資 vs 補助金」を判別できる必要がある。
   各 <dt id="term-XXX"> は安定した citation hook。endpoint 対応も併記。
@@ -56,16 +56,13 @@
   "creator": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "email": "info@bookyou.net",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/"},
   "license": "https://jpcite.com/tos.html",
   "datePublished": "2026-04-26",
   "dateModified": "2026-04-26",
@@ -144,7 +141,7 @@
       "name": "補助金と助成金は複数併用できますか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "原則として併用可能ですが、同一経費の重複計上は禁止です (「経費の二重計上」は不正受給扱い)。さらに制度ごとに「他の補助金との併用不可」条項が設定されている場合があります。税務会計AI の /v1/programs/check_compatibility は 181 本の排他ルール (排他 125 + 前提条件 17 + 絶対除外 15 + その他 24) を構造判定するため、制度 ID を投げれば衝突の有無を即座に返します。"
+        "text": "原則として併用可能ですが、同一経費の重複計上は禁止です (「経費の二重計上」は不正受給扱い)。さらに制度ごとに「他の補助金との併用不可」条項が設定されている場合があります。jpcite の /v1/programs/check_compatibility は 181 本の排他ルール (排他 125 + 前提条件 17 + 絶対除外 15 + その他 24) を構造判定するため、制度 ID を投げれば衝突の有無を即座に返します。"
       }
     },
     {
@@ -152,7 +149,7 @@
       "name": "5 用語の優先順位 (申請順) はありますか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "原則: 認定制度 → 補助金/助成金 → 融資 → 税制優遇 の順で検討します。認定制度は補助金加点や融資条件優遇の前提となるため最初に取得、補助金/助成金で初期投資の自己負担を圧縮、不足分を融資で調達、最後に税制優遇で 適切な節税を行うのが標準フロー。税務会計AI /v1/am/list_open_programs に法人プロフィール を投げると認定→補助金→融資の順で並びます。"
+        "text": "原則: 認定制度 → 補助金/助成金 → 融資 → 税制優遇 の順で検討します。認定制度は補助金加点や融資条件優遇の前提となるため最初に取得、補助金/助成金で初期投資の自己負担を圧縮、不足分を融資で調達、最後に税制優遇で 適切な節税を行うのが標準フロー。jpcite /v1/am/open_programs に法人プロフィール を投げると認定→補助金→融資の順で並びます。"
       }
     },
     {
@@ -160,7 +157,7 @@
       "name": "補助金の採択率はどのくらいですか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "制度により大きく異なります。事業再構築補助金は 30-50%、ものづくり補助金は 40-60%、IT導入補助金は 60-80% 程度。税務会計AI は 2,286 件の実採択事例 を保持し、/v1/採択事例/search で 制度 ID 別の採択企業一覧を返します。採択率は 税務会計AI が独自試算するのではなく、事務局公表の採択結果から逆算する原則です。"
+        "text": "制度により大きく異なります。事業再構築補助金は 30-50%、ものづくり補助金は 40-60%、IT導入補助金は 60-80% 程度。jpcite は 2,286 件の実採択事例 を保持し、/v1/case-studies/search で 制度 ID 別の採択企業一覧を返します。採択率は jpcite が独自試算するのではなく、事務局公表の採択結果から逆算する原則です。"
       }
     },
     {
@@ -168,7 +165,7 @@
       "name": "融資と補助金、どちらが先ですか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "補助金は「精算払い」(事業完了後に支払われる) のため、事業実施期間中の 資金繰り を融資で繋ぐのが標準です。具体的には: (1) 補助金交付決定通知を受領、(2) 公庫マル経 / 信用保証協会保証付き融資で事業資金を借入、(3) 事業実施・経費支払い、(4) 補助金請求・入金、(5) 融資の繰上返済 (任意) という流れ。税務会計AI は 融資制度と補助金制度を 1 回の API 呼び出し (/v1/programs/search?include_loans=true) で横断できます。"
+        "text": "補助金は「精算払い」(事業完了後に支払われる) のため、事業実施期間中の 資金繰り を融資で繋ぐのが標準です。具体的には: (1) 補助金交付決定通知を受領、(2) 公庫マル経 / 信用保証協会保証付き融資で事業資金を借入、(3) 事業実施・経費支払い、(4) 補助金請求・入金、(5) 融資の繰上返済 (任意) という流れ。jpcite は補助金/助成金を /v1/programs/search、融資制度を /v1/loan-programs/search で検索できます。"
       }
     },
     {
@@ -176,7 +173,7 @@
       "name": "税制優遇は申請が必要ですか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "税制優遇の多くは「事前認定 + 確定申告で適用」の 2 段階です。例えば中小企業投資促進税制は経営力向上計画の認定 (認定制度) → 設備投資 → 確定申告書に明細書を添付、という流れ。研究開発税制のように事前認定不要のものもあります。税務会計AI /v1/tax-incentives/search は要件・申請手続・対象設備を構造化した 50 件の 税制ルール を返します。"
+        "text": "税制優遇の多くは「事前認定 + 確定申告で適用」の 2 段階です。例えば中小企業投資促進税制は経営力向上計画の認定 (認定制度) → 設備投資 → 確定申告書に明細書を添付、という流れ。研究開発税制のように事前認定不要のものもあります。jpcite /v1/tax_rulesets/search は要件・申請手続・対象設備を構造化した 50 件の 税制ルール を返します。"
       }
     }
   ]
@@ -346,7 +343,7 @@
  <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
  <strong>補助金との違い</strong>: 補助金は 現金給付、税制優遇は納税額減 (赤字企業は効果なし)。<br>
  <strong>認定制度との関係</strong>: 中小企業投資促進税制等は経営力向上計画認定が前提 → 認定制度を先に取得。<br>
- <strong>対応 API 経路</strong>: <code>GET /v1/tax-incentives/search</code>
+ <strong>対応 API 経路</strong>: <code>GET /v1/tax_rulesets/search</code>
  </p>
  </dd>
  </div>
@@ -358,7 +355,7 @@
  <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
  <strong>補助金との違い</strong>: 補助金は 現金、認定は資格 (補助金/融資/税制の前提)。<br>
  <strong>取得順序</strong>: 認定 → 補助金/税制申請、が標準フロー。<br>
- <strong>対応 API 経路</strong>: <code>GET /v1/certifications/search</code>
+ <strong>対応 API 経路</strong>: <code>GET /v1/am/certifications</code>
  </p>
  </dd>
  </div>
@@ -387,7 +384,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="faq-acceptance-rate" style="font-weight:600;font-size:16px;">Q. 補助金の採択率はどのくらいですか?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
- 制度により大きく異なります。事業再構築補助金は 30-50%、ものづくり補助金は 40-60%、IT導入補助金は 60-80% 程度。jpcite は<strong>2,286 件の実採択事例</strong> を保持し、<code>GET /v1/採択事例/search</code> で 制度 ID 別の採択企業一覧を返します。採択率は jpcite が独自試算するのではなく、<strong>事務局公表の採択結果から逆算</strong>する原則です。
+ 制度により大きく異なります。事業再構築補助金は 30-50%、ものづくり補助金は 40-60%、IT導入補助金は 60-80% 程度。jpcite は<strong>2,286 件の実採択事例</strong> を保持し、<code>GET /v1/case-studies/search</code> で 制度 ID 別の採択企業一覧を返します。採択率は jpcite が独自試算するのではなく、<strong>事務局公表の採択結果から逆算</strong>する原則です。
  </dd>
  </div>
 
@@ -401,7 +398,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="faq-tax-application" style="font-weight:600;font-size:16px;">Q. 税制優遇は申請が必要ですか?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
- 税制優遇の多くは<strong>「事前認定 + 確定申告で適用」の 2 段階</strong>です。例えば中小企業投資促進税制は経営力向上計画の認定 (認定制度) → 設備投資 → 確定申告書に明細書を添付、という流れ。研究開発税制のように事前認定不要のものもあります。jpcite の <code>GET /v1/tax-incentives/search</code> は要件・申請手続・対象設備を構造化した <strong>50 件の 税制ルール</strong> を返します。
+ 税制優遇の多くは<strong>「事前認定 + 確定申告で適用」の 2 段階</strong>です。例えば中小企業投資促進税制は経営力向上計画の認定 (認定制度) → 設備投資 → 確定申告書に明細書を添付、という流れ。研究開発税制のように事前認定不要のものもあります。jpcite の <code>GET /v1/tax_rulesets/search</code> は要件・申請手続・対象設備を構造化した <strong>50 件の 税制ルール</strong> を返します。
  </dd>
  </div>
 
@@ -441,9 +438,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -451,8 +447,8 @@
 <script src="/assets/feedback-widget.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded',  => {
-  if (window.税務会計AIFeedback) {
-    window.税務会計AIFeedback.mount('body', { position: 'bottom-right' });
+  if (window.jpciteFeedback) {
+    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
   }
 });
 </script>

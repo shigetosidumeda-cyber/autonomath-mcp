@@ -1,14 +1,6 @@
 # Screenshots catalog
 
-Press-kit screenshots are **not bundled** into this repo — files are 100-400KB each and
-would balloon the repo. Source images live under `/tmp/ux_jpintel/` on the maintainer's
-machine and must be **regenerated on launch** (post-domain + post-rebrand) before release
-to press.
-
-Regenerate via Playwright walk (width ≤ 1880px, per project convention):
-```
-python scripts/ux_walk.py --out /tmp/ux_jpintel
-```
+Press-kit screenshots are provided on request so media outlets receive current product views.
 
 ## Available shots (2026-04-23)
 
@@ -16,7 +8,7 @@ python scripts/ux_walk.py --out /tmp/ux_jpintel
 |---|---|---|
 | `ux_index.png` | 217 KB | Landing hero + features + demo |
 | `ux_index_newsletter.png` | 130 KB | Newsletter section close-up |
-| `ux_pricing.png` | 161 KB | Pricing page (4 tiers) |
+| `ux_pricing.png` | 161 KB | Pricing page (¥3/request metered) |
 | `ux_privacy.png` | 322 KB | Privacy policy full page |
 | `ux_tos.png` | 410 KB | Terms of service full page |
 | `ux_tos_tall.png` | 418 KB | ToS tall viewport |
@@ -37,5 +29,5 @@ python scripts/ux_walk.py --out /tmp/ux_jpintel
 
 ## Requesting high-res press pack
 
-Email `hello@<DOMAIN_PLACEHOLDER>` with outlet + deadline.
+Email `hello@jpcite.com` with outlet + deadline.
 Response SLA: 24h JST business-day.

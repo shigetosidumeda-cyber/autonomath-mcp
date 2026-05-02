@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://web.resource.org/cc/">
 <channel>
-  <title>税務会計AI 変更履歴</title>
+  <title>jpcite 変更履歴</title>
   <link>https://jpcite.com/audit-log.html</link>
   <atom:link href="https://jpcite.com/audit-log.rss" rel="self" type="application/rss+xml" />
   <description>公的機関データの差分を毎日 cron で検出。検出のみで個別判断は行いません。差分メタデータは CC-BY-4.0、原典は各 source_url の公的機関ライセンスに従います。</description>
   <language>ja</language>
   <copyright>(C) 2026 Bookyou株式会社</copyright>
-  <generator>AutonoMath audit-log RSS (Bookyou株式会社)</generator>
+  <generator>jpcite audit-log RSS (Bookyou株式会社)</generator>
   <dc:rights>CC-BY-4.0 (差分メタデータ)</dc:rights>
   <lastBuildDate>Wed, 29 Apr 2026 00:00:00 +0000</lastBuildDate>
 

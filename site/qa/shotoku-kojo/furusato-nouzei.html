@@ -37,13 +37,11 @@
       "@id": "https://jpcite.com/#publisher",
       "name": "jpcite",
       "alternateName": [
-        "税務会計AI",
-        "AutonoMath",
+        "jpcite",
+        "jpcite",
         "Bookyou株式会社"
       ],
       "url": "https://jpcite.com/",
-      "legalName": "Bookyou株式会社",
-      "taxID": "T8010001213708",
       "founder": {
         "@type": "Person",
         "name": "梅田茂利"
@@ -205,9 +203,7 @@
  </ul>
  </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="/_templates/qa.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
- <span class="sep" aria-hidden="true">/</span>
- <a href="/en/_templates/qa.html" lang="en" hreflang="en">EN</a>
+ <a href="/qa/shotoku-kojo/furusato-nouzei.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
  </span>
  </nav>
  </div>
@@ -231,7 +227,7 @@
  <span class="sep">/</span>
  <span class="source">出典取得: 2026年4月30日</span>
  <span class="sep">/</span>
- <span class="author">Bookyou株式会社 (梅田茂利)</span>
+ <span class="author">jpcite</span>
  </p>
  <p class="byline-note muted">※一次資料は頻繁に改訂されます。最新は出典の公式ページをご確認ください。</p>
  </header>
@@ -277,7 +273,7 @@
  <h2 id="api-title">API で取得</h2>
  <p>このトピックに関連する制度・税務 ruleset・法令データは REST API および MCP で取得できます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
- "https://api.jpcite.com/v1/programs?q=%E3%81%B5%E3%82%8B%E3%81%95%E3%81%A8%E7%B4%8D%E7%A8%8E%20%E6%8E%A7%E9%99%A4"</code></pre>
+ "https://api.jpcite.com/v1/programs/search?q=%E3%81%B5%E3%82%8B%E3%81%95%E3%81%A8%E7%B4%8D%E7%A8%8E%20%E6%8E%A7%E9%99%A4"</code></pre>
  <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>search_programs(q="ふるさと納税 控除")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
  <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
  </section>
@@ -292,7 +288,7 @@
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ <p class="footer-entity">運営: Bookyou株式会社</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">
  <a href="/tos.html">利用規約</a>

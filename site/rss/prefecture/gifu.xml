@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
 
   <item>
     <title>行政の補助金等 - 岐阜県公式ホームページ（県民生活課）</title>
@@ -409,7 +409,7 @@
   <item>
     <title>新規就農者育成支援（経営開始資金）</title>
     <link>https://jpcite.com/programs/shinki-shuunou-mono-ikusei-shien-keiei-kaishi-shikin-488c72.html</link>
-    <description>Tier B / 岐阜県 / （noukaweb 収集） / 上限 1,000万円 出典: https://www.city.takayama.lg.jp/shisei/1000067/1002615/1002621/1020043/1020042.html</description>
+    <description>Tier B / 岐阜県 / 上限 1,000万円 出典: https://www.city.takayama.lg.jp/shisei/1000067/1002615/1002621/1020043/1020042.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-3a05f083ee</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -499,7 +499,7 @@
   <item>
     <title>高山市東京圏からの移住支援金</title>
     <link>https://jpcite.com/programs/kouzan-shi-toukyouken-karano-ijuu-shien-kin-4ce544.html</link>
-    <description>Tier C / 岐阜県 / （noukaweb 収集） 出典: https://www.city.takayama.lg.jp/shisei/1015214/1010749.html</description>
+    <description>Tier C / 岐阜県 出典: https://www.city.takayama.lg.jp/shisei/1015214/1010749.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-8d968177e1</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -542,7 +542,7 @@
   </item>
 
   <item>
-    <title>PREF-21-103_岐阜_農業6次産業化促進支援事業</title>
+    <title>岐阜_農業6次産業化促進支援事業</title>
     <link>https://jpcite.com/programs/pref-21-103-gifu-nougyou-6-tsugi-sangyouka-sokushin-shien-515fbe.html</link>
     <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/13537.html</description>
     <category>subsidy</category>
@@ -551,7 +551,7 @@
   </item>
 
   <item>
-    <title>PREF-21-102_岐阜_岐阜県新規就農支援資金</title>
+    <title>岐阜_岐阜県新規就農支援資金</title>
     <link>https://jpcite.com/programs/pref-21-102-gifu-gifuken-shinki-shuunou-shien-shikin-e667fd.html</link>
     <description>Tier B / 岐阜県 / loan / 上限 150万円 出典: https://www.jabankgifu.or.jp/agri/funds.html</description>
     <category>loan</category>
@@ -569,7 +569,7 @@
   </item>
 
   <item>
-    <title>MUN-212032-001_高山市_農業6次産業化促進支援事業</title>
+    <title>高山市_農業6次産業化促進支援事業</title>
     <link>https://jpcite.com/programs/mun-212032-001-kouzan-shi-nougyou-6-tsugi-sangyouka-ef8d49.html</link>
     <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.city.takayama.lg.jp/shisei/1000067/1002615/1002621/1020039.html</description>
     <category>subsidy</category>
@@ -578,7 +578,7 @@
   </item>
 
   <item>
-    <title>PREF-21-101_岐阜_ぎふ農業経営者育成発展支援事業_経営チャレンジ型</title>
+    <title>岐阜_ぎふ農業経営者育成発展支援事業_経営チャレンジ型</title>
     <link>https://jpcite.com/programs/pref-21-101-gifu-gifu-nougyou-keieisha-ikusei-hatten-shien-7a5642.html</link>
     <description>Tier B / 岐阜県 / grant / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/339239.html</description>
     <category>grant</category>
@@ -598,14 +598,14 @@
   <item>
     <title>農業6次産業化促進支援事業</title>
     <link>https://jpcite.com/programs/nougyou-6-tsugi-sangyouka-sokushin-shien-jigyou-e5ccc4.html</link>
-    <description>Tier C / 岐阜県 / （noukaweb 収集） 出典: https://www.pref.gifu.lg.jp/</description>
+    <description>Tier C / 岐阜県 出典: https://www.pref.gifu.lg.jp/</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-d80ffd28ae</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
   <item>
-    <title>MUN-212024-001_大垣市_新規就農者経営安定支援事業</title>
+    <title>大垣市_新規就農者経営安定支援事業</title>
     <link>https://jpcite.com/programs/mun-212024-001-oogaki-shi-shinki-shuunou-mono-keiei-antei-e6e0e0.html</link>
     <description>Tier B / 岐阜県 / subsidy / 上限 50万円 出典: https://www.city.ogaki.lg.jp/soshiki/8-3-0-0-0_20.html</description>
     <category>subsidy</category>
@@ -659,7 +659,7 @@
   </item>
 
   <item>
-    <title>PREF-21-001_岐阜_ぎふ農業経営者育成発展支援事業</title>
+    <title>岐阜_ぎふ農業経営者育成発展支援事業</title>
     <link>https://jpcite.com/programs/pref-21-001-gifu-gifu-nougyou-keieisha-ikusei-hatten-shien-9084b0.html</link>
     <description>Tier B / 岐阜県 / subsidy / 上限 100万円 出典: https://www.pref.gifu.lg.jp/page/339239.html</description>
     <category>subsidy</category>

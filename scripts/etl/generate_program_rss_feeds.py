@@ -49,6 +49,7 @@ from __future__ import annotations
 import argparse
 import logging
 import os
+import re
 import sqlite3
 import sys
 from collections import defaultdict
@@ -80,6 +81,7 @@ DEFAULT_DOMAIN = "jpcite.com"
 # Per-feed item cap. CLAUDE-md / user-spec: 100 max per feed (Feedly
 # auto-trims long feeds and noticeably penalizes feeds > ~150 items).
 _MAX_ITEMS = 100
+_PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
 
 _BANNED_SOURCE_HOSTS = frozenset(
     {
@@ -108,6 +110,17 @@ _BANNED_SOURCE_HOSTS = frozenset(
         "tokyo-np.co.jp",
         "yayoi-kk.co.jp",
         "jiji.com",
+    }
+)
+_BANNED_AUTHORITY_TOKENS = frozenset(
+    {
+        "noukaweb",
+        "hojyokin-portal",
+        "hojokin-portal",
+        "biz.stayway",
+        "stayway",
+        "smart-hojokin",
+        "収集",
     }
 )
 
@@ -190,6 +203,18 @@ def _source_host_allowed(source_url: str | None) -> bool:
         host == banned or host.endswith(f".{banned}")
         for banned in _BANNED_SOURCE_HOSTS
     )
+
+
+def _public_program_name(name: str | None) -> str:
+    return _PUBLIC_ID_PREFIX_RE.sub("", (name or "").strip()) or "(無題)"
+
+
+def _public_authority_name(name: str | None) -> str:
+    cleaned = (name or "").strip()
+    lowered = cleaned.lower()
+    if not cleaned or any(token in lowered for token in _BANNED_AUTHORITY_TOKENS):
+        return ""
+    return cleaned
 
 
 @dataclass(frozen=True)
@@ -458,8 +483,9 @@ def _program_to_item(p: ProgramItem, *, domain: str) -> dict:
         parts.append(f"Tier {p.tier}")
     if p.prefecture:
         parts.append(p.prefecture)
-    if p.authority_name:
-        parts.append(p.authority_name)
+    authority_name = _public_authority_name(p.authority_name)
+    if authority_name:
+        parts.append(authority_name)
     if p.program_kind:
         parts.append(p.program_kind)
     if p.amount_max_man_yen:
@@ -467,7 +493,7 @@ def _program_to_item(p: ProgramItem, *, domain: str) -> dict:
     desc_lead = " / ".join(parts) if parts else "制度概要"
     src_label = f" 出典: {p.source_url}" if p.source_url else ""
     return {
-        "title": p.primary_name,
+        "title": _public_program_name(p.primary_name),
         "link": page_url,
         "description": f"{desc_lead}{src_label}",
         "category": p.program_kind or "制度",
@@ -506,7 +532,7 @@ def build_tier_s_feed(
     return _render_rss(
         title="jpcite — Tier S 制度 (補助金/融資/税制/認定 高信頼)",
         description=(
-            "jpcite Tier S 制度 (一次資料リンク + 高信頼バッジ) の最新 100 件。"
+            "jpcite Tier S 制度 (出典リンク + 高信頼バッジ) の最新 100 件。"
             "週次再生成、ID/鮮度安定。"
         ),
         feed_url=f"https://{domain}/rss/programs-tier-s.xml",

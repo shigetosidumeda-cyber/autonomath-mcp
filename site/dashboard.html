@@ -27,16 +27,7 @@
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/dashboard.html">
 <link rel="alternate" hreflang="en" href="https://jpcite.com/en/dashboard.html">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard.html">
-<!-- Preconnect to the API origin so the cookie-session + Bearer-flow
-     dashboards (dashboard.js + dashboard_v2.js) can fire /v1/me +
-     /v1/me/dashboard the moment the JS parses, rather than waiting
-     for the per-request DNS + TLS handshake. crossorigin matches the
-     fetch mode used by both files. -->
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<!-- Preconnect to fonts.gstatic.com / fonts.googleapis.com so the webfonts
-     download in parallel with HTML parse instead of waiting for styles.css
-     to be fetched + parsed. font-display:swap (URL param) keeps text painting
-     immediately on the system-font fallback, swap is invisible at JP body sizes. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -46,35 +37,23 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="/critical.css?v=20260428a">
 <link rel="preload" href="/styles.css?v=20260428a" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="/styles.css?v=20260428a">
-<!--
-  Canonical publisher Organization (Task B 2026-04-29 — single
-  @id: https://jpcite.com/#publisher across all pages). All other
-  JSON-LD blocks reference Bookyou株式会社 by @id rather than redefining
-  the Organization inline. sameAs URLs marked TODO(user-action) are
-  placeholders until the user creates them per
-  docs/runbook/social_profile_setup.md.
--->
+<noscript><link rel="stylesheet" href="/styles.css?v=20260428a"></noscript>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "legalName": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
-  "identifier": "T8010001213708",
-  "taxID": "T8010001213708",
   "foundingDate": "2025-05-12",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
     "addressRegion": "東京都",
-    "addressLocality": "文京区",
-    "streetAddress": "小日向 2-22-1"
+    "addressLocality": "文京区"
   },
   "founder": {
     "@type": "Person",
@@ -87,23 +66,12 @@
     "availableLanguage": ["ja", "en"]
   },
   "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+    "https://www.bookyou.net/"
   ]
 }
 </script>
 
-</noscript>
-<!-- dashboard.js wires this page to /v1/session + /v1/me/*. Pure ES2020, no
-     build step. Relative URLs = same-origin. -->
 <script defer src="dashboard.js"></script>
-<!-- dashboard_v2.js adds Bearer-authenticated views (paste-key flow) on top
-     of the cookie-session dashboard above. Reads localStorage.am_api_key
-     and calls /v1/me/dashboard, /v1/me/usage_by_tool,
-     /v1/me/billing_history, /v1/me/tool_recommendation,
-     /v1/me/alerts/*. If no key is in localStorage the additional sections
-     stay in their static demo state so the cookie-session flow is
-     unaffected. Both flows surface the same metered ¥3/req model. -->
 <script defer src="dashboard_v2.js"></script>
 <style>
   .dash { padding: 48px 0 64px; }
@@ -133,9 +101,6 @@
   .btn-ghost:hover { background: var(--bg-alt); }
   .btn-danger { background: var(--bg); color: var(--danger); border: 1px solid var(--danger); padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
   .btn-danger:hover { background: var(--bg-alt); }
-  /* Touch-device target sizing. Coarse pointers (touchscreens) get
-     enlarged tap targets per WCAG 2.5.5; mouse/trackpad keep the compact
-     desktop styling. */
   @media (pointer: coarse) {
     .btn-ghost,
     .btn-danger { padding: 12px 18px; min-height: 44px; }
@@ -143,9 +108,6 @@
   .actions-row { display: flex; gap: 20px; flex-wrap: wrap; margin: 32px 0 0; padding: 20px 0 0; border-top: 1px solid var(--border); font-size: 14px; }
   .actions-row a { color: var(--text-muted); }
   .actions-row a:hover { color: var(--accent); }
-  /* Alert subscription form. Auto-fit grid on wide screens, single
-     column on narrow phones. Style hoisted out of the inline attribute so
-     the @media rule can override. */
   #dash2-alerts-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; align-items: end; }
   @media (max-width: 480px) {
     #dash2-alerts-form { grid-template-columns: 1fr; }
@@ -154,11 +116,6 @@
     .dash { padding: 32px 0 48px; }
     .stat-grid { grid-template-columns: 1fr; }
     .dash-nav { gap: 8px; font-size: 13px; flex-wrap: wrap; }
-    /* Mobile table overflow defense — every dashboard table has 4-7
-       columns at 13px font, which exceeds 375px iPhone SE width.
-       `display:block; overflow-x:auto` lets the table scroll horizontally
-       inside its parent without breaking the page layout. WCAG 1.4.10
-       reflow-compliant: content stays accessible via touch-scroll. */
     .dash table {
       display: block;
       overflow-x: auto;
@@ -213,22 +170,12 @@
  <section class="dash">
  <div class="container">
 
- <!-- Dunning banner. Shown when /v1/me.subscription_status is
-           past_due / unpaid / canceled. Hidden by default; dashboard.js fills
-           in copy + button.href and toggles display. role="alert" so screen
-           readers announce it on first render. Hex colors hoisted into
-           .dunning-banner CSS class so dark-mode @media can override
-           (#7f1d1d on #0d1117 = 1.6:1 fail). -->
  <div id="dash-dunning-banner" class="dunning-banner" role="alert" hidden
  style="display:none;">
  <span id="dash-dunning-msg" class="dunning-banner-msg"></span>
  <a id="dash-dunning-portal" class="dunning-banner-action" href="#" role="button">Stripe ポータルへ</a>
  </div>
 
- <!-- New-key reveal box. Shown one-time on first dashboard
-           load after key creation (sessionStorage `am_first_key` bridge).
-           Hidden by default; dashboard.js populates and reveals if conditions
-           match, then clears sessionStorage so refresh hides it. -->
  <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
  style="display:none;">
  <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの APIキー です。今すぐコピーしてください — 次回以降は表示されません。</p>
@@ -237,17 +184,6 @@
  <button type="button" id="dash-newkey-dismiss" class="btn-ghost">表示を閉じる</button>
  </div>
 
- <!-- ============================================================== -->
- <!-- Quick start panel (2026-04-29 onboarding hardening).              -->
- <!-- Always visible. Shows curl + 4 MCP client config snippets that    -->
- <!-- substitute the user's actual API key (from localStorage.am_api_key-->
- <!-- or the just-issued key in dash-newkey-value). Falls back to the   -->
- <!-- placeholder "am_xxx..." when no key is available (anonymous       -->
- <!-- evaluation mode). Goal: reduce signup → first-API-call time from  -->
- <!-- ~5 min to ~30 sec by removing the hop to /docs/getting-started/   -->
- <!-- and the per-client /integrations/* page. Per-client deep-dive     -->
- <!-- pages remain linked.                                              -->
- <!-- ============================================================== -->
  <section id="quickstart" aria-labelledby="quickstart-title" class="stat-card"
  style="margin:0 0 24px;padding:22px 24px;border:1px solid var(--accent,#0066cc);background:var(--accent-soft,#f6fbff);">
  <h2 id="quickstart-title" style="font-size:18px;margin:0 0 6px;font-weight:700;">
@@ -258,7 +194,7 @@
  </p>
  <div role="tablist" aria-label="Quick start client" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:0 0 14px;">
  <button type="button" role="tab" id="qs-tab-curl" aria-selected="true" aria-controls="qs-panel-curl"
- class="qs-tab qs-tab-active" data-qs-target="curl">curl (5 sec)</button>
+ class="qs-tab qs-tab-active" data-qs-target="curl">curl (5 秒)</button>
  <button type="button" role="tab" id="qs-tab-claude" aria-selected="false" aria-controls="qs-panel-claude"
  class="qs-tab" data-qs-target="claude">Claude Desktop</button>
  <button type="button" role="tab" id="qs-tab-cursor" aria-selected="false" aria-controls="qs-panel-cursor"
@@ -282,7 +218,7 @@
  "mcpServers": {
  "jpcite": {
  "command": "autonomath-mcp",
- "env": {"AUTONOMATH_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
+ "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
  }
  }
 }</code></pre>
@@ -296,7 +232,7 @@
  "name": "jpcite",
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"AUTONOMATH_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
+ "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
 }</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cursor-snippet">コピー</button>
  <p class="qs-note"><a href="/integrations/cursor.html">Cursor 統合ガイド (4 分)</a></p>
@@ -309,7 +245,7 @@
  "jpcite": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"AUTONOMATH_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
+ "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
  "autoApprove": ["search_programs", "get_program", "search_laws"]
  }
  }
@@ -345,15 +281,11 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
         }
       </style>
  <script>
-        // Quick-start panel: tab switching + key substitution + copy buttons.
-        // Pure ES2020, no deps. CSP-safe (sits inline alongside the panel
-        // HTML so a future move to nonce-based CSP can hash it).
         (function() {
           'use strict';
           var QS_PLACEHOLDER = 'am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
           var KEY_RE = /^am_[A-Za-z0-9]{16,}$/;
 
-          // Tab switching.
           var tabs = document.querySelectorAll('.qs-tab');
           tabs.forEach(function (tab) {
             tab.addEventListener('click', function() {
@@ -372,10 +304,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             });
           });
 
-          // Substitute the user's actual APIキー into all qs-key-slot spans.
-          // Reads (in order): localStorage.am_api_key (paste-key flow) →
-          // dash-newkey-value textContent (just-issued key reveal) → leaves
-          // placeholder otherwise.
           function readKey() {
             try {
               var stored = localStorage.getItem('am_api_key');
@@ -395,14 +323,10 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             });
           }
           applyKey();
-          // Re-apply when storage events fire (cross-tab) and after dash2.js
-          // wires up (give it a couple of ticks).
           window.addEventListener('storage', applyKey);
           setTimeout(applyKey, 800);
           setTimeout(applyKey, 2200);
 
-          // Copy buttons (scoped to qs-* — avoids clashing with other copy
-          // buttons elsewhere on the page).
           document.querySelectorAll('.qs-copy').forEach(function (btn) {
             btn.addEventListener('click', function() {
               var src = document.getElementById(btn.getAttribute('data-copy-target'));
@@ -436,16 +360,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
 
  <h1>ダッシュボード</h1>
  <p class="sub">ログイン中: <code>—</code></p>
- <!-- Trust strip — discreet single line so logged-in users keep
-           verifiable provider info above the fold. Not behind auth. -->
-<!-- §52 / §72 disclaimer — surfaced on the highest-trust authenticated
-           surface so paid users see the士業業法 boundary every time they
-           open the dashboard. Same yellow/amber callout as tos.html.
-           Trust Audit hardening (2026-04-29). Body text + heading colors
-           pinned so the box stays legible in dark mode (the box bg is
-           intentionally light-yellow for the §52 callout convention; without
-           a pinned dark text color, system dark-mode flips body to white
-           on light yellow → invisible). -->
  <nav class="dash-nav" aria-label="ダッシュボード">
  <a href="dashboard.html" class="active" aria-current="page">概要</a>
  <a href="#api-key-section" title="同一ページ内の APIキー ブロックへ">APIキー</a>
@@ -472,11 +386,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p class="quota-counter-note">翌日 00:00 JST にリセット</p>
  </section>
 
- <!-- Current Stripe billing period end. Filled by dashboard.src.js
-           (cookie session via /v1/me.subscription_current_period_end) and by
-           dashboard_v2.src.js (Bearer via /v1/me/dashboard.current_period_end).
-           Hidden until at least one path populates a date so anonymous /
-           pre-billing users do not see an empty placeholder. -->
  <p id="dash-period-end" class="stat-note" hidden
  style="display:none;margin:0 0 16px;font-weight:600;color:var(--text);">
  今月の請求期間: <span id="dash-period-end-date">—</span> まで
@@ -487,7 +396,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p class="stat-label">今月</p>
  <p class="stat-value">— <span class="unit">リクエスト</span></p>
  <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
- <p class="stat-note">読み込み中… ご利用は 完全従量 ¥3/リクエスト (税込 ¥3.30)、月次の上限はありません。</p>
+ <p class="stat-note">読み込み中… ご利用は税別 ¥3/リクエスト (税込 ¥3.30) の完全従量です。月次予算 cap は任意で設定できます。</p>
  </div>
  <div class="stat-card">
  <p class="stat-label">過去 7 日</p>
@@ -502,14 +411,8 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <span class="muted" id="dash-chart-peak">読み込み中…</span>
  </div>
  <svg class="chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="30 日 日次 呼び出し グラフ">
- <!-- Bars are populated by dashboard.js from /v1/me/usage. The SVG
-               renders empty until JS hydrates so first-time users see an
-               accurate "no usage yet" state instead of demo fixtures. -->
  </svg>
  <p class="chart-axis"><span id="dash-chart-start">—</span><span id="dash-chart-end">—</span></p>
- <!-- Monthly projection line. dashboard.js extrapolates
-             month-to-date usage to month-end (linear) and shows ¥cost at
-             ¥3/req. Hidden on day 1-2 of the month (insufficient data). -->
  <p id="dash-projection" class="stat-note" style="margin:14px 0 0;font-weight:600;color:var(--text);"></p>
  </div>
 
@@ -532,13 +435,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  キャンセル後も当月末までは API アクセス可能で、当月分のみ ¥3/リクエスト 従量請求が発生します。
  </p>
  </div>
-
- <!-- ============================================================== -->
- <!-- Self-serve dashboard sections wired via Bearer auth.            -->
- <!-- dashboard_v2.js reads localStorage.am_api_key and pulls from    -->
- <!-- /v1/me/* (no cookie session needed). Hidden until a key is      -->
- <!-- pasted below; legacy cookie-session flow above is unaffected.   -->
- <!-- ============================================================== -->
 
  <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
  <p class="stat-label">利用詳細 (APIキーを貼り付け)</p>
@@ -626,17 +522,11 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <ol id="dash2-rec-list" style="margin:12px 0 0;padding:0 0 0 18px;font-size:13px;color:var(--text);"></ol>
  </section>
 
- <!-- ============================================================== -->
- <!-- Amendment-alert subscriptions (法令改正・制度新設・行政処分).      -->
- <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (Bearer auth).     -->
- <!-- Subscriptions are free — fan-out cost is absorbed as retention. -->
- <!-- ============================================================== -->
-
  <section id="dash2-alerts" class="stat-card" style="margin:0 0 16px;display:none;">
- <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート (全ご利用者に無料)</h2>
+ <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  法令改正・制度新設・行政処分などの差分を Webhook 通知 (HTTPS のみ) または メール で
- 先回り通知します。購読登録は<strong>無料</strong> (¥3/リクエスト に追加課金なし、有料プラン契約の有無を問いません)。
+ 先回り通知します。通知配信は ¥3/リクエスト (税込 ¥3.30) の完全従量です。
  <code>filter_type</code> は <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
  <code>industry_jsic</code> / <code>all</code> から選択、<code>min_severity</code> は
  <code>critical</code> (制度終了・適用条件 変更) / <code>important</code> (金額・対象変更) /
@@ -654,7 +544,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <th scope="col" style="padding:6px 4px;">filter_type</th>
  <th scope="col" style="padding:6px 4px;">filter_value</th>
  <th scope="col" style="padding:6px 4px;">severity</th>
- <th scope="col" style="padding:6px 4px;">Webhook 通知_url</th>
+ <th scope="col" style="padding:6px 4px;">Webhook 通知 URL</th>
  <th scope="col" style="padding:6px 4px;">email</th>
  <th scope="col" style="padding:6px 4px;text-align:right;">削除</th>
  </tr>
@@ -695,9 +585,9 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </select>
  </div>
  <div>
- <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">Webhook 通知_url (https のみ、任意)</label>
+ <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">Webhook 通知 URL (https のみ、任意)</label>
  <input id="dash2-alerts-webhook" type="url"
- placeholder="https://hooks.example.com/autonomath"
+ placeholder="https://hooks.example.com/jpcite"
  pattern="https://.*"
  style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;">
  </div>
@@ -714,18 +604,10 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </form>
  <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
  少なくとも Webhook 通知_url か メール のどちらか 1 つが必須。
- 内部 IP (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) は登録時に拒否されます。
+ プライベート IP / loopback (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) は登録できません。
  </p>
  </section>
 
- <!--
-        W3 Saved Searches + Daily Digest. Self-contained vanilla JS at the
-        bottom of this section (no dependency on dashboard_v2.js / external
-        libs). Section is hidden by default; the inline script unhides it
-        once a session cookie is verified via /v1/me. Each digest delivery
-        records ¥3 metered usage on the server side — see
-        scripts/cron/run_saved_searches.py.
-      -->
  <section id="saved-searches" class="stat-card" style="margin:0 0 16px;display:none;">
  <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>保存条件 + 自動配信ダイジェスト</h2>
  <p class="stat-note" style="margin:0 0 12px;">
@@ -821,15 +703,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </section>
 
  <script>
-        // -----------------------------------------------------------------
-        // Saved Searches inline controller (vanilla ES2020, no deps).
-        //
-        // Mounts onto #saved-searches and is independent of dashboard.js /
-        // dashboard_v2.js. The session cookie is shared via the browser, so
-        // the same /v1/session that powers the rest of the page authorises
-        // these calls; X-CSRF-Token from the am_csrf cookie is echoed on
-        // POST/DELETE per the double-submit pattern in api/me.py.
-        // -----------------------------------------------------------------
         (function() {
           'use strict';
           var API_BASE = (function() {
@@ -908,7 +781,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           }
           function fmtTs(s) {
             if (!s) return '—';
-            // best-effort short date: trim to YYYY-MM-DD HH:MM
             return escape(String(s).slice(0, 16).replace('T', ' '));
           }
           function summariseQuery(q) {
@@ -960,7 +832,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
               }
             } catch (err) {
               if (err && err.status === 401) {
-                // Anonymous — keep section hidden.
                 if (SECTION) SECTION.style.display = 'none';
                 return;
               }
@@ -969,7 +840,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           }
           async function onSubmit(e) {
             e.preventDefault();
-            // honeypot
             var hp = document.getElementById('saved-searches-company-url');
             if (hp && hp.value) return;
             var name = (document.getElementById('saved-searches-name').value || '').trim();
@@ -1025,7 +895,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           }
           if (FORM) FORM.addEventListener('submit', onSubmit);
           if (TBODY) TBODY.addEventListener('click', onDelete);
-          // Defer initial load until DOM + cookies are ready.
           if (document.readyState === 'complete' || document.readyState === 'interactive') {
             setTimeout(load, 0);
           } else {
@@ -1034,24 +903,14 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
         })();
       </script>
 
- <!-- ============================================================== -->
- <!-- Customer-side outbound webhooks (¥3/req metered, 署名検証 required). -->
- <!-- Wired to /v1/me/webhooks/* via the inline script at the end of   -->
- <!-- this section (parity with the saved-searches block above —       -->
- <!-- self-contained vanilla JS, no dashboard_v2.js dependency).       -->
- <!-- 5 連続失敗で auto-disable + email、 secret は登録時 1 回のみ表示。 -->
- <!-- See docs/webhooks.md for the full event-type catalog + 署名検証   -->
- <!-- verification examples (Python / Node / Go).                     -->
- <!-- ============================================================== -->
-
  <section id="dash2-webhooks" class="stat-card" style="margin:0 0 16px;display:none;">
- <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知 (¥3/リクエスト 課金)</h2>
+ <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知 (成功配信ごと ¥3)</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  自社の HTTPS エンドポイントに、 <code>program.created</code> / <code>program.amended</code> /
  <code>enforcement.added</code> / <code>tax_ruleset.amended</code> /
  <code>invoice_registrant.matched</code> の各イベントを 署名検証 (SHA256) 付きで POST します。
- <strong>1 回成功配信 = ¥3/リクエスト 課金</strong> (Stripe usage records、 失敗・retry は無料)。
- 5 連続失敗で自動 disable (runaway billing 防止)。 詳細は
+ <strong>1 回成功配信 = ¥3/リクエスト 課金</strong> です。失敗時の再試行は課金対象外です。
+ 5 回連続で失敗すると、意図しない課金を防ぐため自動で無効化します。 詳細は
  <a href="/docs/webhooks/">Webhook 通知 docs</a>。
  </p>
  <p class="stat-note" style="margin:0 0 12px;color:var(--text-muted);font-size:12px;">
@@ -1062,14 +921,13 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p id="dash2-webhooks-banner" role="status" aria-live="polite"
  style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);"></p>
 
- <!-- Secret reveal (one-time, post-register) -->
  <div id="dash2-webhooks-secret-reveal"
  style="display:none;margin:0 0 16px;padding:12px;border:1px solid var(--danger);border-radius:6px;background:var(--bg-alt);">
  <p style="margin:0 0 8px;font-weight:600;color:var(--danger);">
- ⚠ 署名 Secret は今回限りの表示です
+ ⚠ 署名シークレットは今回限りの表示です
  </p>
  <p class="stat-note" style="margin:0 0 8px;">
- このページを離れると 2 度と取得できません。 受信側システムの secret manager に
+ このページを離れると 2 度と取得できません。 受信側システムのシークレット管理ツールに
  すぐにコピーしてください。 紛失した場合は Webhook 通知 を削除して再登録してください。
  </p>
  <div style="display:flex;gap:8px;align-items:center;">
@@ -1088,10 +946,10 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <tr style="text-align:left;border-bottom:1px solid var(--border);">
  <th scope="col" style="padding:6px 4px;">id</th>
  <th scope="col" style="padding:6px 4px;">URL</th>
- <th scope="col" style="padding:6px 4px;">events</th>
- <th scope="col" style="padding:6px 4px;">status</th>
- <th scope="col" style="padding:6px 4px;">failures</th>
- <th scope="col" style="padding:6px 4px;">last delivery</th>
+ <th scope="col" style="padding:6px 4px;">イベント</th>
+ <th scope="col" style="padding:6px 4px;">状態</th>
+ <th scope="col" style="padding:6px 4px;">失敗回数</th>
+ <th scope="col" style="padding:6px 4px;">最終配信</th>
  <th scope="col" style="padding:6px 4px;text-align:right;">操作</th>
  </tr>
  </thead>
@@ -1141,15 +999,15 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </fieldset>
  <div style="margin:12px 0 0;">
  <button type="submit" id="dash2-webhooks-submit" class="btn btn-primary"
- style="width:100%;padding:10px 14px;">登録 (署名 secret を発行)</button>
+ style="width:100%;padding:10px 14px;">登録 (署名シークレットを発行)</button>
  </div>
  </form>
  <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
- 1 APIキー につき active 10 件まで。 https のみ、 internal IP (RFC1918 / loopback) は reject。
+ 1 APIキー につき有効な Webhook 通知は 10 件まで。https のみ登録できます。プライベート IP / loopback は登録できません。
  登録後は「テスト」ボタンで API 経路 の死活確認を推奨。
  </p>
 
- <h3 class="dash-subsection-title is-spaced">直近の配信ログ (last 10)</h3>
+ <h3 class="dash-subsection-title is-spaced">直近の配信ログ (10 件)</h3>
  <p class="stat-note" id="dash2-webhooks-deliveries-hint"
  style="margin:0 0 8px;color:var(--text-muted);font-size:12px;">
  上のテーブルから Webhook 通知 を選んで「ログ」をクリック。
@@ -1170,10 +1028,6 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </table>
  </section>
 
- <!-- Inline wiring for #dash2-webhooks. Self-contained — same posture
-           as the saved-searches block above. Reads localStorage.am_api_key
-           (set by dashboard_v2.js paste-key flow). On 401, the section
-           stays hidden and we leave the cookie-flow rendering alone. -->
  <script>
         (function() {
           var ROOT = document.getElementById('dash2-webhooks');
@@ -1189,7 +1043,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           var DLV_TBODY = document.getElementById('dash2-webhooks-deliveries-tbody');
           var DLV_HINT = document.getElementById('dash2-webhooks-deliveries-hint');
 
-          var API_BASE = (window.AUTONOMATH_API_BASE || '').replace(/\/$/, '');
+          var API_BASE = (window.JPCITE_API_BASE || '').replace(/\/$/, '');
 
           function getKey() {
             try { return localStorage.getItem('am_api_key') || ''; } catch (_e) { return ''; }
@@ -1223,7 +1077,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             var r = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
             var text = await r.text();
             var data = null;
-            try { data = text ? JSON.parse(text) : null; } catch (_e) { /* keep as text */ }
+            try { data = text ? JSON.parse(text) : null; } catch (_e) {}
             if (!r.ok) {
               var msg = (data && (data.detail || data.message)) || text || ('HTTP ' + r.status);
               var err = new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
@@ -1239,7 +1093,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           }
 
           async function load() {
-            if (!getKey()) return; // hidden until paste-key flow set the key
+            if (!getKey()) return;
             try {
               var rows = await fetchJSON('/v1/me/webhooks');
               ROOT.style.display = '';
@@ -1291,7 +1145,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             REVEAL_COPY.addEventListener('click', function() {
               try {
                 navigator.clipboard.writeText(REVEAL_VAL.textContent || '');
-                setBanner('Secret をクリップボードにコピーしました。', false);
+                setBanner('シークレットをクリップボードにコピーしました。', false);
               } catch (_e) {
                 setBanner('クリップボードコピーに失敗。 手動で選択してください。', true);
               }
@@ -1308,7 +1162,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
             FORM.addEventListener('submit', async function (e) {
               e.preventDefault();
               var honey = document.getElementById('dash2-webhooks-honeypot');
-              if (honey && honey.value) return; // bot
+              if (honey && honey.value) return;
               var url = (document.getElementById('dash2-webhooks-url') || {}).value || '';
               var checks = FORM.querySelectorAll('input[name="event_types"]:checked');
               var event_types = Array.prototype.map.call(checks, function (c) { return c.value; });
@@ -1426,7 +1280,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <a href="tokushoho.html">特定商取引法</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">(T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>

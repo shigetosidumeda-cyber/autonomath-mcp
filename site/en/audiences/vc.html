@@ -56,9 +56,7 @@
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://jpcite.com/en/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/en/"},
   "audience": {
     "@type": "Audience",
     "audienceType": "Venture capital, M&A advisors, PE funds"
@@ -85,7 +83,7 @@
   "@type": "FAQPage",
   "inLanguage": "en",
   "mainEntity": [
-    {"@type": "Question", "name": "Can I run a 100-target DD pipeline in parallel?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/req metered with no hard cap and no 429s on spikes. 100 targets × 5 endpoints = 500 req → ¥1,500 (tax exclusive) per batch."}},
+    {"@type": "Question", "name": "Can I run a 100-target DD pipeline in parallel?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/req metered with budget caps and rate limits apply. 100 targets × 5 endpoints = 500 req → ¥1,500 (tax exclusive) per batch."}},
     {"@type": "Question", "name": "How far back does enforcement history go?", "acceptedAnswer": {"@type": "Answer", "text": "1,185 enforcement_cases (construction-business law, real-estate brokerage law, waste-disposal law, financial instruments law, telecom-business law, etc.). Five years by default; some municipal disclosures use different lookback windows. Each row carries source_url + fetched_at."}},
     {"@type": "Question", "name": "How do I pull adoption history?", "acceptedAnswer": {"@type": "Answer", "text": "Query the 2,286 case_studies (publicly disclosed subsidy adoptions) by corporate number or name. About 10 years of lookback is available, varying by program. search_acceptance_stats_am also returns industry- and region-level adoption rates."}},
     {"@type": "Question", "name": "Can I check qualified-invoice (invoice-system) registration?", "acceptedAnswer": {"@type": "Answer", "text": "13,801 invoice_registrants are live as a delta-only mirror under PDL v1.0 attribution (the NTA monthly bulk is pending). Look up registration, registration date, and category by corporate number — essential for invoice-system DD."}},
@@ -108,7 +106,6 @@
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/vc.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -127,7 +124,7 @@
  </nav>
  <h1 id="hero-title">jpcite for VC / M&amp;A advisors</h1>
  <p class="hero-sub">By corporate number, pull 5 years of enforcement, 10 years of adoption history, and qualified-invoice registration in a single cross-source query. Drop into your DD pipeline.</p>
- <p class="hero-tag">Submit the corporate number of an investment or acquisition target and pull from enforcement (1,185), case_studies (2,286), invoice_registrants (13,801), and programs (14,472) in one call. ¥3/req fully metered, no scale limit, Stripe metered billing reconciled monthly.</p>
+ <p class="hero-tag">Submit the corporate number of an investment or acquisition target and pull from enforcement (1,185), case_studies (2,286), invoice_registrants (13,801), and programs (14,472) in one call. ¥3/req fully metered, budget caps and rate limits apply, Stripe metered billing reconciled monthly.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -203,12 +200,11 @@
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card">
- <h3>curl (anonymous, 50 free/mo)</h3>
+ <h3>curl (anonymous, 3 free/day)</h3>
  <pre class="code-block"><code>curl 'https://api.jpcite.com/v1/am/enforcement?\
-corporate_number=8010001213708&amp;\
-since=2021-01-01&amp;\
-limit=20'</code></pre>
- <p class="demo-note">corporate_number is the 13-digit NTA-issued ID.</p>
+houjin_bangou=8010001213708&amp;\
+as_of_date=2026-05-01'</code></pre>
+ <p class="demo-note">houjin_bangou is the 13-digit NTA-issued ID.</p>
  </article>
 
  <article class="card">
@@ -223,21 +219,21 @@ BASE = "https://api.jpcite.com/v1"
 async def dd(client, num):
  invoice = await client.get(f"{BASE}/invoice_registrants/T{num}")
  enforce = await client.get(f"{BASE}/enforcement-cases/search",
- params={"corporate_number": num,
- "since": "2021-01-01"})
+ params={"q": num,
+ "disclosed_from": "2021-01-01"})
  cases = await client.get(f"{BASE}/case-studies/search",
  params={"q": num, "limit": 20})
  return {"invoice": invoice.json, "enforcement": enforce.json,
  "case_studies": cases.json}
 
 async def main:
- async with httpx.AsyncClient(headers={"X-API-Key": "sk_..."}) as client:
+ async with httpx.AsyncClient(headers={"X-API-Key": "am_..."}) as client:
  results = await asyncio.gather(*[dd(client, n) for n in nums])
  for r in results:
  print(r)
 
 asyncio.run(main)</code></pre>
- <p class="demo-note">3-endpoint chain. 100 in parallel, no hard cap. One number = 3 req = ¥9 (tax exclusive).</p>
+ <p class="demo-note">3-endpoint chain. 100-target batches can be planned with budget caps. One number = 3 req = ¥9 (tax exclusive).</p>
  </article>
 
  <article class="card">
@@ -248,7 +244,7 @@ asyncio.run(main)</code></pre>
  "autonomath": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"AUTONOMATH_API_KEY": "sk_..."}
+ "env": {"JPCITE_API_KEY": "am_..."}
  }
  }
 }
@@ -294,7 +290,7 @@ asyncio.run(main)</code></pre>
  <div class="container">
  <h2 id="faq-title" class="section-title">FAQ (VC / M&amp;A advisors)</h2>
  <h3 style="font-size:16px;margin:18px 0 6px;">Can I run a 100-target DD pipeline in parallel?</h3>
- <p>Yes. ¥3/req metered with no hard cap and no 429s on spikes. 100 targets &times; 5 endpoints = 500 req &rarr; ¥1,500 (tax exclusive) per batch.</p>
+ <p>Yes. ¥3/req metered with budget caps and rate limits apply. 100 targets &times; 5 endpoints = 500 req &rarr; ¥1,500 (tax exclusive) per batch.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How far back does enforcement history go?</h3>
  <p>1,185 enforcement_cases (construction-business law, real-estate brokerage law, waste-disposal law, financial instruments law, telecom-business law, etc.). Five years by default; some municipal disclosures use different lookback windows. Each row carries source_url + fetched_at.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How do I pull adoption history?</h3>
@@ -335,7 +331,6 @@ asyncio.run(main)</code></pre>
  <a class="btn btn-secondary" href="../getting-started.html">Get started</a>
  <a class="btn btn-secondary" href="/docs/openapi/v1.json">OpenAPI v1 (JSON)</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
- <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" rel="noopener">GitHub</a>
  </div>
  <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
  </div>
@@ -358,10 +353,9 @@ asyncio.run(main)</code></pre>
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

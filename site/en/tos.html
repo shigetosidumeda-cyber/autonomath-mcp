@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   Terms of Service (EN courtesy translation, 2026-04-26)
-  Bookyou Inc. (T8010001213708) / jpcite
+  Bookyou Inc. / jpcite
   Mirror of /tos.html. Japanese version controls.
 -->
 <html lang="en">
@@ -53,7 +53,6 @@
  <a href="getting-started.html">Docs</a>
  <a href="pricing.html">Pricing</a>
  <a href="audiences/">Audiences</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../tos.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -78,7 +77,7 @@
  <p style="margin:0;">For specific cases, <strong>please consult a licensed 税理士 (Certified Public Tax Accountant) or 弁護士 (attorney)</strong>. The Company is not liable for any damages arising from reliance on the Service. See Section 5 (Compliance with professional-statute laws) for details.</p>
  </div>
 
- <p>These Terms of Service (hereinafter, the "<strong>Terms</strong>") set out the conditions of use of the Japanese public-program information API and MCP server (collectively, the "<strong>Service</strong>") provided under the name "jpcite" by Bookyou Inc. (Bookyou Kabushiki Kaisha; corporate number ; hereinafter, the "<strong>Company</strong>"). Any legal entity or individual using the Service (hereinafter, "<strong>User</strong>") shall use the Service only after agreeing to all provisions of these Terms.</p>
+ <p>These Terms of Service (hereinafter, the "<strong>Terms</strong>") set out the conditions of use of the Japanese public-program information API and MCP server (collectively, the "<strong>Service</strong>") provided under the name "jpcite" by Bookyou Inc. (Bookyou Kabushiki Kaisha; hereinafter, the "<strong>Company</strong>"). Any legal entity or individual using the Service (hereinafter, "<strong>User</strong>") shall use the Service only after agreeing to all provisions of these Terms.</p>
 
  <h2>Section 1 (Definitions)</h2>
  <p>The terms used in these Terms are defined as set out below.</p>
@@ -96,11 +95,11 @@
  <ul>
  <li>These Terms apply to all matters relating to the use of the Service and to the entire relationship between the Company and the User concerning the Service.</li>
  <li>The User shall be deemed to have agreed to these Terms at the earlier of (i) the time at which the User sends the first request to the Service, or (ii) the time at which an API key is issued.</li>
- <li>The Privacy Policy, individual rules, guidelines, rate-limit values, and the <a href="/docs/sla">Service Level Standard (SLA)</a> separately presented by the Company on the website, in documentation, or via API responses form a part of these Terms. In case of conflict between such individual rules and these Terms, the individual rules prevail.</li>
+ <li>The Privacy Policy, individual rules, guidelines, rate-limit values, and the <a href="/docs/sla">Service Level Targets</a> separately presented by the Company on the website, in documentation, or via API responses form a part of these Terms. In case of conflict, these Terms prevail.</li>
  <li>The User shall, at the User's own cost and responsibility, prepare the communications environment, terminals, and software necessary to use the Service.</li>
  <li>The Service is primarily intended to provide service in Japanese to individuals residing in Japan or legal entities incorporated in Japan (hereinafter, "<strong>Target Users</strong>"). For users other than Target Users, the Company makes no express or implied warranty regarding the provision of the Service, and such users use the Service at their own risk. The Company may restrict access from particular countries or regions for reasons of statutory compliance or reasonable business necessity.</li>
  <li>Where a User uses the Service as an individual (a "consumer" as defined in Article 2, paragraph 1 of the Consumer Contract Act), such use is treated as B2C use; where the User uses the Service for or as a business, such use is treated as B2B use. For B2C Users, in accordance with Section 16, the disclaimers and limitation-of-liability clauses do not apply to the extent they conflict with mandatory provisions of law.</li>
- <li>The User agrees that the Service's responses may include AI Output in addition to the Service's own structured data, and uses the Service understanding that, in accordance with Section 7, Section 7-2, and Section 14-2, AI Output may suffer from inaccuracies (hallucinations), staleness, and factual misattribution. The Company will not incorporate the User's request bodies, data uploaded by the User, or API-key identifiers into machine-learning training datasets operated by the Company itself or by any third party.</li>
+ <li>If the User combines the Service's structured data with an external AI client, the resulting output may contain inaccuracies, staleness, or factual misattribution. The Company will not incorporate the User's request bodies, data uploaded by the User, or API-key identifiers into machine-learning training datasets operated by the Company itself or by any third party.</li>
  </ul>
 
  <h2>Section 3 (Account registration and API key management responsibility)</h2>
@@ -134,8 +133,8 @@
  <ul>
  <li>The Company complies with Article 72 of the Attorneys Act, Article 52 of the Certified Tax Accountants Act, Article 47-2 of the Certified Public Accountants Act, Article 27 of the Labour and Social Security Attorneys Act, Article 1-2 of the Administrative Scriveners Act, and other professional-statute laws, and does not provide any of the services that those laws reserve to licensed professionals.</li>
  <li>The information provided by the Service consists of organised and structured general public information on program requirements, eligible applicants, subsidy ratios, application periods, and required documents, and does not constitute legal or tax advice based on the specific circumstances of any particular User.</li>
- <li>The calculation features of the Service, including <code>/v1/calculate/*</code> endpoints, are <strong>rough-estimate features</strong> based on general formulae for subsidy ratios, ceilings, income deductions, and the like, and do not constitute specific tax-advisory consultation or legal-advisory consultation for tax filing, accounting, or subsidy applications. Estimate results are reference values only, and the Company makes no warranty of accuracy, validity, or fitness for any particular purpose.</li>
- <li>Reflecting the spirit of the AI Business Operator Guidelines (2024) published by the AI Strategy Council of the Cabinet Office, the Company adopts, as operational targets for AI Output returned by the Service, factuality, suppression of hallucinations, primary-source attribution (provision of source_url), and the human-in-the-loop principle. Provided, however, that as set forth in paragraph 3 of this Section, these targets do not constitute legal warranties.</li>
+ <li>The calculation, eligibility-evaluation, and estimate features of the Service are <strong>rough-estimate features</strong> based on general formulae for subsidy ratios, ceilings, income deductions, and the like, and do not constitute specific tax-advisory consultation or legal-advisory consultation for tax filing, accounting, or subsidy applications. Estimate results are reference values only, and the Company makes no warranty of accuracy, validity, or fitness for any particular purpose.</li>
+ <li>The Company aims to provide data in a verifiable form, including primary-source URLs, fetched-at timestamps, and source-attribution fields where available. These operational targets do not constitute legal warranties.</li>
  <li>The Company strongly recommends that Users consult individually with a Certified Tax Accountant, attorney, Certified Public Accountant, Labour and Social Security Attorney, Administrative Scrivener, or other licensed professional before making concrete decisions in reliance on information or estimate results provided by the Service.</li>
  </ul>
 
@@ -165,12 +164,11 @@
  <li>The Company is exempted from liability, in accordance with Sections 14 and 15, for damages incurred by Users or End Users on grounds of errors, omissions, or update delays in information contained in the Service.</li>
  </ul>
 
- <h2>Section 7-2 (Special clauses on AI Output)</h2>
+ <h2>Section 7-2 (External AI Output)</h2>
  <ul>
- <li>Among the Service's responses, the portions generated by large language models (LLMs), Retrieval-Augmented Generation (RAG), summary generation, or other generative artificial-intelligence systems (referred to in this Section as "<strong>AI Output</strong>") may, by their nature, contain <strong>content that differs from fact (hallucinations), lag in following program revisions, misattribution of primary sources, rounding errors in numerical calculation, and context-dependent reasoning errors</strong>.</li>
- <li>The User <strong>shall not rely on AI Output as the basis for any final decision</strong> without expert verification, and shall, when making concrete decisions on program eligibility, application of subsidy ratios, evaluation of adoption likelihood, tax handling, or otherwise, ensure human-in-the-loop and use primary sources together with the advice of a licensed professional.</li>
- <li>The Company makes no warranty of any kind regarding the factuality, consistency, or comprehensiveness of AI Output. The Company is exempted from liability, in accordance with Sections 14 and 14-2, for the consequences of decisions made by Users or End Users in reliance on AI Output and for damages arising therefrom.</li>
- <li>Where a User presents the Service's AI Output to its End Users, the User shall be responsible for informing such End Users, by reasonable means, that the AI Output was generated by AI and that human verification is required.</li>
+ <li>Output generated by the User's external AI client, RAG pipeline, summary generator, or other generative-AI system using the Service's structured data may contain factual inaccuracies, staleness, source misattribution, rounding errors, or context-dependent reasoning errors.</li>
+ <li>The User shall not rely on external AI output as the basis for any final decision without expert verification, and shall use primary sources together with the advice of a licensed professional when making concrete decisions.</li>
+ <li>The Company makes no warranty of any kind regarding the factuality, consistency, or comprehensiveness of external AI output generated outside the Service.</li>
  </ul>
 
  <h2>Section 8 (Third-party sources and the duty to verify primary sources)</h2>
@@ -189,7 +187,7 @@
  <li>Payment shall be processed automatically from the credit card the User registers with Stripe via the payment processor designated by the Company, Stripe Payments Japan K.K. (hereinafter, "<strong>Stripe</strong>"). Supported card brands are Visa, Mastercard, American Express, JCB, Diners Club, and Discover (subject to change with Stripe's coverage).<br><span style="font-size:13px;color:#555;">* The cross-border data transfer to Stripe, Inc. (US) via Stripe Payments Japan KK is disclosed in our Privacy Policy.</span></li>
  <li>Payment processing on Stripe, addition / change / deletion of payment methods, invoice issuance, and viewing of receipts shall be performed by the User through the Customer Portal provided by Stripe.</li>
  <li>Qualified invoices based on Qualified Invoice Issuer Registration Number are generated automatically by Stripe and delivered to the User electronically.</li>
- <li>Use within the anonymous monthly allowance (anonymous use without registration: 3 requests per IP address per day, reset at JST 00:00 on the first day of each month) does not incur any fee.</li>
+ <li>Anonymous use without registration is free for up to 3 requests per IP address per day, reset at JST 00:00 daily. Authenticated API-key usage is metered from the first successful paid request; registered users do not receive a separate free request bundle.</li>
  <li>If the User fails to pay fees by the due date, the Company may, in addition to suspension under Section 10, charge late-payment damages at the rate of 14.6% per annum.</li>
  </ul>
 
@@ -245,11 +243,11 @@
 
  <h2>Section 13 (Service level)</h2>
  <ul>
- <li>The Company operates the Service targeting a monthly availability of <strong>99.0%</strong>. Provided, however, that the figure in this paragraph is a <strong>target</strong>, not a warranty by the Company. Specific measurement methods, exclusion conditions, and the handling of service credits are governed by the <a href="/docs/sla">Service Level Standard (SLA)</a>; in case of conflict between these Terms and the SLA, the SLA prevails.</li>
+ <li>The Company operates the Service targeting a monthly availability of <strong>99.0%</strong>. The figure in this paragraph is a <strong>target</strong>, not a warranty by the Company. Specific measurement methods and exclusion conditions are described in the <a href="/docs/sla">Service Level Targets</a>; in case of conflict, these Terms prevail.</li>
  <li>As a data-protection measure, the Company sets, as operational targets for the production database, a Recovery Point Objective (RPO) of <strong>24 hours</strong> and a Recovery Time Objective (RTO) of <strong>4 hours</strong>. The figures in this paragraph are also targets and not a warranty by the Company.</li>
  <li>The Company may temporarily suspend all or part of the Service due to system maintenance, security updates, infrastructure migration, or other reasons. In the case of planned suspension, the Company will use reasonable efforts to give prior notice through the website or the dashboard.</li>
  <li>For suspensions due to emergency incident response, security-incident response, upstream-provider outages, or other situations where prior notice is not feasible, the Company is not under a duty of prior notice.</li>
- <li>Given the Service's metered-pricing nature, no per-request charges accrue during periods of Service downtime. Accordingly, refunds or service credits for downtime do not, as a rule, arise.</li>
+ <li>Given the Service's metered-pricing nature, no per-request charges accrue for requests that do not complete. Refunds for downtime do not, as a rule, arise except for confirmed billing errors.</li>
  <li>For interruption, suspension, or termination of the Service within the anonymous allowance, the Company is not liable for compensation or any other liability to Users.</li>
  </ul>
 
@@ -269,11 +267,11 @@
  <li>The Company is not liable for the consequences of decisions made by the User in reliance on the Service's output.</li>
  </ul>
 
- <h2>Section 14-2 (Disclaimer relating to AI Output and third-party content)</h2>
+ <h2>Section 14-2 (Disclaimer relating to external AI output and third-party content)</h2>
  <ul>
- <li>The Company is not liable for any damages incurred by the User or End Users arising from inaccuracies in AI Output (including hallucinations) as defined in Section 7-2.</li>
+ <li>The Company is not liable for any damages incurred by the User or End Users arising from inaccuracies in external AI output as defined in Section 7-2.</li>
  <li>The Company makes no warranty regarding the contents, accuracy, legality, or update frequency of primary-source content incorporated into the Service (including documents, court decisions, and Official Gazette announcements published by supervising authorities, local governments, incorporated administrative agencies, and the courts), and the Company is not liable for any damages arising from defects in such content.</li>
- <li>The Company is also not liable for damages arising from the User giving improper instructions to the Service's AI responses through prompt-injection attacks under Section 6 (11) or other means.</li>
+ <li>The Company is also not liable for damages arising from the User giving improper instructions to external AI clients or integrations through prompt-injection attacks or other means.</li>
  </ul>
 
  <h2>Section 15 (Limitation of liability)</h2>
@@ -347,7 +345,7 @@
 
  <p class="meta">
  Last updated: 2026-04-24<br>
- Operator: Bookyou Inc. (Bookyou Kabushiki Kaisha; corporate number )<br>
+ Operator: Bookyou Inc. (Bookyou Kabushiki Kaisha)<br>
  Address: 2-22-1 Kohinata, Bunkyo-ku, Tokyo, Japan<br>
  Representative: Shigetoshi Umeda, Representative Director<br>
  Contact: <a href="mailto:info@bookyou.net">info@bookyou.net</a>
@@ -372,10 +370,9 @@
  <a href="tos.html" aria-current="page">Terms</a>
  <a href="privacy.html">Privacy</a>
  <a href="tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

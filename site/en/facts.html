@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Fact sheet — jpcite</title>
-<meta name="description" content="jpcite fact sheet: every public statistic (program counts, entities, facts, ¥3/req unit price, etc.) with its primary source. /v1/meta is the authoritative API; JST fetch dates accompany each figure.">
+<meta name="description" content="jpcite fact sheet: selected public statistics (program counts, entities, facts, ¥3/req unit price, etc.) with their source notes. /v1/meta provides current API counts where available.">
 
 <meta property="og:title" content="Fact sheet — jpcite">
-<meta property="og:description" content="Every published statistic with its primary source.">
+<meta property="og:description" content="Selected published statistics with source notes.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/en/facts.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Fact sheet — jpcite">
-<meta name="twitter:description" content="Every published statistic with its primary source. /v1/meta is the live authoritative API.">
+<meta name="twitter:description" content="Selected published statistics with source notes.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/facts.html">
@@ -34,23 +34,20 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Fact sheet — jpcite",
-  "description": "jpcite fact sheet listing every public statistic (program counts, entities, facts, ¥3/req unit price, etc.) alongside its primary source. /v1/meta is the authoritative live endpoint; figures snapshotted April 2026 (JST).",
+  "description": "jpcite fact sheet listing selected public statistics (program counts, entities, facts, ¥3/req unit price, etc.) alongside source notes. Figures snapshotted April 2026 (JST).",
   "url": "https://jpcite.com/en/facts.html",
   "inLanguage": "en",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/",
-    "email": "info@bookyou.net",
-    "identifier": "T8010001213708"
-  }
+    "email": "info@bookyou.net"}
 }
 </script>
 
@@ -82,8 +79,7 @@
  <a href="getting-started.html">Docs</a>
  <a href="pricing.html">Pricing</a>
  <a href="audiences/">Audiences</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
- <span class="lang-switch" role="group" aria-label="Language / 言語">
+	 <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../facts.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
  <a href="facts.html" lang="en" hreflang="en" aria-current="page">EN</a>
@@ -96,7 +92,7 @@
  <div class="container">
 
  <h1>Fact sheet &mdash; statistics &amp; their sources</h1>
- <p class="lead">Every numeric claim on this site is backed by a primary source. The authoritative live counts are served by <a href="https://api.jpcite.com/v1/meta"><code>/v1/meta</code></a>; the figures below are snapshotted as of April 2026 (JST). The Japanese version (<a href="../facts.html">facts.html</a>) carries the full citation table; this page is an English summary.</p>
+	 <p class="lead">Public statistics listed here include source notes. Current API counts are available from <a href="https://api.jpcite.com/v1/meta"><code>/v1/meta</code></a> where exposed; the figures below are snapshotted as of April 2026 (JST). The Japanese version (<a href="../facts.html">facts.html</a>) carries the fuller citation table; this page is an English summary.</p>
 
  <h2>Program coverage</h2>
  <table>
@@ -104,19 +100,19 @@
  <tr><th>Figure</th><th>Value</th><th>Primary source</th></tr>
  </thead>
  <tbody>
- <tr><td>Total programs indexed</td><td>14,472</td><td>Internal: <code>SELECT COUNT(*) FROM programs</code></td></tr>
- <tr><td>Searchable programs (tier S/A/B/C)</td><td>11,684</td><td>Internal: <code>WHERE tier IN ('S','A','B','C')</code></td></tr>
- <tr><td>Held back for secondary review</td><td>2,788</td><td>Internal: <code>WHERE excluded = 1</code></td></tr>
+	 <tr><td>Total programs indexed</td><td>14,472</td><td>April 2026 coverage snapshot</td></tr>
+	 <tr><td>Searchable programs (tier S/A/B/C)</td><td>11,684</td><td>April 2026 public-search snapshot</td></tr>
+	 <tr><td>Held back for secondary review</td><td>2,788</td><td>Rows excluded from public search pending review</td></tr>
  <tr><td>Adoption case studies (採択事例)</td><td>2,286</td><td>METI / SME Agency / JFC adoption notices</td></tr>
  <tr><td>Loan programs (with three-axis decomposition)</td><td>108</td><td>Japan Finance Corporation, prefectural credit-guarantee associations</td></tr>
  <tr><td>Enforcement actions</td><td>1,185</td><td>JFTC, FSA, METI, MAFF, MLIT, prefectural disciplinary bulletins</td></tr>
- <tr><td>Laws (e-Gov)</td><td>154 full-text + 9,484 catalog stubs (body-text load incremental)</td><td>e-Gov 法令 API (CC BY 4.0)</td></tr>
+ <tr><td>Laws (e-Gov)</td><td>154 full-text + 9,484 law metadata records (full-text coverage varies by record)</td><td>e-Gov 法令 API (CC BY 4.0)</td></tr>
  <tr><td>Tax rulesets</td><td>50</td><td>National Tax Agency 通達</td></tr>
  <tr><td>Court decisions</td><td>2,065</td><td>Supreme Court 裁判例情報, lower-court bulletins</td></tr>
- <tr><td>Public bids</td><td>362</td><td>NJSS-equivalent ministry feeds (direct, no aggregator)</td></tr>
+	 <tr><td>Public bids</td><td>362</td><td>Public procurement notices and ministry feeds</td></tr>
  <tr><td>Invoice registrants</td><td>13,801 (delta-only; full ~4M monthly bulk pending)</td><td>National Tax Agency Qualified Invoice Issuer Registry (PDL v1.0)</td></tr>
  <tr><td>Exclusion + prerequisite rules</td><td>181</td><td>Internal review of program 募集要項; 125 exclude + 17 prerequisite + 15 absolute + 24 other</td></tr>
- <tr><td>Primary-source coverage</td><td>99%+</td><td>Internal: every row carries <code>source_url</code> + <code>fetched_at</code>; ~12 small-municipality rows lack URL</td></tr>
+	 <tr><td>Source URL coverage</td><td>Most published rows</td><td>Published rows generally include <code>source_url</code> and <code>fetched_at</code>; some small-municipality rows require manual verification</td></tr>
  </tbody>
  </table>
 
@@ -127,10 +123,9 @@
  </thead>
  <tbody>
  <tr><td>Per-request unit price</td><td>¥3 tax exclusive / ¥3.30 tax inclusive</td><td>This site, <a href="pricing.html">pricing.html</a></td></tr>
- <tr><td>Anonymous monthly allowance</td><td>3 requests / day / IP, JST 翌日 00:00 reset</td><td>Implementation: <code>AnonIpLimitDep</code> middleware</td></tr>
- <tr><td>Statute change alerts (real-time)</td><td>¥500 tax exclusive / ¥550 tax inclusive per month</td><td>This site, <a href="../alerts.html">alerts.html</a></td></tr>
- <tr><td>Embedded widget (Standard)</td><td>¥10,000 tax exclusive / ¥11,000 tax inclusive per month, 10,000 req included</td><td>This site, <a href="../widget.html">widget.html</a></td></tr>
- <tr><td>Embedded widget (Whitelabel)</td><td>¥30,000 tax exclusive / ¥33,000 tax inclusive per month, 30,000 req included</td><td>This site, <a href="../widget.html">widget.html</a></td></tr>
+	 <tr><td>Anonymous daily allowance</td><td>3 requests / day / IP, JST next-day 00:00 reset</td><td>This site, <a href="pricing.html">pricing.html</a></td></tr>
+	 <tr><td>Statute change alerts</td><td>¥3 tax exclusive / ¥3.30 tax inclusive per notification; monthly digest free</td><td>This site, <a href="../alerts.html">alerts.html</a></td></tr>
+ <tr><td>Embedded widget</td><td>¥3 tax exclusive / ¥3.30 tax inclusive per search; no fixed monthly fee</td><td>This site, <a href="../widget.html">widget.html</a></td></tr>
  <tr><td>Advisor retention fee</td><td>¥3,000 tax exclusive / ¥3,300 tax inclusive per successful retention</td><td>This site, <a href="advisors.html">advisors.html</a></td></tr>
  </tbody>
  </table>
@@ -138,18 +133,15 @@
  <h2>Operator</h2>
  <table>
  <tbody>
- <tr><th>Operator</th><td>Bookyou株式会社 (Bookyou Inc.)</td></tr>
- <tr><th>Corporate number</th><td>T8010001213708</td></tr>
- <tr><th>Qualified invoice registration</th><td>T8010001213708, registered 2025-05-12</td></tr>
- <tr><th>Address</th><td>2-22-1 Kohinata, Bunkyo-ku, Tokyo, Japan</td></tr>
- <tr><th>Representative</th><td>Shigetoshi Umeda (梅田茂利)</td></tr>
+ <tr><th>Operator</th><td>Bookyou K.K. (Bookyou株式会社)</td></tr>
+ <tr><th>Legal entity details</th><td>See Japanese legal disclosure.</td></tr>
  <tr><th>Email</th><td><a href="mailto:info@bookyou.net">info@bookyou.net</a></td></tr>
  <tr><th>Hosting region</th><td>Fly.io Tokyo (nrt)</td></tr>
  <tr><th>Public launch</th><td>2026-05-06</td></tr>
  </tbody>
  </table>
 
- <p style="margin-top:32px;font-size:14px;color:var(--text-muted);">For the authoritative live numbers, query <a href="https://api.jpcite.com/v1/meta"><code>/v1/meta</code></a> &mdash; the API is the source of truth. Static figures here are refreshed when manifests are bumped.</p>
+	 <p style="margin-top:32px;font-size:14px;color:var(--text-muted);">For current API counts, query <a href="https://api.jpcite.com/v1/meta"><code>/v1/meta</code></a>. Static figures here are refreshed during site updates.</p>
 
  </div>
 </main>
@@ -171,8 +163,8 @@
  <a href="tokushoho.html">Legal (JP)</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) &middot; CEO Shigetoshi Umeda &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ <p class="footer-entity">Operated by Bookyou K.K. &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou K.K.</p>
  </div>
 </footer>
 

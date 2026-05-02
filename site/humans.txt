@@ -14,7 +14,7 @@ Components: FastAPI / FastMCP / SQLite (全文検索 + 意味検索)
 Software: Claude Code (Opus 4.7) / VS Code / mkdocs Material
 
 /* OPERATOR */
-Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)
+Bookyou株式会社
 東京都文京区小日向2-22-1
 登録 令和7年5月12日
-URL: https://jpcite.com (formerly 税務会計AI / zeimu-kaikei.ai)
+URL: https://jpcite.com (formerly jpcite / jpcite.com)

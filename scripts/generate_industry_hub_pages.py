@@ -10,9 +10,9 @@ programs **inline**.
 
 Outputs
 -------
-- ``site/industries/{jsic}/index.html`` × 20 (JSIC majors A..T)
+- ``site/industries/{jsic}/index.html`` for JSIC majors with at least one match
 - ``site/industries/{jsic}-sme/index.html`` × 2 (E + L sub-partials, top 20 each)
-- ``site/sitemap-industries.xml`` (regenerated, 22 entries)
+- ``site/sitemap-industries.xml`` (regenerated, excludes empty hubs)
 
 Selection
 ---------
@@ -30,7 +30,6 @@ import logging
 import re
 import sqlite3
 import sys
-from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -59,7 +58,6 @@ from generate_industry_program_pages import (  # type: ignore  # noqa: E402
     _parse_json_list,
 )
 
-
 KIND_JA = {
     "subsidy": "補助金・交付金",
     "grant": "助成金・給付金",
@@ -86,7 +84,27 @@ WHERE excluded = 0
   AND source_url IS NOT NULL
   AND source_url <> ''
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//wikipedia.org%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.wikipedia.org%'
 """
+
+_PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
+
+
+def _public_program_name(name: str | None) -> str:
+    return _PUBLIC_ID_PREFIX_RE.sub("", (name or "").strip())
 
 
 def _today_jst_iso() -> str:
@@ -131,9 +149,7 @@ def _matches_jsic(row: dict[str, Any], code: str) -> bool:
     # Name regex signal
     if matcher.name_regex is not None and matcher.name_regex.search(name):
         return True
-    if matcher.name_strong_regex is not None and matcher.name_strong_regex.search(name):
-        return True
-    return False
+    return bool(matcher.name_strong_regex is not None and matcher.name_strong_regex.search(name))
 
 
 def _rank_key(r: dict[str, Any]) -> tuple[int, float, str]:
@@ -213,7 +229,8 @@ def _render_hub(
         kind = KIND_JA.get(r.get("program_kind") or "subsidy", "公的支援制度")
         amt = _amount_line(r.get("amount_max_man_yen"), r.get("amount_min_man_yen"))
         tier = (r.get("tier") or "A").upper()
-        name_esc = html.escape(r["primary_name"] or "")
+        public_name = _public_program_name(r["primary_name"] or "")
+        name_esc = html.escape(public_name)
         src = html.escape(r.get("source_url") or "")
         # Tier S/A still have a static SSG page (post 2026-04-29 reduction);
         # tier B fell back to dynamic search by unified_id so we never link
@@ -229,7 +246,7 @@ def _render_hub(
             "      <li class=\"industry-program\">\n"
             f"        <a class=\"industry-program-name\" href=\"{program_href}\">{name_esc}</a>\n"
             f"        <span class=\"industry-program-meta\">tier {tier} ・ {kind} ・ {amt}</span>\n"
-            f"        <a class=\"industry-program-source\" href=\"{src}\" rel=\"noopener noreferrer\">一次資料を開く</a>\n"
+            f"        <a class=\"industry-program-source\" href=\"{src}\" rel=\"noopener noreferrer\">出典ページを開く</a>\n"
             "      </li>"
         )
     if not lis:
@@ -248,10 +265,7 @@ def _render_hub(
                 "@type": "Organization",
                 "@id": f"https://{domain}/#publisher",
                 "name": "jpcite",
-                "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
                 "url": f"https://{domain}/",
-                "legalName": "Bookyou株式会社",
-                "taxID": "T8010001213708",
             },
             {
                 "@type": "BreadcrumbList",
@@ -270,7 +284,7 @@ def _render_hub(
                     {
                         "@type": "ListItem",
                         "position": i + 1,
-                        "name": r["primary_name"] or "",
+                        "name": _public_program_name(r["primary_name"] or ""),
                         "url": (
                             f"https://{domain}/programs/{program_static_slug(r['primary_name'] or '', r['unified_id'])}.html"
                             if (r.get("tier") or "").upper() in ("S", "A")
@@ -289,8 +303,8 @@ def _render_hub(
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
-<meta name="author" content="Bookyou株式会社">
-<meta name="publisher" content="Bookyou株式会社">
+<meta name="author" content="jpcite">
+<meta name="publisher" content="jpcite">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
@@ -332,7 +346,7 @@ def _render_hub(
   <h1>{html.escape(title_label)} 補助金・税制 主要{len(top)}件</h1>
   <p class="lede">JSIC {html.escape(code)} ({html.escape(name_ja)}) に該当する事業者向けの
   主要制度を、補助金額の大きい順に上位{len(top)}件まで集約しました。
-  各制度は AutonoMath の制度詳細ページに、出典は一次資料 URL に直接リンクしています。</p>
+  各制度は jpcite の制度詳細ページに、出典は一次情報の URL に直接リンクしています。</p>
   <section class="industry-section" aria-label="主要制度一覧">
     <h2>主要制度（tier S/A/B）</h2>
     <ul class="industry-list">
@@ -349,16 +363,15 @@ def _render_hub(
   </section>
   <section class="industry-disclaimer" aria-label="免責">
     <h2>免責</h2>
-    <p>本ページは AutonoMath（運営: Bookyou株式会社、適格請求書発行事業者番号 T8010001213708、
-    info@bookyou.net）が公開する一次資料ベースの集約結果です。tier 判定は
-    実データ充足ベースの内部スコアであり、申請可否や採択を保証するものではありません。
+    <p>本ページは jpcite が公開する一次資料ベースの集約結果です。掲載内容は
+    出典確認状況に基づいて整理しており、申請可否や採択を保証するものではありません。
     最新の公募要領・申請期間・対象要件は必ず一次資料 URL でご確認ください。
     最終取得日: <time datetime="{today}">{today}</time>。</p>
   </section>
 </main>
 <footer class="site-footer" role="contentinfo">
   <div class="container">
-    <p>&copy; 2026 Bookyou株式会社 (T8010001213708) ・
+    <p>&copy; 2026 jpcite ・
     <a href="/about.html">運営者情報</a> ・
     <a href="/privacy.html">プライバシーポリシー</a> ・
     <a href="/tokushoho.html">特定商取引法に基づく表記</a></p>
@@ -379,10 +392,17 @@ def _render_index(
     rows_html: list[str] = []
     for code, matcher in JSIC_MATCHERS.items():
         n = code_to_count.get(code, 0)
-        rows_html.append(
-            f"      <li><a href=\"/industries/{code}/\">JSIC {code} {html.escape(matcher.name_ja)}</a> "
-            f"<span class=\"industry-count\">{n}件</span></li>"
-        )
+        label = f"JSIC {code} {html.escape(matcher.name_ja)}"
+        if n:
+            rows_html.append(
+                f"      <li><a href=\"/industries/{code}/\">{label}</a> "
+                f"<span class=\"industry-count\">{n}件</span></li>"
+            )
+        else:
+            rows_html.append(
+                f"      <li><span>{label}</span> "
+                "<span class=\"industry-count\">候補確認中</span></li>"
+            )
     sme_lis: list[str] = []
     for slug, label, n in sme_pages:
         sme_lis.append(
@@ -392,7 +412,7 @@ def _render_index(
     title = "業種別ハブ 一覧 (JSIC 22部門) | jpcite"
     desc = (
         "JSIC 産業大分類 20 部門と中小企業向け 2 部門 (製造業中小・専門技術業中小) "
-        "の業種別ハブから、各業種に関連する補助金・税制を一次資料リンクで横断的に検索。"
+        "の業種別ハブから、各業種に関連する補助金・税制を出典リンク付きで横断的に検索。"
     )
     rows_str = "\n".join(rows_html)
     sme_str = "\n".join(sme_lis)
@@ -403,8 +423,8 @@ def _render_index(
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
-<meta name="author" content="Bookyou株式会社">
-<meta name="publisher" content="Bookyou株式会社">
+<meta name="author" content="jpcite">
+<meta name="publisher" content="jpcite">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
@@ -437,7 +457,7 @@ def _render_index(
   </nav>
   <h1>業種別ハブ 一覧</h1>
   <p class="lede">日本標準産業分類 (JSIC) の大分類 20 部門 + 中小企業向け 2 部門のハブから、
-  各業種に関連する補助金・助成金・融資・税制を一次資料リンクで横断的に検索できます。</p>
+  各業種に関連する補助金・助成金・融資・税制を出典リンク付きで横断的に検索できます。</p>
   <section class="industry-major-list">
     <h2>JSIC 大分類</h2>
     <ul>
@@ -453,13 +473,13 @@ def _render_index(
   <section class="industry-disclaimer" aria-label="免責">
     <h2>免責</h2>
     <p>業種マッピングは制度名・所管・対象種別・出典ドメインの 4 軸 evidence マッチで判定しています。
-    false-positive を避けるため、judgement が弱い組合せはハブから除外しています。
+    誤った関連付けを避けるため、根拠が弱い組合せはハブから除外しています。
     最終取得日: <time datetime="{today}">{today}</time>。</p>
   </section>
 </main>
 <footer class="site-footer" role="contentinfo">
   <div class="container">
-    <p>&copy; 2026 Bookyou株式会社 (T8010001213708) ・
+    <p>&copy; 2026 jpcite ・
     <a href="/about.html">運営者情報</a> ・
     <a href="/privacy.html">プライバシーポリシー</a> ・
     <a href="/tokushoho.html">特定商取引法に基づく表記</a></p>
@@ -518,16 +538,23 @@ def generate(
     code_to_count: dict[str, int] = {}
 
     # 20 majors (A..T)
-    for code in JSIC_MATCHERS.keys():
+    for code in JSIC_MATCHERS:
         matcher = JSIC_MATCHERS[code]
         top = _select_for_jsic(rows, code, top_n)
         code_to_count[code] = len(top)
         if not top:
-            LOG.info("JSIC %s (%s): 0 matches → emitting empty hub", code, matcher.name_ja)
+            stale_path = out_dir / code / "index.html"
+            if stale_path.exists():
+                stale_path.unlink()
+                written += 1
+                LOG.info("JSIC %s (%s): 0 matches → removed stale empty hub", code, matcher.name_ja)
+            else:
+                LOG.info("JSIC %s (%s): 0 matches → skipping hub", code, matcher.name_ja)
+            continue
         title_label = f"JSIC {code} {matcher.name_ja}"
         desc = (
             f"JSIC {code} ({matcher.name_ja}) の事業者向け 補助金・助成金・融資・税制 "
-            f"上位{len(top)}件を一次資料リンクで集約。tier S/A/B のみ。"
+            f"上位{len(top)}件を出典リンク付きで集約。tier S/A/B のみ。"
         )
         html_doc = _render_hub(
             code, title_label, matcher.name_ja, desc, top, domain,

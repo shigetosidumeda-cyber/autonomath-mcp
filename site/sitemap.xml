@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Static page sitemap for jpintel-mcp site/ surface.
-  Generated: 2026-04-23 — replace https://jpcite.com at deploy time
-  (see docs/seo_technical_audit.md and project_jpintel_trademark_intel_risk).
+  Static page sitemap for the jpcite site/ surface.
+  Generated: 2026-04-23; canonical domain is https://jpcite.com.
   Updated 2026-04-25: legal pages (privacy/tos/tokushoho) added per audit
   a30f4c848bdd242a6 — tokushoho is a Japanese e-commerce legal requirement
   (特定商取引法) and must be discoverable. priority=0.3, changefreq=yearly.
   Updated 2026-04-26: privacy/tos/tokushoho switched from noindex to
   index,follow (legal discoverability); EN privacy + EN tos added with
   hreflang pairs; audience URLs delegated entirely to sitemap-audiences.xml
-  (single canonical shard); sitemap-structured.xml entry dropped from index
-  (excluded by robots.txt).
+  (single canonical shard).
   Updated 2026-04-26 (later): EN /en/products.html, /en/widget.html, and
   /en/alerts.html added with hreflang pairs to JP; reciprocal EN hreflang
   also added on the JP /products.html, /widget.html, /alerts.html entries.
@@ -34,7 +32,7 @@
   signal for prospect evaluation). Distinct from /status.html which is the
   static fallback served on DNS flip during incidents — that one stays
   noindex. The new /status/index.html polls /v1/am/health/deep + PyPI from
-  the browser; index,follow so it can rank for "AutonoMath status" queries.
+  the browser; index,follow so it can rank for "jpcite status" queries.
 
   Excluded by design:
     - /en/tokushoho.html (noindex — JP-only legal surface with EN pointer)
@@ -155,7 +153,7 @@
   </url>
   <url>
     <loc>https://jpcite.com/llms-full.txt</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms-full.txt"/>
@@ -164,7 +162,7 @@
   </url>
   <url>
     <loc>https://jpcite.com/llms-full.en.txt</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms-full.txt"/>

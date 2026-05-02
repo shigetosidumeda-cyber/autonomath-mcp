@@ -44,17 +44,14 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/",
-    "email": "info@bookyou.net",
-    "identifier": "T8010001213708"
-  }
+    "email": "info@bookyou.net"}
 }
 </script>
 
@@ -158,14 +155,14 @@
  <!-- Coverage ------------------------------------------------------------ -->
  <section class="stats-section" aria-labelledby="coverage-h">
  <h2 id="coverage-h">Coverage &mdash; dataset row counts</h2>
- <p class="desc">Row counts per table in <code>jpintel.db</code>. Aggregator (secondary) sources are <strong>0</strong> &mdash; every record is tied to a primary source.</p>
+ <p class="desc">Row counts in the public dataset. Aggregator (secondary) sources are <strong>0</strong> &mdash; every record is tied to a primary source.</p>
  <div class="grid" id="coverage-grid">
  <div class="card"><p class="label">programs (subsidies etc.)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">case_studies (adoption)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">loan_programs (loans)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">enforcement_cases (enforcement)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">exclusion_rules (exclusions)</p><p class="value pending">…</p></div>
- <div class="card"><p class="label">laws_jpintel (laws)</p><p class="value pending">…</p></div>
+ <div class="card"><p class="label">laws</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">tax_rulesets (tax rulings)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">court_decisions (case law)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">bids (public bids)</p><p class="value pending">…</p></div>
@@ -215,7 +212,7 @@
 
 <footer class="site-footer" role="contentinfo">
  <div class="container">
- <p class="copy">&copy; 2026 Bookyou Inc. &mdash; Japan corporate number </p>
+ <p class="copy">&copy; 2026 Bookyou K.K. &mdash; jpcite</p>
  </div>
 </footer>
 
@@ -223,9 +220,8 @@
 (function () {
   "use strict";
 
-  // Allow override for cross-origin local dev; defaults to same-origin path
-  // so Pages -> Fly proxy works in production.
-  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "jpcite.com" ? "https://api.jpcite.com" : "");
+  // Allow override for cross-origin local dev; defaults to the production API on jpcite.com.
+  var BASE = (typeof window !== "undefined" && window.JPCITE_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "jpcite.com" ? "https://api.jpcite.com" : "");
 
   var COVERAGE_LABELS = [
     ["programs", "programs (subsidies etc.)"],
@@ -233,7 +229,7 @@
     ["loan_programs", "loan_programs (loans)"],
     ["enforcement_cases", "enforcement_cases (enforcement)"],
     ["exclusion_rules", "exclusion_rules (exclusions)"],
-    ["laws_jpintel", "laws_jpintel (laws)"],
+    ["laws_jpintel", "laws"],
     ["tax_rulesets", "tax_rulesets (tax rulings)"],
     ["court_decisions", "court_decisions (case law)"],
     ["bids", "bids (public bids)"],

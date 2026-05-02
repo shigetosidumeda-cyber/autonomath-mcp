@@ -47,7 +47,7 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "publisher": {"@id": "https://jpcite.com/#publisher"},
@@ -70,9 +70,6 @@
 </script>
 
 <style>
-  /* trust.html — page-specific components only. Global tokens / typography
-     come from /styles.css. Status colors use canonical CSS vars
-     (--success / --warning / --danger). */
   .trust-page { padding: 48px 0 64px; }
   .trust-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
   .trust-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 24px; max-width: 760px; line-height: 1.7; }
@@ -226,27 +223,20 @@
 
  <div class="trust-grid" role="list">
 
- <!-- Panel 1: Reproducibility — latest snapshot ID + link.
-      Static value reflects the corpus snapshot wired into Wave 22 tools
-      (corpus_snapshot_id + corpus_checksum). When /v1/snapshot/{id}
-      goes live, swap the link target to that route. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-snapshot-h">
  <p class="panel-label">再現性 / Reproducibility</p>
  <h2 id="panel-snapshot-h" class="panel-value"><code>corpus-2026-04-29</code></h2>
- <p class="panel-detail">最新コーパス スナップショット ID。 Wave 22 composition tools の <code>corpus_snapshot_id</code> + <code>corpus_checksum</code> 値と一致。 同一 ID で再実行すれば同一レコードを返します。</p>
+ <p class="panel-detail">最新コーパス スナップショット ID。同一 ID で再実行すれば同一レコードを返します。</p>
  <ul>
  <li>収録: 制度 11,684 / 採択 2,286 / 融資 108 / 行政処分 1,185 / 法令 154 件本文 + 9,484 件メタ</li>
  <li>判例 2,065 / 税制 50 / 適格事業者 13,801</li>
  </ul>
  <p class="panel-foot">
  <span>更新: 2026-04-29</span>
- <a href="https://api.jpcite.com/v1/snapshot/corpus-2026-04-29">/v1/snapshot/{id} →</a>
+ <a href="https://api.jpcite.com/v1/meta/corpus_snapshot">/v1/meta/corpus_snapshot →</a>
  </p>
  </article>
 
- <!-- Panel 2: Source freshness — top 5 datasets + median fetched_at.
-      Static seed values; live polling routed through /v1/staleness for
-      the global header line via the trust-strip.js asset on this page. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-fresh-h">
  <p class="panel-label">データ鮮度 / Source freshness</p>
  <h2 id="panel-fresh-h" class="panel-value">主要 5 データセット</h2>
@@ -268,10 +258,6 @@
  </p>
  </article>
 
- <!-- Panel 3: SLA — uptime % (last 7d) + sample_count.
-      ONE polling fetch per page load (per task constraint: ≤ 1).
-      Sample_count is ALWAYS rendered alongside uptime per Trust agent —
-      if sample_count = 0 we render "計測中" instead of a fake 100%. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-sla-h">
  <p class="panel-label">SLA / Uptime</p>
  <h2 id="panel-sla-h" class="panel-value" id="trust-sla-uptime">—</h2>
@@ -286,8 +272,6 @@
  </p>
  </article>
 
- <!-- Panel 4: Quality — correction count (last 90 days).
-      Static seed pulled from /v1/corrections?days=90 snapshot. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-corr-h">
  <p class="panel-label">品質 / Corrections (90 日)</p>
  <h2 id="panel-corr-h" class="panel-value">0 件</h2>
@@ -303,8 +287,6 @@
  </p>
  </article>
 
- <!-- Panel 5: License inventory — 5 representative sources.
-      Full table at /sources.html. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-lic-h">
  <p class="panel-label">出典ライセンス / License inventory</p>
  <h2 id="panel-lic-h" class="panel-value">主要 5 出典</h2>
@@ -326,13 +308,12 @@
  </p>
  </article>
 
- <!-- Panel 6: §52 fence — sensitive-tool disclaimer endpoint. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-s52-h">
  <p class="panel-label">§52 / 法令フェンス</p>
  <h2 id="panel-s52-h" class="panel-value">税理士法 §52 / 弁護士法 §72</h2>
- <p class="panel-detail">個別具体的な税務・法律判断は行いません。 該当 11 ツール (Wave 30) の レスポンスには <code>_disclaimer</code> オブジェクトを必ず同梱。 静的注意文は全 API レスポンスに付与します。</p>
+ <p class="panel-detail">個別具体的な税務・法律判断は行いません。税務・法務に関わるレスポンスには注意文と出典確認の導線を付与します。</p>
  <ul>
- <li>対象: 36協定 render / 顧問先 fan-out / 監査 seal / DD checklist 等</li>
+ <li>本サービスは情報検索・根拠確認の補助です</li>
  <li>個別判断は資格を有する専門家にご相談ください</li>
  </ul>
  <p class="panel-foot">
@@ -341,11 +322,10 @@
  </p>
  </article>
 
- <!-- Panel 7: Audit log RSS — subscribe link. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-rss-h">
  <p class="panel-label">監査ログ / Audit log</p>
  <h2 id="panel-rss-h" class="panel-value">変更検出 RSS</h2>
- <p class="panel-detail">公的機関データの差分を毎日 cron で検出し、 一次資料 URL 付きで公開。 差分メタデータは CC BY 4.0、 原典は各 source_url の公的機関ライセンスに従います。</p>
+ <p class="panel-detail">公的機関データの差分を毎日検出し、 一次資料 URL 付きで公開。 差分メタデータは CC BY 4.0、 原典は各 source_url の公的機関ライセンスに従います。</p>
  <ul>
  <li>更新頻度: 毎日 (差分があれば)</li>
  <li>形式: RSS 2.0 / JSON 双方提供</li>
@@ -356,25 +336,24 @@
  </p>
  </article>
 
- <!-- Panel 8: No-LLM invariant — CI test result badge. -->
  <article class="trust-panel" role="listitem" aria-labelledby="panel-nollm-h">
  <p class="panel-label">No-LLM 不変条件 / CI 検証</p>
  <h2 id="panel-nollm-h" class="panel-value"><span class="ok">PASS</span></h2>
- <p class="panel-detail">本番コードに LLM API 呼び出し (anthropic / openai / gemini) を含めない不変条件。 CI guard <code>tests/test_no_llm_in_production.py</code> が src/ · scripts/cron/ · scripts/etl/ · tests/ を走査し、 違反があれば赤に倒れます。</p>
+ <p class="panel-detail">jpcite のサーバー側処理は外部 LLM API を呼び出さず、構造化データと一次資料メタデータを返します。利用者側の AI クライアントは、その根拠を使って回答を組み立てます。</p>
  <ul>
- <li>監視対象 import: <code>anthropic</code> / <code>openai</code> / <code>google.generativeai</code> / <code>claude_agent_sdk</code></li>
- <li>監視対象 env: <code>ANTHROPIC_API_KEY</code> / <code>OPENAI_API_KEY</code> / <code>GEMINI_API_KEY</code></li>
+ <li>回答生成の前に、一次資料 URL・取得時刻・根拠項目を取得できます</li>
+ <li>長文資料を AI に丸投げする前の evidence prefetch レイヤーとして使えます</li>
  </ul>
  <p class="panel-foot">
- <span>最終 CI: 2026-04-29</span>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/actions" rel="noopener">CI ログ →</a>
+ <span>自動検査あり</span>
+ <a href="/docs/">検証方針 →</a>
  </p>
  </article>
 
  </div>
 
  <h2 style="font-size:20px;margin:32px 0 12px;">運営者</h2>
- <p>運営: <strong>Bookyou株式会社</strong> (適格請求書発行事業者番号 <code>T8010001213708</code>) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p>運営: <strong>Bookyou株式会社</strong> · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p>本ページの数値・更新時刻に齟齬を発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。 一次資料と再突合して修正履歴 (<a href="https://api.jpcite.com/v1/corrections?days=90">/v1/corrections</a>) に追加します。</p>
 
  <p class="trust-foot">本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。 関連ページ: <a href="status.html">稼働状況</a> · <a href="data-freshness.html">データ鮮度</a> · <a href="transparency.html">出典の透明性</a> · <a href="sources.html">データソース一覧</a> ·<a href="audit-log.html">監査ログ</a></p>
@@ -397,19 +376,13 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
 
 <script>
-  // trust.html — single polling fetch for SLA per task constraint
-  // ("≤ 1 polling fetch on page load"). All other panels render
-  // server-side from static seed values. sample_count is ALWAYS shown
-  // alongside the uptime number — if sample_count === 0, the value
-  // collapses to "計測中" instead of a fake 100% (Trust agent rule).
   (function () {
     'use strict';
     var SLA_URL = 'https://api.jpcite.com/v1/health/sla?window=7d';
@@ -424,8 +397,8 @@
     }
     function classify(uptime) {
       if (uptime === null || uptime === undefined) return '';
-      if (uptime >= 99.5) return 'ok';
-      if (uptime >= 99.0) return 'warn';
+      if (uptime >= 99.0) return 'ok';
+      if (uptime >= 98.5) return 'warn';
       return 'down';
     }
     function setText(id, txt) {
@@ -466,9 +439,6 @@
         });
     }
 
-    // Single fetch on load. No setInterval — keeps the "≤ 1 polling
-    // request on page load" guarantee. A meta-refresh-style auto-update
-    // can be added later if SLA panel becomes the page's focal point.
     fetchOnce();
   })();
 </script>

@@ -4,11 +4,11 @@
   <title>jpcite — Tier S 制度 (補助金/融資/税制/認定 高信頼)</title>
   <link>https://jpcite.com/</link>
   <atom:link href="https://jpcite.com/rss/programs-tier-s.xml" rel="self" type="application/rss+xml" />
-  <description>jpcite Tier S 制度 (一次資料リンク + 高信頼バッジ) の最新 100 件。週次再生成、ID/鮮度安定。</description>
+  <description>jpcite Tier S 制度 (出典リンク + 高信頼バッジ) の最新 100 件。週次再生成、ID/鮮度安定。</description>
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
 
   <item>
     <title>世代交代・初期投資促進事業（世代交代円滑化タイプ）</title>
@@ -157,7 +157,7 @@
   <item>
     <title>スマート農業推進事業（機械設備導入）</title>
     <link>https://jpcite.com/programs/sumaato-nougyou-suishin-jigyou-kikai-setsubi-dounyuu-a83c62.html</link>
-    <description>Tier S / （noukaweb 収集） / 上限 500万円 出典: https://www.maff.go.jp/j/kanbo/smart/</description>
+    <description>Tier S / 上限 500万円 出典: https://www.maff.go.jp/j/kanbo/smart/</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-5d6de166e3</guid>
     <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
@@ -211,7 +211,7 @@
   <item>
     <title>雇用就農資金</title>
     <link>https://jpcite.com/programs/koyou-shuunou-shikin-8f3239.html</link>
-    <description>Tier S / 東京都 / （noukaweb 収集） / 上限 240万円 出典: https://www.maff.go.jp/</description>
+    <description>Tier S / 東京都 / 上限 240万円 出典: https://www.maff.go.jp/</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-76ff1702bc</guid>
     <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>
@@ -301,7 +301,7 @@
   <item>
     <title>飼料用米等拡大支援事業のうち飼料用米等生産支援事業</title>
     <link>https://jpcite.com/programs/shiryou-you-kome-nado-kakudai-shien-jigyou-nouchi-shiryou-011619.html</link>
-    <description>Tier S / 千葉県 / （noukaweb 収集） / 上限 30,000万円 出典: https://www.pref.chiba.lg.jp/seisan/kinyuu/seisanhanbai.html#shiryoumaikakudai</description>
+    <description>Tier S / 千葉県 / 上限 30,000万円 出典: https://www.pref.chiba.lg.jp/seisan/kinyuu/seisanhanbai.html#shiryoumaikakudai</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-d33f08a683</guid>
     <pubDate>Sun, 26 Apr 2026 05:09:13 +0000</pubDate>

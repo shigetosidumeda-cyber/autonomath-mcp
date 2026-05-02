@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>お知らせ — 制度変更検出 — jpcite</title>
-<meta name="description" content="AutonoMath が検出した日本の公的制度の変更履歴。 補助金・税制・認定・法令の差分を制度改正履歴 (追記専用) から週次で自動生成。 出典 URL + 検出日時付きで全件公開。">
+<meta name="description" content="jpcite が検出した日本の公的制度の変更履歴。 補助金・税制・認定・法令の差分を制度改正履歴 (追記専用) から週次で自動生成。 出典 URL + 検出日時付きで全件公開。">
 <meta name="author" content="Bookyou株式会社">
 <meta name="publisher" content="Bookyou株式会社">
 <meta name="robots" content="index, follow, max-image-preview:large">
 
 <meta property="og:title" content="お知らせ — 制度変更検出 — jpcite">
-<meta property="og:description" content="AutonoMath が検出した日本の公的制度の変更履歴 (補助金・税制・認定・法令)。 出典 URL + 検出日時付き。">
+<meta property="og:description" content="jpcite が検出した日本の公的制度の変更履歴 (補助金・税制・認定・法令)。 出典 URL + 検出日時付き。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/news/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -21,13 +21,13 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="お知らせ — 制度変更検出 — jpcite">
-<meta name="twitter:description" content="AutonoMath が検出した日本の公的制度の変更履歴。">
+<meta name="twitter:description" content="jpcite が検出した日本の公的制度の変更履歴。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/news/">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/news/">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/news/">
-<link rel="alternate" type="application/rss+xml" title="AutonoMath お知らせ" href="https://jpcite.com/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="jpcite お知らせ" href="https://jpcite.com/rss.xml">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -39,7 +39,7 @@
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": "jpcite お知らせ",
-  "description": "AutonoMath が制度改正履歴 (追記専用ログ) から自動検出した、日本の公的制度の変更履歴。",
+  "description": "jpcite が制度改正履歴 (追記専用ログ) から自動検出した、日本の公的制度の変更履歴。",
   "url": "https://jpcite.com/news/",
   "inLanguage": "ja",
   "isAccessibleForFree": true,
@@ -86,7 +86,7 @@
  <article>
  <header class="program-header">
  <h1>お知らせ — 制度変更検出</h1>
- <p class="byline-note muted">AutonoMath が制度改正履歴 (追記専用ログ) から自動検出した、日本の公的制度 (補助金・税制・認定・法令) の変更履歴です。 直近 50 件を月別に表示します。 RSS は <a href="/rss.xml">/rss.xml</a> で配信。</p>
+ <p class="byline-note muted">jpcite が制度改正履歴 (追記専用ログ) から自動検出した、日本の公的制度 (補助金・税制・認定・法令) の変更履歴です。 直近 50 件を月別に表示します。 RSS は <a href="/rss.xml">/rss.xml</a> で配信。</p>
  </header>
 
  <section aria-labelledby="filter-title">
@@ -106,14 +106,10 @@
 
  <div id="news-empty" class="tldr">
  <p>現在、直近 7 日間に検出された変更はありません。 制度変更が検出され次第、 自動でこのページに反映されます。</p>
- <p class="muted">運用ログ: <code>scripts/cron/generate_news_posts.py</code> が毎週 制度改正履歴 を読み、 1 制度につき 1 つのお知らせ記事を生成します。 0 件の週はこのプレースホルダのみが表示されます (誇張投稿は行いません)。</p>
+ <p class="muted">直近 7 日間に検出された変更がない場合は、この案内のみを表示します。</p>
  </div>
 
  <ul id="news-list" class="related-programs" hidden>
- <!-- Populated server-side by scripts/cron/build_news_index.py
-               (or, in the simplest deploy, statically by the cron run that
-               generates posts). Each <li> mirrors the diff-table row in
-               site/_templates/news_post.html. -->
  </ul>
  </section>
 
@@ -136,7 +132,7 @@
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+ <p class="footer-entity">運営: Bookyou株式会社</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="/tos.html">利用規約</a>

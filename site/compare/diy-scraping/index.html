@@ -38,8 +38,8 @@
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "税務会計AI vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026)",
-  "description": "税務会計AI vs 自前スクレイピング — 制度 DB を自分で 巡回取得 + 正規化 + MCP 化する場合の 工数 / 失効監視 / 重複除去 / ライセンス管理の比較。買うか作るかの 率直な整理。",
+  "headline": "jpcite vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026)",
+  "description": "jpcite vs 自前スクレイピング — 制度 DB を自分で 巡回取得 + 正規化 + MCP 化する場合の 工数 / 失効監視 / 重複除去 / ライセンス管理の比較。買うか作るかの 率直な整理。",
   "url": "https://jpcite.com/compare/diy-scraping/",
   "datePublished": "2026-04-29",
   "dateModified": "2026-04-29",
@@ -47,13 +47,11 @@
   "author": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "url": "https://jpcite.com/"
   },
   "mainEntityOfPage": "https://jpcite.com/compare/diy-scraping/"
@@ -64,9 +62,8 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite", "jpcite"],
   "url": "https://jpcite.com/",
-  "identifier": "T8010001213708",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "JP",
@@ -198,7 +195,7 @@
 </tr>
 <tr>
 <th scope="row">2. MCP 対応</th>
-<td class="col-us">89 機能。</td>
+<td class="col-us">93 機能。</td>
 <td>自分で実装する場合は MCP サーバーも自作。</td>
 <td></td>
 </tr>
@@ -217,7 +214,7 @@
 <tr>
 <th scope="row">5. 制度 DB (補助金・融資・税制・認定)</th>
 <td class="col-us">11,684 件 (47 都道府県 + 省庁 + 自治体 1,500 以上の情報源)。</td>
-<td>1,500 以上の情報源を個別 巡回取得 + 失効監視。集約サイト (noukaweb 等) は当社で除外 — 誤情報リスク。</td>
+<td>1,500 以上の情報源を個別 巡回取得 + 失効監視。二次集約サイトは出典に使わない — 誤情報リスク。</td>
 <td class="compare-note-cell">自前で 1,500 以上の情報源管理は実務上極めて重い。</td>
 </tr>
 <tr>
@@ -246,7 +243,7 @@
 </tr>
 <tr>
 <th scope="row">10. 失効監視</th>
-<td class="col-us"><strong>毎晩 tier S/A 全件 + 段階的に B/C も巡回</strong>。404 即 公開保留 (二次レビュー待ち)。</td>
+<td class="col-us"><strong>毎晩 tier S/A 全件 + 段階的に B/C も巡回</strong>。404 即 検索対象外 (内容確認中)。</td>
 <td>自前で URL 死活監視 + 定期実行 + 通知 + DB 巡回。サイト改修ごとに パーサ 修正。</td>
 <td></td>
 </tr>
@@ -284,7 +281,7 @@
  <p class="pick-tag">jpcite が向いている</p>
  <ul>
  <li><strong>5 分で動く</strong>。匿名 3 リクエスト/日/IP で即評価、API キー不要。自前の巡回取得スクリプトは 1,500 以上の情報源を書ききるまで数週間〜数ヶ月。</li>
-<li><strong>失効監視 + 重複除去 + ライセンス管理</strong>を当社が運用。毎晩 tier S/A 全件 + 段階的に B/C も巡回し、404 即 公開保留 (二次レビュー待ち)。重複除去ロジック (公募回 / 都道府県差し替え) も内製済。</li>
+<li><strong>失効監視 + 重複除去 + ライセンス管理</strong>を当社が運用。毎晩 tier S/A 全件 + 段階的に B/C も巡回し、404 即 検索対象外 (内容確認中)。重複除去ロジック (公募回 / 都道府県差し替え) も内製済。</li>
 <li><strong>89 個の MCP ツール</strong>を Claude / ChatGPT / Cursor から直呼び。自前で MCP サーバーを書く工数も不要。</li>
  </ul>
  </div>
@@ -300,7 +297,7 @@
 
  <h2>移行 / 併用ガイド</h2>
  <div class="compare-migration">
- <p><strong>買って始め、作るかは後で判断</strong>: まず当社 API で 試作版 を組んで需要を確かめてから、本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、そのスライスだけ自前で 巡回取得 する、という併用戦略が現実的です。当社の OpenAPI 仕様書は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、MCP ツール仕様も <a href="/docs/mcp-tools/">MCP ツール一覧</a> で読めるため、後から自前に切り替える際の移植も比較的容易です。</p><p><strong>ライセンスの落とし穴</strong>: 自前の巡回取得スクリプトの最大の罠は<strong>出典管理</strong>です。集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を 出典 URL にすると古い金額・終了済み制度を孫引きしてしまい、景表法 / 善管注意義務リスクが顕在化します。当社は社内規約で 集約サイト除外・政府機関一次資料限定 を強制し、全件に 出典 URL + 更新日時 + ライセンス を持たせています。この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>
+ <p><strong>買って始め、作るかは後で判断</strong>: まず当社 API で 試作版 を組んで需要を確かめてから、本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、そのスライスだけ自前で 巡回取得 する、という併用戦略が現実的です。当社の OpenAPI 仕様書は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、MCP ツール仕様も <a href="/docs/mcp-tools/">MCP ツール一覧</a> で読めるため、後から自前に切り替える際の移植も比較的容易です。</p><p><strong>ライセンスの落とし穴</strong>: 自前の巡回取得スクリプトの最大の罠は<strong>出典管理</strong>です。二次集約サイトを出典 URL にすると古い金額・終了済み制度を孫引きしてしまい、景表法 / 善管注意義務リスクが顕在化します。当社は社内規約で 集約サイト除外・政府機関一次資料限定 を強制し、全件に 出典 URL + 更新日時 + ライセンス を持たせています。この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>
  </div>
 
  <h2>関連ページ</h2>
@@ -345,9 +342,8 @@
  <a href="../../tos.html">利用規約</a>
  <a href="../../privacy.html">プライバシー</a>
  <a href="../../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>

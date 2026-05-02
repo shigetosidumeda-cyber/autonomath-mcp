@@ -50,21 +50,18 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite ファクトシート",
-  "description": "jpcite が公表する統計 (制度件数・レコード数・属性データ・料金) の正本一覧。各値は /v1/meta API を一次出典とし、JST 更新日を明記。",
+  "description": "jpcite が公表する統計 (制度件数・レコード数・属性データ・料金) の基準一覧。各値は /v1/meta API を一次出典とし、JST 更新日を明記。",
   "url": "https://jpcite.com/facts.html",
   "creator": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "email": "info@bookyou.net",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/"},
   "license": "https://jpcite.com/tos.html",
   "isAccessibleForFree": true,
   "inLanguage": "ja",
@@ -92,7 +89,7 @@
       "name": "サイトに表示されている数字 (例: 11,684 制度) の出典は?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "本ファクトシート (https://jpcite.com/facts.html) が正本です。各値は /v1/meta API (https://api.jpcite.com/v1/meta) を一次出典とし、JST 更新日を併記しています。サイト内の各数字は <span data-fact=\"...\"> でマークアップされており、ファクトシート上の <dt id=\"fact-...\"> と 1:1 対応します。"
+        "text": "本ファクトシート (https://jpcite.com/facts.html) を基準にしています。各値は /v1/meta API (https://api.jpcite.com/v1/meta) を一次出典とし、JST 更新日を併記しています。サイト内の各数字は <span data-fact=\"...\"> でマークアップされており、ファクトシート上の <dt id=\"fact-...\"> と 1:1 対応します。"
       }
     },
     {
@@ -108,7 +105,7 @@
       "name": "Tier S/A/B/C の意味は?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "実データ充足度に基づく品質ラベルです。Tier S/A/B/C は検索対象、公開保留中の制度は検索対象外。詳細は /docs/exclusions/ を参照。"
+        "text": "実データ充足度に基づく品質ラベルです。Tier S/A/B/C は検索対象、検索対象外の制度は検索対象外。詳細は /docs/exclusions/ を参照。"
       }
     }
   ]
@@ -152,7 +149,7 @@
 <main id="main">
  <div class="container" style="max-width:880px;padding-top:32px;padding-bottom:48px;">
  <h1>ファクトシート — 統計の出典</h1>
- <p class="lead">jpcite のサイト・ドキュメント・営業資料に登場する数値の正本です。各値は <code>/v1/meta</code> API を一次出典とし、更新日 (JST) を明記しています。サイト内の各数字は <code>&lt;span data-fact=&quot;ID&quot;&gt;</code> でマークアップされ、本ページの <code>&lt;dt id=&quot;fact-ID&quot;&gt;</code> に 1:1 で対応します。</p>
+ <p class="lead">jpcite のサイト・ドキュメント・営業資料に登場する数値の基準ページです。各値は <code>/v1/meta</code> API を一次出典とし、更新日 (JST) を明記しています。サイト内の各数字は <code>&lt;span data-fact=&quot;ID&quot;&gt;</code> でマークアップされ、本ページの <code>&lt;dt id=&quot;fact-ID&quot;&gt;</code> に 1:1 で対応します。</p>
 
  <p style="margin:0 0 24px;color:var(--text-muted);font-size:14px;">
  最終更新: <time datetime="2026-04-30">2026-04-30 JST</time> ·
@@ -177,7 +174,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="fact-searchable_programs_total" style="font-weight:600;font-size:18px;">検索対象 制度件数: 11,684</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- Tier S/A/B/C の合計。公開保留中の制度を除外した値で、API 検索結果に現れる母集団。<br>
+ Tier S/A/B/C の合計。検索対象外の制度を除外した値で、API 検索結果に現れる母集団。<br>
  出典: <code>/v1/meta</code> の <code>tier_counts</code> sum (S+A+B+C) · 更新 2026-04-29 JST · 補助金・融資・税制・認定制度を含む
  </dd>
  </div>
@@ -185,7 +182,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="fact-total_programs" style="font-weight:600;font-size:18px;">制度 全件数: 14,472</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 制度 全件 (公開保留 含む)。<br>
+ 制度 全件 (検索対象外を含む)。<br>
  出典: <code>/v1/meta.total_programs</code> · 更新 2026-04-29 JST · 一次資料 99%以上で 出典 URL + 更新日時 付き
  </dd>
  </div>
@@ -193,7 +190,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="fact-tier_s_count" style="font-weight:600;font-size:18px;">Tier S 件数: 114</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 最高品質 (実データ充足 10/10) ラベル。tier 判定は <code>docs/canonical/tier_methodology.md</code> 参照。<br>
+ 出典確認済みの高信頼ラベル。詳しい考え方は公開ドキュメントを参照してください。<br>
  出典: <code>/v1/meta.tier_counts.S</code> · 更新 2026-04-26 JST
  </dd>
  </div>
@@ -223,9 +220,9 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-quarantined_count" style="font-weight:600;font-size:18px;">公開保留中の制度 件数: 2,788</dt>
+ <dt id="fact-review-heldd_count" style="font-weight:600;font-size:18px;">検索対象外の制度 件数: 2,788</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 充足度不足のため検索除外。一次資料は保持しているが、品質基準を満たさず公開保留 (二次レビュー待ち)。<br>
+ 充足度不足のため検索除外。一次資料は保持しているが、品質基準を満たさず検索対象外 (内容確認中)。<br>
  出典: <code>/v1/meta.tier_counts.X</code> · 更新 2026-04-26 JST
  </dd>
  </div>
@@ -399,14 +396,14 @@
  </section>
 
  <p style="margin:32px 0 0;font-size:13px;color:var(--text-muted);">
- 数値の不一致を発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。本ファクトシートが正本であり、サイト他ページに残る古い数字はキャッシュ・移行漏れとして扱います。
+ 数値の不一致を発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。本ファクトシートの値を確認基準とし、サイト他ページに残る古い数字は順次修正します。
  </p>
 
  <section aria-labelledby="faq" style="margin-top:48px;">
  <h2 id="faq" style="font-size:22px;margin:0 0 16px;">よくある質問</h2>
  <details style="margin:0 0 12px;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">
  <summary style="font-weight:600;cursor:pointer;">サイトに表示されている数字 (例: 11,684 制度) の出典は?</summary>
- <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);">本ファクトシート (<a href="https://jpcite.com/facts.html">https://jpcite.com/facts.html</a>) が正本です。各値は <a href="https://api.jpcite.com/v1/meta"><code>/v1/meta</code> API</a> を一次出典とし、JST 更新日を併記しています。サイト内の各数字は <code>&lt;span data-fact="..."&gt;</code> でマークアップされており、ファクトシート上の <code>&lt;dt id="fact-..."&gt;</code> と 1:1 対応します。</p>
+ <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);">本ファクトシート (<a href="https://jpcite.com/facts.html">https://jpcite.com/facts.html</a>) を基準にしています。各値は <a href="https://api.jpcite.com/v1/meta"><code>/v1/meta</code> API</a> を一次出典とし、JST 更新日を併記しています。サイト内の各数字は <code>&lt;span data-fact="..."&gt;</code> でマークアップされており、ファクトシート上の <code>&lt;dt id="fact-..."&gt;</code> と 1:1 対応します。</p>
  </details>
  <details style="margin:0 0 12px;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">
  <summary style="font-weight:600;cursor:pointer;">数字はどの頻度で更新されますか?</summary>
@@ -414,7 +411,7 @@
  </details>
  <details style="margin:0;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">
  <summary style="font-weight:600;cursor:pointer;">Tier S/A/B/C の意味は?</summary>
- <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);">実データ充足度に基づく品質ラベルです。Tier S/A/B/C は検索対象、公開保留中の制度は検索対象外。詳細は <a href="/docs/exclusions/">/docs/exclusions/</a> を参照。</p>
+ <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);">実データ充足度に基づく品質ラベルです。Tier S/A/B/C は検索対象、検索対象外の制度は検索対象外。詳細は <a href="/docs/exclusions/">/docs/exclusions/</a> を参照。</p>
  </details>
  </section>
 
@@ -439,9 +436,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -450,8 +446,8 @@
 <script src="/assets/trust-strip.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.税務会計AIFeedback) {
-    window.税務会計AIFeedback.mount('body', { position: 'bottom-right' });
+  if (window.jpciteFeedback) {
+    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
   }
 });
 </script>

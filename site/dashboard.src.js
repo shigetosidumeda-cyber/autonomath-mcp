@@ -1,16 +1,15 @@
 // dashboard.js — wires site/dashboard.html to /v1/session + /v1/me/*
 // Plain ES2020, no build system, no external deps. Same-origin relative URLs
 // assume the dashboard is served from the same host as the API (or a reverse
-// proxy that forwards /v1/* to the API). Override via window.AUTONOMATH_API_BASE
-// (legacy alias: window.JPINTEL_API_BASE) if a separate origin is ever used
-// (then CORS + allow_credentials must be on).
+// proxy that forwards /v1/* to the API). Override via window.JPCITE_API_BASE
+// if a separate origin is ever used (then CORS + allow_credentials must be on).
 (() => {
   'use strict';
 
   // ------------------------------------------------------------------
   // config
   // ------------------------------------------------------------------
-  const API_BASE = (typeof window !== 'undefined' && (window.AUTONOMATH_API_BASE || window.JPINTEL_API_BASE)) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'jpcite.com' ? 'https://api.jpcite.com' : '');
+  const API_BASE = (typeof window !== 'undefined' && window.JPCITE_API_BASE) || (typeof window !== 'undefined' && window.location && window.location.hostname === 'jpcite.com' ? 'https://api.jpcite.com' : '');
   const api = (p) => API_BASE.replace(/\/$/, '') + p;
 
   // CSRF double-submit cookie pattern. On /v1/session sign-in
@@ -977,8 +976,7 @@
     } catch (err) {
       // 404 + {status:"no_customer"} is the legitimate "Stripe カスタマー未作成"
       // path — happens before the user has made their first metered request.
-      // Per CLAUDE.md: no tiers, no upgrade — surface the server's structured
-      // message verbatim, never "upgrade" / "tier" wording. FastAPI wraps
+      // Surface the server's structured message verbatim. FastAPI wraps
       // `HTTPException(detail={...})` so the inner dict is at err.body.detail.
       const body = err && err.body;
       const inner = body && (body.detail && typeof body.detail === 'object' ? body.detail : body);

@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>Law-revision alerts — invoice system, e-bookkeeping, subsidies — jpcite</title>
-<meta name="description" content="Email alerts for revisions to Japan's invoice system, e-bookkeeping (denshi-chobo) law, subsidies, loans, enforcement actions, tax rulesets, and court decisions. Filter by industry, prefecture, and topic. Monthly digest is free; real-time alerts are ¥3/notification tax exclusive (¥550 incl.). Operated by Bookyou Inc.">
+<meta name="description" content="Email alerts for revisions to Japan's invoice system, e-bookkeeping (denshi-chobo) law, subsidies, loans, enforcement actions, tax rulesets, and court decisions. Filter by industry, prefecture, and topic. Monthly digest is free; real-time alerts are ¥3/notification tax exclusive (¥3.30 incl.). Operated by Bookyou Inc.">
 
-<meta property="og:title" content="Law-revision alerts — invoice / e-bookkeeping / subsidy changes within 24 hours">
-<meta property="og:description" content="Email alerts within 24 hours of detection. Monthly digest free; real-time ¥3/notification. Every alert ships with the primary-source URL.">
+<meta property="og:title" content="Law-revision alerts — invoice / e-bookkeeping / subsidy changes">
+<meta property="og:description" content="Email alerts for detected changes. Monthly digest free; real-time ¥3/notification. Every alert ships with the primary-source URL.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/alerts.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -20,7 +20,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Law-revision alerts — jpcite">
-<meta name="twitter:description" content="Invoice / e-bookkeeping / subsidy changes within 24 hours by email. ¥3/notification.">
+<meta name="twitter:description" content="Invoice / e-bookkeeping / subsidy changes by email. ¥3/notification.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/alerts.html">
@@ -55,9 +55,7 @@
   "manufacturer": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/",
-    "vatID": "T8010001213708",
     "email": "info@bookyou.net"
   },
   "url": "https://jpcite.com/en/alerts.html",
@@ -73,14 +71,14 @@
     {
       "@type": "Offer",
       "name": "Real-time alerts",
-      "price": "500",
+      "price": "3",
       "priceCurrency": "JPY",
-      "description": "¥3/notification tax exclusive (¥550 tax inclusive). Email delivered within 24 hours of detection.",
+      "description": "¥3/notification tax exclusive (¥3.30 tax inclusive). Email delivered for detected changes.",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
-        "price": "500",
+        "price": "3",
         "priceCurrency": "JPY",
-        "unitText": "MONTH"
+        "unitText": "notification"
       }
     }
   ]
@@ -198,11 +196,11 @@
  </nav>
  <h1>Law-revision alerts — never miss an invoice, e-bookkeeping, or subsidy change</h1>
  <p class="lead">
- Filter by industry, prefecture, and topic, and we'll email you within
- 24 hours of any matching change. Every alert links the primary source
+ Filter by industry, prefecture, and topic, and we'll email you when a
+ matching change is detected. Every alert links the primary source
  (ministries, JFC, NTA, e-Gov, the courts).
  </p>
- <p class="tag">Monthly digest is free. Real-time alerts are ¥3/notification (tax excl., ¥550 incl.). No minimum term, no cancellation fee.</p>
+ <p class="tag">Monthly digest is free. Real-time alerts are ¥3/notification (tax excl., ¥3.30 incl.). No minimum term, no cancellation fee.</p>
  </div>
 </section>
 
@@ -279,7 +277,7 @@
  <label id="plan-paid-label">
  <input type="radio" name="plan" value="paid">
  <span class="plan-price">Real-time alerts — ¥3/notification (tax excl.)</span>
- <div class="plan-desc">Within 24 hours of detection, scoped to your topics. ¥550 tax incl. No minimum term.</div>
+ <div class="plan-desc">Detected changes scoped to your topics. ¥3.30 tax incl. No minimum term.</div>
  </label>
  </fieldset>
 
@@ -396,10 +394,9 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>
@@ -469,7 +466,7 @@
       var submitBtn = form.querySelector('button[type=submit], input[type=submit]');
       if (submitBtn) submitBtn.disabled = true;
 
-      var apiBase = window.AUTONOMATH_API_BASE || "https://api.jpcite.com";
+      var apiBase = window.JPCITE_API_BASE || "https://api.jpcite.com";
       var ctrl = new AbortController();
       var timer = setTimeout(function () { ctrl.abort(); }, 15000);
       fetch(apiBase + "/v1/compliance/subscribe", {

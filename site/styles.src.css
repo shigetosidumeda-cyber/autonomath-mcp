@@ -1,4 +1,4 @@
-/* jpintel-mcp landing — monochrome + deep-blue accent.
+/* jpcite landing — monochrome + deep-blue accent.
    System fonts, no CDN, mobile-first.
    Color contrast: text #111 on #fff = 19.3:1. Accent #1e3a8a on #fff = 9.4:1. */
 
@@ -318,7 +318,7 @@ pre code { word-break: normal; }
 
 /* Trust strip — discreet single-line "who runs this" row used in the
    hero of every page so the first impression always carries Bookyou
-   株式会社 (T8010001213708) + 一次資料 anchor. Plain text + dot
+   株式会社  + 一次資料 anchor. Plain text + dot
    separators, no badges, no icons. The trust-strip-blocks variant
    below shows a row of small bordered tokens for cohort pages. */
 .trust-strip {
@@ -1666,7 +1666,7 @@ pre code { word-break: normal; }
    awareness + fluid font sizing. `word-break: keep-all` keeps Japanese
    words from breaking mid-character on narrow phones; `clamp()` shrinks
    the font from 32px to 24px between 320–375px so a long compound like
-   "SMB 経営者向け AutonoMath" never visually clips. Scoped to mobile
+   "SMB 経営者向け jpcite" never visually clips. Scoped to mobile
    so desktop's 44px hero font is preserved. */
 @media (max-width: 480px) {
   .hero h1 {

@@ -575,9 +575,7 @@ class MatchEvidence:
             return True
         if self.authority_match:
             return True
-        if self.name_hits:
-            return True
-        return False
+        return bool(self.name_hits)
 
 
 def _match_one(matcher: JsicMatcher, row: dict[str, Any], target_tokens: list[str]) -> MatchEvidence:
@@ -662,10 +660,6 @@ def _org_node(domain: str) -> dict[str, Any]:
         "name": "jpcite",
         "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
-        "legalName": OPERATOR_NAME,
-        "taxID": OPERATOR_CORPORATE_NUMBER,
-        "founder": {"@type": "Person", "name": OPERATOR_REP},
-        "address": {"@type": "PostalAddress", "addressCountry": "JP", "addressLocality": OPERATOR_ADDRESS_JP},
         "logo": {
             "@type": "ImageObject",
             "url": f"https://{domain}/assets/logo.png",
@@ -837,10 +831,7 @@ def _tldr_paragraph(
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "公募要領を参照"
 
     parts = [f"業種コード {jsic_code} ({jsic_name_ja}) における {name} の機械可読データを jpcite が集約しました。"]
-    if amt:
-        amt_phrase = f"最大支援金額は{amt}です。"
-    else:
-        amt_phrase = "支援金額は公募要領に記載されています。"
+    amt_phrase = f"最大支援金額は{amt}です。" if amt else "支援金額は公募要領に記載されています。"
     if agency:
         parts.append(f"本制度は {agency} が運営する{kind}で、{amt_phrase}")
     else:
@@ -888,7 +879,6 @@ def _qa_pairs(
     name = row["primary_name"]
     agency = _resolve_agency(row) or "公募要領記載の申請窓口"
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "最新を参照"
-    amt = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "公募要領に記載"
     rate = _subsidy_rate_line(row.get("subsidy_rate"))
     target_text = "、".join(_target_type_label(t) for t in target_types) if target_types else "公募要領の規定に従う"
     rate_clause = f"補助率は{rate}が目安です。" if rate else ""

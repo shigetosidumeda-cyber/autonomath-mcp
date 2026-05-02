@@ -26,12 +26,11 @@ bucket results into:
 from __future__ import annotations
 
 import json
-import re
 from datetime import date
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
 from .bind_registry import get_canonical_conn, register, safe_rows
-from .precompute import PrecomputedCache, canonical_program_id
+from .precompute import PrecomputedCache
 
 
 TODAY = date(2026, 4, 23)

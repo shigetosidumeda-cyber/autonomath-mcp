@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Fri, 01 May 2026 13:06:39 +0000</lastBuildDate>
+  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
 
   <item>
     <title>県の補助金交付要綱名 細事項名</title>
@@ -425,7 +425,7 @@
   </item>
 
   <item>
-    <title>MUN-412015-001_佐賀市_親元就農支援給付金事業</title>
+    <title>佐賀市_親元就農支援給付金事業</title>
     <link>https://jpcite.com/programs/mun-412015-001-sagashi-oyamoto-shuunou-shien-kyuufukin-74fbb6.html</link>
     <description>Tier B / 佐賀県 / subsidy / 上限 150万円 出典: https://www.city.saga.lg.jp/main/109132.html</description>
     <category>subsidy</category>
@@ -443,7 +443,7 @@
   </item>
 
   <item>
-    <title>PREF-41-102_佐賀_さが園芸888_新規就農トレーニングファーム</title>
+    <title>佐賀_さが園芸888_新規就農トレーニングファーム</title>
     <link>https://jpcite.com/programs/pref-41-102-saga-saga-engei-888-shinki-shuunou-8797f5.html</link>
     <description>Tier B / 佐賀県 / subsidy / 上限 500万円 出典: https://saga888.jp/newfarmer/</description>
     <category>subsidy</category>
@@ -533,7 +533,7 @@
   </item>
 
   <item>
-    <title>PREF-41-101_佐賀_さが園芸888運動_施設整備支援</title>
+    <title>佐賀_さが園芸888運動_施設整備支援</title>
     <link>https://jpcite.com/programs/pref-41-101-saga-saga-engei-888-undou-shisetsu-seibi-shien-6b6f59.html</link>
     <description>Tier B / 佐賀県 / subsidy / 上限 4,680万円 出典: https://www.city.saga-kashima.lg.jp/main/3073.html</description>
     <category>subsidy</category>
@@ -571,7 +571,7 @@
   <item>
     <title>未来につなぐ唐津移住支援事業補助金</title>
     <link>https://jpcite.com/programs/mirai-nitsunagu-karatsu-ijuu-shien-jigyou-hojokin-fd9db6.html</link>
-    <description>Tier C / 佐賀県 / （noukaweb 収集） 出典: https://www.city.karatsu.lg.jp/page/32493.html</description>
+    <description>Tier C / 佐賀県 出典: https://www.city.karatsu.lg.jp/page/32493.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-6c42f40a03</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -580,7 +580,7 @@
   <item>
     <title>担い手(認定農業者・集落営農組織)等を対象とした各種制度・事業</title>
     <link>https://jpcite.com/programs/ninaite-nintei-nougyou-mono-shuuraku-einou-soshiki-nado-wo-256d49.html</link>
-    <description>Tier C / 佐賀県 / （noukaweb 収集） 出典: https://www.pref.saga.lg.jp/kiji00344397/index.html</description>
+    <description>Tier C / 佐賀県 出典: https://www.pref.saga.lg.jp/kiji00344397/index.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-78cdfc8233</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -670,7 +670,7 @@
   <item>
     <title>唐津市地方創生移住支援事業補助金</title>
     <link>https://jpcite.com/programs/karatsu-shi-chihou-sousei-ijuu-shien-jigyou-hojokin-a7c4d0.html</link>
-    <description>Tier C / 佐賀県 / （noukaweb 収集） 出典: https://www.city.karatsu.lg.jp/page/2234.html</description>
+    <description>Tier C / 佐賀県 出典: https://www.city.karatsu.lg.jp/page/2234.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-b9e04008f8</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -706,7 +706,7 @@
   <item>
     <title>認定新規就農者制度</title>
     <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-84e607.html</link>
-    <description>Tier B / 佐賀県 / （noukaweb 収集） / 上限 150万円 出典: https://www.city.saga.lg.jp/main/24433.html</description>
+    <description>Tier B / 佐賀県 / 上限 150万円 出典: https://www.city.saga.lg.jp/main/24433.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-cdf85b84be</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -724,7 +724,7 @@
   <item>
     <title>明日の農業者チャレンジ支援事業（縁元就農）</title>
     <link>https://jpcite.com/programs/ashita-no-nougyou-mono-charenji-shien-jigyou-heri-motonari-3e4c24.html</link>
-    <description>Tier C / 佐賀県 / （noukaweb 収集） 出典: https://www.city.karatsu.lg.jp/page/3260.html</description>
+    <description>Tier C / 佐賀県 出典: https://www.city.karatsu.lg.jp/page/3260.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-e57e21d6e0</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
@@ -740,7 +740,7 @@
   </item>
 
   <item>
-    <title>PREF-41-001_佐賀_さが園芸生産888億円推進事業</title>
+    <title>佐賀_さが園芸生産888億円推進事業</title>
     <link>https://jpcite.com/programs/pref-41-001-saga-saga-engei-seisan-888-okuen-suishin-jigyou-794112.html</link>
     <description>Tier C / 佐賀県 / subsidy / 上限 3,000万円 出典: https://www.pref.saga.lg.jp/kiji00324423/index.html</description>
     <category>subsidy</category>

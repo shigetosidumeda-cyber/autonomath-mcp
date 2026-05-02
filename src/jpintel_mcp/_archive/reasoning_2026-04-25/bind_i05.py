@@ -18,7 +18,7 @@ certification_id (keyword match), we just parse the raw_json and surface:
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .bind_registry import get_canonical_conn, register, safe_rows
 from .precompute import PrecomputedCache, canonical_program_id

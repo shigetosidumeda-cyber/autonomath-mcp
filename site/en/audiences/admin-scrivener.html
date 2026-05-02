@@ -57,9 +57,7 @@
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://jpcite.com/en/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/en/"},
   "audience": {
     "@type": "Audience",
     "audienceType": "Administrative scriveners and gyoseishoshi-houjin"
@@ -86,8 +84,8 @@
   "@type": "FAQPage",
   "inLanguage": "en",
   "mainEntity": [
-    {"@type": "Question", "name": "Can I find subsidies for a construction-license renewal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Filter target_types=construction + prefecture and you'll get monozukuri subsidy, business-restructuring subsidy, and prefecture-specific construction programs. Sort by approaching deadline."}},
-    {"@type": "Question", "name": "How do I tie this to eldercare, freight, and waste-disposal licenses?", "acceptedAnswer": {"@type": "Answer", "text": "Filter by JSIC industry code and target_types: subsidies for eldercare operators, work-environment improvement for freight, labor-saving subsidies for waste disposal, etc."}},
+    {"@type": "Question", "name": "Can I find subsidies for a construction-license renewal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Filter target_type=construction + prefecture and you'll get monozukuri subsidy, business-restructuring subsidy, and prefecture-specific construction programs. Sort by approaching deadline."}},
+    {"@type": "Question", "name": "How do I tie this to eldercare, freight, and waste-disposal licenses?", "acceptedAnswer": {"@type": "Answer", "text": "Filter by JSIC industry code and target_type: subsidies for eldercare operators, work-environment improvement for freight, labor-saving subsidies for waste disposal, etc."}},
     {"@type": "Question", "name": "What are the 181 exclusion rules?", "acceptedAnswer": {"@type": "Answer", "text": "Structured rules encoding relations like subsidy A and B can't be combined or subsidy C requires prior certification D — 181 rules total (125 exclude + 17 prerequisite + 15 absolute + 24 other). POST a list of program_ids and you get back the conflicts."}},
     {"@type": "Question", "name": "How many requests per case?", "acceptedAnswer": {"@type": "Answer", "text": "Pre-research 5-10 + proposal drafting 5-10 — about 10-20 req per case. 30 cases per month gives 300-600 req, around ¥900-1,800 (tax exclusive)."}},
     {"@type": "Question", "name": "Does this work for nintei-keiei-kakushin-shien-kikan (Certified Management Innovation Support Organization) cases?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. monozukuri and business-restructuring subsidies require involvement from a certified support organization. jpcite surfaces the related programs, and registering as an advisor on our affiliate lets you receive SMB inquiries."}},
@@ -109,7 +107,6 @@
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/admin-scrivener.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -171,7 +168,7 @@
 
  <article class="card">
  <h3>1. Construction-license renewal + subsidy proposal</h3>
- <p>For a renewal site visit, target_types="construction" + prefecture in one call. Pull monozukuri subsidy, Construction Career Up System programs, and prefectural construction subsidies, and propose them alongside the renewal paperwork.</p>
+ <p>For a renewal site visit, target_type="construction" + prefecture in one call. Pull monozukuri subsidy, Construction Career Up System programs, and prefectural construction subsidies, and propose them alongside the renewal paperwork.</p>
  </article>
 
  <article class="card">
@@ -204,13 +201,12 @@
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card">
- <h3>curl (anonymous, 50 free/mo)</h3>
+ <h3>curl (anonymous, 3 free/day)</h3>
  <pre class="code-block"><code>curl 'https://api.jpcite.com/v1/programs/search?\
 prefecture=東京都&amp;\
-target_types=建設業&amp;\
-deadline_within_days=30&amp;\
+q=建設業&amp;\
 limit=10'</code></pre>
- <p class="demo-note">No signup, JST first-of-month reset.</p>
+ <p class="demo-note">No signup, JST daily reset.</p>
  </article>
 
  <article class="card">
@@ -220,7 +216,7 @@ limit=10'</code></pre>
 r = httpx.post(
  "https://api.jpcite.com/v1/exclusions/check",
  json={"program_ids": ["P001", "P342"]},
- headers={"X-API-Key": "sk_..."}
+ headers={"X-API-Key": "am_..."}
 )
 print(r.json["conflicts"])</code></pre>
  <p class="demo-note">181 exclusion rules (125 exclude + 17 prerequisite + 15 absolute + 24 other) flag conflicts.</p>
@@ -234,7 +230,7 @@ print(r.json["conflicts"])</code></pre>
  "autonomath": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"AUTONOMATH_API_KEY": "sk_..."}
+ "env": {"JPCITE_API_KEY": "am_..."}
  }
  }
 }</code></pre>
@@ -248,7 +244,7 @@ print(r.json["conflicts"])</code></pre>
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">Administrative-scrivener pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 3 req/daynth anonymous and free.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 3 req/day anonymous and free.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">Recommended interface pricing for administrative scriveners</caption>
@@ -263,8 +259,7 @@ print(r.json["conflicts"])</code></pre>
  <tbody>
  <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
  <tr><th scope="row">Professional-advisor affiliate (optional)</th><td>Free signup</td><td>¥3,000 / closed intro</td><td>¥3,300 / closed intro</td></tr>
- <tr><th scope="row">Embedded widget — Standard (optional)</th><td>-</td><td>¥10,000 / mo (10,000 req included)</td><td>¥11,000 / mo</td></tr>
- <tr><th scope="row">Embedded widget — Whitelabel (optional)</th><td>-</td><td>¥30,000 / mo (30,000 req included, no logo)</td><td>¥33,000 / mo</td></tr>
+<tr><th scope="row">Embedded widget (optional)</th><td>3 req/day per IP</td><td>¥3 / search</td><td>¥3.30 / search</td></tr>
  </tbody>
  </table>
  </div>
@@ -276,9 +271,9 @@ print(r.json["conflicts"])</code></pre>
  <div class="container">
  <h2 id="faq-title" class="section-title">FAQ (administrative scriveners)</h2>
  <h3 style="font-size:16px;margin:18px 0 6px;">Can I find subsidies for a construction-license renewal?</h3>
- <p>Yes. Filter target_types="construction" + prefecture and you'll get monozukuri subsidy, business-restructuring subsidy, and prefecture-specific construction programs. Sort by approaching deadline.</p>
+ <p>Yes. Filter target_type="construction" + prefecture and you'll get monozukuri subsidy, business-restructuring subsidy, and prefecture-specific construction programs. Sort by approaching deadline.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How do I tie this to eldercare, freight, and waste-disposal licenses?</h3>
- <p>Filter by JSIC industry code and target_types: subsidies for eldercare operators, work-environment improvement for freight, labor-saving subsidies for waste disposal, etc.</p>
+ <p>Filter by JSIC industry code and target_type: subsidies for eldercare operators, work-environment improvement for freight, labor-saving subsidies for waste disposal, etc.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">What are the 181 exclusion rules?</h3>
  <p>Structured rules encoding relations like "subsidy A and B can't be combined" or "subsidy C requires prior certification D" — 181 total (125 exclude + 17 prerequisite + 15 absolute + 24 other). POST program_ids and you get back the conflicts.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How many requests per case?</h3>
@@ -302,7 +297,7 @@ print(r.json["conflicts"])</code></pre>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/req fully metered)</strong></a> &mdash; About 10-20 req per case; 30 cases/month = ¥900-1,800 (tax excl.). Zero monthly minimums.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../widget.html"><strong>Embed on your firm site (widget)</strong></a> &mdash; Drop the prescreen on your firm LP to capture inquiries. One-line script tag, white-label OK.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction. Profile by region &times; industry &times; specialty.</li>
- <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Free 3 req/daynth covers 5-10 clients per month at zero cost.</li>
+ <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Anonymous 3 req/day is available for evaluation.</li>
  </ul>
  </div>
  </section>
@@ -325,7 +320,6 @@ print(r.json["conflicts"])</code></pre>
  <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
  <a class="btn btn-secondary" href="../index.html#demo">Try the 30-second prescreen</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
- <a class="btn btn-secondary" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" rel="noopener">GitHub</a>
  </div>
  <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
  </div>
@@ -348,10 +342,9 @@ print(r.json["conflicts"])</code></pre>
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

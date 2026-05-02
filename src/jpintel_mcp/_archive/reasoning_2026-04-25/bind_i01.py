@@ -21,8 +21,7 @@ queries working even if graph ingest hasn't reached a new topic yet.
 """
 from __future__ import annotations
 
-import json
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
 from .bind_registry import (
     get_canonical_conn,

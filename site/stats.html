@@ -39,19 +39,18 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Stats — 税務会計AI",
+  "name": "Stats — jpcite",
   "url": "https://jpcite.com/stats.html",
-  "description": "税務会計AI の透明性ダッシュボード。データセット件数と source freshness、月間 API 利用量。",
+  "description": "jpcite の透明性ダッシュボード。データセット件数と source freshness、月間 API 利用量。",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "url": "https://jpcite.com/about.html"
   }
 }
@@ -168,14 +167,14 @@
  <!-- Coverage ------------------------------------------------------------ -->
  <section class="stats-section" aria-labelledby="coverage-h">
  <h2 id="coverage-h">カバレッジ — データセット件数</h2>
- <p class="desc">jpintel.db の各テーブルの行数。集約サイト (二次情報源) は <strong>0 件</strong>、すべて一次資料に紐づいています。</p>
+ <p class="desc">公開データセットの行数。集約サイト (二次情報源) は <strong>0 件</strong>、すべて一次資料に紐づいています。</p>
  <div class="grid" id="coverage-grid">
  <div class="card"><p class="label">programs (補助金等)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">case_studies (採択事例)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">loan_programs (融資)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">enforcement_cases (行政処分)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">exclusion_rules (排他)</p><p class="value pending">…</p></div>
- <div class="card"><p class="label">laws_jpintel (法令)</p><p class="value pending">…</p></div>
+ <div class="card"><p class="label">laws (法令)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">tax_rulesets (税制)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">court_decisions (判例)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">bids (入札)</p><p class="value pending">…</p></div>
@@ -238,9 +237,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -249,9 +247,8 @@
 (function() {
   "use strict";
 
-  // Allow override for cross-origin local dev; defaults to same-origin path
-  // so Pages -> Fly proxy works in production.
-  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "jpcite.com" ? "https://api.jpcite.com" : "");
+  // Allow override for cross-origin local dev; defaults to the production API on jpcite.com.
+  var BASE = (typeof window !== "undefined" && window.JPCITE_API_BASE) || (typeof window !== "undefined" && window.location && window.location.hostname === "jpcite.com" ? "https://api.jpcite.com" : "");
 
   var COVERAGE_LABELS = [
     ["programs", "programs (補助金等)"],
@@ -259,7 +256,7 @@
     ["loan_programs", "loan_programs (融資)"],
     ["enforcement_cases", "enforcement_cases (行政処分)"],
     ["exclusion_rules", "exclusion_rules (排他)"],
-    ["laws_jpintel", "laws_jpintel (法令)"],
+    ["laws_jpintel", "laws (法令)"],
     ["tax_rulesets", "tax_rulesets (税制)"],
     ["court_decisions", "court_decisions (判例)"],
     ["bids", "bids (入札)"],

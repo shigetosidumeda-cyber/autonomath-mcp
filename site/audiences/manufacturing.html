@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>製造業向け jpcite — ものづくり 補助金 + 通達 + 裁決事例 (¥3/リクエスト)</title>
-<meta name="description" content="製造業向け jpcite。ものづくり・設備投資・省エネ・GX・事業再構築・IT導入関連の補助金 + 法人税基本通達 + 国税不服審判所 裁決事例 (法人税・所得税) を 1 API で。製造業 業種別パック (`pack_manufacturing`) で 1 リクエストに集約、¥3/リクエスト 従量。">
+<title>製造業特化 jpcite — 補助金候補 + 法基通 + 採択事例 を 1 API で (¥3/リクエスト)</title>
+<meta name="description" content="製造業特化の補助金候補抽出 + 国税庁通達 (法人税基本通達) + JSIC E 採択事例を 1 API で。製造業コンサル・中小企業中央会 (製造部会)・kintone-製造特化 plug-in 開発者向け。製造業 業種別パック (`pack_manufacturing`) で 1 リクエストに集約、¥3/リクエスト 従量。">
 
-<meta property="og:title" content="製造業向け jpcite — ものづくり 補助金 + 通達 + 裁決事例">
-<meta property="og:description" content="製造業特化 業種別パック。1 リクエストで主要 10 補助金 + 法人税基本通達 + 裁決事例。¥3/リクエスト、無料 3 リクエスト/日。">
+<meta property="og:title" content="製造業特化 jpcite — コンサル / 中央会 / 製造特化 SaaS 向け">
+<meta property="og:description" content="JSIC E fence で 458 件 program filter + 法基通 セクション固定参照 + 採択事例 298 件 + 経済産業省 行政処分 56 件 cohort を 1 API で。¥3/リクエスト 従量。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/manufacturing.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -18,8 +18,8 @@
 <meta property="og:site_name" content="jpcite">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="製造業向け jpcite">
-<meta name="twitter:description" content="製造業 業種別パック: 1 リクエストで 10 補助金 + 通達 + 裁決事例。¥3/リクエスト 従量。">
+<meta name="twitter:title" content="製造業特化 jpcite (コンサル / 中央会 / 製造特化 SaaS)">
+<meta name="twitter:description" content="製造業特化 業種別パック: JSIC E 458 件 + 法基通 + 採択事例 298 件 + 経産省 行政処分。¥3/リクエスト 従量。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/audiences/manufacturing.html">
@@ -41,7 +41,7 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
     {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://jpcite.com/audiences/"},
-    {"@type": "ListItem", "position": 3, "name": "製造業向け", "item": "https://jpcite.com/audiences/manufacturing.html"}
+    {"@type": "ListItem", "position": 3, "name": "製造業特化 (コンサル / 中央会 / SaaS)", "item": "https://jpcite.com/audiences/manufacturing.html"}
   ]
 }
 </script>
@@ -50,18 +50,16 @@
 {
   "@context": "https://schema.org",
   "@type": "Service",
-  "serviceType": "製造業向け 補助金・通達・裁決事例 API",
-  "name": "jpcite for 製造業",
-  "description": "製造業特化 業種別パック。ものづくり・設備投資・省エネ・GX・事業再構築・IT導入関連の補助金 + 法人税基本通達 + 国税不服審判所 裁決事例を 1 リクエストに集約。¥3/リクエスト 従量。",
+  "serviceType": "製造業特化 補助金候補 + 通達 + 採択事例 API (コンサル / 中央会 / SaaS 向け)",
+  "name": "jpcite for 製造業 (経由チャネル向け)",
+  "description": "製造業特化の補助金候補抽出 + 国税庁通達 (法人税基本通達) のセクション固定参照 + JSIC E 採択事例 + 経済産業省 行政処分 cohort を 1 リクエストに集約。製造業特化 補助金コンサル / 中小企業中央会 (製造部会) 担当者 / kintone-製造特化 plug-in 開発者向け。¥3/リクエスト 従量。",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/"},
   "audience": {
     "@type": "Audience",
-    "audienceType": "製造業 / 工場 / ものづくり中小企業"
+    "audienceType": "製造業特化 補助金コンサル / 認定支援機関 / 中小企業中央会 (製造部会) 担当者 / kintone-製造特化 plug-in 開発者"
   },
   "areaServed": {"@type": "Country", "name": "日本"},
   "offers": [
@@ -110,29 +108,54 @@
  <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
  <a href="/">ホーム</a> <span aria-hidden="true">›</span>
  <a href="/audiences/">利用者層</a> <span aria-hidden="true">›</span>
- <span aria-current="page">製造業向け</span>
+ <span aria-current="page">製造業特化 (コンサル / 中央会 / SaaS)</span>
  </nav>
- <h1 id="hero-title">製造業向け</h1>
- <p class="hero-sub">ものづくり・設備投資・省エネ・GX・脱炭素・事業再構築・IT 導入関連の補助金 + 通達 + 裁決事例を 1 リクエストで取得。</p>
+ <h1 id="hero-title">製造業特化 jpcite</h1>
+ <p class="hero-sub">製造業特化の補助金候補抽出 + 国税庁通達 (法人税基本通達) + 採択事例を 1 API で。<strong>製造業コンサル / 中小企業中央会 (製造部会) 担当者 / kintone-製造特化 plug-in 開発者向け</strong>。エンドユーザー (ものづくり中小企業 経営者 個人) ではなく、その上流に立つ「経由チャネル」を主対象に再設計しています。</p>
  </div>
  </section>
 
  <section class="features">
  <div class="container">
+ <h2 class="section-title">対象</h2>
  <ul class="card-list" style="font-size:16px;line-height:2;">
- <li>都道府県・従業員数・年商で関連補助金を抽出</li>
- <li>事業再構築・省エネ・GX 優先で上位返却</li>
- <li>法人税基本通達・国税不服審判所 裁決事例 (法人税・所得税) を併記</li>
- <li>各制度・各裁決事例・各通達に出典 URL 付き</li>
- <li>1 リクエスト ¥3 (税込 ¥3.30) 完全従量、3 リクエスト/日まで無料</li>
+ <li><strong>製造業特化 補助金コンサル / 中小企業診断士 / 認定支援機関</strong> — ものづくり / 設備投資 / 省エネ / GX / 事業再構築 / IT 導入 顧問先の補助金候補と通達根拠を 1 リクエストでまとめて返す</li>
+ <li><strong>都道府県中小企業中央会 (製造部会) / 各種工業組合 担当者</strong> — 組合員企業向けの補助金 widget や会報誌コンテンツを jpcite から自動更新</li>
+ <li><strong>kintone-製造特化 plug-in / 生産管理 SaaS / 在庫管理 SaaS 連携開発者</strong> — 製造業向け業務アプリに「使える補助金候補」プラグインを差し込む</li>
  </ul>
- <div class="cta-row" style="margin-top:24px;">
+
+ <h2 class="section-title" style="margin-top:32px;">主要価値</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>JSIC E fence (製造業)</strong> — ものづくり・製造・設備投資・省エネ・GX・脱炭素・事業再構築・IT 導入・DX キーワード union で <strong>458 件 の S/A/B/C tier program</strong> を絞り込み (snapshot 2026-04-30 時点)</li>
+ <li><strong>法基通 (法人税基本通達) のセクション固定参照</strong> — 各補助金候補に対する課税関係 (圧縮記帳 / 国庫補助金等の益金不算入 / 圧縮限度額) のセクション ID 付き引用、<strong>50 件の tax_rulesets</strong> (研究開発税制 措置法42-4 / IT導入補助金 会計処理 含む) を併記</li>
+ <li><strong>経済産業省 行政処分 cohort</strong> — 経済産業省関連の処分 56 件 (ministry='経済産業省') を houjin_bangou で横断検索、与信審査・反社チェックの補助情報として併記可</li>
+ <li><strong>JSIC E 採択事例 298 件</strong> (E24 金属製品 47 / E26 生産用機械 39 / E09 食料品 36 / E ほか 多数) — 案件提案書に「同業の採択パターン」として添付できる一次資料リンク付き</li>
+ <li>各補助金候補・各通達・各裁決事例・各処分・各採択事例に <strong>一次資料 source_url</strong> を併記 (官庁・自治体・公庫などの一次資料に限定)</li>
+ <li>1 リクエスト ¥3 (税込 ¥3.30) 完全従量、3 リクエスト/日まで無料 (匿名 IP ベース、JST 翌日 00:00 リセット)</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">経由チャネルでの使い方</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>コンサル登録</strong> — 認定支援機関の方へ。顧問先製造業者の補助金候補を <code>pack_manufacturing</code> 1 コールでまとめて取得 → 提案書に通達 ID 付きで添付。outreach 用の API 利用説明・ドキュメント直リンクは下部 CTA から。</li>
+ <li><strong>業種団体 widget 設置</strong> — 都道府県中小企業中央会 (製造部会) や各種工業組合の会員サイト / 会報誌 Web 版に、jpcite の補助金候補 widget を埋込。組合員企業からは中央会経由で見える形。</li>
+ <li><strong>kintone 製造特化 plug-in 開発</strong> — 生産管理アプリ・在庫管理アプリで <code>pack_manufacturing</code> を呼び出し、案件登録時に「使える補助金候補」を併記。SDK 雛形は <code>sdk/integrations/kintone/</code>。</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">API 実例</h2>
+ <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code>curl "https://api.jpcite.com/v1/am/pack_manufacturing?prefecture=大阪府&employee_count=50" \
+  -H "X-API-Key: $JPCITE_API_KEY"</code></pre>
+
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0 0;">
+ corpus 開示 (2026-04-30 snapshot): JSIC E 関連 program 458 件 / JSIC E 採択事例 298 件 / 経済産業省 行政処分 56 件 / tax_rulesets 50 件。本サービスは情報検索です。個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1)。本ページは LLM による生成・要約は行っておらず、SQLite + 一次資料 URL のみで構成されています。
+ </p>
+
+ <div class="cta-row" style="margin-top:24px;flex-wrap:wrap;gap:12px;">
  <a class="btn btn-primary" href="../dashboard.html">API キー発行 &rarr;</a>
+ <a class="btn btn-secondary" href="/docs/audiences/subsidy-consultant.html">コンサル登録 (認定支援機関 outreach) &rarr;</a>
+ <a class="btn btn-secondary" href="mailto:info@bookyou.net?subject=%E8%A3%BD%E9%80%A0%E6%A5%AD%20widget%20%E8%A8%AD%E7%BD%AE%E7%9B%B8%E8%AB%87%20%28%E4%B8%AD%E5%A4%AE%E4%BC%9A%20%E7%B5%8C%E7%94%B1%29">業種団体 widget 設置 (中央会経由) &rarr;</a>
+ <a class="btn btn-secondary" href="/docs/integrations/kintone.html">kintone integration 開発 &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">料金</a>
  </div>
- <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0 0;">
- 本サービスは情報検索です。個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1)。
- </p>
  </div>
  </section>
 
@@ -152,9 +175,8 @@
  <a href="../tos.html">利用規約</a>
  <a href="../privacy.html">プライバシー</a>
  <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>

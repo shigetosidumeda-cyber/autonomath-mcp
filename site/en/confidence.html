@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Confidence — jpcite</title>
-<meta name="description" content="jpcite P5-attribution Bayesian confidence dashboard. Per-tool Discovery (probability of being found) and Use (probability of being reused within 7 days), reported with 95% credible intervals.">
+<meta name="description" content="jpcite confidence dashboard. Per-tool Discovery (probability of being found) and Use (probability of being reused within 7 days), reported with 95% intervals.">
 <meta name="robots" content="index, follow">
 
 <meta property="og:title" content="Confidence — jpcite">
-<meta property="og:description" content="Per-tool Discovery / Use Bayesian confidence with 95% credible intervals.">
+<meta property="og:description" content="Per-tool Discovery / Use confidence with 95% intervals.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/confidence.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -20,7 +20,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Confidence — jpcite">
-<meta name="twitter:description" content="Per-tool Discovery / Use Bayesian confidence with 95% credible intervals.">
+<meta name="twitter:description" content="Per-tool Discovery / Use confidence with 95% intervals.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/confidence.html">
@@ -38,27 +38,25 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Confidence — jpcite",
-  "description": "P5-attribution Bayesian confidence dashboard for the jpcite MCP toolset. Reports per-tool Discovery (probability of being found by AI agents) and Use (probability of being reused within 7 days) with Beta(1,1) prior over a 30-day trailing window, accompanied by 95% credible intervals.",
+  "description": "Confidence dashboard for the jpcite MCP toolset. Reports per-tool Discovery (probability of being found by AI agents) and Use (probability of being reused within 7 days), accompanied by 95% intervals.",
   "url": "https://jpcite.com/en/confidence.html",
   "inLanguage": "en",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/",
-    "vatID": "T8010001213708",
     "email": "info@bookyou.net"
   },
   "mainEntity": {
     "@type": "Dataset",
     "name": "jpcite confidence snapshots",
-    "description": "Daily Bayesian confidence snapshots for the jpcite MCP toolset, persisted at /analytics/confidence_<DATE>.json with an index at /analytics/confidence_index.json.",
+    "description": "Daily confidence snapshots for the jpcite MCP toolset.",
     "url": "https://jpcite.com/en/confidence.html",
     "license": "https://jpcite.com/tos.html",
     "creator": {
@@ -199,7 +197,7 @@
  <div class="container">
 
  <h1>Confidence</h1>
- <p class="sub">P5-attribution Bayesian confidence dashboard. Per-tool <strong>Discovery</strong> (probability of being found) and <strong>Use</strong> (probability of being reused within 7 days) are estimated with a Beta(1,1) prior over a 30-day trailing window, and reported alongside 95% credible intervals.</p>
+ <p class="sub">Confidence dashboard. Per-tool <strong>Discovery</strong> (probability of being found) and <strong>Use</strong> (probability of being reused within 7 days) are estimated over a 30-day trailing window and reported alongside 95% intervals.</p>
 
  <!-- Headline ------------------------------------------------------------ -->
  <section class="conf-section" aria-labelledby="headline-h">
@@ -209,17 +207,17 @@
  <div class="headline" id="hd-disc">
  <p class="label">Discovery (weighted)</p>
  <p class="value">…</p>
- <p class="target">95% credible interval shown alongside</p>
+ <p class="target">95% interval shown alongside</p>
  </div>
  <div class="headline" id="hd-use">
  <p class="label">Use (weighted)</p>
  <p class="value">…</p>
- <p class="target">95% credible interval shown alongside</p>
+ <p class="target">95% interval shown alongside</p>
  </div>
  <div class="headline" id="hd-trials">
  <p class="label">Trials (30 days)</p>
  <p class="value">…</p>
- <p class="target">Posterior credible width depends on trial count</p>
+ <p class="target">Interval width depends on trial count</p>
  </div>
  </div>
  <p class="err" id="headline-err" hidden></p>
@@ -228,7 +226,7 @@
  <!-- Per-tool table ------------------------------------------------------ -->
  <section class="conf-section" aria-labelledby="per-tool-h">
  <h2 id="per-tool-h">Per-tool — Discovery / Use by tool</h2>
- <p class="desc">Posterior mean and 95% credible interval for each tool. Tools with few trials show wider CIs (greater uncertainty).</p>
+ <p class="desc">Estimated value and 95% interval for each tool. Tools with few trials show wider intervals (greater uncertainty).</p>
  <table class="conf" aria-describedby="per-tool-h">
  <thead>
  <tr>
@@ -251,7 +249,7 @@
  <!-- Time series --------------------------------------------------------- -->
  <section class="conf-section" aria-labelledby="ts-h">
  <h2 id="ts-h">Trend — daily confidence (from T+0)</h2>
- <p class="desc">Past snapshots (<code>analytics/confidence_&lt;DATE&gt;.json</code>) joined as a time series. The faint band is the 95% credible interval. The public dashboard reads from a static asset in the jpcite public repository.</p>
+ <p class="desc">Past snapshots joined as a time series. The faint band is the 95% interval.</p>
  <div class="ts-chart-wrap">
  <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="Daily Discovery / Use trend">
  <text x="400" y="100" text-anchor="middle" font-size="12" fill="#555">Loading snapshot history…</text>
@@ -259,15 +257,15 @@
  <div class="legend">
  <span><span class="swatch" style="background:#1e3a8a"></span>Discovery</span>
  <span><span class="swatch" style="background:#7c3aed"></span>Use</span>
- <span><span class="swatch" style="background:#1e3a8a;opacity:0.18"></span>Discovery 95% CI</span>
- <span><span class="swatch" style="background:#7c3aed;opacity:0.18"></span>Use 95% CI</span>
+ <span><span class="swatch" style="background:#1e3a8a;opacity:0.18"></span>Discovery 95% interval</span>
+ <span><span class="swatch" style="background:#7c3aed;opacity:0.18"></span>Use 95% interval</span>
  </div>
  </div>
  <p class="err" id="ts-err" hidden></p>
  </section>
 
  <p class="updated-at">
- Cadence: one cron snapshot per day (<code>scripts/cron/confidence_update.py</code>) + 5-minute in-memory cache.
+ Cadence: one snapshot update per day.
  Source: <code>GET /v1/stats/confidence</code> (live) · <code>/analytics/confidence_index.json</code> (history).
  Methodology: <a href="/docs/confidence_methodology/">confidence_methodology.md</a>.
  Last generated: <code id="generated-at">—</code>
@@ -288,10 +286,9 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>
@@ -300,7 +297,7 @@
 (function () {
   "use strict";
 
-  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || "";
+  var BASE = (typeof window !== "undefined" && window.JPCITE_API_BASE) || "";
   var HISTORY_URL = "/analytics/confidence_index.json";
 
   function fmtPct(x) {

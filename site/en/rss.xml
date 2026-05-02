@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-  <title>AutonoMath Announcements</title>
+  <title>jpcite Announcements</title>
   <link>https://jpcite.com/en/</link>
   <atom:link href="https://jpcite.com/en/rss.xml" rel="self" type="application/rss+xml" />
-  <description>Release notes, dataset ingests, and major migrations for AutonoMath (operated by Bookyou Inc.). A unified REST API and MCP server covering Japanese subsidies, loans, tax measures, certifications, laws, court decisions, bids, and qualified-invoice registrants.</description>
+  <description>Release notes, dataset ingests, and major migrations for jpcite (operated by Bookyou Inc.). A unified REST API and MCP server covering Japanese subsidies, loans, tax measures, certifications, laws, court decisions, bids, and qualified-invoice registrants.</description>
   <language>en</language>
   <copyright>(C) 2026 Bookyou Inc.</copyright>
-  <generator>AutonoMath site (Bookyou株式会社)</generator>
+  <generator>jpcite site (Bookyou株式会社)</generator>
   <lastBuildDate>Sun, 26 Apr 2026 16:00:00 +0900</lastBuildDate>
 
   <item>
     <title>v0.3.0 released — extended dataset + static dataset tools complete (8.29 GB unified DB)</title>
     <link>https://jpcite.com/facts.html#changelog-title</link>
-    <description>Shipped 2026-04-25. MCP tools 55 to 69  + 30 autonomath at default gates), entities 424,054 to 503,930, facts 5.26M to 6.12M. pyproject.toml, server.json, mcp-server.json, dxt/manifest.json, and smithery.yaml all bumped to v0.3.0.</description>
-    <guid isPermaLink="false">autonomath:release:v0.3.0:2026-04-25</guid>
+    <description>Shipped 2026-04-25. Expanded MCP coverage and structured-data coverage; entities increased from 424,054 to 503,930 and facts from 5.26M to 6.12M.</description>
+    <guid isPermaLink="false">jpcite:release:v0.3.0:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 12:00:00 +0000</pubDate>
   </item>
 
   <item>
     <title>Metadata tools — four universal MCP tools added</title>
     <link>https://jpcite.com/facts.html#changelog-title</link>
-    <description>Migrations 046–049 applied. Integrated 16,474 examiner-feedback annotations and 79,876 new corporate entities from gbiz (corporate_entity 87,093 to 166,969). Four universal tools (get_annotations / validate / get_provenance / get_provenance_for_fact) now exposed over both REST and MCP.</description>
-    <guid isPermaLink="false">autonomath:absorption:v4:2026-04-25</guid>
+    <description>Four universal tools for annotations, validation, and provenance lookup are now exposed over both REST and MCP. The release strengthens cross-reference coverage across public company and program data.</description>
+    <guid isPermaLink="false">jpcite:release:metadata-tools:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 09:00:00 +0000</pubDate>
   </item>
 
   <item>
     <title>Static dataset tools — 8 static taxonomies and 36-kyotei template</title>
     <link>https://jpcite.com/facts.html#changelog-title</link>
-    <description>Seven new tools added (list_static_resources_am, get_static_resource_am, list_example_profiles_am, get_example_profile_am, render_36_kyotei_am, get_36_kyotei_metadata_am, deep_health_am). Five example profiles and a 36-kyotei (Article 36 Labor Standards Act agreement) template are live; render_36_kyotei_am stays behind a launch gate pending 社労士 review.</description>
-    <guid isPermaLink="false">autonomath:absorption:phase-a:2026-04-25</guid>
+    <description>Static taxonomies and example-profile lookup tools were added. The 36-kyotei template remains outside general availability until review is complete.</description>
+    <guid isPermaLink="false">jpcite:release:static-tools:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 07:00:00 +0000</pubDate>
   </item>
 
   <item>
-    <title>Unified DB migration — autonomath.db is now the primary store</title>
+    <title>Unified Data Foundation Update</title>
     <link>https://jpcite.com/facts.html#changelog-title</link>
-    <description>Migration 032 physically merged jpintel.db tables into autonomath.db (8.29 GB) under a jpi_* prefix. 78 mirrored tables plus four cross-domain views (entity_id_map, v_program_full, v_houjin_360, v_readiness_input) were added. data/autonomath.db is now a 0-byte placeholder; production code reads from the repository root path.</description>
-    <guid isPermaLink="false">autonomath:migration:032-unify-dbs:2026-04-25</guid>
+    <description>jpcite updated its data foundation so public programs, companies, laws, and related records can be referenced together. The public API contract and source-linked responses are unchanged.</description>
+    <guid isPermaLink="false">jpcite:release:data-foundation:2026-04-25</guid>
     <pubDate>Sat, 25 Apr 2026 05:00:00 +0000</pubDate>
   </item>
 
   <item>
     <title>Qualified-invoice registrants delta added (PDL v1.0, 13,801 rows)</title>
     <link>https://jpcite.com/facts.html#changelog-title</link>
-    <description>Imported the National Tax Agency qualified-invoice issuer publication site as invoice_registrants under PDL v1.0 (13,801 rows, with source attribution and edit notes). The 4M-row monthly full bulk is scheduled post-launch. Downstream redistribution via the ¥3/req API is licensed under PDL v1.0.</description>
-    <guid isPermaLink="false">autonomath:dataset:invoice-registrants-pdl:2026-04-24</guid>
+    <description>Imported the National Tax Agency qualified-invoice issuer publication site as invoice_registrants under PDL v1.0 (13,801 rows, with source attribution and edit notes). The 4M-row monthly full bulk is scheduled for a later update. Downstream redistribution via the ¥3/req API is licensed under PDL v1.0.</description>
+    <guid isPermaLink="false">jpcite:dataset:invoice-registrants-pdl:2026-04-24</guid>
     <pubDate>Fri, 24 Apr 2026 12:00:00 +0000</pubDate>
   </item>
 

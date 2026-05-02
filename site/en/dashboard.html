@@ -55,15 +55,13 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://jpcite.com/en/",
-    "identifier": "T8010001213708"
-  }
+    "url": "https://jpcite.com/en/"}
 }
 </script>
 
@@ -222,9 +220,9 @@
  <!-- ============================================================== -->
  <!-- Paying-customer onboarding banner.                              -->
  <!-- Shown to anonymous / first-time visitors. Routes to Stripe      -->
- <!-- Checkout via /v1/billing/start_checkout (issues an API key on   -->
- <!-- successful payment). Once the user has an active subscription,  -->
- <!-- dashboard.js hides this block and shows the live billing card.  -->
+ <!-- Checkout starts from the pricing flow, which POSTs /v1/billing/checkout. -->
+ <!-- Once the user has an active subscription, dashboard.js hides this block  -->
+ <!-- and shows the live billing card.                                         -->
  <!-- ============================================================== -->
 
  <section id="checkout-banner" class="checkout-banner" aria-labelledby="checkout-title">
@@ -236,7 +234,7 @@
  successful payment.
  </p>
  </div>
- <a class="btn" href="/v1/billing/start_checkout?lang=en&amp;return=https%3A%2F%2Fjpcite.com%2Fen%2Fsuccess.html" id="dash-checkout-cta" role="button">Continue to Stripe Checkout &rarr;</a>
+ <a class="btn" href="/en/pricing.html#api-paid" id="dash-checkout-cta" role="button">Continue to Stripe Checkout &rarr;</a>
  </section>
 
  <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
@@ -472,7 +470,7 @@
  <div>
  <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">webhook_url (https only, optional)</label>
  <input id="dash2-alerts-webhook" type="url"
- placeholder="https://hooks.example.com/autonomath"
+ placeholder="https://hooks.example.com/jpcite"
  pattern="https://.*"
  style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
  </div>
@@ -489,7 +487,7 @@
  </form>
  <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
  At least one of webhook_url or email is required.
- Internal IPs (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) are rejected at registration.
+ Private network IPs (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) are rejected at registration.
  </p>
  </section>
 
@@ -519,10 +517,9 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

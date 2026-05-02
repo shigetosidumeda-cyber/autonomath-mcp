@@ -26,10 +26,10 @@ Stacking pattern + advisor window + 期限切れ迫る制度 are tailored to lif
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
 from .bind_registry import get_canonical_conn, register, safe_rows
-from .precompute import PrecomputedCache, canonical_program_id
+from .precompute import PrecomputedCache
 
 
 # ---------------------------------------------------------------------------

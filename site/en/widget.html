@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>Embed Japanese-subsidy search in one line — jpcite Widget</title>
-<meta name="description" content="A drop-in JavaScript widget that adds Japanese-subsidy search to advisor firm sites, chambers of commerce, and SMB-support portals. Two lines of HTML, no build step. Business plan ¥3/search metered (10,000 req included, ¥3.30/req overage). ¥3/search metered, no logo on request.">
+<meta name="description" content="A drop-in JavaScript widget that adds Japanese-subsidy search to advisor firm sites, chambers of commerce, and SMB-support portals. Two lines of HTML, no build step. ¥3/search tax exclusive (¥3.30 tax inclusive), no fixed monthly fee.">
 
 <meta property="og:title" content="jpcite Widget — embed subsidy search in one line">
-<meta property="og:description" content="A drop-in JS widget for Japanese-subsidy search. ¥3/search metered, ¥3/search metered. No build step.">
+<meta property="og:description" content="A drop-in JS widget for Japanese-subsidy search. Origin-locked keys, primary-source links, no build step.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/widget.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -20,7 +20,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite Widget — embed subsidy search in one line">
-<meta name="twitter:description" content="Drop-in subsidy search for advisor sites. ¥3/search metered / ¥3/search metered.">
+<meta name="twitter:description" content="Drop-in subsidy search for advisor sites with origin-locked keys and primary-source links.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/widget.html">
@@ -52,39 +52,22 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "jpcite Widget",
-  "description": "A drop-in JavaScript widget that lets advisor firms and SMB-support sites embed Japanese-subsidy search with one <script> tag. ¥3/search metered (10,000 req included) + ¥3/req overage; ¥3/search metered, no logo on request.",
+  "description": "A drop-in JavaScript widget that lets advisor firms and SMB-support sites embed Japanese-subsidy search with one script tag. ¥3/search tax exclusive (¥3.30 tax inclusive), no fixed monthly fee.",
   "brand": {"@type": "Brand", "name": "jpcite"},
   "url": "https://jpcite.com/en/widget.html",
   "inLanguage": "en",
   "offers": [
     {
       "@type": "Offer",
-      "name": "Business",
-      "price": "10000",
+      "name": "Metered widget",
+      "price": "3",
       "priceCurrency": "JPY",
-      "description": "¥3/search metered tax exclusive (¥11,000 tax inclusive). 10,000 req/month included; overage ¥3/req.",
+      "description": "¥3/search metered tax exclusive (¥3.30 tax inclusive). No fixed monthly fee.",
       "url": "https://jpcite.com/en/widget.html",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
         "name": "Bookyou Inc.",
-        "identifier": "T8010001213708",
-        "email": "info@bookyou.net",
-        "url": "https://jpcite.com/"
-      }
-    },
-    {
-      "@type": "Offer",
-      "name": "Whitelabel",
-      "price": "30000",
-      "priceCurrency": "JPY",
-      "description": "¥3/search metered tax exclusive (¥33,000 tax inclusive). Logo and colors customizable; 100,000 req/month fair use.",
-      "url": "https://jpcite.com/en/widget.html",
-      "availability": "https://schema.org/InStock",
-      "seller": {
-        "@type": "Organization",
-        "name": "Bookyou Inc.",
-        "identifier": "T8010001213708",
         "email": "info@bookyou.net",
         "url": "https://jpcite.com/"
       }
@@ -327,15 +310,15 @@
 
  <div class="code-block" id="snippet-pre">
 <span><!-- 1. Paste these two lines into your site's HTML. --></span>
-<span>&lt;script async src="https://jpcite.com/widget/autonomath.js"&gt;&lt;/script&gt;</span>
-<span>&lt;div data-autonomath-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
+<span>&lt;script async src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;</span>
+<span>&lt;div data-jpcite-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
  <button class="copy-btn" type="button" id="copy-btn" aria-label="Copy snippet">Copy</button>
  </div>
  </section>
 
  <section class="demo-wrap container">
  <h2>Live demo (production JS, language=en)</h2>
- <div data-autonomath-widget
+ <div data-jpcite-widget
  data-key="wgt_live_00000000000000000000000000000000"
  data-theme="light"
  data-language="en"
@@ -388,51 +371,36 @@
  </p>
  </div>
  <div class="feature">
- <h3>Self-serve, flat monthly</h3>
+ <h3>Self-serve metered billing</h3>
  <p>
- Business and Whitelabel both ship via Stripe Checkout. Keys are
- issued automatically — no sales call, no onboarding gate.
+ Keys are issued automatically via Stripe Checkout. Every successful
+ widget search is billed at the same ¥3/search API price.
  </p>
  </div>
  </div>
  </section>
 
  <section class="container" aria-labelledby="plan-title">
- <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">Widget plans</h2>
+ <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">Widget pricing</h2>
  <p style="text-align:center;color:var(--text-muted);">
- A separate plan from the metered API (¥3.30/req tax incl.). Designed for
- sites that want a fixed monthly bill.
+ The widget uses the same fixed metered price as the API: ¥3/search tax
+ exclusive (¥3.30 tax inclusive), with no seat fee or monthly minimum.
  </p>
 
  <div class="plan-grid">
  <article class="plan highlight" aria-labelledby="plan-business">
- <h3 id="plan-business">Business</h3>
- <p class="price">¥10,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ month (tax excl.)</span></p>
- <p class="unit">10,000 req/month included; overage ¥3.30/req tax incl.</p>
+ <h3 id="plan-business">Metered widget</h3>
+ <p class="price">¥3 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ search (tax excl.)</span></p>
+ <p class="unit">¥3.30/search tax incl.; no fixed monthly fee</p>
  <ul>
  <li>Designed for advisor firms and SMB-support sites</li>
- <li>10,000 req/month included as standard usage</li>
- <li>Overage billed automatically via Stripe usage-based at ¥3.30/req</li>
+ <li>Every successful search returns primary-source links</li>
+ <li>Usage is billed automatically via Stripe at ¥3.30/search tax incl.</li>
  <li>"Powered by jpcite" footer is shown</li>
  <li>Multiple origins per key (prod + staging, etc.)</li>
  <li>Qualified invoice issued automatically by Stripe</li>
  </ul>
- <button type="button" class="btn" data-plan="business" id="cta-business">Sign up for Business</button>
- </article>
-
- <article class="plan" aria-labelledby="plan-whitelabel">
- <h3 id="plan-whitelabel">Whitelabel</h3>
- <p class="price">¥30,000 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ month (tax excl.)</span></p>
- <p class="unit">100,000 req/month fair use; no jpcite branding</p>
- <ul>
- <li>Designed for chambers of commerce and financial institutions running their own brand</li>
- <li>"Powered by jpcite" footer is removed</li>
- <li>Up to 100,000 req/month (fair use) at no extra charge</li>
- <li>Same origin allowlist and primary-source links as Business</li>
- <li>We only contact you if usage materially exceeds 100,000 req</li>
- <li>Qualified invoice issued automatically by Stripe</li>
- </ul>
- <button type="button" class="btn btn--secondary" data-plan="business_whitelabel" id="cta-whitelabel">Sign up for Whitelabel</button>
+ <button type="button" class="btn" data-plan="business" id="cta-business">Sign up for metered widget</button>
  </article>
  </div>
  </section>
@@ -456,8 +424,7 @@
  <div class="field">
  <label for="signup-plan">Plan</label>
  <select id="signup-plan">
- <option value="business">Business — ¥3/search metered</option>
- <option value="business_whitelabel">Whitelabel — ¥3/search metered</option>
+ <option value="business">Metered widget — ¥3/search tax excl.</option>
  </select>
  </div>
  <div class="field">
@@ -511,12 +478,12 @@
  <a href="../widget/demo.html">Widget demo</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>
 
-<script src="../widget/autonomath.js"></script>
+<script src="../widget/jpcite.js"></script>
 <script>
 (function () {
   // Copy button
@@ -524,8 +491,8 @@
   if (btn) {
     btn.addEventListener("click", function () {
       var text = [
-        '<script async src="https://jpcite.com/widget/autonomath.js"><\/script>',
-        '<div data-autonomath-widget data-key="wgt_live_YOUR_KEY"><\/div>'
+        '<script async src="https://jpcite.com/widget/jpcite.js"><\/script>',
+        '<div data-jpcite-widget data-key="wgt_live_YOUR_KEY"><\/div>'
       ].join("\n");
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(function () {
@@ -599,7 +566,7 @@
         plan: plan,
         label: label || null,
         origins: origins,
-        success_url: "https://jpcite.com/success.html?w={CHECKOUT_SESSION_ID}",
+        success_url: "https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}",
         cancel_url: "https://jpcite.com/en/widget.html?cancelled=1"
       }),
       signal: ctrl.signal

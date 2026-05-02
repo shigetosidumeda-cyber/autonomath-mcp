@@ -40,28 +40,27 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Confidence — 税務会計AI",
-  "description": "税務会計AI MCP ツールセットの信頼度ダッシュボード。ツール単位の発見確率と 7 日以内の再利用確率を、過去 30 日のデータで集計し、95% 区間を付けて公開。",
+  "name": "Confidence — jpcite",
+  "description": "jpcite MCP ツールセットの信頼度ダッシュボード。ツール単位の発見確率と 7 日以内の再利用確率を、過去 30 日のデータで集計し、95% 区間を付けて公開。",
   "url": "https://jpcite.com/confidence.html",
   "inLanguage": "ja",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "alternateName": ["税務会計AI", "jpcite"],
+    "alternateName": ["jpcite", "jpcite"],
     "url": "https://jpcite.com/",
-    "identifier": "T8010001213708",
     "email": "info@bookyou.net"
   },
   "mainEntity": {
     "@type": "Dataset",
     "name": "jpcite 信頼度 日次スナップショット",
-    "description": "税務会計AI MCP ツールセットの信頼度 日次スナップショット。/analytics/confidence_<DATE>.json と /analytics/confidence_index.json で配信。",
+    "description": "jpcite MCP ツールセットの信頼度 日次スナップショット。/analytics/confidence_<DATE>.json と /analytics/confidence_index.json で配信。",
     "url": "https://jpcite.com/confidence.html",
     "license": "https://jpcite.com/tos.html",
     "creator": {
@@ -265,7 +264,7 @@
  <!-- Time series --------------------------------------------------------- -->
  <section class="conf-section" aria-labelledby="ts-h">
  <h2 id="ts-h">推移 — 日次 信頼度 (T+0 から)</h2>
- <p class="desc">過去のスナップショット (<code>analytics/confidence_&lt;DATE&gt;.json</code>) を時系列で結んだもの。薄色の帯は 95% 区間。 公開ダッシュボードでは jpcite 公開リポジトリの static asset から読み込みます。</p>
+ <p class="desc">過去のスナップショットを時系列で結んだもの。薄色の帯は 95% 区間です。</p>
  <div class="ts-chart-wrap">
  <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="発見確率 / 再利用確率 の日次推移">
  <text x="400" y="100" text-anchor="middle" font-size="12" fill="#555">スナップショット履歴を読み込み中…</text>
@@ -281,7 +280,7 @@
  </section>
 
  <p class="updated-at">
- Cadence: 1 日 1 回 cron スナップショット (<code>scripts/cron/confidence_update.py</code>) + 5 分間メモリキャッシュ。
+ Cadence: 1 日 1 回のスナップショット更新。
  Source: <code>GET /v1/stats/confidence</code> (live) · <code>/analytics/confidence_index.json</code> (history)。
  Methodology: <a href="/docs/confidence_methodology/">confidence_methodology.md</a>。
  最終生成: <code id="generated-at">—</code>
@@ -306,9 +305,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -317,7 +315,7 @@
 (function() {
   "use strict";
 
-  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || "";
+  var BASE = (typeof window !== "undefined" && window.JPCITE_API_BASE) || "";
   var HISTORY_URL = "/analytics/confidence_index.json";
 
   function fmtPct(x) {

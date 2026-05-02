@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Status — jpcite</title>
-<meta name="description" content="Current operational status of the jpcite API (api.jpcite.com) and landing site (jpcite.com). Updated within 5 minutes of any incident or recovery.">
+<meta name="description" content="Current operational status of the jpcite API (api.jpcite.com) and landing site (jpcite.com). Updated as soon as practical during incidents or recovery.">
 <meta name="robots" content="noindex, follow">
 
 <link rel="canonical" href="https://jpcite.com/en/status.html">
@@ -28,17 +28,14 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/",
-    "email": "info@bookyou.net",
-    "identifier": "T8010001213708"
-  }
+    "email": "info@bookyou.net"}
 }
 </script>
 
@@ -237,7 +234,7 @@
   }
 </style>
 <meta property="og:title" content="Status — jpcite">
-<meta property="og:description" content="Current operational status of the jpcite API (api.jpcite.com) and landing site (jpcite.com). Updated within 5 minutes of any incident or recovery.">
+<meta property="og:description" content="Current operational status of the jpcite API (api.jpcite.com) and landing site (jpcite.com). Updated as soon as practical during incidents or recovery.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/status.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -248,7 +245,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Status — jpcite">
-<meta name="twitter:description" content="Current operational status of the jpcite API (api.jpcite.com) and landing site (jpcite.com). Updated within 5 minutes of any incident or recovery.">
+<meta name="twitter:description" content="Current operational status of the jpcite API (api.jpcite.com) and landing site (jpcite.com). Updated as soon as practical during incidents or recovery.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 </head>
 <body>
@@ -278,7 +275,7 @@
       1. Remove "active" from the current state.
       2. Add "active" to the new state (ok / warn / down).
       3. Update "Last updated" below.
-      4. Commit + push; Cloudflare Pages redeploys in <30s.
+      4. Publish the updated static page.
     Default = ok. Keep this English copy in sync with site/status.html.
   -->
 
@@ -312,12 +309,12 @@
  </p>
 
  <p class="fallback-note">
- If you are seeing this page, the landing may be served from the Cloudflare Pages
- fallback. DNS will revert to Fly.io once the API is healthy.
+ If you are seeing this page, the landing may be served from a temporary
+ fallback. Normal serving will resume once the API is healthy.
  </p>
 
  <p class="fallback-note">
- For transparency: during an incident or abuse pattern, we may temporarily pause API access. Status updates here within 5 minutes.
+ For transparency: during an incident or abuse pattern, we may temporarily pause API access. Status updates are posted here as soon as practical.
  </p>
 
  <p class="links">
@@ -336,7 +333,7 @@
  <a href="../tokushoho.html">Legal (JP)</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

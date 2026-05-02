@@ -46,6 +46,51 @@ jobs:
       - name: Set up flyctl
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
 
+      - name: Hydrate jpintel seed DB for Docker build
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          if [ -s data/jpintel.db ]; then
+            echo "data/jpintel.db already present in checkout."
+          else
+            echo "Creating a consistent seed snapshot from the production Fly volume."
+            remote_seed="/tmp/jpintel-ci-seed.db"
+            cleanup_remote_seed() {
+              flyctl ssh console -a autonomath-api -q -C "rm -f ${remote_seed}" >/dev/null || true
+            }
+            trap cleanup_remote_seed EXIT
+
+            flyctl ssh console -a autonomath-api -q -C \
+              "rm -f ${remote_seed} && sqlite3 /data/jpintel.db \".backup ${remote_seed}\""
+            flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db
+            cleanup_remote_seed
+            trap - EXIT
+          fi
+
+          bytes="$(wc -c < data/jpintel.db | tr -d ' ')"
+          if [ "$bytes" -lt 100000000 ]; then
+            echo "data/jpintel.db is too small for a production seed: ${bytes} bytes" >&2
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import sqlite3
+          from pathlib import Path
+
+          db = Path("data/jpintel.db")
+          conn = sqlite3.connect(db)
+          try:
+              result = conn.execute("PRAGMA quick_check").fetchone()
+              if not result or result[0] != "ok":
+                  raise SystemExit(f"quick_check failed: {result!r}")
+              programs = conn.execute("SELECT COUNT(*) FROM programs").fetchone()[0]
+              if programs < 10_000:
+                  raise SystemExit(f"programs table unexpectedly small: {programs}")
+          finally:
+              conn.close()
+          print(f"seed DB verified: {db} ({db.stat().st_size} bytes)")
+          PY
+
       - name: Extract release version from pyproject.toml
         id: version
         # Pin SENTRY_RELEASE to the package version + commit sha so a hotfix

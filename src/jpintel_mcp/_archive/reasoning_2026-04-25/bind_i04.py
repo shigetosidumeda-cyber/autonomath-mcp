@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import date, datetime
+from datetime import date
 from typing import Any, Dict, List, Optional, Tuple
 
 from .bind_registry import get_canonical_conn, register, safe_rows

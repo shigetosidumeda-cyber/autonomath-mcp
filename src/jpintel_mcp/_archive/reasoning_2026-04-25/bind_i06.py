@@ -30,7 +30,6 @@ When program_ids has 0 items we surface a help message + an empty matrix.
 from __future__ import annotations
 
 import json
-import re
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .bind_registry import (

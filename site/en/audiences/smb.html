@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>jpcite for SMB owners — LINE bot, 10 free per month + ¥3 per question</title>
-<meta name="description" content="jpcite for SMB owners. Just ask the LINE bot 'are there any subsidies for my industry?' — no setup, no app. 10 free questions per month, ¥3 per question after that (tax exclusive). Optional connections to certified support organizations, tax advisors, and administrative scriveners.">
+<title>jpcite for SMB owners — LINE bot, anonymous 3/day free + ¥3 per question</title>
+<meta name="description" content="jpcite for SMB owners. Just ask the LINE bot 'are there any subsidies for my industry?' — no setup, no app. Anonymous 3 questions/day free, ¥3 per question after that (tax exclusive). Optional connections to certified support organizations, tax advisors, and administrative scriveners.">
 
-<meta property="og:title" content="jpcite for SMB owners — LINE bot, 10 free per month">
-<meta property="og:description" content="Find subsidies on LINE, 10 free per month. Optional pro connections.">
+<meta property="og:title" content="jpcite for SMB owners — LINE bot, anonymous 3/day free">
+<meta property="og:description" content="Find subsidies on LINE, anonymous 3/day free. Optional pro connections.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/audiences/smb.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite for SMB owners">
-<meta name="twitter:description" content="LINE: 10 free/month + ¥3 per question.">
+<meta name="twitter:description" content="LINE: anonymous 3/day free + ¥3 per question.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/audiences/smb.html">
@@ -52,13 +52,11 @@
   "@type": "Service",
   "serviceType": "Subsidy-search LINE bot for SMB owners",
   "name": "jpcite for SMB Owners",
-  "description": "jpcite LINE bot for SMB owners. No setup, no app, ask in natural language and discover applicable subsidies and loans. 10 free questions per month, ¥3 per question after. Optional connections to certified support organizations and tax advisors.",
+  "description": "jpcite LINE bot for SMB owners. No setup, no app, ask in natural language and discover applicable subsidies and loans. Anonymous 3 questions/day free, ¥3 per question after. Optional connections to certified support organizations and tax advisors.",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://jpcite.com/en/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/en/"},
   "audience": {
     "@type": "Audience",
     "audienceType": "SMB owners and sole proprietors"
@@ -74,7 +72,7 @@
       "name": "LINE bot Free",
       "price": "0",
       "priceCurrency": "JPY",
-      "description": "10 questions per month"
+      "description": "Anonymous 3 questions/day"
     },
     {
       "@type": "Offer",
@@ -93,13 +91,13 @@
   "@type": "FAQPage",
   "inLanguage": "en",
   "mainEntity": [
-    {"@type": "Question", "name": "Do I need to sign up?", "acceptedAnswer": {"@type": "Answer", "text": "Add the LINE bot as a friend — that's it. No app, no email registration. The first 10 questions per month don't even require a card."}},
+    {"@type": "Question", "name": "Do I need to sign up?", "acceptedAnswer": {"@type": "Answer", "text": "Add the LINE bot as a friend — that's it. No app, no email registration. Anonymous 3 questions/day do not require a card."}},
     {"@type": "Question", "name": "What kinds of questions can I ask?", "acceptedAnswer": {"@type": "Answer", "text": "Natural-language phrases work: \"subsidies for restaurants in Tokyo\", \"tax incentives for IT in manufacturing\", \"grants for retailers with 5 employees\". Including prefecture and industry improves accuracy."}},
-    {"@type": "Question", "name": "Am I billed from question 11?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Question 11 onward is ¥3 per question (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement. Counter resets at JST first-of-month 00:00."}},
+    {"@type": "Question", "name": "When am I billed?", "acceptedAnswer": {"@type": "Answer", "text": "Questions after the anonymous daily allowance are ¥3 per question (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement. The anonymous allowance resets at JST midnight."}},
     {"@type": "Question", "name": "Are answers AI-generated?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite returns matching programs from its database (14,472 programs) using rules — no creative writing, no embellishment. Source URLs are always attached."}},
     {"@type": "Question", "name": "Who do I talk to about actually filing?", "acceptedAnswer": {"@type": "Answer", "text": "Tap \"I'd like to consult\" in LINE and we send a list of certified support organizations, tax advisors, and administrative scriveners that match your region and industry. You contract with the advisor directly (the advisor sets the price)."}},
     {"@type": "Question", "name": "How do I cancel?", "acceptedAnswer": {"@type": "Answer", "text": "Send \"cancel\" in LINE, or remove the card from your Stripe portal. No termination fees, and you can resume anytime."}},
-    {"@type": "Question", "name": "Does this work for sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Both incorporated SMBs and sole proprietors are supported. Filter target_types=sole_proprietor and you'll see income-tax filing programs and the small-business sustainability subsidy first."}}
+    {"@type": "Question", "name": "Does this work for sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Both incorporated SMBs and sole proprietors are supported. Filter target_type=sole_proprietor and you'll see income-tax filing programs and the small-business sustainability subsidy first."}}
   ]
 }
 </script>
@@ -116,7 +114,6 @@
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../getting-started.html">Docs</a>
  <a href="../pricing.html">Pricing</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../../audiences/smb.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -134,8 +131,8 @@
  <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">SMB owners</span>
  </nav>
  <h1 id="hero-title">jpcite for SMB owners</h1>
- <p class="hero-sub">Ask the LINE bot "are there any subsidies for my industry?" — no setup, no app, 10 free questions per month. <strong>The LINE bot launches 2026-05-06</strong> (waitlist open; we'll email when it's live).</p>
- <p class="hero-tag">Designed for owner-operated small businesses (the owner, a spouse, a bookkeeper). Add the LINE bot and search 14,472 subsidies and 108 loans in plain language. Question 11 onward is ¥3. An optional connector routes you to a matched certified support organization, tax advisor, or administrative scrivener. If you'd rather not wait, the <a href="../pricing.html">API + MCP (¥3/req)</a> is already available.</p>
+ <p class="hero-sub">Ask the LINE bot "are there any subsidies for my industry?" — no setup, no app, anonymous 3 questions/day free.</p>
+ <p class="hero-tag">Designed for owner-operated small businesses (the owner, a spouse, a bookkeeper). Add the LINE bot and search 14,472 subsidies and 108 loans in plain language. Questions after the anonymous daily allowance are ¥3. An optional connector routes you to a matched certified support organization, tax advisor, or administrative scrivener. If you prefer API access, <a href="../pricing.html">API + MCP (¥3/req)</a> is available.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="../index.html#demo">Try the 30-second prescreen</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -152,7 +149,7 @@
  <article class="card">
  <h3>No signup, no app</h3>
  <p class="card-lead">Just add the LINE bot</p>
- <p>The LINE app you already use is the interface. No email registration, no card on file initially. The first 10 questions per month are completely free.</p>
+ <p>The LINE app you already use is the interface. No email registration, no card on file initially. Anonymous users get 3 questions/day free.</p>
  </article>
 
  <article class="card">
@@ -225,8 +222,8 @@ in 2026.</code></pre>
  </article>
 
  <article class="card">
- <h3>3. Billing kicks in at question 11</h3>
- <p>Once you pass 10 questions in a month, each additional question is ¥3 (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement.</p>
+ <h3>3. Billing starts after the daily allowance</h3>
+ <p>Once you pass the anonymous daily allowance, each additional question is ¥3 (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement.</p>
  <p style="margin-top:12px;"><a class="btn btn-secondary" href="../pricing.html">Pricing details</a></p>
  </article>
 
@@ -237,7 +234,7 @@ in 2026.</code></pre>
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">SMB-owner pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">No fixed monthly fee. 10 questions/month free; you pay ¥3 per question for any beyond.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">No fixed monthly fee. Anonymous 3 questions/day free; you pay ¥3 per question after the daily allowance.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">SMB owner LINE bot pricing</caption>
@@ -250,13 +247,13 @@ in 2026.</code></pre>
  </tr>
  </thead>
  <tbody>
- <tr><th scope="row">1-10 questions / month</th><td>¥0</td><td>¥0</td><td>No card required</td></tr>
- <tr><th scope="row">Question 11 onward</th><td>¥3 / question</td><td>¥3.30 / question</td><td>JST first-of-month reset</td></tr>
+ <tr><th scope="row">Anonymous 3 questions / day</th><td>¥0</td><td>¥0</td><td>No card required</td></tr>
+ <tr><th scope="row">After the daily allowance</th><td>¥3 / question</td><td>¥3.30 / question</td><td>JST midnight reset</td></tr>
  <tr><th scope="row">Professional-advisor intro</th><td>¥0 (user)</td><td>¥0</td><td>Advisor pays ¥3,000 / closed intro</td></tr>
  </tbody>
  </table>
  </div>
- <p class="pricing-note">Even 30 questions/month is ¥60 (tax excl.) — less than one lunch. <a href="../pricing.html">Full pricing &rarr;</a></p>
+ <p class="pricing-note">Even 30 paid questions/month is ¥90 (tax excl.) — less than one lunch. <a href="../pricing.html">Full pricing &rarr;</a></p>
  </div>
  </section>
 
@@ -265,7 +262,7 @@ in 2026.</code></pre>
  <h2 id="tax-advisor-handoff-title" class="section-title">If you have a retained tax advisor</h2>
  <p class="demo-lead" style="margin:-16px 0 18px;">Hand a prescreen result list off to your retained tax advisor in one click — mailto template, source URLs, max amounts, and the §52 disclaimer all auto-filled. No copy-paste.</p>
  <ol style="font-size:15px;line-height:1.85;padding-left:22px;margin:0 0 22px;">
- <li><a href="../index.html#try"><strong>Run the 30-second prescreen</strong></a> &mdash; pick prefecture / sole-proprietor flag / planned investment. Free up to 50 queries/month.</li>
+ <li><a href="../index.html#try"><strong>Run the 30-second prescreen</strong></a> &mdash; pick prefecture / sole-proprietor flag / planned investment. Anonymous 3 queries/day free.</li>
  <li>Click <strong>"Send to tax advisor"</strong> below the result cards &mdash; your mail client opens with subject, body, source URLs, and per-program SEO page URLs pre-filled.</li>
  <li>Add your advisor's email and send. The judgment is theirs. <strong>jpcite does not give tax advice</strong> &mdash; it is a mechanical primary-source candidate-extraction tool (the §52 Tax Accountant Act disclaimer is appended automatically).</li>
  </ol>
@@ -306,11 +303,11 @@ Source: jpcite (Bookyou株式会社, corporate number )</pre>
  <div class="container">
  <h2 id="faq-title" class="section-title">FAQ (SMB owners)</h2>
  <h3 style="font-size:16px;margin:18px 0 6px;">Do I need to sign up?</h3>
- <p>Just add the LINE bot as a friend. No app, no email registration. The first 10 questions per month don't even require a card.</p>
+ <p>Just add the LINE bot as a friend. No app, no email registration. Anonymous 3 questions/day do not require a card.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">What kinds of questions can I ask?</h3>
  <p>Natural-language phrases work: "subsidies for restaurants in Tokyo", "tax incentives for IT in manufacturing", "grants for retailers with 5 employees". Including prefecture and industry improves accuracy.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Am I billed from question 11?</h3>
- <p>Yes. Question 11 onward is ¥3 per question (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement. Counter resets at JST first-of-month 00:00.</p>
+ <p>Yes. Questions after the anonymous daily allowance are ¥3 per question (¥3.30 tax inclusive). Pay each time with LINE Pay / Apple Pay / Google Pay, or register a card with Stripe for monthly settlement. Anonymous allowance resets at JST midnight.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Are answers AI-generated?</h3>
  <p>jpcite returns matching programs from its database (14,472 programs) using rules — no creative writing, no embellishment. Source URLs are always attached.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Who do I talk to about actually filing?</h3>
@@ -318,7 +315,7 @@ Source: jpcite (Bookyou株式会社, corporate number )</pre>
  <h3 style="font-size:16px;margin:18px 0 6px;">How do I cancel?</h3>
  <p>Send "cancel" in LINE, or remove the card from your Stripe portal. No termination fees, and you can resume anytime.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Does this work for sole proprietors?</h3>
- <p>Yes. Both incorporated SMBs and sole proprietors are supported. Filter target_types=sole_proprietor and you'll see income-tax filing programs and the small-business sustainability subsidy first.</p>
+ <p>Yes. Both incorporated SMBs and sole proprietors are supported. Filter target_type=sole_proprietor and you'll see income-tax filing programs and the small-business sustainability subsidy first.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
  <p>Find a professional to file: <a href="tax-advisor.html">tax advisors</a>, <a href="admin-scrivener.html">administrative scriveners</a>. Tech side: <a href="dev.html">AI agent developers</a> (embed in your bot), <a href="vc.html">VC / M&amp;A advisors</a> (target screening). <a href="index.html">Compare all 5 audiences</a>.</p>
  </div>
@@ -328,13 +325,13 @@ Source: jpcite (Bookyou株式会社, corporate number )</pre>
  <div class="container">
  <h2 id="resources-title" class="section-title">SMB owner resources</h2>
  <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../index.html#demo"><strong>30-second program prescreen (widget)</strong></a> &mdash; Just pick prefecture / industry / employee count. No signup, free up to 50 queries/month.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../index.html#demo"><strong>30-second program prescreen (widget)</strong></a> &mdash; Just pick prefecture / industry / employee count. No signup, anonymous 3 queries/day free.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/req fully metered)</strong></a> &mdash; Zero monthly minimums, no termination fees. 30 questions/month is ¥90 (tax excl.) &mdash; less than one lunch.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="admin-scrivener.html"><strong>Find an administrative scrivener (gyoseishoshi) to file</strong></a> &mdash; Permit-heavy cases (construction, care, transport, waste) often pair with subsidies. Narrow with jpcite first, then engage to cut hours.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="tax-advisor.html"><strong>Consult your tax advisor (zeirishi)</strong></a> &mdash; Wage-hike, IT-introduction, and business-strengthening tax incentives are zeirishi territory. Introducing jpcite also raises their engagement value.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Full professional-advisor directory</strong></a> &mdash; Certified support orgs, tax advisors, scriveners, and labor-law attorneys nationwide. Filter by region &times; industry &times; specialty.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../widget.html"><strong>Embed on your own site (widget)</strong></a> &mdash; Drop the prescreen into your LP / corporate site to capture leads. One-line script tag, white-label OK.</li>
- <li style="padding:10px 0;"><a href="../line.html"><strong>LINE bot waitlist (launches 2026-05-06)</strong></a> &mdash; No app, no email. Just add as a friend. First 10 questions/month free, ¥3 per question after via LINE Pay / Apple Pay.</li>
+ <li style="padding:10px 0;"><a href="../line.html"><strong>LINE bot</strong></a> &mdash; No app, no email. Just add as a friend. Anonymous 3 questions/day free, ¥3 per question after via LINE Pay / Apple Pay.</li>
  </ul>
  </div>
  </section>
@@ -368,10 +365,9 @@ Source: jpcite (Bookyou株式会社, corporate number )</pre>
  <a href="../getting-started.html">Getting started</a>
  <a href="../pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

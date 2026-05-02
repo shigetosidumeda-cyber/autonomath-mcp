@@ -34,11 +34,10 @@ from __future__ import annotations
 
 import datetime as _dt
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 from . import match as _match
-from . import query_types
 from synonyms.expand import load_dicts
 
 # ---------------------------------------------------------------------------

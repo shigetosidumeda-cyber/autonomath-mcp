@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate 47 prefecture-level SEO landing pages for AutonoMath (jpcite.com).
+"""Generate 47 prefecture-level SEO landing pages for jpcite.com.
 
 Targets long-tail organic queries like:
     "<都道府県名> 補助金"
@@ -53,10 +53,9 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import re
 import sqlite3
 import sys
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -74,17 +73,17 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 # Reuse generate_program_pages helpers — slugify, JA labels, agency resolution,
 # amount lines. This keeps prefecture pages and per-program pages consistent so
 # that internal /programs/{slug}.html links resolve correctly.
+from _pref_slugs import PREFECTURES, REGIONS, SLUG_TO_JA  # noqa: E402
 from generate_program_pages import (  # noqa: E402
     KIND_JA,
     _amount_line,
     _normalize_iso_date,
     _parse_json_list,
+    _public_program_name,
     _resolve_agency,
     _target_type_label,
     slugify,
 )
-
-from _pref_slugs import PREFECTURES, REGIONS, SLUG_TO_JA  # noqa: E402
 
 LOG = logging.getLogger("generate_prefecture_pages")
 
@@ -273,9 +272,10 @@ def _shape_program(row: sqlite3.Row) -> dict[str, Any]:
     d = dict(row)
     target_types = _parse_json_list(d.get("target_types_json"))
     aliases = _parse_json_list(d.get("aliases_json"))
-    name = d.get("primary_name") or ""
+    raw_name = d.get("primary_name") or ""
+    name = _public_program_name(raw_name)
     return {
-        "slug": slugify(name, d.get("unified_id") or ""),
+        "slug": slugify(raw_name, d.get("unified_id") or ""),
         "name": name,
         "aliases": aliases,
         "kind_ja": KIND_JA.get(d.get("program_kind") or "subsidy", "公的支援制度"),
@@ -388,18 +388,18 @@ def _overview_paragraph(pref_ja: str, programs_count: int, cases_count: int,
     return (
         f"{pref_ja}では、中央省庁 (中小企業庁・農林水産省・経済産業省・厚生労働省) "
         f"および{pref_ja}庁・市区町村が運営する公的支援制度に加え、日本政策金融公庫等の政策金融融資、"
-        f"国税庁の税制優遇措置、各種認定制度が事業者向けに提供されています。AutonoMath では、"
+        f"国税庁の税制優遇措置、各種認定制度が事業者向けに提供されています。jpcite では、"
         f"{pref_ja}に関連する補助金・助成金 {programs_count} 件、{pref_ja}所在事業者の採択事例 {cases_count} 件、"
         f"全国対応の政策金融融資 {loans_count} 件、{pref_ja}関連の行政処分公示 {enforcements_count} 件を、"
-        f"一次情報のみを出典とする形で集約しています。集約サイト ({BANNED_AGGREGATORS}) は出典源から除外しているため、"
-        "誤情報リスク・申請失敗リスクを抑えた上で制度横断の意思決定にご活用いただけます。"
+        "公式出典を確認できる形で集約しています。制度名・金額・地域・出典URLを同時に確認できるため、"
+        "AIや担当者が長い公募ページを読む前の候補整理に使えます。"
     )
 
 
 def _meta_description(pref_ja: str, programs_count: int, cases_count: int) -> str:
     base = (
         f"{pref_ja}の補助金・助成金 {programs_count} 件、採択事例 {cases_count} 件、"
-        f"政策金融融資、行政処分公示を一次情報のみで集約。tier S/A 優先、AutonoMath API/MCP で取得可能。"
+        "政策金融融資、行政処分公示を出典リンク付きで集約。jpcite API/MCP で取得可能。"
     )
     return _truncate(base, 160)
 
@@ -409,7 +409,7 @@ def _page_title(pref_ja: str, programs_count: int) -> str:
     # 70-char cap (which counts Python chars) produced ~92-93 SERP-width titles
     # that Google truncated mid-word at "…行政処". Drop the "…一覧" suffix and
     # cap at 50 chars so the title fits the JA SERP width budget cleanly.
-    base = f"{pref_ja} 補助金{programs_count}件・融資・税制 | AutonoMath"
+    base = f"{pref_ja} 補助金{programs_count}件・融資・税制 | jpcite"
     return _truncate(base, 50)
 
 
@@ -424,21 +424,7 @@ def _org_node(domain: str) -> dict[str, Any]:
         "@type": "Organization",
         "@id": "https://jpcite.com/#publisher",
         "name": "jpcite",
-        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
-        "legalName": OPERATOR_NAME,
-        "taxID": OPERATOR_CORPORATE_NUMBER,
-        "founder": {"@type": "Person", "name": OPERATOR_REP},
-        "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "JP",
-            "addressLocality": OPERATOR_ADDRESS_JP,
-        },
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "email": OPERATOR_EMAIL,
-            "contactType": "customer support",
-        },
         "logo": {
             "@type": "ImageObject",
             "url": f"https://{domain}/assets/logo.png",
@@ -562,7 +548,7 @@ def _build_env(template_dir: Path) -> Environment:
 
 
 def _today_iso() -> str:
-    return datetime.now(tz=timezone.utc).date().isoformat()
+    return datetime.now(tz=UTC).date().isoformat()
 
 
 def _today_ja() -> str:

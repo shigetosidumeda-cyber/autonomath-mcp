@@ -44,15 +44,13 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/",
-    "vatID": "T8010001213708",
     "email": "info@bookyou.net"
   }
 }
@@ -123,10 +121,9 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>
@@ -158,7 +155,7 @@
       btn.disabled = true;
       status.className = "status";
       status.textContent = "Sending…";
-      var apiBase = window.AUTONOMATH_API_BASE || "https://api.jpcite.com";
+      var apiBase = window.JPCITE_API_BASE || "https://api.jpcite.com";
       fetch(apiBase + "/v1/compliance/unsubscribe/" + encodeURIComponent(token), {
         method: "POST",
         headers: { "Accept": "text/html" }

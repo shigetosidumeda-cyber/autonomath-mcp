@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>不動産業向け jpcite — 空き家・住宅 補助金 + 通達 + 裁決事例 (¥3/リクエスト)</title>
-<meta name="description" content="不動産業向け jpcite。空き家対策・既存住宅流通・賃貸改修・住宅取得関連の補助金 + 所得税基本通達・相続税基本通達 + 国税不服審判所 裁決事例 (所得税・相続税) を 1 API で。不動産業 業種別パック (`pack_real_estate`) で 1 リクエストに集約、¥3/リクエスト 従量。">
+<title>不動産業特化 jpcite — 補助金候補 + 所基通 + 採択事例 を 1 API で (¥3/リクエスト)</title>
+<meta name="description" content="不動産業特化の補助金候補抽出 + 国税庁通達 (所得税基本通達・相続税基本通達) + 採択事例を 1 API で。不動産業コンサル・全宅連・不動産専門 SaaS 連携開発者向け。不動産業 業種別パック (`pack_real_estate`) で 1 リクエストに集約、¥3/リクエスト 従量。">
 
-<meta property="og:title" content="不動産業向け jpcite — 空き家・住宅 補助金 + 通達 + 裁決事例">
-<meta property="og:description" content="不動産業特化 業種別パック。1 リクエストで主要 10 補助金 + 所得税基本通達 + 裁決事例。¥3/リクエスト、無料 3 リクエスト/日。">
+<meta property="og:title" content="不動産業特化 jpcite — コンサル / 全宅連 / 不動産専門 SaaS 向け">
+<meta property="og:description" content="JSIC K fence で 189 件 program filter + 所基通 / 相基通 セクション固定参照 + 採択事例 (薄い 11 件、honest 注記) + 国土交通省 行政処分 79 件 cohort を 1 API で。¥3/リクエスト 従量。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/real_estate.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -18,8 +18,8 @@
 <meta property="og:site_name" content="jpcite">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="不動産業向け jpcite">
-<meta name="twitter:description" content="不動産業 業種別パック: 1 リクエストで 10 補助金 + 通達 + 裁決事例。¥3/リクエスト 従量。">
+<meta name="twitter:title" content="不動産業特化 jpcite (コンサル / 全宅連 / 不動産専門 SaaS)">
+<meta name="twitter:description" content="不動産業特化 業種別パック: JSIC K 189 件 + 所基通 / 相基通 + 採択事例 11 件 (薄い)。¥3/リクエスト 従量。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/audiences/real_estate.html">
@@ -41,7 +41,7 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
     {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://jpcite.com/audiences/"},
-    {"@type": "ListItem", "position": 3, "name": "不動産業向け", "item": "https://jpcite.com/audiences/real_estate.html"}
+    {"@type": "ListItem", "position": 3, "name": "不動産業特化 (コンサル / 全宅連 / SaaS)", "item": "https://jpcite.com/audiences/real_estate.html"}
   ]
 }
 </script>
@@ -50,18 +50,16 @@
 {
   "@context": "https://schema.org",
   "@type": "Service",
-  "serviceType": "不動産業向け 補助金・通達・裁決事例 API",
-  "name": "jpcite for 不動産業",
-  "description": "不動産業特化 業種別パック。空き家対策・既存住宅流通・賃貸改修・住宅取得関連の補助金 + 所得税基本通達・相続税基本通達 + 国税不服審判所 裁決事例を 1 リクエストに集約。¥3/リクエスト 従量。",
+  "serviceType": "不動産業特化 補助金候補 + 通達 + 採択事例 API (コンサル / 全宅連 / SaaS 向け)",
+  "name": "jpcite for 不動産業 (経由チャネル向け)",
+  "description": "不動産業特化の補助金候補抽出 + 国税庁通達 (所得税基本通達・相続税基本通達) のセクション固定参照 + JSIC K 採択事例 + 国土交通省 行政処分 cohort を 1 リクエストに集約。不動産業コンサル / 全国宅地建物取引業協会連合会 (全宅連) 担当者 / 不動産専門 SaaS 連携開発者向け。¥3/リクエスト 従量。",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/",
-    "identifier": "T8010001213708"
-  },
+    "url": "https://jpcite.com/"},
   "audience": {
     "@type": "Audience",
-    "audienceType": "不動産業 / 宅建業者 / 賃貸事業者 / 不動産投資家"
+    "audienceType": "不動産業特化 補助金コンサル / 全国宅地建物取引業協会連合会 (全宅連) 担当者 / 不動産専門 SaaS 連携開発者"
   },
   "areaServed": {"@type": "Country", "name": "日本"},
   "offers": [
@@ -110,29 +108,54 @@
  <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
  <a href="/">ホーム</a> <span aria-hidden="true">›</span>
  <a href="/audiences/">利用者層</a> <span aria-hidden="true">›</span>
- <span aria-current="page">不動産業向け</span>
+ <span aria-current="page">不動産業特化 (コンサル / 全宅連 / SaaS)</span>
  </nav>
- <h1 id="hero-title">不動産業向け</h1>
- <p class="hero-sub">空き家・既存住宅流通・賃貸改修・住宅取得関連の補助金 + 所得税・相続税系通達 + 裁決事例を 1 リクエストで取得。</p>
+ <h1 id="hero-title">不動産業特化 jpcite</h1>
+ <p class="hero-sub">不動産業特化の補助金候補抽出 + 国税庁通達 (所得税基本通達 / 相続税基本通達) + 採択事例を 1 API で。<strong>不動産業コンサル / 全国宅地建物取引業協会連合会 (全宅連) 担当者 / 不動産専門 SaaS 連携開発者向け</strong>。エンドユーザー (宅建業者・不動産投資家 個人) ではなく、その上流に立つ「経由チャネル」を主対象に再設計しています。</p>
  </div>
  </section>
 
  <section class="features">
  <div class="container">
+ <h2 class="section-title">対象</h2>
  <ul class="card-list" style="font-size:16px;line-height:2;">
- <li>都道府県・従業員数・年商で住宅系補助金を抽出</li>
- <li>所得税基本通達・相続税基本通達 (居住用財産譲渡・住宅借入金特別控除・小規模宅地等の特例) を併記</li>
- <li>国税不服審判所 裁決事例 (所得税・相続税・法人税) を併記</li>
- <li>各制度・各通達に出典 URL 付き</li>
- <li>1 リクエスト ¥3 (税込 ¥3.30) 完全従量、3 リクエスト/日まで無料</li>
+ <li><strong>不動産業特化 補助金コンサル / 中小企業診断士 / 認定支援機関</strong> — 顧問先宅建業者・賃貸事業者の補助金候補と通達根拠を 1 リクエストでまとめて返す</li>
+ <li><strong>全国宅地建物取引業協会連合会 (全宅連) / 全日本不動産協会 / 不動産協会 担当者</strong> — 会員企業向けの補助金 widget や会報誌コンテンツを jpcite から自動更新</li>
+ <li><strong>不動産専門 SaaS / 賃貸管理 SaaS / 仲介支援ツール 連携開発者</strong> — 物件管理・契約管理アプリに「使える補助金候補」プラグインを差し込む</li>
  </ul>
- <div class="cta-row" style="margin-top:24px;">
+
+ <h2 class="section-title" style="margin-top:32px;">主要価値</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>JSIC K fence (不動産業)</strong> — 不動産・空き家・住宅・賃貸・改修・流通 キーワード union で <strong>189 件 の S/A/B/C tier program</strong> を絞り込み (snapshot 2026-04-30 時点)</li>
+ <li><strong>所基通 (所得税基本通達) + 相基通 (相続税基本通達) のセクション固定参照</strong> — 居住用財産譲渡・住宅借入金特別控除・小規模宅地等の特例 等のセクション ID 付き引用</li>
+ <li><strong>国土交通省 行政処分 cohort</strong> — 宅建業法違反等の処分 79 件 (ministry='国土交通省', 建設業と corpus 共有) を houjin_bangou で横断検索、与信審査・反社チェックの補助情報として併記可</li>
+ <li><strong>JSIC K 採択事例 11 件</strong> (K 親 2 / K68 不動産取引業 1 / K69 不動産賃貸業・管理業 4 / K70 物品賃貸業 4) — <strong>honest 注記: 不動産業の採択事例は補助金性質上 極端に薄い corpus です</strong>。「使える数」というより「同業の採択がそもそも少ない」という事実情報として併記する想定。提案書添付時はこの薄さを前提に。</li>
+ <li>各補助金候補・各通達・各裁決事例・各処分・各採択事例に <strong>一次資料 source_url</strong> を併記 (官庁・自治体・公庫などの一次資料に限定)</li>
+ <li>1 リクエスト ¥3 (税込 ¥3.30) 完全従量、3 リクエスト/日まで無料 (匿名 IP ベース、JST 翌日 00:00 リセット)</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">経由チャネルでの使い方</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>コンサル登録</strong> — 認定支援機関の方へ。顧問先不動産業者の補助金候補を <code>pack_real_estate</code> 1 コールでまとめて取得 → 提案書に所基通 / 相基通 セクション ID 付きで添付。outreach 用の API 利用説明・ドキュメント直リンクは下部 CTA から。</li>
+ <li><strong>業種団体 widget 設置</strong> — 全宅連 / 全日本不動産協会 / 不動産協会 の会員サイト / 会報誌 Web 版に、jpcite の補助金候補 widget を埋込。会員企業からは協会経由で見える形。</li>
+ <li><strong>不動産専門 SaaS integration 開発</strong> — 物件管理・賃貸管理・契約管理アプリで <code>pack_real_estate</code> を呼び出し、物件登録時に「使える補助金候補」を併記。SDK 雛形は <code>sdk/integrations/</code> に共通実装あり。</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">API 実例</h2>
+ <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code>curl "https://api.jpcite.com/v1/am/pack_real_estate?prefecture=神奈川県&employee_count=12" \
+  -H "X-API-Key: $JPCITE_API_KEY"</code></pre>
+
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0 0;">
+ corpus 開示 (2026-04-30 snapshot): JSIC K 関連 program 189 件 / JSIC K 採択事例 <strong>11 件のみ (薄い corpus)</strong> / 国土交通省 行政処分 79 件 (建設業と共有)。採択事例の数が少ないため、提案書では補助金候補と通達引用が主軸となります。本サービスは情報検索です。相続税・所得税の個別判断は資格を有する税理士・公認会計士にご相談ください (税理士法 §52 / 公認会計士法 §47条の2 / 宅地建物取引業法 §3)。本ページは LLM による生成・要約は行っておらず、SQLite + 一次資料 URL のみで構成されています。
+ </p>
+
+ <div class="cta-row" style="margin-top:24px;flex-wrap:wrap;gap:12px;">
  <a class="btn btn-primary" href="../dashboard.html">API キー発行 &rarr;</a>
+ <a class="btn btn-secondary" href="/docs/audiences/subsidy-consultant.html">コンサル登録 (認定支援機関 outreach) &rarr;</a>
+ <a class="btn btn-secondary" href="mailto:info@bookyou.net?subject=%E5%85%A8%E5%AE%85%E9%80%A3%20%2F%20%E4%B8%8D%E5%8B%95%E7%94%A3%E5%8D%94%E4%BC%9A%20widget%20%E8%A8%AD%E7%BD%AE%E7%9B%B8%E8%AB%87">業種団体 widget 設置 (全宅連 / 不動産協会経由) &rarr;</a>
+ <a class="btn btn-secondary" href="/docs/integrations/">不動産専門 SaaS integration 開発 &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">料金</a>
  </div>
- <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0 0;">
- 本サービスは情報検索です。相続税・所得税の個別判断は資格を有する税理士・公認会計士にご相談ください (税理士法 §52 / 公認会計士法 §47条の2)。
- </p>
  </div>
  </section>
 
@@ -152,9 +175,8 @@
  <a href="../tos.html">利用規約</a>
  <a href="../privacy.html">プライバシー</a>
  <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>

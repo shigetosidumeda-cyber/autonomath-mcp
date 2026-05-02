@@ -39,13 +39,11 @@ from __future__ import annotations
 
 import logging
 import sqlite3
-import struct
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import numpy as np
 
 from .config import DB_PATH, TIERS
 from .db import connect
@@ -59,8 +57,6 @@ from .search import (
     _serialize_f32,
     _split_query_for_fts,
     bm25_search,
-    hybrid_search,
-    vector_search,
 )
 
 

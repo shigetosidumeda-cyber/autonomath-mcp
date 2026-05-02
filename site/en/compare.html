@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite vs. other Japanese subsidy search services — Bookyou Inc.</title>
-<meta name="description" content="Side-by-side comparison of jpcite vs. noukaweb, hojyokin-portal.jp, biz.stayway.jp, J-Net21, and ミラサポplus. 13 axes (program count, primary-source links, API/MCP, pricing, free tier, full-text search) based on each provider's public information as of 2026-04-26.">
+<meta name="description" content="Side-by-side comparison of jpcite vs. major Japanese subsidy search services and public support portals. 13 axes (program count, primary-source links, API/MCP, pricing, free tier, full-text search) based on public information as of 2026-04-26.">
 
 <meta property="og:title" content="jpcite vs. other Japanese subsidy search services">
 <meta property="og:description" content="Neutral 13-axis comparison across 6 services, based on public information as of 2026-04-26.">
@@ -37,7 +37,7 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "jpcite vs. other Japanese subsidy search services",
-  "description": "A neutral 13-axis comparison of jpcite, noukaweb, hojyokin-portal.jp, biz.stayway.jp, J-Net21, and ミラサポplus. Compares program count, primary-source URL coverage, API/MCP availability, pricing models, free tiers, and full-text search. Based on each provider's public information as of 2026-04-26.",
+  "description": "A neutral 13-axis comparison of jpcite, major Japanese subsidy search services, public support portals, J-Net21, and ミラサポplus. Compares program count, primary-source URL coverage, API/MCP availability, pricing models, free tiers, and full-text search. Based on each provider's public information as of 2026-04-26.",
   "url": "https://jpcite.com/en/compare.html",
   "datePublished": "2026-04-26",
   "dateModified": "2026-04-26",
@@ -45,13 +45,11 @@
   "author": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "vatID": "T8010001213708",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "vatID": "T8010001213708",
     "url": "https://jpcite.com/en/"
   },
   "mainEntityOfPage": "https://jpcite.com/en/compare.html"
@@ -106,7 +104,6 @@
  <a href="getting-started.html">Docs</a>
  <a href="pricing.html">Pricing</a>
  <a href="audiences/">Audiences</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../compare.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -122,7 +119,7 @@
  <h1>jpcite vs. other Japanese subsidy search services</h1>
  <p class="lead">A neutral side-by-side of jpcite against the main consumer-discoverable Japanese subsidy / 助成金 search services, across 13 axes. Built from each provider's published information only; anything we could not verify is left as "Not publicly disclosed" rather than guessed. Reviewed monthly.</p>
 
- <p class="compare-note">Six services compared: <strong>jpcite</strong> (this site) / <a href="https://noukaweb.com" rel="noopener nofollow" target="_blank">noukaweb</a> (agricultural subsidy DB) / <a href="https://hojyokin-portal.jp" rel="noopener nofollow" target="_blank">hojyokin-portal.jp</a> (補助金ポータル) / <a href="https://biz.stayway.jp" rel="noopener nofollow" target="_blank">biz.stayway.jp</a> (Stayway Biz) / <a href="https://j-net21.smrj.go.jp" rel="noopener" target="_blank">J-Net21</a> (operated by SMRJ, the SME support agency) / <a href="https://mirasapo-plus.go.jp" rel="noopener" target="_blank">ミラサポplus</a> (operated by the SME Agency, METI).</p>
+ <p class="compare-note">Services compared: <strong>jpcite</strong> (this site) / subsidy search sites / public support portals / article-style databases / J-Net21 / ミラサポplus.</p>
 
  <h2>Feature comparison</h2>
 
@@ -132,9 +129,9 @@
  <tr>
  <th scope="col">Axis</th>
  <th scope="col" class="col-us">jpcite</th>
- <th scope="col">noukaweb</th>
- <th scope="col">hojyokin-portal</th>
- <th scope="col">biz.stayway</th>
+ <th scope="col">Subsidy search site</th>
+ <th scope="col">Support portal</th>
+ <th scope="col">Article database</th>
  <th scope="col">J-Net21</th>
  <th scope="col">ミラサポplus</th>
  </tr>
@@ -142,8 +139,8 @@
  <tbody>
  <tr>
  <th scope="row">1. Program count (public-sector)</th>
- <td class="col-us">11,684 searchable (tier S/A/B/C) + 14,472 total (incl. rows held back for secondary review)</td>
- <td class="unknown">Not publicly disclosed (agriculture-focused)</td>
+ <td class="col-us">11,684 searchable (tier S/A/B/C) + 14,472 total (incl. rows excluded from public search)</td>
+ <td class="unknown">Not publicly disclosed (sector-focused)</td>
  <td class="unknown">Not publicly disclosed</td>
  <td class="unknown">Not publicly disclosed (article-led)</td>
  <td class="unknown">Not publicly disclosed (active programs surfaced as feed)</td>
@@ -205,7 +202,7 @@
  </tr>
  <tr>
  <th scope="row">8. Full-text search (Japanese 全文検索 / 分割アルゴリズム)</th>
- <td class="col-us"><span class="yes">Yes</span> — SQLite 全文検索インデックス (3-gram) + ベクトル検索 semantic search</td>
+ <td class="col-us"><span class="yes">Yes</span> — Japanese full-text search + semantic search</td>
  <td class="partial">In-site search (implementation details not disclosed)</td>
  <td class="partial">In-site search (implementation details not disclosed)</td>
  <td class="partial">In-site search (implementation details not disclosed)</td>
@@ -223,7 +220,7 @@
  </tr>
  <tr>
  <th scope="row">10. Statute-text navigation (e-Gov links)</th>
- <td class="col-us"><span class="yes">Yes</span> — 154 laws full-text + 9,484 catalog stubs (body-text load incremental, name resolver covers all 9,484); per-article cross-link via program_law_refs</td>
+ <td class="col-us"><span class="yes">Yes</span> — 154 laws full-text + 9,484 law metadata records (full-text coverage varies by record, name resolver covers all 9,484); per-article cross-link via program_law_refs</td>
  <td class="no">Out of scope (subsidy search only)</td>
  <td class="no">Out of scope (subsidy search only)</td>
  <td class="no">Out of scope</td>
@@ -250,7 +247,7 @@
  </tr>
  <tr>
  <th scope="row">13. Corporate lookup (法人番号 / gBiz)</th>
- <td class="col-us"><span class="yes">Yes</span> — 166,969 corporate_entity records (gBiz INFO ingest) + 13,801 qualified-invoice registrants (PDL v1.0 delta; full monthly bulk pending)</td>
+ <td class="col-us"><span class="yes">Yes</span> — 166,969 corporate records from gBizINFO + 13,801 qualified-invoice registrants (PDL v1.0 delta; full monthly bulk pending)</td>
  <td class="no">Out of scope</td>
  <td class="no">Out of scope</td>
  <td class="no">Out of scope</td>
@@ -261,7 +258,7 @@
  </table>
  </div>
 
- <p class="compare-note">Legend — <span class="yes">green</span>: confirmed from public sources / <span class="partial">amber</span>: partially present / <span class="no">grey ("None publicly listed")</span>: nothing on the official site / <span class="unknown">grey italic ("Not publicly disclosed")</span>: could not verify. "None publicly listed" / "Not publicly disclosed" does <em>not</em> assert the feature is absent — providers may add or undocument features at any time. Spot an error? Email <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> with a source URL and we'll fix it within 48 hours.</p>
+ <p class="compare-note">Legend — <span class="yes">green</span>: confirmed from public sources / <span class="partial">amber</span>: partially present / <span class="no">grey ("None publicly listed")</span>: nothing on the official site / <span class="unknown">grey italic ("Not publicly disclosed")</span>: could not verify. "None publicly listed" / "Not publicly disclosed" does <em>not</em> assert the feature is absent — providers may add or undocument features at any time. Spot an error? Email <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> with a source URL and we'll review it and update if needed.</p>
 
  <h2>Which one should you pick?</h2>
  <p>Honest recommendations by use case. jpcite is not always the right answer.</p>
@@ -284,7 +281,7 @@
  <div class="pick-card">
  <p class="pick-tag">Developers / LLM-agent builders</p>
  <h3>If you need API/MCP, your shortlist is short</h3>
- <p>noukaweb, hojyokin-portal, biz.stayway, J-Net21, and ミラサポplus do not publish open APIs or MCP servers as of 2026-04-26. Calling them from an AI agent means HTML scraping plus per-site Terms review.</p>
+ <p>Most subsidy search sites and public support portals do not publish open APIs or MCP servers as of 2026-04-26. Calling them from an AI agent means HTML scraping plus per-site Terms review.</p>
  <p class="pick-rec"><strong>jpcite</strong> ships REST + MCP (protocol 2025-06-18) + OpenAPI 3.1 + 93 tools at launch. Evaluate with 3 free req/day, then pay strictly per request — no SDK, no seats.</p>
  </div>
  </div>
@@ -293,8 +290,8 @@
  <ul>
  <li><strong>Cadence</strong>: monthly review. Each provider's public pages are re-fetched and changes reflected immediately.</li>
  <li><strong>Coverage</strong>: services beyond this list will be added incrementally if they appear in user search intent (e.g., jGrants, J-LIS, J-Startup).</li>
- <li><strong>Corrections</strong>: providers and users are welcome to submit corrections — <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> goes straight to the operator. Include a source URL and we will judge within 48 hours.</li>
- <li><strong>No exaggeration</strong>: jpcite does not claim "industry's largest" or "No.1". Our numbers are verifiable on <a href="about.html#quick-facts">about.html</a> and via SQL against the underlying database.</li>
+ <li><strong>Corrections</strong>: providers and users are welcome to submit corrections — <a href="mailto:info@bookyou.net?subject=compare.html%20correction">info@bookyou.net</a> goes straight to the operator. Include a source URL and we will review it.</li>
+ <li><strong>No exaggeration</strong>: jpcite does not claim "industry's largest" or "No.1". Our numbers are verifiable on <a href="about.html#quick-facts">about.html</a> and through regular data checks.</li>
  </ul>
 
  <h2>Related pages</h2>
@@ -321,10 +318,9 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) · CEO Shigetoshi Umeda · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-program static HTML pages for AutonoMath (jpcite.com).
+"""Generate per-program static HTML pages for jpcite.com.
 
 Input:  data/jpintel.db (SQLite programs table)
 Output: site/programs/{slug}.html (one per indexable row; slug = hepburn romaji + sha1-6)
@@ -40,7 +40,6 @@ Exit codes
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import logging
 import os
@@ -49,6 +48,9 @@ import sqlite3
 import sys
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+from urllib.parse import urlparse
 
 # JST = UTC+9. Sitemap <lastmod> is dated in JST so the operator timezone
 # matches every other date surfaced on jpcite.com (consistent with
@@ -58,9 +60,7 @@ _JST = timezone(timedelta(hours=9))
 
 def _today_jst_iso() -> str:
     return datetime.now(_JST).date().isoformat()
-from pathlib import Path
-from typing import TYPE_CHECKING, Any
-from urllib.parse import urlparse
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -119,6 +119,23 @@ OPERATOR_REP = "梅田茂利"
 OPERATOR_EMAIL = "info@bookyou.net"
 OPERATOR_ADDRESS_JP = "東京都文京区小日向2-22-1"
 
+BANNED_SOURCE_SQL = """
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//wikipedia.org%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.wikipedia.org%'
+"""
+
 
 # ---------------------------------------------------------------------------
 # Query
@@ -150,6 +167,7 @@ WHERE excluded = 0
   AND source_url IS NOT NULL
   AND source_url <> ''
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
+  {banned_source_sql}
 ORDER BY
     CASE tier WHEN 'S' THEN 0 WHEN 'A' THEN 1 WHEN 'B' THEN 2 ELSE 3 END,
     unified_id
@@ -159,7 +177,9 @@ ORDER BY
 # reference INDEXABLE_SQL directly. _iter_rows builds the actual query from
 # the runtime --tiers selection (default: S+A only after the 2026-04-29 SEO
 # AI-feel reduction; was S/A/B/C).
-INDEXABLE_SQL = INDEXABLE_SQL_TEMPLATE.format(tier_in="'S','A','B','C'")
+INDEXABLE_SQL = INDEXABLE_SQL_TEMPLATE.format(
+    tier_in="'S','A','B','C'", banned_source_sql=BANNED_SOURCE_SQL
+)
 
 SAMPLE_BY_ID_SQL = """
 SELECT
@@ -240,8 +260,10 @@ _TARGET_TYPES_JA = {
     "sole_proprietor": "個人事業主",
     "smb": "中小企業",
     "sme": "中小企業",
+    "small_business": "中小企業",
     "startup": "スタートアップ",
     "npo": "NPO法人",
+    "NPO": "NPO法人・団体",
     "individual": "個人",
     "municipality": "地方自治体",
     "school": "学校法人",
@@ -320,6 +342,54 @@ def _target_types_text(target_types: list[str]) -> str:
 def _target_types_list_ja(target_types: list[str]) -> list[str]:
     """Return per-item JA labels (same mapping as _target_types_text)."""
     return [_target_type_label(t) for t in target_types]
+
+
+_PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
+_BAD_PUBLIC_TITLES = {
+    "このページの本文へ移動",
+    "本文へ移動",
+    "ページトップ",
+    "page top",
+    "詳しくはこちら",
+    "詳細はこちら",
+    "tiếng việt",
+    "português",
+}
+_BAD_PUBLIC_TITLE_PATTERNS = (
+    re.compile(r".*課$"),
+    re.compile(r".*室$"),
+    re.compile(r".*(?:更新しました|受付終了しました|募集終了|公募終了).*"),
+    re.compile(r".*(?:pdf|PDF)[：:].*"),
+    re.compile(r".*(?:様式|記入例|資料|パンフレット).*"),
+)
+
+
+def _public_program_name(name: str | None) -> str:
+    """Hide ingest/internal prefixes from public page text."""
+    cleaned = (name or "").strip()
+    cleaned = _PUBLIC_ID_PREFIX_RE.sub("", cleaned)
+    return re.sub(r"\s+", " ", cleaned)
+
+
+def _is_public_title_quality_ok(name: str | None) -> bool:
+    cleaned = _public_program_name(name).strip().lower()
+    if not cleaned or cleaned in _BAD_PUBLIC_TITLES:
+        return False
+    if any(pattern.fullmatch(cleaned) for pattern in _BAD_PUBLIC_TITLE_PATTERNS):
+        return False
+    return not (len(cleaned) <= 3 and not _is_japanese(cleaned))
+
+
+def _sanitize_aliases_for_public(aliases: list[str], primary_name: str) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = {primary_name}
+    for alias in aliases:
+        cleaned = _public_program_name(alias)
+        if not cleaned or cleaned in seen or not _is_public_title_quality_ok(cleaned):
+            continue
+        seen.add(cleaned)
+        out.append(cleaned)
+    return out
 
 
 def _truncate(text: str, limit: int) -> str:
@@ -588,7 +658,7 @@ def _summary_paragraph(row: dict[str, Any], aliases: list[str]) -> str:
     return (
         f"{lead}{alias_clause}"
         f"{amt_clause}"
-        "本ページは AutonoMath が横断検索用に構造化したプレビューであり、"
+        "本ページは jpcite が横断検索用に構造化したプレビューであり、"
         "最新の公募状況や詳細要件は一次情報を確認してください。"
     )
 
@@ -603,32 +673,32 @@ def _amount_paragraph(row: dict[str, Any]) -> str:
         parts.append("支援金額は公募要領に記載されています。")
     if rate:
         parts.append(f"補助率は{rate}です。")
-    parts.append("上限金額・補助率は年度や採択類型により変動することがあるため、必ず公式の最新公募要領をご確認ください。")
+    parts.append("上限金額・補助率は年度や採択類型により変動することがあるため、必ず出典ページの最新公募要領をご確認ください。")
     return "".join(parts)
 
 
 def _deadline_paragraph(row: dict[str, Any]) -> str:
     fetched = _normalize_iso_date(row.get("source_fetched_at"))
     clause = (
-        f"公募時期・締切は年度ごとに更新されます。AutonoMath の直近データ取得日は{fetched}です。"
+        f"公募時期・締切は年度ごとに更新されます。jpcite の直近データ取得日は{fetched}です。"
         if fetched
         else "公募時期・締切は年度ごとに更新されます。"
     )
-    return clause + "申請を検討される場合は、出典欄の公式ページで現在の公募状況を必ずご確認ください。"
+    return clause + "申請を検討される場合は、出典ページで現在の公募状況を必ずご確認ください。"
 
 
 def _exclusion_paragraph(row: dict[str, Any]) -> str:
     return (
         "他の補助金・助成金との併用可否は制度ごとに異なります。同一経費に対する重複受給は原則不可、"
         "同一事業内でも他制度と併用が制限される場合があります。"
-        "併用チェックは AutonoMath API の併用ルール機能でご確認いただけます。"
+        "併用チェックは jpcite API の併用ルール機能でご確認いただけます。"
     )
 
 
 def _meta_description(row: dict[str, Any], target_types: list[str]) -> str:
     """Compose a 150-160 char meta description.
 
-    Format spec: `{summary_1sentence} 対象者: {target}. 上限額: {amount}. 公募時期: {timing}. 一次資料リンク: {source_domain}.`
+    Format spec: `{summary_1sentence} 対象者: {target}. 上限額: {amount}. 公募時期: {timing}. 出典リンク: {source_domain}.`
     We pad with prefecture/authority details if the base string is < 150 chars,
     and truncate if it exceeds 160.
     """
@@ -651,7 +721,7 @@ def _meta_description(row: dict[str, Any], target_types: list[str]) -> str:
         f"対象者: {who}.",
         f"上限額: {amt}.",
         f"公募時期: {fetched}.",
-        f"一次資料リンク: {domain}." if domain else "",
+        f"出典リンク: {domain}." if domain else "",
     ]
     text = " ".join(p for p in parts if p)
 
@@ -660,9 +730,9 @@ def _meta_description(row: dict[str, Any], target_types: list[str]) -> str:
     if len(text) < 150 and rate_line:
         text = text + f" 補助率: {rate_line}."
     if len(text) < 150:
-        text = text + " 横断検索・併用チェックは AutonoMath API / MCP で提供。"
+        text = text + " 横断検索・併用チェックは jpcite API / MCP で提供。"
     if len(text) < 150:
-        text = text + "最新の公募要領は出典欄の公式ページをご確認ください。"
+        text = text + "最新の公募要領は出典ページをご確認ください。"
 
     return _truncate(text, 160)
 
@@ -677,7 +747,7 @@ def _page_title(row: dict[str, Any], target_types: list[str]) -> str:
     amt_val = row.get("amount_max_man_yen")
     if amt_val is not None:
         parts.append(f"最大{int(amt_val):,}万円")
-    parts.append("AutonoMath")
+    parts.append("jpcite")
     raw = " | ".join(parts)
     return _truncate(raw, 60)
 
@@ -691,22 +761,11 @@ ORG_NODE_ID = "https://jpcite.com/#publisher"
 
 def _org_node(domain: str) -> dict[str, Any]:
     # Single canonical Organization @id across ALL templates (publisher.@id reuses).
-    # Brand "jpcite" / "AutonoMath" resolves to same legal entity (Bookyou株式会社).
     return {
         "@type": "Organization",
         "@id": ORG_NODE_ID,
         "name": "jpcite",
-        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
-        "legalName": OPERATOR_NAME,
-        "taxID": OPERATOR_CORPORATE_NUMBER,
-        "founder": {"@type": "Person", "name": OPERATOR_REP},
-        "address": {"@type": "PostalAddress", "addressCountry": "JP", "addressLocality": OPERATOR_ADDRESS_JP},
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "email": OPERATOR_EMAIL,
-            "contactType": "customer support",
-        },
         # publisher.logo (required for Google rich-results / News).
         # 600x60 white-background PNG kept under /assets/.
         "logo": {
@@ -905,8 +964,6 @@ def _service_node(
         node["areaServed"] = {"@type": "Country", "name": "JP"}
     elif row.get("prefecture"):
         node["areaServed"] = {"@type": "AdministrativeArea", "name": row["prefecture"]}
-    elif auth_level in ("prefecture", "都道府県") and row.get("prefecture"):
-        node["areaServed"] = {"@type": "AdministrativeArea", "name": row["prefecture"]}
     else:
         # Default to JP if unknown — non-asserting but better than missing.
         node["areaServed"] = {"@type": "Country", "name": "JP"}
@@ -1030,7 +1087,7 @@ def _monetary_grant_node(
         },
     }
     # funder = the government agency actually providing funds.
-    # AutonoMath is the aggregator (referenced only as page publisher, not funder).
+    # jpcite is the data publisher (referenced only as page publisher, not funder).
     if resolved_agency:
         node["funder"] = {"@type": "GovernmentOrganization", "name": resolved_agency}
     # sponsor duplicated intentionally for schema.org consumers that expect it.
@@ -1057,12 +1114,12 @@ def _faq_node(
     apply_to = _resolve_agency(row) or "公募要領記載の申請窓口"
     exclusion = (
         "同一経費に対する重複受給は原則不可、同一事業内の他制度との併用も制限される場合があります。"
-        "詳細は公募要領および AutonoMath 併用ルール API でご確認ください。"
+        "詳細は公募要領および jpcite 併用ルール API でご確認ください。"
     )
     qa = [
         ("対象者は誰ですか？", f"{who}が対象です。詳細要件は公募要領でご確認ください。"),
         ("金額上限はいくらですか？", f"{amt}です (目安)。年度や採択類型で変動します。"),
-        ("締切はいつですか？", f"公募時期は年度ごとに更新されます。AutonoMath の最新取得日は{fetched}。出典の公式ページで現在の公募状況をご確認ください。"),
+        ("締切はいつですか？", f"公募時期は年度ごとに更新されます。jpcite の最新取得日は{fetched}。出典ページで現在の公募状況をご確認ください。"),
         ("申請先はどこですか？", f"申請先は{apply_to}です。申請窓口の詳細は公募要領に記載されています。"),
         ("他の制度との併用はできますか？", exclusion),
     ]
@@ -1125,10 +1182,7 @@ def build_standalone_json_ld(
         "@type": "Organization",
         "@id": ORG_NODE_ID,
         "name": "jpcite",
-        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
-        "legalName": OPERATOR_NAME,
-        "taxID": OPERATOR_CORPORATE_NUMBER,
         "logo": {
             "@type": "ImageObject",
             "url": f"https://{domain}/assets/logo.png",
@@ -1153,6 +1207,20 @@ WHERE excluded = 0
   AND tier IN ('S','A','B','C')
   AND source_url IS NOT NULL AND source_url <> ''
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//wikipedia.org%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.wikipedia.org%'
   AND unified_id <> ?
   AND target_types_json IS NOT NULL
   AND target_types_json LIKE ?
@@ -1170,6 +1238,20 @@ WHERE excluded = 0
   AND tier IN ('S','A','B','C')
   AND source_url IS NOT NULL AND source_url <> ''
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.smart-hojokin.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.noukaweb.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.hojyokin-portal.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.biz.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.stayway.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.prtimes.jp%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//wikipedia.org%'
+  AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.wikipedia.org%'
   AND unified_id <> ?
   AND program_kind = ?
 ORDER BY
@@ -1242,16 +1324,21 @@ def _related_programs(
             kept_per_prefix[prefix] = kept_per_prefix.get(prefix, 0) + 1
 
     shaped = []
-    for d in deduped[:limit]:
+    for d in deduped:
+        public_name = _public_program_name(d["primary_name"])
+        if not _is_public_title_quality_ok(public_name):
+            continue
         rp_slug = slugify(d["primary_name"] or "", d["unified_id"])
         shaped.append(
             {
                 "slug": rp_slug,
-                "name": d["primary_name"],
+                "name": public_name,
                 "kind_ja": KIND_JA.get(d.get("program_kind") or "subsidy", "公的支援制度"),
                 "amount_line": _amount_line(d.get("amount_max_man_yen"), d.get("amount_min_man_yen")),
             }
         )
+        if len(shaped) >= limit:
+            break
     return shaped
 
 
@@ -1597,12 +1684,17 @@ def render_row(
     acceptance_stats: dict[str, Any] | None = None,
 ) -> tuple[str, str, dict[str, Any]]:
     """Return (slug, html, standalone_json_ld_doc)."""
-    aliases = _parse_json_list(row.get("aliases_json"))
+    original_name = row.get("primary_name") or ""
+    slug = slugify(original_name, row["unified_id"])
+    row = dict(row)
+    row["primary_name"] = _public_program_name(original_name)
+    aliases = _sanitize_aliases_for_public(
+        _parse_json_list(row.get("aliases_json")), row["primary_name"]
+    )
     target_types = _parse_json_list(row.get("target_types_json"))
     funding_purposes = _parse_json_list(row.get("funding_purpose_json"))
     kind_ja = KIND_JA.get(row.get("program_kind") or "subsidy", "公的支援制度")
 
-    slug = slugify(row["primary_name"] or "", row["unified_id"])
     source_url = row.get("source_url") or row.get("official_url") or ""
     source_domain = _source_domain(source_url)
     resolved_agency = _resolve_agency(row)
@@ -1616,6 +1708,12 @@ def render_row(
     standalone_jsonld = build_standalone_json_ld(
         row, slug, domain, aliases, target_types, funding_purposes
     )
+
+    related_public: list[dict[str, Any]] = []
+    for item in related:
+        item_public = dict(item)
+        item_public["name"] = _public_program_name(item_public.get("name"))
+        related_public.append(item_public)
 
     html = ctx.render(
         DOMAIN=domain,
@@ -1651,7 +1749,7 @@ def render_row(
         source_url=source_url,
         source_domain=source_domain,
         source_org=source_org,
-        related_programs=related,
+        related_programs=related_public,
         related_qa=_related_qa_for_program(row),
         acceptance_stats=acceptance_stats,
         json_ld_pretty=json.dumps(json_ld, ensure_ascii=False, indent=2).replace("</", "<\\/"),
@@ -1812,7 +1910,9 @@ def _iter_rows(
     """
     safe_tiers = [t for t in tiers if t in ("S", "A", "B", "C")] or ["S", "A"]
     tier_in = ",".join(f"'{t}'" for t in safe_tiers)
-    sql = INDEXABLE_SQL_TEMPLATE.format(tier_in=tier_in)
+    sql = INDEXABLE_SQL_TEMPLATE.format(
+        tier_in=tier_in, banned_source_sql=BANNED_SOURCE_SQL
+    )
     if limit is not None and limit > 0:
         sql = sql + f"\nLIMIT {limit}"
     for row in conn.execute(sql):
@@ -1832,7 +1932,7 @@ def _write_structured_sitemap(
     """
     if not entries:
         return
-    _STRUCTURED_PRIORITY = {"S": "0.5", "A": "0.4", "B": "0.3", "C": "0.2"}
+    structured_priority = {"S": "0.5", "A": "0.4", "B": "0.3", "C": "0.2"}
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         "<!-- auto-generated by scripts/generate_program_pages.py -->",
@@ -1840,7 +1940,7 @@ def _write_structured_sitemap(
     ]
     for uid, lastmod, tier in entries:
         cf = _TIER_CHANGEFREQ.get(tier, "monthly")
-        pr = _STRUCTURED_PRIORITY.get(tier, "0.3")
+        pr = structured_priority.get(tier, "0.3")
         lines.append("  <url>")
         lines.append(f"    <loc>https://{domain}/structured/{uid}.jsonld</loc>")
         lines.append(f"    <lastmod>{lastmod}</lastmod>")
@@ -1949,6 +2049,13 @@ def generate(
     # --- bulk mode
     for row in _iter_rows(conn, limit, tiers=tiers):
         try:
+            if not _is_public_title_quality_ok(row.get("primary_name")):
+                LOG.info(
+                    "skip low-quality public title uid=%s name=%r",
+                    row.get("unified_id"),
+                    row.get("primary_name"),
+                )
+                continue
             tts = _parse_json_list(row.get("target_types_json"))
             related = _related_programs(conn, row, tts, limit=8)
             slug, html, standalone = render_row(

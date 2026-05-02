@@ -10,7 +10,7 @@ Output (atomic write):
 
 The compact section is a pipe-delimited inventory of every active program
 (`excluded = 0` AND `tier IN ('S','A','B','C')`, matching the production search
-filter — `tier='X'` is the quarantine tier and must stay excluded). It exists
+filter; non-public review rows stay excluded). It exists
 so LLM crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.) can ingest the full
 program list without scraping 9,998 individual HTML pages.
 
@@ -29,19 +29,53 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import os
+import re
 import sqlite3
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 # Marker that delimits the auto-generated compact section. Anything from this
 # line onward is regenerated each run; everything above is preserved.
 SECTION_MARKER = "## All Programs"
+_PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
 
-# SQL filter: tier='X' is the quarantine tier and excluded=1 is hard-deleted.
+# SQL filter: non-public review rows and excluded=1 rows stay out of outputs.
 # Both must stay out of any user-facing surface (CLAUDE.md non-negotiable).
+_BANNED_SOURCE_HOSTS = frozenset(
+    {
+        "smart-hojokin.jp",
+        "noukaweb.jp",
+        "noukaweb.com",
+        "hojyokin-portal.jp",
+        "hojokin-portal.jp",
+        "biz.stayway.jp",
+        "biz-stayway.jp",
+        "stayway.jp",
+        "subsidymap.jp",
+        "navit-j.com",
+        "hojyokin.jp",
+        "hojokin.jp",
+        "creabiz.co.jp",
+        "yorisoi.jp",
+        "aichihojokin.com",
+        "activation-service.jp",
+        "jsearch.jp",
+        "judgit.net",
+        "news.mynavi.jp",
+        "news.yahoo.co.jp",
+        "shien-39.jp",
+        "tamemap.net",
+        "tokyo-np.co.jp",
+        "yayoi-kk.co.jp",
+        "jiji.com",
+    }
+)
+
 PROGRAMS_SQL = """
 SELECT
     unified_id,
@@ -56,6 +90,22 @@ WHERE excluded = 0
 ORDER BY tier, primary_name
 LIMIT 20000
 """
+
+
+def _source_host_allowed(source_url: str | None) -> bool:
+    if not source_url:
+        return True
+    try:
+        hostname = urlparse(str(source_url).strip()).hostname
+    except ValueError:
+        return True
+    if not hostname:
+        return True
+    host = hostname.lower().rstrip(".")
+    return not any(
+        host == banned or host.endswith(f".{banned}")
+        for banned in _BANNED_SOURCE_HOSTS
+    )
 
 
 def _sanitize(value: str) -> str:
@@ -73,6 +123,10 @@ def _sanitize(value: str) -> str:
     return " ".join(s.split())
 
 
+def _public_program_name(value: str | None) -> str:
+    return _PUBLIC_ID_PREFIX_RE.sub("", _sanitize(value or ""))
+
+
 def _format_amount(amount: float | int | None) -> str:
     """Format amount_max_man_yen as integer when whole, else as float."""
     if amount is None:
@@ -87,7 +141,7 @@ def _format_amount(amount: float | int | None) -> str:
     return f"{f:g}"
 
 
-def fetch_programs(db_path: Path) -> list[tuple[str, ...]]:
+def fetch_programs(db_path: Path) -> list[sqlite3.Row]:
     if not db_path.exists():
         msg = f"db not found: {db_path}"
         raise FileNotFoundError(msg)
@@ -96,24 +150,22 @@ def fetch_programs(db_path: Path) -> list[tuple[str, ...]]:
     with sqlite3.connect(uri, uri=True) as con:
         con.row_factory = sqlite3.Row
         rows = con.execute(PROGRAMS_SQL).fetchall()
-    return rows
+    return [row for row in rows if _source_host_allowed(row["source_url"])]
 
 
 def build_compact_section(rows: list[sqlite3.Row]) -> str:
     """Render the ## All Programs (compact) block as a single string."""
-    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    generated_at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     count = len(rows)
 
     lines: list[str] = []
-    lines.append(f"{SECTION_MARKER} ({count:,} entries, compact)")
+    lines.append(f"{SECTION_MARKER} ({count:,} source-allowed entries, compact)")
     lines.append("")
     lines.append(
-        "Generated daily. Source: jpintel.db. "
-        "AutonoMath operates Bookyou株式会社 T8010001213708."
+        "Generated daily from the current public jpcite dataset."
     )
     lines.append(
-        f"Generated at: {generated_at} | Filter: excluded=0 AND tier IN (S,A,B,C) "
-        "(tier='X' is the quarantine tier and is excluded)."
+        f"Generated at: {generated_at}."
     )
     lines.append(
         "Format: <unified_id> | <primary_name> | <program_kind> | "
@@ -127,7 +179,7 @@ def build_compact_section(rows: list[sqlite3.Row]) -> str:
     for row in rows:
         line = " | ".join([
             _sanitize(row["unified_id"]),
-            _sanitize(row["primary_name"]),
+            _public_program_name(row["primary_name"]),
             _sanitize(row["program_kind"]),
             _format_amount(row["amount_max_man_yen"]),
             _sanitize(row["source_url"]),
@@ -153,9 +205,21 @@ def split_existing(text: str) -> str:
             text += "\n"
         if not text.endswith("\n\n"):
             text += "\n"
-        return text
+        return _sanitize_preserved_prefix(text)
     # Trim trailing whitespace from the kept prefix and re-add a single blank line.
     prefix = text[: idx + 1].rstrip() + "\n\n"
+    return _sanitize_preserved_prefix(prefix)
+
+
+def _sanitize_preserved_prefix(prefix: str) -> str:
+    replacements = {
+        "認証済み呼び出し (有効な API key 付き) はこの IP 制限を完全にバイパスし、metered 課金 (¥3/req 税別、上限なし) が適用される。": "認証済み呼び出し (有効な API key 付き) は匿名 IP 制限とは別に扱われます。従量課金は税別 ¥3/req で、月次予算 cap、保護レート制限、異常バースト時の制御が適用される場合があります。",
+        "| Paid (metered) | 上限なし | Stripe 従量、¥3/req 税別 (税込 ¥3.30) |": "| Paid (metered) | 利用量に応じて課金 | Stripe 従量、¥3/req 税別 (税込 ¥3.30)。月次予算 cap と保護レート制限を設定可能 |",
+        "Paid は cap なし (スパイクでも 429 は返らない)。": "認証済み利用でも、月次予算 cap、保護レート制限、異常バースト時の制御が適用される場合があります。",
+        "- **bulk 再配布 (データセット販売等):** 元データ自体は一次資料のため出典明記で再配布可能。自社サービスに組み込む場合は Paid (¥3/req 税別・税込 ¥3.30) で叩けば制限なし。": "- **bulk 再配布 (データセット販売等):** 出典ごとにライセンス条件が異なります。API 利用可否と再配布許諾は別です。各 record の `source_url` / `license` / attribution 条件を確認してください。",
+    }
+    for old, new in replacements.items():
+        prefix = prefix.replace(old, new)
     return prefix
 
 
@@ -168,10 +232,8 @@ def atomic_write(path: Path, content: str) -> None:
         os.replace(tmp_name, path)
     except Exception:
         # Best-effort cleanup of the temp file if rename failed.
-        try:
+        with contextlib.suppress(OSError):
             os.unlink(tmp_name)
-        except OSError:
-            pass
         raise
 
 
