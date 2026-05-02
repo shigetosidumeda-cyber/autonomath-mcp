@@ -8,14 +8,13 @@
 # together from a single `site/` upload).
 
 site_name: jpcite
-site_description: jpcite — 日本の制度 (補助金 / 融資 / 税制 / 認定制度) 11,684件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料付きで返す REST + MCP API。¥3/req、匿名 3 req/日 無料。
+site_description: jpcite — 日本の制度 (補助金 / 融資 / 税制 / 認定制度) 11,684件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料付きで返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。
 site_author: jpcite
 site_url: "https://jpcite.com/docs/"
 copyright: "© 2026 jpcite"
 
-# Disable the github edit link — we don't want the internal repo structure
-# exposed publicly before rebrand lands. Re-enable post-launch by setting
-# `repo_url` + `edit_uri: edit/main/docs/`.
+# Disable the GitHub edit link for the public documentation build.
+# Re-enable by setting `repo_url` + `edit_uri: edit/main/docs/`.
 edit_uri: ""
 
 docs_dir: docs
@@ -162,9 +161,8 @@ plugins:
   #     type: date
   #     fallback_to_build_date: true
 
-# Public docs allowlist by exclusion: operator runbooks, draft launch
-# material, and local setup notes stay in-repo but are not rendered into
-# the customer-facing documentation site.
+# Public docs allowlist by exclusion: operational notes and draft materials
+# stay in-repo but are not rendered into the customer-facing documentation site.
 exclude_docs: |
   _internal/
   _internal/health_monitoring_runbook.md
@@ -218,10 +216,7 @@ exclude_docs: |
   mcp/
   runbook/
   mcp/
-  # Operator-only / pre-launch-internal pages — moved out of public nav
-  # (2026-04-29 customer-doc cleanup). These contain hiring criteria, ARR
-  # projections, distribution strategy, internal eval gates, vertical launch
-  # plans — none of which are relevant to API consumers.
+  # Operator-only pages that are not relevant to API consumers.
   long_term_strategy.md
   registries.md
   seo_strategy.md
@@ -252,8 +247,6 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/
       name: GitHub
-  # The rebrand decision gates the social/contact block — revisit after
-  # project_jpintel_trademark_intel_risk lands.
 
 nav:
   - ホーム: index.md
