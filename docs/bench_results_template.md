@@ -134,13 +134,16 @@ python tools/offline/bench_harness.py \
 
 # 2. Probe jpcite prefetch URLs before any operator LLM calls.
 python tools/offline/bench_prefetch_probe.py \
-    --instructions-jsonl bench_instructions.jsonl \
-    --output-csv bench_prefetch_probe.csv
+    --queries-csv tools/offline/bench_queries_2026_04_30.csv \
+    --rows-csv bench_prefetch_probe.csv \
+    --input-token-price-jpy-per-1m 300
 
 # Copy records_returned, precomputed_record_count, and
 # packet_tokens_estimate from bench_prefetch_probe.csv into the matching
-# jpcite rows in bench_results.csv. Leave fields empty when the probe
-# cannot measure them.
+# jpcite rows in bench_results.csv. If your query CSV contains
+# baseline_source_tokens/source_token_count or
+# baseline_source_pdf_pages/source_pdf_pages, also copy the break-even
+# fields. Leave fields empty when the probe cannot measure them.
 
 # 3. Operator runs each instruction line manually against their LLM
 #    provider, writes bench_results.csv with the columns listed in

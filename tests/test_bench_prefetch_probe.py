@@ -6,6 +6,7 @@ to read the canonical 30-query bench CSV, call the local
 EvidencePacketComposer with no network or LLM calls, and emit a JSON
 summary plus optional per-query CSV metrics.
 """
+
 from __future__ import annotations
 
 import ast
@@ -19,9 +20,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROBE_PATH = REPO_ROOT / "tools" / "offline" / "bench_prefetch_probe.py"
-BENCH_QUERIES_CSV = (
-    REPO_ROOT / "tools" / "offline" / "bench_queries_2026_04_30.csv"
-)
+BENCH_QUERIES_CSV = REPO_ROOT / "tools" / "offline" / "bench_queries_2026_04_30.csv"
 
 
 def _run_probe(
@@ -115,19 +114,29 @@ def _install_offline_composer_stub(tmp_path: Path) -> Path:
                             rec["precomputed"] = {"basis": "fixture"}
                         records.append(rec)
                     packet_tokens = 1000 + marker
+                    source_pdf_pages = kwargs.get("source_pdf_pages")
                     source_token_count = kwargs.get("source_token_count")
+                    source_tokens = (
+                        source_token_count
+                        if source_token_count
+                        else source_pdf_pages * 700
+                        if source_pdf_pages
+                        else None
+                    )
                     compression = {
                         "packet_tokens_estimate": packet_tokens,
                         "source_tokens_basis": kwargs.get("source_tokens_basis"),
-                        "source_tokens_estimate": source_token_count,
+                        "source_pdf_pages": source_pdf_pages,
+                        "source_token_count": source_token_count,
+                        "source_tokens_estimate": source_tokens,
                         "avoided_tokens_estimate": (
-                            max(0, source_token_count - packet_tokens)
-                            if source_token_count else None
+                            max(0, source_tokens - packet_tokens)
+                            if source_tokens else None
                         ),
                     }
                     price = kwargs.get("input_token_price_jpy_per_1m")
-                    if source_token_count and price:
-                        avoided = max(0, source_token_count - packet_tokens)
+                    if source_tokens and price:
+                        avoided = max(0, source_tokens - packet_tokens)
                         break_even = int((3 / (price / 1_000_000)) + 0.999999)
                         compression["cost_savings_estimate"] = {
                             "break_even_avoided_tokens": break_even,
@@ -155,8 +164,7 @@ def _canonical_query_rows() -> list[dict[str, str]]:
 
 def test_probe_script_exists_at_operator_path() -> None:
     assert PROBE_PATH.exists(), (
-        "expected offline prefetch probe script at "
-        "tools/offline/bench_prefetch_probe.py"
+        "expected offline prefetch probe script at tools/offline/bench_prefetch_probe.py"
     )
 
 
@@ -185,9 +193,7 @@ def test_probe_reads_canonical_queries_and_writes_summary_and_rows(
 
     with call_log.open("r", encoding="utf-8") as f:
         calls = [json.loads(line) for line in f if line.strip()]
-    assert [call["query_text"] for call in calls] == [
-        row["query_text"] for row in query_rows
-    ]
+    assert [call["query_text"] for call in calls] == [row["query_text"] for row in query_rows]
     assert {call["jpintel_db"] for call in calls} == {"stub-jpintel.sqlite"}
     assert {call["autonomath_db"] for call in calls} == {"stub-autonomath.sqlite"}
     assert all(call["kwargs"].get("include_compression") is True for call in calls)
@@ -205,22 +211,18 @@ def test_probe_reads_canonical_queries_and_writes_summary_and_rows(
         "precomputed_record_count",
         "packet_tokens_estimate",
     }
-    assert [row["query_id"] for row in output_rows] == [
-        row["query_id"] for row in query_rows
-    ]
+    assert [row["query_id"] for row in output_rows] == [row["query_id"] for row in query_rows]
     assert all(int(row["records_returned"]) >= 1 for row in output_rows)
     assert all(int(row["precomputed_record_count"]) >= 1 for row in output_rows)
     assert all(int(row["packet_tokens_estimate"]) >= 1000 for row in output_rows)
 
-    assert summary["records_total"] == sum(
-        int(row["records_returned"]) for row in output_rows
-    )
+    assert summary["records_total"] == sum(int(row["records_returned"]) for row in output_rows)
     assert summary["precomputed_records_total"] == sum(
         int(row["precomputed_record_count"]) for row in output_rows
     )
-    assert sum(
-        int(row["packet_tokens_estimate"]) for row in output_rows
-    ) == sum(int(row["packet_tokens_estimate"]) for row in summary["rows"])
+    assert sum(int(row["packet_tokens_estimate"]) for row in output_rows) == sum(
+        int(row["packet_tokens_estimate"]) for row in summary["rows"]
+    )
 
 
 def test_probe_can_emit_json_summary_without_rows_csv(tmp_path: Path) -> None:
@@ -238,9 +240,7 @@ def test_probe_can_emit_json_summary_without_rows_csv(tmp_path: Path) -> None:
     summary = json.loads(result.stdout)
     assert summary["total_queries"] == 30
     assert len(summary["rows"]) == 30
-    assert summary["records_total"] == sum(
-        int(row["records_returned"]) for row in summary["rows"]
-    )
+    assert summary["records_total"] == sum(int(row["records_returned"]) for row in summary["rows"])
     assert summary["precomputed_records_total"] == sum(
         int(row["precomputed_record_count"]) for row in summary["rows"]
     )
@@ -252,11 +252,13 @@ def test_probe_computes_break_even_when_source_token_baseline_is_supplied(
 ) -> None:
     queries_csv = tmp_path / "queries.csv"
     queries_csv.write_text(
-        "\n".join([
-            "query_id,domain,query_text,source_token_count",
-            "1,subsidy,長い公募要領を読む,25000",
-            "2,tax,短い根拠を確認,1200",
-        ])
+        "\n".join(
+            [
+                "query_id,domain,query_text,source_token_count",
+                "1,subsidy,長い公募要領を読む,25000",
+                "2,tax,短い根拠を確認,1200",
+            ]
+        )
         + "\n",
         encoding="utf-8",
     )
@@ -295,10 +297,92 @@ def test_probe_computes_break_even_when_source_token_baseline_is_supplied(
     assert calls[0]["kwargs"]["input_token_price_jpy_per_1m"] == 300.0
 
 
+def test_probe_computes_break_even_when_pdf_page_baseline_is_supplied(
+    tmp_path: Path,
+) -> None:
+    queries_csv = tmp_path / "queries.csv"
+    queries_csv.write_text(
+        "\n".join(
+            [
+                "query_id,domain,query_text,source_pdf_pages",
+                "1,subsidy,長いPDF公募要領を読む,30",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    rows_csv = tmp_path / "prefetch_rows.csv"
+    call_log = tmp_path / "composer_calls.jsonl"
+    stub_path = _install_offline_composer_stub(tmp_path)
+
+    result = _run_probe(
+        "--queries-csv",
+        str(queries_csv),
+        "--rows-csv",
+        str(rows_csv),
+        "--input-token-price-jpy-per-1m",
+        "300",
+        pythonpath=stub_path,
+        call_log=call_log,
+    )
+
+    assert result.returncode == 0, result.stderr
+    summary = json.loads(result.stdout)
+    assert summary["queries_with_source_token_baseline"] == 1
+    assert summary["break_even_queries"] == 1
+
+    with rows_csv.open("r", encoding="utf-8", newline="") as f:
+        output_rows = list(csv.DictReader(f))
+    assert output_rows[0]["source_tokens_basis"] == "pdf_pages"
+    assert output_rows[0]["source_pdf_pages"] == "30"
+    assert int(output_rows[0]["source_tokens_estimate"]) == 21_000
+
+    with call_log.open("r", encoding="utf-8") as f:
+        calls = [json.loads(line) for line in f if line.strip()]
+    assert calls[0]["kwargs"]["source_tokens_basis"] == "pdf_pages"
+    assert calls[0]["kwargs"]["source_pdf_pages"] == 30
+    assert calls[0]["kwargs"]["source_token_count"] is None
+
+
+def test_probe_does_not_treat_output_source_tokens_estimate_as_input_baseline(
+    tmp_path: Path,
+) -> None:
+    queries_csv = tmp_path / "queries.csv"
+    queries_csv.write_text(
+        "\n".join(
+            [
+                "query_id,domain,query_text,source_tokens_estimate",
+                "1,subsidy,出力列を誤って入力にしない,25000",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    call_log = tmp_path / "composer_calls.jsonl"
+    stub_path = _install_offline_composer_stub(tmp_path)
+
+    result = _run_probe(
+        "--queries-csv",
+        str(queries_csv),
+        "--input-token-price-jpy-per-1m",
+        "300",
+        pythonpath=stub_path,
+        call_log=call_log,
+    )
+
+    assert result.returncode == 0, result.stderr
+    summary = json.loads(result.stdout)
+    assert summary["queries_with_source_token_baseline"] == 0
+
+    with call_log.open("r", encoding="utf-8") as f:
+        calls = [json.loads(line) for line in f if line.strip()]
+    assert calls[0]["kwargs"]["source_tokens_basis"] == "unknown"
+    assert calls[0]["kwargs"]["source_token_count"] is None
+
+
 def test_probe_file_has_no_llm_or_network_imports() -> None:
     assert PROBE_PATH.exists(), (
-        "expected offline prefetch probe script at "
-        "tools/offline/bench_prefetch_probe.py"
+        "expected offline prefetch probe script at tools/offline/bench_prefetch_probe.py"
     )
     tree = ast.parse(PROBE_PATH.read_text(encoding="utf-8"))
     forbidden_modules = {
@@ -326,12 +410,10 @@ def test_probe_file_has_no_llm_or_network_imports() -> None:
             and node.module
             and (
                 node.module in forbidden_modules
-                or node.module.split(".")[0]
-                in {"anthropic", "httpx", "openai", "requests"}
+                or node.module.split(".")[0] in {"anthropic", "httpx", "openai", "requests"}
             )
         ):
             hits.append(f"from {node.module} import ...")
     assert not hits, (
-        "bench_prefetch_probe.py must stay offline and LLM-free; "
-        f"forbidden imports found: {hits}"
+        f"bench_prefetch_probe.py must stay offline and LLM-free; forbidden imports found: {hits}"
     )

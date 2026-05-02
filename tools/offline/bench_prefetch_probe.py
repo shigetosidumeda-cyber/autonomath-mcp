@@ -7,6 +7,7 @@ EvidencePacketComposer against the configured SQLite corpus. It is meant
 to run before any operator-owned LLM calls so the benchmark can separate
 "jpcite lookup coverage" from "LLM answer quality".
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,6 +30,8 @@ ROW_FIELDNAMES: tuple[str, ...] = (
     "precomputed_record_count",
     "packet_tokens_estimate",
     "source_tokens_basis",
+    "source_pdf_pages",
+    "source_token_count",
     "source_tokens_estimate",
     "avoided_tokens_estimate",
     "compression_ratio",
@@ -72,9 +75,20 @@ def _probe_row(
         row,
         "source_token_count",
         "baseline_source_tokens",
-        "source_tokens_estimate",
     )
-    source_tokens_basis = "token_count" if source_token_count is not None else "unknown"
+    source_pdf_pages = _optional_positive_int(
+        row,
+        "source_pdf_pages",
+        "baseline_source_pdf_pages",
+        "baseline_pdf_pages",
+    )
+    if source_token_count is not None:
+        source_tokens_basis = "token_count"
+        source_pdf_pages = None
+    elif source_pdf_pages is not None:
+        source_tokens_basis = "pdf_pages"
+    else:
+        source_tokens_basis = "unknown"
     env = composer.compose_for_query(
         row["query_text"],
         limit=limit,
@@ -83,6 +97,7 @@ def _probe_row(
         include_compression=True,
         input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
         source_tokens_basis=source_tokens_basis,
+        source_pdf_pages=source_pdf_pages,
         source_token_count=source_token_count,
     )
     records = env.get("records") or []
@@ -93,11 +108,11 @@ def _probe_row(
         "domain": row.get("domain", ""),
         "query_text": row["query_text"],
         "records_returned": len(records),
-        "precomputed_record_count": sum(
-            1 for record in records if record.get("precomputed")
-        ),
+        "precomputed_record_count": sum(1 for record in records if record.get("precomputed")),
         "packet_tokens_estimate": compression.get("packet_tokens_estimate"),
         "source_tokens_basis": compression.get("source_tokens_basis"),
+        "source_pdf_pages": compression.get("source_pdf_pages"),
+        "source_token_count": compression.get("source_token_count"),
         "source_tokens_estimate": compression.get("source_tokens_estimate"),
         "avoided_tokens_estimate": compression.get("avoided_tokens_estimate"),
         "compression_ratio": compression.get("compression_ratio"),
@@ -113,15 +128,11 @@ def _probe_row(
 def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     total = len(rows)
     zero = sum(1 for row in rows if int(row["records_returned"]) == 0)
-    with_precomputed = sum(
-        1 for row in rows if int(row["precomputed_record_count"]) > 0
-    )
+    with_precomputed = sum(1 for row in rows if int(row["precomputed_record_count"]) > 0)
     with_source_tokens = [
         row for row in rows if row.get("source_tokens_estimate") not in (None, "")
     ]
-    break_even_rows = [
-        row for row in rows if str(row.get("break_even_met")).lower() == "true"
-    ]
+    break_even_rows = [row for row in rows if str(row.get("break_even_met")).lower() == "true"]
     avoided_tokens_total = sum(
         int(row["avoided_tokens_estimate"] or 0) for row in with_source_tokens
     )
@@ -135,18 +146,13 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "zero_result_queries": zero,
         "zero_result_rate": round(zero / total, 4) if total else 0.0,
         "queries_with_precomputed": with_precomputed,
-        "precomputed_query_rate": (
-            round(with_precomputed / total, 4) if total else 0.0
-        ),
+        "precomputed_query_rate": (round(with_precomputed / total, 4) if total else 0.0),
         "records_total": sum(int(row["records_returned"]) for row in rows),
-        "precomputed_records_total": sum(
-            int(row["precomputed_record_count"]) for row in rows
-        ),
+        "precomputed_records_total": sum(int(row["precomputed_record_count"]) for row in rows),
         "queries_with_source_token_baseline": len(with_source_tokens),
         "break_even_queries": len(break_even_rows),
         "break_even_rate": (
-            round(len(break_even_rows) / len(with_source_tokens), 4)
-            if with_source_tokens else 0.0
+            round(len(break_even_rows) / len(with_source_tokens), 4) if with_source_tokens else 0.0
         ),
         "avoided_tokens_total": avoided_tokens_total,
         "net_savings_jpy_ex_tax_total": (
@@ -190,7 +196,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "Optional caller-supplied input-token price in JPY per 1M tokens. "
             "Used only with per-row source_token_count/baseline_source_tokens "
-            "to compute break-even estimates."
+            "or source_pdf_pages/baseline_source_pdf_pages to compute "
+            "break-even estimates."
         ),
     )
     parser.add_argument(

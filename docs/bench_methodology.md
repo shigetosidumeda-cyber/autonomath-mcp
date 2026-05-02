@@ -122,27 +122,21 @@ deltas are computed over the active arms present in the CSV.
 ## 2.4 Offline prefetch probe before LLM calls
 
 Before running any operator LLM calls, run the offline prefetch probe
-against the generated jpcite prefetch instructions. The probe is
-operator-only instrumentation: it fetches the jpcite packet/bundle
-URLs, records lookup coverage and approximate packet size, and gives
-the operator concrete values to copy into `bench_results.csv`. It does
-not call an LLM and does not establish answer quality or token/cost
-savings by itself.
+against the benchmark query CSV. The probe is operator-only
+instrumentation: it composes local jpcite packets/bundles, records lookup
+coverage and approximate packet size, and gives the operator concrete
+values to copy into `bench_results.csv`. It does not call an LLM, does
+not fetch the network, and does not establish answer quality or
+provider-billed token savings by itself.
 
 Typical sequence:
 
 ```bash
-# First emit the bench instruction set.
-python tools/offline/bench_harness.py \
-    --queries-csv tools/offline/bench_queries_2026_04_30.csv \
-    --mode emit \
-    --model <your-model> \
-    > bench_instructions.jsonl
-
-# Then probe jpcite prefetch URLs before any LLM provider calls.
+# Probe jpcite prefetch coverage before any LLM provider calls.
 python tools/offline/bench_prefetch_probe.py \
-    --instructions-jsonl bench_instructions.jsonl \
-    --output-csv bench_prefetch_probe.csv
+    --queries-csv tools/offline/bench_queries_2026_04_30.csv \
+    --rows-csv bench_prefetch_probe.csv \
+    --input-token-price-jpy-per-1m 300
 ```
 
 Use the probe output to fill, for each applicable jpcite row:
@@ -153,6 +147,11 @@ Use the probe output to fill, for each applicable jpcite row:
   the prefetch response.
 - `packet_tokens_estimate`: estimated token count of the packet/bundle
   that will be supplied to the LLM.
+- `source_tokens_estimate`: only when the input CSV includes
+  `baseline_source_tokens` / `source_token_count` or
+  `baseline_source_pdf_pages` / `source_pdf_pages`.
+- `break_even_met`: only when both a source baseline and
+  `--input-token-price-jpy-per-1m` are supplied.
 
 Leave a field empty when the prefetch response or probe cannot measure
 it. Do not substitute an assumed value. If the operator changes the
