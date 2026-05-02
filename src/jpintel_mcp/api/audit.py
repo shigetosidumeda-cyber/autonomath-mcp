@@ -84,7 +84,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, status
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query, Request, status
 from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
@@ -1540,6 +1540,7 @@ def render_workpaper(
     conn: DbDep,
     ctx: ApiContextDep,
     background_tasks: BackgroundTasks,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> JSONResponse:
     """Render a single-client work-paper.
 
@@ -1631,7 +1632,7 @@ def render_workpaper(
     if anticipated_units > 0:
         require_cost_cap(
             predicted_yen=anticipated_units * 3,
-            header_value=request.headers.get("x-cost-cap-jpy"),
+            header_value=x_cost_cap_jpy,
             body_cap_yen=payload.max_cost_jpy,
         )
     cap_response = _projected_cap_response(conn, ctx, anticipated_units)
@@ -1790,6 +1791,7 @@ def batch_evaluate(
     conn: DbDep,
     ctx: ApiContextDep,
     background_tasks: BackgroundTasks,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> JSONResponse:
     t0 = time.perf_counter()
     require_metered_api_key(ctx, "audit batch evaluation")
@@ -1829,7 +1831,7 @@ def batch_evaluate(
     units = max(1, (n_evals + _BATCH_K - 1) // _BATCH_K)  # ceil division
     require_cost_cap(
         predicted_yen=units * 3,
-        header_value=request.headers.get("x-cost-cap-jpy"),
+        header_value=x_cost_cap_jpy,
         body_cap_yen=payload.max_cost_jpy,
     )
     cap_response = _projected_cap_response(conn, ctx, units)

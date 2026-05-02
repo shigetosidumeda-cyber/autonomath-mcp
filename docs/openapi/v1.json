@@ -15591,6 +15591,22 @@
         "parameters": [
           {
             "in": "header",
+            "name": "X-Cost-Cap-JPY",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Cost-Cap-Jpy"
+            }
+          },
+          {
+            "in": "header",
             "name": "X-API-Key",
             "required": false,
             "schema": {
@@ -16045,6 +16061,22 @@
         "description": "Generate a single-client audit work-paper for the audit cycle.\n\n**Bills**: ``len(target_ruleset_ids) \u00d7 \u00a53 + \u00a530 export fee``.\n\n**\u00a752 + \u516c\u8a8d\u4f1a\u8a08\u58eb\u6cd5 \u00a747\u6761\u306e2** \u2014 the artefact is **input material**, NOT a substitute for the auditor's opinion or working papers. The disclaimer is rendered on the cover page, every page footer, every CSV header line, and every JSON response.",
         "operationId": "render_workpaper_v1_audit_workpaper_post",
         "parameters": [
+          {
+            "in": "header",
+            "name": "X-Cost-Cap-JPY",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Cost-Cap-Jpy"
+            }
+          },
           {
             "in": "header",
             "name": "X-API-Key",
