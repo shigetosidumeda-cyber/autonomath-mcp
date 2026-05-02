@@ -5,6 +5,7 @@ primary_region = "nrt"
   dockerfile = "Dockerfile"
 
 [env]
+  JPINTEL_ENV = "prod"
   JPINTEL_LOG_LEVEL = "INFO"
   JPINTEL_LOG_FORMAT = "json"
   JPINTEL_DB_PATH = "/data/jpintel.db"
@@ -12,7 +13,7 @@ primary_region = "nrt"
   AUTONOMATH_ENABLED = "true"
   SENTRY_ENVIRONMENT = "production"
   # SENTRY_DSN, STRIPE_*, API_KEY_SALT, JPINTEL_CORS_ORIGINS: set via `flyctl secrets set`
-  # AUTONOMATH_DB_SOURCE_URL + AUTONOMATH_DB_SHA256 (optional R2 bootstrap): set via secrets
+  # AUTONOMATH_DB_URL + AUTONOMATH_DB_SHA256 (optional R2 bootstrap): set via secrets
 
 # Run migrations on every deploy, before traffic shifts. Must be idempotent.
 # migrate.py reads JPINTEL_DB_PATH from env; it is safe on a fresh volume.
@@ -23,10 +24,10 @@ primary_region = "nrt"
 # Substitute path (added 2026-04-29): jpintel.db migrations still run via
 # `migrate.py` in entrypoint.sh §3 (post-volume-mount, before schema_guard);
 # autonomath.db `target_db: autonomath` migrations auto-discover and self-heal
-# in entrypoint.sh §4 — that's how migration 075 (am_amendment_diff) lands
-# in production. Each boot re-applies idempotent CREATE * IF NOT EXISTS DDL
-# from every scripts/migrations/*.sql whose first line is
-# `-- target_db: autonomath` (rollback companions excluded).
+# in entrypoint.sh §4. Already-recorded schema_migrations rows are skipped;
+# rollback companions and files marked `-- boot_time: manual` are excluded.
+# Any remaining autonomath migration failure aborts boot when
+# AUTONOMATH_ENABLED=true.
 [deploy]
   # release_command = "python scripts/migrate.py"
   strategy = "immediate"
@@ -35,7 +36,7 @@ primary_region = "nrt"
 #   - autonomath.db          ~9.3 GB live, +920 MB/month from NTA bulk ingest
 #   - jpintel.db             ~368 MB live, +incremental law full-text loads
 #   - WAL/SHM headroom       ~10% of DB size during writes
-#   - migration scratch      idempotent CREATE * IF NOT EXISTS DDL on every boot
+#   - migration scratch      autonomath self-heal SQL during boot when needed
 # At 20 GB the volume saturates in ~11 months of NTA bulk growth alone.
 # 40 GB buys ~33 months of headroom and absorbs an unexpected corpus expansion
 # without an emergency `fly volumes extend` (which requires a machine restart).
@@ -60,17 +61,18 @@ primary_region = "nrt"
     hard_limit = 100
 
   # Fly silently caps grace_period at 60s (`flyctl config validate` warning).
-  # Cold-boot work (R2 bootstrap, integrity_check on 9.3 GB autonomath.db,
-  # autonomath self-heal migrations + schema_guard) usually finishes inside
-  # 60s once the DB is on the volume. If a fresh-volume bootstrap pushes
-  # past 60s, Fly retries the check before declaring unhealthy — we accept
-  # the brief restart loop on the first deploy.
+  # Normal redeploy should avoid 9.79 GB boot-time SHA/integrity scans via
+  # DB stamp files; fresh R2 bootstrap or stamp miss can still exceed 60s.
+  # The deep check fails only when the autonomath health body is unhealthy.
+  # If a fresh-volume bootstrap runs long, Fly retries before declaring
+  # unhealthy; expect a brief first-deploy restart loop rather than widening
+  # this check past Fly's effective cap.
   [[http_service.checks]]
     interval = "30s"
     timeout = "10s"
     grace_period = "60s"
     method = "GET"
-    path = "/v1/am/health/deep"
+    path = "/v1/am/health/deep?fail_on_unhealthy=true"
 
 [metrics]
   port = 9091

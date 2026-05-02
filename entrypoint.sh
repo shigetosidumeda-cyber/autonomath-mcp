@@ -4,8 +4,8 @@
 # Order:
 #   1. Ensure /data exists (Fly volume mounted at /data).
 #   2. R2 bootstrap: download autonomath.db if missing/SHA mismatch.
-#   3. Run schema_guard.py (asserts required tables + migration level).
-#   4. Run migrate.py (idempotent migrations on jpintel.db).
+#   3. Run migrate.py (idempotent migrations on jpintel.db).
+#   4. Run schema_guard.py and autonomath self-heal migrations.
 #   5. exec CMD.
 # ------------------------------------------------------------------
 set -euo pipefail
@@ -91,19 +91,100 @@ compute_sha256() {
   fi
 }
 
+file_size() {
+  local f="$1"
+  stat -c%s "$f" 2>/dev/null || stat -f%z "$f" 2>/dev/null || echo unknown
+}
+
+sha_stamp_path() {
+  printf '%s.sha256.stamp' "$1"
+}
+
+trusted_stamp_path() {
+  printf '%s.trusted.stamp' "$1"
+}
+
+sha_stamp_matches() {
+  local f="$1"
+  local want_sha="$2"
+  local size
+  local stamp
+  local stamp_value
+  size="$(file_size "$f")"
+  [ "$size" != "unknown" ] || return 1
+  stamp="$(sha_stamp_path "$f")"
+  [ -f "$stamp" ] || return 1
+  stamp_value="$(cat "$stamp" 2>/dev/null || true)"
+  [ "$stamp_value" = "$want_sha $size" ]
+}
+
+trusted_stamp_matches() {
+  local f="$1"
+  local want_sha="$2"
+  local size
+  local stamp
+  local stamp_value
+  size="$(file_size "$f")"
+  [ "$size" != "unknown" ] || return 1
+  stamp="$(trusted_stamp_path "$f")"
+  if [ -f "$stamp" ]; then
+    stamp_value="$(cat "$stamp" 2>/dev/null || true)"
+    [ "$stamp_value" = "trusted $want_sha $size" ] && return 0
+  fi
+  return 1
+}
+
+write_sha_stamp() {
+  local f="$1"
+  local sha="$2"
+  local size
+  local stamp
+  size="$(file_size "$f")"
+  [ "$size" != "unknown" ] || return 0
+  stamp="$(sha_stamp_path "$f")"
+  printf '%s %s\n' "$sha" "$size" > "${stamp}.new"
+  mv -f "${stamp}.new" "$stamp"
+}
+
+write_trusted_stamp() {
+  local f="$1"
+  local sha="$2"
+  local size
+  local stamp
+  size="$(file_size "$f")"
+  [ "$size" != "unknown" ] || return 0
+  stamp="$(trusted_stamp_path "$f")"
+  printf 'trusted %s %s\n' "$sha" "$size" > "${stamp}.new"
+  mv -f "${stamp}.new" "$stamp"
+  rm -f "$(sha_stamp_path "$f")"
+}
+
 # 2. R2 bootstrap: download autonomath.db if missing or SHA mismatch.
 needs_download=0
 if [ ! -s "$DB_PATH" ]; then
   log "no existing DB at $DB_PATH"
   needs_download=1
 elif [ -n "$DB_SHA256" ]; then
-  log "checking SHA256 of existing $DB_PATH against AUTONOMATH_DB_SHA256"
-  existing_sha="$(compute_sha256 "$DB_PATH")"
-  if [ "$existing_sha" = "$DB_SHA256" ]; then
-    log "SHA256 match — skipping download"
+  if sha_stamp_matches "$DB_PATH" "$DB_SHA256"; then
+    log "SHA256 stamp match for existing $DB_PATH — skipping full-file hash"
+  elif trusted_stamp_matches "$DB_PATH" "$DB_SHA256"; then
+    log "trusted DB stamp match for existing $DB_PATH — skipping full-file hash"
   else
-    log "SHA256 mismatch (have=$existing_sha want=$DB_SHA256) — re-downloading"
-    needs_download=1
+    legacy_stamp="$(sha_stamp_path "$DB_PATH")"
+    if [ -f "$legacy_stamp" ] && grep -q "^trusted " "$legacy_stamp" 2>/dev/null; then
+      log "legacy trusted stamp found at $legacy_stamp — ignoring and forcing full-file hash"
+      rm -f "$legacy_stamp"
+    fi
+    log "checking SHA256 of existing $DB_PATH against AUTONOMATH_DB_SHA256"
+    existing_sha="$(compute_sha256 "$DB_PATH")"
+    if [ "$existing_sha" = "$DB_SHA256" ]; then
+      write_sha_stamp "$DB_PATH" "$DB_SHA256"
+      log "SHA256 match — stamp written; skipping download"
+    else
+      rm -f "$(sha_stamp_path "$DB_PATH")"
+      log "SHA256 mismatch (have=$existing_sha want=$DB_SHA256) — re-downloading"
+      needs_download=1
+    fi
   fi
 else
   log "existing DB at $DB_PATH (no AUTONOMATH_DB_SHA256 set; skipping verification)"
@@ -145,9 +226,12 @@ if [ "$needs_download" -eq 1 ]; then
 
   # Atomic rename so a crash mid-download never leaves a half-baked DB at $DB_PATH.
   mv "$TMP_DB" "$DB_PATH"
+  if [ -n "$DB_SHA256" ]; then
+    write_sha_stamp "$DB_PATH" "$DB_SHA256"
+  fi
   log "DB snapshot landed at $DB_PATH"
 elif [ -s "$DB_PATH" ]; then
-  size_bytes="$(stat -c%s "$DB_PATH" 2>/dev/null || stat -f%z "$DB_PATH" 2>/dev/null || echo unknown)"
+  size_bytes="$(file_size "$DB_PATH")"
   log "using existing DB at $DB_PATH ($size_bytes bytes)"
 else
   log "no autonomath DB present — proceeding without it (am features will return 503)"
@@ -182,16 +266,26 @@ if [ -f /app/scripts/schema_guard.py ]; then
     log "jpintel DB missing at $JPINTEL_DB — schema guard for jpintel skipped (migrate.py will create it)"
   fi
   if [ -s "$DB_PATH" ]; then
-    log "running integrity_check on $DB_PATH before schema_guard (autonomath)"
-    integrity=$(sqlite3 "$DB_PATH" 'PRAGMA integrity_check;' 2>&1 | head -1 || echo "FAILED")
+    if [ -n "$DB_SHA256" ] && { sha_stamp_matches "$DB_PATH" "$DB_SHA256" || trusted_stamp_matches "$DB_PATH" "$DB_SHA256"; }; then
+      log "trusted stamp match for $DB_PATH — skipping full integrity_check"
+      integrity="ok"
+    else
+      log "running integrity_check on $DB_PATH before schema_guard (autonomath)"
+      integrity=$(sqlite3 "$DB_PATH" 'PRAGMA integrity_check;' 2>&1 | head -1 || echo "FAILED")
+    fi
     if [ "$integrity" != "ok" ]; then
-      log "autonomath DB malformed (integrity=$integrity) — removing partial/corrupt file to unblock boot"
+      err "autonomath DB malformed (integrity=$integrity)"
+      if [ "${AUTONOMATH_ENABLED:-true}" = "true" ] || [ "${AUTONOMATH_ENABLED:-1}" = "1" ]; then
+        err "AUTONOMATH_ENABLED=true — failing boot instead of serving a silently degraded API"
+        exit 1
+      fi
+      log "AUTONOMATH_ENABLED=false — removing partial/corrupt file to unblock boot"
       rm -f "$DB_PATH" "${DB_PATH}-shm" "${DB_PATH}-wal" "${DB_PATH}.partial"
       log "autonomath DB removed; /v1/am/* will return 503 until re-uploaded"
     else
-      # Idempotently apply autonomath-only views/migrations that the R2
-      # snapshot may predate. Each migration's `CREATE VIEW IF NOT EXISTS`
-      # / `CREATE TABLE IF NOT EXISTS` makes this safe to run on every boot.
+      # Apply autonomath-only views/migrations that the R2 snapshot may
+      # predate. schema_migrations skips already-recorded files; failures are
+      # counted and handled below instead of being marked applied.
       # This is the minimum self-healing step that keeps /v1/am/* alive
       # after an R2 redownload (which restores schema-as-of-snapshot).
       #
@@ -208,15 +302,17 @@ if [ -f /app/scripts/schema_guard.py ]; then
       #      companions (e.g. 065_*_rollback.sql) carry the same
       #      target_db marker but are draft scripts gated on manual
       #      review, not boot-time idempotent migrations.
-      #   4. Stop on first hard error (existing `head -3` + `|| true`
-      #      pattern keeps noise bounded; schema_guard below catches
-      #      any structural drift the migration failed to repair).
+      #   4. Exclude files declaring `-- boot_time: manual`; those can
+      #      hold maintenance SQL that is safe offline but too expensive
+      #      or disruptive for every production boot.
+      #   5. Record hard errors without marking the migration applied.
+      #      AUTONOMATH_ENABLED=true fails boot after the loop; otherwise
+      #      schema_guard below still catches structural drift.
       # Ensure bookkeeping table exists so we can skip already-applied
       # migrations on the second-and-subsequent boot. Without this, the
       # 8 known non-idempotent ALTER TABLE migrations (049/067_autonomath/
-      # 077/078/082/090/092/101) flood boot logs with "duplicate column"
-      # parse errors on every boot. The errors are harmless (later
-      # statements continue) but the noise hides real failures.
+      # 077/078/082/090/092/101) would flood boot logs with "duplicate column"
+      # parse errors on every boot and now fail boot when AUTONOMATH_ENABLED=true.
       sqlite3 "$DB_PATH" "CREATE TABLE IF NOT EXISTS schema_migrations(
           id TEXT PRIMARY KEY,
           checksum TEXT NOT NULL,
@@ -226,6 +322,7 @@ if [ -f /app/scripts/schema_guard.py ]; then
       am_mig_applied=0
       am_mig_skipped=0
       am_mig_already=0
+      am_mig_failed=0
       for am_mig in $(ls /app/scripts/migrations/*.sql 2>/dev/null | sort); do
         case "$am_mig" in
           *_rollback.sql)
@@ -240,6 +337,11 @@ if [ -f /app/scripts/schema_guard.py ]; then
           am_mig_skipped=$((am_mig_skipped + 1))
           continue
         fi
+        if head -20 "$am_mig" | grep -qi "^-- *boot_time: *manual"; then
+          log "skipping $am_mig (boot_time: manual)"
+          am_mig_skipped=$((am_mig_skipped + 1))
+          continue
+        fi
         am_mig_id="$(basename "$am_mig")"
         # Skip if already recorded in schema_migrations bookkeeping.
         already=$(sqlite3 "$DB_PATH" "SELECT 1 FROM schema_migrations WHERE id='$am_mig_id' LIMIT 1;" 2>/dev/null || echo "")
@@ -248,28 +350,56 @@ if [ -f /app/scripts/schema_guard.py ]; then
           continue
         fi
         log "applying $am_mig to $DB_PATH"
-        if sqlite3 "$DB_PATH" < "$am_mig" 2>&1 | grep -v "^$" | head -3; then
+        am_mig_output="$(mktemp)"
+        if sqlite3 "$DB_PATH" < "$am_mig" >"$am_mig_output" 2>&1; then
           # Record successful apply. Use INSERT OR IGNORE so concurrent
           # boots on the same volume don't crash on the bookkeeping write.
           now=$(date -u +%FT%TZ)
           sqlite3 "$DB_PATH" "INSERT OR IGNORE INTO schema_migrations(id,checksum,applied_at) VALUES('$am_mig_id','self_heal','$now');" 2>/dev/null || true
           am_mig_applied=$((am_mig_applied + 1))
         else
-          # Even on parse error, later statements may have applied (sqlite3
-          # < file does not abort on first error). Record bookkeeping so
-          # subsequent boots skip this file. Real schema drift is caught by
-          # schema_guard below.
-          now=$(date -u +%FT%TZ)
-          sqlite3 "$DB_PATH" "INSERT OR IGNORE INTO schema_migrations(id,checksum,applied_at) VALUES('$am_mig_id','self_heal_partial','$now');" 2>/dev/null || true
-          am_mig_applied=$((am_mig_applied + 1))
+          if grep -qi "duplicate column" "$am_mig_output" \
+             && ! grep -vi "duplicate column" "$am_mig_output" | grep -q '[^[:space:]]'; then
+            # SQLite has no ALTER TABLE ADD COLUMN IF NOT EXISTS. Treat a
+            # duplicate column as "schema already has this additive change",
+            # then record the migration id so future boots skip it. Mixed
+            # output with any other hard error still fails below.
+            now=$(date -u +%FT%TZ)
+            sqlite3 "$DB_PATH" "INSERT OR IGNORE INTO schema_migrations(id,checksum,applied_at) VALUES('$am_mig_id','self_heal_duplicate_column','$now');" 2>/dev/null || true
+            log "autonomath migration duplicate-column treated as applied: $am_mig"
+            am_mig_applied=$((am_mig_applied + 1))
+          else
+            # Do not mark hard-failed migrations as applied. Schema guard below
+            # catches structural drift, and leaving the row unrecorded means a
+            # future boot can retry after the operator fixes the migration.
+            log "autonomath migration failed: $am_mig"
+            grep -v "^$" "$am_mig_output" | head -5 || true
+            am_mig_failed=$((am_mig_failed + 1))
+          fi
         fi
+        rm -f "$am_mig_output"
       done
-      log "autonomath self-heal migrations: applied=$am_mig_applied already=$am_mig_already skipped=$am_mig_skipped"
+      log "autonomath self-heal migrations: applied=$am_mig_applied already=$am_mig_already skipped=$am_mig_skipped failed=$am_mig_failed"
+      if [ "$am_mig_failed" -gt 0 ]; then
+        if [ "${AUTONOMATH_ENABLED:-true}" = "true" ] || [ "${AUTONOMATH_ENABLED:-1}" = "1" ]; then
+          err "AUTONOMATH_ENABLED=true and autonomath migrations failed — failing boot"
+          exit 1
+        fi
+        log "AUTONOMATH_ENABLED=false — continuing despite autonomath migration failures"
+      fi
       log "running schema_guard.py on $DB_PATH (autonomath profile)"
       python /app/scripts/schema_guard.py "$DB_PATH" autonomath || {
-        log "schema_guard failed for autonomath — moving aside to /data/autonomath.db.failed and continuing"
+        err "schema_guard failed for autonomath"
+        if [ "${AUTONOMATH_ENABLED:-true}" = "true" ] || [ "${AUTONOMATH_ENABLED:-1}" = "1" ]; then
+          err "AUTONOMATH_ENABLED=true — failing boot instead of serving a silently degraded API"
+          exit 1
+        fi
+        log "AUTONOMATH_ENABLED=false — moving aside to /data/autonomath.db.failed and continuing"
         mv "$DB_PATH" "${DB_PATH}.failed.$(date +%s)"
       }
+      if [ -n "$DB_SHA256" ] && [ -s "$DB_PATH" ]; then
+        write_trusted_stamp "$DB_PATH" "$DB_SHA256"
+      fi
     fi
   else
     log "autonomath DB absent — schema guard for autonomath skipped"

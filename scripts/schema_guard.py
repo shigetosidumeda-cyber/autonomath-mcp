@@ -20,7 +20,7 @@ other, even accidentally.
                       am_loan_product, am_acceptance_stat,
                       am_application_round, am_insurance_mutual,
                       am_entities_fts, am_entities_vec
-        MUST NOT contain: programs, api_keys
+        MUST NOT contain: programs
 
 A guard violation aborts startup (exit 2 from CLI, raises from module
 import). Silent continuation is forbidden — the Wave 8 incident burned
@@ -52,6 +52,12 @@ JPINTEL_REQUIRED = {
     "enforcement_cases",
 }
 JPINTEL_FORBIDDEN = {"am_entities", "am_entity_facts"}
+JPINTEL_REQUIRED_COLUMNS = {
+    "programs": {"subsidy_rate_text"},
+}
+JPINTEL_REQUIRED_MIGRATIONS = {
+    "121_subsidy_rate_text_column.sql",
+}
 
 AM_REQUIRED = {
     "am_entities",
@@ -72,20 +78,66 @@ AM_REQUIRED = {
 # stale — only `programs` remains forbidden (jpintel.db keeps that table;
 # autonomath uses `jpi_programs` for the mirrored copy).
 AM_FORBIDDEN = {"programs"}
+AM_REQUIRED_COLUMNS = {
+    "jpi_programs": {"subsidy_rate_text"},
+}
+AM_REQUIRED_VIEWS = {
+    "am_unified_rule",
+    "programs_active_at_v2",
+    "am_uncertainty_view",
+    "v_program_source_manifest",
+}
+AM_REQUIRED_MIGRATIONS = {
+    "121_jpi_programs_subsidy_rate_text_column.sql",
+}
 
 
 class SchemaGuardError(RuntimeError):
     """Raised when a DB does not match its declared schema contract."""
 
 
-def _list_tables(db_path: str) -> set[str]:
+def _connect_ro(db_path: str) -> sqlite3.Connection:
     if not Path(db_path).exists():
         raise SchemaGuardError(f"DB file missing: {db_path}")
-    conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+    return sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+
+
+def _list_objects(db_path: str, object_type: str) -> set[str]:
+    conn = _connect_ro(db_path)
     try:
         rows = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'"
+            "SELECT name FROM sqlite_master WHERE type=?", (object_type,)
         ).fetchall()
+        return {row[0] for row in rows}
+    finally:
+        conn.close()
+
+
+def _list_tables(db_path: str) -> set[str]:
+    return _list_objects(db_path, "table")
+
+
+def _list_views(db_path: str) -> set[str]:
+    return _list_objects(db_path, "view")
+
+
+def _table_columns(db_path: str, table: str) -> set[str]:
+    conn = _connect_ro(db_path)
+    try:
+        return {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+    finally:
+        conn.close()
+
+
+def _applied_migrations(db_path: str) -> set[str]:
+    conn = _connect_ro(db_path)
+    try:
+        exists = conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='schema_migrations'"
+        ).fetchone()
+        if not exists:
+            return set()
+        rows = conn.execute("SELECT id FROM schema_migrations").fetchall()
         return {row[0] for row in rows}
     finally:
         conn.close()
@@ -96,6 +148,10 @@ def _assert(
     profile: str,
     required: set[str],
     forbidden: set[str],
+    *,
+    required_columns: dict[str, set[str]] | None = None,
+    required_views: set[str] | None = None,
+    required_migrations: set[str] | None = None,
 ) -> None:
     tables = _list_tables(db_path)
     missing = required - tables
@@ -111,18 +167,59 @@ def _assert(
             f"{profile}: FORBIDDEN tables present in {db_path} "
             f"(Wave 8 swap detected?): {sorted(wrong_kind)}"
         )
+    for table, columns in (required_columns or {}).items():
+        if table not in tables:
+            continue
+        present = _table_columns(db_path, table)
+        missing_columns = columns - present
+        if missing_columns:
+            errors.append(
+                f"{profile}: required columns missing from {table}: "
+                f"{sorted(missing_columns)}"
+            )
+    if required_views:
+        views = _list_views(db_path)
+        missing_views = required_views - views
+        if missing_views:
+            errors.append(
+                f"{profile}: required views missing from {db_path}: "
+                f"{sorted(missing_views)}"
+            )
+    if required_migrations:
+        applied = _applied_migrations(db_path)
+        missing_migrations = required_migrations - applied
+        if missing_migrations:
+            errors.append(
+                f"{profile}: required migrations missing from schema_migrations: "
+                f"{sorted(missing_migrations)}"
+            )
     if errors:
         raise SchemaGuardError(" | ".join(errors))
 
 
 def assert_jpintel_schema(db_path: str) -> None:
     """Assert the primary REST/MCP DB has the expected flat schema."""
-    _assert(db_path, "jpintel", JPINTEL_REQUIRED, JPINTEL_FORBIDDEN)
+    _assert(
+        db_path,
+        "jpintel",
+        JPINTEL_REQUIRED,
+        JPINTEL_FORBIDDEN,
+        required_columns=JPINTEL_REQUIRED_COLUMNS,
+        required_migrations=JPINTEL_REQUIRED_MIGRATIONS,
+    )
 
 
 def assert_am_schema(db_path: str) -> None:
     """Assert the autonomath EAV+vec DB has the expected am_* schema."""
-    _assert(db_path, "autonomath", AM_REQUIRED, AM_FORBIDDEN)
+    _assert(
+        db_path,
+        "autonomath",
+        AM_REQUIRED,
+        AM_FORBIDDEN,
+        required_columns=AM_REQUIRED_COLUMNS,
+        required_views=AM_REQUIRED_VIEWS,
+        required_migrations=AM_REQUIRED_MIGRATIONS,
+    )
 
 
 # Back-compat alias: 9 embedding modules import this name. The underlying

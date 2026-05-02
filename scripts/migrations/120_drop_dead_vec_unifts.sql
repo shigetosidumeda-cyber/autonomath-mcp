@@ -1,4 +1,5 @@
 -- target_db: autonomath
+-- boot_time: manual
 -- migration 120 — drop DEAD vec + unicode-FTS tables (perf audit 2026-04-30)
 --
 -- Why:
