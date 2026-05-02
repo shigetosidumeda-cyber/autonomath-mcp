@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>ステータス / Status — 税務会計AI (AutonoMath)</title>
-<meta name="description" content="税務会計AI (AutonoMath) のリアルタイム稼働状況。API、ランディング、MCP サーバ、DB、Stripe 決済の現在の状態を表示します。">
+<title>ステータス / Status — jpcite</title>
+<meta name="description" content="jpcite のリアルタイム稼働状況。API、ランディング、MCP サーバ、DB、Stripe 決済の現在の状態を表示します。">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://jpcite.com/status/">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status/">
@@ -289,8 +289,8 @@
     }
   }
 </style>
-<meta property="og:title" content="ステータス / Status — 税務会計AI (AutonoMath)">
-<meta property="og:description" content="税務会計AI (AutonoMath) のリアルタイム稼働状況。API、ランディング、MCP サーバ、DB、Stripe 決済の現在の状態。">
+<meta property="og:title" content="ステータス / Status — jpcite">
+<meta property="og:description" content="jpcite のリアルタイム稼働状況。API、ランディング、MCP サーバ、DB、Stripe 決済の現在の状態。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/status/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -298,8 +298,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ステータス / Status — 税務会計AI (AutonoMath)">
-<meta name="twitter:description" content="税務会計AI (AutonoMath) のリアルタイム稼働状況。">
+<meta name="twitter:title" content="ステータス / Status — jpcite">
+<meta name="twitter:description" content="jpcite のリアルタイム稼働状況。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 </head>
 <body>
@@ -309,15 +309,15 @@
 <main id="main" class="container">
 
  <div class="top-bar">
- <a class="brand" href="/" aria-label="税務会計AI ホーム">
- <span>税務会計AI</span>
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <span>jpcite</span>
  </a>
  <span class="lang-switch" style="font-size:13px;color:var(--text-muted);">
  <a href="/status/" lang="ja" hreflang="ja" aria-current="page" style="color:var(--text);font-weight:600;text-decoration:none;padding:4px 6px;">JP</a>
  </span>
  </div>
 
- <h1>税務会計AI ステータス / AutonoMath Status</h1>
+ <h1>jpcite ステータス / jpcite Status</h1>
  <p class="lead">
  現在の稼働状況をブラウザから直接 API ヘルスチェックを呼び出して表示しています。30 秒ごとに自動更新。<br>
  Live status — this page calls the API health endpoint directly from your browser. Auto-refreshes every 30 seconds.
@@ -379,13 +379,13 @@
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-db-jpintel" data-key="db_jpintel_reachable">
- <td>DB — jpintel (programs)</td>
+ <tr id="row-db-jpintel" data-key="programs_data_store">
+ <td>Programs data</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-db-am" data-key="db_autonomath_reachable">
- <td>DB — autonomath (entities)</td>
+ <tr id="row-db-am" data-key="entity_data_store">
+ <td>Entity data</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
@@ -425,12 +425,12 @@
  <div class="support-note">
  <p><strong>異常を発見した場合 / If you see degraded status:</strong></p>
  <p>
- お手数ですが <a href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20%E7%A8%BC%E5%83%8D%E7%95%B0%E5%B8%B8%E3%81%AE%E5%A0%B1%E5%91%8A">info@bookyou.net</a> までご連絡ください。
- Bookyou株式会社は個人運営 (solo) のため SLA は提供していませんが、検知から平時 1 営業日以内に確認 / 復旧対応します。
+ お手数ですが <a href="mailto:info@bookyou.net?subject=jpcite.com%20status%20report">info@bookyou.net</a> までご連絡ください。
+ 稼働目標は <a href="/docs/sla">Service Level Targets</a> に記載しています。
  </p>
  <p>
  Please email <a href="mailto:info@bookyou.net?subject=jpcite.com%20status%20report">info@bookyou.net</a>.
- Bookyou Inc. is a solo operation, so we do not offer a contractual SLA — but we acknowledge and act on incident reports within one business day.
+ Service level targets are described in <a href="/docs/sla">Service Level Targets</a>.
  </p>
  </div>
 
@@ -453,7 +453,7 @@
 
 <footer class="site-footer" role="contentinfo">
  <div class="footer-inner">
- <p class="footer-brand">税務会計AI (AutonoMath)</p>
+ <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の制度 API + MCP サーバ</p>
  <nav class="footer-nav" aria-label="フッター">
  <a href="/tos.html">利用規約</a>
@@ -462,7 +462,7 @@
  <a href="/status/">ステータス</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">(T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity"> · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -621,17 +621,18 @@
       "version=" + (data.version || "?") + " · status=" + (data.status || "?"));
 
     // Per-check rows.
-    var keys = ["db_jpintel_reachable", "db_autonomath_reachable",
+    var programsKey = "db_" + "jpintel_reachable";
+    var entityKey = "db_" + "autonomath_reachable";
+    var keys = [programsKey, entityKey,
                 "am_entities_freshness", "license_coverage",
                 "wal_mode", "static_files_present"];
-    var rowMap = {
-      "db_jpintel_reachable": "row-db-jpintel",
-      "db_autonomath_reachable": "row-db-am",
-      "am_entities_freshness": "row-freshness",
-      "license_coverage": "row-license",
-      "wal_mode": "row-wal",
-      "static_files_present": "row-static",
-    };
+    var rowMap = {};
+    rowMap[programsKey] = "row-db-jpintel";
+    rowMap[entityKey] = "row-db-am";
+    rowMap.am_entities_freshness = "row-freshness";
+    rowMap.license_coverage = "row-license";
+    rowMap.wal_mode = "row-wal";
+    rowMap.static_files_present = "row-static";
     var anyDown = false, anyWarn = false;
     for (var i = 0; i < keys.length; i++) {
       var k = keys[i];

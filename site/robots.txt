@@ -1,12 +1,5 @@
 # robots.txt for jpcite.com
-# 2026-04-23 / see docs/seo_technical_audit.md §6
-# Policy: allow search + LLM crawlers (organic acquisition only);
-# block SEO-spammer backlink crawlers.
-# 2026-04-26: explicit Disallow added for /_internal/ and
-# /structured/ — site/structured/ holds 10k+ JSON-LD shards that should
-# not be crawled directly (they exceed Cloudflare Pages 20k file limit
-# anyway and will move to R2 post-launch); /_internal/ mirrors the
-# docs/_internal coordination markdown family if/when it gets exposed.
+# Policy: allow public discovery crawlers and keep non-public paths out of indexes.
 
 # ------------------------------------------------------------------
 # Search engines (primary) — full allow
@@ -26,9 +19,7 @@ User-agent: DuckDuckBot
 Allow: /
 
 # ------------------------------------------------------------------
-# AI crawlers / LLM training + answer engines — explicit allow
-# Rationale: publishing public-domain Japanese subsidy data into LLM
-# training corpora is the moat (see docs/json_ld_strategy.md §1).
+# AI crawlers / answer engines — explicit allow for public pages.
 # ------------------------------------------------------------------
 User-agent: Google-Extended
 Allow: /
@@ -73,23 +64,14 @@ User-agent: Amazonbot
 Allow: /
 
 # ------------------------------------------------------------------
-# AI crawlers / answer engines (continued) — 2026-04-26 expansion
-# ByteDance / TikTok Doubao answer engine. Previously blocked as
-# "low-value crawler" but the LLM-corpus moat policy outranks SEO-spam
-# concerns: Bytespider's payload feeds an answer engine, not a backlink
-# graph. Move from Disallow to Allow per docs/json_ld_strategy.md §1
-# (publish public-domain Japanese subsidy data into LLM training corpora
-# is the moat).
+# AI crawlers / answer engines (continued).
 # ------------------------------------------------------------------
 User-agent: Bytespider
 Allow: /
 
 # ------------------------------------------------------------------
 # Aggressive / low-value crawlers — block
-# (Reconsider if product needs backlink or competitive data visibility.)
-# These are SEO-spam backlink crawlers and competitive-intel scrapers,
-# not AI training crawlers — blocking is consistent with the LLM-allow
-# policy above.
+# These crawlers do not need access to the public documentation surface.
 # ------------------------------------------------------------------
 User-agent: AhrefsBot
 Disallow: /
@@ -110,10 +92,7 @@ User-agent: YandexBot
 Disallow: /
 
 # ------------------------------------------------------------------
-# Default policy — allow public pages, block private / thin surfaces
-#
-# /en/ is the English mirror (5 pages, see docs/i18n_strategy.md).
-# It is crawl-allowed by the root Allow: / below; listed here for clarity.
+# Default policy — allow public pages and block operational paths.
 # ------------------------------------------------------------------
 User-agent: *
 Allow: /
@@ -131,7 +110,6 @@ Allow: /v1/healthz
 Allow: /.well-known/security.txt
 Disallow: /admin/
 Disallow: /_internal/
-Disallow: /structured/
 Disallow: /dashboard.html
 Disallow: /dashboard
 Disallow: /success.html
@@ -146,11 +124,8 @@ Crawl-delay: 1
 # (sitemap.xml + sitemap-programs.xml + sitemap-prefectures.xml +
 #  sitemap-audiences.xml + sitemap-cross.xml + sitemap-industries.xml +
 #  sitemap-qa.xml + sitemap-pages.xml + docs/sitemap.xml).
-# 2026-04-29: industries / qa / pages added inline as
-# fallback for crawlers that ignore index files (matches the 8 shards
-# referenced from sitemap-index.xml; see docs/runbook/search_console_setup.md §1).
-# Note: sitemap-structured.xml is excluded from the index — site/structured/
-# exceeds Cloudflare Pages 20k file limit and will be re-hosted on R2 post-launch.
+# Industries / qa / pages are listed inline as a fallback for crawlers
+# that ignore index files.
 # ------------------------------------------------------------------
 Sitemap: https://jpcite.com/sitemap-index.xml
 Sitemap: https://jpcite.com/sitemap.xml
@@ -161,4 +136,5 @@ Sitemap: https://jpcite.com/sitemap-cross.xml
 Sitemap: https://jpcite.com/sitemap-industries.xml
 Sitemap: https://jpcite.com/sitemap-qa.xml
 Sitemap: https://jpcite.com/sitemap-pages.xml
+Sitemap: https://jpcite.com/sitemap-enforcement.xml
 Sitemap: https://jpcite.com/docs/sitemap.xml

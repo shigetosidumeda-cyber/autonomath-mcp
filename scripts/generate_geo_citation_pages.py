@@ -94,12 +94,9 @@ def _today_jst_ja() -> str:
     return f"{d.year}年{d.month}月{d.day}日"
 
 
-# Operator constants (per CLAUDE.md / footer block of every page).
+# Operator constants for public page metadata.
 OPERATOR_NAME = "Bookyou株式会社"
-OPERATOR_CORPORATE_NUMBER = "T8010001213708"
-OPERATOR_REP = "梅田茂利"
 OPERATOR_EMAIL = "info@bookyou.net"
-OPERATOR_ADDRESS_JP = "東京都文京区小日向2-22-1"
 
 # Banned source hosts per CLAUDE.md "data hygiene" rule.
 BANNED_HOSTS = {
@@ -2075,7 +2072,7 @@ def _spec_pages() -> list[QAPage]:
             ("jpciteはLLMの代替ですか?", "いいえ。jpcite は回答生成モデルではありません。Claude / ChatGPT / Cursor などが呼び出す REST + MCP の retrieval surface です。AI が書く前に、制度候補・出典・更新日を取りに行くために使います。"),
             ("何がGEO上の差別化になりますか?", "LLMが引用しやすい短いQ&A、FAQPage JSON-LD、facts.html、llms.txt、OpenAPI、MCP tool schema を同じ数字でそろえます。これにより「jpcite = Japanese public-program evidence layer」として認識されやすくなります。"),
             ("出典はどの程度入っていますか?", "公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、93 MCP tools を掲示しています。一次資料URLと取得時刻は99%以上の行で保持し、欠落や保留行は正本側で明示します。"),
-            ("Token Cost Shield という訴求は使いますか?", "見出し訴求としては使いません。LLM API価格はモデル・キャッシュ・Batch・検索無料枠で条件が変わるため、jpcite の価値は「常に安い」ではなく「高額LLMにPDFや制度ページを長文投入する前の Evidence Pre-fetch Layer」として説明します。"),
+            ("トークン削減を見出し訴求にしますか?", "価格保証としては使いません。LLM API価格はモデル・キャッシュ・Batch・検索無料枠で条件が変わるため、jpcite の価値は「常に安い」ではなく「高額LLMにPDFや制度ページを長文投入する前の Evidence Pre-fetch Layer」として説明します。"),
         ],
         facts=[
             ("役割", "回答生成ではなく Evidence Layer"),
@@ -2118,7 +2115,7 @@ def _spec_pages() -> list[QAPage]:
         qa_pairs=[
             ("jpcite MCPは何をするサーバーですか?", "日本の補助金・融資・税制・認定・法令・判例・行政処分・適格請求書発行事業者を、AIクライアントから tool call で検索する MCP server です。"),
             ("どのAIクライアントで使えますか?", "MCP stdio に対応した Claude Desktop、Cursor、Cline、Continue などで使えます。ChatGPTやCustom GPTではREST/OpenAPI経由の組み込みが主経路になります。"),
-            ("ツール数はいくつですか?", "公開ファクトシート上の正本では、default gates で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。"),
+            ("ツール数はいくつですか?", "公開ファクトシート上の正本では、標準構成で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。"),
             ("匿名で試せますか?", "はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、¥3/req 税別 (税込 ¥3.30) の完全従量で使います。"),
             ("LLMが直接Web検索する場合との違いは?", "Web検索はページ単位の候補を返します。jpcite MCPは制度ID単位の構造化レコード、一次資料URL、取得時刻、排他ルール、schemaを返すため、AI agent が後続処理に渡しやすい形になります。"),
         ],
@@ -2159,7 +2156,7 @@ def _ssl_ctx() -> Any:
 def _http_head_or_get(url: str, timeout: int = 10) -> int:
     """Probe URL via HEAD; fall back to GET on 405/501. Returns HTTP status."""
     ctx = _ssl_ctx()
-    headers = {"User-Agent": "AutonoMath-GEO-validator/1.0 (+https://jpcite.com)"}
+    headers = {"User-Agent": "jpcite-GEO-validator/1.0 (+https://jpcite.com)"}
 
     def _attempt(method: str) -> int:
         req = urllib.request.Request(url, method=method, headers=headers)
@@ -2254,16 +2251,8 @@ def _build_json_ld(p: QAPage, domain: str) -> dict[str, Any]:
         "@type": "Organization",
         "@id": "https://jpcite.com/#publisher",
         "name": "jpcite",
-        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
+        "alternateName": ["jpcite"],
         "url": f"https://{domain}/",
-        "legalName": OPERATOR_NAME,
-        "taxID": OPERATOR_CORPORATE_NUMBER,
-        "founder": {"@type": "Person", "name": OPERATOR_REP},
-        "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "JP",
-            "addressLocality": OPERATOR_ADDRESS_JP,
-        },
         "contactPoint": {
             "@type": "ContactPoint",
             "email": OPERATOR_EMAIL,
@@ -2547,7 +2536,7 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
     <div class="footer-col">
       <p class="footer-brand">jpcite</p>
       <p class="footer-tag">日本の制度 API</p>
-      <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708)</p>
+      <p class="footer-entity">運営: Bookyou株式会社</p>
     </div>
     <nav class="footer-nav" aria-label="フッター">
       <a href="/tos.html">利用規約</a>

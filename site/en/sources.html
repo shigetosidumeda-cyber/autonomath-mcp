@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Data Sources, Attribution &amp; Licenses — jpcite">
-<meta name="twitter:description" content="Primary sources only. Aggregator URLs (noukaweb / hojyokin-portal / biz.stayway) are banned from source_url.">
+<meta name="twitter:description" content="Primary sources only. Aggregator URLs are not used as source_url.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/sources.html">
@@ -43,23 +43,14 @@
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
     "url": "https://jpcite.com/en/",
-    "email": "info@bookyou.net",
-    "vatID": "T8010001213708",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "JP",
-      "addressRegion": "Tokyo",
-      "addressLocality": "Bunkyo-ku",
-      "streetAddress": "2-22-1 Kohinata"
-    }
+    "email": "info@bookyou.net"
   },
   "dataset": [
     {"@type": "Dataset", "name": "e-Gov laws (national legislation)", "license": "https://creativecommons.org/licenses/by/4.0/", "creator": {"@type": "Organization", "name": "Digital Agency, Government of Japan (e-Gov)"}},
@@ -113,7 +104,6 @@
  <a href="getting-started.html">Docs</a>
  <a href="pricing.html">Pricing</a>
  <a href="audiences/">Audiences</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub repository (pre-launch)" rel="noopener">GitHub</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../sources.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -129,7 +119,7 @@
  <h1>Data sources, attribution &amp; licenses</h1>
  <p class="lead">jpcite ingests Japanese public-program data from 15 primary sources. This page discloses the source agency, record count, license terms, and the exact attribution string each source requires &mdash; so tax accountants (税理士), administrative scriveners (行政書士), labor &amp; social security attorneys (社労士), SaaS developers, and downstream LLM agents can perform due diligence and design correct attribution for any further redistribution.</p>
 
- <p>Counts in the table below are a snapshot as of <strong>2026-04-26</strong>. Live counts continuously refreshed; see the <a href="facts.html">fact sheet</a> andfor the latest values.</p>
+ <p>Counts in the table below are a snapshot as of <strong>2026-04-26</strong>. Live counts continuously refresh; see the <a href="facts.html">fact sheet</a> for the latest values.</p>
 
  <h2>15 primary data sources</h2>
  <div class="table-wrap">
@@ -145,7 +135,7 @@
  <tbody>
  <tr>
  <td><strong>e-Gov laws</strong> (Digital Agency)</td>
- <td class="count">154 laws full-text + 9,484 catalog stubs (body-text load incremental)</td>
+ <td class="count">154 laws full-text + 9,484 law metadata records (full-text coverage varies by record)</td>
  <td>CC BY 4.0</td>
  <td>"Legal text from the e-Gov laws data service (CC BY 4.0)". State any modifications.</td>
  </tr>
@@ -217,7 +207,7 @@
  </tr>
  <tr>
  <td><strong>METI gBizINFO</strong> &mdash; corporate database</td>
- <td class="count">79,876 corporate_entity / 861,137 corp.* facts</td>
+ <td class="count">79,876 corporate records / 861,137 company facts</td>
  <td>CC BY 4.0 (gBizINFO terms of use)</td>
  <td>"Source: METI gBizINFO (<code>https://info.gbiz.go.jp/</code>)" with disclosure of any modifications. See <a href="https://info.gbiz.go.jp/info/policy.html" rel="noopener noreferrer" target="_blank">gBizINFO terms of use</a>.</td>
  </tr>
@@ -239,10 +229,10 @@
 
  <h2>Aggregator policy</h2>
  <div class="callout">
- <p>jpcite does <strong>not</strong> use second-tier aggregators such as <strong>noukaweb</strong>, <strong>hojyokin-portal</strong>, or <strong>biz.stayway</strong> in <code>source_url</code>.</p>
+ <p>jpcite does <strong>not</strong> use second-tier aggregator pages in <code>source_url</code>.</p>
  </div>
- <p>Past incidents proved that citing aggregator pages let stale amounts, expired programs, and fabricated eligibility requirements flow straight into AI agent responses. From the user's perspective, it looks like jpcite lied; in the worst case, it leads to incorrect benefit projections or improper applications &mdash; which is misrepresentation liability by another name.</p>
- <p>So jpcite enforces an aggregator ban on <code>source_url</code> in both code (除外リスト) and operations (manual review). <code>source_url</code> values are restricted to <strong>primary sources</strong> &mdash; ministries, prefectures, Japan Finance Corporation, NTA, e-Gov, etc. Over 99% of rows carry both <code>source_url</code> and <code>fetched_at</code>; the remaining ~12 rows belong to small municipalities that do not run a public CMS.</p>
+ <p>Citing aggregator pages can let stale amounts, expired programs, and inaccurate eligibility requirements flow straight into AI agent responses. From the user's perspective, the answer is wrong regardless of where the stale claim originated.</p>
+ <p>So jpcite enforces an aggregator ban on <code>source_url</code> through source checks before publication. <code>source_url</code> values are restricted to <strong>primary sources</strong> &mdash; ministries, prefectures, Japan Finance Corporation, NTA, e-Gov, etc. Over 99% of rows carry both <code>source_url</code> and <code>fetched_at</code>; the remaining ~12 rows belong to small municipalities that do not run a public CMS.</p>
 
  <h2>License legend</h2>
  <ul>
@@ -256,14 +246,14 @@
 
  <h2>Machine-readable attribution</h2>
  <p>99%+ of rows in <code>programs</code>, <code>case_studies</code>, <code>loan_programs</code>, <code>enforcement_cases</code>, <code>laws</code>, etc. carry <code>source_url</code> (primary-source URL) and <code>fetched_at</code> (fetch timestamp). Both are returned by every API and MCP tool response. See the <a href="/docs/api-reference/">API reference</a> and the <a href="/docs/mcp-tools">MCP tools reference</a>.</p>
- <p>If you find a stale source URL, a broken link, or a discrepancy between the data and the primary source, please email <a href="mailto:info@bookyou.net">info@bookyou.net</a>. The dispute will be re-checked against the primary source and resolved within 48 hours (business days).</p>
+ <p>If you find a stale source URL, a broken link, or a discrepancy between the data and the primary source, please email <a href="mailto:info@bookyou.net">info@bookyou.net</a>. We will re-check it against the primary source and update the data if needed.</p>
 
  <h2>Right to be forgotten</h2>
- <p>For removal requests against the Qualified Invoice Issuer registry data ("the registration was withdrawn but is still indexed", "I am a sole proprietor and revoked the public listing of my trade name", etc.), email <a href="mailto:info@bookyou.net">info@bookyou.net</a> with your corporate number / registration number / trade name. Records are removed or hidden within 48 hours (business days). See the <a href="../privacy.html">privacy policy (JP)</a>.</p>
+ <p>For removal requests against the Qualified Invoice Issuer registry data ("the registration was withdrawn but is still indexed", "I am a sole proprietor and revoked the public listing of my trade name", etc.), email <a href="mailto:info@bookyou.net">info@bookyou.net</a> with the details needed to identify the record. We review requests and remove or hide records where appropriate. See the <a href="../privacy.html">privacy policy (JP)</a>.</p>
 
  <h2>Contact</h2>
- <p>Questions about this page, requests to add a new data source, or license clarifications: <a href="mailto:info@bookyou.net">info@bookyou.net</a> &mdash; goes directly to the operator, who replies within 48 hours (business days).</p>
- <p>Operated by <strong>Bookyou Inc.</strong> (Bookyou株式会社, invoice registration number <code>T8010001213708</code>, 2-22-1 Kohinata, Bunkyo-ku, Tokyo), CEO <strong>Shigetoshi Umeda</strong> (梅田茂利). <a href="https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708" rel="noopener noreferrer">Verify the company on the NTA public registry</a>.</p>
+ <p>Questions about this page, requests to add a new data source, or license clarifications: <a href="mailto:info@bookyou.net">info@bookyou.net</a> &mdash; goes directly to the operator.</p>
+ <p>Operated by <strong>Bookyou K.K. (Bookyou株式会社)</strong>. Legal and invoice-registration details are available in the Japanese legal disclosure.</p>
  <p>Related: <a href="about.html">About jpcite</a> &middot; <a href="facts.html">Fact sheet</a> &middot; <a href="confidence.html">Quality disclosure</a> &middot; <a href="../tokushoho.html">Japanese legal disclosure (特定商取引法)</a> &middot; <a href="tos.html">Terms of service</a> &middot; <a href="../privacy.html">Privacy policy (JP)</a> &middot; <a href="../sources.html" hreflang="ja">日本語版</a></p>
 
  </div>
@@ -284,10 +274,9 @@
  <a href="pricing.html">Pricing</a>
  <a href="sources.html" aria-current="page">Data sources</a>
  <a href="tokushoho.html">Legal (JP)</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub (pre-launch)" rel="noopener">GitHub</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) &middot; CEO Shigetoshi Umeda &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

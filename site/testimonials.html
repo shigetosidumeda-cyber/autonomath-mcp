@@ -9,7 +9,7 @@
 <meta name="robots" content="index, follow">
 
 <meta property="og:title" content="Testimonials — jpcite">
-<meta property="og:description" content="税理士・行政書士・SMB・VC・開発者の声。実利用者の testimonial を operator-moderation で公開。">
+<meta property="og:description" content="税理士・行政書士・SMB・VC・開発者の声。確認済みの testimonial を公開。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/testimonials.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -20,7 +20,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Testimonials — jpcite">
-<meta name="twitter:description" content="税理士・行政書士・SMB・VC・開発者の声。実利用者の testimonial を operator-moderation で公開。">
+<meta name="twitter:description" content="税理士・行政書士・SMB・VC・開発者の声。確認済みの testimonial を公開。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/testimonials.html">
@@ -40,30 +40,27 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Testimonials — 税務会計AI",
-  "description": "税務会計AI ユーザーの testimonial。operator-moderation、捏造レビューなし。aggregate rating は最初の承認レビューが公開されるまで意図的に省略。",
+  "name": "Testimonials — jpcite",
+  "description": "jpcite ユーザーの testimonial。確認済み投稿のみを掲載し、aggregate rating は最初の承認レビューが公開されるまで意図的に省略。",
   "url": "https://jpcite.com/testimonials.html",
   "inLanguage": "ja",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "税務会計AI",
+    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "about": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "alternateName": ["税務会計AI", "jpcite"],
+    "alternateName": ["jpcite", "jpcite"],
     "url": "https://jpcite.com/",
-    "identifier": "T8010001213708",
     "email": "info@bookyou.net"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "url": "https://jpcite.com/",
-    "identifier": "T8010001213708"
-  }
+    "url": "https://jpcite.com/"}
 }
 </script>
 
@@ -164,7 +161,7 @@
  <div class="container">
 
  <h1>Testimonials</h1>
- <p class="sub">jpcite ユーザーの声。operator-moderation を経た投稿のみ表示。匿名投稿可、name / organization / linkedin は任意。</p>
+ <p class="sub">jpcite ユーザーの声。確認済みの投稿のみ表示。匿名投稿可、name / organization / linkedin は任意。</p>
 
  <!-- Submission form ---------------------------------------------------- -->
  <section class="tm-form-card" aria-labelledby="submit-h">
@@ -240,9 +237,8 @@
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
  <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>
@@ -251,7 +247,7 @@
 (function() {
   "use strict";
 
-  var BASE = (typeof window !== "undefined" && window.AUTONOMATH_API_BASE) || "";
+  var BASE = (typeof window !== "undefined" && window.JPCITE_API_BASE) || "";
 
   function escapeHtml(s) {
     if (s === null || s === undefined) return "";

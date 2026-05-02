@@ -38,8 +38,8 @@
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "税務会計AI vs 帝国データバンク (TDB): 機能・価格・データ範囲の比較 (2026)",
-  "description": "税務会計AI と帝国データバンクの中立比較 (2026)。API/MCP・価格・データ範囲・信用調査評点の有無を 15 軸で並べた 率直な比較。両者の住み分けと併用ガイド付き。",
+  "headline": "jpcite vs 帝国データバンク (TDB): 機能・価格・データ範囲の比較 (2026)",
+  "description": "jpcite と帝国データバンクの中立比較 (2026)。API/MCP・価格・データ範囲・信用調査評点の有無を 15 軸で並べた 率直な比較。両者の住み分けと併用ガイド付き。",
   "url": "https://jpcite.com/compare/tdb/",
   "datePublished": "2026-04-29",
   "dateModified": "2026-04-29",
@@ -47,13 +47,11 @@
   "author": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "url": "https://jpcite.com/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "url": "https://jpcite.com/"
   },
   "mainEntityOfPage": "https://jpcite.com/compare/tdb/"
@@ -64,14 +62,11 @@
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Bookyou株式会社",
-  "alternateName": ["税務会計AI", "jpcite"],
+  "alternateName": ["jpcite"],
   "url": "https://jpcite.com/",
-  "identifier": "T8010001213708",
   "address": {
     "@type": "PostalAddress",
-    "addressCountry": "JP",
-    "addressLocality": "文京区",
-    "addressRegion": "東京都"
+    "addressCountry": "JP"
   },
   "contactPoint": {
     "@type": "ContactPoint",
@@ -198,7 +193,7 @@
 </tr>
 <tr>
 <th scope="row">2. MCP 対応</th>
-<td class="col-us">公式 MCP サーバー (autonomath-mcp PyPI) + Smithery / DXT 配布。89 機能。</td>
+<td class="col-us">jpcite MCP サーバー (PyPI 互換パッケージ名: autonomath-mcp) + Smithery / DXT 配布。93 機能。</td>
 <td>公開情報なし。</td>
 <td></td>
 </tr>
@@ -289,7 +284,7 @@
  <div class="pick-card us">
  <p class="pick-tag">jpcite が向いている</p>
  <ul>
- <li><strong>機械可読 API + MCP</strong>を必須とする LLM エージェント / 自社プロダクトでの自動化用途。89 機能 と OpenAPI 仕様書 で Claude / ChatGPT / Cursor から直接呼べます。</li>
+ <li><strong>機械可読 API + MCP</strong>を必須とする LLM エージェント / 自社プロダクトでの自動化用途。93 機能 と OpenAPI 仕様書 で Claude / ChatGPT / Cursor から直接呼べます。</li>
 <li><strong>補助金・融資・税制・認定の横断検索</strong>と<strong>行政処分 1,185 件</strong>の取引相手調査が必要なとき。TDB は信用調査専業のため、制度 DB 用途では当社が補完。</li>
 <li><strong>完全従量 ¥3/リクエスト</strong>(税込 ¥3.30) で最低料金/契約期間なし。匿名 3 リクエスト/日/IP が無料、評価開始の摩擦が低い。</li>
  </ul>
@@ -306,7 +301,7 @@
 
  <h2>移行 / 併用ガイド</h2>
  <div class="compare-migration">
- <p><strong>典型的な併用パターン</strong>: 取引先の与信判断は TDB のレポートを取り寄せ、その上で「この業者は当社の補助金原資 (例: 業務改善助成金) と排他関係にある制度を受給していないか」「同業者の行政処分履歴は」をjpcite の API/MCP で機械的にクロスチェックする運用です。TDB のレポート → 法人番号 (T...) → 当社 <code>/v1/programs/by_houjin?houjin_bangou=T...</code> や <code>/v1/enforcement/search</code> へ流し込めば 1 分で双方が連結します。</p><p><strong>移行ではなく補完</strong>: jpcite は信用調査評点を提供しないため、TDB を完全に置き換えることはできません。逆に TDB は制度 DB を提供しないため、補助金・融資・税制の自動探索用途は当社が独立で必要になります。両者は競合ではなく、与信フェーズと制度フェーズで別役割を担うのが現実的な落としどころです。</p>
+ <p><strong>典型的な併用パターン</strong>: 取引先の与信判断は TDB のレポートを取り寄せ、その上で「この業者は当社の補助金原資 (例: 業務改善助成金) と排他関係にある制度を受給していないか」「同業者の行政処分履歴は」をjpcite の API/MCP で機械的にクロスチェックする運用です。TDB のレポート → 法人番号 (T...) → 当社 <code>/v1/programs/by_houjin?houjin_bangou=T...</code> や <code>/v1/am/enforcement?houjin_bangou=T...</code> へ流し込めば 1 分で双方が連結します。</p><p><strong>移行ではなく補完</strong>: jpcite は信用調査評点を提供しないため、TDB を完全に置き換えることはできません。逆に TDB は制度 DB を提供しないため、補助金・融資・税制の自動探索用途は当社が独立で必要になります。両者は競合ではなく、与信フェーズと制度フェーズで別役割を担うのが現実的な落としどころです。</p>
  </div>
 
  <h2>関連ページ</h2>
@@ -351,9 +346,8 @@
  <a href="../../tos.html">利用規約</a>
  <a href="../../privacy.html">プライバシー</a>
  <a href="../../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
- <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
  </nav>
- <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  </div>
 </footer>

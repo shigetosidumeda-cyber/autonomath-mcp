@@ -54,16 +54,13 @@
   "creator": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "legalName": "Bookyou株式会社",
-    "identifier": "T8010001213708",
     "email": "info@bookyou.net",
     "url": "https://jpcite.com/en/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
-    "url": "https://jpcite.com/en/",
-    "identifier": "T8010001213708"
+    "url": "https://jpcite.com/en/"
   },
   "license": "https://jpcite.com/en/tos.html",
   "datePublished": "2026-04-26",
@@ -118,7 +115,7 @@
       "@type": "DefinedTerm",
       "@id": "https://jpcite.com/en/glossary.html#term-tier",
       "name": "tier",
-      "description": "jpcite's per-program data-quality grade, populated from the actual completeness of fields and source-URL liveness. Tiers S/A/B/C are searchable; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate, etc.) are held back for secondary review and not surfaced in public search. Production breakdown: S=114, A=1,340, B=4,186, C=6,044; held-back rows: 2,788. All search endpoints exclude held-back rows by default.",
+      "description": "jpcite's per-program data-quality grade, populated from the actual completeness of fields and source-URL liveness. Tiers S/A/B/C are searchable; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate, etc.) are excluded from public search. Production breakdown: S=114, A=1,340, B=4,186, C=6,044; search-excluded rows: 2,788. All search endpoints exclude search-excluded rows by default.",
       "url": "https://jpcite.com/en/glossary.html#term-tier",
       "inDefinedTermSet": "https://jpcite.com/en/glossary.html#termset"
     },
@@ -142,7 +139,7 @@
       "@type": "DefinedTerm",
       "@id": "https://jpcite.com/en/glossary.html#term-am-entity-facts",
       "name": "structured fact index",
-      "description": "The fact index in the jpcite EAV schema. Each row is a (entity_id, field_name, value, source_id) tuple, supporting time-versioned and provenance-tracked attributes for any entity. Currently 6.12 million rows. Backed by the larger 503,930-record normalized entity catalog (12 record kinds: adoption, corporate_entity, statistic, enforcement, invoice_registrant, program, case_study, tax_measure, law, certification, authority, document).",
+      "description": "The structured fact index in jpcite. Each row connects a public record, field name, value, and source reference, supporting time-versioned and provenance-tracked attributes. Currently 6.12 million rows. Backed by the larger 503,930-record normalized catalog across 12 public record categories.",
       "url": "https://jpcite.com/en/glossary.html#term-am-entity-facts",
       "inDefinedTermSet": "https://jpcite.com/en/glossary.html#termset"
     },
@@ -183,7 +180,7 @@
       "@type": "DefinedTerm",
       "@id": "https://jpcite.com/en/glossary.html#term-qualified-invoice",
       "name": "qualified invoice (適格請求書)",
-      "description": "Japan's invoice-system document issued by businesses registered with the National Tax Agency (registration starts with \"T\"). Required for the recipient to claim consumption-tax input credit since 2023-10-01. Bookyou Inc. is a registered issuer (T8010001213708, registered 2025-05-12) and jpcite surfaces 13,801 invoice registrants from PDL v1.0 delta data.",
+      "description": "Japan's invoice-system document issued by businesses registered with the National Tax Agency (registration starts with \"T\"). Required for the recipient to claim consumption-tax input credit since 2023-10-01. jpcite surfaces 13,801 invoice registrants from PDL v1.0 delta data.",
       "url": "https://jpcite.com/en/glossary.html#term-qualified-invoice",
       "inDefinedTermSet": "https://jpcite.com/en/glossary.html#termset"
     }
@@ -209,7 +206,7 @@
       "name": "Is there a recommended order to apply for these five categories?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Standard order: Certification, then Subsidy/Grant, then Loan, then Tax Incentive. Certifications act as prerequisites or scoring bonuses for the rest, subsidies/grants reduce upfront cash burden, loans cover the remaining gap, and tax incentives provide legitimate tax reduction at year-end. jpcite's GET /v1/am/list_open_programs returns programs ordered along this sequence given a corporate profile."
+        "text": "Standard order: Certification, then Subsidy/Grant, then Loan, then Tax Incentive. Certifications act as prerequisites or scoring bonuses for the rest, subsidies/grants reduce upfront cash burden, loans cover the remaining gap, and tax incentives provide legitimate tax reduction at year-end. jpcite's GET /v1/am/open_programs returns programs ordered along this sequence given a corporate profile."
       }
     },
     {
@@ -217,7 +214,7 @@
       "name": "What are typical subsidy acceptance rates?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Highly program-dependent. Business Restructuring Subsidy: 30-50%. Monozukuri Subsidy: 40-60%. IT Introduction Subsidy: 60-80%. jpcite holds 2,286 actual case studies and exposes them via GET /v1/case_studies/search by program_id. Acceptance rates are derived from the secretariat's published selection results, never estimated independently."
+        "text": "Highly program-dependent. Business Restructuring Subsidy: 30-50%. Monozukuri Subsidy: 40-60%. IT Introduction Subsidy: 60-80%. jpcite holds 2,286 actual case studies and exposes them via GET /v1/case-studies/search by program_id. Acceptance rates are derived from the secretariat's published selection results, never estimated independently."
       }
     },
     {
@@ -225,7 +222,7 @@
       "name": "Should I apply for a loan or subsidy first?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Subsidies are paid in arrears (after project completion), so a loan is typically used to bridge cash flow during the project. The standard sequence: (1) receive subsidy approval notice, (2) take a Marukei loan or Credit-Guarantee-backed loan for working capital, (3) execute the project and pay expenses, (4) submit the subsidy claim and receive payment, (5) optionally prepay the loan. jpcite's GET /v1/programs/search?include_loans=true joins loan_programs and programs in one call."
+        "text": "Subsidies are paid in arrears (after project completion), so a loan is typically used to bridge cash flow during the project. The standard sequence: (1) receive subsidy approval notice, (2) take a Marukei loan or Credit-Guarantee-backed loan for working capital, (3) execute the project and pay expenses, (4) submit the subsidy claim and receive payment, (5) optionally prepay the loan. Use jpcite's GET /v1/programs/search for subsidy discovery and GET /v1/loan-programs/search for bridge-financing options."
       }
     },
     {
@@ -233,7 +230,7 @@
       "name": "Do tax incentives require a separate application?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Most tax incentives are two-step: (1) prior certification (e.g., Management Capability Enhancement Plan), and (2) filing the relevant attachment with the annual tax return. Some, such as the R&D Tax Credit, do not require prior certification. jpcite's GET /v1/tax-incentives/search returns 35 structured tax_rulesets with requirements, application procedure, and eligible asset types."
+        "text": "Most tax incentives are two-step: (1) prior certification (e.g., Management Capability Enhancement Plan), and (2) filing the relevant attachment with the annual tax return. Some, such as the R&D Tax Credit, do not require prior certification. jpcite's GET /v1/tax_rulesets/search returns 35 structured tax_rulesets with requirements, application procedure, and eligible asset types."
       }
     }
   ]
@@ -357,7 +354,7 @@
  <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
  <strong>Vs. Grant</strong>: Grant is requirements-met (no competition); Subsidy is competitive.<br>
  <strong>Vs. Loan</strong>: Loan requires repayment with interest; Subsidy is non-refundable but paid in arrears (bridge financing often needed).<br>
- <strong>Endpoint</strong>: <code>GET /v1/programs/search?kind=subsidy</code>
+ <strong>Endpoint</strong>: <code>GET /v1/programs/search?q=補助金</code>
  </p>
  </dd>
  </div>
@@ -369,7 +366,7 @@
  <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
  <strong>Vs. Subsidy</strong>: Grant has no competitive selection; Subsidy does.<br>
  <strong>Application desks</strong>: Prefectural Labour Bureau / Hello Work (vs. METI bureaus or program secretariats for subsidies).<br>
- <strong>Endpoint</strong>: <code>GET /v1/programs/search?kind=subsidy&amp;authority=厚生労働省</code>
+ <strong>Endpoint</strong>: <code>GET /v1/programs/search?q=厚生労働省%20助成金</code>
  </p>
  </dd>
  </div>
@@ -393,7 +390,7 @@
  <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
  <strong>Vs. Subsidy</strong>: Subsidy pays cash; Tax Incentive reduces tax owed (no benefit if loss-making).<br>
  <strong>Vs. Certification</strong>: SME Investment Promotion Tax and similar require Management Capability Enhancement Plan certification first &mdash; Certification comes upstream.<br>
- <strong>Endpoint</strong>: <code>GET /v1/tax-incentives/search</code>
+ <strong>Endpoint</strong>: <code>GET /v1/tax_rulesets/search</code>
  </p>
  </dd>
  </div>
@@ -405,7 +402,7 @@
  <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
  <strong>Vs. Subsidy</strong>: Subsidy is cash; Certification is a credential (prerequisite for subsidy / loan / tax).<br>
  <strong>Acquisition order</strong>: Certification first, then Subsidy / Tax Incentive application.<br>
- <strong>Endpoint</strong>: <code>GET /v1/certifications/search</code>
+ <strong>Endpoint</strong>: <code>GET /v1/am/certifications</code>
  </p>
  </dd>
  </div>
@@ -421,7 +418,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-tier" style="font-weight:700;font-size:18px;"><code>tier</code></dt>
  <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
- Per-program data-quality grade, populated from actual completeness of fields and source-URL liveness (not opinion). <strong>Tiers S / A / B / C are searchable</strong>; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate) are <strong>held back for secondary review</strong> and not surfaced in public search. Production breakdown: S=114, A=1,340, B=4,186, C=6,044; held-back rows: 2,788. <strong>All search endpoints exclude held-back rows by default.</strong> Held-back subcategories include <code>external_info_entry</code>, <code>no_amount_data</code>, <code>placeholder_url</code>, <code>dedup_ambiguous_resolved</code>.
+ Per-program data-quality grade, populated from actual completeness of fields and source-URL liveness (not opinion). <strong>Tiers S / A / B / C are searchable</strong>; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate) are <strong>excluded from public search</strong>. Production breakdown: S=114, A=1,340, B=4,186, C=6,044; search-excluded rows: 2,788. <strong>All search endpoints exclude search-excluded rows by default.</strong> Excluded subcategories include <code>external_info_entry</code>, <code>no_amount_data</code>, <code>placeholder_url</code>, <code>dedup_ambiguous_resolved</code>.
  </dd>
  </div>
 
@@ -442,14 +439,14 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-am-entity-facts" style="font-weight:700;font-size:18px;">structured 属性 (entity-fact)</dt>
  <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
- The fact table in the jpcite EAV (entity-attribute-value) schema. Each row is a <code>(entity_id, field_name, value, source_id)</code> tuple, supporting time-versioned and provenance-tracked attributes for any entity. <strong>612 万件の structured 属性</strong>. Companion to the 503,930 件の正規化レコード across 12 record_kinds: adoption, corporate_entity, statistic, enforcement, invoice_registrant, program, case_study, tax_measure, law, certification, authority, document.
+ The structured fact index in jpcite connects a public record, field name, value, and source reference, supporting time-versioned and provenance-tracked attributes. <strong>612 万件の structured 属性</strong>. Companion to the 503,930 件の正規化レコード across 12 public record categories.
  </dd>
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-source-url" style="font-weight:700;font-size:18px;"><code>source_url</code> / <code>fetched_at</code></dt>
  <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
- Provenance columns present on every row. <code>source_url</code> points to the primary source &mdash; a Japanese government ministry, prefecture, or Japan Finance Corporation page. <strong>Aggregator sites (noukaweb, hojyokin-portal, biz.stayway, etc.) are banned from <code>source_url</code></strong> &mdash; this is enforced because past incidents created misrepresentation liability. <code>fetched_at</code> records when jpcite last retrieved that page (rendered as "source fetched" &mdash; never "last verified" &mdash; to remain semantically honest under Japan's misleading-display law).
+ Provenance columns present on every row. <code>source_url</code> points to the primary source &mdash; a Japanese government ministry, prefecture, or Japan Finance Corporation page. <strong>Second-tier aggregator pages are not used as <code>source_url</code></strong> &mdash; this is enforced because past incidents created misrepresentation liability. <code>fetched_at</code> records when jpcite last retrieved that page (rendered as "source fetched" &mdash; never "last verified" &mdash; to remain semantically honest under Japan's misleading-display law).
  </dd>
  </div>
 
@@ -477,7 +474,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-qualified-invoice" style="font-weight:700;font-size:18px;">qualified invoice (適格請求書)</dt>
  <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
- Japan's invoice-system document issued by businesses registered with the National Tax Agency (registration number starts with <code>T</code>). <strong>Required for the recipient to claim consumption-tax input credit</strong> since 2023-10-01. Bookyou Inc. is a registered issuer (<code>T8010001213708</code>, registered 2025-05-12). jpcite surfaces 13,801 invoice registrants (PDL v1.0 delta data; full ~4M-row monthly bulk pending).
+ Japan's invoice-system document issued by businesses registered with the National Tax Agency (registration number starts with <code>T</code>). <strong>Required for the recipient to claim consumption-tax input credit</strong> since 2023-10-01. jpcite surfaces 13,801 invoice registrants (PDL v1.0 delta data; full monthly bulk import pending).
  </dd>
  </div>
 
@@ -498,28 +495,28 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="faq-priority" style="font-weight:600;font-size:16px;">Q. Is there a recommended order to apply for these five categories?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
- Standard order: <strong>Certification &rarr; Subsidy/Grant &rarr; Loan &rarr; Tax Incentive</strong>. Certifications act as prerequisites or scoring bonuses for the rest, subsidies/grants reduce upfront cash burden, loans cover the remaining gap, and tax incentives provide legitimate tax reduction at year-end. jpcite's <code>GET /v1/am/list_open_programs</code> returns programs ordered along this sequence given a corporate profile.
+ Standard order: <strong>Certification &rarr; Subsidy/Grant &rarr; Loan &rarr; Tax Incentive</strong>. Certifications act as prerequisites or scoring bonuses for the rest, subsidies/grants reduce upfront cash burden, loans cover the remaining gap, and tax incentives provide legitimate tax reduction at year-end. jpcite's <code>GET /v1/am/open_programs</code> returns programs ordered along this sequence given a corporate profile.
  </dd>
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="faq-acceptance-rate" style="font-weight:600;font-size:16px;">Q. What are typical subsidy acceptance rates?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
- Highly program-dependent. Business Restructuring Subsidy: 30-50%. Monozukuri Subsidy: 40-60%. IT Introduction Subsidy: 60-80%. jpcite holds <strong>2,286 actual case studies</strong> and exposes them via <code>GET /v1/case_studies/search</code> by program_id. Acceptance rates are <strong>derived from the secretariat's published selection results</strong>, never estimated independently by jpcite.
+ Highly program-dependent. Business Restructuring Subsidy: 30-50%. Monozukuri Subsidy: 40-60%. IT Introduction Subsidy: 60-80%. jpcite holds <strong>2,286 actual case studies</strong> and exposes them via <code>GET /v1/case-studies/search</code> by program_id. Acceptance rates are <strong>derived from the secretariat's published selection results</strong>, never estimated independently by jpcite.
  </dd>
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="faq-loan-vs-subsidy" style="font-weight:600;font-size:16px;">Q. Should I apply for a loan or subsidy first?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
- Subsidies are <strong>paid in arrears</strong> (after project completion), so a loan is typically used to bridge cash flow during the project. The standard sequence: (1) receive subsidy approval notice, (2) take a Marukei loan or Credit-Guarantee-backed loan for working capital, (3) execute the project and pay expenses, (4) submit the subsidy claim and receive payment, (5) optionally prepay the loan. jpcite's <code>GET /v1/programs/search?include_loans=true</code> joins <code>loan_programs</code> and <code>programs</code> in one call.
+ Subsidies are <strong>paid in arrears</strong> (after project completion), so a loan is typically used to bridge cash flow during the project. The standard sequence: (1) receive subsidy approval notice, (2) take a Marukei loan or Credit-Guarantee-backed loan for working capital, (3) execute the project and pay expenses, (4) submit the subsidy claim and receive payment, (5) optionally prepay the loan. Use jpcite's <code>GET /v1/programs/search</code> for subsidy discovery and <code>GET /v1/loan-programs/search</code> for bridge-financing options.
  </dd>
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="faq-tax-application" style="font-weight:600;font-size:16px;">Q. Do tax incentives require a separate application?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
- Most tax incentives are <strong>two-step</strong>: (1) prior certification (e.g., Management Capability Enhancement Plan), and (2) filing the relevant attachment with the annual tax return. Some, such as the R&amp;D Tax Credit, do not require prior certification. jpcite's <code>GET /v1/tax-incentives/search</code> returns <strong>35 structured tax_rulesets</strong> with requirements, application procedure, and eligible asset types.
+ Most tax incentives are <strong>two-step</strong>: (1) prior certification (e.g., Management Capability Enhancement Plan), and (2) filing the relevant attachment with the annual tax return. Some, such as the R&amp;D Tax Credit, do not require prior certification. jpcite's <code>GET /v1/tax_rulesets/search</code> returns <strong>35 structured tax_rulesets</strong> with requirements, application procedure, and eligible asset types.
  </dd>
  </div>
 
@@ -561,7 +558,7 @@
  <a href="tokushoho.html">Legal (JP)</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
- <p class="footer-entity">Operated by Bookyou Inc. (Japan corporate number T8010001213708) &middot; CEO Shigetoshi Umeda &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-entity">Operated by Bookyou Inc. &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
  </div>
 </footer>

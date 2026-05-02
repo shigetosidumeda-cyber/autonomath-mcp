@@ -1,6 +1,6 @@
 # Security Policy
 
-AutonoMath is operated by **Bookyou株式会社** (Corporate Number T8010001213708, info@bookyou.net) as a solo, zero-touch operation. We take security reports seriously and prefer to be told than to find out from the news.
+jpcite is operated by **Bookyou株式会社** (info@bookyou.net). We take security reports seriously and prefer to be told than to find out from the news.
 
 ## Reporting a vulnerability
 
@@ -32,11 +32,11 @@ We will not pursue legal action, file a complaint, or otherwise interfere with r
 - Do **not** retain, use, or disclose data accessed during testing
 - Give us a reasonable window (at least 14 days from acknowledgement) to remediate before any public discussion
 
-This safe-harbour statement applies to AutonoMath itself (the API at `api.jpcite.com`, the static site at `jpcite.com`, the MCP server distributed as `autonomath-mcp` on PyPI). It does not extend to third-party services we depend on (Stripe, Postmark, Cloudflare, Fly.io) — please report those directly to the vendor. We are happy to coordinate when an issue spans both sides.
+This safe-harbour statement applies to jpcite itself: the API at `api.jpcite.com`, the static site at `jpcite.com`, and the official MCP server package on PyPI. It does not extend to third-party services we depend on; please report those directly to the vendor. We are happy to coordinate when an issue spans both sides.
 
 ## No bug bounty
 
-AutonoMath does **not** run a paid bug bounty program. The product is operated 100% organically with no advertising or paid acquisition spend, and we extend that posture to security as well. We are happy to credit researchers in release notes and on this page (with consent) but cannot offer monetary rewards.
+jpcite does **not** run a paid bug bounty program. We are happy to credit researchers in release notes and on this page (with consent) but cannot offer monetary rewards.
 
 If you would prefer not to be credited, say so in your report — the default is no credit unless you ask for it.
 
@@ -46,9 +46,9 @@ If you would prefer not to be credited, say so in your report — the default is
 
 - The hosted REST API at `https://api.jpcite.com`
 - The static site at `https://jpcite.com`
-- The `autonomath-mcp` Python package on PyPI (and its MCP server entry point)
-- Our data ingestion pipeline (`src/jpintel_mcp/ingest/**` in the public repo)
-- Infrastructure we operate directly (Fly.io app, Cloudflare Pages build, GitHub Actions workflows)
+- The official jpcite MCP Python package on PyPI (and its MCP server entry point)
+- The data ingestion pipeline where it affects public API output
+- Infrastructure we operate directly for the hosted API and static site
 
 **Out of scope**
 
@@ -57,8 +57,8 @@ If you would prefer not to be credited, say so in your report — the default is
 - Denial-of-service requiring unrealistic traffic volumes
 - Missing security headers on static marketing pages absent a demonstrated exploit
 - Self-XSS without a clear privilege-escalation path
-- Social engineering of the operator
-- Physical attacks against operator infrastructure
+- Social engineering
+- Physical attacks
 
 ## Past incidents
 
@@ -66,6 +66,6 @@ We publish redacted writeups of confirmed incidents at <https://jpcite.com/secur
 
 ## Contact
 
-Bookyou株式会社 (T8010001213708) — info@bookyou.net
+Bookyou株式会社 — info@bookyou.net
 
 For non-security questions, the same address works; please prefix the subject line with `[security]` if your report is security-relevant so it gets routed correctly.
