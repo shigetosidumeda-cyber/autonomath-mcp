@@ -46,6 +46,7 @@ Constraints:
 from __future__ import annotations
 
 import csv
+import contextlib
 import hashlib
 import io
 import json
@@ -449,6 +450,11 @@ def _idem_lookup(
         if datetime.fromisoformat(
             str(expires_at).replace("Z", "+00:00")
         ) <= datetime.now(UTC):
+            with contextlib.suppress(Exception):
+                conn.execute(
+                    "DELETE FROM am_idempotency_cache WHERE cache_key = ?",
+                    (_idem_cache_key(key_hash, idem_key),),
+                )
             return None
     except ValueError:
         return None
@@ -456,6 +462,30 @@ def _idem_lookup(
         return json.loads(blob)
     except (TypeError, ValueError):
         return None
+
+
+def _billing_idempotency_key_was_used(
+    conn: Any,
+    key_hash: str,
+    billing_key: str,
+) -> bool:
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM usage_events "
+            "WHERE key_hash = ? "
+            "AND (billing_idempotency_key = ? "
+            "OR substr(billing_idempotency_key, 1, ?) = ?) "
+            "LIMIT 1",
+            (
+                key_hash,
+                billing_key,
+                len(billing_key) + 1,
+                f"{billing_key}:",
+            ),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return False
+    return row is not None
 
 
 def _idem_reserve_payload(
@@ -621,6 +651,7 @@ async def bulk_evaluate_clients(
             "idempotency_key is required when commit=true",
         )
     idem_key = idempotency_key.strip()
+    billing_key = f"{ENDPOINT_LABEL}:{ctx.key_hash}:{idem_key}"
 
     cached = _idem_lookup(conn, ctx.key_hash, idem_key)
     if cached is not None:
@@ -651,6 +682,17 @@ async def bulk_evaluate_clients(
             except Exception:  # noqa: BLE001
                 logger.warning("idem replay failed; falling through to live eval")
     else:
+        if _billing_idempotency_key_was_used(conn, ctx.key_hash, billing_key):
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                {
+                    "code": "idempotency_key_already_used",
+                    "message": (
+                        "This idempotency_key was already used for a billed "
+                        "bulk_evaluate request. Use a new idempotency_key."
+                    ),
+                },
+            )
         reserved = _idem_reserve_payload(
             conn,
             ctx.key_hash,
@@ -718,7 +760,6 @@ async def bulk_evaluate_clients(
     # with quantity=1 — same dollar total but N rows + N Stripe POSTs +
     # N idempotency keys, which fragmented the reconciliation surface and
     # increased the risk of partial-success Stripe outages.
-    billing_key = f"{ENDPOINT_LABEL}:{ctx.key_hash}:{idem_key}"
     billing_key_token = billing_idempotency_key.set(billing_key)
     billing_event_token = billing_event_index.set(0)
     try:

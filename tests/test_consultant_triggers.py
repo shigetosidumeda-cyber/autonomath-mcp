@@ -423,6 +423,49 @@ def test_bulk_evaluate_idempotency_reservation_prevents_cache_failure_overbill(
     assert int(rows[0][0]) == 5, rows
 
 
+def test_bulk_evaluate_rejects_reusing_billed_key_after_cache_expiry(
+    client, consultant_key, seeded_db,
+):
+    idem_key = "expired-cache-reuse"
+    r1 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={"commit": "true", "idempotency_key": idem_key},
+    )
+    assert r1.status_code == 200, r1.text
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.execute(
+            "UPDATE am_idempotency_cache "
+            "SET expires_at = '2000-01-01T00:00:00+00:00'"
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    r2 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={"commit": "true", "idempotency_key": idem_key},
+    )
+    assert r2.status_code == 409
+    assert r2.json()["detail"]["code"] == "idempotency_key_already_used"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE endpoint = 'clients.bulk_evaluate'"
+        ).fetchall()
+    finally:
+        c.close()
+    assert len(rows) == 1, rows
+    assert int(rows[0][0]) == 5, rows
+
+
 # ---------------------------------------------------------------------------
 # 2. post_award_monitor cron
 # ---------------------------------------------------------------------------
