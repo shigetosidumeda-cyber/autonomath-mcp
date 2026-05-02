@@ -14,6 +14,7 @@ Isolation contract:
   cannot affect another. The cap middleware cache is reset between tests via
   an autouse fixture.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -68,9 +69,7 @@ def fresh_paid_key(seeded_db: Path) -> str:
     return raw
 
 
-def _seed_metered_successes(
-    db_path: Path, key_hash: str, count: int
-) -> None:
+def _seed_metered_successes(db_path: Path, key_hash: str, count: int) -> None:
     """Insert `count` metered+successful usage_events rows for the current
     JST month so the cap middleware's COUNT(*) sees a known value.
     """
@@ -84,8 +83,7 @@ def _seed_metered_successes(
     c = sqlite3.connect(db_path)
     try:
         c.executemany(
-            "INSERT INTO usage_events(key_hash, endpoint, ts, status, metered) "
-            "VALUES (?,?,?,?,?)",
+            "INSERT INTO usage_events(key_hash, endpoint, ts, status, metered) VALUES (?,?,?,?,?)",
             rows,
         )
         c.commit()
@@ -217,7 +215,7 @@ def test_batch_projected_quantity_cannot_exceed_cap(
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-deadbeef00", "UNI-deadbeef01"]},
-        headers={"X-API-Key": fresh_paid_key},
+        headers={"X-API-Key": fresh_paid_key, "X-Cost-Cap-JPY": "6"},
     )
     assert r.status_code == 503, r.text
     err = r.json()["error"]
@@ -284,8 +282,7 @@ def test_inline_log_usage_final_cap_check_skips_over_cap_charge(
     c = sqlite3.connect(seeded_db)
     try:
         (n,) = c.execute(
-            "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) "
-            "FROM usage_events WHERE key_hash = ?",
+            "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events WHERE key_hash = ?",
             (key_hash,),
         ).fetchone()
     finally:
@@ -351,8 +348,7 @@ def test_deferred_log_usage_final_cap_check_skips_over_cap_charge(
     c = sqlite3.connect(seeded_db)
     try:
         (n,) = c.execute(
-            "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) "
-            "FROM usage_events WHERE key_hash = ?",
+            "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events WHERE key_hash = ?",
             (key_hash,),
         ).fetchone()
     finally:
@@ -423,9 +419,7 @@ def test_inline_log_usage_reports_stripe_once_after_local_insert(
 # ---------------------------------------------------------------------------
 
 
-def test_cap_null_means_unlimited(
-    client: TestClient, fresh_paid_key: str, seeded_db: Path
-) -> None:
+def test_cap_null_means_unlimited(client: TestClient, fresh_paid_key: str, seeded_db: Path) -> None:
     """A key with monthly_cap_yen IS NULL is never gated by the cap middleware.
 
     Verified by setting a cap, hitting it, removing the cap (null), and
@@ -477,12 +471,8 @@ def test_child_sibling_sees_parent_cap_change_without_stale_cache(
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     try:
-        _child_a, child_a_hash = issue_child_key(
-            c, parent_key_hash=parent_hash, label="child-a"
-        )
-        child_b, _child_b_hash = issue_child_key(
-            c, parent_key_hash=parent_hash, label="child-b"
-        )
+        _child_a, child_a_hash = issue_child_key(c, parent_key_hash=parent_hash, label="child-a")
+        child_b, _child_b_hash = issue_child_key(c, parent_key_hash=parent_hash, label="child-b")
         c.commit()
     finally:
         c.close()
@@ -545,9 +535,7 @@ def test_revoked_key_is_not_masked_by_cap_middleware(
 # ---------------------------------------------------------------------------
 
 
-def test_anonymous_callers_are_not_capped(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_anonymous_callers_are_not_capped(client: TestClient, seeded_db: Path) -> None:
     """An anonymous caller (no X-API-Key) must never be subject to the cap.
 
     No api_keys row exists for an anon caller, so cap_yen is meaningless.
@@ -560,9 +548,7 @@ def test_anonymous_callers_are_not_capped(
     if r.status_code == 503:
         body = r.json()
         # If somehow 503, it must NOT be cap_reached
-        assert (
-            body.get("error", {}).get("code") != "monthly_cap_reached"
-        ), body
+        assert body.get("error", {}).get("code") != "monthly_cap_reached", body
 
 
 def test_me_endpoints_remain_reachable_when_capped(

@@ -131,6 +131,14 @@ class BatchGetProgramsRequest(BaseModel):
     """
 
     unified_ids: list[str] = Field(..., min_length=1, max_length=50)
+    max_cost_jpy: int | None = Field(
+        default=None,
+        ge=0,
+        description=(
+            "Optional body cost cap. For paid batch requests, this or "
+            "`X-Cost-Cap-JPY` is required before billing; the lower cap binds."
+        ),
+    )
 
 
 class BatchGetProgramsResponse(BaseModel):
@@ -388,9 +396,7 @@ class RelatedProgramRef(BaseModel):
     program_unified_id: str
     ref_kind: str = Field(
         ...,
-        description=(
-            "One of: authority | eligibility | exclusion | reference | penalty"
-        ),
+        description=("One of: authority | eligibility | exclusion | reference | penalty"),
     )
     article_citation: str | None = None
     program_name: str | None = None

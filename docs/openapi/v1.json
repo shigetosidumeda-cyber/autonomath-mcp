@@ -1795,6 +1795,19 @@
       "BatchGetProgramsRequest": {
         "description": "Body for POST /v1/programs/batch.\n\n`unified_ids` is capped at 50 \u2014 the 50-cap IS the pagination. Callers\nwith more ids page the request themselves (request.py: chunk(ids, 50)).\nThe cap lives here (pydantic) AND is also enforced inside the API;\nexceeding it surfaces as HTTP 422 per the usual FastAPI validation path.",
         "properties": {
+          "max_cost_jpy": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional body cost cap. For paid batch requests, this or `X-Cost-Cap-JPY` is required before billing; the lower cap binds.",
+            "title": "Max Cost Jpy"
+          },
           "unified_ids": {
             "items": {
               "type": "string"
@@ -26423,6 +26436,22 @@
         "description": "Resolve up to 50 `unified_id` values in a single round-trip. Output shape matches `GET /v1/programs/{unified_id}` per record, so SDK callers can `chunk(ids, 50)` and stitch locally without per-id round trips. The 50-cap *is* the pagination \u2014 there is no page envelope.\n\n**Order contract:** `results[i]` corresponds to the i-th deduped input id (first occurrence wins). Missing ids go to `not_found[]` \u2014 this is NOT a 404, partial success is the point. Batch hard-codes `fields=full` so anonymous tier callers must upgrade (sequential GETs with `fields=default` remain anonymous-OK).",
         "operationId": "batch_get_programs_v1_programs_batch_post",
         "parameters": [
+          {
+            "in": "header",
+            "name": "X-Cost-Cap-JPY",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Cost-Cap-Jpy"
+            }
+          },
           {
             "in": "header",
             "name": "X-API-Key",

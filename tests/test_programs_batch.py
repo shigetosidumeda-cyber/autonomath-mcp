@@ -10,6 +10,7 @@ Covers the five deliverables from the ticket:
 
 Seed data lives in tests/conftest.py — 4 programs (UNI-test-s-1 / a-1 / b-1 / x-1).
 """
+
 from __future__ import annotations
 
 _FULL_ONLY_KEYS = {
@@ -69,7 +70,7 @@ def test_batch_happy_path_preserves_order(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "12"},
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -94,16 +95,16 @@ def test_batch_mixed_valid_and_missing(client, paid_key):
     Not a 404 — partial success is the whole point of batch.
     """
     ids = [
-        "UNI-test-s-1",       # exists
+        "UNI-test-s-1",  # exists
         "UNI-not-a-thing-1",  # junk
-        "UNI-test-a-1",       # exists
+        "UNI-test-a-1",  # exists
         "UNI-not-a-thing-2",  # junk
-        "UNI-test-b-1",       # exists
+        "UNI-test-b-1",  # exists
     ]
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "15"},
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -131,12 +132,12 @@ def test_batch_dedupes_input(client, paid_key):
                 "UNI-test-a-1",
             ]
         },
-        headers={"X-API-Key": paid_key},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
     )
     r_clean = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-test-s-1", "UNI-test-a-1"]},
-        headers={"X-API-Key": paid_key},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
     )
     assert r_dup.status_code == 200
     assert r_clean.status_code == 200
@@ -168,12 +169,39 @@ def test_batch_accepts_exactly_50_ids(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "150"},
     )
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["results"] == []
     assert len(body["not_found"]) == 50
+
+
+def test_batch_requires_cost_cap(client, paid_key):
+    """Paid batch requests must bind an explicit per-request cost ceiling."""
+    r = client.post(
+        "/v1/programs/batch",
+        json={"unified_ids": ["UNI-test-s-1"]},
+        headers={"X-API-Key": paid_key},
+    )
+    assert r.status_code == 400, r.text
+    body = r.json()
+    assert body["detail"]["code"] == "cost_cap_required"
+    assert body["detail"]["predicted_yen"] == 3
+
+
+def test_batch_low_cost_cap_rejects_before_billing(client, paid_key):
+    """A cap below the deduped batch cost is rejected before usage logging."""
+    r = client.post(
+        "/v1/programs/batch",
+        json={"unified_ids": ["UNI-test-s-1", "UNI-test-a-1"]},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "3"},
+    )
+    assert r.status_code == 402, r.text
+    body = r.json()
+    assert body["detail"]["code"] == "cost_cap_exceeded"
+    assert body["detail"]["predicted_yen"] == 6
+    assert body["detail"]["cost_cap_yen"] == 3
 
 
 # ---------------------------------------------------------------------------
@@ -199,7 +227,7 @@ def test_batch_mcp_parity(client, paid_key):
     rest = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
     ).json()
     mcp = mcp_batch(ids)
     # Parity is on the underlying tool envelope. MCP wraps with additive
@@ -209,9 +237,7 @@ def test_batch_mcp_parity(client, paid_key):
     assert set(rest.keys()) == mcp_payload_keys == {"results", "not_found"}
     # Same per-row key set (values may vary slightly for null placeholders
     # but the schema is the contract).
-    assert [r["unified_id"] for r in rest["results"]] == [
-        r["unified_id"] for r in mcp["results"]
-    ]
+    assert [r["unified_id"] for r in rest["results"]] == [r["unified_id"] for r in mcp["results"]]
     for rest_row, mcp_row in zip(rest["results"], mcp["results"], strict=False):
         # REST rows ship static_url (per-program SEO link) in addition to
         # the shared payload; MCP rows omit it. Compare modulo that.

@@ -9,6 +9,7 @@ Covers:
 - full-mode guarantee: enriched / source_mentions / lineage keys present,
   value may be null.
 """
+
 from __future__ import annotations
 
 import json
@@ -16,7 +17,13 @@ import json
 from jpintel_mcp.models import MINIMAL_FIELD_WHITELIST
 
 # Extra fields only present on fields=full (both endpoints).
-_FULL_ONLY_KEYS = {"enriched", "source_mentions", "source_url", "source_fetched_at", "source_checksum"}
+_FULL_ONLY_KEYS = {
+    "enriched",
+    "source_mentions",
+    "source_url",
+    "source_fetched_at",
+    "source_checksum",
+}
 
 # Envelope keys MCP server adds via _envelope_merge (server.py:780-820) that
 # are NOT part of the underlying tool's payload. Strip from MCP side before
@@ -128,7 +135,7 @@ def test_batch_paid_is_200(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-test-s-1"]},
-        headers={"X-API-Key": paid_key},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "3"},
     )
     assert r.status_code == 200
     body = r.json()
@@ -171,13 +178,9 @@ def test_search_minimal_smaller_than_default(client):
         )
     )
     d_def = len(
-        json.dumps(
-            client.get("/v1/programs/search", params={**p}).json(), ensure_ascii=False
-        )
+        json.dumps(client.get("/v1/programs/search", params={**p}).json(), ensure_ascii=False)
     )
-    assert d_min < d_def, (
-        f"minimal ({d_min}) should be smaller than default ({d_def})"
-    )
+    assert d_min < d_def, f"minimal ({d_min}) should be smaller than default ({d_def})"
 
 
 # ---------------------------------------------------------------------------
@@ -197,9 +200,7 @@ def test_get_fields_minimal_whitelist(client):
 
 def test_get_fields_default_matches_no_param(client):
     r_default = client.get("/v1/programs/UNI-test-s-1").json()
-    r_explicit = client.get(
-        "/v1/programs/UNI-test-s-1", params={"fields": "default"}
-    ).json()
+    r_explicit = client.get("/v1/programs/UNI-test-s-1", params={"fields": "default"}).json()
     assert r_default == r_explicit
 
 
@@ -243,9 +244,7 @@ def test_get_rejects_unknown_fields_value(client):
 def test_mcp_rest_parity_full(client):
     from jpintel_mcp.mcp.server import get_program as mcp_get_program
 
-    rest = client.get(
-        "/v1/programs/UNI-test-s-1", params={"fields": "full"}
-    ).json()
+    rest = client.get("/v1/programs/UNI-test-s-1", params={"fields": "full"}).json()
     mcp = mcp_get_program("UNI-test-s-1", fields="full")
     # Parity is on the underlying tool fields. MCP wraps the payload with
     # an additive envelope (status, api_version, ...); strip those before
@@ -260,9 +259,7 @@ def test_mcp_rest_parity_full(client):
 def test_mcp_minimal_same_whitelist(client):
     from jpintel_mcp.mcp.server import get_program as mcp_get_program
 
-    rest = client.get(
-        "/v1/programs/UNI-test-s-1", params={"fields": "minimal"}
-    ).json()
+    rest = client.get("/v1/programs/UNI-test-s-1", params={"fields": "minimal"}).json()
     mcp = mcp_get_program("UNI-test-s-1", fields="minimal")
     # REST returns exactly the whitelist; MCP returns whitelist + envelope.
     # Subset assertion verifies the whitelist is present in both transports

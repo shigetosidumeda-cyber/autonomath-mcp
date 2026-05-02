@@ -8,12 +8,13 @@ from collections import OrderedDict
 from threading import Lock
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi import APIRouter, Header, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
 
 from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
 from jpintel_mcp.api._envelope import StandardResponse, wants_envelope_v2
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES, ErrorEnvelope, safe_request_id
+from jpintel_mcp.api.cost_cap_guard import require_cost_cap
 from jpintel_mcp.api.deps import (
     ApiContextDep,
     DbDep,
@@ -118,6 +119,7 @@ def _validate_as_of_date(as_of_date: str | None) -> str | None:
     if as_of_date is None:
         return None
     import datetime as _dt
+
     try:
         _parsed = _dt.date.fromisoformat(as_of_date)
     except (TypeError, ValueError) as exc:
@@ -154,6 +156,7 @@ def _as_of_predicate(as_of_iso: str | None, table_alias: str = "programs") -> tu
     )
     return sql, [as_of_iso, as_of_iso]
 
+
 # ---------------------------------------------------------------------------
 # L4 cache wiring (Q4 perf diff 4 — Zipf-tail short-circuit at the API edge).
 #
@@ -174,8 +177,8 @@ def _as_of_predicate(as_of_iso: str | None, table_alias: str = "programs") -> tu
 #
 # Tool names 'api.programs.search' / 'api.programs.get' partition rows so
 # `invalidate_tool` can prune one family without touching the rest of L4.
-_L4_TTL_PROGRAMS_SEARCH = 300   # 5 min — programs change daily, FTS hot path
-_L4_TTL_PROGRAMS_GET = 3600     # 1 h — single-row reads, less Zipf churn
+_L4_TTL_PROGRAMS_SEARCH = 300  # 5 min — programs change daily, FTS hot path
+_L4_TTL_PROGRAMS_GET = 3600  # 1 h — single-row reads, less Zipf churn
 _L4_TOOL_SEARCH = "api.programs.search"
 _L4_TOOL_GET = "api.programs.get"
 
@@ -483,27 +486,27 @@ def _fts_escape(term: str) -> str:
 # these chars are non-tokenizable and the trigram tokenizer drops them
 # anyway — keeping them adds nothing and risks parser surprises on future
 # SQLite upgrades.
-_FTS_SPECIAL_STRIP = str.maketrans({
-    "*": " ",  # prefix wildcard
-    ":": " ",  # column filter ('col:term')
-    "(": " ",
-    ")": " ",
-    "^": " ",  # initial-token operator
-    "+": " ",  # AND in some FTS5 dialects
-    "&": " ",
-    "|": " ",
-    "{": " ",
-    "}": " ",
-    "[": " ",
-    "]": " ",
-})
+_FTS_SPECIAL_STRIP = str.maketrans(
+    {
+        "*": " ",  # prefix wildcard
+        ":": " ",  # column filter ('col:term')
+        "(": " ",
+        ")": " ",
+        "^": " ",  # initial-token operator
+        "+": " ",  # AND in some FTS5 dialects
+        "&": " ",
+        "|": " ",
+        "{": " ",
+        "}": " ",
+        "[": " ",
+        "]": " ",
+    }
+)
 
 # Common punctuation we treat as token separators (both ASCII and 全角
 # Japanese). Anything not matched here AND not matched by _FTS_SPECIAL_STRIP
 # is preserved inside a token (kanji, kana, alphanumeric).
-_RE_PUNCT_SEPARATOR = re.compile(
-    r"[,、。．，;；!?！？/／\\＼\-—–　\s]+"
-)
+_RE_PUNCT_SEPARATOR = re.compile(r"[,、。．，;；!?！？/／\\＼\-—–　\s]+")
 
 # User-quoted phrase recognizer. We extract `"..."` substrings (matching
 # the OUTERMOST quote pair greedily but non-nested) before any tokenization
@@ -533,7 +536,7 @@ def _tokenize_query(q: str) -> list[tuple[str, bool]]:
     cursor = 0
     for m in _RE_USER_QUOTED.finditer(q):
         # Process unquoted text BEFORE the quoted phrase.
-        prefix = q[cursor:m.start()]
+        prefix = q[cursor : m.start()]
         if prefix:
             for chunk in _RE_PUNCT_SEPARATOR.split(prefix):
                 cleaned = chunk.translate(_FTS_SPECIAL_STRIP).strip()
@@ -775,7 +778,9 @@ def _extract_required_documents(
     if not isinstance(enriched, dict):
         return []
     candidates: list[Any] = []
-    extraction = enriched.get("extraction") if isinstance(enriched.get("extraction"), dict) else None
+    extraction = (
+        enriched.get("extraction") if isinstance(enriched.get("extraction"), dict) else None
+    )
     paths: list[dict[str, Any]] = []
     if extraction:
         paths.append(extraction)
@@ -862,7 +867,9 @@ def _clear_program_cache() -> None:
 # ---------------------------------------------------------------------------
 
 
-def _extract_enriched_and_sources(row: sqlite3.Row) -> tuple[Any, Any, str | None, str | None, str | None]:
+def _extract_enriched_and_sources(
+    row: sqlite3.Row,
+) -> tuple[Any, Any, str | None, str | None, str | None]:
     """Pull enriched/source_mentions/lineage from a raw sqlite row.
 
     Used by both /search (fields=full) and /get (always). The search path
@@ -885,12 +892,8 @@ def _extract_enriched_and_sources(row: sqlite3.Row) -> tuple[Any, Any, str | Non
 
     row_keys = row.keys()
     source_url = row["source_url"] if "source_url" in row_keys else None
-    source_fetched_at = (
-        row["source_fetched_at"] if "source_fetched_at" in row_keys else None
-    )
-    source_checksum = (
-        row["source_checksum"] if "source_checksum" in row_keys else None
-    )
+    source_fetched_at = row["source_fetched_at"] if "source_fetched_at" in row_keys else None
+    source_checksum = row["source_checksum"] if "source_checksum" in row_keys else None
     return enriched, source_mentions, source_url, source_fetched_at, source_checksum
 
 
@@ -956,8 +959,8 @@ def _row_to_program_detail(row: sqlite3.Row, fields: FieldsLevel) -> dict[str, A
     """
     base = _row_to_program(row).model_dump()
     base["next_deadline"] = _post_cache_next_deadline(base.get("next_deadline"))
-    enriched, source_mentions, src_url, src_fetched, src_checksum = (
-        _extract_enriched_and_sources(row)
+    enriched, source_mentions, src_url, src_fetched, src_checksum = _extract_enriched_and_sources(
+        row
     )
     base["enriched"] = enriched
     if fields == "full":
@@ -1056,7 +1059,7 @@ def search_programs(
         Query(
             description=(
                 "Free-text search across primary_name / aliases / enriched. "
-                "Japanese phrases are normalized, user `\"...\"` phrases are "
+                'Japanese phrases are normalized, user `"..."` phrases are '
                 "preserved verbatim, and punctuation acts as a token separator. "
                 "Empty `q` with no other filter returns 0 to avoid broad dumps."
             ),
@@ -1393,9 +1396,13 @@ def _build_search_response(
     #     the documented use case for browsing by tier / prefecture /
     #     authority_level.
     _has_other_filter = bool(
-        tier or prefecture or authority_level
-        or funding_purpose or target_type
-        or amount_min is not None or amount_max is not None
+        tier
+        or prefecture
+        or authority_level
+        or funding_purpose
+        or target_type
+        or amount_min is not None
+        or amount_max is not None
     )
     if q is not None and not q.strip() and not _has_other_filter:
         # q was explicitly passed as empty/whitespace; no other filter to
@@ -1444,9 +1451,7 @@ def _build_search_response(
         # LIKE path's enriched_json column isn't populated for a row, that
         # row won't match — accept this as the cost of rescuing the
         # 0%-result class. Most paying queries hit primary_name.
-        fts_short_token_present = bool(norm_tokens) and any(
-            len(t) < 3 for t in norm_tokens
-        )
+        fts_short_token_present = bool(norm_tokens) and any(len(t) < 3 for t in norm_tokens)
         # If the tokenizer produced ZERO tokens (e.g. q='**', q=':;', q='[]',
         # punctuation-only input), there is nothing to feed to FTS5 — passing
         # an empty MATCH expression raises `fts5: syntax error near ""`.
@@ -1527,9 +1532,7 @@ def _build_search_response(
                         clause, clause_params = _like_clause_for(tok)
                         sub_clauses.append(clause)
                         local_params.extend(clause_params)
-                    per_candidate_clauses.append(
-                        "(" + " AND ".join(sub_clauses) + ")"
-                    )
+                    per_candidate_clauses.append("(" + " AND ".join(sub_clauses) + ")")
                 else:
                     clause, clause_params = _like_clause_for(cand)
                     per_candidate_clauses.append(clause)
@@ -1636,8 +1639,7 @@ def _build_search_response(
 
     # COUNT(DISTINCT primary_name) for the dedup-aware total.
     count_sql = (
-        f"SELECT COUNT(DISTINCT programs.primary_name) FROM {base_from} "
-        f"WHERE {where_clause}"
+        f"SELECT COUNT(DISTINCT programs.primary_name) FROM {base_from} WHERE {where_clause}"
     )
     (total,) = conn.execute(count_sql, params).fetchone()
 
@@ -1693,8 +1695,7 @@ def _build_search_response(
         base_from = "programs"
         where_clause = " AND ".join(where_for_retry) if where_for_retry else "1=1"
         count_sql = (
-            f"SELECT COUNT(DISTINCT programs.primary_name) FROM {base_from} "
-            f"WHERE {where_clause}"
+            f"SELECT COUNT(DISTINCT programs.primary_name) FROM {base_from} WHERE {where_clause}"
         )
         (total,) = conn.execute(count_sql, params).fetchone()
 
@@ -1716,9 +1717,7 @@ def _build_search_response(
     outer_order_parts: list[str] = []
     name_match_params: list = []
     if raw_query:
-        outer_order_parts.append(
-            "CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END"
-        )
+        outer_order_parts.append("CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END")
         name_match_params.append(f"%{raw_query}%")
     # Outer ORDER BY (post-dedup) is always against the unqualified projection.
     if join_fts:
@@ -1745,9 +1744,7 @@ def _build_search_response(
     if join_fts:
         rn_order_parts: list[str] = []
         if raw_query:
-            rn_order_parts.append(
-                "CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END"
-            )
+            rn_order_parts.append("CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END")
         # Composite calibrated score (bm25 × tier_prior_weight). Inside the
         # PARTITION BY primary_name dedup window this also picks the
         # highest-tier (lowest _score) row per duplicated name.
@@ -1770,9 +1767,7 @@ def _build_search_response(
         # ranking signal (higher tier_weight = stronger prior).
         rn_order_parts = []
         if raw_query:
-            rn_order_parts.append(
-                "CASE WHEN programs.primary_name LIKE ? THEN 0 ELSE 1 END"
-            )
+            rn_order_parts.append("CASE WHEN programs.primary_name LIKE ? THEN 0 ELSE 1 END")
         rn_order_parts.append(f"{_TIER_WEIGHT_CASE_INNER} DESC")
         rn_order_parts.append("programs.primary_name")
         rn_order_sql = "ORDER BY " + ", ".join(rn_order_parts)
@@ -1783,10 +1778,7 @@ def _build_search_response(
             f"                     {rn_order_sql}) AS _rn "
             f"FROM {base_from} WHERE {where_clause}"
         )
-    select_sql = (
-        f"SELECT * FROM ({inner_sql}) "
-        f"WHERE _rn = 1 {outer_order_sql} LIMIT ? OFFSET ?"
-    )
+    select_sql = f"SELECT * FROM ({inner_sql}) WHERE _rn = 1 {outer_order_sql} LIMIT ? OFFSET ?"
     # Parameter order (textual left-to-right in final SQL):
     #   1. inner ORDER BY inside OVER(...)  -> name_match_params
     #   2. inner WHERE clause                -> params
@@ -1988,6 +1980,7 @@ def batch_get_programs(
     payload: BatchGetProgramsRequest,
     conn: DbDep,
     ctx: ApiContextDep,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> JSONResponse:
     """Resolve up to 50 unified_ids in a single round-trip.
 
@@ -2027,15 +2020,18 @@ def batch_get_programs(
     if not unified_ids:
         # min_length=1 in the model catches this earlier (422); belt-and-braces
         # for direct callers.
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY, "unified_ids required"
-        )
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "unified_ids required")
     if len(unified_ids) > 50:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
             f"unified_ids cap is 50, got {len(unified_ids)}",
         )
     n_billable = len(unified_ids)
+    require_cost_cap(
+        predicted_yen=n_billable * 3,
+        header_value=x_cost_cap_jpy,
+        body_cap_yen=payload.max_cost_jpy,
+    )
     from jpintel_mcp.api.middleware.customer_cap import (
         projected_monthly_cap_response,
     )
@@ -2091,9 +2087,7 @@ def batch_get_programs(
         result_count=len(results),
         quantity=n_billable,
     )
-    return JSONResponse(
-        content={"results": results, "not_found": not_found}
-    )
+    return JSONResponse(content={"results": results, "not_found": not_found})
 
 
 @router.get(
@@ -2173,8 +2167,7 @@ def get_program(
         str | None,
         Query(
             description=(
-                "Pin lookup to dataset state at YYYY-MM-DD (ISO-8601). "
-                "Omit / null = live (today)."
+                "Pin lookup to dataset state at YYYY-MM-DD (ISO-8601). Omit / null = live (today)."
             ),
             max_length=10,
         ),
@@ -2210,9 +2203,7 @@ def get_program(
                 "SELECT * FROM programs WHERE unified_id = ?", (unified_id,)
             ).fetchone()
     else:
-        row = conn.execute(
-            "SELECT * FROM programs WHERE unified_id = ?", (unified_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM programs WHERE unified_id = ?", (unified_id,)).fetchone()
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "program not found")
 

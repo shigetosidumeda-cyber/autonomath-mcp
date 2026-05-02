@@ -111,9 +111,7 @@ def test_get_program_404(client):
     assert r.status_code == 404
 
 
-def test_post_idempotency_key_replays_without_second_usage_event(
-    client, paid_key, seeded_db
-):
+def test_post_idempotency_key_replays_without_second_usage_event(client, paid_key, seeded_db):
     import sqlite3
 
     from jpintel_mcp.api.deps import hash_api_key
@@ -122,6 +120,7 @@ def test_post_idempotency_key_replays_without_second_usage_event(
     headers = {
         "X-API-Key": paid_key,
         "Idempotency-Key": "idem-program-batch-1",
+        "X-Cost-Cap-JPY": "6",
     }
     r1 = client.post("/v1/programs/batch", headers=headers, json=body)
     assert r1.status_code == 200, r1.text
@@ -158,6 +157,7 @@ def test_idempotency_replay_revalidates_revoked_key(client, paid_key, seeded_db)
     headers = {
         "X-API-Key": paid_key,
         "Idempotency-Key": "idem-revoked-key-replay",
+        "X-Cost-Cap-JPY": "3",
     }
     r1 = client.post("/v1/programs/batch", headers=headers, json=body)
     assert r1.status_code == 200, r1.text
