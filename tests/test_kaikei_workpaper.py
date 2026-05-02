@@ -21,6 +21,7 @@ Coverage focus
    文書回答). Asserts the depth + that every seed citation is
    classified into one of the resolved kinds.
 """
+
 from __future__ import annotations
 
 import json
@@ -227,6 +228,7 @@ def test_workpaper_pdf_contains_47_2_wording(client, kaikei_key):
             "business_profile": {"annual_revenue_yen": 30_000_000},
             "report_format": "pdf",
             "audit_period": "2026-Q1",
+            "max_cost_jpy": 33,
         },
     )
     assert r.status_code == 200, r.text
@@ -245,8 +247,7 @@ def test_workpaper_pdf_contains_47_2_wording(client, kaikei_key):
     has_kanji = "§47条の2" in text or "公認会計士法" in text
     has_ascii = "Sec.47-2" in text or "47-2" in text
     assert has_kanji or has_ascii, (
-        "PDF must carry §47条の2 wording (WeasyPrint) "
-        "or Sec.47-2 ASCII shim (PDF1.4 fallback)"
+        "PDF must carry §47条の2 wording (WeasyPrint) or Sec.47-2 ASCII shim (PDF1.4 fallback)"
     )
     # Disclaimer envelope is also surfaced JSON-side so MCP / curl
     # consumers see it without parsing the PDF.
@@ -280,6 +281,7 @@ def test_workpaper_pdf_cache_hit_is_free(client, kaikei_key, tmp_path):
                 "business_profile": {"annual_revenue_yen": 30_000_000},
                 "report_format": "pdf",
                 "audit_period": "2026-Q2",
+                "max_cost_jpy": 33,
             },
         )
         assert first.status_code == 200, first.text
@@ -300,6 +302,7 @@ def test_workpaper_pdf_cache_hit_is_free(client, kaikei_key, tmp_path):
                 "business_profile": {"annual_revenue_yen": 30_000_000},
                 "report_format": "pdf",
                 "audit_period": "2026-Q2",
+                "max_cost_jpy": 33,
             },
         )
         assert second.status_code == 200, second.text
@@ -339,6 +342,7 @@ def test_workpaper_records_full_quantity_in_usage_events(client, kaikei_key, see
             "business_profile": {"annual_revenue_yen": 30_000_000},
             "report_format": "md",
             "audit_period": "2026-Q3",
+            "max_cost_jpy": 36,
         },
     )
     assert r.status_code == 200, r.text
@@ -355,6 +359,49 @@ def test_workpaper_records_full_quantity_in_usage_events(client, kaikei_key, see
     finally:
         c.close()
     assert row == ("audit.workpaper", 12, 1)
+
+
+def test_workpaper_requires_cost_cap(client, kaikei_key):
+    r = client.post(
+        "/v1/audit/workpaper",
+        headers={"X-API-Key": kaikei_key},
+        json={
+            "client_id": "client-requires-cap-001",
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+            "business_profile": {"annual_revenue_yen": 30_000_000},
+            "report_format": "md",
+            "audit_period": "2026-05",
+        },
+    )
+    assert r.status_code == 400, r.text
+    assert r.json()["detail"]["code"] == "cost_cap_required"
+
+
+def test_workpaper_low_cost_cap_rejects_before_billing(client, kaikei_key, seeded_db):
+    key_hash = hash_api_key(kaikei_key)
+    r = client.post(
+        "/v1/audit/workpaper",
+        headers={"X-API-Key": kaikei_key, "X-Cost-Cap-JPY": "3"},
+        json={
+            "client_id": "client-low-cap-001",
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+            "business_profile": {"annual_revenue_yen": 30_000_000},
+            "report_format": "md",
+            "audit_period": "2026-06",
+        },
+    )
+    assert r.status_code == 402, r.text
+    assert r.json()["detail"]["code"] == "cost_cap_exceeded"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        count = c.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = 'audit.workpaper'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        c.close()
+    assert count == 0
 
 
 def test_workpaper_multi_unit_cap_rejects_before_billing(client, kaikei_key, seeded_db):
@@ -379,6 +426,7 @@ def test_workpaper_multi_unit_cap_rejects_before_billing(client, kaikei_key, see
             "business_profile": {"annual_revenue_yen": 30_000_000},
             "report_format": "md",
             "audit_period": "2026-Q4",
+            "max_cost_jpy": 33,
         },
     )
     assert r.status_code == 503, r.text
@@ -386,8 +434,7 @@ def test_workpaper_multi_unit_cap_rejects_before_billing(client, kaikei_key, see
     c = sqlite3.connect(seeded_db)
     try:
         count = c.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE key_hash = ? AND endpoint = 'audit.workpaper'",
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = 'audit.workpaper'",
             (key_hash,),
         ).fetchone()[0]
     finally:
@@ -411,9 +458,7 @@ def test_batch_evaluate_5_clients_billing(client, kaikei_key):
     """
     profiles = [
         {"client_id": f"client-{i:03d}", "profile": {"annual_revenue_yen": rev}}
-        for i, rev in enumerate(
-            [10_000_000, 30_000_000, 60_000_000, 80_000_000, 120_000_000]
-        )
+        for i, rev in enumerate([10_000_000, 30_000_000, 60_000_000, 80_000_000, 120_000_000])
     ]
     r = client.post(
         "/v1/audit/batch_evaluate",
@@ -422,6 +467,7 @@ def test_batch_evaluate_5_clients_billing(client, kaikei_key):
             "audit_firm_id": "firm-test-1",
             "profiles": profiles,
             "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+            "max_cost_jpy": 3,
         },
     )
     assert r.status_code == 200, r.text
@@ -467,6 +513,7 @@ def test_batch_evaluate_records_fanout_quantity(client, kaikei_key, seeded_db):
             "audit_firm_id": "firm-quantity-1",
             "profiles": profiles,
             "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+            "max_cost_jpy": 6,
         },
     )
     assert r.status_code == 200, r.text
@@ -483,6 +530,56 @@ def test_batch_evaluate_records_fanout_quantity(client, kaikei_key, seeded_db):
     finally:
         c.close()
     assert row == ("audit.batch_evaluate", 2, 1)
+
+
+def test_batch_evaluate_requires_cost_cap(client, kaikei_key):
+    r = client.post(
+        "/v1/audit/batch_evaluate",
+        headers={"X-API-Key": kaikei_key},
+        json={
+            "audit_firm_id": "firm-requires-cap-1",
+            "profiles": [
+                {
+                    "client_id": "client-requires-cap-001",
+                    "profile": {"annual_revenue_yen": 30_000_000},
+                }
+            ],
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+        },
+    )
+    assert r.status_code == 400, r.text
+    assert r.json()["detail"]["code"] == "cost_cap_required"
+
+
+def test_batch_evaluate_low_cost_cap_rejects_before_billing(client, kaikei_key, seeded_db):
+    key_hash = hash_api_key(kaikei_key)
+    r = client.post(
+        "/v1/audit/batch_evaluate",
+        headers={"X-API-Key": kaikei_key, "X-Cost-Cap-JPY": "0"},
+        json={
+            "audit_firm_id": "firm-low-cap-1",
+            "profiles": [
+                {
+                    "client_id": "client-low-cap-001",
+                    "profile": {"annual_revenue_yen": 30_000_000},
+                }
+            ],
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+        },
+    )
+    assert r.status_code == 402, r.text
+    assert r.json()["detail"]["code"] == "cost_cap_exceeded"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        count = c.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'audit.batch_evaluate'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        c.close()
+    assert count == 0
 
 
 def test_batch_evaluate_anomaly_detection(client, kaikei_key):
@@ -506,6 +603,7 @@ def test_batch_evaluate_anomaly_detection(client, kaikei_key):
             "audit_firm_id": "firm-test-2",
             "profiles": profiles,
             "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+            "max_cost_jpy": 3,
         },
     )
     assert r.status_code == 200, r.text

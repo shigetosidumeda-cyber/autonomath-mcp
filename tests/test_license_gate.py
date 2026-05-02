@@ -8,6 +8,7 @@ Spec source: `docs/_internal/value_maximization_plan_no_llm_api.md`
 §24 + §28.9 No-Go #5 — `license in ('proprietary','unknown')` MUST NOT
 land in any export-eligible row.
 """
+
 from __future__ import annotations
 
 import io
@@ -78,11 +79,11 @@ def test_filter_redistributable_rejects_unknown_value_as_blocked() -> None:
     rows = [
         {"id": "A", "license": "pdl_v1.0"},
         {"id": "B", "license": "mit-but-not-listed"},  # not in allow set
-        {"id": "C", "license": "gov_standard_v2.0"},   # variant typo
-        {"id": "D", "license": "CC_BY_4.0"},           # case-mismatch
-        {"id": "E"},                                    # missing field
-        {"id": "F", "license": None},                   # None value
-        {"id": "G", "license": ""},                     # empty string
+        {"id": "C", "license": "gov_standard_v2.0"},  # variant typo
+        {"id": "D", "license": "CC_BY_4.0"},  # case-mismatch
+        {"id": "E"},  # missing field
+        {"id": "F", "license": None},  # None value
+        {"id": "G", "license": ""},  # empty string
     ]
     allowed, blocked = filter_redistributable(rows)
     assert {r["id"] for r in allowed} == {"A"}
@@ -168,9 +169,7 @@ def test_annotate_attribution_canonical_format() -> None:
 
 def test_annotate_attribution_missing_fields_render_as_unknown() -> None:
     out = annotate_attribution({})
-    assert out["_attribution"] == (
-        "出典: unknown / unknown / 取得 unknown / license=unknown"
-    )
+    assert out["_attribution"] == ("出典: unknown / unknown / 取得 unknown / license=unknown")
 
 
 # ---------------------------------------------------------------------------
@@ -237,6 +236,7 @@ def test_dd_export_zip_filters_proprietary_row(
             "deal_id": "MA-LICENSE-GATE-TEST",
             "houjin_bangous": list(_FIVE_HOUJIN[:3]),
             "format": "zip",
+            "max_cost_jpy": 1_008,
         },
     )
     assert r.status_code == 200, r.text
@@ -256,6 +256,7 @@ def test_dd_export_zip_filters_proprietary_row(
     # Now re-build the ZIP via the helper (the route uses an R2 stub
     # URL in tests, so we need to round-trip the bytes ourselves).
     from jpintel_mcp.config import settings
+
     jp_conn = sqlite3.connect(settings.db_path)
     jp_conn.row_factory = sqlite3.Row
     profiles = [
@@ -308,8 +309,7 @@ def test_dd_export_zip_filters_proprietary_row(
         for hj in (_FIVE_HOUJIN[0], _FIVE_HOUJIN[1]):
             data = zf.read(f"profiles/{hj}.jsonl").decode("utf-8")
             assert _FIVE_HOUJIN[2] not in data, (
-                "proprietary houjin's bangou must NEVER leak into "
-                "an allowed profile's JSONL"
+                "proprietary houjin's bangou must NEVER leak into an allowed profile's JSONL"
             )
 
     # gate_summary mirror is consistent with the body.
@@ -341,6 +341,7 @@ def test_dd_export_all_blocked_returns_empty_zip(
             "deal_id": "MA-LICENSE-GATE-ALL-BLOCKED",
             "houjin_bangous": list(_FIVE_HOUJIN[:2]),
             "format": "zip",
+            "max_cost_jpy": 1_005,
         },
     )
     assert r.status_code == 200, r.text

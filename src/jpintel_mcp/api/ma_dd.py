@@ -42,6 +42,7 @@ Solo + zero-touch posture:
     No CS team, no legal escalation. Every flag is self-serve via the
     response body's `dd_flags` / `disclaimer` / `coverage_scope` fields.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -69,6 +70,7 @@ from jpintel_mcp.api._license_gate import (
     annotate_attribution,
     filter_redistributable,
 )
+from jpintel_mcp.api.cost_cap_guard import require_cost_cap
 from jpintel_mcp.api.deps import (
     ApiContextDep,
     DbDep,
@@ -215,7 +217,10 @@ def _parse_cost_cap_header(value: str | None) -> int | None:
 
 
 def _check_cost_cap(
-    *, predicted_yen: int, header_cap: int | None, body_cap: int | None,
+    *,
+    predicted_yen: int,
+    header_cap: int | None,
+    body_cap: int | None,
 ) -> None:
     """Raise 400 with the canonical envelope when predicted > min(caps).
 
@@ -242,6 +247,16 @@ def _check_cost_cap(
                 "unit_price_yen": _UNIT_PRICE_YEN,
             }
         },
+    )
+
+
+def _require_cost_cap(
+    *, predicted_yen: int, header_value: str | None, body_cap: int | None
+) -> None:
+    require_cost_cap(
+        predicted_yen=predicted_yen,
+        header_value=header_value,
+        body_cap_yen=body_cap,
     )
 
 
@@ -469,14 +484,16 @@ def _build_dd_profile(
                     prog = rj.get("program_name") or r["source_topic"]
                     if prog:
                         programs_set.add(prog)
-                    profile["adoption_timeline"].append({
-                        "canonical_id": r["canonical_id"],
-                        "program_name": prog,
-                        "adopted_at": rj.get("adopted_at") or rj.get("adoption_date"),
-                        "adopted_name": r["primary_name"],
-                        "prefecture": rj.get("prefecture"),
-                        "source_topic": r["source_topic"],
-                    })
+                    profile["adoption_timeline"].append(
+                        {
+                            "canonical_id": r["canonical_id"],
+                            "program_name": prog,
+                            "adopted_at": rj.get("adopted_at") or rj.get("adoption_date"),
+                            "adopted_name": r["primary_name"],
+                            "prefecture": rj.get("prefecture"),
+                            "source_topic": r["source_topic"],
+                        }
+                    )
                 profile["adoptions_summary"]["programs_list"] = sorted(programs_set)
         except sqlite3.OperationalError as exc:
             logger.debug("am_entities read failed: %s", exc)
@@ -563,8 +580,10 @@ def _build_dd_profile(
         if inv:
             profile["invoice_registration"] = {
                 "status": (
-                    "revoked" if inv["revoked_date"]
-                    else "expired" if inv["expired_date"]
+                    "revoked"
+                    if inv["revoked_date"]
+                    else "expired"
+                    if inv["expired_date"]
                     else "registered"
                 ),
                 "invoice_registration_number": inv["invoice_registration_number"],
@@ -621,10 +640,7 @@ def _build_dd_profile(
     # --- dd_flags rollup ---------------------------------------------------
     if profile["enforcement"]["currently_excluded"]:
         profile["dd_flags"].append("currently_excluded")
-    if (
-        profile["enforcement"]["found"]
-        and not profile["enforcement"]["currently_excluded"]
-    ):
+    if profile["enforcement"]["found"] and not profile["enforcement"]["currently_excluded"]:
         profile["dd_flags"].append("recent_enforcement_history")
     if profile["adoptions_summary"]["total"] == 0:
         profile["dd_flags"].append("no_adoption_history")
@@ -695,8 +711,8 @@ class DdBatchRequest(BaseModel):
         "  - len ≤ 50 → application/json `{batch_size, profiles: [...], "
         "metered_yen, corpus_snapshot_id, _disclaimer, coverage_scope}`\n"
         "  - len > 50 → application/x-ndjson stream, one profile per line, "
-        "terminated by a `{ \"_meta\": {...}, \"_disclaimer\": ..., "
-        "\"coverage_scope\": ... }` envelope line.\n\n"
+        'terminated by a `{ "_meta": {...}, "_disclaimer": ..., '
+        '"coverage_scope": ... }` envelope line.\n\n'
         "**§52 fence**: every response carries the 税理士法 §52 disclaimer "
         "and an explicit coverage_scope excluding 役員一覧 / 株主構成 / 経歴 / "
         "反社 / 信用情報 (商業登記法 gray-zone; TDB primary). LLM agents "
@@ -709,9 +725,7 @@ def post_dd_batch(
     payload: DdBatchRequest,
     ctx: ApiContextDep,
     conn: DbDep,
-    x_cost_cap_jpy: Annotated[
-        str | None, Header(alias="X-Cost-Cap-JPY")
-    ] = None,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> JSONResponse:
     require_metered_api_key(ctx, "dd_batch")
 
@@ -753,9 +767,9 @@ def post_dd_batch(
 
     n_ids = len(normalized)
     predicted_yen = n_ids * _UNIT_PRICE_YEN
-    _check_cost_cap(
+    _require_cost_cap(
         predicted_yen=predicted_yen,
-        header_cap=_parse_cost_cap_header(x_cost_cap_jpy),
+        header_value=x_cost_cap_jpy,
         body_cap=payload.max_cost_jpy,
     )
     from jpintel_mcp.api.middleware.customer_cap import (
@@ -790,14 +804,16 @@ def post_dd_batch(
                 )
             except Exception as exc:  # noqa: BLE001 — partial-row resilience
                 logger.warning("dd_batch profile failed for %s: %s", hj, exc)
-                profiles.append({
-                    "houjin_bangou": hj,
-                    "error": {
-                        "code": "internal_error",
-                        "message": "profile compose failed; row skipped",
-                    },
-                    "dd_flags": ["compose_failed"],
-                })
+                profiles.append(
+                    {
+                        "houjin_bangou": hj,
+                        "error": {
+                            "code": "internal_error",
+                            "message": "profile compose failed; row skipped",
+                        },
+                        "dd_flags": ["compose_failed"],
+                    }
+                )
     finally:
         if am_conn is not None:
             with contextlib_suppress(sqlite3.Error):
@@ -976,8 +992,7 @@ def register_watch(
 
     # Cap check.
     (n_active,) = conn.execute(
-        "SELECT COUNT(*) FROM customer_watches "
-        "WHERE api_key_hash = ? AND status = 'active'",
+        "SELECT COUNT(*) FROM customer_watches WHERE api_key_hash = ? AND status = 'active'",
         (ctx.key_hash,),
     ).fetchone()
     if n_active >= _MAX_WATCHES_PER_KEY:
@@ -1010,9 +1025,7 @@ def register_watch(
     )
     new_id = cur.lastrowid
     if new_id is None:
-        raise HTTPException(
-            status.HTTP_500_INTERNAL_SERVER_ERROR, "failed to register watch"
-        )
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "failed to register watch")
     row = conn.execute(
         "SELECT id, watch_kind, target_id, status, registered_at, "
         "last_event_at, created_at FROM customer_watches WHERE id = ?",
@@ -1073,8 +1086,7 @@ def cancel_watch(
             "watches require an authenticated API key",
         )
     row = conn.execute(
-        "SELECT id, status FROM customer_watches "
-        "WHERE id = ? AND api_key_hash = ?",
+        "SELECT id, status FROM customer_watches WHERE id = ? AND api_key_hash = ?",
         (watch_id, ctx.key_hash),
     ).fetchone()
     if row is None:
@@ -1178,13 +1190,15 @@ def get_group_graph(
                     for er in rows:
                         src = er["source_entity_id"]
                         tgt = er["target_entity_id"]
-                        edges.append({
-                            "source": src,
-                            "target": tgt,
-                            "relation_type": "part_of",
-                            "confidence": er["confidence"],
-                            "origin": er["origin"],
-                        })
+                        edges.append(
+                            {
+                                "source": src,
+                                "target": tgt,
+                                "relation_type": "part_of",
+                                "confidence": er["confidence"],
+                                "origin": er["origin"],
+                            }
+                        )
                         for nid in (src, tgt):
                             if nid in nodes:
                                 continue
@@ -1261,19 +1275,17 @@ def get_group_graph(
 
 
 class DdExportRequest(BaseModel):
-    deal_id: Annotated[
-        str, Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_\-:.]+$")
-    ] = Field(
-        description=(
-            "Free-form audit deal identifier; written into the bundle "
-            "manifest. Boutiques typically use 'PROJECT-ALPHA-2026' shaped "
-            "tags so the bundle ZIP filename round-trips through their "
-            "deal-room."
-        ),
+    deal_id: Annotated[str, Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_\-:.]+$")] = (
+        Field(
+            description=(
+                "Free-form audit deal identifier; written into the bundle "
+                "manifest. Boutiques typically use 'PROJECT-ALPHA-2026' shaped "
+                "tags so the bundle ZIP filename round-trips through their "
+                "deal-room."
+            ),
+        )
     )
-    houjin_bangous: Annotated[
-        list[str], Field(min_length=1, max_length=_MAX_BATCH_HOUJIN)
-    ]
+    houjin_bangous: Annotated[list[str], Field(min_length=1, max_length=_MAX_BATCH_HOUJIN)]
     format: Annotated[Literal["zip", "pdf"], Field()] = "zip"
     bundle_class: Annotated[
         Literal["standard", "deal", "case"],
@@ -1289,9 +1301,7 @@ class DdExportRequest(BaseModel):
             ),
         ),
     ] = "standard"
-    max_cost_jpy: Annotated[
-        int | None, Field(ge=0)
-    ] = None
+    max_cost_jpy: Annotated[int | None, Field(ge=0)] = None
 
 
 def _build_audit_bundle_zip(
@@ -1379,42 +1389,50 @@ def _build_audit_bundle_zip(
             url = ev.get("source_url")
             if url and url not in seen_urls:
                 seen_urls.add(url)
-                cite_chain.append({
-                    "houjin_bangou": hj,
-                    "kind": "enforcement",
-                    "url": url,
-                    "case_id": ev.get("case_id"),
-                })
+                cite_chain.append(
+                    {
+                        "houjin_bangou": hj,
+                        "kind": "enforcement",
+                        "url": url,
+                        "case_id": ev.get("case_id"),
+                    }
+                )
         for ev in (p.get("enforcement", {}) or {}).get("active_exclusions", []) or []:
             url = ev.get("source_url")
             if url and url not in seen_urls:
                 seen_urls.add(url)
-                cite_chain.append({
-                    "houjin_bangou": hj,
-                    "kind": "enforcement_active",
-                    "url": url,
-                    "case_id": ev.get("case_id"),
-                })
+                cite_chain.append(
+                    {
+                        "houjin_bangou": hj,
+                        "kind": "enforcement_active",
+                        "url": url,
+                        "case_id": ev.get("case_id"),
+                    }
+                )
         for am in p.get("amendment_recent", []) or []:
             url = am.get("source_url")
             if url and url not in seen_urls:
                 seen_urls.add(url)
-                cite_chain.append({
-                    "houjin_bangou": hj,
-                    "kind": "amendment",
-                    "url": url,
-                    "diff_id": am.get("diff_id"),
-                })
+                cite_chain.append(
+                    {
+                        "houjin_bangou": hj,
+                        "kind": "amendment",
+                        "url": url,
+                        "diff_id": am.get("diff_id"),
+                    }
+                )
         for b in (p.get("bids_summary", {}) or {}).get("recent_won", []) or []:
             url = b.get("source_url")
             if url and url not in seen_urls:
                 seen_urls.add(url)
-                cite_chain.append({
-                    "houjin_bangou": hj,
-                    "kind": "bid",
-                    "url": url,
-                    "unified_id": b.get("unified_id"),
-                })
+                cite_chain.append(
+                    {
+                        "houjin_bangou": hj,
+                        "kind": "bid",
+                        "url": url,
+                        "unified_id": b.get("unified_id"),
+                    }
+                )
     inner_files["cite_chain.json"] = json.dumps(
         cite_chain, ensure_ascii=False, indent=2, sort_keys=True
     ).encode("utf-8")
@@ -1462,9 +1480,7 @@ def _build_audit_bundle_zip(
             ann = annotate_attribution(p)
             hj = p.get("houjin_bangou") or "_unknown"
             attribution_lines.append(f"[{hj}] {ann['_attribution']}")
-        inner_files["attribution.txt"] = (
-            "\n".join(attribution_lines) + "\n"
-        ).encode("utf-8")
+        inner_files["attribution.txt"] = ("\n".join(attribution_lines) + "\n").encode("utf-8")
 
         # MANIFEST.json (license-gate format) — schema_version "license_gate.v1".
         # Distinct from `manifest.json` (lowercase, file-map style) so legacy
@@ -1532,9 +1548,7 @@ def _build_audit_bundle_zip(
         manifest_obj, ensure_ascii=False, indent=2, sort_keys=True
     ).encode("utf-8")
 
-    with zipfile.ZipFile(
-        buf, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=6
-    ) as zf:
+    with zipfile.ZipFile(buf, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
         for name in sorted(inner_files):
             zf.writestr(name, inner_files[name])
 
@@ -1543,7 +1557,10 @@ def _build_audit_bundle_zip(
 
 
 def _upload_bundle_to_r2(
-    *, zip_bytes: bytes, key: str, ttl_hours: int = _BUNDLE_URL_TTL_HOURS,
+    *,
+    zip_bytes: bytes,
+    key: str,
+    ttl_hours: int = _BUNDLE_URL_TTL_HOURS,
 ) -> tuple[str, datetime]:
     """Upload to R2 and return a (signed_url, expires_at) tuple.
 
@@ -1615,9 +1632,7 @@ def post_dd_export(
     payload: DdExportRequest,
     ctx: ApiContextDep,
     conn: DbDep,
-    x_cost_cap_jpy: Annotated[
-        str | None, Header(alias="X-Cost-Cap-JPY")
-    ] = None,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
 ) -> JSONResponse:
     require_metered_api_key(ctx, "audit bundle export")
     if payload.format != "zip":
@@ -1657,9 +1672,9 @@ def post_dd_export(
     bundle_units = _BUNDLE_CLASS_UNITS[payload.bundle_class]
     bundle_fee_yen = bundle_units * _UNIT_PRICE_YEN
     predicted_yen = n_ids * _UNIT_PRICE_YEN + bundle_fee_yen
-    _check_cost_cap(
+    _require_cost_cap(
         predicted_yen=predicted_yen,
-        header_cap=_parse_cost_cap_header(x_cost_cap_jpy),
+        header_value=x_cost_cap_jpy,
         body_cap=payload.max_cost_jpy,
     )
     from jpintel_mcp.api.middleware.customer_cap import (
@@ -1714,7 +1729,8 @@ def post_dd_export(
     safe_deal = "".join(c if c.isalnum() or c in "_-" else "_" for c in payload.deal_id)
     r2_key = f"audit_bundle/{safe_deal}/{snapshot_id}/{nonce}.zip"
     signed_url, expires_at = _upload_bundle_to_r2(
-        zip_bytes=zip_bytes, key=r2_key,
+        zip_bytes=zip_bytes,
+        key=r2_key,
     )
 
     # Bill: per-id (N rows of am.dd_export.row) + the bundle fee surfaced

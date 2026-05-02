@@ -1750,6 +1750,19 @@
             "title": "Audit Firm Id",
             "type": "string"
           },
+          "max_cost_jpy": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional per-request budget cap in JPY. Equivalent to X-Cost-Cap-JPY; the lower of header/body caps binds.",
+            "title": "Max Cost Jpy"
+          },
           "profiles": {
             "description": "Per-client business profiles. Cap: 5,000. Order preserved in results.",
             "items": {
@@ -11106,6 +11119,19 @@
             "minLength": 1,
             "title": "Client Id",
             "type": "string"
+          },
+          "max_cost_jpy": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional per-request budget cap in JPY. Equivalent to X-Cost-Cap-JPY; the lower of header/body caps binds.",
+            "title": "Max Cost Jpy"
           },
           "report_format": {
             "default": "pdf",

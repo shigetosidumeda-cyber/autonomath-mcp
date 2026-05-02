@@ -17,6 +17,7 @@ What we pin:
   4. Anonymous responses do NOT carry the ``audit_seal`` envelope —
      sealing is paid-only (verify is anon-allowed but issue is paid-only).
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -95,6 +96,7 @@ def test_dd_batch_response_carries_audit_seal(client, paid_key, seeded_db):
         json={
             "houjin_bangous": list(_FIVE_HOUJIN),
             "depth": "summary",
+            "max_cost_jpy": 15,
         },
     )
     assert r.status_code == 200, r.text
@@ -115,9 +117,7 @@ def test_dd_batch_response_carries_audit_seal(client, paid_key, seeded_db):
     assert seal["seal_id"].startswith("seal_"), seal["seal_id"]
     assert seal["subject_hash"].startswith("sha256:"), seal["subject_hash"]
     assert seal["corpus_snapshot_id"].startswith("corpus-"), seal["corpus_snapshot_id"]
-    assert seal["verify_endpoint"] == f"/v1/audit/seals/{seal['seal_id']}", (
-        seal["verify_endpoint"]
-    )
+    assert seal["verify_endpoint"] == f"/v1/audit/seals/{seal['seal_id']}", seal["verify_endpoint"]
     # key_hash_prefix is exactly 8 chars (per §17.D copy "first 8 chars only").
     assert len(seal["key_hash_prefix"]) == 8, seal["key_hash_prefix"]
 
@@ -135,6 +135,7 @@ def test_verify_endpoint_200_for_existing_seal(client, paid_key, seeded_db):
         json={
             "houjin_bangous": list(_FIVE_HOUJIN[:2]),
             "depth": "summary",
+            "max_cost_jpy": 6,
         },
     )
     assert r.status_code == 200, r.text
@@ -215,9 +216,7 @@ def test_anon_response_does_not_carry_audit_seal(client, seeded_db):
         return
     body = r.json()
     # The body shape varies; we check both legacy + envelope shapes.
-    assert "audit_seal" not in body, (
-        f"anon response leaked audit_seal: {body.get('audit_seal')!r}"
-    )
+    assert "audit_seal" not in body, f"anon response leaked audit_seal: {body.get('audit_seal')!r}"
     if isinstance(body, dict) and "results" in body:
         for row in body.get("results") or []:
             if isinstance(row, dict):

@@ -67,6 +67,7 @@ The §15 cap is the customer's monthly spend ceiling (前12月支払総額 basel
 which auto-scales as the firm's billable activity rises; bundle adoption
 does not require a contract amendment.
 """
+
 from __future__ import annotations
 
 import csv
@@ -97,6 +98,7 @@ from jpintel_mcp.api._corpus_snapshot import (
 from jpintel_mcp.api._error_envelope import (
     COMMON_ERROR_RESPONSES,
 )
+from jpintel_mcp.api.cost_cap_guard import require_cost_cap
 from jpintel_mcp.api.deps import (
     ApiContext,
     ApiContextDep,
@@ -207,8 +209,7 @@ class WorkpaperRequest(BaseModel):
         dict[str, Any],
         Field(
             description=(
-                "Client's business attribute bag — same shape as "
-                "``/v1/tax_rulesets/evaluate``."
+                "Client's business attribute bag — same shape as ``/v1/tax_rulesets/evaluate``."
             ),
         ),
     ]
@@ -234,6 +235,16 @@ class WorkpaperRequest(BaseModel):
             ),
             min_length=1,
             max_length=16,
+        ),
+    ] = None
+    max_cost_jpy: Annotated[
+        int | None,
+        Field(
+            description=(
+                "Optional per-request budget cap in JPY. Equivalent to "
+                "X-Cost-Cap-JPY; the lower of header/body caps binds."
+            ),
+            ge=0,
         ),
     ] = None
 
@@ -265,10 +276,7 @@ class BatchEvaluateRequest(BaseModel):
     profiles: Annotated[
         list[BatchProfileItem],
         Field(
-            description=(
-                "Per-client business profiles. Cap: 5,000. Order preserved "
-                "in results."
-            ),
+            description=("Per-client business profiles. Cap: 5,000. Order preserved in results."),
             min_length=1,
             max_length=5000,
         ),
@@ -276,14 +284,21 @@ class BatchEvaluateRequest(BaseModel):
     target_ruleset_ids: Annotated[
         list[str],
         Field(
-            description=(
-                "TAX-<10hex> ids to evaluate against EVERY profile. "
-                "Cap: 100."
-            ),
+            description=("TAX-<10hex> ids to evaluate against EVERY profile. Cap: 100."),
             min_length=1,
             max_length=100,
         ),
     ]
+    max_cost_jpy: Annotated[
+        int | None,
+        Field(
+            description=(
+                "Optional per-request budget cap in JPY. Equivalent to "
+                "X-Cost-Cap-JPY; the lower of header/body caps binds."
+            ),
+            ge=0,
+        ),
+    ] = None
 
 
 # ---------------------------------------------------------------------------
@@ -822,9 +837,7 @@ def _build_cite_chain(
     return {
         "ruleset": {
             "unified_id": ruleset_row["unified_id"],
-            "ruleset_name": (
-                ruleset_row["ruleset_name"] if "ruleset_name" in rs_keys else None
-            ),
+            "ruleset_name": (ruleset_row["ruleset_name"] if "ruleset_name" in rs_keys else None),
         },
         "seed_count": len(cites),
         "resolved_count": resolved_count,
@@ -1022,10 +1035,10 @@ def _workpaper_template_html(
             if url:
                 link_html = '<a href="' + _esc(url) + '">link</a>'
             cite_html_parts.append(
-                f'<li><code>{_esc(c.get("cite_id"))}</code> — '
-                f'{_esc(title)} <em>[{_esc(status)}]</em> '
-                f'{link_html}'
-                f'</li>'
+                f"<li><code>{_esc(c.get('cite_id'))}</code> — "
+                f"{_esc(title)} <em>[{_esc(status)}]</em> "
+                f"{link_html}"
+                f"</li>"
             )
         cite_html = "<ul>" + "".join(cite_html_parts) + "</ul>" if cite_html_parts else ""
         kaikei = r.get("kaikei_fields") or {}
@@ -1059,7 +1072,7 @@ def _workpaper_template_html(
 
     return f"""<!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8"/>
-<title>{_esc(_BRAND['service_name'])} 監査ワークペーパー — {_esc(client_id)}</title>
+<title>{_esc(_BRAND["service_name"])} 監査ワークペーパー — {_esc(client_id)}</title>
 <style>
 @page {{ size: A4; margin: 18mm 16mm 24mm 16mm; @bottom-center {{
   content: "公認会計士法 §47条の2 / 税理士法 §52 — Bookyou Inc. T8010001213708";
@@ -1081,9 +1094,9 @@ ul {{ margin: 2pt 0 4pt 0; padding-left: 14pt; }}
 li {{ margin: 1pt 0; }}
 code {{ font-family: "Menlo", "Courier New", monospace; font-size: 8pt; }}
 </style></head><body>
-<h1>{_esc(_BRAND['service_name'])} 監査ワークペーパー</h1>
-<p>運営: {_esc(_BRAND['operator_legal_name'])} ({_esc(_BRAND['houjin_bangou'])}) /
-   contact: {_esc(_BRAND['operator_email'])}</p>
+<h1>{_esc(_BRAND["service_name"])} 監査ワークペーパー</h1>
+<p>運営: {_esc(_BRAND["operator_legal_name"])} ({_esc(_BRAND["houjin_bangou"])}) /
+   contact: {_esc(_BRAND["operator_email"])}</p>
 
 <dl class='cover'>
 <dt>client_id</dt><dd><code>{_esc(client_id)}</code></dd>
@@ -1268,9 +1281,7 @@ def _render_md(
     out.append(f"- client_id: `{client_id}`")
     out.append(f"- corpus_snapshot_id: `{snapshot_id}`")
     out.append(f"- corpus_checksum: `{checksum}`")
-    out.append(
-        f"- 出力時刻 (UTC): `{datetime.now(UTC).isoformat()}`"
-    )
+    out.append(f"- 出力時刻 (UTC): `{datetime.now(UTC).isoformat()}`")
     out.append("")
     out.append("## 境界条項 (§52 / §47条の2)")
     out.append("")
@@ -1381,9 +1392,7 @@ def _render_pdf(
     content_stream_lines.append("BT")
     content_stream_lines.append("/F1 7 Tf")
     content_stream_lines.append("1 0 0 1 50 30 Tm")
-    footer = _pdf_escape(
-        "Sec.52 / CPA Act Sec.47-2 boundary | Bookyou Inc. T8010001213708"
-    )
+    footer = _pdf_escape("Sec.52 / CPA Act Sec.47-2 boundary | Bookyou Inc. T8010001213708")
     content_stream_lines.append(f"({footer}) Tj")
     content_stream_lines.append("ET")
     content = "\n".join(content_stream_lines).encode("ascii")
@@ -1397,12 +1406,13 @@ def _render_pdf(
         b"/Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>"
     )
     objects.append(
-        b"<< /Length " + str(len(content)).encode("ascii") + b" >>\nstream\n"
-        + content + b"\nendstream"
+        b"<< /Length "
+        + str(len(content)).encode("ascii")
+        + b" >>\nstream\n"
+        + content
+        + b"\nendstream"
     )
-    objects.append(
-        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"
-    )
+    objects.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
 
     body = b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n"
     offsets: list[int] = []
@@ -1416,8 +1426,7 @@ def _render_pdf(
     for off in offsets:
         body += f"{off:010d} 00000 n \n".encode("ascii")
     body += (
-        f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\n"
-        f"startxref\n{xref_offset}\n%%EOF\n"
+        f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref_offset}\n%%EOF\n"
     ).encode("ascii")
     return body
 
@@ -1446,20 +1455,12 @@ def _render_docx(
     paragraphs = []
     for line in md_text.splitlines():
         # XML-escape and wrap in a <w:p><w:r><w:t>.
-        safe = (
-            line.replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-        )
-        paragraphs.append(
-            f"<w:p><w:r><w:t xml:space=\"preserve\">{safe}</w:t></w:r></w:p>"
-        )
+        safe = line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        paragraphs.append(f'<w:p><w:r><w:t xml:space="preserve">{safe}</w:t></w:r></w:p>')
     document_xml = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<w:document xmlns:w="http://schemas.openxmlformats.org/'
-        'wordprocessingml/2006/main"><w:body>'
-        + "".join(paragraphs)
-        + "</w:body></w:document>"
+        'wordprocessingml/2006/main"><w:body>' + "".join(paragraphs) + "</w:body></w:document>"
     )
     content_types = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -1470,7 +1471,7 @@ def _render_docx(
         '<Default Extension="xml" ContentType="application/xml"/>'
         '<Override PartName="/word/document.xml" ContentType="application/'
         'vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"'
-        '/></Types>'
+        "/></Types>"
     )
     rels_root = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -1491,6 +1492,7 @@ def _render_docx(
 # ---------------------------------------------------------------------------
 # Signed-URL placeholder
 # ---------------------------------------------------------------------------
+
 
 # We do not have a live R2 bucket on the launch wheel. The endpoint
 # returns a signed-style URL on a stable internal route
@@ -1558,8 +1560,7 @@ def render_workpaper(
     if payload.report_format not in _REPORT_FORMATS:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            f"report_format must be one of {list(_REPORT_FORMATS)}, "
-            f"got {payload.report_format!r}",
+            f"report_format must be one of {list(_REPORT_FORMATS)}, got {payload.report_format!r}",
         )
     if not _CLIENT_ID_RE.match(payload.client_id):
         raise HTTPException(
@@ -1626,9 +1627,13 @@ def render_workpaper(
         pdf_cache_path = _WORKPAPER_CACHE_DIR / f"{api_key_id}_{audit_period}_{cache_hash}.pdf"
         pdf_cache_hit = pdf_cache_path.exists()
 
-    anticipated_units = (
-        0 if pdf_cache_hit else len(ordered_rows) + _WORKPAPER_EXPORT_UNITS
-    )
+    anticipated_units = 0 if pdf_cache_hit else len(ordered_rows) + _WORKPAPER_EXPORT_UNITS
+    if anticipated_units > 0:
+        require_cost_cap(
+            predicted_yen=anticipated_units * 3,
+            header_value=request.headers.get("x-cost-cap-jpy"),
+            body_cap_yen=payload.max_cost_jpy,
+        )
     cap_response = _projected_cap_response(conn, ctx, anticipated_units)
     if cap_response is not None:
         return cap_response
@@ -1657,9 +1662,7 @@ def render_workpaper(
             checksum=checksum,
             rows=evaluated,
         )
-        mime = (
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        )
+        mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     else:  # pdf
         # Try WeasyPrint first (renders Japanese text correctly + uses the
         # disk cache). Fall back to the hand-rolled PDF1.4 renderer when
@@ -1668,9 +1671,7 @@ def render_workpaper(
         if pdf_cache_path is not None and pdf_cache_hit:
             body_bytes = pdf_cache_path.read_bytes()
         else:
-            out_path = pdf_cache_path or (
-                _WORKPAPER_CACHE_DIR / f"{api_key_id}_{audit_period}.pdf"
-            )
+            out_path = pdf_cache_path or (_WORKPAPER_CACHE_DIR / f"{api_key_id}_{audit_period}.pdf")
             ok = _render_pdf_weasyprint(
                 out_path=out_path,
                 client_id=payload.client_id,
@@ -1826,6 +1827,11 @@ def batch_evaluate(
     n_profiles = len(payload.profiles)
     n_evals = n_profiles * len(ordered_rs)
     units = max(1, (n_evals + _BATCH_K - 1) // _BATCH_K)  # ceil division
+    require_cost_cap(
+        predicted_yen=units * 3,
+        header_value=request.headers.get("x-cost-cap-jpy"),
+        body_cap_yen=payload.max_cost_jpy,
+    )
     cap_response = _projected_cap_response(conn, ctx, units)
     if cap_response is not None:
         return cap_response
@@ -1852,9 +1858,7 @@ def batch_evaluate(
         for rs_row in ordered_rs:
             r = _evaluate_ruleset(rs_row, item.profile)
             if r.applicable:
-                applicable_counts[r.unified_id] = (
-                    applicable_counts.get(r.unified_id, 0) + 1
-                )
+                applicable_counts[r.unified_id] = applicable_counts.get(r.unified_id, 0) + 1
             per_ruleset.append(r.model_dump(mode="json"))
         per_profile.append(
             {
@@ -1893,9 +1897,7 @@ def batch_evaluate(
     # Inject 会計士-specific 調書記載要否 / 重要性閾値 / 監査リスク評価
     # rollups onto every (profile, ruleset) cell. Anomaly map is keyed
     # by (client_id, ruleset_id) so each cell's audit_risk lookup is O(1).
-    anomaly_keys: set[tuple[str, str]] = {
-        (a["client_id"], a["ruleset_id"]) for a in anomalies
-    }
+    anomaly_keys: set[tuple[str, str]] = {(a["client_id"], a["ruleset_id"]) for a in anomalies}
     for entry in per_profile:
         cid = entry["client_id"]
         for cell in entry["results"]:
@@ -2175,9 +2177,7 @@ def snapshot_attestation(
     )
     pdf_sha = hashlib.sha256(pdf_bytes).hexdigest()
     token = hashlib.sha256(
-        pdf_sha.encode("ascii")
-        + str(year).encode("ascii")
-        + str(int(time.time())).encode("ascii")
+        pdf_sha.encode("ascii") + str(year).encode("ascii") + str(int(time.time())).encode("ascii")
     ).hexdigest()[:32]
     download_url = _signed_url_for(token, "pdf")
 
@@ -2324,9 +2324,7 @@ def verify_audit_seal(
         "seal_id": (row.get("seal_id") or row.get("call_id")),
         "issued_at": row.get("ts"),
         "subject_hash": (
-            "sha256:" + str(row.get("response_hash"))
-            if row.get("response_hash")
-            else None
+            "sha256:" + str(row.get("response_hash")) if row.get("response_hash") else None
         ),
         "corpus_snapshot_id": row.get("corpus_snapshot_id"),
         "verified": bool(verified),

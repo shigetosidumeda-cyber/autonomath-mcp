@@ -27,6 +27,7 @@ Bundle assertions:
     4. Sha256 manifest internal-consistent: `<digest>  <filename>` rows
        match `hashlib.sha256(inner_files[name]).hexdigest()`.
 """
+
 from __future__ import annotations
 
 import io
@@ -167,16 +168,10 @@ def _ensure_ma_pillar_tables(seeded_db: Path):
 def _check_disclaimer_envelope(body: dict) -> None:
     """Every M&A response must carry the §52 fence + coverage_scope."""
     assert "_disclaimer" in body, "missing §52 disclaimer envelope"
-    assert "税理士法 §52" in body["_disclaimer"], (
-        "disclaimer must reference 税理士法 §52"
-    )
+    assert "税理士法 §52" in body["_disclaimer"], "disclaimer must reference 税理士法 §52"
     assert "coverage_scope" in body, "missing coverage_scope"
-    assert "役員" in body["coverage_scope"], (
-        "coverage_scope must explicitly exclude 役員一覧"
-    )
-    assert "株主構成" in body["coverage_scope"], (
-        "coverage_scope must explicitly exclude 株主構成"
-    )
+    assert "役員" in body["coverage_scope"], "coverage_scope must explicitly exclude 役員一覧"
+    assert "株主構成" in body["coverage_scope"], "coverage_scope must explicitly exclude 株主構成"
 
 
 # ---------------------------------------------------------------------------
@@ -191,6 +186,7 @@ def test_dd_batch_5_houjin_summary(client, paid_key):
         json={
             "houjin_bangous": list(_FIVE_HOUJIN),
             "depth": "summary",
+            "max_cost_jpy": 15,
         },
     )
     assert r.status_code == 200, r.text
@@ -250,14 +246,24 @@ def test_dd_batch_invalid_houjin_returns_422(client, paid_key):
 
 
 def test_dd_batch_cost_cap_blocks_overspend(client, paid_key):
-    # 5 × ¥3 = ¥15 predicted; cap at ¥6 → 400.
+    # 5 × ¥3 = ¥15 predicted; cap at ¥6 → 402.
     r = client.post(
         "/v1/am/dd_batch",
         headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
         json={"houjin_bangous": list(_FIVE_HOUJIN)},
     )
-    assert r.status_code == 400
+    assert r.status_code == 402
     assert "cost_cap_exceeded" in r.text
+
+
+def test_dd_batch_requires_cost_cap(client, paid_key):
+    r = client.post(
+        "/v1/am/dd_batch",
+        headers={"X-API-Key": paid_key},
+        json={"houjin_bangous": list(_FIVE_HOUJIN[:1])},
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"]["code"] == "cost_cap_required"
 
 
 # ---------------------------------------------------------------------------
@@ -369,6 +375,7 @@ def test_audit_bundle_export_round_trip(client, paid_key, tmp_path):
             "deal_id": deal_id,
             "houjin_bangous": list(_FIVE_HOUJIN),
             "format": "zip",
+            "max_cost_jpy": 1_014,
         },
     )
     assert r.status_code == 200, r.text
@@ -400,6 +407,7 @@ def test_audit_bundle_export_round_trip(client, paid_key, tmp_path):
 
     # Open both DBs the same way the route does.
     from jpintel_mcp.config import settings
+
     jp_conn = sqlite3.connect(settings.db_path)
     jp_conn.row_factory = sqlite3.Row
     profiles = [
@@ -481,6 +489,7 @@ def test_audit_bundle_listing_summary(client, paid_key):
         json={
             "deal_id": deal_id,
             "houjin_bangous": list(_FIVE_HOUJIN[:2]),
+            "max_cost_jpy": 1_005,
         },
     )
     assert r.status_code == 200, r.text
@@ -510,6 +519,7 @@ def test_dd_export_bundle_class_deal_charges_3000(client, paid_key):
             "deal_id": "MA-E2E-BUNDLE-DEAL",
             "houjin_bangous": list(_FIVE_HOUJIN),
             "bundle_class": "deal",
+            "max_cost_jpy": 3_015,
         },
     )
     assert r.status_code == 200, r.text
@@ -535,6 +545,7 @@ def test_dd_export_bundle_class_case_charges_10000(client, paid_key):
             "deal_id": "MA-E2E-BUNDLE-CASE",
             "houjin_bangous": list(_FIVE_HOUJIN),
             "bundle_class": "case",
+            "max_cost_jpy": 10_014,
         },
     )
     assert r.status_code == 200, r.text
@@ -556,6 +567,7 @@ def test_dd_export_bundle_class_standard_default(client, paid_key):
         json={
             "deal_id": "MA-E2E-BUNDLE-DEFAULT",
             "houjin_bangous": list(_FIVE_HOUJIN[:1]),
+            "max_cost_jpy": 1_002,
         },
     )
     assert r.status_code == 200, r.text
@@ -577,6 +589,19 @@ def test_dd_export_requires_paid_key(client, trial_key):
     )
     assert r.status_code == 402
     assert r.json()["detail"]["required_tier"] == "paid"
+
+
+def test_dd_export_requires_cost_cap(client, paid_key):
+    r = client.post(
+        "/v1/am/dd_export",
+        headers={"X-API-Key": paid_key},
+        json={
+            "deal_id": "MA-E2E-CAP-REQUIRED",
+            "houjin_bangous": list(_FIVE_HOUJIN[:1]),
+        },
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"]["code"] == "cost_cap_required"
 
 
 def test_dd_export_bundle_class_invalid_returns_422(client, paid_key):
