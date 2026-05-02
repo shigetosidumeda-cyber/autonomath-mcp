@@ -5691,6 +5691,7 @@
         "properties": {
           "fields": {
             "default": "default",
+            "description": "Field projection level. `default` / `full`.",
             "title": "Fields",
             "type": "string"
           },
@@ -5709,16 +5710,19 @@
           },
           "include_compression": {
             "default": false,
+            "description": "Include input-context size estimates. Estimates compare the packet against a caller-supplied source baseline; they are not provider billing guarantees.",
             "title": "Include Compression",
             "type": "boolean"
           },
           "include_facts": {
             "default": true,
+            "description": "Include records[].facts[] source-linked fact records.",
             "title": "Include Facts",
             "type": "boolean"
           },
           "include_rules": {
             "default": false,
+            "description": "Include records[].rules[] compatibility/exclusion rules.",
             "title": "Include Rules",
             "type": "boolean"
           },
@@ -5731,6 +5735,7 @@
                 "type": "null"
               }
             ],
+            "description": "Optional caller-supplied input-token price in JPY per 1M tokens. Used only for an input-context break-even reference; not a total provider bill estimate.",
             "title": "Input Token Price Jpy Per 1M"
           },
           "limit": {
@@ -5759,6 +5764,7 @@
                 "type": "null"
               }
             ],
+            "description": "PDF page count the caller would otherwise paste/fetch into the LLM. Used only when source_tokens_basis=pdf_pages.",
             "title": "Source Pdf Pages"
           },
           "source_token_count": {
@@ -5772,10 +5778,12 @@
                 "type": "null"
               }
             ],
+            "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
             "title": "Source Token Count"
           },
           "source_tokens_basis": {
             "default": "unknown",
+            "description": "Caller-supplied baseline for context comparison. `unknown` returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied by the caller.",
             "enum": [
               "unknown",
               "pdf_pages",
@@ -19458,7 +19466,7 @@
     },
     "/v1/evidence/packets/query": {
       "post": {
-        "description": "Use this endpoint as source-linked evidence prefetch before GPT, Claude, Cursor, or RAG answer generation. It returns a compact Evidence Packet instead of a final narrative answer, so callers can avoid pasting long PDFs, official pages, or search snippets into the model. 1 packet = 1 billable unit (\u00a53 / \u7a0e\u8fbc \u00a53.30). The packet bundles up to `limit` records (hard cap 500). Truncation surfaces `_warning=\"truncated\"`. Optional compression fields are input-context estimates, not external provider billing guarantees.",
+        "description": "Use this endpoint as source-linked evidence prefetch before GPT, Claude, Cursor, or RAG answer generation. It returns a compact Evidence Packet instead of a final narrative answer, so callers can avoid pasting long PDFs, official pages, or search snippets into the model. 1 packet = 1 billable unit; see the pricing page for current public price and anonymous limits. The packet bundles up to `limit` records (hard cap 500). Truncation surfaces `_warning=\"truncated\"`. Optional compression fields are input-context estimates, not external provider billing guarantees.",
         "operationId": "post_evidence_packet_query_v1_evidence_packets_query_post",
         "parameters": [
           {
@@ -19597,7 +19605,7 @@
     },
     "/v1/evidence/packets/{subject_kind}/{subject_id}": {
       "get": {
-        "description": "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG answer generation. 1 packet = 1 billable unit (\u00a53 / \u7a0e\u8fbc \u00a53.30). NO LLM call. Bundles primary metadata + per-fact provenance + compat-matrix rule verdicts (program only) into a compact envelope.\n\n**subject_kind** \u2208 `program` / `houjin`. For multi-record query packets, POST /v1/evidence/packets/query.\n\nResponse is fail-open: any upstream failure surfaces as a code in `quality.known_gaps[]`; the packet still renders. Optional compression fields are input-context estimates, not external provider billing guarantees.",
+        "description": "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG answer generation. 1 packet = 1 billable unit; see the pricing page for current public price and anonymous limits. NO LLM call. Bundles primary metadata + per-fact provenance + compat-matrix rule verdicts (program only) into a compact envelope.\n\n**subject_kind** \u2208 `program` / `houjin`. For multi-record query packets, POST /v1/evidence/packets/query.\n\nResponse is fail-open: any upstream failure surfaces as a code in `quality.known_gaps[]`; the packet still renders. Optional compression fields are input-context estimates, not external provider billing guarantees.",
         "operationId": "get_evidence_packet_v1_evidence_packets__subject_kind___subject_id__get",
         "parameters": [
           {

@@ -14,8 +14,9 @@ Endpoints
 Pricing posture
 ---------------
 
-¥3/req per packet (1 unit). Anonymous tier shares the 3/日 IP cap via
-``AnonIpLimitDep`` on the router mount.
+Each packet is one billable unit. Current public pricing and anonymous
+limits are published on the pricing page. Anonymous tier shares the IP cap
+via ``AnonIpLimitDep`` on the router mount.
 
 Response formats
 ----------------
@@ -338,7 +339,8 @@ def _dispatch_format(envelope: dict[str, Any], fmt: str) -> Response:
     summary="Evidence Packet — single-subject composer (program / houjin)",
     description=(
         "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG "
-        "answer generation. 1 packet = 1 billable unit (¥3 / 税込 ¥3.30). "
+        "answer generation. 1 packet = 1 billable unit; see the pricing "
+        "page for current public price and anonymous limits. "
         "NO LLM call. Bundles primary metadata + per-fact provenance + "
         "compat-matrix rule verdicts (program only) into a compact envelope.\n\n"
         "**subject_kind** ∈ `program` / `houjin`. For multi-record query "
@@ -567,14 +569,72 @@ class EvidencePacketQueryBody(BaseModel):
             description=(f"Cap on records[] length. Hard cap = {MAX_RECORDS_PER_PACKET}."),
         ),
     ] = 10
-    include_facts: bool = True
-    include_rules: bool = False
-    include_compression: bool = False
-    fields: str = "default"
-    input_token_price_jpy_per_1m: float | None = None
-    source_tokens_basis: Literal["unknown", "pdf_pages", "token_count"] = "unknown"
-    source_pdf_pages: Annotated[int | None, Field(ge=1, le=1000)] = None
-    source_token_count: Annotated[int | None, Field(ge=1, le=50_000_000)] = None
+    include_facts: Annotated[
+        bool,
+        Field(description="Include records[].facts[] source-linked fact rows."),
+    ] = True
+    include_rules: Annotated[
+        bool,
+        Field(description="Include records[].rules[] compatibility/exclusion rules."),
+    ] = False
+    include_compression: Annotated[
+        bool,
+        Field(
+            description=(
+                "Include input-context size estimates. Estimates compare the "
+                "packet against a caller-supplied source baseline; they are "
+                "not provider billing guarantees."
+            ),
+        ),
+    ] = False
+    fields: Annotated[
+        str,
+        Field(description="Field projection level. `default` / `full`."),
+    ] = "default"
+    input_token_price_jpy_per_1m: Annotated[
+        float | None,
+        Field(
+            description=(
+                "Optional caller-supplied input-token price in JPY per 1M "
+                "tokens. Used only for an input-context break-even reference; "
+                "not a total provider bill estimate."
+            ),
+        ),
+    ] = None
+    source_tokens_basis: Annotated[
+        Literal["unknown", "pdf_pages", "token_count"],
+        Field(
+            description=(
+                "Caller-supplied baseline for context comparison. `unknown` "
+                "returns packet size only. `pdf_pages` uses source_pdf_pages "
+                "* 700 tokens/page as an estimate. `token_count` uses "
+                "source_token_count exactly as supplied by the caller."
+            ),
+        ),
+    ] = "unknown"
+    source_pdf_pages: Annotated[
+        int | None,
+        Field(
+            ge=1,
+            le=1000,
+            description=(
+                "PDF page count the caller would otherwise paste/fetch into "
+                "the LLM. Used only when source_tokens_basis=pdf_pages."
+            ),
+        ),
+    ] = None
+    source_token_count: Annotated[
+        int | None,
+        Field(
+            ge=1,
+            le=50_000_000,
+            description=(
+                "Caller-measured token count for the source context the LLM "
+                "would otherwise read. Used only when "
+                "source_tokens_basis=token_count."
+            ),
+        ),
+    ] = None
 
 
 @router.post(
@@ -585,8 +645,9 @@ class EvidencePacketQueryBody(BaseModel):
         "Claude, Cursor, or RAG answer generation. It returns a compact "
         "Evidence Packet instead of a final narrative answer, so callers can "
         "avoid pasting long PDFs, official pages, or search snippets into "
-        "the model. 1 packet = 1 billable unit (¥3 / 税込 ¥3.30). The packet "
-        "bundles up to `limit` records (hard cap 500). Truncation surfaces "
+        "the model. 1 packet = 1 billable unit; see the pricing page for "
+        "current public price and anonymous limits. The packet bundles up "
+        "to `limit` records (hard cap 500). Truncation surfaces "
         '`_warning="truncated"`. Optional compression fields are '
         "input-context estimates, not external provider billing guarantees."
     ),
