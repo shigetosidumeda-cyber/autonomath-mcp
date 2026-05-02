@@ -234,6 +234,41 @@ def test_bulk_evaluate_commit_bills_and_returns_zip(
     assert int(rows[0][0]) == 5, rows
 
 
+def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
+    client, consultant_key, seeded_db, monkeypatch,
+):
+    import jpintel_mcp.api.bulk_evaluate as bulk_module
+
+    def _raise_billing_failure(*args, **kwargs):
+        raise RuntimeError("usage insert failed")
+
+    monkeypatch.setattr(bulk_module, "log_usage", _raise_billing_failure)
+
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={
+            "commit": "true",
+            "idempotency_key": "billing-fails",
+        },
+    )
+
+    assert r.status_code == 503
+    assert r.headers.get("X-Billed-Yen") is None
+    assert r.json()["detail"]["code"] == "billing_unavailable"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE endpoint = 'clients.bulk_evaluate'"
+        ).fetchall()
+    finally:
+        c.close()
+    assert rows == []
+
+
 def test_bulk_evaluate_commit_requires_idempotency_key(
     client, consultant_key,
 ):

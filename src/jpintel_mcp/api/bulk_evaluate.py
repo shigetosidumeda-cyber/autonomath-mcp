@@ -64,6 +64,10 @@ from jpintel_mcp.api.deps import (  # noqa: TC001
     log_usage,
     require_metered_api_key,
 )
+from jpintel_mcp.api.idempotency_context import (
+    billing_event_index,
+    billing_idempotency_key,
+)
 
 logger = logging.getLogger("jpintel.bulk_evaluate")
 
@@ -529,6 +533,9 @@ async def bulk_evaluate_clients(
     # with quantity=1 — same dollar total but N rows + N Stripe POSTs +
     # N idempotency keys, which fragmented the reconciliation surface and
     # increased the risk of partial-success Stripe outages.
+    billing_key = f"{ENDPOINT_LABEL}:{ctx.key_hash}:{idempotency_key.strip()}"
+    billing_key_token = billing_idempotency_key.set(billing_key)
+    billing_event_token = billing_event_index.set(0)
     try:
         log_usage(
             conn=conn,
@@ -539,8 +546,22 @@ async def bulk_evaluate_clients(
             quantity=n,
             result_count=n,
         )
-    except Exception:  # noqa: BLE001 — never block delivery on billing
+    except Exception as exc:  # noqa: BLE001
         logger.warning("bulk_evaluate billing row failed", exc_info=True)
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            {
+                "code": "billing_unavailable",
+                "message": (
+                    "Bulk evaluation completed, but the billing audit row "
+                    "could not be written. No ZIP was delivered; retry with "
+                    "the same idempotency_key."
+                ),
+            },
+        ) from exc
+    finally:
+        billing_event_index.reset(billing_event_token)
+        billing_idempotency_key.reset(billing_key_token)
 
     # Stash idempotency so retries reuse the same evaluation.
     _idem_store(
