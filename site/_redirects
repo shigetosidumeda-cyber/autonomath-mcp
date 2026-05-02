@@ -12,6 +12,15 @@
 # Canonical trailing-slash for docs
 /docs  /docs/  301
 
+# Admin surfaces are API-only and must not be exposed as static pages.
+/admin/*  /404  404
+
+# Machine-readable API discovery. Keep common guessed static paths alive for
+# LLM crawlers, Custom GPT importers, and SDK generators; the canonical OpenAPI
+# contract is served by the API process.
+/openapi/v1.json  https://api.jpcite.com/v1/openapi.json  302
+/v1/openapi.json  https://api.jpcite.com/v1/openapi.json  302
+
 # Legacy /getting-started.html → mkdocs Material doc.
 # Real onboarding lives at /docs/getting-started/. Internal links across
 # site/index.html, prescreen-demo.js, etc. still point at the .html path;
@@ -63,12 +72,9 @@
 # on a real page instead of 404. All targets verified to exist on disk.
 # ─────────────────────────────────────────────────────────────────────────
 
-# /blog → published mkdocs blog under docs.
-# We intentionally do not host a /blog landing page; the launch-week posts
-# and ongoing release notes live at /docs/blog/. site/blog/*.md are source
-# files only (not served as pages).
-/blog        /docs/blog/  301
-/blog/*      /docs/blog/  301
+# /blog is not a published surface yet.
+/blog        /docs/  301
+/blog/*      /docs/  301
 
 # /api → REST API reference. Common guess from people who heard "API"
 # before finding the docs index. /docs/api-reference/ is the canonical home.
@@ -91,10 +97,8 @@
 /contact-us  /go.html  302
 /support     /go.html  302
 
-# Legacy "jpintel" brand — the product was renamed to AutonoMath
-# (jpintel collides with Intel as a 著名商標). Anything pointing at the old
-# brand should land on the homepage. Internal source path src/jpintel_mcp/
-# is unaffected; this is user-facing only.
+# Legacy public-brand aliases. Anything pointing at the old public name should
+# land on the jpcite homepage. Internal Python package paths are unaffected.
 /jpintel        /  301
 /jpintel.html   /  301
 /jpintel/*      /  301
