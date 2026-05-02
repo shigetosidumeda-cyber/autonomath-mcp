@@ -4,6 +4,7 @@ This router is intentionally thin: it exposes the compact, precomputed
 Evidence Packet path used by the offline token-cost benchmark without
 adding an LLM dependency or a second datastore.
 """
+
 from __future__ import annotations
 
 import time
@@ -12,11 +13,11 @@ from typing import Annotated, Any, Literal
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse, Response
 
+from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._response_models import (
     PRECOMPUTED_INTELLIGENCE_EXAMPLE,
     PrecomputedIntelligenceBundle,
 )
-from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.api.evidence import _get_composer, _validate_compression_baseline
 from jpintel_mcp.services.evidence_packet import MAX_RECORDS_PER_PACKET
@@ -42,9 +43,7 @@ def _annotate_precomputed_bundle(envelope: dict[str, Any]) -> dict[str, Any]:
         {
             "bundle_kind": "precomputed_intelligence",
             "bundle_id": bundle_id,
-            "answer_basis": (
-                "precomputed" if precomputed_count else "metadata_only"
-            ),
+            "answer_basis": ("precomputed" if precomputed_count else "metadata_only"),
             "records_returned": len(records),
             "precomputed_record_count": precomputed_count,
             "precomputed": {
@@ -162,12 +161,8 @@ def _context_savings_summary(compression: Any) -> dict[str, Any] | None:
     if isinstance(savings, dict):
         summary.update(
             {
-                "input_token_price_jpy_per_1m": savings.get(
-                    "input_token_price_jpy_per_1m"
-                ),
-                "break_even_avoided_tokens": savings.get(
-                    "break_even_avoided_tokens"
-                ),
+                "input_token_price_jpy_per_1m": savings.get("input_token_price_jpy_per_1m"),
+                "break_even_avoided_tokens": savings.get("break_even_avoided_tokens"),
                 "break_even_met": savings.get("break_even_met"),
                 "net_savings_jpy_ex_tax": savings.get("net_savings_jpy_ex_tax"),
                 "billing_savings_claim": savings.get("billing_savings_claim"),
@@ -189,9 +184,7 @@ def _context_savings_summary(compression: Any) -> dict[str, Any] | None:
     responses={
         200: {
             "model": PrecomputedIntelligenceBundle,
-            "content": {
-                "application/json": {"example": PRECOMPUTED_INTELLIGENCE_EXAMPLE}
-            },
+            "content": {"application/json": {"example": PRECOMPUTED_INTELLIGENCE_EXAMPLE}},
         }
     },
 )
@@ -219,9 +212,7 @@ def get_precomputed_intelligence_query(
         Query(
             ge=1,
             le=MAX_RECORDS_PER_PACKET,
-            description=(
-                f"Cap on records[] length. Hard cap = {MAX_RECORDS_PER_PACKET}."
-            ),
+            description=(f"Cap on records[] length. Hard cap = {MAX_RECORDS_PER_PACKET}."),
         ),
     ] = 10,
     include_facts: Annotated[

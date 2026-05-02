@@ -41,15 +41,15 @@ from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
-from jpintel_mcp.api._response_models import (
-    EVIDENCE_PACKET_EXAMPLE,
-    EvidencePacketEnvelope,
-)
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._license_gate import (
     REDISTRIBUTABLE_LICENSES,
     annotate_attribution,
     filter_redistributable,
+)
+from jpintel_mcp.api._response_models import (
+    EVIDENCE_PACKET_EXAMPLE,
+    EvidencePacketEnvelope,
 )
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.config import settings
@@ -69,9 +69,7 @@ _composer_paths: tuple[str, str] | None = None
 
 def _current_composer_paths() -> tuple[str, str]:
     jpintel_db = Path(os.environ.get("JPINTEL_DB_PATH") or settings.db_path)
-    autonomath_db = Path(
-        os.environ.get("AUTONOMATH_DB_PATH") or settings.autonomath_db_path
-    )
+    autonomath_db = Path(os.environ.get("AUTONOMATH_DB_PATH") or settings.autonomath_db_path)
     return (str(jpintel_db), str(autonomath_db))
 
 
@@ -91,10 +89,7 @@ def _get_composer() -> EvidencePacketComposer:
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail={
                     "code": "db_unavailable",
-                    "message": (
-                        "evidence_packet composer のデータソースが見つかりません: "
-                        f"{exc}"
-                    ),
+                    "message": (f"evidence_packet composer のデータソースが見つかりません: {exc}"),
                 },
             ) from exc
     return _composer
@@ -108,10 +103,7 @@ def _validate_compression_baseline(
     if source_tokens_basis == "token_count" and source_token_count is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail=(
-                "source_token_count is required when "
-                "source_tokens_basis=token_count."
-            ),
+            detail=("source_token_count is required when source_tokens_basis=token_count."),
         )
 
 
@@ -184,9 +176,7 @@ def _record_license_tuple(rec: dict[str, Any]) -> dict[str, Any]:
     if licenses:
         # Prefer redistributable licenses. If any allowed license appears
         # on the facts, pick the most-common allowed one (ties lexical).
-        allowed_present = {
-            k: v for k, v in licenses.items() if k in REDISTRIBUTABLE_LICENSES
-        }
+        allowed_present = {k: v for k, v in licenses.items() if k in REDISTRIBUTABLE_LICENSES}
         if allowed_present:
             chosen = sorted(
                 allowed_present.items(),
@@ -208,9 +198,7 @@ def _record_license_tuple(rec: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _apply_license_gate(envelope: dict[str, Any]) -> tuple[
-    dict[str, Any], dict[str, Any]
-]:
+def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     """Filter the envelope's records[] through the license export gate.
 
     Implements `docs/_internal/value_maximization_plan_no_llm_api.md` §24
@@ -274,9 +262,7 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[
     return gated_envelope, gate_summary
 
 
-def _dispatch_format(
-    envelope: dict[str, Any], fmt: str
-) -> Response:
+def _dispatch_format(envelope: dict[str, Any], fmt: str) -> Response:
     """Serialize the packet envelope; gate CSV/MD redistribution paths.
 
     JSON responses are the per-request conversational surface — paid
@@ -320,9 +306,7 @@ def _dispatch_format(
         if _blocked:
             gated["records"] = _allowed
             gate_summary["allowed_count"] = len(_allowed)
-            gate_summary["blocked_count"] = (
-                gate_summary.get("blocked_count", 0) + len(_blocked)
-            )
+            gate_summary["blocked_count"] = gate_summary.get("blocked_count", 0) + len(_blocked)
 
         headers = {
             "X-License-Gate-Allowed": str(gate_summary["allowed_count"]),
@@ -331,11 +315,15 @@ def _dispatch_format(
         if fmt == "csv":
             body = EvidencePacketComposer.to_csv(gated)
             return PlainTextResponse(
-                content=body, media_type="text/csv", headers=headers,
+                content=body,
+                media_type="text/csv",
+                headers=headers,
             )
         body = EvidencePacketComposer.to_markdown(gated)
         return PlainTextResponse(
-            content=body, media_type="text/markdown", headers=headers,
+            content=body,
+            media_type="text/markdown",
+            headers=headers,
         )
     return JSONResponse(content=envelope)
 
@@ -576,9 +564,7 @@ class EvidencePacketQueryBody(BaseModel):
         Field(
             ge=1,
             le=MAX_RECORDS_PER_PACKET,
-            description=(
-                f"Cap on records[] length. Hard cap = {MAX_RECORDS_PER_PACKET}."
-            ),
+            description=(f"Cap on records[] length. Hard cap = {MAX_RECORDS_PER_PACKET}."),
         ),
     ] = 10
     include_facts: bool = True
@@ -601,7 +587,7 @@ class EvidencePacketQueryBody(BaseModel):
         "avoid pasting long PDFs, official pages, or search snippets into "
         "the model. 1 packet = 1 billable unit (¥3 / 税込 ¥3.30). The packet "
         "bundles up to `limit` records (hard cap 500). Truncation surfaces "
-        "`_warning=\"truncated\"`. Optional compression fields are "
+        '`_warning="truncated"`. Optional compression fields are '
         "input-context estimates, not external provider billing guarantees."
     ),
     responses={
@@ -648,9 +634,7 @@ def post_evidence_packet_query(
         params={
             "limit": payload.limit,
             "format": output_format,
-            "filter_keys": (
-                sorted(payload.filters.keys()) if payload.filters else []
-            ),
+            "filter_keys": (sorted(payload.filters.keys()) if payload.filters else []),
             "source_tokens_basis": payload.source_tokens_basis,
             "source_pdf_pages": payload.source_pdf_pages,
             "source_token_count": payload.source_token_count,
@@ -664,9 +648,7 @@ def post_evidence_packet_query(
             request_params={
                 "query_text": payload.query_text,
                 "limit": payload.limit,
-                "filter_keys": (
-                    sorted(payload.filters.keys()) if payload.filters else []
-                ),
+                "filter_keys": (sorted(payload.filters.keys()) if payload.filters else []),
                 "source_tokens_basis": payload.source_tokens_basis,
                 "source_pdf_pages": payload.source_pdf_pages,
                 "source_token_count": payload.source_token_count,

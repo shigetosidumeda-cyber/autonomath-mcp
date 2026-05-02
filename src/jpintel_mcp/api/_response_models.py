@@ -35,6 +35,7 @@ Design notes
   ErrorEnvelope below — we don't make the field strict because callers
   already branch on ``"error" in response``.
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar, Generic, Literal, TypeVar
@@ -133,8 +134,7 @@ class SearchResponse(BaseModel, Generic[T]):
     retrieval_note: str | None = Field(
         default=None,
         description=(
-            "One-line provenance hint, e.g. "
-            "'text search with fallback matching (3 rows from 285)'."
+            "One-line provenance hint, e.g. 'text search with fallback matching (3 rows from 285)'."
         ),
     )
     error: dict[str, Any] | None = Field(
@@ -178,8 +178,7 @@ class EvidencePacketCompression(BaseModel):
     source_tokens_estimate: int | None = Field(
         default=None,
         description=(
-            "Estimated tokens in the source context the caller would "
-            "otherwise send to an LLM."
+            "Estimated tokens in the source context the caller would otherwise send to an LLM."
         ),
     )
     avoided_tokens_estimate: int | None = Field(
@@ -227,9 +226,7 @@ class EvidencePacketRecord(BaseModel):
     entity_id: str = Field(..., description="Stable program/houjin/entity id.")
     primary_name: str | None = None
     record_kind: str | None = None
-    source_url: str | None = Field(
-        default=None, description="Primary source URL when known."
-    )
+    source_url: str | None = Field(default=None, description="Primary source URL when known.")
     source_fetched_at: str | None = Field(
         default=None,
         description="Fetch timestamp for the primary source when known.",
@@ -436,9 +433,7 @@ class AMOpenProgramsResponse(SearchResponse[dict[str, Any]]):
     """``GET /v1/am/open_programs`` — adds ``pivot_date`` (the date the snapshot
     was taken on, defaulting to today)."""
 
-    pivot_date: str | None = Field(
-        default=None, description="ISO YYYY-MM-DD of the snapshot date."
-    )
+    pivot_date: str | None = Field(default=None, description="ISO YYYY-MM-DD of the snapshot date.")
 
 
 class AMActiveAtResponse(SearchResponse[dict[str, Any]]):
