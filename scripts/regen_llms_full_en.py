@@ -144,8 +144,7 @@ LIMIT 5000
 """
 
 PROGRAMS_COUNT_SQL = (
-    "SELECT COUNT(*) FROM programs "
-    "WHERE excluded = 0 AND tier IN ('S','A','B','C')"
+    "SELECT COUNT(*) FROM programs WHERE excluded = 0 AND tier IN ('S','A','B','C')"
 )
 LAWS_COUNT_SQL = "SELECT COUNT(*) FROM laws"
 CASES_COUNT_SQL = "SELECT COUNT(*) FROM case_studies"
@@ -240,10 +239,7 @@ def _source_host_allowed(source_url: str | None) -> bool:
     if not hostname:
         return True
     host = hostname.lower().rstrip(".")
-    return not any(
-        host == banned or host.endswith(f".{banned}")
-        for banned in _BANNED_SOURCE_HOSTS
-    )
+    return not any(host == banned or host.endswith(f".{banned}") for banned in _BANNED_SOURCE_HOSTS)
 
 
 # ---------------------------------------------------------------------------
@@ -350,14 +346,16 @@ def _section_programs(rows: list[sqlite3.Row]) -> list[str]:
     ]
     for row in rows:
         out.append(
-            " | ".join([
-                _sanitize(row["unified_id"]),
-                _public_program_name(row["primary_name"]),
-                _sanitize(row["program_kind"]),
-                _format_amount_man_yen(row["amount_max_man_yen"]),
-                _sanitize(row["source_url"]),
-                _sanitize(row["source_fetched_at"]),
-            ])
+            " | ".join(
+                [
+                    _sanitize(row["unified_id"]),
+                    _public_program_name(row["primary_name"]),
+                    _sanitize(row["program_kind"]),
+                    _format_amount_man_yen(row["amount_max_man_yen"]),
+                    _sanitize(row["source_url"]),
+                    _sanitize(row["source_fetched_at"]),
+                ]
+            )
         )
     out.append("")
     return out
@@ -376,14 +374,16 @@ def _section_laws(rows: list[sqlite3.Row]) -> list[str]:
     ]
     for row in rows:
         out.append(
-            " | ".join([
-                _sanitize(row["unified_id"]),
-                _sanitize(row["law_title"]),
-                _sanitize(row["law_type"]),
-                _sanitize(row["ministry"]),
-                _sanitize(row["revision_status"]),
-                _sanitize(row["full_text_url"]),
-            ])
+            " | ".join(
+                [
+                    _sanitize(row["unified_id"]),
+                    _sanitize(row["law_title"]),
+                    _sanitize(row["law_type"]),
+                    _sanitize(row["ministry"]),
+                    _sanitize(row["revision_status"]),
+                    _sanitize(row["full_text_url"]),
+                ]
+            )
         )
     out.append("")
     return out
@@ -402,14 +402,16 @@ def _section_cases(rows: list[sqlite3.Row]) -> list[str]:
     ]
     for row in rows:
         out.append(
-            " | ".join([
-                _sanitize(row["case_id"]),
-                _sanitize(row["case_title"]),
-                _sanitize(row["prefecture"]),
-                _sanitize(row["industry_name"]),
-                _format_yen(row["total_subsidy_received_yen"]),
-                _sanitize(row["source_url"]),
-            ])
+            " | ".join(
+                [
+                    _sanitize(row["case_id"]),
+                    _sanitize(row["case_title"]),
+                    _sanitize(row["prefecture"]),
+                    _sanitize(row["industry_name"]),
+                    _format_yen(row["total_subsidy_received_yen"]),
+                    _sanitize(row["source_url"]),
+                ]
+            )
         )
     out.append("")
     return out
@@ -506,9 +508,7 @@ def main(argv: list[str] | None = None) -> int:
 
     with _connect_ro(db_path) as con:
         programs = [
-            row
-            for row in _safe_rows(con, PROGRAMS_SQL)
-            if _source_host_allowed(row["source_url"])
+            row for row in _safe_rows(con, PROGRAMS_SQL) if _source_host_allowed(row["source_url"])
         ]
         laws = _safe_rows(con, LAWS_SQL)
         cases = _safe_rows(con, CASES_SQL)

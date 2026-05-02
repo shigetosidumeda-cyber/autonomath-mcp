@@ -68,9 +68,7 @@ if TYPE_CHECKING:
 try:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 except ImportError:  # pragma: no cover
-    sys.stderr.write(
-        "ERROR: jinja2 is required. `uv pip install jinja2` or add to pyproject.\n"
-    )
+    sys.stderr.write("ERROR: jinja2 is required. `uv pip install jinja2` or add to pyproject.\n")
     raise
 
 try:
@@ -449,8 +447,17 @@ _ERA_PATTERN = re.compile(
     r"(?:\s*([0-9一二三四五六七八九十]+)\s*日)?"
 )
 _KANJI_DIGITS = {
-    "元": 1, "一": 1, "二": 2, "三": 3, "四": 4,
-    "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    "元": 1,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
 }
 
 
@@ -528,6 +535,7 @@ def _last_updated_ja(row: dict[str, Any]) -> str:
 # Summary / meta / TL;DR builders
 # ---------------------------------------------------------------------------
 
+
 def _source_domain(url: str | None) -> str:
     if not url:
         return ""
@@ -541,18 +549,53 @@ def _source_domain(url: str | None) -> str:
 
 
 _PREF_HOST_JA = {
-    "hokkaido": "北海道", "aomori": "青森県", "iwate": "岩手県", "miyagi": "宮城県",
-    "akita": "秋田県", "yamagata": "山形県", "fukushima": "福島県", "ibaraki": "茨城県",
-    "tochigi": "栃木県", "gunma": "群馬県", "saitama": "埼玉県", "chiba": "千葉県",
-    "tokyo": "東京都", "kanagawa": "神奈川県", "niigata": "新潟県", "toyama": "富山県",
-    "ishikawa": "石川県", "fukui": "福井県", "yamanashi": "山梨県", "nagano": "長野県",
-    "gifu": "岐阜県", "shizuoka": "静岡県", "aichi": "愛知県", "mie": "三重県",
-    "shiga": "滋賀県", "kyoto": "京都府", "osaka": "大阪府", "hyogo": "兵庫県",
-    "nara": "奈良県", "wakayama": "和歌山県", "tottori": "鳥取県", "shimane": "島根県",
-    "okayama": "岡山県", "hiroshima": "広島県", "yamaguchi": "山口県", "tokushima": "徳島県",
-    "kagawa": "香川県", "ehime": "愛媛県", "kochi": "高知県", "fukuoka": "福岡県",
-    "saga": "佐賀県", "nagasaki": "長崎県", "kumamoto": "熊本県", "oita": "大分県",
-    "miyazaki": "宮崎県", "kagoshima": "鹿児島県", "okinawa": "沖縄県",
+    "hokkaido": "北海道",
+    "aomori": "青森県",
+    "iwate": "岩手県",
+    "miyagi": "宮城県",
+    "akita": "秋田県",
+    "yamagata": "山形県",
+    "fukushima": "福島県",
+    "ibaraki": "茨城県",
+    "tochigi": "栃木県",
+    "gunma": "群馬県",
+    "saitama": "埼玉県",
+    "chiba": "千葉県",
+    "tokyo": "東京都",
+    "kanagawa": "神奈川県",
+    "niigata": "新潟県",
+    "toyama": "富山県",
+    "ishikawa": "石川県",
+    "fukui": "福井県",
+    "yamanashi": "山梨県",
+    "nagano": "長野県",
+    "gifu": "岐阜県",
+    "shizuoka": "静岡県",
+    "aichi": "愛知県",
+    "mie": "三重県",
+    "shiga": "滋賀県",
+    "kyoto": "京都府",
+    "osaka": "大阪府",
+    "hyogo": "兵庫県",
+    "nara": "奈良県",
+    "wakayama": "和歌山県",
+    "tottori": "鳥取県",
+    "shimane": "島根県",
+    "okayama": "岡山県",
+    "hiroshima": "広島県",
+    "yamaguchi": "山口県",
+    "tokushima": "徳島県",
+    "kagawa": "香川県",
+    "ehime": "愛媛県",
+    "kochi": "高知県",
+    "fukuoka": "福岡県",
+    "saga": "佐賀県",
+    "nagasaki": "長崎県",
+    "kumamoto": "熊本県",
+    "oita": "大分県",
+    "miyazaki": "宮崎県",
+    "kagoshima": "鹿児島県",
+    "okinawa": "沖縄県",
 }
 
 
@@ -630,7 +673,10 @@ def _tldr(row: dict[str, Any], target_types: list[str], aliases: list[str]) -> d
     name = row["primary_name"]
     kind = KIND_JA.get(row.get("program_kind") or "subsidy", "公的支援制度")
     auth = _resolve_agency(row)
-    amt = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "金額は公募要領に依る"
+    amt = (
+        _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen"))
+        or "金額は公募要領に依る"
+    )
     who = _target_types_text(target_types)
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "公募要領を参照"
     what = f"{name} ({kind})" if not auth else f"{name} ({kind}, 提供: {auth})"
@@ -673,7 +719,9 @@ def _amount_paragraph(row: dict[str, Any]) -> str:
         parts.append("支援金額は公募要領に記載されています。")
     if rate:
         parts.append(f"補助率は{rate}です。")
-    parts.append("上限金額・補助率は年度や採択類型により変動することがあるため、必ず出典ページの最新公募要領をご確認ください。")
+    parts.append(
+        "上限金額・補助率は年度や採択類型により変動することがあるため、必ず出典ページの最新公募要領をご確認ください。"
+    )
     return "".join(parts)
 
 
@@ -706,7 +754,9 @@ def _meta_description(row: dict[str, Any], target_types: list[str]) -> str:
     auth = _resolve_agency(row)
     pref = row.get("prefecture") or ""
     kind = KIND_JA.get(row.get("program_kind") or "subsidy", "公的支援制度")
-    amt = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "公募要領参照"
+    amt = (
+        _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "公募要領参照"
+    )
     who = _target_types_text(target_types)
     domain = _source_domain(row.get("source_url"))
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "最新を参照"
@@ -790,7 +840,12 @@ def _breadcrumb_node(row: dict[str, Any], slug: str, domain: str, kind_ja: str) 
     # site/_templates/program.html.
     items: list[dict[str, Any]] = [
         {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"https://{domain}/"},
-        {"@type": "ListItem", "position": 2, "name": "制度一覧", "item": f"https://{domain}/programs/"},
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "制度一覧",
+            "item": f"https://{domain}/programs/",
+        },
     ]
     pref = row.get("prefecture")
     pref_slug = _PREF_JA_TO_SLUG.get(pref) if pref else None
@@ -1031,14 +1086,22 @@ def _service_node(
     if row.get("tier"):
         add_props.append({"@type": "PropertyValue", "name": "tier", "value": row["tier"]})
     if row.get("authority_level"):
-        add_props.append({"@type": "PropertyValue", "name": "authority_level", "value": row["authority_level"]})
+        add_props.append(
+            {"@type": "PropertyValue", "name": "authority_level", "value": row["authority_level"]}
+        )
     if row.get("subsidy_rate") is not None:
-        add_props.append({"@type": "PropertyValue", "name": "subsidy_rate", "value": row["subsidy_rate"]})
+        add_props.append(
+            {"@type": "PropertyValue", "name": "subsidy_rate", "value": row["subsidy_rate"]}
+        )
     if target_types:
         target_types_ja = [_target_type_label(t) for t in target_types]
-        add_props.append({"@type": "PropertyValue", "name": "target_types", "value": target_types_ja})
+        add_props.append(
+            {"@type": "PropertyValue", "name": "target_types", "value": target_types_ja}
+        )
     if funding_purposes:
-        add_props.append({"@type": "PropertyValue", "name": "funding_purpose", "value": funding_purposes})
+        add_props.append(
+            {"@type": "PropertyValue", "name": "funding_purpose", "value": funding_purposes}
+        )
     # Tax bucket: surface a `subject=TaxIncentive` PropertyValue so AI crawlers /
     # filters can identify tax measures (no schema.org dedicated type for tax).
     if bucket == "tax":
@@ -1109,7 +1172,10 @@ def _faq_node(
     kind_ja: str,
 ) -> dict[str, Any]:
     who = _target_types_text(target_types)
-    amt = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "公募要領に記載"
+    amt = (
+        _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen"))
+        or "公募要領に記載"
+    )
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "最新を参照"
     apply_to = _resolve_agency(row) or "公募要領記載の申請窓口"
     exclusion = (
@@ -1119,8 +1185,14 @@ def _faq_node(
     qa = [
         ("対象者は誰ですか？", f"{who}が対象です。詳細要件は公募要領でご確認ください。"),
         ("金額上限はいくらですか？", f"{amt}です (目安)。年度や採択類型で変動します。"),
-        ("締切はいつですか？", f"公募時期は年度ごとに更新されます。jpcite の最新取得日は{fetched}。出典ページで現在の公募状況をご確認ください。"),
-        ("申請先はどこですか？", f"申請先は{apply_to}です。申請窓口の詳細は公募要領に記載されています。"),
+        (
+            "締切はいつですか？",
+            f"公募時期は年度ごとに更新されます。jpcite の最新取得日は{fetched}。出典ページで現在の公募状況をご確認ください。",
+        ),
+        (
+            "申請先はどこですか？",
+            f"申請先は{apply_to}です。申請窓口の詳細は公募要領に記載されています。",
+        ),
         ("他の制度との併用はできますか？", exclusion),
     ]
     return {
@@ -1284,7 +1356,7 @@ def _related_programs(
     for tt in target_types[:3]:  # query top 3 types only
         if len(out) >= overfetch_cap:
             break
-        pattern = f'%{tt}%'
+        pattern = f"%{tt}%"
         for r in conn.execute(RELATED_BY_TARGET_SQL, (row["unified_id"], pattern, cur_pref)):
             d = dict(r)
             uid = d["unified_id"]
@@ -1297,7 +1369,9 @@ def _related_programs(
 
     # fallback: same program_kind
     if len(out) < overfetch_cap and row.get("program_kind"):
-        for r in conn.execute(RELATED_BY_KIND_SQL, (row["unified_id"], row["program_kind"], cur_pref)):
+        for r in conn.execute(
+            RELATED_BY_KIND_SQL, (row["unified_id"], row["program_kind"], cur_pref)
+        ):
             d = dict(r)
             uid = d["unified_id"]
             if uid in seen:
@@ -1334,7 +1408,9 @@ def _related_programs(
                 "slug": rp_slug,
                 "name": public_name,
                 "kind_ja": KIND_JA.get(d.get("program_kind") or "subsidy", "公的支援制度"),
-                "amount_line": _amount_line(d.get("amount_max_man_yen"), d.get("amount_min_man_yen")),
+                "amount_line": _amount_line(
+                    d.get("amount_max_man_yen"), d.get("amount_min_man_yen")
+                ),
             }
         )
         if len(shaped) >= limit:
@@ -1664,13 +1740,15 @@ def _related_qa_for_program(row: dict[str, Any]) -> list[dict[str, str]]:
             if key in seen:
                 continue
             seen.add(key)
-            out.append({
-                "topic_slug": topic_slug,
-                "topic_label": topic["label"],
-                "qa_slug": qa_slug,
-                "h1": h1,
-                "url": f"/qa/{topic_slug}/{qa_slug}.html",
-            })
+            out.append(
+                {
+                    "topic_slug": topic_slug,
+                    "topic_label": topic["label"],
+                    "qa_slug": qa_slug,
+                    "h1": h1,
+                    "url": f"/qa/{topic_slug}/{qa_slug}.html",
+                }
+            )
             if len(out) >= 5:
                 return out
     return out
@@ -1702,9 +1780,7 @@ def render_row(
 
     tldr = _tldr(row, target_types, aliases)
 
-    json_ld = build_json_ld(
-        row, slug, domain, aliases, target_types, funding_purposes, kind_ja
-    )
+    json_ld = build_json_ld(row, slug, domain, aliases, target_types, funding_purposes, kind_ja)
     standalone_jsonld = build_standalone_json_ld(
         row, slug, domain, aliases, target_types, funding_purposes
     )
@@ -1910,9 +1986,7 @@ def _iter_rows(
     """
     safe_tiers = [t for t in tiers if t in ("S", "A", "B", "C")] or ["S", "A"]
     tier_in = ",".join(f"'{t}'" for t in safe_tiers)
-    sql = INDEXABLE_SQL_TEMPLATE.format(
-        tier_in=tier_in, banned_source_sql=BANNED_SOURCE_SQL
-    )
+    sql = INDEXABLE_SQL_TEMPLATE.format(tier_in=tier_in, banned_source_sql=BANNED_SOURCE_SQL)
     if limit is not None and limit > 0:
         sql = sql + f"\nLIMIT {limit}"
     for row in conn.execute(sql):
@@ -1995,9 +2069,7 @@ def generate(
     # ATTACH / cross-DB JOIN per CLAUDE.md). 522 rows / ~70 programs total,
     # safe to keep entirely in memory.
     acceptance_map: dict[str, dict[str, Any]] = (
-        load_acceptance_stats(autonomath_db_path)
-        if autonomath_db_path is not None
-        else {}
+        load_acceptance_stats(autonomath_db_path) if autonomath_db_path is not None else {}
     )
 
     conn = sqlite3.connect(str(db_path))
@@ -2035,9 +2107,7 @@ def generate(
                 else:
                     skipped += 1
                 if structured_dir:
-                    _write_jsonld_doc(
-                        structured_dir / f"{row_d['unified_id']}.jsonld", standalone
-                    )
+                    _write_jsonld_doc(structured_dir / f"{row_d['unified_id']}.jsonld", standalone)
                     jsonld_count += 1
             except Exception as exc:  # noqa: BLE001
                 LOG.exception("sample render failed for %s: %s", sid, exc)
@@ -2087,9 +2157,7 @@ def generate(
             tier = (row.get("tier") or "C").upper()
             sitemap_entries.append((slug, lastmod, tier))
             if structured_dir:
-                _write_jsonld_doc(
-                    structured_dir / f"{row['unified_id']}.jsonld", standalone
-                )
+                _write_jsonld_doc(structured_dir / f"{row['unified_id']}.jsonld", standalone)
                 jsonld_count += 1
                 structured_entries.append((row["unified_id"], lastmod, tier))
         except Exception as exc:  # noqa: BLE001
@@ -2180,9 +2248,7 @@ def main() -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
     sample_ids = (
-        [s.strip() for s in args.sample_ids.split(",") if s.strip()]
-        if args.sample_ids
-        else None
+        [s.strip() for s in args.sample_ids.split(",") if s.strip()] if args.sample_ids else None
     )
     sitemap_path = args.sitemap if (args.sitemap and str(args.sitemap) != "") else None
     if sample_ids:
@@ -2206,14 +2272,10 @@ def main() -> int:
             sitemap_structured_path = None  # sample mode skips sitemap
 
     autonomath_db = (
-        args.autonomath_db
-        if (args.autonomath_db and str(args.autonomath_db) != "")
-        else None
+        args.autonomath_db if (args.autonomath_db and str(args.autonomath_db) != "") else None
     )
 
-    tiers_tuple = tuple(
-        t.strip().upper() for t in str(args.tiers).split(",") if t.strip()
-    )
+    tiers_tuple = tuple(t.strip().upper() for t in str(args.tiers).split(",") if t.strip())
     if not tiers_tuple:
         tiers_tuple = ("S", "A")
 

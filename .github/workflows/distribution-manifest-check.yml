@@ -41,7 +41,7 @@ jobs:
         run: |
           python -m venv .venv
           .venv/bin/pip install --upgrade pip
-          .venv/bin/pip install -e ".[dev]"
+          .venv/bin/pip install -e ".[dev,site]"
 
       - name: Static distribution-manifest drift check
         # ~0.2s locally; pure file scan, no DB / no runtime boot.

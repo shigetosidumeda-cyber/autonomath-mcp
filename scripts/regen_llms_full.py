@@ -102,10 +102,7 @@ def _source_host_allowed(source_url: str | None) -> bool:
     if not hostname:
         return True
     host = hostname.lower().rstrip(".")
-    return not any(
-        host == banned or host.endswith(f".{banned}")
-        for banned in _BANNED_SOURCE_HOSTS
-    )
+    return not any(host == banned or host.endswith(f".{banned}") for banned in _BANNED_SOURCE_HOSTS)
 
 
 def _sanitize(value: str) -> str:
@@ -161,12 +158,8 @@ def build_compact_section(rows: list[sqlite3.Row]) -> str:
     lines: list[str] = []
     lines.append(f"{SECTION_MARKER} ({count:,} source-allowed entries, compact)")
     lines.append("")
-    lines.append(
-        "Generated daily from the current public jpcite dataset."
-    )
-    lines.append(
-        f"Generated at: {generated_at}."
-    )
+    lines.append("Generated daily from the current public jpcite dataset.")
+    lines.append(f"Generated at: {generated_at}.")
     lines.append(
         "Format: <unified_id> | <primary_name> | <program_kind> | "
         "<amount_max_man_yen> | <source_url> | <source_fetched_at>"
@@ -177,14 +170,16 @@ def build_compact_section(rows: list[sqlite3.Row]) -> str:
     lines.append("")
 
     for row in rows:
-        line = " | ".join([
-            _sanitize(row["unified_id"]),
-            _public_program_name(row["primary_name"]),
-            _sanitize(row["program_kind"]),
-            _format_amount(row["amount_max_man_yen"]),
-            _sanitize(row["source_url"]),
-            _sanitize(row["source_fetched_at"]),
-        ])
+        line = " | ".join(
+            [
+                _sanitize(row["unified_id"]),
+                _public_program_name(row["primary_name"]),
+                _sanitize(row["program_kind"]),
+                _format_amount(row["amount_max_man_yen"]),
+                _sanitize(row["source_url"]),
+                _sanitize(row["source_fetched_at"]),
+            ]
+        )
         lines.append(line)
 
     lines.append("")
@@ -263,9 +258,7 @@ def main(argv: list[str] | None = None) -> int:
     out_path: Path = args.out.resolve()
 
     if not out_path.exists():
-        sys.stderr.write(
-            f"warn: out file does not exist, creating fresh at {out_path}\n"
-        )
+        sys.stderr.write(f"warn: out file does not exist, creating fresh at {out_path}\n")
         existing = ""
     else:
         existing = out_path.read_text(encoding="utf-8")

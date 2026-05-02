@@ -43,10 +43,22 @@ jobs:
           # workflow_run.head_sha; for workflow_dispatch it is just GITHUB_SHA.
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
+      - name: Check Fly token
+        id: fly-token
+        run: |
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN is not configured; skipping GitHub-hosted Fly deploy."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up flyctl
+        if: steps.fly-token.outputs.available == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
 
       - name: Hydrate jpintel seed DB for Docker build
+        if: steps.fly-token.outputs.available == 'true'
         run: |
           set -euo pipefail
           mkdir -p data
@@ -92,6 +104,7 @@ jobs:
           PY
 
       - name: Extract release version from pyproject.toml
+        if: steps.fly-token.outputs.available == 'true'
         id: version
         # Pin SENTRY_RELEASE to the package version + commit sha so a hotfix
         # redeploy at the same version still groups distinctly in Sentry.
@@ -105,6 +118,7 @@ jobs:
           echo "Computed SENTRY_RELEASE=${RELEASE}"
 
       - name: Deploy (remote builder)
+        if: steps.fly-token.outputs.available == 'true'
         # --remote-only pushes the build to Fly's builder VM so local runner doesn't need docker.
         # -e SENTRY_RELEASE=... sets the env on the machine at deploy time;
         # complements the SENTRY_ENVIRONMENT already pinned in fly.toml.

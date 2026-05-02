@@ -82,7 +82,21 @@ jobs:
           mkdir -p dist
           rsync -a --delete --exclude '_templates/' site/ dist/site/
 
+      - name: Check Cloudflare Pages secrets
+        id: cf-secrets
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
+            echo "::notice::CF_API_TOKEN or CF_ACCOUNT_ID is not configured; skipping GitHub-hosted Pages deploy."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish to Cloudflare Pages
+        if: steps.cf-secrets.outputs.available == 'true'
         uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}

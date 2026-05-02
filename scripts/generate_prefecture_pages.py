@@ -62,9 +62,7 @@ from typing import Any
 try:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 except ImportError:  # pragma: no cover
-    sys.stderr.write(
-        "ERROR: jinja2 is required. `uv pip install jinja2` or add to pyproject.\n"
-    )
+    sys.stderr.write("ERROR: jinja2 is required. `uv pip install jinja2` or add to pyproject.\n")
     raise
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -383,8 +381,9 @@ def _shape_enforcement(row: sqlite3.Row) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def _overview_paragraph(pref_ja: str, programs_count: int, cases_count: int,
-                       loans_count: int, enforcements_count: int) -> str:
+def _overview_paragraph(
+    pref_ja: str, programs_count: int, cases_count: int, loans_count: int, enforcements_count: int
+) -> str:
     return (
         f"{pref_ja}では、中央省庁 (中小企業庁・農林水産省・経済産業省・厚生労働省) "
         f"および{pref_ja}庁・市区町村が運営する公的支援制度に加え、日本政策金融公庫等の政策金融融資、"
@@ -441,7 +440,12 @@ def _breadcrumb_node(pref_ja: str, slug: str, domain: str) -> dict[str, Any]:
         "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"https://{domain}/"},
-            {"@type": "ListItem", "position": 2, "name": "都道府県別", "item": f"https://{domain}/prefectures/"},
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "都道府県別",
+                "item": f"https://{domain}/prefectures/",
+            },
             {
                 "@type": "ListItem",
                 "position": 3,
@@ -463,7 +467,9 @@ def _place_node(pref_ja: str, domain: str, slug: str) -> dict[str, Any]:
     }
 
 
-def _itemlist_node(pref_ja: str, programs: list[dict[str, Any]], domain: str, slug: str) -> dict[str, Any]:
+def _itemlist_node(
+    pref_ja: str, programs: list[dict[str, Any]], domain: str, slug: str
+) -> dict[str, Any]:
     return {
         "@type": "ItemList",
         "@id": f"#itemlist-{slug}",
@@ -504,12 +510,14 @@ def _build_index_jsonld(domain: str, region_summaries: list[dict[str, Any]]) -> 
     pos = 1
     for region in region_summaries:
         for pref in region["items"]:
-            items.append({
-                "@type": "ListItem",
-                "position": pos,
-                "url": f"https://{domain}/prefectures/{pref['slug']}.html",
-                "name": pref["name_ja"],
-            })
+            items.append(
+                {
+                    "@type": "ListItem",
+                    "position": pos,
+                    "url": f"https://{domain}/prefectures/{pref['slug']}.html",
+                    "name": pref["name_ja"],
+                }
+            )
             pos += 1
     return {
         "@context": "https://schema.org",
@@ -518,8 +526,18 @@ def _build_index_jsonld(domain: str, region_summaries: list[dict[str, Any]]) -> 
             {
                 "@type": "BreadcrumbList",
                 "itemListElement": [
-                    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"https://{domain}/"},
-                    {"@type": "ListItem", "position": 2, "name": "都道府県別", "item": f"https://{domain}/prefectures/"},
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "ホーム",
+                        "item": f"https://{domain}/",
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "都道府県別",
+                        "item": f"https://{domain}/prefectures/",
+                    },
                 ],
             },
             {
@@ -593,7 +611,9 @@ def render_prefecture_page(
     else:
         loans = loans_cache
 
-    enforcement_rows = list(conn.execute(ENFORCEMENTS_BY_PREF_SQL, (pref_ja, ENFORCEMENTS_PER_PAGE)))
+    enforcement_rows = list(
+        conn.execute(ENFORCEMENTS_BY_PREF_SQL, (pref_ja, ENFORCEMENTS_PER_PAGE))
+    )
     enforcements = [_shape_enforcement(r) for r in enforcement_rows]
     enforcements_total = conn.execute(ENFORCEMENTS_COUNT_BY_PREF_SQL, (pref_ja,)).fetchone()[0]
 
@@ -707,14 +727,16 @@ def write_sitemap(
     ]
     for slug in slugs:
         slug_lastmod = per_slug_lastmod[slug]
-        lines.extend([
-            "  <url>",
-            f"    <loc>https://{domain}/prefectures/{slug}.html</loc>",
-            f"    <lastmod>{slug_lastmod}</lastmod>",
-            "    <changefreq>weekly</changefreq>",
-            "    <priority>0.7</priority>",
-            "  </url>",
-        ])
+        lines.extend(
+            [
+                "  <url>",
+                f"    <loc>https://{domain}/prefectures/{slug}.html</loc>",
+                f"    <lastmod>{slug_lastmod}</lastmod>",
+                "    <changefreq>weekly</changefreq>",
+                "    <priority>0.7</priority>",
+                "  </url>",
+            ]
+        )
     lines.append("</urlset>")
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -733,10 +755,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--template-dir", type=Path, default=DEFAULT_TEMPLATE_DIR)
     parser.add_argument("--domain", default=DEFAULT_DOMAIN)
     parser.add_argument("--sitemap", type=Path, default=DEFAULT_SITEMAP)
-    parser.add_argument("--slug", default=None,
-                       help="Generate only this prefecture slug (e.g. tokyo). Implies sample mode.")
-    parser.add_argument("--dry-run", action="store_true",
-                       help="Render but do not write files. Print line counts to stdout.")
+    parser.add_argument(
+        "--slug",
+        default=None,
+        help="Generate only this prefecture slug (e.g. tokyo). Implies sample mode.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Render but do not write files. Print line counts to stdout.",
+    )
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args(argv)
 
@@ -765,7 +793,11 @@ def main(argv: list[str] | None = None) -> int:
     targets: list[tuple[str, str]]
     if args.slug:
         if args.slug not in SLUG_TO_JA:
-            LOG.error("Unknown slug: %s. Valid: %s", args.slug, ",".join(s for s, _ in PREFECTURES[:5]) + ",...")
+            LOG.error(
+                "Unknown slug: %s. Valid: %s",
+                args.slug,
+                ",".join(s for s, _ in PREFECTURES[:5]) + ",...",
+            )
             return 1
         targets = [(args.slug, SLUG_TO_JA[args.slug])]
     else:
@@ -787,36 +819,51 @@ def main(argv: list[str] | None = None) -> int:
         # indexable programs. SEO-honest signal: matches when we last touched
         # the upstream primary source for that prefecture's data.
         max_fetched_row = conn.execute(PREF_MAX_FETCHED_SQL, (pref_ja,)).fetchone()
-        max_fetched_iso = _normalize_iso_date(
-            max_fetched_row[0] if max_fetched_row else None
-        )
+        max_fetched_iso = _normalize_iso_date(max_fetched_row[0] if max_fetched_row else None)
         if max_fetched_iso:
             pref_lastmods[slug] = max_fetched_iso
 
-        pref_summaries.append({
-            "slug": slug,
-            "name_ja": pref_ja,
-            "programs_count": counts["programs_total"],
-            "cases_count": counts["cases_total"],
-            "enforcements_count": counts["enforcements_total"],
-        })
+        pref_summaries.append(
+            {
+                "slug": slug,
+                "name_ja": pref_ja,
+                "programs_count": counts["programs_total"],
+                "cases_count": counts["cases_total"],
+                "enforcements_count": counts["enforcements_total"],
+            }
+        )
 
         out_path = args.out / f"{slug}.html"
         if args.dry_run:
-            LOG.info("[dry-run] %s (%s) — %d lines, %d programs, %d cases, %d loans, %d enforcements",
-                     slug, pref_ja, line_counts[-1],
-                     counts["programs"], counts["cases"], counts["loans"], counts["enforcements"])
+            LOG.info(
+                "[dry-run] %s (%s) — %d lines, %d programs, %d cases, %d loans, %d enforcements",
+                slug,
+                pref_ja,
+                line_counts[-1],
+                counts["programs"],
+                counts["cases"],
+                counts["loans"],
+                counts["enforcements"],
+            )
         else:
             changed = _write_if_changed(out_path, html)
             if changed:
                 written += 1
             else:
                 skipped += 1
-            LOG.info("%s %s (%s) — %d programs, %d cases, %d loans, %d enforcements (total: P=%d C=%d E=%d)",
-                     "WROTE" if changed else "skip",
-                     slug, pref_ja,
-                     counts["programs"], counts["cases"], counts["loans"], counts["enforcements"],
-                     counts["programs_total"], counts["cases_total"], counts["enforcements_total"])
+            LOG.info(
+                "%s %s (%s) — %d programs, %d cases, %d loans, %d enforcements (total: P=%d C=%d E=%d)",
+                "WROTE" if changed else "skip",
+                slug,
+                pref_ja,
+                counts["programs"],
+                counts["cases"],
+                counts["loans"],
+                counts["enforcements"],
+                counts["programs_total"],
+                counts["cases_total"],
+                counts["enforcements_total"],
+            )
 
     if args.slug:
         # Single-slug mode: skip index + sitemap regeneration.
@@ -846,8 +893,13 @@ def main(argv: list[str] | None = None) -> int:
         LOG.info("Wrote sitemap: %s", args.sitemap)
 
     avg_lines = sum(line_counts) // len(line_counts) if line_counts else 0
-    LOG.info("Done. wrote=%d skipped=%d avg_lines=%d (over %d prefectures)",
-             written, skipped, avg_lines, len(line_counts))
+    LOG.info(
+        "Done. wrote=%d skipped=%d avg_lines=%d (over %d prefectures)",
+        written,
+        skipped,
+        avg_lines,
+        len(line_counts),
+    )
     return 0
 
 

@@ -147,20 +147,62 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         code="A",
         name_ja="農業、林業",
         target_type_tokens=(
-            "farmer", "certified_farmer", "new_farmer", "certified_new_farmer",
-            "agri_corporation", "agri_corp", "ag_corp", "employment_agri",
-            "aspiring_farmer", "prospective_farmer", "individual_farmer",
-            "individual_certified_farmer", "young_farmer", "認定農業者",
-            "認定新規就農者", "農業法人", "個人農業者", "若手農業者", "集落営農",
-            "女性農業者", "新規就農者", "forestry", "林業",
+            "farmer",
+            "certified_farmer",
+            "new_farmer",
+            "certified_new_farmer",
+            "agri_corporation",
+            "agri_corp",
+            "ag_corp",
+            "employment_agri",
+            "aspiring_farmer",
+            "prospective_farmer",
+            "individual_farmer",
+            "individual_certified_farmer",
+            "young_farmer",
+            "認定農業者",
+            "認定新規就農者",
+            "農業法人",
+            "個人農業者",
+            "若手農業者",
+            "集落営農",
+            "女性農業者",
+            "新規就農者",
+            "forestry",
+            "林業",
         ),
         domain_keywords=("maff.go.jp",),
         authority_keywords=("農林水産省", "農政部", "農林部", "林野庁", "農業会議"),
         name_regex=_re(
-            "農業", "林業", "就農", "農林", "農地", "担い手", "農産", "畜産",
-            "酪農", "畑作", "稲作", "果樹", "野菜", "花き", "茶業", "養鶏",
-            "養豚", "肉牛", "乳牛", "農機", "スマート農業", "6次産業",
-            "六次産業", "中山間", "鳥獣", "森林", "造林", "間伐", "木材",
+            "農業",
+            "林業",
+            "就農",
+            "農林",
+            "農地",
+            "担い手",
+            "農産",
+            "畜産",
+            "酪農",
+            "畑作",
+            "稲作",
+            "果樹",
+            "野菜",
+            "花き",
+            "茶業",
+            "養鶏",
+            "養豚",
+            "肉牛",
+            "乳牛",
+            "農機",
+            "スマート農業",
+            "6次産業",
+            "六次産業",
+            "中山間",
+            "鳥獣",
+            "森林",
+            "造林",
+            "間伐",
+            "木材",
         ),
     ),
     "B": JsicMatcher(
@@ -170,8 +212,17 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=("jfa.maff.go.jp",),
         authority_keywords=("水産庁",),
         name_regex=_re(
-            "漁業", "水産", "養殖", "漁協", "沿岸漁業", "遠洋漁業", "種苗",
-            "藻場", "魚礁", "漁港", "漁船",
+            "漁業",
+            "水産",
+            "養殖",
+            "漁協",
+            "沿岸漁業",
+            "遠洋漁業",
+            "種苗",
+            "藻場",
+            "魚礁",
+            "漁港",
+            "漁船",
         ),
     ),
     "C": JsicMatcher(
@@ -188,9 +239,22 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=(),
         authority_keywords=("国土交通省", "建設業課", "建築指導課", "住宅課"),
         name_regex=_re(
-            "建設業", "建築", "建築物", "公共工事", "住宅取得", "住宅改修",
-            "住宅リフォーム", "省エネ住宅", "耐震改修", "耐震診断", "空き家",
-            "既存住宅", "木造住宅", "建設業退職金", "解体", "造成",
+            "建設業",
+            "建築",
+            "建築物",
+            "公共工事",
+            "住宅取得",
+            "住宅改修",
+            "住宅リフォーム",
+            "省エネ住宅",
+            "耐震改修",
+            "耐震診断",
+            "空き家",
+            "既存住宅",
+            "木造住宅",
+            "建設業退職金",
+            "解体",
+            "造成",
         ),
     ),
     "E": JsicMatcher(
@@ -200,13 +264,39 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=(),
         authority_keywords=("経済産業省", "中小企業庁", "産業技術総合研究所"),
         name_regex=_re(
-            "製造業", "ものづくり", "ものづくり補助金", "工場", "工業",
-            "サポイン", "Go-Tech", "先端設備", "設備投資", "食品製造",
-            "食品加工", "食料品製造", "食品関連", "繊維工業", "繊維",
-            "金属製品", "金属加工", "電子部品", "電気機械", "情報通信機械",
-            "鉄鋼業", "化学工業", "プラスチック", "ゴム", "窯業",
-            "木材加工", "紙パルプ", "印刷", "輸送機械", "自動車部品",
-            "産業機械", "精密機械", "伝統工芸",
+            "製造業",
+            "ものづくり",
+            "ものづくり補助金",
+            "工場",
+            "工業",
+            "サポイン",
+            "Go-Tech",
+            "先端設備",
+            "設備投資",
+            "食品製造",
+            "食品加工",
+            "食料品製造",
+            "食品関連",
+            "繊維工業",
+            "繊維",
+            "金属製品",
+            "金属加工",
+            "電子部品",
+            "電気機械",
+            "情報通信機械",
+            "鉄鋼業",
+            "化学工業",
+            "プラスチック",
+            "ゴム",
+            "窯業",
+            "木材加工",
+            "紙パルプ",
+            "印刷",
+            "輸送機械",
+            "自動車部品",
+            "産業機械",
+            "精密機械",
+            "伝統工芸",
         ),
     ),
     "F": JsicMatcher(
@@ -216,8 +306,17 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=(),
         authority_keywords=("資源エネルギー庁",),
         name_regex=_re(
-            "電気事業", "ガス事業", "熱供給", "水道事業", "再エネ", "再生可能",
-            "太陽光発電", "風力発電", "地熱", "水力発電", "バイオマス発電",
+            "電気事業",
+            "ガス事業",
+            "熱供給",
+            "水道事業",
+            "再エネ",
+            "再生可能",
+            "太陽光発電",
+            "風力発電",
+            "地熱",
+            "水力発電",
+            "バイオマス発電",
             "電力小売",
         ),
     ),
@@ -228,10 +327,21 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=("ipa.go.jp", "soumu.go.jp"),
         authority_keywords=("総務省", "情報処理推進機構"),
         name_regex=_re(
-            "情報通信", "情報サービス", "ソフトウェア開発", "システム開発",
-            "ITベンダー", "通信業", "デジタルコンテンツ", "クラウドサービス",
-            "サイバーセキュリティ", "情報セキュリティ", "AI開発",
-            "ソフトウェア産業", "情報処理", "IoT技術", "DX推進",
+            "情報通信",
+            "情報サービス",
+            "ソフトウェア開発",
+            "システム開発",
+            "ITベンダー",
+            "通信業",
+            "デジタルコンテンツ",
+            "クラウドサービス",
+            "サイバーセキュリティ",
+            "情報セキュリティ",
+            "AI開発",
+            "ソフトウェア産業",
+            "情報処理",
+            "IoT技術",
+            "DX推進",
         ),
     ),
     "H": JsicMatcher(
@@ -241,9 +351,20 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=("mlit.go.jp",),
         authority_keywords=("国土交通省", "運輸局", "陸運局"),
         name_regex=_re(
-            "運輸業", "貨物運送", "旅客運送", "トラック運送", "バス事業",
-            "タクシー事業", "倉庫業", "物流", "海運", "港湾", "鉄道事業",
-            "航空運送", "宅配便", "配送業",
+            "運輸業",
+            "貨物運送",
+            "旅客運送",
+            "トラック運送",
+            "バス事業",
+            "タクシー事業",
+            "倉庫業",
+            "物流",
+            "海運",
+            "港湾",
+            "鉄道事業",
+            "航空運送",
+            "宅配便",
+            "配送業",
         ),
     ),
     "I": JsicMatcher(
@@ -252,9 +373,23 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=(),
         authority_keywords=(),
         name_regex=_re(
-            "卸売業", "小売業", "商店街", "商業振興", "商工振興", "商業近代化",
-            "商業集積", "店舗改装", "店舗改修", "シャッター街", "中心市街地",
-            "店舗", "EC事業", "EC化", "通信販売", "ネット販売", "販路開拓",
+            "卸売業",
+            "小売業",
+            "商店街",
+            "商業振興",
+            "商工振興",
+            "商業近代化",
+            "商業集積",
+            "店舗改装",
+            "店舗改修",
+            "シャッター街",
+            "中心市街地",
+            "店舗",
+            "EC事業",
+            "EC化",
+            "通信販売",
+            "ネット販売",
+            "販路開拓",
         ),
     ),
     "J": JsicMatcher(
@@ -264,8 +399,13 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=("fsa.go.jp",),
         authority_keywords=("金融庁",),
         name_regex=_re(
-            "金融業", "保険業", "信用金庫", "信用組合", "地域金融機関",
-            "ファイナンス", "金融サービス",
+            "金融業",
+            "保険業",
+            "信用金庫",
+            "信用組合",
+            "地域金融機関",
+            "ファイナンス",
+            "金融サービス",
         ),
     ),
     "K": JsicMatcher(
@@ -274,8 +414,15 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=(),
         authority_keywords=(),
         name_regex=_re(
-            "不動産業", "不動産取引", "宅建", "宅地建物取引", "物品賃貸",
-            "リース業", "レンタル業", "不動産仲介", "賃貸住宅",
+            "不動産業",
+            "不動産取引",
+            "宅建",
+            "宅地建物取引",
+            "物品賃貸",
+            "リース業",
+            "レンタル業",
+            "不動産仲介",
+            "賃貸住宅",
         ),
     ),
     "L": JsicMatcher(
@@ -284,14 +431,30 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=("researcher", "大学・研究機関"),
         domain_keywords=("jsps.go.jp", "jst.go.jp", "amed.go.jp"),
         authority_keywords=(
-            "科学技術振興機構", "学術振興会", "医療研究開発機構", "産業技術総合研究所",
+            "科学技術振興機構",
+            "学術振興会",
+            "医療研究開発機構",
+            "産業技術総合研究所",
             "新エネルギー・産業技術総合開発機構",
         ),
         name_regex=_re(
-            "学術研究", "学術", "科学研究", "研究開発", "研究助成", "学術振興",
-            "技術士", "中小企業診断士", "弁理士", "公認会計士", "税理士",
-            "社会保険労務士", "行政書士", "司法書士", "建築士",
-            "経営コンサルタント", "シンクタンク",
+            "学術研究",
+            "学術",
+            "科学研究",
+            "研究開発",
+            "研究助成",
+            "学術振興",
+            "技術士",
+            "中小企業診断士",
+            "弁理士",
+            "公認会計士",
+            "税理士",
+            "社会保険労務士",
+            "行政書士",
+            "司法書士",
+            "建築士",
+            "経営コンサルタント",
+            "シンクタンク",
         ),
     ),
     "M": JsicMatcher(
@@ -300,9 +463,22 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=(),
         authority_keywords=("観光庁",),
         name_regex=_re(
-            "宿泊業", "宿泊事業", "飲食業", "飲食店", "観光業", "観光振興",
-            "ホテル", "旅館", "民宿", "民泊", "レストラン", "食堂",
-            "居酒屋", "カフェ", "インバウンド", "観光地域",
+            "宿泊業",
+            "宿泊事業",
+            "飲食業",
+            "飲食店",
+            "観光業",
+            "観光振興",
+            "ホテル",
+            "旅館",
+            "民宿",
+            "民泊",
+            "レストラン",
+            "食堂",
+            "居酒屋",
+            "カフェ",
+            "インバウンド",
+            "観光地域",
         ),
     ),
     "N": JsicMatcher(
@@ -311,9 +487,21 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=(),
         authority_keywords=(),
         name_regex=_re(
-            "生活関連", "理美容", "美容業", "理容業", "クリーニング", "銭湯",
-            "公衆浴場", "結婚式場", "葬儀", "冠婚葬祭", "娯楽業", "映画館",
-            "スポーツ施設", "フィットネス", "観光協会",
+            "生活関連",
+            "理美容",
+            "美容業",
+            "理容業",
+            "クリーニング",
+            "銭湯",
+            "公衆浴場",
+            "結婚式場",
+            "葬儀",
+            "冠婚葬祭",
+            "娯楽業",
+            "映画館",
+            "スポーツ施設",
+            "フィットネス",
+            "観光協会",
         ),
     ),
     "O": JsicMatcher(
@@ -323,9 +511,21 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         domain_keywords=("mext.go.jp",),
         authority_keywords=("文部科学省", "教育委員会"),
         name_regex=_re(
-            "教育機関", "学校教育", "学習支援", "学校法人", "幼稚園", "保育園",
-            "認定こども園", "学習塾", "予備校", "専修学校", "各種学校",
-            "高等学校", "大学", "私立学校", "教員",
+            "教育機関",
+            "学校教育",
+            "学習支援",
+            "学校法人",
+            "幼稚園",
+            "保育園",
+            "認定こども園",
+            "学習塾",
+            "予備校",
+            "専修学校",
+            "各種学校",
+            "高等学校",
+            "大学",
+            "私立学校",
+            "教員",
         ),
     ),
     "P": JsicMatcher(
@@ -334,13 +534,34 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=(),
         domain_keywords=("mhlw.go.jp", "amed.go.jp"),
         authority_keywords=(
-            "厚生労働省", "保健福祉部", "医療政策課", "介護保険", "障害福祉",
+            "厚生労働省",
+            "保健福祉部",
+            "医療政策課",
+            "介護保険",
+            "障害福祉",
         ),
         name_regex=_re(
-            "医療業", "医療法人", "病院", "診療所", "クリニック", "歯科",
-            "薬局", "在宅医療", "訪問看護", "介護事業", "介護施設",
-            "介護保険", "障害福祉", "障害者就労", "保育所", "児童福祉",
-            "高齢者福祉", "認知症", "地域包括", "看護師", "医師確保",
+            "医療業",
+            "医療法人",
+            "病院",
+            "診療所",
+            "クリニック",
+            "歯科",
+            "薬局",
+            "在宅医療",
+            "訪問看護",
+            "介護事業",
+            "介護施設",
+            "介護保険",
+            "障害福祉",
+            "障害者就労",
+            "保育所",
+            "児童福祉",
+            "高齢者福祉",
+            "認知症",
+            "地域包括",
+            "看護師",
+            "医師確保",
         ),
     ),
     "Q": JsicMatcher(
@@ -349,8 +570,14 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=(),
         authority_keywords=(),
         name_regex=_re(
-            "郵便局", "農業協同組合", "JA", "漁業協同組合", "森林組合",
-            "事業協同組合", "中小企業組合", "協同組合",
+            "郵便局",
+            "農業協同組合",
+            "JA",
+            "漁業協同組合",
+            "森林組合",
+            "事業協同組合",
+            "中小企業組合",
+            "協同組合",
         ),
     ),
     "R": JsicMatcher(
@@ -359,9 +586,16 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=(),
         authority_keywords=(),
         name_regex=_re(
-            "サービス業", "対事業所サービス", "経営コンサルティング",
-            "人材紹介", "労働者派遣", "ビルメンテナンス", "警備業",
-            "廃棄物処理", "リサイクル", "産業廃棄物",
+            "サービス業",
+            "対事業所サービス",
+            "経営コンサルティング",
+            "人材紹介",
+            "労働者派遣",
+            "ビルメンテナンス",
+            "警備業",
+            "廃棄物処理",
+            "リサイクル",
+            "産業廃棄物",
         ),
     ),
     "S": JsicMatcher(
@@ -370,8 +604,13 @@ JSIC_MATCHERS: dict[str, JsicMatcher] = {
         target_type_tokens=("municipality", "地方自治体"),
         authority_keywords=(),
         name_regex=_re(
-            "地方公共団体", "市町村", "公務員", "自治体", "地方自治",
-            "地方創生交付金", "地方自治体向け",
+            "地方公共団体",
+            "市町村",
+            "公務員",
+            "自治体",
+            "地方自治",
+            "地方創生交付金",
+            "地方自治体向け",
         ),
     ),
     # T (分類不能) intentionally omitted — no honest signal exists for it.
@@ -448,16 +687,32 @@ def _subsidy_rate_line(rate: Any) -> str | None:
 
 
 _TARGET_TYPES_JA = {
-    "corporation": "法人", "sole_proprietor": "個人事業主", "smb": "中小企業",
-    "sme": "中小企業", "startup": "スタートアップ", "npo": "NPO法人",
-    "individual": "個人", "municipality": "地方自治体", "school": "学校法人",
-    "farmer": "農業者", "certified_farmer": "認定農業者",
-    "new_farmer": "新規就農者", "certified_new_farmer": "認定新規就農者",
-    "agri_corporation": "農業法人", "agri_corp": "農業法人", "ag_corp": "農業法人",
-    "employment_agri": "雇用就農者", "researcher": "研究者",
-    "nonprofit": "非営利団体", "fishery": "漁業者", "forestry": "林業者",
-    "corp": "法人", "group": "団体", "any": "全般",
-    "aspiring_farmer": "就農希望者", "prospective_farmer": "就農希望者",
+    "corporation": "法人",
+    "sole_proprietor": "個人事業主",
+    "smb": "中小企業",
+    "sme": "中小企業",
+    "startup": "スタートアップ",
+    "npo": "NPO法人",
+    "individual": "個人",
+    "municipality": "地方自治体",
+    "school": "学校法人",
+    "farmer": "農業者",
+    "certified_farmer": "認定農業者",
+    "new_farmer": "新規就農者",
+    "certified_new_farmer": "認定新規就農者",
+    "agri_corporation": "農業法人",
+    "agri_corp": "農業法人",
+    "ag_corp": "農業法人",
+    "employment_agri": "雇用就農者",
+    "researcher": "研究者",
+    "nonprofit": "非営利団体",
+    "fishery": "漁業者",
+    "forestry": "林業者",
+    "corp": "法人",
+    "group": "団体",
+    "any": "全般",
+    "aspiring_farmer": "就農希望者",
+    "prospective_farmer": "就農希望者",
     "individual_farmer": "個人農業者",
     "individual_certified_farmer": "個人認定農業者",
 }
@@ -467,8 +722,10 @@ def _is_japanese(text: str) -> bool:
     for ch in text:
         code = ord(ch)
         if (
-            0x3040 <= code <= 0x309F or 0x30A0 <= code <= 0x30FF
-            or 0x4E00 <= code <= 0x9FFF or 0x3400 <= code <= 0x4DBF
+            0x3040 <= code <= 0x309F
+            or 0x30A0 <= code <= 0x30FF
+            or 0x4E00 <= code <= 0x9FFF
+            or 0x3400 <= code <= 0x4DBF
             or 0xFF00 <= code <= 0xFFEF
         ):
             return True
@@ -554,10 +811,10 @@ def _truncate(text: str, limit: int) -> str:
 
 @dataclass
 class MatchEvidence:
-    target_match: list[str]      # tokens from target_types_json that hit
-    domain_match: str | None     # domain that matched (empty if none)
-    authority_match: list[str]   # authority_name substrings that hit
-    name_hits: list[str]         # primary_name regex hits
+    target_match: list[str]  # tokens from target_types_json that hit
+    domain_match: str | None  # domain that matched (empty if none)
+    authority_match: list[str]  # authority_name substrings that hit
+    name_hits: list[str]  # primary_name regex hits
 
     def is_strong_enough(self) -> bool:
         """Strict gate: at least one signal must fire AND the signal must be
@@ -578,10 +835,12 @@ class MatchEvidence:
         return bool(self.name_hits)
 
 
-def _match_one(matcher: JsicMatcher, row: dict[str, Any], target_tokens: list[str]) -> MatchEvidence:
+def _match_one(
+    matcher: JsicMatcher, row: dict[str, Any], target_tokens: list[str]
+) -> MatchEvidence:
     name = row.get("primary_name") or ""
     domain = _source_domain(row.get("source_url") or "")
-    authority = (row.get("authority_name") or "")
+    authority = row.get("authority_name") or ""
 
     target_match = [t for t in target_tokens if t in matcher.target_type_tokens]
 
@@ -671,14 +930,31 @@ def _org_node(domain: str) -> dict[str, Any]:
     }
 
 
-def _breadcrumb_node(jsic_code: str, jsic_name_ja: str, primary_name: str, slug: str, domain: str) -> dict[str, Any]:
+def _breadcrumb_node(
+    jsic_code: str, jsic_name_ja: str, primary_name: str, slug: str, domain: str
+) -> dict[str, Any]:
     return {
         "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"https://{domain}/"},
-            {"@type": "ListItem", "position": 2, "name": "業種別", "item": f"https://{domain}/industries/"},
-            {"@type": "ListItem", "position": 3, "name": jsic_name_ja, "item": f"https://{domain}/industries/{jsic_code}/"},
-            {"@type": "ListItem", "position": 4, "name": primary_name, "item": f"https://{domain}/industries/{jsic_code}/{slug}/"},
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "業種別",
+                "item": f"https://{domain}/industries/",
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": jsic_name_ja,
+                "item": f"https://{domain}/industries/{jsic_code}/",
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": primary_name,
+                "item": f"https://{domain}/industries/{jsic_code}/{slug}/",
+            },
         ],
     }
 
@@ -757,7 +1033,13 @@ def _article_node(
     }
 
 
-def _faq_node(row: dict[str, Any], jsic_name_ja: str, qa_pairs: list[dict[str, str]], slug: str, jsic_code: str) -> dict[str, Any]:
+def _faq_node(
+    row: dict[str, Any],
+    jsic_name_ja: str,
+    qa_pairs: list[dict[str, str]],
+    slug: str,
+    jsic_code: str,
+) -> dict[str, Any]:
     return {
         "@type": "FAQPage",
         "@id": f"#faq-{jsic_code}-{slug}",
@@ -788,7 +1070,9 @@ def build_json_ld(
         "@graph": [
             _org_node(domain),
             _breadcrumb_node(jsic_code, jsic_name_ja, row["primary_name"], slug, domain),
-            _article_node(row, jsic_code, jsic_name_ja, slug, domain, program_slug_full, target_types),
+            _article_node(
+                row, jsic_code, jsic_name_ja, slug, domain, program_slug_full, target_types
+            ),
             _faq_node(row, jsic_name_ja, qa_pairs, slug, jsic_code),
         ],
     }
@@ -830,14 +1114,18 @@ def _tldr_paragraph(
     amt = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen"))
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "公募要領を参照"
 
-    parts = [f"業種コード {jsic_code} ({jsic_name_ja}) における {name} の機械可読データを jpcite が集約しました。"]
+    parts = [
+        f"業種コード {jsic_code} ({jsic_name_ja}) における {name} の機械可読データを jpcite が集約しました。"
+    ]
     amt_phrase = f"最大支援金額は{amt}です。" if amt else "支援金額は公募要領に記載されています。"
     if agency:
         parts.append(f"本制度は {agency} が運営する{kind}で、{amt_phrase}")
     else:
         parts.append(f"本制度は公的機関が運営する{kind}で、{amt_phrase}")
     parts.append(f"AutonoMath による直近の出典取得は {fetched} です。")
-    parts.append(f"本ページは {jsic_name_ja} 事業者が本制度を活用する観点でのクロスリファレンスであり、申請可否は公募要領で必ずご確認ください。")
+    parts.append(
+        f"本ページは {jsic_name_ja} 事業者が本制度を活用する観点でのクロスリファレンスであり、申請可否は公募要領で必ずご確認ください。"
+    )
     return "".join(parts)
 
 
@@ -853,19 +1141,29 @@ def _industry_match_paragraph(
     bits: list[str] = []
     if evidence.target_match:
         ja = "、".join(_target_type_label(t) for t in evidence.target_match[:3])
-        bits.append(f"本制度の対象者には「{ja}」が含まれており、{jsic_name_ja}事業者が直接の対象に含まれます。")
+        bits.append(
+            f"本制度の対象者には「{ja}」が含まれており、{jsic_name_ja}事業者が直接の対象に含まれます。"
+        )
     if evidence.domain_match:
-        bits.append(f"出典ドメイン ({evidence.domain_match}) は {jsic_name_ja} を所管する省庁・機関のものです。")
+        bits.append(
+            f"出典ドメイン ({evidence.domain_match}) は {jsic_name_ja} を所管する省庁・機関のものです。"
+        )
     if evidence.authority_match:
         a = "、".join(evidence.authority_match[:2])
-        bits.append(f"運営主体に「{a}」が含まれ、{jsic_name_ja}向けの政策パッケージの一部であることが裏付けられます。")
+        bits.append(
+            f"運営主体に「{a}」が含まれ、{jsic_name_ja}向けの政策パッケージの一部であることが裏付けられます。"
+        )
     if evidence.name_hits:
         ja_hits = "、".join(sorted(set(evidence.name_hits))[:3])
-        bits.append(f"制度名に「{ja_hits}」というキーワードが含まれており、{jsic_name_ja}に直接関連します。")
+        bits.append(
+            f"制度名に「{ja_hits}」というキーワードが含まれており、{jsic_name_ja}に直接関連します。"
+        )
     if not bits:
         # is_strong_enough() should have filtered this out, but defensive.
         bits.append(f"{name} は {jsic_name_ja} 向けに活用される可能性のある制度です。")
-    bits.append(f"なお、本制度の最終的な適用可否は、業種だけでなく事業計画・経費区分・地理要件・他制度との併用可否など複数の要素で決まります。{jsic_name_ja}事業者であっても、公募要領の個別要件を満たさない場合は対象外となる点にご注意ください。")
+    bits.append(
+        f"なお、本制度の最終的な適用可否は、業種だけでなく事業計画・経費区分・地理要件・他制度との併用可否など複数の要素で決まります。{jsic_name_ja}事業者であっても、公募要領の個別要件を満たさない場合は対象外となる点にご注意ください。"
+    )
     return "".join(bits)
 
 
@@ -880,7 +1178,11 @@ def _qa_pairs(
     agency = _resolve_agency(row) or "公募要領記載の申請窓口"
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "最新を参照"
     rate = _subsidy_rate_line(row.get("subsidy_rate"))
-    target_text = "、".join(_target_type_label(t) for t in target_types) if target_types else "公募要領の規定に従う"
+    target_text = (
+        "、".join(_target_type_label(t) for t in target_types)
+        if target_types
+        else "公募要領の規定に従う"
+    )
     rate_clause = f"補助率は{rate}が目安です。" if rate else ""
 
     return [
@@ -891,7 +1193,7 @@ def _qa_pairs(
                 f"AutonoMath では業種コード {jsic_code} ({jsic_name_ja}) の採択事例を集約していますが、"
                 "全体採択率を業種別に按分する公式データは多くの制度で公開されておらず、"
                 "推計値の提示は避けています。直近の採択率は AutonoMath API "
-                f"`search_acceptance_stats_am(program_id=\"{row['unified_id']}\")` "
+                f'`search_acceptance_stats_am(program_id="{row["unified_id"]}")` '
                 "または出典欄の公式ページでご確認ください。"
             ),
         },
@@ -948,7 +1250,9 @@ def _meta_description(
     name = row["primary_name"]
     kind = KIND_JA.get(row.get("program_kind") or "subsidy", "公的支援制度")
     agency = _resolve_agency(row)
-    amt = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "公募要領参照"
+    amt = (
+        _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "公募要領参照"
+    )
     fetched = _normalize_iso_date(row.get("source_fetched_at")) or "最新を参照"
     domain = _source_domain(row.get("source_url"))
 
@@ -982,10 +1286,10 @@ def _page_title(row: dict[str, Any], jsic_name_ja: str) -> str:
 # also passes is_strong_enough for them. This drives crawl depth without
 # fabricating relations.
 JSIC_SIBLINGS: dict[str, tuple[str, ...]] = {
-    "A": ("B", "Q", "E"),                      # 農林 → 漁 / 農協 / 食品製造
+    "A": ("B", "Q", "E"),  # 農林 → 漁 / 農協 / 食品製造
     "B": ("A", "Q", "E"),
     "C": ("D", "E"),
-    "D": ("E", "K", "L"),                      # 建設 → 製造 / 不動産 / 建築士
+    "D": ("E", "K", "L"),  # 建設 → 製造 / 不動産 / 建築士
     "E": ("D", "G", "I", "L"),
     "F": ("E", "G"),
     "G": ("L", "E", "R"),
@@ -1034,7 +1338,9 @@ def _write_if_changed(path: Path, content: str) -> bool:
 def _load_jsic_dictionary(autonomath_db: Path) -> dict[str, str]:
     """Return {code: name_ja} from am_industry_jsic (major + medium)."""
     if not autonomath_db.exists():
-        LOG.warning("autonomath.db not found at %s; falling back to embedded JSIC dict", autonomath_db)
+        LOG.warning(
+            "autonomath.db not found at %s; falling back to embedded JSIC dict", autonomath_db
+        )
         return {code: m.name_ja for code, m in JSIC_MATCHERS.items()}
     out: dict[str, str] = {}
     try:
@@ -1066,7 +1372,9 @@ def _build_program_index(conn: sqlite3.Connection) -> list[IndexableProgram]:
     return progs
 
 
-def _build_matches(progs: list[IndexableProgram]) -> dict[str, list[tuple[IndexableProgram, MatchEvidence, float]]]:
+def _build_matches(
+    progs: list[IndexableProgram],
+) -> dict[str, list[tuple[IndexableProgram, MatchEvidence, float]]]:
     """Return {jsic_code: [(prog, evidence, score)] sorted desc by (tier asc, score desc)}."""
     by_jsic: dict[str, list[tuple[IndexableProgram, MatchEvidence, float]]] = defaultdict(list)
     tier_order = {"S": 0, "A": 1, "B": 2}
@@ -1110,11 +1418,13 @@ def _select_other_programs(
         if prefix in seen_prefix:
             continue
         seen_prefix.add(prefix)
-        out.append({
-            "slug": ip.program_slug,
-            "name": ip.row["primary_name"],
-            "kind_ja": _kind_ja(ip.row),
-        })
+        out.append(
+            {
+                "slug": ip.program_slug,
+                "name": ip.row["primary_name"],
+                "kind_ja": _kind_ja(ip.row),
+            }
+        )
         if len(out) >= cap:
             break
     return out
@@ -1175,8 +1485,14 @@ def render_page(
 
     qa_pairs = _qa_pairs(row, jsic_code, jsic_name_ja, target_types)
     json_ld = build_json_ld(
-        row, jsic_code, jsic_name_ja, cross_slug, domain, program_slug_full,
-        target_types, qa_pairs,
+        row,
+        jsic_code,
+        jsic_name_ja,
+        cross_slug,
+        domain,
+        program_slug_full,
+        target_types,
+        qa_pairs,
     )
 
     target_types_ja = [_target_type_label(t) for t in target_types]
@@ -1205,7 +1521,9 @@ def render_page(
         fetched_at=_normalize_iso_date(row.get("source_fetched_at")),
         fetched_at_ja=_last_updated_ja(row),
         tldr_paragraph=_tldr_paragraph(row, jsic_code, jsic_name_ja, target_types),
-        industry_match_paragraph=_industry_match_paragraph(row, jsic_name_ja, evidence, target_types),
+        industry_match_paragraph=_industry_match_paragraph(
+            row, jsic_name_ja, evidence, target_types
+        ),
         qa_pairs=qa_pairs,
         sibling_jsic=sibling_jsic,
         other_programs=other_programs,
@@ -1325,7 +1643,12 @@ def generate(
 
     by_jsic = _build_matches(progs)
     for code in sorted(by_jsic.keys()):
-        LOG.info("  JSIC %s (%s): %d candidate programs", code, jsic_dict.get(code, "?"), len(by_jsic[code]))
+        LOG.info(
+            "  JSIC %s (%s): %d candidate programs",
+            code,
+            jsic_dict.get(code, "?"),
+            len(by_jsic[code]),
+        )
 
     sitemap_entries: list[tuple[str, str, str, str]] = []
     skipped: list[tuple[str, str, str]] = []  # (jsic, unified_id, reason) for audit
@@ -1350,8 +1673,14 @@ def generate(
                 sibling_jsic = _select_sibling_jsic(by_jsic, jsic_dict, code, uid, cap=5)
                 other_programs = _select_other_programs(by_jsic, code, uid, cap=5)
                 html = render_page(
-                    env, domain, ip, ev, code, jsic_name_ja,
-                    sibling_jsic, other_programs,
+                    env,
+                    domain,
+                    ip,
+                    ev,
+                    code,
+                    jsic_name_ja,
+                    sibling_jsic,
+                    other_programs,
                 )
                 page_path = out_dir / code / ip.program_slug / "index.html"
                 if sample_only and len(sample_paths) >= sample_count:
@@ -1392,7 +1721,11 @@ def generate(
     if not sample_only:
         if sitemap_path is not None:
             wrote_sm = write_sitemap(sitemap_entries, sitemap_path, domain)
-            LOG.info("sitemap written: %s (%d entries)", sitemap_path if wrote_sm else "unchanged", len(sitemap_entries))
+            LOG.info(
+                "sitemap written: %s (%d entries)",
+                sitemap_path if wrote_sm else "unchanged",
+                len(sitemap_entries),
+            )
         if sitemap_index_path is not None:
             wrote_idx = update_sitemap_index(sitemap_index_path, domain)
             LOG.info("sitemap-index updated: %s", "yes" if wrote_idx else "already present")
@@ -1401,9 +1734,9 @@ def generate(
             LOG.info("_headers updated: %s", "yes" if wrote_h else "already present")
         # Persist skipped audit
         skipped_path = out_dir / "_skipped.tsv"
-        body = "jsic\tunified_id\treason\n" + "\n".join(
-            f"{j}\t{u}\t{r}" for j, u, r in skipped
-        ) + "\n"
+        body = (
+            "jsic\tunified_id\treason\n" + "\n".join(f"{j}\t{u}\t{r}" for j, u, r in skipped) + "\n"
+        )
         _write_if_changed(skipped_path, body)
         LOG.info("skipped audit: %d pairs → %s", len(skipped), skipped_path)
 
@@ -1421,7 +1754,11 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--sitemap-index", default=str(DEFAULT_SITEMAP_INDEX), type=Path)
     p.add_argument("--headers", default=str(DEFAULT_HEADERS), type=Path)
     p.add_argument("--cap-per-jsic", type=int, default=250)
-    p.add_argument("--sample", action="store_true", help="emit only --sample-count pages, skip sitemap/_headers")
+    p.add_argument(
+        "--sample",
+        action="store_true",
+        help="emit only --sample-count pages, skip sitemap/_headers",
+    )
     p.add_argument("--sample-count", type=int, default=5)
     p.add_argument("--verbose", "-v", action="store_true")
     return p.parse_args()
@@ -1448,7 +1785,10 @@ def main() -> int:
     )
     LOG.info(
         "done: written=%d skipped=%d errors=%d (sample=%d)",
-        written, skipped, errors, len(sample_paths),
+        written,
+        skipped,
+        errors,
+        len(sample_paths),
     )
     if sample_paths:
         for j, u, p in sample_paths:

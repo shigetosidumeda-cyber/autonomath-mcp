@@ -65,7 +65,20 @@ jobs:
           # from main and the [skip ci] suffix prevents recursive triggers.
           persist-credentials: true
 
+      - name: Check Fly token
+        id: fly-token
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN is not configured; skipping GitHub-hosted page regeneration."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.fly-token.outputs.available == 'true'
         uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: "3.12"
@@ -73,15 +86,18 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install package with site extras
+        if: steps.fly-token.outputs.available == 'true'
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
           pip install -e ".[site]"
 
       - name: Install flyctl
+        if: steps.fly-token.outputs.available == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
 
       - name: Pull latest jpintel.db off Fly volume
+        if: steps.fly-token.outputs.available == 'true'
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
@@ -96,6 +112,7 @@ jobs:
           ls -la data/jpintel.db
 
       - name: Regenerate program pages and sitemap
+        if: steps.fly-token.outputs.available == 'true'
         run: |
           set -euo pipefail
           python scripts/generate_program_pages.py \
@@ -106,6 +123,7 @@ jobs:
             --verbose
 
       - name: Commit regenerated pages back to main
+        if: steps.fly-token.outputs.available == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -124,6 +142,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Trigger Cloudflare Pages deploy hook (optional)
+        if: steps.fly-token.outputs.available == 'true'
         env:
           CF_PAGES_DEPLOY_HOOK: ${{ secrets.CF_PAGES_DEPLOY_HOOK }}
         run: |

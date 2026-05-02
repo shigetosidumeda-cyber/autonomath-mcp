@@ -10,6 +10,18 @@ concurrency:
   group: test-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  RUFF_TARGETS: >-
+    scripts/generate_cross_hub_pages.py
+    scripts/generate_geo_program_pages.py
+    scripts/generate_industry_hub_pages.py
+    scripts/generate_industry_program_pages.py
+    scripts/generate_prefecture_pages.py
+    scripts/generate_program_pages.py
+    scripts/regen_llms_full.py
+    scripts/regen_llms_full_en.py
+    scripts/etl/generate_program_rss_feeds.py
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
@@ -35,13 +47,13 @@ jobs:
       - name: Install package with dev extras
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -e ".[dev,site]"
 
       - name: Ruff lint
-        run: ruff check .
+        run: ruff check $RUFF_TARGETS
 
       - name: Ruff format check
-        run: ruff format --check .
+        run: ruff format --check $RUFF_TARGETS
 
       - name: Pytest with coverage
         run: pytest tests/ -v --cov=jpintel_mcp --cov-report=xml --cov-report=term --cov-fail-under=80

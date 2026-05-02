@@ -183,9 +183,7 @@ def _adoption_in_pref(
     return [dict(r) for r in conn.execute(sql, (pattern, pref_ja, limit))]
 
 
-def _adoption_count_in_pref(
-    conn: sqlite3.Connection, primary_name: str, pref_ja: str
-) -> int:
+def _adoption_count_in_pref(conn: sqlite3.Connection, primary_name: str, pref_ja: str) -> int:
     if not primary_name or not pref_ja:
         return 0
     pattern = f"%{primary_name}%"
@@ -199,9 +197,7 @@ def _adoption_count_in_pref(
     return int(cur.fetchone()[0] or 0)
 
 
-def select_top_programs(
-    conn: sqlite3.Connection, top_n: int
-) -> list[dict[str, Any]]:
+def select_top_programs(conn: sqlite3.Connection, top_n: int) -> list[dict[str, Any]]:
     """Return top-N programs ranked by tier S>A, max_amount DESC, adoption_total DESC.
 
     Pulls all tier S + A rows then re-ranks in Python because adoption_total
@@ -309,18 +305,53 @@ def _source_domain(url: str | None) -> str:
 
 
 _PREF_HOST_JA = {
-    "hokkaido": "北海道", "aomori": "青森県", "iwate": "岩手県", "miyagi": "宮城県",
-    "akita": "秋田県", "yamagata": "山形県", "fukushima": "福島県", "ibaraki": "茨城県",
-    "tochigi": "栃木県", "gunma": "群馬県", "saitama": "埼玉県", "chiba": "千葉県",
-    "tokyo": "東京都", "kanagawa": "神奈川県", "niigata": "新潟県", "toyama": "富山県",
-    "ishikawa": "石川県", "fukui": "福井県", "yamanashi": "山梨県", "nagano": "長野県",
-    "gifu": "岐阜県", "shizuoka": "静岡県", "aichi": "愛知県", "mie": "三重県",
-    "shiga": "滋賀県", "kyoto": "京都府", "osaka": "大阪府", "hyogo": "兵庫県",
-    "nara": "奈良県", "wakayama": "和歌山県", "tottori": "鳥取県", "shimane": "島根県",
-    "okayama": "岡山県", "hiroshima": "広島県", "yamaguchi": "山口県", "tokushima": "徳島県",
-    "kagawa": "香川県", "ehime": "愛媛県", "kochi": "高知県", "fukuoka": "福岡県",
-    "saga": "佐賀県", "nagasaki": "長崎県", "kumamoto": "熊本県", "oita": "大分県",
-    "miyazaki": "宮崎県", "kagoshima": "鹿児島県", "okinawa": "沖縄県",
+    "hokkaido": "北海道",
+    "aomori": "青森県",
+    "iwate": "岩手県",
+    "miyagi": "宮城県",
+    "akita": "秋田県",
+    "yamagata": "山形県",
+    "fukushima": "福島県",
+    "ibaraki": "茨城県",
+    "tochigi": "栃木県",
+    "gunma": "群馬県",
+    "saitama": "埼玉県",
+    "chiba": "千葉県",
+    "tokyo": "東京都",
+    "kanagawa": "神奈川県",
+    "niigata": "新潟県",
+    "toyama": "富山県",
+    "ishikawa": "石川県",
+    "fukui": "福井県",
+    "yamanashi": "山梨県",
+    "nagano": "長野県",
+    "gifu": "岐阜県",
+    "shizuoka": "静岡県",
+    "aichi": "愛知県",
+    "mie": "三重県",
+    "shiga": "滋賀県",
+    "kyoto": "京都府",
+    "osaka": "大阪府",
+    "hyogo": "兵庫県",
+    "nara": "奈良県",
+    "wakayama": "和歌山県",
+    "tottori": "鳥取県",
+    "shimane": "島根県",
+    "okayama": "岡山県",
+    "hiroshima": "広島県",
+    "yamaguchi": "山口県",
+    "tokushima": "徳島県",
+    "kagawa": "香川県",
+    "ehime": "愛媛県",
+    "kochi": "高知県",
+    "fukuoka": "福岡県",
+    "saga": "佐賀県",
+    "nagasaki": "長崎県",
+    "kumamoto": "熊本県",
+    "oita": "大分県",
+    "miyazaki": "宮崎県",
+    "kagoshima": "鹿児島県",
+    "okinawa": "沖縄県",
 }
 
 
@@ -471,9 +502,9 @@ def meta_description(
 ) -> str:
     name = row.get("primary_name") or ""
     kind = KIND_JA.get(row.get("program_kind") or "subsidy", "公的支援制度")
-    amt = _amount_line(
-        row.get("amount_max_man_yen"), row.get("amount_min_man_yen")
-    ) or "公募要領参照"
+    amt = (
+        _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen")) or "公募要領参照"
+    )
     if status == "other_prefecture":
         applicability = f"所管は{program_pref}のため{pref_ja}は対象外"
     elif status == "national":
@@ -571,9 +602,7 @@ def _service_node(
             "value": int(amt_max * 10_000),
         }
     add_props = []
-    add_props.append(
-        {"@type": "PropertyValue", "name": "applicability_status", "value": status}
-    )
+    add_props.append({"@type": "PropertyValue", "name": "applicability_status", "value": status})
     add_props.append(
         {
             "@type": "PropertyValue",
@@ -582,9 +611,7 @@ def _service_node(
         }
     )
     if row.get("tier"):
-        add_props.append(
-            {"@type": "PropertyValue", "name": "tier", "value": row["tier"]}
-        )
+        add_props.append({"@type": "PropertyValue", "name": "tier", "value": row["tier"]})
     node["additionalProperty"] = add_props
     # Cross-link to the canonical full program page.
     node["sameAs"] = f"https://{domain}/programs/{program_slug_full}"
@@ -733,9 +760,7 @@ def render_pair(
     source_dom = _source_domain(source_url)
     resolved_agency = _resolve_agency(row)
 
-    amt_line = _amount_line(
-        row.get("amount_max_man_yen"), row.get("amount_min_man_yen")
-    )
+    amt_line = _amount_line(row.get("amount_max_man_yen"), row.get("amount_min_man_yen"))
     amount_label = amt_line or "公募要領参照"
     amount_paragraph = (
         f"「{name}」の支援金額の目安は{amt_line}です。"
@@ -768,9 +793,7 @@ def render_pair(
         unified_id=row["unified_id"],
         primary_name=name,
         page_title=page_title(pref_ja, name),
-        meta_description=meta_description(
-            pref_ja, row, adoption_count, status, program_pref
-        ),
+        meta_description=meta_description(pref_ja, row, adoption_count, status, program_pref),
         pref_ja=pref_ja,
         pref_slug=pref_slug,
         program_slug=program_slug,
@@ -778,9 +801,7 @@ def render_pair(
         program_pref=program_pref,
         applicability_status=status,
         applicability_label=applicability_label(status, pref_ja, program_pref),
-        applicability_paragraph=applicability_paragraph(
-            status, pref_ja, program_pref, name
-        ),
+        applicability_paragraph=applicability_paragraph(status, pref_ja, program_pref, name),
         kind_ja=KIND_JA.get(row.get("program_kind") or "subsidy", "公的支援制度"),
         amount_label=amount_label,
         amount_paragraph=amount_paragraph,
@@ -794,9 +815,7 @@ def render_pair(
         fetched_at=_normalize_iso_date(row.get("source_fetched_at")),
         fetched_at_ja=_last_updated_ja(row),
         related_in_pref=related_in_pref,
-        json_ld_pretty=json.dumps(json_ld, ensure_ascii=False, indent=2).replace(
-            "</", "<\\/"
-        ),
+        json_ld_pretty=json.dumps(json_ld, ensure_ascii=False, indent=2).replace("</", "<\\/"),
     )
     return program_slug, html
 
@@ -848,9 +867,7 @@ def write_sitemap(
         cf = cf_map.get(tier, "monthly")
         pr = pr_map.get(tier, "0.5")
         lines.append("  <url>")
-        lines.append(
-            f"    <loc>https://{domain}/cross/{pref_slug}/{program_slug}.html</loc>"
-        )
+        lines.append(f"    <loc>https://{domain}/cross/{pref_slug}/{program_slug}.html</loc>")
         lines.append(f"    <lastmod>{lastmod}</lastmod>")
         lines.append(f"    <changefreq>{cf}</changefreq>")
         lines.append(f"    <priority>{pr}</priority>")
@@ -926,9 +943,7 @@ def generate(
                     # that says "対象外". Prefer matched + national mix.
                     if other_status == "other_prefecture":
                         continue
-                    other_slug = slugify(
-                        other["primary_name"] or "", other["unified_id"]
-                    )
+                    other_slug = slugify(other["primary_name"] or "", other["unified_id"])
                     related.append(
                         {
                             "program_slug": other_slug,
@@ -945,16 +960,12 @@ def generate(
                     if len(related) >= 6:
                         break
 
-                slug, html = render_pair(
-                    row, pref_ja, pref_slug, ctx, domain, conn, related
-                )
+                slug, html = render_pair(row, pref_ja, pref_slug, ctx, domain, conn, related)
 
                 # Honesty audit hook: track combos where pref-prog is plausible
                 # but adoption_count is 0.
                 status = classify_applicability(row, pref_ja)
-                adoption_n = _adoption_count_in_pref(
-                    conn, row["primary_name"] or "", pref_ja
-                )
+                adoption_n = _adoption_count_in_pref(conn, row["primary_name"] or "", pref_ja)
                 if adoption_n == 0 and status == "matched_prefecture":
                     no_data_combos.append((pref_ja, row["primary_name"]))
 
@@ -1024,9 +1035,7 @@ def main() -> int:
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
-    sitemap_path = (
-        args.sitemap if (args.sitemap and str(args.sitemap) != "") else None
-    )
+    sitemap_path = args.sitemap if (args.sitemap and str(args.sitemap) != "") else None
     written, skipped, errors, no_data = generate(
         db_path=args.db,
         out_dir=args.out,

@@ -67,9 +67,7 @@ from _pref_slugs import PREFECTURES, REGIONS  # type: ignore  # noqa: E402
 try:
     from jpintel_mcp.utils.slug import program_static_slug
 except ImportError:  # pragma: no cover
-    sys.stderr.write(
-        "ERROR: jpintel_mcp.utils.slug not importable — pip install -e . first.\n"
-    )
+    sys.stderr.write("ERROR: jpintel_mcp.utils.slug not importable — pip install -e . first.\n")
     raise
 
 
@@ -206,15 +204,15 @@ def _render_hub(
         name_esc = html.escape(_public_program_name(r["primary_name"] or ""))
         src = html.escape(r.get("source_url") or "")
         lis.append(
-            "      <li class=\"cross-program\">\n"
-            f"        <a class=\"cross-program-name\" href=\"/programs/{slug}.html\">{name_esc}</a>\n"
-            f"        <span class=\"cross-program-meta\">tier {tier} ・ {kind} ・ {amt}</span>\n"
-            f"        <a class=\"cross-program-source\" href=\"{src}\" rel=\"noopener noreferrer\">出典ページを開く</a>\n"
+            '      <li class="cross-program">\n'
+            f'        <a class="cross-program-name" href="/programs/{slug}.html">{name_esc}</a>\n'
+            f'        <span class="cross-program-meta">tier {tier} ・ {kind} ・ {amt}</span>\n'
+            f'        <a class="cross-program-source" href="{src}" rel="noopener noreferrer">出典ページを開く</a>\n'
             "      </li>"
         )
     if not lis:
         lis.append(
-            "      <li class=\"cross-program-empty\">"
+            '      <li class="cross-program-empty">'
             f"{html.escape(pref_ja)} 向け tier S/A 制度は現在 0 件です。"
             "</li>"
         )
@@ -236,8 +234,18 @@ def _render_hub(
             {
                 "@type": "BreadcrumbList",
                 "itemListElement": [
-                    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"https://{domain}/"},
-                    {"@type": "ListItem", "position": 2, "name": "都道府県別", "item": f"https://{domain}/cross/"},
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "ホーム",
+                        "item": f"https://{domain}/",
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "都道府県別",
+                        "item": f"https://{domain}/cross/",
+                    },
                     {"@type": "ListItem", "position": 3, "name": pref_ja, "item": canonical},
                 ],
             },

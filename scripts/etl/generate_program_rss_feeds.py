@@ -72,9 +72,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
 DEFAULT_JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_AUTONOMATH_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db"))
-)
+DEFAULT_AUTONOMATH_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
 DEFAULT_OUT_DIR = REPO_ROOT / "site" / "rss"
 DEFAULT_DOMAIN = "jpcite.com"
 
@@ -199,10 +197,7 @@ def _source_host_allowed(source_url: str | None) -> bool:
     if not hostname:
         return True
     host = hostname.lower().rstrip(".")
-    return not any(
-        host == banned or host.endswith(f".{banned}")
-        for banned in _BANNED_SOURCE_HOSTS
-    )
+    return not any(host == banned or host.endswith(f".{banned}") for banned in _BANNED_SOURCE_HOSTS)
 
 
 def _public_program_name(name: str | None) -> str:
@@ -525,9 +520,7 @@ def _amendment_to_item(a: AmendmentItem, *, domain: str) -> dict:
 # ---------------------------------------------------------------------------
 # Build & write
 # ---------------------------------------------------------------------------
-def build_tier_s_feed(
-    programs: list[ProgramItem], *, domain: str, lastmod: datetime
-) -> str:
+def build_tier_s_feed(programs: list[ProgramItem], *, domain: str, lastmod: datetime) -> str:
     items = [_program_to_item(p, domain=domain) for p in programs]
     return _render_rss(
         title="jpcite — Tier S 制度 (補助金/融資/税制/認定 高信頼)",
@@ -542,9 +535,7 @@ def build_tier_s_feed(
     )
 
 
-def build_amendment_feed(
-    amendments: list[AmendmentItem], *, domain: str, lastmod: datetime
-) -> str:
+def build_amendment_feed(amendments: list[AmendmentItem], *, domain: str, lastmod: datetime) -> str:
     items = [_amendment_to_item(a, domain=domain) for a in amendments]
     return _render_rss(
         title="jpcite — 制度改正検出ログ",
@@ -624,9 +615,7 @@ def run(
         tier_s = _load_tier_s_programs(j_conn)
         counters["tier_s_items"] = len(tier_s)
         feed_a = build_tier_s_feed(tier_s, domain=domain, lastmod=lastmod)
-        if _write_if_changed(
-            out_dir / "programs-tier-s.xml", feed_a, dry_run=dry_run
-        ):
+        if _write_if_changed(out_dir / "programs-tier-s.xml", feed_a, dry_run=dry_run):
             counters["wrote"] += 1
 
         # ---- C. Prefecture feeds (jpintel.db) ----
@@ -639,12 +628,8 @@ def run(
                 # negative-signal SEO surface (Google Discover penalizes
                 # near-empty feeds).
                 continue
-            feed_c = build_prefecture_feed(
-                pref_ja, programs, domain=domain, lastmod=lastmod
-            )
-            if _write_if_changed(
-                out_dir / "prefecture" / f"{slug}.xml", feed_c, dry_run=dry_run
-            ):
+            feed_c = build_prefecture_feed(pref_ja, programs, domain=domain, lastmod=lastmod)
+            if _write_if_changed(out_dir / "prefecture" / f"{slug}.xml", feed_c, dry_run=dry_run):
                 counters["wrote"] += 1
             counters["prefecture_files"] += 1
             counters["prefecture_items_total"] += len(programs)
@@ -660,12 +645,8 @@ def run(
         try:
             amendments = _load_amendments(a_conn)
             counters["amendment_items"] = len(amendments)
-            feed_b = build_amendment_feed(
-                amendments, domain=domain, lastmod=lastmod
-            )
-            if _write_if_changed(
-                out_dir / "amendments.xml", feed_b, dry_run=dry_run
-            ):
+            feed_b = build_amendment_feed(amendments, domain=domain, lastmod=lastmod)
+            if _write_if_changed(out_dir / "amendments.xml", feed_b, dry_run=dry_run):
                 counters["wrote"] += 1
         finally:
             a_conn.close()
@@ -705,11 +686,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
     args = _parse_args(argv)
-    lastmod = (
-        _parse_iso(args.lastmod)
-        if args.lastmod
-        else datetime.now(UTC).replace(microsecond=0)
-    )
+    lastmod = _parse_iso(args.lastmod) if args.lastmod else datetime.now(UTC).replace(microsecond=0)
     try:
         counters = run(
             jpintel_db=args.jpintel_db,

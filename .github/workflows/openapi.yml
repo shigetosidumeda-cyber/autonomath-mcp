@@ -28,7 +28,7 @@ jobs:
       - name: Install package
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -e ".[dev,site]"
 
       - name: Dump /openapi.json
         # Import the FastAPI app in-process; no uvicorn boot needed for schema generation.

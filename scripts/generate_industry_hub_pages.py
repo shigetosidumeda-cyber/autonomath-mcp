@@ -158,9 +158,7 @@ def _rank_key(r: dict[str, Any]) -> tuple[int, float, str]:
     return (tier_rank, amt, r.get("unified_id") or "")
 
 
-def _select_for_jsic(
-    rows: list[dict[str, Any]], code: str, top_n: int
-) -> list[dict[str, Any]]:
+def _select_for_jsic(rows: list[dict[str, Any]], code: str, top_n: int) -> list[dict[str, Any]]:
     matched = [r for r in rows if _matches_jsic(r, code)]
     matched.sort(key=_rank_key)
     return matched[:top_n]
@@ -175,8 +173,15 @@ _E_SME_REGEX = re.compile(
     "|".join(
         re.escape(k)
         for k in (
-            "ものづくり", "中小企業", "小規模事業者", "事業再構築",
-            "省エネ", "GX", "脱炭素", "サポイン", "Go-Tech",
+            "ものづくり",
+            "中小企業",
+            "小規模事業者",
+            "事業再構築",
+            "省エネ",
+            "GX",
+            "脱炭素",
+            "サポイン",
+            "Go-Tech",
         )
     )
 )
@@ -186,8 +191,14 @@ _L_SME_REGEX = re.compile(
     "|".join(
         re.escape(k)
         for k in (
-            "中小企業診断士", "弁理士", "公認会計士", "税理士",
-            "社会保険労務士", "行政書士", "司法書士", "建築士",
+            "中小企業診断士",
+            "弁理士",
+            "公認会計士",
+            "税理士",
+            "社会保険労務士",
+            "行政書士",
+            "司法書士",
+            "建築士",
             "経営コンサルタント",
         )
     )
@@ -243,15 +254,15 @@ def _render_hub(
             uid = html.escape(r["unified_id"] or "")
             program_href = f"/programs/share.html?ids={uid}"
         lis.append(
-            "      <li class=\"industry-program\">\n"
-            f"        <a class=\"industry-program-name\" href=\"{program_href}\">{name_esc}</a>\n"
-            f"        <span class=\"industry-program-meta\">tier {tier} ・ {kind} ・ {amt}</span>\n"
-            f"        <a class=\"industry-program-source\" href=\"{src}\" rel=\"noopener noreferrer\">出典ページを開く</a>\n"
+            '      <li class="industry-program">\n'
+            f'        <a class="industry-program-name" href="{program_href}">{name_esc}</a>\n'
+            f'        <span class="industry-program-meta">tier {tier} ・ {kind} ・ {amt}</span>\n'
+            f'        <a class="industry-program-source" href="{src}" rel="noopener noreferrer">出典ページを開く</a>\n'
             "      </li>"
         )
     if not lis:
         lis.append(
-            "      <li class=\"industry-program-empty\">"
+            '      <li class="industry-program-empty">'
             f"{html.escape(name_ja)} 向けに該当する tier S/A/B 制度は現在 0 件です。"
             "</li>"
         )
@@ -270,8 +281,18 @@ def _render_hub(
             {
                 "@type": "BreadcrumbList",
                 "itemListElement": [
-                    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"https://{domain}/"},
-                    {"@type": "ListItem", "position": 2, "name": "業種別", "item": f"https://{domain}/industries/"},
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "ホーム",
+                        "item": f"https://{domain}/",
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "業種別",
+                        "item": f"https://{domain}/industries/",
+                    },
                     {"@type": "ListItem", "position": 3, "name": title_label, "item": canonical},
                 ],
             },
@@ -395,19 +416,19 @@ def _render_index(
         label = f"JSIC {code} {html.escape(matcher.name_ja)}"
         if n:
             rows_html.append(
-                f"      <li><a href=\"/industries/{code}/\">{label}</a> "
-                f"<span class=\"industry-count\">{n}件</span></li>"
+                f'      <li><a href="/industries/{code}/">{label}</a> '
+                f'<span class="industry-count">{n}件</span></li>'
             )
         else:
             rows_html.append(
                 f"      <li><span>{label}</span> "
-                "<span class=\"industry-count\">候補確認中</span></li>"
+                '<span class="industry-count">候補確認中</span></li>'
             )
     sme_lis: list[str] = []
     for slug, label, n in sme_pages:
         sme_lis.append(
-            f"      <li><a href=\"/industries/{slug}/\">{html.escape(label)}</a> "
-            f"<span class=\"industry-count\">{n}件</span></li>"
+            f'      <li><a href="/industries/{slug}/">{html.escape(label)}</a> '
+            f'<span class="industry-count">{n}件</span></li>'
         )
     title = "業種別ハブ 一覧 (JSIC 22部門) | jpcite"
     desc = (
@@ -557,7 +578,12 @@ def generate(
             f"上位{len(top)}件を出典リンク付きで集約。tier S/A/B のみ。"
         )
         html_doc = _render_hub(
-            code, title_label, matcher.name_ja, desc, top, domain,
+            code,
+            title_label,
+            matcher.name_ja,
+            desc,
+            top,
+            domain,
             f"/industries/{code}/",
         )
         path = out_dir / code / "index.html"
@@ -573,10 +599,14 @@ def generate(
     e_top = _select_e_sme(rows, top_n)
     sme_pages.append(("E-sme", "JSIC E 製造業 (中小企業)", len(e_top)))
     e_doc = _render_hub(
-        "E", "JSIC E 製造業 (中小企業)", "製造業 中小企業特化",
+        "E",
+        "JSIC E 製造業 (中小企業)",
+        "製造業 中小企業特化",
         f"製造業 (JSIC E) のうち中小企業・小規模事業者向けの主要制度 上位{len(e_top)}件。"
         "ものづくり補助金・事業再構築補助金・省エネ・GX 関連を集約。",
-        e_top, domain, "/industries/E-sme/",
+        e_top,
+        domain,
+        "/industries/E-sme/",
     )
     path = out_dir / "E-sme" / "index.html"
     if _write_if_changed(path, e_doc):
@@ -588,10 +618,14 @@ def generate(
     l_top = _select_l_sme(rows, top_n)
     sme_pages.append(("L-sme", "JSIC L 専門・技術サービス業 (士業)", len(l_top)))
     l_doc = _render_hub(
-        "L", "JSIC L 専門・技術サービス業 (士業)", "専門・技術サービス業 士業特化",
+        "L",
+        "JSIC L 専門・技術サービス業 (士業)",
+        "専門・技術サービス業 士業特化",
         f"専門・技術サービス業 (JSIC L) のうち士業 (税理士・公認会計士・社労士・弁理士 等) "
         f"向けの主要制度 上位{len(l_top)}件。",
-        l_top, domain, "/industries/L-sme/",
+        l_top,
+        domain,
+        "/industries/L-sme/",
     )
     path = out_dir / "L-sme" / "index.html"
     if _write_if_changed(path, l_doc):
