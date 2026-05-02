@@ -187,6 +187,10 @@ def test_compose_full_inputs_produces_full_block() -> None:
     assert savings["input_token_price_jpy_per_1m"] == 300.0
     assert savings["jpcite_billable_units"] == 1
     assert savings["jpcite_cost_jpy_ex_tax"] == 3
+    assert savings["break_even_avoided_tokens"] == 10000
+    assert savings["break_even_met"] is True
+    assert savings["price_input_source"] == "caller_supplied"
+    assert savings["billing_savings_claim"] == "estimate_not_guarantee"
     assert isinstance(savings["gross_input_savings_jpy"], float)
     assert isinstance(savings["net_savings_jpy_ex_tax"], float)
 
@@ -322,6 +326,23 @@ def test_savings_math_matches_plan_formula() -> None:
     assert savings["net_savings_jpy_ex_tax"] == 2.3
     assert savings["jpcite_cost_jpy_ex_tax"] == 3
     assert savings["jpcite_billable_units"] == 1
+    assert savings["break_even_avoided_tokens"] == 10000
+    assert savings["break_even_met"] is True
+
+
+def test_savings_break_even_false_when_context_too_small() -> None:
+    """A small source can reduce tokens but still not clear the ¥3 break-even."""
+    estimator = TokenCompressionEstimator()
+    savings = estimator.compute_savings(
+        packet_tokens=900,
+        source_tokens=5_000,
+        jpcite_cost_jpy=3,
+        input_price_jpy_per_1m=300.0,
+    )
+    assert savings is not None
+    assert savings["break_even_avoided_tokens"] == 10000
+    assert savings["break_even_met"] is False
+    assert savings["net_savings_jpy_ex_tax"] < 0
 
 
 def test_compute_savings_returns_none_when_price_missing() -> None:

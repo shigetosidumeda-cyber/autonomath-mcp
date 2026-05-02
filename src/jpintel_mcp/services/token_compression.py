@@ -40,6 +40,7 @@ provider's own tokenizer count.
 from __future__ import annotations
 
 import json
+import math
 import re
 from typing import Any, Literal
 
@@ -205,10 +206,15 @@ class TokenCompressionEstimator:
             return None
         if source_tokens is None:
             return None
+        if input_price_jpy_per_1m <= 0:
+            return None
 
         avoided_tokens = max(0, source_tokens - packet_tokens)
         gross_input_savings_jpy = avoided_tokens * (input_price_jpy_per_1m / 1_000_000)
         net_savings_jpy_ex_tax = gross_input_savings_jpy - jpcite_cost_jpy
+        break_even_tokens = math.ceil(
+            jpcite_cost_jpy / (input_price_jpy_per_1m / 1_000_000)
+        )
 
         return {
             "currency": "JPY",
@@ -217,6 +223,10 @@ class TokenCompressionEstimator:
             "jpcite_billable_units": 1,
             "jpcite_cost_jpy_ex_tax": jpcite_cost_jpy,
             "net_savings_jpy_ex_tax": round(net_savings_jpy_ex_tax, 1),
+            "break_even_avoided_tokens": break_even_tokens,
+            "break_even_met": avoided_tokens >= break_even_tokens,
+            "price_input_source": "caller_supplied",
+            "billing_savings_claim": "estimate_not_guarantee",
         }
 
     def compose(
