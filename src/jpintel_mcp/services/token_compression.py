@@ -107,7 +107,7 @@ _CJK_REGEX = re.compile(r"[぀-ゟ゠-ヿ一-鿿]")
 # constant.
 _TOKENS_PER_PDF_PAGE_JP = 700
 
-SourceBasis = Literal["pdf_pages", "html_chars", "unknown"]
+SourceBasis = Literal["pdf_pages", "html_chars", "token_count", "unknown"]
 
 
 class TokenCompressionEstimator:
@@ -135,6 +135,7 @@ class TokenCompressionEstimator:
         source_text: str | None = None,
         source_basis: SourceBasis = "unknown",
         pdf_pages: int | None = None,
+        source_token_count: int | None = None,
     ) -> int | None:
         """Return the heuristic token estimate for the source document.
 
@@ -148,11 +149,16 @@ class TokenCompressionEstimator:
             preferred when available — the most accurate path.
         source_basis
             ``"pdf_pages"`` enables the per-page heuristic when ``pdf_pages``
-            is also supplied. ``"html_chars"`` is reserved for future
-            byte-count-only paths. ``"unknown"`` (default) means we have no
-            measurement and must return ``None``.
+            is also supplied. ``"token_count"`` uses a caller-supplied token
+            count from the tokenizer / model UI they already trust.
+            ``"html_chars"`` is reserved for future byte-count-only paths.
+            ``"unknown"`` (default) means we have no measurement and must
+            return ``None``.
         pdf_pages
             Page count for the ``"pdf_pages"`` basis path.
+        source_token_count
+            Exact or caller-measured source token count for the
+            ``"token_count"`` basis path.
 
         Returns
         -------
@@ -161,7 +167,16 @@ class TokenCompressionEstimator:
             possible. **Never** returns ``0`` to mean "unknown" — ``0``
             means "we measured it, the source is empty".
         """
-        # Most accurate path: char-weighted on raw text.
+        # Most accurate external path: caller counted tokens in the tokenizer
+        # or model UI they use, so we carry that baseline through unchanged.
+        if (
+            source_basis == "token_count"
+            and source_token_count is not None
+            and source_token_count > 0
+        ):
+            return int(source_token_count)
+
+        # Text path: char-weighted heuristic on raw text.
         if source_text is not None:
             return self._estimate_from_text(source_text)
 
@@ -212,6 +227,7 @@ class TokenCompressionEstimator:
         source_text: str | None = None,
         source_basis: SourceBasis | None = None,
         pdf_pages: int | None = None,
+        source_token_count: int | None = None,
         jpcite_cost_jpy: int = 3,
         input_price_jpy_per_1m: float | None = None,
     ) -> dict[str, Any]:
@@ -226,12 +242,23 @@ class TokenCompressionEstimator:
         basis = source_basis if source_basis is not None else "unknown"
         source_tokens: int | None = None
         has_caller_pdf_baseline = basis == "pdf_pages" and pdf_pages is not None
-        if source_url is not None or source_text is not None or has_caller_pdf_baseline:
+        has_caller_token_baseline = (
+            basis == "token_count"
+            and source_token_count is not None
+            and source_token_count > 0
+        )
+        if (
+            source_url is not None
+            or source_text is not None
+            or has_caller_pdf_baseline
+            or has_caller_token_baseline
+        ):
             source_tokens = self.estimate_source_tokens(
                 source_url or "",
                 source_text=source_text,
                 source_basis=basis,
                 pdf_pages=pdf_pages,
+                source_token_count=source_token_count,
             )
 
         if source_tokens is not None:
@@ -254,10 +281,21 @@ class TokenCompressionEstimator:
             "source_tokens_input_source": (
                 "caller_supplied"
                 if source_tokens is not None
-                and (source_text is not None or has_caller_pdf_baseline)
+                and (
+                    source_text is not None
+                    or has_caller_pdf_baseline
+                    or has_caller_token_baseline
+                )
                 else "unknown"
             ),
             "source_pdf_pages": pdf_pages if basis == "pdf_pages" else None,
+            "source_token_count": (
+                int(source_token_count)
+                if basis == "token_count"
+                and source_token_count is not None
+                and source_token_count > 0
+                else None
+            ),
             "estimate_scope": "input_context_only",
             "savings_claim": "estimate_not_guarantee",
         }

@@ -96,6 +96,21 @@ def _get_composer() -> EvidencePacketComposer:
     return _composer
 
 
+def _validate_compression_baseline(
+    source_tokens_basis: Literal["unknown", "pdf_pages", "token_count"],
+    source_token_count: int | None,
+) -> None:
+    """Reject incomplete caller-supplied token baselines."""
+    if source_tokens_basis == "token_count" and source_token_count is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=(
+                "source_token_count is required when "
+                "source_tokens_basis=token_count."
+            ),
+        )
+
+
 def reset_composer() -> None:
     """Drop the cached composer. Tests call this after monkeypatching paths."""
     global _composer, _composer_paths
@@ -384,12 +399,13 @@ def get_evidence_packet(
         ),
     ] = None,
     source_tokens_basis: Annotated[
-        Literal["unknown", "pdf_pages"],
+        Literal["unknown", "pdf_pages", "token_count"],
         Query(
             description=(
                 "Optional caller-supplied baseline for context comparison. "
                 "`unknown` (default) returns packet size only. `pdf_pages` "
                 "uses source_pdf_pages * 700 tokens/page as an estimate. "
+                "`token_count` uses source_token_count exactly as supplied. "
                 "This is input-context estimation only, not a savings guarantee."
             ),
         ),
@@ -402,6 +418,18 @@ def get_evidence_packet(
             description=(
                 "PDF page count the caller would otherwise paste/fetch into "
                 "the LLM. Used only when source_tokens_basis=pdf_pages."
+            ),
+        ),
+    ] = None,
+    source_token_count: Annotated[
+        int | None,
+        Query(
+            ge=1,
+            le=50_000_000,
+            description=(
+                "Caller-measured token count for the source context the LLM "
+                "would otherwise read. Used only when "
+                "source_tokens_basis=token_count."
             ),
         ),
     ] = None,
@@ -418,6 +446,7 @@ def get_evidence_packet(
     ] = "json",
 ) -> Response:
     _t0 = time.perf_counter()
+    _validate_compression_baseline(source_tokens_basis, source_token_count)
     composer = _get_composer()
 
     if subject_kind == "program":
@@ -430,6 +459,7 @@ def get_evidence_packet(
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
+            source_token_count=source_token_count,
         )
     else:
         envelope = composer.compose_for_houjin(
@@ -441,6 +471,7 @@ def get_evidence_packet(
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
+            source_token_count=source_token_count,
         )
 
     if envelope is None:
@@ -481,6 +512,7 @@ def get_evidence_packet(
             "include_rules": include_rules,
             "source_tokens_basis": source_tokens_basis,
             "source_pdf_pages": source_pdf_pages,
+            "source_token_count": source_token_count,
         },
     )
     # §17.D audit seal on paid JSON responses. CSV/MD outputs skip the
@@ -494,6 +526,7 @@ def get_evidence_packet(
                 "subject_id": subject_id,
                 "source_tokens_basis": source_tokens_basis,
                 "source_pdf_pages": source_pdf_pages,
+                "source_token_count": source_token_count,
             },
             api_key_hash=ctx.key_hash,
             conn=conn,
@@ -540,8 +573,9 @@ class EvidencePacketQueryBody(BaseModel):
     include_compression: bool = False
     fields: str = "default"
     input_token_price_jpy_per_1m: float | None = None
-    source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown"
+    source_tokens_basis: Literal["unknown", "pdf_pages", "token_count"] = "unknown"
     source_pdf_pages: Annotated[int | None, Field(ge=1, le=1000)] = None
+    source_token_count: Annotated[int | None, Field(ge=1, le=50_000_000)] = None
 
 
 @router.post(
@@ -563,6 +597,10 @@ def post_evidence_packet_query(
     ] = "json",
 ) -> Response:
     _t0 = time.perf_counter()
+    _validate_compression_baseline(
+        payload.source_tokens_basis,
+        payload.source_token_count,
+    )
     composer = _get_composer()
     envelope = composer.compose_for_query(
         payload.query_text,
@@ -575,6 +613,7 @@ def post_evidence_packet_query(
         input_token_price_jpy_per_1m=payload.input_token_price_jpy_per_1m,
         source_tokens_basis=payload.source_tokens_basis,
         source_pdf_pages=payload.source_pdf_pages,
+        source_token_count=payload.source_token_count,
     )
     latency_ms = int((time.perf_counter() - _t0) * 1000)
     log_usage(
@@ -590,6 +629,7 @@ def post_evidence_packet_query(
             ),
             "source_tokens_basis": payload.source_tokens_basis,
             "source_pdf_pages": payload.source_pdf_pages,
+            "source_token_count": payload.source_token_count,
         },
     )
     # §17.D audit seal — JSON only (see evidence.packet.get above).
@@ -605,6 +645,7 @@ def post_evidence_packet_query(
                 ),
                 "source_tokens_basis": payload.source_tokens_basis,
                 "source_pdf_pages": payload.source_pdf_pages,
+                "source_token_count": payload.source_token_count,
             },
             api_key_hash=ctx.key_hash,
             conn=conn,

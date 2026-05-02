@@ -234,6 +234,46 @@ def test_precomputed_intelligence_query_pdf_pages_compression(
     assert compression["savings_claim"] == "estimate_not_guarantee"
 
 
+def test_precomputed_intelligence_query_token_count_compression(
+    intelligence_client: TestClient,
+) -> None:
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={
+            "q": "省力化",
+            "limit": 1,
+            "source_tokens_basis": "token_count",
+            "source_token_count": 18_500,
+            "input_token_price_jpy_per_1m": 300,
+        },
+    )
+
+    assert response.status_code == 200
+    compression = response.json()["compression"]
+    assert compression["source_tokens_basis"] == "token_count"
+    assert compression["source_tokens_estimate"] == 18_500
+    assert compression["source_token_count"] == 18_500
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["estimate_scope"] == "input_context_only"
+    assert compression["savings_claim"] == "estimate_not_guarantee"
+
+
+def test_precomputed_intelligence_query_token_count_requires_count(
+    intelligence_client: TestClient,
+) -> None:
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={
+            "q": "省力化",
+            "limit": 1,
+            "source_tokens_basis": "token_count",
+        },
+    )
+
+    assert response.status_code == 422
+    assert "source_token_count is required" in response.text
+
+
 def test_precomputed_intelligence_route_is_mounted(
     intelligence_client: TestClient,
 ) -> None:

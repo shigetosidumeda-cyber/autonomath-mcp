@@ -130,6 +130,17 @@ def test_source_basis_pdf_pages_uses_700_per_page() -> None:
     assert result == 7000
 
 
+def test_source_basis_token_count_uses_caller_measurement() -> None:
+    """Caller-measured token counts pass through unchanged."""
+    estimator = TokenCompressionEstimator()
+    result = estimator.estimate_source_tokens(
+        "https://example.gov.jp/notice.pdf",
+        source_basis="token_count",
+        source_token_count=18_500,
+    )
+    assert result == 18_500
+
+
 def test_source_text_overrides_basis() -> None:
     """When source_text is provided, char-weighted estimate is used regardless of basis."""
     estimator = TokenCompressionEstimator()
@@ -197,6 +208,33 @@ def test_compose_no_price_omits_cost_savings() -> None:
     # Other fields still present.
     assert result["estimate_method"] == ESTIMATE_METHOD
     assert result["source_tokens_estimate"] == 7000
+
+
+def test_compose_token_count_baseline_returns_exact_context_estimate() -> None:
+    """token_count lets callers compare against their own LLM/tokenizer baseline."""
+    estimator = TokenCompressionEstimator()
+    packet = {
+        "subject": "monodzukuri_18",
+        "facts": [{"k": "deadline", "v": "2026-07-31"}],
+        "citations": [{"url": "https://example.gov.jp/notice.pdf"}],
+    }
+    result = estimator.compose(
+        packet,
+        source_url="https://example.gov.jp/notice.pdf",
+        source_basis="token_count",
+        source_token_count=18_500,
+        input_price_jpy_per_1m=300.0,
+    )
+
+    assert result["source_tokens_basis"] == "token_count"
+    assert result["source_token_count"] == 18_500
+    assert result["source_tokens_estimate"] == 18_500
+    assert result["source_tokens_input_source"] == "caller_supplied"
+    assert result["avoided_tokens_estimate"] == max(
+        0, 18_500 - result["packet_tokens_estimate"]
+    )
+    assert result["estimate_scope"] == "input_context_only"
+    assert result["savings_claim"] == "estimate_not_guarantee"
 
 
 def test_compose_unknown_source_emits_null_ratio() -> None:

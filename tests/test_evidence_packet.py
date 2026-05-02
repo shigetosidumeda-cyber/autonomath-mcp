@@ -479,6 +479,38 @@ def test_compose_compression_pdf_pages_baseline_returns_context_estimate(
     assert compression["cost_savings_estimate"]["jpcite_cost_jpy_ex_tax"] == 3
 
 
+def test_compose_compression_token_count_baseline_returns_context_estimate(
+    fixture_db: Path,
+) -> None:
+    """Caller-measured token count gives the cleanest LLM-context comparison."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(
+        jpintel_db=settings.db_path, autonomath_db=fixture_db
+    )
+    env = composer.compose_for_program(
+        "UNI-evp-p1",
+        include_compression=True,
+        input_token_price_jpy_per_1m=300.0,
+        source_tokens_basis="token_count",
+        source_token_count=18_500,
+    )
+
+    assert env is not None
+    compression = env["compression"]
+    assert compression["source_tokens_basis"] == "token_count"
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["source_token_count"] == 18_500
+    assert compression["source_tokens_estimate"] == 18_500
+    assert compression["source_pdf_pages"] is None
+    assert compression["avoided_tokens_estimate"] == max(
+        0, 18_500 - compression["packet_tokens_estimate"]
+    )
+    assert compression["estimate_scope"] == "input_context_only"
+    assert compression["savings_claim"] == "estimate_not_guarantee"
+
+
 def test_compose_includes_precomputed_program_summary(fixture_db: Path) -> None:
     """am_program_summary rows surface as compact precomputed basis data."""
     from jpintel_mcp.config import settings
@@ -610,6 +642,39 @@ def test_rest_get_evidence_packet_pdf_pages_compression(client: TestClient) -> N
     assert compression["savings_claim"] == "estimate_not_guarantee"
 
 
+def test_rest_get_evidence_packet_token_count_compression(client: TestClient) -> None:
+    r = client.get(
+        "/v1/evidence/packets/program/UNI-evp-p1",
+        params={
+            "include_compression": "true",
+            "source_tokens_basis": "token_count",
+            "source_token_count": "18500",
+            "input_token_price_jpy_per_1m": "300",
+        },
+    )
+    assert r.status_code == 200, r.text
+    compression = r.json()["compression"]
+    assert compression["source_tokens_basis"] == "token_count"
+    assert compression["source_tokens_estimate"] == 18_500
+    assert compression["source_token_count"] == 18_500
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["savings_claim"] == "estimate_not_guarantee"
+
+
+def test_rest_get_evidence_packet_token_count_requires_count(
+    client: TestClient,
+) -> None:
+    r = client.get(
+        "/v1/evidence/packets/program/UNI-evp-p1",
+        params={
+            "include_compression": "true",
+            "source_tokens_basis": "token_count",
+        },
+    )
+    assert r.status_code == 422
+    assert "source_token_count is required" in r.text
+
+
 def test_rest_post_evidence_packet_query_pdf_pages_compression(
     client: TestClient,
 ) -> None:
@@ -629,6 +694,44 @@ def test_rest_post_evidence_packet_query_pdf_pages_compression(
     assert compression["source_tokens_estimate"] == 7000
     assert compression["source_tokens_input_source"] == "caller_supplied"
     assert compression["estimate_scope"] == "input_context_only"
+
+
+def test_rest_post_evidence_packet_query_token_count_compression(
+    client: TestClient,
+) -> None:
+    r = client.post(
+        "/v1/evidence/packets/query",
+        json={
+            "query_text": "EVP",
+            "limit": 1,
+            "include_compression": True,
+            "source_tokens_basis": "token_count",
+            "source_token_count": 18_500,
+            "input_token_price_jpy_per_1m": 300,
+        },
+    )
+    assert r.status_code == 200, r.text
+    compression = r.json()["compression"]
+    assert compression["source_tokens_basis"] == "token_count"
+    assert compression["source_tokens_estimate"] == 18_500
+    assert compression["source_token_count"] == 18_500
+    assert compression["source_tokens_input_source"] == "caller_supplied"
+    assert compression["estimate_scope"] == "input_context_only"
+
+
+def test_rest_post_evidence_packet_query_token_count_requires_count(
+    client: TestClient,
+) -> None:
+    r = client.post(
+        "/v1/evidence/packets/query",
+        json={
+            "query_text": "EVP",
+            "include_compression": True,
+            "source_tokens_basis": "token_count",
+        },
+    )
+    assert r.status_code == 422
+    assert "source_token_count is required" in r.text
 
 
 def test_rest_get_evidence_packet_404(client: TestClient) -> None:

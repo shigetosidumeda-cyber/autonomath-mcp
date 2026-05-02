@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse, Response
 
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
-from jpintel_mcp.api.evidence import _get_composer
+from jpintel_mcp.api.evidence import _get_composer, _validate_compression_baseline
 from jpintel_mcp.services.evidence_packet import MAX_RECORDS_PER_PACKET
 
 router = APIRouter(prefix="/v1/intelligence", tags=["intelligence"])
@@ -125,12 +125,13 @@ def get_precomputed_intelligence_query(
         ),
     ] = None,
     source_tokens_basis: Annotated[
-        Literal["unknown", "pdf_pages"],
+        Literal["unknown", "pdf_pages", "token_count"],
         Query(
             description=(
                 "Optional caller-supplied baseline for context comparison. "
                 "`unknown` returns packet size only. `pdf_pages` uses "
                 "source_pdf_pages * 700 tokens/page as an estimate. "
+                "`token_count` uses source_token_count exactly as supplied. "
                 "This is input-context estimation only, not a guarantee."
             ),
         ),
@@ -146,12 +147,25 @@ def get_precomputed_intelligence_query(
             ),
         ),
     ] = None,
+    source_token_count: Annotated[
+        int | None,
+        Query(
+            ge=1,
+            le=50_000_000,
+            description=(
+                "Caller-measured token count for the source context the LLM "
+                "would otherwise read. Used only when "
+                "source_tokens_basis=token_count."
+            ),
+        ),
+    ] = None,
     output_format: Annotated[
         Literal["json"],
         Query(description="Only `json` is supported for benchmark bundles."),
     ] = "json",
 ) -> Response:
     _t0 = time.perf_counter()
+    _validate_compression_baseline(source_tokens_basis, source_token_count)
     filters: dict[str, Any] = {}
     if prefecture:
         filters["prefecture"] = prefecture
@@ -170,6 +184,7 @@ def get_precomputed_intelligence_query(
         input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
         source_tokens_basis=source_tokens_basis,
         source_pdf_pages=source_pdf_pages,
+        source_token_count=source_token_count,
     )
     envelope = _annotate_precomputed_bundle(envelope)
 
@@ -186,6 +201,7 @@ def get_precomputed_intelligence_query(
             "filter_keys": sorted(filters),
             "source_tokens_basis": source_tokens_basis,
             "source_pdf_pages": source_pdf_pages,
+            "source_token_count": source_token_count,
         },
     )
     attach_seal_to_body(
@@ -197,6 +213,7 @@ def get_precomputed_intelligence_query(
             "filter_keys": sorted(filters),
             "source_tokens_basis": source_tokens_basis,
             "source_pdf_pages": source_pdf_pages,
+            "source_token_count": source_token_count,
         },
         api_key_hash=ctx.key_hash,
         conn=conn,

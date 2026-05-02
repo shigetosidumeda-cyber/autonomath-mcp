@@ -72,6 +72,9 @@ MAX_RULES_PER_RECORD: int = 50
 #: Subject kinds — closed enum.
 SubjectKind = Literal["program", "houjin", "query"]
 
+#: Caller-supplied baselines accepted by the compression estimator.
+CompressionSourceBasis = Literal["unknown", "pdf_pages", "token_count"]
+
 #: Cache TTL — same posture as _corpus_snapshot._CACHE.
 _CACHE_TTL_SEC: float = 600.0
 
@@ -622,8 +625,9 @@ class EvidencePacketComposer:
         *,
         source_url: str | None,
         input_token_price_jpy_per_1m: float | None,
-        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_tokens_basis: CompressionSourceBasis = "unknown",
         source_pdf_pages: int | None = None,
+        source_token_count: int | None = None,
     ) -> None:
         """Attach a deterministic TokenCompressionEstimator block fail-open."""
         try:
@@ -641,6 +645,7 @@ class EvidencePacketComposer:
                 source_url=source_url,
                 source_basis=source_tokens_basis,
                 pdf_pages=source_pdf_pages,
+                source_token_count=source_token_count,
                 input_price_jpy_per_1m=input_token_price_jpy_per_1m,
             )
         except Exception:  # pragma: no cover - defensive fail-open surface
@@ -714,8 +719,9 @@ class EvidencePacketComposer:
         include_compression: bool,
         fields: str,
         input_token_price_jpy_per_1m: float | None,
-        source_tokens_basis: Literal["unknown", "pdf_pages"],
+        source_tokens_basis: CompressionSourceBasis,
         source_pdf_pages: int | None,
+        source_token_count: int | None,
         corpus_snapshot_id: str,
     ) -> str:
         return "|".join(
@@ -731,6 +737,7 @@ class EvidencePacketComposer:
                 str(input_token_price_jpy_per_1m or ""),
                 source_tokens_basis,
                 str(source_pdf_pages or ""),
+                str(source_token_count or ""),
                 corpus_snapshot_id,
             ]
         )
@@ -1309,8 +1316,9 @@ class EvidencePacketComposer:
         include_compression: bool = False,
         fields: str = "default",
         input_token_price_jpy_per_1m: float | None = None,
-        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_tokens_basis: CompressionSourceBasis = "unknown",
         source_pdf_pages: int | None = None,
+        source_token_count: int | None = None,
     ) -> dict[str, Any] | None:
         """Compose a single-record packet for one program.
 
@@ -1327,6 +1335,7 @@ class EvidencePacketComposer:
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
+            source_token_count=source_token_count,
         )
 
     def compose_for_houjin(
@@ -1338,8 +1347,9 @@ class EvidencePacketComposer:
         include_compression: bool = False,
         fields: str = "default",
         input_token_price_jpy_per_1m: float | None = None,
-        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_tokens_basis: CompressionSourceBasis = "unknown",
         source_pdf_pages: int | None = None,
+        source_token_count: int | None = None,
     ) -> dict[str, Any] | None:
         """Compose a single-record packet for one 法人番号.
 
@@ -1356,6 +1366,7 @@ class EvidencePacketComposer:
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
+            source_token_count=source_token_count,
         )
 
     def compose_for_query(
@@ -1369,8 +1380,9 @@ class EvidencePacketComposer:
         include_compression: bool = False,
         fields: str = "default",
         input_token_price_jpy_per_1m: float | None = None,
-        source_tokens_basis: Literal["unknown", "pdf_pages"] = "unknown",
+        source_tokens_basis: CompressionSourceBasis = "unknown",
         source_pdf_pages: int | None = None,
+        source_token_count: int | None = None,
     ) -> dict[str, Any]:
         """Compose a multi-record packet for a search query.
 
@@ -1389,6 +1401,7 @@ class EvidencePacketComposer:
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
+            source_token_count=source_token_count,
             corpus_snapshot_id=snapshot_id,
         )
         cached = _cache_get(cache_key)
@@ -1428,6 +1441,7 @@ class EvidencePacketComposer:
                 input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
                 source_tokens_basis="unknown",
                 source_pdf_pages=None,
+                source_token_count=None,
             )
             if inner is None:
                 continue
@@ -1522,6 +1536,7 @@ class EvidencePacketComposer:
                 input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
                 source_tokens_basis=source_tokens_basis,
                 source_pdf_pages=source_pdf_pages,
+                source_token_count=source_token_count,
             )
 
         _attach_known_gaps_inventory(envelope)
@@ -1553,8 +1568,9 @@ class EvidencePacketComposer:
         include_compression: bool,
         fields: str,
         input_token_price_jpy_per_1m: float | None,
-        source_tokens_basis: Literal["unknown", "pdf_pages"],
+        source_tokens_basis: CompressionSourceBasis,
         source_pdf_pages: int | None,
+        source_token_count: int | None,
     ) -> dict[str, Any] | None:
         # 1. Cache check (snapshot_id is part of the key — re-derived per
         #    call, cheap because _corpus_snapshot has its own 5min cache).
@@ -1569,6 +1585,7 @@ class EvidencePacketComposer:
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
+            source_token_count=source_token_count,
             corpus_snapshot_id=snapshot_id,
         )
         cached = _cache_get(cache_key)
@@ -1715,6 +1732,7 @@ class EvidencePacketComposer:
                 input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
                 source_tokens_basis=source_tokens_basis,
                 source_pdf_pages=source_pdf_pages,
+                source_token_count=source_token_count,
             )
 
         _attach_known_gaps_inventory(envelope)
