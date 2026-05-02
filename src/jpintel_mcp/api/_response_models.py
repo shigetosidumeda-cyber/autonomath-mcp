@@ -245,6 +245,10 @@ class EvidencePacketRecord(BaseModel):
     authority_name: str | None = None
     prefecture: str | None = None
     tier: str | None = None
+    aliases: list[dict[str, Any]] | None = Field(
+        default=None,
+        description="Optional user-facing aliases, abbreviations, and old names.",
+    )
     facts: list[dict[str, Any]] | None = Field(
         default=None, description="Optional source-linked fact rows."
     )

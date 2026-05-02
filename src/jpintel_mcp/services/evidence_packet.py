@@ -106,6 +106,17 @@ _RECENT_CHANGE_FIELD_LABELS: dict[str, str] = {
 
 _RECENT_CHANGE_CAP: int = 5
 
+_ALIAS_CAP: int = 10
+_ALIAS_KIND_PRIORITY: dict[str, int] = {
+    "canonical": 0,
+    "abbreviation": 1,
+    "kana": 2,
+    "partial": 3,
+    "legacy": 4,
+    "english": 5,
+    "listed": 6,
+}
+
 #: Cache TTL — same posture as _corpus_snapshot._CACHE.
 _CACHE_TTL_SEC: float = 600.0
 
@@ -686,6 +697,123 @@ class EvidencePacketComposer:
                 summary["generated_at"] = precomputed["generated_at"]
             return summary
         return None
+
+    @staticmethod
+    def _clean_alias_text(alias: Any, primary_name: str | None) -> str | None:
+        if not isinstance(alias, str):
+            return None
+        text = unicodedata.normalize("NFKC", alias).strip()
+        if not text or len(text) > 80:
+            return None
+        if text == (primary_name or "").strip():
+            return None
+        lowered = text.lower()
+        if lowered.startswith(("program:", "http://", "https://")):
+            return None
+        return text
+
+    @staticmethod
+    def _guess_alias_language(text: str) -> str:
+        return "en" if text.isascii() else "ja"
+
+    def _fetch_aliases(
+        self,
+        am_conn: sqlite3.Connection,
+        canonical_id: str,
+        unified_id: str | None,
+        primary_name: str | None,
+        cap: int = _ALIAS_CAP,
+    ) -> list[dict[str, Any]]:
+        """Return compact, user-facing aliases/old names for the program."""
+        aliases: list[dict[str, Any]] = []
+        seen: set[str] = set()
+
+        def add_alias(
+            alias: Any,
+            *,
+            kind: str,
+            language: str | None = None,
+            source: str,
+        ) -> None:
+            text = self._clean_alias_text(alias, primary_name)
+            if text is None or text in seen or len(aliases) >= cap:
+                return
+            seen.add(text)
+            aliases.append(
+                {
+                    "text": text,
+                    "kind": kind,
+                    "language": language or self._guess_alias_language(text),
+                    "source": source,
+                }
+            )
+
+        jpi_cols = self._table_columns(am_conn, "jpi_programs")
+        if unified_id and {"unified_id", "aliases_json"}.issubset(jpi_cols):
+            try:
+                row = am_conn.execute(
+                    "SELECT aliases_json FROM jpi_programs WHERE unified_id = ? LIMIT 1",
+                    (unified_id,),
+                ).fetchone()
+            except sqlite3.OperationalError:
+                row = None
+            if row is not None and row["aliases_json"]:
+                try:
+                    import json as _json
+
+                    parsed = _json.loads(row["aliases_json"])
+                except (TypeError, ValueError):
+                    parsed = []
+                if isinstance(parsed, list):
+                    for alias in parsed:
+                        add_alias(
+                            alias,
+                            kind="listed",
+                            source="jpi_programs.aliases_json",
+                        )
+
+        alias_cols = self._table_columns(am_conn, "am_alias")
+        required = {"canonical_id", "alias", "alias_kind"}
+        if canonical_id and required.issubset(alias_cols):
+            language_expr = "language" if "language" in alias_cols else "NULL AS language"
+            entity_filter = (
+                "AND (entity_table = 'am_entities' OR entity_table IS NULL)"
+                if "entity_table" in alias_cols
+                else ""
+            )
+            order_col = "id" if "id" in alias_cols else "rowid"
+            try:
+                rows = am_conn.execute(
+                    f"""SELECT alias, alias_kind, {language_expr}
+                          FROM am_alias
+                         WHERE canonical_id = ?
+                           {entity_filter}
+                      ORDER BY CASE alias_kind
+                                 WHEN 'canonical' THEN 0
+                                 WHEN 'abbreviation' THEN 1
+                                 WHEN 'kana' THEN 2
+                                 WHEN 'partial' THEN 3
+                                 WHEN 'legacy' THEN 4
+                                 WHEN 'english' THEN 5
+                                 ELSE 9
+                               END,
+                               {order_col} ASC
+                         LIMIT 50""",
+                    (canonical_id,),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                rows = []
+            for row in rows:
+                kind = row["alias_kind"] or "alias"
+                if kind not in _ALIAS_KIND_PRIORITY:
+                    kind = "alias"
+                add_alias(
+                    row["alias"],
+                    kind=kind,
+                    language=row["language"],
+                    source="am_alias",
+                )
+        return aliases
 
     def _fetch_rules_for_program(
         self,
@@ -1767,6 +1895,7 @@ class EvidencePacketComposer:
         precomputed_summary: dict[str, Any] | None = None
         recent_changes: list[dict[str, Any]] = []
         source_health: dict[str, Any] | None = None
+        aliases: list[dict[str, Any]] = []
         try:
             base: dict[str, Any]
             canonical_id = ""
@@ -1816,6 +1945,12 @@ class EvidencePacketComposer:
                     base.get("primary_source_url"),
                     source_fetched_at=base.get("source_fetched_at"),
                 )
+                aliases = self._fetch_aliases(
+                    am,
+                    canonical_id,
+                    base.get("program_id"),
+                    base.get("primary_name"),
+                )
         finally:
             am.close()
 
@@ -1860,6 +1995,8 @@ class EvidencePacketComposer:
             record["recent_changes"] = recent_changes
         if source_health is not None:
             record["source_health"] = source_health
+        if aliases:
+            record["aliases"] = aliases
 
         coverage_score = self._coverage_score([record])
 

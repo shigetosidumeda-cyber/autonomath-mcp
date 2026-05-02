@@ -88,12 +88,22 @@ def _build_fixture_autonomath_db(path: Path) -> None:
             CREATE TABLE jpi_programs (
                 unified_id        TEXT PRIMARY KEY,
                 primary_name      TEXT NOT NULL,
+                aliases_json      TEXT,
                 authority_name    TEXT,
                 prefecture        TEXT,
                 tier              TEXT,
                 source_url        TEXT,
                 source_fetched_at TEXT,
                 updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE TABLE am_alias (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                entity_table TEXT,
+                canonical_id TEXT NOT NULL,
+                alias        TEXT NOT NULL,
+                alias_kind   TEXT NOT NULL,
+                created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+                language     TEXT NOT NULL DEFAULT 'ja'
             );
             CREATE TABLE entity_id_map (
                 jpi_unified_id   TEXT NOT NULL,
@@ -251,6 +261,31 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                     "A",
                     "https://www.example.go.jp/evp2.html",
                     "2026-04-25T00:00:00",
+                ),
+            ],
+        )
+        con.execute(
+            "UPDATE jpi_programs SET aliases_json = ? WHERE unified_id = ?",
+            ('["P1補助", "EVP P1"]', "UNI-evp-p1"),
+        )
+        con.executemany(
+            "INSERT INTO am_alias("
+            "entity_table, canonical_id, alias, alias_kind, language) "
+            "VALUES (?,?,?,?,?)",
+            [
+                (
+                    "am_entities",
+                    "program:evp:p1",
+                    "EVPテスト",
+                    "abbreviation",
+                    "ja",
+                ),
+                (
+                    "am_entities",
+                    "program:evp:p1",
+                    "program:evp:p1-internal",
+                    "legacy",
+                    "ja",
                 ),
             ],
         )
@@ -600,6 +635,39 @@ def test_compose_includes_source_health_without_live_fetch(fixture_db: Path) -> 
         "license": "gov_standard_v2.0",
         "verification_status": "verified",
     }
+
+
+def test_compose_includes_user_facing_aliases(fixture_db: Path) -> None:
+    """Aliases help LLMs resolve abbreviations while hiding ID-like aliases."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_program("UNI-evp-p1")
+    assert env is not None
+
+    aliases = env["records"][0]["aliases"]
+    assert aliases == [
+        {
+            "text": "P1補助",
+            "kind": "listed",
+            "language": "ja",
+            "source": "jpi_programs.aliases_json",
+        },
+        {
+            "text": "EVP P1",
+            "kind": "listed",
+            "language": "en",
+            "source": "jpi_programs.aliases_json",
+        },
+        {
+            "text": "EVPテスト",
+            "kind": "abbreviation",
+            "language": "ja",
+            "source": "am_alias",
+        },
+    ]
+    assert all(not alias["text"].startswith("program:") for alias in aliases)
 
 
 def test_query_records_include_precomputed_program_summary(

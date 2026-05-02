@@ -5803,6 +5803,22 @@
         "additionalProperties": true,
         "description": "One source-linked record inside an Evidence Packet.",
         "properties": {
+          "aliases": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional user-facing aliases, abbreviations, and old names.",
+            "title": "Aliases"
+          },
           "authority_name": {
             "anyOf": [
               {
