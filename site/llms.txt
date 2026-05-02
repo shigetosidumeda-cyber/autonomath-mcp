@@ -33,7 +33,7 @@ Use jpcite as the evidence layer behind ChatGPT / Claude / Gemini: ask the LLM t
 - [文脈トークン削減の条件](https://jpcite.com/qa/llm-evidence/context-savings.html): offline probe summary. On 2026-05-02, 30 benchmark queries returned Evidence Packets estimated at 338-1,352 tokens, median 566 tokens. This measures packet size, not guaranteed LLM bill reduction.
 - [Evidence Pre-fetchとは](https://jpcite.com/qa/llm-evidence/evidence-prefetch.html): where jpcite sits before answer generation, and what source_url / fetched_at / corpus_snapshot_id fields mean.
 - [Custom GPTに日本の補助金Evidence APIを追加する方法](https://jpcite.com/qa/llm-evidence/custom-gpt-japanese-subsidy-api.html): import `https://api.jpcite.com/v1/openapi.json`, then call jpcite Actions before answering Japanese subsidy / public-program questions.
-- REST comparison hook: pass `include_compression=true&source_tokens_basis=pdf_pages&source_pdf_pages=<N>` to Evidence Packet endpoints when the caller knows the PDF-page baseline. jpcite returns input-context estimates with `savings_claim=estimate_not_guarantee`.
+- REST comparison hook: pass `include_compression=true&source_tokens_basis=token_count&source_token_count=<tokens>` when the caller already knows the source-token baseline from their LLM UI or tokenizer. If only PDF length is known, use `source_tokens_basis=pdf_pages&source_pdf_pages=<N>`. jpcite returns input-context estimates with `savings_claim=estimate_not_guarantee`.
 
 ### Sample queries (paste into your AI agent)
 

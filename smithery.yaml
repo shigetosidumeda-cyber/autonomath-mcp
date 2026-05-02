@@ -18,7 +18,7 @@ configSchema:
       type: string
       default: "https://api.jpcite.com"
       description: >-
-        Override the API base URL. Only set this for self-hosted or staging deployments.
+        Override the API base URL only when instructed by jpcite support.
     autonomathApiKey:
       type: string
       description: >-
@@ -42,22 +42,17 @@ commandFunction: |-
 
 metadata:
   version: "0.3.2"
-  displayName: "jpcite (autonomath-mcp) — 日本の制度 MCP (93 tools)"
+  displayName: "jpcite — Japanese public-program evidence MCP"
   description: >-
-    Evidence-first MCP server over Japanese institutional data. Each row carries a
-    primary-source URL + content_hash + fetched_at on 99%+ of rows; aggregators are
-    excluded. Coverage: 11,684 searchable subsidies/loans/tax incentives/certifications
-    + 154 laws full-text + 9,484 law catalog stubs (e-Gov, CC-BY) + 2,065 court decisions
-    + 50 tax rulesets + 13,801 国税庁 invoice registrants (PDL v1.0) + 2,286 採択事例
-    + 1,185 行政処分 + 22,258 enforcement-detail rows + 362 bids + 181 exclusion /
-    prerequisite rules. 93 default-on MCP tools (39 jpintel core + 3 audit /
-    composition + 25 jpcite generic + 4 V4 universal + 5 static-resource tools
-    + 4 NTA corpus tools + 10 composition tools + 3 industry-pack tools). Protocol
-    2025-06-18, stdio. No LLM call inside the service —
-    deterministic SQL + Python over the corpus snapshot. ¥3/req metered (税込 ¥3.30);
-    anonymous 3 req/day per IP free (JST midnight reset, no signup). Not legal /
-    tax / 行政書士 advice — verify primary sources before any business decision.
-    Operator: Bookyou株式会社 (T8010001213708, info@bookyou.net).
+    Evidence-prefetch MCP for Japanese public-program research. Use it before
+    GPT, Claude, Cursor, or RAG answer generation when the alternative is
+    pasting long PDFs, ministry pages, or search results into the model. jpcite
+    returns compact source-linked Evidence Packets with source_url, fetched_at,
+    provenance, known_gaps, and compatibility rules. The service uses
+    deterministic SQL + Python over a corpus snapshot and makes no LLM call
+    inside the request path. Context-size estimates are workload-dependent and
+    not billing guarantees. Pricing is ¥3/request tax-exclusive (¥3.30
+    tax-inclusive); anonymous access is 3 requests/day per IP.
   icon: "https://jpcite.com/assets/mark.svg"
   iconUrl: "https://jpcite.com/assets/favicon-v2.svg"
   homepage: "https://jpcite.com"

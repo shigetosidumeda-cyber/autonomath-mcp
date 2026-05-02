@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — 日本の制度を AI から検索できる REST + MCP API。</title>
-<meta name="description" content="AI が回答を書く前に一次資料 URL・取得時刻・根拠項目を取得する Evidence prefetch API。日本の制度、法令、判例、税制、適格事業者、採択事例、行政処分を REST + MCP で検索。¥3/リクエスト、匿名 3/日 無料。">
+<meta name="description" content="GPT/Claude/Cursor が回答を書く前に、日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得する REST + MCP API。文脈サイズ比較は条件依存、¥3/リクエスト。">
 
-<meta property="og:title" content="jpcite — 日本の制度データを 5 つの形で">
-<meta property="og:description" content="API + MCP / LINE bot / 法令改正アラート / 埋込ウィジェット / 士業 案件紹介。 日本の公的制度 14,472 件を用途別に。">
+<meta property="og:title" content="jpcite — 日本の制度根拠を AI に渡す Evidence API">
+<meta property="og:description" content="長いPDFや公式ページをLLMへ渡す前に、一次資料URL・取得時刻・既知の欠落を短いEvidence Packetで取得。文脈サイズ比較は条件依存。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -18,8 +18,8 @@
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="jpcite — 日本の制度データを 5 つの形で">
-<meta name="twitter:description" content="API + MCP / LINE bot / 法令アラート / 埋込ウィジェット / 士業 案件紹介。 日本の制度データを届けたい場所へ。">
+<meta name="twitter:title" content="jpcite — 日本の制度根拠を AI に渡す Evidence API">
+<meta name="twitter:description" content="GPT/Claude/Cursorが回答を書く前に、一次資料URL付きEvidence Packetを取得。文脈サイズ比較は条件依存。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/">
@@ -28,6 +28,7 @@
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, Japanese)" href="/llms.txt">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/llms.en.txt">
+<link rel="service-desc" type="application/openapi+json" href="https://api.jpcite.com/v1/openapi.json">
 <link type="text/plain" rel="author" href="/humans.txt">
 <link rel="alternate" type="application/rss+xml" title="jpcite お知らせ" href="/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="jpcite Announcements (English)" href="/en/rss.xml">
@@ -51,7 +52,7 @@
   "@type": "SoftwareApplication",
   "name": "jpcite",
   "alternateName": "jpcite",
-  "description": "日本の公的制度 (補助金・融資・税制・認定制度) を 5 つの形 (API + MCP / LINE bot / 法令改正アラート / 埋込ウィジェット / 士業 案件紹介) で提供。 制度 14,472 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185、 排他ルール 181 本、 99% 以上の行に一次資料 URL と取得時刻を付与。",
+  "description": "GPT/Claude/Cursor が回答を書く前に、日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得する REST + MCP API。文脈サイズ比較は条件依存で、請求額削減を保証するものではありません。",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio, LINE, Web, Email)",
   "url": "https://jpcite.com/",
@@ -66,6 +67,8 @@
   "featureList": [
     "制度 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
     "申請可否を機械判定する排他・前提ルール 181 本",
+    "Evidence Packet: source_url、source_fetched_at、corpus_snapshot_id、license、quality.known_gaps をまとめた LLM 入力用パケット",
+    "caller-supplied token baseline と返却パケット推定トークン数を比較できる input-context estimate (削減保証ではありません)",
     "MCP プロトコル 2025-06-18 対応、 93 ツールを Claude Desktop / Cursor から直接呼び出し可能",
     "日本語の高速全文検索",
     "出典 URL と更新日時を99%以上に付与、 一次資料 99% 以上、 省庁・自治体・公庫の公式ページに直リンク"

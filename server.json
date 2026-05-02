@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
-  "description": "jpcite (autonomath-mcp): evidence-first MCP over Japanese gov data — 11,684 programs / 9,484 laws / 22,258 enforcement / 13,801 invoice registrants. 93 tools, primary-source URL + fetched_at on 99%+ rows. ¥3/req metered; anon 3/day free.",
+  "description": "jpcite: evidence-prefetch MCP for Japanese public-program research. Use before GPT, Claude, Cursor, or RAG answer generation to fetch compact source-linked Evidence Packets with source_url, fetched_at, known_gaps, and compatibility rules. Context-size estimates are workload-dependent and not billing guarantees. Package identifier autonomath-mcp is retained for compatibility.",
   "version": "0.3.2",
   "repository": {
     "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
@@ -22,7 +22,6 @@
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
       "publisher": "Bookyou株式会社",
-      "publisher_invoice_registration_number": "T8010001213708",
       "contact": "info@bookyou.net",
       "tool_count": 93,
       "resource_count": 28,
@@ -134,12 +133,12 @@
         },
         {
           "uri": "autonomath://taxonomies/crop_library",
-          "name": "Taxonomy: crop_library (agri)",
+          "name": "Taxonomy: crop_library",
           "mimeType": "application/json"
         },
         {
           "uri": "autonomath://taxonomies/exclusion_rules",
-          "name": "Taxonomy: exclusion_rules (agri)",
+          "name": "Taxonomy: exclusion_rules",
           "mimeType": "application/json"
         },
         {

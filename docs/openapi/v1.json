@@ -5431,11 +5431,25 @@
             ],
             "title": "Source Pdf Pages"
           },
+          "source_token_count": {
+            "anyOf": [
+              {
+                "maximum": 50000000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Token Count"
+          },
           "source_tokens_basis": {
             "default": "unknown",
             "enum": [
               "unknown",
-              "pdf_pages"
+              "pdf_pages",
+              "token_count"
             ],
             "title": "Source Tokens Basis",
             "type": "string"
@@ -18755,16 +18769,17 @@
             }
           },
           {
-            "description": "Optional caller-supplied baseline for context comparison. `unknown` (default) returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. This is input-context estimation only, not a savings guarantee.",
+            "description": "Optional caller-supplied baseline for context comparison. `unknown` (default) returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a savings guarantee.",
             "in": "query",
             "name": "source_tokens_basis",
             "required": false,
             "schema": {
               "default": "unknown",
-              "description": "Optional caller-supplied baseline for context comparison. `unknown` (default) returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. This is input-context estimation only, not a savings guarantee.",
+              "description": "Optional caller-supplied baseline for context comparison. `unknown` (default) returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a savings guarantee.",
               "enum": [
                 "unknown",
-                "pdf_pages"
+                "pdf_pages",
+                "token_count"
               ],
               "title": "Source Tokens Basis",
               "type": "string"
@@ -18788,6 +18803,26 @@
               ],
               "description": "PDF page count the caller would otherwise paste/fetch into the LLM. Used only when source_tokens_basis=pdf_pages.",
               "title": "Source Pdf Pages"
+            }
+          },
+          {
+            "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
+            "in": "query",
+            "name": "source_token_count",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 50000000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
+              "title": "Source Token Count"
             }
           },
           {
@@ -20324,16 +20359,17 @@
             }
           },
           {
-            "description": "Optional caller-supplied baseline for context comparison. `unknown` returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. This is input-context estimation only, not a guarantee.",
+            "description": "Optional caller-supplied baseline for context comparison. `unknown` returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a guarantee.",
             "in": "query",
             "name": "source_tokens_basis",
             "required": false,
             "schema": {
               "default": "unknown",
-              "description": "Optional caller-supplied baseline for context comparison. `unknown` returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. This is input-context estimation only, not a guarantee.",
+              "description": "Optional caller-supplied baseline for context comparison. `unknown` returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a guarantee.",
               "enum": [
                 "unknown",
-                "pdf_pages"
+                "pdf_pages",
+                "token_count"
               ],
               "title": "Source Tokens Basis",
               "type": "string"
@@ -20357,6 +20393,26 @@
               ],
               "description": "PDF page count the caller would otherwise paste/fetch into the LLM. Used only when source_tokens_basis=pdf_pages.",
               "title": "Source Pdf Pages"
+            }
+          },
+          {
+            "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
+            "in": "query",
+            "name": "source_token_count",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 50000000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
+              "title": "Source Token Count"
             }
           },
           {
