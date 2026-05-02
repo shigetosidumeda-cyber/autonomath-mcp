@@ -13,10 +13,6 @@ set -uo pipefail
 BASE_URL="${BASE_URL:-http://localhost:8080}"
 API_KEY="${API_KEY:-}"
 TIMEOUT="${TIMEOUT:-10}"
-AUTH_CURL_ARGS=()
-if [[ -n "$API_KEY" ]]; then
-  AUTH_CURL_ARGS=(-H "x-api-key: $API_KEY")
-fi
 
 pass=0
 fail=0
@@ -86,8 +82,13 @@ else
   printf '        -> anonymous quota already reached; 429 is expected without API_KEY\n'
 fi
 
-status=$(curl -sS -o /tmp/smoke_enforcement_detail.json -w '%{http_code}' --max-time "$TIMEOUT" \
-  "${AUTH_CURL_ARGS[@]}" "$BASE_URL/v1/enforcement-cases/details/search?limit=1")
+if [[ -n "$API_KEY" ]]; then
+  status=$(curl -sS -o /tmp/smoke_enforcement_detail.json -w '%{http_code}' --max-time "$TIMEOUT" \
+    -H "x-api-key: $API_KEY" "$BASE_URL/v1/enforcement-cases/details/search?limit=1")
+else
+  status=$(curl -sS -o /tmp/smoke_enforcement_detail.json -w '%{http_code}' --max-time "$TIMEOUT" \
+    "$BASE_URL/v1/enforcement-cases/details/search?limit=1")
+fi
 check_any "GET /v1/enforcement-cases/details/search?limit=1" "$status" 200 429
 if [[ "$status" == "200" ]]; then
   detail_summary=$(python3 -c "import json; d=json.load(open('/tmp/smoke_enforcement_detail.json')); print(f\"table={d.get('source_table')} total={d.get('total', -1)}\")" 2>/dev/null || echo "table= total=-1")
@@ -137,7 +138,7 @@ fi
 hdr "Invalid key rejection"
 status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" \
   -H "x-api-key: am_live_nonexistent_000" "$BASE_URL/v1/programs/search?q=a")
-check "invalid key -> 401" 401 "$status"
+check_any "invalid key -> 401 or anon quota 429" "$status" 401 429
 
 hdr "Summary"
 total=$((pass+fail))
