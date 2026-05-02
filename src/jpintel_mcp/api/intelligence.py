@@ -12,7 +12,10 @@ from typing import Annotated, Any, Literal
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse, Response
 
-from jpintel_mcp.api._response_models import PrecomputedIntelligenceBundle
+from jpintel_mcp.api._response_models import (
+    PRECOMPUTED_INTELLIGENCE_EXAMPLE,
+    PrecomputedIntelligenceBundle,
+)
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.api.evidence import _get_composer, _validate_compression_baseline
@@ -74,7 +77,14 @@ def _annotate_precomputed_bundle(envelope: dict[str, Any]) -> dict[str, Any]:
         "or a request-time LLM call. Optional compression fields are "
         "input-context estimates, not external provider billing guarantees."
     ),
-    responses={200: {"model": PrecomputedIntelligenceBundle}},
+    responses={
+        200: {
+            "model": PrecomputedIntelligenceBundle,
+            "content": {
+                "application/json": {"example": PRECOMPUTED_INTELLIGENCE_EXAMPLE}
+            },
+        }
+    },
 )
 def get_precomputed_intelligence_query(
     q: Annotated[

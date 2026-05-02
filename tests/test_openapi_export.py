@@ -55,6 +55,9 @@ def test_evidence_prefetch_openapi_has_non_empty_response_schema() -> None:
             "application/json"
         ]["schema"]
         assert response_schema, f"{method.upper()} {path} has empty 200 schema"
+        assert operation["responses"]["200"]["content"]["application/json"][
+            "example"
+        ]
 
 
 def test_evidence_prefetch_openapi_describes_context_estimate_limits() -> None:
@@ -74,3 +77,30 @@ def test_evidence_prefetch_openapi_describes_context_estimate_limits() -> None:
     assert "not external provider billing guarantees" in query_desc
     assert "LLM context prefetch" in intelligence_desc
     assert "without live web search" in intelligence_desc
+
+
+def test_evidence_prefetch_openapi_marks_core_fields_required() -> None:
+    schema = json.loads(
+        (REPO_ROOT / "docs" / "openapi" / "v1.json").read_text(encoding="utf-8")
+    )
+    components = schema["components"]["schemas"]
+    envelope_required = set(components["EvidencePacketEnvelope"]["required"])
+    precomputed_required = set(
+        components["PrecomputedIntelligenceBundle"]["required"]
+    )
+
+    assert {"records", "quality", "verification"} <= envelope_required
+    assert {
+        "bundle_kind",
+        "bundle_id",
+        "answer_basis",
+        "records_returned",
+        "precomputed_record_count",
+        "precomputed",
+        "usage",
+    } <= precomputed_required
+
+    example = components["PrecomputedIntelligenceBundle"]["example"]
+    assert example["bundle_kind"] == "precomputed_intelligence"
+    assert example["precomputed"]["available"] is True
+    assert example["usage"]["web_search_required"] is False

@@ -41,7 +41,10 @@ from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
-from jpintel_mcp.api._response_models import EvidencePacketEnvelope
+from jpintel_mcp.api._response_models import (
+    EVIDENCE_PACKET_EXAMPLE,
+    EvidencePacketEnvelope,
+)
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._license_gate import (
     REDISTRIBUTABLE_LICENSES,
@@ -357,7 +360,12 @@ def _dispatch_format(
         "compression fields are input-context estimates, not external "
         "provider billing guarantees."
     ),
-    responses={200: {"model": EvidencePacketEnvelope}},
+    responses={
+        200: {
+            "model": EvidencePacketEnvelope,
+            "content": {"application/json": {"example": EVIDENCE_PACKET_EXAMPLE}},
+        }
+    },
 )
 def get_evidence_packet(
     subject_kind: Annotated[
@@ -596,7 +604,12 @@ class EvidencePacketQueryBody(BaseModel):
         "`_warning=\"truncated\"`. Optional compression fields are "
         "input-context estimates, not external provider billing guarantees."
     ),
-    responses={200: {"model": EvidencePacketEnvelope}},
+    responses={
+        200: {
+            "model": EvidencePacketEnvelope,
+            "content": {"application/json": {"example": EVIDENCE_PACKET_EXAMPLE}},
+        }
+    },
 )
 def post_evidence_packet_query(
     payload: EvidencePacketQueryBody,

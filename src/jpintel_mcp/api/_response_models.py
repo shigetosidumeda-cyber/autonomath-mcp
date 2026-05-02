@@ -48,6 +48,49 @@ T = TypeVar("T")
 # tolerates extra keys. Defined once so the rule is grep-able.
 _ALLOW_EXTRA: ClassVar[ConfigDict] = ConfigDict(extra="allow")
 
+EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
+    "packet_id": "evp_example",
+    "generated_at": "2026-05-02T12:00:00+09:00",
+    "api_version": "v1",
+    "corpus_snapshot_id": "snap_20260502",
+    "query": {
+        "user_intent": "Tokyo manufacturer subsidy evidence",
+        "normalized_filters": {"prefecture": "Tokyo"},
+    },
+    "answer_not_included": True,
+    "records": [
+        {
+            "entity_id": "program:example",
+            "primary_name": "Example public program",
+            "record_kind": "program",
+            "source_url": "https://example.go.jp/program",
+            "authority_name": "Example authority",
+            "precomputed": {
+                "basis": "am_program_summary",
+                "summaries": {"200": "Short source-linked evidence summary."},
+            },
+        }
+    ],
+    "quality": {
+        "freshness_bucket": "current",
+        "coverage_score": 0.86,
+        "known_gaps": [],
+        "human_review_required": False,
+    },
+    "verification": {
+        "replay_endpoint": "/v1/programs/search?q=...",
+        "freshness_endpoint": "/v1/meta/freshness",
+    },
+    "compression": {
+        "packet_tokens_estimate": 566,
+        "source_tokens_estimate": 14000,
+        "source_tokens_basis": "pdf_pages",
+        "source_pdf_pages": 20,
+        "estimate_scope": "input_context_only",
+        "savings_claim": "estimate_not_guarantee",
+    },
+}
+
 
 # ---------------------------------------------------------------------------
 # Generic envelopes
@@ -187,6 +230,14 @@ class EvidencePacketRecord(BaseModel):
     source_url: str | None = Field(
         default=None, description="Primary source URL when known."
     )
+    source_fetched_at: str | None = Field(
+        default=None,
+        description="Fetch timestamp for the primary source when known.",
+    )
+    fact_provenance_coverage_pct: float | None = Field(
+        default=None,
+        description="Share of included facts that carry source provenance.",
+    )
     authority_name: str | None = None
     prefecture: str | None = None
     tier: str | None = None
@@ -202,57 +253,33 @@ class EvidencePacketRecord(BaseModel):
     )
 
 
+class EvidencePacketQuality(BaseModel):
+    """Quality and gap metadata callers should inspect before answering."""
+
+    model_config = _ALLOW_EXTRA
+
+    freshness_bucket: str | None = None
+    coverage_score: float | None = None
+    known_gaps: list[str] = Field(default_factory=list)
+    human_review_required: bool | None = None
+
+
+class EvidencePacketVerification(BaseModel):
+    """Replay and freshness endpoints for evidence verification."""
+
+    model_config = _ALLOW_EXTRA
+
+    replay_endpoint: str | None = None
+    provenance_endpoint: str | None = None
+    freshness_endpoint: str | None = None
+
+
 class EvidencePacketEnvelope(BaseModel):
     """Compact source-linked packet for LLM evidence prefetch."""
 
     model_config = ConfigDict(
         extra="allow",
-        json_schema_extra={
-            "example": {
-                "packet_id": "evp_example",
-                "generated_at": "2026-05-02T12:00:00+09:00",
-                "api_version": "v1",
-                "corpus_snapshot_id": "snap_20260502",
-                "query": {
-                    "user_intent": "Tokyo manufacturer subsidy evidence",
-                    "normalized_filters": {"prefecture": "Tokyo"},
-                },
-                "answer_not_included": True,
-                "records": [
-                    {
-                        "entity_id": "program:example",
-                        "primary_name": "Example public program",
-                        "record_kind": "program",
-                        "source_url": "https://example.go.jp/program",
-                        "authority_name": "Example authority",
-                        "precomputed": {
-                            "basis": "am_program_summary",
-                            "summaries": {
-                                "200": "Short source-linked evidence summary."
-                            },
-                        },
-                    }
-                ],
-                "quality": {
-                    "freshness_bucket": "current",
-                    "coverage_score": 0.86,
-                    "known_gaps": [],
-                    "human_review_required": False,
-                },
-                "verification": {
-                    "replay_endpoint": "/v1/programs/search?q=...",
-                    "freshness_endpoint": "/v1/meta/freshness",
-                },
-                "compression": {
-                    "packet_tokens_estimate": 566,
-                    "source_tokens_estimate": 14000,
-                    "source_tokens_basis": "pdf_pages",
-                    "source_pdf_pages": 20,
-                    "estimate_scope": "input_context_only",
-                    "savings_claim": "estimate_not_guarantee",
-                },
-            }
-        },
+        json_schema_extra={"example": EVIDENCE_PACKET_EXAMPLE},
     )
 
     packet_id: str
@@ -261,22 +288,74 @@ class EvidencePacketEnvelope(BaseModel):
     corpus_snapshot_id: str
     query: dict[str, Any]
     answer_not_included: bool = True
-    records: list[EvidencePacketRecord] = Field(default_factory=list)
-    quality: dict[str, Any] = Field(default_factory=dict)
-    verification: dict[str, Any] = Field(default_factory=dict)
+    records: list[EvidencePacketRecord]
+    quality: EvidencePacketQuality
+    verification: EvidencePacketVerification
     compression: EvidencePacketCompression | None = None
+
+
+class PrecomputedMetadata(BaseModel):
+    """Metadata describing deterministic precomputed corpus artifacts."""
+
+    model_config = _ALLOW_EXTRA
+
+    available: bool
+    basis_tables: list[str] = Field(default_factory=list)
+    record_count: int
+    note: str | None = None
+
+
+class PrecomputedUsage(BaseModel):
+    """How agents should use a precomputed-intelligence bundle."""
+
+    model_config = _ALLOW_EXTRA
+
+    intended_for: str = "llm_context_prefetch"
+    web_search_required: bool = False
+    jpcite_requests: int = 1
+    billing_units: int = 1
+
+
+PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
+    **EVIDENCE_PACKET_EXAMPLE,
+    "bundle_kind": "precomputed_intelligence",
+    "bundle_id": "pci_example",
+    "answer_basis": "precomputed",
+    "records_returned": 1,
+    "precomputed_record_count": 1,
+    "precomputed": {
+        "available": True,
+        "basis_tables": ["am_program_summary"],
+        "record_count": 1,
+        "note": (
+            "Precomputed summaries are deterministic corpus artifacts. "
+            "They are not generated by a request-time LLM."
+        ),
+    },
+    "usage": {
+        "intended_for": "llm_context_prefetch",
+        "web_search_required": False,
+        "jpcite_requests": 1,
+        "billing_units": 1,
+    },
+}
 
 
 class PrecomputedIntelligenceBundle(EvidencePacketEnvelope):
     """Evidence Packet envelope annotated with precomputed-intelligence usage."""
+
+    model_config = ConfigDict(
+        extra="allow",
+        json_schema_extra={"example": PRECOMPUTED_INTELLIGENCE_EXAMPLE},
+    )
 
     bundle_kind: Literal["precomputed_intelligence"]
     bundle_id: str
     answer_basis: str
     records_returned: int
     precomputed_record_count: int
-    precomputed: dict[str, Any]
-    usage: dict[str, Any]
+    precomputed: PrecomputedMetadata
+    usage: PrecomputedUsage
 
 
 # ---------------------------------------------------------------------------

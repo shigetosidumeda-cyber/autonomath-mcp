@@ -5582,9 +5582,7 @@
             "type": "string"
           },
           "quality": {
-            "additionalProperties": true,
-            "title": "Quality",
-            "type": "object"
+            "$ref": "#/components/schemas/EvidencePacketQuality"
           },
           "query": {
             "additionalProperties": true,
@@ -5599,9 +5597,7 @@
             "type": "array"
           },
           "verification": {
-            "additionalProperties": true,
-            "title": "Verification",
-            "type": "object"
+            "$ref": "#/components/schemas/EvidencePacketVerification"
           }
         },
         "required": [
@@ -5609,9 +5605,60 @@
           "generated_at",
           "api_version",
           "corpus_snapshot_id",
-          "query"
+          "query",
+          "records",
+          "quality",
+          "verification"
         ],
         "title": "EvidencePacketEnvelope",
+        "type": "object"
+      },
+      "EvidencePacketQuality": {
+        "additionalProperties": true,
+        "description": "Quality and gap metadata callers should inspect before answering.",
+        "properties": {
+          "coverage_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Score"
+          },
+          "freshness_bucket": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freshness Bucket"
+          },
+          "human_review_required": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Human Review Required"
+          },
+          "known_gaps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Known Gaps",
+            "type": "array"
+          }
+        },
+        "title": "EvidencePacketQuality",
         "type": "object"
       },
       "EvidencePacketQueryBody": {
@@ -5738,6 +5785,18 @@
             "title": "Entity Id",
             "type": "string"
           },
+          "fact_provenance_coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Share of included facts that carry source provenance.",
+            "title": "Fact Provenance Coverage Pct"
+          },
           "facts": {
             "anyOf": [
               {
@@ -5816,6 +5875,18 @@
             "description": "Optional compatibility/exclusion rules.",
             "title": "Rules"
           },
+          "source_fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Fetch timestamp for the primary source when known.",
+            "title": "Source Fetched At"
+          },
           "source_url": {
             "anyOf": [
               {
@@ -5844,6 +5915,47 @@
           "entity_id"
         ],
         "title": "EvidencePacketRecord",
+        "type": "object"
+      },
+      "EvidencePacketVerification": {
+        "additionalProperties": true,
+        "description": "Replay and freshness endpoints for evidence verification.",
+        "properties": {
+          "freshness_endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freshness Endpoint"
+          },
+          "provenance_endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Endpoint"
+          },
+          "replay_endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replay Endpoint"
+          }
+        },
+        "title": "EvidencePacketVerification",
         "type": "object"
       },
       "ExampleProfileDetail": {
@@ -7513,8 +7625,11 @@
         "additionalProperties": true,
         "description": "Evidence Packet envelope annotated with precomputed-intelligence usage.",
         "example": {
+          "answer_basis": "precomputed",
           "answer_not_included": true,
           "api_version": "v1",
+          "bundle_id": "pci_example",
+          "bundle_kind": "precomputed_intelligence",
           "compression": {
             "estimate_scope": "input_context_only",
             "packet_tokens_estimate": 566,
@@ -7526,6 +7641,15 @@
           "corpus_snapshot_id": "snap_20260502",
           "generated_at": "2026-05-02T12:00:00+09:00",
           "packet_id": "evp_example",
+          "precomputed": {
+            "available": true,
+            "basis_tables": [
+              "am_program_summary"
+            ],
+            "note": "Precomputed summaries are deterministic corpus artifacts. They are not generated by a request-time LLM.",
+            "record_count": 1
+          },
+          "precomputed_record_count": 1,
           "quality": {
             "coverage_score": 0.86,
             "freshness_bucket": "current",
@@ -7553,6 +7677,13 @@
               "source_url": "https://example.go.jp/program"
             }
           ],
+          "records_returned": 1,
+          "usage": {
+            "billing_units": 1,
+            "intended_for": "llm_context_prefetch",
+            "jpcite_requests": 1,
+            "web_search_required": false
+          },
           "verification": {
             "freshness_endpoint": "/v1/meta/freshness",
             "replay_endpoint": "/v1/programs/search?q=..."
@@ -7604,18 +7735,14 @@
             "type": "string"
           },
           "precomputed": {
-            "additionalProperties": true,
-            "title": "Precomputed",
-            "type": "object"
+            "$ref": "#/components/schemas/PrecomputedMetadata"
           },
           "precomputed_record_count": {
             "title": "Precomputed Record Count",
             "type": "integer"
           },
           "quality": {
-            "additionalProperties": true,
-            "title": "Quality",
-            "type": "object"
+            "$ref": "#/components/schemas/EvidencePacketQuality"
           },
           "query": {
             "additionalProperties": true,
@@ -7634,14 +7761,10 @@
             "type": "integer"
           },
           "usage": {
-            "additionalProperties": true,
-            "title": "Usage",
-            "type": "object"
+            "$ref": "#/components/schemas/PrecomputedUsage"
           },
           "verification": {
-            "additionalProperties": true,
-            "title": "Verification",
-            "type": "object"
+            "$ref": "#/components/schemas/EvidencePacketVerification"
           }
         },
         "required": [
@@ -7650,6 +7773,9 @@
           "api_version",
           "corpus_snapshot_id",
           "query",
+          "records",
+          "quality",
+          "verification",
           "bundle_kind",
           "bundle_id",
           "answer_basis",
@@ -7659,6 +7785,72 @@
           "usage"
         ],
         "title": "PrecomputedIntelligenceBundle",
+        "type": "object"
+      },
+      "PrecomputedMetadata": {
+        "additionalProperties": true,
+        "description": "Metadata describing deterministic precomputed corpus artifacts.",
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "basis_tables": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Basis Tables",
+            "type": "array"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "record_count": {
+            "title": "Record Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "available",
+          "record_count"
+        ],
+        "title": "PrecomputedMetadata",
+        "type": "object"
+      },
+      "PrecomputedUsage": {
+        "additionalProperties": true,
+        "description": "How agents should use a precomputed-intelligence bundle.",
+        "properties": {
+          "billing_units": {
+            "default": 1,
+            "title": "Billing Units",
+            "type": "integer"
+          },
+          "intended_for": {
+            "default": "llm_context_prefetch",
+            "title": "Intended For",
+            "type": "string"
+          },
+          "jpcite_requests": {
+            "default": 1,
+            "title": "Jpcite Requests",
+            "type": "integer"
+          },
+          "web_search_required": {
+            "default": false,
+            "title": "Web Search Required",
+            "type": "boolean"
+          }
+        },
+        "title": "PrecomputedUsage",
         "type": "object"
       },
       "PrescreenMatch": {
@@ -19184,6 +19376,52 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "answer_not_included": true,
+                  "api_version": "v1",
+                  "compression": {
+                    "estimate_scope": "input_context_only",
+                    "packet_tokens_estimate": 566,
+                    "savings_claim": "estimate_not_guarantee",
+                    "source_pdf_pages": 20,
+                    "source_tokens_basis": "pdf_pages",
+                    "source_tokens_estimate": 14000
+                  },
+                  "corpus_snapshot_id": "snap_20260502",
+                  "generated_at": "2026-05-02T12:00:00+09:00",
+                  "packet_id": "evp_example",
+                  "quality": {
+                    "coverage_score": 0.86,
+                    "freshness_bucket": "current",
+                    "human_review_required": false,
+                    "known_gaps": []
+                  },
+                  "query": {
+                    "normalized_filters": {
+                      "prefecture": "Tokyo"
+                    },
+                    "user_intent": "Tokyo manufacturer subsidy evidence"
+                  },
+                  "records": [
+                    {
+                      "authority_name": "Example authority",
+                      "entity_id": "program:example",
+                      "precomputed": {
+                        "basis": "am_program_summary",
+                        "summaries": {
+                          "200": "Short source-linked evidence summary."
+                        }
+                      },
+                      "primary_name": "Example public program",
+                      "record_kind": "program",
+                      "source_url": "https://example.go.jp/program"
+                    }
+                  ],
+                  "verification": {
+                    "freshness_endpoint": "/v1/meta/freshness",
+                    "replay_endpoint": "/v1/programs/search?q=..."
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/EvidencePacketEnvelope"
                 }
@@ -19418,6 +19656,52 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "answer_not_included": true,
+                  "api_version": "v1",
+                  "compression": {
+                    "estimate_scope": "input_context_only",
+                    "packet_tokens_estimate": 566,
+                    "savings_claim": "estimate_not_guarantee",
+                    "source_pdf_pages": 20,
+                    "source_tokens_basis": "pdf_pages",
+                    "source_tokens_estimate": 14000
+                  },
+                  "corpus_snapshot_id": "snap_20260502",
+                  "generated_at": "2026-05-02T12:00:00+09:00",
+                  "packet_id": "evp_example",
+                  "quality": {
+                    "coverage_score": 0.86,
+                    "freshness_bucket": "current",
+                    "human_review_required": false,
+                    "known_gaps": []
+                  },
+                  "query": {
+                    "normalized_filters": {
+                      "prefecture": "Tokyo"
+                    },
+                    "user_intent": "Tokyo manufacturer subsidy evidence"
+                  },
+                  "records": [
+                    {
+                      "authority_name": "Example authority",
+                      "entity_id": "program:example",
+                      "precomputed": {
+                        "basis": "am_program_summary",
+                        "summaries": {
+                          "200": "Short source-linked evidence summary."
+                        }
+                      },
+                      "primary_name": "Example public program",
+                      "record_kind": "program",
+                      "source_url": "https://example.go.jp/program"
+                    }
+                  ],
+                  "verification": {
+                    "freshness_endpoint": "/v1/meta/freshness",
+                    "replay_endpoint": "/v1/programs/search?q=..."
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/EvidencePacketEnvelope"
                 }
@@ -21006,6 +21290,71 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "answer_basis": "precomputed",
+                  "answer_not_included": true,
+                  "api_version": "v1",
+                  "bundle_id": "pci_example",
+                  "bundle_kind": "precomputed_intelligence",
+                  "compression": {
+                    "estimate_scope": "input_context_only",
+                    "packet_tokens_estimate": 566,
+                    "savings_claim": "estimate_not_guarantee",
+                    "source_pdf_pages": 20,
+                    "source_tokens_basis": "pdf_pages",
+                    "source_tokens_estimate": 14000
+                  },
+                  "corpus_snapshot_id": "snap_20260502",
+                  "generated_at": "2026-05-02T12:00:00+09:00",
+                  "packet_id": "evp_example",
+                  "precomputed": {
+                    "available": true,
+                    "basis_tables": [
+                      "am_program_summary"
+                    ],
+                    "note": "Precomputed summaries are deterministic corpus artifacts. They are not generated by a request-time LLM.",
+                    "record_count": 1
+                  },
+                  "precomputed_record_count": 1,
+                  "quality": {
+                    "coverage_score": 0.86,
+                    "freshness_bucket": "current",
+                    "human_review_required": false,
+                    "known_gaps": []
+                  },
+                  "query": {
+                    "normalized_filters": {
+                      "prefecture": "Tokyo"
+                    },
+                    "user_intent": "Tokyo manufacturer subsidy evidence"
+                  },
+                  "records": [
+                    {
+                      "authority_name": "Example authority",
+                      "entity_id": "program:example",
+                      "precomputed": {
+                        "basis": "am_program_summary",
+                        "summaries": {
+                          "200": "Short source-linked evidence summary."
+                        }
+                      },
+                      "primary_name": "Example public program",
+                      "record_kind": "program",
+                      "source_url": "https://example.go.jp/program"
+                    }
+                  ],
+                  "records_returned": 1,
+                  "usage": {
+                    "billing_units": 1,
+                    "intended_for": "llm_context_prefetch",
+                    "jpcite_requests": 1,
+                    "web_search_required": false
+                  },
+                  "verification": {
+                    "freshness_endpoint": "/v1/meta/freshness",
+                    "replay_endpoint": "/v1/programs/search?q=..."
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/PrecomputedIntelligenceBundle"
                 }
