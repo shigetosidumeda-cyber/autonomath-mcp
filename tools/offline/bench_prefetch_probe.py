@@ -30,6 +30,8 @@ ROW_FIELDNAMES: tuple[str, ...] = (
     "precomputed_record_count",
     "packet_tokens_estimate",
     "source_tokens_basis",
+    "baseline_source_method",
+    "baseline_source_label",
     "source_pdf_pages",
     "source_token_count",
     "source_tokens_estimate",
@@ -89,10 +91,21 @@ def _probe_row(
     if source_token_count is not None:
         source_tokens_basis = "token_count"
         source_pdf_pages = None
+        default_baseline_method = "caller_token_count"
     elif source_pdf_pages is not None:
         source_tokens_basis = "pdf_pages"
+        default_baseline_method = "pdf_pages_estimate"
     else:
         source_tokens_basis = "unknown"
+        default_baseline_method = ""
+    baseline_source_method = (
+        row.get("baseline_source_method")
+        or row.get("source_token_method")
+        or default_baseline_method
+    ).strip()
+    baseline_source_label = (
+        row.get("baseline_source_label") or row.get("source_label") or ""
+    ).strip()
     env = composer.compose_for_query(
         row["query_text"],
         limit=limit,
@@ -130,6 +143,8 @@ def _probe_row(
         "precomputed_record_count": sum(1 for record in records if record.get("precomputed")),
         "packet_tokens_estimate": compression.get("packet_tokens_estimate"),
         "source_tokens_basis": compression.get("source_tokens_basis"),
+        "baseline_source_method": baseline_source_method,
+        "baseline_source_label": baseline_source_label,
         "source_pdf_pages": compression.get("source_pdf_pages"),
         "source_token_count": compression.get("source_token_count"),
         "source_tokens_estimate": compression.get("source_tokens_estimate"),
@@ -155,7 +170,14 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     with_source_tokens = [
         row for row in rows if row.get("source_tokens_estimate") not in (None, "")
     ]
-    break_even_rows = [row for row in rows if str(row.get("break_even_met")).lower() == "true"]
+    break_even_input_rows = [
+        row
+        for row in with_source_tokens
+        if row.get("input_token_price_jpy_per_1m") not in (None, "")
+    ]
+    break_even_rows = [
+        row for row in break_even_input_rows if str(row.get("break_even_met")).lower() == "true"
+    ]
     avoided_tokens_total = sum(
         int(row["avoided_tokens_estimate"] or 0) for row in with_source_tokens
     )
@@ -171,13 +193,19 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     ]
 
     def median(values: list[float]) -> float | None:
+        return percentile(values, 0.5)
+
+    def percentile(values: list[float], q: float) -> float | None:
         if not values:
             return None
         ordered = sorted(values)
-        mid = len(ordered) // 2
-        if len(ordered) % 2:
-            return round(ordered[mid], 4)
-        return round((ordered[mid - 1] + ordered[mid]) / 2, 4)
+        if len(ordered) == 1:
+            return round(ordered[0], 4)
+        position = (len(ordered) - 1) * q
+        lower = int(position)
+        upper = min(lower + 1, len(ordered) - 1)
+        weight = position - lower
+        return round(ordered[lower] * (1 - weight) + ordered[upper] * weight, 4)
 
     by_domain: dict[str, dict[str, Any]] = {}
     for row in with_source_tokens:
@@ -216,13 +244,30 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "records_total": sum(int(row["records_returned"]) for row in rows),
         "precomputed_records_total": sum(int(row["precomputed_record_count"]) for row in rows),
         "queries_with_source_token_baseline": len(with_source_tokens),
+        "queries_with_break_even_inputs": len(break_even_input_rows),
         "break_even_queries": len(break_even_rows),
         "break_even_rate": (
-            round(len(break_even_rows) / len(with_source_tokens), 4) if with_source_tokens else 0.0
+            round(len(break_even_rows) / len(break_even_input_rows), 4)
+            if break_even_input_rows
+            else 0.0
         ),
         "avoided_tokens_total": avoided_tokens_total,
         "rows_missing_source_token_baseline": total - len(with_source_tokens),
+        "rows_without_price": len(with_source_tokens) - len(break_even_input_rows),
+        "negative_context_rows": sum(
+            1
+            for row in with_source_tokens
+            if float(row.get("input_context_reduction_rate") or 0) <= 0
+        ),
         "median_context_reduction_rate": median(context_reduction_values),
+        "context_reduction_rate_p25": percentile(context_reduction_values, 0.25),
+        "context_reduction_rate_p75": percentile(context_reduction_values, 0.75),
+        "context_reduction_rate_min": (
+            round(min(context_reduction_values), 4) if context_reduction_values else None
+        ),
+        "context_reduction_rate_max": (
+            round(max(context_reduction_values), 4) if context_reduction_values else None
+        ),
         "break_even_rate_by_domain": break_even_rate_by_domain,
         "net_savings_jpy_ex_tax_total": (
             round(sum(net_savings_values), 1) if net_savings_values else None

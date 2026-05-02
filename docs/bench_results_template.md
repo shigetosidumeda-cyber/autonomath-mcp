@@ -30,7 +30,7 @@ lookup coverage: `records_returned`, `precomputed_record_count`, and
 `packet_tokens_estimate` where the probe can measure them. If the query
 CSV includes `baseline_source_tokens` / `source_token_count` or
 `baseline_source_pdf_pages` / `source_pdf_pages`, also record
-`source_tokens_estimate`, `input_context_reduction_rate`,
+`baseline_source_method`, `source_tokens_estimate`, `input_context_reduction_rate`,
 `break_even_source_tokens_estimate`, and `break_even_met`.
 
 ### Per-arm medians
@@ -62,8 +62,12 @@ For `jpcite_precomputed_intelligence` only:
 | precomputed_record_count | ... |
 | packet_tokens_estimate | ... |
 | queries_with_source_token_baseline | ... |
+| queries_with_break_even_inputs | ... |
 | rows_missing_source_token_baseline | ... |
+| rows_without_price | ... |
+| negative_context_rows | ... |
 | median_context_reduction_rate | ...% |
+| context_reduction_rate_p25-p75 | ...% - ...% |
 | break_even_rate | ...% |
 | zero_result_rate | ...% |
 
@@ -149,7 +153,7 @@ python tools/offline/bench_prefetch_probe.py \
     --input-token-price-jpy-per-1m 300
 
 # Copy records_returned, precomputed_record_count, packet_tokens_estimate,
-# source_tokens_estimate, input_context_reduction_rate,
+# baseline_source_method, source_tokens_estimate, input_context_reduction_rate,
 # break_even_source_tokens_estimate, and break_even_met from
 # bench_prefetch_probe.csv into the matching jpcite rows when present.
 # Leave fields empty when the probe cannot measure them.
