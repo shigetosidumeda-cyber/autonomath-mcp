@@ -65,8 +65,12 @@ jobs:
           if [ -s data/jpintel.db ]; then
             echo "data/jpintel.db already present in checkout."
           else
-            echo "Hydrating the Docker seed DB from the production image seed."
-            flyctl ssh sftp get -a autonomath-api -q /seed/jpintel.db data/jpintel.db
+            echo "Hydrating the Docker seed DB from a verified production volume snapshot."
+            remote_seed="/tmp/jpintel-ci-seed.db"
+            flyctl ssh console -a autonomath-api -q -C \
+              "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'"
+            flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db
+            flyctl ssh console -a autonomath-api -q -C "rm -f ${remote_seed}" || true
           fi
 
           bytes="$(wc -c < data/jpintel.db | tr -d ' ')"
