@@ -12,7 +12,11 @@ Architecture (mirrors scripts/generate_program_pages.py):
 - DB:        data/jpintel.db (programs + case_studies)
 - Template:  site/_templates/cross.html (Jinja2)
 - Output:    site/cross/{pref-slug}/{program-slug}.html
-- Sitemap:   site/sitemap-cross.xml (referenced from sitemap-index.xml)
+- Sitemap:   site/sitemap-cross-detail.xml (detail pages; pair with the
+             47-entry site/sitemap-cross.xml owned by
+             generate_cross_hub_pages.py — both referenced from
+             sitemap-index.xml. Distinct files so the two generators do not
+             clobber each other when run in the same workflow.)
 
 Top-N selection ranking:
   Tier S/A first (S preferred), then sort by max_amount_man_yen DESC,
@@ -69,7 +73,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_TEMPLATE_DIR = REPO_ROOT / "site" / "_templates"
 DEFAULT_OUT = REPO_ROOT / "site" / "cross"
-DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-cross.xml"
+# NOTE: writes sitemap-cross-detail.xml (NOT sitemap-cross.xml) to avoid the
+# clobber race against generate_cross_hub_pages.py which owns sitemap-cross.xml
+# (47 hub URLs). sitemap-index.xml references both files.
+DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-cross-detail.xml"
 DEFAULT_DOMAIN = "jpcite.com"
 DEFAULT_TOP_N = 50
 

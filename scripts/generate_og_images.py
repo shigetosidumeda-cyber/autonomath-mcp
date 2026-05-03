@@ -12,6 +12,7 @@ Pure Pillow, no external image deps. Re-run via:
 """
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -36,12 +37,12 @@ def _load_font(path: str, size: int) -> ImageFont.FreeTypeFont:
 def _draw_brand_mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:
     draw.rectangle((x, y, x + size, y + size), fill=ACCENT, outline=ACCENT)
     fnt = _load_font(EN_FONT_PATH, int(size * 0.55))
-    bbox = draw.textbbox((0, 0), "AM", font=fnt)
+    bbox = draw.textbbox((0, 0), "jc", font=fnt)
     tw = bbox[2] - bbox[0]
     th = bbox[3] - bbox[1]
     draw.text(
         (x + (size - tw) / 2, y + (size - th) / 2 - bbox[1]),
-        "AM",
+        "jc",
         font=fnt,
         fill=(255, 255, 255),
     )
@@ -58,7 +59,7 @@ def _render(width: int, height: int, headline: str, subline: str, kicker: str) -
     brand_fnt = _load_font(EN_FONT_PATH, int(mark_size * 0.55))
     draw.text(
         (pad + mark_size + int(pad * 0.3), pad + int(mark_size * 0.22)),
-        "AutonoMath",
+        "jpcite",
         font=brand_fnt,
         fill=TEXT,
     )
@@ -90,6 +91,20 @@ def _render(width: int, height: int, headline: str, subline: str, kicker: str) -
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--out-dir",
+        type=Path,
+        default=ASSETS,
+        help="Directory to write og*.png into (default: site/assets/)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print intended output paths but do not write any PNG",
+    )
+    args = parser.parse_args()
+
     headline = "日本の公的制度を、5 つの\nインターフェースで。"
     subline = "API + MCP + LINE + 法令アラート + 埋込 Widget · ¥3/req metered"
     kicker = "補助金 · 融資 · 税制 · 認定 · 13,578 制度 · 一次資料 100%"
@@ -100,11 +115,21 @@ def main() -> None:
         ("og-square.png", 1200, 1200),
     ]
 
+    out_dir: Path = args.out_dir
+    if not args.dry_run:
+        out_dir.mkdir(parents=True, exist_ok=True)
     for name, w, h in targets:
-        out = ASSETS / name
+        out = out_dir / name
+        if args.dry_run:
+            print(f"[dry-run] would write {out}  ({w}x{h})")
+            continue
         img = _render(w, h, headline, subline, kicker)
         img.save(out, "PNG", optimize=True)
-        print(f"wrote {out.relative_to(REPO)}  ({w}x{h})")
+        try:
+            rel = out.relative_to(REPO)
+        except ValueError:
+            rel = out
+        print(f"wrote {rel}  ({w}x{h})")
 
 
 if __name__ == "__main__":

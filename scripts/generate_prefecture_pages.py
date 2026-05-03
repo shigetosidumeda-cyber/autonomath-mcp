@@ -469,7 +469,7 @@ def _breadcrumb_node(pref_ja: str, slug: str, domain: str) -> dict[str, Any]:
                 "@type": "ListItem",
                 "position": 3,
                 "name": pref_ja,
-                "item": f"https://{domain}/prefectures/{slug}.html",
+                "item": f"https://{domain}/prefectures/{slug}",
             },
         ],
     }
@@ -480,7 +480,7 @@ def _place_node(pref_ja: str, domain: str, slug: str) -> dict[str, Any]:
         "@type": "Place",
         "@id": f"#place-{slug}",
         "name": pref_ja,
-        "url": f"https://{domain}/prefectures/{slug}.html",
+        "url": f"https://{domain}/prefectures/{slug}",
         "containedInPlace": {"@type": "Country", "name": "日本"},
         "additionalType": "AdministrativeArea",
     }
@@ -533,7 +533,7 @@ def _build_index_jsonld(domain: str, region_summaries: list[dict[str, Any]]) -> 
                 {
                     "@type": "ListItem",
                     "position": pos,
-                    "url": f"https://{domain}/prefectures/{pref['slug']}.html",
+                    "url": f"https://{domain}/prefectures/{pref['slug']}",
                     "name": pref["name_ja"],
                 }
             )
@@ -768,7 +768,7 @@ def write_sitemap(
         lines.extend(
             [
                 "  <url>",
-                f"    <loc>https://{domain}/prefectures/{slug}.html</loc>",
+                f"    <loc>https://{domain}/prefectures/{slug}</loc>",
                 f"    <lastmod>{slug_lastmod}</lastmod>",
                 "    <changefreq>weekly</changefreq>",
                 "    <priority>0.7</priority>",

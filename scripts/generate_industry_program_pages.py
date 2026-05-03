@@ -20,7 +20,9 @@ Inputs
 Outputs
 -------
 - site/industries/{jsic_code}/{slug}/index.html  (per industry × program)
-- site/sitemap-industries.xml                    (sitemap shard for the new axis)
+- site/sitemap-industries-detail.xml             (detail-page sitemap shard;
+                                                  pair with site/sitemap-industries.xml
+                                                  owned by generate_industry_hub_pages.py)
 - site/_headers                                  (gain /industries/* cache rule, in-place)
 
 Constraints
@@ -70,7 +72,11 @@ DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_TEMPLATE_DIR = REPO_ROOT / "site" / "_templates"
 DEFAULT_OUT = REPO_ROOT / "site" / "industries"
-DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-industries.xml"
+# NOTE: writes sitemap-industries-detail.xml (NOT sitemap-industries.xml) to
+# avoid the clobber race against generate_industry_hub_pages.py which owns
+# sitemap-industries.xml (22 hub URLs). sitemap-index.xml references both
+# files via scripts/sitemap_gen.py KNOWN_BASENAMES.
+DEFAULT_SITEMAP = REPO_ROOT / "site" / "sitemap-industries-detail.xml"
 DEFAULT_SITEMAP_INDEX = REPO_ROOT / "site" / "sitemap-index.xml"
 DEFAULT_HEADERS = REPO_ROOT / "site" / "_headers"
 DEFAULT_DOMAIN = "jpcite.com"
@@ -1563,15 +1569,20 @@ def write_sitemap(entries: list[tuple[str, str, str, str]], path: Path, domain: 
 
 
 def update_sitemap_index(index_path: Path, domain: str) -> bool:
-    """Append <sitemap> entry for sitemap-industries.xml if missing."""
+    """Append <sitemap> entry for sitemap-industries-detail.xml if missing.
+
+    Note: sitemap_gen.py KNOWN_BASENAMES is the canonical place to register
+    discoverable sitemap fragments; this function is a defensive fallback
+    when the master index is hand-tracked instead of regenerated.
+    """
     if not index_path.exists():
         return False
     text = index_path.read_text(encoding="utf-8")
-    if "/sitemap-industries.xml" in text:
+    if "/sitemap-industries-detail.xml" in text:
         return False
     entry = (
         "  <sitemap>\n"
-        f"    <loc>https://{domain}/sitemap-industries.xml</loc>\n"
+        f"    <loc>https://{domain}/sitemap-industries-detail.xml</loc>\n"
         f"    <lastmod>{_today_jst_iso()}</lastmod>\n"
         "  </sitemap>\n"
     )

@@ -38,6 +38,12 @@ on:
       - "site/_templates/**"
       - "scripts/generate_program_pages.py"
       - "scripts/generate_prefecture_pages.py"
+      - "scripts/generate_cross_hub_pages.py"
+      - "scripts/generate_geo_program_pages.py"
+      - "scripts/generate_industry_hub_pages.py"
+      - "scripts/generate_industry_program_pages.py"
+      - "scripts/generate_compare_pages.py"
+      - "scripts/generate_og_images.py"
       - "scripts/regen_llms_full.py"
       - "scripts/regen_llms_full_en.py"
       - "scripts/sitemap_gen.py"
@@ -124,6 +130,36 @@ jobs:
             --out site/prefectures \
             --domain jpcite.com \
             --sitemap site/sitemap-prefectures.xml
+          # Hub generators MUST run before detail generators that share a
+          # sitemap namespace. cross_hub owns sitemap-cross.xml (47 URLs);
+          # geo_program writes the disjoint sitemap-cross-detail.xml.
+          # Same pattern for industries (sitemap-industries.xml hubs vs.
+          # sitemap-industries-detail.xml details). See
+          # analysis_wave18/research_W2_1_generator_audit_2026-05-04.md §4.
+          python scripts/generate_cross_hub_pages.py \
+            --db data/jpintel.db \
+            --out site/cross \
+            --domain jpcite.com \
+            --sitemap site/sitemap-cross.xml
+          python scripts/generate_geo_program_pages.py \
+            --db data/jpintel.db \
+            --out site/cross \
+            --domain jpcite.com \
+            --top 50 \
+            --sitemap site/sitemap-cross-detail.xml
+          python scripts/generate_industry_hub_pages.py \
+            --db data/jpintel.db \
+            --out site/industries \
+            --domain jpcite.com \
+            --sitemap site/sitemap-industries.xml
+          python scripts/generate_industry_program_pages.py \
+            --db data/jpintel.db \
+            --out site/industries \
+            --domain jpcite.com \
+            --sitemap site/sitemap-industries-detail.xml \
+            --sitemap-index site/sitemap-index.xml
+          python scripts/generate_compare_pages.py
+          python scripts/generate_og_images.py --out-dir site/assets
           python scripts/regen_llms_full.py --db data/jpintel.db --out site/llms-full.txt
           python scripts/regen_llms_full_en.py --db data/jpintel.db --out site/llms-full.en.txt
 
