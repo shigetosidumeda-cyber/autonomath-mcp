@@ -10,7 +10,7 @@
 
 ## TL;DR
 
-I shipped jpcite (`autonomath-mcp` on PyPI) — a REST + MCP search API over 11,684 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 50 tax rulesets, and 2,286 adoption cases. 99%+ of returned rows include a primary-source URL. Pricing is ¥3 per request metered with 3/day free anonymously. No subscription tiers. No signup for the free path.
+I shipped jpcite (`autonomath-mcp` on PyPI) — a REST + MCP search API over 11,684 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 50 tax rulesets, and 2,286 adoption cases. Returned public rows are designed to include a primary-source URL. Pricing is ¥3 per request metered with 3/day free anonymously. No subscription tiers. No signup for the free path.
 
 ```bash
 curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"

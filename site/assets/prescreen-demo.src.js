@@ -379,7 +379,7 @@
       resultsEl.innerHTML =
         '<p class="ps-status">' + escapeHtml(summary) + "</p>" + renderRows(data.results || []) + handoffHtml + ctaHtml;
       // Announce only the summary, not the full result HTML — screen
-      // readers were re-reading every row on each render before this.
+      // readers were re-reading each rendered row before this.
       announce(summary);
     } catch (err) {
       if (err && err.name === "AbortError") {

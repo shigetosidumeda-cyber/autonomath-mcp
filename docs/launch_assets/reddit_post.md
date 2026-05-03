@@ -54,7 +54,7 @@ ChatGPT, Gemini) in a single call.
 - 13,801 invoice registrants (NTA, PDL v1.0, delta-only live mirror)
 - 503,930 entities + 6.12M facts in entity-fact EAV layer
 - 181 exclusion / prerequisite rules
-- 99%+ rows with source_url + fetched_at lineage
+- major public rows with source_url + fetched_at lineage
 
 **MCP-native, 93 tools, protocol 2025-06-18:**
 
@@ -75,7 +75,7 @@ compliance.
 **Tech:**
 
 Python + FastAPI + FastMCP + SQLite 全文検索インデックス (3-gram) + ベクトル検索, hosted on
-Fly.io Tokyo. 99%+ primary-source URL coverage; aggregators (noukaweb,
+Fly.io Tokyo. primary-source URL coverage for major public rows; aggregators (noukaweb,
 hojyokin-portal, etc.) banned from source_url for trust reasons.
 
 **Try it:**
@@ -133,7 +133,7 @@ Coverage at launch:
 - 14,472 programs across 8 ministries, 47 prefectures
 - 2,286 case studies, 108 loans, 1,185 enforcement cases
 - 9,484 laws, 13,801 invoice registrants
-- 99%+ primary-source URL coverage, aggregators banned
+- primary-source URL coverage for major public rows, aggregators banned
 
 Genuinely interested in pushback on:
 

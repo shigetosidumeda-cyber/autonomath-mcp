@@ -10,7 +10,7 @@ ASCII fallback if HN strips the kanji:
 
 ## First comment (text post body)
 
-Hi HN. I've been building jpcite (autonomath-mcp on PyPI) for about a year — a search API + MCP server over Japanese institutional data: 11,684 subsidy programs, 9,484 e-Gov laws, 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, 1,185 enforcement records, 2,286 採択事例. 99%+ of returned rows carry a primary-source URL (ministry / prefecture / 公庫 / 国税庁) — aggregators are explicitly banned from the source field.
+Hi HN. I've been building jpcite (autonomath-mcp on PyPI) for about a year — a search API + MCP server over Japanese institutional data: 11,684 subsidy programs, 9,484 e-Gov laws, 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, 1,185 enforcement records, 2,286 採択事例. Returned public rows are designed to carry a primary-source URL (ministry / prefecture / 公庫 / 国税庁) — aggregators are explicitly banned from the source field.
 
 I built it because the existing surface for accessing this data is awful. The portals are PHP-era, search is keyword-AND only, half the URLs 404 within 18 months, and aggregator sites SEO-spam the rest. For an LLM agent doing due diligence on a Japanese SMB, there was no clean machine-readable layer. So I made one.
 

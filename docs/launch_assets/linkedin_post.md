@@ -36,7 +36,7 @@ What's in it (2026-05-06 launch):
   1,185 enforcement cases
 - 9,484 laws (e-Gov, CC-BY), 13,801 invoice registrants (NTA, PDL v1.0)
 - 503,930 entities + 6.12M facts in entity-fact EAV layer
-- 99%+ rows ship with source_url + fetched_at lineage
+- major public rows ship with source_url + fetched_at lineage
 - 181 exclusion rules for compatibility checks
 
 Architecture choices that I think are interesting:

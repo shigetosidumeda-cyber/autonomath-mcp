@@ -80,7 +80,7 @@ curl -sS https://api.jpcite.com/v1/programs/search \
 ## なぜ今出すか
 
 LLM (ChatGPT / Claude / Gemini) が日本語の制度を知らないのは、データが **散らばって、PDF で、機械可読でなく、ライセンスが曖昧** だからです。
-jpcite は **(a) primary-source lineage を 99%+ 担保**、**(b) 全文検索 + ベクトル検索 で機械可読**、**(c) ¥3 で誰でも叩ける** の 3 点で、その溝を埋めます。
+jpcite は **(a) primary-source lineage を主要な公開行で担保**、**(b) 全文検索 + ベクトル検索 で機械可読**、**(c) ¥3 で誰でも叩ける** の 3 点で、その溝を埋めます。
 
 ## 次のステップ
 

@@ -147,7 +147,7 @@
       "@type": "DefinedTerm",
       "@id": "https://jpcite.com/en/glossary.html#term-source-url",
       "name": "source_url / fetched_at",
-      "description": "Provenance columns present on every row in jpcite. source_url points to the primary source (a Japanese government ministry, prefecture, or Japan Finance Corporation page) and fetched_at records when jpcite last retrieved that page. Aggregator sites are banned from source_url. Together they form the lineage contract that supports the Primary-source coverage claim.",
+      "description": "Provenance columns present on major public rows in jpcite. source_url points to the primary source (a Japanese government ministry, prefecture, or Japan Finance Corporation page) and fetched_at records when jpcite last retrieved that page. Aggregator sites are excluded from source_url. Together they form the lineage contract that supports the primary-source coverage claim.",
       "url": "https://jpcite.com/en/glossary.html#term-source-url",
       "inDefinedTermSet": "https://jpcite.com/en/glossary.html#termset"
     },
@@ -446,7 +446,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-source-url" style="font-weight:700;font-size:18px;"><code>source_url</code> / <code>fetched_at</code></dt>
  <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
- Provenance columns present on every row. <code>source_url</code> points to the primary source &mdash; a Japanese government ministry, prefecture, or Japan Finance Corporation page. <strong>Second-tier aggregator pages are not used as <code>source_url</code></strong> &mdash; this is enforced because past incidents created misrepresentation liability. <code>fetched_at</code> records when jpcite last retrieved that page (rendered as "source fetched" &mdash; never "last verified" &mdash; to remain semantically honest under Japan's misleading-display law).
+ Provenance columns present on major public rows. <code>source_url</code> points to the primary source &mdash; a Japanese government ministry, prefecture, or Japan Finance Corporation page. <strong>Second-tier aggregator pages are not used as <code>source_url</code></strong>. <code>fetched_at</code> records when jpcite last retrieved that page (rendered as "source fetched" &mdash; never "last verified").
  </dd>
  </div>
 

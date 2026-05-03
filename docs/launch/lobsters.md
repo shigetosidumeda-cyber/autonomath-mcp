@@ -48,7 +48,7 @@ The PyPI wheel doesn't ship the 8.29 GB DB — it auto-detects empty local DB an
 
 ## Honest framing
 
-Not tax advice (税理士法 §52). Information lookup with primary-source URLs only. Aggregator sites are banned from `source_url` — every record points to a ministry / prefecture / 公庫 / 国税庁 page.
+Not tax advice (税理士法 §52). Information lookup with primary-source URLs where available. Aggregator sites are excluded from `source_url`; public records point to ministry / prefecture / 公庫 / 国税庁 pages where available.
 
 ## Try it
 

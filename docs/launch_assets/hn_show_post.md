@@ -58,7 +58,7 @@ What:
 - 13,801 invoice registrants (NTA, PDL v1.0, delta-only live mirror)
 - 503,930 entities + 6.12M facts in entity-fact EAV layer
 - 181 exclusion / prerequisite rules curated from public program guidelines
-- 99%+ rows with source_url + fetched_at lineage
+- major public rows with source_url + fetched_at lineage
 
 Why:
 Japanese gov subsidy data is PDF-first, scattered across 8 ministries +

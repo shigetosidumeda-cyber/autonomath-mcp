@@ -56,7 +56,7 @@ AI が即答できる API が欲しかった、というだけです。
 - 採択事例 2,286 / 融資 108 / 行政処分 1,185
 - 法令 9,484 (e-Gov CC-BY)
 - 適格事業者 13,801 (NTA PDL v1.0)
-- 出典 URL 99%+ 付与
+- 主要な公開行に出典 URL を付与
 
 #jpcite
 ```
@@ -99,11 +99,11 @@ AI が即答できる API が欲しかった、というだけです。
 ```
 6/ データの肝。
 
-全 programs 行に一次情報源 (省庁/都道府県/公庫等) を引用。
-aggregator (noukaweb / hojyokin-portal 等) は source_url から完全 ban。
+主要な programs 行に一次情報源 (省庁/都道府県/公庫等) を引用。
+aggregator (noukaweb / hojyokin-portal 等) は source_url の参照対象から除外。
 過去の業界事例が 詐欺 risk を生んだ反省です。
 
-99%+ 行に source_url + fetched_at lineage を付与。
+主要な公開行に source_url + fetched_at lineage を付与。
 
 #補助金 #データ
 ```

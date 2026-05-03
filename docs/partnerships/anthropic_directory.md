@@ -47,7 +47,7 @@ jpcite — 日本の制度情報 MCP サーバー (93 tools, protocol 2025-06-18
 税制 ruleset (インボイス / 電帳法) 35 行 + 適格請求書事業者 13,801 行 (PDL v1.0) +
 503,930 entity + 6.12M facts + 177,381 relations + 335k aliases。
 181 件の排他ルール、cross-dataset glue (trace_program_to_law / find_cases_by_law /
-combined_compliance_check)。99%+ rows: source_url + fetched_at、集約サイト不使用。
+combined_compliance_check)。major public rows: source_url + fetched_at、集約サイト不使用。
 ¥3/req (税別、税込 ¥3.30) フル従量、IP ベース 3 req/日 無料 (JST 翌日 00:00 リセット、
 key 不要)。Bookyou 株式会社 / info@bookyou.net。
 ```
@@ -62,7 +62,7 @@ data: 14,472 programs (subsidy / loan / tax / certification) + 2,286 acceptance 
 (invoice / electronic-bookkeeping) + 13,801 invoice registrants (NTA, PDL v1.0) +
 503,930 entities + 6.12M facts + 177,381 relations + 335k aliases.
 181 exclusion / prerequisite rules; cross-dataset glue: trace_program_to_law /
-find_cases_by_law / combined_compliance_check. 99%+ rows ship source_url +
+find_cases_by_law / combined_compliance_check. major public rows ship source_url +
 fetched_at; no aggregators. ¥3/req fully metered (¥3.30 incl. tax); 3 req/day
 per IP free (resets JST midnight, no key required). Bookyou Inc. / info@bookyou.net.
 ```

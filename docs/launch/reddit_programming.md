@@ -6,7 +6,7 @@
 
 ## Body
 
-I shipped jpcite today. It's a search API + MCP server over Japanese institutional data — 11,684 subsidy programs, 9,484 laws (e-Gov CC-BY), 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, plus 1,185 enforcement records and 2,286 historical adoption cases. 99%+ of returned rows point to a primary-source URL (ministry / prefecture / 国税庁 / 日本政策金融公庫). Aggregator sites are banned from the source field.
+I shipped jpcite today. It's a search API + MCP server over Japanese institutional data — 11,684 subsidy programs, 9,484 laws (e-Gov CC-BY), 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, plus 1,185 enforcement records and 2,286 historical adoption cases. Returned public rows are designed to point to a primary-source URL (ministry / prefecture / 国税庁 / 日本政策金融公庫). Aggregator sites are banned from the source field.
 
 The existing access surface for this data is genuinely bad — government portals are old, search is keyword-AND only, URLs rot, and aggregator sites pollute SERPs. I wanted a clean machine-readable layer for LLM agents doing due diligence on Japanese SMBs.
 

@@ -17,7 +17,7 @@ Posting here because r/japanfinance has a lot of small-business owners and 個�
 - **2,286 adoption cases** so you can see what kinds of businesses actually got funded
 - **2,065 court decisions** + **1,185 enforcement records** for risk-checking 業者
 
-99%+ of returned rows include a `source_url` to the original government page. Aggregator sites are banned from the source field — past portal incidents created 詐欺 risk for me, so I cut them entirely.
+Returned public rows are designed to include a `source_url` to the original government page. Aggregator sites are banned from the source field — past portal incidents created 詐欺 risk for me, so I cut them entirely.
 
 ## Why this is useful for small-business owners
 

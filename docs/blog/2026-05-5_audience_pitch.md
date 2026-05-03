@@ -118,7 +118,7 @@ result = requests.post(
 # - 関連訴訟・判例 (court_decisions, post-launch)
 ```
 
-**99%+ 行に source_url + fetched_at つき** — 引用付きで report に貼れます。
+**主要な公開行に source_url + fetched_at つき** — 引用付きで report に貼れます。
 M&A 1 件あたりのデュー期間が短縮できる想定。
 
 ---

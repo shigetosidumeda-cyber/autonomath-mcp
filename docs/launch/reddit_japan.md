@@ -17,7 +17,7 @@ I built jpcite — a search API over Japanese institutional public data:
 - 13,801 invoice-registry entries (適格事業者)
 - Plus 2,286 historical adoption cases so you can see what actually got funded
 
-Why this matters if you're a foreigner running a small business or 個人事業主 here: Japanese subsidy info is genuinely scattered across hundreds of prefecture / city / METI / MAFF / SMRJ portals. Aggregator sites exist but most are SEO-farms with broken or out-of-date data. I built the API specifically to point at primary sources — every record has a `source_url` to the ministry or prefecture page. Aggregators are banned.
+Why this matters if you're a foreigner running a small business or 個人事業主 here: Japanese subsidy info is genuinely scattered across hundreds of prefecture / city / METI / MAFF / SMRJ portals. Aggregator sites exist but most are SEO-farms with broken or out-of-date data. I built the API specifically to point at primary sources: public records return a `source_url` to the ministry or prefecture page where available. Aggregators are excluded from source fields.
 
 You can hit it from a script, from Claude / ChatGPT via MCP, or just curl it manually. Free for 3 requests/day with no signup (anonymous, IP-based). After that it's ¥3/request metered, no monthly minimums, no subscription, cancel anytime.
 

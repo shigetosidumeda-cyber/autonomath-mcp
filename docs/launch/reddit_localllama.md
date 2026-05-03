@@ -8,7 +8,7 @@
 
 If you're building agents that need to reason about Japanese institutional data (subsidies, laws, court decisions, tax rulesets), you can now plug in jpcite as an MCP server.
 
-**Coverage** (every row has a primary-source URL — no aggregators):
+**Coverage** (public rows include primary-source URLs where available — no aggregators):
 
 - 11,684 subsidy programs across 47 prefectures
 - 9,484 laws (e-Gov, CC-BY)

@@ -25,7 +25,7 @@ I'm posting here mostly to explain why I chose **fully metered ¥3/req** instead
 ## The product
 
 - 11,684 subsidies + 9,484 laws + 2,065 court decisions + 13,801 invoice registrants + 50 tax rulesets + 1,185 enforcement records + 2,286 adoption cases
-- 99%+ of returned rows include a primary-source URL (ministry / prefecture / 国税庁 / 公庫). Aggregators banned.
+- Returned public rows are designed to include a primary-source URL (ministry / prefecture / 国税庁 / 公庫). Aggregators banned.
 - REST API + MCP server (93 tools at default gates, protocol 2025-06-18)
 - ¥3/req (税込 ¥3.30), 3 req/日 free anonymously, no signup
 

@@ -6,7 +6,7 @@
 
 ## Body
 
-After about a year of nights and weekends, I launched jpcite today. It's a search API + MCP server over Japanese institutional data — 11,684 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, plus tax rulesets and enforcement records. 99%+ of returned rows include a primary-source URL.
+After about a year of nights and weekends, I launched jpcite today. It's a search API + MCP server over Japanese institutional data — 11,684 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, plus tax rulesets and enforcement records. Returned public rows are designed to include a primary-source URL.
 
 **The 1-year build journey, condensed**:
 

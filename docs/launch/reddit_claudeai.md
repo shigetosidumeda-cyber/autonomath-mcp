@@ -6,7 +6,7 @@
 
 ## Body
 
-Built and launched jpcite — a custom MCP server giving Claude direct access to Japanese institutional data: 11,684 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, and historical adoption cases. 99%+ of returned rows include a primary-source URL.
+Built and launched jpcite — a custom MCP server giving Claude direct access to Japanese institutional data: 11,684 subsidy programs, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, and historical adoption cases. Returned public rows are designed to include a primary-source URL.
 
 **Why this is useful for Claude users**: Claude is great at reasoning over Japanese text but it doesn't have grounded access to the live institutional dataset. Without a tool layer, you get plausible-sounding subsidy names that don't exist or hallucinated tax rulings. The MCP server gives Claude actual rows from primary sources so it can cite e-Gov / METI / 公庫 URLs directly.
 

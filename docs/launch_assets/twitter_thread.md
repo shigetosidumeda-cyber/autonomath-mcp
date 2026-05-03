@@ -54,7 +54,7 @@ I wanted one API where Claude can just answer.
 - 2,286 case studies, 108 loans, 1,185 enforcement
 - 9,484 laws (e-Gov CC-BY)
 - 13,801 invoice registrants (NTA PDL v1.0)
-- 99%+ rows w/ source_url + fetched_at
+- major public rows w/ source_url + fetched_at
 ```
 
 ---
@@ -95,7 +95,7 @@ Every program row cites a primary source (ministry, prefecture, JFC).
 Aggregators (noukaweb, hojyokin-portal, biz.stayway) are banned from
 source_url — past industry incidents created 詐欺 risk.
 
-99%+ rows ship with source_url + fetched_at lineage.
+major public rows ship with source_url + fetched_at lineage.
 ```
 
 ---

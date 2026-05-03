@@ -9,7 +9,7 @@
 
 Just shipped jpcite: a search API + MCP server over Japanese institutional data.
 
-11,684 subsidies / 9,484 laws / 2,065 court decisions / 13,801 invoice registrants / 50 tax rulesets — every row has a primary-source URL.
+11,684 subsidies / 9,484 laws / 2,065 court decisions / 13,801 invoice registrants / 50 tax rulesets — public rows include primary-source URLs where available.
 
 ¥3/req metered. 3/day free anonymously, no signup.
 
