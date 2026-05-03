@@ -597,4 +597,174 @@ def get_kill_switch_status(_auth: AdminAuthDep) -> KillSwitchStatus:
     )
 
 
+# ---------------------------------------------------------------------------
+# /v1/admin/analytics_split — §4-E bot-vs-human conversion denominator
+# ---------------------------------------------------------------------------
+
+
+class AnalyticsSplitBucket(BaseModel):
+    """One row of the bot/human/UA-class roll-up."""
+
+    model_config = ConfigDict(frozen=True)
+
+    user_agent_class: str
+    is_bot: bool
+    request_count: int
+    distinct_paths: int
+    distinct_anon_ips: int
+    distinct_keys: int
+
+
+class FunnelEventCount(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    event_name: str
+    total_count: int
+    human_count: int  # is_bot=0
+    bot_count: int  # is_bot=1
+    distinct_sessions: int
+
+
+class AnalyticsSplitResponse(BaseModel):
+    """§4-E bot-vs-human view.
+
+    Numerator candidates (`paid_conversions`, etc.) live in `usage_events` /
+    `api_keys`; this endpoint surfaces the *denominator* candidates so the
+    operator can pick a defensible "human-ish" baseline (Cloudflare raw PV
+    is dominated by bots and is the wrong denominator).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    hours: int
+    total_requests: int
+    bot_requests: int
+    human_requests: int
+    paid_conversion_denominator_human_request: int
+    by_ua_class: list[AnalyticsSplitBucket]
+    funnel_events: list[FunnelEventCount]
+    note: str | None = None
+
+
+@router.get("/analytics_split", response_model=AnalyticsSplitResponse)
+def get_analytics_split(
+    _auth: AdminAuthDep,
+    conn: DbDep,
+    hours: int = 24,
+) -> AnalyticsSplitResponse:
+    """Bot vs human split of `analytics_events` + `funnel_events`.
+
+    §4-E receipt: dashboards must be able to compute paid-conversion
+    rates with bot traffic excluded from the denominator. This endpoint
+    returns both the raw split and a `paid_conversion_denominator_human_request`
+    figure that downstream dashboards plug into rate calculations.
+    """
+    if hours < 1:
+        hours = 1
+    if hours > 24 * 30:
+        hours = 24 * 30
+    since = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
+
+    notes: list[str] = []
+
+    # ---- analytics_events split (per UA class) -----------------------------
+    bot_requests = 0
+    human_requests = 0
+    total_requests = 0
+    by_ua_class: list[AnalyticsSplitBucket] = []
+    if not _table_exists(conn, "analytics_events"):
+        notes.append("analytics_events table missing")
+    elif not _column_exists(conn, "analytics_events", "is_bot"):
+        notes.append(
+            "analytics_events.is_bot column missing — apply migration 123"
+        )
+        # Fall back to a bot-blind row so the UI doesn't 500.
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM analytics_events WHERE ts >= ?",
+            (since,),
+        ).fetchone()
+        total_requests = int(row["n"] or 0)
+        human_requests = total_requests
+    else:
+        row = conn.execute(
+            """SELECT
+                 COUNT(*)                                AS total,
+                 SUM(CASE WHEN is_bot = 1 THEN 1 ELSE 0 END) AS bots,
+                 SUM(CASE WHEN is_bot = 0 THEN 1 ELSE 0 END) AS humans
+               FROM analytics_events
+              WHERE ts >= ?""",
+            (since,),
+        ).fetchone()
+        total_requests = int(row["total"] or 0)
+        bot_requests = int(row["bots"] or 0)
+        human_requests = int(row["humans"] or 0)
+
+        ua_rows = conn.execute(
+            """SELECT
+                 COALESCE(user_agent_class, 'unknown') AS ua_class,
+                 MAX(is_bot)                            AS is_bot,
+                 COUNT(*)                               AS n,
+                 COUNT(DISTINCT path)                   AS d_paths,
+                 COUNT(DISTINCT anon_ip_hash)           AS d_anon,
+                 COUNT(DISTINCT key_hash)               AS d_keys
+               FROM analytics_events
+              WHERE ts >= ?
+           GROUP BY ua_class
+           ORDER BY n DESC
+              LIMIT 50""",
+            (since,),
+        ).fetchall()
+        by_ua_class = [
+            AnalyticsSplitBucket(
+                user_agent_class=r["ua_class"],
+                is_bot=bool(r["is_bot"]),
+                request_count=int(r["n"] or 0),
+                distinct_paths=int(r["d_paths"] or 0),
+                distinct_anon_ips=int(r["d_anon"] or 0),
+                distinct_keys=int(r["d_keys"] or 0),
+            )
+            for r in ua_rows
+        ]
+
+    # ---- funnel_events roll-up ---------------------------------------------
+    funnel_rows: list[FunnelEventCount] = []
+    if not _table_exists(conn, "funnel_events"):
+        notes.append("funnel_events table missing — apply migration 123")
+    else:
+        rows = conn.execute(
+            """SELECT
+                 event_name,
+                 COUNT(*)                                          AS n,
+                 SUM(CASE WHEN is_bot = 0 THEN 1 ELSE 0 END)       AS humans,
+                 SUM(CASE WHEN is_bot = 1 THEN 1 ELSE 0 END)       AS bots,
+                 COUNT(DISTINCT session_id)                        AS sessions
+               FROM funnel_events
+              WHERE ts >= ?
+           GROUP BY event_name
+           ORDER BY humans DESC, n DESC""",
+            (since,),
+        ).fetchall()
+        funnel_rows = [
+            FunnelEventCount(
+                event_name=r["event_name"],
+                total_count=int(r["n"] or 0),
+                human_count=int(r["humans"] or 0),
+                bot_count=int(r["bots"] or 0),
+                distinct_sessions=int(r["sessions"] or 0),
+            )
+            for r in rows
+        ]
+
+    return AnalyticsSplitResponse(
+        hours=hours,
+        total_requests=total_requests,
+        bot_requests=bot_requests,
+        human_requests=human_requests,
+        paid_conversion_denominator_human_request=human_requests,
+        by_ua_class=by_ua_class,
+        funnel_events=funnel_rows,
+        note="; ".join(notes) if notes else None,
+    )
+
+
 __all__ = ["router", "require_admin"]

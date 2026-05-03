@@ -8,9 +8,9 @@ name: analytics-cron
 # Required GitHub repository secrets:
 #   CF_API_TOKEN   Cloudflare token, scope = "Account.Account Analytics:Read"
 #                  Create at: https://dash.cloudflare.com/profile/api-tokens
-#                  (template "Read Analytics", zone = zeimu-kaikei.ai)
-#   CF_ZONE_ID     Cloudflare zone ID for zeimu-kaikei.ai
-#                  Find at: Cloudflare → zeimu-kaikei.ai → Overview → API
+#                  (template "Read Analytics", zone = jpcite.com)
+#   CF_ZONE_ID     Cloudflare zone ID for jpcite.com
+#                  Find at: Cloudflare → jpcite.com → Overview → API
 #
 # The commit step uses the default GITHUB_TOKEN (no separate PAT) — that's
 # enough write access for `actions/checkout` + `git push origin HEAD:main`

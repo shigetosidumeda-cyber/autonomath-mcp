@@ -21,15 +21,10 @@ Why DELETE-then-INSERT (not UPSERT or trigger):
     expansion drives toward T+90d 47).
 
 What populates each table:
-  Each per-table refresh function below is intentionally a stub that:
-    1. Logs the table name + row count it would compute.
-    2. Writes ZERO rows (pre-launch state — population is a follow-up).
-
-  Once the source-side projection queries are agreed (per-tool tickets in
-  the v8 plan), drop the real SELECT into _refresh_<table>() and the cron
-  will start producing rows. The contract is: every _refresh_<table>
-  function must end with the table containing zero stale rows + N fresh
-  rows for the dimension it covers.
+  Implemented refreshers are listed in IMPLEMENTED_PC_TABLES and are rebuilt
+  with DELETE-then-INSERT. Placeholder refreshers are visited in dry-run, but
+  skipped in real runs so future hand-filled or separately-ingested rows are
+  not accidentally wiped.
 
 Cache coupling:
   After all 32 pc_* tables refresh, the cron also calls
@@ -136,6 +131,17 @@ PC_TABLES_AM = (
 
 PC_TABLES = PC_TABLES_C3 + PC_TABLES_D8 + PC_TABLES_AM
 
+IMPLEMENTED_PC_TABLES = frozenset(
+    {
+        "pc_top_subsidies_by_prefecture",
+        "pc_program_geographic_density",
+        "pc_amount_max_distribution",
+        "pc_application_close_calendar",
+        "jpi_pc_program_health",
+        "am_amendment_diff",
+    }
+)
+
 
 def _configure_logging() -> None:
     root = logging.getLogger("autonomath.cron.precompute_refresh")
@@ -204,6 +210,10 @@ def _refresh_one(
         logger.info("pc_dry_run table=%s current_rows=%d", name, int(existing))
         return 0
 
+    if name not in IMPLEMENTED_PC_TABLES:
+        logger.info("pc_skip_unimplemented table=%s", name)
+        return 0
+
     write_conn.execute("BEGIN")
     try:
         write_conn.execute(
@@ -270,7 +280,80 @@ def _refresh_pc_top_subsidies_by_industry(
 def _refresh_pc_top_subsidies_by_prefecture(
     w: sqlite3.Connection, r: sqlite3.Connection | None
 ) -> int:
-    return 0
+    """Top 20 (rank 1..20) programs per ISO 3166-2:JP prefecture code.
+
+    Source: programs (excluded=0, tier IN ('S','A','B','C')). Ranking is
+    (tier_rank ASC, amount_max_man_yen DESC NULLS LAST, primary_name ASC)
+    so S/A bubble up and large-amount programs win ties. We project
+    Japanese prefecture name → ISO 3166-2:JP via the static map below;
+    rows with prefecture='全国' or any non-47 value are skipped (the
+    table's PK is (prefecture_code, rank) and 全国 has no ISO code in
+    3166-2:JP).
+    """
+    iso = {
+        "北海道": "JP-01", "青森県": "JP-02", "岩手県": "JP-03",
+        "宮城県": "JP-04", "秋田県": "JP-05", "山形県": "JP-06",
+        "福島県": "JP-07", "茨城県": "JP-08", "栃木県": "JP-09",
+        "群馬県": "JP-10", "埼玉県": "JP-11", "千葉県": "JP-12",
+        "東京都": "JP-13", "神奈川県": "JP-14", "新潟県": "JP-15",
+        "富山県": "JP-16", "石川県": "JP-17", "福井県": "JP-18",
+        "山梨県": "JP-19", "長野県": "JP-20", "岐阜県": "JP-21",
+        "静岡県": "JP-22", "愛知県": "JP-23", "三重県": "JP-24",
+        "滋賀県": "JP-25", "京都府": "JP-26", "大阪府": "JP-27",
+        "兵庫県": "JP-28", "奈良県": "JP-29", "和歌山県": "JP-30",
+        "鳥取県": "JP-31", "島根県": "JP-32", "岡山県": "JP-33",
+        "広島県": "JP-34", "山口県": "JP-35", "徳島県": "JP-36",
+        "香川県": "JP-37", "愛媛県": "JP-38", "高知県": "JP-39",
+        "福岡県": "JP-40", "佐賀県": "JP-41", "長崎県": "JP-42",
+        "熊本県": "JP-43", "大分県": "JP-44", "宮崎県": "JP-45",
+        "鹿児島県": "JP-46", "沖縄県": "JP-47",
+    }
+    rows = w.execute(
+        """
+        SELECT prefecture, unified_id, tier, amount_max_man_yen, primary_name
+        FROM programs
+        WHERE excluded = 0
+          AND tier IN ('S','A','B','C')
+          AND prefecture IS NOT NULL
+          AND prefecture != ''
+        """
+    ).fetchall()
+    tier_rank = {"S": 0, "A": 1, "B": 2, "C": 3}
+    by_pref: dict[str, list] = {}
+    for pref, uid, tier, amt, name in rows:
+        code = iso.get(pref)
+        if code is None:
+            continue
+        # Sort key: tier asc, amount desc (NULLS LAST), name asc.
+        amt_sort = -(amt or 0.0)
+        by_pref.setdefault(code, []).append(
+            (tier_rank.get(tier, 99), amt_sort, name or "", uid, tier, amt)
+        )
+    inserted = 0
+    for code, items in by_pref.items():
+        items.sort(key=lambda x: (x[0], x[1], x[2]))
+        for rank, (tr, _amt_sort, _nm, uid, _tier, amt) in enumerate(
+            items[:20], start=1
+        ):
+            # relevance_score: tier weight (S=1.0, A=0.7, B=0.4, C=0.2)
+            # plus log10(amount) tiebreaker normalised to ≤ 0.2.
+            tier_weight = {0: 1.0, 1: 0.7, 2: 0.4, 3: 0.2}.get(tr, 0.0)
+            amt_bonus = 0.0
+            if amt and amt > 0:
+                import math  # noqa: PLC0415
+                amt_bonus = min(0.2, math.log10(max(1.0, amt)) / 25.0)
+            score = round(tier_weight + amt_bonus, 4)
+            w.execute(
+                """
+                INSERT INTO pc_top_subsidies_by_prefecture (
+                    prefecture_code, rank, program_id,
+                    relevance_score, cached_payload
+                ) VALUES (?, ?, ?, ?, NULL)
+                """,
+                (code, rank, uid, score),
+            )
+            inserted += 1
+    return inserted
 
 
 def _refresh_pc_law_to_program_index(
@@ -364,7 +447,57 @@ def _refresh_pc_amendment_recent_by_law(
 def _refresh_pc_program_geographic_density(
     w: sqlite3.Connection, r: sqlite3.Connection | None
 ) -> int:
-    return 0
+    """Program count per (prefecture_code, tier).
+
+    Same prefecture-name → ISO mapping as
+    _refresh_pc_top_subsidies_by_prefecture. Skip 全国 / unknown names.
+    Rows where the (prefecture, tier) combo is empty are simply not
+    inserted (no zero-rows guarantee — the consumer must coalesce).
+    """
+    iso = {
+        "北海道": "JP-01", "青森県": "JP-02", "岩手県": "JP-03",
+        "宮城県": "JP-04", "秋田県": "JP-05", "山形県": "JP-06",
+        "福島県": "JP-07", "茨城県": "JP-08", "栃木県": "JP-09",
+        "群馬県": "JP-10", "埼玉県": "JP-11", "千葉県": "JP-12",
+        "東京都": "JP-13", "神奈川県": "JP-14", "新潟県": "JP-15",
+        "富山県": "JP-16", "石川県": "JP-17", "福井県": "JP-18",
+        "山梨県": "JP-19", "長野県": "JP-20", "岐阜県": "JP-21",
+        "静岡県": "JP-22", "愛知県": "JP-23", "三重県": "JP-24",
+        "滋賀県": "JP-25", "京都府": "JP-26", "大阪府": "JP-27",
+        "兵庫県": "JP-28", "奈良県": "JP-29", "和歌山県": "JP-30",
+        "鳥取県": "JP-31", "島根県": "JP-32", "岡山県": "JP-33",
+        "広島県": "JP-34", "山口県": "JP-35", "徳島県": "JP-36",
+        "香川県": "JP-37", "愛媛県": "JP-38", "高知県": "JP-39",
+        "福岡県": "JP-40", "佐賀県": "JP-41", "長崎県": "JP-42",
+        "熊本県": "JP-43", "大分県": "JP-44", "宮崎県": "JP-45",
+        "鹿児島県": "JP-46", "沖縄県": "JP-47",
+    }
+    rows = w.execute(
+        """
+        SELECT prefecture, tier, COUNT(*) AS n
+        FROM programs
+        WHERE excluded = 0
+          AND tier IN ('S','A','B','C')
+          AND prefecture IS NOT NULL
+          AND prefecture != ''
+        GROUP BY prefecture, tier
+        """
+    ).fetchall()
+    inserted = 0
+    for pref, tier, n in rows:
+        code = iso.get(pref)
+        if code is None or not n:
+            continue
+        w.execute(
+            """
+            INSERT INTO pc_program_geographic_density (
+                prefecture_code, tier, program_count
+            ) VALUES (?, ?, ?)
+            """,
+            (code, tier, int(n)),
+        )
+        inserted += 1
+    return inserted
 
 
 def _refresh_pc_authority_action_frequency(
@@ -388,7 +521,57 @@ def _refresh_pc_industry_jsic_to_program(
 def _refresh_pc_amount_max_distribution(
     w: sqlite3.Connection, r: sqlite3.Connection | None
 ) -> int:
-    return 0
+    """Histogram of programs.amount_max_man_yen across schema's 9 buckets.
+
+    Buckets are in JPY (not 万円), matching the schema CHECK constraint
+    enum: <1M, 1M-5M, 5M-10M, 10M-50M, 50M-100M, 100M-500M, 500M-1B, >1B,
+    unknown. amount_max_man_yen is in 万円 — multiply by 1e4 to get JPY
+    before bucketing. NULL or non-positive → 'unknown'.
+    """
+    rows = w.execute(
+        """
+        SELECT amount_max_man_yen
+        FROM programs
+        WHERE excluded = 0
+          AND tier IN ('S','A','B','C')
+        """
+    ).fetchall()
+
+    def _bucket(amt_man: float | None) -> str:
+        if amt_man is None or amt_man <= 0:
+            return "unknown"
+        jpy = amt_man * 10_000.0
+        if jpy < 1_000_000:
+            return "<1M"
+        if jpy < 5_000_000:
+            return "1M-5M"
+        if jpy < 10_000_000:
+            return "5M-10M"
+        if jpy < 50_000_000:
+            return "10M-50M"
+        if jpy < 100_000_000:
+            return "50M-100M"
+        if jpy < 500_000_000:
+            return "100M-500M"
+        if jpy < 1_000_000_000:
+            return "500M-1B"
+        return ">1B"
+
+    counts: dict[str, int] = {}
+    for (amt,) in rows:
+        b = _bucket(amt)
+        counts[b] = counts.get(b, 0) + 1
+    inserted = 0
+    for bucket, n in counts.items():
+        w.execute(
+            """
+            INSERT INTO pc_amount_max_distribution (bucket, program_count)
+            VALUES (?, ?)
+            """,
+            (bucket, int(n)),
+        )
+        inserted += 1
+    return inserted
 
 
 def _refresh_pc_program_to_loan_combo(
@@ -418,7 +601,75 @@ def _refresh_pc_acceptance_rate_by_authority(
 def _refresh_pc_application_close_calendar(
     w: sqlite3.Connection, r: sqlite3.Connection | None
 ) -> int:
-    return 0
+    """Per-month index of program close dates parsed from
+    application_window_json.
+
+    Source: programs.application_window_json (JSON dict). We pull
+    end_date (top-level) and end_date inside each windows[] entry. Dates
+    are kept as ISO 8601 strings; days_until is computed from the SQLite
+    'now' the row is inserted with (matches refreshed_at semantics).
+    Skip rows whose end_date doesn't parse to YYYY-MM-DD.
+    """
+    import json  # noqa: PLC0415
+    from datetime import date  # noqa: PLC0415
+
+    rows = w.execute(
+        """
+        SELECT unified_id, application_window_json
+        FROM programs
+        WHERE excluded = 0
+          AND tier IN ('S','A','B','C')
+          AND application_window_json IS NOT NULL
+          AND application_window_json != ''
+          AND application_window_json != 'null'
+        """
+    ).fetchall()
+    today = date.today()
+    seen: set[tuple[int, str, str]] = set()
+    inserted = 0
+    for uid, raw in rows:
+        try:
+            obj = json.loads(raw)
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(obj, dict):
+            continue
+        # Collect all candidate close dates: top-level end_date plus each
+        # windows[i].end_date (if windows[] is a list of dicts).
+        candidates: list[str] = []
+        top_end = obj.get("end_date")
+        if isinstance(top_end, str) and top_end.strip():
+            candidates.append(top_end.strip())
+        windows = obj.get("windows")
+        if isinstance(windows, list):
+            for win in windows:
+                if not isinstance(win, dict):
+                    continue
+                we = win.get("end_date")
+                if isinstance(we, str) and we.strip():
+                    candidates.append(we.strip())
+        for cd in candidates:
+            try:
+                parsed = date.fromisoformat(cd[:10])
+            except (TypeError, ValueError):
+                continue
+            month = parsed.month
+            iso_str = parsed.isoformat()
+            key = (month, uid, iso_str)
+            if key in seen:
+                continue
+            seen.add(key)
+            days_until = (parsed - today).days
+            w.execute(
+                """
+                INSERT INTO pc_application_close_calendar (
+                    month_of_year, program_id, close_date, days_until
+                ) VALUES (?, ?, ?, ?)
+                """,
+                (month, uid, iso_str, days_until),
+            )
+            inserted += 1
+    return inserted
 
 
 def _refresh_pc_amount_to_recipient_size(
