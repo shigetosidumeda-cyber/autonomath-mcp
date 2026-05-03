@@ -79,15 +79,15 @@ def test_filter_redistributable_rejects_unknown_value_as_blocked() -> None:
     rows = [
         {"id": "A", "license": "pdl_v1.0"},
         {"id": "B", "license": "mit-but-not-listed"},  # not in allow set
-        {"id": "C", "license": "gov_standard_v2.0"},  # variant typo
+        {"id": "C", "license": "gov_standard_v2.0"},  # allowed government standard
         {"id": "D", "license": "CC_BY_4.0"},  # case-mismatch
         {"id": "E"},  # missing field
         {"id": "F", "license": None},  # None value
         {"id": "G", "license": ""},  # empty string
     ]
     allowed, blocked = filter_redistributable(rows)
-    assert {r["id"] for r in allowed} == {"A"}
-    assert {r["id"] for r in blocked} == {"B", "C", "D", "E", "F", "G"}
+    assert {r["id"] for r in allowed} == {"A", "C"}
+    assert {r["id"] for r in blocked} == {"B", "D", "E", "F", "G"}
 
 
 # ---------------------------------------------------------------------------

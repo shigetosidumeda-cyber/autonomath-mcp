@@ -289,17 +289,17 @@
  <h1 id="hero-title">日本の公的制度を、Evidence Packet で AI に渡す。</h1>
  <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 出典 URL ・取得時刻・known gaps ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 caller supplied baseline がある場合だけ、 入力文脈量の削減見込みと <code>break_even_met</code> を返します。 外部 LLM の請求額削減は保証しません。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
 
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 出典の鮮度は 中央値 7 日。 Claude / ChatGPT / Cursor から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude / ChatGPT / Cursor から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
 
  <div class="cta-row">
  <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回の無料ライブ検証を始める (Evidence Packet) →</a>
- <a href="/docs/getting-started/" data-cta-variant="hero-getting-started-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">5 分クイックスタート (curl → Playground → MCP) →</a>
+ <a href="/docs/getting-started/" data-cta-variant="hero-getting-started-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">クイックスタート (curl → Playground → MCP) →</a>
  <a href="/pricing.html" data-cta-variant="hero-pricing-tertiary" style="align-self:center;font-size:14px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金 (¥3.30/req) →</a>
  </div>
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
- <span class="chip-success">5 秒</span>匿名 curl で動作確認 (登録不要) ·
- <span class="chip-success">30 秒</span>Playground で Evidence Packet 確認 ·
- <span class="chip-success">5 分</span>Claude Desktop / Cursor / Cline / ChatGPT で稼働
+ <span class="chip-success">匿名</span>curl で動作確認 (登録不要) ·
+ <span class="chip-success">Playground</span>Evidence Packet 確認 ·
+ <span class="chip-success">MCP</span>Claude Desktop / Cursor / Cline / ChatGPT に接続
  </p>
  <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用、LINE、法令アラート、ウィジェットは ¥3/リクエスト (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
@@ -504,7 +504,7 @@
  <p class="audience-pitch">e-Gov の英訳法令と各国との租税条約を 1 つの API で。 海外子会社・投資ファンドの日本側コンプライアンスを一括処理。 外資規制のかかる制度はフラグ付きで絞り込めます。</p>
  <ul class="card-list">
  <li>e-Gov 英訳 </li>
- <li>租税条約 約 80 ヵ国対応 (収録は)</li>
+ <li>租税条約・国際課税の参照導線</li>
  <li>外資規制フラグ付きの制度フィルタ</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/en/audiences/dev.html">海外法人 向け (EN) →</a></p>
@@ -513,7 +513,7 @@
  <article class="card audience-card" aria-labelledby="aud-consultant">
  <h3 id="aud-consultant">補助金コンサルタント</h3>
  <p class="card-lead audience-context">顧問先 横展開 + 採択後の進捗追跡</p>
- <p class="audience-pitch">顧問先 1 社 &times; 月 10 リクエスト &times; ¥3 = <strong>¥30/社/月</strong>。 顧問先数に応じてスケール (例: 200 社 ¥6,000/月 + 事前リサーチ ¥600 = ¥6,600/月)。 API + Slack Webhook で既存の業務フローに連携でき、採択後の日程通知も即日 配信できます。</p>
+ <p class="audience-pitch">顧問先 1 社 &times; 月 10 リクエスト &times; ¥3 = <strong>¥30/社/月</strong>。 顧問先数に応じてスケール (例: 200 社 ¥6,000/月 + 事前リサーチ ¥600 = ¥6,600/月)。 API + Slack Webhook で既存の業務フローに連携でき、採択後の日程通知フローにも組み込めます。</p>
  <ul class="card-list">
  <li>1 顧問先 = ¥30/月 (10 リクエスト × ¥3)</li>
  <li>併用ルール <span data-fact="exclusion_rules_total">181</span> 本で申請前の確認リスクを機械検出</li>
@@ -541,7 +541,7 @@
  <ul class="card-list">
  <li>制度の品質ラベル: S 厳選 <span data-fact="tier_s_count">114</span> 件 + A 高品質 <span data-fact="tier_a_count">1,340</span> 件</li>
  <li>融資商品 <span data-fact="loan_programs_total">108</span> 件 (担保・個人保証人・第三者保証人で分類)</li>
- <li>勉強会用の検索ウィジェット 埋込 (1 検索 ¥3 税込 ¥3.30、 サイト訪問者の検索ごと従量)</li>
+ <li>勉強会用の検索ウィジェット 埋込 (1 検索 ¥3 税別 / 税込 ¥3.30、 サイト訪問者の検索ごと従量)</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/admin-scrivener.html">信金・商工会向け →</a></p>
  </article>
@@ -751,7 +751,7 @@
  <article class="card">
  <h3>(a) 複数 DB を 1 コール で統合</h3>
  <p class="card-lead">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
- <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (差分、 月次フル取り込み 4M 行)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 93 MCP ツールから呼び出せます。</p>
+ <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 93 MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
@@ -892,7 +892,7 @@
  </section>
 
  <section class="features"><div class="container" style="text-align:center;padding:48px 0;">
- <h2>5 分で動かしてみる</h2>
+ <h2>すぐ動かしてみる</h2>
  <p>登録不要・ 3 リクエスト/日 まで無料。 Claude Desktop / Cursor から uvx 1 行で。</p>
  <p>
  <a class="btn btn-primary" href="/docs/getting-started/">スタートガイド →</a>

@@ -69,8 +69,8 @@ Never invent program IDs. Use IDs returned by `search_programs`.
 
 Example natural-language prompts designed to map to jpcite routes — copy as-is into Claude / ChatGPT / Cursor / Cline / Gemini and adjust as needed.
 
-- `What subsidies can a 30-employee construction company in 東京都 use?` → `search_programs(prefecture="東京都", target_industry="D", employee_count=30)` (`target_industry` is a JSIC 1-letter enum; D = 建設業)
-- `Can 事業再構築補助金 and ものづくり補助金 be combined?` → first call `search_programs(keyword="事業再構築")` and `search_programs(keyword="ものづくり")` to get real `unified_id`s, then pass that list into `check_exclusions(program_ids=[<id1>, <id2>])` — never hard-code program ids; use the ones returned from `search_programs`.
+- `What subsidies can a 30-employee construction company in 東京都 use?` → `prescreen_programs(prefecture="東京都", industry_jsic="D", employee_count=30)` (`industry_jsic` is a JSIC 1-letter enum; D = 建設業)
+- `Can 事業再構築補助金 and ものづくり補助金 be combined?` → first call `search_programs(q="事業再構築")` and `search_programs(q="ものづくり")` to get real `unified_id`s, then pass that list into `check_exclusions(program_ids=[<id1>, <id2>])` — never hard-code program ids; use the ones returned from `search_programs`.
 - `Show subsidies closing within 30 days for 東京 SMBs` → `upcoming_deadlines(within_days=30, prefecture="東京都")`
 - `Is this Japanese invoice registration number registered?` → `search_invoice_registrants(houjin_bangou="<invoice registration number>")` (PDL v1.0 attribution included)
 - `Build a 3-year subsidy roadmap for an 埼玉県 manufacturer (JSIC E)` → `subsidy_roadmap_3yr(prefecture="埼玉県", industry_jsic="E", company_size="medium")` — 36-month JST fiscal-year quarter timeline
@@ -99,7 +99,7 @@ Example natural-language prompts designed to map to jpcite routes — copy as-is
 - [Programs sitemap](https://jpcite.com/sitemap-programs.xml)
 - [Q&A sitemap](https://jpcite.com/sitemap-qa.xml): 79 citation-targeted FAQPage pages across 24 topics
 - [Enforcement sitemap](https://jpcite.com/sitemap-enforcement.xml): administrative action pages
-- Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on each `/programs/{id}.html`
+- Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on generated program pages. Use the `static_url` returned by search/API results instead of inventing a URL.
 - Per-Q&A JSON-LD (schema.org Article + FAQPage + BreadcrumbList) is embedded inline on each `/qa/{topic}/{slug}.html`
 - Landing pages (index / pricing / docs root / audiences) carry SoftwareApplication + Dataset + WebAPI + Service + Audience + Organization with stable `@id: https://jpcite.com/#publisher` for cross-page entity resolution.
 

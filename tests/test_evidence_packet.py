@@ -1076,6 +1076,58 @@ def test_evidence_license_gate_filters_mixed_license_facts() -> None:
     assert all(f["source"]["license"] != "proprietary" for f in facts)
 
 
+def test_evidence_license_gate_filters_proprietary_pdf_fact_refs() -> None:
+    from jpintel_mcp.api.evidence import _apply_license_gate
+
+    envelope = {
+        "records": [
+            {
+                "entity_id": "program:pdf-ref-fixture",
+                "primary_name": "pdf ref fixture",
+                "facts": [
+                    {
+                        "field": "amount_max_yen",
+                        "value": "1000000",
+                        "source": {
+                            "license": "pdl_v1.0",
+                            "url": "https://example.go.jp/public",
+                        },
+                    }
+                ],
+                "pdf_fact_refs": [
+                    {
+                        "field_name": "subsidy_rate",
+                        "value": "must not export",
+                        "source_url": "https://example.com/private.pdf",
+                        "license": "proprietary",
+                    },
+                    {
+                        "field_name": "deadline",
+                        "value": "2026-06-30",
+                        "source_url": "https://example.go.jp/public.pdf",
+                        "license": "pdl_v1.0",
+                    },
+                ],
+            }
+        ]
+    }
+
+    gated, summary = _apply_license_gate(envelope)
+
+    assert summary["allowed_count"] == 1
+    assert summary["blocked_pdf_fact_refs_count"] == 1
+    refs = gated["records"][0]["pdf_fact_refs"]
+    assert refs == [
+        {
+            "field_name": "deadline",
+            "value": "2026-06-30",
+            "source_url": "https://example.go.jp/public.pdf",
+            "license": "pdl_v1.0",
+        }
+    ]
+    assert "must not export" not in str(gated)
+
+
 def test_rest_json_license_gate_filters_mixed_license_facts(
     client: TestClient,
     fixture_db: Path,

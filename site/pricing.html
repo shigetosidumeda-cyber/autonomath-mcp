@@ -266,7 +266,7 @@
  <section aria-labelledby="three-trial-checklist-title" style="margin-top:40px;">
  <h2 id="three-trial-checklist-title" class="section-title" style="font-size:22px;">無料 3 回で確認すること</h2>
  <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:780px;">
- 匿名 3 リクエスト/日 (IP 単位、 JST 翌日 00:00 リセット) で、 課金前に下の 5 点をすべて確認できます。 全項目が想定通りに返ったら、 ¥3.30/req の従量課金は <strong>「外部 LLM の請求額が下がる保証」 ではなく、 「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」</strong> の対価として割に合うかを判断できます。 jpcite は外部 LLM の請求額削減を保証しません。
+ 匿名 3 リクエスト/日 (IP 単位、 JST 翌日 00:00 リセット) の代表的な検証フローで、 課金前に下の 5 点を確認できます。 全項目が想定通りに返ったら、 ¥3.30/req の従量課金は <strong>「外部 LLM の請求額が下がる保証」 ではなく、 「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」</strong> の対価として割に合うかを判断できます。 jpcite は外部 LLM の請求額削減を保証しません。
  </p>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;background:var(--bg,#fff);max-width:880px;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
@@ -283,7 +283,7 @@
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 16px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);vertical-align:top;">2. <code>source_fetched_at</code> がある</th>
- <td style="padding:12px 16px;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.6;">最終更新ではなく <strong>jpcite が出典を最後に取得した時刻</strong>。 中央値 7 日で再 fetch、 古ければ <a href="data-freshness.html">データ鮮度</a> で per-source 内訳を確認できます。</td>
+ <td style="padding:12px 16px;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.6;">最終更新ではなく <strong>jpcite が出典を最後に取得した時刻</strong>。 優先度の高い出典の再取得中央値は約 7 日で、 古ければ <a href="data-freshness.html">データ鮮度</a> で per-source 内訳を確認できます。</td>
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 16px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);vertical-align:top;">3. Evidence Packet で <code>quality.known_gaps</code> を確認できる</th>
@@ -327,8 +327,8 @@
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:20px 22px;background:var(--bg,#fff);">
  <p style="font-size:13px;font-weight:600;color:var(--text-muted);margin:0 0 6px;letter-spacing:0.04em;">3. 鮮度 + コスト決定性</p>
- <p style="font-size:18px;font-weight:700;line-height:1.4;margin:0 0 10px;">中央値 7 日以内に再取得</p>
- <p style="font-size:14px;line-height:1.7;margin:0;color:var(--text);">優先度の高い出典は中央値 7 日で再 fetch。 税込 ¥3.30/request は jpcite の billable API/MCP call 単価です。 外部 LLM 側の token / search / cache / tool cost は利用者のモデル設定に依存します。</p>
+ <p style="font-size:18px;font-weight:700;line-height:1.4;margin:0 0 10px;">再取得中央値は約 7 日</p>
+ <p style="font-size:14px;line-height:1.7;margin:0;color:var(--text);">優先度の高い出典の再取得中央値は約 7 日です。 税込 ¥3.30/request は jpcite の billable API/MCP call 単価です。 外部 LLM 側の token / search / cache / tool cost は利用者のモデル設定に依存します。</p>
  </div>
  </div>
  <p style="font-size:13px;line-height:1.7;margin:14px 0 0;color:var(--text-muted);">

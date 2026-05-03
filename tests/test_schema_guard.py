@@ -206,3 +206,27 @@ def test_migrate_handles_explicit_transaction_scripts(tmp_path: Path) -> None:
         conn.close()
 
     assert count == 1
+
+
+def test_migrate_load_migrations_skips_rollback_and_manual_files(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    from scripts import migrate
+
+    migrations_dir = tmp_path / "migrations"
+    migrations_dir.mkdir()
+    (migrations_dir / "001_forward.sql").write_text("CREATE TABLE ok(id INTEGER);\n", encoding="utf-8")
+    (migrations_dir / "002_forward_rollback.sql").write_text(
+        "DROP TABLE ok;\n",
+        encoding="utf-8",
+    )
+    (migrations_dir / "003_manual.sql").write_text(
+        "-- boot_time: manual\nDROP TABLE large_table;\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(migrate, "MIGRATIONS_DIR", migrations_dir)
+
+    loaded = migrate._load_migrations()
+
+    assert [mid for mid, _path, _checksum in loaded] == ["001_forward.sql"]

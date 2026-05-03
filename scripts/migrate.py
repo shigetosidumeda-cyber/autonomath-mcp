@@ -64,6 +64,9 @@ def _load_migrations() -> list[tuple[str, Path, str]]:
         return out
     for p in sorted(MIGRATIONS_DIR.glob("*.sql")):
         sql = p.read_text(encoding="utf-8")
+        if p.name.endswith("_rollback.sql") or _sql_has_header_marker(sql, "boot_time", "manual"):
+            _LOG.info("skipping_manual_migration id=%s", p.name)
+            continue
         checksum = hashlib.sha256(sql.encode("utf-8")).hexdigest()
         out.append((p.name, p, checksum))
     return out
@@ -89,6 +92,12 @@ def _sql_has_target_marker(sql: str, target: str) -> bool:
     the same string buried in a CREATE TRIGGER body can't trip the gate.
     """
     needle = f"-- target_db: {target}"
+    return any(line.strip() == needle for line in sql.splitlines()[:5])
+
+
+def _sql_has_header_marker(sql: str, key: str, value: str) -> bool:
+    """True iff one of the first ~5 lines is `-- <key>: <value>`."""
+    needle = f"-- {key}: {value}"
     return any(line.strip() == needle for line in sql.splitlines()[:5])
 
 

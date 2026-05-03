@@ -1,10 +1,10 @@
-# 公開開発予定
+# 公開済み機能と改善候補
 
 最終更新: 2026-04-29
 
-このページは社内で動いている計画を、外向けにそのまま開示したものです。
-**「予定」であり「確約」ではありません。** 期日コミットメントを必要とする
-お客様には別途相談ください (`info@bookyou.net`)。
+このページは、jpcite の公開済み機能と、今後改善する可能性がある領域を整理したものです。
+記載内容は提供を約束するものではありません。現在利用できる機能は、API reference、
+Pricing、Data freshness の各ページを正とします。
 
 zero-touch / solo 運営のため、フィードバック窓口はメール (`info@bookyou.net`)
 の 1 系統に集約しています。GitHub Issues / Discord / Slack 等のコミュニティ
@@ -38,14 +38,14 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 - **Email-only trial signup** — magic-link で 14 日 / 200 req のカード不要試用。
   evaluator email を bounce 前に補足。
 
-## 今後 3 ヶ月予定 (In Progress)
+## 改善候補
 
-実装着手済み・優先度高。期日は best-effort、変動あり。
+公開データの品質、出典追跡、AI エージェントからの使いやすさを上げるために検討している項目です。
 
 - **法令本文 9,484 件全件ロード完了** — 現在 154 件 indexed、残りを e-Gov 法令
   API V2 経由で順次取り込み。法改正検知 cron は既に稼働中、本文蓄積は進行中。
-- **NTA 適格事業者 月次フル取り込み (4M rows)** — 現在 13,801 rows delta only。
-  PDL v1.0 で API 再配布可確定済みなので、月次 bulk pipeline を確立。
+- **NTA 適格事業者データ拡充** — 現在の公開 API は 13,801 件の差分 mirror。
+  PDL v1.0 の条件を守りながら、より広い bulk 取り込みを検討。
 - **入札 実データ拡充** — 362 rows → 数千 rows。schema 構築済み、
   NEXCO / JR / UR / 都道府県の現行入札を継続収集。
 - **判例 実データ拡充** — 2,065 rows → 5,000+。知財高裁
@@ -63,12 +63,12 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 - **適格事業者の取消・失効 monitoring** — registered / revoked / expired を
   watchlist 登録した法人について Webhook 通知。
 
-## 検討中 (Considering)
+## その他の検討領域
 
-公開アイデア。コミットしていません。優先順位は変動します。
+必要性が明確になった場合に検討します。
 
-- **多言語対応の深化** — 現在 EN は thin layer。深い翻訳 (用語集 / pricing /
-  glossary) を進めるか、JA に集中するか未確定。
+- **多言語対応の深化** — 英語ページの用語、料金、導入説明をより自然にするか、
+  日本語 API 利用者向けの深さを優先するか検討。
 - **MCP tool の deprecation 戦略** — 93 tools を 60 程度に絞る (重複統合)。
   external schema なので breaking change の影響が大きく、慎重に検討中。
 - **Webhook subscription 機構** — alerts は email、API は polling のみ。
@@ -90,8 +90,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
   acquisition (SEO / GEO / 直接の引用) で集客。
 - **営業電話 / コールド outreach** — 飛び込み営業・cold email・cold DM はゼロ。
   inbound 経由のみ対応。
-- **複数ドメイン展開** — `jpcite.com` 1 ドメインに集約。`autonomath.ai`
-  等のサブブランドを別ドメインで増やすことはしない (内部識別子は維持)。
+- **複数ドメイン展開** — `jpcite.com` 1 ドメインに集約。
 - **SaaS UI / ダッシュボード SaaS** — 価値は API / MCP / 静的 docs 経由で配信。
   polished SaaS UI ビルドは AI agents 単独では難しく、その方向の機能拡張は
   しない。dashboard は bearer-auth の最小限の usage / billing 表示のみ維持。
@@ -101,14 +100,12 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
   しない。標準 ToS / Privacy / 特商法のみ。
 - **電話サポート / Slack Connect / 専用 onboarding call** — 全て self-service。
   解決しない場合のみ `info@bookyou.net` 1 系統。
-- **多媒体 EC 広告運用 SaaS への pivot** — AutoNoMath EC は別線、当 product
-  (jpcite) と混在させない。
+- **多媒体 EC 広告運用 SaaS への pivot** — jpcite は公的制度データ API / MCP に集中する。
 - **特許出願 (A/B/C/D/E)** — 2026-04-13 に 5 特許全撤退決定済み。新たな
   特許出願は今後もしない方針。
 - **商標登録** — Intel との著名商標衝突は rename で回避。商標出願の工数 /
   費用は取らない (2026-04-23 確定方針)。
-- **農業 managed service / ブルーベリー栽培事業との結合** — それらは別線
-  (内部 project)。当 product (jpcite) と混在させない。
+- **農業 managed service との結合** — jpcite は公的制度データ API / MCP に集中する。
 
 ---
 

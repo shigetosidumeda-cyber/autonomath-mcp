@@ -104,8 +104,8 @@ Billing caveat:
 
 Example natural-language prompts designed to map to jpcite routes — copy as-is into Claude / ChatGPT / Cursor and adjust as needed.
 
-- `東京都の建設業 30 人で使える補助金は?` → `search_programs(prefecture="東京都", target_industry="D", employee_count=30)` (`target_industry` は JSIC 1 文字 enum、D=建設業)
-- `事業再構築補助金とものづくり補助金は同時に申請できる?` → まず `search_programs(keyword="事業再構築")` と `search_programs(keyword="ものづくり")` で実在 unified_id を取得し、その配列を `check_exclusions(program_ids=[<id1>, <id2>])` に渡す (program_id はハードコードしない、必ず `search_programs` の戻り値を使う)。
+- `東京都の建設業 30 人で使える補助金は?` → `prescreen_programs(prefecture="東京都", industry_jsic="D", employee_count=30)` (`industry_jsic` は JSIC 1 文字 enum、D=建設業)
+- `事業再構築補助金とものづくり補助金は同時に申請できる?` → まず `search_programs(q="事業再構築")` と `search_programs(q="ものづくり")` で実在 unified_id を取得し、その配列を `check_exclusions(program_ids=[<id1>, <id2>])` に渡す (program_id はハードコードしない、必ず `search_programs` の戻り値を使う)。
 - `30 日以内に締め切る東京の SMB 向け補助金を教えて` → `upcoming_deadlines(within_days=30, prefecture="東京都")` — 全国 / prefecture 未設定 行も自動 fallback
 - `適格請求書発行事業者番号を確認したい` → `search_invoice_registrants(houjin_bangou="<適格請求書登録番号>")` — PDL v1.0 attribution 同梱
 - `製造業×埼玉県の SMB 用に 補助金 + 融資 + 採択事例 + 締切 をまとめて` → `smb_starter_pack(prefecture="埼玉県", industry_jsic="E", employees=30)` — 6-tool chain を 1 コール
@@ -174,9 +174,9 @@ A curated subset of the 93 tools — pick the right entry point on the first cal
 - `list_static_resources_am` / `list_example_profiles_am` — 8 静的タクソノミ + 5 サンプル profile (即実行 payload + few-shot grounding).
 - `get_usage_status` — anonymous quota probe. **このツール自体はクォータを消費しません.**
 
-## Client integrations (5-min step-by-step tutorials)
+## Client integrations
 
-Hand-written tutorials for the 5 most-used MCP / Custom-GPT / GPTs / Gemini clients. Each one converts a curious evaluator into a working caller in ≦ 5 minutes — copy-paste config snippet + first prompt + expected output + 5 troubleshooting items.
+Hand-written tutorials for the 5 most-used MCP / Custom-GPT / GPTs / Gemini clients. They are designed for a quick first call, with copy-paste config snippets, first prompts, expected output, and troubleshooting items. Setup time varies by client.
 
 - [Integrations index](https://jpcite.com/integrations/): all client guides + 5-language SDK samples + official Python / TypeScript SDK
 - [Claude Desktop](https://jpcite.com/integrations/claude-desktop.html): install + claude_desktop_config.json. macOS / Windows / Linux paths covered. ~3 min to first tool call (93 tools live).
@@ -202,7 +202,7 @@ Hand-written tutorials for the 5 most-used MCP / Custom-GPT / GPTs / Gemini clie
 - [Pages sitemap](https://jpcite.com/sitemap-pages.xml): /news/* auto-generated change-detection posts
 - [Q&A sitemap](https://jpcite.com/sitemap-qa.xml): citation-targeted Q&A pages (FAQPage JSON-LD)
 - [Enforcement sitemap](https://jpcite.com/sitemap-enforcement.xml): administrative action pages
-- Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on each `/programs/{id}.html`
+- Per-program JSON-LD (schema.org GovernmentService / LoanOrCredit) is embedded inline on generated program pages. Use the `static_url` returned by search/API results instead of inventing a URL.
 - Per-news JSON-LD (schema.org NewsArticle + GovernmentService) embedded on each `/news/{YYYY}/{MM}/{DD}/{slug}.html`
 - Per-Q&A JSON-LD (schema.org Article + FAQPage + BreadcrumbList) embedded on each `/qa/{topic}/{slug}.html`
 - Per-audience JSON-LD (schema.org Service + Audience + Offer + BreadcrumbList) embedded on each `/audiences/{slug}.html`

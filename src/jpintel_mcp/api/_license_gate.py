@@ -123,7 +123,7 @@ def filter_redistributable(
       * rows where the field is missing (`license_field not in row`)
       * rows where the value is None / empty string
       * rows whose value is in `BLOCKED_LICENSES` (proprietary, unknown)
-      * rows with any unrecognized string (e.g. `mit`, `gov_standard_v2.0`)
+      * rows with any unrecognized string (e.g. `mit`, `gov_standard_v3.0`)
 
     The function does NOT mutate the input rows. Allowed rows preserve
     their original order; blocked rows likewise.

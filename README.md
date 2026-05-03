@@ -2,7 +2,7 @@
 
 mcp-name: io.github.shigetosidumeda-cyber/autonomath-mcp
 
-*Updated 2026-04-30 — v0.3.2*
+Current public docs and release tags are the source of truth for version and pricing.
 
 [![PyPI version](https://img.shields.io/pypi/v/autonomath-mcp.svg)](https://pypi.org/project/autonomath-mcp/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
@@ -30,7 +30,7 @@ An evidence-first context layer over Japanese institutional public data, exposed
 
 ## Coverage
 
-- **Source-linked records** — `source_url` + `content_hash` + `source_fetched_at` on 99%+ of rows (12 rows lack URL because the originating small-municipality CMS has no dedicated page). Second-tier aggregator pages are not used as citation sources.
+- **Source-linked records** — most published rows include `source_url`, `content_hash`, and `source_fetched_at`; known source gaps are surfaced. Known second-tier aggregator pages are excluded from citation sources where detected.
 - **11,684 searchable programs** across 47 prefectures + national (補助金・融資・税制・認定; tier S=114 / A=1,340 / B=4,186 / C=6,044; full catalog = 14,472, 2,788 publication-review rows)
 - **2,286 採択事例 + 108 融資 (担保・個人保証人・第三者保証人 三軸分解) + 1,185 行政処分 + 22,258 enforcement-detail records + 2,065 court decisions + 362 bids**
 - **154 laws full-text indexed + 9,484 law metadata records** (e-Gov CC-BY; full-text coverage is incremental — name resolver covers all 9,484, body text 154) **+ 50 tax rulesets + 13,801 invoice registrants (PDL v1.0 delta)**
@@ -148,7 +148,7 @@ Full list: [docs/mcp-tools.md](https://jpcite.com/docs/mcp-tools/)
 
 ## REST API & SDKs
 
-> WARNING: Both SDKs are pre-release — direct git install only. PyPI / npm publish pending.
+> WARNING: The MCP package is published on PyPI; REST SDKs remain pre-release.
 
 **OpenAPI spec**
 
@@ -180,7 +180,7 @@ uvx autonomath-mcp
 
 ## Data sources
 
-All programs cite primary sources — 経産省, 農林水産省 (MAFF), 日本政策金融公庫 (JFC), 総務省, and 47 都道府県公報. 99%+ records carry `source_url` + `source_fetched_at` lineage (12 rows are small-municipality programs lacking a dedicated CMS page). Public structured data is exposed through `/structured/`, `sitemap-structured.xml`, and inline JSON-LD on generated program pages.
+Program records prioritize primary sources such as 経産省, 農林水産省 (MAFF), 日本政策金融公庫 (JFC), 総務省, and 47 都道府県公報. Most public records carry `source_url` + `source_fetched_at` lineage, with known gaps documented. Public structured data is exposed through `/structured/`, `sitemap-structured.xml`, and inline JSON-LD on generated program pages.
 
 ## Evaluation
 

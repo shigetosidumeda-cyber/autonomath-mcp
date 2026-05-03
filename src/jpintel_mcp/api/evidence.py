@@ -217,6 +217,18 @@ def _redistributable_facts(rec: dict[str, Any]) -> list[dict[str, Any]]:
     return [dict(f) for f in facts if _fact_is_redistributable(f)]
 
 
+def _pdf_fact_ref_is_redistributable(ref: Any) -> bool:
+    if not isinstance(ref, dict):
+        return False
+    license_name = ref.get("license")
+    return isinstance(license_name, str) and license_name in REDISTRIBUTABLE_LICENSES
+
+
+def _redistributable_pdf_fact_refs(rec: dict[str, Any]) -> list[dict[str, Any]]:
+    refs = rec.get("pdf_fact_refs") or []
+    return [dict(ref) for ref in refs if _pdf_fact_ref_is_redistributable(ref)]
+
+
 def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     """Filter the envelope's records[] through the license export gate.
 
@@ -284,6 +296,16 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
             except (TypeError, ValueError):
                 denom = max(1, len(r.get("facts") or []))
             out["fact_provenance_coverage_pct"] = round(len(out["facts"]) / denom, 4)
+        if "pdf_fact_refs" in out:
+            original_pdf_refs = r.get("pdf_fact_refs") or []
+            out["pdf_fact_refs"] = _redistributable_pdf_fact_refs(r)
+            blocked_pdf_refs = len(original_pdf_refs) - len(out["pdf_fact_refs"])
+            if blocked_pdf_refs > 0:
+                gate_summary["blocked_pdf_fact_refs_count"] = (
+                    gate_summary.get("blocked_pdf_fact_refs_count", 0) + blocked_pdf_refs
+                )
+            if not out["pdf_fact_refs"]:
+                out.pop("pdf_fact_refs", None)
         out["_attribution"] = ann.get("_attribution")
         out["license"] = proxy.get("license")
         new_records.append(out)
@@ -328,6 +350,15 @@ def _dispatch_format(
     `tests/test_license_gate_no_bypass.py` asserts to keep this function
     in the "wired" set.
     """
+    allowed_records, blocked_records = filter_redistributable(envelope.get("records") or [])
+    if blocked_records:
+        envelope = dict(envelope)
+        envelope["records"] = allowed_records
+        gate_summary = dict(gate_summary)
+        gate_summary["allowed_count"] = len(allowed_records)
+        gate_summary["blocked_count"] = gate_summary.get("blocked_count", 0) + len(blocked_records)
+        envelope["license_gate"] = gate_summary
+
     headers = {
         "X-License-Gate-Allowed": str(gate_summary["allowed_count"]),
         "X-License-Gate-Blocked": str(gate_summary["blocked_count"]),
