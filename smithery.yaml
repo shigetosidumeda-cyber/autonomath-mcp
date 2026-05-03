@@ -44,15 +44,10 @@ metadata:
   version: "0.3.2"
   displayName: "jpcite — Japanese public-program evidence MCP"
   description: >-
-    Evidence-prefetch MCP for Japanese public-program research. Use it before
-    GPT, Claude, Cursor, or RAG answer generation when the alternative is
-    pasting long PDFs, ministry pages, or search results into the model. jpcite
-    returns compact source-linked Evidence Packets with source_url, fetched_at,
-    provenance, known_gaps, and compatibility rules. The service uses
-    deterministic SQL + Python over a corpus snapshot and makes no LLM call
-    inside the request path. Context-size estimates are workload-dependent and
-    not billing guarantees. Pricing is ¥3/request tax-exclusive (¥3.30
-    tax-inclusive); anonymous access is 3 requests/day per IP.
+    Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate
+    data. 11,684 補助金 + 9,484 e-Gov laws + 22,258 行政処分 + 13,801 適格事業者
+    + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet
+    with source_url + source_fetched_at + known gaps + 互換/排他 rules. 93 tools.
   icon: "https://jpcite.com/assets/mark.svg"
   iconUrl: "https://jpcite.com/assets/favicon-v2.svg"
   homepage: "https://jpcite.com"
