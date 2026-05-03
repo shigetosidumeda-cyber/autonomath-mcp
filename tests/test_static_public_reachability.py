@@ -5,6 +5,19 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REDIRECTS = REPO_ROOT / "site" / "_redirects"
+PUBLIC_DOCS = REPO_ROOT / "site" / "docs"
+PAGES_WORKFLOWS = [
+    REPO_ROOT / ".github" / "workflows" / "pages-preview.yml",
+    REPO_ROOT / ".github" / "workflows" / "pages-regenerate.yml",
+]
+PUBLIC_AI_AND_TOOL_SURFACES = [
+    REPO_ROOT / "site" / "llms.txt",
+    REPO_ROOT / "site" / "llms-full.txt",
+    REPO_ROOT / "site" / "llms-full.en.txt",
+    REPO_ROOT / "site" / "bookmarklet.html",
+    REPO_ROOT / "site" / "qa" / "mcp" / "what-can-jpcite-mcp-do.html",
+    REPO_ROOT / "site" / "qa" / "llm-evidence" / "custom-gpt-japanese-subsidy-api.html",
+]
 
 
 def _redirect_sources() -> list[str]:
@@ -56,3 +69,95 @@ def test_qa_template_uses_public_links_and_search_endpoint() -> None:
     assert "/_templates/qa.html" not in template
     assert "/v1/programs?q=" not in template
     assert "/v1/programs/search?q=" in template
+
+
+def test_public_docs_do_not_regress_to_internal_or_legacy_copy() -> None:
+    banned_terms = [
+        "¥3/req",
+        "¥3/request",
+        "¥3.30/req",
+        "¥3 / リクエスト",
+        "¥3 per request",
+        "One ¥3 charge per request",
+        "Bookyou株式会社 (T8010001213708)",
+        "AUTONOMATH_API_KEY",
+        "include_excluded",
+        "include_internal",
+        "Tier X",
+        "sitemap-structured",
+        "/structured/",
+    ]
+    suffixes = {".html", ".json", ".xml", ".txt", ".csv"}
+
+    offenders: list[tuple[str, str]] = []
+    for path in PUBLIC_DOCS.rglob("*"):
+        if not path.is_file() or path.suffix not in suffixes:
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        for term in banned_terms:
+            if term in text:
+                offenders.append((rel, term))
+
+    assert offenders == []
+
+
+def test_public_sitemap_controls_do_not_republish_structured_shards() -> None:
+    control_files = [
+        REPO_ROOT / "site" / "robots.txt",
+        REPO_ROOT / "site" / "sitemap-index.xml",
+        REPO_ROOT / "site" / "_headers",
+    ]
+    offenders: list[tuple[str, str]] = []
+    for path in control_files:
+        text = path.read_text(encoding="utf-8")
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        for term in ("sitemap-structured", "/structured/"):
+            if term in text:
+                offenders.append((rel, term))
+
+    assert offenders == []
+
+
+def test_key_ai_and_tool_surfaces_use_current_billing_and_evidence_copy() -> None:
+    banned_terms = [
+        "¥3/req",
+        "¥3/request",
+        "¥3.30/req",
+        "¥3 / req",
+        "税込¥3.30/request",
+        "**Use first** for any 制度 query",
+        "The five highest-leverage endpoints for agent flows: `GET /v1/programs/search`",
+        '"tier_counts": {"S": 46',
+        '"X": 1213',
+        "source-allowed public-search rows",
+        "source-allowed entries",
+    ]
+
+    offenders: list[tuple[str, str]] = []
+    for path in PUBLIC_AI_AND_TOOL_SURFACES:
+        text = path.read_text(encoding="utf-8")
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        for term in banned_terms:
+            if term in text:
+                offenders.append((rel, term))
+
+    assert offenders == []
+
+
+def test_pages_artifact_excludes_standalone_structured_shards() -> None:
+    missing: list[tuple[str, str]] = []
+    expected_snippets = [
+        "--exclude 'structured/'",
+        "--exclude 'sitemap-structured.xml'",
+        "cat > dist/site/sitemap-structured.xml",
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>',
+    ]
+    for workflow in PAGES_WORKFLOWS:
+        text = workflow.read_text(encoding="utf-8")
+        rel = workflow.relative_to(REPO_ROOT).as_posix()
+        for snippet in expected_snippets:
+            if snippet not in text:
+                missing.append((rel, snippet))
+
+    assert missing == []

@@ -29,6 +29,17 @@ env:
     tests/test_rate_limit.py
     tests/test_source_manifest.py
     tests/test_extract_prefecture.py
+    tests/test_no_llm_in_production.py
+    tests/test_openapi_export.py
+    tests/test_openapi_agent.py
+    tests/test_billing.py
+    tests/test_billing_webhook_signature.py
+    tests/test_programs_batch.py
+    tests/test_usage_billing_idempotency.py
+    tests/test_self_cap.py
+    tests/test_cost_preview.py
+    tests/test_trial_signup.py
+    tests/test_device_flow.py
 
 jobs:
   pytest:

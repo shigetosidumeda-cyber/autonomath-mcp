@@ -204,7 +204,7 @@
           "name": "匿名で試せますか?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、¥3/req 税別 (税込 ¥3.30) の完全従量で使います。"
+            "text": "はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、従量課金対象単位ごとに ¥3 税別 (税込 ¥3.30) で使います。"
           }
         },
         {
@@ -285,7 +285,7 @@
  <dd>日本の補助金・融資・税制・認定・法令・判例・行政処分・適格請求書発行事業者を、AIクライアントから tool call で検索する MCP server です。</dd> <dt>どのAIクライアントで使えますか?</dt>
  <dd>MCP stdio に対応した Claude Desktop、Cursor、Cline、Continue などで使えます。ChatGPTやCustom GPTではREST/OpenAPI経由の組み込みが主経路になります。</dd> <dt>ツール数はいくつですか?</dt>
  <dd>公開ファクトシート上の最新値では、standard configuration で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。</dd> <dt>匿名で試せますか?</dt>
- <dd>はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、¥3/req 税別 (税込 ¥3.30) の完全従量で使います。</dd> <dt>LLMが直接Web検索する場合との違いは?</dt>
+ <dd>はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、従量課金対象単位ごとに ¥3 税別 (税込 ¥3.30) で使います。</dd> <dt>LLMが直接Web検索する場合との違いは?</dt>
  <dd>Web検索はページ単位の候補を返します。jpcite MCPは制度ID単位の構造化レコード、一次資料URL、取得時刻、排他ルール、schemaを返すため、AI agent が後続処理に渡しやすい形になります。</dd> </dl>
  </section> <section aria-labelledby="facts-title">
  <h2 id="facts-title">主要事実</h2>
@@ -293,7 +293,7 @@
  <dd>MCP stdio + REST/OpenAPI</dd> <dt>tools</dt>
  <dd>93</dd> <dt>anonymous</dt>
  <dd>3 req/日 per IP</dd> <dt>price</dt>
- <dd>¥3/req 税別</dd> </dl>
+ <dd>¥3/billable unit 税別</dd> </dl>
  </section>
  <section aria-labelledby="source-title">
  <h2 id="source-title">出典・一次資料</h2>

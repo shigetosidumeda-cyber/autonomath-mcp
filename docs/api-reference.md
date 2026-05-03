@@ -323,7 +323,7 @@ IP は raw 保存せず `HMAC-SHA256(ip, api_key_salt)` で hash 化。詳細は
 - `compression.cost_savings_estimate.break_even_met` — 入力文脈量だけの参考比較、 外部 LLM 請求額を保証しない (`provider_billing_not_guaranteed=true` 同梱)
 - `agent_recommendation.cost_savings_decision` — `supported_by_caller_baseline` / `not_supported_by_caller_baseline` / `needs_caller_baseline` / `needs_input_token_price`
 
-3 回到達して全項目が想定通りなら、 ¥3.30/req は「外部 LLM の請求額が下がる保証」 ではなく 「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」 の対価として割に合うかを判断できます。 jpcite は外部 LLM の請求額削減を保証しません。 ブラウザで順に検証する場合は <https://jpcite.com/playground.html?flow=evidence3>。 個別 field の詳細仕様は [Context Compression 章](#context-compression-workload-dependent-estimate) と [pricing.md `break_even_met` の正しい読み方](./pricing.md) を参照。
+3 回到達して全項目が想定通りなら、税込概算 ¥3.30/billable unit は「外部 LLM の請求額が下がる保証」ではなく、「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」の対価として割に合うかを判断できます。 jpcite は外部 LLM の請求額削減を保証しません。 ブラウザで順に検証する場合は <https://jpcite.com/playground.html?flow=evidence3>。 個別 field の詳細仕様は [Context Compression 章](#context-compression-workload-dependent-estimate) と [pricing.md `break_even_met` の正しい読み方](./pricing.md) を参照。
 
 ---
 

@@ -1,6 +1,6 @@
 # Cloudflare Pages _headers — jpcite.com
 # Reference: https://developers.cloudflare.com/pages/configuration/headers/
-# Generated 2026-04-25 to support /structured/*.jsonld MIME + cache headers.
+# Generated 2026-04-25 for security and sitemap cache headers.
 
 # Security headers for the static site. Review CSP changes before deploy.
 /*
@@ -10,14 +10,6 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-
-# JSON-LD structured-data feed for AI training crawlers.
-# Content-Type per https://www.w3.org/TR/json-ld11/ §IANA registration.
-/structured/*.jsonld
-  Content-Type: application/ld+json; charset=utf-8
-  Cache-Control: public, max-age=3600, s-maxage=86400
-  X-Content-Type-Options: nosniff
-  Access-Control-Allow-Origin: *
 
 # Sitemaps must be served as XML to be parsed by Googlebot / Bingbot.
 /sitemap*.xml

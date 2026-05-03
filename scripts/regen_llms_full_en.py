@@ -332,7 +332,7 @@ def _section_coverage(programs: int, laws: int, cases: int) -> list[str]:
     return [
         "## Coverage statistics",
         "",
-        f"- Programs: {programs:,} source-allowed public-search rows.",
+        f"- Programs: {programs:,} normalized LLM-index rows. Public search exposes 11,684 searchable program rows.",
         f"- Laws: {laws:,} rows in the laws table (e-Gov / ministry primary sources, current + superseded + repealed).",
         f"- Case studies: {cases:,} adoption case studies (採択事例). Each row is a real adopting entity, with 法人番号 when public.",
         "- Loans: 108 rows in loan_programs (担保 / 個人保証人 / 第三者保証人 split into three independent enumerations).",
@@ -350,7 +350,7 @@ def _section_programs(rows: list[sqlite3.Row]) -> list[str]:
     """Compact pipe-delimited program inventory. Japanese names preserved."""
     count = len(rows)
     out: list[str] = [
-        f"## All Programs ({count:,} source-allowed entries, compact)",
+        f"## All Programs ({count:,} normalized LLM-index program rows, compact)",
         "",
         "Generated from the current public jpcite dataset.",
         "Format: <unified_id> | <primary_name> | <program_kind> | <amount_max_man_yen> | <source_url> | <source_fetched_at>",

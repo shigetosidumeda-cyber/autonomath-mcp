@@ -171,7 +171,7 @@ def build_compact_section(rows: list[sqlite3.Row]) -> str:
     count = len(rows)
 
     lines: list[str] = []
-    lines.append(f"{SECTION_MARKER} ({count:,} source-allowed entries, compact)")
+    lines.append(f"{SECTION_MARKER} ({count:,} normalized LLM-index program rows, compact)")
     lines.append("")
     lines.append("Generated daily from the current public jpcite dataset.")
     lines.append(f"Generated at: {generated_at}.")
@@ -247,6 +247,36 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
         prefix = prefix.replace(old, new)
     prefix = prefix.replace("¥3/request", "¥3/billable unit")
     prefix = prefix.replace("¥3/req", "¥3/billable unit")
+    prefix = prefix.replace("¥3 / request", "¥3/billable unit")
+    prefix = prefix.replace("¥3 / req", "¥3/billable unit")
+    prefix = prefix.replace(
+        '"tier_counts": {"S": 46, "A": 468, "B": 3174, "C": 6310, "X": 1213}',
+        '"tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 6044}',
+    )
+    prefix = prefix.replace(
+        "**¥3 / billable unit 税別 (税込 ¥3.30)**",
+        "**¥3/billable unit 税別 (税込 ¥3.30)**",
+    )
+    prefix = prefix.replace(
+        "`search_programs` — discover by keyword + region + amount across 11,684 制度 "
+        "(tier S/A/B/C). 一次資料 URL 付き. **Use first** for any 制度 query.",
+        "`search_programs` — discover by keyword + region + amount across 11,684 制度 "
+        "(tier S/A/B/C). 一次資料 URL 付き. 広い回答生成では先に "
+        "`/v1/intelligence/precomputed/query`、実在する `unified_id` が必要な時に使う。",
+    )
+    prefix = re.sub(
+        r"The five highest-leverage endpoints for agent flows: `GET /v1/programs/search`.*?"
+        r"For repeated stdio access,",
+        "The five highest-leverage endpoints for agent flows are evidence-first: "
+        "`POST /v1/evidence/packets/query`, `GET /v1/intelligence/precomputed/query`, "
+        "`GET /v1/programs/search`, `GET /v1/programs/{unified_id}`, and "
+        "`GET /v1/source_manifest/{program_id}`. Search responses share a "
+        "`{total, limit, offset, results[]}` shape. Published rows generally expose "
+        "`source_url` + `source_fetched_at` so agents can cite sources directly. "
+        "For repeated stdio access,",
+        prefix,
+        flags=re.DOTALL,
+    )
     # The preserved docs prefix may come from an older generated snapshot.
     # Keep LLM crawler input aligned with the public OpenAPI surface even when
     # the compact inventory is regenerated without rebuilding the docs prefix.

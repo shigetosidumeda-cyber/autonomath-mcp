@@ -142,7 +142,7 @@ The most common 0-hit cause is hallucinated filter values. Always probe the live
 
 A curated subset of the 93 tools — pick the right entry point on the first call. Full reference at https://jpcite.com/docs/mcp-tools/.
 
-- `search_programs` — discover by keyword + region + amount across 11,684 制度 (tier S/A/B/C). 一次資料 URL 付き. **Use first** for any 制度 query.
+- `search_programs` — discover by keyword + region + amount across 11,684 制度 (tier S/A/B/C). 一次資料 URL 付き. 広い回答生成では先に `/v1/intelligence/precomputed/query`、実在する `unified_id` が必要な時に使う。
 - `get_program` — full A-J detail by `unified_id` (eligibility, amount, window, exclusions, lineage). Hydrate after `search_programs`.
 - `batch_get_programs` — fetch 1-50 programs in one call. Collapse round-trips when the agent has the IDs.
 - `prescreen_programs` — ranked judgment from a profile (prefecture / sole_proprietor / planned investment). Returns fit_score + match_reasons + caveats; no row hidden.

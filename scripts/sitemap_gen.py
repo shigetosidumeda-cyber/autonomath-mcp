@@ -6,7 +6,6 @@ The site has multiple sitemaps:
 - sitemap-programs.xml (per-program HTML, auto-generated)
 - sitemap-prefectures.xml / sitemap-cross.xml / sitemap-industries.xml (GEO pages)
 - sitemap-audiences.xml / sitemap-qa.xml / sitemap-pages.xml (content pages)
-- sitemap-structured.xml (standalone JSON-LD shards for AI / search discovery)
 - sitemap-enforcement.xml (administrative action detail pages)
 - docs/sitemap.xml (MkDocs output)
 
@@ -53,15 +52,12 @@ KNOWN_BASENAMES = (
     "sitemap-industries.xml",
     "sitemap-pages.xml",
     "sitemap-qa.xml",
-    "sitemap-structured.xml",
     "sitemap-enforcement.xml",
     "docs/sitemap.xml",
 )
 
 # Glob for sharded sitemap-programs files (numbered shards, e.g. sitemap-programs-1.xml).
-SHARD_PATTERNS = (
-    "sitemap-programs-*.xml",
-)
+SHARD_PATTERNS = ("sitemap-programs-*.xml",)
 
 
 def _file_lastmod_iso(path: Path) -> str:

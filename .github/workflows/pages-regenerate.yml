@@ -143,6 +143,8 @@ jobs:
           rsync -a --delete \
             --exclude '_templates/' \
             --exclude '_data/' \
+            --exclude 'structured/' \
+            --exclude 'sitemap-structured.xml' \
             --exclude '*.src.js' \
             --exclude '*.src.css' \
             --exclude '*.map' \
@@ -150,6 +152,10 @@ jobs:
             --include 'security/policy.md' \
             --exclude '*.md' \
             site/ dist/site/
+          cat > dist/site/sitemap-structured.xml <<'XML'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>
+          XML
 
       - name: Check Cloudflare Pages secrets
         id: cf-secrets
