@@ -245,6 +245,7 @@ def _assert(
     required_migrations: set[str] | None = None,
     prod_nonempty_tables: tuple[str, ...] = (),
     prod_min_programs: int | None = None,
+    skip_quick_check: bool = False,
 ) -> None:
     tables = _list_tables(db_path)
     missing = required - tables
@@ -287,18 +288,21 @@ def _assert(
                 f"{sorted(missing_migrations)}"
             )
 
-    # Production-only row-count + integrity guards. Cheap to run
-    # (~1ms each) and the only fail-closed defence we have against an
-    # accidentally-empty / accidentally-tiny seed silently landing on
-    # the live path. Skipped in dev/test so unit fixtures don't trip
-    # the floor.
+    # Production-only row-count + integrity guards. Row-count COUNTs are
+    # cheap (~1ms). PRAGMA quick_check scans the full file so it scales
+    # with DB size — fine on jpintel.db (~352 MB) but takes 15+ minutes
+    # on autonomath.db (~9.8 GB) and will exhaust Fly's 60s health-check
+    # grace period (see fly.toml comment). Callers that boot off a large
+    # DB with an existing trusted stamp pass skip_quick_check=True; the
+    # nonempty/row-count guards still run.
     if _is_prod_env() and not errors:
-        quick = _quick_check(db_path)
-        if quick != "ok":
-            errors.append(
-                f"{profile}: PRAGMA quick_check failed in prod ({quick!r}) — "
-                f"DB at {db_path} may be corrupt"
-            )
+        if not skip_quick_check:
+            quick = _quick_check(db_path)
+            if quick != "ok":
+                errors.append(
+                    f"{profile}: PRAGMA quick_check failed in prod ({quick!r}) — "
+                    f"DB at {db_path} may be corrupt"
+                )
         if prod_min_programs is not None and "programs" in tables:
             n = _table_count(db_path, "programs")
             if 0 <= n < prod_min_programs:
@@ -346,6 +350,7 @@ def assert_am_schema(db_path: str) -> None:
         required_views=AM_REQUIRED_VIEWS,
         required_migrations=AM_REQUIRED_MIGRATIONS,
         prod_nonempty_tables=AM_NONEMPTY_TABLES,
+        skip_quick_check=True,
     )
 
 
