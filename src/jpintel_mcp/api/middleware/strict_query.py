@@ -55,6 +55,7 @@ attached by the outer ``_RequestContextMiddleware`` after this gate
 returns. The error envelope still echoes the request id via
 ``request.state`` if available.
 """
+
 from __future__ import annotations
 
 import logging
@@ -129,9 +130,7 @@ class StrictQueryMiddleware(BaseHTTPMiddleware):
     See module docstring for rationale and design notes.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         if _is_disabled():
             return await call_next(request)
 
@@ -169,20 +168,32 @@ class StrictQueryMiddleware(BaseHTTPMiddleware):
         # Build the structured 422 envelope. Use the canonical error
         # envelope helper so wire shape matches every other 4xx/5xx.
         from jpintel_mcp.api._error_envelope import make_error  # local import
+        from jpintel_mcp.api.middleware.did_you_mean import (
+            suggest_query_keys,
+        )
 
         rid = request.headers.get("x-request-id")
         unknown_sorted = sorted(unknown)
         expected_sorted = sorted(declared)
+        # R12 §2.1 / W2-3 D1: stdlib difflib suggester for typos like
+        # `perfecture → prefecture`. Empty dict when nothing close enough;
+        # downstream renders only the human-readable hint when populated.
+        did_you_mean = suggest_query_keys(unknown_sorted, expected_sorted)
+        hint = ""
+        if did_you_mean:
+            hint = "もしかして: " + ", ".join(f"{k} → {v}" for k, v in did_you_mean.items()) + ". "
         body = make_error(
             code="unknown_query_parameter",
             user_message=(
                 "未定義のクエリパラメータが含まれています: "
                 f"{', '.join(unknown_sorted)}. "
+                f"{hint}"
                 f"許可されているパラメータ: {', '.join(expected_sorted) or '(なし)'}"
             ),
             request_id=rid,
             unknown=unknown_sorted,
             expected=expected_sorted,
+            did_you_mean=did_you_mean,
             path=request.url.path,
             method=request.method,
         )

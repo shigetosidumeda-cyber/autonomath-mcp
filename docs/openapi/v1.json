@@ -2989,6 +2989,132 @@
         "title": "CheckoutResponse",
         "type": "object"
       },
+      "ChildKeyIssueRequest": {
+        "description": "Body for POST /v1/me/keys/children (schema update).\n\n`label` is free-text, \u226464 chars, alphanumeric + spaces + a few\npunctuation marks (server-validated). Required at issuance \u2014 there\nis no way to issue a child key without a label so the dashboard\nfan-out summary always has a human identifier to render.",
+        "properties": {
+          "label": {
+            "description": "Free-text human identifier (e.g. 'prod', 'customer_acme').",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label"
+        ],
+        "title": "ChildKeyIssueRequest",
+        "type": "object"
+      },
+      "ChildKeyIssueResponse": {
+        "description": "Response for POST /v1/me/keys/children \u2014 newly issued key returned ONCE.",
+        "properties": {
+          "api_key": {
+            "title": "Api Key",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "key_hash_prefix": {
+            "title": "Key Hash Prefix",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "api_key",
+          "id",
+          "label",
+          "key_hash_prefix"
+        ],
+        "title": "ChildKeyIssueResponse",
+        "type": "object"
+      },
+      "ChildKeyListEntry": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "key_hash_prefix": {
+            "title": "Key Hash Prefix",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "key_hash_prefix",
+          "created_at",
+          "revoked_at",
+          "last_used_at"
+        ],
+        "title": "ChildKeyListEntry",
+        "type": "object"
+      },
       "CitationInput": {
         "description": "One citation to verify.\n\nAt least one of ``excerpt`` / ``field_value`` MUST be present and\nnon-null; otherwise the verifier returns ``unknown`` (not an error,\njust an honest \"no signal\"). The pydantic schema does NOT enforce\nthat here so callers can send a permissive batch and let per-record\nverdicts drive their UI.",
         "properties": {
@@ -25630,6 +25756,221 @@
         "summary": "Get Dashboard",
         "tags": [
           "dashboard"
+        ]
+      }
+    },
+    "/v1/me/keys/children": {
+      "get": {
+        "description": "List every child key under the caller's parent key.\n\n`include_revoked=true` flips on the historic dataset (revoked records\nincluded alongside live ones, sorted by issuance order). Default\nsurfaces live children only \u2014 matches the dashboard fan-out summary\nuse case. Read-only, no CSRF required.\n\nReturns an empty list when the caller has no children, OR when the\ncaller is themselves a child (the helper resolves to the caller's\nparent_key_id; a child-as-caller has no children of its own).",
+        "operationId": "list_child_keys_route_v1_me_keys_children_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_revoked",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Revoked",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "am_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Am Session"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChildKeyListEntry"
+                  },
+                  "title": "Response List Child Keys Route V1 Me Keys Children Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Child Keys Route",
+        "tags": [
+          "me"
+        ]
+      },
+      "post": {
+        "description": "Issue a new child API key under the caller's parent key.\n\nWires the `issue_child_key` helper (billing/keys.py, schema update)\ninto the REST surface. The raw child key is returned ONCE in the\nresponse body; subsequent reads only ever surface the\n`key_hash_prefix` (first 8 chars) for identification.\n\nConstraints enforced upstream:\n  * Caller must be the parent (children cannot spawn grandchildren \u2014\n    the helper rejects with `nesting_forbidden`).\n  * Per-parent cap is MAX_CHILDREN_PER_PARENT (1,000) NON-revoked\n    children \u2014 `child_cap_exceeded` once exhausted. Revoked siblings\n    free up slots.\n  * Label is required, \u226464 chars, no control characters.",
+        "operationId": "issue_child_key_route_v1_me_keys_children_post",
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "am_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Am Session"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "am_csrf",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Am Csrf"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChildKeyIssueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChildKeyIssueResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Issue Child Key Route",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/v1/me/keys/children/{child_id}": {
+      "delete": {
+        "description": "Revoke a single child key by id, scoped to the caller's parent.\n\nThe parent_key_hash controlled inside the helper is critical: without it\na stolen child id alone would let any caller revoke any child\n(rowids are guessable). Returns `{\"revoked\": true}` when a record was\nflipped, or 404 with `child_not_found` when the id is unknown to\nthis parent (already revoked, never existed, or belongs to a\ndifferent parent).",
+        "operationId": "revoke_child_key_route_v1_me_keys_children__child_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "child_id",
+            "required": true,
+            "schema": {
+              "title": "Child Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "am_session",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Am Session"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "am_csrf",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Am Csrf"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Revoke Child Key Route V1 Me Keys Children  Child Id  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revoke Child Key Route",
+        "tags": [
+          "me"
         ]
       }
     },

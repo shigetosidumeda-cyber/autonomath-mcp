@@ -28,6 +28,7 @@ process-local pattern. The global RateLimitMiddleware allows 10 req/sec on
 paid keys, which is not tight enough to protect Stripe's API quota when the
 endpoint is hammered. P1 hardening from audit a000834c952c34822.
 """
+
 from __future__ import annotations
 
 import base64
@@ -63,6 +64,12 @@ from jpintel_mcp.api.deps import (
     hash_api_key,
     hash_api_key_bcrypt,
     verify_api_key_bcrypt,
+)
+from jpintel_mcp.billing.keys import (
+    ChildKeyError,
+    issue_child_key,
+    list_children,
+    revoke_child_by_id,
 )
 from jpintel_mcp.config import settings
 from jpintel_mcp.email import get_client as _get_email_client
@@ -100,9 +107,7 @@ CSRF_HEADER_NAME = "X-CSRF-Token"
 
 def _sign(key_hash: str, tier: str, exp_iso: str) -> str:
     msg = f"{key_hash}{tier}{exp_iso}".encode()
-    return hmac.new(
-        settings.api_key_salt.encode("utf-8"), msg, hashlib.sha256
-    ).hexdigest()
+    return hmac.new(settings.api_key_salt.encode("utf-8"), msg, hashlib.sha256).hexdigest()
 
 
 def _make_cookie(key_hash: str, tier: str, exp_iso: str) -> str:
@@ -262,9 +267,7 @@ def current_me(
         if not row or row["revoked_at"] is not None:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid api key")
         row_keys = row.keys() if hasattr(row, "keys") else ()
-        stored_bcrypt = (
-            row["key_hash_bcrypt"] if "key_hash_bcrypt" in row_keys else None
-        )
+        stored_bcrypt = row["key_hash_bcrypt"] if "key_hash_bcrypt" in row_keys else None
         if stored_bcrypt and not verify_api_key_bcrypt(raw, stored_bcrypt):
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid api key")
         return key_hash, row["tier"]
@@ -493,18 +496,14 @@ def require_csrf(
 CsrfDep = Annotated[None, Depends(require_csrf)]
 
 
-def _set_session_cookie(
-    request: Request, response: Response, key_hash: str, tier: str
-) -> None:
+def _set_session_cookie(request: Request, response: Response, key_hash: str, tier: str) -> None:
     exp = datetime.now(UTC) + timedelta(days=SESSION_TTL_DAYS)
     exp_iso = exp.isoformat()
     cookie = _make_cookie(key_hash, tier, exp_iso)
     # Secure flag only makes sense over HTTPS — a browser silently drops
     # a Secure cookie from an http:// response. For tests and local dev we
     # fall back to non-secure; production always runs behind fly.io HTTPS.
-    is_https = request.url.scheme == "https" or request.headers.get(
-        "x-forwarded-proto"
-    ) == "https"
+    is_https = request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https"
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=cookie,
@@ -627,9 +626,7 @@ def get_me(me: CurrentMeDep, conn: DbDep) -> MeResponse:
         subscription_current_period_end = None
     else:
         subscription_current_period_end = (
-            datetime.fromtimestamp(int(cpe_epoch), tz=UTC)
-            .isoformat()
-            .replace("+00:00", "Z")
+            datetime.fromtimestamp(int(cpe_epoch), tz=UTC).isoformat().replace("+00:00", "Z")
         )
     cancel_flag = row["stripe_subscription_cancel_at_period_end"] if row else None
     subscription_cancel_at_period_end = bool(cancel_flag) if cancel_flag else False
@@ -676,13 +673,10 @@ def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
     if root is None:
         return [key_hash]
     rows = conn.execute(
-        "SELECT key_hash FROM api_keys "
-        "WHERE id = ? OR parent_key_id = ?",
+        "SELECT key_hash FROM api_keys " "WHERE id = ? OR parent_key_id = ?",
         (root, root),
     ).fetchall()
-    hashes = [
-        r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows
-    ]
+    hashes = [r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows]
     if key_hash not in hashes:
         hashes.append(key_hash)
     return hashes
@@ -820,10 +814,7 @@ def get_me_usage_csv(
                 "error": "invalid_group_by",
                 "allowed": ["client_tag"],
                 "got": group_by,
-                "message": (
-                    "/v1/me/usage.csv currently only supports "
-                    "group_by=client_tag"
-                ),
+                "message": ("/v1/me/usage.csv currently only supports " "group_by=client_tag"),
             },
         )
     if days < 1:
@@ -885,8 +876,7 @@ def _lookup_subscriber_email(conn, key_hash: str) -> str | None:
     """
     try:
         row = conn.execute(
-            "SELECT email FROM email_schedule WHERE api_key_id = ? "
-            "ORDER BY id ASC LIMIT 1",
+            "SELECT email FROM email_schedule WHERE api_key_id = ? " "ORDER BY id ASC LIMIT 1",
             (key_hash,),
         ).fetchone()
     except Exception:  # pragma: no cover — defensive
@@ -982,9 +972,7 @@ def rotate_key(
         ).fetchone()
         if row is None or row["revoked_at"]:
             conn.execute("ROLLBACK")
-            raise HTTPException(
-                status.HTTP_401_UNAUTHORIZED, "key not found or revoked"
-            )
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "key not found or revoked")
         if row["parent_key_id"] is not None:
             conn.execute("ROLLBACK")
             raise HTTPException(
@@ -1001,8 +989,7 @@ def rotate_key(
         monthly_cap_yen = row["monthly_cap_yen"]
 
         conn.execute(
-            "UPDATE api_keys SET revoked_at = ? "
-            "WHERE key_hash = ? AND revoked_at IS NULL",
+            "UPDATE api_keys SET revoked_at = ? " "WHERE key_hash = ? AND revoked_at IS NULL",
             (now, key_hash),
         )
 
@@ -1025,8 +1012,7 @@ def rotate_key(
         # build from schema.sql, which doesn't carry the alert table).
         try:
             conn.execute(
-                "UPDATE alert_subscriptions SET api_key_hash = ? "
-                "WHERE api_key_hash = ?",
+                "UPDATE alert_subscriptions SET api_key_hash = ? " "WHERE api_key_hash = ?",
                 (new_hash, key_hash),
             )
         except sqlite3.OperationalError as e:  # pragma: no cover
@@ -1071,9 +1057,7 @@ def rotate_key(
         subscriber_email = _lookup_subscriber_email(conn, key_hash)
         if subscriber_email:
             jst = timezone(timedelta(hours=9))
-            ts_jst = datetime.now(UTC).astimezone(jst).strftime(
-                "%Y-%m-%d %H:%M JST"
-            )
+            ts_jst = datetime.now(UTC).astimezone(jst).strftime("%Y-%m-%d %H:%M JST")
             ip = _client_ip(request)
             # Real-browser User-Agent strings can run 200+ chars. Truncate
             # so a hostile UA cannot pad the email body unbounded — the
@@ -1101,6 +1085,217 @@ def rotate_key(
         logger.warning("key_rotated email scheduling failed", exc_info=True)
 
     return RotateKeyResponse(api_key=new_raw, tier=tier)
+
+
+# ---------------------------------------------------------------------------
+# Child API keys (migration 086 — sub-API-key SaaS B2B fan-out)
+# ---------------------------------------------------------------------------
+#
+# A parent paid key can issue up to MAX_CHILDREN_PER_PARENT (1,000) child
+# keys, one per 顧問先 (税理士 fan-out cohort #2 in CLAUDE.md). Each child
+# inherits the parent's tier, monthly_cap_yen, and stripe_subscription_id
+# verbatim — Stripe sees only the parent subscription, so no separate
+# Checkout / cancel flow is needed for children.
+#
+# Constraints (enforced server-side by billing/keys.py helpers):
+#   * Children CANNOT spawn grandchildren (flat tree only).
+#   * A revoked parent kills all live children via revoke_key_tree
+#     (invoked by the Stripe webhook on subscription.deleted).
+#   * Children themselves cannot rotate the parent key, set caps, or open
+#     the billing portal — those routes already 403 child-key callers.
+#
+# CSRF gating: issuance + revoke are state-changing session-cookie POSTs
+# so they require the X-CSRF-Token header (double-submit cookie pattern).
+# The list endpoint is read-only and skips CSRF.
+#
+# Authentication shape: every endpoint uses CurrentMeDep, which means the
+# CALLER's session must be the parent's session (children never log in
+# via /v1/session in the dashboard fan-out flow). A child key holder
+# trying to list/issue/revoke would fail at the parent_key_id check
+# inside the helpers (parent_id resolution, list returns []).
+
+
+def _child_key_error_to_http(exc: ChildKeyError) -> HTTPException:
+    """Map a ChildKeyError into a canonical 4xx HTTPException.
+
+    The helper layer raises distinct error_code values
+    (label_invalid / label_too_long / label_missing /
+    parent_not_found / parent_revoked / nesting_forbidden /
+    child_cap_exceeded). 422 covers user-supplied label problems;
+    409 covers parent-state problems (already revoked, nested,
+    over-cap); 404 covers a missing parent. The wire shape mirrors
+    the rotate-key / billing-portal child_key_forbidden envelope so
+    clients can dispatch on `detail.error` uniformly.
+    """
+    code = getattr(exc, "error_code", "child_key_invalid")
+    label_codes = {"label_missing", "label_invalid", "label_too_long"}
+    state_codes = {"parent_revoked", "nesting_forbidden", "child_cap_exceeded"}
+    if code in label_codes:
+        http_status = status.HTTP_422_UNPROCESSABLE_ENTITY
+    elif code == "parent_not_found":
+        http_status = status.HTTP_404_NOT_FOUND
+    elif code in state_codes:
+        http_status = status.HTTP_409_CONFLICT
+    else:  # pragma: no cover — defensive fallback
+        http_status = status.HTTP_400_BAD_REQUEST
+    return HTTPException(
+        status_code=http_status,
+        detail={
+            "error": code,
+            "message": str(exc),
+        },
+    )
+
+
+@router.post(
+    "/v1/me/keys/children",
+    response_model=ChildKeyIssueResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def issue_child_key_route(
+    payload: ChildKeyIssueRequest,
+    me: CurrentMeDep,
+    _csrf: CsrfDep,
+    conn: DbDep,
+    request: Request,
+) -> ChildKeyIssueResponse:
+    """Issue a new child API key under the caller's parent key.
+
+    Wires the `issue_child_key` helper (billing/keys.py, migration 086)
+    into the REST surface. The raw child key is returned ONCE in the
+    response body; subsequent reads only ever surface the
+    `key_hash_prefix` (first 8 chars) for identification.
+
+    Constraints enforced upstream:
+      * Caller must be the parent (children cannot spawn grandchildren —
+        the helper rejects with `nesting_forbidden`).
+      * Per-parent cap is MAX_CHILDREN_PER_PARENT (1,000) NON-revoked
+        children — `child_cap_exceeded` once exhausted. Revoked siblings
+        free up slots.
+      * Label is required, ≤64 chars, no control characters.
+    """
+    parent_hash, _tier = me
+    try:
+        raw, key_hash = issue_child_key(
+            conn,
+            parent_key_hash=parent_hash,
+            label=payload.label,
+        )
+        conn.commit()
+    except ChildKeyError as exc:
+        with contextlib.suppress(Exception):
+            conn.rollback()
+        raise _child_key_error_to_http(exc) from None
+
+    # Look up the new child's id so the response carries it (caller uses
+    # the id later to revoke). The list_children read is bounded by the
+    # parent's child set — small (≤1,000).
+    child_id: int | None = None
+    row = conn.execute(
+        "SELECT id FROM api_keys WHERE key_hash = ?",
+        (key_hash,),
+    ).fetchone()
+    if row is not None:
+        rk = row.keys() if hasattr(row, "keys") else []
+        child_id = row["id"] if "id" in rk else None
+
+    log_event(
+        conn,
+        event_type="child_key_issue",
+        key_hash=parent_hash,
+        request=request,
+        child_key_hash_prefix=key_hash[:8],
+        child_id=child_id,
+        label=payload.label,
+    )
+
+    return ChildKeyIssueResponse(
+        api_key=raw,
+        id=child_id,
+        label=payload.label,
+        key_hash_prefix=key_hash[:8],
+    )
+
+
+@router.get(
+    "/v1/me/keys/children",
+    response_model=list[ChildKeyListEntry],
+)
+def list_child_keys_route(
+    me: CurrentMeDep,
+    conn: DbDep,
+    include_revoked: bool = False,
+) -> list[ChildKeyListEntry]:
+    """List every child key under the caller's parent key.
+
+    `include_revoked=true` flips on the historic view (revoked rows
+    included alongside live ones, sorted by issuance order). Default
+    surfaces live children only — matches the dashboard fan-out summary
+    use case. Read-only, no CSRF required.
+
+    Returns an empty list when the caller has no children, OR when the
+    caller is themselves a child (the helper resolves to the caller's
+    parent_key_id; a child-as-caller has no children of its own).
+    """
+    parent_hash, _tier = me
+    rows = list_children(
+        conn,
+        parent_key_hash=parent_hash,
+        include_revoked=include_revoked,
+    )
+    return [
+        ChildKeyListEntry(
+            id=row.get("id"),
+            label=row.get("label"),
+            key_hash_prefix=row.get("key_hash_prefix") or "",
+            created_at=row.get("created_at"),
+            revoked_at=row.get("revoked_at"),
+            last_used_at=row.get("last_used_at"),
+        )
+        for row in rows
+    ]
+
+
+@router.delete("/v1/me/keys/children/{child_id}")
+def revoke_child_key_route(
+    child_id: int,
+    me: CurrentMeDep,
+    _csrf: CsrfDep,
+    conn: DbDep,
+    request: Request,
+) -> dict[str, object]:
+    """Revoke a single child key by id, scoped to the caller's parent.
+
+    The parent_key_hash gate inside the helper is critical: without it
+    a stolen child id alone would let any caller revoke any child
+    (rowids are guessable). Returns `{"revoked": true}` when a row was
+    flipped, or 404 with `child_not_found` when the id is unknown to
+    this parent (already revoked, never existed, or belongs to a
+    different parent).
+    """
+    parent_hash, _tier = me
+    ok = revoke_child_by_id(
+        conn,
+        parent_key_hash=parent_hash,
+        child_id=int(child_id),
+    )
+    conn.commit()
+    if not ok:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error": "child_not_found",
+                "message": ("child key not found, already revoked, or not owned " "by this parent"),
+            },
+        )
+    log_event(
+        conn,
+        event_type="child_key_revoke",
+        key_hash=parent_hash,
+        request=request,
+        child_id=int(child_id),
+    )
+    return {"revoked": True, "child_id": int(child_id)}
 
 
 @router.post("/v1/me/cap", response_model=CapResponse)
@@ -1208,9 +1403,7 @@ def billing_portal(
         )
 
     if not settings.stripe_secret_key:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe not configured"
-        )
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe not configured")
     stripe.api_key = settings.stripe_secret_key
 
     return_url = f"{_origin_from_request(request)}/dashboard"
