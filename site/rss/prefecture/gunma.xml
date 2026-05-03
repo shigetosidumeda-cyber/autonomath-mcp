@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>動画メニュー</title>
@@ -740,15 +740,6 @@
   </item>
 
   <item>
-    <title>遊休農地再生利用事業補助金</title>
-    <link>https://jpcite.com/programs/yuukyuu-nouchi-saiseiriyou-jigyou-hojokin-b471df.html</link>
-    <description>Tier C / 群馬県 / 群馬県渋川市 / subsidy 出典: https://www.city.shibukawa.lg.jp/material/files/group/8/yukyuno_chisaiseiriyoujigyouyoukou.pdf</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1e825d8d3f</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>農地再生推進事業補助金</title>
     <link>https://jpcite.com/programs/nouchi-saisei-suishin-jigyou-hojokin-203889.html</link>
     <description>Tier B / 群馬県 / 群馬県高崎市 / subsidy 出典: https://www.city.takasaki.gunma.jp/page/39054.html</description>
@@ -907,6 +898,15 @@
     <description>Tier C / 群馬県 出典: https://www.city.maebashi.gunma.jp/soshiki/noseibu/nosei/oshirase/33075.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-3a8b0bcd1c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>沼田市農業経営収入保険制度加入促進事業補助金</title>
+    <link>https://jpcite.com/programs/numata-shi-nougyou-keiei-shuunyuu-hokenseido-kanyuu-621240.html</link>
+    <description>Tier B / 群馬県 / 群馬県沼田市 / subsidy / 上限 15万円 出典: https://www.city.numata.gunma.jp/jigyosha/nourin/nougyou/1014146.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3d671e42a4</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

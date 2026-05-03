@@ -66,9 +66,8 @@ def test_batch_happy_path_preserves_order(client, paid_key):
     Batch endpoint uses fields=full, so enriched/source_mentions/lineage keys
     must be present on every row (value may be null).
     """
-    # All 4 seeded ids; use include_excluded-style coverage by asking for
-    # tier=X too. Order is intentionally NOT alphabetical or tier-sorted so
-    # the order-preservation assertion is load-bearing.
+    # Include the seeded Tier X/excluded row: public batch treats it like
+    # not_found, so it cannot leak into the public Program model.
     ids = [
         "UNI-test-b-1",
         "UNI-test-s-1",
@@ -82,9 +81,19 @@ def test_batch_happy_path_preserves_order(client, paid_key):
     )
     assert r.status_code == 200, r.text
     body = r.json()
-    assert set(body.keys()) == {"results", "not_found"}
-    assert body["not_found"] == []
-    assert [row["unified_id"] for row in body["results"]] == ids
+    assert set(body.keys()) == {"results", "not_found", "billing"}
+    assert body["not_found"] == ["UNI-test-x-1"]
+    assert [row["unified_id"] for row in body["results"]] == [
+        "UNI-test-b-1",
+        "UNI-test-s-1",
+        "UNI-test-a-1",
+    ]
+    assert body["billing"] == {
+        "billable_units": 3,
+        "yen_excl_tax": 9,
+        "unit_price_yen": 3,
+        "not_found_billed": False,
+    }
     # fields=full contract: enriched/source_mentions/lineage keys always present.
     for row in body["results"]:
         for k in _FULL_ONLY_KEYS:
@@ -122,6 +131,9 @@ def test_batch_mixed_valid_and_missing(client, paid_key):
         "UNI-test-b-1",
     ]
     assert body["not_found"] == ["UNI-not-a-thing-1", "UNI-not-a-thing-2"]
+    assert body["billing"]["billable_units"] == 3
+    assert body["billing"]["yen_excl_tax"] == 9
+    assert body["billing"]["not_found_billed"] is False
 
 
 # ---------------------------------------------------------------------------
@@ -183,6 +195,8 @@ def test_batch_accepts_exactly_50_ids(client, paid_key):
     body = r.json()
     assert body["results"] == []
     assert len(body["not_found"]) == 50
+    assert body["billing"]["billable_units"] == 0
+    assert body["billing"]["yen_excl_tax"] == 0
 
 
 def test_batch_requires_cost_cap(client, paid_key):
@@ -236,6 +250,18 @@ def test_paid_batch_requires_idempotency_key(client, paid_key):
     assert r.json()["error"] == "idempotency_key_required"
 
 
+def test_authenticated_bulk_route_is_guarded_by_cost_cap_middleware(client, paid_key):
+    """The generic bulk guard must be mounted, not only handler-level checks."""
+    r = client.post(
+        "/v1/unknown/bulk_preview",
+        json={"items": ["x"]},
+        headers={"X-API-Key": paid_key},
+    )
+    assert r.status_code == 400
+    assert r.json()["error"]["code"] == "cost_cap_required"
+    assert r.headers["X-Cost-Cap-Required"] == "true"
+
+
 # ---------------------------------------------------------------------------
 # REST vs MCP shape parity — same dict shape per row in both transports.
 # ---------------------------------------------------------------------------
@@ -255,7 +281,9 @@ def test_batch_mcp_parity(client, paid_key):
     # envelope keys (status, api_version, ...); strip them before comparing.
     # REST does not get the envelope, so do not strip from REST.
     mcp_payload_keys = set(mcp.keys()) - _ENVELOPE_ONLY_KEYS
-    assert set(rest.keys()) == mcp_payload_keys == {"results", "not_found"}
+    assert {"results", "not_found"}.issubset(rest.keys())
+    assert mcp_payload_keys == {"results", "not_found"}
+    assert rest["billing"]["billable_units"] == len(rest["results"])
     # Same per-row key set (values may vary slightly for null placeholders
     # but the schema is the contract).
     assert [r["unified_id"] for r in rest["results"]] == [r["unified_id"] for r in mcp["results"]]

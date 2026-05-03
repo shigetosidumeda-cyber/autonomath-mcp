@@ -5,9 +5,9 @@ Covers ``get_annotations`` exposed at:
   - MCP: ``jpintel_mcp.mcp.autonomath_tools.annotation_tools.get_annotations``
   - REST: ``GET /v1/am/annotations/{entity_id}``  (api/autonomath.py)
 
-The 16,474 ingested rows are all visibility='internal' — default
-``include_internal=False`` therefore returns 0 results even for entities that
-have annotations in the table. Tests cover both branches.
+The public tool never returns ``visibility='internal'`` or ``visibility='private'``
+rows. The currently ingested annotation rows are internal, so an entity that has
+rows in the table still returns an empty public envelope.
 
 Skips module-wide if autonomath.db / graph.sqlite are missing — same convention
 as test_autonomath_tools.py.
@@ -42,10 +42,9 @@ os.environ.setdefault("AUTONOMATH_ENABLED", "1")
 # server import first to break the autonomath_tools<->server circular import.
 from jpintel_mcp.mcp import server  # noqa: F401, E402
 from jpintel_mcp.mcp.autonomath_tools.annotation_tools import (  # noqa: E402
-    _KNOWN_KINDS,
+    _PUBLIC_KIND_LABELS,
     get_annotations,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures: pluck a real entity_id that has annotation rows.
@@ -57,9 +56,7 @@ def annotated_entity_id() -> str:
     """A canonical_id that has at least one row in am_entity_annotation."""
     con = sqlite3.connect(_DB_PATH)
     try:
-        row = con.execute(
-            "SELECT entity_id FROM am_entity_annotation LIMIT 1"
-        ).fetchone()
+        row = con.execute("SELECT entity_id FROM am_entity_annotation LIMIT 1").fetchone()
         if not row:
             pytest.skip("am_entity_annotation is empty — cannot test happy path")
         return row[0]
@@ -68,9 +65,8 @@ def annotated_entity_id() -> str:
 
 
 @pytest.fixture(scope="module")
-def known_kind_in_db() -> str:
-    """An annotation kind that actually has rows (currently only 3 of 6 are
-    populated: examiner_correction / examiner_warning / quality_score)."""
+def known_kind_in_db() -> tuple[str, str]:
+    """A public annotation kind whose backing internal kind has rows."""
     con = sqlite3.connect(_DB_PATH)
     try:
         row = con.execute(
@@ -78,7 +74,8 @@ def known_kind_in_db() -> str:
         ).fetchone()
         if not row:
             pytest.skip("no annotation kinds present")
-        return row[0]
+        internal_kind = row[0]
+        return internal_kind, _PUBLIC_KIND_LABELS[internal_kind]
     finally:
         con.close()
 
@@ -105,57 +102,30 @@ def _assert_paginated_envelope(res: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 1. Default visibility — 16,474 rows are all 'internal', so default returns 0.
+# 1. Public visibility — internal rows never surface.
 # ---------------------------------------------------------------------------
 
 
 def test_get_annotations_default_visibility_is_public_only(annotated_entity_id: str):
-    """Default include_internal=False → 0 results because every ingested row is internal.
-
-    This is the documented behavior in the docstring's LIMITATIONS section.
-    Verifies the gate is wired (not just skipped at SQL level).
-    """
+    """Public surface returns 0 for entities whose annotations are internal."""
     res = get_annotations(entity_id=annotated_entity_id)
     _assert_paginated_envelope(res)
     assert res["entity_id"] == annotated_entity_id
     assert res["total"] == 0
     assert res["results"] == []
-    assert res["filters"]["include_internal"] is False
+    assert res["filters"]["visibility"] == "public"
 
 
 # ---------------------------------------------------------------------------
-# 2. Happy path — include_internal=True surfaces the actual rows.
+# 2. Internal rows stay hidden even when the entity has table rows.
 # ---------------------------------------------------------------------------
 
 
-def test_get_annotations_include_internal_returns_rows(annotated_entity_id: str):
-    res = get_annotations(entity_id=annotated_entity_id, include_internal=True)
+def test_get_annotations_never_returns_internal_rows(annotated_entity_id: str):
+    res = get_annotations(entity_id=annotated_entity_id)
     _assert_paginated_envelope(res)
-    assert res["total"] >= 1
-    row = res["results"][0]
-    # Required fields per the public schema.
-    for key in (
-        "annotation_id",
-        "entity_id",
-        "kind",
-        "severity",
-        "text_ja",
-        "score",
-        "meta",
-        "visibility",
-        "source_id",
-        "effective_from",
-        "effective_until",
-        "supersedes_id",
-        "superseded_at",
-        "observed_at",
-    ):
-        assert key in row, f"missing field {key!r} in annotation row: {row}"
-    assert row["entity_id"] == annotated_entity_id
-    # Default-internal rows must carry visibility='internal'.
-    assert row["visibility"] in ("internal", "public")
-    # meta must be a dict (parsed JSON, not raw string).
-    assert isinstance(row["meta"], dict)
+    assert res["results"] == []
+    assert res["total"] == 0
 
 
 # ---------------------------------------------------------------------------
@@ -164,17 +134,17 @@ def test_get_annotations_include_internal_returns_rows(annotated_entity_id: str)
 
 
 def test_get_annotations_kind_filter_single(
-    annotated_entity_id: str, known_kind_in_db: str
+    annotated_entity_id: str, known_kind_in_db: tuple[str, str]
 ):
+    _internal_kind, public_kind = known_kind_in_db
     res = get_annotations(
         entity_id=annotated_entity_id,
-        kinds=[known_kind_in_db],
-        include_internal=True,
+        kinds=[public_kind],
     )
     _assert_paginated_envelope(res)
     for r in res["results"]:
-        assert r["kind"] == known_kind_in_db
-    assert res["filters"]["kinds"] == [known_kind_in_db]
+        assert r["kind"] == public_kind
+    assert res["filters"]["kinds"] == [public_kind]
 
 
 def test_get_annotations_kind_filter_multiple_known():
@@ -193,12 +163,11 @@ def test_get_annotations_kind_filter_multiple_known():
         pytest.skip("no entity with examiner_warning|quality_score rows")
     res = get_annotations(
         entity_id=row[0],
-        kinds=["examiner_warning", "quality_score"],
-        include_internal=True,
+        kinds=["warning", "quality_score"],
     )
     _assert_paginated_envelope(res)
     for r in res["results"]:
-        assert r["kind"] in ("examiner_warning", "quality_score")
+        assert r["kind"] in ("warning", "quality_score")
 
 
 # ---------------------------------------------------------------------------
@@ -215,7 +184,6 @@ def test_get_annotations_unknown_kind_returns_invalid_enum(annotated_entity_id: 
     res = get_annotations(
         entity_id=annotated_entity_id,
         kinds=["totally_made_up_kind"],
-        include_internal=True,
     )
     assert _has_nested_error(res, "invalid_enum")
     # Hint must list the valid set so the caller can self-correct.
@@ -232,7 +200,6 @@ def test_get_annotations_unknown_entity_id_returns_empty_envelope():
     """
     res = get_annotations(
         entity_id="program:does_not_exist:9999999999",
-        include_internal=True,
     )
     _assert_paginated_envelope(res)
     assert res["total"] == 0
@@ -249,36 +216,34 @@ def test_get_annotations_include_superseded_does_not_crash(annotated_entity_id: 
     but the SQL branch must execute cleanly."""
     res = get_annotations(
         entity_id=annotated_entity_id,
-        include_internal=True,
         include_superseded=True,
     )
     _assert_paginated_envelope(res)
     # Without supersede chains in the corpus today, the count is at least the
     # default-include_superseded=False count for the same entity.
     res_default = get_annotations(
-        entity_id=annotated_entity_id, include_internal=True,
+        entity_id=annotated_entity_id,
     )
     assert res["total"] >= res_default["total"]
     assert res["filters"]["include_superseded"] is True
 
 
 # ---------------------------------------------------------------------------
-# 6. Closed kind enum sanity — _KNOWN_KINDS exposes exactly the 6 kinds the
-#    docstring promises. Catches drift where someone adds a 7th kind to the
-#    seed but forgets to extend the local frozenset.
+# 6. Public kind mapping sanity — public labels should not expose the backing
+#    annotation taxonomy.
 # ---------------------------------------------------------------------------
 
 
-def test_known_kinds_matches_documented_set():
+def test_public_kind_labels_match_documented_set():
     expected = {
-        "examiner_warning",
-        "examiner_correction",
+        "warning",
+        "correction",
         "quality_score",
-        "validation_failure",
-        "ml_inference",
-        "manual_note",
+        "validation_issue",
+        "model_signal",
+        "note",
     }
-    assert _KNOWN_KINDS == expected
+    assert expected == set(_PUBLIC_KIND_LABELS.values())
 
 
 # ---------------------------------------------------------------------------
@@ -300,7 +265,7 @@ def test_rest_get_annotations_invalid_kind_param(client, annotated_entity_id: st
     """REST surface returns the canonical invalid_enum envelope on bad kind."""
     r = client.get(
         f"/v1/am/annotations/{annotated_entity_id}",
-        params={"kinds": ["totally_bogus_kind"], "include_internal": "true"},
+        params={"kinds": ["totally_bogus_kind"]},
     )
     assert r.status_code == 200
     body = r.json()

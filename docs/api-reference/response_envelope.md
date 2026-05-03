@@ -176,11 +176,11 @@ The following routes accept the `Accept: application/vnd.jpcite.v2+json` opt-in 
 - **2026-04-30** — v2 ships as opt-in via `Accept: application/vnd.jpcite.v2+json`.
 - **2026-05-06** (launch) — v2 documented in API reference, MCP tools, and SDK READMEs as the recommended shape for AI/agent clients.
 - **2026-05-06 → 2026-08-04** (90-day window) — both shapes supported in parallel. Legacy callers see no change. v2 adoption tracked via `X-Envelope-Version` access logs.
-- **2026-08-04** — planned default-flip review point. Any legacy opt-out mechanism must be documented before activation; launch-time negotiation is header-only.
+- **2026-08-04** — compatibility review point. v1 remains supported unless a separate migration notice is published in advance; client negotiation stays header-only during this period.
 
 ## Stability
 
-- The v2 wire shape is **frozen** for the launch window. Adding new top-level keys is permitted; renaming or removing existing ones requires `api_version` bump.
+- The v2 wire shape is **stable** for the compatibility period. Adding new top-level keys is permitted; renaming or removing existing ones requires `api_version` bump.
 - `error.code` is a closed enum. Adding a new code is permitted; renaming requires `api_version` bump.
 - Per-row payload (inside `results[]`) follows each route's own contract, unchanged from v1.
 

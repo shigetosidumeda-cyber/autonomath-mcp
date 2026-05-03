@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>タグ詳細検索|都庁総合ホームページ</title>
@@ -412,15 +412,6 @@
     <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/6hojokin</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-3b4105e1de</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>平成30年度補助金一覧</title>
-    <link>https://jpcite.com/programs/heisei-30-nendo-hojokin-ichiran-a014c2.html</link>
-    <description>Tier A / 東京都 / 東京都 / subsidy 出典: https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin/30hojokin</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-3f6f1c1650</guid>
     <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
   </item>
 
@@ -907,6 +898,15 @@
     <description>Tier C / 東京都 / 東京都中小企業団体中央会／東京都 / 助成金 / 上限 1,000万円 出典: https://www.tokyochuokai.or.jp/sienseido/jyoseijigyou/asuchare.html</description>
     <category>助成金</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-bed0694915</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>市場取引委員会 法定設置（卸売市場法）</title>
+    <link>https://jpcite.com/programs/shijou-torihiki-iinkai-houtei-setchi-oroshiuri-shijou-hou-9818e4.html</link>
+    <description>Tier C / 東京都 / 各市場開設者（自治体・民間） 出典: https://www.reiki.metro.tokyo.lg.jp/reiki/reiki_honbun/g101RG00001148.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c375ce3d25</guid>
     <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
   </item>
 

@@ -17,7 +17,7 @@
       "id": "audit-log",
       "title": "jpcite 変更履歴",
       "url": "https://jpcite.com/audit-log.rss",
-      "scope": "am_amendment_diff (full field set)",
+      "scope": "制度・出典変更の監査ログ",
       "max_items": 50,
       "update_frequency": "weekly"
     },
@@ -33,7 +33,7 @@
       "id": "amendments",
       "title": "jpcite 制度改正検出ログ",
       "url": "https://jpcite.com/rss/amendments.xml",
-      "scope": "am_amendment_diff (programs-only filter)",
+      "scope": "制度改正・金額・補助率・出典 URL の変更",
       "max_items": 100,
       "update_frequency": "monthly"
     }

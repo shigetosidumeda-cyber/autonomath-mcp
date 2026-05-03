@@ -111,6 +111,7 @@ from jpintel_mcp.api.idempotency_context import (
     billing_event_index,
     billing_idempotency_key,
 )
+from jpintel_mcp.api.middleware.cost_cap import record_cost_cap_spend
 from jpintel_mcp.api.middleware.idempotency import (
     _check_or_record_body_fingerprint,
     _compute_collision_key,
@@ -388,9 +389,7 @@ def _snapshot_attestation_idempotency_response(
         return JSONResponse(
             content={
                 "error": (
-                    "idempotency_cache_busy"
-                    if state == "busy"
-                    else "idempotency_cache_unavailable"
+                    "idempotency_cache_busy" if state == "busy" else "idempotency_cache_unavailable"
                 ),
                 "detail": "retry later",
             },
@@ -1623,6 +1622,13 @@ def render_workpaper(
     ctx: ApiContextDep,
     background_tasks: BackgroundTasks,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
+    _idempotency_key: Annotated[
+        str | None,
+        Header(
+            alias="Idempotency-Key",
+            description="Required for paid workpaper calls to prevent duplicate billing on retries.",
+        ),
+    ] = None,
 ) -> JSONResponse:
     """Render a single-client work-paper.
 
@@ -1676,18 +1682,11 @@ def render_workpaper(
             },
         )
 
-    evaluated: list[dict[str, Any]] = []
-    for r in ordered_rows:
-        result = _evaluate_ruleset(r, payload.business_profile)
-        cite_tree = resolve_citation_tree(conn, r, result)
-        d = result.model_dump(mode="json")
-        d["citation_tree"] = cite_tree
-        evaluated.append(d)
-
     snapshot_id, checksum = compute_corpus_snapshot(conn)
 
     # Audit period + cache key. Both inputs are sanitised to ASCII so the
-    # filename is safe to write.
+    # filename is safe to write. Compute this before ruleset evaluation so a
+    # missing/low cost cap rejects without consuming export work.
     audit_period = _audit_period_token(payload.audit_period)
     api_key_id = _api_key_id_redacted(ctx)
     pdf_cache_path: Path | None = None
@@ -1720,6 +1719,14 @@ def render_workpaper(
     cap_response = _projected_cap_response(conn, ctx, anticipated_units)
     if cap_response is not None:
         return cap_response
+
+    evaluated: list[dict[str, Any]] = []
+    for r in ordered_rows:
+        result = _evaluate_ruleset(r, payload.business_profile)
+        cite_tree = resolve_citation_tree(conn, r, result)
+        d = result.model_dump(mode="json")
+        d["citation_tree"] = cite_tree
+        evaluated.append(d)
 
     # Render artefact.
     if payload.report_format == "csv":
@@ -1755,9 +1762,7 @@ def render_workpaper(
         else:
             _WORKPAPER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
             out_path = (
-                pdf_cache_path.with_name(
-                    f".{pdf_cache_path.name}.{time.time_ns()}.render.tmp"
-                )
+                pdf_cache_path.with_name(f".{pdf_cache_path.name}.{time.time_ns()}.render.tmp")
                 if pdf_cache_path is not None
                 else _WORKPAPER_CACHE_DIR
                 / f".{api_key_id}_{audit_period}.{time.time_ns()}.render.tmp"
@@ -1817,6 +1822,7 @@ def render_workpaper(
         quantity=max(1, units),
         strict_metering=units > 0,
     )
+    record_cost_cap_spend(request, units * 3)
 
     if (
         payload.report_format == "pdf"
@@ -1827,9 +1833,7 @@ def render_workpaper(
         cache_tmp: Path | None = None
         try:
             pdf_cache_path.parent.mkdir(parents=True, exist_ok=True)
-            cache_tmp = pdf_cache_path.with_name(
-                f".{pdf_cache_path.name}.{token}.cache.tmp"
-            )
+            cache_tmp = pdf_cache_path.with_name(f".{pdf_cache_path.name}.{token}.cache.tmp")
             cache_tmp.write_bytes(body_bytes)
             cache_tmp.replace(pdf_cache_path)
         except OSError:
@@ -1907,6 +1911,13 @@ def batch_evaluate(
     ctx: ApiContextDep,
     background_tasks: BackgroundTasks,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
+    _idempotency_key: Annotated[
+        str | None,
+        Header(
+            alias="Idempotency-Key",
+            description="Required for paid batch calls to prevent duplicate billing on retries.",
+        ),
+    ] = None,
 ) -> JSONResponse:
     t0 = time.perf_counter()
     require_metered_api_key(ctx, "audit batch evaluation")
@@ -2057,6 +2068,7 @@ def batch_evaluate(
         quantity=units,
         strict_metering=True,
     )
+    record_cost_cap_spend(request, units * 3)
 
     body: dict[str, Any] = {
         "audit_firm_id": payload.audit_firm_id,
@@ -2328,6 +2340,7 @@ def snapshot_attestation(
     finally:
         billing_event_index.reset(billing_index_token)
         billing_idempotency_key.reset(billing_key_token)
+    record_cost_cap_spend(request, units * 3)
 
     body: dict[str, Any] = {
         "year": year,

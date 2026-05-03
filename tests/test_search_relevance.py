@@ -21,6 +21,7 @@ We extend it with targeted inserts per test to exercise each fix in
 isolation. conftest.py is session-scoped, so we use a dedicated fixture
 that augments the existing DB on demand.
 """
+
 from __future__ import annotations
 
 import json
@@ -42,10 +43,16 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
-def _insert(conn: sqlite3.Connection, *, unified_id: str, primary_name: str,
-            tier: str | None, excluded: int = 0,
-            aliases: list[str] | None = None,
-            enriched_text: str = "") -> None:
+def _insert(
+    conn: sqlite3.Connection,
+    *,
+    unified_id: str,
+    primary_name: str,
+    tier: str | None,
+    excluded: int = 0,
+    aliases: list[str] | None = None,
+    enriched_text: str = "",
+) -> None:
     """Insert one program row + its FTS row. Minimal column set — matches
     conftest.py::seeded_db usage."""
     now = datetime.now(UTC).isoformat()
@@ -64,17 +71,34 @@ def _insert(conn: sqlite3.Connection, *, unified_id: str, primary_name: str,
             enriched_json, source_mentions_json, updated_at
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
-            unified_id, primary_name, aliases_json,
-            "国", None, None, None,
-            "補助金", None,
-            None, None, None,
-            None, tier, None, None, None,
-            excluded, None,
-            None, None,
+            unified_id,
+            primary_name,
+            aliases_json,
+            "国",
+            None,
+            None,
+            None,
+            "補助金",
+            None,
+            None,
+            None,
+            None,
+            None,
+            tier,
+            None,
+            None,
+            None,
+            excluded,
+            None,
+            None,
+            None,
             json.dumps([], ensure_ascii=False),
             json.dumps([], ensure_ascii=False),
-            None, None,
-            enriched_text, None, now,
+            None,
+            None,
+            enriched_text,
+            None,
+            now,
         ),
     )
     conn.execute(
@@ -112,19 +136,16 @@ def test_tier_x_excluded(client: TestClient, db_conn: sqlite3.Connection) -> Non
     r = client.get("/v1/programs/search", params={"q": unique_name})
     assert r.status_code == 200
     body = r.json()
-    assert body["total"] == 0, (
-        f"tier='X' row leaked into search despite excluded=0; got {body}"
-    )
+    assert body["total"] == 0, f"tier='X' row leaked into search despite excluded=0; got {body}"
 
-    # Sanity check: include_excluded=true lets the row through.
+    # Public search rejects hidden/internal filters instead of exposing
+    # quarantine rows.
     r2 = client.get(
         "/v1/programs/search",
         params={"q": unique_name, "include_excluded": "true"},
     )
-    assert r2.status_code == 200
-    # Not asserting == 1 because "include_excluded" also relaxes the
-    # tier-X gate by design (see programs.py::search_programs).
-    assert r2.json()["total"] >= 1
+    assert r2.status_code == 422
+    assert "include_excluded" in r2.text
 
 
 def test_get_program_tier_x_404(client: TestClient, db_conn: sqlite3.Connection) -> None:
@@ -158,9 +179,7 @@ def test_fts_tier_priority(client: TestClient, db_conn: sqlite3.Connection) -> N
     body = r.json()
     assert body["total"] >= 1
     first = body["results"][0]
-    assert first["tier"] in ("S", "A"), (
-        f"FTS ordering did not prioritize tier; first row = {first}"
-    )
+    assert first["tier"] in ("S", "A"), f"FTS ordering did not prioritize tier; first row = {first}"
 
 
 # ---------------------------------------------------------------------------
@@ -200,9 +219,7 @@ def test_kana_expansion(client: TestClient, db_conn: sqlite3.Connection) -> None
 # ---------------------------------------------------------------------------
 
 
-def test_phrase_match_no_false_positive(
-    client: TestClient, db_conn: sqlite3.Connection
-) -> None:
+def test_phrase_match_no_false_positive(client: TestClient, db_conn: sqlite3.Connection) -> None:
     """`税額控除` must NOT pick up `ふるさと納税` / `企業版ふるさと納税`
     as the top result — those share only the single kanji 税.
 
@@ -234,12 +251,10 @@ def test_phrase_match_no_false_positive(
     assert body["total"] >= 1
     top = body["results"][0]
     assert "税額控除" in top["primary_name"], (
-        f"top result does not contain the literal phrase 税額控除: "
-        f"{top['primary_name']!r}"
+        f"top result does not contain the literal phrase 税額控除: {top['primary_name']!r}"
     )
     assert "ふるさと納税" not in top["primary_name"], (
-        f"top result is the 税-overlap false-positive: "
-        f"{top['primary_name']!r}"
+        f"top result is the 税-overlap false-positive: {top['primary_name']!r}"
     )
 
 
@@ -275,15 +290,11 @@ def test_dedup(client: TestClient, db_conn: sqlite3.Connection) -> None:
     assert r.status_code == 200
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
-    assert len(names) == len(set(names)), (
-        f"duplicate primary_names leaked: {names}"
-    )
+    assert len(names) == len(set(names)), f"duplicate primary_names leaked: {names}"
     # Matching row present, and the kept copy is tier S (the highest).
     matching = [row for row in body["results"] if row["primary_name"] == name]
     assert len(matching) == 1
-    assert matching[0]["tier"] == "S", (
-        f"dedup kept the wrong tier: {matching[0]['tier']!r}"
-    )
+    assert matching[0]["tier"] == "S", f"dedup kept the wrong tier: {matching[0]['tier']!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -291,9 +302,7 @@ def test_dedup(client: TestClient, db_conn: sqlite3.Connection) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_short_query_aliases(
-    client: TestClient, db_conn: sqlite3.Connection
-) -> None:
+def test_short_query_aliases(client: TestClient, db_conn: sqlite3.Connection) -> None:
     """A 2-char query whose term lives only in aliases_json (not in
     primary_name) must still return that row. Proves the LIKE fallback
     covers the aliases column, not only primary_name."""
@@ -318,9 +327,7 @@ def test_short_query_aliases(
     assert "テスト略称検索対象事業" in names
 
 
-def test_short_query_enriched(
-    client: TestClient, db_conn: sqlite3.Connection
-) -> None:
+def test_short_query_enriched(client: TestClient, db_conn: sqlite3.Connection) -> None:
     """Companion to test_short_query_aliases: a 2-char NON-ASCII query
     whose term lives only in enriched_json must surface the row.
 
@@ -346,9 +353,7 @@ def test_short_query_enriched(
     )
 
 
-def test_short_query_ascii_skips_enriched(
-    client: TestClient, db_conn: sqlite3.Connection
-) -> None:
+def test_short_query_ascii_skips_enriched(client: TestClient, db_conn: sqlite3.Connection) -> None:
     """Short pure-ASCII queries (len<3) deliberately skip enriched_json.
 
     Rationale: including enriched_json for 2-char ASCII is a double
@@ -383,10 +388,7 @@ def test_short_query_ascii_skips_enriched(
     assert r.status_code == 200
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
-    assert "QZ導入支援事業" in names, (
-        f"short ASCII query missed primary_name hit; names={names}"
-    )
+    assert "QZ導入支援事業" in names, f"short ASCII query missed primary_name hit; names={names}"
     assert "テストASCII短文デコイ対象" not in names, (
-        "short ASCII query leaked enriched_json-only match; "
-        "the perf-fix narrowing is not active"
+        "short ASCII query leaked enriched_json-only match; the perf-fix narrowing is not active"
     )

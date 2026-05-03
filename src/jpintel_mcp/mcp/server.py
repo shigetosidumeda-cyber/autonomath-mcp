@@ -7,6 +7,7 @@ Run:
     autonomath-mcp       # stdio transport (default for Claude Desktop)
     python -m jpintel_mcp.mcp.server
 """
+
 from __future__ import annotations
 
 import functools
@@ -73,13 +74,16 @@ mcp = FastMCP(
     instructions=(
         "Japanese public-program data (日本の補助金 / 助成金 / 融資 / 税制優遇 / 認定制度). "
         "Primary-source URL + fetched_at on every row; no aggregators.\n\n"
+        "Use before answer generation to fetch compact, source-linked evidence packets "
+        "instead of pasting long PDFs, pages, or search results. Context-size estimates "
+        "require caller-supplied baselines and are not provider billing guarantees.\n\n"
         "Coverage:\n"
-        "- 11,211 programs (国 + 47 都道府県 + 市区町村)\n"
+        "- 11,684 searchable programs (国 + 47 都道府県 + 市区町村; non-public rows are not exposed)\n"
         "- 2,286 採択事例 (real recipient profiles paired with programs received)\n"
         "- 108 融資 programs on 3-axis risk (担保 / 個人保証人 / 第三者保証人)\n"
         "- 1,185 会計検査院 enforcement_cases (不当請求 / 目的外使用 etc.)\n"
         "- 181 exclusion / prerequisite rules (125 exclude + 17 prerequisite + 15 absolute + 24 other) pre-extracted from 要綱 PDF footnotes\n\n"
-        "Tier: S/A = primary-source verified; B = partially enriched; C = sparse; X = excluded.\n"
+        "Tier: S/A = primary-source verified; B = partially enriched; C = sparse; non-public rows are not exposed.\n"
         "Use search_programs for program discovery, search_case_studies for adoption evidence, "
         "search_loan_programs for 無担保・無保証 filtering, search_enforcement_cases for compliance / "
         "due-diligence, check_exclusions for 併給可否 (can I combine A+B?).\n\n"
@@ -236,9 +240,7 @@ def _expansion_coverage_state(table: str, conn: sqlite3.Connection) -> dict[str,
     Called only on the empty-result path to keep normal search responses lean.
     """
     try:
-        (row_count,) = conn.execute(
-            f"SELECT COUNT(*) FROM {table}"
-        ).fetchone()
+        (row_count,) = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
     except sqlite3.Error:
         row_count = 0
     if row_count == 0:
@@ -270,9 +272,7 @@ def _empty_laws_hint(
             "('財務省' vs '国税庁'). e-Gov の所管省庁名と完全一致させてください."
         )
     if law_type:
-        return (
-            f"law_type='{law_type}' で 0 件. canonical 値は '法律' / '政令' / '省令' / '規則' / '告示'."
-        )
+        return f"law_type='{law_type}' で 0 件. canonical 値は '法律' / '政令' / '省令' / '規則' / '告示'."
     return (
         "法令に該当なし. 略称 '下請法' は 下請代金支払遅延等防止法 のように正式名で保存されています. "
         "別アプローチ: (a) 正式名で再検索, (b) `search_tax_rules` で税制 ruleset を直接引く, "
@@ -285,7 +285,9 @@ def _empty_tax_rules_hint(
     tax_category: str | None,
 ) -> str:
     """Empty-hit hint for search_tax_rules (coverage is インボイス/電帳法/中小企業 法人税/消費税 biased, 35 rows)."""
-    if q and any(kw in q for kw in ("事業承継", "承継税制", "相続", "贈与", "組織再編", "合併", "分割")):
+    if q and any(
+        kw in q for kw in ("事業承継", "承継税制", "相続", "贈与", "組織再編", "合併", "分割")
+    ):
         return (
             f"q='{q}' は search_tax_rules の 35 行対象外 (インボイス/電帳法/中小企業 法人税・消費税 only). "
             "`get_am_tax_rule(measure_name_or_id='事業承継税制')` または `search_tax_incentives(query='…')` に切り替えてください — "
@@ -297,9 +299,7 @@ def _empty_tax_rules_hint(
             "`get_am_tax_rule(measure_name_or_id=…)` で相続・贈与関連を確認してください."
         )
     if q and len(q.strip()) < 3:
-        return (
-            f"q='{q}' が短すぎます. 3 文字以上の語で再検索してください."
-        )
+        return f"q='{q}' が短すぎます. 3 文字以上の語で再検索してください."
     return (
         "税務 ruleset に該当なし. 現状 35 行 (インボイス/電帳法/中小企業 法人税・消費税). "
         "別アプローチ: (a) `search_tax_incentives` で autonomath tax_measure (>100 種) を横断検索, "
@@ -334,7 +334,8 @@ def _empty_precedents_hint(article_citation: str | None) -> str:
     """
     prefix = (
         f"article_citation='{article_citation}' に該当する 判例 は現 DB 0 件です. "
-        if article_citation else ""
+        if article_citation
+        else ""
     )
     return (
         f"{prefix}"
@@ -444,12 +445,8 @@ def _row_to_dict(row: sqlite3.Row, include_enriched: bool = False) -> dict[str, 
     # very old DB files where the migration has not yet been applied.
     row_keys = row.keys()
     source_url = row["source_url"] if "source_url" in row_keys else None
-    source_fetched_at = (
-        row["source_fetched_at"] if "source_fetched_at" in row_keys else None
-    )
-    source_checksum = (
-        row["source_checksum"] if "source_checksum" in row_keys else None
-    )
+    source_fetched_at = row["source_fetched_at"] if "source_fetched_at" in row_keys else None
+    source_checksum = row["source_checksum"] if "source_checksum" in row_keys else None
 
     application_window = _json_col(row, "application_window_json", None)
     official_url = row["official_url"]
@@ -489,9 +486,7 @@ def _row_to_dict(row: sqlite3.Row, include_enriched: bool = False) -> dict[str, 
         "funding_purpose": _json_col(row, "funding_purpose_json", []),
         "amount_band": row["amount_band"],
         "application_window": application_window,
-        "next_deadline": _post_cache_next_deadline(
-            _extract_next_deadline(application_window)
-        ),
+        "next_deadline": _post_cache_next_deadline(_extract_next_deadline(application_window)),
         "application_url": official_url,
         "source_url": source_url,
         "source_fetched_at": source_fetched_at,
@@ -515,9 +510,7 @@ def _resolve_fields(fields: str | None) -> Literal["minimal", "default", "full"]
     if fields is None:
         return "default"
     if fields not in _VALID_FIELDS:
-        raise ValueError(
-            f"fields must be one of {_VALID_FIELDS}, got {fields!r}"
-        )
+        raise ValueError(f"fields must be one of {_VALID_FIELDS}, got {fields!r}")
     return fields  # type: ignore[return-value]  # validated against _VALID_FIELDS above
 
 
@@ -543,11 +536,18 @@ def _trim_to_fields(record: dict[str, Any], fields: str) -> dict[str, Any]:
 # get the smallest payload (~80 B/row vs ~600 B/row full). See task brief.
 
 _CASE_STUDY_MINIMAL_KEYS: tuple[str, ...] = (
-    "case_id", "company_name", "case_title", "source_url",
+    "case_id",
+    "company_name",
+    "case_title",
+    "source_url",
 )
 _CASE_STUDY_STANDARD_EXTRA: tuple[str, ...] = (
-    "prefecture", "industry_jsic", "industry_name", "publication_date",
-    "total_subsidy_received_yen", "fetched_at",
+    "prefecture",
+    "industry_jsic",
+    "industry_name",
+    "publication_date",
+    "total_subsidy_received_yen",
+    "fetched_at",
 )
 
 
@@ -561,11 +561,18 @@ def _trim_case_study_fields(record: dict[str, Any], fields: str) -> dict[str, An
 
 
 _ENFORCEMENT_MINIMAL_KEYS: tuple[str, ...] = (
-    "case_id", "program_name_hint", "event_type", "source_url",
+    "case_id",
+    "program_name_hint",
+    "event_type",
+    "source_url",
 )
 _ENFORCEMENT_STANDARD_EXTRA: tuple[str, ...] = (
-    "ministry", "prefecture", "disclosed_date",
-    "amount_improper_grant_yen", "recipient_name", "fetched_at",
+    "ministry",
+    "prefecture",
+    "disclosed_date",
+    "amount_improper_grant_yen",
+    "recipient_name",
+    "fetched_at",
 )
 
 
@@ -590,31 +597,29 @@ def _resolve_shaped_fields(fields: str | None) -> Literal["minimal", "standard",
     if fields is None:
         return "minimal"
     if fields not in _SHAPED_FIELDS:
-        raise ValueError(
-            f"fields must be one of {_SHAPED_FIELDS}, got {fields!r}"
-        )
+        raise ValueError(f"fields must be one of {_SHAPED_FIELDS}, got {fields!r}")
     return fields  # type: ignore[return-value]
 
 
-def _enforce_limit_cap(
-    limit: int, cap: int = 20
-) -> tuple[int, list[dict[str, Any]]]:
+def _enforce_limit_cap(limit: int, cap: int = 20) -> tuple[int, list[dict[str, Any]]]:
     """Cap `limit` at `cap` and emit an input_warnings entry if the caller
     asked for more. dd_v3_09 / v7 P3-K: list tools cap at 20 rows so a
     single call cannot blow the response budget.
     """
     warnings: list[dict[str, Any]] = []
     if limit > cap:
-        warnings.append({
-            "field": "limit",
-            "code": "limit_capped",
-            "value": limit,
-            "normalized_to": cap,
-            "message": (
-                f"limit={limit} は token-shaping cap ({cap}) を超過。"
-                f"{cap} に丸めました。さらに必要なら offset を進めて再呼び出ししてください。"
-            ),
-        })
+        warnings.append(
+            {
+                "field": "limit",
+                "code": "limit_capped",
+                "value": limit,
+                "normalized_to": cap,
+                "message": (
+                    f"limit={limit} は token-shaping cap ({cap}) を超過。"
+                    f"{cap} に丸めました。さらに必要なら offset を進めて再呼び出ししてください。"
+                ),
+            }
+        )
         limit = cap
     return limit, warnings
 
@@ -630,11 +635,7 @@ def _mcp_detect_lang(text: str) -> str:
     """Return 'ja', 'en', or 'mixed' based on CJK character ratio."""
     if not text:
         return "en"
-    cjk = sum(
-        1
-        for ch in text
-        if unicodedata.category(ch) in ("Lo",) and "⺀" <= ch <= "鿿"
-    )
+    cjk = sum(1 for ch in text if unicodedata.category(ch) in ("Lo",) and "⺀" <= ch <= "鿿")
     ratio = cjk / len(text)
     if ratio > 0.5:
         return "ja"
@@ -830,14 +831,23 @@ def _envelope_merge(
     # in environments where pydantic_settings cannot resolve env vars.
     try:
         from jpintel_mcp.config import settings as _s
+
         disclaimer_level = str(getattr(_s, "autonomath_disclaimer_level", "standard"))
     except Exception:
         disclaimer_level = "standard"
 
     # Pick the most query-like kwarg for query_echo + router input.
     query_echo = ""
-    for q_key in ("q", "query", "law_name", "program_name", "enum_name",
-                  "natural_query", "name_query", "target_name"):
+    for q_key in (
+        "q",
+        "query",
+        "law_name",
+        "program_name",
+        "enum_name",
+        "natural_query",
+        "name_query",
+        "target_name",
+    ):
         v = kwargs.get(q_key)
         if isinstance(v, str) and v:
             query_echo = v
@@ -947,28 +957,28 @@ def _envelope_merge(
 def _with_mcp_telemetry(fn: Any) -> Any:
     """Decorator: wrap an MCP tool function with query telemetry logging.
 
-    Apply with ``@_with_mcp_telemetry`` BELOW ``@mcp.tool`` so FastMCP sees
-    the original signature for schema generation, and the wrapper is called
-    at invocation time.
+        Apply with ``@_with_mcp_telemetry`` BELOW ``@mcp.tool`` so FastMCP sees
+        the original signature for schema generation, and the wrapper is called
+        at invocation time.
 
-    Usage::
+        Usage::
 
-        @mcp.tool(annotations=_READ_ONLY)
-@_with_mcp_telemetry
-        @_with_mcp_telemetry
-        def search_programs(q: ..., ...) -> ...:
-            ...
+            @mcp.tool(annotations=_READ_ONLY)
+    @_with_mcp_telemetry
+            @_with_mcp_telemetry
+            def search_programs(q: ..., ...) -> ...:
+                ...
 
-    Side-effects beyond logging:
-      * Response-envelope v2 hint fields are additively merged onto the
-        tool result via :func:`_envelope_merge`. This wires the
-        ``envelope_wrapper.build_envelope`` machinery (status /
-        suggested_actions / meta.suggestions / meta.alternative_intents
-        / meta.tips) onto every ``@mcp.tool`` call without modifying the
-        per-tool function bodies. See _envelope_merge docstring for the
-        merge posture (additive only — never overrides existing keys).
+        Side-effects beyond logging:
+          * Response-envelope v2 hint fields are additively merged onto the
+            tool result via :func:`_envelope_merge`. This wires the
+            ``envelope_wrapper.build_envelope`` machinery (status /
+            suggested_actions / meta.suggestions / meta.alternative_intents
+            / meta.tips) onto every ``@mcp.tool`` call without modifying the
+            per-tool function bodies. See _envelope_merge docstring for the
+            merge posture (additive only — never overrides existing keys).
 
-    Zero-result returns still log at INFO — no WARNING noise.
+        Zero-result returns still log at INFO — no WARNING noise.
     """
     tool_name = fn.__name__
 
@@ -1070,13 +1080,13 @@ def search_programs(
         ),
     ] = None,
     tier: Annotated[
-        list[Literal["S", "A", "B", "C", "X"]] | None,
+        list[Literal["S", "A", "B", "C"]] | None,
         Field(
             description=(
                 "Quality-tier filter (multi-select, OR). S/A = primary-source "
                 "verified (8+/10 dims). B = partial (4-7/10). C = name+URL "
-                "only (1-3/10). X = excluded/deprecated (omit unless "
-                "include_excluded=true). Typical agent default: ['S','A','B']."
+                "only (1-3/10). Review-held/quarantine rows are not exposed. "
+                "Typical agent default: ['S','A','B']."
             ),
         ),
     ] = None,
@@ -1126,14 +1136,6 @@ def search_programs(
         float | None,
         Field(ge=0, description="Upper bound on amount_max_man_yen (万円). Must be >= 0."),
     ] = None,
-    include_excluded: Annotated[
-        bool,
-        Field(
-            description=(
-                "Include tier=X excluded/deprecated programs. Default false."
-            ),
-        ),
-    ] = False,
     limit: Annotated[
         int,
         Field(
@@ -1198,10 +1200,11 @@ def search_programs(
     free-text search works for 3+ char queries via FTS5 trigram; shorter queries
     fall back to LIKE substring.
 
-    Tier ranking (best→worst): S, A, B, C, X. S/A are verified by primary-source
+    Tier ranking (best→worst): S, A, B, C. S/A are verified by primary-source
     URL + evidence on 8+/10 A-J dimensions; B is partial (4-7 dims); C is sparse
-    (1-3 dims, name+URL only); X is excluded/deprecated. When presenting to an
-    end user, default to tier ∈ {S, A, B} and mark C as "要 1 次確認".
+    (1-3 dims, name+URL only). Review-held/quarantine rows are not exposed.
+    When presenting to an end user, default to tier ∈ {S, A, B} and mark C
+    as "要 1 次確認".
 
     `fields` controls response size per row (see param description).
 
@@ -1212,7 +1215,7 @@ def search_programs(
       - `enum_values(field=…)` *first* if unsure whether a target_type / funding_purpose / authority_level / prefecture value is canonical — the DB mixes "sole_proprietor" / "個人事業主", "省エネ" / "energy" etc. Prefecture uses the full suffix ("東京都", not "東京" or "Tokyo").
 
     LIMITATIONS:
-      - Tier X is a **quarantine tier** (deprecated / untrustworthy rows) and is excluded by default (`include_excluded=False`). Do not flip `include_excluded=True` to surface more results — the X-tier rows intentionally lack a verified primary source.
+      - Review-held/quarantine rows are excluded from the public MCP surface.
       - `source_fetched_at` is a **uniform sentinel** across bulk-rewritten rows (<100 distinct values for thousands of programs). Render as "出典取得日" (when we last fetched), never as "最終更新日" or "現行確認日" — the column does not imply we verified currency.
       - FTS5 trigram tokenizer causes false positives on single-kanji overlap. Searching `税額控除` also matches `ふるさと納税` because both contain `税`. For 2+ character kanji compounds, wrap the query in quotes (`"税額控除"`) to force phrase matching.
       - `application_window` coverage is partial; many rows store 通年 / 随時 / empty — absence of a date does not mean closed. Fall back to the source URL for 募集期間 when the field is null.
@@ -1238,7 +1241,6 @@ def search_programs(
             "target_type": target_type,
             "amount_min_man_yen": amount_min_man_yen,
             "amount_max_man_yen": amount_max_man_yen,
-            "include_excluded": include_excluded,
             "limit": limit,
             "offset": offset,
             "fields": fields,
@@ -1261,7 +1263,10 @@ def search_programs(
     # a paying-user trap ("no programs match" → user gives up, burns 1 req).
     if amount_min_man_yen is not None and amount_min_man_yen < 0:
         return {
-            "total": 0, "limit": limit, "offset": offset, "results": [],
+            "total": 0,
+            "limit": limit,
+            "offset": offset,
+            "results": [],
             "error": {
                 "code": "invalid_range",
                 "message": f"amount_min_man_yen must be >= 0 (got {amount_min_man_yen}).",
@@ -1271,7 +1276,10 @@ def search_programs(
         }
     if amount_max_man_yen is not None and amount_max_man_yen < 0:
         return {
-            "total": 0, "limit": limit, "offset": offset, "results": [],
+            "total": 0,
+            "limit": limit,
+            "offset": offset,
+            "results": [],
             "error": {
                 "code": "invalid_range",
                 "message": f"amount_max_man_yen must be >= 0 (got {amount_max_man_yen}).",
@@ -1288,6 +1296,7 @@ def search_programs(
         q_clean = q.strip()
         if len(q_clean) >= 3:
             from jpintel_mcp.api.programs import _build_fts_match
+
             join_fts = True
             params.append(_build_fts_match(q_clean))
         else:
@@ -1297,6 +1306,7 @@ def search_programs(
             # also matches 'Eコマース' / '電子商取引'. Without this the user
             # pays ¥3/req for 0 hits on a normal abbreviation.
             from jpintel_mcp.api.programs import KANA_EXPANSIONS
+
             short_terms: list[str] = [q_clean]
             for k in (q_clean, q_clean.lower(), q_clean.upper()):
                 if k in KANA_EXPANSIONS:
@@ -1321,17 +1331,19 @@ def search_programs(
     # match 0 rows on a typo like 'Tokio' / '東京府' (¥3/req refund trap).
     input_warnings: list[dict[str, Any]] = []
     if pref_raw and not _is_known_prefecture(pref_raw):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": pref_raw,
-            "normalized_to": prefecture,
-            "message": (
-                f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
-                "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": pref_raw,
+                "normalized_to": prefecture,
+                "message": (
+                    f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
+                    "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         prefecture = None
     if prefecture:
         where.append("prefecture = ?")
@@ -1354,12 +1366,10 @@ def search_programs(
     if amount_max_man_yen is not None:
         where.append("amount_max_man_yen <= ?")
         params.append(amount_max_man_yen)
-    if not include_excluded:
-        where.append("excluded = 0")
-        # Keep the MCP surface in parity with the REST gate: tier='X' is
-        # the quality quarantine. api/programs.py applies the same rule
-        # (COALESCE(tier,'X') != 'X'); MCP must not be looser.
-        where.append("COALESCE(tier,'X') != 'X'")
+    where.append("excluded = 0")
+    # Keep the MCP surface in parity with the REST gate: tier='X' is the
+    # quality quarantine. MCP must not be looser than public REST.
+    where.append("COALESCE(tier,'X') != 'X'")
 
     # as_of filter: drop rows whose application_window.end_date is strictly
     # past relative to as_of_iso. NULL-tolerant: rows with no end_date (通年
@@ -1392,8 +1402,7 @@ def search_programs(
             f"SELECT COUNT(*) FROM {base_from} WHERE {where_clause}", params
         ).fetchone()
         rows = conn.execute(
-            f"SELECT programs.* FROM {base_from} WHERE {where_clause} {order_sql} "
-            f"LIMIT ? OFFSET ?",
+            f"SELECT programs.* FROM {base_from} WHERE {where_clause} {order_sql} LIMIT ? OFFSET ?",
             [*params, limit, offset],
         ).fetchall()
         # Build rows at the "default" shape, then enrich / trim based on
@@ -1422,8 +1431,12 @@ def search_programs(
             # instead of telling the user "no data". The text here is picked
             # up verbatim by the model in many clients.
             payload["hint"] = _empty_search_hint(
-                q, prefecture, list(tier) if tier else None,
-                authority_level_norm, target_type, funding_purpose
+                q,
+                prefecture,
+                list(tier) if tier else None,
+                authority_level_norm,
+                target_type,
+                funding_purpose,
             )
             payload["retry_with"] = [
                 "search_case_studies",
@@ -1492,9 +1505,7 @@ def get_program(
     fields = _resolve_fields(fields)
     conn = connect()
     try:
-        row = conn.execute(
-            "SELECT * FROM programs WHERE unified_id = ?", (unified_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM programs WHERE unified_id = ?", (unified_id,)).fetchone()
         if row is None:
             return {
                 "error": f"program not found: {unified_id}",
@@ -1551,7 +1562,8 @@ def batch_get_programs(
 
     if not deduped:
         return {
-            "results": [], "not_found": [],
+            "results": [],
+            "not_found": [],
             "error": {
                 "code": "empty_input",
                 "message": "unified_ids required (list must contain 1-50 ids)",
@@ -1561,7 +1573,8 @@ def batch_get_programs(
         }
     if len(deduped) > 50:
         return {
-            "results": [], "not_found": [],
+            "results": [],
+            "not_found": [],
             "error": {
                 "code": "limit_exceeded",
                 "message": f"unified_ids cap is 50, got {len(deduped)}",
@@ -1574,7 +1587,13 @@ def batch_get_programs(
     try:
         placeholders = ",".join("?" * len(deduped))
         rows = conn.execute(
-            f"SELECT * FROM programs WHERE unified_id IN ({placeholders})",
+            f"""
+            SELECT *
+            FROM programs
+            WHERE unified_id IN ({placeholders})
+              AND excluded=0
+              AND COALESCE(tier, 'X') != 'X'
+            """,
             deduped,
         ).fetchall()
         by_id: dict[str, sqlite3.Row] = {r["unified_id"]: r for r in rows}
@@ -1607,13 +1626,22 @@ def batch_get_programs(
 @_with_mcp_telemetry
 def list_exclusion_rules(
     kind: Annotated[
-        list[Literal[
-            "exclude", "prerequisite", "absolute", "combine_ok",
-            "conditional_reduction", "same_asset_exclusive",
-            "cross_tier_same_asset", "area_allocation",
-            "cross_tier_loan_interest", "entity_scope_restriction",
-            "mutex_certification",
-        ]] | None,
+        list[
+            Literal[
+                "exclude",
+                "prerequisite",
+                "absolute",
+                "combine_ok",
+                "conditional_reduction",
+                "same_asset_exclusive",
+                "cross_tier_same_asset",
+                "area_allocation",
+                "cross_tier_loan_interest",
+                "entity_scope_restriction",
+                "mutex_certification",
+            ]
+        ]
+        | None,
         Field(
             description=(
                 "Filter by rule kind (multi-select, OR). Omit for all 181. "
@@ -1686,8 +1714,7 @@ def list_exclusion_rules(
             # program_b_group_json (a JSON array). LIKE on the JSON
             # text covers the array case without sqlite-json1 dependency.
             where.append(
-                "(program_a = ? OR program_b = ? "
-                "OR COALESCE(program_b_group_json,'') LIKE ?)"
+                "(program_a = ? OR program_b = ? OR COALESCE(program_b_group_json,'') LIKE ?)"
             )
             params.extend([program_id, program_id, f'%"{program_id}"%'])
         sql = "SELECT * FROM exclusion_rules"
@@ -1708,18 +1735,20 @@ def list_exclusion_rules(
                     notes = notes[:197] + "…"
                 src_urls = src_urls[:1]
                 extra = {}
-            out.append({
-                "rule_id": r["rule_id"],
-                "kind": r["kind"],
-                "severity": r["severity"],
-                "program_a": r["program_a"],
-                "program_b": r["program_b"],
-                "program_b_group": _json_col(r, "program_b_group_json", []),
-                "description": desc,
-                "source_notes": notes,
-                "source_urls": src_urls,
-                "extra": extra,
-            })
+            out.append(
+                {
+                    "rule_id": r["rule_id"],
+                    "kind": r["kind"],
+                    "severity": r["severity"],
+                    "program_a": r["program_a"],
+                    "program_b": r["program_b"],
+                    "program_b_group": _json_col(r, "program_b_group_json", []),
+                    "description": desc,
+                    "source_notes": notes,
+                    "source_urls": src_urls,
+                    "extra": extra,
+                }
+            )
         # Always return the same envelope shape (rules / total / filters)
         # regardless of populated vs empty result. The pre-fix path returned
         # a bare list on hit and a dict envelope on miss — that union typing
@@ -1727,11 +1756,13 @@ def list_exclusion_rules(
         # unified envelope makes responses self-describing and lets clients
         # always read `.rules` / `.total`.
         filters_applied = {
-            k: v for k, v in [
+            k: v
+            for k, v in [
                 ("kind", list(kind) if kind else None),
                 ("program_id", program_id),
                 ("verbose", verbose),
-            ] if v is not None and v != []
+            ]
+            if v is not None and v != []
         }
         if not out:
             # Empty-hit envelope: echo filters + suggest broader queries
@@ -1749,8 +1780,7 @@ def list_exclusion_rules(
                     "rules even on a single program_id."
                 )
                 suggestions.append(
-                    "search_programs(q=program_id) で unified_id や制度名の "
-                    "表記揺れを確認."
+                    "search_programs(q=program_id) で unified_id や制度名の 表記揺れを確認."
                 )
             elif kind:
                 suggestions.append(
@@ -1825,7 +1855,9 @@ def check_exclusions(
     """
     if not program_ids:
         return {
-            "program_ids": [], "hits": [], "checked_rules": 0,
+            "program_ids": [],
+            "hits": [],
+            "checked_rules": 0,
             "summary": "program_ids required (>=1 for prerequisite, >=2 for exclusion check).",
             "error": {
                 "code": "empty_input",
@@ -1836,7 +1868,9 @@ def check_exclusions(
         }
     if len(program_ids) > 50:
         return {
-            "program_ids": program_ids[:50], "hits": [], "checked_rules": 0,
+            "program_ids": program_ids[:50],
+            "hits": [],
+            "checked_rules": 0,
             "summary": f"program_ids cap is 50 (got {len(program_ids)}).",
             "error": {
                 "code": "limit_exceeded",
@@ -1961,7 +1995,7 @@ def check_exclusions(
 @mcp.tool(annotations=_READ_ONLY)
 @_with_mcp_telemetry
 def get_meta() -> dict[str, Any]:
-    """UTILITY: データの鮮度・網羅件数を確認する (verify dataset freshness and scope). Returns visible program count (excluded=0 AND tier != X), canonical vs external-source split, 採択事例 / 融資 / 行政処分 / rule counts, tier distribution (S/A/B/C/X), prefecture distribution, and last_ingested_at.
+    """UTILITY: データの鮮度・網羅件数を確認する (verify dataset freshness and scope). Returns public-searchable program count, canonical vs external-source split, 採択事例 / 融資 / 行政処分 / rule counts, tier distribution (S/A/B/C), prefecture distribution, and last_ingested_at.
 
     **When to call:** before first `search_programs` if the user asks about
     coverage / freshness ("データはいつ更新された?" / "何件入ってる?" /
@@ -1969,7 +2003,7 @@ def get_meta() -> dict[str, Any]:
     `source_fetched_at` is authoritative for per-record freshness.
 
     **Key fields to surface to the user:**
-    - `visible_programs`: rows a default search will return (excluded=0, tier != X)
+    - `visible_programs`: rows a default search will return
     - `tier_counts`: quality distribution; quote S/A first when the user
       asks about "信頼できるデータ".
     - `last_ingested_at`: UTC ISO-8601 of the most recent pipeline run.
@@ -1988,14 +2022,16 @@ def get_meta() -> dict[str, Any]:
         tier_counts: dict[str, int] = {}
         for row in conn.execute(
             "SELECT COALESCE(tier, 'unknown') AS tier, COUNT(*) AS c "
-            "FROM programs WHERE excluded=0 GROUP BY tier"
+            "FROM programs WHERE excluded=0 AND COALESCE(tier, 'X') != 'X' "
+            "GROUP BY tier"
         ):
             tier_counts[row["tier"]] = row["c"]
 
         pref_counts: dict[str, int] = {}
         for row in conn.execute(
             "SELECT COALESCE(prefecture, '_none') AS p, COUNT(*) AS c "
-            "FROM programs WHERE excluded=0 GROUP BY prefecture"
+            "FROM programs WHERE excluded=0 AND COALESCE(tier, 'X') != 'X' "
+            "GROUP BY prefecture"
         ):
             pref_counts[row["p"]] = row["c"]
 
@@ -2004,15 +2040,16 @@ def get_meta() -> dict[str, Any]:
             row = cur.fetchone()
             return int(row[0]) if row and row[0] is not None else 0
 
-        programs_total = _scalar("SELECT COUNT(*) FROM programs")
         programs_visible = _scalar(
             "SELECT COUNT(*) FROM programs WHERE excluded=0 AND COALESCE(tier,'X') != 'X'"
         )
         programs_canonical = _scalar(
-            "SELECT COUNT(*) FROM programs WHERE unified_id NOT LIKE 'UNI-ext-%'"
+            "SELECT COUNT(*) FROM programs WHERE excluded=0 AND COALESCE(tier,'X') != 'X' "
+            "AND unified_id NOT LIKE 'UNI-ext-%'"
         )
         programs_external = _scalar(
-            "SELECT COUNT(*) FROM programs WHERE unified_id LIKE 'UNI-ext-%'"
+            "SELECT COUNT(*) FROM programs WHERE excluded=0 AND COALESCE(tier,'X') != 'X' "
+            "AND unified_id LIKE 'UNI-ext-%'"
         )
         rules_n = _scalar("SELECT COUNT(*) FROM exclusion_rules")
 
@@ -2026,9 +2063,7 @@ def get_meta() -> dict[str, Any]:
 
         case_studies_n = _optional_scalar("SELECT COUNT(*) FROM case_studies")
         loan_programs_n = _optional_scalar("SELECT COUNT(*) FROM loan_programs")
-        enforcement_cases_n = _optional_scalar(
-            "SELECT COUNT(*) FROM enforcement_cases"
-        )
+        enforcement_cases_n = _optional_scalar("SELECT COUNT(*) FROM enforcement_cases")
 
         # Dynamic tool count: read directly from FastMCP's tool manager
         # rather than hardcoding. Hardcoding drifted (was "47 if autonomath
@@ -2041,7 +2076,7 @@ def get_meta() -> dict[str, Any]:
             tool_count = 0
 
         meta: dict[str, Any] = {
-            "total_programs": programs_total,
+            "total_programs": programs_visible,
             "visible_programs": programs_visible,
             "canonical_programs": programs_canonical,
             "external_programs": programs_external,
@@ -2132,23 +2167,29 @@ def get_usage_status(
 
     def _jst_next_day_iso() -> str:
         now = datetime.now(jst)
-        nxt = (
-            now.replace(hour=0, minute=0, second=0, microsecond=0)
-            + timedelta(days=1)
-        )
+        nxt = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
         return nxt.isoformat()
 
     def _utc_next_month_iso() -> str:
         now = datetime.now(UTC)
         if now.month == 12:
             nxt = now.replace(
-                year=now.year + 1, month=1, day=1,
-                hour=0, minute=0, second=0, microsecond=0,
+                year=now.year + 1,
+                month=1,
+                day=1,
+                hour=0,
+                minute=0,
+                second=0,
+                microsecond=0,
             )
         else:
             nxt = now.replace(
-                month=now.month + 1, day=1,
-                hour=0, minute=0, second=0, microsecond=0,
+                month=now.month + 1,
+                day=1,
+                hour=0,
+                minute=0,
+                second=0,
+                microsecond=0,
             )
         return nxt.isoformat()
 
@@ -2225,9 +2266,11 @@ def get_usage_status(
 
         tier = row["tier"]
         if tier == "paid":
-            month_start = datetime.now(UTC).replace(
-                day=1, hour=0, minute=0, second=0, microsecond=0
-            ).isoformat()
+            month_start = (
+                datetime.now(UTC)
+                .replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+                .isoformat()
+            )
             (used,) = conn.execute(
                 "SELECT COUNT(*) FROM usage_events "
                 "WHERE key_hash = ? AND ts >= ? "
@@ -2352,8 +2395,7 @@ _ENUM_SOURCES: dict[str, tuple[str, str, str]] = {
         "SELECT event_type AS v, COUNT(*) AS n FROM enforcement_cases "
         "WHERE event_type IS NOT NULL "
         "GROUP BY event_type ORDER BY n DESC LIMIT ?",
-        "SELECT COUNT(DISTINCT event_type) FROM enforcement_cases "
-        "WHERE event_type IS NOT NULL",
+        "SELECT COUNT(DISTINCT event_type) FROM enforcement_cases WHERE event_type IS NOT NULL",
         "Enforcement outcome. Current values: 'clawback' (返還命令), "
         "'penalty' (処分). Use as a filter on search_enforcement_cases.",
     ),
@@ -2361,8 +2403,7 @@ _ENUM_SOURCES: dict[str, tuple[str, str, str]] = {
         "SELECT ministry AS v, COUNT(*) AS n FROM enforcement_cases "
         "WHERE ministry IS NOT NULL "
         "GROUP BY ministry ORDER BY n DESC LIMIT ?",
-        "SELECT COUNT(DISTINCT ministry) FROM enforcement_cases "
-        "WHERE ministry IS NOT NULL",
+        "SELECT COUNT(DISTINCT ministry) FROM enforcement_cases WHERE ministry IS NOT NULL",
         "Supervising ministry on enforcement cases. 8 values "
         "(厚労省 / 経産省 / 農水省 / 国交省 / 文科省 / 環境省 / 総務省 / 内閣府).",
     ),
@@ -2370,8 +2411,7 @@ _ENUM_SOURCES: dict[str, tuple[str, str, str]] = {
         "SELECT loan_type AS v, COUNT(*) AS n FROM loan_programs "
         "WHERE loan_type IS NOT NULL "
         "GROUP BY loan_type ORDER BY n DESC LIMIT ?",
-        "SELECT COUNT(DISTINCT loan_type) FROM loan_programs "
-        "WHERE loan_type IS NOT NULL",
+        "SELECT COUNT(DISTINCT loan_type) FROM loan_programs WHERE loan_type IS NOT NULL",
         "Loan category. English slugs: 'general', 'agriculture_forestry', 'succession', "
         "'green', 'productivity', 'overseas', 'safety_net', 'special_rate', "
         "'social', 'tourism', 'wage_increase'.",
@@ -2380,8 +2420,7 @@ _ENUM_SOURCES: dict[str, tuple[str, str, str]] = {
         "SELECT provider AS v, COUNT(*) AS n FROM loan_programs "
         "WHERE provider IS NOT NULL "
         "GROUP BY provider ORDER BY n DESC LIMIT ?",
-        "SELECT COUNT(DISTINCT provider) FROM loan_programs "
-        "WHERE provider IS NOT NULL",
+        "SELECT COUNT(DISTINCT provider) FROM loan_programs WHERE provider IS NOT NULL",
         "Lender. Top: '日本政策金融公庫 国民生活事業 / 中小企業事業 / 農林水産事業', "
         "'商工組合中央金庫', '信金中央金庫'.",
     ),
@@ -2461,11 +2500,7 @@ def enum_values(
         (total_distinct,) = conn.execute(distinct_sql).fetchone()
         return {
             "field": field,
-            "values": [
-                {"value": r["v"], "count": int(r["n"])}
-                for r in rows
-                if r["v"] is not None
-            ],
+            "values": [{"value": r["v"], "count": int(r["n"])} for r in rows if r["v"] is not None],
             "total_distinct": int(total_distinct or 0),
             "limit": limit,
             "note": note,
@@ -2725,9 +2760,7 @@ def search_enforcement_cases(
 
     if q:
         like = f"%{q}%"
-        where.append(
-            "(program_name_hint LIKE ? OR reason_excerpt LIKE ? OR source_title LIKE ?)"
-        )
+        where.append("(program_name_hint LIKE ? OR reason_excerpt LIKE ? OR source_title LIKE ?)")
         params.extend([like, like, like])
     if event_type:
         where.append("event_type = ?")
@@ -2741,17 +2774,19 @@ def search_enforcement_cases(
     # match 0 rows on a typo like 'Tokio' / '東京府' (¥3/req refund trap).
     input_warnings: list[dict[str, Any]] = []
     if pref_raw and not _is_known_prefecture(pref_raw):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": pref_raw,
-            "normalized_to": prefecture,
-            "message": (
-                f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
-                "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": pref_raw,
+                "normalized_to": prefecture,
+                "message": (
+                    f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
+                    "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         prefecture = None
     if prefecture:
         where.append("prefecture = ?")
@@ -2805,10 +2840,7 @@ def search_enforcement_cases(
                 LIMIT ? OFFSET ?""",
             [*params, limit, offset],
         ).fetchall()
-        results = [
-            _trim_enforcement_fields(_row_to_enforcement_case(r), fields)
-            for r in rows
-        ]
+        results = [_trim_enforcement_fields(_row_to_enforcement_case(r), fields) for r in rows]
         payload: dict[str, Any] = {
             "total": total,
             "limit": limit,
@@ -2936,8 +2968,7 @@ def search_case_studies(
         str | None,
         Field(
             description=(
-                "Free-text LIKE across company_name + case_title + "
-                "case_summary + source_excerpt."
+                "Free-text LIKE across company_name + case_title + case_summary + source_excerpt."
             ),
         ),
     ] = None,
@@ -3036,7 +3067,10 @@ def search_case_studies(
     ] = 20,
     offset: Annotated[
         int,
-        Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` to page through `total`. 例: offset=20 で limit=20 なら 2 ページ目.", ge=0),
+        Field(
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` to page through `total`. 例: offset=20 で limit=20 なら 2 ページ目.",
+            ge=0,
+        ),
     ] = 0,
     fields: Annotated[
         Literal["minimal", "standard", "full"],
@@ -3134,17 +3168,19 @@ def search_case_studies(
     # match 0 rows on a typo like 'Tokio' / '東京府' (¥3/req refund trap).
     input_warnings: list[dict[str, Any]] = []
     if pref_raw and not _is_known_prefecture(pref_raw):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": pref_raw,
-            "normalized_to": prefecture,
-            "message": (
-                f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
-                "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": pref_raw,
+                "normalized_to": prefecture,
+                "message": (
+                    f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
+                    "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         prefecture = None
     if prefecture:
         where.append("prefecture = ?")
@@ -3188,9 +3224,7 @@ def search_case_studies(
                 LIMIT ? OFFSET ?""",
             [*params, limit, offset],
         ).fetchall()
-        results = [
-            _trim_case_study_fields(_row_to_case_study(r), fields) for r in rows
-        ]
+        results = [_trim_case_study_fields(_row_to_case_study(r), fields) for r in rows]
         payload: dict[str, Any] = {
             "total": total,
             "limit": limit,
@@ -3230,9 +3264,7 @@ def get_case_study(
     """
     conn = connect()
     try:
-        row = conn.execute(
-            "SELECT * FROM case_studies WHERE case_id = ?", (case_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM case_studies WHERE case_id = ?", (case_id,)).fetchone()
         if row is None:
             return {
                 "error": f"case study not found: {case_id}",
@@ -3314,17 +3346,14 @@ def search_loan_programs(
         _LoanRiskT | None,
         Field(
             description=(
-                "個人保証人 (代表者保証) requirement. Same 4 values as "
-                "collateral_required."
+                "個人保証人 (代表者保証) requirement. Same 4 values as collateral_required."
             ),
         ),
     ] = None,
     third_party_guarantor_required: Annotated[
         _LoanRiskT | None,
         Field(
-            description=(
-                "第三者保証人 (代表者以外の保証人) requirement. Same 4 values."
-            ),
+            description=("第三者保証人 (代表者以外の保証人) requirement. Same 4 values."),
         ),
     ] = None,
     min_amount_yen: Annotated[
@@ -3349,7 +3378,10 @@ def search_loan_programs(
     ] = 20,
     offset: Annotated[
         int,
-        Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` to page through `total`. 例: offset=20 で limit=20 なら 2 ページ目.", ge=0),
+        Field(
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` to page through `total`. 例: offset=20 で limit=20 なら 2 ページ目.",
+            ge=0,
+        ),
     ] = 0,
 ) -> dict[str, Any]:
     """DISCOVER: 無担保・無保証 の融資を 1 クエリで抽出する — 108 日本の融資プログラム (日本政策金融公庫 / 自治体融資 / 信用金庫 etc.) with three-axis risk filters. Headline feature: 担保 (collateral) / 個人保証人 (personal guarantor) / 第三者保証人 (third-party guarantor) are each a **separate enum axis** — "無担保・無個人保証" filtering is one query, not multi-turn natural-language parsing of each provider's prose. No single public site offers this 融資 decomposition.
@@ -3417,7 +3449,10 @@ def search_loan_programs(
     ):
         if val is not None and val not in _LOAN_RISK_VALUES:
             return {
-                "total": 0, "limit": limit, "offset": offset, "results": [],
+                "total": 0,
+                "limit": limit,
+                "offset": offset,
+                "results": [],
                 "error": {
                     "code": "invalid_enum",
                     "message": f"{name} must be one of {list(_LOAN_RISK_VALUES)}, got {val!r}",
@@ -3528,9 +3563,7 @@ def get_loan_program(
     """
     conn = connect()
     try:
-        row = conn.execute(
-            "SELECT * FROM loan_programs WHERE id = ?", (loan_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM loan_programs WHERE id = ?", (loan_id,)).fetchone()
         if row is None:
             return {
                 "error": f"loan program not found: {loan_id}",
@@ -3568,8 +3601,7 @@ def prescreen_programs(
         bool | None,
         Field(
             description=(
-                "True = 個人事業主. False = 法人 (株式会社/合同会社/組合 etc.). "
-                "None = unspecified."
+                "True = 個人事業主. False = 法人 (株式会社/合同会社/組合 etc.). None = unspecified."
             )
         ),
     ] = None,
@@ -3621,9 +3653,7 @@ def prescreen_programs(
     houjin_bangou: Annotated[
         str | None,
         Field(
-            description=(
-                "13-digit 国税庁 法人番号. Identity only — not used for matching in v1."
-            ),
+            description=("13-digit 国税庁 法人番号. Identity only — not used for matching in v1."),
             max_length=13,
         ),
     ] = None,
@@ -3681,17 +3711,19 @@ def prescreen_programs(
     # back to national candidates instead of silently scoring against a typo.
     input_warnings: list[dict[str, Any]] = []
     if prefecture and not _is_known_prefecture(prefecture):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": prefecture,
-            "normalized_to": pref_norm,
-            "message": (
-                f"prefecture={prefecture!r} は正規の都道府県に一致せず。"
-                "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": prefecture,
+                "normalized_to": pref_norm,
+                "message": (
+                    f"prefecture={prefecture!r} は正規の都道府県に一致せず。"
+                    "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         pref_norm = None
 
     profile = PrescreenRequest(
@@ -3844,17 +3876,19 @@ def smb_starter_pack(
     # so the LLM knows the filter was a no-op, and drop the filter to national fallback.
     input_warnings: list[dict[str, Any]] = []
     if prefecture and not _is_known_prefecture(prefecture):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": prefecture,
-            "normalized_to": pref_norm,
-            "message": (
-                f"prefecture={prefecture!r} は正規の都道府県に一致せず。"
-                "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": prefecture,
+                "normalized_to": pref_norm,
+                "message": (
+                    f"prefecture={prefecture!r} は正規の都道府県に一致せず。"
+                    "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         pref_norm = None
 
     profile = PrescreenRequest(
@@ -3892,24 +3926,35 @@ def smb_starter_pack(
 
         top_subsidies = []
         for r in programs_subsidy[:limit_per_section]:
-            top_subsidies.append({
-                "unified_id": r.get("unified_id"),
-                "name": r.get("primary_name") or r.get("name"),
-                "amount_max_man_yen": r.get("amount_max_man_yen"),
-                "tier": r.get("tier"),
-                "official_url": r.get("official_url"),
-                "fit_score": r.get("fit_score"),
-                "why_fit": (r.get("match_reasons") or [])[:2],
-            })
+            top_subsidies.append(
+                {
+                    "unified_id": r.get("unified_id"),
+                    "name": r.get("primary_name") or r.get("name"),
+                    "amount_max_man_yen": r.get("amount_max_man_yen"),
+                    "tier": r.get("tier"),
+                    "official_url": r.get("official_url"),
+                    "fit_score": r.get("fit_score"),
+                    "why_fit": (r.get("match_reasons") or [])[:2],
+                }
+            )
 
         # BUG-6 fix: stress-test found 4/5 default loans are 事業再生/DIP/危機対応
         # (distressed-company products) served to every user regardless of
         # prefecture/industry. Filter them out of the healthy-baseline pack,
         # and boost rows that mention the caller's prefecture in target_conditions.
         _distressed_kws = (
-            "DIP", "事業再生", "企業再建", "危機対応", "再挑戦",
-            "セーフティネット", "東日本大震災",
-            "豪雨", "災害", "特別貸付", "被災", "地震",
+            "DIP",
+            "事業再生",
+            "企業再建",
+            "危機対応",
+            "再挑戦",
+            "セーフティネット",
+            "東日本大震災",
+            "豪雨",
+            "災害",
+            "特別貸付",
+            "被災",
+            "地震",
         )
         loan_rows_all = conn.execute(
             """
@@ -3926,8 +3971,7 @@ def smb_starter_pack(
             """,
         ).fetchall()
         loan_candidates = [
-            r for r in loan_rows_all
-            if not any(k in (r[1] or "") for k in _distressed_kws)
+            r for r in loan_rows_all if not any(k in (r[1] or "") for k in _distressed_kws)
         ]
 
         def _loan_starter_score(r: Any) -> tuple[int, int]:
@@ -3944,17 +3988,20 @@ def smb_starter_pack(
             return (bonus, int(r[7] or 0))
 
         loan_candidates.sort(key=_loan_starter_score, reverse=True)
-        top_loans = [{
-            "loan_id": r[0],
-            "program_name": r[1],
-            "provider": r[2],
-            "loan_type": r[3],
-            "collateral_required": r[4],
-            "personal_guarantor_required": r[5],
-            "interest_rate_base_annual": r[6],
-            "amount_max_yen": r[7],
-            "loan_period_years_max": r[8],
-        } for r in loan_candidates[:limit_per_section]]
+        top_loans = [
+            {
+                "loan_id": r[0],
+                "program_name": r[1],
+                "provider": r[2],
+                "loan_type": r[3],
+                "collateral_required": r[4],
+                "personal_guarantor_required": r[5],
+                "interest_rate_base_annual": r[6],
+                "amount_max_yen": r[7],
+                "loan_period_years_max": r[8],
+            }
+            for r in loan_candidates[:limit_per_section]
+        ]
 
         tax_hints: list[dict[str, Any]] = []
         if revenue_yen is not None or emp is not None:
@@ -3970,14 +4017,17 @@ def smb_starter_pack(
                 """,
                 (limit_per_section,),
             ).fetchall()
-            tax_hints = [{
-                "unified_id": r[0],
-                "ruleset_name": r[1],
-                "tax_category": r[2],
-                "ruleset_kind": r[3],
-                "effective_until": r[5],
-                "call_to_confirm": "evaluate_tax_applicability",
-            } for r in tax_rows]
+            tax_hints = [
+                {
+                    "unified_id": r[0],
+                    "ruleset_name": r[1],
+                    "tax_category": r[2],
+                    "ruleset_kind": r[3],
+                    "effective_until": r[5],
+                    "call_to_confirm": "evaluate_tax_applicability",
+                }
+                for r in tax_rows
+            ]
 
         deadlines_rows = conn.execute(
             """
@@ -4003,12 +4053,14 @@ def smb_starter_pack(
                 days_left = (dl - date.fromisoformat(_jst_today_iso())).days
             except Exception:
                 days_left = None
-            urgent_deadlines.append({
-                "unified_id": r[0],
-                "name": r[1],
-                "end_date": end_iso[:10] if end_iso else None,
-                "days_left": days_left,
-            })
+            urgent_deadlines.append(
+                {
+                    "unified_id": r[0],
+                    "name": r[1],
+                    "end_date": end_iso[:10] if end_iso else None,
+                    "days_left": days_left,
+                }
+            )
 
         enf_count = conn.execute(
             """
@@ -4025,12 +4077,12 @@ def smb_starter_pack(
 
     next_actions: list[str] = []
     if not top_subsidies:
-        next_actions.append(
-            "prescreen が 0 件 → industry_jsic / 地域 を広げて再実行"
-        )
+        next_actions.append("prescreen が 0 件 → industry_jsic / 地域 を広げて再実行")
     else:
         next_actions.append("GビズID プライム取得 (ほぼ全補助金で必要)")
-        if any(r.get("amount_max_man_yen", 0) and r["amount_max_man_yen"] >= 500 for r in top_subsidies):
+        if any(
+            r.get("amount_max_man_yen", 0) and r["amount_max_man_yen"] >= 500 for r in top_subsidies
+        ):
             next_actions.append("経営計画書 草案 (1 週間で粗書き → 士業に添削)")
         if top_loans:
             next_actions.append("公庫 事業資金相談の予約 (担保・保証の 3 軸ヒアリング)")
@@ -4058,7 +4110,7 @@ def smb_starter_pack(
         "source": {
             "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             "coverage": (
-                "補助金 11,211 + 融資 108 + 税制 35 + 行政処分 1,185 から "
+                "補助金 11,684 + 融資 108 + 税制 50 + 行政処分 1,185 から "
                 "プロファイルに沿った top N を 1 call で。"
                 "併用可否は check_exclusions、詳細は get_program で深掘り。"
             ),
@@ -4165,9 +4217,7 @@ def upcoming_deadlines(
     )
 
     effective_days = (
-        within_days
-        if within_days is not None
-        else (days_ahead if days_ahead is not None else 30)
+        within_days if within_days is not None else (days_ahead if days_ahead is not None else 30)
     )
     conn = connect()
     try:
@@ -4176,18 +4226,20 @@ def upcoming_deadlines(
         # falls back to national rather than silently filtering on garbage.
         input_warnings: list[dict[str, Any]] = []
         if prefecture and not _is_known_prefecture(prefecture):
-            input_warnings.append({
-                "field": "prefecture",
-                "code": "unknown_prefecture",
-                "value": prefecture,
-                "normalized_to": normalized_pref,
-                "message": (
-                    f"prefecture={prefecture!r} は正規の都道府県に一致せず。"
-                    "フィルタを無効化し全国ベースの締切一覧を返しました。"
-                    "正しい例: '東京' / '東京都' / 'Tokyo'。"
-                ),
-                "retry_with": ["enum_values(field='prefecture')"],
-            })
+            input_warnings.append(
+                {
+                    "field": "prefecture",
+                    "code": "unknown_prefecture",
+                    "value": prefecture,
+                    "normalized_to": normalized_pref,
+                    "message": (
+                        f"prefecture={prefecture!r} は正規の都道府県に一致せず。"
+                        "フィルタを無効化し全国ベースの締切一覧を返しました。"
+                        "正しい例: '東京' / '東京都' / 'Tokyo'。"
+                    ),
+                    "retry_with": ["enum_values(field='prefecture')"],
+                }
+            )
             normalized_pref = None
         result = run_upcoming_deadlines(
             conn,
@@ -4204,9 +4256,9 @@ def upcoming_deadlines(
         # 21 rows and doesn't know 0 are 大阪-specific, 21 are national.
         results_list = payload.get("results", []) or []
         nat_count = sum(
-            1 for r in results_list
-            if not r.get("prefecture")
-            or r.get("authority_level") == "national"
+            1
+            for r in results_list
+            if not r.get("prefecture") or r.get("authority_level") == "national"
         )
         pref_count = len(results_list) - nat_count
         payload["prefecture_specific_count"] = pref_count
@@ -4288,17 +4340,19 @@ def deadline_calendar(
     # BUG-2 fix: warn on unknown prefecture, drop filter to national fallback.
     input_warnings: list[dict[str, Any]] = []
     if prefecture and not _is_known_prefecture(prefecture):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": prefecture,
-            "normalized_to": pref_norm,
-            "message": (
-                f"prefecture={prefecture!r} は正規の都道府県名ではありません。"
-                "フィルタを無効化し全国ベースの締切一覧を返しました。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": prefecture,
+                "normalized_to": pref_norm,
+                "message": (
+                    f"prefecture={prefecture!r} は正規の都道府県名ではありません。"
+                    "フィルタを無効化し全国ベースの締切一覧を返しました。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         pref_norm = None
 
     conn = connect()
@@ -4333,16 +4387,18 @@ def deadline_calendar(
         row_pref = r.get("prefecture")
         row_auth = r.get("authority_level")
         is_national_row = (not row_pref) or row_auth == "national"
-        by_month.setdefault(key, []).append({
-            "unified_id": r.get("unified_id"),
-            "name": r.get("primary_name") or r.get("name"),
-            "end_date": end_iso[:10],
-            "days_left": (dl - today).days,
-            "amount_max_man_yen": r.get("amount_max_man_yen"),
-            "tier": r.get("tier"),
-            "prefecture": row_pref,
-            "authority_level": row_auth,
-        })
+        by_month.setdefault(key, []).append(
+            {
+                "unified_id": r.get("unified_id"),
+                "name": r.get("primary_name") or r.get("name"),
+                "end_date": end_iso[:10],
+                "days_left": (dl - today).days,
+                "amount_max_man_yen": r.get("amount_max_man_yen"),
+                "tier": r.get("tier"),
+                "prefecture": row_pref,
+                "authority_level": row_auth,
+            }
+        )
         if (dl - today).days <= 7:
             urgent += 1
         if is_national_row:
@@ -4383,12 +4439,15 @@ def deadline_calendar(
     # BUG-1 fix: when pref_norm is set and all rows are national-or-mismatched-prefecture,
     # be explicit so the LLM doesn't frame 霧島市 rows as Tokyo programs.
     if pref_norm and pref_specific == 0 and national > 0:
-        out.setdefault("hint", (
-            f"prefecture='{pref_norm}' 固有の締切 0 件。返している {national} 件は"
-            " 全国区 / 市区町村 プレフィックスの no-prefecture 行です。"
-            f" search_programs(prefecture='{pref_norm}', authority_level='prefecture') で"
-            "都道府県固有の直接検索も検討してください。"
-        ))
+        out.setdefault(
+            "hint",
+            (
+                f"prefecture='{pref_norm}' 固有の締切 0 件。返している {national} 件は"
+                " 全国区 / 市区町村 プレフィックスの no-prefecture 行です。"
+                f" search_programs(prefecture='{pref_norm}', authority_level='prefecture') で"
+                "都道府県固有の直接検索も検討してください。"
+            ),
+        )
 
     if out["total"] == 0:
         out["hint"] = (
@@ -4427,11 +4486,7 @@ def subsidy_combo_finder(
     ] = None,
     unified_id: Annotated[
         str | None,
-        Field(
-            description=(
-                "seed 補助金の unified_id (UNI-xxxx)。keyword より優先、exact match。"
-            )
-        ),
+        Field(description=("seed 補助金の unified_id (UNI-xxxx)。keyword より優先、exact match。")),
     ] = None,
     prefecture: Annotated[
         PrefectureParam,
@@ -4444,7 +4499,11 @@ def subsidy_combo_finder(
     ] = None,
     limit: Annotated[
         int,
-        Field(ge=1, le=5, description="返す組合せ数 (default=3, max=5)。各 combo は 補助金+融資+税制 の 1 セット — 上位 N 件を combined_max_benefit_man_yen 順で返却。"),
+        Field(
+            ge=1,
+            le=5,
+            description="返す組合せ数 (default=3, max=5)。各 combo は 補助金+融資+税制 の 1 セット — 上位 N 件を combined_max_benefit_man_yen 順で返却。",
+        ),
     ] = 3,
 ) -> dict[str, Any]:
     """ONE-SHOT COMBO: 補助金+融資+税制 の 非衝突組合せ TOP N を 1 call で。
@@ -4490,6 +4549,7 @@ def subsidy_combo_finder(
     # Normalize full-width → half-width so `ＩＴ導入` matches stored `IT導入`.
     # Without this, 日本語サイトからコピペした keyword が silent miss になる。
     import unicodedata as _ud
+
     if keyword is not None:
         keyword = _ud.normalize("NFKC", keyword).strip()
     if unified_id is not None:
@@ -4498,16 +4558,18 @@ def subsidy_combo_finder(
     # BUG-2 fix: warn on unknown prefecture (ranking bonus path, not hard filter).
     input_warnings: list[dict[str, Any]] = []
     if prefecture and not _is_known_prefecture(prefecture):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": prefecture,
-            "message": (
-                f"prefecture={prefecture!r} は正規の都道府県名ではありません。"
-                "ランキング bonus は効かず全国候補から選定します。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": prefecture,
+                "message": (
+                    f"prefecture={prefecture!r} は正規の都道府県名ではありません。"
+                    "ランキング bonus は効かず全国候補から選定します。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
 
     # seed resolve
     seed: dict[str, Any] | None = None
@@ -4598,12 +4660,21 @@ def subsidy_combo_finder(
         # is 再生/再建/倒産系; those 20億 products are wrong for 補助金 申請者
         # (who must be in 健全経営).
         distressed_kws = (
-            "DIP", "事業再生", "企業再建", "危機対応", "再挑戦",
-            "セーフティネット", "東日本大震災",
+            "DIP",
+            "事業再生",
+            "企業再建",
+            "危機対応",
+            "再挑戦",
+            "セーフティネット",
+            "東日本大震災",
             # BUG-5 (stress-test 2026-04-25): 豪雨 / 災害 / 特別貸付 が
             # ものづくり seed に混入して disaster-relief loans が recommend
             # される事故。天災 loan は 再建 と同じ bucket で block する。
-            "豪雨", "災害", "特別貸付", "被災", "地震",
+            "豪雨",
+            "災害",
+            "特別貸付",
+            "被災",
+            "地震",
         )
         seed_is_distressed = any(k in seed_name for k in distressed_kws) or any(
             k in (kw_hint or "") for k in distressed_kws
@@ -4650,7 +4721,8 @@ def subsidy_combo_finder(
             return (theme_bonus, int(ln.get("amount_max_yen") or 0))
 
         loans_filtered = [
-            ln for ln in loans_all
+            ln
+            for ln in loans_all
             if _is_blocked(ln.get("program_name") or "") is None
             and (
                 seed_is_distressed
@@ -4687,10 +4759,7 @@ def subsidy_combo_finder(
             """
         )
         tax_all = [dict(r) for r in cur.fetchall()]
-        tax_ok = [
-            t for t in tax_all
-            if _is_blocked(t.get("ruleset_name") or "") is None
-        ]
+        tax_ok = [t for t in tax_all if _is_blocked(t.get("ruleset_name") or "") is None]
     finally:
         conn.close()
 
@@ -4700,8 +4769,8 @@ def subsidy_combo_finder(
     seed_amount_man = int(seed.get("amount_max_man_yen") or 0)
 
     for i, ln in enumerate(loans_ok[:limit]):
-        tax_pick: dict[str, Any] | None = tax_ok[i] if i < len(tax_ok) else (
-            tax_ok[0] if tax_ok else None
+        tax_pick: dict[str, Any] | None = (
+            tax_ok[i] if i < len(tax_ok) else (tax_ok[0] if tax_ok else None)
         )
         loan_max_man = (ln.get("amount_max_yen") or 0) // 10000
         loan_rate = ln.get("interest_rate_special_annual") or ln.get("interest_rate_base_annual")
@@ -4724,7 +4793,9 @@ def subsidy_combo_finder(
                 "ruleset_name": tax_pick.get("ruleset_name") if tax_pick else None,
                 "tax_category": tax_pick.get("tax_category") if tax_pick else None,
                 "ruleset_kind": tax_pick.get("ruleset_kind") if tax_pick else None,
-            } if tax_pick else None,
+            }
+            if tax_pick
+            else None,
             "financial_structure": {
                 "grant_man_yen": seed_amount_man or None,
                 "debt_capacity_man_yen": loan_max_man or None,
@@ -4799,8 +4870,8 @@ def dd_profile_am(
         Field(
             description=(
                 "補助金採択履歴 (adoption_records) を含めるか. Default True. "
-                "False で payload を最大 60% 圧縮 (token 節約). "
-                "False のとき adoption_limit は無視される."
+                "False で adoption_records を省き、返却 payload を小さくする. "
+                "token 影響は caller/model 依存. False のとき adoption_limit は無視される."
             ),
         ),
     ] = True,
@@ -4876,6 +4947,7 @@ def dd_profile_am(
     # endpoint in a follow-up; until then this surfaces an honest hint.
     if detect_fallback_mode():
         from jpintel_mcp.mcp._http_fallback import _api_base
+
         base = _api_base()
         return {
             "error": "remote_only_via_REST_API",
@@ -4891,9 +4963,7 @@ def dd_profile_am(
                 f"{base}/v1/invoice-registrants/{houjin_bangou}",
             ],
             "rest_api_base": base,
-            "remediation": (
-                "Use the REST chain above for the same public-data checks."
-            ),
+            "remediation": ("Use the REST chain above for the same public-data checks."),
         }
     # === END S3 HTTP FALLBACK ===
     from jpintel_mcp.mcp.autonomath_tools.db import connect_autonomath
@@ -4914,9 +4984,7 @@ def dd_profile_am(
             "dd_flags": [],
             "error": {
                 "code": "invalid_enum",
-                "message": (
-                    f"houjin_bangou={houjin_bangou!r} を 13 桁に正規化できません。"
-                ),
+                "message": (f"houjin_bangou={houjin_bangou!r} を 13 桁に正規化できません。"),
                 "hint": (
                     "T+13桁のインボイス番号、ハイフン入り (1234-5678-9012-3)、"
                     "全角数字、いずれも自動正規化します。13 桁の法人番号が必要。"
@@ -4992,14 +5060,16 @@ def dd_profile_am(
                     prog = raw.get("program_name") or row["source_topic"]
                     if prog:
                         program_names_set.add(prog)
-                    adoptions_rows.append({
-                        "canonical_id": row["canonical_id"],
-                        "program_name": prog,
-                        "adopted_at": raw.get("adopted_at") or raw.get("adoption_date"),
-                        "adopted_name": row["primary_name"],
-                        "prefecture": raw.get("prefecture"),
-                        "source_topic": row["source_topic"],
-                    })
+                    adoptions_rows.append(
+                        {
+                            "canonical_id": row["canonical_id"],
+                            "program_name": prog,
+                            "adopted_at": raw.get("adopted_at") or raw.get("adoption_date"),
+                            "adopted_name": row["primary_name"],
+                            "prefecture": raw.get("prefecture"),
+                            "source_topic": row["source_topic"],
+                        }
+                    )
     except sqlite3.OperationalError:
         # autonomath.db 不在でも他データ で返せる — entity/adoption は空で進む。
         pass
@@ -5023,9 +5093,9 @@ def dd_profile_am(
             ).fetchone()
             if inv:
                 invoice_info = {
-                    "status": "revoked" if inv["revoked_date"] else (
-                        "expired" if inv["expired_date"] else "registered"
-                    ),
+                    "status": "revoked"
+                    if inv["revoked_date"]
+                    else ("expired" if inv["expired_date"] else "registered"),
                     "invoice_registration_number": inv["invoice_registration_number"],
                     "registered_date": inv["registered_date"],
                     "revoked_date": inv["revoked_date"],
@@ -5045,8 +5115,11 @@ def dd_profile_am(
     # --- dd_flags 集約 ---
     if enforcement_payload.get("currently_excluded"):
         dd_flags.append("currently_excluded")
-    if enforcement_payload.get("found") and enforcement_payload.get("all_count", 0) > 0 \
-            and not enforcement_payload.get("currently_excluded"):
+    if (
+        enforcement_payload.get("found")
+        and enforcement_payload.get("all_count", 0) > 0
+        and not enforcement_payload.get("currently_excluded")
+    ):
         dd_flags.append("recent_enforcement_history")
     if enforcement_payload.get("found") is False:
         dd_flags.append("clean_enforcement_record_in_corpus")
@@ -5148,16 +5221,18 @@ def _resolve_supporting_programs(
         if row is None:
             out.append({"source_name": name, "matched": False})
             continue
-        out.append({
-            "unified_id": row["unified_id"],
-            "source_name": name,
-            "primary_name": row["primary_name"],
-            "tier": row["tier"],
-            "prefecture": row["prefecture"],
-            "authority_level": row["authority_level"],
-            "official_url": row["official_url"],
-            "matched": True,
-        })
+        out.append(
+            {
+                "unified_id": row["unified_id"],
+                "source_name": name,
+                "primary_name": row["primary_name"],
+                "tier": row["tier"],
+                "prefecture": row["prefecture"],
+                "authority_level": row["authority_level"],
+                "official_url": row["official_url"],
+                "matched": True,
+            }
+        )
     return out
 
 
@@ -5330,17 +5405,19 @@ def similar_cases(
     pref_override = _normalize_prefecture(prefecture)
     input_warnings: list[dict[str, Any]] = []
     if pref_override_raw and not _is_known_prefecture(pref_override_raw):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": pref_override_raw,
-            "normalized_to": pref_override,
-            "message": (
-                f"prefecture={pref_override_raw!r} は正規の都道府県に一致せず。"
-                "override を無効化し seed 側の prefecture を採用しました。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": pref_override_raw,
+                "normalized_to": pref_override,
+                "message": (
+                    f"prefecture={pref_override_raw!r} は正規の都道府県に一致せず。"
+                    "override を無効化し seed 側の prefecture を採用しました。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         pref_override = None
     industry_override = _normalize_industry_jsic(industry_jsic)
 
@@ -5425,7 +5502,7 @@ def similar_cases(
                    outcomes_json, patterns_json, source_url,
                    publication_date
               FROM case_studies
-             WHERE {' AND '.join(where_clauses)}
+             WHERE {" AND ".join(where_clauses)}
         """
         cand_rows = conn.execute(sql, params).fetchall()
 
@@ -5434,9 +5511,7 @@ def similar_cases(
         for r in cand_rows:
             cand_programs_raw = r["programs_used_json"] or ""
             try:
-                cand_programs = (
-                    json.loads(cand_programs_raw) if cand_programs_raw else []
-                )
+                cand_programs = json.loads(cand_programs_raw) if cand_programs_raw else []
             except json.JSONDecodeError:
                 cand_programs = []
             if not isinstance(cand_programs, list):
@@ -5459,19 +5534,21 @@ def similar_cases(
                     outcome = json.loads(outcomes_raw)
                 except json.JSONDecodeError:
                     outcome = None
-            scored.append({
-                "case_id": r["case_id"],
-                "title": r["case_title"],
-                "company_name": r["company_name"],
-                "outcome": outcome,
-                "prefecture": r["prefecture"],
-                "industry_jsic": r["industry_jsic"],
-                "programs_used": cand_programs,
-                "similarity_score": round(score, 3),
-                "match_reasons": reasons,
-                "source_url": r["source_url"],
-                "publication_date": r["publication_date"],
-            })
+            scored.append(
+                {
+                    "case_id": r["case_id"],
+                    "title": r["case_title"],
+                    "company_name": r["company_name"],
+                    "outcome": outcome,
+                    "prefecture": r["prefecture"],
+                    "industry_jsic": r["industry_jsic"],
+                    "programs_used": cand_programs,
+                    "similarity_score": round(score, 3),
+                    "match_reasons": reasons,
+                    "source_url": r["source_url"],
+                    "publication_date": r["publication_date"],
+                }
+            )
 
         scored.sort(
             key=lambda x: (
@@ -5503,9 +5580,7 @@ def similar_cases(
             "candidate_pool_size": len(cand_rows),
             "source": {
                 "tool": "similar_cases",
-                "generated_at": datetime.now(UTC).isoformat().replace(
-                    "+00:00", "Z"
-                ),
+                "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
                 "scoring": (
                     "weighted Jaccard: industry×2 + prefecture×1 + "
                     "programs_used overlap×3, normalized to [0, 1]"
@@ -5550,12 +5625,14 @@ _SIZE_MAP: dict[str, list[str]] = {
 
 def _jst_today_iso() -> str:
     from datetime import timedelta as _td
+
     return (datetime.now(UTC) + _td(hours=9)).date().isoformat()
 
 
 def _jst_fy_quarter(d_iso: str) -> str:
     """Japanese FY (Apr-Mar): 4-6=Q1, 7-9=Q2, 10-12=Q3, 1-3=Q4 of prior FY."""
     from datetime import date as _date
+
     try:
         d = _date.fromisoformat(d_iso[:10])
     except Exception:
@@ -5574,6 +5651,7 @@ def _project_next_opens(start: str | None, cycle: str | None, anchor_iso: str) -
     """Past start_date + cycle=annual → roll +N years until >= anchor (Feb 29
     on a non-leap year drops to Feb 28). Non-annual past returns None."""
     from datetime import date as _date
+
     if not start:
         return None
     try:
@@ -5598,13 +5676,43 @@ def _project_next_opens(start: str | None, cycle: str | None, anchor_iso: str) -
 @mcp.tool(annotations=_READ_ONLY)
 @_with_mcp_telemetry
 def subsidy_roadmap_3yr(
-    industry: Annotated[str, Field(description="JSIC 大分類 (A..T) または和名 ('製造業','農業','建設業' 等). `enum_values(field='industry_jsic')` 参照.")],
-    prefecture: Annotated[PrefectureParam, Field(description="都道府県 closed-set 48 値 ('東京'/'東京都'/'Tokyo' 自動正規化, 未知値は invalid_enum). 省略=全国+都道府県ミックス.")] = None,
-    company_size: Annotated[Literal["sole", "small", "medium", "large"] | None, Field(description="個人=sole / 小=small / 中=medium / 大=large. target_types へ写像.")] = None,
-    funding_purpose: Annotated[Literal["equipment", "rd", "export", "staffing", "digital", "green", "general"] | None, Field(description="使途. equipment/rd/export/staffing/digital/green/general.")] = None,
-    from_date: Annotated[str | None, Field(description="起点 ISO8601 date (YYYY-MM-DD). default=today JST. 過去日は today JST に clamp + hint 出力.")] = None,
-    horizon_months: Annotated[int, Field(ge=1, le=60, description="先何ヶ月までを timeline 射程にするか. Range [1, 60] = 最大 5 年. Default 36 (3 年). 短くするほど直近 quarter に焦点, 長くするほど先期の予算審議リスクを含む.")] = 36,
-    limit: Annotated[int, Field(ge=1, le=100, description="timeline 全体の最大件数 (default 20).")] = 20,
+    industry: Annotated[
+        str,
+        Field(
+            description="JSIC 大分類 (A..T) または和名 ('製造業','農業','建設業' 等). `enum_values(field='industry_jsic')` 参照."
+        ),
+    ],
+    prefecture: Annotated[
+        PrefectureParam,
+        Field(
+            description="都道府県 closed-set 48 値 ('東京'/'東京都'/'Tokyo' 自動正規化, 未知値は invalid_enum). 省略=全国+都道府県ミックス."
+        ),
+    ] = None,
+    company_size: Annotated[
+        Literal["sole", "small", "medium", "large"] | None,
+        Field(description="個人=sole / 小=small / 中=medium / 大=large. target_types へ写像."),
+    ] = None,
+    funding_purpose: Annotated[
+        Literal["equipment", "rd", "export", "staffing", "digital", "green", "general"] | None,
+        Field(description="使途. equipment/rd/export/staffing/digital/green/general."),
+    ] = None,
+    from_date: Annotated[
+        str | None,
+        Field(
+            description="起点 ISO8601 date (YYYY-MM-DD). default=today JST. 過去日は today JST に clamp + hint 出力."
+        ),
+    ] = None,
+    horizon_months: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=60,
+            description="先何ヶ月までを timeline 射程にするか. Range [1, 60] = 最大 5 年. Default 36 (3 年). 短くするほど直近 quarter に焦点, 長くするほど先期の予算審議リスクを含む.",
+        ),
+    ] = 36,
+    limit: Annotated[
+        int, Field(ge=1, le=100, description="timeline 全体の最大件数 (default 20).")
+    ] = 20,
 ) -> dict[str, Any]:
     """ONE-SHOT 3-YEAR ROADMAP: industry × prefecture × size × purpose で
     今後 N ヶ月の application window を JST 会計年度 quarter にバケット。
@@ -5636,40 +5744,56 @@ def subsidy_roadmap_3yr(
     pref_norm = _normalize_prefecture(prefecture)
     jsic_norm = _normalize_industry_jsic(industry)
     if not jsic_norm:
-        return {"error": {"code": "invalid_industry",
-                          "message": f"industry={industry!r} を JSIC に正規化できません.",
-                          "hint": "enum_values(field='industry_jsic') で正規 letter (A..T) または和名を確認."}}
+        return {
+            "error": {
+                "code": "invalid_industry",
+                "message": f"industry={industry!r} を JSIC に正規化できません.",
+                "hint": "enum_values(field='industry_jsic') で正規 letter (A..T) または和名を確認.",
+            }
+        }
 
     input_warnings: list[dict[str, Any]] = []
     if pref_raw and not _is_known_prefecture(pref_raw):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": pref_raw,
-            "normalized_to": pref_norm,
-            "message": (
-                f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
-                "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": pref_raw,
+                "normalized_to": pref_norm,
+                "message": (
+                    f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
+                    "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         pref_norm = None
 
     hints: list[str] = []
     eff_from = from_date or today
     if from_date and from_date < today:
-        hints.append(f"from_date={from_date!r} は past のため today JST ({today}) に clamp しました.")
+        hints.append(
+            f"from_date={from_date!r} は past のため today JST ({today}) に clamp しました."
+        )
         eff_from = today
     try:
         from_d = _date.fromisoformat(eff_from)
     except Exception:
-        return {"error": {"code": "invalid_from_date",
-                          "message": f"from_date={from_date!r} は ISO8601 date でない.",
-                          "hint": "YYYY-MM-DD で渡してください. 例 '2026-05-01'."}}
+        return {
+            "error": {
+                "code": "invalid_from_date",
+                "message": f"from_date={from_date!r} は ISO8601 date でない.",
+                "hint": "YYYY-MM-DD で渡してください. 例 '2026-05-01'.",
+            }
+        }
     horizon_iso = (from_d + _td(days=horizon_months * 31)).isoformat()
 
-    where = ["excluded = 0", "tier IN ('S','A','B','C')",
-             "application_window_json IS NOT NULL", "application_window_json != ''"]
+    where = [
+        "excluded = 0",
+        "tier IN ('S','A','B','C')",
+        "application_window_json IS NOT NULL",
+        "application_window_json != ''",
+    ]
     params: list[Any] = []
     if pref_norm:
         where.append("(prefecture = ? OR prefecture IS NULL OR prefecture = '')")
@@ -5679,7 +5803,9 @@ def subsidy_roadmap_3yr(
         for tt in _SIZE_MAP[company_size]:
             sz.append("target_types_json LIKE ?")
             params.append(f"%{tt}%")
-        where.append("(target_types_json IS NULL OR target_types_json = '' OR " + " OR ".join(sz) + ")")
+        where.append(
+            "(target_types_json IS NULL OR target_types_json = '' OR " + " OR ".join(sz) + ")"
+        )
     if funding_purpose and funding_purpose in _FP_MAP:
         fp = []
         for v in _FP_MAP[funding_purpose]:
@@ -5687,9 +5813,11 @@ def subsidy_roadmap_3yr(
             params.append(f"%{v}%")
         where.append("(" + " OR ".join(fp) + ")")
 
-    sql = (f"SELECT unified_id, primary_name, program_kind, prefecture, "
-           f"amount_max_man_yen, official_url, source_url, application_window_json "
-           f"FROM programs WHERE {' AND '.join(where)} LIMIT 800")
+    sql = (
+        f"SELECT unified_id, primary_name, program_kind, prefecture, "
+        f"amount_max_man_yen, official_url, source_url, application_window_json "
+        f"FROM programs WHERE {' AND '.join(where)} LIMIT 800"
+    )
     conn = connect()
     try:
         rows = conn.execute(sql, params).fetchall()
@@ -5703,7 +5831,9 @@ def subsidy_roadmap_3yr(
         except json.JSONDecodeError:
             continue
         start, end, cycle = w.get("start_date"), w.get("end_date"), w.get("cycle")
-        opens_at = start if (start and start >= eff_from) else _project_next_opens(start, cycle, eff_from)
+        opens_at = (
+            start if (start and start >= eff_from) else _project_next_opens(start, cycle, eff_from)
+        )
         deadline = end if (end and end >= eff_from) else None
         anchor = opens_at or deadline
         if not anchor or anchor > horizon_iso:
@@ -5716,15 +5846,19 @@ def subsidy_roadmap_3yr(
             why.append(f"purpose={funding_purpose}")
         if pref_norm and r["prefecture"] == pref_norm:
             why.append(f"pref-match={pref_norm}")
-        timeline.append({
-            "quarter": _jst_fy_quarter(anchor),
-            "program_id": r["unified_id"], "program_name": r["primary_name"],
-            "program_kind": r["program_kind"],
-            "opens_at": opens_at, "application_deadline": deadline,
-            "max_amount_yen": amount_yen,
-            "source_url": r["source_url"] or r["official_url"],
-            "why": " / ".join(why),
-        })
+        timeline.append(
+            {
+                "quarter": _jst_fy_quarter(anchor),
+                "program_id": r["unified_id"],
+                "program_name": r["primary_name"],
+                "program_kind": r["program_kind"],
+                "opens_at": opens_at,
+                "application_deadline": deadline,
+                "max_amount_yen": amount_yen,
+                "source_url": r["source_url"] or r["official_url"],
+                "why": " / ".join(why),
+            }
+        )
 
     timeline.sort(key=lambda x: (x["opens_at"] or "9999", x["application_deadline"] or "9999"))
     timeline = timeline[:limit]
@@ -5736,18 +5870,28 @@ def subsidy_roadmap_3yr(
             total += e["max_amount_yen"]
 
     if not timeline:
-        envelope: dict[str, Any] = {"error": {"code": "empty_roadmap",
-                          "message": f"industry={jsic_norm} prefecture={pref_norm} で 今後 {horizon_months} ヶ月 の application window が 0 件.",
-                          "hint": "(a) prefecture を外す, (b) funding_purpose を緩める, (c) horizon_months=60 で広げる, (d) `list_open_programs` で 随時/rolling 募集を参照."}}
+        envelope: dict[str, Any] = {
+            "error": {
+                "code": "empty_roadmap",
+                "message": f"industry={jsic_norm} prefecture={pref_norm} で 今後 {horizon_months} ヶ月 の application window が 0 件.",
+                "hint": "(a) prefecture を外す, (b) funding_purpose を緩める, (c) horizon_months=60 で広げる, (d) `list_open_programs` で 随時/rolling 募集を参照.",
+            }
+        }
         if input_warnings:
             envelope["input_warnings"] = input_warnings
         return envelope
     if len(timeline) < 5:
-        hints.append(f"timeline={len(timeline)} 件のみ. funding_purpose を外すか horizon_months を広げると拾える可能性あり.")
+        hints.append(
+            f"timeline={len(timeline)} 件のみ. funding_purpose を外すか horizon_months を広げると拾える可能性あり."
+        )
     payload: dict[str, Any] = {
-        "industry": jsic_norm, "prefecture": pref_norm, "from_date": eff_from,
-        "horizon_end": horizon_iso, "timeline": timeline,
-        "total_ceiling_yen": total, "by_quarter_count": dict(sorted(by_q.items())),
+        "industry": jsic_norm,
+        "prefecture": pref_norm,
+        "from_date": eff_from,
+        "horizon_end": horizon_iso,
+        "timeline": timeline,
+        "total_ceiling_yen": total,
+        "by_quarter_count": dict(sorted(by_q.items())),
         "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
     }
     if hints:
@@ -5948,8 +6092,7 @@ def _trim_tax_ruleset(rec: dict[str, Any], fields: str) -> dict[str, Any]:
     narrative = rec.get("eligibility_conditions") or ""
     if isinstance(narrative, str) and len(narrative) > 400:
         narrative = narrative[:397] + "…"
-    out = {k: v for k, v in rec.items()
-           if k not in ("source_excerpt", "source_checksum")}
+    out = {k: v for k, v in rec.items() if k not in ("source_excerpt", "source_checksum")}
     out["eligibility_conditions"] = narrative
     return out
 
@@ -6041,8 +6184,21 @@ def search_laws(
             ),
         ),
     ] = False,
-    limit: Annotated[int, Field(ge=1, le=100, description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.")] = 20,
-    offset: Annotated[int, Field(ge=0, description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.")] = 0,
+    limit: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=100,
+            description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.",
+        ),
+    ] = 20,
+    offset: Annotated[
+        int,
+        Field(
+            ge=0,
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+        ),
+    ] = 0,
 ) -> dict[str, Any]:
     """DISCOVER-LAW: search e-Gov 法令 catalog (~3,400 憲法 / 法律 / 政令 / 勅令 / 府省令 / 規則 / 告示 / ガイドライン harvested under CC-BY 4.0). Primary surface for "what is the 根拠法 of 補助金 X" and "which statute does this article cite" questions. Returns law_title + number + enforced_date + ministry + summary + lineage.
 
@@ -6123,14 +6279,11 @@ def search_laws(
         order_parts: list[str] = [rev_order]
         if join_fts:
             order_parts.append("laws_fts.rank")
-        order_parts.extend(
-            ["COALESCE(enforced_date, promulgated_date, '') DESC", "unified_id"]
-        )
+        order_parts.extend(["COALESCE(enforced_date, promulgated_date, '') DESC", "unified_id"])
         order_sql = "ORDER BY " + ", ".join(order_parts)
 
         rows = conn.execute(
-            f"SELECT laws.* FROM {base_from} WHERE {where_clause} {order_sql} "
-            f"LIMIT ? OFFSET ?",
+            f"SELECT laws.* FROM {base_from} WHERE {where_clause} {order_sql} LIMIT ? OFFSET ?",
             [*params, limit, offset],
         ).fetchall()
         payload: dict[str, Any] = {
@@ -6183,9 +6336,7 @@ def get_law(
     """
     conn = connect()
     try:
-        row = conn.execute(
-            "SELECT * FROM laws WHERE unified_id = ?", (unified_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM laws WHERE unified_id = ?", (unified_id,)).fetchone()
         if row is None:
             return _err("no_matching_records", f"law not found: {unified_id}")
         return _row_to_law_dict(row)
@@ -6234,9 +6385,7 @@ def list_law_revisions(
     """
     conn = connect()
     try:
-        start = conn.execute(
-            "SELECT * FROM laws WHERE unified_id = ?", (unified_id,)
-        ).fetchone()
+        start = conn.execute("SELECT * FROM laws WHERE unified_id = ?", (unified_id,)).fetchone()
         if start is None:
             return _err("seed_not_found", f"law not found: {unified_id}")
 
@@ -6249,9 +6398,7 @@ def list_law_revisions(
             if not nxt_id or nxt_id in visited:
                 break
             visited.add(nxt_id)
-            nxt_row = conn.execute(
-                "SELECT * FROM laws WHERE unified_id = ?", (nxt_id,)
-            ).fetchone()
+            nxt_row = conn.execute("SELECT * FROM laws WHERE unified_id = ?", (nxt_id,)).fetchone()
             if nxt_row is None:
                 break
             successors.append(_row_to_law_dict(nxt_row))
@@ -6288,7 +6435,13 @@ def list_law_revisions(
         diagnostic: str | None = None
         if not predecessors and not successors:
             chain_status = "singleton"
-            rev_status = start.get("revision_status") if hasattr(start, "get") else (start["revision_status"] if "revision_status" in start.keys() else None)  # noqa: SIM118
+            if hasattr(start, "get"):
+                rev_status = start.get("revision_status")
+            else:
+                try:
+                    rev_status = start["revision_status"]
+                except (KeyError, TypeError):
+                    rev_status = None
             diagnostic = (
                 "revision_chain_not_populated: this row has no predecessors and "
                 "no successors. supersede pointers across the laws table are "
@@ -6373,7 +6526,14 @@ def search_court_decisions(
         str | None,
         Field(description="ISO date upper bound on decision_date (YYYY-MM-DD)."),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=100, description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.")] = 20,
+    limit: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=100,
+            description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.",
+        ),
+    ] = 20,
     offset: Annotated[
         int,
         Field(
@@ -6564,8 +6724,21 @@ def find_precedents_by_statute(
             ),
         ),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=100, description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.")] = 20,
-    offset: Annotated[int, Field(ge=0, description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.")] = 0,
+    limit: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=100,
+            description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.",
+        ),
+    ] = 20,
+    offset: Annotated[
+        int,
+        Field(
+            ge=0,
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+        ),
+    ] = 0,
 ) -> dict[str, Any]:
     """TRACE-STATUTE: given a LAW-<10 hex> unified_id, return 判例 citing that statute via related_law_ids_json. Ordered by precedent_weight → court_level → decision_date. When `article_citation` is set, we additionally require the article string to appear in key_ruling or source_excerpt (best-effort narrowing).
 
@@ -6602,10 +6775,7 @@ def find_precedents_by_statute(
 
         if article_citation:
             article = article_citation.strip()
-            where.append(
-                "(COALESCE(key_ruling,'') LIKE ? "
-                "OR COALESCE(source_excerpt,'') LIKE ?)"
-            )
+            where.append("(COALESCE(key_ruling,'') LIKE ? OR COALESCE(source_excerpt,'') LIKE ?)")
             like_article = f"%{article}%"
             params.extend([like_article, like_article])
 
@@ -6676,8 +6846,7 @@ def search_bids(
         Literal["open", "selective", "negotiated", "kobo_subsidy"] | None,
         Field(
             description=(
-                "open=一般競争, selective=指名競争, negotiated=随意契約, "
-                "kobo_subsidy=公募型補助."
+                "open=一般競争, selective=指名競争, negotiated=随意契約, kobo_subsidy=公募型補助."
             ),
         ),
     ] = None,
@@ -6734,8 +6903,21 @@ def search_bids(
             ),
         ),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=100, description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.")] = 20,
-    offset: Annotated[int, Field(ge=0, description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.")] = 0,
+    limit: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=100,
+            description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.",
+        ),
+    ] = 20,
+    offset: Annotated[
+        int,
+        Field(
+            ge=0,
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+        ),
+    ] = 0,
 ) -> dict[str, Any]:
     """DISCOVER-BID: search 入札 (GEPS 政府電子調達 CC-BY 4.0 + self-gov top-7 JV flows + ministry *.go.jp). Primary-source only — NJSS-style aggregators are banned at ingest. Headline query: "vendors that won 5000万円+ 公募型補助 in 2025".
 
@@ -6825,8 +7007,7 @@ def search_bids(
             )
 
         rows = conn.execute(
-            f"SELECT bids.* FROM {base_from} WHERE {where_clause} "
-            f"{order_sql} LIMIT ? OFFSET ?",
+            f"SELECT bids.* FROM {base_from} WHERE {where_clause} {order_sql} LIMIT ? OFFSET ?",
             [*params, limit, offset],
         ).fetchall()
         payload: dict[str, Any] = {
@@ -6878,9 +7059,7 @@ def get_bid(
     """
     conn = connect()
     try:
-        row = conn.execute(
-            "SELECT * FROM bids WHERE unified_id = ?", (unified_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM bids WHERE unified_id = ?", (unified_id,)).fetchone()
         if row is None:
             return _err("no_matching_records", f"bid not found: {unified_id}")
         return _row_to_bid_dict(row)
@@ -6929,9 +7108,7 @@ def bid_eligible_for_profile(
     """
     conn = connect()
     try:
-        row = conn.execute(
-            "SELECT * FROM bids WHERE unified_id = ?", (bid_unified_id,)
-        ).fetchone()
+        row = conn.execute("SELECT * FROM bids WHERE unified_id = ?", (bid_unified_id,)).fetchone()
         if row is None:
             return _err("seed_not_found", f"bid not found: {bid_unified_id}")
 
@@ -6952,11 +7129,7 @@ def bid_eligible_for_profile(
                 )
 
         industry_jsic = business_profile.get("industry_jsic")
-        if (
-            isinstance(industry_jsic, str)
-            and industry_jsic
-            and industry_jsic in eligibility
-        ):
+        if isinstance(industry_jsic, str) and industry_jsic and industry_jsic in eligibility:
             matched.append(f"industry_jsic='{industry_jsic}' mentioned")
 
         rating_grade = business_profile.get("rating_grade")
@@ -6968,9 +7141,7 @@ def bid_eligible_for_profile(
                     f"rating_grade='{rating_grade}' — eligibility_conditions "
                     "references 等級 but no grade match found"
                 )
-                caveats.append(
-                    "等級要件あり; confirm 競争参加資格 grade before bidding"
-                )
+                caveats.append("等級要件あり; confirm 競争参加資格 grade before bidding")
 
         target_types = business_profile.get("target_types")
         if isinstance(target_types, list):
@@ -7023,10 +7194,7 @@ def search_tax_rules(
         ),
     ] = None,
     tax_category: Annotated[
-        Literal[
-            "consumption", "corporate", "income", "property", "local", "inheritance"
-        ]
-        | None,
+        Literal["consumption", "corporate", "income", "property", "local", "inheritance"] | None,
         Field(
             description=(
                 "Tax category (closed-set). 'consumption' = 消費税 / "
@@ -7069,14 +7237,20 @@ def search_tax_rules(
             ),
         ),
     ] = None,
-    limit: Annotated[int, Field(ge=1, le=100, description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.")] = 20,
+    limit: Annotated[
+        int,
+        Field(
+            ge=1,
+            le=100,
+            description="返却する最大行数. Range [1, 100]. Default 20. 増やすほど token 消費が比例 — 確認用は 5-10, 一覧表示は 20-50 が現実的.",
+        ),
+    ] = 20,
     offset: Annotated[
         int,
         Field(
             ge=0,
             description=(
-                "Pagination offset (0-based). Default 0. Combine with `limit` "
-                "to walk past page 1."
+                "Pagination offset (0-based). Default 0. Combine with `limit` to walk past page 1."
             ),
         ),
     ] = 0,
@@ -7163,9 +7337,7 @@ def search_tax_rules(
             f"SELECT COUNT(*) FROM {base_from} WHERE {where_clause}", params
         ).fetchone()
 
-        order_parts: list[str] = [
-            "CASE WHEN effective_until IS NULL THEN 0 ELSE 1 END"
-        ]
+        order_parts: list[str] = ["CASE WHEN effective_until IS NULL THEN 0 ELSE 1 END"]
         if join_fts:
             order_parts.append("bm25(tax_rulesets_fts)")
         order_parts.extend(["effective_from DESC", "unified_id"])
@@ -7293,11 +7465,11 @@ def evaluate_tax_applicability(
     if target_ruleset_ids is not None:
         for uid in target_ruleset_ids:
             import re as _re
+
             if not _re.match(_TAX_ID_RE, uid):
                 return _err(
                     "invalid_enum",
-                    f"target_ruleset_ids contains malformed id: {uid!r} "
-                    "(expected TAX-<10 hex>)",
+                    f"target_ruleset_ids contains malformed id: {uid!r} (expected TAX-<10 hex>)",
                 )
 
     try:
@@ -7325,9 +7497,7 @@ def evaluate_tax_applicability(
                 "ORDER BY unified_id"
             ).fetchall()
 
-        results = [
-            _evaluate_ruleset(r, business_profile).model_dump() for r in ordered_rows
-        ]
+        results = [_evaluate_ruleset(r, business_profile).model_dump() for r in ordered_rows]
         return {"results": results}
     finally:
         conn.close()
@@ -7383,8 +7553,7 @@ def compose_audit_workpaper(
         dict[str, Any],
         Field(
             description=(
-                "Client's business attribute bag. Same shape as "
-                "evaluate_tax_applicability."
+                "Client's business attribute bag. Same shape as evaluate_tax_applicability."
             ),
         ),
     ],
@@ -7405,8 +7574,7 @@ def compose_audit_workpaper(
         Field(description="Output format."),
     ] = "pdf",
 ) -> dict[str, Any]:
-    """[KAIKEI] 監査ワークペーパー (PDF/CSV/MD/DOCX) を 1 件の client + ruleset セットに対して生成する。corpus_snapshot_id + sha256 + §47条の2 wording を全 surface に埋め込む。WeasyPrint レンダ → data/workpapers/ に cache、再 pull は無料。¥3 × N + ¥30 export fee。§47条の2 + §52 sensitive — 監査意見の代替ではない。
-    """
+    """[KAIKEI] 監査ワークペーパー (PDF/CSV/MD/DOCX) を 1 件の client + ruleset セットに対して生成する。corpus_snapshot_id + sha256 + §47条の2 wording を全 surface に埋め込む。WeasyPrint レンダ → data/workpapers/ に cache、再 pull は無料。¥3 × N + ¥30 export fee。§47条の2 + §52 sensitive — 監査意見の代替ではない。"""
     import re as _re
 
     if not _re.match(r"^[A-Za-z0-9._:\\-]{1,128}$", client_id):
@@ -7418,8 +7586,7 @@ def compose_audit_workpaper(
         if not _re.match(_TAX_ID_RE, uid):
             return _err(
                 "invalid_enum",
-                f"target_ruleset_ids contains malformed id: {uid!r} "
-                "(expected TAX-<10 hex>)",
+                f"target_ruleset_ids contains malformed id: {uid!r} (expected TAX-<10 hex>)",
             )
 
     try:
@@ -7500,9 +7667,7 @@ def compose_audit_workpaper(
                 checksum=checksum,
                 rows=evaluated,
             )
-            mime = (
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            )
+            mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         else:  # pdf
             pdf_cache_path = _WORKPAPER_CACHE_DIR / f"{api_key_id}_{period}.pdf"
             if pdf_cache_path.exists():
@@ -7569,9 +7734,7 @@ def audit_batch_evaluate(
     audit_firm_id: Annotated[
         str,
         Field(
-            description=(
-                "Audit firm's own identifier (echoed back). ASCII ≤128 chars."
-            ),
+            description=("Audit firm's own identifier (echoed back). ASCII ≤128 chars."),
             min_length=1,
             max_length=128,
         ),
@@ -7591,30 +7754,24 @@ def audit_batch_evaluate(
     target_ruleset_ids: Annotated[
         list[str],
         Field(
-            description=(
-                "TAX-<10 hex> ids to evaluate against EVERY profile. Cap: 100."
-            ),
+            description=("TAX-<10 hex> ids to evaluate against EVERY profile. Cap: 100."),
             min_length=1,
             max_length=100,
         ),
     ],
 ) -> dict[str, Any]:
-    """[KAIKEI] Batch evaluation across an audit firm's client population. ¥3 × N profiles billing (K=10 fan-out → 5,000×100=50,000 units / ¥150,000). Returns per-profile results + anomalies (population-deviation flags) + kaikei_fields (調書記載要否 / 重要性閾値 / 監査リスク評価) per cell. §47条の2 + §52 sensitive — checklist, not 監査意見.
-    """
+    """[KAIKEI] Batch evaluation across an audit firm's client population. ¥3 × N profiles billing (K=10 fan-out → 5,000×100=50,000 units / ¥150,000). Returns per-profile results + anomalies (population-deviation flags) + kaikei_fields (調書記載要否 / 重要性閾値 / 監査リスク評価) per cell. §47条の2 + §52 sensitive — checklist, not 監査意見."""
     import re as _re
 
     for uid in target_ruleset_ids:
         if not _re.match(_TAX_ID_RE, uid):
             return _err(
                 "invalid_enum",
-                f"target_ruleset_ids contains malformed id: {uid!r} "
-                "(expected TAX-<10 hex>)",
+                f"target_ruleset_ids contains malformed id: {uid!r} (expected TAX-<10 hex>)",
             )
     for p in profiles:
         cid = (p or {}).get("client_id")
-        if not isinstance(cid, str) or not _re.match(
-            r"^[A-Za-z0-9._:\\-]{1,128}$", cid
-        ):
+        if not isinstance(cid, str) or not _re.match(r"^[A-Za-z0-9._:\\-]{1,128}$", cid):
             return _err(
                 "invalid_enum",
                 f"profiles entry missing or malformed client_id: {p!r}",
@@ -7662,9 +7819,7 @@ def audit_batch_evaluate(
             for rs_row in ordered_rs:
                 r = _evaluate_ruleset(rs_row, prof)
                 if r.applicable:
-                    applicable_counts[r.unified_id] = (
-                        applicable_counts.get(r.unified_id, 0) + 1
-                    )
+                    applicable_counts[r.unified_id] = applicable_counts.get(r.unified_id, 0) + 1
                 per_ruleset.append(r.model_dump(mode="json"))
             per_profile.append({"client_id": cid, "results": per_ruleset})
 
@@ -7692,9 +7847,7 @@ def audit_batch_evaluate(
                             }
                         )
 
-        anomaly_keys: set[tuple[str, str]] = {
-            (a["client_id"], a["ruleset_id"]) for a in anomalies
-        }
+        anomaly_keys: set[tuple[str, str]] = {(a["client_id"], a["ruleset_id"]) for a in anomalies}
         for entry in per_profile:
             cid = entry["client_id"]
             for cell in entry["results"]:
@@ -7750,15 +7903,13 @@ def resolve_citation_chain(
         str,
         Field(
             description=(
-                "TAX-<10 hex> id. Returns the full provenance graph rooted "
-                "at this ruleset."
+                "TAX-<10 hex> id. Returns the full provenance graph rooted at this ruleset."
             ),
             pattern=_TAX_ID_RE,
         ),
     ],
 ) -> dict[str, Any]:
-    """[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3 / call。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。
-    """
+    """[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3 / call。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。"""
     try:
         from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
         from jpintel_mcp.api.audit import (
@@ -7870,7 +8021,13 @@ def search_invoice_registrants(
             ),
         ),
     ] = 50,
-    offset: Annotated[int, Field(ge=0, description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.")] = 0,
+    offset: Annotated[
+        int,
+        Field(
+            ge=0,
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+        ),
+    ] = 0,
 ) -> dict[str, Any]:
     """LOOKUP-INVOICE: search 適格請求書発行事業者 (国税庁 bulk, PDL v1.0). Returns {total, limit, offset, results, attribution} — every response carries the mandatory 出典明記 + 編集・加工注記 block per PDL v1.0.
 
@@ -7953,9 +8110,7 @@ def search_invoice_registrants(
             payload["retry_with"] = ["search_enforcement_cases"]
             # Surface coverage: 13,801 delta rows today, full 400 万 bulk pending.
             try:
-                (loaded,) = conn.execute(
-                    "SELECT COUNT(*) FROM invoice_registrants"
-                ).fetchone()
+                (loaded,) = conn.execute("SELECT COUNT(*) FROM invoice_registrants").fetchone()
             except sqlite3.Error:
                 loaded = 0
             payload["coverage_note"] = {
@@ -8203,9 +8358,7 @@ def find_cases_by_law(
         payload: dict[str, Any] = {
             "law_id": law_unified_id,
             "court_decisions": [_row_to_court_decision_dict(r) for r in court_rows],
-            "enforcement_cases": [
-                _row_to_enforcement_case(r) for r in enforcement_rows
-            ],
+            "enforcement_cases": [_row_to_enforcement_case(r) for r in enforcement_rows],
             "totals": {
                 "court_decisions": len(court_rows),
                 "enforcement_cases": len(enforcement_rows),
@@ -8263,9 +8416,9 @@ def combined_compliance_check(
         Field(
             description=(
                 "When False (default), tax_evaluation.results includes only rulesets "
-                "where applicable=True (90%+ token savings — typical 35-row scan "
-                "returns 2-4 applicable rows). Set True to include non-matching "
-                "rulesets with their disqualification reasons (audit / debugging)."
+                "where applicable=True, keeping the payload smaller for agent context. "
+                "Token impact depends on caller/model context. Set True to include "
+                "non-matching rulesets with their disqualification reasons (audit / debugging)."
             ),
         ),
     ] = False,
@@ -8365,7 +8518,11 @@ def combined_compliance_check(
                         "retry_with": ["search_programs", "get_program"],
                     },
                     "exclusion_check": {"hits": [], "checked_rules": 0},
-                    "tax_evaluation": {"results": [], "applicable_count": 0, "applicable_ruleset_ids": []},
+                    "tax_evaluation": {
+                        "results": [],
+                        "applicable_count": 0,
+                        "applicable_ruleset_ids": [],
+                    },
                     "relevant_bids": [],
                     "summary": "program_not_found; no checks run",
                 }
@@ -8476,6 +8633,7 @@ def combined_compliance_check(
         ):
             try:
                 from jpintel_mcp.mcp.autonomath_tools.db import connect_autonomath
+
                 am_conn = connect_autonomath()
                 # Pairwise compat_matrix lookup — read both (a,b) and (b,a) since
                 # the matrix is not guaranteed symmetric in row population.
@@ -8533,17 +8691,19 @@ def combined_compliance_check(
                             cbc_n += 1
                         elif status == "unknown":
                             unk_n += 1
-                        pairs_out.append({
-                            "program_a_id": row["program_a_id"],
-                            "program_b_id": row["program_b_id"],
-                            "compat_status": status,
-                            "combined_max_yen": row["combined_max_yen"],
-                            "conditions_text": row["conditions_text"],
-                            "rationale_short": row["rationale_short"],
-                            "evidence_relation": row["evidence_relation"],
-                            "source_url": row["source_url"],
-                            "confidence": row["confidence"],
-                        })
+                        pairs_out.append(
+                            {
+                                "program_a_id": row["program_a_id"],
+                                "program_b_id": row["program_b_id"],
+                                "compat_status": status,
+                                "combined_max_yen": row["combined_max_yen"],
+                                "conditions_text": row["conditions_text"],
+                                "rationale_short": row["rationale_short"],
+                                "evidence_relation": row["evidence_relation"],
+                                "source_url": row["source_url"],
+                                "confidence": row["confidence"],
+                            }
+                        )
                 compat_section = {
                     "pairs": pairs_out,
                     "incompatible_count": inc_n,
@@ -8561,9 +8721,7 @@ def combined_compliance_check(
                 cand_set = set(candidate_program_ids)
                 combo_unavailable = False
                 try:
-                    combo_rows = am_conn.execute(
-                        "SELECT * FROM am_combo_calculator"
-                    ).fetchall()
+                    combo_rows = am_conn.execute("SELECT * FROM am_combo_calculator").fetchall()
                 except sqlite3.OperationalError:
                     combo_rows = []
                     combo_unavailable = True
@@ -8578,19 +8736,21 @@ def combined_compliance_check(
                     member_set = {m for m in members if isinstance(m, str)}
                     if not cand_set.issubset(member_set):
                         continue
-                    matched.append({
-                        "combo_id": cr["combo_id"],
-                        "combo_name": cr["combo_name"],
-                        "members": members,
-                        "scenario_business_type": cr["scenario_business_type"],
-                        "invest_amount_yen": cr["invest_amount_yen"],
-                        "subsidy_max_yen": cr["subsidy_max_yen"],
-                        "tax_savings_yen": cr["tax_savings_yen"],
-                        "loan_advantage_yen": cr["loan_advantage_yen"],
-                        "total_max_benefit": cr["total_max_benefit"],
-                        "duration_months": cr["duration_months"],
-                        "rationale_md": cr["rationale_md"],
-                    })
+                    matched.append(
+                        {
+                            "combo_id": cr["combo_id"],
+                            "combo_name": cr["combo_name"],
+                            "members": members,
+                            "scenario_business_type": cr["scenario_business_type"],
+                            "invest_amount_yen": cr["invest_amount_yen"],
+                            "subsidy_max_yen": cr["subsidy_max_yen"],
+                            "tax_savings_yen": cr["tax_savings_yen"],
+                            "loan_advantage_yen": cr["loan_advantage_yen"],
+                            "total_max_benefit": cr["total_max_benefit"],
+                            "duration_months": cr["duration_months"],
+                            "rationale_md": cr["rationale_md"],
+                        }
+                    )
                 combo_section = {
                     "matched_combos": matched,
                     "unmatched_count": len(combo_rows) - len(matched),
@@ -8679,9 +8839,7 @@ def combined_compliance_check(
                 f"unknown={compat_section['unknown_count']})"
             )
         if combo_section is not None:
-            summary_parts.append(
-                f"combo_matches={len(combo_section['matched_combos'])}"
-            )
+            summary_parts.append(f"combo_matches={len(combo_section['matched_combos'])}")
         summary = ", ".join(summary_parts)
 
         payload: dict[str, Any] = {
@@ -8751,11 +8909,26 @@ def combined_compliance_check(
 # are not yet populated), so we lean on substring fuzz instead of failing
 # to filter at all.
 _JSIC_LIKE_KEYWORD: dict[str, str] = {
-    "A": "農", "B": "漁", "C": "鉱", "D": "建設", "E": "製造",
-    "F": "電気", "G": "情報", "H": "運輸", "I": "卸売",
-    "J": "金融", "K": "不動産", "L": "学術", "M": "宿泊",
-    "N": "生活", "O": "教育", "P": "医療", "Q": "サービス",
-    "R": "サービス", "S": "公務", "T": "産業",
+    "A": "農",
+    "B": "漁",
+    "C": "鉱",
+    "D": "建設",
+    "E": "製造",
+    "F": "電気",
+    "G": "情報",
+    "H": "運輸",
+    "I": "卸売",
+    "J": "金融",
+    "K": "不動産",
+    "L": "学術",
+    "M": "宿泊",
+    "N": "生活",
+    "O": "教育",
+    "P": "医療",
+    "Q": "サービス",
+    "R": "サービス",
+    "S": "公務",
+    "T": "産業",
 }
 
 
@@ -8842,27 +9015,31 @@ def regulatory_prep_pack(
     """
     industry_norm = _normalize_industry_jsic(industry)
     if not industry_norm:
-        return {"error": {
-            "code": "missing_required_arg",
-            "message": "industry が未指定です。",
-            "hint": "JSIC letter ('E') / 和名 ('製造業') / EN slug ('manufacturing') のいずれか。",
-        }}
+        return {
+            "error": {
+                "code": "missing_required_arg",
+                "message": "industry が未指定です。",
+                "hint": "JSIC letter ('E') / 和名 ('製造業') / EN slug ('manufacturing') のいずれか。",
+            }
+        }
 
     pref_raw = prefecture
     pref_norm = _normalize_prefecture(prefecture)
     input_warnings: list[dict[str, Any]] = []
     if pref_raw and not _is_known_prefecture(pref_raw):
-        input_warnings.append({
-            "field": "prefecture",
-            "code": "unknown_prefecture",
-            "value": pref_raw,
-            "normalized_to": pref_norm,
-            "message": (
-                f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
-                "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
-            ),
-            "retry_with": ["enum_values(field='prefecture')"],
-        })
+        input_warnings.append(
+            {
+                "field": "prefecture",
+                "code": "unknown_prefecture",
+                "value": pref_raw,
+                "normalized_to": pref_norm,
+                "message": (
+                    f"prefecture={pref_raw!r} は正規の都道府県に一致せず。"
+                    "フィルタを無効化し全国ベースで返しました。正しい例: '東京' / '東京都' / 'Tokyo'。"
+                ),
+                "retry_with": ["enum_values(field='prefecture')"],
+            }
+        )
         pref_norm = None
 
     # Industry → LIKE keyword (single-kanji broad term). Fall back to the raw
@@ -8885,12 +9062,15 @@ def regulatory_prep_pack(
             """,
             (like, like, limit),
         ).fetchall()
-        laws_out = [{
-            "law_id": r["unified_id"],
-            "canonical_name": r["law_short_title"] or r["law_title"],
-            "scope_summary": r["summary"],
-            "source_url": r["source_url"],
-        } for r in laws_rows]
+        laws_out = [
+            {
+                "law_id": r["unified_id"],
+                "canonical_name": r["law_short_title"] or r["law_title"],
+                "scope_summary": r["summary"],
+                "source_url": r["source_url"],
+            }
+            for r in laws_rows
+        ]
 
         # --- certifications (programs.program_kind LIKE 'certification%') -
         cert_sql = (
@@ -8905,13 +9085,16 @@ def regulatory_prep_pack(
         cert_sql += "ORDER BY tier, primary_name LIMIT ?"
         params.append(limit)
         cert_rows = conn.execute(cert_sql, params).fetchall()
-        certs_out = [{
-            "program_id": r["unified_id"],
-            "name": r["primary_name"],
-            "issuer": r["authority_name"],
-            "validity_years": None,  # not stored on programs schema
-            "url": r["official_url"],
-        } for r in cert_rows]
+        certs_out = [
+            {
+                "program_id": r["unified_id"],
+                "name": r["primary_name"],
+                "issuer": r["authority_name"],
+                "validity_years": None,  # not stored on programs schema
+                "url": r["official_url"],
+            }
+            for r in cert_rows
+        ]
 
         # --- tax_rulesets ------------------------------------------------
         tax_sql = (
@@ -8925,13 +9108,16 @@ def regulatory_prep_pack(
         tax_sql += "ORDER BY effective_from DESC LIMIT ?"
         tax_params.append(limit)
         tax_rows = conn.execute(tax_sql, tax_params).fetchall()
-        tax_out = [{
-            "ruleset_id": r["unified_id"],
-            "name": r["ruleset_name"],
-            "effective_from": r["effective_from"],
-            "effective_until": r["effective_until"],
-            "url": r["source_url"],
-        } for r in tax_rows]
+        tax_out = [
+            {
+                "ruleset_id": r["unified_id"],
+                "name": r["ruleset_name"],
+                "effective_from": r["effective_from"],
+                "effective_until": r["effective_until"],
+                "url": r["source_url"],
+            }
+            for r in tax_rows
+        ]
 
         # --- recent_enforcement ------------------------------------------
         enf_where: list[str] = []
@@ -8951,13 +9137,16 @@ def regulatory_prep_pack(
         )
         enf_params.append(limit)
         enf_rows = conn.execute(enf_sql, enf_params).fetchall()
-        enf_out = [{
-            "case_id": r["case_id"],
-            "authority": r["ministry"],
-            "action": r["event_type"] or (r["reason_excerpt"] or "")[:80],
-            "published_at": r["disclosed_date"],
-            "url": r["source_url"],
-        } for r in enf_rows]
+        enf_out = [
+            {
+                "case_id": r["case_id"],
+                "authority": r["ministry"],
+                "action": r["event_type"] or (r["reason_excerpt"] or "")[:80],
+                "published_at": r["disclosed_date"],
+                "url": r["source_url"],
+            }
+            for r in enf_rows
+        ]
     finally:
         conn.close()
 
@@ -8972,20 +9161,26 @@ def regulatory_prep_pack(
         "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
     }
     empty_sections = [
-        name for name, arr in (
-            ("laws", laws_out), ("certifications", certs_out),
-            ("tax_rulesets", tax_out), ("recent_enforcement", enf_out),
-        ) if not arr
+        name
+        for name, arr in (
+            ("laws", laws_out),
+            ("certifications", certs_out),
+            ("tax_rulesets", tax_out),
+            ("recent_enforcement", enf_out),
+        )
+        if not arr
     ]
     if len(empty_sections) == 4:
-        envelope: dict[str, Any] = {"error": {
-            "code": "no_matching_records",
-            "message": f"industry={industry!r} prefecture={prefecture!r} で全セクション 0 件.",
-            "hint": (
-                "industry を JSIC 大分類 letter ('A'..'T') か '農業' / '製造業' などの "
-                "和名で再試行、または prefecture=None で全国コーパスから探してください。"
-            ),
-        }}
+        envelope: dict[str, Any] = {
+            "error": {
+                "code": "no_matching_records",
+                "message": f"industry={industry!r} prefecture={prefecture!r} で全セクション 0 件.",
+                "hint": (
+                    "industry を JSIC 大分類 letter ('A'..'T') か '農業' / '製造業' などの "
+                    "和名で再試行、または prefecture=None で全国コーパスから探してください。"
+                ),
+            }
+        }
         if input_warnings:
             envelope["input_warnings"] = input_warnings
         return envelope

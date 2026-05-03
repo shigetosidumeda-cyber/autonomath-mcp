@@ -2,10 +2,8 @@
 
 Returns rows from ``am_entity_annotation`` (created via migration 046) for a
 given ``am_entities.canonical_id``. Generic across the polymorphic kind set
-(currently 3 ingested: examiner_warning / quality_score / examiner_correction;
-the lookup table seeds 6 kinds total). Designed so future kinds — validation
-failures, ML inferences, manual notes — surface through the same call with no
-schema or signature change.
+Designed so future public annotation kinds can surface through the same call
+with no schema or signature change.
 
 Why this is a separate tool (not a view inside an existing search_*):
   * The annotation surface is cross-domain — examiner feedback hits programs,
@@ -14,11 +12,10 @@ Why this is a separate tool (not a view inside an existing search_*):
   * Customer LLMs that already have an entity_id (from search_programs etc.)
     can fan out a single follow-up call instead of re-searching.
 
-Visibility model (mirrors migration 046 docstring):
-  * default → ``visibility='public'`` only. The 16,474 currently ingested rows
-    are all 'internal', so the default returns 0 results — by design.
-    ``include_internal=True`` flips to public+internal for operator surfaces
-    or paid integrations. ``private`` is never exposed via this tool.
+Visibility model:
+  * Public MCP/REST surfaces return ``visibility='public'`` only.
+    ``internal`` and ``private`` rows are not exposed from this tool, even when
+    the backing table contains internal review notes.
 
 Liveness model:
   * default filters ``superseded_at IS NULL`` AND ``(effective_until IS NULL
@@ -26,6 +23,7 @@ Liveness model:
   * ``include_superseded=True`` returns the full audit trail including
     superseded rows + expired effective windows.
 """
+
 from __future__ import annotations
 
 import logging
@@ -41,16 +39,19 @@ from .tools import _safe_json_loads, _safe_tool
 
 logger = logging.getLogger("jpintel.mcp.new.annotations")
 
-# Closed enum mirrored from am_annotation_kind seed (migration 046). Add to
-# both the seed INSERT and this list when introducing a new kind.
-_KNOWN_KINDS: frozenset[str] = frozenset({
-    "examiner_warning",
-    "examiner_correction",
-    "quality_score",
-    "validation_failure",
-    "ml_inference",
-    "manual_note",
-})
+# Public kind labels mapped to the internal am_annotation_kind seed. Do not
+# expose the backing taxonomy directly in MCP docs or error hints.
+_PUBLIC_KIND_LABELS: dict[str, str] = {
+    "examiner_warning": "warning",
+    "examiner_correction": "correction",
+    "quality_score": "quality_score",
+    "validation_failure": "validation_issue",
+    "ml_inference": "model_signal",
+    "manual_note": "note",
+}
+_PUBLIC_KIND_ALIASES: dict[str, str] = {
+    public: internal for internal, public in _PUBLIC_KIND_LABELS.items()
+}
 
 _DEFAULT_LIMIT = 50
 _MAX_LIMIT = 500
@@ -62,7 +63,7 @@ def _row_to_annotation(row: Any) -> dict[str, Any]:
     return {
         "annotation_id": row["annotation_id"],
         "entity_id": row["entity_id"],
-        "kind": row["kind"],
+        "kind": _PUBLIC_KIND_LABELS.get(row["kind"], "note"),
         "severity": row["severity"],
         "text_ja": row["text_ja"],
         "score": row["score"],
@@ -97,24 +98,12 @@ def get_annotations(
         list[str] | None,
         Field(
             description=(
-                "annotation kind フィルタ。1 つ以上指定すると OR 結合。"
-                "未指定なら全 kind を返す。known kinds: "
-                "examiner_warning / examiner_correction / quality_score / "
-                "validation_failure / ml_inference / manual_note。"
+                "public annotation kind フィルタ。指定可能: "
+                "warning / correction / quality_score / validation_issue / model_signal / note。"
+                "未指定なら public annotation の全 kind を返す。"
             ),
         ),
     ] = None,
-    include_internal: Annotated[
-        bool,
-        Field(
-            description=(
-                "True で visibility='internal' 行も返す (default False = "
-                "public のみ)。private は常に隠す。現状 ingest 済の "
-                "16,474 行は全て internal なので、検査用途で internal を "
-                "見たい場合は True を指定。"
-            ),
-        ),
-    ] = False,
     include_superseded: Annotated[
         bool,
         Field(
@@ -137,17 +126,17 @@ def get_annotations(
         ),
     ] = _DEFAULT_LIMIT,
 ) -> dict[str, Any]:
-    """[ANNOTATION] Returns annotation rows from am_entity_annotation for a given entity_id (examiner feedback / quality score / validation failure / ML inference). Default visibility='public' returns 0 rows for currently-ingested data (16,474 rows are all 'internal'); pass include_internal=True to surface those.
+    """[ANNOTATION] Return public annotation rows for a given entity_id.
 
     WHAT: ``am_entity_annotation`` table (migration 046 で導入された汎用注釈
-    レイヤー、現在 16,474 行) を ``entity_id`` で絞って返す。kind / severity /
-    text_ja / score / meta + supersede chain + effective window を 1 行ずつ。
+    レイヤー) を ``entity_id`` で絞って返す。public visibility の kind /
+    severity / text_ja / score / meta + supersede chain + effective window
+    を 1 行ずつ。
 
     WHEN:
       - 「この program はなぜ品質スコアが低いと判断された?」
-      - 「採択事例 X に紐付く examiner warning を全部見たい」
-      - 「過去の validation failure 履歴を audit したい」(include_superseded=True)
-      - operator dashboard で internal annotation を一覧 (include_internal=True)
+      - 「採択事例 X に紐付く public warning を全部見たい」
+      - 「過去の validation_issue 履歴を確認したい」(include_superseded=True)
 
     WHEN NOT:
       - 全 entity 横断で「最も警告が多い program」を探したい → 別 tool を
@@ -170,15 +159,13 @@ def get_annotations(
           }, ...
         ],
         entity_id: <echo>,
-        filters: {kinds, include_internal, include_superseded},
+        filters: {kinds, visibility, include_superseded},
       }
 
     LIMITATIONS:
-      - default visibility='public' フィルタは現状 0 行を返す (16,474 全件
-        internal)。include_internal=True を必ず指定する想定。
-      - meta_json の schema は kind 依存 (quality_score → sections[],
-        examiner_warning → field_path 等)。caller 側で kind を見て
-        分岐する。
+      - public visibility の注釈だけを返す。internal / private のレビュー
+        メモは公開 API / MCP からは返さない。
+      - meta_json の schema は kind 依存。caller 側で kind を見て分岐する。
     """
     # --- arg validation -----------------------------------------------------
     eid = (entity_id or "").strip()
@@ -192,6 +179,7 @@ def get_annotations(
         )
 
     requested_kinds: list[str] = []
+    requested_public_kinds: list[str] = []
     if kinds:
         for k in kinds:
             if not isinstance(k, str):
@@ -199,22 +187,23 @@ def get_annotations(
             ks = k.strip()
             if not ks:
                 continue
-            if ks not in _KNOWN_KINDS:
+            internal_kind = _PUBLIC_KIND_ALIASES.get(ks)
+            if internal_kind is None:
+                valid_kinds = sorted(_PUBLIC_KIND_ALIASES)
                 return make_error(
                     code="invalid_enum",
                     message=f"unknown annotation kind: {ks!r}",
-                    hint=f"Valid kinds: {sorted(_KNOWN_KINDS)}",
+                    hint=f"Valid kinds: {valid_kinds}",
                     field="kinds",
-                    retry_args={"kinds": [sorted(_KNOWN_KINDS)[0]]},
+                    retry_args={"kinds": [valid_kinds[0]]},
                     limit=limit,
                 )
-            requested_kinds.append(ks)
+            requested_kinds.append(internal_kind)
+            requested_public_kinds.append(ks)
 
     # --- visibility set -----------------------------------------------------
     visibilities: list[str] = ["public"]
-    if include_internal:
-        visibilities.append("internal")
-    # 'private' is never exposed.
+    # 'internal' and 'private' are never exposed from the public tool.
 
     # --- build SQL ----------------------------------------------------------
     where_clauses: list[str] = ["entity_id = ?"]
@@ -231,9 +220,7 @@ def get_annotations(
 
     if not include_superseded:
         where_clauses.append("superseded_at IS NULL")
-        where_clauses.append(
-            "(effective_until IS NULL OR effective_until > date('now'))"
-        )
+        where_clauses.append("(effective_until IS NULL OR effective_until > date('now'))")
 
     sql = (
         "SELECT annotation_id, entity_id, kind, severity, text_ja, score, "
@@ -257,11 +244,11 @@ def get_annotations(
         "results": results,
         "entity_id": eid,
         "filters": {
-            "kinds": requested_kinds or None,
-            "include_internal": include_internal,
+            "kinds": requested_public_kinds or None,
+            "visibility": "public",
             "include_superseded": include_superseded,
         },
     }
 
 
-__all__ = ["get_annotations"]
+__all__ = ["_PUBLIC_KIND_LABELS", "get_annotations"]

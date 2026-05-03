@@ -104,10 +104,11 @@ Allow: /llms-full.txt
 Allow: /llms-full.en.txt
 Allow: /facts.html
 Allow: /en/facts.html
-Allow: /openapi/v1.json
-Allow: /openapi/agent.json
-Allow: /v1/openapi.json
-Allow: /v1/openapi.agent.json
+Allow: /docs/openapi/v1.json
+Allow: /docs/openapi/agent.json
+# API host canonical:
+# https://api.jpcite.com/v1/openapi.json
+# https://api.jpcite.com/v1/openapi.agent.json
 Allow: /mcp-server.json
 Allow: /server.json
 Allow: /v1/healthz

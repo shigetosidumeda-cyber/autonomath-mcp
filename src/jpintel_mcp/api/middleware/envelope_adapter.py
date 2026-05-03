@@ -1,7 +1,7 @@
 """Optional Accept-header v2 envelope adapter middleware (§28.2 Agent Contract).
 
-The plan ships the v2 envelope as **opt-in** so we don't break ~140
-existing routes during the launch window. This middleware is a thin
+The v2 envelope is **opt-in** so we don't break ~140 existing routes during
+the compatibility period. This middleware is a thin
 diagnostic + observability layer; it does NOT mass-rewrite legacy
 responses (that would defeat the opt-in promise).
 

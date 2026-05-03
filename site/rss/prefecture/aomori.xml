@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>令和８年度 中小企業・小規模事業者等が活用できる主な補助金等一覧</title>
@@ -398,15 +398,6 @@
   </item>
 
   <item>
-    <title>農業雪害対策緊急支援事業</title>
-    <link>https://jpcite.com/programs/nougyou-setsugai-taisaku-kinkyuu-shien-jigyou-6c9505.html</link>
-    <description>Tier C / 青森県 / 青森県平川市 / subsidy / 上限 1万円 出典: https://www.city.hirakawa.lg.jp/material/files/group/7/yukigai2024chirashi.pdf</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-02abecca3c</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>黒石市グランファーム応援事業補助金</title>
     <link>https://jpcite.com/programs/kuroishi-shi-guranfaamu-ouen-jigyou-hojokin-806f79.html</link>
     <description>Tier B / 青森県 / 市町村 / subsidy / 上限 60万円 出典: http://www.city.kuroishi.aomori.jp/sangyou/nougyou/g-farm-hojokin.html</description>
@@ -466,15 +457,6 @@
     <description>Tier C / 青森県 / 青森県五戸町 / subsidy / 上限 60万円 出典: https://www.town.gonohe.aomori.jp/material/files/group/2/jutakureformyoukou.pdf</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-1871a730c5</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>八戸市農業者収入保険加入促進事業補助金</title>
-    <link>https://jpcite.com/programs/hachinohe-shi-nougyou-mono-shuunyuu-hoken-kanyuu-sokushin-239e78.html</link>
-    <description>Tier C / 青森県 / 青森県八戸市 / subsidy 出典: https://www.city.hachinohe.aomori.jp/soshikikarasagasu/nogyokeieishinkocenter/sangyo/1/22668.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-18e5c8b678</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -794,15 +776,6 @@
   </item>
 
   <item>
-    <title>八戸市農業者収入保険加入促進事業補助金</title>
-    <link>https://jpcite.com/programs/hachinohe-shi-nougyou-mono-shuunyuu-hoken-kanyuu-sokushin-2da9c4.html</link>
-    <description>Tier A / 青森県 出典: https://www.city.hachinohe.aomori.jp/soshikikarasagasu/nogyokeieishinkocenter/sangyo/1/22668.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-978b0e3bc3</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>青森_施設園芸等支援タイプ</title>
     <link>https://jpcite.com/programs/pref-02-003-aomori-shisetsu-engei-nado-shien-taipu-63f377.html</link>
     <description>Tier C / 青森県 / subsidy / 上限 625万円 出典: https://www.pref.aomori.lg.jp/soshiki/nourin/noen/shisetsuengeishientaipu.html</description>
@@ -907,6 +880,33 @@
     <description>Tier B / 青森県 / 青森県東北町 / subsidy / 上限 30万円 出典: https://www.town.tohoku.lg.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-ab53e22d4c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度南部町鳥獣被害防止柵設置事業補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-nanbu-machi-choujuu-higai-boushi-saku-setchi-5e9369.html</link>
+    <description>Tier C / 青森県 / 青森県南部町 / subsidy / 上限 8万円 出典: https://www.town.aomori-nanbu.lg.jp/page/8321.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ade3564c51</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農者養成研修事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-mono-yousei-kenshuu-jigyou-191930.html</link>
+    <description>Tier B / 青森県 / subsidy / 上限 100万円 出典: https://www.aomori-nogyoshien.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b2680b2c88</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>黒石市産品販売力強化補助金</title>
+    <link>https://jpcite.com/programs/kuroishi-shi-sanhin-hanbai-chikara-kyouka-hojokin-8e4122.html</link>
+    <description>Tier C / 青森県 / subsidy / 上限 250万円 出典: https://www.city.kuroishi.aomori.jp/soshiki/sangyo/yuushi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b4b2fc0fc4</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

@@ -1050,7 +1050,7 @@ def _enable_widget_key(conn: sqlite3.Connection, subscription_id: str | None) ->
 
 
 # ---------------------------------------------------------------------------
-# Usage endpoint (stub — Bearer admin)
+# Usage endpoint (Bearer admin)
 # ---------------------------------------------------------------------------
 
 
@@ -1062,9 +1062,8 @@ def widget_usage(
 ) -> JSONResponse:
     """Owner-visible usage for their widget key. Bearer admin required.
 
-    Sparse on purpose: the dashboard consumes this via a scheduled fetch
-    so we return stable, JSON-first fields. A full dashboard UI is a
-    later ticket — this stub is enough for "how many reqs this month?".
+    The dashboard consumes this via a scheduled fetch, so the endpoint returns
+    stable JSON-first fields for current-month usage.
     """
     admin_key = settings.admin_api_key
     if not admin_key:

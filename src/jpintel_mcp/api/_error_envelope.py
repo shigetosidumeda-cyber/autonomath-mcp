@@ -48,14 +48,16 @@ The closed enum lives in :data:`ERROR_CODES`. Adding a new code
 requires updating the Japanese / English copy and the documentation
 anchor.  Customer-facing reference: ``docs/error_handling.md``.
 """
+
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import re
 import secrets
 import time
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -106,6 +108,7 @@ def _mint_request_id() -> str:
     except Exception:  # pragma: no cover — defensive
         return secrets.token_hex(16)
 
+
 #: Public documentation anchor base. Each code uses
 #: ``f"{DOC_URL}#{code}"`` to point at its specific section.
 DOC_URL = "https://jpcite.com/docs/error_handling"
@@ -143,9 +146,7 @@ ERROR_CODES: dict[str, dict[str, str]] = {
         "user_message_ja": (
             "日付形式が不正です。ISO 8601 (YYYY-MM-DD、例: 2026-04-26) で指定してください。"
         ),
-        "user_message_en": (
-            "Invalid date format. Use ISO 8601 (YYYY-MM-DD, e.g. 2026-04-26)."
-        ),
+        "user_message_en": ("Invalid date format. Use ISO 8601 (YYYY-MM-DD, e.g. 2026-04-26)."),
     },
     "out_of_range": {
         "severity": "hard",
@@ -357,10 +358,7 @@ def make_error(
     err: dict[str, Any] = {
         "code": code,
         "user_message": (user_message or spec["user_message_ja"]).strip(),
-        "user_message_en": (
-            (user_message_en or spec.get("user_message_en") or "").strip()
-            or None
-        ),
+        "user_message_en": ((user_message_en or spec.get("user_message_en") or "").strip() or None),
         # Defensive fallback: callers SHOULD pass ``safe_request_id(request)``,
         # but a unit-test or programmatic consumer can still call
         # ``make_error`` with no request context. Mint a real id rather than
@@ -421,22 +419,17 @@ def safe_request_id(request) -> str:
         hdr = request.headers.get("x-request-id")
     except Exception:  # pragma: no cover — defensive
         hdr = None
-    if hdr and _REQUEST_ID_RE.fullmatch(hdr):
-        rid_val = hdr
-    else:
-        # 3. Mint. ``secrets.token_hex(8)`` mirrors the context-middleware
-        #    fallback so log search treats both id streams uniformly.
-        rid_val = _mint_request_id()
+    # 3. Mint. ``secrets.token_hex(8)`` mirrors the context-middleware
+    #    fallback so log search treats both id streams uniformly.
+    rid_val = hdr if hdr and _REQUEST_ID_RE.fullmatch(hdr) else _mint_request_id()
 
     # Stamp onto request.state so anyone else who calls safe_request_id on
     # the same request gets the SAME id. Without this, the strict-query 422
     # body and the response ``x-request-id`` header could disagree (each
     # call site would mint independently), breaking the correlation
     # contract just as surely as the literal "unset" did.
-    try:
+    with contextlib.suppress(Exception):
         request.state.request_id = rid_val
-    except Exception:  # pragma: no cover — defensive
-        pass
     return rid_val
 
 
@@ -543,14 +536,14 @@ class ErrorBody(BaseModel):
             "Mirrored in `user_message` extra for legacy clients that read that key."
         ),
     )
-    details: Optional[dict[str, Any]] = Field(
+    details: dict[str, Any] | None = Field(
         default=None,
         description=(
             "Per-code extras: e.g. `retry_after` seconds for 503, "
             "`field_errors` for 422, `suggested_paths` for 404."
         ),
     )
-    request_id: Optional[str] = Field(
+    request_id: str | None = Field(
         default=None,
         description=(
             "Echoed `x-request-id`. Always populated server-side with a "
@@ -609,6 +602,10 @@ COMMON_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
         "model": ErrorEnvelope,
         "description": "Authentication required — `code='auth_required'`. Send `X-API-Key`.",
     },
+    402: {
+        "model": ErrorEnvelope,
+        "description": "Cost cap exceeded — `code='cost_cap_exceeded'`. Raise `X-Cost-Cap-JPY` or reduce fan-out.",
+    },
     404: {
         "model": ErrorEnvelope,
         "description": "Not found — `code` ∈ {no_matching_records, seed_not_found, route_not_found}.",
@@ -616,6 +613,10 @@ COMMON_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     422: {
         "model": ErrorEnvelope,
         "description": "Unprocessable entity — Pydantic validation failure (`code='invalid_enum'`).",
+    },
+    428: {
+        "model": ErrorEnvelope,
+        "description": "Precondition required — `code='idempotency_key_required'`. Send `Idempotency-Key` on paid fan-out requests.",
     },
     429: {
         "model": ErrorEnvelope,

@@ -10,7 +10,7 @@ Output (atomic write):
 
 The compact section is a pipe-delimited inventory of every active program
 (`excluded = 0` AND `tier IN ('S','A','B','C')`, matching the production search
-filter; non-public review rows stay excluded). It exists
+filter; non-public rows stay excluded). It exists
 so LLM crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.) can ingest the full
 program list without scraping 9,998 individual HTML pages.
 
@@ -39,12 +39,20 @@ from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
+try:
+    from static_bad_urls import load_static_bad_urls  # type: ignore
+except ImportError:  # pragma: no cover
+
+    def load_static_bad_urls() -> set[str]:
+        return set()
+
+
 # Marker that delimits the auto-generated compact section. Anything from this
 # line onward is regenerated each run; everything above is preserved.
 SECTION_MARKER = "## All Programs"
 _PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
 
-# SQL filter: non-public review rows and excluded=1 rows stay out of outputs.
+# SQL filter: non-public rows and excluded=1 rows stay out of outputs.
 # Both must stay out of any user-facing surface (CLAUDE.md non-negotiable).
 _BANNED_SOURCE_HOSTS = frozenset(
     {
@@ -87,6 +95,8 @@ SELECT
 FROM programs
 WHERE excluded = 0
   AND tier IN ('S', 'A', 'B', 'C')
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
 ORDER BY tier, primary_name
 LIMIT 20000
 """
@@ -147,7 +157,12 @@ def fetch_programs(db_path: Path) -> list[sqlite3.Row]:
     with sqlite3.connect(uri, uri=True) as con:
         con.row_factory = sqlite3.Row
         rows = con.execute(PROGRAMS_SQL).fetchall()
-    return [row for row in rows if _source_host_allowed(row["source_url"])]
+    denied = load_static_bad_urls()
+    return [
+        row
+        for row in rows
+        if _source_host_allowed(row["source_url"]) and row["source_url"] not in denied
+    ]
 
 
 def build_compact_section(rows: list[sqlite3.Row]) -> str:
@@ -212,9 +227,45 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
         "| Paid (metered) | 上限なし | Stripe 従量、¥3/req 税別 (税込 ¥3.30) |": "| Paid (metered) | 利用量に応じて課金 | Stripe 従量、¥3/req 税別 (税込 ¥3.30)。月次予算 cap と保護レート制限を設定可能 |",
         "Paid は cap なし (スパイクでも 429 は返らない)。": "認証済み利用でも、月次予算 cap、保護レート制限、異常バースト時の制御が適用される場合があります。",
         "- **bulk 再配布 (データセット販売等):** 元データ自体は一次資料のため出典明記で再配布可能。自社サービスに組み込む場合は Paid (¥3/req 税別・税込 ¥3.30) で叩けば制限なし。": "- **bulk 再配布 (データセット販売等):** 出典ごとにライセンス条件が異なります。API 利用可否と再配布許諾は別です。各 record の `source_url` / `license` / attribution 条件を確認してください。",
+        "- **MCP ネイティブ対応** — Claude Desktop / Cursor / ChatGPT (Plus 以降) から直接ツール呼び出し": "- **MCP ネイティブ対応** — Claude Desktop / Cursor / Cline など、ローカル stdio MCP サーバーを起動できるクライアントで利用可能。ChatGPT Custom GPT は OpenAPI Actions を使います。",
+        "jpcite は MCP (Model Context Protocol) サーバーとして 93 ツール を公開する。Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini から直接呼び出せる。": "jpcite は MCP (Model Context Protocol) サーバーとして 93 ツールを公開します。Claude Desktop / Cursor / Cline などの stdio MCP クライアントで使えます。ChatGPT Custom GPT は OpenAPI Actions を使います。",
+        "- **ChatGPT:** Plus 以降 (2025-10+) で MCP 対応": "- **ChatGPT:** Custom GPT は OpenAPI Actions (`/v1/openapi.agent.json`) 経由。ChatGPT Apps / Developer Mode の remote MCP は、この stdio MCP package とは別です。",
+        '"args": ["<mcp-server-command>"]': '"args": ["autonomath-mcp"]',
+        "curl https://api.jpcite.com/meta": "curl https://api.jpcite.com/v1/meta",
+        "`GET /meta`": "`GET /v1/meta`",
+        "GET /meta": "GET /v1/meta",
+        "`/healthz`, `/meta`, `/v1` prefix を持たない utility 系": "`/healthz`, `/v1/meta`, `/v1` prefix を持たない utility 系",
+        "- `/meta` は aggregate stats (total_programs, last_updated 等) を返すが、field 追加・削除・意味変更が発生しうる": "- `/v1/meta` は公開検索対象の aggregate stats (total_programs, last_ingested_at 等) を返します",
+        '"total_programs": 13578': '"total_programs": 11684',
+        "[pricing.md](./pricing.md) — tier 別制限": "[pricing.md](./pricing.md) — 料金・匿名枠・従量課金条件",
+        '"tier=X の理由が見えづらい"': '"検索対象外判定の理由が見えづらい"',
+        "`/meta`, `/v1/ping`, `/v1/programs/*`, `/v1/exclusions/*`, `/v1/feedback`": "`/v1/meta`, `/v1/ping`, `/v1/programs/*`, `/v1/exclusions/*`, `/v1/feedback`",
+        "- `GET /healthz` / `GET /meta` はカウント対象外": "- `GET /healthz` はカウント対象外。`GET /v1/meta` は discoverability 枠に含まれます。",
+        "- **Stripe 経由で自動 revoke:** サブスクリプション解約時、webhook (`customer.subscription.deleted`) で自動的に `revoked_at` セット。": "- **解約時の停止:** 解約時に API key は停止されます。漏えい時の緊急停止はサポートへ連絡してください。",
     }
     for old, new in replacements.items():
         prefix = prefix.replace(old, new)
+    # The preserved docs prefix may come from an older generated snapshot.
+    # Keep LLM crawler input aligned with the public OpenAPI surface even when
+    # the compact inventory is regenerated without rebuilding the docs prefix.
+    prefix = prefix.replace(
+        "| `include_excluded` | bool | no | `true` で tier=X も含める (default `false`) |\n",
+        "",
+    )
+    prefix = prefix.replace(
+        "| `include_excluded` | bool | false | `true` で tier=X も含める |\n",
+        "",
+    )
+    prefix = re.sub(
+        r"\n### `POST /v1/billing/webhook`\n.*?\n---\n\n",
+        "\n",
+        prefix,
+        flags=re.DOTALL,
+    )
+    prefix = prefix.replace(
+        "`/healthz`, `/v1/billing/webhook`, `/v1/subscribers/unsubscribe`, dashboard 系",
+        "`/healthz`, `/v1/subscribers/unsubscribe`, dashboard 系",
+    )
     return prefix
 
 

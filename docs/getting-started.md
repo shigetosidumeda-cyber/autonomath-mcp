@@ -29,7 +29,7 @@
 
 # Getting Started
 
-jpcite は ChatGPT / Claude / Cursor が文章を生成する前に呼ぶ Evidence prefetch layer です。 長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、 出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。 caller supplied baseline がある場合だけ、 入力文脈量の削減見込みと break-even を返します。 外部 LLM の請求額削減は保証しません。 LLM call はサーバ側で実行せず、 jpcite の課金は ¥3/req (税込 ¥3.30) の単一従量、 LLM トークン量やモデル選択には連動しません。
+jpcite は ChatGPT / Claude / Cursor が文章を生成する前に呼ぶ Evidence prefetch layer です。 長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、 出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。 caller supplied baseline がある場合だけ、 入力文脈量の削減見込みと break-even を返します。 外部 LLM の請求額削減は保証しません。 LLM call はサーバ側で実行せず、 jpcite の課金は ¥3/billable unit (税込 ¥3.30) の単一従量、 LLM トークン量やモデル選択には連動しません。
 
 評価は次の順で進めると、課金前に価値を判断できます: **匿名 curl → Playground → MCP / OpenAPI → API キー**。料金詳細は [pricing.md](./pricing.md)。
 
@@ -59,7 +59,7 @@ curl "https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5"
 - `compression.packet_tokens_estimate` / `source_tokens_estimate` / `input_context_reduction_rate`
 - `compression.cost_savings_estimate.break_even_met` (caller baseline がある時のみ true / false が出る)
 - `agent_recommendation.recommend_for_cost_savings` (条件付き)
-- `agent_recommendation.cost_savings_decision` (`supported_by_caller_baseline` または `needs_caller_baseline`)
+- `agent_recommendation.cost_savings_decision` (`supported_by_caller_baseline` / `not_supported_by_caller_baseline` / `needs_caller_baseline` / `needs_input_token_price`)
 - `quality.known_gaps[]` (空でないとき、 AI 側でも「未接続な根拠」 を明示する)
 
 `compression` は **入力文脈量だけの参考推定** で、 外部 LLM の請求額削減は保証しません (`provider_billing_not_guaranteed=true`)。
@@ -81,7 +81,7 @@ curl "https://api.jpcite.com/v1/intelligence/precomputed/query?q=省力化&limit
 
 匿名で 3 回検証して納得したら、 反復利用のために MCP か OpenAPI client から呼びます。 ここまでは API キー無しで進められます (匿名 3 req/日 quota は MCP からも消費)。
 
-### 3.1 MCP (Claude Desktop / Cursor / Cline / ChatGPT MCP 対応版)
+### 3.1 MCP (Claude Desktop / Cursor / Cline)
 
 Protocol: `2025-06-18`。`~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) を編集:
 
@@ -99,7 +99,7 @@ Protocol: `2025-06-18`。`~/Library/Application Support/Claude/claude_desktop_co
 - `uv` 未導入なら `brew install uv` か `pip install uv`
 - `pip install autonomath-mcp` 済みなら `"command": "autonomath-mcp"`
 - ワンクリック: [jpcite MCP bundle](/downloads/autonomath-mcp.mcpb) を Claude Desktop で開く
-- 再起動後、 標準構成で 93 ツールが有効。 Cursor / Gemini / ChatGPT (MCP 対応版) も同設定で動作
+- 再起動後、標準構成で 93 ツールが有効。Cursor / Cline などの MCP 対応クライアントも同じ server 設定を使えます。ChatGPT Custom GPT では次節の OpenAPI Actions を使います。
 
 ツール一覧: [mcp-tools.md](./mcp-tools.md)。 出典付きで回答させたい場合は、 検索後に `get_evidence_packet` を呼び、 一次資料 URL・取得時刻・provenance・ルール判定を先に AI クライアントへ渡します。 トークン量や追加検索回数への影響は、 モデル・プロンプト・質問内容・キャッシュ状態に依存します。
 
@@ -112,7 +112,7 @@ OpenAPI spec は live と committed snapshot の 2 経路で取得できます:
 curl https://api.jpcite.com/v1/openapi.json -o openapi.json
 
 # repo snapshot
-# https://github.com/.../blob/main/docs/openapi/v1.json
+# https://github.com/shigetosidumeda-cyber/autonomath-mcp/blob/main/docs/openapi/v1.json
 ```
 
 任意の OpenAPI generator で client を生成し、 `https://api.jpcite.com` を base URL に設定します。

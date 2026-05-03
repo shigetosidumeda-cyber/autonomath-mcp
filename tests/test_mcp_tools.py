@@ -6,7 +6,7 @@ These tests share the `seeded_db` fixture from conftest.py so the connect()
 inside each tool hits the same test DB the REST-layer tests use.
 
 Goal: exercise the 5 public MCP tools the way a real client (Claude
-Desktop, Cursor, ChatGPT MCP, etc.) would, not the REST mirrors. Parity
+Desktop, Cursor, Cline, etc.) would, not the REST mirrors. Parity
 between MCP + REST is documented in `research/mcp_rest_parity.md`; this
 file is the test-level guarantee.
 """
@@ -79,12 +79,6 @@ def test_search_programs_returns_seeded_rows_with_pagination_envelope(client, se
     assert "UNI-test-x-1" not in ids
 
 
-def test_search_programs_include_excluded_flag_surfaces_x_tier(client, seeded_db):
-    res = search_programs(include_excluded=True)
-    ids = {r["unified_id"] for r in res["results"]}
-    assert "UNI-test-x-1" in ids
-
-
 def test_search_programs_tier_filter_narrows_results(client, seeded_db):
     res = search_programs(tier=["S"])
     assert res["total"] == 1
@@ -126,8 +120,7 @@ def test_search_programs_fields_full_includes_enriched_and_lineage_keys(client, 
     res = search_programs(fields="full")
     row = res["results"][0]
     # `full` guarantees these keys are present (even if null).
-    for k in ("enriched", "source_mentions", "source_url",
-              "source_fetched_at", "source_checksum"):
+    for k in ("enriched", "source_mentions", "source_url", "source_fetched_at", "source_checksum"):
         assert k in row
 
 
@@ -251,8 +244,7 @@ def test_batch_get_programs_full_contract_always_has_enriched_keys(client, seede
     res = batch_get_programs(["UNI-test-s-1"])
     rec = res["results"][0]
     # Batch uses the "full" contract — keys always present even if null.
-    for k in ("enriched", "source_mentions", "source_url",
-              "source_fetched_at", "source_checksum"):
+    for k in ("enriched", "source_mentions", "source_url", "source_fetched_at", "source_checksum"):
         assert k in rec
 
 
@@ -276,9 +268,18 @@ def test_list_exclusion_rules_returns_full_shape(client, seeded_db):
     assert "excl-test-prereq" in ids
     rule = next(r for r in rules if r["rule_id"] == "excl-test-mutex")
     # Shape parity: every expected key present.
-    for k in ("rule_id", "kind", "severity", "program_a", "program_b",
-              "program_b_group", "description", "source_notes",
-              "source_urls", "extra"):
+    for k in (
+        "rule_id",
+        "kind",
+        "severity",
+        "program_a",
+        "program_b",
+        "program_b_group",
+        "description",
+        "source_notes",
+        "source_urls",
+        "extra",
+    ):
         assert k in rule
 
 
@@ -331,10 +332,12 @@ def test_check_exclusions_dual_key_unified_id_hits_name_keyed_rule(client, seede
 def test_check_exclusions_dual_key_primary_name_hits_uid_keyed_rule(client, seeded_db):
     """Reverse direction: caller passes the primary_name strings and the
     rule's _uid columns are populated. Either form must hit the rule."""
-    res = check_exclusions([
-        "テスト S-tier 補助金",
-        "B-tier 融資 スーパーL資金",
-    ])
+    res = check_exclusions(
+        [
+            "テスト S-tier 補助金",
+            "B-tier 融資 スーパーL資金",
+        ]
+    )
     hits_ids = {h["rule_id"] for h in res["hits"]}
     assert "excl-test-uid-mutex" in hits_ids, (
         f"primary_name input failed to resolve uid-keyed rule: hits={hits_ids}"
@@ -348,14 +351,18 @@ def test_check_exclusions_dual_key_primary_name_hits_uid_keyed_rule(client, seed
 
 def test_get_meta_returns_tier_and_prefecture_counts(client, seeded_db):
     m = get_meta()
-    assert m["total_programs"] >= 4  # S, A, B, X in seed (all rows incl. excluded)
-    assert m["visible_programs"] >= 3  # S, A, B — X is excluded=1 in seed
+    assert m["total_programs"] >= 3  # Public searchable rows only: S, A, B.
+    assert m["visible_programs"] == m["total_programs"]
     assert m["exclusion_rules_count"] >= 2
     assert "tier_counts" in m
     # Seeded non-excluded tiers present. The excluded=1 X row is filtered
     # out of tier_counts (matches search gate: COALESCE(tier,'X') != 'X').
     for t in ("S", "A", "B"):
         assert m["tier_counts"].get(t) is not None, f"missing tier {t}"
+    assert "X" not in m["tier_counts"]
+    assert m["total_programs"] == sum(m["tier_counts"].values())
+    assert m["total_programs"] == sum(m["prefecture_counts"].values())
+    assert m["canonical_programs"] + m["external_programs"] == m["total_programs"]
     assert "prefecture_counts" in m
     assert m["prefecture_counts"].get("東京都") == 1
     assert m["prefecture_counts"].get("青森県") == 1
@@ -375,8 +382,7 @@ def test_row_to_dict_handles_missing_lineage_columns(client, seeded_db):
 
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
-    row = c.execute("SELECT * FROM programs WHERE unified_id = ?",
-                    ("UNI-test-s-1",)).fetchone()
+    row = c.execute("SELECT * FROM programs WHERE unified_id = ?", ("UNI-test-s-1",)).fetchone()
     c.close()
     d = _row_to_dict(row, include_enriched=False)
     # Lineage keys always present in the output dict.
@@ -389,8 +395,7 @@ def test_trim_to_fields_full_sets_missing_keys_to_none():
     rec = {"unified_id": "UNI-a", "primary_name": "x"}
     out = _trim_to_fields(rec, "full")
     # full contract: enriched/source_mentions/lineage keys always set.
-    for k in ("enriched", "source_mentions", "source_url",
-              "source_fetched_at", "source_checksum"):
+    for k in ("enriched", "source_mentions", "source_url", "source_fetched_at", "source_checksum"):
         assert k in out
         assert out[k] is None
 
@@ -472,62 +477,102 @@ def _seed_regulatory_prep(seeded_db):
         c.execute("DELETE FROM laws WHERE unified_id LIKE 'LAW-aaaaaa%'")
         c.execute("DELETE FROM tax_rulesets WHERE unified_id LIKE 'TAX-aaaaaa%'")
         c.execute("DELETE FROM enforcement_cases WHERE case_id LIKE 'ENF-test%'")
-        c.execute(
-            "DELETE FROM programs WHERE unified_id IN ('UNI-cert-1','UNI-cert-2')"
-        )
+        c.execute("DELETE FROM programs WHERE unified_id IN ('UNI-cert-1','UNI-cert-2')")
         # 2 laws that match '製造' (E=manufacturing) + 1 unrelated.
         for lid, title, summary, status in [
-            ("LAW-aaaaaa0001", "製造業安全衛生法",  "製造ラインの安全管理。", "current"),
-            ("LAW-aaaaaa0002", "繊維製造監督令",   "繊維製造の届出。",       "current"),
-            ("LAW-aaaaaa0003", "金融商品取引法",   "投資商品 規制。",        "current"),
-            ("LAW-aaaaaa0004", "旧 製造業税法",    "製造業 旧税制 (廃止)。", "repealed"),
+            ("LAW-aaaaaa0001", "製造業安全衛生法", "製造ラインの安全管理。", "current"),
+            ("LAW-aaaaaa0002", "繊維製造監督令", "繊維製造の届出。", "current"),
+            ("LAW-aaaaaa0003", "金融商品取引法", "投資商品 規制。", "current"),
+            ("LAW-aaaaaa0004", "旧 製造業税法", "製造業 旧税制 (廃止)。", "repealed"),
         ]:
             c.execute(
                 """INSERT INTO laws(unified_id, law_number, law_title, law_type,
                        revision_status, summary, source_url, fetched_at, updated_at)
                    VALUES(?,?,?,?,?,?,?,?,?)""",
-                (lid, "test法律第1号", title, "act", status, summary,
-                 "https://example.com", now, now),
+                (
+                    lid,
+                    "test法律第1号",
+                    title,
+                    "act",
+                    status,
+                    summary,
+                    "https://example.com",
+                    now,
+                    now,
+                ),
             )
         # 2 certifications via programs(program_kind='certification').
         for uid, name, kind, pref in [
             ("UNI-cert-1", "テスト製造業 認証", "certification", "東京都"),
-            ("UNI-cert-2", "テスト IoT 認証",   "certification", None),
+            ("UNI-cert-2", "テスト IoT 認証", "certification", None),
         ]:
             c.execute(
                 """INSERT INTO programs(unified_id, primary_name, program_kind,
                        prefecture, authority_name, official_url, tier, excluded,
                        updated_at)
                    VALUES(?,?,?,?,?,?,?,?,?)""",
-                (uid, name, kind, pref, "テスト省", "https://example.com/cert",
-                 "B", 0, now),
+                (uid, name, kind, pref, "テスト省", "https://example.com/cert", "B", 0, now),
             )
         # 3 tax_rulesets: 1 current, 1 expired, 1 future-effective.
         for tid, rname, eff_from, eff_until in [
-            ("TAX-aaaaaa0001", "テスト製造業現行税制",   "2025-04-01", None),
-            ("TAX-aaaaaa0002", "テスト製造業失効税制",   "2020-04-01", "2024-03-31"),
-            ("TAX-aaaaaa0003", "テスト製造業経過措置税制","2026-10-01", "2029-09-30"),
+            ("TAX-aaaaaa0001", "テスト製造業現行税制", "2025-04-01", None),
+            ("TAX-aaaaaa0002", "テスト製造業失効税制", "2020-04-01", "2024-03-31"),
+            ("TAX-aaaaaa0003", "テスト製造業経過措置税制", "2026-10-01", "2029-09-30"),
         ]:
             c.execute(
                 """INSERT INTO tax_rulesets(unified_id, ruleset_name, tax_category,
                        ruleset_kind, effective_from, effective_until, authority,
                        source_url, fetched_at, updated_at)
                    VALUES(?,?,?,?,?,?,?,?,?,?)""",
-                (tid, rname, "consumption", "credit", eff_from, eff_until,
-                 "国税庁", "https://nta.go.jp/test", now, now),
+                (
+                    tid,
+                    rname,
+                    "consumption",
+                    "credit",
+                    eff_from,
+                    eff_until,
+                    "国税庁",
+                    "https://nta.go.jp/test",
+                    now,
+                    now,
+                ),
             )
         # 2 enforcement_cases — one matching 製造 in 東京都, one elsewhere.
         for cid, pref, ministry, reason, hint, dd in [
-            ("ENF-test001", "東京都",  "経済産業省", "製造工程の不正があった事案", "製造補助金", "2025-12-01"),
-            ("ENF-test002", "大阪府",  "厚生労働省", "農業従事者の労務管理不備",   "農業助成金", "2025-11-15"),
+            (
+                "ENF-test001",
+                "東京都",
+                "経済産業省",
+                "製造工程の不正があった事案",
+                "製造補助金",
+                "2025-12-01",
+            ),
+            (
+                "ENF-test002",
+                "大阪府",
+                "厚生労働省",
+                "農業従事者の労務管理不備",
+                "農業助成金",
+                "2025-11-15",
+            ),
         ]:
             c.execute(
                 """INSERT INTO enforcement_cases(case_id, event_type,
                        program_name_hint, prefecture, ministry, reason_excerpt,
                        source_url, disclosed_date, fetched_at, confidence)
                    VALUES(?,?,?,?,?,?,?,?,?,?)""",
-                (cid, "返還請求", hint, pref, ministry, reason,
-                 "https://example.com/enf", dd, now, 0.9),
+                (
+                    cid,
+                    "返還請求",
+                    hint,
+                    pref,
+                    ministry,
+                    reason,
+                    "https://example.com/enf",
+                    dd,
+                    now,
+                    0.9,
+                ),
             )
         c.commit()
         yield seeded_db
@@ -535,9 +580,7 @@ def _seed_regulatory_prep(seeded_db):
         c.execute("DELETE FROM laws WHERE unified_id LIKE 'LAW-aaaaaa%'")
         c.execute("DELETE FROM tax_rulesets WHERE unified_id LIKE 'TAX-aaaaaa%'")
         c.execute("DELETE FROM enforcement_cases WHERE case_id LIKE 'ENF-test%'")
-        c.execute(
-            "DELETE FROM programs WHERE unified_id IN ('UNI-cert-1','UNI-cert-2')"
-        )
+        c.execute("DELETE FROM programs WHERE unified_id IN ('UNI-cert-1','UNI-cert-2')")
         c.commit()
     finally:
         c.close()
@@ -546,8 +589,7 @@ def _seed_regulatory_prep(seeded_db):
 def test_regulatory_prep_pack_happy_path(client, _seed_regulatory_prep):
     """製造業 + 東京都: laws kanji-LIKE + cert prefecture filter +
     current-only tax + 同業 enforcement, all four sections populated."""
-    out = regulatory_prep_pack(industry="製造業", prefecture="東京都",
-                               limit_per_section=5)
+    out = regulatory_prep_pack(industry="製造業", prefecture="東京都", limit_per_section=5)
     assert out["industry"] == "E"
     assert out["prefecture"] == "東京都"
     law_ids = {r["law_id"] for r in out["laws"]}
@@ -588,33 +630,28 @@ def test_regulatory_prep_pack_empty_returns_nested_error(client, seeded_db):
     assert "hint" in out["error"]
 
 
-def test_regulatory_prep_pack_include_expired_toggle(client,
-                                                    _seed_regulatory_prep):
+def test_regulatory_prep_pack_include_expired_toggle(client, _seed_regulatory_prep):
     """include_expired=True surfaces TAX-aaaaaa0002 (effective_until=2024)."""
-    out = regulatory_prep_pack(industry="製造業", include_expired=True,
-                               limit_per_section=20)
+    out = regulatory_prep_pack(industry="製造業", include_expired=True, limit_per_section=20)
     tax_ids = {r["ruleset_id"] for r in out["tax_rulesets"]}
     assert "TAX-aaaaaa0002" in tax_ids
-    out_default = regulatory_prep_pack(industry="製造業",
-                                       include_expired=False,
-                                       limit_per_section=20)
+    out_default = regulatory_prep_pack(
+        industry="製造業", include_expired=False, limit_per_section=20
+    )
     tax_ids_default = {r["ruleset_id"] for r in out_default["tax_rulesets"]}
     assert "TAX-aaaaaa0002" not in tax_ids_default
 
 
-def test_regulatory_prep_pack_limit_caps_sections(client,
-                                                  _seed_regulatory_prep):
+def test_regulatory_prep_pack_limit_caps_sections(client, _seed_regulatory_prep):
     """limit_per_section=1 caps every array to ≤1 row."""
-    out = regulatory_prep_pack(industry="製造業", prefecture="東京都",
-                               limit_per_section=1)
+    out = regulatory_prep_pack(industry="製造業", prefecture="東京都", limit_per_section=1)
     assert len(out["laws"]) <= 1
     assert len(out["certifications"]) <= 1
     assert len(out["tax_rulesets"]) <= 1
     assert len(out["recent_enforcement"]) <= 1
 
 
-def test_regulatory_prep_pack_company_size_echoed(client,
-                                                  _seed_regulatory_prep):
+def test_regulatory_prep_pack_company_size_echoed(client, _seed_regulatory_prep):
     """company_size is echoed back so callers can verify the parameter
     landed (it's currently a hint-only field, not a SQL filter)."""
     out = regulatory_prep_pack(industry="製造業", company_size="small")

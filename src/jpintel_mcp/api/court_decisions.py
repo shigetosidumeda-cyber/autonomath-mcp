@@ -377,11 +377,8 @@ def get_court_decision(
 ) -> JSONResponse:
     """Return a single court decision with full source lineage.
 
-    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
-    `corpus_snapshot_id` (ISO-8601 of latest am_amendment_diff detection or
-    MAX(fetched_at) fallback) and `corpus_checksum` (sha256:<16hex>) so an
-    auditor citing this 判例 in a work-paper can reproduce the lookup later
-    and detect whether the corpus mutated. See docs/audit_trail.md.
+    The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
+    can reproduce the lookup later and detect whether the corpus changed.
     """
     row = conn.execute(
         "SELECT * FROM court_decisions WHERE unified_id = ?",

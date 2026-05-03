@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sqlite3
+
 import pytest
 
 from jpintel_mcp.api.cost import (
@@ -124,6 +126,51 @@ def test_cost_preview_endpoint_returns_422_for_missing_fanout_args(client) -> No
 
     assert response.status_code == 422
     assert response.json()["detail"]["error"]["code"] == "cost_preview_requires_args"
+
+
+def test_cost_preview_endpoint_does_not_consume_anon_quota(client, seeded_db) -> None:
+    """The free estimator must not burn the anonymous 3/day discovery runway."""
+    ip = "203.0.113.210"
+    for _ in range(3):
+        response = client.post(
+            "/v1/cost/preview",
+            json={"stack_or_calls": [{"tool": "/v1/programs/search"}]},
+            headers={"x-forwarded-for": ip},
+        )
+        assert response.status_code == 200, response.text
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        (count,) = conn.execute(
+            "SELECT COUNT(*) FROM anon_rate_limit",
+        ).fetchone()
+    finally:
+        conn.close()
+    assert count == 0
+
+
+def test_cost_preview_invalid_api_keys_share_ip_preview_throttle(
+    client, seeded_db
+) -> None:
+    """Bogus key rotation must not mint unlimited preview buckets."""
+    from jpintel_mcp.api.cost import _reset_preview_rate_state
+
+    _reset_preview_rate_state()
+    ip = "203.0.113.211"
+    last = None
+    for i in range(51):
+        last = client.post(
+            "/v1/cost/preview",
+            json={"stack_or_calls": [{"tool": "/v1/programs/search"}]},
+            headers={
+                "x-forwarded-for": ip,
+                "X-API-Key": f"am_bogus_{i}",
+            },
+        )
+    assert last is not None
+    assert last.status_code == 429
+    assert last.headers["Retry-After"]
+    assert last.json()["detail"]["error"]["bucket"] == "cost_preview"
 
 
 def test_openapi_operation_id_aliases_use_fanout_quantities() -> None:

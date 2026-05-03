@@ -22,6 +22,7 @@ The autonomath path is overridden via the ``AUTONOMATH_DB_PATH``
 environment variable. Per-test ``monkeypatch`` (NOT ``monkeypatch.setenv``
 inside a fixture that re-imports modules) keeps the swap local.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -409,8 +410,9 @@ def _build_fixture_autonomath_db(path: Path) -> None:
 
         # Apply migration 115 (the view) to this fixture DB.
         repo_root = Path(__file__).resolve().parents[1]
-        sql = (repo_root / "scripts" / "migrations"
-               / "115_source_manifest_view.sql").read_text(encoding="utf-8")
+        sql = (repo_root / "scripts" / "migrations" / "115_source_manifest_view.sql").read_text(
+            encoding="utf-8"
+        )
         con.executescript(sql)
         con.commit()
     finally:
@@ -431,9 +433,7 @@ def fixture_db(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 @pytest.fixture(autouse=True)
-def _override_autonomath_path(
-    fixture_db: Path, monkeypatch: pytest.MonkeyPatch
-) -> Iterator[None]:
+def _override_autonomath_path(fixture_db: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     """Point both the REST handler and the MCP tool's connection helper
     at the fixture autonomath.db.
 
@@ -575,9 +575,7 @@ def test_response_includes_disclaimer(client: TestClient) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_anon_within_quota_returns_200(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_anon_within_quota_returns_200(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Anonymous caller within the cap gets 200 + remaining-quota header."""
     from jpintel_mcp.config import settings
 
@@ -590,13 +588,13 @@ def test_anon_within_quota_returns_200(
     assert r.headers.get("X-Anon-Quota-Remaining") is not None
 
 
-def test_anon_over_quota_returns_429(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_anon_over_quota_returns_429(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Second anon hit on a 1/month cap MUST 429."""
+    from jpintel_mcp.api import anon_limit as _anon_limit
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "anon_rate_limit_per_day", 1)
+    monkeypatch.setattr(_anon_limit.settings, "anon_rate_limit_per_day", 1)
     ip = "198.51.100.92"
     r1 = client.get(
         "/v1/source_manifest/program:test:p1",
@@ -648,8 +646,7 @@ def test_mcp_tool_returns_same_envelope_as_rest(
         "summary",
     ):
         assert mcp.get(key) == rest.get(key), (
-            f"MCP/REST divergence on {key!r}: "
-            f"mcp={mcp.get(key)!r} rest={rest.get(key)!r}"
+            f"MCP/REST divergence on {key!r}: mcp={mcp.get(key)!r} rest={rest.get(key)!r}"
         )
     assert "_disclaimer" in mcp
 

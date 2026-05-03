@@ -332,12 +332,10 @@ def get_loan_program(
     conn: DbDep,
     ctx: ApiContextDep,
 ) -> JSONResponse:
-    """Return one loan program with audit-trail snapshot fields.
+    """Return one loan program with corpus snapshot fields.
 
-    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
-    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this row in
-    a work-paper can reproduce the lookup later and detect whether the corpus
-    mutated. See docs/audit_trail.md.
+    The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
+    can reproduce the lookup later and detect whether the corpus changed.
     """
     row = conn.execute(
         "SELECT * FROM loan_programs WHERE id = ?", (loan_id,)

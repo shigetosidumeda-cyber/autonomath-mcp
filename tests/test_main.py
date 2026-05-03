@@ -14,8 +14,10 @@ Background — 2026-04-25 CORS audit (a0a7316a311c3ffd9):
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
-from fastapi.testclient import TestClient
+if TYPE_CHECKING:
+    from fastapi.testclient import TestClient
 
 
 _TOKEN_HEX_8_RE = re.compile(r"^[0-9a-f]{16}$")
@@ -48,6 +50,40 @@ def test_cors_methods_restricted(client: TestClient) -> None:
     assert "*" not in allow, (
         f"Wildcard method leaked into Access-Control-Allow-Methods: {allow!r}"
     )
+
+
+def test_cors_allows_cost_cap_preflight(client: TestClient) -> None:
+    """Browser paid bulk calls need the cost-cap/idempotency headers."""
+    resp = client.options(
+        "/v1/programs/batch",
+        headers={
+            "Origin": "https://jpcite.com",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": (
+                "X-API-Key, X-Cost-Cap-JPY, Idempotency-Key, Content-Type"
+            ),
+        },
+    )
+    assert resp.status_code in {200, 204}
+    allow_headers = resp.headers.get("access-control-allow-headers", "")
+    assert "X-Cost-Cap-JPY" in allow_headers
+
+
+def test_cors_exposes_cost_cap_short_circuit(client: TestClient) -> None:
+    """Cost-cap errors must remain readable by browser clients."""
+    resp = client.post(
+        "/v1/unknown/bulk_preview",
+        json={"items": ["x"]},
+        headers={
+            "Origin": "https://jpcite.com",
+            "X-API-Key": "am_live_shape_only",
+        },
+    )
+    assert resp.status_code == 400
+    assert resp.headers.get("access-control-allow-origin") == "https://jpcite.com"
+    exposed = resp.headers.get("access-control-expose-headers", "")
+    assert "X-Cost-Cap-Required" in exposed
+    assert resp.headers.get("X-Cost-Cap-Required") == "true"
 
 
 # ---------------------------------------------------------------------------

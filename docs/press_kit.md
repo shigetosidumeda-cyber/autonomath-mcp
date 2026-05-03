@@ -158,7 +158,7 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 
 ### Audience 3: SMB (中小企業) 経営者 / 経理担当
 
-**Use case**: ChatGPT に「うちの会社で使える補助金は?」と聞くと、jpcite MCP 経由で一次資料 URL 付きの制度のみを Tier 順に提示。集約サイト由来の hallucination を抑制。
+**Use case**: ChatGPT Custom GPT の Actions や Claude Desktop / Cursor の MCP から jpcite を呼ぶと、「うちの会社で使える補助金は?」に一次資料 URL 付きの制度のみを Tier 順に提示できます。集約サイト由来の hallucination を抑制。
 
 **Quote (想定発言)**: 「『一次資料 URL + 更新日時』が前提なのが大きい。集約サイトでは何が信用できるか分からなかった。」(persona: 経理担当 / sample)
 

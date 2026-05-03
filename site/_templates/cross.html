@@ -209,7 +209,7 @@
 
  <section aria-labelledby="api-title">
  <h2 id="api-title">{{ pref_ja }} × 「{{ primary_name }}」を API / MCP で取得</h2>
- <p>本ページに掲載した制度・採択データは jpcite の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / ChatGPT などの MCP クライアントから即時に呼び出せます。</p>
+ <p>本ページに掲載した制度・採択データは jpcite の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から呼び出せます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.{{ DOMAIN }}/v1/programs/{{ unified_id }}"
 curl -H "X-API-Key: YOUR_API_KEY" \

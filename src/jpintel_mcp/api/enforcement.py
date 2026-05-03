@@ -665,10 +665,8 @@ def get_enforcement_case(
 ) -> JSONResponse:
     """Return one enforcement case with audit-trail snapshot fields.
 
-    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
-    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this
-    行政処分 case in a work-paper can reproduce the lookup later and detect
-    whether the corpus mutated. See docs/audit_trail.md.
+    The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
+    can reproduce the lookup later and detect whether the corpus changed.
     """
     row = conn.execute(
         "SELECT * FROM enforcement_cases WHERE case_id = ?", (case_id,)

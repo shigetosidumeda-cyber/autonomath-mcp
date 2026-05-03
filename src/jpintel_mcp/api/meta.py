@@ -51,18 +51,24 @@ def get_meta(conn: DbDep, ctx: ApiContextDep) -> Meta:
 
     tier_counts: dict[str, int] = {}
     for row in conn.execute(
-        "SELECT COALESCE(tier, 'unknown') AS tier, COUNT(*) AS c FROM programs GROUP BY tier"
+        "SELECT COALESCE(tier, 'unknown') AS tier, COUNT(*) AS c "
+        "FROM programs WHERE excluded=0 AND COALESCE(tier, 'X') != 'X' "
+        "GROUP BY tier"
     ):
         tier_counts[row["tier"]] = row["c"]
 
     pref_counts: dict[str, int] = {}
     for row in conn.execute(
-        "SELECT COALESCE(prefecture, '_none') AS p, COUNT(*) AS c FROM programs GROUP BY prefecture"
+        "SELECT COALESCE(prefecture, '_none') AS p, COUNT(*) AS c "
+        "FROM programs WHERE excluded=0 AND COALESCE(tier, 'X') != 'X' "
+        "GROUP BY prefecture"
     ):
         pref_counts[row["p"]] = row["c"]
 
     (rules_n,) = conn.execute("SELECT COUNT(*) FROM exclusion_rules").fetchone()
-    (programs_n,) = conn.execute("SELECT COUNT(*) FROM programs").fetchone()
+    (programs_n,) = conn.execute(
+        "SELECT COUNT(*) FROM programs WHERE excluded=0 AND COALESCE(tier, 'X') != 'X'"
+    ).fetchone()
 
     last_ingested = None
     data_as_of = None
@@ -78,7 +84,8 @@ def get_meta(conn: DbDep, ctx: ApiContextDep) -> Meta:
     ):
         row = conn.execute(
             "SELECT MAX(source_fetched_at) AS last_fetched, "
-            "COUNT(DISTINCT source_checksum) AS uniq FROM programs"
+            "COUNT(DISTINCT source_checksum) AS uniq FROM programs "
+            "WHERE excluded=0 AND COALESCE(tier, 'X') != 'X'"
         ).fetchone()
         lineage = DataLineage(
             last_fetched_at=row["last_fetched"],
@@ -302,14 +309,16 @@ def data_health() -> JSONResponse:
         if err is not None or rows is None:
             status = "missing"
             has_unhealthy = True
-            checks.append({
-                "table": table,
-                "db": db_path.name,
-                "expected_min_rows": floor,
-                "actual_rows": None,
-                "status": status,
-                "detail": err,
-            })
+            checks.append(
+                {
+                    "table": table,
+                    "db": db_path.name,
+                    "expected_min_rows": floor,
+                    "actual_rows": None,
+                    "status": status,
+                    "detail": err,
+                }
+            )
             continue
         if rows == 0 and floor > 0:
             status = "empty"
@@ -319,14 +328,16 @@ def data_health() -> JSONResponse:
             has_degraded = True
         else:
             status = "ok"
-        checks.append({
-            "table": table,
-            "db": db_path.name,
-            "expected_min_rows": floor,
-            "actual_rows": rows,
-            "status": status,
-            "detail": None,
-        })
+        checks.append(
+            {
+                "table": table,
+                "db": db_path.name,
+                "expected_min_rows": floor,
+                "actual_rows": rows,
+                "status": status,
+                "detail": None,
+            }
+        )
 
     if has_unhealthy:
         agg = "unhealthy"

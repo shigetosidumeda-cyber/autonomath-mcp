@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>OpenAI Custom GPT と連携する — jpcite</title>
+<title>ChatGPT Custom GPT と連携する — jpcite</title>
 <meta name="description" content="ChatGPT Custom GPT に OpenAPI を読み込ませれば、jpcite の API が Actions として利用できます。">
 
-<meta property="og:title" content="OpenAI Custom GPT と連携する — jpcite">
+<meta property="og:title" content="ChatGPT Custom GPT と連携する — jpcite">
 <meta property="og:description" content="ChatGPT Custom GPT に OpenAPI を読み込ませれば、jpcite の API が Actions として利用できます。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/integrations/openai-custom-gpt.html">
@@ -54,7 +54,7 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "headline": "OpenAI Custom GPT と連携する",
+  "headline": "ChatGPT Custom GPT と連携する",
   "url": "https://jpcite.com/integrations/openai-custom-gpt.html",
   "inLanguage": "ja",
   "author": {"@id": "https://jpcite.com/#publisher"},
@@ -98,9 +98,9 @@
 <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
 <a href="/">ホーム</a> <span aria-hidden="true">›</span>
 <a href="/integrations/">連携</a> <span aria-hidden="true">›</span>
-<span aria-current="page">OpenAI Custom GPT</span>
+<span aria-current="page">ChatGPT Custom GPT</span>
 </nav>
-<h1 style="margin-bottom:0.2em;">OpenAI Custom GPT と連携する</h1>
+<h1 style="margin-bottom:0.2em;">ChatGPT Custom GPT と連携する</h1>
 <p>jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換 / 排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合だけ、入力文脈量の削減見込みと break-even を返します。外部 LLM の請求額削減は保証しません。</p>
 <p>Custom GPT は自然文の説明を作る場所、jpcite は根拠データを取りに行く場所として分けると安定します。制度 PDF や自治体ページを毎回 GPT に長文投入する代わりに、jpcite が制度 metadata、出典 URL、取得時点、注意点を短い JSON で返します。これにより、GPT の出力は引用可能な根拠に寄せやすくなります。トークン量や読み込み待ちへの効果は、モデル、プロンプト、検索設定、キャッシュ状態によって変わります。</p>
 

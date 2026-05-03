@@ -17,7 +17,7 @@ author: Bookyou株式会社
 > 公開日: 2026-05-06
 
 jpcite は「日本の制度データを 1 query にまとめた API」です。
-誰がどう使うかを 5 シナリオで示します。Claude / Cursor / ChatGPT から MCP で呼ぶ前提です。
+誰がどう使うかを 5 シナリオで示します。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から呼ぶ前提です。
 
 ---
 

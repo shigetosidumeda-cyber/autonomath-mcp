@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>地域中小企業支援協議会について - 福岡県庁ホームページ</title>
@@ -848,15 +848,6 @@
   </item>
 
   <item>
-    <title>福岡 スマート農業機械等導入支援 地域型サービス支援</title>
-    <link>https://jpcite.com/programs/fukuoka-sumaato-nougyou-kikai-nado-dounyuu-shien-chiiki-e56c69.html</link>
-    <description>Tier A / 福岡県 / 都道府県 / subsidy / 上限 5,000万円 出典: https://www.pref.fukuoka.lg.jp/contents/sien-service.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-17414f2b6e</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>八女市農地銀行</title>
     <link>https://jpcite.com/programs/yame-shi-nouchi-ginkou-2bac5d.html</link>
     <description>Tier C / 福岡県 / subsidy / 上限 100万円 出典: https://www.city.yame.fukuoka.jp/soshiki/nougyou_ringyo/</description>
@@ -871,15 +862,6 @@
     <description>Tier C / 福岡県 / 農林水産省 / subsidy / 上限 150万円 出典: https://www.city.asakura.lg.jp/www/contents/1688091607537/index.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-1a58c02c00</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>福岡_スマート農業機械等導入支援_地域型サービス支援</title>
-    <link>https://jpcite.com/programs/pref-40-103-fukuoka-sumaato-nougyou-kikai-nado-dounyuu-8420fd.html</link>
-    <description>Tier B / 福岡県 / subsidy / 上限 1,500万円 出典: https://www.pref.fukuoka.lg.jp/contents/sien-service.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1f79536e53</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +889,24 @@
     <description>Tier B / 福岡県 / 福岡県糸島市 / subsidy 出典: https://www.city.itoshima.lg.jp/s024/050/080/ninnteishinki.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-2293683c44</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>あさ暮らし移住・定住支援金</title>
+    <link>https://jpcite.com/programs/asa-kurashi-ijuu-teijuu-shien-kin-e9423c.html</link>
+    <description>Tier B / 福岡県 / 福岡県朝倉市 / subsidy / 上限 40万円 出典: https://www.city.asakura.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-23aa05ab82</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>糸島市農業研修生を受け入れるまちづくり事業</title>
+    <link>https://jpcite.com/programs/ito-shima-shi-nougyou-kenshuusei-wo-ukeire-rumachizukuri-527773.html</link>
+    <description>Tier B / 福岡県 / 福岡県糸島市 / subsidy / 上限 3万円 出典: https://www.city.itoshima.lg.jp/s024/050/080/nougyoukensyuu.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-28365e726b</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

@@ -40,6 +40,7 @@ Wiring:
     * `.github/workflows/saved-searches-cron.yml` runs this daily at
       06:00 JST (21:00 UTC) via `flyctl ssh console -C ...`.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -81,7 +82,7 @@ DEFAULT_MAX_MATCHES = 10
 # 'weekly' = 7d window. Shorter than the bare interval so a clock-drift
 # of a few minutes does not skip a run.
 _FREQUENCY_INTERVALS_HOURS: dict[str, int] = {
-    "daily": 22,    # 22h instead of 24h so JST 06:00 cron doesn't push to 06:01 next day
+    "daily": 22,  # 22h instead of 24h so JST 06:00 cron doesn't push to 06:01 next day
     "weekly": 7 * 24 - 4,  # 6d 20h same reason
 }
 
@@ -111,8 +112,7 @@ def _build_search_sql(query: dict[str, Any]) -> tuple[str, list[Any]]:
     where: list[str] = ["1=1"]
     params: list[Any] = []
 
-    if not query.get("include_excluded"):
-        where.append("(excluded = 0 OR excluded IS NULL)")
+    where.append("(excluded = 0 OR excluded IS NULL)")
 
     # Quarantine tier always excluded — matches generate_program_pages.py.
     where.append("(tier IS NULL OR tier IN ('S', 'A', 'B', 'C'))")
@@ -194,7 +194,8 @@ def _public_url(unified_id: str) -> str:
 
 
 def _changed_entity_ids_since(
-    am_conn: sqlite3.Connection, since_iso: str,
+    am_conn: sqlite3.Connection,
+    since_iso: str,
 ) -> set[str]:
     """Return the set of `entity_id` values that changed since `since_iso`.
 
@@ -208,8 +209,7 @@ def _changed_entity_ids_since(
     """
     try:
         rows = am_conn.execute(
-            "SELECT DISTINCT entity_id FROM am_amendment_diff "
-            "WHERE detected_at >= ?",
+            "SELECT DISTINCT entity_id FROM am_amendment_diff WHERE detected_at >= ?",
             (since_iso,),
         ).fetchall()
     except sqlite3.OperationalError as exc:
@@ -504,12 +504,7 @@ def run(
         # Channel routing fields (channel_format / channel_url) land in
         # migration 099. Older test DBs may not have them; we feature-
         # detect via PRAGMA so the cron stays compatible with both.
-        cols = {
-            r[1]
-            for r in jp_conn.execute(
-                "PRAGMA table_info(saved_searches)"
-            ).fetchall()
-        }
+        cols = {r[1] for r in jp_conn.execute("PRAGMA table_info(saved_searches)").fetchall()}
         has_channel = "channel_format" in cols
         if has_channel:
             sweep_sql = (
@@ -569,9 +564,7 @@ def run(
             # spamming every match daily — preserving the "new since
             # last run" contract of the digest.
             if changed_ids:
-                matches = [
-                    dict(r) for r in search_rows if r["unified_id"] in changed_ids
-                ]
+                matches = [dict(r) for r in search_rows if r["unified_id"] in changed_ids]
             else:
                 matches = []
 
@@ -649,9 +642,7 @@ def run(
                     payload=payload,
                     dry_run=dry_run,
                 )
-                sent = bool(outcome.get("slack_ok")) or (
-                    outcome.get("reason") == "dry_run"
-                )
+                sent = bool(outcome.get("slack_ok")) or (outcome.get("reason") == "dry_run")
                 if not sent:
                     _record_slack_failure(
                         jp_conn=jp_conn,
@@ -678,12 +669,11 @@ def run(
                             pass
             else:
                 outcome = _send_digest_email(
-                    to=row["notify_email"], payload=payload, dry_run=dry_run,
+                    to=row["notify_email"],
+                    payload=payload,
+                    dry_run=dry_run,
                 )
-                sent = (
-                    outcome.get("skipped") is None
-                    or outcome.get("reason") == "dry_run"
-                )
+                sent = outcome.get("skipped") is None or outcome.get("reason") == "dry_run"
             if sent:
                 emails_sent += 1
                 # Same ¥3 metering across both channels — the customer
@@ -715,8 +705,7 @@ def run(
             "frequency_filter": only_frequency,
             "dry_run": dry_run,
         }
-        logger.info("saved_search_digest.summary %s",
-                    json.dumps(summary, ensure_ascii=False))
+        logger.info("saved_search_digest.summary %s", json.dumps(summary, ensure_ascii=False))
         return summary
     finally:
         if am_conn is not None:
@@ -725,18 +714,27 @@ def run(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Daily/weekly saved-search digest cron"
+    parser = argparse.ArgumentParser(description="Daily/weekly saved-search digest cron")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="log + count only; no email, no Stripe push, no DB writes",
     )
-    parser.add_argument("--dry-run", action="store_true",
-                        help="log + count only; no email, no Stripe push, no DB writes")
-    parser.add_argument("--frequency", default=None,
-                        choices=["daily", "weekly"],
-                        help="restrict sweep to a single frequency")
-    parser.add_argument("--max-matches", type=int, default=DEFAULT_MAX_MATCHES,
-                        help=f"max matches per digest (default {DEFAULT_MAX_MATCHES})")
-    parser.add_argument("--since", default=None,
-                        help="ISO datetime for am_amendment_diff lookback (default now-8d)")
+    parser.add_argument(
+        "--frequency",
+        default=None,
+        choices=["daily", "weekly"],
+        help="restrict sweep to a single frequency",
+    )
+    parser.add_argument(
+        "--max-matches",
+        type=int,
+        default=DEFAULT_MAX_MATCHES,
+        help=f"max matches per digest (default {DEFAULT_MAX_MATCHES})",
+    )
+    parser.add_argument(
+        "--since", default=None, help="ISO datetime for am_amendment_diff lookback (default now-8d)"
+    )
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args(argv)
 
@@ -752,9 +750,9 @@ def main(argv: list[str] | None = None) -> int:
             since_iso=args.since,
         )
         hb["rows_processed"] = int(summary.get("emails_sent", 0))
-        hb["rows_skipped"] = int(
-            summary.get("skipped_window", 0)
-        ) + int(summary.get("skipped_no_match", 0))
+        hb["rows_skipped"] = int(summary.get("skipped_window", 0)) + int(
+            summary.get("skipped_no_match", 0)
+        )
         hb["metadata"] = {
             "scanned": summary.get("scanned"),
             "billed": summary.get("billed"),

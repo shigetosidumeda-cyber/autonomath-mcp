@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>栃木県／うちエコ診断士資格試験受験料を助成します</title>
@@ -439,15 +439,6 @@
     <description>Tier B / 栃木県 / 都道府県 / subsidy / 上限 100万円 出典: https://www.pref.tochigi.lg.jp/g04/keigi_sinkisyuunou.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-17161fb991</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>新規就農者支援事業</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-jigyou-71b15a.html</link>
-    <description>Tier A / 栃木県 / 栃木県真岡市 / subsidy / 上限 1,000万円 出典: https://www.city.moka.lg.jp/material/files/group/19/hojyochirashi2025.pdf</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1738a01452</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +898,15 @@
     <description>Tier A / 栃木県 / 栃木県さくら市 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html#c98a-187c-7d94-eea8-a34f2ae92e84289c</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-5c6764860c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さくら市_農産物売上向上対策総合支援事業費補助金</title>
+    <link>https://jpcite.com/programs/sakura-shi-nousanbutsu-uriage-koujou-taisaku-sougou-shien-901de0.html</link>
+    <description>Tier B / 栃木県 / subsidy / 上限 200万円 出典: https://www.city.tochigi-sakura.lg.jp/business/000043/000255/000547/p003260.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5d1c58d75a</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

@@ -27,7 +27,7 @@
 
 ## 障害通知
 
-- 公開状況: `https://status.jpcite.com`
+- 公開状況: `https://jpcite.com/status.html`
 - 連絡先: [特定商取引法に基づく表記](./compliance/tokushoho.md)
 - 全面停止など影響が大きい障害では、復旧状況を status page または登録メールで案内します
 

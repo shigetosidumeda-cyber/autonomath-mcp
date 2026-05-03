@@ -12,7 +12,7 @@ from jpintel_mcp.models.premium_response import (
     QualityGrade,
 )
 
-Tier = Literal["S", "A", "B", "C", "X"]
+Tier = Literal["S", "A", "B", "C"]
 
 # Controls how much of each program row is returned.
 # - "minimal": bare list fields (unified_id, primary_name, tier, prefecture,
@@ -139,17 +139,26 @@ class BatchGetProgramsRequest(BaseModel):
     )
 
 
+class BatchGetProgramsBilling(BaseModel):
+    """Billing summary for POST /v1/programs/batch."""
+
+    billable_units: int = Field(..., ge=0)
+    yen_excl_tax: int = Field(..., ge=0)
+    unit_price_yen: int = Field(3, ge=0)
+    not_found_billed: bool = False
+
+
 class BatchGetProgramsResponse(BaseModel):
     """Response for POST /v1/programs/batch.
 
-    `results[]` is in the same order as the deduped input `unified_ids`.
-    Missing ids go to `not_found` (NOT a 404 — partial success is the point
-    of batch-fetch). Use `not_found` length == 0 as the "everything resolved"
-    signal.
+    `results[]` contains found rows in the same order as the deduped input
+    `unified_ids`. Missing ids go to `not_found` (NOT a 404 and not billed).
+    Use `not_found` length == 0 as the "everything resolved" signal.
     """
 
     results: list[ProgramDetail]
     not_found: list[str]
+    billing: BatchGetProgramsBilling
 
 
 class ExclusionRule(BaseModel):
@@ -496,6 +505,7 @@ __all__ = [
     "Program",
     "ProgramDetail",
     "SearchResponse",
+    "BatchGetProgramsBilling",
     "BatchGetProgramsRequest",
     "BatchGetProgramsResponse",
     "ExclusionRule",

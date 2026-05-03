@@ -21,17 +21,18 @@ GPT / Claude / Cursor に長い PDF や公式ページを直接渡す前に、Ev
 ## 使える形
 
 - **REST API**: `https://api.jpcite.com/v1/*`
-- **OpenAPI**: [openapi/v1.json](./openapi/v1.json)
+- **Agent-safe OpenAPI**: [openapi/agent.json](./openapi/agent.json) / `https://api.jpcite.com/v1/openapi.agent.json` (ChatGPT Custom GPT Actions や AI tool import 向け)
+- **Full OpenAPI**: [openapi/v1.json](./openapi/v1.json) / `https://api.jpcite.com/v1/openapi.json` (SDK 生成・完全リファレンス向け)
 - **MCP server**: Claude Desktop / Cursor / Cline などの MCP クライアントで利用できます。ChatGPT Custom GPT では OpenAPI Actions 経由で同等の REST endpoint を呼び出します。
 - **配布 package**: 互換性のため package 名は `autonomath-mcp` を維持しています。表示名とサービス名は jpcite です。
 
-## 代表的な使い方
+## AI agent 向け first call
 
-1. `GET /v1/programs/search` で制度候補を検索する
-2. `GET /v1/programs/{id}` で制度詳細と出典 URL を取る
-3. `POST /v1/exclusions/check` で併用不可・前提条件を確認する
-4. `GET /v1/source_manifest/{program_id}` または Evidence Packet 系 endpoint で根拠 chain を確認する
-5. AI クライアント側では `source_url` と取得時刻を添えて回答する
+1. 広い制度質問は `GET /v1/intelligence/precomputed/query?include_facts=false&include_compression=true`
+2. 根拠 record、known gaps、文脈サイズ比較が必要なら `POST /v1/evidence/packets/query`
+3. 実在 ID が必要な場合だけ `GET /v1/programs/search`
+4. 詳細・併用確認は `GET /v1/programs/{unified_id}` / `POST /v1/exclusions/check`
+5. AI クライアント側では `source_url` と `source_fetched_at` を添え、known gaps も明示する
 
 ## データ収録
 

@@ -41,6 +41,10 @@ from jpintel_mcp.api.middleware.client_tag import (
     ClientTagMiddleware,
     validate_client_tag,
 )
+from jpintel_mcp.api.middleware.cost_cap import (
+    CostCapMiddleware,
+    CostCapState,
+)
 from jpintel_mcp.api.middleware.customer_cap import (
     CustomerCapMiddleware,
     _reset_cap_cache_state,
@@ -81,6 +85,8 @@ __all__ = [
     "AnalyticsRecorderMiddleware",
     "AnonQuotaHeaderMiddleware",
     "ClientTagMiddleware",
+    "CostCapMiddleware",
+    "CostCapState",
     "CustomerCapMiddleware",
     "DeprecationWarningMiddleware",
     "EnvelopeAdapterMiddleware",

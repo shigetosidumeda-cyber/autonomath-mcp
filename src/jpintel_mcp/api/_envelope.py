@@ -2,7 +2,7 @@
 
 Source-of-truth for the v2 wire shape that customer agents (Cursor / Cline /
 Continue / Claude Desktop / Zapier / Make / RPA) pattern-match against.
-Adoption is opt-in for the launch window so legacy consumers (`results: [...]`
+Adoption is opt-in for the compatibility period so legacy consumers (`results: [...]`
 vs `data: [...]` vs raw arrays) keep working untouched. Routes opt in via:
 
     Accept: application/vnd.jpcite.v2+json  # explicit media type for SDKs

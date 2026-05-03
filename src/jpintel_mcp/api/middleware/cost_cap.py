@@ -3,30 +3,30 @@
 Why this exists
 ---------------
 A bulk endpoint (`batch_get_programs`, `dd_batch`, future `bulk_*`) can fan
-out into N internal sub-calls and quietly cost the customer ¥3 × N before
-they have any feedback signal. `X-Cost-Cap-JPY: 5000` is the customer's
-declarative budget per request — the middleware tracks cumulative cost as
-each unit is billed and short-circuits with HTTP 402 (`Payment Required`)
-the moment `cumulative_cost >= cap`. Partial results that were already
-computed are returned alongside `cost_capped: true` so the agent can decide
-whether to re-issue with a higher cap or accept the partial response.
+out into N internal sub-calls and quietly cost the customer ¥3 × N. The
+`X-Cost-Cap-JPY: 5000` header is the customer's declarative budget for that
+request. This middleware parses the cap, requires it on paid bulk endpoints,
+and exposes `request.state.cost_cap` so handlers can enforce exact predicted
+costs or mid-loop charging. Route handlers remain responsible for computing
+their billable unit count before work begins.
 
 Two modes:
   1. **Mandatory** for known bulk endpoints. Missing header → HTTP 400 with
      `cost_cap_required` so an LLM agent gets a hard nudge to pass it
      before its first batch run, not after silent overspend.
   2. **Advisory** elsewhere (single-row reads, search). The header is
-     optional; when present the middleware still tracks cumulative cost
-     and aborts at the threshold, but its absence does not 400.
+     optional; when present it is made available to handlers, but its absence
+     does not 400.
 
 Mid-fan-out abort
 -----------------
-The middleware exposes `request.state.cost_cap` so handlers running a
-sub-loop (e.g. resolve N unified_ids one at a time) can call
-`cost_cap.charge(weight)` between sub-calls to deduct from the budget and
-get back a "stop?" signal. When the handler does not opt in, only the
-initial / final cost is charged (single billing unit) and the cap acts as
-a simple "this-request budget" gate — still useful as a regression-guard.
+The middleware exposes `request.state.cost_cap` so handlers running a sub-loop
+(e.g. resolve N unified_ids one at a time) can call `cost_cap.charge(weight)`
+between sub-calls to deduct from the budget and get back a "stop?" signal.
+Handlers that do not opt in will not get cumulative accounting or partial
+result envelopes from the middleware. Endpoints with exact predicted cost, such
+as `/v1/programs/batch`, enforce the cap in the handler before doing billable
+work and should call `record_cost_cap_spend(...)` before returning.
 
 Pricing model (¥3/req, 税別)
 ----------------------------
@@ -47,6 +47,7 @@ Any exception in the cap path returns `call_next` immediately (over-charging
 a buggy gate is worse than over-serving a single batch). Logged through
 `jpintel.cost_cap`.
 """
+
 from __future__ import annotations
 
 import logging
@@ -82,6 +83,19 @@ _BULK_PATH_SUFFIXES: tuple[str, ...] = (
 _BULK_PATH_CONTAINS: tuple[str, ...] = (
     "/batch_",
     "/bulk_",
+)
+_HANDLER_LEVEL_COST_CAP_PATHS: frozenset[str] = frozenset(
+    {
+        # This endpoint computes its exact predicted_yen from deduped IDs and
+        # returns that in the documented detail envelope. The middleware still
+        # attaches request.state.cost_cap when a header is present, but does not
+        # replace the route-specific missing-cap contract.
+        "/v1/programs/batch",
+        "/v1/am/dd_batch",
+        "/v1/am/dd_export",
+        "/v1/audit/batch_evaluate",
+        "/v1/audit/workpaper",
+    }
 )
 
 
@@ -129,6 +143,17 @@ class CostCapState:
             return None
         return max(0, self.cap_yen - self.used_yen)
 
+    def record_spend_yen(self, yen: int) -> None:
+        """Record the actual billed yen for exact-cost route handlers."""
+        self.used_yen = max(self.used_yen, max(0, int(yen)))
+
+
+def record_cost_cap_spend(request: Request, yen: int) -> None:
+    """Attach actual billed yen to the per-request cap state, if present."""
+    state = getattr(request.state, "cost_cap", None)
+    if state is not None and hasattr(state, "record_spend_yen"):
+        state.record_spend_yen(yen)
+
 
 def _parse_cap_header(value: str | None) -> int | None:
     """Return the parsed cap or None.
@@ -147,6 +172,20 @@ def _parse_cap_header(value: str | None) -> int | None:
     except ValueError:
         return None
     return max(0, n)
+
+
+def _has_customer_api_key(request: Request) -> bool:
+    """Return True when the caller presented a customer API key header.
+
+    The middleware is a spend guard, so anonymous discovery calls should not be
+    rejected for lacking ``X-Cost-Cap-JPY``. Actual key validity and tier are
+    still checked by the route dependencies; this only decides whether a
+    missing cap is a client-error shape before fan-out.
+    """
+    if (request.headers.get("x-api-key") or "").strip():
+        return True
+    auth = (request.headers.get("authorization") or "").strip().lower()
+    return auth.startswith("bearer ")
 
 
 def _build_missing_cap_body() -> dict:
@@ -226,7 +265,12 @@ class CostCapMiddleware(BaseHTTPMiddleware):
 
         cap_yen = _parse_cap_header(request.headers.get("x-cost-cap-jpy"))
 
-        if cap_yen is None and _is_bulk_endpoint(path):
+        if (
+            cap_yen is None
+            and _is_bulk_endpoint(path)
+            and path not in _HANDLER_LEVEL_COST_CAP_PATHS
+            and _has_customer_api_key(request)
+        ):
             # Mandatory header missing on a bulk endpoint → 400.
             return JSONResponse(
                 status_code=400,
@@ -274,4 +318,5 @@ __all__ = [
     "CostCapState",
     "_is_bulk_endpoint",
     "_parse_cap_header",
+    "record_cost_cap_spend",
 ]

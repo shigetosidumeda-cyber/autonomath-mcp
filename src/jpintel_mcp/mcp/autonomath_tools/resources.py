@@ -293,7 +293,7 @@ When a tool returns a row without a primary-source URL, that row is marked
 MUST not present unverified rows as authoritative.
 """
 
-_NO_HALLUCINATION_POLICY_MD = """# No-Hallucination Policy (for client LLMs)
+_NO_HALLUCINATION_POLICY_MD = """# Evidence Grounding Policy (for client LLMs)
 
 jpcite is a **read-only retrieval layer over curated public data**. It does
 not invent programs, rates, deadlines, or authorities. Client LLMs consuming
@@ -698,7 +698,7 @@ _RESOURCES: list[ResourceMeta] = [
     ),
     ResourceMeta(
         uri="autonomath://policy/no_hallucination",
-        name="No-Hallucination Policy",
+        name="Evidence Grounding Policy",
         description=(
             "Hard rules the client LLM must follow when speaking on top of "
             "jpcite data."

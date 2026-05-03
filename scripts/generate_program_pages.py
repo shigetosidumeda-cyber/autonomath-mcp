@@ -56,6 +56,7 @@ from urllib.parse import urlparse
 # matches every other date surfaced on jpcite.com (consistent with
 # CLAUDE.md "anonymous quota resets at JST midnight" baseline).
 _JST = timezone(timedelta(hours=9))
+_RESERVED_PROGRAM_HTML = frozenset({"index.html", "share.html"})
 
 
 def _today_jst_iso() -> str:
@@ -89,6 +90,13 @@ try:
     from _pref_slugs import JA_TO_SLUG as _PREF_JA_TO_SLUG  # type: ignore
 except ImportError:  # pragma: no cover
     _PREF_JA_TO_SLUG = {}
+try:
+    from static_bad_urls import load_static_bad_urls  # type: ignore
+except ImportError:  # pragma: no cover
+
+    def load_static_bad_urls() -> set[str]:
+        return set()
+
 
 LOG = logging.getLogger("generate_program_pages")
 
@@ -164,6 +172,8 @@ WHERE excluded = 0
   AND tier IN ({tier_in})
   AND source_url IS NOT NULL
   AND source_url <> ''
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
   {banned_source_sql}
 ORDER BY
@@ -1278,6 +1288,8 @@ FROM programs
 WHERE excluded = 0
   AND tier IN ('S','A','B','C')
   AND source_url IS NOT NULL AND source_url <> ''
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
   AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//smart-hojokin.jp%'
   AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.smart-hojokin.jp%'
@@ -1309,6 +1321,8 @@ FROM programs
 WHERE excluded = 0
   AND tier IN ('S','A','B','C')
   AND source_url IS NOT NULL AND source_url <> ''
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
   AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//smart-hojokin.jp%'
   AND LOWER(COALESCE(source_url, '')) NOT LIKE '%//www.smart-hojokin.jp%'
@@ -1976,6 +1990,7 @@ def _iter_rows(
     conn: sqlite3.Connection,
     limit: int | None,
     tiers: tuple[str, ...] = ("S", "A", "B", "C"),
+    bad_urls: set[str] | None = None,
 ) -> Iterable[dict[str, Any]]:
     """Yield indexable program rows. ``tiers`` controls the WHERE filter.
 
@@ -1989,8 +2004,32 @@ def _iter_rows(
     sql = INDEXABLE_SQL_TEMPLATE.format(tier_in=tier_in, banned_source_sql=BANNED_SOURCE_SQL)
     if limit is not None and limit > 0:
         sql = sql + f"\nLIMIT {limit}"
+    denied = bad_urls or set()
     for row in conn.execute(sql):
-        yield dict(row)
+        row_d = dict(row)
+        if row_d.get("source_url") in denied:
+            continue
+        yield row_d
+
+
+def _prune_stale_generated_files(
+    *,
+    out_dir: Path,
+    expected_html: set[Path],
+    structured_dir: Path | None,
+    expected_jsonld: set[Path],
+) -> None:
+    """Remove generated pages whose rows are no longer publishable."""
+    if out_dir.exists():
+        for path in out_dir.glob("*.html"):
+            if path.name in _RESERVED_PROGRAM_HTML:
+                continue
+            if path not in expected_html:
+                path.unlink(missing_ok=True)
+    if structured_dir and structured_dir.exists():
+        for path in structured_dir.glob("*.jsonld"):
+            if path not in expected_jsonld:
+                path.unlink(missing_ok=True)
 
 
 def _write_structured_sitemap(
@@ -2080,7 +2119,12 @@ def generate(
     errors = 0
     sitemap_entries: list[tuple[str, str, str]] = []
     structured_entries: list[tuple[str, str, str]] = []
+    expected_html: set[Path] = set()
+    expected_jsonld: set[Path] = set()
     jsonld_count = 0
+    bad_urls = load_static_bad_urls()
+    if bad_urls:
+        LOG.info("loaded static bad-url denylist: %d urls", len(bad_urls))
 
     # --- sample mode
     if sample_ids and samples_dir:
@@ -2117,7 +2161,7 @@ def generate(
         return written, skipped, errors
 
     # --- bulk mode
-    for row in _iter_rows(conn, limit, tiers=tiers):
+    for row in _iter_rows(conn, limit, tiers=tiers, bad_urls=bad_urls):
         try:
             if not _is_public_title_quality_ok(row.get("primary_name")):
                 LOG.info(
@@ -2136,6 +2180,7 @@ def generate(
                 acceptance_stats=acceptance_map.get(row.get("unified_id") or ""),
             )
             path = out_dir / f"{slug}.html"
+            expected_html.add(path)
             changed = _write_if_changed(path, html)
             if changed:
                 written += 1
@@ -2157,7 +2202,9 @@ def generate(
             tier = (row.get("tier") or "C").upper()
             sitemap_entries.append((slug, lastmod, tier))
             if structured_dir:
-                _write_jsonld_doc(structured_dir / f"{row['unified_id']}.jsonld", standalone)
+                jsonld_path = structured_dir / f"{row['unified_id']}.jsonld"
+                expected_jsonld.add(jsonld_path)
+                _write_jsonld_doc(jsonld_path, standalone)
                 jsonld_count += 1
                 structured_entries.append((row["unified_id"], lastmod, tier))
         except Exception as exc:  # noqa: BLE001
@@ -2170,6 +2217,13 @@ def generate(
         _write_structured_sitemap(structured_entries, sitemap_structured_path, domain)
     if structured_dir:
         LOG.info("standalone JSON-LD docs written: %d", jsonld_count)
+    if limit is None:
+        _prune_stale_generated_files(
+            out_dir=out_dir,
+            expected_html=expected_html,
+            structured_dir=structured_dir,
+            expected_jsonld=expected_jsonld,
+        )
 
     return written, skipped, errors
 

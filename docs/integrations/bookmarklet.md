@@ -42,6 +42,6 @@
 
 ## 関連
 
-- [連携ガイド (Claude Desktop / Cursor / ChatGPT)](https://jpcite.com/integrations/)
+- [連携ガイド (Claude Desktop / Cursor / ChatGPT Custom GPT)](https://jpcite.com/integrations/)
 - [REST API リファレンス](../api-reference.md)
 - [料金](../pricing.md)

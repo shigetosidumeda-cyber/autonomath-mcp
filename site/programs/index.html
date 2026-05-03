@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>制度一覧・検索 — jpcite</title>
+<meta name="description" content="jpcite の制度検索入口。補助金・融資・税制・認定制度を、API・MCP・ChatGPT Custom GPT Actions から検索できます。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jpcite.com/programs/">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/docs/">ドキュメント</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/dashboard.html">API キー発行</a>
+ </nav>
+ </div>
+</header>
+<main id="main">
+ <section class="hero" style="padding:56px 0 32px;">
+ <div class="container">
+ <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
+ <a href="/">ホーム</a> &raquo; <span aria-current="page">制度一覧</span>
+ </nav>
+ <h1 style="font-size:32px;margin:0 0 10px;">制度一覧・検索</h1>
+ <p class="hero-tag" style="margin:0 0 18px;">補助金・融資・税制・認定制度を、出典 URL と取得時刻付きで検索できます。</p>
+ <div class="cta-row">
+ <a class="btn btn-primary" href="/#try">画面で検索する</a>
+ <a class="btn btn-secondary" href="/docs/api-reference/#programs">API で検索する</a>
+ <a class="btn btn-secondary" href="/docs/mcp-tools/">MCP tools</a>
+ </div>
+ </div>
+ </section>
+ <section class="features" style="padding:28px 0 56px;background:var(--bg-alt);">
+ <div class="container">
+ <h2 class="section-title" style="font-size:20px;">AI から使う場合</h2>
+ <p>Claude Desktop / Cursor / Cline などの MCP クライアントでは <code>search_programs</code> を使います。ChatGPT Custom GPT では <code>https://api.jpcite.com/v1/openapi.agent.json</code> を Actions に読み込ませて、同等の REST endpoint を呼び出します。</p>
+ <p>長い PDF や複数の官公庁ページを LLM に貼る前に、jpcite で候補制度・出典・既知の欠落を取得してください。トークン量や外部 LLM の請求額への影響は、利用するモデル・プロンプト・キャッシュ状態に依存します。</p>
+ </div>
+ </section>
+</main>
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <p class="footer-brand">jpcite</p>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/docs/">Docs</a>
+ <a href="/pricing.html">Pricing</a>
+ <a href="/tos.html">利用規約</a>
+ </nav>
+ </div>
+</footer>
+</body>
+</html>

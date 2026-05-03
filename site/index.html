@@ -28,7 +28,9 @@
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, Japanese)" href="/llms.txt">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/llms.en.txt">
-<link rel="service-desc" type="application/openapi+json" href="https://api.jpcite.com/v1/openapi.json">
+<link rel="service-desc" type="application/openapi+json" title="Agent-safe OpenAPI" href="https://api.jpcite.com/v1/openapi.agent.json">
+<link rel="service-desc" type="application/openapi+json" title="Full OpenAPI" href="https://api.jpcite.com/v1/openapi.json">
+<link rel="service-desc" type="application/json" title="MCP server manifest" href="/server.json">
 <link type="text/plain" rel="author" href="/humans.txt">
 <link rel="alternate" type="application/rss+xml" title="jpcite お知らせ" href="/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="jpcite Announcements (English)" href="/en/rss.xml">
@@ -184,12 +186,12 @@
   "@context": "https://schema.org",
   "@type": "WebAPI",
   "name": "jpcite REST + MCP API",
-  "description": "日本の公的制度データの REST + MCP API。93 MCP ツール、178 REST API 経路、MCP プロトコル 2025-06-18。",
+  "description": "日本の公的制度データの REST + MCP API。AI が回答を書く前に出典 URL・取得時刻・既知の欠落を取得する Evidence prefetch layer。",
   "documentation": "https://jpcite.com/docs/",
   "termsOfService": "https://jpcite.com/tos.html",
   "provider": {"@id": "https://jpcite.com/#publisher"},
   "endpointURL": "https://api.jpcite.com/v1/",
-  "endpointDescription": "https://api.jpcite.com/v1/openapi.json",
+  "endpointDescription": "https://api.jpcite.com/v1/openapi.agent.json",
   "inLanguage": "ja",
   "isAccessibleForFree": true,
   "offers": {
@@ -289,7 +291,7 @@
  <h1 id="hero-title">日本の公的制度を、Evidence Packet で AI に渡す。</h1>
  <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 出典 URL ・取得時刻・known gaps ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 caller supplied baseline がある場合だけ、 入力文脈量の削減見込みと <code>break_even_met</code> を返します。 外部 LLM の請求額削減は保証しません。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
 
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude / ChatGPT / Cursor から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
 
  <div class="cta-row">
  <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回の無料ライブ検証を始める (Evidence Packet) →</a>
@@ -299,7 +301,7 @@
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">匿名</span>curl で動作確認 (登録不要) ·
  <span class="chip-success">Playground</span>Evidence Packet 確認 ·
- <span class="chip-success">MCP</span>Claude Desktop / Cursor / Cline / ChatGPT に接続
+ <span class="chip-success">MCP</span>Claude Desktop / Cursor / Cline に接続 · ChatGPT は OpenAPI Actions
  </p>
  <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用、LINE、法令アラート、ウィジェットは ¥3/リクエスト (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
@@ -309,7 +311,7 @@
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
  <summary style="cursor:pointer;color:var(--text);">登録不要で匿名 3 リクエスト/日まで利用できます</summary>
- <p style="margin:6px 0 0;">匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a> · <a href="line.html">LINE bot</a>)。継続利用は <a href="dashboard.html">ダッシュボード</a> で API キーを発行し、¥3/リクエスト (税込 ¥3.30) の完全従量で利用できます。</p>
+ <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE bot は <a href="line.html">公開予定と早期アクセス</a> を案内しています。継続利用は <a href="dashboard.html">ダッシュボード</a> で API キーを発行し、¥3/リクエスト (税込 ¥3.30) の完全従量で利用できます。</p>
  </details>
 
  <section id="trial" aria-labelledby="trial-title" style="margin:24px 0 0;padding:18px 20px;background:var(--bg-alt,#f6f7f9);border:1px solid var(--border,#e5e7eb);border-radius:8px;">
@@ -387,7 +389,7 @@
  <ul class="card-list">
  <li>¥<span data-fact="price_per_req">3</span>/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>)</li>
  <li>匿名 <span data-fact="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
- <li>Claude Desktop / Cursor / ChatGPT 対応</li>
+ <li>Claude Desktop / Cursor は MCP、ChatGPT は Actions 対応</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="/docs/getting-started/">ドキュメントを読む →</a></p>
  </article>
@@ -395,12 +397,12 @@
  <article class="card" aria-labelledby="pillar-line">
  <h3 id="pillar-line">LINE bot</h3>
  <p class="card-lead">中小企業経営者 / 士業</p>
- <p>スマホの LINE で 30 秒、補助金を自然言語で発見。友だち追加するだけ、アプリ不要。</p>
+ <p>公開後はスマホの LINE で補助金を自然言語で検索できます。REST / MCP を使わない利用者向けの入口です。</p>
  <ul class="card-list">
  <li>1 通知 ¥3 (税込 ¥3.30)</li>
  <li>無料枠は 1 日 3 件まで</li>
  </ul>
- <p style="margin:14px 0 0;"><a href="line.html">LINE bot を使う →</a></p>
+ <p style="margin:14px 0 0;"><a href="line.html">LINE bot の案内を見る →</a></p>
  </article>
 
  <article class="card" aria-labelledby="pillar-alerts">

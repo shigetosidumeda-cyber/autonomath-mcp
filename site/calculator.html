@@ -311,7 +311,7 @@
  <p class="lead" style="margin-top:-12px;font-size:14px;">
  ※ 本ツールは「トークン削減 / コスト x% 削減」を保証するものではありません。
  削減効果はモデル・プロンプト・キャッシュ・クエリ分布で大きく変動するため、
- 計測手順は <a href="/docs/bench_methodology/">ベンチ方法論</a> をご参照ください。
+ 測定値の読み方は <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> をご参照ください。
  ここでは jpcite が <em>1 リクエストで何を join するか</em> のみを開示します。
  </p>
 
@@ -360,11 +360,11 @@
  </div>
  <div>
  <dt>1 リクエストで返る出典本数 (中央値)</dt>
- <dd id="out-sources" class="coverage">— 本<span class="secondary" id="out-sources-detail">一次資料の URL を返却 (官公庁 / 公庫 等)</span></dd>
+ <dd id="out-sources" class="coverage">— 本<span class="secondary" id="out-sources-detail">主要公開行で一次資料 URL を優先</span></dd>
  </div>
  <div>
  <dt>データ鮮度 (出典最終取得)</dt>
- <dd id="out-freshness" class="coverage">— 日<span class="secondary" id="out-freshness-detail">毎日 nightly で URL liveness を再確認</span></dd>
+ <dd id="out-freshness" class="coverage">— 日<span class="secondary" id="out-freshness-detail">tier S/A の中央値。最新性は行ごとの取得時刻で確認</span></dd>
  </div>
  </dl>
  </aside>
@@ -373,7 +373,7 @@
  <!-- Plain-language summary -->
  <div class="calc-summary" aria-live="polite">
  <p id="summary-line">入力に応じて要約が更新されます。</p>
- <p>※ ¥3/リクエストの内訳: <strong class="coverage-figure" id="summary-coverage">— DB join</strong> + 出典付き返却 + 鮮度 SLO。 トークン量や AI 全体コストの増減は <a href="/docs/bench_methodology/">ベンチ方法論</a> をご参照ください。</p>
+ <p>※ ¥3/リクエストの内訳: <strong class="coverage-figure" id="summary-coverage">— DB join</strong> + 出典付き返却 + 鮮度 SLO。 トークン量や AI 全体コストの増減は <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> をご参照ください。</p>
  </div>
 
  <!-- Assumption disclosure -->
@@ -410,13 +410,13 @@
  </tr>
  <tr>
  <th scope="row">出典付与ポリシー</th>
- <td class="num">100% 一次資料</td>
- <td>aggregator 出典は禁止 (<a href="/sources.html">/sources.html</a>)</td>
+ <td class="num">一次資料優先</td>
+ <td>主要公開行では官公庁・公庫等の出典を優先し、aggregator 出典は citation source に使いません (<a href="/sources.html">/sources.html</a>)</td>
  </tr>
  <tr>
  <th scope="row">鮮度 SLO</th>
  <td class="num">nightly liveness</td>
- <td><a href="/data-freshness.html">/data-freshness.html</a> — `source_fetched_at` を毎日再確認</td>
+ <td><a href="/data-freshness.html">/data-freshness.html</a> — tier S/A は median 7 日以内。各行の `source_fetched_at` と known gaps を確認してください</td>
  </tr>
  </tbody>
  </table>
@@ -432,7 +432,7 @@
  「1 リクエストで join される DB / 出典本数 / 鮮度日数」 はカタログ値であり、
  個別クエリの返却件数は対象制度・地域・キーワードにより変動します。
  トークン削減・AI コスト全体の増減はモデル・プロンプト・キャッシュ・クエリ分布で大きく変動するため、
- 当社ベンチ範囲外への外挿はできません ( <a href="/docs/bench_methodology/">ベンチ方法論</a> 参照)。
+ 当社ベンチ範囲外への外挿はできません ( <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> 参照)。
  jpcite は税理士法 §52 / §72 の遵守のため、 個別税務助言は提供せず、 一次資料の検索・整理に限定します。
  税理士業務 / 会計士業務 の判断は必ず資格者にご相談ください。
  </p>
@@ -481,8 +481,8 @@
   // Joining means: a single API request fan-outs across these tables on
   // the server side and returns merged results with citations.
   var DB_JOIN_COUNT = 8; // programs + 採択 + 融資 + 法令 + 税制 + 行政処分 + 適格事業者 + 入札
-  var SOURCES_PER_REQUEST_MEDIAN = 4; // primary-source URLs returned per typical request (catalog median)
-  var FRESHNESS_DAYS = 1; // nightly liveness scan re-fetches source_url
+  var SOURCES_PER_REQUEST_MEDIAN = 4; // source-linked URLs returned per typical evidence request (catalog median)
+  var FRESHNESS_DAYS = 7; // median freshness for tier S/A program rows
 
   function $(id) { return document.getElementById(id); }
   function num(el) {
@@ -542,7 +542,7 @@
         " 件</strong> 確認 = 月 <strong>" + fmtNum(totalReviews) + " req</strong>、 " +
         "API コスト (税込) <strong>" + fmtYen(costInc) + "</strong>。 " +
         "1 リクエストで <strong>" + fmtNum(DB_JOIN_COUNT) + " 個の公的 DB</strong> を join し、 " +
-        "中央値 <strong>" + fmtNum(SOURCES_PER_REQUEST_MEDIAN) + " 本</strong> の一次資料 URL を返却します。";
+        "中央値 <strong>" + fmtNum(SOURCES_PER_REQUEST_MEDIAN) + " 本</strong> の出典 URL を返却します。";
     }
     var coverageEl = $("summary-coverage");
     if (coverageEl) {

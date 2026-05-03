@@ -41,10 +41,13 @@ process-local cache slot" — no cost path.
 Tax-related cost previews still carry the 税理士法 §52 fence in the
 response (LLM agents must relay it verbatim).
 """
+
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import logging
+import sqlite3
 import threading
 import time
 import unicodedata
@@ -53,10 +56,13 @@ from urllib.parse import urlsplit
 
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
-from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (runtime for FastAPI Depends resolution)
+from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
+    DbDep,
+    hash_api_key,
+)
 
 logger = logging.getLogger("jpintel.cost")
 
@@ -274,6 +280,8 @@ class CostPreviewCall(BaseModel):
     billed `quantity`.
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     tool: str = Field(
         min_length=1,
         max_length=128,
@@ -300,6 +308,8 @@ class CostPreviewRequest(BaseModel):
     per call). `iterations` multiplies the entire stack — handy for agent
     loops that fan out the same stack across N inputs.
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     stack_or_calls: list[CostPreviewCall] = Field(
         min_length=1,
@@ -353,20 +363,7 @@ _preview_hits: dict[str, list[float]] = {}
 _preview_hits_lock = threading.Lock()
 
 
-def _identity_for(request: Request) -> str:
-    """Return a stable identity string for rate-limit bucketing.
-
-    Prefer X-API-Key hash (16 hex prefix) > Fly-Client-IP > X-Forwarded-For
-    first hop > request.client.host. Mirrors `rate_limit.py` priority so a
-    paid caller's preview rate budget tracks their other request budget.
-    """
-    raw = request.headers.get("x-api-key")
-    if raw and raw.strip():
-        return "k:" + hashlib.sha256(raw.strip().encode("utf-8")).hexdigest()[:16]
-    auth = request.headers.get("authorization", "")
-    parts = auth.split(None, 1)
-    if len(parts) == 2 and parts[0].lower() == "bearer" and parts[1].strip():
-        return "k:" + hashlib.sha256(parts[1].strip().encode("utf-8")).hexdigest()[:16]
+def _ip_identity_for(request: Request) -> str:
     fly = request.headers.get("fly-client-ip", "").strip()
     if fly:
         return f"ip:{fly}"
@@ -378,6 +375,33 @@ def _identity_for(request: Request) -> str:
     if request.client:
         return f"ip:{request.client.host}"
     return "ip:unknown"
+
+
+def _identity_for(request: Request, conn: sqlite3.Connection | None = None) -> str:
+    """Return a stable identity string for rate-limit bucketing.
+
+    Prefer a validated active API-key hash over the IP bucket. Invalid or
+    revoked key-shaped strings intentionally fall back to IP, otherwise an
+    anonymous caller could rotate bogus keys and bypass the free preview
+    throttle.
+    """
+    raw = (request.headers.get("x-api-key") or "").strip()
+    auth = request.headers.get("authorization", "")
+    parts = auth.split(None, 1)
+    if not raw and len(parts) == 2 and parts[0].lower() == "bearer":
+        raw = parts[1].strip()
+    if raw and conn is not None:
+        key_hash = hash_api_key(raw)
+        with contextlib.suppress(sqlite3.Error):
+            row = conn.execute(
+                "SELECT 1 FROM api_keys WHERE key_hash = ? "
+                "AND (revoked_at IS NULL OR revoked_at = '') "
+                "LIMIT 1",
+                (key_hash,),
+            ).fetchone()
+            if row is not None:
+                return "k:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
+    return _ip_identity_for(request)
 
 
 def _rate_check(identity: str) -> tuple[bool, int]:
@@ -501,9 +525,7 @@ def _billing_units_for_call(call: CostPreviewCall) -> float:
     tool = _canonical_tool_name(call.tool)
     args = call.args or {}
     if tool in _BATCH_PROGRAM_TOOL_NAMES:
-        return float(
-            _dedupe_count(args.get("unified_ids"), arg_name="unified_ids", tool=tool)
-        )
+        return float(_dedupe_count(args.get("unified_ids"), arg_name="unified_ids", tool=tool))
     if tool in _DD_BATCH_TOOL_NAMES:
         return float(_dedupe_houjin_count(args.get("houjin_bangous"), tool=tool))
     if tool in _DD_EXPORT_TOOL_NAMES:
@@ -537,7 +559,12 @@ def _billing_units_for_call(call: CostPreviewCall) -> float:
             arg_name="program_ids",
             tool=tool,
         )
-        return float(max(1, n_programs * (n_programs - 1) // 2))
+        if n_programs < 2:
+            raise CostPreviewArgsError(
+                tool,
+                "program_ids must contain at least two unique values",
+            )
+        return float(n_programs * (n_programs - 1) // 2)
     if tool in _BULK_EVALUATE_TOOL_NAMES:
         commit = args.get("commit")
         if isinstance(commit, str):
@@ -545,6 +572,13 @@ def _billing_units_for_call(call: CostPreviewCall) -> float:
         if commit is False:
             return 0.0
         return float(_row_count_arg(args, tool=tool))
+    if tool not in _TOOL_WEIGHTS and any(
+        marker in tool for marker in ("batch", "bulk", "export", "workpaper", "attestation")
+    ):
+        raise CostPreviewArgsError(
+            tool,
+            "unknown high-fanout tool; pass a supported tool name so the preview can fail closed",
+        )
     return _TOOL_WEIGHTS.get(tool, _DEFAULT_TOOL_WEIGHT)
 
 
@@ -595,7 +629,7 @@ def compute_predicted_cost(
     description=(
         "Returns a no-charge cost estimate for planned jpcite tool calls "
         "without executing them.\n\n"
-        "**Pricing**: metered calls are ¥3/req (税別; 税込 ¥3.30). The preview "
+        "**Pricing**: metered calls are ¥3/billable unit (税別; 税込 ¥3.30). The preview "
         "itself is not metered and is rate-limited 50/min per IP/key.\n\n"
         "**Tax-related previews**: when the stack touches tax-relevant tools "
         "(`evaluate_tax_ruleset`, `search_tax_incentives`, etc.) the response "
@@ -607,7 +641,7 @@ def post_cost_preview(
     conn: DbDep,
     request: Request,
 ) -> JSONResponse:
-    identity = _identity_for(request)
+    identity = _identity_for(request, conn)
     allowed, retry_after_s = _rate_check(identity)
     if not allowed:
         # 429 with Retry-After. Mirrors the rate-limit middleware shape so an
@@ -619,8 +653,7 @@ def post_cost_preview(
                 "error": {
                     "code": "rate_limited",
                     "message": (
-                        "Cost preview rate limit exceeded "
-                        f"({_PREVIEW_RATE_MAX}/min per IP/key)."
+                        f"Cost preview rate limit exceeded ({_PREVIEW_RATE_MAX}/min per IP/key)."
                     ),
                     "retry_after": retry_after_s,
                     "bucket": "cost_preview",
@@ -630,8 +663,8 @@ def post_cost_preview(
         )
 
     try:
-        predicted_total_yen, billing_units, breakdown, has_tax_tool = (
-            compute_predicted_cost(payload.stack_or_calls, payload.iterations)
+        predicted_total_yen, billing_units, breakdown, has_tax_tool = compute_predicted_cost(
+            payload.stack_or_calls, payload.iterations
         )
     except CostPreviewArgsError as exc:
         raise HTTPException(

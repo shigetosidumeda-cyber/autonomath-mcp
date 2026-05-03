@@ -155,7 +155,7 @@
     },
     {
       "name": "search_laws",
-      "description": "日本の法令 (e-Gov法令, CC-BY) を横断検索。法令名・条文本文に FTS5 trigram + 法令種別 / 所管省庁 / 施行日 の構造化フィルタを適用し、一次資料 URL + fetched_at を可能な限り付与"
+      "description": "日本の法令 (e-Gov法令, CC-BY) を横断検索。法令名・条文本文・法令種別・所管省庁・施行日で絞り込み、一次資料 URL + fetched_at を可能な限り付与"
     },
     {
       "name": "search_loan_programs",
@@ -163,7 +163,7 @@
     },
     {
       "name": "search_programs",
-      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索。11,684 searchable Japanese public programs; most searchable rows include primary-source URL + fetched_at, and review-held rows are excluded from normal search. Typical args: prefecture='東京都', target_industry JSIC 1-letter code, funding_purpose. For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
+      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索。11,684 searchable Japanese public programs; most searchable rows include primary-source URL + fetched_at, and non-public rows are excluded from normal search. Typical args: prefecture='東京都', target_industry JSIC 1-letter code, funding_purpose. For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
     },
     {
       "name": "search_tax_rules",
@@ -307,7 +307,7 @@
     },
     {
       "name": "get_annotations",
-      "description": "Annotations attached to public records, including review notes, amendment notes, and QA notes. Returns structured annotations that do not fit in the main record fields"
+      "description": "Public annotation signals attached to public records. Internal review notes and private notes are not exposed."
     },
     {
       "name": "get_provenance",
@@ -351,11 +351,11 @@
     },
     {
       "name": "find_saiketsu",
-      "description": "国税不服審判所 (KFS) 公表裁決事例 を全文検索 (FTS5 trigram on nta_saiketsu)。出力は citation のみで税務助言 (税理士法 §52) ではない。出典 source_url で原典確認必須。"
+      "description": "国税不服審判所 (KFS) 公表裁決事例を全文検索。出力は citation のみで税務助言 (税理士法 §52) ではない。出典 source_url で原典確認必須。"
     },
     {
       "name": "find_shitsugi",
-      "description": "国税庁 質疑応答事例 を全文検索 (FTS5 trigram on nta_shitsugi)。出力は citation のみで税務助言 (税理士法 §52) ではない。出典 source_url で原典確認必須。"
+      "description": "国税庁 質疑応答事例を全文検索。出力は citation のみで税務助言 (税理士法 §52) ではない。出典 source_url で原典確認必須。"
     },
     {
       "name": "apply_eligibility_chain",

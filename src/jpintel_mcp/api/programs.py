@@ -6,7 +6,7 @@ import time
 import unicodedata
 from collections import OrderedDict
 from threading import Lock
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Header, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
@@ -21,6 +21,7 @@ from jpintel_mcp.api.deps import (
     log_empty_search,
     log_usage,
 )
+from jpintel_mcp.api.middleware.cost_cap import record_cost_cap_spend
 from jpintel_mcp.api.vocab import (
     _normalize_authority_level,
     _normalize_prefecture,
@@ -34,11 +35,11 @@ from jpintel_mcp.models import (
     Program,
     ProgramDetail,
     SearchResponse,
-    Tier,
 )
 from jpintel_mcp.utils.slug import program_static_url
 
 router = APIRouter(prefix="/v1/programs", tags=["programs"])
+SearchTier = Literal["S", "A", "B", "C"]
 
 
 # ---------------------------------------------------------------------------
@@ -1066,7 +1067,10 @@ def search_programs(
             max_length=200,
         ),
     ] = None,
-    tier: Annotated[list[Tier] | None, Query(description="filter tier, repeat for OR")] = None,
+    tier: Annotated[
+        list[SearchTier] | None,
+        Query(description="filter public tier, repeat for OR (S/A/B/C)"),
+    ] = None,
     prefecture: Annotated[
         str | None,
         Query(
@@ -1094,7 +1098,6 @@ def search_programs(
     target_type: Annotated[list[str] | None, Query(max_length=64)] = None,
     amount_min: Annotated[float | None, Query(ge=0)] = None,
     amount_max: Annotated[float | None, Query(ge=0)] = None,
-    include_excluded: Annotated[bool, Query()] = False,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
     fields: Annotated[
@@ -1166,7 +1169,7 @@ def search_programs(
         "target_type": sorted(target_type) if target_type else None,
         "amount_min": amount_min,
         "amount_max": amount_max,
-        "include_excluded": include_excluded,
+        "include_excluded": False,
         "limit": limit,
         "offset": offset,
         "fields": fields,
@@ -1189,7 +1192,7 @@ def search_programs(
             target_type=target_type,
             amount_min=amount_min,
             amount_max=amount_max,
-            include_excluded=include_excluded,
+            include_excluded=False,
             limit=limit,
             offset=offset,
             fields=fields,
@@ -1305,8 +1308,6 @@ def search_programs(
             filters["amount_min"] = amount_min
         if amount_max is not None:
             filters["amount_max"] = amount_max
-        if include_excluded:
-            filters["include_excluded"] = True
         if _as_of_iso is not None:
             filters["as_of_date"] = _as_of_iso
 
@@ -1363,7 +1364,7 @@ def _build_search_response(
     *,
     conn: sqlite3.Connection,
     q: str | None,
-    tier: list[Tier] | None,
+    tier: list[SearchTier] | None,
     prefecture: str | None,
     authority_level: str | None,
     funding_purpose: list[str] | None,
@@ -1608,14 +1609,10 @@ def _build_search_response(
         where.append("amount_max_man_yen <= ?")
         params.append(amount_max)
 
-    if not include_excluded:
-        where.append("excluded = 0")
-        # Tier-X is a quality-gate "excluded-equivalent" bucket. 432 rows
-        # currently have tier='X' with excluded=0 (ingest lag). Gate them
-        # on the app-path so user-facing search never surfaces a
-        # quarantined row. COALESCE catches NULL tier too. Callers who
-        # really want quarantined rows pass include_excluded=True.
-        where.append("COALESCE(tier,'X') != 'X'")
+    where.append("excluded = 0")
+    # Tier-X is a quality-gate "excluded-equivalent" bucket. Gate it on
+    # the app path so user-facing search never surfaces quarantined rows.
+    where.append("COALESCE(tier,'X') != 'X'")
 
     # R8 dataset versioning — pin to historical snapshot when as_of_iso set.
     # No-op when versioning is disabled (env flag) or as_of is None.
@@ -1695,9 +1692,8 @@ def _build_search_response(
         if amount_max is not None:
             where_for_retry.append("amount_max_man_yen <= ?")
             params.append(amount_max)
-        if not include_excluded:
-            where_for_retry.append("excluded = 0")
-            where_for_retry.append("COALESCE(tier,'X') != 'X'")
+        where_for_retry.append("excluded = 0")
+        where_for_retry.append("COALESCE(tier,'X') != 'X'")
         _as_of_sql, _as_of_params = _as_of_predicate(as_of_iso, "programs")
         if _as_of_sql:
             where_for_retry.append(_as_of_sql)
@@ -1930,9 +1926,9 @@ def _build_search_response(
         "SDK callers can `chunk(ids, 50)` and stitch locally without "
         "per-id round trips. The 50-cap *is* the pagination — there is no "
         "page envelope.\n\n"
-        "**Order contract:** `results[i]` corresponds to the i-th "
-        "deduped input id (first occurrence wins). Missing ids go to "
-        "`not_found[]` — this is NOT a 404, partial success is the point. "
+        "**Order contract:** `results[]` contains found rows in deduped input "
+        "order (first occurrence wins). Missing ids go to `not_found[]` and "
+        "are not billed — this is NOT a 404, partial success is the point. "
         "Batch hard-codes `fields=full` so anonymous tier callers must "
         "upgrade (sequential GETs with `fields=default` remain anonymous-OK)."
     ),
@@ -1940,9 +1936,10 @@ def _build_search_response(
         **COMMON_ERROR_RESPONSES,
         200: {
             "description": (
-                "Batch ProgramDetail lookup. `results[]` is ordered by the deduped "
-                "input `unified_ids`. Ids not found in the DB go to `not_found` — "
-                "this is NOT a 404, because partial success is the point of batch."
+                "Batch ProgramDetail lookup. `results[]` contains found rows in "
+                "deduped input order. Ids not found in the DB go to `not_found` "
+                "and are not billed — this is NOT a 404, because partial success "
+                "is the point of batch."
             ),
             "model": BatchGetProgramsResponse,
             "content": {
@@ -1988,9 +1985,26 @@ def _build_search_response(
 )
 def batch_get_programs(
     payload: BatchGetProgramsRequest,
+    request: Request,
     conn: DbDep,
     ctx: ApiContextDep,
-    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
+    x_cost_cap_jpy: Annotated[
+        str | None,
+        Header(
+            alias="X-Cost-Cap-JPY",
+            description=(
+                "JPY request budget for paid batch calls. Paid callers must "
+                "send either this header or body.max_cost_jpy; the lower cap binds."
+            ),
+        ),
+    ] = None,
+    _idempotency_key: Annotated[
+        str | None,
+        Header(
+            alias="Idempotency-Key",
+            description="Required for paid batch calls to prevent duplicate billing on retries.",
+        ),
+    ] = None,
 ) -> JSONResponse:
     """Resolve up to 50 unified_ids in a single round-trip.
 
@@ -1999,15 +2013,14 @@ def batch_get_programs(
     per-id round trips. The 50-cap IS the pagination; do not add a paging
     envelope.
 
-    Order contract: `results[i]` corresponds to the i-th element of the
-    *deduped* input list (first occurrence wins). Missing ids go to
-    `not_found`, NOT a 404 — partial success is the whole point.
+    Order contract: `results[]` contains found rows in the *deduped* input
+    order (first occurrence wins). Missing ids go to `not_found`, are not
+    billed, and are NOT a 404 — partial success is the whole point.
 
     # Quota accounting:
     # Batch writes one usage_events row with quantity=N, where N is the
-    # deduped ID count. Stripe and dashboard aggregates both read quantity, so
-    # the customer sees the same total as N single GET calls with a cleaner
-    # audit trail.
+    # number of found rows. Not-found IDs are returned for debugging but are
+    # not billed.
     """
     # Batch is hardcoded fields=full (spec §3 "predictable schema across 50
     # rows at once"), so anon callers must upgrade. Sequential GET with
@@ -2033,9 +2046,9 @@ def batch_get_programs(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
             f"unified_ids cap is 50, got {len(unified_ids)}",
         )
-    n_billable = len(unified_ids)
+    predicted_units = len(unified_ids)
     require_cost_cap(
-        predicted_yen=n_billable * 3,
+        predicted_yen=predicted_units * 3,
         header_value=x_cost_cap_jpy,
         body_cap_yen=payload.max_cost_jpy,
     )
@@ -2046,7 +2059,7 @@ def batch_get_programs(
     cap_response = projected_monthly_cap_response(
         conn,
         ctx.key_hash,
-        n_billable,
+        predicted_units,
     )
     if cap_response is not None:
         return cap_response
@@ -2055,7 +2068,13 @@ def batch_get_programs(
     # hard-caps parameter count at 999 by default, so 50 is well under.
     placeholders = ",".join("?" * len(unified_ids))
     rows = conn.execute(
-        f"SELECT * FROM programs WHERE unified_id IN ({placeholders})",
+        f"""
+        SELECT *
+        FROM programs
+        WHERE unified_id IN ({placeholders})
+          AND excluded=0
+          AND COALESCE(tier, 'X') != 'X'
+        """,
         unified_ids,
     ).fetchall()
     by_id: dict[str, sqlite3.Row] = {r["unified_id"]: r for r in rows}
@@ -2079,23 +2098,34 @@ def batch_get_programs(
     # Digest material (W7): group by the set of ids requested. Sort so any
     # permutation of the same set hashes identically.
     #
-    # Billing (CLAUDE.md "¥3/req metered only"): a 50-id batch is N billable
-    # units, NOT 1. The previous TODO(W2) parked this as a "credits ticket"
-    # but the metered Stripe pipeline already accepts a `quantity=N`
-    # usage_record (single audit row + Stripe-aggregated charge) — wiring
-    # quantity=len(unified_ids) here closes the bulk-billing gap without
-    # any new schema. Local usage_events still gets one row (audit), Stripe
-    # gets one record at quantity=N (charge), reconciliation stays clean.
-    log_usage(
-        conn,
-        ctx,
-        "programs.get",
-        params={"batch_ids": sorted(unified_ids), "batch_size": n_billable},
-        result_count=len(results),
-        quantity=n_billable,
-        strict_metering=True,
+    # Billing: found rows are billed as N units, not 1. Not-found IDs are
+    # excluded from actual billing even though the cost cap is checked against
+    # the requested ID count before fan-out.
+    actual_units = len(results)
+    if actual_units > 0:
+        log_usage(
+            conn,
+            ctx,
+            "programs.get",
+            params={"batch_ids": sorted(unified_ids), "batch_size": predicted_units},
+            result_count=len(results),
+            quantity=actual_units,
+            strict_metering=True,
+        )
+    actual_yen = actual_units * 3
+    record_cost_cap_spend(request, actual_yen)
+    return JSONResponse(
+        content={
+            "results": results,
+            "not_found": not_found,
+            "billing": {
+                "billable_units": actual_units,
+                "yen_excl_tax": actual_yen,
+                "unit_price_yen": 3,
+                "not_found_billed": False,
+            },
+        }
     )
-    return JSONResponse(content={"results": results, "not_found": not_found})
 
 
 @router.get(

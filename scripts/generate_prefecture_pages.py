@@ -75,6 +75,7 @@ from _pref_slugs import PREFECTURES, REGIONS, SLUG_TO_JA  # noqa: E402
 from generate_program_pages import (  # noqa: E402
     KIND_JA,
     _amount_line,
+    _is_public_title_quality_ok,
     _normalize_iso_date,
     _parse_json_list,
     _public_program_name,
@@ -82,6 +83,7 @@ from generate_program_pages import (  # noqa: E402
     _target_type_label,
     slugify,
 )
+from static_bad_urls import load_static_bad_urls  # noqa: E402
 
 LOG = logging.getLogger("generate_prefecture_pages")
 
@@ -134,6 +136,8 @@ WHERE excluded = 0
   AND tier IN ('S','A','B','C')
   AND source_url IS NOT NULL
   AND source_url <> ''
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
   AND prefecture = ?
 ORDER BY
@@ -151,6 +155,8 @@ WHERE excluded = 0
   AND tier IN ('S','A','B','C')
   AND source_url IS NOT NULL
   AND source_url <> ''
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
   AND prefecture = ?
 """
@@ -190,6 +196,8 @@ WHERE excluded = 0
   AND tier IN ('S','A','B','C')
   AND source_url IS NOT NULL
   AND source_url <> ''
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
   AND (authority_name IS NULL OR authority_name NOT LIKE '%noukaweb%')
   AND prefecture = ?
 """
@@ -309,6 +317,17 @@ def _truncate(text: str, n: int) -> str:
     if len(text) <= n:
         return text
     return text[: n - 1] + "…"
+
+
+def _row_url_allowed(row: sqlite3.Row, field: str, bad_urls: set[str]) -> bool:
+    url = str(dict(row).get(field) or "").strip()
+    return not url or url not in bad_urls
+
+
+def _program_row_publishable(row: sqlite3.Row, bad_urls: set[str]) -> bool:
+    if not _row_url_allowed(row, "source_url", bad_urls):
+        return False
+    return _is_public_title_quality_ok(row["primary_name"])
 
 
 def _shape_case(row: sqlite3.Row) -> dict[str, Any]:
@@ -593,27 +612,46 @@ def render_prefecture_page(
     slug: str,
     pref_ja: str,
     domain: str,
+    bad_urls: set[str],
     loans_cache: list[dict[str, Any]] | None = None,
 ) -> tuple[str, dict[str, int]]:
     """Render a single prefecture page. Returns (html, counts dict)."""
 
-    program_rows = list(conn.execute(PROGRAMS_BY_PREF_SQL, (pref_ja, PROGRAMS_PER_PAGE)))
+    program_rows = [
+        r
+        for r in conn.execute(PROGRAMS_BY_PREF_SQL, (pref_ja, PROGRAMS_PER_PAGE * 8))
+        if _program_row_publishable(r, bad_urls)
+    ][:PROGRAMS_PER_PAGE]
     programs = [_shape_program(r) for r in program_rows]
-    programs_total = conn.execute(PROGRAMS_COUNT_BY_PREF_SQL, (pref_ja,)).fetchone()[0]
+    programs_total = sum(
+        1
+        for r in conn.execute(PROGRAMS_BY_PREF_SQL, (pref_ja, 10_000))
+        if _program_row_publishable(r, bad_urls)
+    )
 
-    case_rows = list(conn.execute(CASES_BY_PREF_SQL, (pref_ja, CASES_PER_PAGE)))
+    case_rows = [
+        r
+        for r in conn.execute(CASES_BY_PREF_SQL, (pref_ja, CASES_PER_PAGE * 4))
+        if _row_url_allowed(r, "source_url", bad_urls)
+    ][:CASES_PER_PAGE]
     case_studies = [_shape_case(r) for r in case_rows]
     cases_total = conn.execute(CASES_COUNT_BY_PREF_SQL, (pref_ja,)).fetchone()[0]
 
     if loans_cache is None:
-        loan_rows = list(conn.execute(LOANS_TOP_SQL, (LOANS_PER_PAGE,)))
+        loan_rows = [
+            r
+            for r in conn.execute(LOANS_TOP_SQL, (LOANS_PER_PAGE * 4,))
+            if _row_url_allowed(r, "official_url", bad_urls)
+        ][:LOANS_PER_PAGE]
         loans = [_shape_loan(r) for r in loan_rows]
     else:
         loans = loans_cache
 
-    enforcement_rows = list(
-        conn.execute(ENFORCEMENTS_BY_PREF_SQL, (pref_ja, ENFORCEMENTS_PER_PAGE))
-    )
+    enforcement_rows = [
+        r
+        for r in conn.execute(ENFORCEMENTS_BY_PREF_SQL, (pref_ja, ENFORCEMENTS_PER_PAGE * 4))
+        if _row_url_allowed(r, "source_url", bad_urls)
+    ][:ENFORCEMENTS_PER_PAGE]
     enforcements = [_shape_enforcement(r) for r in enforcement_rows]
     enforcements_total = conn.execute(ENFORCEMENTS_COUNT_BY_PREF_SQL, (pref_ja,)).fetchone()[0]
 
@@ -784,9 +822,16 @@ def main(argv: list[str] | None = None) -> int:
     conn.row_factory = sqlite3.Row
 
     env = _build_env(args.template_dir)
+    bad_urls = load_static_bad_urls()
+    if bad_urls:
+        LOG.info("Loaded %d static bad-url denylist entries", len(bad_urls))
 
     # Cache loans once — same for every prefecture (loan_programs is national).
-    loan_rows = list(conn.execute(LOANS_TOP_SQL, (LOANS_PER_PAGE,)))
+    loan_rows = [
+        r
+        for r in conn.execute(LOANS_TOP_SQL, (LOANS_PER_PAGE * 4,))
+        if _row_url_allowed(r, "official_url", bad_urls)
+    ][:LOANS_PER_PAGE]
     loans_cache = [_shape_loan(r) for r in loan_rows]
     LOG.info("Loaded %d national loan programs (shared across all prefectures)", len(loans_cache))
 
@@ -811,7 +856,13 @@ def main(argv: list[str] | None = None) -> int:
 
     for slug, pref_ja in targets:
         html, counts = render_prefecture_page(
-            env, conn, slug, pref_ja, args.domain, loans_cache=loans_cache
+            env,
+            conn,
+            slug,
+            pref_ja,
+            args.domain,
+            bad_urls,
+            loans_cache=loans_cache,
         )
         line_counts.append(html.count("\n") + 1)
 

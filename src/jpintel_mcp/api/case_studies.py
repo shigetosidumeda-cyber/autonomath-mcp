@@ -475,10 +475,8 @@ def get_case_study(
 ) -> JSONResponse:
     """Single case study lookup by `case_id`.
 
-    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
-    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this 採択事例
-    in a work-paper can reproduce the lookup later and detect whether the
-    corpus mutated. See docs/audit_trail.md.
+    The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
+    can reproduce the lookup later and detect whether the corpus changed.
     """
     row = conn.execute(
         "SELECT * FROM case_studies WHERE case_id = ?", (case_id,)

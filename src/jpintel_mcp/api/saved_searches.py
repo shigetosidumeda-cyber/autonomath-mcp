@@ -40,6 +40,7 @@ Cost posture:
     lets customers manage their saved searches surfaces the same line so the
     surface stays consistent.
 """
+
 from __future__ import annotations
 
 import json
@@ -48,7 +49,7 @@ from datetime import UTC, datetime
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
     ApiContextDep,
@@ -59,6 +60,8 @@ from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends r
 router = APIRouter(prefix="/v1/me/saved_searches", tags=["saved-searches"])
 
 logger = logging.getLogger("jpintel.saved_searches")
+
+PublicTier = Literal["S", "A", "B", "C"]
 
 
 # ---------------------------------------------------------------------------
@@ -86,7 +89,6 @@ _ALLOWED_QUERY_KEYS: frozenset[str] = frozenset(
         "amount_min",
         "amount_max",
         "tier",  # list[str]
-        "include_excluded",
     }
 )
 
@@ -101,24 +103,22 @@ class SavedSearchQuery(BaseModel):
 
     Public criteria for a saved-search alert. These mirror public
     ``GET /v1/programs/search`` filters, but intentionally exclude
-    non-public operator escape hatches. All fields
+    non-public/internal filters. All fields
     are optional, BUT the create endpoint enforces "at least one filter" so
     a customer cannot save the empty-corpus query (which would email them
     every program every day).
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     q: Annotated[str | None, Field(default=None, max_length=200)] = None
     prefecture: Annotated[str | None, Field(default=None, max_length=20)] = None
     authority_level: Annotated[str | None, Field(default=None, max_length=20)] = None
-    target_types: Annotated[
-        list[str] | None, Field(default=None, max_length=20)
-    ] = None
-    funding_purpose: Annotated[
-        list[str] | None, Field(default=None, max_length=20)
-    ] = None
+    target_types: Annotated[list[str] | None, Field(default=None, max_length=20)] = None
+    funding_purpose: Annotated[list[str] | None, Field(default=None, max_length=20)] = None
     amount_min: Annotated[float | None, Field(default=None, ge=0)] = None
     amount_max: Annotated[float | None, Field(default=None, ge=0)] = None
-    tier: Annotated[list[str] | None, Field(default=None, max_length=4)] = None
+    tier: Annotated[list[PublicTier] | None, Field(default=None, max_length=4)] = None
 
 
 # Slack-only webhook prefix for SSRF defense — see migration 099 docs.
@@ -200,16 +200,26 @@ def _canonicalise_query(q: SavedSearchQuery) -> dict[str, Any]:
     return cleaned
 
 
+def _scrub_legacy_query(query: dict[str, Any]) -> dict[str, Any]:
+    """Drop legacy/private saved-search fields before echoing to customers."""
+    cleaned = {k: v for k, v in query.items() if k in _ALLOWED_QUERY_KEYS}
+    tiers = cleaned.get("tier")
+    if isinstance(tiers, list):
+        public_tiers = [t for t in tiers if t in {"S", "A", "B", "C"}]
+        if public_tiers:
+            cleaned["tier"] = public_tiers
+        else:
+            cleaned.pop("tier", None)
+    return cleaned
+
+
 def _has_any_filter(query: dict[str, Any]) -> bool:
     """True iff the saved query has at least one non-default filter.
 
-    `include_excluded=False` is the default, so we ignore it on the
-    "do you have any filter" check. Without this check a customer could
-    save the empty query and get every program in every digest.
+    Without this check a customer could save the empty query and get every
+    program in every digest.
     """
-    for k, v in query.items():
-        if k == "include_excluded":
-            continue
+    for v in query.values():
         if v is None:
             continue
         if isinstance(v, list) and not v:
@@ -226,9 +236,7 @@ def _row_to_response(row: dict[str, Any]) -> SavedSearchResponse:
     except (TypeError, ValueError):
         # On corruption, emit an empty query rather than 500ing the list
         # endpoint. The cron will skip the row when it can't parse.
-        logger.warning(
-            "saved_search.query_json_unparseable id=%s", row.get("id")
-        )
+        logger.warning("saved_search.query_json_unparseable id=%s", row.get("id"))
         query = {}
     # Tolerate rows persisted before migration 099 (channel_format / channel_url
     # may be missing when reading via a legacy SELECT). Default to 'email'.
@@ -243,7 +251,7 @@ def _row_to_response(row: dict[str, Any]) -> SavedSearchResponse:
     return SavedSearchResponse(
         id=row["id"],
         name=row["name"],
-        query=query,
+        query=_scrub_legacy_query(query),
         frequency=row["frequency"],
         notify_email=row["notify_email"],
         channel_format=channel_format,
@@ -253,9 +261,7 @@ def _row_to_response(row: dict[str, Any]) -> SavedSearchResponse:
     )
 
 
-def _validate_channel(
-    channel_format: str, channel_url: str | None
-) -> None:
+def _validate_channel(channel_format: str, channel_url: str | None) -> None:
     """Raise 422 if the channel pair is inconsistent.
 
     Slack format requires a Slack-domain webhook URL; any other host is
@@ -422,9 +428,7 @@ def update_saved_search(
         (saved_id, ctx.key_hash),
     ).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, "saved search not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "saved search not found")
 
     # Treat partial PATCH as no-op (return current row) when neither field
     # is supplied. When EITHER is supplied, both must be supplied so we
@@ -488,9 +492,7 @@ def delete_saved_search(
     ).fetchone()
     if row is None:
         # 404 (not 403) so callers cannot probe the id-space of other keys.
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, "saved search not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "saved search not found")
     conn.execute(
         "DELETE FROM saved_searches WHERE id = ? AND api_key_hash = ?",
         (saved_id, ctx.key_hash),
@@ -552,9 +554,7 @@ def _run_saved_search_query(conn, query: dict[str, Any]) -> tuple[list[dict[str,
         prefecture=query.get("prefecture"),
         authority_level=query.get("authority_level"),
         funding_purpose=_saved_query_list(query.get("funding_purpose")),
-        target_type=_saved_query_list(
-            query.get("target_types") or query.get("target_type")
-        ),
+        target_type=_saved_query_list(query.get("target_types") or query.get("target_type")),
         amount_min=query.get("amount_min"),
         amount_max=query.get("amount_max"),
         include_excluded=False,
@@ -687,8 +687,7 @@ def saved_search_results(
             "saved searches require an authenticated API key",
         )
     row = conn.execute(
-        "SELECT id, query_json FROM saved_searches "
-        "WHERE id = ? AND api_key_hash = ?",
+        "SELECT id, query_json FROM saved_searches WHERE id = ? AND api_key_hash = ?",
         (saved_id, ctx.key_hash),
     ).fetchone()
     if row is None:
@@ -763,11 +762,7 @@ def saved_search_results(
         "data sheet plus a ``_meta`` sheet with license + brand."
     ),
     responses={
-        200: {
-            "content": {
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-        }
+        200: {"content": {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}}}
     },
 )
 def saved_search_results_xlsx(
@@ -782,12 +777,9 @@ def saved_search_results_xlsx(
     workbook layout lives (api/formats/xlsx.py).
     """
     if ctx.key_hash is None:
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED, "XLSX download requires API key"
-        )
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "XLSX download requires API key")
     row = conn.execute(
-        "SELECT id, query_json FROM saved_searches "
-        "WHERE id = ? AND api_key_hash = ?",
+        "SELECT id, query_json FROM saved_searches WHERE id = ? AND api_key_hash = ?",
         (saved_id, ctx.key_hash),
     ).fetchone()
     if row is None:

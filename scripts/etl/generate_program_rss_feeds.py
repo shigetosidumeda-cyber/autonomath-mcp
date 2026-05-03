@@ -68,13 +68,18 @@ logger = logging.getLogger("jpcite.etl.generate_program_rss_feeds")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _SRC = REPO_ROOT / "src"
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+
+from scripts.static_bad_urls import load_static_bad_urls  # noqa: E402
 
 DEFAULT_JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_AUTONOMATH_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
 DEFAULT_OUT_DIR = REPO_ROOT / "site" / "rss"
 DEFAULT_DOMAIN = "jpcite.com"
+_STATIC_BAD_URLS = load_static_bad_urls()
 
 # Per-feed item cap. CLAUDE-md / user-spec: 100 max per feed (Feedly
 # auto-trims long feeds and noticeably penalizes feeds > ~150 items).
@@ -190,6 +195,8 @@ _AMENDMENT_FIELDS_JA: dict[str, str] = {
 def _source_host_allowed(source_url: str | None) -> bool:
     if not source_url:
         return True
+    if str(source_url).strip() in _STATIC_BAD_URLS:
+        return False
     try:
         hostname = urlparse(str(source_url).strip()).hostname
     except ValueError:
@@ -414,19 +421,25 @@ def _load_prefecture_programs(
 
 
 def _load_amendments(autonomath_conn: sqlite3.Connection) -> list[AmendmentItem]:
-    cur = autonomath_conn.execute(
-        """
-        SELECT diff_id, entity_id, field_name, prev_value, new_value, detected_at
-        FROM am_amendment_diff
-        WHERE field_name IN
-              ('amount_max_yen','subsidy_rate_max','target_set_json',
-               'source_url','source_fetched_at','eligibility_text',
-               'projection_regression_candidate')
-        ORDER BY detected_at DESC, diff_id DESC
-        LIMIT ?
-        """,
-        (_MAX_ITEMS,),
-    )
+    try:
+        cur = autonomath_conn.execute(
+            """
+            SELECT diff_id, entity_id, field_name, prev_value, new_value, detected_at
+            FROM am_amendment_diff
+            WHERE field_name IN
+                  ('amount_max_yen','subsidy_rate_max','target_set_json',
+                   'source_url','source_fetched_at','eligibility_text',
+                   'projection_regression_candidate')
+            ORDER BY detected_at DESC, diff_id DESC
+            LIMIT ?
+            """,
+            (_MAX_ITEMS,),
+        )
+    except sqlite3.OperationalError as exc:
+        if "am_amendment_diff" not in str(exc):
+            raise
+        logger.warning("am_amendment_diff missing — skipping amendments feed")
+        return []
     out: list[AmendmentItem] = []
     for r in cur:
         diff_id, entity_id, field_name, prev_value, new_value, detected_at = r
@@ -540,9 +553,9 @@ def build_amendment_feed(amendments: list[AmendmentItem], *, domain: str, lastmo
     return _render_rss(
         title="jpcite — 制度改正検出ログ",
         description=(
-            "jpcite が一次出典の差分追跡で検出した制度改正イベント (am_amendment_diff)。"
+            "jpcite が一次出典の差分追跡で検出した制度改正イベント。"
             "金額・補助率・対象・出典 URL の差分を時系列で配信。"
-            "/audit-log.rss の派生 (programs フィルタ専用)。"
+            "制度情報の更新確認に使えます。"
         ),
         feed_url=f"https://{domain}/rss/amendments.xml",
         home_url=f"https://{domain}/",

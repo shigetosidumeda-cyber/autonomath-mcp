@@ -11,7 +11,8 @@ Billing posture
 ---------------
 
 One billable unit per **pair**. ``check_stack(["A","B","C"])`` evaluates 3
-pairs (AB / AC / BC) and bills 3 units. The cap (``max_pairs=10``) caps
+pairs (AB / AC / BC) and bills 3 units. At least two programs are required;
+single-program requests are rejected before billing. The cap (``max_pairs=10``) caps
 spend per call at ¥30 (税込 ¥33) — practical for a consultant building a
 small portfolio matrix without runaway billing surfaces.
 
@@ -22,6 +23,7 @@ Input cap
 callers see a clear validation error rather than silently being charged for
 a useless 15-pair matrix.
 """
+
 from __future__ import annotations
 
 import logging
@@ -46,7 +48,7 @@ _MAX_PROGRAMS = 5
 class FundingStackCheckRequest(BaseModel):
     """POST body for ``/v1/funding_stack/check``.
 
-    ``program_ids`` is a non-empty list (max 5). Each id should be a
+    ``program_ids`` is a 2..5 item list. Each id should be a
     jpcite ``unified_id`` or a primary program name; the matcher also
     accepts legacy curated rule keys for backwards compatibility.
     """
@@ -55,12 +57,12 @@ class FundingStackCheckRequest(BaseModel):
         list[str],
         Field(
             ...,
-            min_length=1,
+            min_length=2,
             max_length=_MAX_PROGRAMS,
             description=(
                 "List of program identifiers to evaluate as a stack. "
                 "C(N, 2) pairs are evaluated (N=5 → 10 pairs). 1 billed "
-                "unit per pair."
+                "unit per pair. At least two programs are required."
             ),
         ),
     ]
@@ -90,10 +92,7 @@ def _get_checker() -> FundingStackChecker:
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail={
                     "code": "db_unavailable",
-                    "message": (
-                        "funding_stack checker のデータソースが見つかりません: "
-                        f"{exc}"
-                    ),
+                    "message": (f"funding_stack checker のデータソースが見つかりません: {exc}"),
                 },
             ) from exc
     return _checker
@@ -126,6 +125,14 @@ def check_funding_stack(
     ctx: ApiContextDep,
 ) -> dict[str, Any]:
     program_ids = payload.program_ids
+    if len(program_ids) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "code": "too_few_programs",
+                "message": "program_ids は 2 件以上必要です。1 件のリクエストは課金されません。",
+            },
+        )
     if len(program_ids) > _MAX_PROGRAMS:
         # Pydantic Field max_length already enforces this, but keep an
         # explicit guard so a future schema relaxation doesn't silently
@@ -135,8 +142,7 @@ def check_funding_stack(
             detail={
                 "code": "too_many_programs",
                 "message": (
-                    f"program_ids は最大 {_MAX_PROGRAMS} 件までです "
-                    f"(received {len(program_ids)})。"
+                    f"program_ids は最大 {_MAX_PROGRAMS} 件までです (received {len(program_ids)})。"
                 ),
             },
         )
@@ -150,11 +156,16 @@ def check_funding_stack(
     # actual evaluated pair count (C(unique, 2)) which is what we bill.
     quantity = len(result.pairs)
     if quantity < 1:
-        # Single program / no pairs — keep the audit trail with 1 row at
-        # quantity=1 so the per-call admin dashboard still sees the call.
-        # No customer surprise: a 1-program request gets a single ¥3 charge
-        # for the validation work and warning emission.
-        quantity = 1
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "code": "too_few_unique_programs",
+                "message": (
+                    "併用可否の判定には重複を除いて 2 件以上の program_ids が必要です。"
+                    "このリクエストは課金されません。"
+                ),
+            },
+        )
 
     log_usage(
         conn,

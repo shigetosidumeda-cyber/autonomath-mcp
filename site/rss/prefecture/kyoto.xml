@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>京都府公衆浴場設備改善事業補助金について（令和8年度受付終了）／京都府ホームページ</title>
@@ -722,29 +722,11 @@
   </item>
 
   <item>
-    <title>京都府 一般資金</title>
-    <link>https://jpcite.com/programs/kyoutofu-ippan-shikin-1fc2d9.html</link>
-    <description>Tier A / 京都府 / loan / 上限 20,000万円 出典: https://www.pref.kyoto.jp/kinyu/documents/25ippan.pdf</description>
-    <category>loan</category>
-    <guid isPermaLink="false">jpcite:program:UNI-3951c2d7fc</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>福知山市有機JAS認証新規取得支援事業補助金</title>
     <link>https://jpcite.com/programs/fukuchiyama-shiyuu-ki-jas-ninshou-shinki-shutoku-shien-d06a86.html</link>
     <description>Tier A / 京都府 / subsidy / 上限 4万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-3aacf3cb97</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>京都府 脱炭素経営促進資金</title>
-    <link>https://jpcite.com/programs/kyoutofu-dattan-moto-keiei-sokushin-shikin-df05a2.html</link>
-    <description>Tier A / 京都府 / loan / 上限 20,000万円 出典: https://www.pref.kyoto.jp/kinyu/documents/42datsutanso.pdf</description>
-    <category>loan</category>
-    <guid isPermaLink="false">jpcite:program:UNI-403c868f5a</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -875,15 +857,6 @@
   </item>
 
   <item>
-    <title>京都府 開業・経営承継支援資金（経営承継一般型）</title>
-    <link>https://jpcite.com/programs/kyoutofu-kaigyou-keiei-shoukei-shien-shikin-keiei-shoukei-b53a7a.html</link>
-    <description>Tier A / 京都府 / loan / 上限 28,000万円 出典: https://www.pref.kyoto.jp/kinyu/documents/37keieisyokei_1.pdf</description>
-    <category>loan</category>
-    <guid isPermaLink="false">jpcite:program:UNI-9cbd3556fd</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>京都府あんしん借換資金（制度融資）</title>
     <link>https://jpcite.com/programs/kyoutofu-anshin-karikae-shikin-seido-yuushi-8fa23c.html</link>
     <description>Tier A / 京都府 / loan / 上限 20,000万円 出典: https://www.pref.kyoto.jp/kinyu/seido.html</description>
@@ -907,6 +880,33 @@
     <description>Tier B / 京都府 / subsidy / 上限 50万円 出典: https://www.ki21.jp/subsidy/kobo-r5-kaikaku</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-b2432821b9</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福知山市遊休農地発生防止支援事業補助金</title>
+    <link>https://jpcite.com/programs/fukuchiyama-shi-yuukyuu-nouchi-hassei-boushi-shien-jigyou-1a216e.html</link>
+    <description>Tier C / 京都府 / subsidy / 上限 250万円 出典: https://www.city.fukuchiyama.lg.jp/soshiki/27/77227.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b4d9da688e</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>園芸高温対策等支援事業</title>
+    <link>https://jpcite.com/programs/engei-kouon-taisaku-nado-shien-jigyou-08fee4.html</link>
+    <description>Tier C / 京都府 / subsidy / 上限 100万円 出典: https://www.city.nantan.kyoto.jp/www/town/125/001/000/index_1016984.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-cd65388abd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>京都府中小企業海外展開支援補助金</title>
+    <link>https://jpcite.com/programs/kyoutofu-chuushoukigyou-kaigaitenkai-shien-hojokin-57618b.html</link>
+    <description>Tier B / 京都府 / subsidy / 上限 100万円 出典: https://www.ki21.jp/subsidy</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d18fdffa5a</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

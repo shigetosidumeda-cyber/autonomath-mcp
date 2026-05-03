@@ -509,7 +509,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "Liveness monitoring / 失効監視",
     "<strong>毎晩 tier S/A 全件 + 段階的に B/C も巡回</strong>。404 即 quarantine (tier X)。",
     "自前で URL 死活監視 + cron + alert + DB 巡回。サイト改修ごとに parser 修正。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Deduplication",
-    "Wave 17/20 dedup (公募回 / 都道府県差し替え 等のパターン規則化)。",
+    "公募回 / 都道府県差し替え 等の重複パターンを規則化。",
     "自前で名寄せルール設計。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Terms of use",
     "ToS 同意で開始。",

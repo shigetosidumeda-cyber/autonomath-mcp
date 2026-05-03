@@ -133,7 +133,7 @@ search:
 
 ### 6.3 障害通知
 
-障害発生時は、status page (https://status.jpcite.com) および登録 email で通知します。
+障害発生時は、status page (https://jpcite.com/status.html) および登録 email で通知します。
 
 ---
 

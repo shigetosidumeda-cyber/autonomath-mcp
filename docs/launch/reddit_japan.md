@@ -19,7 +19,7 @@ I built jpcite — a search API over Japanese institutional public data:
 
 Why this matters if you're a foreigner running a small business or 個人事業主 here: Japanese subsidy info is genuinely scattered across hundreds of prefecture / city / METI / MAFF / SMRJ portals. Aggregator sites exist but most are SEO-farms with broken or out-of-date data. I built the API specifically to point at primary sources: public records return a `source_url` to the ministry or prefecture page where available. Aggregators are excluded from source fields.
 
-You can hit it from a script, from Claude / ChatGPT via MCP, or just curl it manually. Free for 3 requests/day with no signup (anonymous, IP-based). After that it's ¥3/request metered, no monthly minimums, no subscription, cancel anytime.
+You can hit it from a script, from Claude Desktop / Cursor via MCP, from a ChatGPT Custom GPT through OpenAPI Actions, or just curl it manually. Free for 3 requests/day with no signup (anonymous, IP-based). After that it is ¥3 per billable unit metered; normal search/detail calls are 1 unit, with no monthly minimums, no subscription, cancel anytime.
 
 **Important caveat**: this is a search/lookup tool, not tax or legal advice. 税理士法 §52 says only a 税理士 can give actual tax advice. Use the data to find programs and pull primary-source URLs, then talk to a licensed professional before making a business decision.
 

@@ -12,7 +12,7 @@
   rebuilds the others. For now we list the index entry only; per-post
   entries are appended as posts are generated.
 
-  When am_amendment_diff has 0 rows in the window the cron logs
+  When the amendment feed has 0 rows in the window the cron logs
   "no posts to generate" and this file is unchanged — keeping the
   honesty constraint (no fabricated entries).
 -->

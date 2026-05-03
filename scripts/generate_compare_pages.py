@@ -59,9 +59,9 @@ PAGES["tdb"] = {
         "「どちらか」ではなく「目的別に併用」が一般的な落としどころです。"
     ),
     "us_strengths": [
-        "<strong>機械可読 API + MCP</strong>を必須とする LLM Agent / 自社プロダクトでの自動化用途。93 tools (protocol 2025-06-18) と OpenAPI 3.1 で Claude / ChatGPT / Cursor から直接呼べます。",
+        "<strong>機械可読 API + MCP</strong>を必須とする LLM Agent / 自社プロダクトでの自動化用途。93 tools (protocol 2025-06-18) と OpenAPI 3.1 で Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べます。",
         "<strong>補助金・融資・税制・認定の横断検索</strong>と<strong>行政処分 1,185 件</strong>の取引相手調査が必要なとき。TDB は信用調査専業のため、制度 DB 用途では当社が補完。",
-        "<strong>完全従量 ¥3/req</strong>(税込 ¥3.30) で最低料金/契約期間なし。匿名 3 req/日/IP が無料、評価開始の摩擦が低い。",
+        "<strong>完全従量 ¥3/billable unit</strong>(税込目安 ¥3.30) で最低料金/契約期間なし。匿名 3 requests/日/IP が無料、評価開始の摩擦が低い。",
     ],
     "them_strengths": [
         "<strong>信用調査評点・代表者経歴・親族関係</strong>などの取材ベースの人物・与信情報が必要なとき。TDB は同領域の代表的な専門業者。",
@@ -97,7 +97,7 @@ PAGES["tsr"] = {
         "<strong>API/MCP 必須の自動化用途</strong>。93 tools + OpenAPI 3.1 で LLM Agent から直接呼べます。"
         "TSR の API/MCP の公開仕様は 2026-04 時点で公開情報なし。",
         "<strong>11,684 制度 + 2,065 判例 + 9,484 法令 + 1,185 行政処分</strong>の横断検索。TSR の対象外領域。",
-        "<strong>¥3/req 完全従量</strong>。年間契約・代理店経由不要、匿名 3 req/日/IP 無料で評価可能。",
+        "<strong>¥3/billable unit 完全従量</strong>。年間契約・代理店経由不要、匿名 3 requests/日/IP 無料で評価可能。",
     ],
     "them_strengths": [
         "<strong>信用調査評点 (TSR 評点) と代表者経歴</strong>。同社のコア商品で、当社では提供できない領域。",
@@ -132,13 +132,13 @@ PAGES["gbizinfo"] = {
     "us_strengths": [
         "<strong>制度 DB との連結</strong>: 法人番号 → 適用可能な補助金 / 融資 / 税制 / 認定 を 1 リクエストで取得。"
         "gBizINFO は補助金採択企業のリンクはあるが、未受給の制度を逆引きする検索は提供せず。",
-        "<strong>MCP プロトコル対応</strong>。Claude / ChatGPT / Cursor 等から直接呼べる 93 tools。"
+        "<strong>MCP プロトコル対応</strong>。Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べる 93 tools。"
         "gBizINFO は REST のみ (MCP は公開情報なし)。",
         "<strong>判例 2,065 件 + 行政処分 1,185 件 + 法令 9,484 件 + 適格請求書 13,801 件</strong>を横断"
         "(法人 × 制度 × 法令 × 処分 を 1 query)。",
     ],
     "them_strengths": [
-        "<strong>完全無料</strong>(政府公式)。当社は ¥3/req 完全従量。"
+        "<strong>完全無料</strong>(政府公式)。当社は ¥3/billable unit 完全従量。"
         "「法人マスタの定期取込だけ必要」なケースなら gBizINFO で完結します。",
         "<strong>500 万社超の網羅性</strong>(法人番号公表サイト連携、ほぼ全法人)。"
         "当社 corporate_entity は 166,969 件で、網羅性では gBizINFO が圧倒。",
@@ -217,8 +217,7 @@ PAGES["mirasapo"] = {
         "<strong>完全無料</strong>(中小企業庁公式)。",
         "<strong>専門家紹介機能</strong>(中小企業診断士・士業マッチング)。"
         "人的支援が必要なケースでは当社では代替不能。",
-        "<strong>読み物としての解説の充実</strong>。"
-        "制度を初めて知る経営者向けの導入線として機能。",
+        "<strong>読み物としての解説の充実</strong>。制度を初めて知る経営者向けの導入線として機能。",
     ],
     "migration": (
         "<p><strong>用途別に住み分け</strong>: 制度を初めて理解する SMB 経営者なら、まずミラサポ plus の解説で勘所を掴み、"
@@ -248,7 +247,7 @@ PAGES["moneyforward"] = {
         "MF は会計 SaaS のため、制度 DB の API は提供せず。",
         "<strong>API/MCP 提供</strong>。当社の API は LLM Agent 連携が主用途。"
         "MF API は会計 SaaS の顧客向けで、制度 DB アクセスとは別レイヤー。",
-        "<strong>従量 ¥3/req</strong>。会計データ自体は持たないため、「制度横断検索だけ欲しい」なら従量だけで済みます。",
+        "<strong>従量 ¥3/billable unit</strong>。会計データ自体は持たないため、「制度横断検索だけ欲しい」なら従量だけで済みます。",
     ],
     "them_strengths": [
         "<strong>会計・経費・給与・人事</strong>の SaaS。当社は会計データを持たず、MF の代替にはなりません。",
@@ -321,7 +320,7 @@ PAGES["navit"] = {
     "us_strengths": [
         "<strong>API + MCP</strong>提供。93 tools で LLM Agent から直接呼べる。"
         "ナビットは Web UI 中心で、API/MCP の公開仕様は 2026-04 時点で公開情報なし。",
-        "<strong>従量 ¥3/req</strong>。Seat 不要、必要な分だけ。"
+        "<strong>従量 ¥3/billable unit</strong>。Seat 不要、必要な分だけ。"
         "ナビットは Seat 課金モデル (公開価格情報なし、要問合せ)。",
         "<strong>制度 + 判例 + 行政処分 + 法令 + 適格請求書</strong>の横断検索。"
         "補助金単体の網羅件数では同社が多い場合あり (「6,000 件以上」と公開) — 件数だけが指標ならナビットを検討する価値あり。",
@@ -360,12 +359,12 @@ PAGES["nta-invoice"] = {
     "us_strengths": [
         "<strong>登録番号 × 制度の横断検索</strong>。同事業者が受給できる補助金 / 適用税制 / 該当判例 を 1 リクエストで取得。"
         "国税庁公表サイトは登録番号と公示情報のみで、他データとの結合は提供せず。",
-        "<strong>MCP プロトコル対応</strong>。Claude / ChatGPT / Cursor 等から直接呼べる 93 tools。"
+        "<strong>MCP プロトコル対応</strong>。Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べる 93 tools。"
         "国税庁公表サイトは Web API のみで、MCP は対象外。",
         "<strong>判例 / 行政処分 / 法令</strong>を含む横断検索。「取引相手の登録番号 → 行政処分の有無」を 1 query で確認可能。",
     ],
     "them_strengths": [
-        "<strong>完全無料</strong>(国税庁公式)。当社は ¥3/req 完全従量。",
+        "<strong>完全無料</strong>(国税庁公式)。当社は ¥3/billable unit 完全従量。",
         "<strong>登録番号約 4 百万件の網羅性</strong>(全件)。"
         "当社は delta 13,801 件で、フル取込は月次予定。網羅性では国税庁公表サイトが圧倒。",
         "<strong>PDL v1.0</strong>(Public Data License) で出典明記付きの再配布が可能。"
@@ -401,22 +400,22 @@ PAGES["diy-scraping"] = {
         "<strong>失効監視 + dedup + license 管理</strong>を当社が運用。"
         "URL 死活と出典鮮度を定期的に監視し、問題のある行は確認対象に回します。"
         "重複除去ロジック (公募回 / 都道府県差し替え) も内製済。",
-        "<strong>93 MCP tools</strong>を Claude / ChatGPT / Cursor から直呼び。"
+        "<strong>93 MCP tools</strong>を Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼び出し。"
         "自前で MCP サーバーを書く工数も不要。",
     ],
     "them_strengths": [
         "<strong>完全コントロール</strong>。データ構造・正規化方針・更新頻度を自社要件に合わせて設計可能。"
         "当社のスキーマで合わない場合、自前が選択肢。",
         "<strong>原価が下がる</strong>(規模次第)。月数十万 req 規模で長期運用するなら、Cloud + 開発工数の方が"
-        "従量 ¥3/req より安くなる可能性あり (人件費を除けば)。",
+        "従量 ¥3/billable unit より安くなる可能性あり (人件費を除けば)。",
         "<strong>機密性</strong>。第三者 API に query を流したくない (例: クライアント名を含む) ケースでは自前が必要。",
     ],
     "migration": (
         "<p><strong>買って始め、作るかは後で判断</strong>: まず当社 API で MVP を組んで需要を確かめてから、"
         "本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、"
         "そのスライスだけ自前で crawl する、というハイブリッド戦略が現実的です。"
-        "当社の OpenAPI 3.1 spec は <a href=\"/docs/api-reference/\">API リファレンス</a> 経由で公開、"
-        "MCP tool 仕様も <a href=\"/docs/mcp-tools/\">MCP tools</a> で読めるため、"
+        '当社の OpenAPI 3.1 spec は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、'
+        'MCP tool 仕様も <a href="/docs/mcp-tools/">MCP tools</a> で読めるため、'
         "後から自前に切り替える際の移植も比較的容易です。</p>"
         "<p><strong>license の落とし穴</strong>: 自前 crawler の最大の罠は<strong>出典管理</strong>です。"
         "集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>source_url</code> にすると"
@@ -474,9 +473,7 @@ def render_matrix_html(rows: list[dict], competitor_label: str) -> str:
 def render_jsonld(slug: str, page: dict) -> str:
     """Render JSON-LD: Article + Organization."""
     title_competitor = page["title_competitor"]
-    headline = (
-        f"jpcite vs {title_competitor}: 機能・価格・データ範囲の比較 (2026)"
-    )
+    headline = f"jpcite vs {title_competitor}: 機能・価格・データ範囲の比較 (2026)"
     url = f"{SITE_BASE}/compare/{slug}/"
     article_ld = {
         "@context": "https://schema.org",
@@ -490,13 +487,11 @@ def render_jsonld(slug: str, page: dict) -> str:
         "author": {
             "@type": "Organization",
             "name": "Bookyou株式会社",
-            "identifier": "T8010001213708",
             "url": f"{SITE_BASE}/",
         },
         "publisher": {
             "@type": "Organization",
             "name": "Bookyou株式会社",
-            "identifier": "T8010001213708",
             "url": f"{SITE_BASE}/",
         },
         "mainEntityOfPage": url,
@@ -507,7 +502,6 @@ def render_jsonld(slug: str, page: dict) -> str:
         "name": "Bookyou株式会社",
         "alternateName": ["jpcite"],
         "url": f"{SITE_BASE}/",
-        "identifier": "T8010001213708",
         "address": {
             "@type": "PostalAddress",
             "addressCountry": "JP",
@@ -540,13 +534,9 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
     them_bullets = "\n".join(f"<li>{b}</li>" for b in page["them_strengths"])
     competitor_url = rows[0].get("competitor_url", "") if rows else ""
     if competitor_url:
-        competitor_link_phrase = (
-            f'最新情報は <a href="{html.escape(competitor_url)}" rel="noopener nofollow" target="_blank">{html.escape(title_competitor)} 公式</a> および当社 <a href="/pricing.html">料金ページ</a> をご確認ください。'
-        )
+        competitor_link_phrase = f'最新情報は <a href="{html.escape(competitor_url)}" rel="noopener nofollow" target="_blank">{html.escape(title_competitor)} 公式</a> および当社 <a href="/pricing.html">料金ページ</a> をご確認ください。'
     else:
-        competitor_link_phrase = (
-            f'最新情報は当社 <a href="/pricing.html">料金ページ</a> でご確認ください ({html.escape(title_competitor)} は外部サービスではないため公式参照先はありません)。'
-        )
+        competitor_link_phrase = f'最新情報は当社 <a href="/pricing.html">料金ページ</a> でご確認ください ({html.escape(title_competitor)} は外部サービスではないため公式参照先はありません)。'
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -554,11 +544,11 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>{html.escape(headline)} — jpcite</title>
-<meta name="description" content="{html.escape(page['meta_description'])}">
+<meta name="description" content="{html.escape(page["meta_description"])}">
 <meta name="robots" content="index,follow">
 
 <meta property="og:title" content="{html.escape(headline)}">
-<meta property="og:description" content="{html.escape(page['meta_description'])}">
+<meta property="og:description" content="{html.escape(page["meta_description"])}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="{url}">
 <meta property="og:image" content="{SITE_BASE}/assets/og.png">
@@ -568,7 +558,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{html.escape(headline)}">
-<meta name="twitter:description" content="{html.escape(page['meta_description'])}">
+<meta name="twitter:description" content="{html.escape(page["meta_description"])}">
 <meta name="twitter:image" content="{SITE_BASE}/assets/og-twitter.png">
 
 <link rel="canonical" href="{url}">
@@ -658,7 +648,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
     </nav>
 
     <h1>{html.escape(headline)}</h1>
-    <p class="lead">{page['intro']}</p>
+    <p class="lead">{page["intro"]}</p>
 
     <div class="compare-disclaimer">
       <strong>本ページは公開情報をもとに当社が作成しています。</strong>
@@ -689,13 +679,13 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 
     <h2>移行 / 併用ガイド</h2>
     <div class="compare-migration">
-      {page['migration']}
+      {page["migration"]}
     </div>
 
     <h2>関連ページ</h2>
     <ul class="related-list">
       <li><a href="/compare.html">全比較表 (6 サービス × 13 軸)</a></li>
-      <li><a href="/pricing.html">料金 (¥3/req 完全従量)</a></li>
+      <li><a href="/pricing.html">料金 (¥3/billable unit 完全従量)</a></li>
       <li><a href="/docs/api-reference/">API リファレンス</a></li>
       <li><a href="/docs/mcp-tools/">MCP tools (93)</a></li>
       <li><a href="/sources.html">出典・ライセンス</a></li>
@@ -716,7 +706,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
   <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
     比較は <time datetime="{PUBLISHED}">{PUBLISHED}</time> 時点の各社公開情報に基づきます。
     {html.escape(title_competitor)} の各サービス名は、運営者の登録商標または商標です。
-    · 運営 <a href="https://www.invoice-kohyo.nta.go.jp/regno-list/?T8010001213708" rel="noopener nofollow" target="_blank">Bookyou株式会社 (T8010001213708) を国税庁公表で確認</a>
+    · 運営 <a href="/about.html">Bookyou株式会社</a>
     · <a href="/tokushoho.html">特商法表記</a> / <a href="/tos.html">利用規約</a> / <a href="/privacy.html">プライバシー</a>
     · 修正提案 <a href="mailto:info@bookyou.net?subject=compare/{slug}%20correction">info@bookyou.net</a>
   </p>
@@ -735,7 +725,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
       <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
     <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
   </div>
 </footer>

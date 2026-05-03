@@ -62,9 +62,7 @@
  </ul>
  </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="/_templates/prefecture.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
- <span class="sep" aria-hidden="true">/</span>
- <a href="/en/_templates/prefecture.html" lang="en" hreflang="en">EN</a>
+ <a href="/prefectures/{{ slug }}.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
  </span>
  </nav>
  </div>
@@ -217,7 +215,7 @@
 
  <section aria-labelledby="api-title">
  <h2 id="api-title">{{ pref_ja }}データを API / MCP で取得</h2>
- <p>本ページに掲載した {{ pref_ja }}の制度・採択・融資・処分データは、すべて jpcite の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / ChatGPT などの MCP クライアントから即時に呼び出せます。</p>
+ <p>本ページに掲載した {{ pref_ja }}の制度・採択・融資・処分データは、すべて jpcite の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から呼び出せます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.{{ DOMAIN }}/v1/programs/search?prefecture={{ pref_ja | urlencode }}&amp;tier=S,A&amp;limit=20"</code></pre>
  <p>MCP からは <code>search_programs(prefecture="{{ pref_ja }}", tier=["S","A"], limit=20)</code> で同等の検索が可能です。詳細は <a href="/docs/api-reference">API reference</a> および <a href="/docs/mcp-tools">MCP ツール</a> をご参照ください。</p>

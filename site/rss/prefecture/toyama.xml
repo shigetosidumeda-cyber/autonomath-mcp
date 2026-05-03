@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>称等 詳細情報・条件等 募集期間 問合せ先 リンク先</title>
@@ -866,15 +866,6 @@
   </item>
 
   <item>
-    <title>未来の担い手育成支援事業</title>
-    <link>https://jpcite.com/programs/mirai-no-ninaite-ikusei-shien-jigyou-c4a1dc.html</link>
-    <description>Tier C / 富山県 / 富山県富山市 / subsidy / 上限 5万円 出典: https://www.city.toyama.toyama.jp/_res/projects/default_project/_page_/001/005/893/1005893.pdf</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-8118c28a67</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>南砺市ブラッシュアップ農業導入促進重点事業補助金</title>
     <link>https://jpcite.com/programs/nanto-shi-burasshuappu-nougyou-dounyuu-sokushin-juuten-a291dd.html</link>
     <description>Tier C / 富山県 / subsidy / 上限 250万円 出典: https://www.city.nanto.toyama.jp/cms-sypher/www/service/detail.jsp?id=27379</description>
@@ -902,11 +893,20 @@
   </item>
 
   <item>
-    <title>未来の担い手育成支援事業</title>
-    <link>https://jpcite.com/programs/mirai-no-ninaite-ikusei-shien-jigyou-da87a2.html</link>
-    <description>Tier A / 富山県 / 上限 5万円 出典: https://www.city.toyama.toyama.jp/_res/projects/default_project/_page_/001/005/893/1005893.pdf</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-958009cbc2</guid>
+    <title>高岡市_収入減少影響緩和対策（ナラシ対策）</title>
+    <link>https://jpcite.com/programs/takaokashi-shuunyuu-genshou-eikyou-kanwa-taisaku-narashi-1cdd1f.html</link>
+    <description>Tier B / 富山県 / insurance / 上限 100万円 出典: https://www.city.takaoka.toyama.jp/</description>
+    <category>insurance</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a565db2035</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>南砺市_雇用創出奨励事業補助金（南砺市農業人材活躍促進重点事業）</title>
+    <link>https://jpcite.com/programs/nanto-shi-koyou-soushutsu-shourei-jigyou-hojokin-nanto-shi-b5e2d5.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 20万円 出典: https://www.city.nanto.toyama.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b07abd4754</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

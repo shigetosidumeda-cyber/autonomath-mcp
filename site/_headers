@@ -226,7 +226,7 @@
 /news/*
   Cache-Control: public, max-age=3600, stale-while-revalidate=21600
 
-# Integrations tutorials (Claude Desktop / Cursor / Cline / OpenAI Custom GPT)
+# Integrations tutorials (Claude Desktop / Cursor / Cline / ChatGPT Custom GPT)
 # — hand-written 5-min step-by-step guides + SDK sample index. Mostly read by
 # evaluator humans + AI crawlers. Cache 1h browser / 24h edge: copy edits to
 # config snippets / version bumps reach users within a day, edge soaks up the

@@ -57,6 +57,58 @@ def test_health_deep_route_returns_200(client: TestClient):
     assert body["status"] in {"ok", "degraded", "unhealthy"}
     assert "checks" in body
     assert isinstance(body["checks"], dict)
+    assert "version" not in body
+    assert "evaluated_at_jst" not in body
+    for check_result in body["checks"].values():
+        assert "value" not in check_result
+
+
+def test_health_deep_route_redacts_internal_details(
+    client: TestClient, monkeypatch
+):
+    """Public deep health keeps status but hides paths, counts, ratios, values."""
+    from jpintel_mcp.api import autonomath as autonomath_mod
+
+    monkeypatch.setattr(
+        autonomath_mod,
+        "get_deep_health",
+        lambda force=False: {
+            "status": "ok",
+            "version": "secret-version",
+            "checks": {
+                "db_jpintel_reachable": {
+                    "status": "ok",
+                    "details": "opened /data/jpintel.db",
+                    "value": {"rows": 14472},
+                },
+                "license_coverage": {
+                    "status": "warn",
+                    "details": "NULL license ratio=0.0123",
+                    "value": 0.9877,
+                },
+            },
+            "timestamp_utc": "2026-05-01T00:00:00+00:00",
+            "evaluated_at_jst": "2026-05-01T09:00:00+09:00",
+        },
+    )
+
+    resp = client.get("/v1/am/health/deep?force=true")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body == {
+        "status": "ok",
+        "checks": {
+            "db_jpintel_reachable": {
+                "status": "ok",
+                "details": "program database reachable",
+            },
+            "license_coverage": {
+                "status": "warn",
+                "details": "license coverage evaluated",
+            },
+        },
+        "timestamp_utc": "2026-05-01T00:00:00+00:00",
+    }
 
 
 def test_health_deep_can_fail_http_for_unhealthy_monitor(

@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>あきた企業立地促進助成事業（事業集約型）補助金の指定について（令和６年６月１９日） | 美の国あきたネット</title>
@@ -407,15 +407,6 @@
   </item>
 
   <item>
-    <title>ヘルスケアビジネス臨時支援事業費補助金の公募について</title>
-    <link>https://jpcite.com/programs/herusukeabijinesu-rinji-shien-jigyou-hi-hojokin-no-koubo-a92cbd.html</link>
-    <description>Tier A / 秋田県 / 秋田県 / subsidy 出典: https://www.pref.akita.lg.jp/pages/archive/95178</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-668513f0d7</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
     <title>補助金の関連ジャンル</title>
     <link>https://jpcite.com/programs/hojokin-no-kanren-janru-9cf8c7.html</link>
     <description>Tier A / 秋田県 / 秋田県 / subsidy 出典: https://www.pref.akita.lg.jp/pages/genre/34580</description>
@@ -704,15 +695,6 @@
   </item>
 
   <item>
-    <title>美郷町新規参入者営農継続経費助成</title>
-    <link>https://jpcite.com/programs/misato-machi-shinkisannyuusha-einou-keizoku-keihi-josei-2aad03.html</link>
-    <description>Tier C / 秋田県 / subsidy / 上限 100万円 出典: https://www.town.misato.akita.jp/nougyou/2832</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-2a2d40a7e7</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>かづの農業夢プラン応援事業</title>
     <link>https://jpcite.com/programs/kazuno-nougyou-yume-puran-ouen-jigyou-441261.html</link>
     <description>Tier B / 秋田県 / subsidy / 上限 1,000万円 出典: https://www.city.kazuno.lg.jp/soshiki/norin/kozokaikakusuisin/gyomu/4/01/2691.html</description>
@@ -907,6 +889,24 @@
     <description>Tier B / 秋田県 / subsidy / 上限 100万円 出典: https://www.city.yokote.lg.jp/sangyo/norin/noringyoshanomuke/6jisangyo/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-708f68559f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>集落営農活性化プロジェクト促進事業</title>
+    <link>https://jpcite.com/programs/shuuraku-einou-kasseika-purojiekuto-sokushin-jigyou-8abffd.html</link>
+    <description>Tier B / 秋田県 / subsidy / 上限 100万円 出典: https://www.city.yokote.lg.jp/sangyo/norin/noringyoshanomuke/kokken/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-715e50fb8d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>あきた中小企業みらい応援ファンド（共同研究助成事業・秋田市型）</title>
+    <link>https://jpcite.com/programs/akita-chuushoukigyou-mirai-ouen-fando-kyoudoukenkyuu-josei-f6f5f4.html</link>
+    <description>Tier B / 秋田県 / incentive / 上限 300万円 出典: https://www.smrj.go.jp/sme/funding/regional_fund/fbrion00000047w8-att/jver9n000000dwf9.pdf</description>
+    <category>incentive</category>
+    <guid isPermaLink="false">jpcite:program:UNI-72e2443468</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

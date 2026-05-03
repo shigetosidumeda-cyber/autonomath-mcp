@@ -19,14 +19,16 @@ def test_readyz(client):
 
 
 def test_meta(client):
-    r = client.get("/meta")
+    r = client.get("/v1/meta")
     assert r.status_code == 200
     d = r.json()
-    # Fixture seeds 4 UNI-test-* programs; live conftest may seed more for
-    # cross-feature smoke. Lower-bound is what matters: at least the 4 fixture
-    # rows must round-trip and tier S must include at least the test-s-1 row.
-    assert d["total_programs"] >= 4
+    # /meta reports public-searchable programs only. The fixture has three
+    # public UNI-test-* rows; the excluded/Tier X seed row must not leak.
+    assert d["total_programs"] >= 3
     assert d["tier_counts"]["S"] >= 1
+    assert "X" not in d["tier_counts"]
+    assert d["total_programs"] == sum(d["tier_counts"].values())
+    assert d["total_programs"] == sum(d["prefecture_counts"].values())
     # Three fixture rules: legacy mutex / legacy prereq / migration-051
     # uid-keyed mutex (added so the dual-key path can be exercised).
     assert d["exclusion_rules_count"] >= 3
@@ -40,13 +42,10 @@ def test_search_default_excludes_excluded(client):
     assert {"UNI-test-s-1", "UNI-test-a-1", "UNI-test-b-1"}.issubset(set(ids))
 
 
-def test_search_include_excluded(client):
+def test_search_rejects_include_excluded(client):
     r = client.get("/v1/programs/search", params={"include_excluded": True, "limit": 100})
-    d = r.json()
-    ids = [x["unified_id"] for x in d["results"]]
-    assert "UNI-test-x-1" in ids
-    # All 4 fixture rows must be present when include_excluded=True.
-    assert {"UNI-test-s-1", "UNI-test-a-1", "UNI-test-b-1", "UNI-test-x-1"}.issubset(set(ids))
+    assert r.status_code == 422
+    assert "include_excluded" in r.text
 
 
 def test_search_filter_tier(client):

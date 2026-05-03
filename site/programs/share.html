@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>共有された制度候補 — jpcite</title>
+<meta name="description" content="prescreen で抽出した制度候補の共有 URL。一次資料リンク・最大金額・Tier 付き。経営者と顧問税理士の判断ハンドオフ用。">
+<meta name="robots" content="noindex,follow">
+
+<link rel="canonical" href="https://jpcite.com/programs/share.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
+</head>
+<body>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/products.html">Products</a>
+ <a href="/docs/">Docs</a>
+ <a href="/pricing.html">Pricing</a>
+ <a href="/dashboard.html">ダッシュボードへ</a>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+ <section class="hero" aria-labelledby="share-title" style="padding:48px 0 28px;">
+ <div class="container">
+ <nav aria-label="パンくず" style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
+ <a href="/">ホーム</a> &raquo; <a href="/programs/">制度一覧</a> &raquo; <span aria-current="page">共有された候補</span>
+ </nav>
+ <h1 id="share-title" style="font-size:30px;letter-spacing:-0.01em;margin:0 0 8px;">共有された制度候補</h1>
+ <p class="hero-tag" id="ps-summary" style="margin:0 0 18px;">URL の <code>?ids=UNI-...</code> パラメータから候補を読み込みます。</p>
+ </div>
+ </section>
+
+ <section class="prescreen" aria-labelledby="ps-results-title" style="padding:24px 0 56px;">
+ <div class="container">
+ <h2 id="ps-results-title" class="section-title" style="font-size:18px;margin:0 0 14px;">候補一覧</h2>
+ <div class="ps-card">
+ <div id="ps-status-live" class="visually-hidden" role="status" aria-live="polite"></div>
+ <div id="ps-results" class="ps-results is-visible" aria-busy="false">
+ <p class="ps-status">読み込み中…</p>
+ </div>
+ </div>
+ <p class="hero-note" style="margin-top:16px;">
+ この画面は <code>?ids=UNI-xxx,UNI-yyy</code> 形式の URL でアクセスして候補を共有するためのページです。
+ 最大 50 件まで一度に表示できます。出典 URL と最大金額は API
+ <a rel="noopener" href="https://api.jpcite.com/v1/programs/batch">/v1/programs/batch</a>
+ で更新しています。
+ </p>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="share-disclaimer-title" style="background:var(--bg-alt);">
+ <div class="container">
+ <h2 id="share-disclaimer-title" class="section-title" style="font-size:18px;">税理士法 §52 注記</h2>
+ <p>本一覧は jpcite が一次資料に基づいて検索した <strong>候補</strong> です。
+ 具体的な申請可否・税務処理は資格を有する税理士・行政書士の判断によります。
+ jpcite は判定の助言ではなく、機械的な候補抽出ツールです。</p>
+ <div class="cta-row" style="margin-top:18px;">
+ <a class="btn btn-primary" href="/#try">自分でも prescreen を試す</a>
+ <a class="btn btn-secondary" href="/audiences/smb.html#tax-advisor-handoff">経営者→税理士ハンドオフを見る</a>
+ </div>
+ </div>
+ </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/products.html">Products</a>
+ <a href="/pricing.html">Pricing</a>
+ <a href="/docs/">Docs</a>
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特定商取引法</a>
+ <a href="/docs/faq/">ヘルプ</a>
+ </nav>
+ <p class="footer-entity">制度データ提供: jpcite</p>
+ <p class="footer-copy">&copy; 2026 jpcite</p>
+ </div>
+</footer>
+
+<script>
+// share-page renderer.
+// Reads `?ids=UNI-a,UNI-b,...` from window.location.search, calls
+// /v1/programs/batch (max 50 ids), and renders the same card layout
+// the prescreen widget uses. Pure DOM, no framework — ships flat to
+// Cloudflare Pages.
+(function () {
+  "use strict";
+
+  // Sibling endpoint of the prescreen widget. Hardcoded to api.jpcite.com
+  // because the share page is consumed cross-origin (e.g. opened from a
+  // tax-advisor's email) and `data-api-base` doesn't exist here.
+  var API_BASE = "https://api.jpcite.com";
+
+  var resultsEl = document.getElementById("ps-results");
+  var summaryEl = document.getElementById("ps-summary");
+  var liveEl = document.getElementById("ps-status-live");
+
+  function announce(msg) { if (liveEl) liveEl.textContent = msg || ""; }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function formatAmount(manYen) {
+    if (manYen == null) return "金額非公開";
+    if (manYen >= 10000) {
+      return (manYen / 10000).toLocaleString("ja-JP", { maximumFractionDigits: 1 }) + " 億円";
+    }
+    return manYen.toLocaleString("ja-JP") + " 万円";
+  }
+
+  function programHref(p) {
+    if (p && typeof p.static_url === "string" && p.static_url) return p.static_url;
+    return "/programs/";
+  }
+
+  function renderRows(programs) {
+    if (!programs.length) {
+      return '<p class="ps-status">候補が見つかりませんでした。URL の <code>ids=</code> パラメータを確認してください。</p>';
+    }
+    var items = programs.map(function (r) {
+      var tier = r.tier || "";
+      var sourceHtml = r.official_url
+        ? '<p class="ps-source">出典: <a rel="noopener noreferrer nofollow" target="_blank" href="' +
+          escapeHtml(r.official_url) + '">' + escapeHtml(r.official_url) + "</a></p>"
+        : "";
+      return (
+        '<li class="ps-row">' +
+        '<div class="ps-row-head">' +
+        (tier ? '<span class="ps-tier t-' + escapeHtml(tier) + '">Tier ' + escapeHtml(tier) + "</span>" : "") +
+        '<a class="ps-name" href="' + escapeHtml(programHref(r)) + '">' +
+        escapeHtml(r.primary_name || r.unified_id) +
+        "</a>" +
+        '<span class="ps-amount">上限 ' + escapeHtml(formatAmount(r.amount_max_man_yen)) + "</span>" +
+        "</div>" +
+        sourceHtml +
+        "</li>"
+      );
+    }).join("");
+    return '<ul class="ps-list">' + items + "</ul>";
+  }
+
+  function parseIds() {
+    var qs = window.location.search || "";
+    var m = qs.match(/[?&]ids=([^&#]*)/);
+    if (!m) return [];
+    var raw;
+    try { raw = decodeURIComponent(m[1]); } catch (_) { raw = m[1]; }
+    return raw
+      .split(",")
+      .map(function (s) { return s.trim(); })
+      .filter(function (s) {
+        // Only accept canonical UNI-xxxxxxxxxx ids — rejects any other
+        // shape so a hostile share URL can't smuggle nonsense into our
+        // POST body. The cap at 50 mirrors the API's BatchGetProgramsRequest
+        // max_length.
+        return /^UNI-[A-Za-z0-9]{8,16}$/.test(s);
+      })
+      .slice(0, 50);
+  }
+
+  function showError(msg) {
+    resultsEl.innerHTML = '<p class="ps-error">' + escapeHtml(msg) + "</p>";
+    announce(msg);
+  }
+
+  async function load() {
+    var ids = parseIds();
+    if (!ids.length) {
+      summaryEl.innerHTML =
+        "URL に <code>?ids=UNI-xxxx,UNI-yyyy</code> を付けてアクセスしてください。" +
+        " <a href=\"/#try\">prescreen を実行</a> して結果カード下の「共有 URL を生成」ボタンから取得できます。";
+      resultsEl.innerHTML = '<p class="ps-status">候補 ID が指定されていません。</p>';
+      announce("ID 未指定");
+      return;
+    }
+    summaryEl.textContent = ids.length + " 件の候補を読み込み中…";
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    try {
+      var resp = await fetch(API_BASE + "/v1/programs/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unified_ids: ids }),
+        signal: ctrl.signal,
+      });
+      if (!resp.ok) {
+        showError("読み込みに失敗しました (HTTP " + resp.status + ")");
+        return;
+      }
+      var data = await resp.json();
+      var found = (data.results || []);
+      var notFound = (data.not_found || []);
+      var summary =
+        "共有された候補 " + ids.length + " 件のうち " + found.length + " 件を表示" +
+        (notFound.length ? " (見つからず: " + notFound.length + " 件)" : "") + "。";
+      summaryEl.textContent = summary;
+      resultsEl.innerHTML = renderRows(found);
+      announce(summary);
+    } catch (err) {
+      if (err && err.name === "AbortError") {
+        showError("タイムアウトしました。時間をおいて再試行してください。");
+      } else {
+        showError("ネットワークエラー: " + (err && err.message ? err.message : "unknown"));
+      }
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

@@ -1,13 +1,13 @@
-# Generates site/programs/{slug}.html (one per indexable row) and
-# site/sitemap-programs.xml from the production SQLite registry, then commits
-# the regenerated artefacts back to main so Cloudflare Pages picks them up
-# on its next deploy.
+# Generates public program/prefecture/llms/sitemap artifacts from the production
+# SQLite registry, then deploys the prepared static artifact directly to
+# Cloudflare Pages. Generated pages stay gitignored to avoid committing hundreds
+# of megabytes of static HTML back to the repo.
 #
-# Why we commit static HTML instead of generating at request time:
+# Why we generate static HTML instead of generating at request time:
 #   - jpcite.com is a static site on Cloudflare Pages; no server runtime.
 #   - Per-program pages are the SEO/GEO surface area (≈10k rows). Crawlers
 #     need addressable URLs with prerendered JSON-LD, not SPA placeholders.
-#   - Idempotent generator (`_write_if_changed`) keeps the diff minimal.
+#   - Idempotent generator (`_write_if_changed`) keeps deploy diffs stable.
 #
 # Required GitHub repository secrets:
 #   FLY_API_TOKEN  Fly.io deploy token with ssh+sftp on app `autonomath-api`.
@@ -17,14 +17,11 @@
 #                  checkout).
 #
 # Optional:
-#   CF_PAGES_DEPLOY_HOOK  Cloudflare Pages "Deploy hook" URL. If set, we POST
-#                         to it after pushing so Pages rebuilds immediately
-#                         instead of waiting for its commit-trigger latency.
-#                         Configure under Pages project → Settings → Builds &
-#                         deployments → Deploy hooks (autonomath-fallback).
+#   CF_API_TOKEN          Cloudflare API token with Pages edit scope.
+#   CF_ACCOUNT_ID         Cloudflare account ID.
 #
 # Runtime budget: ≈10k rows × ~50ms render + sitemap ≈ 8-12 minutes wall.
-# `timeout-minutes: 30` leaves slack for sftp + git push.
+# `timeout-minutes: 30` leaves slack for sftp + direct Pages deploy.
 
 name: pages-regenerate
 
@@ -40,6 +37,10 @@ on:
     paths:
       - "site/_templates/**"
       - "scripts/generate_program_pages.py"
+      - "scripts/generate_prefecture_pages.py"
+      - "scripts/regen_llms_full.py"
+      - "scripts/regen_llms_full_en.py"
+      - "scripts/sitemap_gen.py"
       - ".github/workflows/pages-regenerate.yml"
 
 concurrency:
@@ -47,7 +48,8 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
+  deployments: write
 
 jobs:
   regenerate:
@@ -57,13 +59,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # Need full history so the commit-back step has a sane HEAD to push.
           fetch-depth: 1
-          # Use the default GITHUB_TOKEN to allow `git push` back to main.
-          # This token is auto-scoped to the repo and respects branch
-          # protection — direct push to main only works because we run
-          # from main and the [skip ci] suffix prevents recursive triggers.
-          persist-credentials: true
 
       - name: Check Fly token
         id: fly-token
@@ -85,11 +81,12 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
-      - name: Install package with site extras
+      - name: Install docs and site dependencies
         if: steps.fly-token.outputs.available == 'true'
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
+          pip install -r docs-requirements.txt
           pip install -e ".[site]"
 
       - name: Install flyctl
@@ -111,7 +108,7 @@ jobs:
           mv jpintel.live.db data/jpintel.db
           ls -la data/jpintel.db
 
-      - name: Regenerate program pages and sitemap
+      - name: Regenerate generated public artifacts
         if: steps.fly-token.outputs.available == 'true'
         run: |
           set -euo pipefail
@@ -120,36 +117,62 @@ jobs:
             --out site/programs \
             --domain jpcite.com \
             --sitemap site/sitemap-programs.xml \
+            --tiers S,A,B,C \
             --verbose
+          python scripts/generate_prefecture_pages.py \
+            --db data/jpintel.db \
+            --out site/prefectures \
+            --domain jpcite.com \
+            --sitemap site/sitemap-prefectures.xml
+          python scripts/regen_llms_full.py --db data/jpintel.db --out site/llms-full.txt
+          python scripts/regen_llms_full_en.py --db data/jpintel.db --out site/llms-full.en.txt
 
-      - name: Commit regenerated pages back to main
+      - name: Build docs and sitemap
         if: steps.fly-token.outputs.available == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Only stage the regenerated artefacts; never commit the pulled DB.
-          git add site/programs/ site/structured/ site/sitemap-programs.xml site/sitemap-programs-*.xml site/sitemap-structured.xml 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "No changes to commit (regeneration was idempotent)."
-            exit 0
-          fi
-          # `[skip ci]` short-circuits the push trigger above so we don't
-          # ping-pong workflow runs. Schedule + workflow_dispatch keep flowing.
-          git commit -m "Regenerate program pages [skip ci]"
-          git push origin HEAD:main
+          mkdocs build --strict
+          python scripts/sitemap_gen.py --site-dir site --domain jpcite.com
 
-      - name: Trigger Cloudflare Pages deploy hook (optional)
+      - name: Prepare public artifact
         if: steps.fly-token.outputs.available == 'true'
-        env:
-          CF_PAGES_DEPLOY_HOOK: ${{ secrets.CF_PAGES_DEPLOY_HOOK }}
         run: |
           set -euo pipefail
-          if [ -z "${CF_PAGES_DEPLOY_HOOK:-}" ]; then
-            echo "::notice::CF_PAGES_DEPLOY_HOOK not set; skipping (Pages will pick up the push on its own cadence)."
-            exit 0
+          rm -rf dist/site
+          mkdir -p dist
+          rsync -a --delete \
+            --exclude '_templates/' \
+            --exclude '_data/' \
+            --exclude '*.src.js' \
+            --exclude '*.src.css' \
+            --exclude '*.map' \
+            --include 'press/*.md' \
+            --include 'security/policy.md' \
+            --exclude '*.md' \
+            site/ dist/site/
+
+      - name: Check Cloudflare Pages secrets
+        id: cf-secrets
+        if: steps.fly-token.outputs.available == 'true'
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
+            echo "::notice::Cloudflare Pages secrets are not configured; skipping scheduled Pages publish."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
           fi
-          curl -fsSL -X POST "$CF_PAGES_DEPLOY_HOOK" -o /dev/null
-          echo "Cloudflare Pages deploy triggered."
+
+      - name: Publish regenerated artifact to Cloudflare Pages
+        if: steps.cf-secrets.outputs.available == 'true'
+        uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: autonomath
+          directory: dist/site
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main

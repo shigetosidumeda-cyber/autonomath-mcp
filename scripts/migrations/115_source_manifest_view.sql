@@ -4,11 +4,11 @@
 -- Source Manifest view — backs `GET /v1/source_manifest/{program_id}` and
 -- the `get_source_manifest` MCP tool. Per docs/_internal/value_maximization
 -- _plan_no_llm_api.md §7.7 + §28.1, every value (制度 detail, eligibility,
--- amount, deadline) needs a per-field citation envelope. Today, the
--- per-fact provenance column `am_entity_facts.source_id` is largely NULL
--- (1.12M / 6.12M = ~18.3% filled, with ZERO program-fact rows populated as
--- of 2026-04-30). The view honestly emits the sparse signal so callers can
--- reason about coverage rather than us hiding it.
+-- amount, deadline) needs a per-field citation envelope. The per-fact
+-- provenance column `am_entity_facts.source_id` is partially populated, with
+-- stronger coverage on program facts after the source_id backfill. The view
+-- honestly emits the sparse signal so callers can reason about coverage
+-- rather than us hiding it.
 --
 -- Why the view does NOT join `programs`
 -- -------------------------------------

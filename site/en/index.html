@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — Search Japanese institutional data via REST + MCP API.</title>
-<meta name="description" content="Evidence prefetch for AI agents working with Japanese public-program data. Search subsidies, laws, court decisions, tax rulesets, invoice registrants, adoption cases, and enforcement records via REST + MCP API with primary-source URLs. ¥3/request, anon 3/day free.">
+<meta name="description" content="Evidence prefetch for AI agents working with Japanese public-program data. Search subsidies, laws, court decisions, tax rulesets, invoice registrants, adoption cases, and enforcement records via REST + MCP API with primary-source URLs. ¥3/billable unit for normal calls, anon 3/day free.">
 
 <meta property="og:title" content="jpcite — Japanese public programs, one API.">
 <meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (93 tools, 2025-06-18). Primary-source lineage on most public rows.">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite — Japanese public programs, one API.">
-<meta name="twitter:description" content="Evidence prefetch for AI agents: primary-source URLs, fetched_at, facts, and compatibility rules over Japanese public-program data. REST + MCP, 93 tools, ¥3/request.">
+<meta name="twitter:description" content="Evidence prefetch for AI agents: primary-source URLs, fetched_at, facts, and compatibility rules over Japanese public-program data. REST + MCP, 93 tools, ¥3/billable unit for normal calls.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/">
@@ -28,6 +28,9 @@
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/en/llms.txt">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, Japanese)" href="/llms.txt">
+<link rel="service-desc" type="application/openapi+json" title="Agent-safe OpenAPI" href="https://api.jpcite.com/v1/openapi.agent.json">
+<link rel="service-desc" type="application/openapi+json" title="Full OpenAPI" href="https://api.jpcite.com/v1/openapi.json">
+<link rel="service-desc" type="application/json" title="MCP server manifest" href="/server.json">
 <link type="text/plain" rel="author" href="/humans.txt">
 <link rel="alternate" type="application/rss+xml" title="jpcite Announcements" href="/en/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="jpcite お知らせ (Japanese)" href="/rss.xml">
@@ -52,7 +55,7 @@
   "inLanguage": "en",
   "offers": [
     {"@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "JPY", "description": "3 calls/day per IP, JST next-day 00:00 reset, no card required"},
-    {"@type": "Offer", "name": "Paid", "price": "3", "priceCurrency": "JPY", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "per request", "valueAddedTaxIncluded": false}, "description": "Metered, ¥3 per request tax exclusive (¥3.30 tax inclusive, 10% JCT added at invoice), no cap"}
+    {"@type": "Offer", "name": "Paid", "price": "3", "priceCurrency": "JPY", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "per billable unit", "valueAddedTaxIncluded": false}, "description": "Metered, ¥3 per billable unit tax exclusive (¥3.30 tax inclusive, 10% JCT added at invoice). Normal search/detail calls are 1 unit; batch/export formulas are shown before use."}
   ],
   "featureList": [
     "Cross-source search (programs + case_studies + loan_programs + enforcement_cases, unified schema)",
@@ -150,8 +153,10 @@
   "@context": "https://schema.org",
   "@type": "WebAPI",
   "name": "jpcite REST API",
+  "description": "Evidence prefetch API for Japanese public-program data. Use before answer generation to retrieve source URLs, fetched timestamps, known gaps, and compatibility rules.",
   "url": "https://api.jpcite.com/v1/",
   "documentation": "https://jpcite.com/docs/api-reference/",
+  "endpointDescription": "https://api.jpcite.com/v1/openapi.agent.json",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
@@ -202,12 +207,12 @@
  <div class="container">
  <!-- Primary hero copy. -->
  <h1 id="hero-title">Search Japanese subsidies &amp; tax rules with one line of AI.</h1>
- <p class="hero-sub">¥3.30/req (tax incl.) · 3 req/day free, no signup. Drop into Claude / Cursor / curl and run.</p>
+ <p class="hero-sub">¥3.30/req (tax incl.) · 3 requests/day free, no signup. Drop into Claude / Cursor / curl and run.</p>
  <div class="cta-row">
- <a class="btn btn-primary" href="getting-started.html">Try free (3 req/day per IP, no signup)</a>
+ <a class="btn btn-primary" href="getting-started.html">Try free (3 requests/day per IP, no signup)</a>
  <a class="btn btn-secondary" href="/downloads/autonomath-mcp.mcpb" download aria-label="Download Claude Desktop Extension">Add to Claude Desktop (.mcpb)</a>
  </div>
- <p class="hero-note">Anonymous 3 req/day per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day 00:00 reset); ¥3/req tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on most public rows.</p>
+ <p class="hero-note">Anonymous 3 requests/day per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day 00:00 reset); ¥3/billable unit tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on most public rows.</p>
  </div>
  </section>
 
@@ -252,7 +257,7 @@
  <ul class="card-list">
  <li>125 exclude + 17 prerequisite</li>
  <li>15 absolute + 24 other</li>
- <li>Tier S/A/B/C = data-completeness ranks; X = review-held</li>
+ <li>Tier S/A/B/C = data-completeness ranks; non-public rows are excluded from search</li>
  </ul>
  </article>
 
@@ -271,9 +276,9 @@
  <p class="card-lead">AI developers / enterprise RAG</p>
  <p>Call 93 MCP tools directly from an agent. Prefetch Evidence Packets with primary-source URLs before answer generation.</p>
  <ul class="card-list">
- <li>¥3/req tax exclusive (¥3.30 tax inclusive)</li>
- <li>Anonymous 3 req/day per IP free</li>
- <li>Claude Desktop / Cursor / ChatGPT compatible</li>
+ <li>¥3/billable unit tax exclusive (¥3.30 tax inclusive)</li>
+ <li>Anonymous 3 requests/day per IP free</li>
+ <li>Claude Desktop / Cursor via MCP; ChatGPT via Actions</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="getting-started.html">Read the docs &rarr;</a></p>
  </article>
@@ -308,7 +313,7 @@
  <p>Add subsidy search to your own site with a single &lt;script&gt; tag. Visitors narrow down candidates without leaving your page.</p>
  <ul class="card-list">
  <li>¥3/search metered (10,000 req included)</li>
- <li>Overage ¥3/req</li>
+ <li>Overage ¥3/billable unit</li>
  <li>White-label ¥3/search metered</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="widget.html">Embed the widget &rarr;</a></p>
@@ -353,7 +358,7 @@
  <p class="card-lead audience-context">Mid-size firm, ~80 SMB clients</p>
  <p class="audience-pitch">When a client asks "which subsidies apply to us this year?", point Claude at the API. About ¥3,000/month metered. Email digest of monthly amendments included.</p>
  <ul class="card-list">
- <li>API + MCP (¥3/req)</li>
+ <li>API + MCP (¥3/billable unit)</li>
  <li>Law-amendment alerts (¥3/notification)</li>
  <li>Monthly digest is free</li>
  </ul>
@@ -366,7 +371,7 @@
  <p class="audience-pitch">Pull "applicable subsidies + loans + permits" for a case in one call. Filter by region × industry × deadline. Try the first 3/day free.</p>
  <ul class="card-list">
  <li>API + MCP — one call, cross-source</li>
- <li>Anonymous 3 req/day per IP free</li>
+ <li>Anonymous 3 requests/day per IP free</li>
  <li>Region × industry × deadline search</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/admin-scrivener.html">Admin scrivener details &rarr;</a></p>
@@ -387,11 +392,11 @@
  <article class="card audience-card" aria-labelledby="aud-vc">
  <h3 id="aud-vc"><span aria-hidden="true">📊</span> VC / M&amp;A advisors</h3>
  <p class="card-lead audience-context">Investors / acquirers running a DD pipeline</p>
- <p class="audience-pitch">From a corporate number, fetch 5 years of enforcement history, 10 years of adoption history, and invoice-registrant status in one query. Drop straight into your DD pipeline. ¥3/req metered, batch-friendly within API rate limits.</p>
+ <p class="audience-pitch">From a corporate number, fetch 5 years of enforcement history, 10 years of adoption history, and invoice-registrant status in one query. Drop straight into your DD pipeline. ¥3/billable unit metered, batch-friendly within API rate limits.</p>
  <ul class="card-list">
  <li>One query keyed on corporate number</li>
  <li>Enforcement 1,185 / adoptions 2,286 / invoice 13,801</li>
- <li>¥3/req fully metered, budget caps and rate limits apply</li>
+ <li>¥3/billable unit fully metered, budget caps and rate limits apply</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/vc.html">VC / DD details &rarr;</a></p>
  </article>
@@ -399,11 +404,11 @@
  <article class="card audience-card" aria-labelledby="aud-dev">
  <h3 id="aud-dev"><span aria-hidden="true">🤖</span> AI agent developers</h3>
  <p class="card-lead audience-context">Claude Desktop / Cursor / your own SaaS integration</p>
- <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 93 tools. ¥3/req, 3/day free. Works in Claude Desktop and Cursor out of the box.</p>
+ <p class="audience-pitch">A Japanese subsidy / tax / loan MCP server. 93 tools. ¥3/billable unit, 3/day free. Works in Claude Desktop and Cursor out of the box.</p>
  <ul class="card-list">
  <li>93 MCP tools, protocol 2025-06-18</li>
  <li>stdio transport, no SDK</li>
- <li>3 req/day evaluation, then ¥3/req metered</li>
+ <li>3 requests/day evaluation, then ¥3/billable unit metered</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/dev.html">Developer details &rarr;</a> · <a href="../docs/mcp-tools/">MCP tool list</a></p>
  </article>
@@ -428,7 +433,7 @@
  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
  <div class="container">
  <h2 id="curl-title" class="section-title">Try in 5 seconds (no signup)</h2>
- <p class="demo-lead" style="margin:-16px 0 16px;">Anonymous IP gets 3 req/day free. Paste and run.</p>
+ <p class="demo-lead" style="margin:-16px 0 16px;">Anonymous IP gets 3 requests/day free. Paste and run.</p>
  <pre class="code-block" id="curl-snippet" aria-label="curl example for /v1/programs/search"><code>$ curl 'https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'
 {
  "results": [...],
@@ -494,7 +499,7 @@
  <section class="prescreen" aria-labelledby="ps-title" id="try">
  <div class="container">
  <h2 id="ps-title" class="section-title">Subsidy Prescreen — Top 5 in 3 questions</h2>
- <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,684 active programs</strong> ranked by fit. Free, no signup, anonymous (3 req/day/IP). One call to <code>/v1/programs/prescreen</code>.</p>
+ <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,684 active programs</strong> ranked by fit. Free, no signup, anonymous (3 requests/day/IP). One call to <code>/v1/programs/prescreen</code>.</p>
  <style>
         /* prescreen a11y polish — scoped, additive only */
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
@@ -671,7 +676,7 @@
  <tbody>
  <tr>
  <th scope="row">API + MCP</th>
- <td>3 req/day per IP</td>
+ <td>3 requests/day per IP</td>
  <td>¥3 / req (tax excl.)</td>
  <td>¥3.30 / req</td>
  </tr>
@@ -689,7 +694,7 @@
 </tr>
 <tr>
 <th scope="row">Embeddable widget</th>
-<td>3 req/day per IP</td>
+<td>3 requests/day per IP</td>
 <td>¥3 / search (tax excl.)</td>
 <td>¥3.30 / search</td>
 </tr>

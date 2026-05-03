@@ -53,6 +53,7 @@ Wiring:
     (Monday 07:00 JST — before the workday starts) via `flyctl ssh
     console -C ...`.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -350,9 +351,7 @@ def _render_html(
     items = []
     for h in hits:
         marker = h.get("_delta") or ""
-        marker_html = (
-            f'<strong>[{marker}]</strong> ' if marker else ""
-        )
+        marker_html = f"<strong>[{marker}]</strong> " if marker else ""
         amt = _format_amount(h.get("amount_max_man_yen"))
         pref = h.get("prefecture") or "全国"
         url = f"{_PUBLIC_ORIGIN}/programs/{h.get('unified_id')}"
@@ -364,9 +363,7 @@ def _render_html(
         if marker in ("NEW", "MODIFIED"):
             packet_url = _evidence_packet_endpoint(h.get("unified_id"))
             if packet_url:
-                evidence_html = (
-                    f' <a href="{_PUBLIC_ORIGIN}{packet_url}">[Evidence]</a>'
-                )
+                evidence_html = f' <a href="{_PUBLIC_ORIGIN}{packet_url}">[Evidence]</a>'
         items.append(
             f'<li>{marker_html}<a href="{url}">{name}</a>{evidence_html} — {pref}{amt}</li>'
         )
@@ -375,27 +372,23 @@ def _render_html(
     removed_block = ""
     removed = diff.get("removed", [])
     if removed:
-        removed_items = "".join(
-            f"<li>{uid}</li>" for uid in removed[:_TOP_K_HITS]
-        )
-        removed_block = (
-            f"<h4>REMOVED since last week</h4><ul>{removed_items}</ul>"
-        )
+        removed_items = "".join(f"<li>{uid}</li>" for uid in removed[:_TOP_K_HITS])
+        removed_block = f"<h4>REMOVED since last week</h4><ul>{removed_items}</ul>"
 
     return (
-        f'<html><body>'
-        f'<h2>[{saved_name}] 週次 Digest — {now_iso[:10]}</h2>'
-        f'<p>合計 {diff.get("all_count", 0)} 件 '
-        f'(NEW {len(diff.get("new", []))} / '
-        f'MODIFIED {len(diff.get("modified", []))} / '
-        f'REMOVED {len(diff.get("removed", []))})</p>'
-        f'{body_list}'
-        f'{removed_block}'
+        f"<html><body>"
+        f"<h2>[{saved_name}] 週次 Digest — {now_iso[:10]}</h2>"
+        f"<p>合計 {diff.get('all_count', 0)} 件 "
+        f"(NEW {len(diff.get('new', []))} / "
+        f"MODIFIED {len(diff.get('modified', []))} / "
+        f"REMOVED {len(diff.get('removed', []))})</p>"
+        f"{body_list}"
+        f"{removed_block}"
         f'<p><a href="{manage_url}">管理</a></p>'
-        f'<p><small>本通知は jpcite による公開情報の検索結果です。'
-        f'個別具体的な税務助言・法律判断は税理士法 §52 / 弁護士法 §72 に基づき'
-        f'資格者にご確認ください。</small></p>'
-        f'</body></html>'
+        f"<p><small>本通知は jpcite による公開情報の検索結果です。"
+        f"個別具体的な税務助言・法律判断は税理士法 §52 / 弁護士法 §72 に基づき"
+        f"資格者にご確認ください。</small></p>"
+        f"</body></html>"
     )
 
 
@@ -525,9 +518,7 @@ def _send_email(
                 "match_count": 0,
                 "matches": [],
                 "manage_url": f"{_PUBLIC_ORIGIN}/dashboard.html#saved-searches",
-                "disclaimer": (
-                    "本通知は jpcite による公開情報の検索結果です。"
-                ),
+                "disclaimer": ("本通知は jpcite による公開情報の検索結果です。"),
                 # Pass the rendered bodies through metadata so a future
                 # template revision can read them; today's saved_search_digest
                 # template ignores unknown keys.
@@ -579,7 +570,7 @@ def _replay_search(
         target_type=query.get("target_types") or query.get("target_type"),
         amount_min=query.get("amount_min"),
         amount_max=query.get("amount_max"),
-        include_excluded=bool(query.get("include_excluded", False)),
+        include_excluded=False,
         limit=int(query.get("limit") or 200),
         offset=0,
         fields="default",
@@ -628,15 +619,12 @@ def _replay_search_fallback(
     """
     where: list[str] = ["1=1"]
     params: list[Any] = []
-    if not query.get("include_excluded"):
-        where.append("(excluded = 0 OR excluded IS NULL)")
+    where.append("(excluded = 0 OR excluded IS NULL)")
     where.append("(tier IS NULL OR tier IN ('S','A','B','C'))")
 
     q = query.get("q")
     if q and isinstance(q, str) and q.strip():
-        where.append(
-            "(primary_name LIKE ? OR aliases_json LIKE ?)"
-        )
+        where.append("(primary_name LIKE ? OR aliases_json LIKE ?)")
         like = f"%{q.strip()}%"
         params.extend([like, like])
 
@@ -655,13 +643,17 @@ def _replay_search_fallback(
     # path. Older schemas may not have all of them — we tolerate missing
     # columns by sniffing PRAGMA table_info first.
     select_cols = [
-        "unified_id", "primary_name", "prefecture", "authority_name",
-        "amount_max_man_yen", "subsidy_rate", "official_url", "updated_at",
+        "unified_id",
+        "primary_name",
+        "prefecture",
+        "authority_name",
+        "amount_max_man_yen",
+        "subsidy_rate",
+        "official_url",
+        "updated_at",
     ]
     try:
-        existing_cols = {
-            r[1] for r in conn.execute("PRAGMA table_info(programs)").fetchall()
-        }
+        existing_cols = {r[1] for r in conn.execute("PRAGMA table_info(programs)").fetchall()}
     except sqlite3.OperationalError:
         existing_cols = set()
     for opt in ("source_url", "source_fetched_at"):
@@ -838,7 +830,9 @@ def run_one(
     # mislead the diff after months of dormancy.
     window_iso = (now_utc - timedelta(days=30)).isoformat()
     prev_snapshot = _load_previous_snapshot(
-        conn=jp_conn, saved_id=saved_id, window_iso=window_iso,
+        conn=jp_conn,
+        saved_id=saved_id,
+        window_iso=window_iso,
     )
 
     diff = _diff_sets(
@@ -846,9 +840,7 @@ def run_one(
         prev_result_map=prev_snapshot,
         current=current_results,
     )
-    delta_count = (
-        len(diff["new"]) + len(diff["removed"]) + len(diff["modified"])
-    )
+    delta_count = len(diff["new"]) + len(diff["removed"]) + len(diff["modified"])
 
     now_iso = now_utc.isoformat().replace("+00:00", "Z")
     manage_url = f"{_PUBLIC_ORIGIN}/dashboard.html#saved-searches"
@@ -889,7 +881,8 @@ def run_one(
     if not dry_run:
         # Stash the snapshot in client_tag so next week's run can diff.
         client_tag_blob = _stash_snapshot_in_client_tag(
-            results=current_results, delta_count=delta_count,
+            results=current_results,
+            delta_count=delta_count,
         )
 
         # Insert analytics_events row with event_name='digest_delivered'.
@@ -906,7 +899,10 @@ def run_one(
                     now_iso,
                     "CRON",
                     "/cron/weekly_digest",
-                    200 if send_outcome.get("sent") or send_outcome.get("reason") in ("dry_run", "email_sender_unavailable") else 500,
+                    200
+                    if send_outcome.get("sent")
+                    or send_outcome.get("reason") in ("dry_run", "email_sender_unavailable")
+                    else 500,
                     None,
                     row["api_key_hash"],
                     None,
@@ -973,9 +969,7 @@ def run_one(
 
 def _has_column(conn: sqlite3.Connection, table: str, col: str) -> bool:
     try:
-        return col in {
-            r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()
-        }
+        return col in {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
     except sqlite3.OperationalError:
         return False
 
@@ -997,24 +991,24 @@ def run(
         # Defensive: if the migration 113 columns aren't present yet, the
         # filter clause below would fail. Build the predicate dynamically.
         has_is_active = _has_column(jp_conn, "saved_searches", "is_active")
-        has_last_signature = _has_column(
-            jp_conn, "saved_searches", "last_result_signature"
-        )
+        has_last_signature = _has_column(jp_conn, "saved_searches", "last_result_signature")
 
         select_cols = [
-            "id", "api_key_hash", "name", "query_json", "frequency",
-            "notify_email", "last_run_at", "created_at",
+            "id",
+            "api_key_hash",
+            "name",
+            "query_json",
+            "frequency",
+            "notify_email",
+            "last_run_at",
+            "created_at",
         ]
         if has_last_signature:
             select_cols.append("last_result_signature")
         else:
             select_cols.append("NULL AS last_result_signature")
 
-        sql = (
-            "SELECT " + ", ".join(select_cols) + " "
-            "FROM saved_searches "
-            "WHERE frequency = 'weekly'"
-        )
+        sql = "SELECT " + ", ".join(select_cols) + " FROM saved_searches WHERE frequency = 'weekly'"
         if has_is_active:
             sql += " AND is_active = 1"
         sql += " ORDER BY id ASC"
@@ -1030,7 +1024,10 @@ def run(
         skipped = 0
         for row in rows:
             outcome = run_one(
-                jp_conn=jp_conn, row=row, now_utc=now_utc, dry_run=dry_run,
+                jp_conn=jp_conn,
+                row=row,
+                now_utc=now_utc,
+                dry_run=dry_run,
             )
             results.append(outcome)
             if outcome["status"] == "sent":
@@ -1066,8 +1063,7 @@ def run(
             "errors": errors,
             "skipped": skipped,
             "top_5_active_accounts": [
-                {"key_hash_prefix": (k or "")[:8], "digest_count": v}
-                for k, v in top_5
+                {"key_hash_prefix": (k or "")[:8], "digest_count": v} for k, v in top_5
             ],
             "dry_run": dry_run,
         }

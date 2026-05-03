@@ -25,8 +25,9 @@ from __future__ import annotations
 
 import json
 import re
+import sqlite3
 import time
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
@@ -40,8 +41,6 @@ from jpintel_mcp.api.deps import (
     log_usage,
 )
 
-if TYPE_CHECKING:
-    import sqlite3
 from jpintel_mcp.api.programs import (
     KANA_EXPANSIONS,
     _build_fts_match,
@@ -595,7 +594,7 @@ def _gather_predicate_cites(node: Any, into: list[str]) -> None:
 def resolve_citation_tree(
     conn: sqlite3.Connection,
     row: sqlite3.Row,
-    result: "EvaluateResult",
+    result: EvaluateResult,
 ) -> list[dict[str, Any]]:
     """Resolve every citation id referenced by a ruleset.
 
@@ -792,8 +791,8 @@ def _resolve_single_citation(
                                 "effective_from": "2023-10-01",
                                 "effective_until": "2026-09-30",
                                 "related_law_ids": [
-                                    "PENDING:所得税法等の一部を改正する法律(令和五年法律第三号)附則第51条の2",
-                                    "PENDING:消費税法第37条",
+                                    "所得税法等の一部を改正する法律(令和五年法律第三号)附則第51条の2",
+                                    "消費税法第37条",
                                 ],
                                 "eligibility_conditions": (
                                     "インボイス制度を機に免税事業者から課税事業者となった小規模事業者は、"
@@ -1136,18 +1135,16 @@ def evaluate_tax_rulesets(
     matching against publicly disclosed eligibility conditions, NOT 税務助言.
     Filing decisions require qualified 税理士 confirmation.
 
-    Audit-trail fields (会計士 work-paper requirement, added 2026-04-29):
+    Corpus snapshot fields:
         corpus_snapshot_id  ISO-8601 of latest am_amendment_diff detection
                             (or MAX(fetched_at) fallback). The whole-corpus
                             identity at the moment of evaluation.
         corpus_checksum     sha256:<16hex> deterministic over
                             (snapshot_id || api_version || row_counts).
-                            Auditors quote both fields verbatim in their
-                            work-paper; a year later the same call with the
-                            same business_profile must yield byte-identical
-                            results, OR a different checksum proving the
-                            corpus mutated. Per-row `fetched_at` is too
-                            granular for this purpose. See docs/audit_trail.md.
+                            A later replay with the same inputs should yield
+                            the same result, or a different checksum showing
+                            that the corpus changed. Per-row `fetched_at` is
+                            too granular for this purpose.
     """
     def _wrap(results: list[EvaluateResult]) -> JSONResponse:
         body = EvaluateResponse(results=results).model_dump(mode="json")

@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
-  "description": "jpcite: 93-tool evidence MCP for Japanese subsidies, laws, tax, bids, and due diligence.",
+  "description": "jpcite provides 93 MCP tools for Japanese public-program evidence prefetch. Use before GPT, Claude, Cursor, or RAG answer generation when the user asks about Japanese subsidies, loans, tax measures, certifications, bids, laws, enforcement cases, invoice registrants, or eligibility and needs source_url, fetched_at, provenance, known_gaps, and compatibility rules. Skip for general tasks outside Japanese public records. Context-size estimates are workload-dependent and not billing guarantees.",
   "version": "0.3.2",
   "repository": {
     "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
@@ -53,7 +53,7 @@
         },
         {
           "uri": "autonomath://policy/no_hallucination",
-          "name": "No-Hallucination Policy",
+          "name": "Evidence Grounding Policy",
           "mimeType": "text/markdown"
         },
         {

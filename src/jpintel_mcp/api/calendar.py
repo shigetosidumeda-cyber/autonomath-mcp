@@ -59,9 +59,7 @@ class DeadlineEntry(BaseModel):
 class DeadlinesResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    as_of: str = Field(
-        description="Today's ISO date (UTC). Makes days_remaining reproducible."
-    )
+    as_of: str = Field(description="Today's ISO date (UTC). Makes days_remaining reproducible.")
     within_days: int
     total: int = Field(description="Matching rows before `limit` was applied.")
     results: list[DeadlineEntry]
@@ -180,9 +178,7 @@ def run_upcoming_deadlines(
         tier,
         limit,
     )
-    total = _fetch_deadline_count(
-        conn, today_iso, horizon_iso, prefecture, authority_level, tier
-    )
+    total = _fetch_deadline_count(conn, today_iso, horizon_iso, prefecture, authority_level, tier)
 
     results: list[DeadlineEntry] = []
     for r in rows:
@@ -378,10 +374,7 @@ def _fetch_rounds_and_map(
         "  AND COALESCE(status, 'open') != 'closed' "
         "ORDER BY application_close_date ASC, round_id ASC"
     )
-    rounds = [
-        dict(r)
-        for r in am_conn.execute(rounds_sql, (today_iso, horizon_iso)).fetchall()
-    ]
+    rounds = [dict(r) for r in am_conn.execute(rounds_sql, (today_iso, horizon_iso)).fetchall()]
 
     map_sql = "SELECT jpi_unified_id, am_canonical_id FROM entity_id_map"
     am_to_jpi: dict[str, list[str]] = {}
@@ -420,9 +413,7 @@ def _fetch_programs(
         # Tokyo + national-fallback (authority_level='国' OR prefecture IS NULL).
         # Mirrors the existing /deadlines logic but uses '国' (jp canonical)
         # because the seeded fixture uses '国' for authority_level.
-        where.append(
-            "(prefecture = ? OR prefecture IS NULL OR authority_level = '国')"
-        )
+        where.append("(prefecture = ? OR prefecture IS NULL OR authority_level = '国')")
         params.append(prefecture)
     if authority_level:
         where.append("authority_level = ?")
@@ -617,7 +608,7 @@ def get_deadlines_ics(
         Query(
             description=(
                 "Comma-separated tier list (e.g. ``S,A,B,C`` or ``S``). "
-                "Tier X is always excluded."
+                "Non-public records are always excluded."
             ),
             max_length=20,
         ),

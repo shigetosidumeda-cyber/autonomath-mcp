@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>共生の地域づくり助成事業</title>
@@ -560,15 +560,6 @@
   </item>
 
   <item>
-    <title>桜川市_桜川市荒廃農地解消事業補助金</title>
-    <link>https://jpcite.com/programs/sakuragawa-shi-sakuragawa-shi-kouhai-nouchi-kaishou-jigyou-3f61f8.html</link>
-    <description>Tier A / 茨城県 / subsidy / 上限 250万円 出典: https://www.city.sakuragawa.lg.jp/shisei/nouringyou/page008836.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-086115c283</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>行方市（公共下水道・農業集落排水）排水設備接続支援補助金</title>
     <link>https://jpcite.com/programs/namegata-shi-koukyou-gesuidou-nougyou-shuuraku-haisui-5590ff.html</link>
     <description>Tier C / 茨城県 出典: https://www.city.namegata.ibaraki.jp/section.php?code=14</description>
@@ -646,15 +637,6 @@
     <description>Tier B / 茨城県 / 茨城県行方市 / subsidy / 上限 40万円 出典: https://www.city.namegata.ibaraki.jp/section.php?code=14</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-10adcceb43</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>桜川市_認定農業者制度</title>
-    <link>https://jpcite.com/programs/sakuragawa-shi-nintei-nougyou-mono-seido-52170a.html</link>
-    <description>Tier C / 茨城県 / subsidy / 上限 100万円 出典: https://www.city.sakuragawa.lg.jp/shisei/nouringyou/page008836.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-14e34452a6</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +889,24 @@
     <description>Tier B / 茨城県 / 農林水産省 / subsidy 出典: https://www.city.hokota.lg.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-4399934109</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>つくば市新規就農者経営支援補助金</title>
+    <link>https://jpcite.com/programs/tsukuba-shi-shinki-shuunou-mono-keiei-shien-hojokin-accfbd.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 60万円 出典: https://www.city.tsukuba.lg.jp/soshikikarasagasu/keizaibunogyoseisakuka/gyomuannai/4/1/1001754.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4425419b98</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業・市特産米栽培推進支援事業（令和8年産）</title>
+    <link>https://jpcite.com/programs/nougyou-shi-tokusan-kome-saibai-suishin-shien-jigyou-reiwa-d8277d.html</link>
+    <description>Tier B / 茨城県 / 茨城県下妻市 / subsidy 出典: https://www.city.shimotsuma.lg.jp/kanko-business-sangyo/nogyo/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-446b6195c8</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

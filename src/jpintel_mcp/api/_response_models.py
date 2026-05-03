@@ -251,16 +251,19 @@ class EvidencePacketCompression(BaseModel):
     provider_billing_not_guaranteed: bool = Field(
         default=True,
         description=(
-            "Always true. Output / reasoning / cache / provider tool tokens "
+            "Always true. Output / reasoning / cache / search / provider tool tokens "
             "are NOT measured by the compression block."
         ),
     )
     cost_savings_estimate: dict[str, Any] | None = Field(
         default=None,
         description=(
-            "Optional caller-price comparison, including break_even_met and "
-            "break_even_source_tokens_estimate when the caller supplied an "
-            "input token price."
+            "Optional caller-price input-context comparison, including "
+            "break_even_met and break_even_source_tokens_estimate when the "
+            "caller supplied an input token price. Fields such as "
+            "gross_input_savings_jpy and net_savings_jpy_ex_tax are "
+            "input-context-only estimates; they exclude output, reasoning, "
+            "cache, search, provider tool costs, and provider billing effects."
         ),
     )
 
@@ -365,12 +368,8 @@ class EvidencePacketEvidenceValue(BaseModel):
     precomputed_records: int = Field(
         ..., description="Records carrying a deterministic precomputed summary."
     )
-    pdf_fact_refs: int = Field(
-        ..., description="Sum of pdf_fact_refs[] entries across records."
-    )
-    known_gap_count: int = Field(
-        ..., description="Length of quality.known_gaps for this packet."
-    )
+    pdf_fact_refs: int = Field(..., description="Sum of pdf_fact_refs[] entries across records.")
+    known_gap_count: int = Field(..., description="Length of quality.known_gaps for this packet.")
     fact_provenance_coverage_pct_avg: float | None = Field(
         default=None,
         description=(
@@ -474,10 +473,7 @@ class PrecomputedAgentRecommendation(BaseModel):
         "records_returned_without_source_links",
     ] = Field(
         default="no_records_returned",
-        description=(
-            "Machine-readable basis for the "
-            "`recommend_for_evidence` boolean."
-        ),
+        description=("Machine-readable basis for the `recommend_for_evidence` boolean."),
     )
     recommend_for_cost_savings: bool = Field(
         ...,
@@ -553,8 +549,19 @@ PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
     "compression": {
         "packet_tokens_estimate": 566,
         "source_tokens_basis": "unknown",
+        "source_tokens_estimate": None,
+        "avoided_tokens_estimate": None,
+        "compression_ratio": None,
+        "input_context_reduction_rate": None,
+        "estimate_method": "none",
+        "estimate_disclaimer": (
+            "Compression estimates compare input context size only. "
+            "Provider billing can differ because of output, reasoning, cache, "
+            "search, and tool charges."
+        ),
+        "source_tokens_input_source": None,
         "estimate_scope": "input_context_only",
-        "savings_claim": "needs_caller_baseline",
+        "savings_claim": "estimate_not_guarantee",
         "provider_billing_not_guaranteed": True,
     },
     "agent_recommendation": {
@@ -566,7 +573,7 @@ PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
         "cost_savings_decision": "needs_caller_baseline",
         "missing_for_cost_claim": [
             "source_tokens_basis",
-            "source_token_count_or_pdf_pages",
+            "source_pdf_pages_or_source_token_count",
             "input_token_price_jpy_per_1m",
         ],
         "route": "/v1/intelligence/precomputed/query",
@@ -699,7 +706,7 @@ class AMIntentResponse(BaseModel):
 
 
 class AMReasonResponse(BaseModel):
-    """``GET /v1/am/reason`` — citation-backed narrative answer."""
+    """``GET /v1/am/reason`` — citation-backed answer skeleton."""
 
     model_config = _ALLOW_EXTRA
 
@@ -792,7 +799,7 @@ class AMLawArticleResponse(BaseModel):
 
 
 class AMAnnotationsResponse(SearchResponse[dict[str, Any]]):
-    """``GET /v1/am/annotations/{entity_id}`` — examiner / quality / ML notes."""
+    """``GET /v1/am/annotations/{entity_id}`` — public annotation signals."""
 
     entity_id: str
     filters: dict[str, Any] = Field(default_factory=dict)

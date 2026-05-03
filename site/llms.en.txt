@@ -20,7 +20,7 @@ crawlers can index the framing.
 - [API reference (REST)](https://jpcite.com/docs/api-reference/)
 - [Agent-safe OpenAPI spec](https://api.jpcite.com/v1/openapi.agent.json): evidence/search subset for ChatGPT Custom GPTs and Claude tools. Excludes billing, webhook, OAuth, account-management, and operator endpoints.
 - [Full OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 171 paths for SDK generators and developer reference.
-- [MCP tools (93)](https://jpcite.com/docs/mcp-tools/):  core +  stdio tools, MCP protocol 2025-06-18
+- [MCP tools (93)](https://jpcite.com/docs/mcp-tools/): local stdio MCP tools, protocol 2025-06-18
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Error handling](https://jpcite.com/docs/error_handling/)
 - [Exclusion rules](https://jpcite.com/docs/exclusions/)

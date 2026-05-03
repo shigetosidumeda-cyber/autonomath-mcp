@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>垂水市新規就農者機械・施設整備事業</title>
@@ -830,15 +830,6 @@
   </item>
 
   <item>
-    <title>曽於市_新規就農者支援対策事業</title>
-    <link>https://jpcite.com/programs/mun-462179-001-so-oichi-shinki-shuunou-mono-shien-taisaku-19a066.html</link>
-    <description>Tier A / 鹿児島県 / subsidy / 上限 360万円 出典: https://www.city.soo.kagoshima.jp/sangyo/nogyo</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-4c54f8e232</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>肝付町就農者経営支援事業補助金</title>
     <link>https://jpcite.com/programs/kimotsuki-machi-shuunou-mono-keiei-shien-jigyou-hojokin-3d5ff9.html</link>
     <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 100万円 出典: https://www.kagoshima-iju.jp/contribute/kimotsuki/</description>
@@ -907,6 +898,15 @@
     <description>Tier B / 鹿児島県 / 市町村 / subsidy / 上限 115万円 出典: https://www.kagoshima-iju.jp/contribute/higashikushira/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-5b2f1cabaf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>西之表市農業振興公社研修事業（新規就農者研修）</title>
+    <link>https://jpcite.com/programs/nishinoomote-shi-nougyou-shinkou-kousha-kenshuu-jigyou-852da9.html</link>
+    <description>Tier B / 鹿児島県 / subsidy / 上限 100万円 出典: https://www.city.nishinoomote.lg.jp/admin/soshiki/nourinsuisan/nouseikanrikakari/nougyou/2745.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5d229b5908</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

@@ -17,6 +17,7 @@ constructs a `tier='free'` context when the header is absent. The router
 is mounted with `AnonIpLimitDep` in api/main.py so anonymous 3/day
 IP quota applies uniformly. Authenticated paid tier is metered ¥3/req.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -286,40 +287,95 @@ def _attach_lifecycle_caveat(body: Any) -> Any:
 # OpenAPI schema advertises the same constraint set as the MCP tools. If a
 # new value is added upstream, update the mirror here too (audit via grep).
 _TAX_AUTHORITIES = Literal[
-    "国税庁", "財務省", "経済産業省", "中小企業庁", "農林水産省", "総務省",
-    "国土交通省", "厚生労働省", "自治体",
+    "国税庁",
+    "財務省",
+    "経済産業省",
+    "中小企業庁",
+    "農林水産省",
+    "総務省",
+    "国土交通省",
+    "厚生労働省",
+    "自治体",
 ]
 _TAX_ENTITY = Literal[
-    "中小企業", "小規模事業者", "個人事業主", "大企業", "認定事業者",
-    "青色申告者", "農業法人", "特定事業者等",
+    "中小企業",
+    "小規模事業者",
+    "個人事業主",
+    "大企業",
+    "認定事業者",
+    "青色申告者",
+    "農業法人",
+    "特定事業者等",
 ]
 _CERT_AUTHORITIES = Literal[
-    "経済産業省", "日本健康会議", "厚生労働省", "内閣府", "都道府県", "市町村",
-    "農林水産省", "国土交通省", "その他",
+    "経済産業省",
+    "日本健康会議",
+    "厚生労働省",
+    "内閣府",
+    "都道府県",
+    "市町村",
+    "農林水産省",
+    "国土交通省",
+    "その他",
 ]
 _SIZE_VALUES = Literal["sole", "small", "sme", "mid", "large"]
 _EnumName = Literal[
-    "authority", "tier", "industry", "funding_purpose", "target_type",
-    "region", "tax_category", "program_kind", "loan_type", "event_type",
-    "ministry", "certification_authority",
+    "authority",
+    "tier",
+    "industry",
+    "funding_purpose",
+    "target_type",
+    "region",
+    "tax_category",
+    "program_kind",
+    "loan_type",
+    "event_type",
+    "ministry",
+    "certification_authority",
 ]
 _GxTheme = Literal[
-    "ghg_reduction", "ev", "renewable", "zeb_zeh", "carbon_credit",
+    "ghg_reduction",
+    "ev",
+    "renewable",
+    "zeb_zeh",
+    "carbon_credit",
 ]
 _GxCompanySize = Literal[
-    "sme", "midsize", "large", "individual", "municipality", "farmer",
+    "sme",
+    "midsize",
+    "large",
+    "individual",
+    "municipality",
+    "farmer",
 ]
 _LoanKind = Literal[
-    "ippan", "trou", "seirei", "sanko", "sogyo",
-    "rinsei", "saigai", "shingiseikyu", "kiki", "other",
+    "ippan",
+    "trou",
+    "seirei",
+    "sanko",
+    "sogyo",
+    "rinsei",
+    "saigai",
+    "shingiseikyu",
+    "kiki",
+    "other",
 ]
 _PlanKind = Literal[
-    "retirement_mutual", "bankruptcy_mutual", "dc_pension", "db_pension",
-    "industry_pension", "welfare_insurance", "health_insurance", "other",
+    "retirement_mutual",
+    "bankruptcy_mutual",
+    "dc_pension",
+    "db_pension",
+    "industry_pension",
+    "welfare_insurance",
+    "health_insurance",
+    "other",
 ]
 _TaxDedType = Literal[
-    "small_enterprise_deduction", "idekodc", "group_retirement",
-    "corp_expense", "none",
+    "small_enterprise_deduction",
+    "idekodc",
+    "group_retirement",
+    "corp_expense",
+    "none",
 ]
 
 
@@ -478,7 +534,9 @@ def rest_search_tax_incentives(
             offset=offset,
         )
         return _apply_envelope(
-            "search_tax_incentives", result, query=query or natural_query,
+            "search_tax_incentives",
+            result,
+            query=query or natural_query,
         )
 
     body = _l4_get_or_compute_safe(
@@ -566,9 +624,13 @@ def rest_search_certifications(
         offset=offset,
     )
     log_usage(conn, ctx, "am.certifications.search")
-    return JSONResponse(content=_apply_envelope(
-        "search_certifications", result, query=query,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "search_certifications",
+            result,
+            query=query,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -578,7 +640,9 @@ def rest_search_certifications(
 def rest_list_open_programs(
     conn: DbDep,
     ctx: ApiContextDep,
-    on_date: Annotated[str | None, Query(max_length=10, description="ISO YYYY-MM-DD. Default = today.")] = None,
+    on_date: Annotated[
+        str | None, Query(max_length=10, description="ISO YYYY-MM-DD. Default = today.")
+    ] = None,
     region: Annotated[str | None, Query(max_length=100)] = None,
     industry: Annotated[str | None, Query(max_length=100)] = None,
     size: Annotated[_SIZE_VALUES | None, Query()] = None,
@@ -595,9 +659,13 @@ def rest_list_open_programs(
         limit=limit,
     )
     log_usage(conn, ctx, "am.open_programs.list")
-    return JSONResponse(content=_apply_envelope(
-        "list_open_programs", result, query=natural_query,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "list_open_programs",
+            result,
+            query=natural_query,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -612,9 +680,13 @@ def rest_enum_values(
     """List canonical enum values + frequency for a given enum_name."""
     result = tools.enum_values_am(enum_name=enum_name)
     log_usage(conn, ctx, "am.enum_values", params={"enum_name": enum_name})
-    return JSONResponse(content=_apply_envelope(
-        "enum_values", result, query=enum_name,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "enum_values",
+            result,
+            query=enum_name,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -643,9 +715,13 @@ def rest_search_by_law(
     # am_amendment_snapshot rows shipped in the response.
     result = _attach_lifecycle_caveat(result)
     log_usage(conn, ctx, "am.by_law.search")
-    return JSONResponse(content=_apply_envelope(
-        "search_by_law", result, query=law_name,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "search_by_law",
+            result,
+            query=law_name,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -670,9 +746,13 @@ def rest_active_programs_at(
         limit=limit,
     )
     log_usage(conn, ctx, "am.active_at")
-    return JSONResponse(content=_apply_envelope(
-        "active_programs_at", result, query=date,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "active_programs_at",
+            result,
+            query=date,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -695,10 +775,12 @@ def _validate_iso_or_none(value: str | None, *, name: str) -> str | None:
     if value is None:
         return None
     import datetime as _dt
+
     try:
         return _dt.date.fromisoformat(value).isoformat()
     except (TypeError, ValueError) as exc:
         from fastapi import HTTPException
+
         raise HTTPException(
             status_code=422,
             detail=f"{name} must be ISO-8601 YYYY-MM-DD ({exc})",
@@ -734,8 +816,7 @@ def rest_programs_active_at_v2(
         ),
     ] = None,
     prefecture: Annotated[
-        str | None,
-        Query(max_length=20, description="Optional prefecture filter (e.g. '東京都').")
+        str | None, Query(max_length=20, description="Optional prefecture filter (e.g. '東京都').")
     ] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
 ) -> JSONResponse:
@@ -763,11 +844,13 @@ def rest_programs_active_at_v2(
     close_by_iso = _validate_iso_or_none(application_close_by, name="application_close_by")
 
     from jpintel_mcp.mcp.autonomath_tools.db import connect_autonomath
+
     am_conn = connect_autonomath()
 
     # If `as_of` omitted, use today's date (UTC; lex-comparable against ISO).
     if as_of_iso is None:
         import datetime as _dt
+
         as_of_iso = _dt.date.today().isoformat()
 
     where_sql: list[str] = [
@@ -801,8 +884,9 @@ def rest_programs_active_at_v2(
         "       effective_from, effective_until, effective_from_source, "
         "       is_effective_now, is_application_open_now "
         "  FROM programs_active_at_v2 "
-        " WHERE " + " AND ".join(where_sql) +
-        " ORDER BY application_close_date ASC, primary_name ASC "
+        " WHERE "
+        + " AND ".join(where_sql)
+        + " ORDER BY application_close_date ASC, primary_name ASC "
         " LIMIT ?"
     )
     params.append(int(limit))
@@ -823,9 +907,13 @@ def rest_programs_active_at_v2(
     }
     body = _attach_lifecycle_caveat(body)
     log_usage(conn, ctx, "am.programs.active_v2")
-    return JSONResponse(content=_apply_envelope(
-        "programs_active_at_v2", body, query=as_of_iso,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "programs_active_at_v2",
+            body,
+            query=as_of_iso,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -838,7 +926,9 @@ def rest_related_programs(
     ctx: ApiContextDep,
     relation_types: Annotated[
         list[str] | None,
-        Query(description="Filter edge types (prerequisite / compatible / incompatible / replaces / …)."),
+        Query(
+            description="Filter edge types (prerequisite / compatible / incompatible / replaces / …)."
+        ),
     ] = None,
     depth: Annotated[int, Query(ge=1, le=3)] = 1,
     max_edges: Annotated[int, Query(ge=1, le=500)] = 100,
@@ -851,9 +941,13 @@ def rest_related_programs(
         max_edges=max_edges,
     )
     log_usage(conn, ctx, "am.related_programs", params={"program_id": program_id})
-    return JSONResponse(content=_apply_envelope(
-        "related_programs", result, query=program_id,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "related_programs",
+            result,
+            query=program_id,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -880,9 +974,13 @@ def rest_search_acceptance_stats(
         offset=offset,
     )
     log_usage(conn, ctx, "am.acceptance_stats.search")
-    return JSONResponse(content=_apply_envelope(
-        "search_acceptance_stats", result, query=program_name,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "search_acceptance_stats",
+            result,
+            query=program_name,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -903,9 +1001,13 @@ def rest_intent_of(
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "reasoning tools disabled")
     result = tools.intent_of(query=query)
     log_usage(conn, ctx, "am.intent")
-    return JSONResponse(content=_apply_envelope(
-        "intent_of", result, query=query,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "intent_of",
+            result,
+            query=query,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -922,14 +1024,18 @@ def rest_reason_answer(
     query: Annotated[str, Query(min_length=1, max_length=500)],
     persona: Annotated[str | None, Query(max_length=100)] = None,
 ) -> JSONResponse:
-    """Return a citation-backed narrative answer (source_url + snippet per claim)."""
+    """Return a citation-backed answer skeleton for downstream drafting."""
     if not settings.autonomath_reasoning_enabled:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "reasoning tools disabled")
     result = tools.reason_answer(query=query, persona=persona)
     log_usage(conn, ctx, "am.reason")
-    return JSONResponse(content=_apply_envelope(
-        "reason_answer", result, query=query,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "reason_answer",
+            result,
+            query=query,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -941,7 +1047,9 @@ def rest_get_tax_rule(
     ctx: ApiContextDep,
     measure_name_or_id: Annotated[str, Query(min_length=1, max_length=200)],
     rule_type: Annotated[str | None, Query(max_length=60)] = None,
-    as_of: Annotated[str | None, Query(max_length=10, description="ISO YYYY-MM-DD (default today)")] = None,
+    as_of: Annotated[
+        str | None, Query(max_length=10, description="ISO YYYY-MM-DD (default today)")
+    ] = None,
 ) -> JSONResponse:
     """Single tax measure lookup against am_tax_rule with root_law + rate + applicability window.
 
@@ -957,7 +1065,9 @@ def rest_get_tax_rule(
         as_of=as_of,
     )
     body = _apply_envelope(
-        "get_am_tax_rule", result, query=measure_name_or_id,
+        "get_am_tax_rule",
+        result,
+        query=measure_name_or_id,
     )
     if isinstance(body, dict):
         body = dict(body)
@@ -986,9 +1096,13 @@ def rest_search_gx_programs(
         limit=limit,
     )
     log_usage(conn, ctx, "am.gx_programs.search")
-    return JSONResponse(content=_apply_envelope(
-        "search_gx_programs_am", result, query=theme,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "search_gx_programs_am",
+            result,
+            query=theme,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1069,9 +1183,13 @@ def rest_search_loans(
         limit=limit,
     )
     log_usage(conn, ctx, "am.loans.search")
-    return JSONResponse(content=_apply_envelope(
-        "search_loans_am", result, query=name_query,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "search_loans_am",
+            result,
+            query=name_query,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1141,9 +1259,13 @@ def rest_check_enforcement(
         as_of_date=as_of_date,
     )
     log_usage(conn, ctx, "am.enforcement.check")
-    return JSONResponse(content=_apply_envelope(
-        "check_enforcement_am", result, query=target_name or houjin_bangou,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "check_enforcement_am",
+            result,
+            query=target_name or houjin_bangou,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1193,9 +1315,13 @@ def rest_search_mutual_plans(
         limit=limit,
     )
     log_usage(conn, ctx, "am.mutual_plans.search")
-    return JSONResponse(content=_apply_envelope(
-        "search_mutual_plans_am", result, query=name_query,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "search_mutual_plans_am",
+            result,
+            query=name_query,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1216,12 +1342,18 @@ def rest_get_law_article(
     # O4: response includes amendment_history; tag with snapshot caveat.
     result = _attach_lifecycle_caveat(result)
     log_usage(
-        conn, ctx, "am.law_article.get",
+        conn,
+        ctx,
+        "am.law_article.get",
         params={"law_name": law_name_or_canonical_id, "article": article_number},
     )
-    return JSONResponse(content=_apply_envelope(
-        "get_law_article_am", result, query=law_name_or_canonical_id,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "get_law_article_am",
+            result,
+            query=law_name_or_canonical_id,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1229,35 +1361,38 @@ def rest_get_law_article(
 # ---------------------------------------------------------------------------
 @router.get("/annotations/{entity_id}", response_model=AMAnnotationsResponse)
 def rest_get_annotations(
-    entity_id: Annotated[str, Path(min_length=1, max_length=200, description="Stable entity identifier.")],
+    entity_id: Annotated[
+        str, Path(min_length=1, max_length=200, description="Stable entity identifier.")
+    ],
     conn: DbDep,
     ctx: ApiContextDep,
     kinds: Annotated[
         list[str] | None,
-        Query(description="Filter on annotation kind (examiner_warning / examiner_correction / quality_score / validation_failure / ml_inference / manual_note). Repeat the param to OR-combine."),
+        Query(description="Filter on public annotation kind. Repeat the param to OR-combine."),
     ] = None,
-    include_internal: Annotated[
-        bool,
-        Query(description="Include visibility='internal' rows (default False = public only). 'private' is never returned."),
-    ] = False,
     include_superseded: Annotated[
         bool,
-        Query(description="Include superseded / expired annotations (default False = currently-live only)."),
+        Query(
+            description="Include superseded / expired annotations (default False = currently-live only)."
+        ),
     ] = False,
     limit: Annotated[int, Query(ge=1, le=500)] = 50,
 ) -> JSONResponse:
-    """Return annotations, review signals, and quality scores for one entity."""
+    """Return public annotation signals for one entity."""
     result = annotation_tools.get_annotations(
         entity_id=entity_id,
         kinds=kinds,
-        include_internal=include_internal,
         include_superseded=include_superseded,
         limit=limit,
     )
     log_usage(conn, ctx, "am.annotations.get", params={"entity_id": entity_id})
-    return JSONResponse(content=_apply_envelope(
-        "get_annotations", result, query=entity_id,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "get_annotations",
+            result,
+            query=entity_id,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1309,9 +1444,13 @@ def rest_validate(
         scope=scope,
     )
     log_usage(conn, ctx, "am.validate", params={"scope": scope, "entity_id": entity_id})
-    return JSONResponse(content=_apply_envelope(
-        "validate", result, query=entity_id,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "validate",
+            result,
+            query=entity_id,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1347,9 +1486,13 @@ def rest_get_provenance(
         fact_limit=fact_limit,
     )
     log_usage(conn, ctx, "am.provenance.get", params={"entity_id": entity_id})
-    return JSONResponse(content=_apply_envelope(
-        "get_provenance", result, query=entity_id,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "get_provenance",
+            result,
+            query=entity_id,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1364,9 +1507,13 @@ def rest_get_provenance_for_fact(
     """am_entity_facts.source_id → am_source 1 件 (NULL なら entity-level am_entity_source の候補 list に fallback)."""
     result = provenance_tools.get_provenance_for_fact(fact_id=fact_id)
     log_usage(conn, ctx, "am.provenance.fact", params={"fact_id": fact_id})
-    return JSONResponse(content=_apply_envelope(
-        "get_provenance_for_fact", result, query=str(fact_id),
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "get_provenance_for_fact",
+            result,
+            query=str(fact_id),
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1380,17 +1527,23 @@ def rest_list_static_resources(
     """List 8 curated jpcite taxonomies (seido / glossary / money_types / obligations / dealbreakers / sector_combos / crop_library / exclusion_rules)."""
     results = static_resources.list_static_resources()
     log_usage(conn, ctx, "am.static.list", params={})
-    return JSONResponse(content=_apply_envelope(
-        "list_static_resources",
-        {"total": len(results), "results": results},
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "list_static_resources",
+            {"total": len(results), "results": results},
+        )
+    )
 
 
 @router.get("/static/{resource_id}", response_model=StaticResourceDetail)
 def rest_get_static_resource(
     resource_id: Annotated[
         str,
-        Path(min_length=1, max_length=64, description="Resource id; see /v1/am/static for the catalog."),
+        Path(
+            min_length=1,
+            max_length=64,
+            description="Resource id; see /v1/am/static for the catalog.",
+        ),
     ],
     conn: DbDep,
     ctx: ApiContextDep,
@@ -1399,16 +1552,28 @@ def rest_get_static_resource(
     try:
         result = static_resources.get_static_resource(resource_id)
     except static_resources.ResourceNotFoundError as exc:
-        log_usage(conn, ctx, "am.static.get", params={"resource_id": resource_id, "result": "no_matching_records"})
-        return JSONResponse(status_code=404, content=_apply_envelope(
-            "get_static_resource",
-            {"error": {"code": "no_matching_records", "message": str(exc)}},
-            query=resource_id,
-        ))
+        log_usage(
+            conn,
+            ctx,
+            "am.static.get",
+            params={"resource_id": resource_id, "result": "no_matching_records"},
+        )
+        return JSONResponse(
+            status_code=404,
+            content=_apply_envelope(
+                "get_static_resource",
+                {"error": {"code": "no_matching_records", "message": str(exc)}},
+                query=resource_id,
+            ),
+        )
     log_usage(conn, ctx, "am.static.get", params={"resource_id": resource_id})
-    return JSONResponse(content=_apply_envelope(
-        "get_static_resource", result, query=resource_id,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "get_static_resource",
+            result,
+            query=resource_id,
+        )
+    )
 
 
 @router.get("/example_profiles", response_model=ExampleProfileList)
@@ -1419,10 +1584,12 @@ def rest_list_example_profiles(
     """List 5 canonical client-intake example payloads (PII-clean)."""
     results = static_resources.list_example_profiles()
     log_usage(conn, ctx, "am.example_profiles.list", params={})
-    return JSONResponse(content=_apply_envelope(
-        "list_example_profiles",
-        {"total": len(results), "results": results},
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "list_example_profiles",
+            {"total": len(results), "results": results},
+        )
+    )
 
 
 @router.get("/example_profiles/{profile_id}", response_model=ExampleProfileDetail)
@@ -1438,16 +1605,28 @@ def rest_get_example_profile(
     try:
         result = static_resources.get_example_profile(profile_id)
     except static_resources.ResourceNotFoundError as exc:
-        log_usage(conn, ctx, "am.example_profiles.get", params={"profile_id": profile_id, "result": "no_matching_records"})
-        return JSONResponse(status_code=404, content=_apply_envelope(
-            "get_example_profile",
-            {"error": {"code": "no_matching_records", "message": str(exc)}},
-            query=profile_id,
-        ))
+        log_usage(
+            conn,
+            ctx,
+            "am.example_profiles.get",
+            params={"profile_id": profile_id, "result": "no_matching_records"},
+        )
+        return JSONResponse(
+            status_code=404,
+            content=_apply_envelope(
+                "get_example_profile",
+                {"error": {"code": "no_matching_records", "message": str(exc)}},
+                query=profile_id,
+            ),
+        )
     log_usage(conn, ctx, "am.example_profiles.get", params={"profile_id": profile_id})
-    return JSONResponse(content=_apply_envelope(
-        "get_example_profile", result, query=profile_id,
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "get_example_profile",
+            result,
+            query=profile_id,
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1479,7 +1658,9 @@ def rest_get_36_kyotei_metadata(
     """
     if not settings.saburoku_kyotei_enabled:
         log_usage(
-            conn, ctx, "am.template.metadata",
+            conn,
+            ctx,
+            "am.template.metadata",
             params={"template_id": "saburoku_kyotei", "result": "feature_disabled"},
         )
         return JSONResponse(
@@ -1488,20 +1669,22 @@ def rest_get_36_kyotei_metadata(
         )
     meta = get_36_kyotei_metadata()
     log_usage(conn, ctx, "am.template.metadata", params={"template_id": "saburoku_kyotei"})
-    return JSONResponse(content=_apply_envelope(
-        "get_36_kyotei_metadata_am",
-        {
-            "template_id": meta["template_id"],
-            "obligation": meta["obligation"],
-            "authority": meta["authority"],
-            "license": meta["license"],
-            "quality_grade": meta["quality_grade"],
-            "method": meta["method"],
-            "uses_llm": meta["uses_llm"],
-            "required_fields": get_36_kyotei_required(),
-            "_disclaimer": _SABUROKU_DISCLAIMER,
-        },
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "get_36_kyotei_metadata_am",
+            {
+                "template_id": meta["template_id"],
+                "obligation": meta["obligation"],
+                "authority": meta["authority"],
+                "license": meta["license"],
+                "quality_grade": meta["quality_grade"],
+                "method": meta["method"],
+                "uses_llm": meta["uses_llm"],
+                "required_fields": get_36_kyotei_required(),
+                "_disclaimer": _SABUROKU_DISCLAIMER,
+            },
+        )
+    )
 
 
 @router.post(
@@ -1512,7 +1695,9 @@ def rest_get_36_kyotei_metadata(
 def rest_render_36_kyotei(
     fields: Annotated[
         dict[str, Any],
-        Body(description="Required field map for the 36協定 template (canonical or Japanese aliases — see /v1/am/templates/saburoku_kyotei/metadata)."),
+        Body(
+            description="Required field map for the 36協定 template (canonical or Japanese aliases — see /v1/am/templates/saburoku_kyotei/metadata)."
+        ),
     ],
     conn: DbDep,
     ctx: ApiContextDep,
@@ -1526,7 +1711,9 @@ def rest_render_36_kyotei(
     """
     if not settings.saburoku_kyotei_enabled:
         log_usage(
-            conn, ctx, "am.template.render",
+            conn,
+            ctx,
+            "am.template.render",
             params={"template_id": "saburoku_kyotei", "result": "feature_disabled"},
         )
         return JSONResponse(
@@ -1536,7 +1723,12 @@ def rest_render_36_kyotei(
     try:
         text = render_36_kyotei(fields)
     except TemplateError as exc:
-        log_usage(conn, ctx, "am.template.render", params={"template_id": "saburoku_kyotei", "result": "missing_required_arg"})
+        log_usage(
+            conn,
+            ctx,
+            "am.template.render",
+            params={"template_id": "saburoku_kyotei", "result": "missing_required_arg"},
+        )
         return JSONResponse(
             status_code=422,
             content=_apply_envelope(
@@ -1546,26 +1738,73 @@ def rest_render_36_kyotei(
         )
     meta = get_36_kyotei_metadata()
     log_usage(conn, ctx, "am.template.render", params={"template_id": "saburoku_kyotei"})
-    return JSONResponse(content=_apply_envelope(
-        "render_36_kyotei_am",
-        {
-            "template_id": meta["template_id"],
-            "obligation": meta["obligation"],
-            "authority": meta["authority"],
-            "license": meta["license"],
-            "quality_grade": meta["quality_grade"],
-            "method": meta["method"],
-            "uses_llm": meta["uses_llm"],
-            "rendered_text": text,
-            "_disclaimer": _SABUROKU_DISCLAIMER,
-        },
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "render_36_kyotei_am",
+            {
+                "template_id": meta["template_id"],
+                "obligation": meta["obligation"],
+                "authority": meta["authority"],
+                "license": meta["license"],
+                "quality_grade": meta["quality_grade"],
+                "method": meta["method"],
+                "uses_llm": meta["uses_llm"],
+                "rendered_text": text,
+                "_disclaimer": _SABUROKU_DISCLAIMER,
+            },
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
 # 27. Deep health  (Phase A — 10-check aggregate)
 # Mounted on health_router (no AnonIpLimitDep) so monitors don't burn quota.
 # ---------------------------------------------------------------------------
+_PUBLIC_DEEP_HEALTH_DETAILS = {
+    "db_jpintel_reachable": "program database reachable",
+    "db_entity_facts_reachable": "entity-fact database reachable",
+    "db_autonomath_reachable": "entity-fact database reachable",
+    "am_entities_freshness": "source freshness evaluated",
+    "license_coverage": "license coverage evaluated",
+    "fact_source_id_coverage": "source-id coverage evaluated",
+    "entity_id_map_coverage": "entity mapping evaluated",
+    "annotation_volume": "annotation store evaluated",
+    "validation_rules_loaded": "validation rules evaluated",
+    "static_files_present": "static bundle evaluated",
+    "wal_mode": "sqlite journal mode evaluated",
+}
+
+
+def _public_deep_health_doc(doc: dict[str, Any]) -> dict[str, Any]:
+    """Return the public health shape without DB paths, counts, or ratios."""
+    public: dict[str, Any] = {
+        "status": str(doc.get("status") or "unknown"),
+        "checks": {},
+    }
+    timestamp = doc.get("timestamp_utc")
+    if isinstance(timestamp, str):
+        public["timestamp_utc"] = timestamp
+
+    checks = doc.get("checks")
+    if isinstance(checks, dict):
+        public_checks: dict[str, dict[str, str]] = {}
+        for name, result in checks.items():
+            status_value = "unknown"
+            if isinstance(result, dict):
+                status_value = str(result.get("status") or "unknown")
+            check_name = str(name)
+            public_checks[check_name] = {
+                "status": status_value,
+                "details": _PUBLIC_DEEP_HEALTH_DETAILS.get(
+                    check_name,
+                    "check evaluated",
+                ),
+            }
+        public["checks"] = public_checks
+
+    return public
+
+
 @health_router.get("/health/deep", response_model=DeepHealthResponse)
 def rest_deep_health(
     request: Request,
@@ -1584,8 +1823,9 @@ def rest_deep_health(
     unhealthy aggregate, or ``?fail_on_degraded=true`` to require exact
     ``status=ok``.
     """
-    doc = get_deep_health(force=force)
-    health_status = str(doc.get("status") or "unknown")
+    raw_doc = get_deep_health(force=force)
+    health_status = str(raw_doc.get("status") or "unknown")
+    doc = _public_deep_health_doc(raw_doc)
     status_code = (
         503
         if (
@@ -1655,9 +1895,13 @@ def rest_pack_construction(
         revenue_yen=revenue_yen,
     )
     log_usage(conn, ctx, "am.pack_construction")
-    return JSONResponse(content=_apply_envelope(
-        "pack_construction", result, query=prefecture or "",
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "pack_construction",
+            result,
+            query=prefecture or "",
+        )
+    )
 
 
 @router.get("/pack_manufacturing")
@@ -1675,9 +1919,13 @@ def rest_pack_manufacturing(
         revenue_yen=revenue_yen,
     )
     log_usage(conn, ctx, "am.pack_manufacturing")
-    return JSONResponse(content=_apply_envelope(
-        "pack_manufacturing", result, query=prefecture or "",
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "pack_manufacturing",
+            result,
+            query=prefecture or "",
+        )
+    )
 
 
 @router.get("/pack_real_estate")
@@ -1695,6 +1943,10 @@ def rest_pack_real_estate(
         revenue_yen=revenue_yen,
     )
     log_usage(conn, ctx, "am.pack_real_estate")
-    return JSONResponse(content=_apply_envelope(
-        "pack_real_estate", result, query=prefecture or "",
-    ))
+    return JSONResponse(
+        content=_apply_envelope(
+            "pack_real_estate",
+            result,
+            query=prefecture or "",
+        )
+    )

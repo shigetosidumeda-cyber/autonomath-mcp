@@ -29,7 +29,7 @@ See [CLAUDE.md](../../CLAUDE.md) Architecture section for the live runtime narra
 | **wave22** | 5 | ON | autonomath.db; DD / 決算 / renewal / jurisdiction / kit composition (税理士法 §52 / §72 / 行政書士法 §1) |
 | **wave23** | 3 | ON | autonomath.db; industry packs (建設 / 製造 / 不動産) — programs + saiketsu + 通達 in 1 call |
 | **broken** | 3 | **OFF** | Gated by AUTONOMATH_SNAPSHOT_ENABLED + AUTONOMATH_REASONING_ENABLED; smoke test 2026-04-29 found them broken |
-| **kyotei36** | 2 | **OFF** | Gated by AUTONOMATH_36_KYOTEI_ENABLED; 労基法 §36 + 社労士法 — requires legal review before flip |
+| **kyotei36** | 2 | **OFF** | Limited availability; 労基法 §36 + 社労士法 — requires qualified review before use |
 
 Total **93 default-on** + **5 default-off** = **98 surface tools**.
 
@@ -207,8 +207,8 @@ Backed by `autonomath.db`. JSIC-keyed cohort packs that bundle top 10 programs +
 
 | Tool | DB | Sensitive | Gate | Default | Description |
 |---|---|---|---|---|---|
-| `get_36_kyotei_metadata_am` | autonomath.db | 労基法, 社労士法 | `AUTONOMATH_36_KYOTEI_ENABLED` | **OFF** | ⚠️ DRAFT template metadata — render output MUST be reviewed by 社労士 before submission. 労基法 §36 + 社労士法 regulated. |
-| `render_36_kyotei_am` | autonomath.db | 労基法, 社労士法 | `AUTONOMATH_36_KYOTEI_ENABLED` | **OFF** | ⚠️ DRAFT ONLY: 36協定 template — output MUST be reviewed by 社労士 before submission. 労基法 §36 + 社労士法 regulated. |
+| `get_36_kyotei_metadata_am` | autonomath.db | 労基法, 社労士法 | limited availability | **OFF** | ⚠️ DRAFT template metadata — render output MUST be reviewed by 社労士 before submission. 労基法 §36 + 社労士法 regulated. |
+| `render_36_kyotei_am` | autonomath.db | 労基法, 社労士法 | limited availability | **OFF** | ⚠️ DRAFT ONLY: 36協定 template — output MUST be reviewed by 社労士 before submission. 労基法 §36 + 社労士法 regulated. |
 
 ## Default-on / default-off matrix
 
@@ -244,8 +244,8 @@ Five tools are gated OFF by default. Flipping each gate to `1` exposes the tool 
 | `query_at_snapshot` | `AUTONOMATH_SNAPSHOT_ENABLED` | Migration 067 referenced but never written; every call → `no such column: valid_from` | Land migration 067 adding `valid_from` / `valid_until` to programs / laws / tax_rulesets |
 | `intent_of` | `AUTONOMATH_REASONING_ENABLED` | `_reasoning_import()` ModuleNotFoundError — `reasoning` package missing from install | Bundle `reasoning` package into install or place on resolvable sys.path |
 | `reason_answer` | `AUTONOMATH_REASONING_ENABLED` | Same root cause as `intent_of` (shared `_reasoning_import()`) | Same as intent_of |
-| `render_36_kyotei_am` | `AUTONOMATH_36_KYOTEI_ENABLED` | 労基法 §36 + 社労士法 regulated; mis-render → 社労士法 liability + brand damage | 社労士 supervision arrangement + customer-facing disclaimer alignment + legal review (see `docs/_internal/saburoku_kyotei_gate_decision_2026-04-25.md`) |
-| `get_36_kyotei_metadata_am` | `AUTONOMATH_36_KYOTEI_ENABLED` | Same gate as `render_36_kyotei_am` (paired surface) | Same as render_36_kyotei_am |
+| `render_36_kyotei_am` | limited availability | 労基法 §36 + 社労士法 regulated; mis-render → legal and brand risk | 社労士 supervision arrangement + customer-facing disclaimer alignment + legal review |
+| `get_36_kyotei_metadata_am` | limited availability | Same availability as `render_36_kyotei_am` (paired surface) | Same as render_36_kyotei_am |
 
 ## Verification
 

@@ -390,8 +390,9 @@ def _sanitize_public_text(text: str) -> str:
             "Japanese phrase normalization",
         ),
         (r"quality-gate quarantine", "publication review hold"),
-        (r"Tier X", "review-held rows"),
-        (r"tier X", "review-held rows"),
+        (r"Tier X", "non-public records"),
+        (r"tier X", "non-public records"),
+        (r"review-held records?", "non-public records"),
         (r"case_studies_fts", "case study index"),
         (r"corpus dump guard", "broad empty-search guard"),
         (r"\bhandler\b", "API"),
@@ -515,6 +516,8 @@ def main() -> int:
 
     app = _build_app(include_preview=args.include_preview)
     schema = app.openapi()
+    _normalize_component_schema_names(schema)
+    _sanitize_public_schema(schema)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(

@@ -90,6 +90,7 @@ from jpintel_mcp.api.middleware import (
     AnalyticsRecorderMiddleware,
     AnonQuotaHeaderMiddleware,
     ClientTagMiddleware,
+    CostCapMiddleware,
     CustomerCapMiddleware,
     DeprecationWarningMiddleware,
     EnvelopeAdapterMiddleware,
@@ -654,8 +655,9 @@ def _sanitize_openapi_public_text(text: str) -> str:
             "Japanese phrase normalization",
         ),
         (r"quality-gate quarantine", "publication review hold"),
-        (r"Tier X", "review-held rows"),
-        (r"tier X", "review-held rows"),
+        (r"Tier X", "non-public records"),
+        (r"tier X", "non-public records"),
+        (r"review-held records?", "non-public records"),
         (r"case_studies_fts", "case study index"),
         (r"corpus dump guard", "broad empty-search guard"),
         (r"\bhandler\b", "API"),
@@ -772,9 +774,7 @@ def _sanitize_openapi_public_schema(node: Any) -> None:
             properties.pop("include_excluded", None)
             required = node.get("required")
             if isinstance(required, list):
-                node["required"] = [
-                    item for item in required if item != "include_excluded"
-                ]
+                node["required"] = [item for item in required if item != "include_excluded"]
         parameters = node.get("parameters")
         if isinstance(parameters, list):
             node["parameters"] = [
@@ -942,8 +942,9 @@ def create_app() -> FastAPI:
             "registrants. Records include source URLs and fetched timestamps "
             "where available.\n\n"
             "## Who this is for\n\n"
-            "Built for LLM agents (Claude / ChatGPT / Perplexity / Cursor) "
-            "and developers building Japanese-business automation. Use cases:\n"
+            "Built for LLM agents (Claude Desktop / Cursor / Cline via MCP; "
+            "ChatGPT Custom GPTs via OpenAPI Actions) and developers building "
+            "Japanese-business automation. Use cases:\n"
             "- discover candidate 補助金 / 助成金 by region + industry + amount\n"
             "- check whether a 法人番号 is a registered 適格請求書発行事業者\n"
             "- look up the current 税務判定ルールセット (e.g. 2割特例, "
@@ -952,6 +953,11 @@ def create_app() -> FastAPI:
             "- check 行政処分 history before extending credit / awarding "
             "subsidy\n"
             "- read e-Gov 法令 articles and trace which programs cite them\n\n"
+            "For AI workflows, call `/v1/intelligence/precomputed/query` or "
+            "`/v1/evidence/packets/query` before answer generation to retrieve "
+            "compact source-linked evidence. Optional compression fields compare "
+            "caller-supplied input-context baselines; they are estimates, not "
+            "external provider billing guarantees.\n\n"
             "## Information lookup, not professional advice (税理士法 §52)\n\n"
             "**This API returns information retrieved from public Japanese "
             "sources and official provider pages. It is NOT 税務助言 (tax advice), NOT 法律相談 "
@@ -965,8 +971,9 @@ def create_app() -> FastAPI:
             "```bash\n"
             "curl 'https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5'\n"
             "```\n\n"
-            "Authenticated (¥3/req metered, 税込 ¥3.30, no tier SKUs, no "
-            "monthly minimum commitment) — pass `X-API-Key: am_...` issued via "
+            "Authenticated (¥3/billable unit metered, 税込 ¥3.30, no tier SKUs, no "
+            "monthly minimum commitment; normal search/detail calls are 1 unit, "
+            "batch/export endpoints document their fan-out formula) — pass `X-API-Key: am_...` issued via "
             "Stripe Checkout:\n"
             "```bash\n"
             "curl -H 'X-API-Key: am_live_...' "
@@ -994,7 +1001,8 @@ def create_app() -> FastAPI:
             "**362 件の入札案件**、**13,801 件の適格請求書発行事業者 (国税庁 / PDL "
             "v1.0)** を、REST + MCP の単一検索面で公開する API です。各レコードは "
             "一次情報源 URL と取得時刻 (`source_url` / `fetched_at`) を保持しています。\n\n"
-            "**用途:** LLM エージェント (Claude / ChatGPT / Perplexity / Cursor) と"
+            "**用途:** LLM エージェント (Claude Desktop / Cursor / Cline は MCP、"
+            "ChatGPT Custom GPT は OpenAPI Actions) と"
             "日本企業向け業務自動化開発者向け。地域 × 業種 × 金額の補助金候補抽出、"
             "13 桁 法人番号 → 適格請求書発行事業者 登録確認、税務判定ルール適用判断、"
             "採択事例の事前研究、行政処分歴の与信前 DD、e-Gov 法令の条文参照、等。\n\n"
@@ -1016,45 +1024,10 @@ def create_app() -> FastAPI:
     )
 
     origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
-        allow_headers=[
-            "Authorization",
-            "X-API-Key",
-            "Content-Type",
-            "X-Request-ID",
-            "X-CSRF-Token",
-            "X-Client-Tag",
-            "Stripe-Signature",
-            "X-Postmark-Webhook-Signature",
-            # IETF Idempotency-Key (draft-ietf-httpapi-idempotency-key-header).
-            # Accepted by /v1/me/clients/bulk_evaluate (commit=true) as a
-            # form-field fallback and by the kintone integration POST.
-            # Without it on the allowlist, browser-side preflight rejects the
-            # dedup token before the handler can enforce retry safety.
-            "Idempotency-Key",
-        ],
-        expose_headers=[
-            "X-Anon-Quota-Remaining",
-            "X-Anon-Quota-Reset",
-            "X-Anon-Upgrade-Url",
-            "X-Billed-Yen",
-            "X-Cost-Yen",
-            "X-Idempotent-Replay",
-            "X-Metered",
-            "Retry-After",
-        ],
-        max_age=3600,
-    )
-    # Wave 16 P1: hard origin enforcement. Starlette's CORSMiddleware only
-    # strips the Access-Control-Allow-Origin header on a non-whitelisted
-    # origin — the request still reaches the handler. OriginEnforcement
-    # short-circuits with 403 BEFORE any DB write or Stripe API call.
-    # Same-origin (no Origin header) and webhook callers are passed through.
-    app.add_middleware(OriginEnforcementMiddleware)
+    # Wave 16 P1: hard origin enforcement is mounted after CORS below so it
+    # runs outermost. That lets it return the legacy 403 for disallowed
+    # regular/preflight origins before any DB write or Stripe API call, while
+    # still letting allowed-origin short-circuit responses pass through CORS.
     # P2.6.5 browser hardening: HSTS (1y, includeSubDomains, preload),
     # CSP (default-src 'self' + frame-ancestors 'none'), X-Frame-Options
     # DENY, X-Content-Type-Options nosniff, Referrer-Policy
@@ -1115,6 +1088,11 @@ def create_app() -> FastAPI:
     # forward-attribute its cap-reached telemetry (none today, but the
     # ordering keeps options open).
     app.add_middleware(ClientTagMiddleware)
+    # Per-request budget guard for authenticated bulk/batch routes.
+    # Missing X-Cost-Cap-JPY on paid bulk requests should fail before the
+    # handler fans out into billable work. Anonymous evaluation calls are not
+    # forced to carry the header because they cannot create metered spend.
+    app.add_middleware(CostCapMiddleware)
     # P3-W customer self-cap: short-circuit with 503 + cap_reached:true once
     # month-to-date billable spend (¥3/req) reaches the customer's
     # `monthly_cap_yen`. Runs after request-id binding so logged 503s carry
@@ -1166,6 +1144,51 @@ def create_app() -> FastAPI:
     # monitoring + crawler hygiene survive an incident. Operator runbook:
     # docs/_internal/launch_kill_switch.md.
     app.add_middleware(KillSwitchMiddleware)
+    # CORS is added last so it executes first in Starlette's LIFO middleware
+    # stack. That lets browser clients read short-circuit responses from
+    # cost-cap/rate-limit/origin guards and lets preflight complete before
+    # request logging or billing guards run.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=[
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "X-Request-ID",
+            "X-CSRF-Token",
+            "X-Client-Tag",
+            "X-Cost-Cap-JPY",
+            "Stripe-Signature",
+            "X-Postmark-Webhook-Signature",
+            # IETF Idempotency-Key (draft-ietf-httpapi-idempotency-key-header).
+            # Accepted by /v1/me/clients/bulk_evaluate (commit=true) as a
+            # form-field fallback and by the kintone integration POST.
+            # Without it on the allowlist, browser-side preflight rejects the
+            # dedup token before the handler can enforce retry safety.
+            "Idempotency-Key",
+        ],
+        expose_headers=[
+            "X-Anon-Quota-Remaining",
+            "X-Anon-Quota-Reset",
+            "X-Anon-Upgrade-Url",
+            "X-Billed-Yen",
+            "X-Cost-Yen",
+            "X-Cost-Cap-Required",
+            "X-Cost-Capped",
+            "X-Cap-Yen",
+            "X-Used-Yen",
+            "X-Remaining-Yen",
+            "X-Idempotent-Replay",
+            "X-Idempotency-Replayed",
+            "X-Metered",
+            "Retry-After",
+        ],
+        max_age=3600,
+    )
+    app.add_middleware(OriginEnforcementMiddleware)
 
     _log = logging.getLogger("jpintel.api")
 
@@ -1498,7 +1521,9 @@ def create_app() -> FastAPI:
     # /v1/citations/verify — deterministic citation verifier.
     app.include_router(citations_router, dependencies=[AnonIpLimitDep])
     # /v1/cost/preview — Evidence Pre-fetch Layer estimator (no LLM).
-    app.include_router(cost_router, dependencies=[AnonIpLimitDep])
+    # Free/non-metered estimator: it has its own short per-IP throttle and
+    # must not burn the anonymous 3/day discovery allowance.
+    app.include_router(cost_router)
     # /v1/intelligence/precomputed/query — compact precomputed context
     # bundle for offline token-cost benchmarking and LLM prefetch flows.
     app.include_router(intelligence_router, dependencies=[AnonIpLimitDep])

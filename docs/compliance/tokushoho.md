@@ -97,7 +97,7 @@ search:
 | サービス形態 | 必要環境 |
 |---|---|
 | **REST API** | HTTPS クライアント (curl、各言語の HTTP ライブラリ) |
-| **MCP server** | Claude Desktop / ChatGPT (Plus 以上、2025-10 以降) / Cursor / Gemini 等の MCP 対応クライアント (stdio Python) |
+| **MCP server** | Claude Desktop / Cursor / Cline 等の MCP 対応クライアント (stdio Python)。ChatGPT Custom GPT は OpenAPI Actions 経由で利用 |
 
 ---
 

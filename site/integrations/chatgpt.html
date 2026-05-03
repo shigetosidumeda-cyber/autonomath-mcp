@@ -100,6 +100,7 @@
 </nav>
 <h1 style="margin-bottom:0.2em;">ChatGPT GPTs と連携する</h1>
 <p>ChatGPT は回答生成が得意ですが、制度名・締切・対象者・出典 URL を毎回長いプロンプトで渡すと、入力トークンや確認作業が増えることがあります。jpcite は生成の代わりに、一次資料に紐づく構造化済みデータを Action で返します。GPT 側はその evidence を参照して文章化できます。効果はモデル、プロンプト、質問内容によって変わります。</p>
+<p>ChatGPT では MCP サーバーを直接起動するのではなく、Custom GPT Actions から OpenAPI subset を呼び出します。MCP 対応クライアントは Claude Desktop / Cursor / Cline などのガイドを参照してください。詳細版は <a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT 連携ガイド</a> です。</p>
 
 <h2 id="action">Action 設定</h2>
 <p>ChatGPT GPT エディタの Configure → Actions → Import from URL に以下を貼り付けます。これは Action 向けの安全な subset で、請求・Webhook・アカウント管理系 endpoint は含みません。</p>

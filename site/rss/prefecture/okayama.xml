@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>補助金リスト（2026.4.15時点）</title>
@@ -214,15 +214,6 @@
     <description>Tier A / 岡山県 / 岡山県 / subsidy 出典: https://www.pref.okayama.jp/page/970388.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-09757e0083</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>令和７年度「訪問看護ステーションへの看護職員入職促進事業」補助金について</title>
-    <link>https://jpcite.com/programs/reiwa-7-nendo-houmon-kango-suteeshon-heno-kango-shokuin-537d1f.html</link>
-    <description>Tier A / 岡山県 / 岡山県 / subsidy 出典: https://www.pref.okayama.jp/page/726488.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-0ecf940163</guid>
     <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
   </item>
 
@@ -907,6 +898,15 @@
     <description>Tier B / 岡山県 / subsidy / 上限 100万円 出典: https://www.city.takahashi.lg.jp/soshiki/8/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-58bb25b2cb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>岡山市_新規就農者サポート事業補助金</title>
+    <link>https://jpcite.com/programs/mun-331007-001-okayamashi-shinki-shuunou-mono-sapooto-893d75.html</link>
+    <description>Tier B / 岡山県 / subsidy / 上限 125万円 出典: https://www.city.okayama.jp/jigyosha/0000010721.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5926850e19</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>岩手県 - 中小企業被災資産復旧事業費補助</title>
@@ -497,15 +497,6 @@
   </item>
 
   <item>
-    <title>いちのせき子育て農業者応援事業補助金</title>
-    <link>https://jpcite.com/programs/ichinoseki-kosodate-nougyou-mono-ouen-jigyou-hojokin-57cc0a.html</link>
-    <description>Tier A / 岩手県 / subsidy / 上限 250万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/1,1108,c,html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-10ffe70514</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>意欲ある農業担い手支援事業（家賃補助）</title>
     <link>https://jpcite.com/programs/iyoku-aru-nougyou-ninaite-shien-jigyou-yachinhojo-a4de21.html</link>
     <description>Tier B / 岩手県 / subsidy / 上限 48万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/1,1152,c,html</description>
@@ -812,15 +803,6 @@
   </item>
 
   <item>
-    <title>いちのせき新規就農応援事業</title>
-    <link>https://jpcite.com/programs/ichinoseki-shinki-shuunou-ouen-jigyou-f184c1.html</link>
-    <description>Tier A / 岩手県 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/29,70818,c,html/70818/20230919-180847.pdf</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-7580888962</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>一関市新規就農支援制度</title>
     <link>https://jpcite.com/programs/ichinoseki-shi-shinki-shuunou-shien-seido-6fe32e.html</link>
     <description>Tier C / 岩手県 / 岩手県一関市 / subsidy / 上限 150万円 出典: https://www.city.ichinoseki.iwate.jp/index.cfm/6,0,41,html</description>
@@ -907,6 +889,24 @@
     <description>Tier C / 岩手県 出典: https://www.city.oshu.iwate.jp/section/reiki_int/reiki_honbun/r204RG00000861.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-8d6d79bf72</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住者の住宅取得及びリフォーム費用支援</title>
+    <link>https://jpcite.com/programs/ijuusha-no-juutaku-shutoku-oyobi-rifoomu-hiyou-shien-93cf4d.html</link>
+    <description>Tier A / 岩手県 / 岩手県花巻市 / subsidy / 上限 100万円 出典: https://www.city.hanamaki.iwate.jp/kurashi/ijyu_teijyu/1000985.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8ec68711f1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地等災害復旧事業</title>
+    <link>https://jpcite.com/programs/nouchi-nado-saigai-fukkyuu-jigyou-5efdb9.html</link>
+    <description>Tier C / 岩手県 / subsidy / 上限 100万円 出典: https://www.city.hanamaki.iwate.jp/sangyo/1011097.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-905c93ec78</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

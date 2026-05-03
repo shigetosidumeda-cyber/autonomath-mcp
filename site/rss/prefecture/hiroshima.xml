@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>東広島市新規就農者初期投資支援事業</title>
@@ -151,15 +151,6 @@
     <description>Tier A / 広島県 / 広島県 / subsidy 出典: https://www.pref.hiroshima.lg.jp/site/hcm-reskilling/jinkaikinhojokin.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-b3b84fd17d</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>令和７年度人材開発支援助成金活用支援補助金</title>
-    <link>https://jpcite.com/programs/reiwa-7-nendo-jinzai-kaihatsushien-joseikin-katsuyou-shien-85ab19.html</link>
-    <description>Tier A / 広島県 / 広島県 / subsidy 出典: https://www.pref.hiroshima.lg.jp/hint-s/1012796.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-c326d677b2</guid>
     <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
   </item>
 
@@ -407,15 +398,6 @@
   </item>
 
   <item>
-    <title>神石高原○豊とまと用養液土耕栽培普及規模拡大事業</title>
-    <link>https://jpcite.com/programs/jinsekikougen-yutaka-tomato-you-youeki-dokou-saibai-fukyuu-240c61.html</link>
-    <description>Tier C / 広島県 / 広島県神石高原町 / subsidy / 上限 80万円 出典: http://www.jinsekigun.jp/town/formation/sangyou1/shinko1/engei-2/</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-11f285123a</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>広島県人材開発支援助成金活用支援補助金</title>
     <link>https://jpcite.com/programs/hiroshima-kenjin-zai-kaihatsushien-joseikin-katsuyou-shien-270c0a.html</link>
     <description>Tier B / 広島県 / subsidy / 上限 50万円 出典: https://www.pref.hiroshima.lg.jp/site/hcm-reskilling/jinkaikinhojokin.html</description>
@@ -538,15 +520,6 @@
     <description>Tier B / 広島県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.hiroshima.lg.jp/business/sangyo/1021494/1026469/1026474/1017674.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-2ecac893de</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>小規模事業者経営改善資金（マル経融資）利子補給制度</title>
-    <link>https://jpcite.com/programs/shoukibo-jigyousha-keiei-kaizen-shikin-maru-kei-yuushi-508c45.html</link>
-    <description>Tier A / 広島県 / loan / 上限 2,000万円 出典: https://www.city.fuchu.hiroshima.jp/soshiki/sangyo/shien/</description>
-    <category>loan</category>
-    <guid isPermaLink="false">jpcite:program:UNI-2f0176cd4f</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -758,15 +731,6 @@
   </item>
 
   <item>
-    <title>神石高原○豊とまと用ビニールハウス規模拡大事業</title>
-    <link>https://jpcite.com/programs/jinsekikougen-yutaka-tomato-you-biniiruhausu-kibo-kakudai-0aabd8.html</link>
-    <description>Tier S / 広島県 / 広島県神石高原町 / subsidy / 上限 800万円 出典: http://www.jinsekigun.jp/town/formation/sangyou1/shinko1/engei-2/</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-5f224060c2</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>三次市環境保全型農業推進支援事業</title>
     <link>https://jpcite.com/programs/sanji-shi-kankyouhozen-kata-nougyou-suishin-shien-jigyou-556bd2.html</link>
     <description>Tier C / 広島県 出典: https://www.city.miyoshi.hiroshima.jp/soshiki/13.html</description>
@@ -907,6 +871,42 @@
     <description>Tier C / 広島県 / 広島県三次市 / subsidy 出典: https://www.city.miyoshi.hiroshima.jp/uploaded/attachment/1795.pdf</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-8bce76106a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>三次市環境保全型農業推進支援事業</title>
+    <link>https://jpcite.com/programs/sanji-shi-kankyouhozen-kata-nougyou-suishin-shien-jigyou-3172ea.html</link>
+    <description>Tier A / 広島県 / 広島県三次市 / subsidy / 上限 10万円 出典: https://www.city.miyoshi.hiroshima.jp/soshiki/13.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8c4f4e8eb6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地の利用集積促進事業</title>
+    <link>https://jpcite.com/programs/nouchi-no-riyou-shuuseki-sokushin-jigyou-22e6b8.html</link>
+    <description>Tier B / 広島県 / subsidy / 上限 100万円 出典: https://www.city.shobara.hiroshima.jp/main/industry/nogyo/cat03/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-977e6d4ec5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>広島市 農業継承円滑化支援 給付金</title>
+    <link>https://jpcite.com/programs/hiroshima-shi-nougyou-keishou-enkatsu-ka-shien-kyuufukin-f6cf1d.html</link>
+    <description>Tier B / 広島県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.hiroshima.lg.jp/business/sangyo/1021494/1026469/1026474/1017674.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-97ba796091</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>広島県DX推進実証補助金</title>
+    <link>https://jpcite.com/programs/hiroshima-ken-dx-suishin-jisshou-hojokin-4383e5.html</link>
+    <description>Tier B / 広島県 / subsidy / 上限 20万円 出典: https://dx-hiroshima.jp/shien</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-99303a26f7</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

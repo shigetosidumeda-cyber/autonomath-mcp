@@ -457,10 +457,8 @@ def get_bid(
 ) -> JSONResponse:
     """Return a single 入札案件 by BID-<10 hex> unified_id.
 
-    Audit trail (会計士 work-paper, added 2026-04-29): the response includes
-    `corpus_snapshot_id` + `corpus_checksum` so an auditor citing this 入札
-    in a work-paper can reproduce the lookup later and detect whether the
-    corpus mutated. See docs/audit_trail.md.
+    The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
+    can reproduce the lookup later and detect whether the corpus changed.
     """
     row = conn.execute(
         "SELECT * FROM bids WHERE unified_id = ?", (unified_id,)

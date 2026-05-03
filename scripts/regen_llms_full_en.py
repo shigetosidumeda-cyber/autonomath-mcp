@@ -66,6 +66,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
+try:
+    from static_bad_urls import load_static_bad_urls  # type: ignore
+except ImportError:  # pragma: no cover
+
+    def load_static_bad_urls() -> set[str]:
+        return set()
+
+
 _PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
 
 # ---------------------------------------------------------------------------
@@ -113,6 +121,8 @@ SELECT
 FROM programs
 WHERE excluded = 0
   AND tier IN ('S', 'A', 'B', 'C')
+  AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead')
+  AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)
 ORDER BY tier, primary_name
 LIMIT 20000
 """
@@ -144,7 +154,10 @@ LIMIT 5000
 """
 
 PROGRAMS_COUNT_SQL = (
-    "SELECT COUNT(*) FROM programs WHERE excluded = 0 AND tier IN ('S','A','B','C')"
+    "SELECT COUNT(*) FROM programs "
+    "WHERE excluded = 0 AND tier IN ('S','A','B','C') "
+    "AND COALESCE(source_url_status, '') NOT IN ('broken', 'dead') "
+    "AND COALESCE(source_last_check_status, 0) NOT IN (403, 404, 410)"
 )
 LAWS_COUNT_SQL = "SELECT COUNT(*) FROM laws"
 CASES_COUNT_SQL = "SELECT COUNT(*) FROM case_studies"
@@ -251,9 +264,9 @@ def _section_header(programs: int, laws: int, cases: int, generated_at: str) -> 
     return [
         "# jpcite - Japanese public-program database (English LLM index)",
         "",
-        f"> Evidence pre-fetch index for Japanese public programs: {programs:,} source-allowed program rows + {laws:,} laws + {cases:,} adoption case studies.",
+        f"> Evidence pre-fetch index for Japanese public programs: {programs:,} normalized LLM-index program rows + {laws:,} laws + {cases:,} adoption case studies. The public search surface has 11,684 searchable program rows; rows whose source title looks like page chrome, attachments, or navigation text are excluded from this compact LLM index.",
         "> Use this before answer generation to retrieve cited facts, source URLs, fetched_at metadata, provenance, and compatibility-rule context. It is not an answer generator.",
-        "> Token and cost impact is workload-dependent; jpcite API pricing is fixed at ¥3/request.",
+        "> Token and cost impact is workload-dependent; jpcite API pricing is fixed at ¥3 per billable unit. Normal search/detail calls are 1 unit.",
         "> Program names, law titles, and case fields stay in Japanese where applicable.",
         "> Publisher: jpcite / Canonical: https://jpcite.com",
         f"> Generated: {generated_at}",
@@ -271,7 +284,7 @@ def _section_about() -> list[str]:
         "",
         "Public search returns source-linked rows that have passed jpcite's publication checks. Rows cite government or official institutional sources where available.",
         "",
-        "MCP exposes 93 tools in the standard configuration. The MCP server runs over stdio (protocol 2025-06-18) and is compatible with Claude Desktop, Cursor, and ChatGPT (Plus and above).",
+        "MCP exposes 93 tools in the standard configuration. The MCP server runs over stdio (protocol 2025-06-18) for Claude Desktop, Cursor, Cline, and other MCP clients. ChatGPT Custom GPTs use the OpenAPI Actions integration instead.",
         "",
         "jpcite is an API-first service; downstream callers build their own product workflows and UIs.",
         "",
@@ -284,11 +297,11 @@ def _section_pricing() -> list[str]:
     return [
         "## Pricing",
         "",
-        "Fully metered: ¥3 per request (¥3.30 tax-included). No tier SKUs, no seat fees, no annual minimums.",
+        "Fully metered: ¥3 per billable unit (¥3.30 tax-included). Normal search/detail calls are 1 unit. No tier SKUs, no seat fees, no annual minimums.",
         "",
         "- Anonymous tier: 3 requests per day per IP, free. Resets at JST next-day 00:00.",
-        "- Authenticated tier: ¥3 per request, billed monthly via Stripe. Monthly budget caps and protective rate limits may apply.",
-        "- jpcite pricing is per billable API/MCP request. External LLM token, search, cache, and tool costs depend on the caller's model and prompt settings.",
+        "- Authenticated tier: ¥3 per billable unit, billed monthly via Stripe. Monthly budget caps and protective rate limits may apply.",
+        "- External LLM token, search, cache, and tool costs depend on the caller's model and prompt settings.",
         "- Support and enterprise terms are described in the public documentation.",
         "",
         "Sign up at https://jpcite.com/pricing.html. API keys are issued once at Stripe checkout success and shown verbatim in the response - keep the key safe; the only re-issue path is to cancel the subscription via the billing portal and re-checkout.",
@@ -507,8 +520,11 @@ def main(argv: list[str] | None = None) -> int:
     out_path: Path = args.out.resolve()
 
     with _connect_ro(db_path) as con:
+        denied = load_static_bad_urls()
         programs = [
-            row for row in _safe_rows(con, PROGRAMS_SQL) if _source_host_allowed(row["source_url"])
+            row
+            for row in _safe_rows(con, PROGRAMS_SQL)
+            if _source_host_allowed(row["source_url"]) and row["source_url"] not in denied
         ]
         laws = _safe_rows(con, LAWS_SQL)
         cases = _safe_rows(con, CASES_SQL)

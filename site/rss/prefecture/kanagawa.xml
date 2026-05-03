@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>神奈川県事業承継補助金（令和8年度実施分）について - 神奈川県ホームページ</title>
@@ -668,15 +668,6 @@
   </item>
 
   <item>
-    <title>神奈川県 事業承継関連融資</title>
-    <link>https://jpcite.com/programs/kanagawaken-jigyou-shoukei-kanren-yuushi-a303de.html</link>
-    <description>Tier A / 神奈川県 / loan / 上限 8,000万円 出典: https://www.pref.kanagawa.jp/docs/m6c/cnt/f5782/p845602.html</description>
-    <category>loan</category>
-    <guid isPermaLink="false">jpcite:program:UNI-0df7fa45a4</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>秦野市 農業振興補助金（省エネルギー対策）</title>
     <link>https://jpcite.com/programs/hatanoshi-nougyou-shinkou-hojokin-shouene-rugii-taisaku-073d43.html</link>
     <description>Tier B / 神奈川県 / 市町村 / subsidy / 上限 15万円 出典: https://www1.g-reiki.net/city.hadano/reiki_honbun/g213RG00001154.html</description>
@@ -736,15 +727,6 @@
     <description>Tier B / 神奈川県 / subsidy / 上限 500万円 出典: https://www.pref.kanagawa.jp/docs/f6k/cnt/f470020/2023smart_suisinzigyou.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-2ae1010b67</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>神奈川県 売上・利益減少対策融資</title>
-    <link>https://jpcite.com/programs/kanagawaken-uriage-rieki-genshou-taisaku-yuushi-39a7eb.html</link>
-    <description>Tier A / 神奈川県 / loan / 上限 8,000万円 出典: https://www.pref.kanagawa.jp/docs/m6c/cnt/f5782/p845602.html</description>
-    <category>loan</category>
-    <guid isPermaLink="false">jpcite:program:UNI-34de5a5a4d</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +889,24 @@
     <description>Tier A / 神奈川県 / subsidy / 上限 500万円 出典: https://www.pref.kanagawa.jp/docs/f6k/cnt/f470020/2023smart_suisinzigyou.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-aad3e0e22b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>川崎市_川崎市農業経営高度化支援事業補助金（経営改善支援事業）</title>
+    <link>https://jpcite.com/programs/kawasakishi-kawasakishi-nougyou-keiei-koudoka-shien-jigyou-ed2432.html</link>
+    <description>Tier B / 神奈川県 / subsidy / 上限 75万円 出典: https://www.city.kawasaki.jp/280/page/0000167936.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b05e69e1ab</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>横浜チャレンジファーマー研修</title>
+    <link>https://jpcite.com/programs/yokohama-charenjifaamaa-kenshuu-305807.html</link>
+    <description>Tier C / 神奈川県 / 神奈川県横浜市 / subsidy 出典: https://www.city.yokohama.lg.jp/business/keizai/nogyo/ninaite/challengefarmer.files/boshu_annai.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b0d51bdc88</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

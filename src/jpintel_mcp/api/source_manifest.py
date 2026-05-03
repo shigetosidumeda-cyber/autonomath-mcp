@@ -4,12 +4,12 @@ per-program source rollup (90-day deliverable, value_maximization plan
 
 Surfaces every source citation linked to a program via two signals:
 
-  * **Per-fact provenance** (sparse). `am_entity_facts.source_id` (mig 049)
-    pins a single fact to a single am_source row. As of 2026-04-30 this is
-    1.12M / 6.12M facts populated overall, but **0 program-fact rows have
-    source_id set** — the bulk fill cron has not started for the program
-    cohort yet. The endpoint surfaces this honestly: empty
-    `fact_provenance[]` and `fact_provenance_coverage_pct=0.0`.
+  * **Per-fact provenance** (partially populated). `am_entity_facts.source_id`
+    (mig 049) pins a single fact to a single am_source row. The program cohort
+    now has source_id coverage on the key fact rows where the backfill could
+    resolve a public source. The endpoint surfaces this honestly via
+    `fact_provenance[]` and `fact_provenance_coverage_pct`, rather than
+    implying field-level proof where source_id remains absent.
   * **Entity-level rollup** (dense for programs). `am_entity_source` maps
     every entity to its primary / pdf / application sources via role.
     Used for the `summary` block (`source_count`, `latest_fetched_at`,
@@ -31,6 +31,7 @@ Read-only. The autonomath connection is opened in `mode=ro` so a
 misconfigured deploy can never write to the 9.4 GB primary DB through
 this surface.
 """
+
 from __future__ import annotations
 
 import json
@@ -44,6 +45,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, HTTPException, status
 from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api._license_gate import REDISTRIBUTABLE_LICENSES
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
@@ -87,6 +89,142 @@ _DISCLAIMER = (
     "manifest reflects per-fact provenance where source_id is populated; "
     "unpopulated facts inherit the program's primary_source_url."
 )
+
+
+class SourceManifestSummary(BaseModel):
+    """Entity-level source rollup for one program."""
+
+    field_paths_covered: list[str] = Field(
+        default_factory=list,
+        description="Field paths with source coverage in the entity rollup.",
+    )
+    source_count: int = Field(
+        default=0,
+        description="Distinct source rows linked to this program entity.",
+    )
+    license_set: list[str] = Field(
+        default_factory=list,
+        description="Raw license values observed across linked source rows.",
+    )
+    latest_fetched_at: str | None = Field(
+        default=None,
+        description="Newest fetched timestamp among linked sources, when known.",
+    )
+    oldest_fetched_at: str | None = Field(
+        default=None,
+        description="Oldest fetched timestamp among linked sources, when known.",
+    )
+    unique_publishers: int = Field(
+        default=0,
+        description="Distinct publisher/domain count across linked sources.",
+    )
+
+
+class SourceManifestFactProvenance(BaseModel):
+    """Redistributable per-fact source citation."""
+
+    field_name: str
+    source_id: int
+    source_url: str
+    publisher: str | None = None
+    fetched_at: str | None = None
+    license: str = "unknown"
+    checksum: str | None = Field(
+        default=None,
+        description="Content hash/checksum when the source row has one.",
+    )
+
+
+class SourceManifestLicenseGate(BaseModel):
+    """Reasons some source rows are withheld from public provenance output."""
+
+    model_config = ConfigDict(extra="allow")
+
+    policy: str = "redistributable_sources_only"
+    blocked_fact_provenance_count: int = 0
+    blocked_reasons: dict[str, int] | None = None
+    blocked_entity_source_licenses: list[str] | None = None
+    redistributable_licenses: list[str] = Field(default_factory=list)
+
+
+class SourceManifestEnvelope(BaseModel):
+    """Source manifest response schema for agents and OpenAPI importers."""
+
+    model_config = ConfigDict(
+        extra="allow",
+        populate_by_name=True,
+        json_schema_extra={
+            "example": {
+                "program_id": "UNI-00d62c90c3",
+                "primary_name": "Example subsidy program",
+                "primary_source_url": "https://example.go.jp/program",
+                "primary_license": "gov_standard",
+                "license_posture": "redistributable",
+                "redistribution_allowed": True,
+                "source_fetched_at": "2026-05-01T00:00:00+09:00",
+                "authority_name": "Example authority",
+                "prefecture": "東京都",
+                "tier": "S",
+                "fact_provenance": [
+                    {
+                        "field_name": "amount_max_man_yen",
+                        "source_id": 123,
+                        "source_url": "https://example.go.jp/program",
+                        "publisher": "example.go.jp",
+                        "fetched_at": "2026-05-01T00:00:00+09:00",
+                        "license": "gov_standard_v2.0",
+                        "checksum": "sha256:example",
+                    }
+                ],
+                "fact_provenance_coverage_pct": 0.42,
+                "summary": {
+                    "field_paths_covered": ["amount_max_man_yen", "application_window"],
+                    "source_count": 2,
+                    "license_set": ["gov_standard_v2.0"],
+                    "latest_fetched_at": "2026-05-01T00:00:00+09:00",
+                    "oldest_fetched_at": "2026-04-20T00:00:00+09:00",
+                    "unique_publishers": 1,
+                },
+                "quality": {
+                    "known_gaps": ["per-fact provenance is partial when source_id is unpopulated"]
+                },
+                "_disclaimer": _DISCLAIMER,
+                "_resolution_path": "unified_id_via_entity_id_map",
+            }
+        },
+    )
+
+    program_id: str
+    primary_name: str | None = None
+    primary_source_url: str | None = None
+    primary_source_url_license_unverified: bool | None = None
+    primary_source_license_note: str | None = None
+    primary_source_url_redacted: bool | None = None
+    primary_source_redaction_reason: str | None = None
+    primary_license: str = "unknown"
+    license_posture: str = "unknown"
+    redistribution_allowed: bool = False
+    source_fetched_at: str | None = None
+    authority_name: str | None = None
+    prefecture: str | None = None
+    tier: str | None = None
+    fact_provenance: list[SourceManifestFactProvenance] = Field(default_factory=list)
+    fact_provenance_coverage_pct: float = Field(
+        default=0.0,
+        description=(
+            "Redistributable source-linked facts divided by total facts. "
+            "A low value is a known gap, not fabricated provenance."
+        ),
+    )
+    summary: SourceManifestSummary = Field(default_factory=SourceManifestSummary)
+    license_gate: SourceManifestLicenseGate | None = None
+    quality: dict[str, Any] | None = Field(
+        default=None,
+        description="Known gaps or caveats for downstream AI relays.",
+    )
+    disclaimer: str = Field(alias="_disclaimer")
+    resolution_path: str | None = Field(default=None, alias="_resolution_path")
+    warning: str | None = Field(default=None, alias="_warning")
 
 
 # ---------------------------------------------------------------------------
@@ -297,11 +435,25 @@ def _redact_primary_source_if_restricted(out: dict[str, Any], raw_license: str) 
         return
     if raw_license == "unknown":
         out["primary_source_url_license_unverified"] = True
-        out["primary_source_license_note"] = "source URL is listed as metadata; redistribution license is unverified"
+        out["primary_source_license_note"] = (
+            "source URL is listed as metadata; redistribution license is unverified"
+        )
         return
     out.pop("primary_source_url", None)
     out["primary_source_url_redacted"] = True
     out["primary_source_redaction_reason"] = "license_not_redistributable_or_unknown"
+
+
+def _attach_quality_caveats(out: dict[str, Any]) -> None:
+    known_gaps: list[str] = []
+    if float(out.get("fact_provenance_coverage_pct") or 0.0) < 1.0:
+        known_gaps.append("per-fact provenance is partial when source_id is unpopulated")
+    if out.get("primary_source_url_license_unverified"):
+        known_gaps.append("primary source URL license is unverified")
+    if out.get("primary_source_url_redacted"):
+        known_gaps.append("primary source URL redacted by license gate")
+    if known_gaps:
+        out["quality"] = {"known_gaps": known_gaps}
 
 
 def _build_manifest(
@@ -360,6 +512,7 @@ def _build_manifest(
         out["license_posture"] = license_posture
         out["redistribution_allowed"] = redistribution_allowed
         _redact_primary_source_if_restricted(out, primary_raw_license)
+        _attach_quality_caveats(out)
         return out
 
     # Pull the rollup row from the view. Row may be missing when the
@@ -377,9 +530,7 @@ def _build_manifest(
 
     if summary_row is not None:
         try:
-            field_paths = json.loads(
-                summary_row["field_paths_covered"] or "[]"
-            )
+            field_paths = json.loads(summary_row["field_paths_covered"] or "[]")
         except (TypeError, ValueError):
             field_paths = []
         try:
@@ -393,9 +544,7 @@ def _build_manifest(
             "license_set": license_list,
             "latest_fetched_at": summary_row["latest_fetched_at"],
             "oldest_fetched_at": summary_row["oldest_fetched_at"],
-            "unique_publishers": int(
-                summary_row["unique_publishers"] or 0
-            ),
+            "unique_publishers": int(summary_row["unique_publishers"] or 0),
         }
         out["primary_license"] = _friendly_license(primary_raw_license)
         license_posture, redistribution_allowed = _license_posture(
@@ -493,13 +642,9 @@ def _build_manifest(
     ).fetchone()
     total_facts = int(coverage_row["total_facts"] or 0)
     facts_with_source = int(coverage_row["facts_with_source"] or 0)
-    facts_with_redistributable_source = int(
-        coverage_row["facts_with_redistributable_source"] or 0
-    )
+    facts_with_redistributable_source = int(coverage_row["facts_with_redistributable_source"] or 0)
     coverage_pct = (
-        round(facts_with_redistributable_source / total_facts, 4)
-        if total_facts > 0
-        else 0.0
+        round(facts_with_redistributable_source / total_facts, 4) if total_facts > 0 else 0.0
     )
     out["fact_provenance_coverage_pct"] = coverage_pct
     out["_total_facts"] = total_facts
@@ -513,12 +658,9 @@ def _build_manifest(
     if blocked_license_rows:
         out["license_gate"] = {
             "policy": "redistributable_sources_only",
-            "blocked_fact_provenance_count": sum(
-                int(r["n"] or 0) for r in blocked_license_rows
-            ),
+            "blocked_fact_provenance_count": sum(int(r["n"] or 0) for r in blocked_license_rows),
             "blocked_reasons": {
-                str(r["license"] or "unknown"): int(r["n"] or 0)
-                for r in blocked_license_rows
+                str(r["license"] or "unknown"): int(r["n"] or 0) for r in blocked_license_rows
             },
             "redistributable_licenses": allowed_licenses,
         }
@@ -531,10 +673,9 @@ def _build_manifest(
         }
 
     if truncated:
-        out["_warning"] = (
-            f"fact_provenance truncated at {_MAX_FACT_PROVENANCE}"
-        )
+        out["_warning"] = f"fact_provenance truncated at {_MAX_FACT_PROVENANCE}"
 
+    _attach_quality_caveats(out)
     return out
 
 
@@ -545,6 +686,7 @@ def _build_manifest(
 
 @router.get(
     "/{program_id}",
+    response_model=SourceManifestEnvelope,
     summary="Per-program source manifest (partial Evidence Graph)",
     description=(
         "Surface the available provenance manifest for one program: "
@@ -571,15 +713,9 @@ def _build_manifest(
                 "`primary_*` carries the program-row authoritative URL."
             )
         },
-        404: {
-            "description": (
-                "Unknown program_id in the current public corpus."
-            )
-        },
+        404: {"description": ("Unknown program_id in the current public corpus.")},
         503: {
-            "description": (
-                "Source manifest data is temporarily unavailable."
-            ),
+            "description": ("Source manifest data is temporarily unavailable."),
         },
     },
 )

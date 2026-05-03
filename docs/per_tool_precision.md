@@ -68,7 +68,7 @@ To **update** gates after a real schema change (e.g. new tier policy, new tax_ru
 ## Honesty constraints
 
 - This table reflects the **current** snapshot. We commit gold.yaml regenerated runs, not optimistic numbers.
-- 検索対象外 rows are excluded from every search path. `it_001_donyu_subsidy` has a `forbidden_ids: [UNI-158e0bb965]` to enforce this — silent inclusion of public-hold rows = trust kill.
+- 検索対象外 rows are excluded from every search path. `it_001_donyu_subsidy` has a `forbidden_ids: [UNI-158e0bb965]` to enforce this — silent inclusion of non-public rows is a trust failure.
 - `source_fetched_at` semantics: rendered as **「出典取得」** (when we last fetched), never as **「最終更新」** (which would imply we verified currency). Documented in `CLAUDE.md` under "Common gotchas".
 
 ---

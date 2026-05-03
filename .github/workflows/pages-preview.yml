@@ -9,6 +9,9 @@
 #                    Account → Cloudflare Pages → Edit
 #                  Create at https://dash.cloudflare.com/profile/api-tokens
 #   CF_ACCOUNT_ID  Cloudflare account ID (right sidebar of any CF dashboard page)
+#   FLY_API_TOKEN  Fly.io deploy token. Required for production deploys because
+#                  program / prefecture / structured / llms-full artifacts are
+#                  generated from the live SQLite corpus and are gitignored.
 #
 # Project name: autonomath
 #   This workflow targets the Cloudflare Pages project "autonomath".
@@ -19,7 +22,8 @@
 #   Domains: autonomath.pages.dev, jpcite.com, www.jpcite.com,
 #            zeimu-kaikei.ai, www.zeimu-kaikei.ai
 #
-# No dependencies on Fly secrets; this workflow is independent of deploy.yml.
+# Production publishes require Fly data access so gitignored generated artifacts
+# are rebuilt before the static mirror is synced.
 
 name: pages-preview
 
@@ -45,7 +49,7 @@ jobs:
   deploy:
     name: Deploy site/ to Cloudflare Pages
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: read
       deployments: write
@@ -66,30 +70,83 @@ jobs:
           cache: pip
           cache-dependency-path: docs-requirements.txt
 
-      - name: Install docs dependencies
+      - name: Install docs and site dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r docs-requirements.txt
+          pip install -e ".[site]"
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Pull latest jpintel.db for generated public artifacts
+        id: generated-data
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN is not configured; skipping Pages publish to avoid deleting generated public artifacts."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p data
+          flyctl ssh console -a autonomath-api -C \
+            "sqlite3 /data/jpintel.db \".backup /data/jpintel.pages.db\""
+          flyctl ssh sftp get /data/jpintel.pages.db -a autonomath-api
+          mv jpintel.pages.db data/jpintel.db
+          echo "available=true" >> "$GITHUB_OUTPUT"
 
       - name: Build docs (MkDocs Material → site/docs/)
         # strict: fail on broken internal links / missing nav entries.
         # This is the primary quality gate against [text](link.md) drift.
         run: mkdocs build --strict
 
+      - name: Regenerate generated public artifacts
+        if: steps.generated-data.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          python scripts/generate_program_pages.py \
+            --db data/jpintel.db \
+            --out site/programs \
+            --domain jpcite.com \
+            --sitemap site/sitemap-programs.xml \
+            --tiers S,A,B,C \
+            --verbose
+          python scripts/generate_prefecture_pages.py \
+            --db data/jpintel.db \
+            --out site/prefectures \
+            --domain jpcite.com \
+            --sitemap site/sitemap-prefectures.xml
+          python scripts/regen_llms_full.py --db data/jpintel.db --out site/llms-full.txt
+          python scripts/regen_llms_full_en.py --db data/jpintel.db --out site/llms-full.en.txt
+          python scripts/sitemap_gen.py --site-dir site --domain jpcite.com
+
       - name: Prepare public artifact
+        if: steps.generated-data.outputs.available == 'true'
         run: |
           rm -rf dist/site
           mkdir -p dist
-          rsync -a --delete --exclude '_templates/' site/ dist/site/
+          rsync -a --delete \
+            --exclude '_templates/' \
+            --exclude '_data/' \
+            --exclude '*.src.js' \
+            --exclude '*.src.css' \
+            --exclude '*.map' \
+            --include 'press/*.md' \
+            --include 'security/policy.md' \
+            --exclude '*.md' \
+            site/ dist/site/
 
       - name: Check Cloudflare Pages secrets
         id: cf-secrets
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          GENERATED_DATA_AVAILABLE: ${{ steps.generated-data.outputs.available }}
         run: |
-          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
-            echo "::notice::CF_API_TOKEN or CF_ACCOUNT_ID is not configured; skipping GitHub-hosted Pages deploy."
+          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ] || [ "${GENERATED_DATA_AVAILABLE:-false}" != "true" ]; then
+            echo "::notice::CF_API_TOKEN, CF_ACCOUNT_ID, or FLY_API_TOKEN is not configured; skipping GitHub-hosted Pages deploy."
             echo "available=false" >> "$GITHUB_OUTPUT"
           else
             echo "available=true" >> "$GITHUB_OUTPUT"

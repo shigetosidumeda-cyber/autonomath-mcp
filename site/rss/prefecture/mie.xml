@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sat, 02 May 2026 13:36:53 +0000</lastBuildDate>
+  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
 
   <item>
     <title>制度内容 申請期間 補助金リンク</title>
@@ -776,15 +776,6 @@
   </item>
 
   <item>
-    <title>農業集落排水接続促進補助金</title>
-    <link>https://jpcite.com/programs/nougyou-shuuraku-haisui-setsuzoku-sokushin-hojokin-a51d59.html</link>
-    <description>Tier C / 三重県 / 三重県鈴鹿市 / subsidy / 上限 15万円 出典: https://www.city.suzuka.lg.jp/_res/projects/default_project/_page_/001/002/218/tebiki.pdf</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-9e18fea2ab</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>三重県中小企業DX推進支援事業補助金</title>
     <link>https://jpcite.com/programs/mieken-chuushoukigyou-dx-suishin-shien-jigyou-hojokin-24eacd.html</link>
     <description>Tier C / 三重県 / subsidy / 上限 150万円 出典: https://www.miesc.or.jp/support/subsidy</description>
@@ -808,15 +799,6 @@
     <description>Tier C / 三重県 / subsidy / 上限 200万円 出典: https://www.pref.mie.lg.jp/KOYOKEI/HP/shouene-setsubi.htm</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-a38caff408</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>四日市市_アグリビジネス支援_ICT事業</title>
-    <link>https://jpcite.com/programs/mun-242020-001-yokkaichi-shi-aguribijinesu-shien-ict-jigyou-5c229a.html</link>
-    <description>Tier C / 三重県 / subsidy / 上限 500万円 出典: https://www.city.yokkaichi.lg.jp/www/contents/1743521730227/index.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-a622feecd0</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -866,15 +848,6 @@
   </item>
 
   <item>
-    <title>農業集落排水接続促進補助金</title>
-    <link>https://jpcite.com/programs/nougyou-shuuraku-haisui-setsuzoku-sokushin-hojokin-934ad3.html</link>
-    <description>Tier A / 三重県 / 上限 15万円 出典: https://www.city.suzuka.lg.jp/_res/projects/default_project/_page_/001/002/218/tebiki.pdf</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-c166621826</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>伊賀市 集落営農支援事業補助金</title>
     <link>https://jpcite.com/programs/iga-shi-shuuraku-einou-shien-jigyou-hojokin-61d6d7.html</link>
     <description>Tier B / 三重県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.iga.lg.jp/0000010787.html</description>
@@ -907,6 +880,33 @@
     <description>Tier B / 三重県 / subsidy / 上限 100万円 出典: https://www.city.ise.mie.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-e7c1191798</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>合併処理浄化槽設置費補助金</title>
+    <link>https://jpcite.com/programs/gappeishori-joukasou-setchi-hi-hojokin-62404d.html</link>
+    <description>Tier B / 三重県 / 三重県鈴鹿市 / subsidy / 上限 54万円 出典: https://www.city.suzuka.lg.jp/suido/1002309/1008776/1002335.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f765973b47</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>三重_多様な担い手確保事業</title>
+    <link>https://jpcite.com/programs/pref-24-001-mie-tayou-na-ninaite-kakuho-jigyou-680ddb.html</link>
+    <description>Tier B / 三重県 / subsidy / 上限 75万円 出典: https://www.pref.mie.lg.jp/NINAITE/HP/m0105900223.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f86e53e9c7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>三重県中小企業人材確保支援補助金</title>
+    <link>https://jpcite.com/programs/mieken-chuushoukigyou-jinzai-kakuho-shien-hojokin-31d485.html</link>
+    <description>Tier C / 三重県 / subsidy / 上限 100万円 出典: https://www.miesc.or.jp/support/subsidy</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f8d1e3c46c</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

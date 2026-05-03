@@ -57,7 +57,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -77,6 +77,7 @@ from jpintel_mcp.api.deps import (
     log_usage,
     require_metered_api_key,
 )
+from jpintel_mcp.api.middleware.cost_cap import record_cost_cap_spend
 
 logger = logging.getLogger("jpintel.api.ma_dd")
 
@@ -719,10 +720,18 @@ class DdBatchRequest(BaseModel):
 )
 def post_dd_batch(
     payload: DdBatchRequest,
+    request: Request,
     ctx: ApiContextDep,
     conn: DbDep,
     background_tasks: BackgroundTasks,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
+    _idempotency_key: Annotated[
+        str | None,
+        Header(
+            alias="Idempotency-Key",
+            description="Required for paid batch calls to prevent duplicate billing on retries.",
+        ),
+    ] = None,
 ) -> JSONResponse:
     require_metered_api_key(ctx, "dd_batch")
 
@@ -816,24 +825,29 @@ def post_dd_batch(
             with contextlib_suppress(sqlite3.Error):
                 am_conn.close()
 
-    # 5. Meter the full batch as one audit row with quantity=N. This preserves
-    #    ¥3 per houjin while making the final cap/idempotency check atomic.
-    log_usage(
-        conn,
-        ctx,
-        endpoint="am.dd_batch",
-        params={
-            "batch_size": n_ids,
-            "depth": payload.depth,
-            "houjin_bangous_sha256": hashlib.sha256(
-                ",".join(normalized).encode("utf-8")
-            ).hexdigest(),
-        },
-        result_count=n_ids,
-        background_tasks=background_tasks,
-        quantity=n_ids,
-        strict_metering=True,
-    )
+    # 5. Meter successful profiles only. Internal compose failures are returned
+    #    as row-level errors and are not billed.
+    successful_profiles = [p for p in profiles if not p.get("error")]
+    actual_units = len(successful_profiles)
+    actual_yen = actual_units * _UNIT_PRICE_YEN
+    if actual_units > 0:
+        log_usage(
+            conn,
+            ctx,
+            endpoint="am.dd_batch",
+            params={
+                "batch_size": n_ids,
+                "depth": payload.depth,
+                "houjin_bangous_sha256": hashlib.sha256(
+                    ",".join(normalized).encode("utf-8")
+                ).hexdigest(),
+            },
+            result_count=actual_units,
+            background_tasks=background_tasks,
+            quantity=actual_units,
+            strict_metering=True,
+        )
+    record_cost_cap_spend(request, actual_yen)
 
     # 6. NDJSON stream when batch is large. Each profile gets its own line +
     #    a final meta envelope. Customers running this through `jq -c` will
@@ -843,7 +857,9 @@ def post_dd_batch(
             "_meta": {
                 "batch_size": n_ids,
                 "depth": payload.depth,
-                "metered_yen": predicted_yen,
+                "metered_yen": actual_yen,
+                "billing_units": actual_units,
+                "failed_count": n_ids - actual_units,
                 "unit_price_yen": _UNIT_PRICE_YEN,
                 "corpus_snapshot_id": snapshot_id,
                 "corpus_checksum": checksum,
@@ -875,7 +891,9 @@ def post_dd_batch(
         "batch_size": n_ids,
         "depth": payload.depth,
         "profiles": profiles,
-        "metered_yen": predicted_yen,
+        "metered_yen": actual_yen,
+        "billing_units": actual_units,
+        "failed_count": n_ids - actual_units,
         "unit_price_yen": _UNIT_PRICE_YEN,
         "corpus_snapshot_id": snapshot_id,
         "corpus_checksum": checksum,
@@ -1632,10 +1650,18 @@ def _upload_bundle_to_r2(
 )
 def post_dd_export(
     payload: DdExportRequest,
+    request: Request,
     ctx: ApiContextDep,
     conn: DbDep,
     background_tasks: BackgroundTasks,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
+    _idempotency_key: Annotated[
+        str | None,
+        Header(
+            alias="Idempotency-Key",
+            description="Required for paid export calls to prevent duplicate billing on retries.",
+        ),
+    ] = None,
 ) -> JSONResponse:
     require_metered_api_key(ctx, "audit bundle export")
     if payload.format != "zip":
@@ -1757,6 +1783,7 @@ def post_dd_export(
         background_tasks=background_tasks,
         strict_metering=True,
     )
+    record_cost_cap_spend(request, predicted_yen)
 
     body = {
         "deal_id": payload.deal_id,

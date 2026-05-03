@@ -20,7 +20,7 @@ crawlers can index the framing.
 - [API reference (REST)](https://jpcite.com/docs/api-reference/)
 - [Agent-safe OpenAPI spec](https://api.jpcite.com/v1/openapi.agent.json): evidence/search subset for ChatGPT Custom GPTs and Claude tools. Excludes billing, webhook, OAuth, account-management, and operator endpoints.
 - [Full OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 171 paths for SDK generators and developer reference.
-- [MCP tools (93)](https://jpcite.com/docs/mcp-tools/):  core +  stdio tools, MCP protocol 2025-06-18
+- [MCP tools (93)](https://jpcite.com/docs/mcp-tools/): stdio MCP tools, protocol 2025-06-18
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Error handling](https://jpcite.com/docs/error_handling/)
 - [Exclusion rules](https://jpcite.com/docs/exclusions/)
@@ -91,7 +91,7 @@ Example natural-language prompts for MCP tools. ChatGPT Custom GPTs should call 
 - NTA invoice-registrant bulk: PDL v1.0 (Public Data License, redistribution OK with attribution)
 - gBizINFO corporate metadata: Japan Government Standard Terms of Use
 - Public-domain rows (gazette etc): public domain
-- Each row carries an explicit license via `am_source.license` (99.997% coverage)
+- License metadata is carried through `am_source.license` for 99.997% of source-linked rows; callers should treat missing license values as a known gap.
 - Full terms: https://jpcite.com/en/tos.html
 
 ## Structured data

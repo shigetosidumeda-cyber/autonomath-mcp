@@ -10,7 +10,6 @@ AGENT_SAFE_PATHS: tuple[str, ...] = (
     "/v1/evidence/packets/query",
     "/v1/programs/search",
     "/v1/programs/{unified_id}",
-    "/v1/programs/batch",
     "/v1/source_manifest/{program_id}",
     "/v1/meta/freshness",
     "/v1/citations/verify",
@@ -54,9 +53,7 @@ def _prune_components(schema: dict[str, Any]) -> None:
         if component is not None:
             _collect_schema_refs(component, needed)
     components["schemas"] = {
-        name: deepcopy(schemas[name])
-        for name in sorted(expanded)
-        if name in schemas
+        name: deepcopy(schemas[name]) for name in sorted(expanded) if name in schemas
     }
     if not components["schemas"]:
         components.pop("schemas", None)
@@ -67,19 +64,22 @@ def build_agent_openapi_schema(full_schema: dict[str, Any]) -> dict[str, Any]:
     schema = deepcopy(full_schema)
     all_paths = schema.get("paths") or {}
     schema["paths"] = {
-        path: deepcopy(all_paths[path])
-        for path in AGENT_SAFE_PATHS
-        if path in all_paths
+        path: deepcopy(all_paths[path]) for path in AGENT_SAFE_PATHS if path in all_paths
     }
     schema["security"] = []
     info = schema.setdefault("info", {})
     info["title"] = "jpcite Agent Evidence API"
     info["description"] = (
         "Agent-safe OpenAPI subset for evidence prefetch before answer "
-        "generation. It excludes billing, webhook, OAuth, account-management, "
-        "and operator endpoints. Anonymous callers can evaluate within the "
-        "published daily limit unless an operation marks X-API-Key as required; "
-        "callers that need higher volume send X-API-Key."
+        "generation. jpcite returns source-linked facts, source_url, "
+        "fetched timestamps, known gaps, and compatibility rules; it does not "
+        "call external LLM APIs and does not generate final legal/tax advice. "
+        "Optional token/context fields are input-context estimates based on "
+        "caller-supplied baselines, not provider billing guarantees. This spec "
+        "excludes billing, webhook, OAuth, account-management, and operator "
+        "endpoints. Anonymous callers can evaluate within the published daily "
+        "limit unless an operation marks X-API-Key as required; callers that "
+        "need higher volume send X-API-Key."
     )
     for path, path_item in schema["paths"].items():
         if not isinstance(path_item, dict):
@@ -99,21 +99,19 @@ def build_agent_openapi_schema(full_schema: dict[str, Any]) -> dict[str, Any]:
             if not isinstance(operation, dict):
                 continue
             auth_required = path == "/v1/citations/verify"
-            operation["security"] = [{"ApiKeyAuth": []}] if auth_required else [{"ApiKeyAuth": []}, {}]
+            operation["security"] = (
+                [{"ApiKeyAuth": []}] if auth_required else [{"ApiKeyAuth": []}, {}]
+            )
             operation["x-jpcite-agent-safe"] = True
             operation["x-jpcite-auth"] = (
-                "required_x_api_key"
-                if auth_required
-                else "optional_x_api_key_for_paid_volume"
+                "required_x_api_key" if auth_required else "optional_x_api_key_for_paid_volume"
             )
             responses = operation.get("responses")
             if isinstance(responses, dict):
                 auth_response = responses.get("401")
                 if isinstance(auth_response, dict):
                     if auth_required:
-                        auth_response["description"] = (
-                            "Authentication required. Send X-API-Key."
-                        )
+                        auth_response["description"] = "Authentication required. Send X-API-Key."
                     else:
                         auth_response["description"] = (
                             "Invalid authentication — returned only when an API "
