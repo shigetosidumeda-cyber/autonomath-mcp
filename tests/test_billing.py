@@ -271,7 +271,7 @@ def test_portal_unauthed_returns_401(client, stripe_env, monkeypatch):
 
     r = client.post(
         "/v1/billing/portal",
-        json={"customer_id": "cus_victim_1", "return_url": "https://example.test/back"},
+        json={"customer_id": "cus_victim_1", "return_url": "https://jpcite.com/dashboard"},
     )
     assert r.status_code == 401, r.text
     assert called == []
@@ -306,7 +306,7 @@ def test_portal_resolves_customer_from_authed_key(
             # in the body. The endpoint must IGNORE this and use the DB
             # `customer_id` keyed off the auth'd key hash instead.
             "customer_id": "cus_victim_other",
-            "return_url": "https://example.test/back",
+            "return_url": "https://jpcite.com/dashboard",
         },
     )
     assert r.status_code == 200, r.text
@@ -314,7 +314,30 @@ def test_portal_resolves_customer_from_authed_key(
     # The `paid_key` fixture issues with customer_id="cus_test_paid".
     assert captured[0]["customer"] == "cus_test_paid"
     assert captured[0]["customer"] != "cus_victim_other"
-    assert captured[0]["return_url"] == "https://example.test/back"
+    assert captured[0]["return_url"] == "https://jpcite.com/dashboard"
+
+
+def test_portal_rejects_offsite_return_url(client, stripe_env, paid_key, monkeypatch):
+    """Stripe must not redirect an authenticated customer to an attacker origin."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    called: list[dict] = []
+
+    def _should_not_be_called(**kwargs):  # pragma: no cover — regression only
+        called.append(kwargs)
+        raise AssertionError("Stripe portal created with offsite return_url")
+
+    monkeypatch.setattr(
+        billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called
+    )
+
+    r = client.post(
+        "/v1/billing/portal",
+        headers={"X-API-Key": paid_key},
+        json={"return_url": "https://example.test/back"},
+    )
+    assert r.status_code == 400, r.text
+    assert called == []
 
 
 def test_portal_rejects_child_api_key(
@@ -348,7 +371,7 @@ def test_portal_rejects_child_api_key(
     r = client.post(
         "/v1/billing/portal",
         headers={"X-API-Key": child_raw},
-        json={"return_url": "https://example.test/back"},
+        json={"return_url": "https://jpcite.com/dashboard"},
     )
     assert r.status_code == 403, r.text
     assert called == []

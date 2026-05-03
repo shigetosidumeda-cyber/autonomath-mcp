@@ -17,9 +17,14 @@
 
 # Machine-readable API discovery. Keep common guessed static paths alive for
 # LLM crawlers, Custom GPT importers, and SDK generators; the canonical OpenAPI
-# contract is served by the API process.
-/openapi/v1.json  https://api.jpcite.com/v1/openapi.json  302
-/v1/openapi.json  https://api.jpcite.com/v1/openapi.json  302
+# contract is also served by the API process at https://api.jpcite.com/v1/openapi.json.
+# The jpcite.com aliases rewrite to the checked-in static snapshot so AI importers
+# can still discover the contract if the API process is temporarily unavailable.
+/openapi/v1.json  /docs/openapi/v1.json  200
+/openapi/agent.json  /docs/openapi/agent.json  200
+/v1/openapi.json  /docs/openapi/v1.json  200
+/v1/openapi.agent.json  /docs/openapi/agent.json  200
+/server.json  /mcp-server.json  302
 
 # Legacy /getting-started.html → mkdocs Material doc.
 # Real onboarding lives at /docs/getting-started/. Internal links across
@@ -91,8 +96,7 @@
 /sign-up     /dashboard.html  302
 /register    /dashboard.html  302
 
-# Contact — there is no dedicated contact page; info@bookyou.net is the
-# operator inbox and /go.html is the only first-party interaction surface.
+# Contact aliases route users to the account/support entry point.
 /contact     /go.html  302
 /contact-us  /go.html  302
 /support     /go.html  302
@@ -125,21 +129,7 @@
 /_templates/*  /404  404
 
 # ─────────────────────────────────────────────────────────────────────────
-# 2026-04-29 SEO AI-feel reduction — retired SSG pages.
-#
-# The site was producing 12,629 generated SEO pages (programs S/A/B/C × cross
-# 47×10 × qa × industries). 84% of those landed in tier B/C territory whose
-# coverage was thin and read as AI-generated boilerplate. We collapsed the
-# static surface to ~2,000 high-signal pages:
-#   - programs/    : 10,953 → 1,413 (tier S+A only, B/C searchable via API)
-#   - cross/       : 470    → 47    (47 prefecture hubs, top 10 inline)
-#   - qa/          : 99     → 30    (curated high-volume queries)
-#   - industries/  : 1,049  → 22    (JSIC majors A..S + E-sme + L-sme + index)
-#   - prefectures/ : 48     → 48    (already correct, depth upgrade only)
-#
-# The redirect rules below catch inbound traffic to the retired URLs and
-# bounce it to the new surface. Per-program detail is always reachable via
-# the API at /v1/programs/{unified_id} regardless of static-page status.
+# Retired low-signal generated pages; redirect legacy inbound URLs to canonical hubs.
 # ─────────────────────────────────────────────────────────────────────────
 
 # Programs: tier B/C SSG pages were retired. Do not add a broad

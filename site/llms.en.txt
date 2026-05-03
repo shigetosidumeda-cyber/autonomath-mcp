@@ -18,7 +18,8 @@ crawlers can index the framing.
 - [Overview](https://jpcite.com/docs/)
 - [Getting started (5-minute quickstart)](https://jpcite.com/docs/getting-started/): install, API key, curl/Python/Node, Claude Desktop MCP config
 - [API reference (REST)](https://jpcite.com/docs/api-reference/)
-- [OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 180 paths for ChatGPT Custom GPTs, Claude tools, Stainless / Mintlify / Postman SDK generators.
+- [Agent-safe OpenAPI spec](https://api.jpcite.com/v1/openapi.agent.json): evidence/search subset for ChatGPT Custom GPTs and Claude tools. Excludes billing, webhook, OAuth, account-management, and operator endpoints.
+- [Full OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 180 paths for SDK generators and developer reference.
 - [MCP tools (93)](https://jpcite.com/docs/mcp-tools/):  core +  stdio tools, MCP protocol 2025-06-18
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Error handling](https://jpcite.com/docs/error_handling/)
@@ -33,7 +34,7 @@ Use jpcite as the evidence layer behind ChatGPT / Claude / Gemini: let the LLM w
 
 - [Context-token savings conditions](https://jpcite.com/qa/llm-evidence/context-savings.html): 2026-05-02 offline probe, 30 benchmark queries, Evidence Packets estimated at 338-1,352 tokens, median 566 tokens. This measures packet size, not guaranteed LLM bill reduction.
 - [Evidence Pre-fetch](https://jpcite.com/qa/llm-evidence/evidence-prefetch.html): how jpcite sits before answer generation and returns source_url, fetched_at, and corpus_snapshot_id metadata.
-- [Custom GPT Japanese subsidy API](https://jpcite.com/qa/llm-evidence/custom-gpt-japanese-subsidy-api.html): import `https://api.jpcite.com/v1/openapi.json`, then call jpcite Actions before answering Japanese public-program questions.
+- [Custom GPT Japanese subsidy API](https://jpcite.com/qa/llm-evidence/custom-gpt-japanese-subsidy-api.html): import `https://api.jpcite.com/v1/openapi.agent.json`, then call jpcite Actions before answering Japanese public-program questions.
 - REST comparison hook: pass `include_compression=true&source_tokens_basis=token_count&source_token_count=<tokens>` when the caller already knows the source-token baseline from their LLM UI or tokenizer. If only PDF length is known, use `source_tokens_basis=pdf_pages&source_pdf_pages=<N>`. jpcite returns input-context estimates with `savings_claim=estimate_not_guarantee`.
 - Agent decision rule: call jpcite before answering when the alternative is reading long PDFs, several official pages, or repeated public-program searches. If the caller supplies an input-token price, use `cost_savings_estimate.break_even_met` only as an input-context reference based on the caller-supplied baseline and current jpcite billing metadata. Skip jpcite for short general questions where no source-linked Japanese public-program evidence is needed.
 
@@ -86,7 +87,7 @@ Example natural-language prompts designed to map to jpcite routes — copy as-is
 ## Data licenses
 
 - e-Gov law corpus: CC-BY 4.0
-- NTA invoice-registrant bulk: PDL v1.0 (Public Domain License, redistribution OK with attribution)
+- NTA invoice-registrant bulk: PDL v1.0 (Public Data License, redistribution OK with attribution)
 - gBizINFO corporate metadata: Japan Government Standard Terms of Use
 - Public-domain rows (gazette etc): public domain
 - Published rows include license metadata where available

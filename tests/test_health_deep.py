@@ -14,8 +14,10 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from fastapi.testclient import TestClient
+if TYPE_CHECKING:
+    from fastapi.testclient import TestClient
 
 
 _REPO = Path(__file__).resolve().parent.parent
@@ -78,3 +80,26 @@ def test_health_deep_can_fail_http_for_unhealthy_monitor(
     resp = client.get("/v1/am/health/deep?force=true&fail_on_unhealthy=true")
     assert resp.status_code == 503
     assert resp.json()["status"] == "unhealthy"
+
+
+def test_health_deep_can_fail_http_for_degraded_monitor(
+    client: TestClient, monkeypatch
+):
+    """Fly can require exact status=ok, not merely non-unhealthy."""
+    from jpintel_mcp.api import autonomath as autonomath_mod
+
+    monkeypatch.setattr(
+        autonomath_mod,
+        "get_deep_health",
+        lambda force=False: {
+            "status": "degraded",
+            "version": "test",
+            "checks": {},
+            "timestamp_utc": "2026-05-01T00:00:00Z",
+            "evaluated_at_jst": "2026-05-01T09:00:00+09:00",
+        },
+    )
+
+    resp = client.get("/v1/am/health/deep?force=true&fail_on_degraded=true")
+    assert resp.status_code == 503
+    assert resp.json()["status"] == "degraded"

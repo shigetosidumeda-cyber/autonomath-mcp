@@ -6,11 +6,9 @@ The site has multiple sitemaps:
 - sitemap-programs.xml (per-program HTML, auto-generated)
 - sitemap-prefectures.xml / sitemap-cross.xml / sitemap-industries.xml (GEO pages)
 - sitemap-audiences.xml / sitemap-qa.xml / sitemap-pages.xml (content pages)
+- sitemap-structured.xml (standalone JSON-LD shards for AI / search discovery)
+- sitemap-enforcement.xml (administrative action detail pages)
 - docs/sitemap.xml (MkDocs output)
-
-site/structured/*.jsonld is deliberately *not* included in the master index:
-the standalone JSON-LD shard exceeds Cloudflare Pages limits and is governed
-by robots.txt separately.
 
 When sitemap-programs has > 50,000 URLs (sitemap.org spec) the program
 generator splits into shards `sitemap-programs-1.xml`, `sitemap-programs-2.xml`
@@ -55,6 +53,8 @@ KNOWN_BASENAMES = (
     "sitemap-industries.xml",
     "sitemap-pages.xml",
     "sitemap-qa.xml",
+    "sitemap-structured.xml",
+    "sitemap-enforcement.xml",
     "docs/sitemap.xml",
 )
 

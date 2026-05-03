@@ -403,6 +403,14 @@ _CHECKOUT_CANCEL_PATHS = frozenset({
     "/widget.html",
     "/en/widget.html",
 })
+_PORTAL_RETURN_PATHS = frozenset({
+    "/dashboard",
+    "/dashboard.html",
+    "/en/dashboard",
+    "/en/dashboard.html",
+    "/pricing.html",
+    "/en/pricing.html",
+})
 _CHECKOUT_GO_PREFIX = "/go/"
 _CHECKOUT_STATE_COOKIE = "jpcite_checkout_state"
 _CHECKOUT_STATE_MAX_AGE_SECONDS = 60 * 60
@@ -429,6 +437,18 @@ def _validate_checkout_redirect_url(raw_url: str, *, kind: str) -> str:
             status.HTTP_400_BAD_REQUEST,
             "success_url must include {CHECKOUT_SESSION_ID}",
         )
+    return raw_url
+
+
+def _validate_portal_return_url(raw_url: str) -> str:
+    """Allow Stripe Portal to return only to jpcite-owned account pages."""
+    parsed = urlparse(raw_url)
+    if parsed.scheme != "https" or parsed.username or parsed.password:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "invalid return_url")
+    if parsed.hostname not in _CHECKOUT_ALLOWED_HOSTS or parsed.port not in (None, 443):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "invalid return_url")
+    if parsed.path not in _PORTAL_RETURN_PATHS:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "invalid return_url")
     return raw_url
 
 
@@ -750,7 +770,7 @@ def create_portal(
     s = _stripe()
     portal_kwargs: dict[str, object] = {
         "customer": customer_id,
-        "return_url": payload.return_url,
+        "return_url": _validate_portal_return_url(payload.return_url),
     }
     if settings.stripe_billing_portal_config_id:
         portal_kwargs["configuration_id"] = settings.stripe_billing_portal_config_id

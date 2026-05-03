@@ -159,6 +159,14 @@ def _record_license_tuple(rec: dict[str, Any]) -> dict[str, Any]:
     # Track per-license publisher / url / fetched_at so attribution
     # reflects the WINNING license source, not a random earlier source.
     per_license_meta: dict[str, dict[str, Any]] = {}
+    top_level_license = rec.get("license")
+    if isinstance(top_level_license, str) and top_level_license:
+        licenses[top_level_license] = licenses.get(top_level_license, 0) + 1
+        meta = per_license_meta.setdefault(top_level_license, {})
+        if "url" not in meta and rec.get("source_url"):
+            meta["url"] = rec.get("source_url")
+        if "fetched_at" not in meta and rec.get("source_fetched_at"):
+            meta["fetched_at"] = rec.get("source_fetched_at")
     for f in facts:
         src = f.get("source") or {}
         lic = src.get("license")
@@ -177,6 +185,39 @@ def _record_license_tuple(rec: dict[str, Any]) -> dict[str, Any]:
             fetched_at = src.get("fetched_at")
         if source_url is None and src.get("url"):
             source_url = src.get("url")
+
+    source_health = rec.get("source_health")
+    if isinstance(source_health, dict):
+        lic = source_health.get("license")
+        if isinstance(lic, str) and lic:
+            licenses[lic] = licenses.get(lic, 0) + 1
+            meta = per_license_meta.setdefault(lic, {})
+            if "publisher" not in meta and source_health.get("domain"):
+                meta["publisher"] = source_health.get("domain")
+            if "url" not in meta and source_health.get("source_url"):
+                meta["url"] = source_health.get("source_url")
+            if "fetched_at" not in meta and source_health.get("source_fetched_at"):
+                meta["fetched_at"] = source_health.get("source_fetched_at")
+        if publisher is None and source_health.get("domain"):
+            publisher = source_health.get("domain")
+        if fetched_at is None and source_health.get("source_fetched_at"):
+            fetched_at = source_health.get("source_fetched_at")
+        if source_url is None and source_health.get("source_url"):
+            source_url = source_health.get("source_url")
+
+    for ref in rec.get("pdf_fact_refs") or []:
+        if not isinstance(ref, dict):
+            continue
+        lic = ref.get("license")
+        if isinstance(lic, str) and lic:
+            licenses[lic] = licenses.get(lic, 0) + 1
+            meta = per_license_meta.setdefault(lic, {})
+            if "publisher" not in meta and ref.get("domain"):
+                meta["publisher"] = ref.get("domain")
+            if "url" not in meta and ref.get("source_url"):
+                meta["url"] = ref.get("source_url")
+            if "fetched_at" not in meta and ref.get("last_verified"):
+                meta["fetched_at"] = ref.get("last_verified")
 
     chosen: str = "unknown"
     if licenses:
@@ -209,7 +250,29 @@ def _fact_is_redistributable(fact: Any) -> bool:
         return False
     src = fact.get("source") or {}
     license_name = src.get("license")
+    return _license_is_redistributable(license_name)
+
+
+def _license_is_redistributable(license_name: Any) -> bool:
     return isinstance(license_name, str) and license_name in REDISTRIBUTABLE_LICENSES
+
+
+def _embedded_license_is_blocked(obj: Any) -> bool:
+    """True when a nested payload explicitly carries a blocked license."""
+    if isinstance(obj, dict):
+        license_name = obj.get("license")
+        if isinstance(license_name, str) and not _license_is_redistributable(license_name):
+            return True
+        license_set = obj.get("license_set")
+        if isinstance(license_set, list) and any(
+            isinstance(v, str) and not _license_is_redistributable(v)
+            for v in license_set
+        ):
+            return True
+        return any(_embedded_license_is_blocked(v) for v in obj.values())
+    if isinstance(obj, list):
+        return any(_embedded_license_is_blocked(v) for v in obj)
+    return False
 
 
 def _redistributable_facts(rec: dict[str, Any]) -> list[dict[str, Any]]:
@@ -221,7 +284,7 @@ def _pdf_fact_ref_is_redistributable(ref: Any) -> bool:
     if not isinstance(ref, dict):
         return False
     license_name = ref.get("license")
-    return isinstance(license_name, str) and license_name in REDISTRIBUTABLE_LICENSES
+    return _license_is_redistributable(license_name)
 
 
 def _redistributable_pdf_fact_refs(rec: dict[str, Any]) -> list[dict[str, Any]]:
@@ -286,10 +349,18 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
         proxy = proxy_by_id.get(eid) or {}
         ann = annotate_attribution(proxy)
         out = dict(r)
+        record_had_blocked_payload = False
         if "facts" in out:
+            original_facts = r.get("facts") or []
             out["facts"] = _redistributable_facts(r)
             if not out["facts"]:
                 continue
+            blocked_facts = len(original_facts) - len(out["facts"])
+            if blocked_facts > 0:
+                record_had_blocked_payload = True
+                gate_summary["blocked_facts_count"] = (
+                    gate_summary.get("blocked_facts_count", 0) + blocked_facts
+                )
             total_facts = r.get("total_facts") or len(r.get("facts") or [])
             try:
                 denom = max(1, int(total_facts))
@@ -301,11 +372,31 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
             out["pdf_fact_refs"] = _redistributable_pdf_fact_refs(r)
             blocked_pdf_refs = len(original_pdf_refs) - len(out["pdf_fact_refs"])
             if blocked_pdf_refs > 0:
+                record_had_blocked_payload = True
                 gate_summary["blocked_pdf_fact_refs_count"] = (
                     gate_summary.get("blocked_pdf_fact_refs_count", 0) + blocked_pdf_refs
                 )
             if not out["pdf_fact_refs"]:
                 out.pop("pdf_fact_refs", None)
+        if out.get("source_health") and not _license_is_redistributable(
+            (out.get("source_health") or {}).get("license")
+        ):
+            out.pop("source_health", None)
+            gate_summary["blocked_source_health_count"] = (
+                gate_summary.get("blocked_source_health_count", 0) + 1
+            )
+        derived_payload_blocked = (
+            record_had_blocked_payload
+            or _embedded_license_is_blocked(out.get("precomputed"))
+            or _embedded_license_is_blocked(out.get("recent_changes"))
+        )
+        if derived_payload_blocked:
+            for key in ("precomputed", "short_summary", "recent_changes"):
+                if key in out:
+                    out.pop(key, None)
+                    gate_summary[f"blocked_{key}_count"] = (
+                        gate_summary.get(f"blocked_{key}_count", 0) + 1
+                    )
         out["_attribution"] = ann.get("_attribution")
         out["license"] = proxy.get("license")
         new_records.append(out)
@@ -333,6 +424,8 @@ def _gate_evidence_envelope(envelope: dict[str, Any]) -> tuple[dict[str, Any], d
         gated["records"] = _allowed
         gate_summary["allowed_count"] = len(_allowed)
         gate_summary["blocked_count"] = gate_summary.get("blocked_count", 0) + len(_blocked)
+    EvidencePacketComposer._attach_agent_recommendation(gated)
+    EvidencePacketComposer._attach_evidence_value(gated)
     return gated, gate_summary
 
 
@@ -358,6 +451,8 @@ def _dispatch_format(
         gate_summary["allowed_count"] = len(allowed_records)
         gate_summary["blocked_count"] = gate_summary.get("blocked_count", 0) + len(blocked_records)
         envelope["license_gate"] = gate_summary
+        EvidencePacketComposer._attach_agent_recommendation(envelope)
+        EvidencePacketComposer._attach_evidence_value(envelope)
 
     headers = {
         "X-License-Gate-Allowed": str(gate_summary["allowed_count"]),

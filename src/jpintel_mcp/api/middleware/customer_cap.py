@@ -477,7 +477,7 @@ class CustomerCapMiddleware(BaseHTTPMiddleware):
             path.startswith("/v1/me")
             or path.startswith("/v1/session")
             or path.startswith("/v1/billing")
-            or path in {"/healthz", "/readyz", "/v1/openapi.json"}
+            or path in {"/healthz", "/readyz", "/v1/openapi.json", "/v1/openapi.agent.json"}
         ):
             return await call_next(request)
 

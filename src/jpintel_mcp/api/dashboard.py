@@ -169,12 +169,18 @@ class ToolRecommendationResponse(BaseModel):
 def _fetch_usage_series(
     conn: Any, key_hash: str, days: int
 ) -> list[UsageDay]:
-    """Return a contiguous oldest-first series of (date, calls)."""
+    """Return a contiguous oldest-first series of billed usage units."""
     today = datetime.now(UTC).date()
     start = today - timedelta(days=days - 1)
     start_iso = start.isoformat()
     rows = conn.execute(
-        """SELECT substr(ts, 1, 10) AS d, COUNT(*) AS n
+        """SELECT substr(ts, 1, 10) AS d,
+                  COALESCE(SUM(
+                      CASE
+                        WHEN metered = 1 AND status < 400 THEN COALESCE(quantity, 1)
+                        ELSE 0
+                      END
+                  ), 0) AS n
              FROM usage_events
             WHERE key_hash = ? AND ts >= ?
          GROUP BY d
@@ -198,9 +204,9 @@ def _month_start_iso_utc() -> str:
 
 
 def _fetch_mtd_usage(conn: Any, key_hash: str) -> int:
-    """Count metered+successful usage_events in the current calendar month."""
+    """Count metered+successful billed units in the current calendar month."""
     (count,) = conn.execute(
-        """SELECT COUNT(*) FROM usage_events
+        """SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events
             WHERE key_hash = ? AND ts >= ?
               AND metered = 1 AND status < 400""",
         (key_hash, _month_start_iso_utc()),
@@ -304,11 +310,16 @@ def get_usage_by_tool(
     start = (datetime.now(UTC).date() - timedelta(days=days - 1)).isoformat()
     rows = conn.execute(
         """SELECT endpoint, COUNT(*) AS n,
-                  SUM(CASE WHEN metered=1 AND status<400 THEN 1 ELSE 0 END) AS billable
+                  SUM(
+                      CASE
+                        WHEN metered=1 AND status<400 THEN COALESCE(quantity, 1)
+                        ELSE 0
+                      END
+                  ) AS billable
              FROM usage_events
             WHERE key_hash = ? AND ts >= ?
          GROUP BY endpoint
-         ORDER BY n DESC
+         ORDER BY billable DESC, n DESC
             LIMIT ?""",
         (key_hash, start, limit),
     ).fetchall()

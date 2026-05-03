@@ -66,12 +66,16 @@ indexes as a breadcrumb-class event with logger tag set to
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import Response
 from starlette.routing import Match
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from starlette.requests import Request
+    from starlette.responses import Response
 
 # Logger name MUST match the Sentry rule filter
 # (`monitoring/sentry_alert_rules.yml` rule id `deprecated_endpoint_hit`).
@@ -87,6 +91,7 @@ _ALWAYS_BYPASS_PATHS = frozenset(
         "/status",
         "/robots.txt",
         "/v1/openapi.json",
+        "/v1/openapi.agent.json",
         "/v1/am/health/deep",
     }
 )

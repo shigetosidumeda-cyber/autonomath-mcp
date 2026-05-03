@@ -52,11 +52,11 @@
 - **検索除外プール** — 検索インデックスは tier S/A/B/C のみ収録。tier C 未満は二次レビュー後に編入する運用
 - **法令条文** — e-Gov 全文ロード継続中 (本文 154 件 + メタデータ 9,484 件、resolver で全件にリーチ可能)
 
-## 6. 保証する / しない
+## 6. 提供する運用目標 / 保証しないこと
 
-### 保証する
+### 提供する運用目標
 
-- **API 稼働率** — [sla.md](./sla.md) 記載の通り
+- **API 稼働率** — [sla.md](./sla.md) 記載の運用目標。返金・損害賠償・サービスクレジットを保証するものではありません
 - **出典 URL 返却** — `source_url` が登録済みのレコードではレスポンスに含める
 - **¥3/req 課金の正確性**
 
@@ -69,5 +69,5 @@
 
 - [pricing.md](./pricing.md) — 料金
 - [exclusions.md](./exclusions.md) — 排他ルール
-- [sla.md](./sla.md) — 稼働率コミットメント
+- [sla.md](./sla.md) — 稼働目標
 - [compliance/landing_disclaimer.md](compliance/landing_disclaimer.md) — 法的免責

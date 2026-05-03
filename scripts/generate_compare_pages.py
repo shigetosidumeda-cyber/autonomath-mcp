@@ -368,7 +368,7 @@ PAGES["nta-invoice"] = {
         "<strong>完全無料</strong>(国税庁公式)。当社は ¥3/req 完全従量。",
         "<strong>登録番号約 4 百万件の網羅性</strong>(全件)。"
         "当社は delta 13,801 件で、フル取込は月次予定。網羅性では国税庁公表サイトが圧倒。",
-        "<strong>PDL v1.0</strong>(Public Domain License) で再配布が極めて自由。"
+        "<strong>PDL v1.0</strong>(Public Data License) で出典明記付きの再配布が可能。"
         "当社の bulk 取込もこの規約のおかげで成立。",
     ],
     "migration": (
@@ -505,7 +505,7 @@ def render_jsonld(slug: str, page: dict) -> str:
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Bookyou株式会社",
-        "alternateName": ["jpcite", "税務会計AI"],
+        "alternateName": ["jpcite"],
         "url": f"{SITE_BASE}/",
         "identifier": "T8010001213708",
         "address": {
@@ -732,7 +732,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
       <a href="/tos.html">利用規約</a>
       <a href="/privacy.html">プライバシー</a>
       <a href="/tokushoho.html">特定商取引法</a>
-      <a href="https://github.com/shigetosidumeda-cyber/jpintel-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+      <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
       <a href="mailto:info@bookyou.net">info@bookyou.net</a>
     </nav>
     <p class="footer-entity">運営: Bookyou株式会社 (T8010001213708) · 代表取締役 梅田茂利 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

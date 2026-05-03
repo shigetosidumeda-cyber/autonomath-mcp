@@ -18,7 +18,9 @@ other, even accidentally.
         MUST contain: am_entities, am_entity_facts, am_amount_condition,
                       am_relation, am_authority, am_region, am_tax_rule,
                       am_loan_product, am_acceptance_stat,
-                      am_application_round, am_insurance_mutual,
+                      am_application_round, am_source, am_entity_source,
+                      jpi_programs, am_alias, am_amendment_diff,
+                      am_program_summary, am_insurance_mutual,
                       am_entities_fts, am_entities_vec
         MUST NOT contain: programs
 
@@ -87,6 +89,12 @@ JPINTEL_REQUIRED_MIGRATIONS = {
 AM_REQUIRED = {
     "am_entities",
     "am_entity_facts",
+    "am_source",
+    "am_entity_source",
+    "jpi_programs",
+    "am_alias",
+    "am_amendment_diff",
+    "am_program_summary",
     "am_amount_condition",
     "am_relation",
     "am_authority",
@@ -104,7 +112,30 @@ AM_REQUIRED = {
 # autonomath uses `jpi_programs` for the mirrored copy).
 AM_FORBIDDEN = {"programs"}
 AM_REQUIRED_COLUMNS = {
-    "jpi_programs": {"subsidy_rate_text"},
+    "am_alias": {"canonical_id", "alias", "alias_kind", "language"},
+    "am_amendment_diff": {"entity_id", "field_name", "detected_at"},
+    "am_entity_facts": {
+        "entity_id",
+        "field_name",
+        "field_kind",
+        "field_value_text",
+        "field_value_json",
+        "field_value_numeric",
+        "source_id",
+        "confirming_source_count",
+    },
+    "am_entity_source": {"entity_id", "source_id", "role"},
+    "am_program_summary": {"entity_id", "summary_50", "summary_200", "token_50_est"},
+    "am_source": {
+        "source_url",
+        "source_type",
+        "domain",
+        "content_hash",
+        "first_seen",
+        "last_verified",
+        "license",
+    },
+    "jpi_programs": {"unified_id", "primary_name", "source_url", "source_fetched_at", "subsidy_rate_text"},
 }
 AM_REQUIRED_VIEWS = {
     "am_unified_rule",
@@ -113,6 +144,10 @@ AM_REQUIRED_VIEWS = {
     "v_program_source_manifest",
 }
 AM_REQUIRED_MIGRATIONS = {
+    "049_provenance_strengthen.sql",
+    "075_am_amendment_diff.sql",
+    "090_law_article_body_en.sql",
+    "115_source_manifest_view.sql",
     "121_jpi_programs_subsidy_rate_text_column.sql",
 }
 

@@ -2,11 +2,24 @@
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-STATIC_DIR = REPO_ROOT / "data" / "autonomath_static"
+
+
+def _resolve_static_dir() -> Path:
+    configured = os.environ.get("AUTONOMATH_STATIC_DIR")
+    if configured:
+        return Path(configured)
+    volume_static = Path("/data/autonomath_static")
+    if volume_static.exists():
+        return volume_static
+    return REPO_ROOT / "data" / "autonomath_static"
+
+
+STATIC_DIR = _resolve_static_dir()
 EXAMPLE_DIR = STATIC_DIR / "example_profiles"
 
 _STATIC_RESOURCES = {

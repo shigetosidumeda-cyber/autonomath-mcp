@@ -22,6 +22,7 @@ Timezone notes (CLAUDE.md "Common gotchas"):
 from __future__ import annotations
 
 import sqlite3
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -36,7 +37,7 @@ if TYPE_CHECKING:
 
 
 def test_rest_anonymous_usage_returns_3_limit_and_jst_reset(
-    client: "TestClient",
+    client: TestClient,
 ) -> None:
     """No X-API-Key → tier=anonymous, limit=3, used=0, reset_at JST."""
     r = client.get("/v1/usage", headers={"x-forwarded-for": "203.0.113.50"})
@@ -63,7 +64,7 @@ def test_rest_anonymous_usage_returns_3_limit_and_jst_reset(
 
 
 def test_rest_anonymous_usage_does_not_consume_quota(
-    client: "TestClient", seeded_db: "Path"
+    client: TestClient, seeded_db: Path
 ) -> None:
     """The probe must be free — calling it never increments anon_rate_limit.
 
@@ -85,7 +86,7 @@ def test_rest_anonymous_usage_does_not_consume_quota(
 
 
 def test_rest_anonymous_usage_reflects_existing_count(
-    client: "TestClient", seeded_db: "Path"
+    client: TestClient, seeded_db: Path
 ) -> None:
     """If the IP+fingerprint hash already has N calls today, the
     probe MUST report used=N / remaining=3-N.
@@ -104,7 +105,7 @@ def test_rest_anonymous_usage_reflects_existing_count(
 
 
 def test_rest_paid_usage_returns_paid_tier_and_utc_reset(
-    client: "TestClient", paid_key: str
+    client: TestClient, paid_key: str
 ) -> None:
     """X-API-Key (paid tier) → tier=paid, limit=null, reset_at UTC."""
     r = client.get("/v1/usage", headers={"X-API-Key": paid_key})
@@ -121,13 +122,47 @@ def test_rest_paid_usage_returns_paid_tier_and_utc_reset(
     assert body["upgrade_url"] is None
 
 
+def test_rest_paid_usage_counts_billed_quantity_units(
+    client: TestClient, seeded_db: Path, paid_key: str
+) -> None:
+    """Batch endpoints write one audit row with quantity=N; /v1/usage must
+    show billed units, not raw ledger rows.
+    """
+    from jpintel_mcp.api.deps import hash_api_key
+
+    key_hash = hash_api_key(paid_key)
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.execute(
+            "INSERT INTO usage_events(key_hash, endpoint, ts, status, metered, quantity) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                key_hash,
+                "programs.batch_get",
+                datetime.now(UTC).isoformat(),
+                200,
+                1,
+                7,
+            ),
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    r = client.get("/v1/usage", headers={"X-API-Key": paid_key})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["tier"] == "paid"
+    assert body["used"] == 7
+
+
 # ---------------------------------------------------------------------------
 # MCP tool: get_usage_status
 # ---------------------------------------------------------------------------
 
 
 def test_mcp_get_usage_status_anonymous_returns_ceiling_and_jst_note(
-    client: "TestClient",
+    client: TestClient,
 ) -> None:
     """No api_key → ceiling + honest "MCP cannot resolve IP" note.
 
@@ -146,7 +181,7 @@ def test_mcp_get_usage_status_anonymous_returns_ceiling_and_jst_note(
 
 
 def test_mcp_get_usage_status_unknown_key_surfaces_error_envelope(
-    client: "TestClient",
+    client: TestClient,
 ) -> None:
     """An unrecognised api_key returns a structured error envelope.
 
@@ -161,7 +196,7 @@ def test_mcp_get_usage_status_unknown_key_surfaces_error_envelope(
 
 
 def test_mcp_get_usage_status_paid_key_returns_paid_tier(
-    client: "TestClient", paid_key: str
+    client: TestClient, paid_key: str
 ) -> None:
     """Paid api_key → tier=paid, used=0, UTC reset boundary."""
     from jpintel_mcp.mcp.server import get_usage_status

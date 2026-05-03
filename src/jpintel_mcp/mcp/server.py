@@ -33,7 +33,9 @@ from jpintel_mcp.api.vocab import (
 )
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.session import connect, init_db
-from jpintel_mcp.mcp._constants import PrefectureParam
+from jpintel_mcp.mcp._constants import (
+    PrefectureParam,  # noqa: TC001 (MCP tool schema introspection)
+)
 from jpintel_mcp.mcp._error_helpers import safe_internal_error_payload
 from jpintel_mcp.mcp._http_fallback import (  # === S3 HTTP FALLBACK (uvx empty-DB fix) ===
     detect_fallback_mode,
@@ -1458,7 +1460,7 @@ def get_program(
         ),
     ] = "default",
 ) -> dict[str, Any]:
-    """DETAIL: 1 制度の完全詳細を unified_id で取得する (fetch one 補助金 / 助成金 / 融資 / 税制 / 認定 program's full detail). Returns application window, required documents, exclusion notes, statistics (J_*), plus source_url + fetched_at lineage. Jグランツ does not expose per-program detail via API; this is the structured equivalent.
+    """DETAIL: 1 制度の収録済みフィールドの詳細を unified_id で取得する (fetch one 補助金 / 助成金 / 融資 / 税制 / 認定 program detail). Returns application window, required documents, exclusion notes, statistics (J_*), plus source_url + fetched_at lineage.
 
     Use when the user names a specific program ("事業再構築補助金の要件を教えて") or
     after search_programs returns a candidate. For 2-50 programs at once, use
@@ -2126,10 +2128,10 @@ def get_usage_status(
     from datetime import timedelta
     from datetime import timezone as _tz
 
-    _JST = _tz(timedelta(hours=9))
+    jst = _tz(timedelta(hours=9))
 
     def _jst_next_day_iso() -> str:
-        now = datetime.now(_JST)
+        now = datetime.now(jst)
         nxt = (
             now.replace(hour=0, minute=0, second=0, microsecond=0)
             + timedelta(days=1)
@@ -3215,7 +3217,7 @@ def get_case_study(
         Field(description="case_id from search_case_studies (e.g. 'mirasapo_case_118')."),
     ],
 ) -> dict[str, Any]:
-    """DETAIL: 採択事例 1 件の完全詳細を取得する (fetch one case study). Returns full record: recipient profile (company_name, 法人番号, prefecture, industry_jsic, employees, founded_year, capital_yen), case_title / case_summary, programs_used (list of 受給した補助金), subsidy amount, outcomes / patterns (JSON), source_url + publication_date.
+    """DETAIL: 採択事例 1 件の収録済みフィールドの詳細を取得する (fetch one case study). Returns recipient profile (company_name, 法人番号, prefecture, industry_jsic, employees, founded_year, capital_yen), case_title / case_summary, programs_used (list of 受給した補助金), subsidy amount, outcomes / patterns (JSON), source_url + publication_date.
 
     WHEN NOT:
       - `search_case_studies` instead if you don't have a case_id yet.

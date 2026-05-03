@@ -221,7 +221,7 @@ class CostCapMiddleware(BaseHTTPMiddleware):
 
         path = request.url.path
         # Health + meta probes never bill, never cap.
-        if path in {"/healthz", "/readyz", "/v1/openapi.json"}:
+        if path in {"/healthz", "/readyz", "/v1/openapi.json", "/v1/openapi.agent.json"}:
             return await call_next(request)
 
         cap_yen = _parse_cap_header(request.headers.get("x-cost-cap-jpy"))

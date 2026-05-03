@@ -19,7 +19,11 @@ from jpintel_mcp.api._response_models import (
     PrecomputedIntelligenceBundle,
 )
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
-from jpintel_mcp.api.evidence import _get_composer, _validate_compression_baseline
+from jpintel_mcp.api.evidence import (
+    _gate_evidence_envelope,
+    _get_composer,
+    _validate_compression_baseline,
+)
 from jpintel_mcp.services.evidence_packet import (
     MAX_RECORDS_PER_PACKET,
     EvidencePacketComposer,
@@ -451,6 +455,7 @@ def get_precomputed_intelligence_query(
         source_pdf_pages=source_pdf_pages,
         source_token_count=source_token_count,
     )
+    envelope, _gate_summary = _gate_evidence_envelope(envelope)
     envelope = _annotate_precomputed_bundle(envelope)
 
     latency_ms = int((time.perf_counter() - _t0) * 1000)

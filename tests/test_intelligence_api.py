@@ -26,6 +26,18 @@ def _build_intelligence_db(path: Path) -> None:
                 last_verified TEXT,
                 license TEXT
             );
+            CREATE TABLE am_entity_facts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                entity_id TEXT NOT NULL,
+                field_name TEXT NOT NULL,
+                field_value_text TEXT,
+                field_value_json TEXT,
+                field_value_numeric REAL,
+                field_kind TEXT NOT NULL DEFAULT 'text',
+                source_id INTEGER REFERENCES am_source(id),
+                confirming_source_count INTEGER DEFAULT 1,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
             CREATE TABLE jpi_programs (
                 unified_id TEXT PRIMARY KEY,
                 primary_name TEXT NOT NULL,
@@ -338,6 +350,62 @@ def test_evidence_value_block_present_on_precomputed_bundle(
     assert ev["precomputed_records"] == 1
     assert ev["web_search_performed_by_jpcite"] is False
     assert ev["request_time_llm_call_performed"] is False
+
+
+def test_precomputed_query_filters_proprietary_facts_before_recommendation(
+    intelligence_client: TestClient,
+) -> None:
+    from jpintel_mcp.config import settings
+
+    db_path = settings.autonomath_db_path
+    con = sqlite3.connect(db_path)
+    try:
+        cur = con.execute(
+            "INSERT INTO am_source(source_url, source_type, domain, content_hash, "
+            "first_seen, last_verified, license) VALUES (?,?,?,?,?,?,?)",
+            (
+                "https://example.com/private-intelligence",
+                "secondary",
+                "example.com",
+                "sha256:private-intelligence",
+                "2026-05-03T00:00:00",
+                "2026-05-03T00:00:00",
+                "proprietary",
+            ),
+        )
+        source_id = cur.lastrowid
+        con.execute(
+            "INSERT INTO am_entity_facts(entity_id, field_name, field_value_text, "
+            "field_kind, source_id, confirming_source_count) VALUES (?,?,?,?,?,?)",
+            (
+                "program:pci:1",
+                "private_note",
+                "must not export",
+                "text",
+                source_id,
+                1,
+            ),
+        )
+        con.commit()
+    finally:
+        con.close()
+
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={"q": "省力化", "limit": 1, "include_facts": "true"},
+    )
+
+    assert response.status_code == 200
+    assert "must not export" not in response.text
+    body = response.json()
+    assert body["records"] == []
+    assert body["license_gate"]["allowed_count"] == 0
+    assert body["license_gate"]["blocked_count"] == 1
+    assert body["records_returned"] == 0
+    assert body["evidence_value"]["records_returned"] == 0
+    recommendation = body["agent_recommendation"]
+    assert recommendation["recommend_to_user"] is False
+    assert recommendation["recommend_for_evidence"] is False
 
 
 def test_pdf_pages_baseline_returns_break_even_and_reduction(

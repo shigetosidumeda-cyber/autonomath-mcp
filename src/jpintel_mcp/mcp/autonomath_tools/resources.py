@@ -64,7 +64,14 @@ _DB_PATH = Path(_os.environ.get(
 ))
 
 # Static-file roots (8 taxonomies + 5 example profiles + optional templates).
-_STATIC_DIR = _REPO_ROOT / "data" / "autonomath_static"
+_STATIC_DIR = Path(
+    _os.environ.get(
+        "AUTONOMATH_STATIC_DIR",
+        "/data/autonomath_static"
+        if Path("/data/autonomath_static").exists()
+        else str(_REPO_ROOT / "data" / "autonomath_static"),
+    )
+)
 _EXAMPLE_DIR = _STATIC_DIR / "example_profiles"
 _TEMPLATE_DIR = _STATIC_DIR / "templates"
 

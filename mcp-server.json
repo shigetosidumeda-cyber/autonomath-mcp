@@ -79,27 +79,27 @@
     },
     {
       "name": "get_bid",
-      "description": "入札案件 1 件の完全詳細 (発注機関 / 品目 / 仕様書 / 参加資格 / 入札方式 / 予定価格 / 落札結果) を取得"
+      "description": "入札案件 1 件の収録済みフィールドの詳細 (発注機関 / 品目 / 仕様書 / 参加資格 / 入札方式 / 予定価格 / 落札結果) を取得"
     },
     {
       "name": "get_case_study",
-      "description": "採択事例 1 件の完全詳細を取得 (applicant attributes + project scope + 受給額 + source_url + publication_date)"
+      "description": "採択事例 1 件の収録済みフィールドの詳細を取得 (applicant attributes + project scope + 受給額 + source_url + publication_date)"
     },
     {
       "name": "get_court_decision",
-      "description": "判例 1 件の完全詳細 (当事者・事実関係・争点・判示事項・主文・参照条文・下級審履歴) を取得"
+      "description": "判例 1 件の収録済みフィールドの詳細 (当事者・事実関係・争点・判示事項・主文・参照条文・下級審履歴) を取得"
     },
     {
       "name": "get_enforcement_case",
-      "description": "会計検査院 事例 1 件の完全詳細を取得 (event_type / ministry / bureau / recipient_name / occurred_fiscal_years / amount_improper_grant_yen / reason_excerpt / legal_basis / source_url)"
+      "description": "会計検査院 事例 1 件の収録済みフィールドの詳細を取得 (event_type / ministry / bureau / recipient_name / occurred_fiscal_years / amount_improper_grant_yen / reason_excerpt / legal_basis / source_url)"
     },
     {
       "name": "get_law",
-      "description": "law_id を指定して法令本文 (目次 + 全条文 + 附則) を完全取得。search_laws / find_precedents_by_statute / trace_program_to_law で返る law_id の詳細展開用"
+      "description": "law_id を指定して収録済み法令本文 (目次 + 条文 + 附則) を可能な範囲で取得。search_laws / find_precedents_by_statute / trace_program_to_law で返る law_id の詳細展開用"
     },
     {
       "name": "get_loan_program",
-      "description": "融資プログラム 1 件の完全詳細を取得 (3-axis 担保・保証人 decomposition + 金利 base/special + loan_period + grace_period + target_conditions)"
+      "description": "融資プログラム 1 件の収録済みフィールドの詳細を取得 (3-axis 担保・保証人 decomposition + 金利 base/special + loan_period + grace_period + target_conditions)"
     },
     {
       "name": "get_meta",
@@ -107,11 +107,11 @@
     },
     {
       "name": "get_program",
-      "description": "補助金 1 件の完全詳細を unified_id で取得 (full enriched program detail: A-J dimensions, application_window, documents, exclusions, source_mentions + lineage)"
+      "description": "補助金 1 件の収録済みフィールドの詳細を unified_id で取得 (enriched program detail: A-J dimensions, application_window, documents, exclusions, source_mentions + lineage)"
     },
     {
       "name": "get_tax_rule",
-      "description": "税務 ruleset 1 件の完全詳細 (適用要件 / 経過措置 / 帳簿要件 / 例外規定 / 関連 Q&A) を取得"
+      "description": "税務 ruleset 1 件の収録済みフィールドの詳細 (適用要件 / 経過措置 / 帳簿要件 / 例外規定 / 関連 Q&A) を取得"
     },
     {
       "name": "get_usage_status",
@@ -147,7 +147,7 @@
     },
     {
       "name": "search_enforcement_cases",
-      "description": "会計検査院 不当・不正受給事例を横断検索 — 1,185 cases of improper 補助金 handling (不当請求 / 目的外使用 / 重複受給 / 資格不備). For due-diligence vetting (vendor / counterparty / 取引先 名), recipient-name substring match across reason_excerpt / source_title. Spread across METI / MAFF / 国交省 / 厚労省; not queryable elsewhere. Typical args: entity_name (法人名 / 受給者名 部分一致), authority='METI' / 'MAFF' / '国交省' / '厚労省', event_type='improper_grant' / 'purpose_violation' / 'duplicate_receipt' / 'eligibility_defect'."
+      "description": "会計検査院 不当・不正受給事例を横断検索 — 1,185 cases of improper 補助金 handling (不当請求 / 目的外使用 / 重複受給 / 資格不備). For due-diligence vetting (vendor / counterparty / 取引先 名), recipient-name substring match across reason_excerpt / source_title. Typical args: entity_name (法人名 / 受給者名 部分一致), authority='METI' / 'MAFF' / '国交省' / '厚労省', event_type='improper_grant' / 'purpose_violation' / 'duplicate_receipt' / 'eligibility_defect'."
     },
     {
       "name": "search_invoice_registrants",
@@ -470,7 +470,7 @@
         "ja-JP"
       ],
       "free_tier_daily_calls_per_ip": 3,
-      "primary_source_coverage_pct": 99,
+      "primary_source_coverage_note": "Most public searchable rows include source_url and fetched_at; current counts vary by dataset.",
       "mcp_protocol_version": "2025-06-18"
     }
   }

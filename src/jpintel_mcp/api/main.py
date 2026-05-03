@@ -102,6 +102,7 @@ from jpintel_mcp.api.middleware import (
     SecurityHeadersMiddleware,
     StrictQueryMiddleware,
 )
+from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.prescreen import router as prescreen_router
 from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
@@ -1315,6 +1316,7 @@ def create_app() -> FastAPI:
             extras.setdefault(
                 "suggested_paths",
                 [
+                    "/v1/openapi.agent.json",
                     "/v1/openapi.json",
                     "/v1/programs/search",
                     "/v1/meta",
@@ -1347,6 +1349,10 @@ def create_app() -> FastAPI:
     @app.get("/openapi.json", include_in_schema=False)
     async def _openapi_legacy_redirect() -> RedirectResponse:
         return RedirectResponse(url="/v1/openapi.json", status_code=308)
+
+    @app.get("/v1/openapi.agent.json", include_in_schema=False)
+    def _openapi_agent() -> JSONResponse:
+        return JSONResponse(content=build_agent_openapi_schema(app.openapi()))
 
     # Router wiring. AnonIpLimitDep is attached only to routers whose
     # routes accept anonymous callers and should count toward the per-IP

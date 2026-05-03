@@ -22,6 +22,7 @@ Constraints honoured by these tests:
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import sqlite3
 import zipfile
@@ -208,6 +209,12 @@ def test_bulk_evaluate_commit_bills_and_returns_zip(
     assert r.headers.get("content-type", "").startswith("application/zip")
     assert r.headers.get("X-Row-Count") == "5"
     assert r.headers.get("X-Billed-Yen") == "15"
+    expected_name_hash = hashlib.sha256(b"test-idem-1").hexdigest()[:16]
+    assert (
+        r.headers.get("content-disposition")
+        == f"attachment; filename=bulk_evaluate_{expected_name_hash}.zip"
+    )
+    assert "test-idem-1" not in r.headers.get("content-disposition", "")
 
     # ZIP integrity + manifest.
     zf = zipfile.ZipFile(io.BytesIO(r.content))
@@ -257,6 +264,60 @@ def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
     assert r.status_code == 503
     assert r.headers.get("X-Billed-Yen") is None
     assert r.json()["detail"]["code"] == "billing_unavailable"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE endpoint = 'clients.bulk_evaluate'"
+        ).fetchall()
+    finally:
+        c.close()
+    assert rows == []
+
+
+def test_bulk_evaluate_rejects_unsafe_idempotency_key_before_billing(
+    client, consultant_key, seeded_db,
+):
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={
+            "commit": "true",
+            "idempotency_key": "bad\r\nContent-Disposition: injected",
+        },
+    )
+
+    assert r.status_code == 400
+    assert r.json()["detail"]["code"] == "invalid_idempotency_key"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE endpoint = 'clients.bulk_evaluate'"
+        ).fetchall()
+    finally:
+        c.close()
+    assert rows == []
+
+
+def test_bulk_evaluate_rejects_overlong_idempotency_key_before_billing(
+    client, consultant_key, seeded_db,
+):
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={
+            "commit": "true",
+            "idempotency_key": "x" * 300,
+        },
+    )
+
+    assert r.status_code == 400
+    assert r.json()["detail"]["code"] == "invalid_idempotency_key"
 
     c = sqlite3.connect(seeded_db)
     try:

@@ -4,7 +4,7 @@
 # This file is OPERATOR-ONLY and is NOT consumed by the application.
 # It documents the rules to apply via the Cloudflare API or dashboard
 # (Security → WAF → Custom Rules / Rate Limiting Rules) for the zone
-# that hosts api.autonomath.ai and autonomath.ai.
+# that hosts api.jpcite.com and jpcite.com.
 #
 # Apply procedure (manual, no automation by design):
 #   1. Open Cloudflare dashboard → Security → WAF → Custom Rules
@@ -66,7 +66,7 @@ custom_rules:
       Generic broad-spectrum scraper UAs that have no legitimate use on a
       paid-data API. The list is conservative (no Googlebot, no
       uptimerobot, no Stripe) so we never block crawlers that we WANT
-      indexing the public docs site at autonomath.ai/docs/.
+      indexing the public docs site at jpcite.com/docs/.
     expression: |
       lower(http.user_agent) contains "ahrefsbot" or
       lower(http.user_agent) contains "semrushbot" or

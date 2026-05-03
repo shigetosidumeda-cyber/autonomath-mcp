@@ -58,7 +58,7 @@ def fresh_paid_key(seeded_db) -> str:
 
 def _seed_usage(
     db_path, key_hash: str, *, endpoint: str, count: int, days_ago: int = 0,
-    metered: int = 1, status: int = 200,
+    metered: int = 1, status: int = 200, quantity: int = 1,
 ) -> None:
     """Insert N usage_events rows for a given endpoint at days_ago."""
     base = datetime.now(UTC) - timedelta(days=days_ago, hours=1)
@@ -69,14 +69,15 @@ def _seed_usage(
             (base + timedelta(seconds=i)).isoformat(),
             status,
             metered,
+            quantity,
         )
         for i in range(count)
     ]
     c = sqlite3.connect(db_path)
     try:
         c.executemany(
-            "INSERT INTO usage_events(key_hash, endpoint, ts, status, metered) "
-            "VALUES (?,?,?,?,?)",
+            "INSERT INTO usage_events(key_hash, endpoint, ts, status, metered, quantity) "
+            "VALUES (?,?,?,?,?,?)",
             rows,
         )
         c.commit()
@@ -200,6 +201,31 @@ def test_dashboard_reports_cap_state(client, fresh_paid_key, seeded_db):
     assert body["cap_remaining_yen"] <= 850
 
 
+def test_dashboard_amounts_use_billed_quantity(
+    client, fresh_paid_key, seeded_db
+):
+    kh = hash_api_key(fresh_paid_key)
+    _seed_usage(
+        seeded_db,
+        kh,
+        endpoint="programs.batch",
+        count=1,
+        metered=1,
+        status=200,
+        quantity=12,
+    )
+
+    r = client.get(
+        "/v1/me/dashboard?days=30", headers={"X-API-Key": fresh_paid_key}
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["last_30_calls"] == 12
+    assert body["last_30_amount_yen"] == 12 * 3
+    assert body["month_to_date_calls"] == 12
+    assert body["month_to_date_amount_yen"] == 12 * 3
+
+
 # ---------------------------------------------------------------------------
 # /v1/me/usage_by_tool — top N tools
 # ---------------------------------------------------------------------------
@@ -227,6 +253,32 @@ def test_usage_by_tool_orders_by_count_desc(
     # amount_yen reflects metered+success only
     p = next(row for row in body["top"] if row["endpoint"] == "programs.search")
     assert p["amount_yen"] == 20 * 3
+
+
+def test_usage_by_tool_amount_uses_billed_quantity(
+    client, fresh_paid_key, seeded_db
+):
+    kh = hash_api_key(fresh_paid_key)
+    _seed_usage(
+        seeded_db,
+        kh,
+        endpoint="programs.batch",
+        count=1,
+        metered=1,
+        status=200,
+        quantity=9,
+    )
+
+    r = client.get(
+        "/v1/me/usage_by_tool?days=30",
+        headers={"X-API-Key": fresh_paid_key},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    row = next(item for item in body["top"] if item["endpoint"] == "programs.batch")
+    assert row["calls"] == 1
+    assert row["amount_yen"] == 9 * 3
+    assert body["total_amount_yen"] == 9 * 3
 
 
 def test_usage_by_tool_excludes_other_keys(

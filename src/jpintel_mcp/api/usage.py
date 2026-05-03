@@ -13,7 +13,7 @@ Posture:
     Returns ``tier="anonymous"``, ``limit=settings.anon_rate_limit_per_day``,
     ``remaining = limit - call_count`` (clamped at 0), ``reset_at`` =
     next JST 翌日 00:00 ISO8601 (gotchas: anon resets are JST, NOT UTC).
-  - Authenticated (paid): COUNT(*) from usage_events for the current
+  - Authenticated (paid): SUM(quantity) from usage_events for the current
     UTC calendar month + key_hash. Returns ``tier="paid"`` with
     ``limit=null`` (no upper cap on metered ¥3/req) and
     ``reset_at`` = first day of next UTC month (gotchas: authed counters
@@ -147,9 +147,9 @@ def _anonymous_status(
 def _paid_status(
     conn: sqlite3.Connection, key_hash: str
 ) -> dict[str, Any]:
-    """Metered ("paid") tier — month-to-date count, no upper cap."""
+    """Metered ("paid") tier — month-to-date billed units, no upper cap."""
     (used,) = conn.execute(
-        "SELECT COUNT(*) FROM usage_events "
+        "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events "
         "WHERE key_hash = ? AND ts >= ? "
         "AND metered = 1 AND status < 400",
         (key_hash, _utc_month_start_iso()),
@@ -177,7 +177,8 @@ def _free_authed_status(
     daily_limit = settings.rate_limit_free_per_day
     bucket = datetime.now(UTC).strftime("%Y-%m-%d")
     (used,) = conn.execute(
-        "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND ts >= ?",
+        "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) "
+        "FROM usage_events WHERE key_hash = ? AND ts >= ?",
         (key_hash, bucket),
     ).fetchone()
     used_int = int(used)

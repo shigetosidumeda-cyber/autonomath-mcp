@@ -89,6 +89,7 @@ _CSV_REQUIRED = ("name_label",)
 _NAME_MAX_LEN = 128
 _JSIC_MAX_LEN = 4
 _PREFECTURE_MAX_LEN = 20
+_IDEMPOTENCY_KEY_RE = re.compile(r"^[A-Za-z0-9._:-]{1,96}$")
 
 # Per-client result cap. Each client gets the top-K matched programs to keep
 # the ZIP at a sane size. 50 mirrors the prescreen default.
@@ -338,9 +339,10 @@ def _zip_stream_response(
     row_count: int | None = None,
     billed_yen: int | None = None,
 ) -> StreamingResponse:
+    filename_hash = hashlib.sha256(idem_key.encode("utf-8")).hexdigest()[:16]
     headers = {
         "Content-Disposition": (
-            f"attachment; filename=bulk_evaluate_{idem_key}.zip"
+            f"attachment; filename=bulk_evaluate_{filename_hash}.zip"
         ),
     }
     if replay:
@@ -375,6 +377,26 @@ def _idem_cache_key(key_hash: str, idem_key: str) -> str:
     h.update(b":/v1/me/clients/bulk_evaluate:")
     h.update(idem_key.encode("utf-8"))
     return h.hexdigest()
+
+
+def _normalise_idempotency_key(raw: str | None) -> str | None:
+    if raw is None:
+        return None
+    key = raw.strip()
+    if not key:
+        return None
+    if not _IDEMPOTENCY_KEY_RE.fullmatch(key):
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            {
+                "code": "invalid_idempotency_key",
+                "message": (
+                    "idempotency_key must be 1-96 characters and use only "
+                    "A-Z, a-z, 0-9, dot, underscore, colon, or hyphen."
+                ),
+            },
+        )
+    return key
 
 
 def _payload_signature(raw_bytes: bytes, *, program_filter: str, row_count: int) -> str:
@@ -649,10 +671,8 @@ async def bulk_evaluate_clients(
     require_metered_api_key(ctx, "bulk_evaluate commit")
 
     # commit=true — billing path requires idempotency.
-    form_idem_key = idempotency_key.strip() if idempotency_key else None
-    header_idem_key = (
-        idempotency_key_header.strip() if idempotency_key_header else None
-    )
+    form_idem_key = _normalise_idempotency_key(idempotency_key)
+    header_idem_key = _normalise_idempotency_key(idempotency_key_header)
     if form_idem_key and header_idem_key and form_idem_key != header_idem_key:
         raise HTTPException(
             status.HTTP_409_CONFLICT,

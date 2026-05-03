@@ -1571,6 +1571,7 @@ def rest_deep_health(
     request: Request,
     force: bool = False,
     fail_on_unhealthy: bool = False,
+    fail_on_degraded: bool = False,
 ) -> JSONResponse:
     """10-check aggregate health (db + freshness + license + provenance + bundle + WAL).
 
@@ -1580,14 +1581,22 @@ def rest_deep_health(
     Responses are cached for 30 seconds; pass ``?force=true`` to bypass for
     debugging or post-deploy verification. Monitors that only understand HTTP
     status can pass ``?fail_on_unhealthy=true`` to receive 503 for an
-    unhealthy aggregate.
+    unhealthy aggregate, or ``?fail_on_degraded=true`` to require exact
+    ``status=ok``.
     """
     doc = get_deep_health(force=force)
-    status_code = 503 if fail_on_unhealthy and doc.get("status") == "unhealthy" else 200
+    health_status = str(doc.get("status") or "unknown")
+    status_code = (
+        503
+        if (
+            (fail_on_unhealthy and health_status == "unhealthy")
+            or (fail_on_degraded and health_status != "ok")
+        )
+        else 200
+    )
     if wants_envelope_v2(request):
         with contextlib.suppress(Exception):
             request.state.envelope_v2_served = True
-        health_status = str(doc.get("status") or "unknown")
         if health_status == "ok":
             env = StandardResponse.sparse(
                 [doc],
@@ -1609,6 +1618,7 @@ def rest_deep_health(
                     "applied_filters": {
                         "force": force,
                         "fail_on_unhealthy": fail_on_unhealthy,
+                        "fail_on_degraded": fail_on_degraded,
                     },
                     "unparsed_terms": [],
                 },

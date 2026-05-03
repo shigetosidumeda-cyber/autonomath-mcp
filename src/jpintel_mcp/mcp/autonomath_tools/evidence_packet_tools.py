@@ -135,9 +135,9 @@ def _impl_get_evidence_packet(
             ),
             field="subject_id",
         )
-    from jpintel_mcp.api.evidence import _apply_license_gate
+    from jpintel_mcp.api.evidence import _gate_evidence_envelope
 
-    gated, _summary = _apply_license_gate(envelope)
+    gated, _summary = _gate_evidence_envelope(envelope)
     return gated
 
 

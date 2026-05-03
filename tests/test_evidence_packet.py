@@ -1040,6 +1040,15 @@ def test_evidence_license_gate_filters_mixed_license_facts() -> None:
                 "entity_id": "program:mixed",
                 "primary_name": "mixed license fixture",
                 "total_facts": 2,
+                "precomputed": {"summaries": {"200": "derived from mixed facts"}},
+                "short_summary": {"text": "derived from mixed facts"},
+                "recent_changes": [
+                    {"title": "derived change", "license": "proprietary"}
+                ],
+                "source_health": {
+                    "license": "proprietary",
+                    "source_url": "https://example.com/private-health",
+                },
                 "facts": [
                     {
                         "field": "invoice_status",
@@ -1074,6 +1083,12 @@ def test_evidence_license_gate_filters_mixed_license_facts() -> None:
     assert len(facts) == 1
     assert facts[0]["field"] == "invoice_status"
     assert all(f["source"]["license"] != "proprietary" for f in facts)
+    assert "precomputed" not in gated["records"][0]
+    assert "short_summary" not in gated["records"][0]
+    assert "recent_changes" not in gated["records"][0]
+    assert "source_health" not in gated["records"][0]
+    assert summary["blocked_facts_count"] == 1
+    assert summary["blocked_precomputed_count"] == 1
 
 
 def test_evidence_license_gate_filters_proprietary_pdf_fact_refs() -> None:
@@ -1126,6 +1141,52 @@ def test_evidence_license_gate_filters_proprietary_pdf_fact_refs() -> None:
         }
     ]
     assert "must not export" not in str(gated)
+
+
+def test_evidence_gate_recomputes_value_signals_after_blocking_all_records() -> None:
+    from jpintel_mcp.api.evidence import _gate_evidence_envelope
+
+    envelope = {
+        "records": [
+            {
+                "entity_id": "program:blocked",
+                "primary_name": "blocked fixture",
+                "facts": [
+                    {
+                        "field": "private_note",
+                        "value": "must not export",
+                        "source": {
+                            "license": "proprietary",
+                            "url": "https://example.com/private",
+                        },
+                    }
+                ],
+            }
+        ],
+        "quality": {"known_gaps": []},
+        "agent_recommendation": {
+            "recommendation": "use_jpcite_prefetch",
+            "recommend_to_user": True,
+            "recommend_for_evidence": True,
+        },
+        "evidence_value": {
+            "records_returned": 1,
+            "source_linked_records": 1,
+        },
+    }
+
+    gated, summary = _gate_evidence_envelope(envelope)
+
+    assert gated["records"] == []
+    assert summary["allowed_count"] == 0
+    assert summary["blocked_count"] == 1
+    assert gated["evidence_value"]["records_returned"] == 0
+    assert gated["evidence_value"]["source_linked_records"] == 0
+    recommendation = gated["agent_recommendation"]
+    assert recommendation["recommendation"] == "broaden_query_or_skip"
+    assert recommendation["recommend_to_user"] is False
+    assert recommendation["recommend_for_evidence"] is False
+    assert recommendation["evidence_decision"] == "no_records_returned"
 
 
 def test_rest_json_license_gate_filters_mixed_license_facts(

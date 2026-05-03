@@ -63,7 +63,7 @@ primary_region = "nrt"
   # Fly silently caps grace_period at 60s (`flyctl config validate` warning).
   # Normal redeploy should avoid 9.79 GB boot-time SHA/integrity scans via
   # DB stamp files; fresh R2 bootstrap or stamp miss can still exceed 60s.
-  # The deep check fails only when the autonomath health body is unhealthy.
+  # The deep check fails unless the autonomath health body is fully ok.
   # If a fresh-volume bootstrap runs long, Fly retries before declaring
   # unhealthy; expect a brief first-deploy restart loop rather than widening
   # this check past Fly's effective cap.
@@ -72,7 +72,7 @@ primary_region = "nrt"
     timeout = "10s"
     grace_period = "60s"
     method = "GET"
-    path = "/v1/am/health/deep?fail_on_unhealthy=true"
+    path = "/v1/am/health/deep?fail_on_degraded=true"
 
 [metrics]
   port = 9091

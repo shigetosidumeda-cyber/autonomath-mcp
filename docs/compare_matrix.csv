@@ -122,7 +122,7 @@ nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice 
 nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Court decisions / 判例,"2,065 件。",対象外。,
 nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Cross-domain join,<strong>あり</strong> (制度 × 法人 × 判例 × 行政処分 × 適格請求書 を 1 リクエストで横断)。,対象外 (適格請求書のみ)。,
 nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Primary source citations,主要な公開行に source_url + fetched_at。,出典は国税庁 (一次)。,
-nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Terms of use,ToS 同意で開始。NTA 由来データは PDL v1.0 で再配布可。,<strong>PDL v1.0</strong> (Public Domain License、出典明記で再配布 OK)。,この自由度の高い再配布規約のおかげで当社の bulk 取込が成立。
+nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Terms of use,ToS 同意で開始。NTA 由来データは PDL v1.0 で再配布可。,<strong>PDL v1.0</strong> (Public Data License、出典明記で再配布 OK)。,この再配布可能な規約のおかげで当社の bulk 取込が成立。
 nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Free tier,匿名 3 req/日/IP。,完全無料 (登録番号 1 件ずつの Web 検索は無料、bulk DL も無料)。,
 nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Sample contract length,なし — 利用規約のみ。,なし (公的サービス)。,
 nta-invoice,国税庁 適格請求書発行事業者公表サイト,NTA Invoice Issuer Public Site,https://www.invoice-kohyo.nta.go.jp/,Support model,Self-service + メール。,公的サービス窓口 (国税庁)。,

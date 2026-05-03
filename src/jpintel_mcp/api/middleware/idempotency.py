@@ -138,6 +138,7 @@ _BYPASS_EXACT: frozenset[str] = frozenset(
         "/healthz",
         "/readyz",
         "/v1/openapi.json",
+        "/v1/openapi.agent.json",
     }
 )
 

@@ -458,7 +458,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "Primary source citations",
     "出典は国税庁 (一次)。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Terms of use",
     "ToS 同意で開始。NTA 由来データは PDL v1.0 で再配布可。",
-    "<strong>PDL v1.0</strong> (Public Domain License、出典明記で再配布 OK)。",
+    "<strong>PDL v1.0</strong> (Public Data License、出典明記で再配布 OK)。",
     "この自由度の高い再配布規約のおかげで当社の bulk 取込が成立。")
 add(SLUG, NAME_JA, NAME_EN, URL, "Free tier",
     "匿名 3 req/日/IP。",
