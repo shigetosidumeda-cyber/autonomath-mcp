@@ -12,6 +12,7 @@ concurrency:
 
 env:
   RUFF_TARGETS: >-
+    scripts/generate_city_pages.py
     scripts/generate_cross_hub_pages.py
     scripts/generate_geo_program_pages.py
     scripts/generate_industry_hub_pages.py
