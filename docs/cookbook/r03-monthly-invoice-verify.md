@@ -5,7 +5,7 @@
 - **Audience (cohort)**: C2 ZEI (税理士) primary / C8 IND (Industry packs) secondary
 - **Use case**: 月次決算前の仕入請求書 100-1,000 件の T 番号バリデーション
 - **Disclaimer**: PDL v1.0 attribution required (出典: 国税庁 法人番号公表サイト)
-- **Cost**: ¥3/req (税込 ¥3.30) per T-番号 lookup
+- **Cost**: ¥3/billable unit (税込 ¥3.30) per T-番号 lookup
 
 ## TL;DR
 

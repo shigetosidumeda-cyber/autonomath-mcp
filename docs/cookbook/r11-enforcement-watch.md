@@ -5,7 +5,7 @@
 - **Audience (cohort)**: C1 MA (M&A pre-DD) primary / C8 IND (Industry packs) secondary
 - **Use case**: M&A pre-DD の業界別リスク把握、業界 watch list 上の "同業 redflag" 自動配信
 - **Disclaimer**: なし (公表処分の引用)。M&A 文脈で参照する場合は §72
-- **Cost**: ¥3/req (税込 ¥3.30) per scan / weekly run
+- **Cost**: ¥3/billable unit (税込 ¥3.30) per scan / weekly run
 
 ## TL;DR
 
