@@ -139,10 +139,9 @@ def _record_license_tuple(rec: dict[str, Any]) -> dict[str, Any]:
       * If ANY fact source carries a license value in
         `REDISTRIBUTABLE_LICENSES`, the record's license is set to that
         allowed value (most-common allowed license wins; ties broken
-        lexically). Rationale: a record whose provenance includes at
-        least one redistributable source CAN be redistributed under
-        that source's terms — the export carries the matching
-        attribution line per CC-BY 4.0 §3 / PDL v1.0.
+        lexically). The record can remain in the response, but only the
+        matching redistributable facts are retained by `_apply_license_gate`;
+        mixed proprietary / unknown facts are filtered out.
       * Else, fall back to the most-common license seen on the facts
         (which will be a non-allow-listed value — `gov_standard_v2.0`,
         `proprietary`, etc. — and the gate will correctly block).
@@ -205,6 +204,19 @@ def _record_license_tuple(rec: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _fact_is_redistributable(fact: Any) -> bool:
+    if not isinstance(fact, dict):
+        return False
+    src = fact.get("source") or {}
+    license_name = src.get("license")
+    return isinstance(license_name, str) and license_name in REDISTRIBUTABLE_LICENSES
+
+
+def _redistributable_facts(rec: dict[str, Any]) -> list[dict[str, Any]]:
+    facts = rec.get("facts") or []
+    return [dict(f) for f in facts if _fact_is_redistributable(f)]
+
+
 def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     """Filter the envelope's records[] through the license export gate.
 
@@ -248,6 +260,9 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
     }
 
     # Re-build records[] with attribution annotations on the allowed set.
+    # Fact-level filtering is mandatory: one record can mix PDL/CC-BY
+    # facts with unknown/proprietary facts. Export formats may keep the
+    # record only if at least one redistributable fact remains.
     # Lookup by entity_id; fall back to positional match for records
     # missing entity_id (defensive — records always carry it in practice).
     proxy_by_id = {p.get("entity_id"): p for p in proxies if p.get("entity_id")}
@@ -259,80 +274,79 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
         proxy = proxy_by_id.get(eid) or {}
         ann = annotate_attribution(proxy)
         out = dict(r)
+        if "facts" in out:
+            out["facts"] = _redistributable_facts(r)
+            if not out["facts"]:
+                continue
+            total_facts = r.get("total_facts") or len(r.get("facts") or [])
+            try:
+                denom = max(1, int(total_facts))
+            except (TypeError, ValueError):
+                denom = max(1, len(r.get("facts") or []))
+            out["fact_provenance_coverage_pct"] = round(len(out["facts"]) / denom, 4)
         out["_attribution"] = ann.get("_attribution")
         out["license"] = proxy.get("license")
         new_records.append(out)
 
     gated_envelope = dict(envelope)
     gated_envelope["records"] = new_records
+    gate_summary["allowed_count"] = len(new_records)
+    gate_summary["blocked_count"] = len(records) - len(new_records)
     gated_envelope["license_gate"] = gate_summary
     return gated_envelope, gate_summary
 
 
-def _dispatch_format(envelope: dict[str, Any], fmt: str) -> Response:
-    """Serialize the packet envelope; gate CSV/MD redistribution paths.
+def _gate_evidence_envelope(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Apply the license gate and assert the gated records remain allow-listed."""
+    gated, gate_summary = _apply_license_gate(envelope)
 
-    JSON responses are the per-request conversational surface — paid
-    customers see the full envelope as composed (license info is already
-    inline on every fact via `facts[].source.license`, and the customer
-    is bound by the API ToS not to redistribute the per-request body).
+    # Defense-in-depth post-condition: re-run `filter_redistributable`
+    # over the gated records[] using the lifted top-level `license`
+    # field that `_apply_license_gate` injected. ANY non-empty `_blocked`
+    # here means the gate's allow-list logic regressed — fail closed by
+    # dropping the offending rows from the output. In practice this is a
+    # no-op, but keeps the invariant local + auditable.
+    _allowed, _blocked = filter_redistributable(gated.get("records") or [])
+    if _blocked:
+        gated["records"] = _allowed
+        gate_summary["allowed_count"] = len(_allowed)
+        gate_summary["blocked_count"] = gate_summary.get("blocked_count", 0) + len(_blocked)
+    return gated, gate_summary
 
-    CSV and MD exports, by contrast, are bulk-redistribution shapes that
-    leave the operator's perimeter as a self-contained file the customer
-    can hand to a third party. Per
-    `docs/_internal/value_maximization_plan_no_llm_api.md` §24 + §28.9
-    No-Go #5 these paths funnel records[] through `filter_redistributable`
-    (allow-list policy on `REDISTRIBUTABLE_LICENSES`) so any record whose
-    dominant fact-source license is `proprietary` / `unknown` / a
-    non-allow-listed value (e.g. `gov_standard_v2.0` while the constant
-    is the canonical `gov_standard`) is dropped from the output bytes.
-    Allowed records each gain an `_attribution` line via
-    `annotate_attribution` so downstream auditors preserve CC-BY 4.0 §3.
 
-    Both gated responses surface the gate rollup via the
-    `X-License-Gate-Allowed` / `X-License-Gate-Blocked` headers (mirrors
-    `api/ma_dd.py` audit-bundle export semantics).
+def _dispatch_format(
+    envelope: dict[str, Any],
+    fmt: str,
+    gate_summary: dict[str, Any],
+) -> Response:
+    """Serialize an already license-gated packet envelope.
 
-    The textual reference to `filter_redistributable` is also what
+    JSON, CSV, and MD all receive the same record/fact-level license gate.
+    This avoids a JSON bypass where a mixed-license record could expose a
+    proprietary fact even though CSV/MD export would filter it. The textual
+    reference to `filter_redistributable` is also what
     `tests/test_license_gate_no_bypass.py` asserts to keep this function
-    in the "wired" set — the AST scanner walks every export-shaped
-    function under `api/` and fails CI if the gate token is absent.
+    in the "wired" set.
     """
-    if fmt in ("csv", "md"):
-        gated, gate_summary = _apply_license_gate(envelope)
-
-        # Defense-in-depth post-condition: re-run `filter_redistributable`
-        # over the gated records[] using the lifted top-level `license`
-        # field that `_apply_license_gate` injected. ANY non-empty
-        # `_blocked` here means the gate's allow-list logic regressed —
-        # fail closed by dropping the offending rows from the output. In
-        # practice this is always a no-op (the upstream gate already
-        # filtered) but keeps the invariant local + auditable in the
-        # export path itself.
-        _allowed, _blocked = filter_redistributable(gated.get("records") or [])
-        if _blocked:
-            gated["records"] = _allowed
-            gate_summary["allowed_count"] = len(_allowed)
-            gate_summary["blocked_count"] = gate_summary.get("blocked_count", 0) + len(_blocked)
-
-        headers = {
-            "X-License-Gate-Allowed": str(gate_summary["allowed_count"]),
-            "X-License-Gate-Blocked": str(gate_summary["blocked_count"]),
-        }
-        if fmt == "csv":
-            body = EvidencePacketComposer.to_csv(gated)
-            return PlainTextResponse(
-                content=body,
-                media_type="text/csv",
-                headers=headers,
-            )
-        body = EvidencePacketComposer.to_markdown(gated)
+    headers = {
+        "X-License-Gate-Allowed": str(gate_summary["allowed_count"]),
+        "X-License-Gate-Blocked": str(gate_summary["blocked_count"]),
+    }
+    if fmt == "csv":
+        body = EvidencePacketComposer.to_csv(envelope)
+        return PlainTextResponse(
+            content=body,
+            media_type="text/csv",
+            headers=headers,
+        )
+    if fmt == "md":
+        body = EvidencePacketComposer.to_markdown(envelope)
         return PlainTextResponse(
             content=body,
             media_type="text/markdown",
             headers=headers,
         )
-    return JSONResponse(content=envelope)
+    return JSONResponse(content=envelope, headers=headers)
 
 
 # ---------------------------------------------------------------------------
@@ -511,11 +525,13 @@ def get_evidence_packet(
             },
         )
 
+    gated_envelope, gate_summary = _gate_evidence_envelope(envelope)
+
     # §17.D audit seal on paid JSON responses. CSV/MD outputs skip the
     # seal (the wire shape has no place to embed JSON inside flat text).
     if output_format == "json":
         attach_seal_to_body(
-            envelope,
+            gated_envelope,
             endpoint="evidence.packet.get",
             request_params={
                 "subject_kind": subject_kind,
@@ -527,7 +543,7 @@ def get_evidence_packet(
             api_key_hash=ctx.key_hash,
             conn=conn,
         )
-    response = _dispatch_format(envelope, output_format)
+    response = _dispatch_format(gated_envelope, output_format, gate_summary)
     latency_ms = int((time.perf_counter() - _t0) * 1000)
     log_usage(
         conn,
@@ -698,10 +714,12 @@ def post_evidence_packet_query(
         source_pdf_pages=payload.source_pdf_pages,
         source_token_count=payload.source_token_count,
     )
+    gated_envelope, gate_summary = _gate_evidence_envelope(envelope)
+
     # §17.D audit seal — JSON only (see evidence.packet.get above).
     if output_format == "json":
         attach_seal_to_body(
-            envelope,
+            gated_envelope,
             endpoint="evidence.packet.query",
             request_params={
                 "query_text": payload.query_text,
@@ -714,7 +732,7 @@ def post_evidence_packet_query(
             api_key_hash=ctx.key_hash,
             conn=conn,
         )
-    response = _dispatch_format(envelope, output_format)
+    response = _dispatch_format(gated_envelope, output_format, gate_summary)
     latency_ms = int((time.perf_counter() - _t0) * 1000)
     log_usage(
         conn,

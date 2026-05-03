@@ -8,7 +8,7 @@
 <meta name="description" content="Evidence prefetch for AI agents working with Japanese public-program data. Search subsidies, laws, court decisions, tax rulesets, invoice registrants, adoption cases, and enforcement records via REST + MCP API with primary-source URLs. ¥3/request, anon 3/day free.">
 
 <meta property="og:title" content="jpcite — Japanese public programs, one API.">
-<meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (93 tools, 2025-06-18). Primary-source lineage on 99%+ of rows.">
+<meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (93 tools, 2025-06-18). Primary-source lineage on most public rows.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -37,7 +37,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=20260428a">
 
-<script defer src="../analytics.js"></script>
+<script defer src="../analytics.js?v=20260503a"></script>
 
 <script type="application/ld+json">
 {
@@ -61,7 +61,7 @@
     "全文検索インデックス (3-gram) Japanese search",
     "Tier classification S/A/B/C/X",
     "Three-axis loan decomposition (collateral / personal guarantor / third-party guarantor)",
-    "Primary-source lineage (source_url + fetched_at on 99%+ of rows; 12 rows are small-municipality programs lacking a dedicated CMS page)"
+    "Primary-source lineage (source_url + fetched_at on most public rows; 12 rows are small-municipality programs lacking a dedicated CMS page)"
   ]
 }
 </script>
@@ -181,7 +181,7 @@
  <summary>Trust</summary>
  <ul>
  <li><a href="../status.html">Status</a></li>
- <li><a href="../roadmap.html">Roadmap</a></li>
+ <li><a href="../sources.html">Sources</a></li>
  <li><a href="../data-freshness.html">Data Freshness</a></li>
  <li><a href="../transparency.html">Transparency</a></li>
  <li><a href="../audit-log.html">Audit Log</a></li>
@@ -207,7 +207,7 @@
  <a class="btn btn-primary" href="getting-started.html">Try free (3 req/day per IP, no signup)</a>
  <a class="btn btn-secondary" href="/downloads/autonomath-mcp.mcpb" download aria-label="Download Claude Desktop Extension">Add to Claude Desktop (.mcpb)</a>
  </div>
- <p class="hero-note">Anonymous 3 req/day per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day 00:00 reset); ¥3/req tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on 99%+ of rows.</p>
+ <p class="hero-note">Anonymous 3 req/day per IP free (JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day 00:00 reset); ¥3/req tax exclusive (¥3.30 tax inclusive) metered beyond. Primary-source URL + fetched_at on most public rows.</p>
  </div>
  </section>
 
@@ -235,8 +235,8 @@
  </article>
 
  <article class="card" aria-labelledby="trust-lineage">
- <h3 id="trust-lineage">99%+ primary source</h3>
- <p class="card-lead">source_url + fetched_at on 99%+ of rows</p>
+ <h3 id="trust-lineage">Primary-source trace</h3>
+ <p class="card-lead">source_url + fetched_at on most public rows</p>
  <p>Sourced directly from METI, MAFF, the SME Agency, Japan Finance Corporation, prefectures, and municipalities. Aggregator sites are excluded by policy. Designed to track amendment signals and refetch status continuously.</p>
  <ul class="card-list">
  <li>second-tier aggregators excluded</li>
@@ -571,8 +571,8 @@
  <h3 id="vs-llm-halluc">Source fabrication &amp; aggregator drift</h3>
  <p class="card-lead">Misidentification = misrepresentation liability</p>
  <p>Second-tier aggregator pages can list expired programs as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
- <p>jpcite <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
- <p>99%+ of rows carry <code>source_url</code> + <code>fetched_at</code>, so you can show your client / regulator / opposing counsel exactly <em>why</em> this program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
+ <p>jpcite <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. Most public rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
+ <p>Most public rows carry <code>source_url</code> + <code>fetched_at</code>, so you can show your client / regulator / opposing counsel exactly <em>why</em> this program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
  </article>
 
  <article class="card" aria-labelledby="vs-llm-rules">
@@ -595,14 +595,14 @@
  <h3>No aggregator sources</h3>
  <p class="card-lead">Misrepresentation-liability avoidance</p>
  <p>Second-tier aggregator pages can keep expired programs listed as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Filing on that basis and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
- <p>jpcite's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. 99%+ of 14,472 rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
- <p>Because 99%+ of rows carry <code>source_url</code> + <code>fetched_at</code>, you can show your client, the regulator, or opposing counsel exactly <em>why</em> a program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
+ <p>jpcite's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. Most public rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
+ <p>Because most public rows carry <code>source_url</code> + <code>fetched_at</code>, you can show your client, the regulator, or opposing counsel exactly <em>why</em> a program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
  </article>
 
  <article class="card">
  <h3>Primary source, end to end</h3>
  <p class="card-lead">Fetch dates and liveness are explicit</p>
- <p>99%+ of returned rows carry <code>source_url</code> + <code>fetched_at</code>. The fetch date is shown verbatim — never relabeled as "last updated" (which would falsely imply we re-verified currency). Nightly liveness scans flag dead URLs.</p>
+ <p>Most returned public rows carry <code>source_url</code> + <code>fetched_at</code>. The fetch date is shown verbatim — never relabeled as "last updated" (which would falsely imply we re-verified currency). Nightly liveness scans flag dead URLs.</p>
  </article>
 
  <article class="card">

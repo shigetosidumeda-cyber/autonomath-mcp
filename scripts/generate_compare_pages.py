@@ -27,7 +27,6 @@ import csv
 import html
 import json
 from collections import OrderedDict
-from datetime import date
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -45,7 +44,7 @@ SITE_BASE = "https://jpcite.com"
 #   us_strengths: list of 2-3 bullets (HTML allowed)
 #   them_strengths: list of 2-3 bullets (HTML allowed)
 #   migration: HTML string with 2 <p> for dual-use guidance
-PAGES: "OrderedDict[str, dict]" = OrderedDict()
+PAGES: OrderedDict[str, dict] = OrderedDict()
 
 PAGES["tdb"] = {
     "title_competitor": "帝国データバンク (TDB)",
@@ -60,9 +59,9 @@ PAGES["tdb"] = {
         "「どちらか」ではなく「目的別に併用」が一般的な落としどころです。"
     ),
     "us_strengths": [
-        "<strong>機械可読 API + MCP</strong>を必須とする LLM Agent / 自社プロダクトでの自動化用途。89 tools (protocol 2025-06-18) と OpenAPI 3.1 で Claude / ChatGPT / Cursor から直接呼べます。",
+        "<strong>機械可読 API + MCP</strong>を必須とする LLM Agent / 自社プロダクトでの自動化用途。93 tools (protocol 2025-06-18) と OpenAPI 3.1 で Claude / ChatGPT / Cursor から直接呼べます。",
         "<strong>補助金・融資・税制・認定の横断検索</strong>と<strong>行政処分 1,185 件</strong>の取引相手調査が必要なとき。TDB は信用調査専業のため、制度 DB 用途では当社が補完。",
-        "<strong>完全従量 ¥3/req</strong>(税込 ¥3.30) で最低料金/契約期間なし。匿名 50 req/月/IP が無料、評価開始の摩擦が低い。",
+        "<strong>完全従量 ¥3/req</strong>(税込 ¥3.30) で最低料金/契約期間なし。匿名 3 req/日/IP が無料、評価開始の摩擦が低い。",
     ],
     "them_strengths": [
         "<strong>信用調査評点・代表者経歴・親族関係</strong>などの取材ベースの人物・与信情報が必要なとき。TDB は同領域の代表的な専門業者。",
@@ -95,10 +94,10 @@ PAGES["tsr"] = {
         "目的が「与信判断」なら TSR、「補助金・税制・法令の自動探索」なら当社、両方なら併用、が素直な選び方になります。"
     ),
     "us_strengths": [
-        "<strong>API/MCP 必須の自動化用途</strong>。89 tools + OpenAPI 3.1 で LLM Agent から直接呼べます。"
+        "<strong>API/MCP 必須の自動化用途</strong>。93 tools + OpenAPI 3.1 で LLM Agent から直接呼べます。"
         "TSR の API/MCP の公開仕様は 2026-04 時点で公開情報なし。",
-        "<strong>10,790 制度 + 2,065 判例 + 9,484 法令 + 1,185 行政処分</strong>の横断検索。TSR の対象外領域。",
-        "<strong>¥3/req 完全従量</strong>。年間契約・代理店経由不要、匿名 50 req/月/IP 無料で評価可能。",
+        "<strong>11,684 制度 + 2,065 判例 + 9,484 法令 + 1,185 行政処分</strong>の横断検索。TSR の対象外領域。",
+        "<strong>¥3/req 完全従量</strong>。年間契約・代理店経由不要、匿名 3 req/日/IP 無料で評価可能。",
     ],
     "them_strengths": [
         "<strong>信用調査評点 (TSR 評点) と代表者経歴</strong>。同社のコア商品で、当社では提供できない領域。",
@@ -133,7 +132,7 @@ PAGES["gbizinfo"] = {
     "us_strengths": [
         "<strong>制度 DB との連結</strong>: 法人番号 → 適用可能な補助金 / 融資 / 税制 / 認定 を 1 リクエストで取得。"
         "gBizINFO は補助金採択企業のリンクはあるが、未受給の制度を逆引きする検索は提供せず。",
-        "<strong>MCP プロトコル対応</strong>。Claude / ChatGPT / Cursor 等から直接呼べる 89 tools。"
+        "<strong>MCP プロトコル対応</strong>。Claude / ChatGPT / Cursor 等から直接呼べる 93 tools。"
         "gBizINFO は REST のみ (MCP は公開情報なし)。",
         "<strong>判例 2,065 件 + 行政処分 1,185 件 + 法令 9,484 件 + 適格請求書 13,801 件</strong>を横断"
         "(法人 × 制度 × 法令 × 処分 を 1 query)。",
@@ -171,7 +170,7 @@ PAGES["jgrants"] = {
         "「申請を電子化する」なら jGrants、「申請前の探索を自動化する」なら当社、両方使うのが標準的です。"
     ),
     "us_strengths": [
-        "<strong>API + MCP で横断検索</strong>。10,790 制度 (補助金 + 融資 + 税制 + 認定) を一括で扱える。"
+        "<strong>API + MCP で横断検索</strong>。11,684 制度 (補助金 + 融資 + 税制 + 認定) を一括で扱える。"
         "jGrants は 2026-04 時点で公開 API なし、検索 UI のみ。",
         "<strong>適合判定ロジック</strong> (target_types / 業種 / 売上規模 / 都道府県) を query で指定可能。"
         "jGrants の検索はキーワード + カテゴリ中心。",
@@ -208,7 +207,7 @@ PAGES["mirasapo"] = {
         "両者の競合関係は実は薄く、用途が違います。"
     ),
     "us_strengths": [
-        "<strong>API + MCP</strong> による自動化。89 tools で AI Agent から直接呼べる。"
+        "<strong>API + MCP</strong> による自動化。93 tools で AI Agent から直接呼べる。"
         "ミラサポは 2026-04 時点で公開 API なし。",
         "<strong>適用可能な制度の機械的フィルタ</strong>(業種 / 都道府県 / 売上規模 等の structured query)。",
         "<strong>判例 / 行政処分 / 法令 / 適格請求書発行事業者</strong>の横断検索。"
@@ -245,7 +244,7 @@ PAGES["moneyforward"] = {
         "「自社の会計を回したい」なら MF、「制度・法令を AI Agent から自動探索したい」なら当社。"
     ),
     "us_strengths": [
-        "<strong>制度 DB API/MCP</strong>。10,790 補助金/融資/税制/認定 + 35 税制 ruleset + 2,065 判例 + 9,484 法令の横断検索。"
+        "<strong>制度 DB API/MCP</strong>。11,684 検索可制度 + 50 税制 ruleset + 2,065 判例 + 9,484 法令メタデータの横断検索。"
         "MF は会計 SaaS のため、制度 DB の API は提供せず。",
         "<strong>API/MCP 提供</strong>。当社の API は LLM Agent 連携が主用途。"
         "MF API は会計 SaaS の顧客向けで、制度 DB アクセスとは別レイヤー。",
@@ -260,8 +259,8 @@ PAGES["moneyforward"] = {
         "<p><strong>会計と制度は分離レイヤー</strong>: MF で会計を回しつつ、"
         "「自社の業種・売上・地域に合う未受給の補助金」を当社 API で横断検索する併用が一般的です。"
         "両者のデータが交差するのは、<strong>適格請求書発行事業者の登録番号</strong>と<strong>賃上げ促進税制等の税制</strong>あたり。"
-        "当社の <code>invoice_registrants</code> 13,801 件 (delta + 月次フル取込予定) と"
-        "<code>tax_rulesets</code> 35 件は MF 内部のマスタとは別系統で、出典 (国税庁 / e-Gov) を直接参照できます。</p>"
+        "当社の <code>invoice_registrants</code> 13,801 件と"
+        "<code>tax_rulesets</code> 50 件は MF 内部のマスタとは別系統で、出典 (国税庁 / e-Gov) を直接参照できます。</p>"
         "<p><strong>住み分け</strong>: MF を会計の<strong>口座</strong>として、"
         "当社を制度・法令の<strong>辞書</strong>として併用するイメージ。"
         "両者を接続するのは法人番号 (T...) と業種 (JSIC) のキーで、"
@@ -282,8 +281,8 @@ PAGES["freee"] = {
         "「freee 以外の会計を使っている / そもそも会計 SaaS と切り離したい」「LLM Agent から呼びたい」なら当社。"
     ),
     "us_strengths": [
-        "<strong>顧客制約なし</strong>。freee アカウント不要、誰でも匿名 50 req/月/IP で評価可能。",
-        "<strong>API + MCP</strong>。LLM Agent / 自社プロダクトに直接組み込める 89 tools。"
+        "<strong>顧客制約なし</strong>。freee アカウント不要、誰でも匿名 3 req/日/IP で評価可能。",
+        "<strong>API + MCP</strong>。LLM Agent / 自社プロダクトに直接組み込める 93 tools。"
         "freee 助成金 AI の外部 API は 2026-04 時点で公開情報なし。",
         "<strong>判例 + 行政処分 + 法令 + 適格請求書</strong>の横断検索。"
         "freee 助成金 AI は助成金中心で、これらは対象外。",
@@ -320,7 +319,7 @@ PAGES["navit"] = {
         "「人が UI で検索する」ならナビット、「AI Agent / 自社システムから API 呼出」なら当社、が素直な切り分けです。"
     ),
     "us_strengths": [
-        "<strong>API + MCP</strong>提供。89 tools で LLM Agent から直接呼べる。"
+        "<strong>API + MCP</strong>提供。93 tools で LLM Agent から直接呼べる。"
         "ナビットは Web UI 中心で、API/MCP の公開仕様は 2026-04 時点で公開情報なし。",
         "<strong>従量 ¥3/req</strong>。Seat 不要、必要な分だけ。"
         "ナビットは Seat 課金モデル (公開価格情報なし、要問合せ)。",
@@ -361,7 +360,7 @@ PAGES["nta-invoice"] = {
     "us_strengths": [
         "<strong>登録番号 × 制度の横断検索</strong>。同事業者が受給できる補助金 / 適用税制 / 該当判例 を 1 リクエストで取得。"
         "国税庁公表サイトは登録番号と公示情報のみで、他データとの結合は提供せず。",
-        "<strong>MCP プロトコル対応</strong>。Claude / ChatGPT / Cursor 等から直接呼べる 89 tools。"
+        "<strong>MCP プロトコル対応</strong>。Claude / ChatGPT / Cursor 等から直接呼べる 93 tools。"
         "国税庁公表サイトは Web API のみで、MCP は対象外。",
         "<strong>判例 / 行政処分 / 法令</strong>を含む横断検索。「取引相手の登録番号 → 行政処分の有無」を 1 query で確認可能。",
     ],
@@ -397,12 +396,12 @@ PAGES["diy-scraping"] = {
         "を踏まえると、買う方が早いケースが多いという honest な比較です。"
     ),
     "us_strengths": [
-        "<strong>5 分で動く</strong>。匿名 50 req/月/IP で即評価、API key 不要。"
+        "<strong>5 分で動く</strong>。匿名 3 req/日/IP で即評価、API key 不要。"
         "自前 crawler は 1,500+ ソースを書ききるまで数週間〜数ヶ月。",
         "<strong>失効監視 + dedup + license 管理</strong>を当社が運用。"
-        "毎晩 tier S/A 全件 + 段階的に B/C も巡回し、404 即 quarantine。"
+        "URL 死活と出典鮮度を定期的に監視し、問題のある行は確認対象に回します。"
         "重複除去ロジック (公募回 / 都道府県差し替え) も内製済。",
-        "<strong>89 MCP tools</strong>を Claude / ChatGPT / Cursor から直呼び。"
+        "<strong>93 MCP tools</strong>を Claude / ChatGPT / Cursor から直呼び。"
         "自前で MCP サーバーを書く工数も不要。",
     ],
     "them_strengths": [
@@ -422,8 +421,8 @@ PAGES["diy-scraping"] = {
         "<p><strong>license の落とし穴</strong>: 自前 crawler の最大の罠は<strong>出典管理</strong>です。"
         "集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>source_url</code> にすると"
         "古い金額・終了済み制度を孫引きしてしまい、景表法 / 善管注意義務リスクが顕在化します。"
-        "当社は社内規約で「集約サイト除外、政府機関一次資料のみ」を強制し、"
-        "全行に <code>source_url</code> + <code>fetched_at</code> + <code>license</code> を持たせています。"
+        "当社は「集約サイトを出典にしない」方針を公開し、主要な公開行に"
+        "<code>source_url</code> + <code>fetched_at</code> + <code>license</code> を持たせています。"
         "この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、"
         "「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>"
     ),
@@ -625,7 +624,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
   }}
 </style>
 
-<script defer src="/analytics.js"></script>
+<script defer src="/analytics.js?v=20260503a"></script>
 </head>
 <body>
 
@@ -698,7 +697,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
       <li><a href="/compare.html">全比較表 (6 サービス × 13 軸)</a></li>
       <li><a href="/pricing.html">料金 (¥3/req 完全従量)</a></li>
       <li><a href="/docs/api-reference/">API リファレンス</a></li>
-      <li><a href="/docs/mcp-tools/">MCP tools (72)</a></li>
+      <li><a href="/docs/mcp-tools/">MCP tools (93)</a></li>
       <li><a href="/sources.html">出典・ライセンス</a></li>
       <li><a href="/facts.html">数字の検証 SQL</a></li>
     </ul>
@@ -706,7 +705,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
     <p class="footnote">
       凡例: 「公開情報なし」「公開情報非公表」は、各社公式サイトに記載が確認できなかった、または当社が把握していない項目を指します。
       機能の不在を断定するものではありません。各社 ToS や新規機能追加によって変わります。
-      また、本ページは特定商取引法 §52 に従い、誇大表現の排除と訂正義務を負います。
+      本ページは公開情報に基づき、誇張を避け、訂正依頼を受け付けます。
       訂正が必要な場合は <a href="mailto:info@bookyou.net?subject=compare/{slug}%20correction">info@bookyou.net</a> 宛にご連絡ください。
     </p>
 

@@ -117,7 +117,7 @@
   }
 </style>
 
-<script defer src="analytics.js"></script>
+<script defer src="analytics.js?v=20260503a"></script>
 </head>
 <body>
 
@@ -195,7 +195,7 @@
  </tr>
  <tr>
  <th scope="row">2. 一次資料 出典 URL の有無 (政府機関への直リンク)</th>
- <td class="col-us"><span class="yes">あり</span> 99%以上の制度に出典 URL + 更新日時を付与 (例外は CMS が無い 12 件の小規模自治体)</td>
+ <td class="col-us"><span class="yes">あり</span> 主要な公開レコードに一次資料 URL + 取得時刻を付与。詳細は Data Freshness / Sources を参照。</td>
  <td class="unknown">公開情報非公表 (要確認)</td>
  <td class="unknown">公開情報非公表 (要確認)</td>
  <td class="unknown">公開情報非公表 (要確認)</td>
@@ -217,7 +217,7 @@
  </tr>
  <tr>
  <th scope="row">4. MCP (Model Context Protocol)</th>
- <td class="col-us"><span class="yes">あり</span> 公式 MCP サーバー (PyPI 配布) + Smithery / DXT 配布、AI Agent から直接利用可</td>
+ <td class="col-us"><span class="yes">あり</span> MCP サーバー (PyPI 互換) + 手動設定 / DXT bundle、AI Agent から直接利用可</td>
  <td class="no">公開情報なし</td>
  <td class="no">公開情報なし</td>
  <td class="no">公開情報なし</td>
@@ -316,7 +316,7 @@
  </tr>
  <tr>
  <th scope="row">13. 法人検索 (法人番号 / gBiz)</th>
- <td class="col-us"><span class="yes">あり</span> 法人 166,969 件 (gBiz INFO 取込) + 適格請求書発行事業者 13,801 件 (PDL v1.0 ライセンス、月次フル取込予定)</td>
+ <td class="col-us"><span class="yes">あり</span> 法人 166,969 件 (gBiz INFO 取込) + 適格請求書発行事業者 13,801 件 (PDL v1.0)</td>
  <td class="no">対象外</td>
  <td class="no">対象外</td>
  <td class="no">対象外</td>
@@ -356,15 +356,15 @@
  <div class="pick-card">
  <p class="pick-tag">税理士 / 行政書士 / 中小企業診断士</p>
  <h3>顧客横断で扱うなら一次資料連結が必須</h3>
- <p>顧問先 10 社以上を扱う士業の方は、二次情報サイトの古い金額や終了済み制度をそのまま使うと事故になります (景表法・善管注意義務リスク)。一次資料 URL と更新日時が全件に紐づく仕組みが必須です。</p>
- <p class="pick-rec"><strong>jpcite</strong> なら、全件の出典 URL + 更新日時、e-Gov 法令本文への直リンク、行政処分 1,185 件 (取引相手の業者調査) が一気通貫。MCP 経由で Claude / ChatGPT に直接渡せます。</p>
+ <p>顧問先 10 社以上を扱う士業の方は、二次情報サイトの古い金額や終了済み制度をそのまま使うと事故になります。一次資料 URL と取得時刻を確認できる仕組みが必要です。</p>
+ <p class="pick-rec"><strong>jpcite</strong> は、主要公開レコードの出典 URL + 取得時刻、e-Gov 法令へのリンク、行政処分 1,185 件を API/MCP から参照できます。MCP 経由で Claude / ChatGPT に直接渡せます。</p>
  </div>
 
  <div class="pick-card">
  <p class="pick-tag">開発者 / AI Agent 構築</p>
- <h3>API/MCP が必須なら選択肢は実質一つ</h3>
+ <h3>API/MCP を重視する場合</h3>
  <p>主要な補助金検索サイト・支援ポータルの多くは、公開 API や MCP サーバーを提供していません (2026-04-26 時点)。AI から呼ぶには HTML スクレイピング + 個別 TOS 確認が必要です。</p>
- <p class="pick-rec"><strong>jpcite</strong> は REST + MCP + OpenAPI 仕様書 + 93 機能 が公開時点で揃います。匿名 3 リクエスト/日で評価でき、本番は ¥3/リクエスト 完全従量、SDK 不要です。</p>
+ <p class="pick-rec"><strong>jpcite</strong> は REST + MCP + OpenAPI 仕様書 + 93 機能を公開しています。匿名 3 リクエスト/日で評価でき、本番は ¥3/リクエスト 完全従量、SDK 不要です。</p>
  </div>
  </div>
 

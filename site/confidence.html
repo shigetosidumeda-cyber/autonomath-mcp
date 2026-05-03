@@ -263,7 +263,7 @@
 
  <!-- Time series --------------------------------------------------------- -->
  <section class="conf-section" aria-labelledby="ts-h">
- <h2 id="ts-h">推移 — 日次 信頼度 (T+0 から)</h2>
+	 <h2 id="ts-h">推移 — 日次 信頼度 (公開後)</h2>
  <p class="desc">過去のスナップショットを時系列で結んだもの。薄色の帯は 95% 区間です。</p>
  <div class="ts-chart-wrap">
  <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="発見確率 / 再利用確率 の日次推移">
@@ -374,7 +374,7 @@
       var td = document.createElement("td");
       td.colSpan = 7;
       td.className = "muted";
-      td.textContent = "まだ tool 単位の十分な trial が蓄積されていません (T+0 直後はスパースな状態です)。";
+      td.textContent = "まだ tool 単位の十分な trial が蓄積されていません (公開直後はデータが少ない状態です)。";
       tr.appendChild(td);
       body.appendChild(tr);
       return;
@@ -440,7 +440,7 @@
       t.setAttribute("text-anchor", "middle");
       t.setAttribute("font-size", "12");
       t.setAttribute("fill", "#555");
-      t.textContent = "スナップショット履歴がまだ蓄積されていません (T+0 直後)。";
+      t.textContent = "スナップショット履歴がまだ蓄積されていません (公開直後)。";
       svg.appendChild(t);
       return;
     }

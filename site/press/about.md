@@ -34,7 +34,7 @@ Where jGrants is the application portal, jpcite is the discovery, compatibility,
 | Case studies (採択事例) | 2,286 |
 | Loan programs (detailed) | 108 (three-axis collateral / personal-guarantor / third-party-guarantor decomposition) |
 | Enforcement cases | 1,185 |
-| Primary-source coverage | 99%以上 (source_url + fetched_at; 12件は小規模自治体 CMS 不在のため URL 未取得) |
+| Primary-source coverage | 主要な公開行に source_url + fetched_at を付与。欠落行は backfill せず明示 |
 | Exclusion rules | 181 public-rule entries for compatibility and prerequisite checks |
 | MCP tools | 93 tools for program search, eligibility checks, evidence packets, laws, tax rulesets, invoice registrants, court decisions, and bids |
 | MCP protocol | 2025-06-18 |

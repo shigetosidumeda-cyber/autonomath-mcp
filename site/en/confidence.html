@@ -248,7 +248,7 @@
 
  <!-- Time series --------------------------------------------------------- -->
  <section class="conf-section" aria-labelledby="ts-h">
- <h2 id="ts-h">Trend — daily confidence (from T+0)</h2>
+	 <h2 id="ts-h">Trend — daily confidence (since launch)</h2>
  <p class="desc">Past snapshots joined as a time series. The faint band is the 95% interval.</p>
  <div class="ts-chart-wrap">
  <svg id="ts-svg" viewBox="0 0 800 200" preserveAspectRatio="none" role="img" aria-label="Daily Discovery / Use trend">
@@ -356,7 +356,7 @@
       var td = document.createElement("td");
       td.colSpan = 7;
       td.className = "muted";
-      td.textContent = "Not enough per-tool trials have accumulated yet (the data is sparse just after T+0).";
+      td.textContent = "Not enough per-tool trials have accumulated yet (data is limited just after launch).";
       tr.appendChild(td);
       body.appendChild(tr);
       return;
@@ -422,7 +422,7 @@
       t.setAttribute("text-anchor", "middle");
       t.setAttribute("font-size", "12");
       t.setAttribute("fill", "#555");
-      t.textContent = "No snapshot history yet (just after T+0).";
+      t.textContent = "No snapshot history yet (early after launch).";
       svg.appendChild(t);
       return;
     }

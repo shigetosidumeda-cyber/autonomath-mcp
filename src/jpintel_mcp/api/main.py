@@ -978,11 +978,21 @@ def create_app() -> FastAPI:
             "Stripe-Signature",
             "X-Postmark-Webhook-Signature",
             # IETF Idempotency-Key (draft-ietf-httpapi-idempotency-key-header).
-            # Used by /v1/me/clients/bulk_evaluate (commit=true) and the
-            # kintone integration POST. Without it on the allowlist, browser-
-            # side preflight rejects the header and the dashboard's retry UI
-            # cannot send the dedup token alongside the POST body.
+            # Accepted by /v1/me/clients/bulk_evaluate (commit=true) as a
+            # form-field fallback and by the kintone integration POST.
+            # Without it on the allowlist, browser-side preflight rejects the
+            # dedup token before the handler can enforce retry safety.
             "Idempotency-Key",
+        ],
+        expose_headers=[
+            "X-Anon-Quota-Remaining",
+            "X-Anon-Quota-Reset",
+            "X-Anon-Upgrade-Url",
+            "X-Billed-Yen",
+            "X-Cost-Yen",
+            "X-Idempotent-Replay",
+            "X-Metered",
+            "Retry-After",
         ],
         max_age=3600,
     )

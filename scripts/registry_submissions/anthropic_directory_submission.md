@@ -39,7 +39,7 @@ MCP server (external)
 ### Short description (160 characters max)
 
 ```
-Search Japanese institutional data: 10,790 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants. 93 MCP tools. ¥3/req (¥3.30 tax-incl). 3/day free anon.
+Search Japanese institutional data: 11,684 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants. 93 MCP tools. ¥3/req (¥3.30 tax-incl). 3/day free anon.
 ```
 
 (Length: 156 characters.)
@@ -47,7 +47,7 @@ Search Japanese institutional data: 10,790 subsidies + 154 laws + 2,065 court de
 ### Long description (500–800 characters)
 
 ```
-AutonoMath exposes Japanese institutional public data via 93 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 10,790 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 154 laws full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 35 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0 delta) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Every row carries source_url + fetched_at; no aggregators. ¥3/req tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
+AutonoMath exposes Japanese institutional public data via 93 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 11,684 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 154 laws full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; no aggregators. ¥3/req tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
 ```
 
 ### Repository URL
@@ -223,7 +223,7 @@ Square variant: site/static/icons/autonomath-icon-512.png (if needed)
 ```
 - Public 79-query gold-standard eval suite at evals/ runs in CI on every PR.
 - Per-tool precision table at docs/per_tool_precision.md.
-- 99%+ of rows carry source_url + fetched_at (12 rows lack URL because the originating small-municipality CMS has no dedicated page).
+- major public rows carry source_url + fetched_at (12 rows lack URL because the originating small-municipality CMS has no dedicated page).
 - 4 broken tools are gated OFF (not stripped) so a fix can flip them back ON without a manifest bump.
 - Evidence Pre-fetch / precomputed intelligence prepares source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins for retrieval; describe it as evidence packaging, not as model-cost savings.
 - Fully metered ¥3/req tax-exclusive (¥3.30 tax-inclusive) with no tiers reflects a deliberate solo-operator + zero-touch ops policy.

@@ -44,7 +44,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="/styles.css?v=20260428a">
 
-<script defer src="analytics.js"></script>
+<script defer src="analytics.js?v=20260503a"></script>
 
 <script type="application/ld+json">
 {
@@ -936,24 +936,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="/assets/prescreen-demo.js" defer></script>
 <script src="/assets/trust-strip.js" defer></script>
-
-<script defer>
-// §4-E cta_click beacon — delegate clicks on any element carrying
-// data-cta-variant. Same scheme used across the site so we don't have to
-// thread per-button handlers through every section. Fires once per click;
-// the beacon helper itself swallows all errors.
-document.addEventListener('click', function(e) {
-  try {
-    var el = e.target.closest && e.target.closest('[data-cta-variant]');
-    if (!el) return;
-    if (typeof window.jpciteTrack !== 'function') return;
-    window.jpciteTrack('cta_click', {
-      cta_variant: el.getAttribute('data-cta-variant'),
-      href: el.getAttribute('href') || null,
-    });
-  } catch (_e) {}
-}, true);
-</script>
 
 </body>
 </html>

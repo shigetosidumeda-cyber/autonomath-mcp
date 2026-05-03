@@ -60,16 +60,16 @@ Operator:           Bookyou株式会社 (T8010001213708) — 代表 梅田茂利
 
 ----- What it does -----
 
-AutonoMath exposes Japanese institutional public data via MCP tools, with primary-source URLs on 99%+ of rows. Coverage:
+AutonoMath exposes Japanese institutional public data via MCP tools, with primary-source URLs on major public rows. Coverage:
 
-- 10,790 searchable programs (補助金 / 融資 / 税制 / 認定; tier S=114, A=1,340, B=3,292, C=6,044; full table incl. tier X quarantine = 13,578)
+- 11,684 searchable programs (補助金 / 融資 / 税制 / 認定; tier S=114, A=1,340, B=3,292, C=6,044; full table incl. tier X quarantine = 14,472)
 - 2,286 採択事例 (adoption case studies)
 - 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人)
 - 1,185 行政処分 records (administrative enforcement)
 - 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY; full-text load is incremental, name resolver covers all 9,484)
 - 2,065 court decisions
 - 362 bids (GEPS + 47 都道府県)
-- 35 tax rulesets (インボイス + 電帳法)
+- 50 tax rulesets (インボイス + 電帳法)
 - 13,801 国税庁 qualified-invoice registrants (PDL v1.0 delta-only, redistributable with attribution)
 - 4,300 sourced compatibility pairs (am_compat_matrix status='confirmed'; the additional 44,515 heuristic inferences are flagged status='unknown' and never surfaced as truth)
 - 181 exclusion / prerequisite rules

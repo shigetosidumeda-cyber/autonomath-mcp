@@ -2,8 +2,8 @@
 {
   "@context": "https://schema.org",
   "@type": "APIReference",
-  "headline": "jpcite REST API Reference (178 endpoints)",
-  "description": "jpcite REST API の全 178 endpoint 仕様。programs / exclusions / meta / billing / dashboard / laws / loans / court-decisions / bids / 行政処分 / 採択事例 / invoice 適格事業者 / tax_rulesets / V1+メタデータ+静的データセット 拡張を含む。",
+  "headline": "jpcite REST API Reference (187 operations)",
+  "description": "jpcite REST API の全 187 operation 仕様。programs / exclusions / meta / billing / dashboard / laws / loans / court-decisions / bids / 行政処分 / 採択事例 / invoice 適格事業者 / tax_rulesets / V1+メタデータ+静的データセット 拡張を含む。",
   "datePublished": "2026-04-01",
   "dateModified": "2026-04-26",
   "inLanguage": "ja",
@@ -31,7 +31,7 @@
 
 jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合だけ、入力文脈量の削減見込みと break-even を返します。外部 LLM の請求額削減は保証しません。
 
-REST API 全 178 endpoint。programs / exclusions / meta / billing / dashboard / 各種データセット (laws / loans / court_decisions / bids / 行政処分 / 採択事例 / invoice / tax_rulesets) / agent・MCP 向け endpoint を含む。
+REST API 全 187 operation。programs / exclusions / meta / billing / dashboard / 各種データセット (laws / loans / court_decisions / bids / 行政処分 / 採択事例 / invoice / tax_rulesets) / agent・MCP 向け endpoint を含む。
 
 ## ベース URL
 
@@ -41,7 +41,7 @@ https://api.jpcite.com
 
 ## 目次 (Endpoint catalogue)
 
-全 178 endpoint。OpenAPI spec (`docs/openapi/v1.json`) と完全一致。★ = 本ページに詳細あり、それ以外は OpenAPI から自動展開した最小ドキュメント (本ページ後半に展開済み)。
+全 187 operation (180 paths)。OpenAPI spec (`docs/openapi/v1.json`) と完全一致。★ = 本ページに詳細あり、それ以外は OpenAPI から自動展開した最小ドキュメント (本ページ後半に展開済み)。
 
 - **Programs** (4)
   - `POST /v1/programs/batch` ★

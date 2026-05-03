@@ -32,7 +32,8 @@ License values (per CLAUDE.md V4 absorption notes)
 Redistributable (allowed):
 
   * ``pdl_v1.0``      — NTA インボイス公表サイト bulk (PDL v1.0; attribution required)
-  * ``gov_standard``  — 政府標準利用規約 (省庁全般; attribution required)
+  * ``gov_standard`` / ``gov_standard_v2.0`` — 政府標準利用規約
+    (省庁全般; attribution required)
   * ``cc_by_4.0``     — e-Gov 法令 (Creative Commons BY 4.0; attribution required)
   * ``public_domain`` — public domain (no attribution required, but emitted anyway)
 
@@ -42,14 +43,10 @@ Blocked (NOT redistributable):
   * ``unknown``       — license not yet resolved; safe default = block
   * any other value   — allow-list default
 
-Note on the on-disk DB: `am_source.license` may carry the production
-value ``gov_standard_v2.0`` (the v2 string is what the bulk-fill script
-emits). The constants here use the canonical short-form ``gov_standard``
-as specified by the task; if a row carries ``gov_standard_v2.0`` the
-caller is responsible for normalizing it to ``gov_standard`` (or for
-adding ``gov_standard_v2.0`` to ``REDISTRIBUTABLE_LICENSES`` once
-legally reviewed). The gate stays strict about exact-string match so
-license drift is loud, not silent.
+Note on the on-disk DB: `am_source.license` may carry either the
+canonical short-form ``gov_standard`` or the production v2 string
+``gov_standard_v2.0``. Both are intentionally allow-listed. Future
+license strings still default to blocked until explicitly added here.
 
 Attribution
 ===========
@@ -85,6 +82,7 @@ __all__ = [
 REDISTRIBUTABLE_LICENSES: Final[frozenset[str]] = frozenset({
     "pdl_v1.0",
     "gov_standard",
+    "gov_standard_v2.0",
     "cc_by_4.0",
     "public_domain",
 })

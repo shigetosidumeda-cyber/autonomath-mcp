@@ -28,12 +28,17 @@ import hashlib
 import hmac
 import importlib.util
 import json
+import os
 import sqlite3
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 REPO = Path(__file__).resolve().parent.parent
 SRC = REPO / "src"
@@ -42,6 +47,21 @@ if str(SRC) not in sys.path:
 
 
 _PACKET_PREFIX = "/v1/evidence/packets/program/"
+
+
+def _purge_jpintel_modules() -> None:
+    """Force jpintel_mcp modules to re-read the active test DB env.
+
+    These tests import the weekly-digest script under a one-off JPINTEL_DB_PATH.
+    That script lazily imports api.programs, which in turn imports the L4 cache
+    and db.session. Leaving those modules in sys.modules leaks the one-off DB
+    into later API tests in the same pytest process.
+    """
+    for mod in list(sys.modules):
+        if mod.startswith("jpintel_mcp"):
+            del sys.modules[mod]
+    if "weekly_digest_under_test" in sys.modules:
+        del sys.modules["weekly_digest_under_test"]
 
 
 # ---------------------------------------------------------------------------
@@ -139,11 +159,13 @@ def _seed_programs(conn: sqlite3.Connection, programs: list[dict]) -> None:
 
 
 @pytest.fixture()
-def weekly_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+def weekly_db(tmp_path: Path) -> Iterator[Path]:
     """Build a fresh jpintel.db with all required tables for digest tests."""
     db_path = tmp_path / "jpintel.db"
-    monkeypatch.setenv("JPINTEL_DB_PATH", str(db_path))
-    monkeypatch.setenv("API_KEY_SALT", "test-salt")
+    old_db_path = os.environ.get("JPINTEL_DB_PATH")
+    old_salt = os.environ.get("API_KEY_SALT")
+    os.environ["JPINTEL_DB_PATH"] = str(db_path)
+    os.environ["API_KEY_SALT"] = "test-salt"
 
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
@@ -258,12 +280,20 @@ def weekly_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     finally:
         conn.close()
 
-    for mod in list(sys.modules):
-        if mod.startswith("jpintel_mcp.config") or mod.startswith("jpintel_mcp.db"):
-            del sys.modules[mod]
-    if "weekly_digest_under_test" in sys.modules:
-        del sys.modules["weekly_digest_under_test"]
-    return db_path
+    _purge_jpintel_modules()
+
+    try:
+        yield db_path
+    finally:
+        if old_db_path is None:
+            os.environ.pop("JPINTEL_DB_PATH", None)
+        else:
+            os.environ["JPINTEL_DB_PATH"] = old_db_path
+        if old_salt is None:
+            os.environ.pop("API_KEY_SALT", None)
+        else:
+            os.environ["API_KEY_SALT"] = old_salt
+        _purge_jpintel_modules()
 
 
 def _import_digest_module():

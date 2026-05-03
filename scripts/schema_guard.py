@@ -66,13 +66,22 @@ JPINTEL_REQUIRED = {
     "case_studies",
     "loan_programs",
     "enforcement_cases",
+    "analytics_events",
+    "funnel_events",
+    "l4_query_cache",
 }
 JPINTEL_FORBIDDEN = {"am_entities", "am_entity_facts"}
 JPINTEL_REQUIRED_COLUMNS = {
     "programs": {"subsidy_rate_text"},
+    "analytics_events": {"user_agent_class", "is_bot"},
+    "funnel_events": {"event_name", "is_bot", "is_anonymous"},
+    "l4_query_cache": {"cache_key", "tool_name", "params_json", "result_json"},
 }
 JPINTEL_REQUIRED_MIGRATIONS = {
+    "043_l4_cache.sql",
+    "111_analytics_events.sql",
     "121_subsidy_rate_text_column.sql",
+    "123_funnel_events.sql",
 }
 
 AM_REQUIRED = {

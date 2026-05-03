@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>連携ガイド — jpcite</title>
-<meta name="description" content="jpcite を Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini / ChatGPT から使い、回答生成前に一次資料・provenance・構造化ファクトを pre-fetch する連携ガイド。API は固定 ¥3/req。">
+<meta name="description" content="jpcite を Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini / ChatGPT から使い、回答生成前に一次資料・provenance・構造化ファクトを pre-fetch する連携ガイド。現在の公開料金は Pricing に掲載。">
 
 <meta property="og:title" content="連携ガイド — jpcite">
-<meta property="og:description" content="jpcite を Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini / ChatGPT から使い、回答生成前に一次資料・provenance・構造化ファクトを pre-fetch する連携ガイド。API は固定 ¥3/req。">
+<meta property="og:description" content="jpcite を Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini / ChatGPT から使い、回答生成前に一次資料・provenance・構造化ファクトを pre-fetch する連携ガイド。現在の公開料金は Pricing に掲載。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/integrations/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -18,7 +18,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="連携ガイド — jpcite">
-<meta name="twitter:description" content="一次資料・provenance・構造化ファクトを ChatGPT / Claude / Cursor に渡す jpcite 連携ガイド。固定 ¥3/req。">
+<meta name="twitter:description" content="一次資料・provenance・構造化ファクトを ChatGPT / Claude / Cursor に渡す jpcite 連携ガイド。公開料金は Pricing 参照。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/integrations/">
@@ -56,7 +56,7 @@
 }
 </script>
 
-<script defer src="/analytics.js"></script>
+<script defer src="/analytics.js?v=20260503a"></script>
 
 <script type="application/ld+json">
 {
@@ -115,7 +115,7 @@
 <h1 style="margin-bottom:0.2em;">連携ガイド</h1>
 <p style="color:#444;margin-top:0;">MCP 対応クライアント (Claude Desktop / Cursor / Cline / Continue / Windsurf / Gemini) と OpenAPI 連携 (ChatGPT)。</p>
 
-<p>jpcite は ChatGPT / Claude / Cursor が回答を書く前に呼び出す、証拠取得・provenance・pre-fetch レイヤーです。一次資料 URL、取得時刻、制度名、対象地域、金額、締切、併用ルールなどを構造化して返し、AI クライアントが引用可能な根拠を持って説明できるようにします。API は外部 LLM を呼ばず、料金は固定 ¥3/req です。</p>
+<p>jpcite は ChatGPT / Claude / Cursor が回答を書く前に呼び出す、証拠取得・provenance・pre-fetch レイヤーです。一次資料 URL、取得時刻、制度名、対象地域、金額、締切、併用ルールなどを構造化して返し、AI クライアントが引用可能な根拠を持って説明できるようにします。API は外部 LLM を呼ばず、現在の公開料金は Pricing に掲載しています。</p>
 
 <h2 id="before-model">モデルが書く前に使う</h2>
 <p>jpcite は GPT/Claude の代替ではありません。GPT/Claude が文章を書く前に、jpcite が出典付き Evidence Packet を取得します。長いPDFや複数検索結果をそのままモデルへ渡す場合に比べ、文脈量を小さくできる場合があります。削減効果は workload-dependent であり、公開数値は同日・同モデルのベンチマークに限定します。</p>

@@ -63,7 +63,7 @@ https://jpcite.com/docs/
 ### Short description (~160 chars)
 
 ```
-Search 10,790 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants from Cursor. 93 MCP tools, primary-source URLs, ¥3/req (¥3.30 tax-incl), 3/day free anon.
+Search 11,684 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants from Cursor. 93 MCP tools, primary-source URLs, ¥3/req (¥3.30 tax-incl), 3/day free anon.
 ```
 
 ### Long description
@@ -71,9 +71,9 @@ Search 10,790 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice regi
 ```
 AutonoMath exposes Japanese institutional public data via 93 MCP tools at default gates (protocol 2025-06-18, stdio). Drop it into Cursor and ask: 「東京都の農業 DX 補助金を期日順に教えて」or「houjin_bangou=… の DD プロファイルと適格事業者登録を確認して」.
 
-Coverage: 10,790 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 35 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0 delta) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check.
+Coverage: 11,684 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check.
 
-Every row carries source_url + fetched_at; aggregator domains are banned. ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
+Major public rows carry source_url + fetched_at; aggregator domains are banned. ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
 Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
 ```
@@ -196,7 +196,7 @@ https://jpcite.com/tos
 - Honest tool count = 93 at default gates. Older snapshots ("55", "59", "66", "72") may appear in historical files and should be ignored.
 - 4 broken tools are deliberately gated OFF (query_at_snapshot, intent_of, reason_answer, related_programs) — they remain in code so a fix re-enables them without a manifest bump.
 - Evidence Pre-fetch / precomputed intelligence prepares source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins for retrieval; describe it as evidence packaging, not as model-cost savings.
-- 99%+ of rows have primary-source URL lineage; aggregator domains banned.
+- major public rows include primary-source URL lineage; aggregator domains banned.
 ```
 
 ---

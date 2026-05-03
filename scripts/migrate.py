@@ -89,10 +89,7 @@ def _sql_has_target_marker(sql: str, target: str) -> bool:
     the same string buried in a CREATE TRIGGER body can't trip the gate.
     """
     needle = f"-- target_db: {target}"
-    for line in sql.splitlines()[:5]:
-        if line.strip() == needle:
-            return True
-    return False
+    return any(line.strip() == needle for line in sql.splitlines()[:5])
 
 
 def _apply_one(conn: sqlite3.Connection, mig_id: str, sql: str, checksum: str) -> None:
@@ -115,10 +112,24 @@ def _apply_one(conn: sqlite3.Connection, mig_id: str, sql: str, checksum: str) -
             return
     # Note: sqlite3.Connection.executescript() issues an implicit COMMIT before
     # running, so we cannot wrap DDL + bookkeeping in a single user transaction
-    # via BEGIN/COMMIT. Instead run the script, then record it. If the record
-    # insert fails, the migration has still been applied — the next run will
-    # detect and record it via the duplicate-column fallback.
-    conn.executescript(sql)
+    # via BEGIN/COMMIT. Apply statement-by-statement so an already-present
+    # ALTER TABLE ADD COLUMN does not abort the rest of a multi-column
+    # migration and then get recorded as fully applied.
+    for stmt in _iter_sql_statements(sql):
+        try:
+            conn.execute(stmt)
+        except sqlite3.OperationalError as exc:
+            msg = str(exc).lower()
+            stmt_lower = stmt.lower()
+            is_add_column = "alter table" in stmt_lower and "add column" in stmt_lower
+            if "duplicate column" in msg and is_add_column:
+                _LOG.warning(
+                    "duplicate_column_statement_skipping id=%s err=%s",
+                    mig_id,
+                    exc,
+                )
+                continue
+            raise
     conn.execute(
         "INSERT INTO schema_migrations(id, checksum, applied_at) VALUES (?,?,?)",
         (mig_id, checksum, now),
@@ -170,7 +181,7 @@ def _ensure_base_schema(conn: sqlite3.Connection) -> None:
     raw_sql = SCHEMA_PATH.read_text(encoding="utf-8")
     for stmt in _iter_sql_statements(raw_sql):
         try:
-            conn.executescript(stmt)
+            conn.execute(stmt)
         except sqlite3.OperationalError as e:
             msg = str(e).lower()
             stmt_lower = stmt.lower()

@@ -34,7 +34,7 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
 {
   "name": "autonomath-mcp",
   "displayName": "AutonoMath — 日本の制度 MCP",
-  "description": "Search Japanese institutional data: 10,790 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 35 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 93 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on 99%+ rows.",
+  "description": "Search Japanese institutional data: 11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 93 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on major public rows.",
   "repository": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
   "homepage": "https://jpcite.com",
   "license": "MIT",
@@ -118,7 +118,7 @@ A single-server entry for **AutonoMath** (`autonomath-mcp` on PyPI), an MCP serv
 
 | Dataset | Count |
 |---|---|
-| Searchable subsidy/loan/tax/certification programs | 10,790 |
+| Searchable subsidy/loan/tax/certification programs | 11,684 |
 | Adoption case studies (採択事例) | 2,286 |
 | Loan products (3-axis 担保 / 個人保証人 / 第三者保証人 decomposition) | 108 |
 | Enforcement records (行政処分) | 1,185 |

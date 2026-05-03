@@ -37,7 +37,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="/styles.css?v=20260429b">
 
-<script defer src="analytics.js"></script>
+<script defer src="analytics.js?v=20260503a"></script>
 
 <style>
   /* Page-scoped styles — kept inline to avoid a second style.css fetch.
@@ -487,7 +487,7 @@
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="/playground.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
  <span class="sep" aria-hidden="true">/</span>
- <a href="/en/playground.html" lang="en" hreflang="en">EN</a>
+ <a href="/en/" lang="en" hreflang="en">EN</a>
  </span>
  </nav>
  </div>
@@ -750,7 +750,7 @@
       method: 'GET',
       path: '/v1/invoice_registrants/search',
       title: '適格請求書発行事業者 検索',
-      desc: 'PDL v1.0 attribution エンベロープあり (再配布 OK)。 13,801 rows delta。',
+      desc: '返却行には PDL v1.0 attribution を付与。全件 bulk は国税庁の公式ダウンロードを参照。収録 13,801 rows。',
       params: [
         { name: 'q',                  type: 'text',   label: '事業者名 (前方一致)', placeholder: 'トヨタ', defaultValue: 'トヨタ' },
         { name: 'houjin_bangou',      type: 'text',   label: '法人番号 (13桁)',     placeholder: '1180301018771' },

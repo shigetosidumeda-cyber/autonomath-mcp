@@ -1,8 +1,8 @@
 # jpcite Fact Sheet
 
-更新日: 2026-04-25 / Launch: 2026-05-06 / Bookyou株式会社
+更新日: 2026-05-03 / Bookyou株式会社
 
-数値ファクトシート — 引用時は出典「jpcite / Bookyou株式会社, 2026-04-25 時点」を明記してください。
+数値ファクトシート — 引用時は出典「jpcite / Bookyou株式会社, 2026-05-03 時点」を明記してください。
 
 ---
 
@@ -21,13 +21,13 @@
 | 製品名 | jpcite |
 | MCP パッケージ | PyPI 互換パッケージとして提供 |
 | ドメイン | https://jpcite.com |
-| ステータス | Launch 2026-05-06 |
+| ステータス | 公開中 |
 | 提供形態 | REST API + MCP server (stdio) |
 | MCP プロトコル | 2025-06-18 |
 | MCP ツール総数 | 93 |
 | REST API 経路 | `/v1/*` (FastAPI) |
 
-## Coverage (2026-04-25 時点)
+## Coverage (2026-05-03 時点)
 
 | データ | 件数 | 出典 |
 |---|---:|---|
@@ -37,16 +37,16 @@
 | 行政処分 | 1,185 | 各官庁の公表行政処分 |
 | 法令 (本文収録) | 154 | e-Gov 法令データ提供システム (CC-BY) — 全文検索対象 |
 | 法令 (メタデータ stubs) | 9,484 | e-Gov 法令データ提供システム (CC-BY) — 法令名 resolver 用、本文ロード継続中 |
-| 税務 ruleset | 35 | 国税庁 (インボイス + 電帳法) |
+| 税務 ruleset | 50 | 国税庁 (インボイス + 電帳法) |
 | 適格事業者 | 13,801 | 国税庁 (PDL v1.0) |
 | entity-fact entities | 503,930 | 12 record_kinds |
 | entity-fact facts | 6.12M | EAV schema |
-| entity-fact relations | 23,805 | 14 canonical relation types |
+| entity-fact relations | 378,342 | relation table |
 | entity-fact aliases | 335,605 | 別名・略称 index |
 | 法令条文 index | 28,048 | e-Gov 法令データ提供システム |
 | 行政処分 詳細 records | 22,258 | 各官庁の公表行政処分 |
 | 排他ルール | 181 | 公開要綱に基づき整理 |
-| `source_url` 付与率 | 99% 以上 | 12 件は小規模自治体 CMS 不在のため URL 未取得 |
+| `source_url` / 鮮度 | 主要な公開レコードに付与 | 鮮度・broken URL は Data Freshness で確認 |
 
 ## Pricing
 
@@ -68,19 +68,12 @@
 | 静的サイト | 公開Webサイト |
 | データベース | SQLite + 日本語の高速全文検索 |
 | OpenAPI | https://api.jpcite.com/v1/openapi.json |
-| MCP registry | mcp registry, smithery, glama, etc. |
+| MCP distribution | MCP client configuration, DXT bundle, public manifests |
 
-## Launch milestones
+## Release notes
 
-| 日付 (JST) | イベント |
-|---|---|
-| T-3d (2026-05-03) | Zenn 草稿 publish |
-| T-2d (2026-05-04) | GitHub repo public |
-| T-1d (2026-05-05) | PyPI publish |
-| T+0 (2026-05-06) | Launch tweet + HN Show + email subscribers |
-| T+1d (2026-05-07) | 5 audience pitch detailed blog |
-| T+3d (2026-05-09) | Case study collection start |
-| T+7d (2026-05-13) | First metrics report (transparent dashboard) |
+Public release notes and data refresh notices are published on the website
+and in the audit log feed.
 
 ## Contact
 
@@ -90,4 +83,4 @@
 
 ---
 
-最終更新: 2026-04-25 / Bookyou株式会社 / info@bookyou.net
+最終更新: 2026-05-03 / Bookyou株式会社 / info@bookyou.net

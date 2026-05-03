@@ -165,7 +165,7 @@
     {"@type": "Question", "name": "Corporations and sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Both. Same ¥3/req for taxable / tax-exempt entities, corporations, and sole proprietors. Every invoice carries the qualified Japanese invoice registration — taxable entities can claim the input-tax credit."}},
     {"@type": "Question", "name": "Can I set a monthly spend cap?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set monthly_cap_yen from the dashboard (or POST /v1/me/cap). Once hit, the API returns 503 with cap_reached until the next JST monthly billing cycle. Default is uncapped."}},
     {"@type": "Question", "name": "How is 1 request defined?", "acceptedAnswer": {"@type": "Answer", "text": "1 HTTP or 1 MCP tool call = 1 req. A response with 100 hits still counts as 1 req. /v1/healthz and /v1/me/* meta endpoints are uncounted."}},
-    {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications; 11,684 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition, 1,185 enforcement actions, 154 statutes full-text + 9,484 law metadata records, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned."}}
+    {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications; 11,684 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition, 1,185 enforcement actions, 154 statutes full-text + 9,484 law metadata records, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Most public rows carry primary-source URL + fetched_at metadata; aggregators are banned from source fields."}}
   ]
 }
 </script>
@@ -176,7 +176,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=20260429a">
 
-<script defer src="../analytics.js"></script>
+<script defer src="../analytics.js?v=20260503a"></script>
 </head>
 <body>
 
@@ -250,8 +250,8 @@
  </div>
 
  <div class="hero-cta" style="display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px;">
- <a class="btn btn-primary" href="#api-paid" data-cta-variant="hero-issue-key" style="font-size:17px;padding:14px 24px;">Issue API key (free 3 req/day tier)</a>
- <a class="btn btn-secondary" href="getting-started.html" data-cta-variant="hero-playground" style="font-size:17px;padding:14px 24px;">Try in REST playground</a>
+ <a class="btn btn-primary" href="#api-paid" data-cta-variant="hero-issue-key" style="font-size:17px;padding:14px 24px;">Issue paid API key</a>
+ <a class="btn btn-secondary" href="../playground.html" data-cta-variant="hero-playground" style="font-size:17px;padding:14px 24px;">Open Japanese REST playground</a>
  </div>
 
  <ul class="trust-strip-blocks" style="display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:24px 0 28px;font-size:12px;line-height:1.5;">
@@ -454,7 +454,7 @@
           }
           r.addEventListener('input', recompute);
           recompute();
-        });
+        })();
       </script>
  <script>
         // ?from=429 / ?from=trial entry-banner (EN mirror).
@@ -480,7 +480,7 @@
             bodyEl.textContent = 'You can resume anytime. Questions: info@bookyou.net.';
             banner.hidden = false;
           }
-        });
+        })();
       </script>
  <script>
         (function() {
@@ -512,8 +512,9 @@
 	                credentials: 'include',
 	                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 	                body: JSON.stringify({
-                  success_url: 'https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}',
-                  cancel_url: 'https://jpcite.com/en/pricing.html?cancelled=1'
+	                  success_url: 'https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}',
+	                  cancel_url: 'https://jpcite.com/en/pricing.html?cancelled=1',
+	                  locale: 'en'
                 }),
                 signal: ctrl.signal
               });
@@ -545,7 +546,7 @@
               clearTimeout(timer);
             }
           });
-        });
+        })();
       </script>
  </section>
 
@@ -629,7 +630,7 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Data coverage?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">As of April 2026: <span data-fact="total_programs">14,472</span> Japanese public programs (<span data-fact="searchable_programs_total">11,684</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs (three-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, 154 statutes full-text + 9,484 law metadata records, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. 99%+ of rows carry a primary-source URL + fetched_at; aggregators are banned. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">As of April 2026: <span data-fact="total_programs">14,472</span> Japanese public programs (<span data-fact="searchable_programs_total">11,684</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs (three-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, 154 statutes full-text + 9,484 law metadata records, 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Most public rows carry primary-source URL + fetched_at metadata; aggregators are banned from source fields. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
  </details>
  </div>
  </section>
@@ -644,7 +645,7 @@
  </p>
  <div style="display:flex;flex-wrap:wrap;gap:12px;">
  <a class="btn btn-primary" href="#api-paid" data-cta-variant="bottom-issue-key" style="font-size:16px;padding:13px 22px;">Issue API key</a>
- <a class="btn btn-secondary" href="getting-started.html" data-cta-variant="bottom-playground" style="font-size:16px;padding:13px 22px;">Try in REST playground</a>
+ <a class="btn btn-secondary" href="../playground.html" data-cta-variant="bottom-playground" style="font-size:16px;padding:13px 22px;">Open Japanese REST playground</a>
  </div>
  </section>
 

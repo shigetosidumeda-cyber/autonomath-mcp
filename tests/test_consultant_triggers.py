@@ -269,6 +269,46 @@ def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
     assert rows == []
 
 
+def test_bulk_evaluate_final_cap_guard_blocks_delivery_and_cache(
+    client, consultant_key, seeded_db, monkeypatch,
+):
+    import jpintel_mcp.api.middleware.customer_cap as cap_module
+
+    monkeypatch.setattr(
+        cap_module, "metered_charge_within_cap", lambda *args, **kwargs: False
+    )
+
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "15"},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={
+            "commit": "true",
+            "idempotency_key": "final-cap-blocks",
+        },
+    )
+
+    assert r.status_code == 503
+    assert r.headers.get("X-Billed-Yen") is None
+    assert r.json()["detail"]["code"] == "billing_unavailable"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        usage_rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE endpoint = 'clients.bulk_evaluate'"
+        ).fetchall()
+        cache_rows = c.execute(
+            "SELECT response_blob FROM am_idempotency_cache"
+        ).fetchall()
+    finally:
+        c.close()
+    assert usage_rows == []
+    assert len(cache_rows) == 1
+    assert '"reserved": true' in cache_rows[0][0]
+    assert '"results"' not in cache_rows[0][0]
+
+
 def test_bulk_evaluate_commit_requires_cost_cap(
     client, consultant_key,
 ):
@@ -395,11 +435,13 @@ def test_bulk_evaluate_idempotency_reservation_prevents_cache_failure_overbill(
 
     r2 = client.post(
         "/v1/me/clients/bulk_evaluate",
-        headers=headers,
+        headers={"X-API-Key": consultant_key, "X-Cost-Cap-JPY": "0"},
         files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
         data=data,
     )
     assert r2.status_code == 200, r2.text
+    assert r2.headers.get("X-Idempotent-Replay") == "1"
+    assert r2.headers.get("X-Billed-Yen") is None
 
     changed_csv = SAMPLE_CSV.replace("株式会社A商事", "別法人")
     r3 = client.post(
@@ -410,6 +452,44 @@ def test_bulk_evaluate_idempotency_reservation_prevents_cache_failure_overbill(
     )
     assert r3.status_code == 409
     assert r3.json()["detail"]["code"] == "idempotency_payload_mismatch"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE endpoint = 'clients.bulk_evaluate'"
+        ).fetchall()
+    finally:
+        c.close()
+    assert len(rows) == 1, rows
+    assert int(rows[0][0]) == 5, rows
+
+
+def test_bulk_evaluate_accepts_idempotency_header(
+    client, consultant_key, seeded_db,
+):
+    idem_key = "header-idempotency-key"
+    r = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={
+            "X-API-Key": consultant_key,
+            "X-Cost-Cap-JPY": "15",
+            "Idempotency-Key": idem_key,
+        },
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={"commit": "true"},
+    )
+    assert r.status_code == 200, r.text
+    assert r.headers.get("X-Billed-Yen") == "15"
+
+    r2 = client.post(
+        "/v1/me/clients/bulk_evaluate",
+        headers={"X-API-Key": consultant_key, "Idempotency-Key": idem_key},
+        files={"file": ("clients.csv", SAMPLE_CSV.encode("utf-8"))},
+        data={"commit": "true"},
+    )
+    assert r2.status_code == 200, r2.text
+    assert r2.headers.get("X-Idempotent-Replay") == "1"
 
     c = sqlite3.connect(seeded_db)
     try:

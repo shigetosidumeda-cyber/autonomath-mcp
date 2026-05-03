@@ -238,12 +238,14 @@ def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch)
         json={
             "success_url": "https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}",
             "cancel_url": "https://jpcite.com/en/pricing.html?cancelled=1",
+            "locale": "en",
         },
     )
     assert r.status_code == 200, r.text
     assert r.json()["url"] == "https://checkout.stripe.test/en-ok"
     assert captured[0]["success_url"].startswith("https://jpcite.com/en/success.html")
     assert captured[0]["cancel_url"].startswith("https://jpcite.com/en/pricing.html")
+    assert captured[0]["locale"] == "en"
 
 
 def test_portal_unauthed_returns_401(client, stripe_env, monkeypatch):

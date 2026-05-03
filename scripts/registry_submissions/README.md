@@ -29,7 +29,7 @@ Value proposition note: Evidence Pre-fetch / precomputed intelligence means sour
 
 ### Honest data counts
 
-- **Programs**: 10,790 searchable (tier S=114 / A=1,340 / B=3,292 / C=6,044). Full table incl. tier X quarantine = 13,578.
+- **Programs**: 11,684 searchable (tier S=114 / A=1,340 / B=3,292 / C=6,044). Full table incl. tier X quarantine = 14,472.
 - **Adoption case studies**: 2,286
 - **Loan products**: 108 (with 3-axis 担保 / 個人保証人 / 第三者保証人 decomposition)
 - **Enforcement records (行政処分)**: 1,185

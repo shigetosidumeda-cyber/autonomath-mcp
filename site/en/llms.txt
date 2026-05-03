@@ -18,7 +18,7 @@ crawlers can index the framing.
 - [Overview](https://jpcite.com/docs/)
 - [Getting started (5-minute quickstart)](https://jpcite.com/docs/getting-started/): install, API key, curl/Python/Node, Claude Desktop MCP config
 - [API reference (REST)](https://jpcite.com/docs/api-reference/)
-- [OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 178 paths for ChatGPT Custom GPTs, Claude tools, Stainless / Mintlify / Postman SDK generators.
+- [OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 180 paths for ChatGPT Custom GPTs, Claude tools, Stainless / Mintlify / Postman SDK generators.
 - [MCP tools (93)](https://jpcite.com/docs/mcp-tools/):  core +  stdio tools, MCP protocol 2025-06-18
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Error handling](https://jpcite.com/docs/error_handling/)

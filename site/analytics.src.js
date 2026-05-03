@@ -24,10 +24,13 @@
 //      jpciteTrack('quickstart_copy', { snippet: 'curl-search' });
 //
 //    Defaults:
-//      - API base: window.JPINTEL_API_BASE || 'https://api.jpcite.com'
-//      - Endpoint: <base>/v1/funnel/event (POST, application/json)
+//      - API base: window.JPCITE_API_BASE || window.JPINTEL_API_BASE ||
+//        'https://api.jpcite.com'
+//      - Endpoint: <base>/v1/funnel/event (POST JSON payload)
 //      - Transport: navigator.sendBeacon when available (survives nav),
-//        falls back to fetch keepalive.
+//        falls back to fetch keepalive. Beacon payloads are sent as
+//        text/plain so cross-origin navigation clicks do not depend on
+//        an application/json preflight finishing in time.
 //      - Session id: random 128-bit hex stored in sessionStorage so events
 //        within the same tab can be chained without persistent identifiers.
 //      - Page: location.pathname (query string stripped).
@@ -81,7 +84,7 @@
   }
 
   function apiBase() {
-    var base = window.JPINTEL_API_BASE;
+    var base = window.JPCITE_API_BASE || window.JPINTEL_API_BASE;
     if (typeof base === 'string' && base.length > 0) return base;
     return 'https://api.jpcite.com';
   }
@@ -98,20 +101,25 @@
       });
 
       var apiKey = window.JPINTEL_API_KEY;
-      var headers = { 'Content-Type': 'application/json' };
-      if (typeof apiKey === 'string' && apiKey.length > 0) {
+      var hasApiKey = typeof apiKey === 'string' && apiKey.length > 0;
+      var headers = {
+        'Content-Type': hasApiKey
+          ? 'application/json'
+          : 'text/plain;charset=UTF-8',
+      };
+      if (hasApiKey) {
         headers['Authorization'] = 'Bearer ' + apiKey;
       }
 
       // sendBeacon doesn't support custom headers — use it only when we
       // can ship the payload as text/plain (anonymous events, no Bearer).
-      var canBeacon = !apiKey
+      var canBeacon = !hasApiKey
         && typeof navigator !== 'undefined'
         && typeof navigator.sendBeacon === 'function';
 
       if (canBeacon) {
         try {
-          var blob = new Blob([body], { type: 'application/json' });
+          var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
           if (navigator.sendBeacon(url, blob)) return;
         } catch (_e) { /* fall through */ }
       }
@@ -135,13 +143,42 @@
   // listeners that closed over the old reference.
   window.jpciteTrack = send;
 
-  // Auto-fire pricing_view when the page is /pricing or /pricing.html.
+  function bindCtaTracking() {
+    if (window.__jpciteCtaTrackingBound) return;
+    window.__jpciteCtaTrackingBound = true;
+    document.addEventListener('click', function (e) {
+      try {
+        var target = e.target;
+        var el = target && target.closest && target.closest('[data-cta-variant]');
+        if (!el) return;
+        send('cta_click', {
+          cta_variant: el.getAttribute('data-cta-variant'),
+          href: el.getAttribute('href') || null,
+        });
+      } catch (_e) { /* no-op */ }
+    }, true);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindCtaTracking, { once: true });
+  } else {
+    bindCtaTracking();
+  }
+
+  // Auto-fire pricing_view when the page is /pricing or /en/pricing.
   try {
     var p = (location.pathname || '').replace(/\/$/, '');
-    if (p === '/pricing' || p === '/pricing.html') {
+    if (
+      p === '/pricing'
+      || p === '/pricing.html'
+      || p === '/en/pricing'
+      || p === '/en/pricing.html'
+    ) {
       // Defer to the next tick so any inline JPINTEL_API_KEY assignment
       // gets to run before we check for it.
-      setTimeout(function () { send('pricing_view'); }, 0);
+      setTimeout(function () {
+        send('pricing_view', p.indexOf('/en/') === 0 ? { locale: 'en' } : null);
+      }, 0);
     }
   } catch (_e) { /* no-op */ }
 })();

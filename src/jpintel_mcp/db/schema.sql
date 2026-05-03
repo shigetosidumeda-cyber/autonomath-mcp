@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS programs (
     amount_max_man_yen REAL,
     amount_min_man_yen REAL,
     subsidy_rate REAL,
+    subsidy_rate_text TEXT,
     trust_level TEXT,
     tier TEXT,
     coverage_score REAL,
@@ -369,6 +370,28 @@ CREATE INDEX IF NOT EXISTS idx_funnel_events_key_ts
 CREATE INDEX IF NOT EXISTS idx_funnel_events_human_event_ts
     ON funnel_events(event_name, ts DESC)
     WHERE is_bot = 0;
+
+-- ----- l4_query_cache -------------------------------------------------------
+-- Migration 043 is also embedded here so fresh DBs created via init_db()
+-- (tests/dev/bootstrap paths that do not run scripts/migrate.py) can serve
+-- L4-wired routes without a missing-table first request.
+CREATE TABLE IF NOT EXISTS l4_query_cache (
+    cache_key   TEXT PRIMARY KEY,
+    tool_name   TEXT NOT NULL,
+    params_json TEXT NOT NULL,
+    result_json TEXT NOT NULL,
+    hit_count   INTEGER NOT NULL DEFAULT 0,
+    last_hit_at TEXT,
+    ttl_seconds INTEGER NOT NULL DEFAULT 86400,
+    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_l4_cache_tool
+    ON l4_query_cache(tool_name);
+CREATE INDEX IF NOT EXISTS idx_l4_cache_lru
+    ON l4_query_cache(last_hit_at);
+CREATE INDEX IF NOT EXISTS idx_l4_cache_ttl
+    ON l4_query_cache(created_at, ttl_seconds);
 
 CREATE TABLE IF NOT EXISTS schema_migrations (
     id TEXT PRIMARY KEY,

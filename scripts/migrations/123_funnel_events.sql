@@ -26,8 +26,8 @@
 -- Idempotent: every CREATE / ALTER is guarded against re-apply.
 --   - CREATE TABLE / INDEX uses IF NOT EXISTS.
 --   - ALTER TABLE ADD COLUMN — SQLite has no IF NOT EXISTS, but
---     `scripts/migrate.py:218` and `entrypoint.sh §4` both swallow
---     "duplicate column" errors and mark the migration applied.
+--     `scripts/migrate.py` applies this file statement-by-statement and skips
+--     duplicate ADD COLUMN statements without aborting later columns.
 --
 -- PII posture: `funnel_events.anon_ip_hash` reuses the same daily-rotated
 -- sha256(ip||salt||day) as `analytics_events.anon_ip_hash`. Raw IP NEVER

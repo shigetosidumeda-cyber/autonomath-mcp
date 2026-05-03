@@ -13,6 +13,7 @@ Coverage:
 from __future__ import annotations
 
 import sqlite3
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
@@ -206,8 +207,6 @@ def test_admin_top_errors_happy_path(client, admin_enabled, seeded_db: Path):
 
     kh = hash_api_key(raw)
 
-    from datetime import UTC, datetime, timedelta
-
     now = datetime.now(UTC)
     recent = now - timedelta(minutes=30)
 
@@ -251,6 +250,164 @@ def test_admin_top_errors_happy_path(client, admin_enabled, seeded_db: Path):
     assert fives and fives[0]["error_class"] == "5xx"
     # 200 rows must NOT appear
     assert all(e["status_code"] >= 400 for e in errors)
+
+
+def test_admin_analytics_split_happy_path(client, admin_enabled, seeded_db: Path):
+    """Seed bot + human rows and verify conversion denominators exclude bots."""
+    now = datetime.now(UTC).isoformat()
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.execute("DELETE FROM analytics_events")
+        c.execute("DELETE FROM funnel_events WHERE session_id LIKE 'split-%'")
+        c.executemany(
+            """INSERT INTO analytics_events(
+                   ts, method, path, status, latency_ms, key_hash, anon_ip_hash,
+                   client_tag, is_anonymous, user_agent_class, is_bot
+               ) VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+            [
+                (
+                    now,
+                    "GET",
+                    "/_test/playground.html",
+                    200,
+                    12,
+                    None,
+                    "anon-a",
+                    None,
+                    1,
+                    "browser:chrome",
+                    0,
+                ),
+                (
+                    now,
+                    "GET",
+                    "/_test/pricing.html",
+                    200,
+                    10,
+                    None,
+                    "anon-b",
+                    None,
+                    1,
+                    "browser:chrome",
+                    0,
+                ),
+                (
+                    now,
+                    "POST",
+                    "/_test/v1/programs/search",
+                    200,
+                    45,
+                    "key-hash-1",
+                    None,
+                    "claude",
+                    0,
+                    "claude-code",
+                    0,
+                ),
+                (
+                    now,
+                    "GET",
+                    "/_test/robots",
+                    200,
+                    8,
+                    None,
+                    "anon-bot",
+                    None,
+                    1,
+                    "bot:googlebot",
+                    1,
+                ),
+                (
+                    now,
+                    "POST",
+                    "/v1/funnel/event",
+                    202,
+                    9,
+                    None,
+                    "anon-funnel",
+                    None,
+                    1,
+                    "browser:funnel-beacon",
+                    0,
+                ),
+            ],
+        )
+        c.executemany(
+            """INSERT INTO funnel_events(
+                   ts, event_name, page, properties_json, anon_ip_hash,
+                   session_id, key_hash, user_agent_class, is_bot,
+                   is_anonymous, referer_host
+               ) VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+            [
+                (
+                    now,
+                    "pricing_view",
+                    "/pricing.html",
+                    None,
+                    "anon-a",
+                    "split-1",
+                    None,
+                    "browser:chrome",
+                    0,
+                    1,
+                    "chatgpt.com",
+                ),
+                (
+                    now,
+                    "pricing_view",
+                    "/pricing.html",
+                    None,
+                    "anon-b",
+                    "split-2",
+                    None,
+                    "browser:chrome",
+                    0,
+                    1,
+                    "claude.ai",
+                ),
+                (
+                    now,
+                    "cta_click",
+                    "/pricing.html",
+                    None,
+                    "anon-bot",
+                    "split-bot",
+                    None,
+                    "bot:googlebot",
+                    1,
+                    1,
+                    "google.com",
+                ),
+            ],
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    r = client.get(
+        "/v1/admin/analytics_split",
+        params={"hours": 24},
+        headers={"X-API-Key": ADMIN_KEY},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["bot_requests"] == 1
+    assert body["human_requests"] == 3
+    assert body["paid_conversion_denominator_human_request"] == body[
+        "human_requests"
+    ]
+
+    by_ua = {row["user_agent_class"]: row for row in body["by_ua_class"]}
+    assert by_ua["browser:chrome"]["request_count"] >= 2
+    assert by_ua["browser:chrome"]["is_bot"] is False
+    assert by_ua["bot:googlebot"]["is_bot"] is True
+    assert "browser:funnel-beacon" not in by_ua
+
+    funnel = {row["event_name"]: row for row in body["funnel_events"]}
+    assert funnel["pricing_view"]["human_count"] >= 2
+    assert funnel["pricing_view"]["distinct_sessions"] >= 2
+    assert funnel["cta_click"]["bot_count"] >= 1
 
 
 # ---------------------------------------------------------------------------

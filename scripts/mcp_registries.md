@@ -7,7 +7,7 @@ Target launch: 2026-05-06. Last audited: 2026-04-24.
 
 | Field | Value |
 |---|---|
-| display_name | AutonoMath — 日本の制度 MCP (89 tools) |
+| display_name | jpcite — 日本の制度 MCP (93 tools) |
 | registry_id | `io.github.AutonoMath/autonomath-mcp` |
 | repo | `https://github.com/shigetosidumeda-cyber/autonomath-mcp` |
 | homepage | `https://jpcite.com` |
@@ -23,7 +23,7 @@ Target launch: 2026-05-06. Last audited: 2026-04-24.
 ### Short description (≤160 chars)
 
 ```
-AutonoMath: 93-tool MCP (39 core + 50 autonomath entity-fact DB) over Japanese primary-gov data — 11,684 programs + 503,930 entities + 6.12M facts + 23,805 relations, 181 exclusion rules, 3-axis loan risk. ¥3/req; 3/日 free.
+AutonoMath: 93-tool MCP (39 core + 50 autonomath entity-fact DB) over Japanese primary-gov data — 11,684 programs + 503,930 entities + 6.12M facts + 378,342 relations, 181 exclusion rules, 3-axis loan risk. ¥3/req; 3/日 free.
 ```
 
 ### Long description (≤500 chars)
@@ -32,13 +32,13 @@ AutonoMath: 93-tool MCP (39 core + 50 autonomath entity-fact DB) over Japanese p
 AutonoMath provides structured access to Japanese public-program data via 93 MCP tools (protocol
 2025-06-18): 38 core (11,684 programs 補助金/融資/税制/認定 + 2,286 採択事例 + 108 融資
 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + laws e-Gov CC-BY 9,484 rows + tax rulesets
-インボイス/電帳法 35 rows + court_decisions 2,065 rows + bids 362 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows delta) + 28 autonomath
-(entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across
+インボイス/電帳法 50 rows + court_decisions 2,065 rows + bids 362 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows) + 28 autonomath
+(entity-fact DB: 503,930 entities + 6.12M facts + 378,342 relations + 335,605 aliases across
 tax measures / certifications / laws / authorities / loans / mutual insurance).
 181 structural exclusion/prerequisite rules; cross-dataset glue: trace_program_to_law /
-find_cases_by_law / combined_compliance_check. 99%+ rows: source_url + fetched_at; no aggregators.
-FTS5 trigram tokenizer (Japanese). ¥3/req tax-excl (¥3.30 incl); 50 req/月 per IP free
-(JST 月初リセット, no key required). Bookyou株式会社 / info@bookyou.net.
+find_cases_by_law / combined_compliance_check. Major public rows: source_url + fetched_at; no aggregators.
+FTS5 trigram tokenizer (Japanese). ¥3/req tax-excl (¥3.30 incl); 3 req/日 per IP free
+(JST 日次リセット, no key required). Bookyou株式会社 / info@bookyou.net.
 ```
 
 ## Launch-day publish command (MCP Official Registry)
@@ -113,7 +113,7 @@ After publish: listing propagates to PulseMCP within ~1 week and to several down
 - Method: PR adding one line to `README.md` under `Finance & Fintech`, alphabetical order
 - Entry draft:
   ```
-  - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 93 tools at default gates (39 core + 50 autonomath + 4 LR plan) MCP over 11,684 searchable Japanese public programs (out of 14,472 total), 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only) live. ¥3/req; 3/日 free. `uvx autonomath-mcp`
+  - [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — AutonoMath: 93 tools at default gates (39 core + 50 autonomath + 4 LR plan) MCP over 11,684 searchable Japanese public programs (out of 14,472 total), 181 exclusion rules, 3-axis loan risk, laws (9,484 rows, continually loading) + tax rulesets (50 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows) live. ¥3/req; 3/日 free. `uvx autonomath-mcp`
   ```
 - Review: maintainer-gated, usually days
 
@@ -354,8 +354,8 @@ Submit in order; each should take < 10 min.
 
 gh repo fork punkpeye/awesome-mcp-servers --clone
 # Edit README.md, then:
-gh pr create --title "Add AutonoMath: 66-tool Japanese gov-data MCP" \
-  --body "AutonoMath provides structured access to 11,684 searchable Japanese public programs (out of 14,472 total) (補助金/融資/税制/認定) via 93 MCP tools (39 core + 50 autonomath entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations). Laws (9,484 rows, continually loading) + tax rulesets (35 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows delta-only mirror) live. 99%+ rows: primary-source lineage. 181 exclusion rules, 3-axis loan risk. ¥3/req metered; anon 3 req/日 free per IP."
+gh pr create --title "Add AutonoMath: 93-tool Japanese gov-data MCP" \
+  --body "AutonoMath provides structured access to 11,684 searchable Japanese public programs (out of 14,472 total) (補助金/融資/税制/認定) via 93 MCP tools (39 core + 50 autonomath entity-fact DB: 503,930 entities + 6.12M facts + 378,342 relations). Laws (9,484 rows, continually loading) + tax rulesets (50 rows) + court_decisions (2,065 rows) + bids (362 rows) + invoice registrants (13,801 rows mirror) live. Major public rows: primary-source lineage. 181 exclusion rules, 3-axis loan risk. ¥3/req metered; anon 3 req/日 free per IP."
 ```
 
 #### Step 9 — Zenn launch article
@@ -404,7 +404,7 @@ gh pr create --title "Add AutonoMath: 66-tool Japanese gov-data MCP" \
 
 ### 5. Post-launch monitoring — first 6 hours
 
-Run all of these in parallel from launch moment (T+0):
+Run all of these in parallel from the publication moment:
 
 ```bash
 # Terminal 1: Fly.io live logs

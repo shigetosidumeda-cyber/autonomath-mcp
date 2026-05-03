@@ -24,7 +24,7 @@
 --   The trial is NOT a "Free tier" SKU — pricing stays ¥3/req metered
 --   post-trial. After expiry the user can re-sign up via Stripe Checkout
 --   for a paid key (existing path), or fall back to the anonymous
---   50/月 per-IP free quota (existing AnonIpLimitDep). See
+--   3/day per-IP free quota (existing AnonIpLimitDep). See
 --   project_autonomath_business_model + feedback_zero_touch_solo.
 --
 -- Constraints:

@@ -145,6 +145,26 @@ def test_health_path_excluded(
     assert _count_analytics_for_path(seeded_db, "/healthz") == 0
 
 
+def test_funnel_event_path_excluded_from_analytics_denominator(
+    client: TestClient, seeded_db: Path
+) -> None:
+    """Funnel beacons are stored in funnel_events, not analytics_events."""
+    _clear_analytics(seeded_db)
+
+    r = client.post(
+        "/v1/funnel/event",
+        json={
+            "event": "pricing_view",
+            "page": "/pricing.html",
+            "session_id": "analytics-denominator-test",
+        },
+        headers={"User-Agent": "Mozilla/5.0 Chrome/120.0"},
+    )
+    assert r.status_code == 202, r.text
+
+    assert _count_analytics_for_path(seeded_db, "/v1/funnel/event") == 0
+
+
 def test_multiple_requests_aggregate_correctly(
     client: TestClient, seeded_db: Path
 ) -> None:

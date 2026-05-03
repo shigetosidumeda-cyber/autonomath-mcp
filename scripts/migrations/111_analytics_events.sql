@@ -3,7 +3,7 @@
 --
 -- P0-10 fix (2026-04-30): `usage_events` is 0 rows in production because
 -- `usage_events.key_hash NOT NULL` forbids anonymous traffic, and 99% of
--- launch-window traffic is anonymous (50/月 free tier). Result: every
+-- launch-window traffic is anonymous (3/day free tier). Result: every
 -- analytics / adoption / feature-coverage dashboard reads zero.
 --
 -- Fix: capture EVERY HTTP request (auth + anon) in a separate

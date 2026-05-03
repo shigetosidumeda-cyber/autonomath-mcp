@@ -24,7 +24,7 @@
       "contact": "info@bookyou.net"
     },
     "description_short": "AutonoMath: 93-tool MCP (39 core + 50 autonomath at runtime) over Japanese primary-gov data — 11,684 searchable programs + 503,930 entities + 6.12M facts, 181 exclusion rules, 3-axis loan risk. ¥3/req; 3/日 free.",
-    "description_long": "AutonoMath provides structured access to Japanese public-program data via 93 MCP tools (protocol 2025-06-18): 39 core (11,684 searchable programs 補助金/融資/税制/認定; full table 14,472 incl. public-hold/quarantine rows + 2,286 採択事例 + 108 融資 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + one-shot packs [smb_starter_pack/subsidy_combo_finder/deadline_calendar/dd_profile_am/similar_cases/regulatory_prep_pack/subsidy_roadmap_3yr] + laws e-Gov CC-BY 9,484 rows + tax rulesets インボイス/電帳法 50 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows live delta-only + court decisions 2,065 rows + bids 362 rows) + 50 autonomath at runtime (entity-fact DB: 503,930 entities + 6.12M facts + 23,805 relations + 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance, plus V4 universal resources and Phase A absorption). Evidence Pre-fetch / precomputed intelligence means source_url/fetched_at lineage, exclusion-rule checks, and cross-dataset joins are prepared for retrieval; describe it as evidence packaging, not as model-cost savings. 181 structural exclusion/prerequisite rules; cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. 99%+ rows carry source_url + fetched_at; no aggregators. FTS5 trigram tokenizer. ¥3/req tax-excl (¥3.30 incl); 3 req/日 per IP free (JST 翌日リセット). 36協定 renderer behind AUTONOMATH_36_KYOTEI_ENABLED gate (社労士法 review). Bookyou株式会社 / info@bookyou.net.",
+    "description_long": "AutonoMath provides structured access to Japanese public-program data via 93 MCP tools (protocol 2025-06-18): 39 core (11,684 searchable programs 補助金/融資/税制/認定; full table 14,472 incl. public-hold/quarantine rows + 2,286 採択事例 + 108 融資 担保/個人保証人/第三者保証人 三軸分解 + 1,185 行政処分 + one-shot packs [smb_starter_pack/subsidy_combo_finder/deadline_calendar/dd_profile_am/similar_cases/regulatory_prep_pack/subsidy_roadmap_3yr] + laws e-Gov CC-BY 9,484 rows + tax rulesets インボイス/電帳法 50 rows + invoice registrants 国税庁 PDL v1.0 13,801 rows live delta-only + court decisions 2,065 rows + bids 362 rows) + 50 autonomath at runtime (entity-fact DB: 503,930 entities + 6.12M facts + 378,342 relations + 335,605 aliases across tax measures / certifications / laws / authorities / loans / mutual insurance, plus V4 universal resources and Phase A absorption). Evidence Pre-fetch / precomputed intelligence means source_url/fetched_at lineage, exclusion-rule checks, and cross-dataset joins are prepared for retrieval; describe it as evidence packaging, not as model-cost savings. 181 structural exclusion/prerequisite rules; cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. major public rows carry source_url + fetched_at; no aggregators. FTS5 trigram tokenizer. ¥3/req tax-excl (¥3.30 incl); 3 req/日 per IP free (JST 翌日リセット). 36協定 renderer behind AUTONOMATH_36_KYOTEI_ENABLED gate (社労士法 review). Bookyou株式会社 / info@bookyou.net.",
     "tool_count": 93,
     "tools_base": [
       {"name": "search_programs", "summary": "Full-text + faceted search over 11,684 searchable Japanese public programs (14,472 total incl. public-hold/quarantine rows)"},
@@ -109,10 +109,10 @@
       "court_decisions": "裁判所公開判例 (2,065 rows)",
       "bids": "GEPS + 47都道府県 (362 rows)",
       "tax_rulesets": "インボイス + 電帳法 (50 rows)",
-      "invoice_registrants": "国税庁 PDL v1.0 (13,801 rows delta-only, re-distributable with attribution)",
+      "invoice_registrants": "国税庁 PDL v1.0 (13,801 rows, re-distributable with attribution)",
       "autonomath_entities": 503930,
       "autonomath_facts": "6.12M",
-      "autonomath_relations": 23805,
+      "autonomath_relations": 378342,
       "autonomath_aliases": 335605,
       "annotations": 16474
     },

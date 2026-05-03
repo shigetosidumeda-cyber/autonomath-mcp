@@ -71,6 +71,8 @@ _EXCLUDED_PATHS: frozenset[str] = frozenset({
     "/status",
     "/robots.txt",
     "/openapi.json",
+    "/v1/openapi.json",
+    "/v1/funnel/event",
     "/docs",
     "/redoc",
     "/favicon.ico",

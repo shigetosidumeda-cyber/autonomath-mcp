@@ -44,13 +44,13 @@ https://jpcite.com/docs/
 ### Short description (1 sentence; PulseMCP renders this in the listing card)
 
 ```
-93 MCP tools over Japanese institutional data — subsidies, laws, court decisions, tax rulesets, invoice registrants — with primary-source URLs on 99%+ of rows.
+93 MCP tools over Japanese institutional data — subsidies, laws, court decisions, tax rulesets, invoice registrants — with primary-source URLs on major public rows.
 ```
 
 ### Long description (paragraph; PulseMCP renders this on the detail page)
 
 ```
-AutonoMath exposes Japanese institutional public data via 93 MCP tools at default gates (protocol 2025-06-18, stdio): 10,790 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 35 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0 delta) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue tools tie programs to statutes, statutes to court decisions, and stack tax / bid / law / case lookups in one call. Every row carries source_url + fetched_at and aggregator domains are banned. Pricing: ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
+AutonoMath exposes Japanese institutional public data via 93 MCP tools at default gates (protocol 2025-06-18, stdio): 11,684 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue tools tie programs to statutes, statutes to court decisions, and stack tax / bid / law / case lookups in one call. Major public rows carry source_url + fetched_at and aggregator domains are banned. Pricing: ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
 Disclaimer (税理士法 §52 fence): AutonoMath is information retrieval, not advice. It does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
 ```
@@ -155,7 +155,7 @@ Square variant if needed: site/static/icons/autonomath-icon-512.png
 - Honest data counts:
   - 154 laws full-text (incremental load); 9,484 catalog stubs cover the long tail name-resolver-only.
   - 4,300 sourced compatibility pairs (am_compat_matrix status='confirmed'). 44,515 heuristic inferences are flagged status='unknown' and not surfaced as truth.
-  - 99%+ of rows carry source_url + fetched_at; 12 rows lack URL because the originating municipal CMS has no dedicated page.
+  - major public rows carry source_url + fetched_at; 12 rows lack URL because the originating municipal CMS has no dedicated page.
 - Evidence Pre-fetch / precomputed intelligence prepares source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins for retrieval; describe it as evidence packaging, not as model-cost savings.
 - Aggregator domains (noukaweb / hojyokin-portal / biz.stayway) are banned from source_url to mitigate fraud risk on credit / DD use cases.
 ```

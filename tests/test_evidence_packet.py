@@ -1031,6 +1031,107 @@ def test_rest_get_evidence_packet_md(client: TestClient) -> None:
     assert "EVP テスト P1 補助金" in body
 
 
+def test_evidence_license_gate_filters_mixed_license_facts() -> None:
+    from jpintel_mcp.api.evidence import _apply_license_gate
+
+    envelope = {
+        "records": [
+            {
+                "entity_id": "program:mixed",
+                "primary_name": "mixed license fixture",
+                "total_facts": 2,
+                "facts": [
+                    {
+                        "field": "invoice_status",
+                        "value": "registered",
+                        "source": {
+                            "license": "pdl_v1.0",
+                            "publisher": "nta.go.jp",
+                            "url": "https://www.invoice-kohyo.nta.go.jp/",
+                            "fetched_at": "2026-05-03T00:00:00Z",
+                        },
+                    },
+                    {
+                        "field": "private_note",
+                        "value": "must not export",
+                        "source": {
+                            "license": "proprietary",
+                            "publisher": "example",
+                            "url": "https://example.com/private",
+                            "fetched_at": "2026-05-03T00:00:00Z",
+                        },
+                    },
+                ],
+            }
+        ]
+    }
+
+    gated, summary = _apply_license_gate(envelope)
+
+    assert summary["allowed_count"] == 1
+    assert summary["blocked_count"] == 0
+    facts = gated["records"][0]["facts"]
+    assert len(facts) == 1
+    assert facts[0]["field"] == "invoice_status"
+    assert all(f["source"]["license"] != "proprietary" for f in facts)
+
+
+def test_rest_json_license_gate_filters_mixed_license_facts(
+    client: TestClient,
+    fixture_db: Path,
+) -> None:
+    """JSON responses use the same fact-level license gate as CSV/MD."""
+    con = sqlite3.connect(fixture_db)
+    try:
+        cur = con.execute(
+            "INSERT INTO am_source(source_url, source_type, domain, content_hash, "
+            "first_seen, last_verified, license) VALUES (?,?,?,?,?,?,?)",
+            (
+                "https://example.com/private-evidence",
+                "secondary",
+                "example.com",
+                "sha256:private",
+                "2026-05-03T00:00:00",
+                "2026-05-03T00:00:00",
+                "proprietary",
+            ),
+        )
+        source_id = cur.lastrowid
+        con.execute(
+            "INSERT INTO am_entity_facts("
+            "entity_id, field_name, field_value_text, field_kind, source_id, "
+            "confirming_source_count) VALUES (?,?,?,?,?,?)",
+            (
+                "program:evp:p1",
+                "private_note",
+                "must not export",
+                "text",
+                source_id,
+                1,
+            ),
+        )
+        con.commit()
+
+        r = client.get("/v1/evidence/packets/program/UNI-evp-p1")
+        assert r.status_code == 200, r.text
+        assert r.headers["X-License-Gate-Allowed"] == "1"
+        assert r.headers["X-License-Gate-Blocked"] == "0"
+        body = r.json()
+        fields = {f["field"] for f in body["records"][0]["facts"]}
+        assert "private_note" not in fields
+        assert "must not export" not in r.text
+        assert body["records"][0]["license"] in {"gov_standard_v2.0", "pdl_v1.0"}
+        assert body["license_gate"]["allowed_count"] == 1
+    finally:
+        con.execute(
+            "DELETE FROM am_entity_facts "
+            "WHERE entity_id = 'program:evp:p1' AND field_name = 'private_note'"
+        )
+        con.execute("DELETE FROM am_source WHERE source_url = ?", ("https://example.com/private-evidence",))
+        con.commit()
+        con.close()
+
+
 def test_rest_get_evidence_packet_renderer_failure_does_not_bill(
     client: TestClient,
     paid_key: str,

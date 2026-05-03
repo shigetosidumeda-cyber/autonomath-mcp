@@ -23,7 +23,7 @@ import json
 import logging
 import secrets
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Literal
 from urllib.parse import urlparse
 
 import stripe
@@ -616,6 +616,7 @@ class CheckoutRequest(BaseModel):
     success_url: str
     cancel_url: str
     customer_email: str | None = None
+    locale: Literal["ja", "en"] | None = None
 
 
 class CheckoutResponse(BaseModel):
@@ -671,6 +672,9 @@ def create_checkout(
     # https://jpcite.com/tos.html + /privacy.html.
     success_url = _validate_checkout_redirect_url(payload.success_url, kind="success")
     cancel_url = _validate_checkout_redirect_url(payload.cancel_url, kind="cancel")
+    checkout_locale = payload.locale or (
+        "en" if urlparse(success_url).path.startswith("/en/") else "ja"
+    )
     checkout_state = secrets.token_urlsafe(32)
 
     session = s.checkout.Session.create(
@@ -681,7 +685,7 @@ def create_checkout(
         customer_email=payload.customer_email,
         metadata={"checkout_state_hash": _checkout_state_hash(checkout_state)},
         allow_promotion_codes=True,
-        locale="ja",
+        locale=checkout_locale,
         custom_text={
             "submit": {
                 "message": (

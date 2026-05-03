@@ -63,6 +63,131 @@ def test_funnel_event_accepts_browser_beacon(client, seeded_db: Path) -> None:
     assert row["referer_host"] == "jpcite.com"
 
 
+def test_funnel_event_accepts_text_plain_beacon(client, seeded_db: Path) -> None:
+    _clear_funnel_events(seeded_db)
+
+    response = client.post(
+        "/v1/funnel/event",
+        content=json.dumps(
+            {
+                "event": "pricing_view",
+                "page": "https://www.jpcite.com/pricing.html?utm_source=chatgpt",
+                "session_id": "sid-text-plain",
+                "properties": {"source": "sendBeacon"},
+            }
+        ),
+        headers={
+            "Content-Type": "text/plain;charset=UTF-8",
+            "User-Agent": "Mozilla/5.0 Safari/605.1.15",
+            "Referer": "https://chatgpt.com/",
+        },
+    )
+
+    assert response.status_code == 202, response.text
+
+    conn = sqlite3.connect(seeded_db)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute(
+            "SELECT event_name, page, session_id, properties_json, referer_host "
+            "FROM funnel_events ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+    finally:
+        conn.close()
+
+    assert row is not None
+    assert row["event_name"] == "pricing_view"
+    assert row["page"] == "/pricing.html"
+    assert row["session_id"] == "sid-text-plain"
+    assert json.loads(row["properties_json"]) == {"source": "sendBeacon"}
+    assert row["referer_host"] == "chatgpt.com"
+
+
+def test_funnel_event_drops_foreign_absolute_page(client, seeded_db: Path) -> None:
+    _clear_funnel_events(seeded_db)
+
+    response = client.post(
+        "/v1/funnel/event",
+        json={
+            "event": "cta_click",
+            "page": "https://evil.example.com/pricing.html?email=a@example.com",
+            "properties": {"target": "pricing"},
+        },
+    )
+
+    assert response.status_code == 202, response.text
+
+    conn = sqlite3.connect(seeded_db)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute(
+            "SELECT page, properties_json FROM funnel_events ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+    finally:
+        conn.close()
+
+    assert row is not None
+    assert row["page"] is None
+    assert json.loads(row["properties_json"]) == {"target": "pricing"}
+
+
+def test_funnel_event_large_properties_remain_valid_json(
+    client, seeded_db: Path
+) -> None:
+    _clear_funnel_events(seeded_db)
+
+    response = client.post(
+        "/v1/funnel/event",
+        json={
+            "event": "quickstart_copy",
+            "page": "/docs/getting-started/",
+            "properties": {
+                "snippet": "curl-search",
+                "long": "あ" * 1000,
+                "nested": {"drop": "not top-level scalar"},
+            },
+        },
+    )
+
+    assert response.status_code == 202, response.text
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        raw = conn.execute(
+            "SELECT properties_json FROM funnel_events ORDER BY id DESC LIMIT 1"
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    decoded = json.loads(raw)
+    assert decoded["_truncated"] is True
+    assert decoded["snippet"] == "curl-search"
+    assert len(raw.encode("utf-8")) <= 512
+
+
+def test_funnel_event_rejects_oversized_body(client, seeded_db: Path) -> None:
+    _clear_funnel_events(seeded_db)
+
+    response = client.post(
+        "/v1/funnel/event",
+        content=(
+            '{"event":"quickstart_copy","page":"/docs/getting-started/",'
+            '"properties":{"too_big":"'
+            + ("x" * 5000)
+            + '"}}'
+        ),
+        headers={"Content-Type": "text/plain;charset=UTF-8"},
+    )
+
+    assert response.status_code == 413
+    conn = sqlite3.connect(seeded_db)
+    try:
+        count = conn.execute("SELECT COUNT(*) FROM funnel_events").fetchone()[0]
+    finally:
+        conn.close()
+    assert count == 0
+
+
 def test_funnel_event_rejects_unknown_event(client, seeded_db: Path) -> None:
     _clear_funnel_events(seeded_db)
 
@@ -78,4 +203,3 @@ def test_funnel_event_rejects_unknown_event(client, seeded_db: Path) -> None:
     finally:
         conn.close()
     assert count == 0
-

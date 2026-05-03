@@ -163,7 +163,7 @@
     },
     {
       "name": "search_programs",
-      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索。11,684 searchable Japanese public programs with primary-source URL + fetched_at on 99%+ searchable rows; review-held rows are excluded from normal search. Typical args: prefecture='東京都', target_industry JSIC 1-letter code, funding_purpose. For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
+      "description": "補助金・助成金・融資・税制優遇・認定制度を横断検索。11,684 searchable Japanese public programs; most searchable rows include primary-source URL + fetched_at, and review-held rows are excluded from normal search. Typical args: prefecture='東京都', target_industry JSIC 1-letter code, funding_purpose. For program definitions; use search_case_studies for actual recipients, prescreen_programs for fit judgment."
     },
     {
       "name": "search_tax_rules",

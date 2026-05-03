@@ -9,7 +9,7 @@ on both sides — never a parallel implementation.
 
 Pure SQLite + Python. NO LLM call.
 
-Billing: 1 ¥3 unit per call (mirrors REST). Anonymous IPs share the 50/月
+Billing: 1 ¥3 unit per call (mirrors REST). Anonymous IPs share the 3/day
 cap via the standard MCP gate.
 """
 
@@ -135,7 +135,10 @@ def _impl_get_evidence_packet(
             ),
             field="subject_id",
         )
-    return envelope
+    from jpintel_mcp.api.evidence import _apply_license_gate
+
+    gated, _summary = _apply_license_gate(envelope)
+    return gated
 
 
 # ---------------------------------------------------------------------------

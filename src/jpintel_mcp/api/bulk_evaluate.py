@@ -45,8 +45,8 @@ Constraints:
 """
 from __future__ import annotations
 
-import csv
 import contextlib
+import csv
 import hashlib
 import io
 import json
@@ -591,13 +591,17 @@ async def bulk_evaluate_clients(
     program_filter: Annotated[str, Form()] = "all",
     idempotency_key: Annotated[str | None, Form()] = None,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
+    idempotency_key_header: Annotated[
+        str | None, Header(alias="Idempotency-Key")
+    ] = None,
 ) -> Any:
     """Pre-evaluate program eligibility for ALL clients in a CSV batch.
 
     When `commit=false` (default): returns JSON cost preview only. NO billing.
     When `commit=true`: bills ¥3 × N rows, returns a ZIP archive (one CSV
-        per client + manifest.json). `idempotency_key` REQUIRED on commit
-        so accidental retries don't double-bill. `X-Cost-Cap-JPY` REQUIRED
+        per client + manifest.json). `idempotency_key` form field or
+        `Idempotency-Key` header REQUIRED on commit so accidental retries
+        don't double-bill. `X-Cost-Cap-JPY` REQUIRED
         on commit so callers explicitly approve the predicted charge.
 
     Returns:
@@ -645,13 +649,30 @@ async def bulk_evaluate_clients(
     require_metered_api_key(ctx, "bulk_evaluate commit")
 
     # commit=true — billing path requires idempotency.
-    if not idempotency_key or not idempotency_key.strip():
+    form_idem_key = idempotency_key.strip() if idempotency_key else None
+    header_idem_key = (
+        idempotency_key_header.strip() if idempotency_key_header else None
+    )
+    if form_idem_key and header_idem_key and form_idem_key != header_idem_key:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            {
+                "code": "idempotency_payload_mismatch",
+                "message": (
+                    "idempotency_key form field and Idempotency-Key header "
+                    "must match when both are supplied."
+                ),
+            },
+        )
+    idem_key = form_idem_key or header_idem_key
+    if not idem_key:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
-            "idempotency_key is required when commit=true",
+            "idempotency_key form field or Idempotency-Key header is "
+            "required when commit=true",
         )
-    idem_key = idempotency_key.strip()
     billing_key = f"{ENDPOINT_LABEL}:{ctx.key_hash}:{idem_key}"
+    already_billed_retry = False
 
     cached = _idem_lookup(conn, ctx.key_hash, idem_key)
     if cached is not None:
@@ -681,6 +702,9 @@ async def bulk_evaluate_clients(
                 return _zip_stream_response(zip_bytes, idem_key, replay=True)
             except Exception:  # noqa: BLE001
                 logger.warning("idem replay failed; falling through to live eval")
+        already_billed_retry = _billing_idempotency_key_was_used(
+            conn, ctx.key_hash, billing_key
+        )
     else:
         if _billing_idempotency_key_was_used(conn, ctx.key_hash, billing_key):
             raise HTTPException(
@@ -739,10 +763,11 @@ async def bulk_evaluate_clients(
         projected_monthly_cap_response,
     )
 
-    cap_response = projected_monthly_cap_response(conn, ctx.key_hash, n)
-    if cap_response is not None:
-        return cap_response
-    _check_commit_cost_cap(x_cost_cap_jpy, PRICE_PER_ROW_YEN * n)
+    if not already_billed_retry:
+        cap_response = projected_monthly_cap_response(conn, ctx.key_hash, n)
+        if cap_response is not None:
+            return cap_response
+        _check_commit_cost_cap(x_cost_cap_jpy, PRICE_PER_ROW_YEN * n)
 
     # Live eval path.
     results: list[list[dict[str, Any]]] = []
@@ -760,34 +785,52 @@ async def bulk_evaluate_clients(
     # with quantity=1 — same dollar total but N rows + N Stripe POSTs +
     # N idempotency keys, which fragmented the reconciliation surface and
     # increased the risk of partial-success Stripe outages.
-    billing_key_token = billing_idempotency_key.set(billing_key)
-    billing_event_token = billing_event_index.set(0)
-    try:
-        log_usage(
-            conn=conn,
-            ctx=ctx,
-            endpoint=ENDPOINT_LABEL,
-            status_code=200,
-            params={"program_filter": program_filter, "row_count": n},
-            quantity=n,
-            result_count=n,
-        )
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("bulk_evaluate billing row failed", exc_info=True)
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-            {
-                "code": "billing_unavailable",
-                "message": (
-                    "Bulk evaluation completed, but the billing audit row "
-                    "could not be written. No ZIP was delivered; retry with "
-                    "the same idempotency_key."
-                ),
-            },
-        ) from exc
-    finally:
-        billing_event_index.reset(billing_event_token)
-        billing_idempotency_key.reset(billing_key_token)
+    if not already_billed_retry:
+        billing_key_token = billing_idempotency_key.set(billing_key)
+        billing_event_token = billing_event_index.set(0)
+        try:
+            log_usage(
+                conn=conn,
+                ctx=ctx,
+                endpoint=ENDPOINT_LABEL,
+                status_code=200,
+                params={"program_filter": program_filter, "row_count": n},
+                quantity=n,
+                result_count=n,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("bulk_evaluate billing row failed", exc_info=True)
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                {
+                    "code": "billing_unavailable",
+                    "message": (
+                        "Bulk evaluation completed, but the billing audit row "
+                        "could not be written. No ZIP was delivered; retry with "
+                        "the same idempotency_key."
+                    ),
+                },
+            ) from exc
+        finally:
+            billing_event_index.reset(billing_event_token)
+            billing_idempotency_key.reset(billing_key_token)
+        if not _billing_idempotency_key_was_used(conn, ctx.key_hash, billing_key):
+            logger.warning(
+                "bulk_evaluate billing row not recorded after log_usage"
+            )
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                {
+                    "code": "billing_unavailable",
+                    "message": (
+                        "Bulk evaluation completed, but the billing audit row "
+                        "was not recorded. No ZIP was delivered; retry with "
+                        "the same idempotency_key."
+                    ),
+                },
+            )
+    else:
+        logger.info("bulk_evaluate rebuilding cached ZIP for already billed retry")
 
     # Stash idempotency so retries reuse the same evaluation.
     _idem_store(
@@ -805,8 +848,9 @@ async def bulk_evaluate_clients(
     return _zip_stream_response(
         zip_bytes,
         idem_key,
+        replay=already_billed_retry,
         row_count=n,
-        billed_yen=PRICE_PER_ROW_YEN * n,
+        billed_yen=None if already_billed_retry else PRICE_PER_ROW_YEN * n,
     )
 
 

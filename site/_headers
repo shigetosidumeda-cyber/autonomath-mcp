@@ -24,7 +24,7 @@
 # (Stripe checkout is a top-level redirect, not an embedded iframe). This
 # does not affect form-action which already permits checkout/billing.stripe.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.jpcite.com https://pypi.org; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -132,18 +132,14 @@
 /playground.html
   Cache-Control: public, max-age=300, s-maxage=600
 
-# Trust-signal pages (Wave 31): roadmap, data-freshness, transparency.
-# Public roadmap, live data freshness dashboard, and source citation
-# methodology page. data-freshness.html auto-polls /v1/am/data-freshness
-# every 5 min from the browser, so a slightly fresher edge response is
-# preferable; transparency.html and roadmap.html are static-content. 1h
+# Trust-signal pages (Wave 31): data-freshness and transparency.
+# data-freshness.html auto-polls /v1/am/data-freshness every 5 min from
+# the browser, so a slightly fresher edge response is preferable;
+# transparency.html is static-content. 1h
 # browser / 6h edge SWR matches /news/* — crawler bursts get the cached
 # copy while origin re-checks in the background, content edits propagate
 # within a day. Listed above /*.html so the more specific path wins on
 # Cloudflare's matcher.
-/roadmap.html
-  Cache-Control: public, max-age=3600, stale-while-revalidate=21600
-
 /data-freshness.html
   Cache-Control: public, max-age=3600, stale-while-revalidate=21600
 
@@ -200,16 +196,16 @@
 /en/*
   Cache-Control: public, max-age=3600, s-maxage=86400
 
-# Fingerprinted static assets — immutable, 1y cache.
-# Note: site/styles.css and site/dashboard.js are *not* fingerprinted —
-# they live at fixed paths because 10,953 generated program pages
-# reference them by name. The 1y immutable cache here mainly serves
-# fingerprinted mkdocs assets (site/docs/**/*.<hash>.min.css|js).
+# Static assets. CSS is stable; top-level JS is not fingerprinted, so it
+# gets a short browser cache below.
+# Note: site/styles.css and site/dashboard.js are *not* fingerprinted.
+# CSS changes rarely and remains long-lived; JS changes can affect
+# checkout/dashboard/funnel behavior, so it uses the short rule below.
 /*.css
   Cache-Control: public, max-age=31536000, immutable
 
 /*.js
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=300, s-maxage=3600
 
 # Self-hosted Noto Sans JP woff2 subsets (mkdocs theme).
 # Path-fingerprinted by sha10 of the upstream gstatic URL → safe to

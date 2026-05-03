@@ -42,6 +42,7 @@ _log = logging.getLogger("jpintel.admin")
 
 # include_in_schema=False keeps /v1/admin/* out of app.openapi() output.
 router = APIRouter(prefix="/v1/admin", tags=["admin"], include_in_schema=False)
+_FUNNEL_EVENT_PATH = "/v1/funnel/event"
 
 
 # ---------------------------------------------------------------------------
@@ -680,8 +681,9 @@ def get_analytics_split(
         )
         # Fall back to a bot-blind row so the UI doesn't 500.
         row = conn.execute(
-            "SELECT COUNT(*) AS n FROM analytics_events WHERE ts >= ?",
-            (since,),
+            "SELECT COUNT(*) AS n FROM analytics_events "
+            "WHERE ts >= ? AND path != ?",
+            (since, _FUNNEL_EVENT_PATH),
         ).fetchone()
         total_requests = int(row["n"] or 0)
         human_requests = total_requests
@@ -692,8 +694,9 @@ def get_analytics_split(
                  SUM(CASE WHEN is_bot = 1 THEN 1 ELSE 0 END) AS bots,
                  SUM(CASE WHEN is_bot = 0 THEN 1 ELSE 0 END) AS humans
                FROM analytics_events
-              WHERE ts >= ?""",
-            (since,),
+              WHERE ts >= ?
+                AND path != ?""",
+            (since, _FUNNEL_EVENT_PATH),
         ).fetchone()
         total_requests = int(row["total"] or 0)
         bot_requests = int(row["bots"] or 0)
@@ -709,10 +712,11 @@ def get_analytics_split(
                  COUNT(DISTINCT key_hash)               AS d_keys
                FROM analytics_events
               WHERE ts >= ?
+                AND path != ?
            GROUP BY ua_class
            ORDER BY n DESC
               LIMIT 50""",
-            (since,),
+            (since, _FUNNEL_EVENT_PATH),
         ).fetchall()
         by_ua_class = [
             AnalyticsSplitBucket(

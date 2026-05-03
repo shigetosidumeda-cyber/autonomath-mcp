@@ -26,6 +26,10 @@ Posture:
 * Properties capped at 512 chars JSON to keep rows compact.
 * PII: raw IP NEVER stored — same daily-rotated hash as
   `analytics_events.anon_ip_hash`.
+* Transport-tolerant. Browsers can post `application/json`, but anonymous
+  `navigator.sendBeacon()` posts may use `text/plain` to avoid CORS
+  preflight during navigation. The endpoint parses the raw body itself so
+  both transports land identically.
 
 This is intentionally NOT part of the public OpenAPI export
 (`include_in_schema=False`): it is an internal collection sink, not a
@@ -41,7 +45,7 @@ from typing import Annotated
 from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Header, HTTPException, Request, status
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from jpintel_mcp.api.anon_limit import _classify_user_agent, _client_ip
 from jpintel_mcp.api.deps import DbDep, hash_api_key, hash_ip_for_telemetry
@@ -72,10 +76,22 @@ _ALLOWED_EVENTS: frozenset[str] = frozenset(
 
 # Cap on the JSON-encoded properties payload to keep `funnel_events` compact.
 _MAX_PROPERTIES_JSON_BYTES = 512
+# Cap on the raw body accepted by the anonymous beacon sink. Legitimate
+# browser breadcrumbs are tiny; reject oversized payloads before JSON parsing.
+_MAX_BODY_BYTES = 4096
 # Cap on the page path stored.
 _MAX_PAGE_LEN = 256
 # Cap on the session_id stored (clients send a 128-bit hex = 32 chars).
 _MAX_SESSION_ID_LEN = 64
+_LOCAL_PAGE_HOSTS: frozenset[str] = frozenset(
+    {
+        "jpcite.com",
+        "www.jpcite.com",
+        "api.jpcite.com",
+        "autonomath.ai",
+        "www.autonomath.ai",
+    }
+)
 
 
 class FunnelEventIn(BaseModel):
@@ -127,12 +143,27 @@ def _extract_key_hash(authorization: str | None, x_api_key: str | None) -> str |
 def _normalise_page(page: str | None) -> str | None:
     if not page:
         return None
-    # Reject absolute URLs from other origins to keep the column path-only.
-    parsed = urlsplit(page)
-    raw_path = parsed.path or page
+    try:
+        parsed = urlsplit(page)
+    except ValueError:
+        return None
+    if parsed.scheme or parsed.netloc:
+        host = parsed.hostname.lower() if parsed.hostname else None
+        # Keep the column path-only and avoid foreign-origin pollution.
+        if host not in _LOCAL_PAGE_HOSTS:
+            return None
+        raw_path = parsed.path or "/"
+    else:
+        raw_path = parsed.path or page
     # Strip query / fragment, redact path-param values (T-numbers, law IDs).
     redacted = redact_pii(raw_path)
     return redacted[:_MAX_PAGE_LEN]
+
+
+def _json_len(raw: object) -> int:
+    return len(
+        json.dumps(raw, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    )
 
 
 def _normalise_properties(props: dict | None) -> str | None:
@@ -143,11 +174,23 @@ def _normalise_properties(props: dict | None) -> str | None:
     except (TypeError, ValueError):
         return None
     if len(encoded.encode("utf-8")) > _MAX_PROPERTIES_JSON_BYTES:
-        # Truncate by re-encoding only top-level scalar keys; falling back
-        # to the literal cap keeps the row insertable without a 400.
-        return encoded.encode("utf-8")[:_MAX_PROPERTIES_JSON_BYTES].decode(
-            "utf-8", errors="ignore"
-        )
+        compact: dict[str, object] = {"_truncated": True}
+        for key, value in props.items():
+            if not isinstance(key, str):
+                continue
+            if not isinstance(value, (str, int, float, bool, type(None))):
+                continue
+            next_value: object = value[:120] if isinstance(value, str) else value
+            candidate = compact | {key[:64]: next_value}
+            try:
+                if _json_len(candidate) <= _MAX_PROPERTIES_JSON_BYTES:
+                    compact = candidate
+            except (TypeError, ValueError):
+                continue
+        try:
+            return json.dumps(compact, ensure_ascii=False, separators=(",", ":"))
+        except (TypeError, ValueError):
+            return '{"_truncated":true}'
     return encoded
 
 
@@ -172,6 +215,28 @@ def _normalise_referer(ref: str | None) -> str | None:
     # Cap at 128 chars (RFC 1035 max is 253; 128 is plenty for hostnames
     # we'd want to keep around).
     return host[:128]
+
+
+async def _parse_body(request: Request) -> FunnelEventIn:
+    try:
+        chunks: list[bytes] = []
+        total = 0
+        async for chunk in request.stream():
+            total += len(chunk)
+            if total > _MAX_BODY_BYTES:
+                raise HTTPException(
+                    status.HTTP_413_CONTENT_TOO_LARGE,
+                    detail="funnel event payload too large",
+                )
+            chunks.append(chunk)
+        raw = b"".join(chunks)
+        payload = json.loads(raw.decode("utf-8") if isinstance(raw, bytes) else raw)
+        return FunnelEventIn.model_validate(payload)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValidationError, TypeError) as exc:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            detail="invalid funnel event payload",
+        ) from exc
 
 
 def _record(
@@ -217,9 +282,8 @@ def _record(
     response_model=FunnelEventResponse,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def post_event(
+async def post_event(
     request: Request,
-    body: FunnelEventIn,
     conn: DbDep,
     authorization: Annotated[str | None, Header(alias="Authorization")] = None,
     x_api_key: Annotated[str | None, Header(alias="X-API-Key")] = None,
@@ -227,6 +291,7 @@ def post_event(
     referer: Annotated[str | None, Header(alias="Referer")] = None,
 ) -> FunnelEventResponse:
     """Record one funnel breadcrumb."""
+    body = await _parse_body(request)
     event_name = body.event.strip().lower()
     if event_name not in _ALLOWED_EVENTS:
         raise HTTPException(

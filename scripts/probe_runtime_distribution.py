@@ -61,8 +61,7 @@ def _runtime_counts() -> tuple[int, int]:
     The API count is then taken from a separate ``app`` import to exercise
     the FastAPI surface used by ``autonomath-api``.
     """
-    # Default gates: AUTONOMATH_ENABLED=1 mirrors the production gate set
-    # CLAUDE.md describes (89 tools at default gates).
+    # Default gates: AUTONOMATH_ENABLED=1 mirrors the production gate set.
     os.environ.setdefault("AUTONOMATH_ENABLED", "1")
 
     # Canonical MCP boot — must come first for a deterministic tool count.
