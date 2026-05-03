@@ -301,16 +301,20 @@ CREATE INDEX IF NOT EXISTS idx_empty_search_log_created
 -- `path` is the URL path with no query string and no T-numbers / law IDs
 -- (path-param values stripped via `redact_pii`).
 CREATE TABLE IF NOT EXISTS analytics_events (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    ts            TEXT NOT NULL,
-    method        TEXT NOT NULL,
-    path          TEXT NOT NULL,
-    status        INTEGER NOT NULL,
-    latency_ms    INTEGER,
-    key_hash      TEXT,           -- NULL for anonymous traffic
-    anon_ip_hash  TEXT,           -- sha256(ip||daily_salt); NULL if key_hash present
-    client_tag    TEXT,           -- X-Client-Tag, validated; NULL when absent
-    is_anonymous  INTEGER NOT NULL DEFAULT 0
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts              TEXT NOT NULL,
+    method          TEXT NOT NULL,
+    path            TEXT NOT NULL,
+    status          INTEGER NOT NULL,
+    latency_ms      INTEGER,
+    key_hash        TEXT,           -- NULL for anonymous traffic
+    anon_ip_hash    TEXT,           -- sha256(ip||daily_salt); NULL if key_hash present
+    client_tag      TEXT,           -- X-Client-Tag, validated; NULL when absent
+    is_anonymous    INTEGER NOT NULL DEFAULT 0,
+    -- §4-E (migration 123): bot/UA discrimination so paid-conversion
+    -- denominators can `WHERE is_bot=0` without re-classifying every row.
+    user_agent_class TEXT,
+    is_bot          INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_analytics_events_ts
@@ -323,6 +327,48 @@ CREATE INDEX IF NOT EXISTS idx_analytics_events_key_ts
 CREATE INDEX IF NOT EXISTS idx_analytics_events_anon_ts
     ON analytics_events(anon_ip_hash, ts DESC)
     WHERE anon_ip_hash IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_analytics_events_human_path_ts
+    ON analytics_events(path, ts DESC)
+    WHERE is_bot = 0;
+CREATE INDEX IF NOT EXISTS idx_analytics_events_ua_class_ts
+    ON analytics_events(user_agent_class, ts DESC)
+    WHERE user_agent_class IS NOT NULL;
+
+-- ----- funnel_events ---------------------------------------------------------
+-- §4-E (migration 123): client-side breadcrumb table for the static-site
+-- funnel (Playground, pricing, MCP install, OpenAPI import, checkout,
+-- dashboard sign-in). Posted from the browser to /v1/funnel/event;
+-- `analytics_events` only sees server-side traffic and only as URL paths,
+-- so it cannot answer "did the curl copy fire" or "did playground succeed
+-- N times before pricing view".
+CREATE TABLE IF NOT EXISTS funnel_events (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts              TEXT    NOT NULL,
+    event_name      TEXT    NOT NULL,
+    page            TEXT,
+    properties_json TEXT,
+    anon_ip_hash    TEXT,
+    session_id      TEXT,
+    key_hash        TEXT,
+    user_agent_class TEXT,
+    is_bot          INTEGER NOT NULL DEFAULT 0,
+    is_anonymous    INTEGER NOT NULL DEFAULT 1,
+    referer_host    TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_funnel_events_ts
+    ON funnel_events(ts DESC);
+CREATE INDEX IF NOT EXISTS idx_funnel_events_event_ts
+    ON funnel_events(event_name, ts DESC);
+CREATE INDEX IF NOT EXISTS idx_funnel_events_session
+    ON funnel_events(session_id, ts ASC)
+    WHERE session_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_funnel_events_key_ts
+    ON funnel_events(key_hash, ts DESC)
+    WHERE key_hash IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_funnel_events_human_event_ts
+    ON funnel_events(event_name, ts DESC)
+    WHERE is_bot = 0;
 
 CREATE TABLE IF NOT EXISTS schema_migrations (
     id TEXT PRIMARY KEY,

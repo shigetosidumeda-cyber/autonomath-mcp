@@ -49,7 +49,7 @@ from typing import TYPE_CHECKING
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from jpintel_mcp.api.anon_limit import _client_ip
+from jpintel_mcp.api.anon_limit import _classify_user_agent, _client_ip
 from jpintel_mcp.api.deps import hash_api_key, hash_ip_for_telemetry
 from jpintel_mcp.db.session import connect
 from jpintel_mcp.security.pii_redact import redact_pii
@@ -111,34 +111,67 @@ def _record_one(
     key_hash: str | None,
     anon_ip_hash: str | None,
     client_tag: str | None,
+    user_agent_class: str | None,
+    is_bot: bool,
 ) -> None:
     """Open a short-lived SQLite connection and insert one row.
 
     All exceptions are swallowed — the middleware contract is
-    "never block, never raise". A missing table (migration 111 not yet
-    applied) surfaces as ``sqlite3.OperationalError`` and is logged at
-    DEBUG, not WARNING, because the path is hot.
+    "never block, never raise". A missing column (migration 123 not yet
+    applied) surfaces as ``sqlite3.OperationalError`` and triggers a
+    fall-back to the legacy 9-column INSERT so the row is still recorded
+    (just without the bot/UA discriminator).
     """
     conn: sqlite3.Connection | None = None
     try:
         conn = connect()
-        conn.execute(
-            "INSERT INTO analytics_events("
-            "  ts, method, path, status, latency_ms,"
-            "  key_hash, anon_ip_hash, client_tag, is_anonymous"
-            ") VALUES (?,?,?,?,?,?,?,?,?)",
-            (
-                ts,
-                method,
-                path,
-                status,
-                latency_ms,
-                key_hash,
-                anon_ip_hash,
-                client_tag,
-                1 if key_hash is None else 0,
-            ),
-        )
+        try:
+            conn.execute(
+                "INSERT INTO analytics_events("
+                "  ts, method, path, status, latency_ms,"
+                "  key_hash, anon_ip_hash, client_tag, is_anonymous,"
+                "  user_agent_class, is_bot"
+                ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    ts,
+                    method,
+                    path,
+                    status,
+                    latency_ms,
+                    key_hash,
+                    anon_ip_hash,
+                    client_tag,
+                    1 if key_hash is None else 0,
+                    user_agent_class,
+                    1 if is_bot else 0,
+                ),
+            )
+        except sqlite3.OperationalError as exc:
+            # Migration 123 columns not yet present — fall back to the
+            # pre-123 column list so the row is still captured. Once 123
+            # has rolled to all envs this branch becomes unreachable, but
+            # keeping it ensures an old DB cannot drop analytics on the
+            # floor (silent under-counting was the original §4-E bug).
+            if "no column named" in str(exc).lower():
+                conn.execute(
+                    "INSERT INTO analytics_events("
+                    "  ts, method, path, status, latency_ms,"
+                    "  key_hash, anon_ip_hash, client_tag, is_anonymous"
+                    ") VALUES (?,?,?,?,?,?,?,?,?)",
+                    (
+                        ts,
+                        method,
+                        path,
+                        status,
+                        latency_ms,
+                        key_hash,
+                        anon_ip_hash,
+                        client_tag,
+                        1 if key_hash is None else 0,
+                    ),
+                )
+            else:
+                raise
     except sqlite3.OperationalError as exc:
         _log.debug("analytics_events insert skipped (likely missing migration): %s", exc)
     except Exception as exc:  # noqa: BLE001 — defensive
@@ -181,6 +214,15 @@ class AnalyticsRecorderMiddleware(BaseHTTPMiddleware):
 
                 client_tag = getattr(request.state, "client_tag", None)
                 redacted_path = redact_pii(path) if path else path
+                # §4-E: bucket the UA so dashboards can split bot from
+                # human traffic without re-running the classifier on every
+                # SELECT. `_classify_user_agent` returns labels like
+                # "bot:googlebot", "claude-code", "browser:chrome" — bot
+                # labels are the ones prefixed with "bot:".
+                ua_class = _classify_user_agent(
+                    request.headers.get("user-agent")
+                )
+                is_bot = ua_class.startswith("bot:")
                 _record_one(
                     ts=datetime.now(UTC).isoformat(),
                     method=request.method,
@@ -190,6 +232,8 @@ class AnalyticsRecorderMiddleware(BaseHTTPMiddleware):
                     key_hash=key_hash,
                     anon_ip_hash=anon_ip_hash,
                     client_tag=client_tag,
+                    user_agent_class=ua_class,
+                    is_bot=is_bot,
                 )
             except Exception as exc:  # noqa: BLE001 — never block
                 _log.debug("analytics_recorder dispatch swallowed exc: %s", exc)

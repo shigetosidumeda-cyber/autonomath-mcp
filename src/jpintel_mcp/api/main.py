@@ -69,6 +69,7 @@ from jpintel_mcp.api.evidence import router as evidence_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
+from jpintel_mcp.api.funnel_events import router as funnel_events_router
 from jpintel_mcp.api.houjin import router as houjin_router
 from jpintel_mcp.api.intelligence import router as intelligence_router
 from jpintel_mcp.api.invoice_registrants import router as invoice_registrants_router
@@ -1382,6 +1383,12 @@ def create_app() -> FastAPI:
     # precomputed funnel_daily rollup; this one computes off raw tables so
     # the operator can see numbers before the rollup catches up.
     app.include_router(stats_funnel_router)
+    # /v1/funnel/event — §4-E browser-side breadcrumb sink (Playground
+    # success, pricing view, MCP install copy, checkout start, etc.).
+    # Hidden from openapi (internal collection sink, not customer API).
+    # No AnonIpLimitDep — we want every fire (including rapid bursts on
+    # quickstart_copy) recorded; analytics integrity > anti-abuse here.
+    app.include_router(funnel_events_router)
     # P5-attribution: Bayesian Discovery + Use confidence dashboard.
     # /v1/stats/confidence — same transparency posture as the other /stats/*
     # surfaces. 5-min in-memory cache. Per-tool aggregates only (no
