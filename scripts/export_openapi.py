@@ -435,6 +435,11 @@ def _sanitize_public_text(text: str) -> str:
     ]
     for pattern, replacement in replacements:
         text = re.sub(pattern, replacement, text)
+    # Keep this aligned with src/jpintel_mcp/api/main.py. The generic
+    # row/record rewrite runs late, so re-apply the public source wording after
+    # that pass.
+    text = re.sub(r"\bsource records\b", "public records", text)
+    text = re.sub(r"\bsource record\b", "public record", text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 

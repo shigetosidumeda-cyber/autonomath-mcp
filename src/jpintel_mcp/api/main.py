@@ -699,6 +699,12 @@ def _sanitize_openapi_public_text(text: str) -> str:
     ]
     for pattern, replacement in replacements:
         text = re.sub(pattern, replacement, text)
+    # Some generic replacements above intentionally rewrite implementation
+    # nouns such as "row" to "record" late in the pass. Re-apply the public
+    # source wording after that final generic sweep so runtime OpenAPI and the
+    # exported committed spec stay byte-compatible.
+    text = re.sub(r"\bsource records\b", "public records", text)
+    text = re.sub(r"\bsource record\b", "public record", text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 

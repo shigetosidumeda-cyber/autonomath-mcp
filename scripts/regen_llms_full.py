@@ -223,8 +223,8 @@ def split_existing(text: str) -> str:
 
 def _sanitize_preserved_prefix(prefix: str) -> str:
     replacements = {
-        "認証済み呼び出し (有効な API key 付き) はこの IP 制限を完全にバイパスし、metered 課金 (¥3/req 税別、上限なし) が適用される。": "認証済み呼び出し (有効な API key 付き) は匿名 IP 制限とは別に扱われます。従量課金は税別 ¥3/req で、月次予算 cap、保護レート制限、異常バースト時の制御が適用される場合があります。",
-        "| Paid (metered) | 上限なし | Stripe 従量、¥3/req 税別 (税込 ¥3.30) |": "| Paid (metered) | 利用量に応じて課金 | Stripe 従量、¥3/req 税別 (税込 ¥3.30)。月次予算 cap と保護レート制限を設定可能 |",
+        "認証済み呼び出し (有効な API key 付き) はこの IP 制限を完全にバイパスし、metered 課金 (¥3/req 税別、上限なし) が適用される。": "認証済み呼び出し (有効な API key 付き) は匿名 IP 制限とは別に扱われます。従量課金は税別 ¥3/billable unit で、月次予算 cap、保護レート制限、異常バースト時の制御が適用される場合があります。",
+        "| Paid (metered) | 上限なし | Stripe 従量、¥3/req 税別 (税込 ¥3.30) |": "| Paid (metered) | 利用量に応じて課金 | Stripe 従量、¥3/billable unit 税別 (税込 ¥3.30)。月次予算 cap と保護レート制限を設定可能 |",
         "Paid は cap なし (スパイクでも 429 は返らない)。": "認証済み利用でも、月次予算 cap、保護レート制限、異常バースト時の制御が適用される場合があります。",
         "- **bulk 再配布 (データセット販売等):** 元データ自体は一次資料のため出典明記で再配布可能。自社サービスに組み込む場合は Paid (¥3/req 税別・税込 ¥3.30) で叩けば制限なし。": "- **bulk 再配布 (データセット販売等):** 出典ごとにライセンス条件が異なります。API 利用可否と再配布許諾は別です。各 record の `source_url` / `license` / attribution 条件を確認してください。",
         "- **MCP ネイティブ対応** — Claude Desktop / Cursor / ChatGPT (Plus 以降) から直接ツール呼び出し": "- **MCP ネイティブ対応** — Claude Desktop / Cursor / Cline など、ローカル stdio MCP サーバーを起動できるクライアントで利用可能。ChatGPT Custom GPT は OpenAPI Actions を使います。",
@@ -245,6 +245,8 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
     }
     for old, new in replacements.items():
         prefix = prefix.replace(old, new)
+    prefix = prefix.replace("¥3/request", "¥3/billable unit")
+    prefix = prefix.replace("¥3/req", "¥3/billable unit")
     # The preserved docs prefix may come from an older generated snapshot.
     # Keep LLM crawler input aligned with the public OpenAPI surface even when
     # the compact inventory is regenerated without rebuilding the docs prefix.
@@ -265,6 +267,15 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
     prefix = prefix.replace(
         "`/healthz`, `/v1/billing/webhook`, `/v1/subscribers/unsubscribe`, dashboard 系",
         "`/healthz`, `/v1/subscribers/unsubscribe`, dashboard 系",
+    )
+    # Standalone site/structured/*.jsonld shards are not shipped in the
+    # Cloudflare Pages bundle because the bundle must stay under the 20k-file
+    # deployment limit. Keep crawler-facing llms-full aligned with deployed URLs.
+    prefix = re.sub(
+        r"\n## Section: Structured data strategy\n.*?(?=\n## All Programs|\Z)",
+        "\n",
+        prefix,
+        flags=re.DOTALL,
     )
     return prefix
 

@@ -20,7 +20,7 @@
     - enforcement_cases  1,185
     - exclusion_rules    181  (125 exclude + 17 prerequisite + 15 absolute + 24 other)
     - MCP tools          93 in the standard configuration (see docs/mcp-tools.md)
-    - price/req          ¥3 税別 (¥3.30 税込)
+    - price/unit         ¥3 税別 (¥3.30 税込)
 -#}
 <script type="application/ld+json">
 {
@@ -38,8 +38,8 @@
       "inLanguage": "ja",
       "offers": [
         {"@type": "Offer", "name": "Free",           "price": "0", "priceCurrency": "JPY", "description": "3 req/日 per IP, 登録不要 (JST 翌日リセット)"},
-        {"@type": "Offer", "name": "Paid (metered)", "price": "3", "priceCurrency": "JPY", "description": "¥3 / request 税別 (税込 ¥3.30, Stripe 従量)",
-         "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "request", "valueAddedTaxIncluded": false}}
+        {"@type": "Offer", "name": "Paid (metered)", "price": "3", "priceCurrency": "JPY", "description": "¥3 / billable unit 税別 (税込 ¥3.30, Stripe 従量)",
+         "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "billable unit", "valueAddedTaxIncluded": false}}
       ],
       "featureList": [
         "11,684 programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 を横断検索",
@@ -87,7 +87,7 @@
       "publisher": {"@id": "{{ config.extra.domain }}/docs/#app"},
       "license": "{{ config.extra.domain }}/tos.html",
       "isAccessibleForFree": true,
-      "conditionsOfAccess": "匿名 3 req/日 per IP 無料 (JST 翌日リセット)、それ以上は ¥3/req 税別 (税込 ¥3.30) 従量課金。",
+      "conditionsOfAccess": "匿名 3 req/日 per IP 無料 (JST 翌日リセット)、それ以上は ¥3/billable unit 税別 (税込 ¥3.30) 従量課金。",
       "inLanguage": "ja",
       "spatialCoverage": {"@type": "Country", "name": "日本"},
       "variableMeasured": [

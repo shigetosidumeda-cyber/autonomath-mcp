@@ -26,7 +26,7 @@ Output (atomic write, UTF-8, LF):
 Sections, in order:
   1. Title + abstract (English)
   2. About jpcite (English)
-  3. Pricing (English, ¥3/req metered)
+  3. Pricing (English, ¥3/billable unit metered)
   4. Five canonical audiences (English)
   5. Coverage statistics (English, derived from live SQL counts)
   6. All Programs (compact, pipe-delimited, Japanese names preserved)
@@ -319,9 +319,9 @@ def _section_audiences() -> list[str]:
         "",
         "1. Tax accountants (税理士) - Claude Desktop + jpcite API. Primary tools: search_tax_incentives, evaluate_tax_applicability, list_tax_sunset_alerts.",
         "2. Certified administrative scriveners (行政書士) - one MCP call resolves subsidy + loan + permit eligibility. Primary tools: search_programs, search_loans_am, search_certifications.",
-        "3. SMB owners (中小企業経営者) - LINE chatbot frontends and internal assistants. Anonymous usage is limited to 3 requests per day per IP; authenticated usage is ¥3/request.",
+        "3. SMB owners (中小企業経営者) - LINE chatbot frontends and internal assistants. Anonymous usage is limited to 3 requests per day per IP; authenticated usage is ¥3 per billable unit.",
         "4. VC and M&A advisors - one query by 法人番号 returns enforcement history + adoption track record + invoice-registrant status. Primary tools: search_enforcement_cases, search_acceptance_stats_am, search_invoice_registrants.",
-        "5. AI agent developers - 93 MCP tools, ¥3 per request, 3 anonymous requests per day. Primary tools: full surface area; see https://jpcite.com/docs/mcp-tools/.",
+        "5. AI agent developers - 93 MCP tools, ¥3 per billable unit, 3 anonymous requests per day. Primary tools: full surface area; see https://jpcite.com/docs/mcp-tools/.",
         "",
         "---",
         "",

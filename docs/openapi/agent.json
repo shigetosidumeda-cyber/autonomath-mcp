@@ -4159,7 +4159,7 @@
               }
             ],
             "title": "Checksum",
-            "description": "Content hash/checksum when the source record has one."
+            "description": "Content hash/checksum when the public record has one."
           }
         },
         "type": "object",
@@ -4222,7 +4222,7 @@
         "additionalProperties": true,
         "type": "object",
         "title": "SourceManifestLicenseGate",
-        "description": "Reasons some source records are withheld from public provenance output."
+        "description": "Reasons some public records are withheld from public provenance output."
       },
       "SourceManifestSummary": {
         "properties": {
@@ -4237,7 +4237,7 @@
           "source_count": {
             "type": "integer",
             "title": "Source Count",
-            "description": "Distinct source records linked to this program entity.",
+            "description": "Distinct public records linked to this program entity.",
             "default": 0
           },
           "license_set": {
@@ -4246,7 +4246,7 @@
             },
             "type": "array",
             "title": "License Set",
-            "description": "Raw license values observed across linked source records."
+            "description": "Raw license values observed across linked public records."
           },
           "latest_fetched_at": {
             "anyOf": [

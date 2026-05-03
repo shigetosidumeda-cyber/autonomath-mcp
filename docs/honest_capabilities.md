@@ -18,7 +18,7 @@
 | 税制ルールセット | 50 |
 | 適格請求書発行事業者 | 13,801 |
 
-提供形態: REST API + MCP server。料金: ¥3/req 従量、匿名 3 req/日 無料。tier プラン無し、契約無し ([pricing.md](./pricing.md))。
+提供形態: REST API + MCP server。料金: ¥3/billable unit 従量、匿名 3 req/日 無料。tier プラン無し、契約無し ([pricing.md](./pricing.md))。
 
 ## 2. これは何ではないか (専門業務、提供しない)
 
@@ -59,7 +59,7 @@
 
 - **API 稼働率** — [sla.md](./sla.md) 記載の運用目標。返金・損害賠償・サービスクレジットを保証するものではありません
 - **出典 URL 返却** — `source_url` が登録済みのレコードではレスポンスに含める
-- **¥3/req 課金の正確性**
+- **¥3/billable unit 課金の正確性**
 
 ### 保証しない
 
