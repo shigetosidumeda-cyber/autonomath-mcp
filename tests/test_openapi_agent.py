@@ -30,3 +30,37 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
     assert "AuthorizeRequest" not in component_names
     assert "BillingHistoryResponse" not in component_names
     assert "BillingPortalResponse" not in component_names
+
+
+def test_agent_openapi_has_stable_operation_ids_and_stats_routes(
+    client: TestClient,
+) -> None:
+    response = client.get("/v1/openapi.agent.json")
+    assert response.status_code == 200, response.text
+    body = response.json()
+
+    expected_operation_ids = {
+        ("get", "/v1/intelligence/precomputed/query"): "prefetchIntelligence",
+        ("post", "/v1/evidence/packets/query"): "queryEvidencePacket",
+        ("get", "/v1/programs/search"): "searchPrograms",
+        ("get", "/v1/programs/{unified_id}"): "getProgram",
+        ("get", "/v1/source_manifest/{program_id}"): "getSourceManifest",
+        ("get", "/v1/meta/freshness"): "getMetaFreshness",
+        ("get", "/v1/stats/coverage"): "getStatsCoverage",
+        ("get", "/v1/stats/freshness"): "getStatsFreshness",
+        ("post", "/v1/citations/verify"): "verifyCitations",
+        ("post", "/v1/cost/preview"): "previewCost",
+    }
+
+    seen: list[str] = []
+    for (method, path), operation_id in expected_operation_ids.items():
+        operation = body["paths"][path][method]
+        assert operation["operationId"] == operation_id
+        assert operation["x-jpcite-agent-safe"] is True
+        seen.append(operation["operationId"])
+
+    assert len(seen) == len(set(seen))
+    for path in ("/v1/stats/coverage", "/v1/stats/freshness"):
+        operation = body["paths"][path]["get"]
+        assert operation["security"] == [{"ApiKeyAuth": []}, {}]
+        assert operation["x-jpcite-auth"] == "optional_x_api_key_for_paid_volume"

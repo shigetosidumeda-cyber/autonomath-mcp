@@ -457,7 +457,7 @@
       o.value = p; o.textContent = p;
       sel.appendChild(o);
     });
-  });
+  })();
 
   (function() {
     var form = document.getElementById("alerts-signup");
@@ -474,7 +474,7 @@
       });
     }
     planInputs.forEach(function (i) { i.addEventListener("change", syncPlan); });
-    syncPlan;
+    syncPlan();
 
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
@@ -498,10 +498,10 @@
       }
       var payload = {
         email: (data.get("email") || "").trim(),
-        houjin_bangou: (data.get("houjin_bangou") || "").trim || null,
+        houjin_bangou: (data.get("houjin_bangou") || "").trim() || null,
         industry_codes: industries,
         areas_of_interest: areas,
-        prefecture: (data.get("prefecture") || "").trim || null,
+        prefecture: (data.get("prefecture") || "").trim() || null,
         plan: data.get("plan") || "free",
         source_lang: "ja"
       };
@@ -527,8 +527,8 @@
             msg += " メール内リンクで確認後、決済に進んでください。";
           }
           status.textContent = msg;
-          form.reset;
-          syncPlan;
+          form.reset();
+          syncPlan();
         } else {
           status.className = "signup-status err";
           var detail = res.body && res.body.detail;
@@ -546,7 +546,7 @@
         if (submitBtn) submitBtn.disabled = false;
       });
     });
-  });
+  })();
 </script>
 
 </body>

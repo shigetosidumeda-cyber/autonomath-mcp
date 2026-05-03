@@ -106,21 +106,19 @@ def test_public_docs_do_not_regress_to_internal_or_legacy_copy() -> None:
     assert offenders == []
 
 
-def test_public_sitemap_controls_do_not_republish_structured_shards() -> None:
-    control_files = [
-        REPO_ROOT / "site" / "robots.txt",
-        REPO_ROOT / "site" / "sitemap-index.xml",
-        REPO_ROOT / "site" / "_headers",
-    ]
-    offenders: list[tuple[str, str]] = []
-    for path in control_files:
-        text = path.read_text(encoding="utf-8")
-        rel = path.relative_to(REPO_ROOT).as_posix()
-        for term in ("sitemap-structured", "/structured/"):
-            if term in text:
-                offenders.append((rel, term))
+def test_public_sitemap_controls_publish_structured_jsonld_shards() -> None:
+    """Structured JSON-LD shards are an intentional AI discovery surface."""
+    robots = (REPO_ROOT / "site" / "robots.txt").read_text(encoding="utf-8")
+    sitemap_index = (REPO_ROOT / "site" / "sitemap-index.xml").read_text(
+        encoding="utf-8"
+    )
+    headers = (REPO_ROOT / "site" / "_headers").read_text(encoding="utf-8")
 
-    assert offenders == []
+    assert "Allow: /structured/" in robots
+    assert "https://jpcite.com/sitemap-structured.xml" in robots
+    assert "https://jpcite.com/sitemap-structured.xml" in sitemap_index
+    assert "/structured/*.jsonld" in headers
+    assert "application/ld+json" in headers
 
 
 def test_key_ai_and_tool_surfaces_use_current_billing_and_evidence_copy() -> None:

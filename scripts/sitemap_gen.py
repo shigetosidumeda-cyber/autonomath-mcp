@@ -7,6 +7,7 @@ The site has multiple sitemaps:
 - sitemap-prefectures.xml / sitemap-cross.xml / sitemap-industries.xml (GEO pages)
 - sitemap-audiences.xml / sitemap-qa.xml / sitemap-pages.xml (content pages)
 - sitemap-enforcement.xml (administrative action detail pages)
+- sitemap-structured.xml (standalone JSON-LD records for AI / answer crawlers)
 - docs/sitemap.xml (MkDocs output)
 
 When sitemap-programs has > 50,000 URLs (sitemap.org spec) the program
@@ -53,6 +54,7 @@ KNOWN_BASENAMES = (
     "sitemap-pages.xml",
     "sitemap-qa.xml",
     "sitemap-enforcement.xml",
+    "sitemap-structured.xml",
     "docs/sitemap.xml",
 )
 

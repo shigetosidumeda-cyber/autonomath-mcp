@@ -15,10 +15,13 @@ agnostic to whether jpintel_mcp.config is fully wired.
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import httpx
 import pytest
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.fixture(autouse=True)
@@ -116,6 +119,20 @@ def test_legacy_autonomath_env_alias_still_works(monkeypatch: pytest.MonkeyPatch
     assert _http_fallback._api_base() == "https://legacy.example.test"  # type: ignore[attr-defined]
 
 
+def test_api_key_falls_back_to_stored_device_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Device-flow checkout stores the issued key in keychain, not env."""
+    from jpintel_mcp.mcp import _http_fallback
+    from jpintel_mcp.mcp import auth as auth_mod
+
+    monkeypatch.delenv("JPCITE_API_KEY", raising=False)
+    monkeypatch.delenv("AUTONOMATH_API_KEY", raising=False)
+    monkeypatch.setattr(auth_mod, "get_stored_token", lambda: "am_keychain")
+
+    assert _http_fallback._api_key() == "am_keychain"  # type: ignore[attr-defined]
+
+
 # --------------------------------------------------------------------------- #
 # Case 2: fallback mode → search_programs round-trips via HTTP
 # --------------------------------------------------------------------------- #
@@ -184,6 +201,47 @@ def test_search_programs_fallback_returns_remote_shape(
     assert captured["path"] == "/v1/programs/search"
     # None values must be stripped before being passed to httpx params.
     assert "tier" not in captured["query"]
+
+
+def test_http_call_converts_429_to_mcp_upgrade_payload(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from jpintel_mcp.mcp import _http_fallback
+    from jpintel_mcp.mcp import auth as auth_mod
+
+    monkeypatch.setenv("JPCITE_API_BASE", "https://api.example.test")
+    monkeypatch.setattr(
+        auth_mod,
+        "handle_quota_exceeded",
+        lambda: "device-flow upgrade instructions",
+    )
+
+    def _handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/v1/programs/search"
+        return httpx.Response(
+            429,
+            json={
+                "error": {"code": "quota_exceeded"},
+                "upgrade_url": "https://jpcite.com/pricing.html#api-paid",
+                "direct_checkout_url": "https://jpcite.com/v1/billing/checkout",
+                "trial_signup_url": "https://jpcite.com/trial.html",
+            },
+        )
+
+    _http_fallback._client = httpx.Client(  # type: ignore[attr-defined]
+        base_url="https://api.example.test",
+        transport=httpx.MockTransport(_handler),
+    )
+
+    out = _http_fallback.http_call("/v1/programs/search", retry=0)
+
+    assert out["error"] == "quota_exceeded"
+    assert out["status_code"] == 429
+    assert out["path"] == "/v1/programs/search"
+    assert out["message"] == "device-flow upgrade instructions"
+    assert out["upgrade_url"] == "https://jpcite.com/pricing.html#api-paid"
+    assert out["direct_checkout_url"] == "https://jpcite.com/v1/billing/checkout"
+    assert out["trial_signup_url"] == "https://jpcite.com/trial.html"
 
 
 # --------------------------------------------------------------------------- #

@@ -156,7 +156,7 @@
     var lead = document.getElementById("unsub-lead");
     if (!btn) return;
 
-    var token = tokenFromQuery;
+    var token = tokenFromQuery();
     if (!token) {
       status.className = "status err";
       status.innerHTML = 'リンクが無効です。メール末尾のリンクをご確認ください。届かない場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。<br><a href="alerts.html">アラート設定に戻る</a>';
@@ -189,7 +189,7 @@
         btn.disabled = false;
       });
     });
-  });
+  })();
 </script>
 
 </body>

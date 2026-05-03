@@ -267,6 +267,7 @@ nav:
   - 開発者:
       - サンプル: examples.md
       - Prompt Cookbook: prompt_cookbook.md
+      - AI 推薦条件: recommendation-scenarios.md
       - ダッシュボード: dashboard_guide.md
       - アラート: alerts_guide.md
       - Webhook: webhooks.md

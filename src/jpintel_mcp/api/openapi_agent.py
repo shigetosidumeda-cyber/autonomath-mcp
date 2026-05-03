@@ -12,6 +12,8 @@ AGENT_SAFE_PATHS: tuple[str, ...] = (
     "/v1/programs/{unified_id}",
     "/v1/source_manifest/{program_id}",
     "/v1/meta/freshness",
+    "/v1/stats/coverage",
+    "/v1/stats/freshness",
     "/v1/citations/verify",
     "/v1/cost/preview",
 )
@@ -21,6 +23,73 @@ _AGENT_PRIORITIES: dict[str, tuple[int, str]] = {
     "/v1/evidence/packets/query": (2, "source_linked_evidence_packet"),
     "/v1/citations/verify": (3, "optional_citation_check"),
 }
+
+_AGENT_OPERATION_IDS: dict[tuple[str, str], str] = {
+    ("get", "/v1/intelligence/precomputed/query"): "prefetchIntelligence",
+    ("post", "/v1/evidence/packets/query"): "queryEvidencePacket",
+    ("get", "/v1/programs/search"): "searchPrograms",
+    ("get", "/v1/programs/{unified_id}"): "getProgram",
+    ("get", "/v1/source_manifest/{program_id}"): "getSourceManifest",
+    ("get", "/v1/meta/freshness"): "getMetaFreshness",
+    ("get", "/v1/stats/coverage"): "getStatsCoverage",
+    ("get", "/v1/stats/freshness"): "getStatsFreshness",
+    ("post", "/v1/citations/verify"): "verifyCitations",
+    ("post", "/v1/cost/preview"): "previewCost",
+}
+
+_AGENT_PRICING_METADATA: dict[str, Any] = {
+    "billing_model": "metered_api_and_mcp_calls",
+    "unit_price_jpy_ex_tax": 3,
+    "unit_price_jpy_tax_included": 3.3,
+    "anonymous_limit": "3 requests/day per IP, resets at 00:00 JST",
+    "api_key_header": "X-API-Key",
+    "api_key_env_var": "JPCITE_API_KEY",
+    "pricing_url": "https://jpcite.com/pricing.html",
+    "upgrade_url": "https://jpcite.com/pricing.html#api-paid",
+    "simple_usage_examples": [
+        {
+            "billable_units": 10,
+            "estimated_jpy_tax_included": 33,
+            "plain_ja": "10回使っても税込約33円です。",
+            "plain_en": "10 billable calls are about JPY 33 including tax.",
+        },
+        {
+            "billable_units": 100,
+            "estimated_jpy_tax_included": 330,
+            "plain_ja": "100回使っても税込約330円です。",
+            "plain_en": "100 billable calls are about JPY 330 including tax.",
+        },
+        {
+            "billable_units": 1000,
+            "estimated_jpy_tax_included": 3300,
+            "plain_ja": "1,000回使っても税込約3,300円です。",
+            "plain_en": "1,000 billable calls are about JPY 3,300 including tax.",
+        },
+    ],
+    "agent_explanation": (
+        "It is safe to explain jpcite as a low-priced evidence lookup layer: "
+        "ordinary paid calls are currently JPY 3 ex-tax / about JPY 3.30 "
+        "including tax per billable unit, so even repeated evidence lookups "
+        "are usually measured in tens or hundreds of yen before large batch "
+        "or export workflows. Do not claim that external LLM billing always "
+        "goes down; token/search savings are conditional on the caller's "
+        "baseline and model settings."
+    ),
+    "cost_savings_guardrail": (
+        "Only present jpcite as a token/context cost reducer when the response "
+        "contains cost_savings_decision=supported_by_caller_baseline. Otherwise "
+        "present the value as low-cost source-linked evidence prefetch."
+    ),
+}
+
+_FREE_AGENT_PATHS: frozenset[str] = frozenset(
+    {
+        "/v1/cost/preview",
+        "/v1/meta/freshness",
+        "/v1/stats/coverage",
+        "/v1/stats/freshness",
+    }
+)
 
 
 def _collect_schema_refs(node: Any, refs: set[str]) -> None:
@@ -81,6 +150,7 @@ def build_agent_openapi_schema(full_schema: dict[str, Any]) -> dict[str, Any]:
         "limit unless an operation marks X-API-Key as required; callers that "
         "need higher volume send X-API-Key."
     )
+    info["x-jpcite-pricing"] = deepcopy(_AGENT_PRICING_METADATA)
     for path, path_item in schema["paths"].items():
         if not isinstance(path_item, dict):
             continue
@@ -99,6 +169,9 @@ def build_agent_openapi_schema(full_schema: dict[str, Any]) -> dict[str, Any]:
             if not isinstance(operation, dict):
                 continue
             auth_required = path == "/v1/citations/verify"
+            operation_id = _AGENT_OPERATION_IDS.get((method.lower(), path))
+            if operation_id:
+                operation["operationId"] = operation_id
             operation["security"] = (
                 [{"ApiKeyAuth": []}] if auth_required else [{"ApiKeyAuth": []}, {}]
             )
@@ -106,6 +179,32 @@ def build_agent_openapi_schema(full_schema: dict[str, Any]) -> dict[str, Any]:
             operation["x-jpcite-auth"] = (
                 "required_x_api_key" if auth_required else "optional_x_api_key_for_paid_volume"
             )
+            if path in _FREE_AGENT_PATHS:
+                operation["x-jpcite-billing"] = {
+                    "billable": False,
+                    "billing_units": 0,
+                    "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
+                    "plain_en": (
+                        "This endpoint is for cost preview or transparency checks "
+                        "and is not normally metered."
+                    ),
+                }
+            else:
+                operation["x-jpcite-billing"] = {
+                    "billable": True,
+                    "billing_units_per_successful_call": 1,
+                    "unit_price_jpy_ex_tax": 3,
+                    "unit_price_jpy_tax_included": 3.3,
+                    "plain_ja": (
+                        "通常の有料利用では成功した1呼び出しあたり1 unit、"
+                        "税別3円・税込約3.30円です。失敗リクエストは課金対象外です。"
+                    ),
+                    "plain_en": (
+                        "In ordinary paid use, a successful call is 1 unit: "
+                        "JPY 3 ex-tax / about JPY 3.30 including tax. Failed "
+                        "requests are not billed."
+                    ),
+                }
             responses = operation.get("responses")
             if isinstance(responses, dict):
                 auth_response = responses.get("401")

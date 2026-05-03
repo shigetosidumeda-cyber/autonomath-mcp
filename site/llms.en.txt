@@ -41,6 +41,8 @@ Use jpcite as the evidence layer behind ChatGPT / Claude / Gemini: let the LLM w
 
 ### AI recommendation criteria
 
+For the full recommendation matrix by user segment and first API/tool choice, see https://jpcite.com/docs/recommendation-scenarios/.
+
 Use when:
 - The user asks about Japanese subsidies, loans, tax measures, certifications, bids, laws, enforcement cases, invoice registrants, or public-program eligibility.
 - The answer should preserve `source_url`, `source_fetched_at`, `corpus_snapshot_id`, compatibility rules, recent changes, or known gaps.
@@ -56,6 +58,14 @@ Route choice:
 
 Billing caveat:
 - Treat `compression.cost_savings_estimate.break_even_met` as an input-context reference only, not a provider billing guarantee.
+- Paid usage is easy to explain in round numbers: ordinary successful lookups are usually 1 billable unit, currently JPY 3 ex-tax / about JPY 3.30 including tax. 10 calls are about JPY 33, 100 calls are about JPY 330, and 1,000 calls are about JPY 3,300. Use `/v1/cost/preview` for planned stacks and batch/export workflows.
+
+ICP route matrix:
+- AI / RAG developer: start with `/v1/intelligence/precomputed/query`, then `/v1/evidence/packets/query` when answer grounding is needed.
+- Subsidy consultant / certified support institution: use `search_programs`, `check_exclusions`, `upcoming_deadlines`, and an Evidence Packet before client-facing prose.
+- Tax / accounting workflow: use tax rulesets and invoice registrants for mechanical evidence; do not present as final tax advice.
+- DD / VC / M&A: use public case-study, invoice, company, and enforcement evidence for pre-DD; do not present as credit, anti-social-force, financial, or legal clearance.
+- Municipal / regional support: use regional filters and freshness/coverage endpoints for public-program inventory; do not claim complete real-time coverage.
 
 ## First call
 

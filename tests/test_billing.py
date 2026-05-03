@@ -248,6 +248,93 @@ def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch)
     assert captured[0]["locale"] == "en"
 
 
+def test_checkout_attaches_pending_device_user_code_metadata(
+    client, stripe_env, monkeypatch
+):
+    """MCP device-flow checkout must bind the Stripe Session to the pending code."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    auth = client.post(
+        "/v1/device/authorize",
+        json={},
+        headers={"user-agent": "pytest-checkout-device-flow"},
+    )
+    assert auth.status_code == 200, auth.text
+    device = auth.json()
+
+    captured: list[dict] = []
+
+    class _FakeSession:
+        id = "cs_device_checkout"
+        url = "https://checkout.stripe.test/device"
+
+    def _create(**kwargs):
+        captured.append(kwargs)
+        return _FakeSession()
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "create", _create)
+
+    r = client.post(
+        "/v1/billing/checkout",
+        json={
+            "success_url": "https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://jpcite.com/pricing.html?cancelled=1",
+            "user_code": device["user_code"],
+        },
+    )
+
+    assert r.status_code == 200, r.text
+    metadata = captured[0]["metadata"]
+    assert metadata["device_code"] == device["device_code"]
+    assert metadata["user_code"] == device["user_code"]
+    assert metadata["checkout_state_hash"]
+
+
+def test_checkout_rejects_nonpending_device_user_code(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    from jpintel_mcp.api import billing as billing_mod
+
+    auth = client.post(
+        "/v1/device/authorize",
+        json={},
+        headers={"user-agent": "pytest-checkout-device-flow"},
+    )
+    assert auth.status_code == 200, auth.text
+    user_code = auth.json()["user_code"]
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.execute(
+            "UPDATE device_codes SET status = 'denied' WHERE user_code = ?",
+            (user_code,),
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    called: list[dict] = []
+
+    def _should_not_be_called(**kwargs):  # pragma: no cover - regression guard
+        called.append(kwargs)
+        raise AssertionError("Stripe Checkout must not be created for denied device code")
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "create", _should_not_be_called)
+
+    r = client.post(
+        "/v1/billing/checkout",
+        json={
+            "success_url": "https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://jpcite.com/pricing.html?cancelled=1",
+            "user_code": user_code,
+        },
+    )
+
+    assert r.status_code == 409, r.text
+    assert "not pending" in r.json()["detail"]
+    assert called == []
+
+
 def test_portal_unauthed_returns_401(client, stripe_env, monkeypatch):
     """P0-6: anonymous (no X-API-Key) caller gets 401, NEVER a portal URL.
 

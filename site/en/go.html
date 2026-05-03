@@ -490,7 +490,8 @@
         body: JSON.stringify({
           success_url: successUrl,
           cancel_url: cancelUrl,
-          customer_email: email
+          customer_email: email,
+          user_code: userCode
         })
       }).then(function (r) {
         return r.text().then(function (text) {

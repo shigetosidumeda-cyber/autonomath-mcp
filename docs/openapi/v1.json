@@ -2254,6 +2254,17 @@
           "success_url": {
             "title": "Success Url",
             "type": "string"
+          },
+          "user_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Code"
           }
         },
         "required": [

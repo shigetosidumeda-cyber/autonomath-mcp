@@ -42,7 +42,11 @@
     <lastmod>2026-05-02</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://jpcite.com/docs/sitemap.xml</loc>
+    <loc>https://jpcite.com/sitemap-structured.xml</loc>
     <lastmod>2026-05-03</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/docs/sitemap.xml</loc>
+    <lastmod>2026-05-04</lastmod>
   </sitemap>
 </sitemapindex>

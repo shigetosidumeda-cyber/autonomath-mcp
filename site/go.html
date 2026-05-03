@@ -349,7 +349,7 @@
 
     function normalizeUserCode(raw) {
       if (!raw) return '';
-      var v = String(raw).toUpperCase.replace(/[^A-HJ-NP-Z2-9\-]/g, '');
+      var v = String(raw).toUpperCase().replace(/[^A-HJ-NP-Z2-9\-]/g, '');
       // Accept 8 chars (no dash) → insert dash.
       if (/^[A-HJ-NP-Z2-9]{8}$/.test(v)) {
         return v.slice(0, 4) + '-' + v.slice(4);
@@ -404,7 +404,7 @@
     // --- Form wiring ------------------------------------------------------
 
     function initForm() {
-      var code = getCodeFromLocation;
+      var code = getCodeFromLocation();
       var input = $('user_code');
       var box = $('recovery-box');
       if (code && input) {
@@ -434,10 +434,10 @@
           var v = normalizeUserCode(input.value);
           if (v !== input.value) input.value = v;
           if (box) box.textContent = v || '—';
-          syncCta;
+          syncCta();
         });
       }
-      syncCta;
+      syncCta();
 
       var form = $('go-form');
       if (form) form.addEventListener('submit', function (ev) {
@@ -481,7 +481,8 @@
         body: JSON.stringify({
           success_url: successUrl,
           cancel_url: cancelUrl,
-          customer_email: email
+          customer_email: email,
+          user_code: userCode
         })
       }).then(function (r) {
         return r.text().then(function (text) {
@@ -508,8 +509,8 @@
     // --- /v1/device/complete (post-Stripe redirect) ----------------------
 
     function completeAfterCheckout() {
-      var sid = getSessionIdFromLocation;
-      var code = getCodeFromLocation;
+      var sid = getSessionIdFromLocation();
+      var code = getCodeFromLocation();
       if (!sid || !code) return false;
 
       showOnly('state-processing');
@@ -552,7 +553,7 @@
         }
       } catch (_e) { /* noop */ }
 
-      initForm;
+      initForm();
       var retry = $('retry-btn');
       if (retry) retry.addEventListener('click', function() {
         showOnly('state-form');
@@ -561,8 +562,8 @@
       // If we came back from Stripe with a session_id, jump straight to
       // /complete. initForm has already wired the form in case the user
       // navigates back to it.
-      if (getSessionIdFromLocation) {
-        completeAfterCheckout;
+      if (getSessionIdFromLocation()) {
+        completeAfterCheckout();
       } else {
         showOnly('state-form');
       }
@@ -571,9 +572,9 @@
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', boot);
     } else {
-      boot;
+      boot();
     }
-  });
+  })();
 </script>
 
 </body>

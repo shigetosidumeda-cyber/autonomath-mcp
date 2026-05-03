@@ -37,11 +37,14 @@ Memory contract (project_autonomath_business_model.md):
 """
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import sqlite3
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = logging.getLogger("jpintel.mcp.http_fallback")
 
@@ -70,11 +73,17 @@ def _api_base() -> str:
 
 
 def _api_key() -> str | None:
-    return (
-        os.environ.get("JPCITE_API_KEY")
-        or os.environ.get("AUTONOMATH_API_KEY")
-        or None
-    )
+    env_key = os.environ.get("JPCITE_API_KEY") or os.environ.get("AUTONOMATH_API_KEY")
+    if env_key:
+        return env_key
+    # Device-flow auth stores the issued jpcite key in the OS keychain.
+    # Import lazily so the fallback path stays usable even when optional
+    # keyring backends are not installed.
+    with contextlib.suppress(Exception):
+        from jpintel_mcp.mcp.auth import get_stored_token
+
+        return get_stored_token()
+    return None
 
 
 def _user_agent() -> str:
@@ -208,15 +217,21 @@ _client: Any = None
 def _get_client() -> Any:
     """Lazy-import httpx and reuse a single Client. Returns the Client."""
     global _client
+    key = _api_key()
     if _client is not None:
-        return _client
+        current_key = _client.headers.get("X-API-Key")
+        # After device-flow checkout, the key appears in keychain while the
+        # MCP process is still running. Rebuild the client so the next tool
+        # call immediately becomes paid/authenticated.
+        if current_key == key:
+            return _client
+        _close_client()
     import httpx  # local import — keeps DB-only path lightweight
 
     headers: dict[str, str] = {
         "User-Agent": _user_agent(),
         "Accept": "application/json",
     }
-    key = _api_key()
     if key:
         headers["X-API-Key"] = key
     _client = httpx.Client(
@@ -227,13 +242,36 @@ def _get_client() -> Any:
     return _client
 
 
+def _quota_exceeded_payload(data: dict[str, Any], path: str) -> dict[str, Any]:
+    """Return an MCP-friendly 429 response with conversion instructions."""
+    message = ""
+    with contextlib.suppress(Exception):
+        from jpintel_mcp.mcp.auth import handle_quota_exceeded
+
+        message = handle_quota_exceeded()
+    if not message:
+        upgrade_url = data.get("direct_checkout_url") or data.get("upgrade_url")
+        message = (
+            "無料枠に到達しました。続けるには jpcite API キーを発行してください: "
+            f"{upgrade_url or 'https://jpcite.com/pricing.html#api-paid'}"
+        )
+    return {
+        "error": "quota_exceeded",
+        "status_code": 429,
+        "detail": data,
+        "path": path,
+        "message": message,
+        "upgrade_url": data.get("upgrade_url"),
+        "direct_checkout_url": data.get("direct_checkout_url"),
+        "trial_signup_url": data.get("trial_signup_url"),
+    }
+
+
 def _close_client() -> None:
     global _client
     if _client is not None:
-        try:
+        with contextlib.suppress(Exception):
             _client.close()
-        except Exception:
-            pass
         _client = None
 
 
@@ -290,6 +328,8 @@ def http_call(
             data = {"_raw": resp.text}
 
         if resp.status_code >= 400:
+            if resp.status_code == 429 and isinstance(data, dict):
+                return _quota_exceeded_payload(data, path)
             return {
                 "error": "remote_http_error",
                 "status_code": resp.status_code,

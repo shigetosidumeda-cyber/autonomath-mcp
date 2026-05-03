@@ -320,9 +320,9 @@
     var key = (document.getElementById("api-key").value || "").trim();
     var audience = (document.getElementById("audience").value || "").trim();
     var text = (document.getElementById("text").value || "").trim();
-    var name = (document.getElementById("name").value || "").trim || null;
-    var organization = (document.getElementById("organization").value || "").trim || null;
-    var linkedin = (document.getElementById("linkedin").value || "").trim || null;
+    var name = (document.getElementById("name").value || "").trim() || null;
+    var organization = (document.getElementById("organization").value || "").trim() || null;
+    var linkedin = (document.getElementById("linkedin").value || "").trim() || null;
     if (!key) { showFormMsg("API key を入力してください", false); return; }
     if (!audience) { showFormMsg("audience を選択してください", false); return; }
     if (text.length < 10) { showFormMsg("本文は 10 文字以上必要です", false); return; }
@@ -344,7 +344,7 @@
     }).then(function (r) {
       if (r.status === 201) {
         showFormMsg("投稿を受け付けました。承認後に公開されます。", true);
-        document.getElementById("tm-form").reset;
+        document.getElementById("tm-form").reset();
       } else if (r.status === 401) {
         showFormMsg("API key が無効です。", false);
       } else if (r.status === 422) {
@@ -362,9 +362,9 @@
   document.addEventListener("DOMContentLoaded", function() {
     var f = document.getElementById("tm-form");
     if (f) f.addEventListener("submit", submit);
-    loadList;
+    loadList();
   });
-});
+})();
 </script>
 
 </body>

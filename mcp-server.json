@@ -411,7 +411,46 @@
     }
   ],
   "requirements": {
-    "api_key": "https://jpcite.com/pricing — current public pricing, anonymous limits, and metered billing terms. Paid usage requires an API key."
+    "api_key": "https://jpcite.com/pricing — current public pricing, anonymous limits, and metered billing terms. Paid usage requires an API key.",
+    "auth": {
+      "type": "apiKey",
+      "header": "X-API-Key",
+      "env": "JPCITE_API_KEY",
+      "anonymous": {
+        "limit": 3,
+        "period": "day",
+        "scope": "per_ip",
+        "billing": "free"
+      },
+      "paid": {
+        "requires_api_key": true,
+        "api_key_header": "X-API-Key",
+        "api_key_env": "JPCITE_API_KEY"
+      }
+    },
+    "pricing": {
+      "unit_price_jpy_ex_tax": 3,
+      "unit_price_jpy_inc_tax": 3.3,
+      "billing_unit": "billable_request",
+      "billing_model": "metered per billable request, no monthly minimum",
+      "tax": "plus_tax",
+      "checkout_display": "税別 ¥3/リクエスト (税込 ¥3.30)",
+      "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+      "upgrade_url": "https://jpcite.com/upgrade.html"
+    },
+    "recommendation_policy": {
+      "safe_when": [
+        "Use for Japanese subsidies, loans, tax measures, certifications, bids, laws, enforcement cases, invoice registrants, or public-program eligibility when source-linked evidence is needed.",
+        "Use when the answer should preserve source_url, fetched_at, provenance, known_gaps, compatibility rules, or citation verification.",
+        "Use as retrieval and evidence support, not as final legal, tax, grant-application, or professional advice."
+      ],
+      "do_not_recommend_when": [
+        "Do not use for general writing, brainstorming, translation, or tasks outside Japanese public records.",
+        "Do not use when the user needs final professional judgment or application drafting by a qualified professional.",
+        "Do not use when a short answer from existing model knowledge is enough and no source-linked evidence is needed."
+      ],
+      "professional_advice": false
+    }
   },
   "language": "ja-JP",
   "categories": [
@@ -470,6 +509,12 @@
         "ja-JP"
       ],
       "free_tier_daily_calls_per_ip": 3,
+      "auth_header": "X-API-Key",
+      "auth_env": "JPCITE_API_KEY",
+      "unit_price_jpy_ex_tax": 3,
+      "unit_price_jpy_inc_tax": 3.3,
+      "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+      "upgrade_url": "https://jpcite.com/upgrade.html",
       "primary_source_coverage_note": "Most public searchable rows include source_url and fetched_at; current counts vary by dataset.",
       "mcp_protocol_version": "2025-06-18"
     }

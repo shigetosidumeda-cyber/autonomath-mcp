@@ -104,6 +104,7 @@ Allow: /llms-full.txt
 Allow: /llms-full.en.txt
 Allow: /facts.html
 Allow: /en/facts.html
+Allow: /structured/
 Allow: /docs/openapi/v1.json
 Allow: /docs/openapi/agent.json
 # API host canonical:
@@ -113,6 +114,7 @@ Allow: /mcp-server.json
 Allow: /server.json
 Allow: /v1/healthz
 Allow: /.well-known/security.txt
+Allow: /.well-known/mcp.json
 Disallow: /admin/
 Disallow: /_internal/
 Disallow: /dashboard.html
@@ -143,4 +145,5 @@ Sitemap: https://jpcite.com/sitemap-industries.xml
 Sitemap: https://jpcite.com/sitemap-qa.xml
 Sitemap: https://jpcite.com/sitemap-pages.xml
 Sitemap: https://jpcite.com/sitemap-enforcement.xml
+Sitemap: https://jpcite.com/sitemap-structured.xml
 Sitemap: https://jpcite.com/docs/sitemap.xml

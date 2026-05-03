@@ -663,6 +663,8 @@ class CheckoutRequest(BaseModel):
     cancel_url: str
     customer_email: str | None = None
     locale: Literal["ja", "en"] | None = None
+    # Optional MCP device-flow user code. Normal website checkout omits it.
+    user_code: str | None = None
 
 
 class CheckoutResponse(BaseModel):
@@ -675,6 +677,7 @@ def create_checkout(
     payload: CheckoutRequest,
     request: Request,
     response: Response,
+    conn: DbDep,
 ) -> CheckoutResponse:
     s = _stripe()
     price_id = settings.stripe_price_per_request
@@ -722,6 +725,21 @@ def create_checkout(
         "en" if urlparse(success_url).path.startswith("/en/") else "ja"
     )
     checkout_state = secrets.token_urlsafe(32)
+    metadata = {"checkout_state_hash": _checkout_state_hash(checkout_state)}
+    if payload.user_code:
+        row = conn.execute(
+            "SELECT device_code, user_code, status FROM device_codes WHERE user_code = ?",
+            (payload.user_code,),
+        ).fetchone()
+        if row is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "user_code not found")
+        if row["status"] != "pending":
+            raise HTTPException(
+                status.HTTP_409_CONFLICT,
+                f"device_code is not pending (status={row['status']})",
+            )
+        metadata["device_code"] = row["device_code"]
+        metadata["user_code"] = row["user_code"]
 
     session = s.checkout.Session.create(
         mode="subscription",
@@ -729,13 +747,14 @@ def create_checkout(
         success_url=success_url,
         cancel_url=cancel_url,
         customer_email=payload.customer_email,
-        metadata={"checkout_state_hash": _checkout_state_hash(checkout_state)},
+        metadata=metadata,
         allow_promotion_codes=True,
         locale=checkout_locale,
         custom_text={
             "submit": {
                 "message": (
-                    "ご登録により利用規約 (https://jpcite.com/tos.html) "
+                    "決済対象: jpcite API。ご登録により利用規約 "
+                    "(https://jpcite.com/tos.html) "
                     "およびプライバシーポリシー (https://jpcite.com/privacy.html) "
                     "に同意したものとみなされます。"
                 )

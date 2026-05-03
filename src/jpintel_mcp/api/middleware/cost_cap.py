@@ -95,6 +95,16 @@ _HANDLER_LEVEL_COST_CAP_PATHS: frozenset[str] = frozenset(
         "/v1/am/dd_export",
         "/v1/audit/batch_evaluate",
         "/v1/audit/workpaper",
+        # The route parses commit=false/true and only bills on commit=true.
+        # Preview and idempotent replay paths must remain usable without a cap.
+        "/v1/me/clients/bulk_evaluate",
+    }
+)
+_FREE_BULK_PATHS: frozenset[str] = frozenset(
+    {
+        # CSV profile import mutates caller-owned metadata only. It does not
+        # bill, fan out to paid data lookups, or write Stripe usage.
+        "/v1/me/client_profiles/bulk_import",
     }
 )
 
@@ -268,6 +278,7 @@ class CostCapMiddleware(BaseHTTPMiddleware):
         if (
             cap_yen is None
             and _is_bulk_endpoint(path)
+            and path not in _FREE_BULK_PATHS
             and path not in _HANDLER_LEVEL_COST_CAP_PATHS
             and _has_customer_api_key(request)
         ):

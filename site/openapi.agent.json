@@ -11,6 +11,38 @@
     "termsOfService": "https://jpcite.com/tos.html",
     "license": {
       "name": "Proprietary - see termsOfService"
+    },
+    "x-jpcite-pricing": {
+      "billing_model": "metered_api_and_mcp_calls",
+      "unit_price_jpy_ex_tax": 3,
+      "unit_price_jpy_tax_included": 3.3,
+      "anonymous_limit": "3 requests/day per IP, resets at 00:00 JST",
+      "api_key_header": "X-API-Key",
+      "api_key_env_var": "JPCITE_API_KEY",
+      "pricing_url": "https://jpcite.com/pricing.html",
+      "upgrade_url": "https://jpcite.com/pricing.html#api-paid",
+      "simple_usage_examples": [
+        {
+          "billable_units": 10,
+          "estimated_jpy_tax_included": 33,
+          "plain_ja": "10回使っても税込約33円です。",
+          "plain_en": "10 billable calls are about JPY 33 including tax."
+        },
+        {
+          "billable_units": 100,
+          "estimated_jpy_tax_included": 330,
+          "plain_ja": "100回使っても税込約330円です。",
+          "plain_en": "100 billable calls are about JPY 330 including tax."
+        },
+        {
+          "billable_units": 1000,
+          "estimated_jpy_tax_included": 3300,
+          "plain_ja": "1,000回使っても税込約3,300円です。",
+          "plain_en": "1,000 billable calls are about JPY 3,300 including tax."
+        }
+      ],
+      "agent_explanation": "It is safe to explain jpcite as a low-priced evidence lookup layer: ordinary paid calls are currently JPY 3 ex-tax / about JPY 3.30 including tax per billable unit, so even repeated evidence lookups are usually measured in tens or hundreds of yen before large batch or export workflows. Do not claim that external LLM billing always goes down; token/search savings are conditional on the caller's baseline and model settings.",
+      "cost_savings_guardrail": "Only present jpcite as a token/context cost reducer when the response contains cost_savings_decision=supported_by_caller_baseline. Otherwise present the value as low-cost source-linked evidence prefetch."
     }
   },
   "paths": {
@@ -21,7 +53,7 @@
         ],
         "summary": "Precomputed Intelligence Bundle — query prefetch",
         "description": "Returns a compact precomputed intelligence bundle for LLM context prefetch. Use when an agent needs short source-linked Japanese public-program evidence before answering, without live web search or a request-time LLM call. Optional compression fields are input-context estimates, not external provider billing guarantees.",
-        "operationId": "get_precomputed_intelligence_query_v1_intelligence_precomputed_query_get",
+        "operationId": "prefetchIntelligence",
         "parameters": [
           {
             "name": "q",
@@ -373,6 +405,14 @@
         ],
         "x-jpcite-agent-safe": true,
         "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
         "x-jpcite-agent-priority": 1,
         "x-jpcite-route-purpose": "compact_first_pass"
       }
@@ -384,7 +424,7 @@
         ],
         "summary": "Evidence Packet — multi-record query composer",
         "description": "Use this endpoint as source-linked evidence prefetch before GPT, Claude, Cursor, or RAG answer generation. It returns a compact Evidence Packet instead of a final narrative answer, so callers can avoid pasting long PDFs, official pages, or search snippets into the model. 1 packet = 1 billable unit; see the pricing page for current public price and anonymous limits. The packet bundles up to `limit` records (hard cap 500). Truncation surfaces `_warning=\"truncated\"`. Optional compression fields are input-context estimates, not external provider billing guarantees.",
-        "operationId": "post_evidence_packet_query_v1_evidence_packets_query_post",
+        "operationId": "queryEvidencePacket",
         "parameters": [
           {
             "name": "output_format",
@@ -554,6 +594,14 @@
         ],
         "x-jpcite-agent-safe": true,
         "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
         "x-jpcite-agent-priority": 2,
         "x-jpcite-route-purpose": "source_linked_evidence_packet"
       }
@@ -565,7 +613,7 @@
         ],
         "summary": "Search 補助金 / 助成金 / 融資 / 税制 / 認定 programs",
         "description": "Discover candidate Japanese public-funding programs by free-text + structured filters across **11,684 searchable source-linked records**. Records outside the public publication criteria are excluded from search. Filters include prefecture, authority level, target type, funding purpose, and amount band.\n\n**When to use this endpoint:** the caller has a topic / region / kind in mind ('IT導入', '東京都', '補助金') and wants candidates. For *judgment* (does this profile fit?), prefer `POST /v1/programs/prescreen`. For exact-id lookup use `GET /v1/programs/{unified_id}`. For up-to-50 ids in one call use `POST /v1/programs/batch`.\n\n**Search behavior:** punctuation and full-width characters are normalized, quoted phrases are preserved, and empty searches without filters return no records. Combine text search with filters when browsing broad topics.\n\nUse `as_of_date=YYYY-MM-DD` to pin the result set to a historical dataset state. `confidence` and `source_fetched_at` are exposed per-record.",
-        "operationId": "search_programs_v1_programs_search_get",
+        "operationId": "searchPrograms",
         "parameters": [
           {
             "name": "q",
@@ -997,7 +1045,15 @@
           {}
         ],
         "x-jpcite-agent-safe": true,
-        "x-jpcite-auth": "optional_x_api_key_for_paid_volume"
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        }
       }
     },
     "/v1/programs/{unified_id}": {
@@ -1007,7 +1063,7 @@
         ],
         "summary": "Get a single program by unified_id (UNI-*)",
         "description": "Look up one program (補助金 / 融資 / 税制 / 認定) by stable `unified_id` (`UNI-<10 hex>`). Returns the full program detail including `enriched_json` (eligibility narrative, application window, required documents) and lineage (`source_url`, `source_fetched_at`, `source_checksum`).\n\n**404 semantics:** A miss means the record is not available in jpcite's current snapshot. The response includes official lookup guidance when available.\n\n**Discovery flow:** call `GET /v1/programs/search` first, then follow up on each `unified_id` with this endpoint to get the narrative + required-documents detail.",
-        "operationId": "get_program_v1_programs__unified_id__get",
+        "operationId": "getProgram",
         "parameters": [
           {
             "name": "unified_id",
@@ -1234,7 +1290,15 @@
           {}
         ],
         "x-jpcite-agent-safe": true,
-        "x-jpcite-auth": "optional_x_api_key_for_paid_volume"
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        }
       }
     },
     "/v1/source_manifest/{program_id}": {
@@ -1244,7 +1308,7 @@
         ],
         "summary": "Per-program source manifest (partial Evidence Graph)",
         "description": "Surface the available provenance manifest for one program: redistributable fact-level references plus an entity-level source rollup in one response.\n\n**Pricing:** ¥3/call (1 unit). Anonymous callers share the 3/日 per-IP cap (JST 翌日 00:00 リセット).\n\n**program_id** accepts:\n* a unified_id (`UNI-...`);\n* a stable program identifier (`program:...`).\n\n**Sparse-data honesty:** the per-fact provenance signal is currently partial for some program cohorts. The endpoint returns `fact_provenance=[]` and `fact_provenance_coverage_pct=0.0` rather than fabricating a richer dataset. The `_disclaimer` field is required reading for any downstream LLM relay.",
-        "operationId": "get_source_manifest_v1_source_manifest__program_id__get",
+        "operationId": "getSourceManifest",
         "parameters": [
           {
             "name": "program_id",
@@ -1330,7 +1394,15 @@
           {}
         ],
         "x-jpcite-agent-safe": true,
-        "x-jpcite-auth": "optional_x_api_key_for_paid_volume"
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        }
       }
     },
     "/v1/meta/freshness": {
@@ -1340,7 +1412,7 @@
           "transparency"
         ],
         "summary": "Meta Freshness",
-        "operationId": "meta_freshness_v1_meta_freshness_get",
+        "operationId": "getMetaFreshness",
         "parameters": [
           {
             "name": "limit",
@@ -1406,7 +1478,85 @@
           {}
         ],
         "x-jpcite-agent-safe": true,
-        "x-jpcite-auth": "optional_x_api_key_for_paid_volume"
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": false,
+          "billing_units": 0,
+          "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
+          "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
+        }
+      }
+    },
+    "/v1/stats/coverage": {
+      "get": {
+        "tags": [
+          "stats",
+          "transparency"
+        ],
+        "summary": "Stats Coverage",
+        "operationId": "getStatsCoverage",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverageResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": false,
+          "billing_units": 0,
+          "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
+          "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
+        }
+      }
+    },
+    "/v1/stats/freshness": {
+      "get": {
+        "tags": [
+          "stats",
+          "transparency"
+        ],
+        "summary": "Stats Freshness",
+        "operationId": "getStatsFreshness",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshnessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": false,
+          "billing_units": 0,
+          "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
+          "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
+        }
       }
     },
     "/v1/citations/verify": {
@@ -1416,7 +1566,7 @@
         ],
         "summary": "Verify Citations",
         "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (¥3) — billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict ∈ {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection — current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
-        "operationId": "verify_citations_v1_citations_verify_post",
+        "operationId": "verifyCitations",
         "parameters": [
           {
             "name": "X-API-Key",
@@ -1490,6 +1640,14 @@
         ],
         "x-jpcite-agent-safe": true,
         "x-jpcite-auth": "required_x_api_key",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
         "x-jpcite-agent-priority": 3,
         "x-jpcite-route-purpose": "optional_citation_check"
       }
@@ -1501,7 +1659,7 @@
         ],
         "summary": "Predict the cost of a planned tool-call stack (no request charge, ¥0)",
         "description": "Returns a no-charge cost estimate for planned jpcite tool calls without executing them.\n\n**Pricing**: metered calls are ¥3/billable unit (税別; 税込 ¥3.30). The preview itself is not metered and is rate-limited 50/min per IP/key.\n\n**Tax-related previews**: when the stack touches tax-relevant tools (`evaluate_tax_ruleset`, `search_tax_incentives`, etc.) the response includes a disclaimer for downstream display.",
-        "operationId": "post_cost_preview_v1_cost_preview_post",
+        "operationId": "previewCost",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1541,7 +1699,13 @@
           {}
         ],
         "x-jpcite-agent-safe": true,
-        "x-jpcite-auth": "optional_x_api_key_for_paid_volume"
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": false,
+          "billing_units": 0,
+          "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
+          "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
+        }
       }
     }
   },
@@ -1742,6 +1906,72 @@
           "corpus_checksum"
         ],
         "title": "CostPreviewResponse"
+      },
+      "CoverageResponse": {
+        "properties": {
+          "programs": {
+            "type": "integer",
+            "title": "Programs",
+            "default": 0
+          },
+          "case_studies": {
+            "type": "integer",
+            "title": "Case Studies",
+            "default": 0
+          },
+          "loan_programs": {
+            "type": "integer",
+            "title": "Loan Programs",
+            "default": 0
+          },
+          "enforcement_cases": {
+            "type": "integer",
+            "title": "Enforcement Cases",
+            "default": 0
+          },
+          "exclusion_rules": {
+            "type": "integer",
+            "title": "Exclusion Rules",
+            "default": 0
+          },
+          "laws_jpintel": {
+            "type": "integer",
+            "title": "Laws",
+            "description": "Law metadata records in the public jpcite corpus.",
+            "default": 0
+          },
+          "tax_rulesets": {
+            "type": "integer",
+            "title": "Tax Rulesets",
+            "default": 0
+          },
+          "court_decisions": {
+            "type": "integer",
+            "title": "Court Decisions",
+            "default": 0
+          },
+          "bids": {
+            "type": "integer",
+            "title": "Bids",
+            "default": 0
+          },
+          "invoice_registrants": {
+            "type": "integer",
+            "title": "Invoice Registrants",
+            "default": 0
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "generated_at"
+        ],
+        "title": "CoverageResponse",
+        "description": "``GET /v1/stats/coverage`` — dataset record counts."
       },
       "ErrorBody": {
         "properties": {
@@ -2674,6 +2904,74 @@
         "type": "object",
         "title": "EvidencePacketVerification",
         "description": "Replay and freshness endpoints for evidence verification."
+      },
+      "FreshnessResponse": {
+        "properties": {
+          "sources": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FreshnessSourceStat"
+            },
+            "type": "object",
+            "title": "Sources"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "generated_at"
+        ],
+        "title": "FreshnessResponse",
+        "description": "``GET /v1/stats/freshness`` — per-source min/max/avg fetched_at."
+      },
+      "FreshnessSourceStat": {
+        "properties": {
+          "min": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "default": 0
+          },
+          "avg_interval_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Interval Days"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "FreshnessSourceStat",
+        "description": "Per-source freshness stats inside ``FreshnessResponse.sources``."
       },
       "HTTPValidationError": {
         "properties": {
