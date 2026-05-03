@@ -437,11 +437,12 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </div>
 
  <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
- <p class="stat-label">利用詳細 (APIキーを貼り付け)</p>
+ <p class="stat-label">利用詳細 (APIキーを貼り付け・ワンショット閲覧)</p>
  <p class="stat-note" style="margin:0 0 12px;">
- APIキー を貼り付けてください。ブラウザの localStorage に保存され、
- /v1/me/dashboard へ Bearer ヘッダとして送信されます。サーバ側保存
- (cookie セッション) は別フロー <code>サインイン</code> を使ってください。
+ Stripe または無料トライアルで発行された APIキー を貼り付けてください。
+ ブラウザの localStorage に保存され、 /v1/me/dashboard へ Bearer ヘッダとして送信されます。
+ 共有端末や 1 回だけ確認したい場合に向いています。継続利用するなら、上の
+ <code>サインイン</code> (cookie セッション・7 日) を使う方が安全です。
  </p>
  <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
  <label for="dash2-key-input" class="visually-hidden">APIキー</label>
