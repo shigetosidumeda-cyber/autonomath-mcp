@@ -25,7 +25,7 @@ canonical_api_env:
 tool_count_default_gates: 93  # source: len(mcp._tool_manager.list_tools()) at boot — verified 2026-05-01 JST
 # NOTE: older public surfaces claimed 89 or 92 tools at default gates. Runtime now reports 93.
 # Treat stale public mentions as distribution drift.
-route_count: 212              # source: len(app.routes) at boot — verified 2026-05-03 JST
+route_count: 215              # source: len(app.routes) at boot — verified 2026-05-03 JST
 # NOTE: CLAUDE.md says 196 (and the Wave 21-22 changelog says 194). Runtime now reports 212.
 # Treat stale public route-count mentions as distribution drift.
 pyproject_version: "0.3.2"    # source: pyproject.toml [project] version field
