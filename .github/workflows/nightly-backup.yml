@@ -11,8 +11,12 @@ name: nightly-backup
 #   R2_SECRET_ACCESS_KEY  Cloudflare R2 secret access key.
 #   R2_BUCKET             Target bucket name (e.g. autonomath-backups).
 #
-# If any R2 secret is missing the off-site upload step logs a warning and
-# exits success -- the on-machine backup still ran, so cron is not blocked.
+# Fail-closed semantics (2026-05-03 hardening):
+#   The off-site upload step FAILS THE WORKFLOW when any R2 secret is missing.
+#   Older policy treated missing secrets as ::warning + exit 0; that hid the
+#   loss of off-site DR durability behind a green check. Operators MUST set
+#   all four R2_* secrets, otherwise nightly-backup fails loudly and the
+#   alert lands in Actions / Slack instead of a silent gap.
 #
 # TODO (operator — manual Fly.io steps required if the Fly app is still named jpintel-mcp):
 #   The fly.toml already declares: app = "autonomath-api"
@@ -96,7 +100,67 @@ jobs:
           set -euo pipefail
           shasum -a 256 -c jpintel-*.db.gz.sha256
 
-      - name: Upload to Cloudflare R2 and rotate (fail-open if secrets missing)
+      - name: Build backup manifest (sha + row count + schema migration max)
+        id: manifest
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          LATEST_BASENAME: ${{ steps.locate.outputs.latest_basename }}
+        # Capture the integrity-relevant facts about THIS backup so an
+        # auditor can later verify which exact corpus snapshot a given
+        # .db.gz on R2 corresponds to. We probe the LIVE Fly volume (not
+        # the local gzipped artifact) for row counts because gunzipping
+        # 350+ MB on the runner is wasteful when the source numbers are
+        # the same. sha256 of the artifact comes from the .sha256
+        # sidecar emitted by backup.py.
+        run: |
+          set -euo pipefail
+          ARTIFACT_SHA=$(awk '{print $1}' "${LATEST_BASENAME}.sha256")
+          PROGRAMS_COUNT=$(flyctl ssh console -a autonomath-api -q -C \
+            "sqlite3 /data/jpintel.db 'SELECT COUNT(*) FROM programs;'" \
+            | tr -d '\r\n' | awk '{print $NF}')
+          API_KEYS_COUNT=$(flyctl ssh console -a autonomath-api -q -C \
+            "sqlite3 /data/jpintel.db 'SELECT COUNT(*) FROM api_keys;'" \
+            | tr -d '\r\n' | awk '{print $NF}')
+          # schema_migrations.id is filename like "121_subsidy_rate_text_column.sql".
+          # max(id) preserves lexical ordering which matches our zero-padded
+          # numeric prefix scheme.
+          MIGRATION_MAX=$(flyctl ssh console -a autonomath-api -q -C \
+            "sqlite3 /data/jpintel.db 'SELECT COALESCE(MAX(id),\"\") FROM schema_migrations;'" \
+            | tr -d '\r\n' | awk '{print $NF}')
+          QUICK_CHECK=$(flyctl ssh console -a autonomath-api -q -C \
+            "sqlite3 /data/jpintel.db 'PRAGMA quick_check;'" \
+            | tr -d '\r\n' | awk '{print $NF}')
+
+          # Hard floor — match scripts/schema_guard.py prod gate. A backup
+          # of an empty / corrupt prod DB is worse than no backup because
+          # it can quietly overwrite a good R2 snapshot via rotation.
+          if [ -z "${PROGRAMS_COUNT:-}" ] || [ "${PROGRAMS_COUNT}" -lt 10000 ] 2>/dev/null; then
+            echo "::error::backup manifest fails programs floor (got=${PROGRAMS_COUNT:-empty})"
+            exit 1
+          fi
+          if [ "${QUICK_CHECK}" != "ok" ]; then
+            echo "::error::backup manifest fails quick_check (got=${QUICK_CHECK})"
+            exit 1
+          fi
+
+          MANIFEST_PATH="${LATEST_BASENAME}.manifest.json"
+          cat > "$MANIFEST_PATH" <<EOF
+          {
+            "artifact_basename": "${LATEST_BASENAME}",
+            "artifact_sha256": "${ARTIFACT_SHA}",
+            "source_db": "/data/jpintel.db",
+            "programs_count": ${PROGRAMS_COUNT},
+            "api_keys_count": ${API_KEYS_COUNT},
+            "schema_migration_max": "${MIGRATION_MAX}",
+            "quick_check": "${QUICK_CHECK}",
+            "captured_at": "$(date -u +%FT%TZ)",
+            "workflow_run_id": "${GITHUB_RUN_ID}"
+          }
+          EOF
+          cat "$MANIFEST_PATH"
+          echo "manifest_path=${MANIFEST_PATH}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to Cloudflare R2 and rotate (fail-closed if secrets missing)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -104,22 +168,28 @@ jobs:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           LATEST_BASENAME: ${{ steps.locate.outputs.latest_basename }}
+          MANIFEST_PATH: ${{ steps.manifest.outputs.manifest_path }}
         run: |
           set -euo pipefail
 
+          # Fail-closed (2026-05-03 hardening). Previously emitted a
+          # ::warning and exited 0, which silently lost off-site DR.
           if [ -z "${AWS_ACCESS_KEY_ID:-}" ] \
              || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ] \
              || [ -z "${R2_ENDPOINT:-}" ] \
              || [ -z "${R2_BUCKET:-}" ]; then
-            echo "::warning::R2 secrets not fully configured; skipping off-site upload." \
-              "Set R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_ENDPOINT / R2_BUCKET to enable."
-            exit 0
+            echo "::error::R2 secrets not fully configured — failing nightly-backup loudly." \
+              "Set R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_ENDPOINT / R2_BUCKET to restore off-site DR."
+            exit 1
           fi
 
           # aws CLI ships preinstalled on ubuntu-latest.
           PREFIX="autonomath-api"
           aws s3 cp "$LATEST_BASENAME"         "s3://$R2_BUCKET/$PREFIX/" --endpoint-url "$R2_ENDPOINT"
           aws s3 cp "${LATEST_BASENAME}.sha256" "s3://$R2_BUCKET/$PREFIX/" --endpoint-url "$R2_ENDPOINT"
+          if [ -f "$MANIFEST_PATH" ]; then
+            aws s3 cp "$MANIFEST_PATH" "s3://$R2_BUCKET/$PREFIX/" --endpoint-url "$R2_ENDPOINT"
+          fi
 
           # Rotation: keep only the 14 newest jpintel-*.db.gz + their .sha256 siblings.
           # NOTE: backup filenames (jpintel-*.db.gz) are set by scripts/backup.py and
@@ -138,9 +208,10 @@ jobs:
 
           if [ "${#ALL[@]}" -gt "$KEEP" ]; then
             for key in "${ALL[@]:$KEEP}"; do
-              echo "Pruning: $key (+ .sha256)"
-              aws s3 rm "s3://$R2_BUCKET/$key"         --endpoint-url "$R2_ENDPOINT" || true
-              aws s3 rm "s3://$R2_BUCKET/${key}.sha256" --endpoint-url "$R2_ENDPOINT" || true
+              echo "Pruning: $key (+ .sha256 + .manifest.json)"
+              aws s3 rm "s3://$R2_BUCKET/$key"               --endpoint-url "$R2_ENDPOINT" || true
+              aws s3 rm "s3://$R2_BUCKET/${key}.sha256"       --endpoint-url "$R2_ENDPOINT" || true
+              aws s3 rm "s3://$R2_BUCKET/${key}.manifest.json" --endpoint-url "$R2_ENDPOINT" || true
             done
           else
             echo "No rotation needed (${#ALL[@]} <= $KEEP)."

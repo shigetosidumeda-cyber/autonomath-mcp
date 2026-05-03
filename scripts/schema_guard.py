@@ -27,6 +27,21 @@ import). Silent continuation is forbidden — the Wave 8 incident burned
 ~6 hours recovering from a swap that would have been caught in <1s by
 this check.
 
+Production row-count + integrity guard
+--------------------------------------
+When ``JPINTEL_ENV=prod`` (Fly default in fly.toml) the jpintel profile also
+demands:
+    * ``PRAGMA quick_check`` returns ``ok``
+    * ``COUNT(*) FROM programs >= JPINTEL_GUARD_MIN_PROGRAMS`` (default 10000)
+    * Every table in ``JPINTEL_NONEMPTY_TABLES`` is non-empty
+The autonomath profile in prod additionally requires non-empty
+``am_entities`` / ``am_entity_facts``. These checks are skipped in dev /
+test runs (``JPINTEL_ENV != prod``) so unit fixtures with tiny seed data
+still pass. The cheap COUNT queries (~1ms on a ~352 MB DB with the
+existing index on ``programs.tier``) keep boot fast while preventing the
+class of incident where an empty / tiny / corrupt DB lands on the live
+path and silently degrades search results.
+
 Usage
 -----
 CLI:
@@ -40,6 +55,7 @@ Module:
 """
 from __future__ import annotations
 
+import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -90,6 +106,51 @@ AM_REQUIRED_VIEWS = {
 AM_REQUIRED_MIGRATIONS = {
     "121_jpi_programs_subsidy_rate_text_column.sql",
 }
+
+# Production row-count floor for jpintel.programs (the canonical search
+# corpus). 10000 mirrors the same sentinel used by the deploy workflow's
+# seed-hydration step (see .github/workflows/deploy.yml). Bumping the floor
+# is safer than lowering it — the worst incident the floor defends against
+# is a near-empty seed quietly landing on the live path.
+DEFAULT_PROD_PROGRAMS_FLOOR = 10000
+
+# Tables whose emptiness in prod is a fail-closed signal (e.g. accidental
+# truncate, partial migration, broken seed). Keep this list small and only
+# include corpora that are *always* non-empty post-seed; volatile auxiliary
+# tables (alias_candidates_queue, empty_search_log, audit_seals) are not
+# included because zero rows is a legitimate steady state for them.
+JPINTEL_NONEMPTY_TABLES = (
+    "programs",
+    "api_keys",
+    "case_studies",
+    "loan_programs",
+    "enforcement_cases",
+)
+AM_NONEMPTY_TABLES = (
+    "am_entities",
+    "am_entity_facts",
+)
+
+
+def _is_prod_env() -> bool:
+    """Return True iff this process should apply the prod row-count guard.
+
+    Uses ``JPINTEL_ENV`` (set to ``prod`` in fly.toml). Tests override via
+    monkeypatch / explicit env. Anything other than the literal string
+    ``prod`` is treated as a dev / staging context where the cheap row-count
+    sentinel queries would create false negatives against tiny fixture DBs.
+    """
+    return os.environ.get("JPINTEL_ENV", "").lower() == "prod"
+
+
+def _programs_floor() -> int:
+    raw = os.environ.get("JPINTEL_GUARD_MIN_PROGRAMS")
+    if not raw:
+        return DEFAULT_PROD_PROGRAMS_FLOOR
+    try:
+        return max(0, int(raw))
+    except ValueError:
+        return DEFAULT_PROD_PROGRAMS_FLOOR
 
 
 class SchemaGuardError(RuntimeError):
@@ -143,6 +204,36 @@ def _applied_migrations(db_path: str) -> set[str]:
         conn.close()
 
 
+def _table_count(db_path: str, table: str) -> int:
+    """Return ``COUNT(*)`` for ``table`` (defensively returns -1 on missing).
+
+    The caller decides what to do with -1: in a prod gate we treat a missing
+    table as already covered by the structural ``required`` check above —
+    returning -1 here preserves the existing error message rather than
+    surfacing a confusing duplicate.
+    """
+    conn = _connect_ro(db_path)
+    try:
+        # PRAGMA table_info is cheaper than a SELECT against a missing table
+        # which would crash with sqlite3.OperationalError.
+        cols = conn.execute(f"PRAGMA table_info({table})").fetchall()
+        if not cols:
+            return -1
+        row = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()  # noqa: S608 — table is from a static allowlist
+        return int(row[0]) if row else 0
+    finally:
+        conn.close()
+
+
+def _quick_check(db_path: str) -> str:
+    conn = _connect_ro(db_path)
+    try:
+        row = conn.execute("PRAGMA quick_check").fetchone()
+        return str(row[0]) if row and row[0] is not None else "FAILED"
+    finally:
+        conn.close()
+
+
 def _assert(
     db_path: str,
     profile: str,
@@ -152,6 +243,8 @@ def _assert(
     required_columns: dict[str, set[str]] | None = None,
     required_views: set[str] | None = None,
     required_migrations: set[str] | None = None,
+    prod_nonempty_tables: tuple[str, ...] = (),
+    prod_min_programs: int | None = None,
 ) -> None:
     tables = _list_tables(db_path)
     missing = required - tables
@@ -193,6 +286,37 @@ def _assert(
                 f"{profile}: required migrations missing from schema_migrations: "
                 f"{sorted(missing_migrations)}"
             )
+
+    # Production-only row-count + integrity guards. Cheap to run
+    # (~1ms each) and the only fail-closed defence we have against an
+    # accidentally-empty / accidentally-tiny seed silently landing on
+    # the live path. Skipped in dev/test so unit fixtures don't trip
+    # the floor.
+    if _is_prod_env() and not errors:
+        quick = _quick_check(db_path)
+        if quick != "ok":
+            errors.append(
+                f"{profile}: PRAGMA quick_check failed in prod ({quick!r}) — "
+                f"DB at {db_path} may be corrupt"
+            )
+        if prod_min_programs is not None and "programs" in tables:
+            n = _table_count(db_path, "programs")
+            if 0 <= n < prod_min_programs:
+                errors.append(
+                    f"{profile}: programs row-count {n} below prod floor "
+                    f"{prod_min_programs} (set JPINTEL_GUARD_MIN_PROGRAMS to override)"
+                )
+        for table in prod_nonempty_tables:
+            if table not in tables:
+                # Already reported as missing above.
+                continue
+            n = _table_count(db_path, table)
+            if n == 0:
+                errors.append(
+                    f"{profile}: required prod-nonempty table is empty in "
+                    f"{db_path}: {table}"
+                )
+
     if errors:
         raise SchemaGuardError(" | ".join(errors))
 
@@ -206,6 +330,8 @@ def assert_jpintel_schema(db_path: str) -> None:
         JPINTEL_FORBIDDEN,
         required_columns=JPINTEL_REQUIRED_COLUMNS,
         required_migrations=JPINTEL_REQUIRED_MIGRATIONS,
+        prod_nonempty_tables=JPINTEL_NONEMPTY_TABLES,
+        prod_min_programs=_programs_floor(),
     )
 
 
@@ -219,6 +345,7 @@ def assert_am_schema(db_path: str) -> None:
         required_columns=AM_REQUIRED_COLUMNS,
         required_views=AM_REQUIRED_VIEWS,
         required_migrations=AM_REQUIRED_MIGRATIONS,
+        prod_nonempty_tables=AM_NONEMPTY_TABLES,
     )
 
 

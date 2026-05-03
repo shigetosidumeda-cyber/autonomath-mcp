@@ -118,6 +118,68 @@ jobs:
         # complements the SENTRY_ENVIRONMENT already pinned in fly.toml.
         run: flyctl deploy --remote-only -e SENTRY_RELEASE=${{ steps.version.outputs.release }}
 
+      - name: Post-deploy smoke (hard gate)
+        if: steps.fly-token.outputs.available == 'true'
+        # Hard gate AFTER flyctl deploy completes. We re-run the same probes
+        # operators run manually (scripts/smoke_test.sh) but treat any
+        # "WARN" (deep_health.status != "ok", programs total <= 0) as a HARD
+        # FAIL so a green deploy with degraded data never silently ships.
+        # The sleep gives Fly's machine ~25s to swap traffic to the new
+        # release machine before we probe — Fly's `--strategy=immediate`
+        # in fly.toml makes this brief.
+        env:
+          BASE_URL: https://api.jpcite.com
+        run: |
+          set -euo pipefail
+          sleep 25
+
+          echo "== Post-deploy hard gate =="
+
+          # Probe 1: /healthz must be HTTP 200.
+          status=$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 15 "$BASE_URL/healthz" || echo 000)
+          echo "GET /healthz -> $status"
+          if [ "$status" != "200" ]; then
+            echo "::error::POST-DEPLOY FAIL: /healthz expected 200 got $status"
+            exit 1
+          fi
+
+          # Probe 2: /v1/am/health/deep?fail_on_unhealthy=true must return status='ok'.
+          # Anything else (degraded / unhealthy / 5xx body) is a hard fail.
+          curl -fsS --max-time 20 -o /tmp/deep_health.json \
+            "$BASE_URL/v1/am/health/deep?fail_on_unhealthy=true" || {
+            echo "::error::POST-DEPLOY FAIL: deep health endpoint did not return 2xx"
+            cat /tmp/deep_health.json 2>/dev/null || true
+            exit 1
+          }
+          deep_status=$(python3 -c "import json,sys; print(json.load(open('/tmp/deep_health.json')).get('status',''))")
+          echo "deep_health.status=$deep_status"
+          if [ "$deep_status" != "ok" ]; then
+            echo "::error::POST-DEPLOY FAIL: deep_health.status=$deep_status (must be 'ok')"
+            cat /tmp/deep_health.json
+            exit 1
+          fi
+
+          # Probe 3: /v1/programs/search must return total>0 for the canonical
+          # 補助金 query. total<=0 means the search corpus is empty / FTS index
+          # missing — historically the failure mode for an empty seed.
+          status=$(curl -fsS -o /tmp/smoke_search.json -w '%{http_code}' --max-time 20 \
+            "$BASE_URL/v1/programs/search?q=%E8%A3%9C%E5%8A%A9%E9%87%91&limit=1" || echo 000)
+          echo "GET /v1/programs/search -> $status"
+          if [ "$status" != "200" ]; then
+            echo "::error::POST-DEPLOY FAIL: programs/search returned $status (expected 200)"
+            cat /tmp/smoke_search.json 2>/dev/null || true
+            exit 1
+          fi
+          total=$(python3 -c "import json; print(json.load(open('/tmp/smoke_search.json')).get('total', -1))")
+          echo "programs.total=$total"
+          if [ "$total" -le 0 ] 2>/dev/null; then
+            echo "::error::POST-DEPLOY FAIL: programs.total=$total (must be > 0)"
+            cat /tmp/smoke_search.json
+            exit 1
+          fi
+
+          echo "Post-deploy hard gate PASS (healthz=200 deep_health=ok programs.total=$total)"
+
       - name: Notify Slack on failure
         if: failure()
         env:

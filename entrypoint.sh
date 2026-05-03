@@ -25,6 +25,19 @@ if [ ! -d /data ]; then
   exit 1
 fi
 
+# Helper: compute SHA256 of a file (portable across Linux + macOS).
+# Forward-declared here so the seed validation block in §1.5 can hash the
+# staged seed file before the atomic rename. The same function is used by
+# the R2 bootstrap path further below.
+compute_sha256() {
+  local f="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$f" | awk '{print $1}'
+  else
+    shasum -a 256 "$f" | awk '{print $1}'
+  fi
+}
+
 # 1.5. Seed data sync (jpintel.db + unified_registry.json baked into image at /seed/).
 # DATA_SEED_VERSION env var (set in Dockerfile) controls re-sync — bumping it
 # forces overwrite of the volume copy. Without bump, existing volume wins
@@ -39,18 +52,72 @@ if [ -n "${DATA_SEED_VERSION:-}" ] && [ -f "$SEED_DB" ]; then
   current_seed=""
   [ -f "$SEED_VERSION_FILE" ] && current_seed="$(cat "$SEED_VERSION_FILE" 2>/dev/null || echo '')"
   if [ "$current_seed" != "$DATA_SEED_VERSION" ]; then
-    log "seed version drift (volume='$current_seed' image='$DATA_SEED_VERSION') — copying baked seed"
+    log "seed version drift (volume='$current_seed' image='$DATA_SEED_VERSION') — validating seed policy"
+    if [ -f "$JPINTEL_DB" ] && [ "${JPINTEL_FORCE_SEED_OVERWRITE:-0}" != "1" ]; then
+      live_quick_check=$(sqlite3 "$JPINTEL_DB" 'PRAGMA quick_check;' 2>&1 | head -1 || echo "FAILED")
+      live_program_count=$(sqlite3 "$JPINTEL_DB" 'SELECT COUNT(*) FROM programs;' 2>/dev/null || echo "0")
+      if [ "$live_quick_check" = "ok" ] && [ "$live_program_count" -ge 10000 ] 2>/dev/null; then
+        live_sha=$(compute_sha256 "$JPINTEL_DB")
+        log "existing volume jpintel.db is healthy (programs=$live_program_count sha256=$live_sha) — preserving live DB; set JPINTEL_FORCE_SEED_OVERWRITE=1 to replace"
+        if [ -f "$SEED_REGISTRY" ] && [ ! -f "$TARGET_REGISTRY" ]; then
+          mkdir -p "$(dirname "$TARGET_REGISTRY")"
+          cp -f "$SEED_REGISTRY" "$TARGET_REGISTRY"
+          log "unified_registry.json restored at $TARGET_REGISTRY (was missing)"
+        fi
+        printf '%s\n' "$DATA_SEED_VERSION" > "${SEED_VERSION_FILE}.new"
+        mv -f "${SEED_VERSION_FILE}.new" "$SEED_VERSION_FILE"
+        printf 'version=%s preserved_existing=true sha256=%s programs=%s applied_at=%s\n' \
+          "$DATA_SEED_VERSION" "$live_sha" "$live_program_count" "$(date -u +%FT%TZ)" \
+          > "${SEED_VERSION_FILE}.manifest.new"
+        mv -f "${SEED_VERSION_FILE}.manifest.new" "${SEED_VERSION_FILE}.manifest"
+        log "seed sentinel updated without DB replacement"
+      else
+        log "existing volume jpintel.db failed health check (quick_check=$live_quick_check programs=$live_program_count) — replacing from baked seed"
+        JPINTEL_FORCE_SEED_OVERWRITE=1
+      fi
+    fi
+
+    if [ ! -f "$JPINTEL_DB" ] || [ "${JPINTEL_FORCE_SEED_OVERWRITE:-0}" = "1" ]; then
+      log "copying baked seed into volume"
     # Stop any in-flight sqlite WAL/shm so the replacement is atomic from app POV.
     rm -f "${JPINTEL_DB}-wal" "${JPINTEL_DB}-shm"
+    # Stage the seed at $JPINTEL_DB.new and validate BEFORE atomic rename so a
+    # broken / empty / corrupt seed never lands on the live path. Three gates:
+    #   * PRAGMA quick_check returns 'ok'
+    #   * SELECT COUNT(*) FROM programs >= 10000 (sentinel against empty seed)
+    #   * sha256 of staged file recorded next to .seed_version (manifest)
+    # If any gate fails we abort with the staged file removed; the volume DB
+    # (whatever version) keeps serving until the operator fixes the image.
     cp -f "$SEED_DB" "${JPINTEL_DB}.new"
+    seed_quick_check=$(sqlite3 "${JPINTEL_DB}.new" 'PRAGMA quick_check;' 2>&1 | head -1 || echo "FAILED")
+    if [ "$seed_quick_check" != "ok" ]; then
+      err "seed DB quick_check failed: $seed_quick_check (staged=${JPINTEL_DB}.new)"
+      rm -f "${JPINTEL_DB}.new"
+      exit 1
+    fi
+    seed_program_count=$(sqlite3 "${JPINTEL_DB}.new" 'SELECT COUNT(*) FROM programs;' 2>/dev/null || echo "0")
+    if [ "$seed_program_count" -lt 10000 ] 2>/dev/null; then
+      err "seed DB programs row-count below 10000 floor (got=$seed_program_count)"
+      rm -f "${JPINTEL_DB}.new"
+      exit 1
+    fi
+    seed_sha=$(compute_sha256 "${JPINTEL_DB}.new")
+    log "seed gate pass: quick_check=ok programs=$seed_program_count sha256=$seed_sha"
     mv -f "${JPINTEL_DB}.new" "$JPINTEL_DB"
     if [ -f "$SEED_REGISTRY" ]; then
       mkdir -p "$(dirname "$TARGET_REGISTRY")"
       cp -f "$SEED_REGISTRY" "$TARGET_REGISTRY"
       log "unified_registry.json placed at $TARGET_REGISTRY"
     fi
-    echo "$DATA_SEED_VERSION" > "$SEED_VERSION_FILE"
-    log "seed sync complete (jpintel.db + unified_registry.json now at $DATA_SEED_VERSION)"
+    # Atomic .seed_version write: include sha + program count for manifest audit.
+    printf '%s\n' "$DATA_SEED_VERSION" > "${SEED_VERSION_FILE}.new"
+    mv -f "${SEED_VERSION_FILE}.new" "$SEED_VERSION_FILE"
+    printf 'version=%s sha256=%s programs=%s applied_at=%s\n' \
+      "$DATA_SEED_VERSION" "$seed_sha" "$seed_program_count" "$(date -u +%FT%TZ)" \
+      > "${SEED_VERSION_FILE}.manifest.new"
+    mv -f "${SEED_VERSION_FILE}.manifest.new" "${SEED_VERSION_FILE}.manifest"
+    log "seed sync complete (jpintel.db + unified_registry.json now at $DATA_SEED_VERSION, manifest written)"
+    fi
   else
     log "seed version current ($DATA_SEED_VERSION) — no copy needed"
     # Always ensure unified_registry.json exists at the target path (image rebuild may
@@ -81,15 +148,7 @@ if [ -d "$SEED_STATIC" ] && [ -f "$SEED_STATIC/MANIFEST.md" ]; then
   fi
 fi
 
-# Helper: compute SHA256 of a file (portable across Linux + macOS).
-compute_sha256() {
-  local f="$1"
-  if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$f" | awk '{print $1}'
-  else
-    shasum -a 256 "$f" | awk '{print $1}'
-  fi
-}
+# compute_sha256 forward-declared at top of file (above §1.5 seed gate).
 
 file_size() {
   local f="$1"
