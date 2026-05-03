@@ -1,6 +1,52 @@
 # jpcite
 
-> jpcite は、LLM が回答を書く前に一次資料 URL・取得時刻・根拠項目・併用ルールを取得する Evidence prefetch layer です。日本の公的制度 (補助金・融資・税制・認定 + 採択事例 + 行政処分 + 法令 + 判例 + 入札 + 適格請求書) を REST + MCP API で横断検索できます。**11,684 searchable programs** (tier S=114 / A=1,340 / B=4,186 / C=6,044) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 法令本文 154 + 法令メタデータ 9,484 + 50 tax_rulesets + 2,065 court_decisions + 362 bids + 13,801 invoice_registrants + 503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases、181 排他/前提ルール。公開行は原則として source URL と fetched_at を含みます。MCP **93 tools** (protocol 2025-06-18)。現在の公開料金・匿名枠は Pricing に掲載しています。
+## What jpcite is
+jpcite は、LLM が回答を書く前に「一次資料 URL・取得時刻・根拠項目・併用ルール」を返す Evidence prefetch layer です。日本の公的制度 (補助金・融資・税制・認定 + 採択事例 + 行政処分 + 法令 + 判例 + 入札 + 適格請求書) を REST + MCP API で横断検索できます。jpcite は回答生成 LLM ではなく、外部 LLM API も呼びません。生成・要約・推論は呼び出し側 (Claude / GPT / Cursor / Cline / Gemini) が担当し、jpcite は引用可能な出典付きデータだけを返します。
+
+## Use when
+- ユーザーが日本の補助金・融資・税制優遇・認定・入札・法令・判例・行政処分・適格請求書発行事業者・公的制度の適合判定を質問している。
+- 回答に `source_url`, `source_fetched_at`, `corpus_snapshot_id`, 併用/排他ルール, 直近の改正, known gaps を保持したい。
+- 代替が「長い PDF・複数の府省庁ページ・繰り返しの検索結果・手作業で集めた原文」を LLM に丸ごと渡すこと。
+
+## Do not use when
+- 一般的な文章生成・ブレスト・翻訳・日本の公的制度に関係ないタスク。
+- 最終的な税務・法務・行政書士・申請書面そのものの判断 (jpcite は citation / evidence retrieval 専用で、専門判断や申請代行はしない)。
+
+## First call
+日本の制度に関する広めの質問が来たら、次の順で呼ぶ:
+1. `search_programs` または `GET /v1/programs/search` — keyword + prefecture + JSIC + funding_purpose で横断検索 (11,684 制度)。
+2. 候補の `unified_id` を `get_program` または `GET /v1/programs/{unified_id}` で hydrate。
+3. 複数制度を比較する場合は `check_exclusions` (program_ids=[...]) で 181 本の併給/前提ルールを判定。
+4. 出典付きで圧縮した根拠が必要なら `get_evidence_packet` または `GET /v1/intelligence/precomputed/query` を呼ぶ。
+※ program id は架空に決めず、必ず手順 1 の `search_programs` で実在する `unified_id` を取ってから手順 2 以降で使う。
+
+## Evidence / cost-savings conditions
+jpcite は出典付きの小さな Evidence Packet を返します。caller が元資料の token 数または PDF ページ数と入力単価を渡した場合に限り、`input_context_reduction_rate` と `break_even_met` を返します。
+- baseline 無し → `recommend_for_evidence=true` は出ても `recommend_for_cost_savings=false` / `cost_savings_decision=needs_caller_baseline`。
+- `source_tokens_basis=token_count` + `source_token_count` または `source_tokens_basis=pdf_pages` + `source_pdf_pages` + `input_token_price_jpy_per_1m` を渡すと `cost_savings_estimate` が返る。
+- これは入力文脈だけの参考値で、外部 LLM の請求額削減を保証するものではない (`provider_billing_not_guaranteed=true`, `savings_claim=estimate_not_guarantee`)。
+- 詳細条件: https://jpcite.com/qa/llm-evidence/context-savings.html
+
+## Install MCP
+- uvx (推奨): `uvx autonomath-mcp` (PyPI 配布名は互換性のため autonomath-mcp、ブランドは jpcite)。
+- pip: `pip install autonomath-mcp && autonomath-mcp`
+- Claude Desktop 拡張 (.mcpb): https://jpcite.com/downloads/autonomath-mcp.mcpb (zip 内 manifest.json)
+- Canonical MCP server manifest: https://jpcite.com/mcp-server.json
+- 詳細セットアップ: https://jpcite.com/docs/mcp-tools/
+
+## OpenAPI
+- OpenAPI 3.x: https://api.jpcite.com/v1/openapi.json (178 paths, ChatGPT Custom GPTs / Claude tools / Stainless / Mintlify / Postman 用)
+- API reference (REST): https://jpcite.com/docs/api-reference/
+
+## Pricing
+- 公開料金: ¥3/req (税別), ¥3.30/req (税込)、tier 無し純従量。
+- 匿名枠: 1 IP あたり 1 日 3 回 (JST 翌日 00:00 リセット)、登録不要。
+- 詳細: https://jpcite.com/pricing.html
+
+## Coverage
+**11,684 searchable programs** (tier S=114 / A=1,340 / B=4,186 / C=6,044) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 法令本文 154 + 法令メタデータ 9,484 + 50 tax_rulesets + 2,065 court_decisions + 362 bids + 13,801 invoice_registrants + 503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases、181 排他/前提ルール。公開行は原則として source URL と fetched_at を含みます。MCP **93 tools** (protocol 2025-06-18)。
+
+---
 
 This file follows the emerging llms.txt convention (https://llmstxt.org/) —
 a curated, plaintext index of canonical documents for LLM indexers.
@@ -24,7 +70,7 @@ Concatenated full docs: https://jpcite.com/llms-full.txt
 
 ## LLM agent integration guide
 
-jpcite is built for LLM agents (Claude / ChatGPT / Perplexity / Cursor / Cline / Gemini) to consume directly. The base URL is `https://api.jpcite.com`; the OpenAPI 3.x spec at `https://api.jpcite.com/v1/openapi.json` lists endpoints under `/v1/*`. Anonymous traffic and paid API-key usage are documented on the Pricing page; callers that need higher volume send an `X-API-Key` header. The five highest-leverage endpoints for agent flows: `GET /v1/programs/search` (discovery by keyword + region + amount), `POST /v1/programs/prescreen` (judgment by business profile), `GET /v1/am/tax_incentives` (special-depreciation / tax-credit lookup), `GET /v1/am/loans` (3-axis risk-filtered loan products), and `GET /v1/invoice_registrants/{T-number}` (適格請求書発行事業者 lookup). Search responses share a `{total, limit, offset, results[]}` shape; tax / am-* responses carry a `_disclaimer` 法令注記キー (税理士法 §52 fence — relay verbatim, this is information retrieval not 税務助言); NTA invoice-registrant responses carry a PDL v1.0 `attribution` block. Published rows generally expose `source_url` + `source_fetched_at` so agents can cite sources directly. For repeated stdio access, see https://jpcite.com/docs/mcp-tools/ and the step-by-step integration tutorials at `https://jpcite.com/integrations/` (Claude Desktop / Cursor / Cline / OpenAI Custom GPT).
+jpcite is built for LLM agents (Claude / ChatGPT / Perplexity / Cursor / Cline / Gemini) to consume directly. The base URL is `https://api.jpcite.com`; the OpenAPI 3.x spec at `https://api.jpcite.com/v1/openapi.json` lists endpoints under `/v1/*`. Anonymous traffic and paid API-key usage are documented on the Pricing page; callers that need higher volume send an `X-API-Key` header. The five highest-leverage endpoints for agent flows: `GET /v1/programs/search` (discovery by keyword + region + amount), `POST /v1/programs/prescreen` (judgment by business profile), `GET /v1/am/tax_incentives` (special-depreciation / tax-credit lookup), `GET /v1/am/loans` (3-axis risk-filtered loan products), and `GET /v1/invoice_registrants/{invoice_registration_number}` (適格請求書発行事業者 lookup). Search responses share a `{total, limit, offset, results[]}` shape; tax / am-* responses carry a professional-services disclaimer to relay verbatim. NTA invoice-registrant responses carry a PDL v1.0 `attribution` block. Published rows generally expose `source_url` + `source_fetched_at` so agents can cite sources directly. For repeated stdio access, see https://jpcite.com/docs/mcp-tools/ and the step-by-step integration tutorials at `https://jpcite.com/integrations/` (Claude Desktop / Cursor / Cline / OpenAI Custom GPT).
 
 ## Evidence prefetch / context-size estimates
 
@@ -58,8 +104,8 @@ Billing caveat:
 
 Example natural-language prompts designed to map to jpcite routes — copy as-is into Claude / ChatGPT / Cursor and adjust as needed.
 
-- `東京都の建設業 30 人で使える補助金は?` → `search_programs(prefecture="東京都", target_industry="construction", employee_count=30)` (uses canonical JSIC D + 都道府県 enum)
-- `事業再構築補助金とものづくり補助金は同時に申請できる?` → `check_exclusions(program_ids=["jigyo-saikouchiku-r6", "monodzukuri-r6"])` — 登録済みの排他/前提ルールを確認
+- `東京都の建設業 30 人で使える補助金は?` → `search_programs(prefecture="東京都", target_industry="D", employee_count=30)` (`target_industry` は JSIC 1 文字 enum、D=建設業)
+- `事業再構築補助金とものづくり補助金は同時に申請できる?` → まず `search_programs(keyword="事業再構築")` と `search_programs(keyword="ものづくり")` で実在 unified_id を取得し、その配列を `check_exclusions(program_ids=[<id1>, <id2>])` に渡す (program_id はハードコードしない、必ず `search_programs` の戻り値を使う)。
 - `30 日以内に締め切る東京の SMB 向け補助金を教えて` → `upcoming_deadlines(within_days=30, prefecture="東京都")` — 全国 / prefecture 未設定 行も自動 fallback
 - `適格請求書発行事業者番号を確認したい` → `search_invoice_registrants(houjin_bangou="<T番号>")` — PDL v1.0 attribution 同梱
 - `製造業×埼玉県の SMB 用に 補助金 + 融資 + 採択事例 + 締切 をまとめて` → `smb_starter_pack(prefecture="埼玉県", industry_jsic="E", employees=30)` — 6-tool chain を 1 コール
@@ -82,7 +128,7 @@ The most common 0-hit cause is hallucinated filter values. Always probe the live
 
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Try the prescreen widget](https://jpcite.com/index.html#try)
-- [API Playground (interactive try-it surface)](https://jpcite.com/playground.html): browser-based REST API explorer for the highest-leverage GET routes, including `/v1/intelligence/precomputed/query`, `/v1/programs/search`, `/v1/programs/{unified_id}`, `/v1/am/tax_incentives`, `/v1/am/loans`, `/v1/invoice_registrants/search`, `/v1/invoice_registrants/{T-number}`, `/v1/laws/search`, `/v1/court-decisions/search`, `/v1/case-studies/search`, and `/v1/tax_rulesets/search`. Auto-generated parameter forms, live URL preview, syntax-highlighted JSON response, anonymous quota indicator, copy-as-curl. Current anonymous evaluation limits are published on Pricing. Suited for evaluating response shape + §52 法令注記の付与 before issuing a key.
+- [API Playground (interactive try-it surface)](https://jpcite.com/playground.html): browser-based REST API explorer for the highest-leverage GET routes, including `/v1/intelligence/precomputed/query`, `/v1/programs/search`, `/v1/programs/{unified_id}`, `/v1/am/tax_incentives`, `/v1/am/loans`, `/v1/invoice_registrants/search`, `/v1/invoice_registrants/{invoice_registration_number}`, `/v1/laws/search`, `/v1/court-decisions/search`, `/v1/case-studies/search`, and `/v1/tax_rulesets/search`. Auto-generated parameter forms, live URL preview, syntax-highlighted JSON response, anonymous quota indicator, copy-as-curl. Current anonymous evaluation limits are published on Pricing. Suited for evaluating response shape, source fields, and professional-services disclaimers before issuing a key.
 
 ## MCP server
 
@@ -185,7 +231,7 @@ to the cited 官公庁 一次資料. Designed for LLM citation (Perplexity / Cha
 - [News index / お知らせ一覧](https://jpcite.com/news/): the latest detected changes to Japanese public programs (補助金 / 税制 / 認定 / 法令), grouped by month and filterable by category.
 - [RSS feed (JA) / お知らせ RSS](https://jpcite.com/rss.xml): RSS 2.0, ja, latest 50 items. application/rss+xml; charset=utf-8.
 - [RSS feed (EN) / News RSS](https://jpcite.com/en/rss.xml): RSS 2.0, en メタデータ wrapping, item bodies fall back to JA when no translation is available.
-- Each `/news/{YYYY}/{MM}/{DD}/{slug}.html` post carries a JSON-LD `NewsArticle` + `GovernmentService` graph, a per-field before/after diff table, source URL, and the §52 税理士法 disclaimer in the footer.
+- Each `/news/{YYYY}/{MM}/{DD}/{slug}.html` post carries a JSON-LD `NewsArticle` + `GovernmentService` graph, a per-field before/after diff table, source URL, and a professional-services disclaimer in the footer.
 
 ## Comparisons
 

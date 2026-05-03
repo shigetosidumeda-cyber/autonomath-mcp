@@ -29,6 +29,8 @@
 
 # Pricing
 
+jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合だけ、入力文脈量の削減見込みと break-even を返します。外部 LLM の請求額削減は保証しません。
+
 完全従量。tier プラン無し、最低額無し、契約無し。必要に応じて利用側で月次上限を設定してください。
 
 | Plan | 単価 (税別) | Quota |
@@ -45,12 +47,36 @@
 - 請求は月次 (Stripe usage 集計)、クレジットカードのみ
 - **Starter / Pro / Enterprise / Team / Seat は存在しない**
 
+## 無料 3 回で確認すること
+
+匿名 3 req/日 (IP 単位、JST 翌日 00:00 リセット) で、課金前に下の 5 点をすべて確認できます。
+
+1. **出典 URL がある** — 主要な公開検索 / Evidence response の `source_url` がまとめサイトでなく省庁・自治体・公庫の一次資料
+2. **`source_fetched_at` がある** — jpcite が出典を最後に取得した時刻 (最終更新ではない)。中央値 7 日
+3. **Evidence Packet で `quality.known_gaps` を確認できる** — 未接続 / 未取得 / 未抽出 を黙って隠さない
+4. **packet tokens vs baseline 比較が返る** — `GET /v1/intelligence/precomputed/query` に `source_tokens_basis=pdf_pages` + `source_pdf_pages` + `input_token_price_jpy_per_1m` を渡すと `compression.packet_tokens_estimate` / `source_tokens_estimate` / `input_context_reduction_rate` が返る
+5. **`agent_recommendation.recommend_for_cost_savings` が true になる条件** — caller baseline と入力 token 単価が揃い、`break_even_met=true` の時のみ true。baseline なしなら必ず false で `cost_savings_decision=needs_caller_baseline`
+
+## `break_even_met` の正しい読み方
+
+`compression.cost_savings_estimate.break_even_met` は **入力文脈量だけの参考比較** です。
+
+- `true` の意味: caller が渡した baseline (`source_pdf_pages` または `source_token_count`) と `input_token_price_jpy_per_1m` を使ったとき、`avoided_tokens × 単価 / 1,000,000 ≥ ¥3` (jpcite 1 req 単価) を満たしたという推定値
+- `false` の意味: 上の式を満たさない、または caller baseline が未指定 (`needs_caller_baseline`)
+- **含まないもの**: 出力 tokens、reasoning tokens、cache、provider tool / search 料金、為替、外部 LLM 側の請求仕様
+- **保証しないもの**: 外部 LLM の請求額が必ず ¥3 安くなること、月額 LLM 費用が必ず下がること
+
+レスポンス側でも `compression.savings_claim="estimate_not_guarantee"` と `compression.provider_billing_not_guaranteed=true` が常に付きます。AI が引用するときも「caller baseline 条件下の入力文脈削減見込み」 として扱ってください。
+
+数式と用語は API リファレンスの「Context Compression」を参照。
+
 ## 始め方
 
-1. Free で試す (カード登録なし、IP ベース 3 req/日)
-2. [Stripe Checkout](https://jpcite.com/pricing.html) でカード登録
-3. `X-API-Key` を投げるだけで Paid に切替
-4. ダッシュボードから Customer Portal を開き、カード削除または停止が可能
+1. **匿名 curl で 5 秒スモーク** (`curl "https://api.jpcite.com/v1/programs/search?q=IT導入&limit=3"` — カード登録なし、IP ベース 3 req/日)
+2. **Playground で残り 2 回を Evidence Packet に使う** (<https://jpcite.com/playground.html?flow=evidence3>) — `break_even_met` まで一通り確認
+3. **MCP / OpenAPI で取り込む** ([Getting Started](./getting-started.md)) — 反復利用は MCP server か OpenAPI client から
+4. **API キー発行** ([Stripe Checkout](https://jpcite.com/pricing.html)) で Paid に切替、`X-API-Key` を投げるだけ
+5. ダッシュボードから Customer Portal を開き、カード削除または停止が可能
 
 ## Rate limit 仕様
 

@@ -29,6 +29,8 @@
 
 # API Reference
 
+jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合だけ、入力文脈量の削減見込みと break-even を返します。外部 LLM の請求額削減は保証しません。
+
 REST API 全 178 endpoint。programs / exclusions / meta / billing / dashboard / 各種データセット (laws / loans / court_decisions / bids / 行政処分 / 採択事例 / invoice / tax_rulesets) / agent・MCP 向け endpoint を含む。
 
 ## ベース URL
@@ -252,10 +254,10 @@ API key 不在は匿名扱い、無効 key は `401 Unauthorized`。
 | 匿名 (key 無し) | 3 req/日 per IP (IPv4 /32 / IPv6 /64)、JST 翌日 00:00 リセット |
 | 認証済み (Paid) | ¥3/req metered (税込 ¥3.30)。予算上限や保護レート制限が適用される場合があります |
 
-**¥3/req の対価 (コスト削減保証ではなく、データ統合の対価):** ¥3/req は LLM token 削減効果を保証するものではありません。token 使用量への影響は workload-dependent です。実際の対価は次の 3 点:
+**¥3/req の対価 (コスト削減を保証するものではなく、データ統合の対価):** ¥3/req は LLM token 削減効果を保証するものではありません。token 使用量への影響は workload-dependent です。実際の対価は次の 3 点:
 
 - **Cross-source data integration**: 1 request can combine relevant public-program, case-study, loan, enforcement, law, tax, bid, and invoice-registrant datasets with source URLs and freshness metadata. Caller 側で同等を組み立てる場合の取得・正規化・整合性検証を肩代わりする
-- **Primary source citation**: 99%+ の rows に 一次資料 (官公庁 / 政策金融公庫 等) の `source_url` を付与。aggregator 経由のデータは `source_url` に登録しない
+- **Primary source citation**: 主要公開レコードの多くに 一次資料 (官公庁 / 政策金融公庫 等) の `source_url` を付与。aggregator 経由のデータは `source_url` に登録しない
 - **Freshness metadata**: median 7 日以内の `source_fetched_at`。`/v1/meta/freshness` で per-source の鮮度分布を公開
 
 匿名 IP 制限は discoverability 系 (`/meta`, `/v1/ping`, `/v1/programs/*`, `/v1/exclusions/*`, `/v1/feedback`) にのみ適用。`/healthz`, `/v1/billing/webhook`, `/v1/subscribers/unsubscribe`, dashboard 系 (`/v1/me/*`, `/v1/session`) はカウントしない。
@@ -270,6 +272,28 @@ Retry-After: <翌日 JST 00:00 までの秒>
 ```
 
 IP は raw 保存せず `HMAC-SHA256(ip, api_key_salt)` で hash 化。詳細は [pricing.md](./pricing.md)。
+
+---
+
+## 3 回の無料検証フロー (匿名 3 req/日 で価値を確認する順序)
+
+匿名 3 req/日 (IP 単位、JST 翌日 00:00 リセット) を、 課金前の評価に最大限使うための推奨順序です。 各 endpoint の field 詳細は本ページ下部の `Programs` / `Context Compression` 章を参照してください。
+
+| 回 | 確認内容 | 例 |
+|---|---|---|
+| **1 回目** | 制度候補と一次資料が返ること、 `source_url` がまとめサイト経由でないこと、 `source_fetched_at` が付いていること | `GET /v1/programs/search?q=IT導入&limit=3` |
+| **2 回目** | precomputed Evidence Packet が live web search 無し / LLM call 無しで返ること (`bundle_kind=precomputed_intelligence` · `usage.web_search_required=false`) | `GET /v1/intelligence/precomputed/query?q=省力化&limit=5` |
+| **3 回目** | caller baseline を渡すと `compression.input_context_reduction_rate` と `compression.cost_savings_estimate.break_even_met` が返ること、 `agent_recommendation.recommend_for_cost_savings` が条件付きで true / false に分かれること | `GET /v1/intelligence/precomputed/query?q=省力化&limit=5&source_tokens_basis=pdf_pages&source_pdf_pages=30&input_token_price_jpy_per_1m=300` |
+
+確認すべき response field の意味:
+
+- `source_url` / `source_fetched_at` — 1 回目で確認。 一次資料 URL と取得時刻
+- `quality.known_gaps[]` — Evidence / intelligence response で確認。 「未接続な根拠」 を AI 側で明示するため
+- `compression.packet_tokens_estimate` / `source_tokens_estimate` / `input_context_reduction_rate` — 3 回目で確認。 caller baseline がある時のみ意味を持つ
+- `compression.cost_savings_estimate.break_even_met` — 入力文脈量だけの参考比較、 外部 LLM 請求額を保証しない (`provider_billing_not_guaranteed=true` 同梱)
+- `agent_recommendation.cost_savings_decision` — `supported_by_caller_baseline` (true) または `needs_caller_baseline` (false)
+
+3 回到達して全項目が想定通りなら、 ¥3.30/req は「外部 LLM の請求額が下がる保証」 ではなく 「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」 の対価として割に合うかを判断できます。 jpcite は外部 LLM の請求額削減を保証しません。 ブラウザで順に検証する場合は <https://jpcite.com/playground.html?flow=evidence3>。 個別 field の詳細仕様は [Context Compression 章](#context-compression-workload-dependent-estimate) と [pricing.md `break_even_met` の正しい読み方](./pricing.md) を参照。
 
 ---
 
@@ -745,7 +769,7 @@ curl -H "X-API-Key: am_..." https://api.jpcite.com/v1/ping
 
 ## Billing
 
-Stripe 経由のサブスクリプション管理。詳細フローは [getting-started.md](./getting-started.md#2-api-key)。
+Stripe 経由のサブスクリプション管理。詳細フローは [getting-started.md](./getting-started.md)。
 
 ### `POST /v1/billing/checkout`
 
@@ -955,13 +979,27 @@ curl -H "X-API-Key: am_..." \
 | `precomputed.record_count` | int | 事前計算済み summary を含む record 件数 |
 | `usage.web_search_required` | bool | 常に `false`。caller 側の web search 要否を保証するものではなく、この endpoint 自体が live web search をしないことを示す |
 | `compression` | object | context-size estimate。実測 savings や将来の cost reduction を保証しない |
+| `compression.input_context_reduction_rate` | float\|null | `max(0, source - packet) / source`。caller baseline が無いときは `null`。**入力文脈量だけ**の参考値で、外部 LLM 請求額は保証しない |
+| `compression.provider_billing_not_guaranteed` | bool | 常に `true`。output / reasoning / cache / tool-use / search 料金を含まないことを明示する |
 | `compression.source_tokens_input_source` | string | `caller_supplied` の場合のみ、caller が渡した baseline に基づく比較であることを示す |
 | `compression.savings_claim` | string | 常に `estimate_not_guarantee`。保証値ではなく参考推定であることを示す |
+| `compression.cost_savings_estimate.break_even_source_tokens_estimate` | int | jpcite 1 回分 (¥3) を入力文脈削減だけで回収するために必要な source token 数の目安 (= `packet_tokens_estimate + break_even_avoided_tokens`) |
+| `evidence_value.records_returned` | int | `records[]` の件数 |
+| `evidence_value.source_linked_records` | int | `source_url` または source 付き fact を持つ record 数 |
+| `evidence_value.precomputed_records` | int | precomputed summary を持つ record 数 |
+| `evidence_value.pdf_fact_refs` | int | PDF fact 参照の合計 |
+| `evidence_value.known_gap_count` | int | `quality.known_gaps` の件数 |
+| `evidence_value.fact_provenance_coverage_pct_avg` | float\|null | record 単位 fact 出典率の平均 |
+| `evidence_value.web_search_performed_by_jpcite` | bool | 常に `false`。jpcite はライブ検索しない |
+| `evidence_value.request_time_llm_call_performed` | bool | 常に `false`。jpcite は応答時に LLM を呼ばない |
 | `agent_recommendation.recommendation` | string | AI agent 向けの次アクション。`use_jpcite_prefetch` / `use_evidence_packet` / `broaden_query_or_skip` |
+| `agent_recommendation.recommend_for_evidence` | bool | source-linked record が 1 件以上あり、出典付き根拠 layer として推薦できるか。caller baseline 不要の axis-1 |
+| `agent_recommendation.evidence_decision` | string | `supported_by_source_linked_records` / `no_records_returned` / `records_returned_without_source_links` |
 | `agent_recommendation.recommend_for_cost_savings` | bool | `true` のときだけ、caller が渡した baseline と token 単価で break-even を満たしたことを示す |
 | `agent_recommendation.cost_savings_decision` | string | `supported_by_caller_baseline` のときだけ、AI は「この条件ならコスト削減の可能性がある」と説明できる |
 | `agent_recommendation.missing_for_cost_claim` | array | コスト削減として説明するために不足している caller 入力 |
-| `agent_recommendation.context_savings` | object | caller baseline がある場合だけ、`break_even_met` や `avoided_tokens_estimate` を機械可読にまとめる |
+| `agent_recommendation.value_reasons` | array | AI が jpcite を推薦するときに引用できる肯定 signal リスト |
+| `agent_recommendation.context_savings` | object | caller baseline がある場合だけ、`break_even_met` / `break_even_source_tokens_estimate` / `avoided_tokens_estimate` を機械可読にまとめる |
 
 ---
 

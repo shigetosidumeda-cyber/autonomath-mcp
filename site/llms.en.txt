@@ -55,19 +55,31 @@ Route choice:
 Billing caveat:
 - Treat `compression.cost_savings_estimate.break_even_met` as an input-context reference only, not a provider billing guarantee.
 
+## First call
+
+For broad Japanese public-program questions, call in this order:
+1. `search_programs` or `GET /v1/programs/search` to get real `unified_id` values.
+2. `get_program` or `GET /v1/programs/{unified_id}` to hydrate selected candidates.
+3. `check_exclusions` when comparing multiple programs.
+4. `get_evidence_packet` or `GET /v1/intelligence/precomputed/query` when the answer needs source-linked compact context.
+
+Never invent program IDs. Use IDs returned by `search_programs`.
+
 ## Sample queries (paste into your AI agent)
 
 Example natural-language prompts designed to map to jpcite routes — copy as-is into Claude / ChatGPT / Cursor / Cline / Gemini and adjust as needed.
 
-- `What subsidies can a 30-employee construction company in 東京都 use?` → `search_programs(prefecture="東京都", target_industry="construction", employee_count=30)`
-- `Can 事業再構築補助金 and ものづくり補助金 be combined?` → `check_exclusions(program_ids=[...])` — checks registered exclusion / prerequisite rules
+- `What subsidies can a 30-employee construction company in 東京都 use?` → `search_programs(prefecture="東京都", target_industry="D", employee_count=30)` (`target_industry` is a JSIC 1-letter enum; D = 建設業)
+- `Can 事業再構築補助金 and ものづくり補助金 be combined?` → first call `search_programs(keyword="事業再構築")` and `search_programs(keyword="ものづくり")` to get real `unified_id`s, then pass that list into `check_exclusions(program_ids=[<id1>, <id2>])` — never hard-code program ids; use the ones returned from `search_programs`.
 - `Show subsidies closing within 30 days for 東京 SMBs` → `upcoming_deadlines(within_days=30, prefecture="東京都")`
-- `Is this Japanese invoice registration number registered?` → `search_invoice_registrants(houjin_bangou="<T-number>")` (PDL v1.0 attribution included)
+- `Is this Japanese invoice registration number registered?` → `search_invoice_registrants(houjin_bangou="<invoice registration number>")` (PDL v1.0 attribution included)
 - `Build a 3-year subsidy roadmap for an 埼玉県 manufacturer (JSIC E)` → `subsidy_roadmap_3yr(prefecture="埼玉県", industry_jsic="E", company_size="medium")` — 36-month JST fiscal-year quarter timeline
 
 ## MCP server
 
 - Installation: see https://jpcite.com/docs/mcp-tools/
+- Canonical MCP server manifest: https://jpcite.com/mcp-server.json (uvx + pip + Claude Desktop install hints)
+- Claude Desktop extension (.mcpb): https://jpcite.com/downloads/autonomath-mcp.mcpb (zip with manifest.json)
 - Console script and client configuration are documented in the MCP tools guide
 - Evidence packet: `get_evidence_packet` and REST `/v1/evidence/packets/{subject_kind}/{subject_id}` bundle primary metadata, provenance, and rule verdicts for evidence prefetch before answer generation. Token and cost impact is workload-dependent.
 
