@@ -1085,7 +1085,7 @@ def search_programs(
             description=(
                 "Quality-tier filter (multi-select, OR). S/A = primary-source "
                 "verified (8+/10 dims). B = partial (4-7/10). C = name+URL "
-                "only (1-3/10). Review-held/quarantine rows are not exposed. "
+                "only (1-3/10). Non-public records are not exposed. "
                 "Typical agent default: ['S','A','B']."
             ),
         ),
@@ -1202,7 +1202,7 @@ def search_programs(
 
     Tier ranking (best→worst): S, A, B, C. S/A are verified by primary-source
     URL + evidence on 8+/10 A-J dimensions; B is partial (4-7 dims); C is sparse
-    (1-3 dims, name+URL only). Review-held/quarantine rows are not exposed.
+    (1-3 dims, name+URL only). Non-public records are not exposed.
     When presenting to an end user, default to tier ∈ {S, A, B} and mark C
     as "要 1 次確認".
 
@@ -1215,7 +1215,7 @@ def search_programs(
       - `enum_values(field=…)` *first* if unsure whether a target_type / funding_purpose / authority_level / prefecture value is canonical — the DB mixes "sole_proprietor" / "個人事業主", "省エネ" / "energy" etc. Prefecture uses the full suffix ("東京都", not "東京" or "Tokyo").
 
     LIMITATIONS:
-      - Review-held/quarantine rows are excluded from the public MCP surface.
+      - Non-public records are excluded from the public MCP surface.
       - `source_fetched_at` is a **uniform sentinel** across bulk-rewritten rows (<100 distinct values for thousands of programs). Render as "出典取得日" (when we last fetched), never as "最終更新日" or "現行確認日" — the column does not imply we verified currency.
       - FTS5 trigram tokenizer causes false positives on single-kanji overlap. Searching `税額控除` also matches `ふるさと納税` because both contain `税`. For 2+ character kanji compounds, wrap the query in quotes (`"税額控除"`) to force phrase matching.
       - `application_window` coverage is partial; many rows store 通年 / 随時 / empty — absence of a date does not mean closed. Fall back to the source URL for 募集期間 when the field is null.

@@ -84,6 +84,10 @@ def test_public_docs_do_not_regress_to_internal_or_legacy_copy() -> None:
         "include_excluded",
         "include_internal",
         "Tier X",
+        "Review-held",
+        "review-held",
+        "quarantine rows",
+        "Review-held/quarantine",
         "sitemap-structured",
         "/structured/",
     ]
