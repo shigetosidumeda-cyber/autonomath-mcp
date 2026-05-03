@@ -1,0 +1,215 @@
+{
+  "schema_version": "jpcite_trust_v1",
+  "generated_at": "2026-05-04",
+  "operator": {
+    "legal_name": "Bookyou株式会社",
+    "legal_name_en": "Bookyou Inc.",
+    "houjin_bangou": "8010001213708",
+    "qualified_invoice_id": "T8010001213708",
+    "qualified_invoice_registered_on": "2025-05-12",
+    "address": "〒112-0006 東京都文京区小日向2-22-1",
+    "address_en": "2-22-1 Kohinata, Bunkyo-ku, Tokyo 112-0006, Japan",
+    "representative": "梅田 茂利",
+    "representative_en": "Shigetoshi Umeda",
+    "contact_email": "info@bookyou.net",
+    "external_verification": "https://www.invoice-kohyo.nta.go.jp/regno-search/detail?selRegNo=8010001213708",
+    "iso6523": "0188:8010001213708"
+  },
+  "product": {
+    "name": "jpcite",
+    "previous_brands": ["AutonoMath", "jpintel-mcp", "zeimu-kaikei.ai"],
+    "operator_brand": "Bookyou株式会社",
+    "service_type": "B2B data API + MCP server (Japanese public-program corpus)",
+    "pypi_distribution": "autonomath-mcp",
+    "pricing_model": "metered_only",
+    "pricing_jpy_per_request_excl_tax": 3,
+    "pricing_jpy_per_request_incl_tax": 3.30,
+    "free_anonymous_quota_per_ip_per_day": 3,
+    "free_quota_reset": "JST 翌日 00:00",
+    "site_url": "https://jpcite.com",
+    "api_url": "https://api.jpcite.com",
+    "docs_url": "https://jpcite.com/docs/",
+    "purchasing_summary_url": "https://jpcite.com/trust/purchasing.html",
+    "trust_center_url": "https://jpcite.com/trust.html",
+    "security_overview_url": "https://jpcite.com/security/",
+    "legal_fence_url": "https://jpcite.com/legal-fence.html",
+    "data_licensing_url": "https://jpcite.com/data-licensing.html"
+  },
+  "legal": {
+    "tos_url": "https://jpcite.com/tos.html",
+    "privacy_url": "https://jpcite.com/privacy.html",
+    "tokushoho_url": "https://jpcite.com/tokushoho.html",
+    "data_subject_rights_url": "https://jpcite.com/data_subject_rights.html",
+    "governing_law": "Japan",
+    "jurisdiction": "Tokyo District Court (専属的合意管轄)",
+    "currency": "JPY",
+    "tax_handling": "stripe_tax_jp_10pct",
+    "qualified_invoice_issued_via": "Stripe Japan K.K.",
+    "billing_payment_terms": "monthly_postpaid_metered",
+    "individual_dpa_negotiation": false,
+    "individual_msa_negotiation": false
+  },
+  "sla": {
+    "uptime_pct_target_monthly": 99.0,
+    "p95_latency_ms_target": 1500,
+    "5xx_rate_target": 0.005,
+    "live_endpoint": "https://api.jpcite.com/v1/health/sla?window=7d",
+    "status_page": "https://jpcite.com/status.html",
+    "sla_page": "https://jpcite.com/sla.html",
+    "rpo_hours": 24,
+    "rto_hours": 4,
+    "planned_maintenance_lead_time_hours": 48,
+    "sunset_lead_time_days": 90,
+    "credit_policy": "tokushoho_serious_nonconformity_clause",
+    "credit_policy_url": "https://jpcite.com/tokushoho.html"
+  },
+  "data_provenance": {
+    "all_publish_records_have_source_url": true,
+    "freshness_endpoint": "https://api.jpcite.com/v1/staleness",
+    "freshness_page": "https://jpcite.com/data-freshness.html",
+    "corrections_feed": "https://api.jpcite.com/v1/corrections?days=90",
+    "audit_log_html": "https://jpcite.com/audit-log.html",
+    "audit_log_rss": "https://jpcite.com/audit-log.rss",
+    "license_inventory_url": "https://jpcite.com/data-licensing.html",
+    "sources_catalog_url": "https://jpcite.com/sources.html",
+    "license_review_queue_size": 805,
+    "license_classified_count": 97270,
+    "license_total_count": 97272,
+    "banned_aggregators": [
+      "noukaweb.com",
+      "hojyokin-portal.jp",
+      "biz.stayway.jp",
+      "stayway.jp",
+      "nikkei.com",
+      "prtimes.jp",
+      "wikipedia.org"
+    ],
+    "boot_invariant": "INV-04 hard-fail if banned domain leaks into source_url"
+  },
+  "datasets_summary": {
+    "count": 16,
+    "license_breakdown": {
+      "cc_by_4_0": 2,
+      "pdl_v1_0": 1,
+      "gov_standard_v2_0": 6,
+      "public_domain": 1,
+      "individual_or_review_required": 6
+    },
+    "totals": {
+      "programs_searchable": 11684,
+      "case_studies": 2286,
+      "loan_programs": 108,
+      "enforcement_cases": 1185,
+      "laws_full_text": 154,
+      "laws_metadata": 9484,
+      "tax_rulesets": 50,
+      "court_decisions": 2065,
+      "bids": 362,
+      "invoice_registrants": 13801,
+      "tsutatsu_index": 3221,
+      "saiketsu": 137
+    }
+  },
+  "legal_fences": {
+    "list": [
+      {"law": "税理士法", "section": "52", "professional": "税理士", "scope_excluded": "個別税務代理・申告書作成・税務相談", "directory": "https://www.nichizeiren.or.jp/"},
+      {"law": "弁護士法", "section": "72", "professional": "弁護士", "scope_excluded": "個別法律事務", "directory": "https://www.nichibenren.or.jp/"},
+      {"law": "公認会計士法", "section": "47-2", "professional": "公認会計士", "scope_excluded": "監査証明業務", "directory": "https://jicpa.or.jp/"},
+      {"law": "行政書士法", "section": "1", "professional": "行政書士", "scope_excluded": "申請書面作成・提出代行", "directory": "https://www.gyosei.or.jp/"},
+      {"law": "司法書士法", "section": "3", "professional": "司法書士", "scope_excluded": "登記申請・登記書類作成", "directory": "https://www.shiho-shoshi.or.jp/"},
+      {"law": "社会保険労務士法", "section": "27", "professional": "社労士", "scope_excluded": "36協定生成 (gated off)・就業規則作成・助成金申請代行", "directory": "https://www.shakaihokenroumushi.jp/"}
+    ],
+    "page": "https://jpcite.com/legal-fence.html",
+    "disclaimer_in_response": true,
+    "sensitive_tool_branches": [
+      "get_am_tax_rule",
+      "search_tax_incentives",
+      "compose_audit_workpaper",
+      "prepare_kessan_briefing",
+      "match_due_diligence_questions",
+      "cross_check_jurisdiction",
+      "bundle_application_kit",
+      "render_36_kyotei_am",
+      "pack_construction",
+      "pack_manufacturing",
+      "pack_real_estate"
+    ]
+  },
+  "privacy": {
+    "framework": "APPI (Act on the Protection of Personal Information)",
+    "policy_url": "https://jpcite.com/privacy.html",
+    "data_subject_rights_url": "https://jpcite.com/data_subject_rights.html",
+    "data_subject_rights_response_window_days": 14,
+    "pii_at_rest_fields": ["customers.email", "api_keys.key_hash"],
+    "retention_days_email_after_termination": 30,
+    "retention_days_query_log": 90,
+    "retention_years_billing_records": 7,
+    "cookie_count": 0,
+    "cross_border_transfer": {
+      "regions": ["Japan", "United States"],
+      "subprocessor_safeguards": "SOC 2 Type II / GDPR-DPA published by all overseas subprocessors"
+    },
+    "subprocessors": [
+      {"name": "Stripe Japan K.K.", "purpose": "payment + qualified invoice issuance", "country": "Japan/US", "certifications": ["PCI-DSS L1", "SOC 1 Type II", "SOC 2 Type II"]},
+      {"name": "Fly.io, Inc.", "purpose": "API hosting (NRT region)", "country": "US", "certifications": ["SOC 2 Type II"]},
+      {"name": "Cloudflare, Inc.", "purpose": "CDN/WAF/DNS", "country": "US", "certifications": ["SOC 2 Type II", "ISO 27001", "PCI-DSS"]},
+      {"name": "Postmark (ActiveCampaign LLC)", "purpose": "transactional email", "country": "US", "certifications": ["SOC 2 Type II", "GDPR-DPA"]},
+      {"name": "Sentry (Functional Software, Inc.)", "purpose": "server error tracking", "country": "US", "certifications": ["SOC 2 Type II", "ISO 27001"]}
+    ]
+  },
+  "security": {
+    "overview_url": "https://jpcite.com/security/",
+    "vuln_disclosure_rfc9116": "https://jpcite.com/.well-known/security.txt",
+    "vuln_disclosure_policy": "https://jpcite.com/security/policy",
+    "vuln_ack_window_hours": 72,
+    "vuln_fix_target_days": 14,
+    "responsible_disclosure_window_days": 90,
+    "safe_harbour_offered": true,
+    "bug_bounty_offered": false,
+    "no_llm_call_in_server": true,
+    "ci_guard_test": "tests/test_no_llm_in_production.py",
+    "tls_min_version": "1.2",
+    "encryption_at_rest": "AES-256",
+    "soc2_status": "not_pursued_solo_zero_touch",
+    "soc2_alternatives": [
+      {"name": "OpenSSF Best Practices Badge", "status": "in_preparation", "verification_url_after_award": "https://www.bestpractices.dev/projects/<id>"},
+      {"name": "OWASP ASVS Level 1 self-assessment", "status": "in_progress", "verification_url_after_award": "https://jpcite.com/security/asvs.html"},
+      {"name": "CSA STAR CAIQ (self Level 1)", "status": "in_progress", "verification_url_after_award": "https://jpcite.com/security/caiq.html"},
+      {"name": "Cloudflare Trust Hub (subprocessor)", "status": "available", "verification_url_after_award": "https://www.cloudflare.com/trust-hub/"}
+    ],
+    "incident_notification_window_hours": 24,
+    "postmortem_window_days": 7,
+    "backup_rpo_hours": 24,
+    "backup_rto_hours": 4,
+    "backup_destination": "Cloudflare R2 (server-side AES-256)"
+  },
+  "ai_use": {
+    "server_side_llm_call": false,
+    "client_ai_runtime_use": "permitted",
+    "training_data_use": "prohibited",
+    "ai_response_disclaimer_recommended": true,
+    "ai_response_disclaimer_reference": "https://jpcite.com/legal-fence.html",
+    "tool_count_default_gates": 93,
+    "mcp_protocol_version": "2025-06-18"
+  },
+  "related_laws_compliance": {
+    "shitauke_ho": {"applicable": false, "reason": "fully self-service metered SaaS, no subcontracting"},
+    "denchou_ho": {"applicable": true, "method": "Stripe-issued qualified invoices stored 7 years"},
+    "den_keiyaku_ho": {"applicable": true, "method": "Stripe Checkout standard misclick-prevention UI + consent capture"},
+    "tokutei_dempou_meiru_ho": {"applicable": true, "method": "transactional emails to contracted parties only, no advertising emails"},
+    "keiho_keihyou_ho": {"applicable": true, "method": "INV-22 banned-phrase auto-strip in API response + ToS §7.2 prohibition"}
+  },
+  "no_advice": true,
+  "no_solicitation": true,
+  "discoverability": {
+    "llms_txt_ja": "https://jpcite.com/llms.txt",
+    "llms_txt_en": "https://jpcite.com/llms.en.txt",
+    "llms_full_ja": "https://jpcite.com/llms-full.txt",
+    "llms_full_en": "https://jpcite.com/llms-full.en.txt",
+    "ai_discovery_manifest": "https://jpcite.com/.well-known/mcp.json",
+    "openapi_agent": "https://api.jpcite.com/v1/openapi.agent.json",
+    "openapi_full": "https://api.jpcite.com/v1/openapi.json",
+    "mcp_registry_manifest": "https://jpcite.com/server.json",
+    "mcp_tool_manifest": "https://jpcite.com/mcp-server.json"
+  }
+}

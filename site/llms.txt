@@ -272,6 +272,16 @@ Two pages expose public trust data for users and AI agents. Both are public, no 
 - [Data freshness dashboard / データ鮮度ダッシュボード](https://jpcite.com/data-freshness.html) — 9 データセット (programs / case_studies / loan_programs / enforcement_cases / laws / court_decisions / bids / invoice_registrants / tax_rulesets) の現在行数・最終更新日時・ライセンス・出典機関を `GET /v1/am/data-freshness` から live で取得。30 日経過で yellow、90 日経過で red。
 - [Source citation transparency / 出典の透明性](https://jpcite.com/transparency.html) — cite chain (発出機関 → 公募要領 PDF → 事務局サイト → 採択事例) が `GET /v1/am/programs/{id}/sources` で機械可読。各レコードの出典 URL と取得日時を確認できます。
 
+## Trust (法人購買 + AI agent 用)
+
+法人購買・法務部 reviewer / AI agent procurement bot 向け。 DPA / MSA 個別交渉なし、SOC 2 Type II 取得なし (Solo zero-touch、代替表明あり)。 機械可読 manifest は `/.well-known/trust.json`、人間可読 1-screen summary は `/trust/purchasing.html`。
+
+- [法人購買 1-screen summary](https://jpcite.com/trust/purchasing.html) — 法務部 reviewer の稟議 review checklist (実在性 / 規約 / 個人情報 / セキュリティ / SLA / データ source / 法令フェンス / 下請法・電帳法・電契法 / AI 利用観点) を 1 page に集約。
+- [Security Overview (外部公開版)](https://jpcite.com/security/) — defense layers / 暗号化 / アクセス制御 / 副処理者 5 社 (Stripe / Fly / CF / Postmark / Sentry) / DR / dependency audit / SOC 2 alternative (OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ self-assessment)。
+- [データソース・ライセンス開示](https://jpcite.com/data-licensing.html) — 16 dataset × license (CC BY 4.0 / PDL v1.0 / 政府標準利用規約 v2.0 / パブリックドメイン / 個別) × 商用配信可否 × 出典表示要件 × 更新頻度。
+- [法令フェンス](https://jpcite.com/legal-fence.html) — 触らない 6 業法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1 / 司法書士法 §3 / 社会保険労務士法 §27) の業務範囲・「やる/やらない」境界線・違反通報先・MCP tool ごとの sensitive マッピング。
+- [Trust manifest (machine-readable JSON)](https://jpcite.com/.well-known/trust.json) — operator (T8010001213708) / SLA / data provenance / legal fences / privacy / security / AI use を 1 fetch で取得できる machine-readable manifest (`schema_version: jpcite_trust_v1`)。
+
 ## Optional
 
 - [About / 会社情報](https://jpcite.com/about.html)

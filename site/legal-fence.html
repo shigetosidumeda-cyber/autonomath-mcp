@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>法令フェンス — jpcite が触らない 6 業法</title>
+<meta name="description" content="jpcite が触らない 6 業法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1 / 司法書士法 §3 / 社会保険労務士法 §27) の業務範囲・jpcite が「やる/やらない」境界線・違反通報先・API response 内 _disclaimer field 仕様を 1 page で開示。">
+
+<meta property="og:title" content="法令フェンス — jpcite が触らない 6 業法">
+<meta property="og:description" content="6 業法 (税理士 / 弁護士 / 会計士 / 行政書士 / 司法書士 / 社労士) の境界線を 1 page で。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jpcite.com/legal-fence.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="法令フェンス — jpcite が触らない 6 業法">
+<meta name="twitter:description" content="6 業法の境界線を 1 page で。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/legal-fence.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/legal-fence.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/legal-fence.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=20260504a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "法令フェンス — jpcite が触らない 6 業法",
+  "description": "jpcite が触らない 6 業法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1 / 司法書士法 §3 / 社会保険労務士法 §27) の業務範囲・境界線・違反通報先・API response 内 _disclaimer 仕様。",
+  "url": "https://jpcite.com/legal-fence.html",
+  "inLanguage": "ja",
+  "publisher": {"@id": "https://jpcite.com/#publisher"}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "信頼", "item": "https://jpcite.com/trust.html"},
+    {"@type": "ListItem", "position": 3, "name": "法令フェンス", "item": "https://jpcite.com/legal-fence.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "jpcite が触らない 6 業法",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "税理士法 §52", "item": {"@type": "LegalService", "name": "税理士法 §52 (税理士業務)", "url": "https://elaws.e-gov.go.jp/document?lawid=326AC1000000237"}},
+    {"@type": "ListItem", "position": 2, "name": "弁護士法 §72", "item": {"@type": "LegalService", "name": "弁護士法 §72 (非弁活動禁止)", "url": "https://elaws.e-gov.go.jp/document?lawid=324AC0000000205"}},
+    {"@type": "ListItem", "position": 3, "name": "公認会計士法 §47の2", "item": {"@type": "LegalService", "name": "公認会計士法 §47の2 (監査証明業務)", "url": "https://elaws.e-gov.go.jp/document?lawid=323AC1000000103"}},
+    {"@type": "ListItem", "position": 4, "name": "行政書士法 §1", "item": {"@type": "LegalService", "name": "行政書士法 §1 (官公署提出書類等)", "url": "https://elaws.e-gov.go.jp/document?lawid=326AC1000000004"}},
+    {"@type": "ListItem", "position": 5, "name": "司法書士法 §3", "item": {"@type": "LegalService", "name": "司法書士法 §3 (登記又は供託に関する手続代理)", "url": "https://elaws.e-gov.go.jp/document?lawid=325AC1000000197"}},
+    {"@type": "ListItem", "position": 6, "name": "社会保険労務士法 §27", "item": {"@type": "LegalService", "name": "社会保険労務士法 §27 (無資格者の業務制限)", "url": "https://elaws.e-gov.go.jp/document?lawid=343AC0000000089"}}
+  ]
+}
+</script>
+
+<style>
+  .lf-page { padding: 48px 0 64px; }
+  .lf-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .lf-page .lead { font-size: 16px; color: var(--text-muted); margin: 0 0 24px; max-width: 820px; line-height: 1.7; }
+  .lf-page h2 { font-size: 19px; margin: 28px 0 10px; font-weight: 700; padding-top: 12px; border-top: 1px solid var(--border); }
+  .lf-page h2:first-of-type { border-top: none; padding-top: 0; }
+  .lf-page h3 { font-size: 16px; margin: 16px 0 6px; font-weight: 600; color: var(--text); }
+  .lf-page p { line-height: 1.7; margin: 6px 0; }
+  .lf-page ul { line-height: 1.75; padding-left: 22px; margin: 6px 0 12px; }
+  .lf-page li { margin: 3px 0; }
+  .lf-page table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 14px; }
+  .lf-page th, .lf-page td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+  .lf-page th { font-weight: 600; color: var(--text-muted); font-size: 13px; background: var(--bg-alt); }
+  .lf-page code { font-family: var(--font-mono, monospace); font-size: 13px; background: var(--bg); border: 1px solid var(--border); padding: 1px 5px; border-radius: 3px; }
+  .lf-block {
+    border-left: 3px solid var(--text-muted);
+    background: var(--bg-alt);
+    padding: 14px 18px;
+    margin: 14px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .lf-do { color: #15803d; font-weight: 600; }
+  .lf-dont { color: #b91c1c; font-weight: 600; }
+  .lf-foot { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+  .lf-toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 0 0 22px; font-size: 14px; }
+  .lf-toc ul { margin: 4px 0; padding-left: 22px; }
+  @media (max-width: 480px) {
+    .lf-page h1 { font-size: clamp(22px, 6vw, 30px); }
+    .lf-page table { font-size: 13px; }
+  }
+</style>
+
+<script defer src="/analytics.js?v=20260504a"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <details class="nav-trust" open>
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼センター</a></li>
+ <li><a href="/trust/purchasing.html">法人購買 1-screen</a></li>
+ <li><a href="/security/">Security Overview</a></li>
+ <li><a href="/data-licensing.html">データソース・ライセンス</a></li>
+ <li><a href="/legal-fence.html" aria-current="page">法令フェンス</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ </ul>
+ </details>
+ </nav>
+ </div>
+</header>
+
+<main id="main" class="lf-page">
+ <div class="container">
+
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/trust.html">信頼</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">法令フェンス</span>
+ </nav>
+
+ <h1>jpcite が触らない 6 業法</h1>
+ <p class="lead">jpcite は情報検索・根拠確認の補助に徹し、 個別具体的な税務・法律・申請・監査・登記・労務の判断は行いません。 該当する 6 業法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1 / 司法書士法 §3 / 社会保険労務士法 §27) の業務範囲・「やる/やらない」境界線・違反通報先を 1 page で開示します。 API response の <code>_disclaimer</code> field 仕様も末尾に記載しています。</p>
+
+ <div class="lf-toc" aria-label="目次">
+ <strong>目次</strong>
+ <ul>
+ <li><a href="#fence-52">1. 税理士法 §52</a></li>
+ <li><a href="#fence-72">2. 弁護士法 §72</a></li>
+ <li><a href="#fence-47-2">3. 公認会計士法 §47-2</a></li>
+ <li><a href="#fence-gyosei">4. 行政書士法 §1</a></li>
+ <li><a href="#fence-shiho">5. 司法書士法 §3</a></li>
+ <li><a href="#fence-shaho">6. 社会保険労務士法 §27 (36協定 含む)</a></li>
+ <li><a href="#disclaimer">7. API response の <code>_disclaimer</code> field 仕様</a></li>
+ <li><a href="#mapping">8. MCP tool ごとの sensitive 業法 マッピング</a></li>
+ </ul>
+ </div>
+
+ <h2 id="fence-52">1. 税理士法 §52</h2>
+ <div class="lf-block">
+ <h3>業務範囲 (税理士法 §52 が独占)</h3>
+ <p>税務代理 / 税務書類作成 / 税務相談 (税理士法 §2 で定義する税理士業務)</p>
+ <h3>jpcite が <span class="lf-do">やる</span></h3>
+ <ul>
+ <li>制度検索 (補助金・税制優遇・認定)</li>
+ <li>租税特別措置法・通達・裁決事例の引用 + 出典 URL 提示</li>
+ <li>税制 ID lookup (措置法 〇条 〇項 等)</li>
+ <li>税法改正の差分検出 + 改正 effective date の提示</li>
+ </ul>
+ <h3>jpcite が <span class="lf-dont">やらない</span></h3>
+ <ul>
+ <li>個別具体的な税額計算</li>
+ <li>申告書 (法人税 / 所得税 / 消費税) の作成</li>
+ <li>税務署対応 / 税務調査立会</li>
+ <li>「あなたの場合は〇〇円控除できます」型の個別断定</li>
+ </ul>
+ <p><strong>違反通報先</strong>: 日本税理士会連合会 <a href="https://www.nichizeiren.or.jp/" rel="noopener">https://www.nichizeiren.or.jp/</a></p>
+ </div>
+
+ <h2 id="fence-72">2. 弁護士法 §72</h2>
+ <div class="lf-block">
+ <h3>業務範囲 (弁護士法 §72 が独占)</h3>
+ <p>法律事務 (具体的事件についての法律相談・代理・書類作成)。 報酬を得る目的での非弁活動を禁止</p>
+ <h3>jpcite が <span class="lf-do">やる</span></h3>
+ <ul>
+ <li>法令本文・判例・行政処分の検索 + 出典 URL</li>
+ <li>e-Gov 法令データの全文検索 (CC BY 4.0)</li>
+ <li>知財高裁・特許庁の判例検索</li>
+ <li>行政処分の事業者横断検索</li>
+ </ul>
+ <h3>jpcite が <span class="lf-dont">やらない</span></h3>
+ <ul>
+ <li>個別事案への法律意見の表明</li>
+ <li>訴訟代理 / 紛争代理</li>
+ <li>契約書・示談書・告訴状等の作成</li>
+ <li>「この場合は違法/合法です」型の個別断定</li>
+ </ul>
+ <p><strong>違反通報先</strong>: 日本弁護士連合会 <a href="https://www.nichibenren.or.jp/" rel="noopener">https://www.nichibenren.or.jp/</a></p>
+ </div>
+
+ <h2 id="fence-47-2">3. 公認会計士法 §47の2</h2>
+ <div class="lf-block">
+ <h3>業務範囲 (公認会計士法 §47の2 が独占)</h3>
+ <p>監査証明業務 (財務書類の監査又は証明) を、公認会計士又は監査法人以外が行うことを禁止</p>
+ <h3>jpcite が <span class="lf-do">やる</span></h3>
+ <ul>
+ <li>監査作業文書の draft 整理 (<code>compose_audit_workpaper</code>)</li>
+ <li>採択事例 / 決算情報 briefing (<code>prepare_kessan_briefing</code>)</li>
+ <li>DD 質問 checklist の生成 (<code>match_due_diligence_questions</code>)</li>
+ <li>業界 pack (建設・製造・不動産) の通達・裁決引用</li>
+ </ul>
+ <h3>jpcite が <span class="lf-dont">やらない</span></h3>
+ <ul>
+ <li>監査意見の表明 (適正意見 / 限定意見 / 不適正意見 / 意見不表明)</li>
+ <li>財務書類の正当性証明</li>
+ <li>監査証明書類の発行</li>
+ <li>「監査済」「監査報告書」相当の対外表示</li>
+ </ul>
+ <p><strong>違反通報先</strong>: 日本公認会計士協会 <a href="https://jicpa.or.jp/" rel="noopener">https://jicpa.or.jp/</a></p>
+ </div>
+
+ <h2 id="fence-gyosei">4. 行政書士法 §1</h2>
+ <div class="lf-block">
+ <h3>業務範囲 (行政書士法 §1 が独占)</h3>
+ <p>官公署に提出する書類等の作成、その代理・相談業務</p>
+ <h3>jpcite が <span class="lf-do">やる</span></h3>
+ <ul>
+ <li>制度の必要書類 checklist (<code>bundle_application_kit</code>)</li>
+ <li>応募要領 PDF への一次資料 link 集約</li>
+ <li>類似採択事例の参照</li>
+ <li>scaffold (項目見出し) の生成</li>
+ </ul>
+ <h3>jpcite が <span class="lf-dont">やらない</span></h3>
+ <ul>
+ <li>申請書面そのものの作成 (記入済の応募書類)</li>
+ <li>提出代行 (官公署窓口対応)</li>
+ <li>許認可申請の代理</li>
+ <li>「申請して採択を保証」型の表現</li>
+ </ul>
+ <p><strong>違反通報先</strong>: 日本行政書士会連合会 <a href="https://www.gyosei.or.jp/" rel="noopener">https://www.gyosei.or.jp/</a></p>
+ </div>
+
+ <h2 id="fence-shiho">5. 司法書士法 §3</h2>
+ <div class="lf-block">
+ <h3>業務範囲 (司法書士法 §3 が独占)</h3>
+ <p>登記又は供託に関する手続の代理、登記又は供託に関する審査請求の手続の代理 等</p>
+ <h3>jpcite が <span class="lf-do">やる</span></h3>
+ <ul>
+ <li>法人番号 / 登記情報の cross-check (<code>cross_check_jurisdiction</code>)</li>
+ <li>登記住所と適格請求書発行事業者公表住所の整合性検証</li>
+ <li>採択事例の事業所所在地と登記住所の比較</li>
+ <li>houjin_master / invoice_registrants / adoption_records の不一致検出</li>
+ </ul>
+ <h3>jpcite が <span class="lf-dont">やらない</span></h3>
+ <ul>
+ <li>登記申請の代理</li>
+ <li>登記書類 (申請書 / 添付書類) の作成</li>
+ <li>法務局窓口対応</li>
+ <li>商業登記・不動産登記・成年後見登記の審査請求代理</li>
+ </ul>
+ <p><strong>違反通報先</strong>: 日本司法書士会連合会 <a href="https://www.shiho-shoshi.or.jp/" rel="noopener">https://www.shiho-shoshi.or.jp/</a></p>
+ </div>
+
+ <h2 id="fence-shaho">6. 社会保険労務士法 §27 (36協定 含む)</h2>
+ <div class="lf-block">
+ <h3>業務範囲 (社会保険労務士法 §27 が独占)</h3>
+ <p>労働社会保険諸法令に基づく書類作成・申請代行、労務相談 (社労士法 §2 で定義)。 36協定 (労働基準法 §36) も範囲</p>
+ <h3>jpcite が <span class="lf-do">やる</span></h3>
+ <ul>
+ <li>助成金検索 (キャリアアップ助成金 / 雇用調整助成金 等)</li>
+ <li>厚生労働省の行政処分検索</li>
+ <li>労働関連法令の検索 (e-Gov 法令)</li>
+ </ul>
+ <h3>jpcite が <span class="lf-dont">やらない</span></h3>
+ <ul>
+ <li>36協定 (時間外労働・休日労働に関する協定届) の生成 — <code>render_36_kyotei_am</code> + <code>get_36_kyotei_metadata_am</code> は <code>AUTONOMATH_36_KYOTEI_ENABLED</code> gate で default off</li>
+ <li>就業規則作成・改定</li>
+ <li>助成金申請代行</li>
+ <li>労働社会保険諸法令に基づく申告書類の作成</li>
+ </ul>
+ <p><strong>違反通報先</strong>: 全国社会保険労務士会連合会 <a href="https://www.shakaihokenroumushi.jp/" rel="noopener">https://www.shakaihokenroumushi.jp/</a></p>
+ <p><strong>36協定 gate</strong>: <code>AUTONOMATH_36_KYOTEI_ENABLED = False</code> (default)。 仮に gate ON でも、render response は draft 扱いで「社労士確認必須」 disclaimer を必ず付与します。</p>
+ </div>
+
+ <h2 id="disclaimer">7. API response の <code>_disclaimer</code> field 仕様</h2>
+ <p>業法に該当する 11 sensitive tool branch では、API response 末尾に <code>_disclaimer</code> field を自動付与します (Wave 30 disclaimer hardening 済)。</p>
+ <h3>統一文体</h3>
+ <pre><code>{
+  "_disclaimer": {
+    "law": "税理士法 §52",
+    "scope_excluded": "個別税務代理・申告書作成・税務相談",
+    "professional": "税理士",
+    "professional_directory": "https://www.nichizeiren.or.jp/",
+    "message": "本 response は情報検索の結果です。 個別具体的な税務判断は税理士にご相談ください (税理士法 §52 に基づく業務範囲外)。",
+    "source_urls": ["https://elaws.e-gov.go.jp/...", ...]
+  }
+}
+</code></pre>
+ <h3>表記の統一</h3>
+ <p><em>「本 response は情報検索の結果です。 個別具体的な {税務 / 法律 / 申請 / 監査 / 登記 / 労務} 判断は {税理士 / 弁護士 / 行政書士 / 公認会計士 / 司法書士 / 社労士} にご相談ください。 ({業法 §条文} に基づく業務範囲外)。 出典: {source_url}」</em></p>
+
+ <h2 id="mapping">8. MCP tool ごとの sensitive 業法 マッピング</h2>
+ <table>
+ <thead><tr><th>MCP Tool</th><th>Sensitive 業法</th><th><code>_disclaimer</code> 対象</th></tr></thead>
+ <tbody>
+ <tr><td><code>get_am_tax_rule</code></td><td>税理士法 §52</td><td>○</td></tr>
+ <tr><td><code>search_tax_incentives</code></td><td>税理士法 §52</td><td>○</td></tr>
+ <tr><td><code>compose_audit_workpaper</code></td><td>§52 + 公認会計士法 §47-2</td><td>○</td></tr>
+ <tr><td><code>prepare_kessan_briefing</code></td><td>税理士法 §52</td><td>○</td></tr>
+ <tr><td><code>match_due_diligence_questions</code></td><td>§52 + 弁護士法 §72</td><td>○</td></tr>
+ <tr><td><code>cross_check_jurisdiction</code></td><td>§52 + §72 + 司法書士法 §3</td><td>○</td></tr>
+ <tr><td><code>bundle_application_kit</code></td><td>行政書士法 §1</td><td>○</td></tr>
+ <tr><td><code>render_36_kyotei_am</code> (gated off)</td><td>社労士法 §27 + 労基法 §36</td><td>○ (gate ON 時)</td></tr>
+ <tr><td><code>pack_construction</code></td><td>§52 + §47-2</td><td>○</td></tr>
+ <tr><td><code>pack_manufacturing</code></td><td>§52 + §47-2</td><td>○</td></tr>
+ <tr><td><code>pack_real_estate</code></td><td>§52 + §47-2</td><td>○</td></tr>
+ </tbody>
+ </table>
+ <p>これらは内部実装で保証され、CI で「全 sensitive branch の response が <code>_disclaimer</code> を含む」 ことを検証します。</p>
+
+ <p class="lf-foot">本 page の各業法引用は e-Gov 法令データ (CC BY 4.0) と各業法主管団体の公開情報を一次資料とします。 jpcite が「やる/やらない」境界線に関する記述は、<a href="/tos.html">利用規約</a> §7 (免責) と整合します。 関連 page: <a href="/trust/purchasing.html">法人購買 1-screen</a> · <a href="/security/">Security Overview</a> · <a href="/data-licensing.html">データソース・ライセンス</a> · <a href="/.well-known/trust.json">trust.json</a></p>
+
+ </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/trust.html">信頼</a>
+ <a href="/trust/purchasing.html">法人購買</a>
+ <a href="/security/">Security</a>
+ <a href="/legal-fence.html">法令フェンス</a>
+ <a href="/data-licensing.html">データソース</a>
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特商法</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+</body>
+</html>
