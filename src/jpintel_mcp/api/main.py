@@ -699,6 +699,20 @@ def _sanitize_openapi_public_text(text: str) -> str:
     ]
     for pattern, replacement in replacements:
         text = re.sub(pattern, replacement, text)
+    pricing_replacements = [
+        (r"¥3 / リクエスト 完全従量", "¥3/billable unit 完全従量"),
+        (r"¥3/request", "¥3/billable unit"),
+        (r"¥3/req", "¥3/billable unit"),
+        (r"¥3 per request", "¥3 per billable unit"),
+        (
+            r"One ¥3 charge per request regardless of format\.",
+            "One billable unit regardless of format.",
+        ),
+        (r"Single ¥3 charge per request", "Single billable unit"),
+    ]
+    for pattern, replacement in pricing_replacements:
+        text = re.sub(pattern, replacement, text)
+    text = text.replace("¥3/billable unit unit price", "¥3/billable unit price")
     # Some generic replacements above intentionally rewrite implementation
     # nouns such as "row" to "record" late in the pass. Re-apply the public
     # source wording after that final generic sweep so runtime OpenAPI and the

@@ -803,11 +803,11 @@
             "schema": {
               "type": "string",
               "pattern": "^(json|csv|xlsx|md|csv-freee|csv-mf|csv-yayoi)$",
-              "description": "Output format. Default `json` returns the SearchResponse envelope unchanged. Other values dispatch to the 6-pack renderer surface (csv / xlsx / md / csv-freee / csv-mf / csv-yayoi). `ics` and `docx-application` are intentionally rejected here — ICS belongs to deadline-bearing endpoints (saved_searches) and DOCX is per-program (get-by-id). One ¥3 charge per request regardless of format.",
+              "description": "Output format. Default `json` returns the SearchResponse envelope unchanged. Other values dispatch to the 6-pack renderer surface (csv / xlsx / md / csv-freee / csv-mf / csv-yayoi). `ics` and `docx-application` are intentionally rejected here — ICS belongs to deadline-bearing endpoints (saved_searches) and DOCX is per-program (get-by-id). One billable unit regardless of format.",
               "default": "json",
               "title": "Format"
             },
-            "description": "Output format. Default `json` returns the SearchResponse envelope unchanged. Other values dispatch to the 6-pack renderer surface (csv / xlsx / md / csv-freee / csv-mf / csv-yayoi). `ics` and `docx-application` are intentionally rejected here — ICS belongs to deadline-bearing endpoints (saved_searches) and DOCX is per-program (get-by-id). One ¥3 charge per request regardless of format."
+            "description": "Output format. Default `json` returns the SearchResponse envelope unchanged. Other values dispatch to the 6-pack renderer surface (csv / xlsx / md / csv-freee / csv-mf / csv-yayoi). `ics` and `docx-application` are intentionally rejected here — ICS belongs to deadline-bearing endpoints (saved_searches) and DOCX is per-program (get-by-id). One billable unit regardless of format."
           },
           {
             "name": "X-API-Key",
@@ -1061,11 +1061,11 @@
             "schema": {
               "type": "string",
               "pattern": "^(json|csv|xlsx|md|docx-application)$",
-              "description": "Output format. Default `json` returns the ProgramDetail envelope unchanged. Other values dispatch to: csv / xlsx / md / docx-application. ICS and accounting CSVs (freee / mf / yayoi) are rejected here — ICS belongs to deadline-bearing list endpoints, and accounting CSVs are list-shaped. One ¥3 charge per request regardless of format.",
+              "description": "Output format. Default `json` returns the ProgramDetail envelope unchanged. Other values dispatch to: csv / xlsx / md / docx-application. ICS and accounting CSVs (freee / mf / yayoi) are rejected here — ICS belongs to deadline-bearing list endpoints, and accounting CSVs are list-shaped. One billable unit regardless of format.",
               "default": "json",
               "title": "Format"
             },
-            "description": "Output format. Default `json` returns the ProgramDetail envelope unchanged. Other values dispatch to: csv / xlsx / md / docx-application. ICS and accounting CSVs (freee / mf / yayoi) are rejected here — ICS belongs to deadline-bearing list endpoints, and accounting CSVs are list-shaped. One ¥3 charge per request regardless of format."
+            "description": "Output format. Default `json` returns the ProgramDetail envelope unchanged. Other values dispatch to: csv / xlsx / md / docx-application. ICS and accounting CSVs (freee / mf / yayoi) are rejected here — ICS belongs to deadline-bearing list endpoints, and accounting CSVs are list-shaped. One billable unit regardless of format."
           },
           {
             "name": "X-API-Key",
