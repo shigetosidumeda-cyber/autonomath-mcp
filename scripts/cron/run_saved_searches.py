@@ -430,6 +430,7 @@ def _record_metered_delivery(
     key_hash: str,
     saved_id: int,
     dry_run: bool,
+    client_tag: str | None = None,
 ) -> None:
     """Insert one usage_events row + fire report_usage_async.
 
@@ -440,6 +441,9 @@ def _record_metered_delivery(
     happens via the same daemon-thread path used by API requests.
 
     Skipped entirely on --dry-run so test runs do not bill the customer.
+    `client_tag` (mig 085) carries the per-顧問先 profile_id during
+    `saved_searches.profile_ids_json` fan-out (mig 097) so the consultant
+    can attribute each ¥3 delivery back to a specific 顧問先.
     """
     if dry_run:
         return
@@ -448,6 +452,7 @@ def _record_metered_delivery(
         jp_conn,
         key_hash=key_hash,
         endpoint="saved_searches.digest",
+        client_tag=client_tag,
     )
     if not ok:
         logger.warning("metered.delivery_skipped saved_id=%s", saved_id)
@@ -506,12 +511,20 @@ def run(
         # detect via PRAGMA so the cron stays compatible with both.
         cols = {r[1] for r in jp_conn.execute("PRAGMA table_info(saved_searches)").fetchall()}
         has_channel = "channel_format" in cols
+        # mig 097: profile_ids_json — per-顧問先 fan-out column. Older test
+        # DBs without the column fall back to NULL so the legacy single-
+        # delivery path stays the default.
+        has_profile_ids = "profile_ids_json" in cols
+        profile_ids_select = (
+            "profile_ids_json" if has_profile_ids else "NULL AS profile_ids_json"
+        )
         if has_channel:
             sweep_sql = (
                 "SELECT id, api_key_hash, name, query_json, frequency, "
                 "       notify_email, "
                 "       COALESCE(channel_format, 'email') AS channel_format, "
                 "       channel_url, "
+                f"       {profile_ids_select}, "
                 "       last_run_at, created_at "
                 "  FROM saved_searches"
             )
@@ -521,6 +534,7 @@ def run(
                 "       notify_email, "
                 "       'email' AS channel_format, "
                 "       NULL   AS channel_url, "
+                f"       {profile_ids_select}, "
                 "       last_run_at, created_at "
                 "  FROM saved_searches"
             )
@@ -676,16 +690,30 @@ def run(
                 sent = outcome.get("skipped") is None or outcome.get("reason") == "dry_run"
             if sent:
                 emails_sent += 1
+                # mig 097 fan-out: profile_ids_json non-empty → 1 metered
+                # delivery per 顧問先 (navit cancel break-even ≥40 顧問先 =
+                # ¥2,600/月; mig 096 docstring). Empty/NULL → legacy single
+                # delivery. Tag with profile_id so the consultant can
+                # attribute each ¥3 row in usage_events back to a 顧問先.
+                profile_tags: list[str | None] = [None]
+                try:
+                    pids = json.loads(row["profile_ids_json"]) if row["profile_ids_json"] else []
+                except (TypeError, ValueError):
+                    pids = []
+                if isinstance(pids, list) and pids:
+                    profile_tags = [str(p) for p in pids]
                 # Same ¥3 metering across both channels — the customer
                 # opted into a delivery, the system delivered, we bill.
-                _record_metered_delivery(
-                    jp_conn=jp_conn,
-                    key_hash=row["api_key_hash"],
-                    saved_id=row["id"],
-                    dry_run=dry_run,
-                )
-                if not dry_run:
-                    billed += 1
+                for tag in profile_tags:
+                    _record_metered_delivery(
+                        jp_conn=jp_conn,
+                        key_hash=row["api_key_hash"],
+                        saved_id=row["id"],
+                        dry_run=dry_run,
+                        client_tag=tag,
+                    )
+                    if not dry_run:
+                        billed += 1
 
             if not dry_run:
                 jp_conn.execute(
