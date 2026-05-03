@@ -853,6 +853,15 @@
         body: JSON.stringify({ api_key: key })
       });
       if (input) input.value = '';
+      // §4-E: dashboard_signin_success — only fires when /v1/session
+      // returned 2xx (failures are caught below and re-thrown).
+      try {
+        if (typeof window.jpciteTrack === 'function') {
+          window.jpciteTrack('dashboard_signin_success', {
+            mode: 'cookie_session',
+          });
+        }
+      } catch (_e) {}
       await loadMe();
     } catch (err) {
       const msg = err.status === 429

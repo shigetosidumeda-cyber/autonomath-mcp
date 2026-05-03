@@ -122,7 +122,7 @@
 回答には source_url と source_fetched_at を入れてください。</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
-<p>PDFや長い制度ページをGPTへ直接渡す前にEvidence Packetを使うと、必要な根拠だけを短いJSONにできます。効果はworkload-dependentで、削減保証ではありません。</p>
+<p>PDFや長い制度ページをGPTへ直接渡す前にEvidence Packetを使うと、必要な根拠だけを短いJSONにできます。効果はworkload-dependentで、外部 LLM の請求額削減は保証しません。</p>
 
 <h2 id="next">次のステップ</h2>
 <ul>
@@ -167,6 +167,17 @@
     btn.addEventListener('click', function(){
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
+      // §4-E funnel beacon: openapi_import_click for the OpenAPI URL
+      // copy, quickstart_copy for everything else on this page.
+      try {
+        if (typeof window.jpciteTrack === 'function') {
+          var isOpenApi = (text || '').indexOf('openapi.json') !== -1;
+          window.jpciteTrack(isOpenApi ? 'openapi_import_click' : 'quickstart_copy', {
+            page: 'chatgpt',
+            snippet: isOpenApi ? 'openapi-url' : 'code-block',
+          });
+        }
+      } catch (_e) {}
       var done = function(){
         btn.textContent = 'Copied';
         btn.classList.add('copied');

@@ -29,6 +29,7 @@
 
       <section>
         <h2>定義</h2>
+        <p>jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換 / 排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合だけ、入力文脈量の削減見込みと break-even を返します。外部 LLM の請求額削減は保証しません。</p>
         <p>Evidence Pre-fetchは、LLMが文章を書く前に、制度候補、出典URL、取得時刻、content hash、provenance、併用ルール、既知の欠落を取得する手順です。jpciteは回答文を作らず、AIが引用できる入力packetを返します。</p>
       </section>
 

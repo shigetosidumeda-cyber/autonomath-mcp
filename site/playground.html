@@ -1,50 +1,5 @@
 <!DOCTYPE html>
-<!--
-  site/playground.html — interactive REST API try-it surface.
-
-  Why this page exists (added 2026-04-29):
-    Prospects want to verify the API works before committing — even before
-    issuing an API key. The pricing page sells; the docs explain; this page
-    lets the visitor *prove* the response shape, see the §52 disclaimer
-    法令注記の付与 live, and walk away with a curl one-liner that runs verbatim.
-    Funnel: blog/SEO → playground → /upgrade.html (gentle nudge after 10
-    successful requests) → /pricing.html#api-paid → Stripe Checkout.
-
-  How it works (vanilla JS, zero deps, static page):
-    1. Endpoint dropdown lists the highest-leverage GET routes (search +
-       lookup across programs / am / invoice_registrants / laws /
-       court-decisions / case-studies / tax_rulesets).
-    2. Param form is rendered from a hard-coded local schema (mirrors
-       /v1/openapi.json()). We do *not* fetch the live OpenAPI on page-load
-       because it is 292 KB and would block first paint; the local copy is
-       small (~6 KB inlined) and matches v0.3.0 prod surface verbatim.
-    3. Live URL preview updates on every keystroke (no debounce — pure
-       string concat, no network).
-    4. "Send" button calls fetch with credentials='omit' + Accept JSON
-       (and Authorization Bearer when the operator pasted a key). 500 ms
-       debounce on rapid double-clicks (prevents quota burn from accidental
-       repeat).
-    5. Response display shows status + duration + JSON body (pretty-printed,
-       client-side syntax highlight via a single regex pass — no Prism / no
-       highlight.js — keeps zero-dep promise) + headers (collapsible).
-    6. X-Anon-Quota-Remaining header drives a "残 N/50" indicator. When
-       N <= 5 we surface a CTA to /pricing.html#api-paid. Page never
-       blocks the request — the quota indicator is a soft nudge, the
-       upstream 429 is the hard fence.
-    7. Successful-request counter (sessionStorage) shows a "気に入ったら
-       API キー発行 →" banner after the 10th success. Dismissable.
-
-  Static API playground. Requests are sent directly from the browser.
-
-  CSP note: this page ships a single inline <script> block (the playground
-  controller). _headers already permits 'unsafe-inline' on script-src for
-  vetted page-level scripts (see _headers comment in repo). No remote
-  scripts, no third-party CDN.
-
-  Mobile responsive @ 375 / 768 / 1280 px. Modern browsers only (Chrome /
-  Firefox / Safari / Edge — uses fetch + URLSearchParams + template
-  literals; no IE shim).
--->
+<!-- Static API playground. Requests are sent directly from the browser. -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -547,8 +502,8 @@
  <h1>API プレイグラウンド</h1>
  <p class="pg-lead">
  ブラウザから直接 <code>https://api.jpcite.com/v1/*</code> を叩いて、
- レスポンス形状・<strong>§52 開示エンベロープ</strong>・出典 URL を確認できます。
- <strong>登録不要・API キー不要</strong>。 匿名 <span data-fact="anonymous_quota_per_month">3</span> req/日 (per IP) まで無料、 超過後は API キー発行で ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト (税込) 完全従量。
+ レスポンス形状・<strong>専門業務ではないことの注意書き</strong>・出典 URL を確認できます。
+ <strong>登録不要・API キー不要</strong>。 匿名 <span data-fact="anonymous_quota_per_day">3</span> req/日 (per IP) まで無料、 超過後は API キー発行で ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト (税込) 完全従量。
  <a href="/docs/api-reference/">API リファレンス</a> · <a href="pricing.html">料金</a> · <a href="/dashboard">ダッシュボード</a>
  </p>
 
@@ -557,12 +512,12 @@
  </div>
 
  <div class="pg-banner" id="pg-flow-hint" role="note" hidden>
- <strong>3回の無料ライブ検証:</strong> まず Evidence Packet を返すエンドポイントを選択済みです。1回目はこのまま送信、2回目は <code>source_pdf_pages</code> を変えて文脈量の差を確認、3回目は自社の質問に差し替えてください。表示される compression は参考推定であり、削減保証ではありません。
+ <strong>3 回の無料ライブ検証:</strong> Evidence Packet を返すエンドポイント (<code>GET /v1/intelligence/precomputed/query</code>) を選択済みです。 デフォルトで <code>source_tokens_basis=pdf_pages</code> · <code>source_pdf_pages=30</code> · <code>input_token_price_jpy_per_1m=300</code> が入っているため、 送信すると <code>compression.input_context_reduction_rate</code> · <code>compression.cost_savings_estimate.break_even_met</code> が返ります。 2 回目は <code>source_pdf_pages</code> を変えて差を確認、 3 回目は自社の質問に差し替えてください。 表示される compression は入力文脈量だけの参考推定であり、 外部 LLM の請求額削減は保証しません。
  </div>
 
  <div class="pg-quota" id="pg-quota" data-state="ok" aria-live="polite">
  <span>匿名クォータ</span>
- <span class="pg-quota-num"><span id="pg-quota-remaining">--</span> / <span data-fact="anonymous_quota_per_month">3</span></span>
+ <span class="pg-quota-num"><span id="pg-quota-remaining">--</span> / <span data-fact="anonymous_quota_per_day">3</span></span>
  <span>req (JST 翌日 00:00 リセット)</span>
  <span id="pg-quota-cta" hidden> · <a href="pricing.html#api-paid">上限間近 — API キー発行で解除 →</a></span>
  </div>
@@ -603,11 +558,14 @@
  </section>
  </div>
 
- <!-- Conversion nudge after 10 successful requests in session -->
- <aside class="pg-nudge" id="pg-nudge" role="region" aria-label="API キー発行のおすすめ">
- <span>気に入りましたか? API キーを発行すると ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト で継続利用できます。</span>
+ <!-- 3-stage conversion nudge aligned with anonymous 3 req/day quota.
+      stage 1 (1st success): copy the curl one-liner.
+      stage 2 (2nd success): install MCP / import OpenAPI for repeat use.
+      stage 3 (3rd success or quota_remaining <= 0): pricing / API key. -->
+ <aside class="pg-nudge" id="pg-nudge" role="region" aria-label="次のステップ">
+ <span id="pg-nudge-text">気に入りましたか?</span>
  <span>
- <a href="pricing.html#api-paid" data-cta="playground-nudge">API キー発行 →</a>
+ <a id="pg-nudge-link" href="#" data-cta="playground-nudge">→</a>
  <button type="button" class="pg-nudge-dismiss" id="pg-nudge-dismiss" aria-label="閉じる">×</button>
  </span>
  </aside>
@@ -641,7 +599,7 @@
  </section>
 
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0;border-top:1px solid var(--border);padding-top:16px;">
-本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
+本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください。
 </p>
  </div>
 </main>
@@ -702,8 +660,7 @@
   // Mirrors /v1/openapi.json paths verbatim (verified against prod
   // 2026-04-29 dump). Adding params here only — never inventing names
   // that the API does not accept (validation would 422 and confuse the
-  // visitor). Defaults chosen for "good first impression" (a query that
-  // reliably returns rows and demonstrates the §52 disclaimer 法令注記の付与).
+  // visitor). Defaults are chosen so the first request reliably returns rows.
   const ENDPOINTS = [
     {
       id: 'intelligence.precomputed.query',
@@ -813,11 +770,8 @@
       title: '適格事業者 1 件詳細 (T番号 lookup)',
       desc: 'T + 13 桁の登録番号で exact lookup。 delta 未収録なら 200 + not_in_mirror=true。',
       params: [
-        // Default = a T-number known to be in the delta mirror (verified 200
-        // via curl 2026-04-29). The full 4M-row monthly bulk lands post-launch;
-        // until then ~13.8k delta rows are queryable. Visitors can paste any
-        // real T-number — out-of-mirror values may 404 today but will resolve
-        // once the monthly bulk ingests.
+        // Default value is a valid example format. Visitors can paste any
+        // real invoice registration number.
         { name: 'invoice_registration_number', type: 'text', label: 'T番号 (T1234567890123)', isPath: true, required: true, placeholder: 'T3810649779313', defaultValue: 'T3810649779313' },
       ],
     },
@@ -894,9 +848,12 @@
 
   const API_BASE = 'https://api.jpcite.com';
   const STORAGE_KEY = 'pg-success-count';
-  const NUDGE_KEY = 'pg-nudge-dismissed';
-  const NUDGE_THRESHOLD = 10;
+  const NUDGE_KEY = 'pg-nudge-dismissed-stage';
+  // Anonymous quota is 3 req/day per IP. The nudge cadence is aligned to
+  // that quota: 1=copy curl, 2=MCP/OpenAPI, 3 (or quota=0)=pricing/API key.
+  const NUDGE_THRESHOLD = 1;
   const SEND_DEBOUNCE_MS = 500;
+  let lastQuotaRemaining = null;
 
   // ----- 2. State + DOM lookups ------------------------------------------
   let currentEndpoint = ENDPOINTS[0];
@@ -923,6 +880,8 @@
     quotaRemaining: $('pg-quota-remaining'),
     quotaCta: $('pg-quota-cta'),
     nudge: $('pg-nudge'),
+    nudgeText: $('pg-nudge-text'),
+    nudgeLink: $('pg-nudge-link'),
     nudgeDismiss: $('pg-nudge-dismiss'),
     flowHint: $('pg-flow-hint'),
     copyCurl: $('pg-copy-curl'),
@@ -1120,10 +1079,12 @@
     if (remainingHeader == null) return; // no header → keep existing display
     const n = parseInt(remainingHeader, 10);
     if (isNaN(n)) return;
+    lastQuotaRemaining = n;
     safeText(els.quotaRemaining, String(Math.max(0, n)));
+    // Anonymous quota = 3 req/day per IP. warn when 1 left, over when 0.
     let state = 'ok';
     if (n <= 0) state = 'over';
-    else if (n <= 5) state = 'warn';
+    else if (n <= 1) state = 'warn';
     els.quota.dataset.state = state;
     els.quotaCta.hidden = (state === 'ok');
   }
@@ -1199,13 +1160,19 @@
     updateQuota(quotaHdr);
 
     // Bump success counter (2xx only) → maybe show conversion nudge.
+    let count = 0;
+    try { count = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0', 10) || 0; }
+    catch (_e) {}
     if (resp.ok) {
       try {
-        let count = parseInt(sessionStorage.getItem(STORAGE_KEY) || '0', 10) || 0;
         count += 1;
         sessionStorage.setItem(STORAGE_KEY, String(count));
-        maybeShowNudge(count);
-      } catch (_e) { /* sessionStorage off → no nudge */ }
+      } catch (_e) {}
+    }
+    // Always re-evaluate the nudge: quota may have dropped to 0 without a
+    // 2xx (e.g. an upstream 429), in which case we still want stage 3.
+    if (resp.ok || resp.status === 429 || (lastQuotaRemaining != null && lastQuotaRemaining <= 0)) {
+      maybeShowNudge(count);
     }
 
     // Analytics breadcrumb (GA4 dataLayer if present).
@@ -1219,19 +1186,106 @@
         });
       }
     } catch (_e) { /* analytics best-effort */ }
+
+    // Funnel beacon: request, success, and quota-exhaustion signals.
+    try {
+      if (typeof window.jpciteTrack === 'function') {
+        window.jpciteTrack('playground_request', {
+          endpoint_id: currentEndpoint.id,
+          status: resp.status,
+        });
+        if (resp.ok) {
+          window.jpciteTrack('playground_success', {
+            endpoint_id: currentEndpoint.id,
+            success_count: count,
+          });
+        }
+        // Quota header reads "remaining"; <=0 means the next call will 429.
+        if (lastQuotaRemaining != null && lastQuotaRemaining <= 0) {
+          window.jpciteTrack('playground_quota_exhausted', {
+            endpoint_id: currentEndpoint.id,
+          });
+        }
+      }
+    } catch (_e) { /* analytics best-effort */ }
+  }
+
+  // ----- 5b. 3-stage nudge ----------------------------------------------
+  // Stage 1 (1st success): tell the visitor to copy the curl one-liner so
+  // they can replay the request offline. Validates "you can hit this from
+  // your shell, no SDK".
+  // Stage 2 (2nd success): point at MCP install + OpenAPI import. This is
+  // the recurring-use surface — visitors who get here are evaluating
+  // whether to integrate, not just curious.
+  // Stage 3 (3rd success OR quota_remaining <= 0): pricing + API key.
+  // The hard quota fence is upstream (HTTP 429); this nudge is the soft
+  // pre-fence so they don't hit a wall cold.
+  const NUDGE_STAGES = [
+    {
+      // Stage 1
+      text: '1 リクエスト成功。 オフラインで再現するなら下の curl をコピー →',
+      label: 'curl をコピー →',
+      href: '#pg-copy-curl',
+      action: function() {
+        if (els.copyCurl && els.copyCurl.click) els.copyCurl.click();
+      },
+    },
+    {
+      // Stage 2
+      text: '2 リクエスト成功。 繰り返し使うなら MCP / OpenAPI を取り込み →',
+      label: 'MCP / OpenAPI →',
+      href: '/docs/getting-started/',
+    },
+    {
+      // Stage 3 (or quota exhausted before reaching it)
+      text: '3 リクエスト到達 — 匿名枠は 3/日。 続けるなら API キー (¥3.30/req) を発行 →',
+      label: 'API キー発行 →',
+      href: 'pricing.html#api-paid',
+    },
+  ];
+
+  function nudgeStageFor(count, quotaRemaining) {
+    // Quota exhaustion always promotes to the final stage.
+    if (quotaRemaining != null && quotaRemaining <= 0) return 2;
+    if (count >= 3) return 2;
+    if (count === 2) return 1;
+    if (count === 1) return 0;
+    return -1;
   }
 
   function maybeShowNudge(count) {
-    if (count < NUDGE_THRESHOLD) return;
+    const stageIdx = nudgeStageFor(count, lastQuotaRemaining);
+    if (stageIdx < 0 || stageIdx >= NUDGE_STAGES.length) return;
     let dismissed = '';
     try { dismissed = sessionStorage.getItem(NUDGE_KEY) || ''; } catch (_e) {}
-    if (dismissed === '1') return;
+    // dismissed value records the latest dismissed stage index. Re-show only
+    // when the next stage unlocks.
+    const dismissedIdx = parseInt(dismissed, 10);
+    if (!isNaN(dismissedIdx) && dismissedIdx >= stageIdx) return;
+
+    const stage = NUDGE_STAGES[stageIdx];
+    safeText(els.nudgeText, stage.text);
+    safeText(els.nudgeLink, stage.label);
+    els.nudgeLink.setAttribute('href', stage.href);
+    els.nudgeLink.dataset.cta = 'playground-nudge-stage-' + (stageIdx + 1);
+    els.nudgeLink.onclick = function(ev) {
+      if (typeof stage.action === 'function') {
+        ev.preventDefault();
+        stage.action();
+      }
+      // else: regular navigation
+    };
     els.nudge.classList.add('is-visible');
   }
 
   function dismissNudge() {
     els.nudge.classList.remove('is-visible');
-    try { sessionStorage.setItem(NUDGE_KEY, '1'); } catch (_e) {}
+    const count = (function() {
+      try { return parseInt(sessionStorage.getItem(STORAGE_KEY) || '0', 10) || 0; }
+      catch (_e) { return 0; }
+    })();
+    const stageIdx = nudgeStageFor(count, lastQuotaRemaining);
+    try { sessionStorage.setItem(NUDGE_KEY, String(Math.max(0, stageIdx))); } catch (_e) {}
   }
 
   // ----- 6. Wire-up ------------------------------------------------------
@@ -1273,6 +1327,15 @@
 
     els.copyCurl.addEventListener('click', async function() {
       const cmd = buildCurl();
+      // Fires before clipboard so we capture intent even if clipboard write fails.
+      try {
+        if (typeof window.jpciteTrack === 'function') {
+          window.jpciteTrack('quickstart_copy', {
+            snippet: 'playground-curl',
+            endpoint_id: currentEndpoint && currentEndpoint.id,
+          });
+        }
+      } catch (_e) {}
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(cmd);

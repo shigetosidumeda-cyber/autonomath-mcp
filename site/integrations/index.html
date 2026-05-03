@@ -190,6 +190,21 @@
     btn.addEventListener('click', function(){
       var block = btn.closest('.code-block');
       var text = block.getAttribute('data-code') || block.querySelector('code').innerText;
+      // §4-E funnel beacon: this page's main copy is the MCP install
+      // (`uvx autonomath-mcp`). Other code blocks ride quickstart_copy.
+      try {
+        if (typeof window.jpciteTrack === 'function') {
+          var t = (text || '').toLowerCase();
+          var isMcp = t.indexOf('uvx autonomath-mcp') !== -1
+            || t.indexOf('autonomath-mcp') !== -1
+            || t.indexOf('jpcite-mcp') !== -1;
+          var isOpenApi = t.indexOf('openapi.json') !== -1;
+          var name = isMcp ? 'mcp_install_copy'
+            : isOpenApi ? 'openapi_import_click'
+            : 'quickstart_copy';
+          window.jpciteTrack(name, { page: 'integrations-index' });
+        }
+      } catch (_e) {}
       var done = function(){
         btn.textContent = 'Copied';
         btn.classList.add('copied');

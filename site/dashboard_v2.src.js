@@ -670,6 +670,17 @@
         // memory loses the key on the next navigation. Rendered as a
         // sibling element so loadAll()'s setStatus calls don't clobber it.
         renderStorageWarning();
+        // §4-E: dashboard_signin_success — Bearer-mode sign-in. We fire
+        // the beacon BEFORE loadAll() so the event lands even if the
+        // first dashboard fetch fails (a key shaped like am_… but
+        // unknown to the API still counts as a "tried to sign in" event).
+        try {
+          if (typeof window.jpciteTrack === 'function') {
+            window.jpciteTrack('dashboard_signin_success', {
+              mode: 'bearer_localstorage',
+            });
+          }
+        } catch (_e) {}
         loadAll();
       });
     }

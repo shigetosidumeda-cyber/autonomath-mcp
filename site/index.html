@@ -68,10 +68,10 @@
     "制度 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
     "申請可否を機械判定する排他・前提ルール 181 本",
     "Evidence Packet: source_url、source_fetched_at、corpus_snapshot_id、license、quality.known_gaps をまとめた LLM 入力用パケット",
-    "caller-supplied token baseline と返却パケット推定トークン数を比較できる input-context estimate (削減保証ではありません)",
+    "caller-supplied token baseline と返却パケット推定トークン数を比較できる input-context estimate (外部 LLM の請求額削減は保証しません)",
     "MCP プロトコル 2025-06-18 対応、 93 ツールを Claude Desktop / Cursor から直接呼び出し可能",
     "日本語の高速全文検索",
-    "出典 URL と更新日時を99%以上に付与、 一次資料 99% 以上、 省庁・自治体・公庫の公式ページに直リンク"
+    "主要公開レコードの多くに一次資料 URL と取得時刻を付与し、省庁・自治体・公庫の公式ページに直リンク"
   ]
 }
 </script>
@@ -121,7 +121,7 @@
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://jpcite.com/programs/?q={search_term_string}"
+      "urlTemplate": "https://jpcite.com/playground.html?endpoint=programs.search&q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   },
@@ -134,7 +134,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite — 日本の制度データセット",
-  "description": "日本の公的制度 14,472 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 の正規化データセット。99%以上の行に一次資料 URL + fetched_at を付与し二次情報源は除外 (12件は自治体 CMS 不在)。排他・前提ルール 181 本付き。",
+  "description": "日本の公的制度 14,472 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 の正規化データセット。主要公開レコードの多くに一次資料 URL + fetched_at を付与し、二次情報源を出典として扱わない設計。排他・前提ルール 181 本付き。",
   "url": "https://jpcite.com/",
   "creator": {"@id": "https://jpcite.com/#publisher"},
   "license": "https://jpcite.com/tos.html",
@@ -286,24 +286,25 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
- <h1 id="hero-title">補助金 11,684 + 法令 9,484 + 法人 167K を、REST + MCP で横断。</h1>
- <p class="hero-sub">日本の公的制度を REST + MCP で。 多くのレコードに一次資料 URL + 取得時刻 + content_hash。 ¥3.30/リクエスト 完全従量、 匿名 3 リクエスト/日 はカード登録不要から始められます。</p>
+ <h1 id="hero-title">日本の公的制度を、Evidence Packet で AI に渡す。</h1>
+ <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 出典 URL ・取得時刻・known gaps ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 caller supplied baseline がある場合だけ、 入力文脈量の削減見込みと <code>break_even_met</code> を返します。 外部 LLM の請求額削減は保証しません。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
 
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 出典の鮮度は 中央値 7 日。 Claude / ChatGPT / Cursor から呼び出して、 制度名・品質ランク・一次資料リンクをまとめて取得できます。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 出典の鮮度は 中央値 7 日。 Claude / ChatGPT / Cursor から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
 
  <div class="cta-row">
- <a class="btn btn-primary" href="#trial" data-cta-variant="hero-trial-c2">無料で 3 リクエスト試す (登録不要) →</a>
- <a href="#trial" data-cta-variant="hero-key-issue-c2" style="align-self:center;font-size:15px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">API キー発行 (¥3.30/req) →</a>
+ <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回の無料ライブ検証を始める (Evidence Packet) →</a>
+ <a href="/docs/getting-started/" data-cta-variant="hero-getting-started-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">5 分クイックスタート (curl → Playground → MCP) →</a>
+ <a href="/pricing.html" data-cta-variant="hero-pricing-tertiary" style="align-self:center;font-size:14px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金 (¥3.30/req) →</a>
  </div>
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">5 秒</span>匿名 curl で動作確認 (登録不要) ·
- <span class="chip-success">30 秒</span>email で APIキー (カード不要) ·
+ <span class="chip-success">30 秒</span>Playground で Evidence Packet 確認 ·
  <span class="chip-success">5 分</span>Claude Desktop / Cursor / Cline / ChatGPT で稼働
  </p>
  <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用、LINE、法令アラート、ウィジェットは ¥3/リクエスト (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
- <li>出典は省庁・自治体・公庫の一次資料 99% 以上 (補助金まとめサイトは除外)</li>
- <li>税理士法 §52・弁護士法 §72 への注意書きを全 API レスポンスに同梱</li>
+ <li>出典は省庁・自治体・公庫などの一次資料を優先 (補助金まとめサイトは出典扱いしません)</li>
+ <li>専門業務・申請代行ではないことを API レスポンスで明示</li>
  <li>適格請求書に対応</li>
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
@@ -313,66 +314,14 @@
 
  <section id="trial" aria-labelledby="trial-title" style="margin:24px 0 0;padding:18px 20px;background:var(--bg-alt,#f6f7f9);border:1px solid var(--border,#e5e7eb);border-radius:8px;">
  <h2 id="trial-title" style="font-size:17px;margin:0 0 8px;line-height:1.4;">登録不要で 3 リクエスト/日まで試せます</h2>
- <p style="font-size:13px;color:var(--text-muted,#555);margin:0 0 12px;line-height:1.6;">匿名枠で動作確認できます。継続利用する場合はメールアドレスで API キーを発行し、¥3/リクエスト (税込 ¥3.30) の完全従量で利用できます。</p>
- <form id="trial-signup-form" action="/v1/signup" method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">
- <label for="trial-email" class="visually-hidden" style="position:absolute;width:1px;height:1px;clip:rect(0 0 0 0);overflow:hidden;">メールアドレス</label>
- <input id="trial-email" name="email" type="email" required placeholder="you@example.com" autocomplete="email" inputmode="email" style="flex:1 1 240px;min-width:200px;padding:10px 12px;border:1px solid var(--border,#d1d5db);border-radius:6px;font-size:14px;">
- <button type="submit" class="btn btn-primary" style="padding:10px 20px;font-size:14px;white-space:nowrap;">API キー発行リンクを送る</button>
- </form>
- <p id="trial-signup-result" role="status" aria-live="polite" style="margin:10px 0 0;font-size:13px;color:var(--text-muted,#555);min-height:1em;"></p>
- <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted,#555);line-height:1.6;">
- 税理士法 §52 / 弁護士法 §72 該当業務はおこないません。詳細は <a href="tos.html">利用規約</a> · <a href="privacy.html">プライバシー</a>。
+ <p style="font-size:13px;color:var(--text-muted,#555);margin:0 0 12px;line-height:1.6;">匿名枠だけで、制度候補、Evidence Packet、入力文脈 estimate を順に確認できます。継続利用する場合だけ API キーを発行します。</p>
+ <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px;">
+ <a class="btn btn-primary" href="/playground.html?flow=evidence3">Playground で3回検証</a>
+ <a class="btn btn-secondary" href="/docs/getting-started/">5分クイックスタート</a>
  </p>
- <script>
-          (function() {
-            'use strict';
-            var form = document.getElementById('trial-signup-form');
-            if (!form || !window.fetch) return;
-            var resultEl = document.getElementById('trial-signup-result');
-            var emailEl = document.getElementById('trial-email');
-            form.addEventListener('submit', function (ev) {
-              ev.preventDefault();
-              if (!emailEl || !emailEl.value) return;
-              if (resultEl) {
-                resultEl.textContent = '送信中…';
-                resultEl.style.color = '';
-              }
-              fetch('https://api.jpcite.com/v1/signup', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-                body: JSON.stringify({email: emailEl.value})
-              }).then(function (r) {
-                return r.json().then(function (body) {
-                  return {status: r.status, body: body};
-                });
-              }).then(function (out) {
-                if (!resultEl) return;
-                if (out.status === 202) {
-                  resultEl.textContent = (out.body && out.body.detail) ||
-                    'メールに記載されたリンクをクリックすると API キーが発行されます (24h 有効)。';
-                  resultEl.style.color = '#10b981';
-                  if (emailEl) emailEl.value = '';
-                } else if (out.status === 429) {
-                  var msg = (out.body && out.body.detail && out.body.detail.message) ||
-                    '同一 IP からの登録は 24 時間に 1 件までです。';
-                  resultEl.textContent = msg;
-                  resultEl.style.color = '#f59e0b';
-                } else if (out.status === 422) {
-                  resultEl.textContent = 'メールアドレスの形式を確認してください。';
-                  resultEl.style.color = '#dc2626';
-                } else {
-                  resultEl.textContent = '送信に失敗しました。時間をおいて再度お試しください。';
-                  resultEl.style.color = '#dc2626';
-                }
-              }).catch(function() {
-                if (resultEl) {
-                  resultEl.textContent = '通信エラーが発生しました。もう一度お試しください。';
-                  resultEl.style.color = '#dc2626';
-                }
-              });
-            });
-          })();
-        </script>
+ <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted,#555);line-height:1.6;">
+ 専門業務・申請代行は提供しません。詳細は <a href="tos.html">利用規約</a> · <a href="privacy.html">プライバシー</a>。
+ </p>
  </section>
  </div>
  </section>
@@ -401,8 +350,8 @@
  </article>
 
  <article class="card" aria-labelledby="trust-lineage">
- <h3 id="trust-lineage">一次資料 99%以上</h3>
- <p class="card-lead">出典 URL と更新日を 99%以上の行に付与</p>
+ <h3 id="trust-lineage">一次資料を追える</h3>
+ <p class="card-lead">主要公開レコードに出典 URL と取得時刻を付与</p>
  <p>出典は省庁 (経産省、農水省、中小企業庁) と政府系金融 (日本政策金融公庫) と自治体の公式 URL のみ。二次情報源は最初から除外する設計。法改正の差分検知と再取得状況を継続的に追跡しています。</p>
  <ul class="card-list">
  <li>毎晩、出典 URL の生存確認を自動実行</li>
@@ -604,7 +553,7 @@
  <ul class="card-list">
  <li>建設業 36 件 + 製造業 71 件 + 不動産業 9 件</li>
  <li>1 リクエストで 補助金 上位 10 件 + 裁決事例 5 件 + 通達 3 件</li>
- <li>税理士法 §52 / 行政書士法 §1 への注意書きを自動付与</li>
+ <li>専門業務・申請代行ではないことをレスポンスで明示</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/construction.html">建設</a> · <a href="/audiences/manufacturing.html">製造</a> · <a href="/audiences/real_estate.html">不動産</a></p>
  </article>
@@ -627,60 +576,83 @@
 
  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
  <div class="container">
- <h2 id="curl-title" class="section-title">登録不要で試す</h2>
- <p class="demo-lead" style="margin:-16px 0 16px;"><span data-fact="anonymous_quota_per_day">3</span> 回/日まで無料。 検索キーワードを入れるだけで、制度名・品質ランク・出典 URL・更新日が返ります。</p>
- <div class="curl-try" style="margin:0 0 16px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
+ <h2 id="curl-title" class="section-title">登録不要で試す — 3 回の無料ライブ検証</h2>
+ <p class="demo-lead" style="margin:-16px 0 16px;"><span data-fact="anonymous_quota_per_day">3</span> 回/日まで無料、 API キー不要。 1 回目で制度候補、 2 回目で Evidence Packet と precomputed bundle、 3 回目で <code>break_even_met</code> 含む compression estimate を確認します。</p>
+
+ <h3 style="font-size:15px;margin:18px 0 8px;color:var(--text);">1 回目: 制度候補と出典 URL を確認</h3>
+ <div class="curl-try" style="margin:0 0 8px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
  <pre style="flex:1 1 auto;min-width:0;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5;"><code id="curl-snippet">curl 'https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3'</code></pre>
  <button id="curl-copy-btn" type="button" class="btn-ghost" data-copy-target="curl-snippet" style="flex:0 0 auto;">コピー</button>
  <span id="curl-copy-status" aria-live="polite" style="position:absolute;left:-9999px;"></span>
  </div>
- <p style="margin:0 0 14px;font-size:15px;line-height:1.7;">具体的な呼び出し方は <a href="/docs/getting-started/">スタートガイド</a> をご覧ください。 既存の AI ツール (Claude Desktop / Cursor / Cline 等) からそのまま接続できます。</p>
+ <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;"><code>source_url</code> · <code>source_fetched_at</code> · 品質 tier が返ります。</p>
+
+ <h3 style="font-size:15px;margin:14px 0 8px;color:var(--text);">2 回目: Evidence Packet (precomputed) を 1 リクエストで取得</h3>
+ <div class="curl-try" style="margin:0 0 8px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
+ <pre style="flex:1 1 auto;min-width:0;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5;"><code id="curl-snippet-evidence">curl 'https://api.jpcite.com/v1/intelligence/precomputed/query?q=%E7%9C%81%E5%8A%9B%E5%8C%96&amp;limit=5'</code></pre>
+ <button id="curl-copy-btn-evidence" type="button" class="btn-ghost" data-copy-target="curl-snippet-evidence" style="flex:0 0 auto;">コピー</button>
+ </div>
+ <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">事前計算済み Evidence Packet を返します。 LLM call も live web search も行われません。 caller が baseline を渡さない限り、 cost claim は出ません。</p>
+
+ <h3 style="font-size:15px;margin:14px 0 8px;color:var(--text);">3 回目: 入力文脈 compression estimate と <code>break_even_met</code> を返す</h3>
+ <div class="curl-try" style="margin:0 0 8px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
+ <pre style="flex:1 1 auto;min-width:0;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5;"><code id="curl-snippet-compress">curl 'https://api.jpcite.com/v1/intelligence/precomputed/query?q=%E7%9C%81%E5%8A%9B%E5%8C%96&amp;limit=5&amp;source_tokens_basis=pdf_pages&amp;source_pdf_pages=30&amp;input_token_price_jpy_per_1m=300'</code></pre>
+ <button id="curl-copy-btn-compress" type="button" class="btn-ghost" data-copy-target="curl-snippet-compress" style="flex:0 0 auto;">コピー</button>
+ </div>
+ <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;"><code>compression.input_context_reduction_rate</code> · <code>compression.cost_savings_estimate.break_even_met</code> · <code>agent_recommendation.recommend_for_cost_savings</code> が返ります。 これは入力文脈量だけの参考推定で、 外部 LLM 請求額の削減を保証するものではありません (<code>provider_billing_not_guaranteed=true</code>)。</p>
+
+ <p style="margin:14px 0 14px;font-size:15px;line-height:1.7;">ブラウザ完結なら <a href="/playground.html?flow=evidence3"><strong>Playground で3回検証を始める</strong></a> · 詳細手順は <a href="/docs/getting-started/">5 分クイックスタート</a>。 Claude Desktop / Cursor / Cline からも同じ endpoint を呼べます。</p>
  <p class="demo-note" style="font-size:14px;margin:0 0 14px;">AI ツール統合の例 → <a href="/integrations/claude-desktop.html">Claude Desktop</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
- <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">これは検索インデックスです。 法律相談 / 税務相談 / 申請代行は提供しません。 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1 該当行為は対象外。 詳細は <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">利用規約</a>。</p>
+ <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">これは検索インデックスです。 法律相談 / 税務相談 / 申請代行は提供しません。 詳細は <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">利用規約</a>。</p>
  </div>
  </section>
  <script>
   (function() {
-    var btn = document.getElementById('curl-copy-btn');
-    if (!btn) return;
-    var srcEl = document.getElementById(btn.getAttribute('data-copy-target'));
     var status = document.getElementById('curl-copy-status');
-    btn.addEventListener('click', function() {
-      var raw = srcEl ? srcEl.textContent : '';
-      var lines = raw.split(/\r?\n/);
-      for (var i = 0; i < lines.length; i++) {
-        if (lines[i].length > 0) {
-          lines[i] = lines[i].replace(/^\$\s+/, '');
-          break;
+    function bind(btnId) {
+      var btn = document.getElementById(btnId);
+      if (!btn) return;
+      var srcEl = document.getElementById(btn.getAttribute('data-copy-target'));
+      btn.addEventListener('click', function() {
+        var raw = srcEl ? srcEl.textContent : '';
+        var lines = raw.split(/\r?\n/);
+        for (var i = 0; i < lines.length; i++) {
+          if (lines[i].length > 0) {
+            lines[i] = lines[i].replace(/^\$\s+/, '');
+            break;
+          }
         }
-      }
-      var text = lines.join('\n').trim();
-      var done = function(ok) {
-        var prev = btn.textContent;
-        btn.textContent = ok ? 'コピー完了' : 'コピー失敗';
-        if (status) status.textContent = ok ? 'クリップボードにコピーしました' : 'コピーに失敗しました';
-        setTimeout(function() {
-          btn.textContent = prev || 'COPY';
-          if (status) status.textContent = '';
-        }, 1800);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() { done(true); }, function() { done(false); });
-      } else {
-        try {
-          var ta = document.createElement('textarea');
-          ta.value = text;
-          ta.setAttribute('readonly', '');
-          ta.style.position = 'absolute';
-          ta.style.left = '-9999px';
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-          done(true);
-        } catch (e) { done(false); }
-      }
-    });
+        var text = lines.join('\n').trim();
+        var done = function(ok) {
+          var prev = btn.textContent;
+          btn.textContent = ok ? 'コピー完了' : 'コピー失敗';
+          if (status) status.textContent = ok ? 'クリップボードにコピーしました' : 'コピーに失敗しました';
+          setTimeout(function() {
+            btn.textContent = prev || 'COPY';
+            if (status) status.textContent = '';
+          }, 1800);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function() { done(true); }, function() { done(false); });
+        } else {
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'absolute';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            done(true);
+          } catch (e) { done(false); }
+        }
+      });
+    }
+    bind('curl-copy-btn');
+    bind('curl-copy-btn-evidence');
+    bind('curl-copy-btn-compress');
   })();
   </script>
 
@@ -784,8 +756,8 @@
 
  <article class="card">
  <h3>(b) 出典 URL + 取得時刻 + content_hash 付エビデンス</h3>
- <p class="card-lead">99% 以上の行に一次資料 URL と取得時刻 (出典取得)</p>
- <p>出典は省庁・都道府県・政府系金融機関・商工会などの一次 URL のみ。 二次集約サイトは出典に登録しません。 出典 URL + 取得時刻 + content_hash がそろうため、 「なぜこの制度がヒットしたか」を顧客・監督官庁・相手方に客観的に示せる監査ログが生成できます。 14,472 件の 99% 以上で一次 URL を保有、 残る 12 件は「一次 URL 不足」を明示。 詳細は <a href="/transparency.html">透明性レポート</a>。</p>
+ <p class="card-lead">主要公開レコードに一次資料 URL と取得時刻を付与</p>
+ <p>出典は省庁・都道府県・政府系金融機関・商工会などの一次 URL を優先します。 二次集約サイトは出典に登録しません。 出典 URL + 取得時刻 + content_hash がそろうため、 「なぜこの制度がヒットしたか」を顧客・監督官庁・相手方に客観的に示せる監査ログが生成できます。 未接続の根拠は known gaps として明示します。 詳細は <a href="/transparency.html">透明性レポート</a>。</p>
  </article>
 
  <article class="card">
@@ -964,6 +936,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="/assets/prescreen-demo.js" defer></script>
 <script src="/assets/trust-strip.js" defer></script>
+
+<script defer>
+// §4-E cta_click beacon — delegate clicks on any element carrying
+// data-cta-variant. Same scheme used across the site so we don't have to
+// thread per-button handlers through every section. Fires once per click;
+// the beacon helper itself swallows all errors.
+document.addEventListener('click', function(e) {
+  try {
+    var el = e.target.closest && e.target.closest('[data-cta-variant]');
+    if (!el) return;
+    if (typeof window.jpciteTrack !== 'function') return;
+    window.jpciteTrack('cta_click', {
+      cta_variant: el.getAttribute('data-cta-variant'),
+      href: el.getAttribute('href') || null,
+    });
+  } catch (_e) {}
+}, true);
+</script>
 
 </body>
 </html>
