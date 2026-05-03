@@ -9,9 +9,25 @@ via /v1/me/webhooks:
   * program.amended               — am_amendment_diff row (autonomath.db)
   * enforcement.added             — new enforcement_cases row
   * tax_ruleset.amended           — tax_rulesets row updated
-  * invoice_registrant.matched    — invoice_registrants row matched (placeholder
-                                    in MVP — emits no events until matcher lands;
-                                    schema is forward-compatible.)
+  * invoice_registrant.matched    — invoice_registrants row matched. The
+                                    *global* path is still a placeholder
+                                    pending the matcher pipeline; the
+                                    *houjin_watch* path (mig 088) IS live —
+                                    invoice_registrants joined by
+                                    `houjin_bangou` to the watched 法人番号
+                                    fires per-watch instead of per-key.
+
+houjin_watch (migration 088) overlay:
+  When a customer registers `customer_watches(watch_kind='houjin', target_id=
+  <13桁>)` via /v1/me/watches the dispatcher pre-attributes 3 event types
+  (enforcement.added, invoice_registrant.matched, program.amended) to the
+  watching api_key_hash and scopes delivery to ONLY that key — instead of
+  the legacy global fan-out which would over-bill every subscriber. The
+  collector lives in `_collect_houjin_watch_events` and is gated by the
+  presence of at least one active 'houjin' watch (zero overhead when none
+  registered). R14 (analysis_wave18/research_R14_ma_cohort_2026-05-03.md
+  §1.4) flagged the prior always-global broadcast as the M&A cohort
+  launch blocker.
 
 Pricing (project_autonomath_business_model — immutable):
   Each SUCCESSFUL HTTP 2xx delivery emits one Stripe usage_record at ¥3/req.
@@ -283,7 +299,15 @@ def _collect_program_amended(
 def _collect_enforcement_added(
     jp_conn: sqlite3.Connection,
     since_iso: str,
+    watched_houjins: frozenset[str] | None = None,
 ) -> list[dict[str, Any]]:
+    """Collect enforcement.added events for global fan-out.
+
+    `watched_houjins` excludes 法人番号 already covered by the houjin_watch
+    overlay so the same case is not delivered twice (once globally + once
+    per-watch). Defaults to None which preserves the legacy global path
+    when called by the simple _COLLECTORS dispatch.
+    """
     rows = jp_conn.execute(
         """SELECT case_id, event_type, recipient_name, recipient_houjin_bangou,
                   prefecture, ministry, amount_yen, reason_excerpt,
@@ -294,6 +318,7 @@ def _collect_enforcement_added(
             LIMIT 1000""",
         (since_iso,),
     ).fetchall()
+    skip = watched_houjins or frozenset()
     return [
         {
             "event_type": "enforcement.added",
@@ -313,6 +338,7 @@ def _collect_enforcement_added(
             "timestamp": r["fetched_at"],
         }
         for r in rows
+        if r["recipient_houjin_bangou"] not in skip
     ]
 
 
@@ -366,10 +392,14 @@ def _collect_invoice_registrant_matched(
     jp_conn: sqlite3.Connection,
     since_iso: str,
 ) -> list[dict[str, Any]]:
-    """Placeholder. The matcher pipeline is not yet wired (see CLAUDE.md
-    invoice_registrants delta posture). Returns [] so the dispatcher path
-    stays stable; subscribers to this event type get an empty fan-out
-    until the matcher lands.
+    """Placeholder for the global fan-out path.
+
+    The matcher pipeline is not yet wired (see CLAUDE.md invoice_registrants
+    delta posture). Returns [] so the dispatcher path stays stable;
+    subscribers to this event type get an empty global fan-out until the
+    matcher lands. Houjin-scoped invoice events ARE collected by
+    `_collect_houjin_watch_events` below, which uses houjin_watch
+    registrations to scope by 法人番号 instead of waiting for the matcher.
     """
     return []
 
@@ -380,6 +410,288 @@ _COLLECTORS = {
     "tax_ruleset.amended": _collect_tax_ruleset_amended,
     "invoice_registrant.matched": _collect_invoice_registrant_matched,
 }
+
+
+# ---------------------------------------------------------------------------
+# houjin_watch (migration 088) — per-watch event collection
+#
+# R14 (analysis_wave18/research_R14_ma_cohort_2026-05-03.md §1.4) identified
+# the load-bearing gap: dispatcher advertised houjin_watch as the M&A
+# pillar but never read `customer_watches`. The collector below closes
+# the gap by pre-attributing events to the api_key_hashes that registered
+# active watches on the matching target_id.
+#
+# Each event returned carries `_target_api_key_hashes` (set[str]) which
+# the main dispatcher loop honours: a watch-scoped event is delivered ONLY
+# to webhooks owned by those keys, not globally fanned out.
+#
+# Non-watch events from `_COLLECTORS` keep the global fan-out semantics
+# (no `_target_api_key_hashes` key) — backwards compatible.
+#
+# watch_kind enum (mig 088 CHECK constraint):
+#   'houjin'  — 13-digit 法人番号
+#   'program' — programs.unified_id
+#   'law'     — laws.law_id
+#
+# 'houjin' is the only kind wired today; 'program' and 'law' will land
+# when the M&A cohort needs deeper joins. The dispatcher will then add
+# their per-kind collectors here without changing the fan-out contract.
+# ---------------------------------------------------------------------------
+
+
+_HOUJIN_WATCH_EVENT_TYPES: tuple[str, ...] = (
+    "enforcement.added",
+    "invoice_registrant.matched",
+    "program.amended",
+)
+
+
+def _load_active_watches(
+    jp_conn: sqlite3.Connection,
+) -> dict[str, dict[str, set[str]]]:
+    """Return active customer_watches indexed by (watch_kind, target_id).
+
+    Shape: {watch_kind: {target_id: set(api_key_hash)}}
+    Returns {} when the customer_watches table is missing (mig 088 not yet
+    applied) so the dispatcher path stays safe on a cold DB.
+    """
+    try:
+        rows = jp_conn.execute(
+            """SELECT watch_kind, target_id, api_key_hash
+                 FROM customer_watches
+                WHERE status = 'active'"""
+        ).fetchall()
+    except sqlite3.OperationalError as exc:
+        if "no such table" in str(exc).lower():
+            return {}
+        raise
+    out: dict[str, dict[str, set[str]]] = {}
+    for r in rows:
+        kind = r["watch_kind"]
+        tid = r["target_id"]
+        kh = r["api_key_hash"]
+        if not kind or not tid or not kh:
+            continue
+        out.setdefault(kind, {}).setdefault(tid, set()).add(kh)
+    return out
+
+
+def _collect_houjin_watch_events(
+    jp_conn: sqlite3.Connection,
+    am_path: Path,
+    since_iso: str,
+    watches: dict[str, dict[str, set[str]]] | None = None,
+) -> list[dict[str, Any]]:
+    """Collect events scoped to active 'houjin' watches.
+
+    For each (api_key_hash, 法人番号) pair with an active watch this joins
+    three corpora and emits per-event records pre-attributed to the
+    watching key set:
+
+      * `enforcement.added`            ← enforcement_cases.recipient_houjin_bangou
+      * `invoice_registrant.matched`   ← invoice_registrants.houjin_bangou
+                                         (real path; the global collector
+                                         is still a placeholder)
+      * `program.amended`              ← am_amendment_diff.entity_id where
+                                         entity_id resolves to the houjin
+                                         (autonomath corporate_entity
+                                         canonical_id == 法人番号)
+
+    Returns a list of event dicts compatible with the existing
+    fan-out loop, plus a `_target_api_key_hashes` key (set[str]) that the
+    dispatcher uses to scope delivery to only the webhooks owned by the
+    watching customer(s).
+    """
+    if watches is None:
+        watches = _load_active_watches(jp_conn)
+    houjin_watches = watches.get("houjin") or {}
+    if not houjin_watches:
+        return []
+
+    snapshot_id = _corpus_snapshot_id(jp_conn)
+    out: list[dict[str, Any]] = []
+    target_ids = list(houjin_watches.keys())
+    placeholders = ",".join(["?"] * len(target_ids))
+
+    # 1. enforcement.added scoped per watch.
+    try:
+        enf_rows = jp_conn.execute(
+            f"""SELECT case_id, event_type, recipient_name, recipient_houjin_bangou,
+                       prefecture, ministry, amount_yen, reason_excerpt,
+                       source_url, disclosed_date, fetched_at
+                  FROM enforcement_cases
+                 WHERE fetched_at >= ?
+                   AND recipient_houjin_bangou IN ({placeholders})
+              ORDER BY fetched_at ASC
+                 LIMIT 1000""",
+            (since_iso, *target_ids),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        enf_rows = []
+    for r in enf_rows:
+        houjin = r["recipient_houjin_bangou"]
+        keys = houjin_watches.get(houjin) or set()
+        if not keys:
+            continue
+        out.append({
+            "event_type": "enforcement.added",
+            "event_id": f"watch:houjin:{houjin}:enf:{r['case_id']}",
+            "data": {
+                "watch_kind": "houjin",
+                "watch_target_id": houjin,
+                "case_id": r["case_id"],
+                "event_kind": r["event_type"],
+                "recipient_name": r["recipient_name"],
+                "recipient_houjin_bangou": houjin,
+                "prefecture": r["prefecture"],
+                "ministry": r["ministry"],
+                "amount_yen": r["amount_yen"],
+                "reason_excerpt": r["reason_excerpt"],
+                "source_url": r["source_url"],
+                "disclosed_date": r["disclosed_date"],
+                "corpus_snapshot_id": snapshot_id,
+            },
+            "timestamp": r["fetched_at"],
+            "_target_api_key_hashes": set(keys),
+            "_watch_target_id": houjin,
+            "_watch_kind": "houjin",
+        })
+
+    # 2. invoice_registrant.matched scoped per watch — real path even though
+    # the global collector is still a placeholder. M&A subscribers want the
+    # registration / revocation / expiry inflection on a known houjin.
+    try:
+        inv_rows = jp_conn.execute(
+            f"""SELECT invoice_registration_number, houjin_bangou, normalized_name,
+                       prefecture, registered_date, revoked_date, expired_date,
+                       registrant_kind, source_url, fetched_at, updated_at
+                  FROM invoice_registrants
+                 WHERE updated_at >= ?
+                   AND houjin_bangou IN ({placeholders})
+              ORDER BY updated_at ASC
+                 LIMIT 1000""",
+            (since_iso, *target_ids),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        inv_rows = []
+    for r in inv_rows:
+        houjin = r["houjin_bangou"]
+        keys = houjin_watches.get(houjin) or set()
+        if not keys:
+            continue
+        out.append({
+            "event_type": "invoice_registrant.matched",
+            "event_id": (
+                f"watch:houjin:{houjin}:inv:{r['invoice_registration_number']}"
+                f"@{r['updated_at']}"
+            ),
+            "data": {
+                "watch_kind": "houjin",
+                "watch_target_id": houjin,
+                "invoice_registration_number": r["invoice_registration_number"],
+                "houjin_bangou": houjin,
+                "normalized_name": r["normalized_name"],
+                "prefecture": r["prefecture"],
+                "registered_date": r["registered_date"],
+                "revoked_date": r["revoked_date"],
+                "expired_date": r["expired_date"],
+                "registrant_kind": r["registrant_kind"],
+                "source_url": r["source_url"],
+                "corpus_snapshot_id": snapshot_id,
+            },
+            "timestamp": r["updated_at"],
+            "_target_api_key_hashes": set(keys),
+            "_watch_target_id": houjin,
+            "_watch_kind": "houjin",
+        })
+
+    # 3. program.amended scoped per watch — autonomath.am_amendment_diff
+    # rows whose entity_id is the watched 法人番号. corporate_entity rows
+    # in am_entities use the 13-digit 法人番号 as canonical_id, so the
+    # entity_id == target_id join is exact.
+    if am_path.is_file():
+        am_conn = sqlite3.connect(str(am_path))
+        am_conn.row_factory = sqlite3.Row
+        try:
+            try:
+                amd_rows = am_conn.execute(
+                    f"""SELECT diff_id, entity_id, field_name, prev_value,
+                               new_value, detected_at, source_url
+                          FROM am_amendment_diff
+                         WHERE detected_at >= ?
+                           AND entity_id IN ({placeholders})
+                      ORDER BY detected_at ASC, diff_id ASC
+                         LIMIT 1000""",
+                    (since_iso, *target_ids),
+                ).fetchall()
+            except sqlite3.OperationalError as exc:
+                if "no such table" in str(exc).lower():
+                    amd_rows = []
+                else:
+                    raise
+        finally:
+            am_conn.close()
+        # Group by (entity_id, detected_at) so we emit ONE program.amended
+        # per houjin per detection batch with field-level diffs aggregated.
+        grouped: dict[tuple[str, str], dict[str, Any]] = {}
+        for r in amd_rows:
+            houjin = r["entity_id"]
+            keys = houjin_watches.get(houjin) or set()
+            if not keys:
+                continue
+            key = (houjin, r["detected_at"])
+            if key not in grouped:
+                grouped[key] = {
+                    "event_type": "program.amended",
+                    "event_id": f"watch:houjin:{houjin}:amd@{r['detected_at']}",
+                    "data": {
+                        "watch_kind": "houjin",
+                        "watch_target_id": houjin,
+                        "entity_id": houjin,
+                        "diff_id": r["diff_id"],
+                        "field_name": r["field_name"],
+                        "diffs": [],
+                        "source_url": r["source_url"],
+                        "corpus_snapshot_id": snapshot_id,
+                        "evidence_packet_endpoint": _evidence_packet_endpoint(houjin),
+                    },
+                    "timestamp": r["detected_at"],
+                    "_target_api_key_hashes": set(keys),
+                    "_watch_target_id": houjin,
+                    "_watch_kind": "houjin",
+                }
+            grouped[key]["data"]["diffs"].append({
+                "field": r["field_name"],
+                "before": r["prev_value"],
+                "after": r["new_value"],
+            })
+        out.extend(grouped.values())
+
+    return out
+
+
+def _bump_watch_last_event_at(
+    jp_conn: sqlite3.Connection,
+    *,
+    watch_kind: str,
+    target_id: str,
+    api_key_hash: str,
+    when_iso: str,
+) -> None:
+    """Update last_event_at on the matching active watch row.
+
+    Best-effort: missing table (mig 088 not applied) is silently swallowed.
+    """
+    try:
+        jp_conn.execute(
+            """UPDATE customer_watches
+                  SET last_event_at = ?, updated_at = ?
+                WHERE watch_kind = ? AND target_id = ?
+                  AND api_key_hash = ? AND status = 'active'""",
+            (when_iso, when_iso, watch_kind, target_id, api_key_hash),
+        )
+    except sqlite3.OperationalError:
+        return
 
 
 # ---------------------------------------------------------------------------
@@ -653,13 +965,45 @@ def run(
                 types = []
             subscribed_types.update(types)
 
+        # houjin_watch (mig 088) per-watch event collection — load BEFORE the
+        # legacy global collectors so we can exclude already-covered houjins
+        # from the global path. This preserves the legacy fan-out for events
+        # NOT scoped by an active watch while routing watched 法人番号 events
+        # solely to the watching key. R14 (analysis_wave18/research_R14_*)
+        # specifically called out the previous always-global broadcast as the
+        # M&A cohort launch blocker.
+        watches_by_kind: dict[str, dict[str, set[str]]] = {}
+        if subscribed_types & set(_HOUJIN_WATCH_EVENT_TYPES):
+            watches_by_kind = _load_active_watches(jp_conn)
+        watched_houjins: frozenset[str] = frozenset(
+            (watches_by_kind.get("houjin") or {}).keys()
+        )
+
         events: list[dict[str, Any]] = []
         if "program.amended" in subscribed_types:
-            events.extend(_collect_program_amended(am_path, jp_conn, since_iso))
+            # Global program.amended skips entities being watched as houjins —
+            # the watch overlay below covers them per-key.
+            for ev in _collect_program_amended(am_path, jp_conn, since_iso):
+                if ev["data"].get("entity_id") in watched_houjins:
+                    continue
+                events.append(ev)
         for et, fn in _COLLECTORS.items():
             if et in subscribed_types and et != "program.amended":
-                events.extend(fn(jp_conn, since_iso))
+                if et == "enforcement.added":
+                    events.extend(fn(jp_conn, since_iso, watched_houjins))
+                else:
+                    events.extend(fn(jp_conn, since_iso))
+
+        if watches_by_kind.get("houjin"):
+            events.extend(
+                _collect_houjin_watch_events(
+                    jp_conn, am_path, since_iso, watches=watches_by_kind,
+                )
+            )
         summary["events_collected"] = len(events)
+        summary["houjin_watch_events"] = sum(
+            1 for ev in events if ev.get("_watch_kind") == "houjin"
+        )
         if not events:
             return summary
 
@@ -682,6 +1026,13 @@ def run(
 
                 for ev in events:
                     if ev["event_type"] not in types:
+                        continue
+                    # Watch-scoped events carry `_target_api_key_hashes`;
+                    # only deliver to webhooks owned by a key that registered
+                    # the underlying watch. Non-targeted events fan out
+                    # globally (legacy behaviour preserved).
+                    target_keys = ev.get("_target_api_key_hashes")
+                    if target_keys is not None and w["api_key_hash"] not in target_keys:
                         continue
                     if _already_delivered(
                         jp_conn, wid, ev["event_type"], ev["event_id"]
@@ -746,6 +1097,20 @@ def run(
                         if not dry_run:
                             _bill_one_delivery(jp_conn, wid, w["api_key_hash"])
                             summary["billed_units"] += 1
+                        # Bump customer_watches.last_event_at so the
+                        # /v1/me/watches dashboard reflects the most recent
+                        # fired event. Cheap (single UPDATE per delivery)
+                        # and only runs for watch-scoped events.
+                        wkind = ev.get("_watch_kind")
+                        wtid = ev.get("_watch_target_id")
+                        if not dry_run and wkind and wtid:
+                            _bump_watch_last_event_at(
+                                jp_conn,
+                                watch_kind=wkind,
+                                target_id=wtid,
+                                api_key_hash=w["api_key_hash"],
+                                when_iso=now_iso,
+                            )
                     else:
                         summary["deliveries_failed"] += 1
                         cur_failure_count += 1
