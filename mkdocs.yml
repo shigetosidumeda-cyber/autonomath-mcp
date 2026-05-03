@@ -267,6 +267,20 @@ nav:
   - 開発者:
       - サンプル: examples.md
       - Prompt Cookbook: prompt_cookbook.md
+      - Cookbook (12 recipes):
+          - 概要: cookbook/index.md
+          - R01 顧問先別 補助金 weekly alert: cookbook/r01-weekly-alert-per-client.md
+          - R02 税法改正 cliff-date weekly digest: cookbook/r02-tax-cliff-digest.md
+          - R03 月次申告 適格事業者 bulk verify: cookbook/r03-monthly-invoice-verify.md
+          - R09 法人 360 view: cookbook/r09-corp-360-view.md
+          - R10 類似採択事例 検索: cookbook/r10-case-studies-search.md
+          - R11 行政処分 watch: cookbook/r11-enforcement-watch.md
+          - R16 Claude Desktop install: cookbook/r16-claude-desktop-install.md
+          - R17 Cursor MCP: cookbook/r17-cursor-mcp.md
+          - R18 ChatGPT Custom GPT: cookbook/r18-chatgpt-custom-gpt.md
+          - R19 Gemini extension: cookbook/r19-gemini-extension.md
+          - R20 OpenAI Agents SDK: cookbook/r20-openai-agents.md
+          - R21 47 都道府県 補助金 heatmap: cookbook/r21-pref-heatmap.md
       - AI 推薦条件: recommendation-scenarios.md
       - ダッシュボード: dashboard_guide.md
       - アラート: alerts_guide.md

@@ -13,6 +13,7 @@ GPT / Claude / Cursor に長い PDF や公式ページを直接渡す前に、Ev
 | 5 分で API を試す | [Getting started](./getting-started.md) |
 | エンドポイント一覧を見る | [API reference](./api-reference.md) |
 | Claude / Cursor などのMCPクライアント、ChatGPT Custom GPT から使う | [MCP tools](./mcp-tools.md) / [API reference](./api-reference.md) |
+| 5-15 行 runnable レシピ集 (12 本) | [Cookbook](./cookbook/index.md) |
 | 調査コンテキストを小さくできる条件を見る | [MCP tools](./mcp-tools.md#evidence-packet) / [API reference](./api-reference.md) |
 | 返却形式とエラー処理を合わせる | [Response envelope](./api-reference/response_envelope.md) / [Error handling](./error_handling.md) |
 | 出典・根拠・除外ルールを確認する | [Exclusions](./exclusions.md) / [Honest capabilities](./honest_capabilities.md) |
