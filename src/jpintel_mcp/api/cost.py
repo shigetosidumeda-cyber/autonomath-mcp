@@ -23,10 +23,11 @@ jpcite is pure metered ¥3/req 税別 (税込 ¥3.30) per
 discounts, NO seat fees. The math is therefore trivial: predicted cost =
 billing_units * ¥3 where billing_units = sum-over-calls(weight) * iterations.
 
-Today every tool counts as 1 billing unit. `batch_*` tools take a list of
-ids but still bill as 1 unit per call (parity with the current production
-metering posture in `deps.log_usage`). If that ever changes (e.g. N-weighted
-batch) the weight table below is the single place to bump.
+Most discovery tools count as 1 billing unit. Fan-out tools use their
+argument shape to predict the same `quantity` that the handler records in
+`usage_events`: batch program reads count deduped IDs, DD batch counts
+deduped corporate numbers, and DD export counts corporate numbers plus the
+bundle-class quantity multiplier.
 
 Free-tier note
 --------------
@@ -46,14 +47,16 @@ import hashlib
 import logging
 import threading
 import time
+import unicodedata
 from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
-from jpintel_mcp.api.deps import DbDep
+from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (runtime for FastAPI Depends resolution)
 
 logger = logging.getLogger("jpintel.cost")
 
@@ -80,7 +83,6 @@ _TOOL_WEIGHTS: dict[str, float] = {
     # Discovery — flat per-call.
     "search_programs": 1.0,
     "get_program": 1.0,
-    "batch_get_programs": 1.0,  # 1 unit per call (parity w/ current metering).
     "search_case_studies": 1.0,
     "get_case_study": 1.0,
     "search_loan_programs": 1.0,
@@ -126,11 +128,95 @@ _TOOL_WEIGHTS: dict[str, float] = {
     "deep_health_am": 1.0,
 }
 
-# Default weight for any tool not in the table (forward compatibility).
-# Returning 1.0 is the safe overshoot — agents should expect "at most this
-# much"; an unknown future tool that turns out to be free is a pleasant
-# surprise rather than a billing event.
+# Default weight for any tool not in the table (forward compatibility). Unknown
+# single-call tools still preview as 1 unit, but known fan-out tools fail
+# closed when required args are missing so the preview cannot understate a bill.
 _DEFAULT_TOOL_WEIGHT: float = 1.0
+
+_BATCH_PROGRAM_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "batch_get_programs",
+        "batch_get_programs_v1_programs_batch_post",
+        "programs.batch",
+        "v1.programs.batch",
+        "/v1/programs/batch",
+    }
+)
+_DD_BATCH_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "dd_batch",
+        "post_dd_batch_v1_am_dd_batch_post",
+        "am.dd_batch",
+        "v1.am.dd_batch",
+        "/v1/am/dd_batch",
+    }
+)
+_DD_EXPORT_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "dd_export",
+        "post_dd_export_v1_am_dd_export_post",
+        "am.dd_export",
+        "v1.am.dd_export",
+        "/v1/am/dd_export",
+    }
+)
+_GROUP_GRAPH_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "group_graph",
+        "get_group_graph_v1_am_group_graph_get",
+        "am.group_graph",
+        "v1.am.group_graph",
+        "/v1/am/group_graph",
+    }
+)
+_AUDIT_WORKPAPER_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "audit.workpaper",
+        "render_workpaper_v1_audit_workpaper_post",
+        "compose_audit_workpaper",
+        "v1.audit.workpaper",
+        "/v1/audit/workpaper",
+    }
+)
+_AUDIT_BATCH_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "audit.batch_evaluate",
+        "batch_evaluate_v1_audit_batch_evaluate_post",
+        "audit_batch_evaluate",
+        "v1.audit.batch_evaluate",
+        "/v1/audit/batch_evaluate",
+    }
+)
+_AUDIT_SNAPSHOT_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "audit.snapshot_attestation",
+        "snapshot_attestation_v1_audit_snapshot_attestation_get",
+        "v1.audit.snapshot_attestation",
+        "/v1/audit/snapshot_attestation",
+    }
+)
+_FUNDING_STACK_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "funding_stack.check",
+        "check_funding_stack_v1_funding_stack_check_post",
+        "v1.funding_stack.check",
+        "/v1/funding_stack/check",
+    }
+)
+_BULK_EVALUATE_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "clients.bulk_evaluate",
+        "bulk_evaluate",
+        "bulk_evaluate_clients",
+        "bulk_evaluate_clients_v1_me_clients_bulk_evaluate_post",
+        "v1.me.clients.bulk_evaluate",
+        "/v1/me/clients/bulk_evaluate",
+    }
+)
+
+_AUDIT_BATCH_K = 10
+_WORKPAPER_EXPORT_UNITS = 10
+_SNAPSHOT_ATTESTATION_UNITS = 10_000
 
 # Bundle-class quantity multipliers for `POST /v1/am/dd_export` (mirrors
 # `api/ma_dd.py::_BUNDLE_CLASS_UNITS`). The export endpoint accepts a
@@ -159,8 +245,11 @@ _TAX_RELEVANT_TOOLS: frozenset[str] = frozenset(
         "search_tax_rulesets",
         "get_tax_ruleset",
         "evaluate_tax_ruleset",
+        "/v1/tax_rulesets/evaluate",
         "search_tax_incentives",
+        "/v1/am/tax_incentives",
         "list_tax_sunset_alerts",
+        "/v1/am/tax_sunset_alerts",
     }
 )
 
@@ -180,10 +269,9 @@ _TAX_DISCLAIMER = (
 class CostPreviewCall(BaseModel):
     """A single planned tool invocation inside a stack.
 
-    `args` is opaque — we don't validate against the underlying tool schema
-    here because the preview is meant to be cheap (no DB read for shape).
-    Cost is determined by `tool` only; `args` is round-tripped into the
-    `breakdown[]` for caller display only.
+    The preview does not execute the target tool or read from the DB. For
+    known fan-out tools it reads only the list arguments needed to mirror the
+    billed `quantity`.
     """
 
     tool: str = Field(
@@ -191,15 +279,16 @@ class CostPreviewCall(BaseModel):
         max_length=128,
         description=(
             "Tool name as it appears in MCP / REST. Example: search_programs, "
-            "batch_get_programs, evaluate_tax_ruleset. Unknown tools default "
-            "to weight=1.0 (¥3) so the prediction is a safe overshoot."
+            "batch_get_programs, am.dd_export, evaluate_tax_ruleset. Known "
+            "fan-out tools require their list args so preview can match the "
+            "actual billed quantity."
         ),
     )
     args: dict[str, Any] | None = Field(
         default=None,
         description=(
-            "Tool arguments. Opaque to the preview engine — passed through "
-            "into the per-call breakdown so the caller can display the plan."
+            "Tool arguments. For fan-out tools, the preview reads only the "
+            "ID list and bundle_class needed to calculate billed quantity."
         ),
     )
 
@@ -315,6 +404,150 @@ def _reset_preview_rate_state() -> None:
         _preview_hits.clear()
 
 
+class CostPreviewArgsError(ValueError):
+    """Raised when a known fan-out tool cannot be previewed safely."""
+
+    def __init__(self, tool: str, message: str) -> None:
+        self.tool = tool
+        super().__init__(message)
+
+
+def _canonical_tool_name(tool: str) -> str:
+    name = tool.strip()
+    parts = name.split(maxsplit=1)
+    if len(parts) == 2 and parts[0].upper() in {
+        "DELETE",
+        "GET",
+        "PATCH",
+        "POST",
+        "PUT",
+    }:
+        name = parts[1].strip()
+    parsed = urlsplit(name)
+    if parsed.scheme and parsed.netloc:
+        return parsed.path or "/"
+    if name.startswith("/") or parsed.query or parsed.fragment:
+        return parsed.path or name.split("?", 1)[0].split("#", 1)[0]
+    return name
+
+
+def _dedupe_count(values: Any, *, arg_name: str, tool: str) -> int:
+    if not isinstance(values, list):
+        raise CostPreviewArgsError(tool, f"{arg_name} list is required")
+    seen: set[str] = set()
+    for value in values:
+        key = str(value).strip()
+        if key:
+            seen.add(key)
+    if not seen:
+        raise CostPreviewArgsError(tool, f"{arg_name} must contain at least one value")
+    return len(seen)
+
+
+def _normalize_houjin_for_preview(raw: Any) -> str | None:
+    if raw is None:
+        return None
+    s = unicodedata.normalize("NFKC", str(raw)).strip().lstrip("Tt")
+    for ch in "- ,　":
+        s = s.replace(ch, "")
+    if not s.isdigit() or len(s) != 13:
+        return None
+    return s
+
+
+def _dedupe_houjin_count(values: Any, *, tool: str) -> int:
+    if not isinstance(values, list):
+        raise CostPreviewArgsError(tool, "houjin_bangous list is required")
+    normalized: set[str] = set()
+    invalid = 0
+    for value in values:
+        n = _normalize_houjin_for_preview(value)
+        if n is None:
+            invalid += 1
+            continue
+        normalized.add(n)
+    if invalid:
+        raise CostPreviewArgsError(tool, "houjin_bangous contains invalid corporate numbers")
+    if not normalized:
+        raise CostPreviewArgsError(tool, "houjin_bangous must contain at least one value")
+    return len(normalized)
+
+
+def _list_count(values: Any, *, arg_name: str, tool: str) -> int:
+    if not isinstance(values, list):
+        raise CostPreviewArgsError(tool, f"{arg_name} list is required")
+    if not values:
+        raise CostPreviewArgsError(tool, f"{arg_name} must contain at least one value")
+    return len(values)
+
+
+def _row_count_arg(args: dict[str, Any], *, tool: str) -> int:
+    raw = args.get("row_count")
+    if raw is None:
+        rows = args.get("rows")
+        if isinstance(rows, list):
+            return _list_count(rows, arg_name="rows", tool=tool)
+        raise CostPreviewArgsError(tool, "row_count is required")
+    try:
+        row_count = int(raw)
+    except (TypeError, ValueError) as exc:
+        raise CostPreviewArgsError(tool, "row_count must be an integer") from exc
+    if row_count < 1:
+        raise CostPreviewArgsError(tool, "row_count must be at least 1")
+    return row_count
+
+
+def _billing_units_for_call(call: CostPreviewCall) -> float:
+    tool = _canonical_tool_name(call.tool)
+    args = call.args or {}
+    if tool in _BATCH_PROGRAM_TOOL_NAMES:
+        return float(
+            _dedupe_count(args.get("unified_ids"), arg_name="unified_ids", tool=tool)
+        )
+    if tool in _DD_BATCH_TOOL_NAMES:
+        return float(_dedupe_houjin_count(args.get("houjin_bangous"), tool=tool))
+    if tool in _DD_EXPORT_TOOL_NAMES:
+        n_houjin = _dedupe_houjin_count(args.get("houjin_bangous"), tool=tool)
+        bundle_class = str(args.get("bundle_class") or "standard")
+        if bundle_class not in _BUNDLE_CLASS_UNITS:
+            raise CostPreviewArgsError(tool, "bundle_class must be standard, deal, or case")
+        return float(n_houjin + _BUNDLE_CLASS_UNITS[bundle_class])
+    if tool in _GROUP_GRAPH_TOOL_NAMES:
+        return 1.0
+    if tool in _AUDIT_WORKPAPER_TOOL_NAMES:
+        n_rulesets = _dedupe_count(
+            args.get("target_ruleset_ids"),
+            arg_name="target_ruleset_ids",
+            tool=tool,
+        )
+        return float(n_rulesets + _WORKPAPER_EXPORT_UNITS)
+    if tool in _AUDIT_BATCH_TOOL_NAMES:
+        n_profiles = _list_count(args.get("profiles"), arg_name="profiles", tool=tool)
+        n_rulesets = _dedupe_count(
+            args.get("target_ruleset_ids"),
+            arg_name="target_ruleset_ids",
+            tool=tool,
+        )
+        return float(max(1, (n_profiles * n_rulesets + _AUDIT_BATCH_K - 1) // _AUDIT_BATCH_K))
+    if tool in _AUDIT_SNAPSHOT_TOOL_NAMES:
+        return float(_SNAPSHOT_ATTESTATION_UNITS)
+    if tool in _FUNDING_STACK_TOOL_NAMES:
+        n_programs = _dedupe_count(
+            args.get("program_ids"),
+            arg_name="program_ids",
+            tool=tool,
+        )
+        return float(max(1, n_programs * (n_programs - 1) // 2))
+    if tool in _BULK_EVALUATE_TOOL_NAMES:
+        commit = args.get("commit")
+        if isinstance(commit, str):
+            commit = commit.strip().lower() not in {"0", "false", "no", "off"}
+        if commit is False:
+            return 0.0
+        return float(_row_count_arg(args, tool=tool))
+    return _TOOL_WEIGHTS.get(tool, _DEFAULT_TOOL_WEIGHT)
+
+
 # ---------------------------------------------------------------------------
 # Cost computation (deterministic, no DB execution)
 # ---------------------------------------------------------------------------
@@ -333,9 +566,9 @@ def compute_predicted_cost(
     units_per_iter: float = 0.0
     has_tax_tool = False
     for c in calls:
-        weight = _TOOL_WEIGHTS.get(c.tool, _DEFAULT_TOOL_WEIGHT)
+        weight = _billing_units_for_call(c)
         units_per_iter += weight
-        if c.tool in _TAX_RELEVANT_TOOLS:
+        if _canonical_tool_name(c.tool) in _TAX_RELEVANT_TOOLS:
             has_tax_tool = True
         breakdown.append(
             CostPreviewBreakdownEntry(
@@ -360,16 +593,13 @@ def compute_predicted_cost(
     status_code=status.HTTP_200_OK,
     summary="Predict the cost of a planned tool-call stack (FREE, ¥0)",
     description=(
-        "Returns a deterministic ¥-cost prediction for a planned sequence of "
-        "tool calls without executing them. Anti-runaway 三点セット A.\n\n"
-        "**Pricing**: ¥3/req metered (税別; 税込 ¥3.30). The preview itself "
-        "is FREE — no `usage_events` row, no Stripe usage_record. Rate-"
-        "limited 50/min per IP/key.\n\n"
-        "**§52 fence**: when the stack touches tax-relevant tools "
+        "Returns a no-charge cost estimate for planned jpcite tool calls "
+        "without executing them.\n\n"
+        "**Pricing**: metered calls are ¥3/req (税別; 税込 ¥3.30). The preview "
+        "itself is not metered and is rate-limited 50/min per IP/key.\n\n"
+        "**Tax-related previews**: when the stack touches tax-relevant tools "
         "(`evaluate_tax_ruleset`, `search_tax_incentives`, etc.) the response "
-        "carries a `disclaimer` field. LLM agents MUST relay it.\n\n"
-        "**Operator**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708). "
-        "Brand: jpcite."
+        "includes a disclaimer for downstream display."
     ),
 )
 def post_cost_preview(
@@ -399,9 +629,21 @@ def post_cost_preview(
             headers={"Retry-After": str(retry_after_s)},
         )
 
-    predicted_total_yen, billing_units, breakdown, has_tax_tool = (
-        compute_predicted_cost(payload.stack_or_calls, payload.iterations)
-    )
+    try:
+        predicted_total_yen, billing_units, breakdown, has_tax_tool = (
+            compute_predicted_cost(payload.stack_or_calls, payload.iterations)
+        )
+    except CostPreviewArgsError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": {
+                    "code": "cost_preview_requires_args",
+                    "tool": exc.tool,
+                    "message": str(exc),
+                }
+            },
+        ) from exc
     snapshot_id, checksum = compute_corpus_snapshot(conn)
     body: dict[str, Any] = {
         "predicted_total_yen": predicted_total_yen,
@@ -424,6 +666,7 @@ def post_cost_preview(
 
 
 __all__ = [
+    "CostPreviewArgsError",
     "CostPreviewRequest",
     "CostPreviewResponse",
     "compute_predicted_cost",

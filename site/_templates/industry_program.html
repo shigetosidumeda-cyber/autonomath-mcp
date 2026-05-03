@@ -178,7 +178,7 @@
  <p>本制度の機械可読データは REST / MCP の両方で取得できます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.{{ DOMAIN }}/v1/programs/{{ unified_id }}"</code></pre>
- <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_program(unified_id="{{ unified_id }}")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
+ <p>MCP クライアント (Claude Desktop / Cursor / Cline など) では <code>get_program(unified_id="{{ unified_id }}")</code>、ChatGPT Custom GPT では OpenAPI Actions 経由で同等の REST endpoint を呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
  <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
  </section>
 

@@ -263,6 +263,36 @@ def test_rest_endpoint_with_monkeypatched_fetch(
     ]
     # Last entry is the failed fetch — error string must surface.
     assert body["verifications"][-1]["error"] == "source_unreachable"
+    assert body["verifications"][0]["verification_basis"] == "live_fetch"
+    assert body["verifications"][0]["source_url_fetched"] is True
+    assert body["verifications"][-1]["source_url_fetched"] is False
+
+
+def test_rest_endpoint_marks_caller_supplied_source_text_basis(
+    client,
+    paid_key_for_citations: str,
+) -> None:
+    r = client.post(
+        "/v1/citations/verify",
+        json={
+            "citations": [
+                {
+                    "source_url": "https://example.com/source",
+                    "source_text": "補助上限は5,000,000円です。",
+                    "excerpt": "5,000,000円",
+                }
+            ]
+        },
+        headers={"X-API-Key": paid_key_for_citations},
+    )
+
+    assert r.status_code == 200, r.text
+    verification = r.json()["verifications"][0]
+    assert verification["verification_status"] == "verified"
+    assert verification["verification_basis"] == "caller_supplied_source_text"
+    assert verification["source_url_fetched"] is False
+    assert r.json()["verified_count"] == 1
+    assert r.json()["caller_text_matched_count"] == 1
 
 
 # ---------------------------------------------------------------------------

@@ -135,7 +135,11 @@ def test_batch_paid_is_200(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-test-s-1"]},
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "3"},
+        headers={
+            "X-API-Key": paid_key,
+            "X-Cost-Cap-JPY": "3",
+            "Idempotency-Key": "programs-batch-paid-is-200",
+        },
     )
     assert r.status_code == 200
     body = r.json()

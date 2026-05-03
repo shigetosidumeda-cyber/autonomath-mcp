@@ -19,7 +19,7 @@ crawlers can index the framing.
 - [Getting started (5-minute quickstart)](https://jpcite.com/docs/getting-started/): install, API key, curl/Python/Node, Claude Desktop MCP config
 - [API reference (REST)](https://jpcite.com/docs/api-reference/)
 - [Agent-safe OpenAPI spec](https://api.jpcite.com/v1/openapi.agent.json): evidence/search subset for ChatGPT Custom GPTs and Claude tools. Excludes billing, webhook, OAuth, account-management, and operator endpoints.
-- [Full OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 180 paths for SDK generators and developer reference.
+- [Full OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): stable export with 171 paths for SDK generators and developer reference.
 - [MCP tools (93)](https://jpcite.com/docs/mcp-tools/):  core +  stdio tools, MCP protocol 2025-06-18
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/)
 - [Error handling](https://jpcite.com/docs/error_handling/)
@@ -32,7 +32,8 @@ crawlers can index the framing.
 
 Use jpcite as the evidence layer behind ChatGPT / Claude / Gemini: let the LLM write the answer, and let jpcite supply the source-linked packet it should cite. This is strongest when the alternative is sending long PDFs, ministry pages, or several search results into the model. It is not a guaranteed token-cost reducer; impact depends on model pricing, prompt shape, search settings, cache state, and how much raw source text would otherwise enter context.
 
-- [Context-token savings conditions](https://jpcite.com/qa/llm-evidence/context-savings.html): 2026-05-02 offline probe, 30 benchmark queries, Evidence Packets estimated at 338-1,352 tokens, median 566 tokens. This measures packet size, not guaranteed LLM bill reduction.
+- [Context-token savings conditions](https://jpcite.com/qa/llm-evidence/context-savings.html): 2026-05-02 offline measurement over 30 representative queries; no external LLM or web-search calls. Evidence Packets were estimated at 338-1,352 tokens, median 566 tokens. This is a historical packet-size measurement, not a current recomputation or LLM billing-savings guarantee.
+- [Machine-readable prefetch probe](https://jpcite.com/bench/prefetch-probe-2026-05-02.json): historical offline probe metadata, `packet_tokens_estimate`, `precomputed_query_rate`, estimator scope, sample size, packet-size estimates, and limitations.
 - [Evidence Pre-fetch](https://jpcite.com/qa/llm-evidence/evidence-prefetch.html): how jpcite sits before answer generation and returns source_url, fetched_at, and corpus_snapshot_id metadata.
 - [Custom GPT Japanese subsidy API](https://jpcite.com/qa/llm-evidence/custom-gpt-japanese-subsidy-api.html): import `https://api.jpcite.com/v1/openapi.agent.json`, then call jpcite Actions before answering Japanese public-program questions.
 - REST comparison hook: pass `include_compression=true&source_tokens_basis=token_count&source_token_count=<tokens>` when the caller already knows the source-token baseline from their LLM UI or tokenizer. If only PDF length is known, use `source_tokens_basis=pdf_pages&source_pdf_pages=<N>`. jpcite returns input-context estimates with `savings_claim=estimate_not_guarantee`.
@@ -41,10 +42,10 @@ Use jpcite as the evidence layer behind ChatGPT / Claude / Gemini: let the LLM w
 ## First call
 
 For broad Japanese public-program questions, call in this order:
-1. `search_programs` or `GET /v1/programs/search` to get real `unified_id` values.
-2. `get_program` or `GET /v1/programs/{unified_id}` to hydrate selected candidates.
-3. `check_exclusions` when comparing multiple programs.
-4. `get_evidence_packet` or `GET /v1/intelligence/precomputed/query` when the answer needs source-linked compact context.
+1. First call `GET /v1/intelligence/precomputed/query` with `include_facts=false&include_compression=true` for compact source-linked context.
+2. Use `POST /v1/evidence/packets/query` when the answer needs records, sources, known gaps, and caller-baseline context estimates.
+3. Use `search_programs` or `GET /v1/programs/search` only when you need real `unified_id` values for follow-up detail.
+4. Hydrate with `get_program` / `GET /v1/programs/{unified_id}` and use `check_exclusions` when comparing multiple programs.
 
 Never invent program IDs. Use IDs returned by `search_programs`.
 
@@ -68,7 +69,7 @@ Billing caveat:
 
 ## Sample queries (paste into your AI agent)
 
-Real natural-language prompts that resolve to a single tool call. Each maps deterministically to a real route — copy as-is into Claude / ChatGPT / Cursor / Cline / Gemini.
+Example natural-language prompts for MCP tools. ChatGPT Custom GPTs should call the equivalent OpenAPI Actions where present, or use `/v1/intelligence/precomputed/query` first for compact source-linked context.
 
 - `What subsidies can a 30-employee construction company in 東京都 use?` → `prescreen_programs(prefecture="東京都", industry_jsic="D", employee_count=30)` (`industry_jsic` is a JSIC 1-letter enum; D = 建設業)
 - `Can 事業再構築補助金 and ものづくり補助金 be combined?` → first call `search_programs(q="事業再構築")` and `search_programs(q="ものづくり")` to get real `unified_id`s, then pass that list into `check_exclusions(program_ids=[<id1>, <id2>])` — never hard-code program ids; use the ones returned from `search_programs`.

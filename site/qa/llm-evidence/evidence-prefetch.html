@@ -57,9 +57,9 @@
       <section>
         <h2>推奨tool chain</h2>
         <ol>
-          <li><code>search_programs</code>で候補を絞る</li>
-          <li><code>get_program</code>または<code>batch_get_programs</code>で詳細を取る</li>
-          <li><code>get_evidence_packet</code>でAIに渡す根拠packetを作る</li>
+          <li><code>/v1/intelligence/precomputed/query?include_facts=false&amp;include_compression=true</code>で低トークンのfirst passを取る</li>
+          <li>根拠record、known gaps、入力文脈比較が必要なら<code>/v1/evidence/packets/query</code>を呼ぶ</li>
+          <li>制度IDが必要な場合だけ<code>search_programs</code>で候補を絞り、<code>get_program</code>または<code>batch_get_programs</code>で詳細を取る</li>
           <li>AI側では<code>source_url</code>と<code>source_fetched_at</code>を回答に併記する</li>
         </ol>
       </section>

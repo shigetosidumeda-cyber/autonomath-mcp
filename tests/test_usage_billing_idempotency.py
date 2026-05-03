@@ -187,6 +187,177 @@ def test_duplicate_billing_idempotency_does_not_advance_cap_cache(
     assert noted == [("kh_paid", 7)]
 
 
+def test_duplicate_billing_idempotency_skips_final_cap_check(tmp_path) -> None:
+    db_path = tmp_path / "usage_idempotency_cap_retry.db"
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.executescript(
+            """
+            CREATE TABLE api_keys (
+                key_hash TEXT PRIMARY KEY,
+                last_used_at TEXT,
+                tier TEXT DEFAULT 'paid',
+                monthly_cap_yen INTEGER,
+                id INTEGER,
+                parent_key_id INTEGER,
+                revoked_at TEXT
+            );
+            CREATE TABLE usage_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key_hash TEXT NOT NULL,
+                endpoint TEXT NOT NULL,
+                ts TEXT NOT NULL,
+                status INTEGER,
+                metered INTEGER DEFAULT 0,
+                params_digest TEXT,
+                latency_ms INTEGER,
+                result_count INTEGER,
+                client_tag TEXT,
+                quantity INTEGER NOT NULL DEFAULT 1,
+                billing_idempotency_key TEXT
+            );
+            CREATE UNIQUE INDEX idx_usage_events_billing_idempotency
+                ON usage_events(key_hash, billing_idempotency_key)
+                WHERE billing_idempotency_key IS NOT NULL;
+            """
+        )
+        conn.execute(
+            "INSERT INTO api_keys(key_hash, last_used_at, tier, monthly_cap_yen, id) "
+            "VALUES (?, NULL, 'paid', 3, 1)",
+            ("kh_paid_cap",),
+        )
+        ctx = ApiContext(
+            key_hash="kh_paid_cap",
+            tier="paid",
+            customer_id="cus_paid_cap",
+            stripe_subscription_id=None,
+        )
+
+        idem = import_module("jpintel_mcp.api.idempotency_context")
+        for _ in range(2):
+            key_token = idem.billing_idempotency_key.set("idem_cap_once")
+            index_token = idem.billing_event_index.set(0)
+            try:
+                log_usage(
+                    conn,
+                    ctx,
+                    "programs.get",
+                    params={"id": "P-1"},
+                    quantity=1,
+                    strict_metering=True,
+                )
+            finally:
+                idem.billing_event_index.reset(index_token)
+                idem.billing_idempotency_key.reset(key_token)
+
+        row_count = conn.execute("SELECT COUNT(*) FROM usage_events").fetchone()[0]
+    finally:
+        conn.close()
+
+    assert row_count == 1
+
+
+def test_duplicate_billing_idempotency_retries_stripe_report_without_cap_cache(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    db_path = tmp_path / "usage_idempotency_stripe_retry.db"
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    reported: list[tuple[str, dict]] = []
+    noted: list[tuple[str | None, int]] = []
+    try:
+        conn.executescript(
+            """
+            CREATE TABLE api_keys (
+                key_hash TEXT PRIMARY KEY,
+                last_used_at TEXT,
+                tier TEXT DEFAULT 'paid',
+                monthly_cap_yen INTEGER,
+                id INTEGER,
+                parent_key_id INTEGER,
+                revoked_at TEXT
+            );
+            CREATE TABLE usage_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key_hash TEXT NOT NULL,
+                endpoint TEXT NOT NULL,
+                ts TEXT NOT NULL,
+                status INTEGER,
+                metered INTEGER DEFAULT 0,
+                params_digest TEXT,
+                latency_ms INTEGER,
+                result_count INTEGER,
+                client_tag TEXT,
+                quantity INTEGER NOT NULL DEFAULT 1,
+                billing_idempotency_key TEXT
+            );
+            CREATE UNIQUE INDEX idx_usage_events_billing_idempotency
+                ON usage_events(key_hash, billing_idempotency_key)
+                WHERE billing_idempotency_key IS NOT NULL;
+            """
+        )
+        conn.execute(
+            "INSERT INTO api_keys(key_hash, last_used_at, tier, id) "
+            "VALUES (?, NULL, 'paid', 1)",
+            ("kh_paid_stripe",),
+        )
+        ctx = ApiContext(
+            key_hash="kh_paid_stripe",
+            tier="paid",
+            customer_id="cus_paid_stripe",
+            stripe_subscription_id="sub_paid_stripe",
+        )
+
+        def fake_report_usage_async(subscription_id: str, **kwargs) -> None:
+            reported.append((subscription_id, kwargs))
+
+        def fake_note_cap_usage(key_hash: str | None, quantity: int = 1) -> None:
+            noted.append((key_hash, quantity))
+
+        monkeypatch.setattr(
+            "jpintel_mcp.billing.stripe_usage.report_usage_async",
+            fake_report_usage_async,
+        )
+        monkeypatch.setattr(
+            "jpintel_mcp.api.middleware.customer_cap.note_cap_usage",
+            fake_note_cap_usage,
+        )
+
+        idem = import_module("jpintel_mcp.api.idempotency_context")
+        for _ in range(2):
+            key_token = idem.billing_idempotency_key.set("idem_stripe_retry")
+            index_token = idem.billing_event_index.set(0)
+            try:
+                log_usage(
+                    conn,
+                    ctx,
+                    "programs.get",
+                    params={"id": "P-1"},
+                    quantity=4,
+                )
+            finally:
+                idem.billing_event_index.reset(index_token)
+                idem.billing_idempotency_key.reset(key_token)
+
+        rows = conn.execute(
+            "SELECT id, quantity, billing_idempotency_key FROM usage_events"
+        ).fetchall()
+    finally:
+        conn.close()
+
+    assert len(rows) == 1
+    assert int(rows[0]["quantity"]) == 4
+    assert noted == [("kh_paid_stripe", 4)]
+    assert len(reported) == 2
+    assert {call[0] for call in reported} == {"sub_paid_stripe"}
+    assert [call[1]["usage_event_id"] for call in reported] == [rows[0]["id"], rows[0]["id"]]
+    assert {call[1]["idempotency_key"] for call in reported} == {
+        rows[0]["billing_idempotency_key"]
+    }
+
+
 def test_body_fingerprint_collision_guard_rejects_different_payload(tmp_path) -> None:
     from jpintel_mcp.api.middleware.idempotency import (
         _check_or_record_body_fingerprint,

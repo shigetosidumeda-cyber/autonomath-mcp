@@ -917,7 +917,7 @@ def _org_node(domain: str) -> dict[str, Any]:
         "@type": "Organization",
         "@id": ORG_NODE_ID,
         "name": "jpcite",
-        "alternateName": ["税務会計AI", "AutonoMath", "Bookyou株式会社"],
+        "alternateName": ["jpcite", "AutonoMath", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "logo": {
             "@type": "ImageObject",

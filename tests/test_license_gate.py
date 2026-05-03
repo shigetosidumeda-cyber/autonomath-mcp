@@ -12,6 +12,7 @@ land in any export-eligible row.
 from __future__ import annotations
 
 import io
+import itertools
 import json
 import sqlite3
 import zipfile
@@ -37,6 +38,14 @@ _FIVE_HOUJIN: tuple[str, ...] = (
     "4010001000004",
     "5010001000005",
 )
+_IDEM_COUNTER = itertools.count()
+
+
+def _idem_headers(api_key: str) -> dict[str, str]:
+    return {
+        "X-API-Key": api_key,
+        "Idempotency-Key": f"license-gate-{next(_IDEM_COUNTER)}",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -231,7 +240,7 @@ def test_dd_export_zip_filters_proprietary_row(
 
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": "MA-LICENSE-GATE-TEST",
             "houjin_bangous": list(_FIVE_HOUJIN[:3]),
@@ -336,7 +345,7 @@ def test_dd_export_all_blocked_returns_empty_zip(
 
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": "MA-LICENSE-GATE-ALL-BLOCKED",
             "houjin_bangous": list(_FIVE_HOUJIN[:2]),

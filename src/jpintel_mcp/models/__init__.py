@@ -124,10 +124,8 @@ class SearchResponse(BaseModel):
 class BatchGetProgramsRequest(BaseModel):
     """Body for POST /v1/programs/batch.
 
-    `unified_ids` is capped at 50 — the 50-cap IS the pagination. Callers
-    with more ids page the request themselves (request.py: chunk(ids, 50)).
-    The cap lives here (pydantic) AND is also enforced inside the handler;
-    exceeding it surfaces as HTTP 422 per the usual FastAPI validation path.
+    `unified_ids` is capped at 50. Submit up to 50 unified_ids per request;
+    larger lists should be split client-side. Exceeding the cap returns HTTP 422.
     """
 
     unified_ids: list[str] = Field(..., min_length=1, max_length=50)

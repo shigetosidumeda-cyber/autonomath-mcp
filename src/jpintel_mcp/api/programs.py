@@ -2003,14 +2003,11 @@ def batch_get_programs(
     *deduped* input list (first occurrence wins). Missing ids go to
     `not_found`, NOT a 404 — partial success is the whole point.
 
-    # Quota accounting — TODO(W2):
-    # Batch counts as 1 "get_program" unit against the per-key daily quota
-    # today (log_usage inserts a single usage_events row). Spec calls for
-    # N units per N-id batch. The existing accounting model is "one row
-    # per request" (see api/deps._enforce_quota + usage_events schema). A
-    # credits / weight column is a separate ticket — out of scope here.
-    # When credits lands, swap the single log_usage call below for an
-    # N-weighted accounting path.
+    # Quota accounting:
+    # Batch writes one usage_events row with quantity=N, where N is the
+    # deduped ID count. Stripe and dashboard aggregates both read quantity, so
+    # the customer sees the same total as N single GET calls with a cleaner
+    # audit trail.
     """
     # Batch is hardcoded fields=full (spec §3 "predictable schema across 50
     # rows at once"), so anon callers must upgrade. Sequential GET with
@@ -2096,6 +2093,7 @@ def batch_get_programs(
         params={"batch_ids": sorted(unified_ids), "batch_size": n_billable},
         result_count=len(results),
         quantity=n_billable,
+        strict_metering=True,
     )
     return JSONResponse(content={"results": results, "not_found": not_found})
 

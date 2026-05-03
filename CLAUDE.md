@@ -167,10 +167,10 @@ sqlite3 data/jpintel.db "SELECT tier, COUNT(*) FROM programs WHERE excluded=0 GR
 
 ## Quality gates (before deploying)
 
-- `ruff check src/ tests/ scripts/` passes
+- CI lint target passes: `uv run ruff check scripts/generate_cross_hub_pages.py scripts/generate_geo_program_pages.py scripts/generate_industry_hub_pages.py scripts/generate_industry_program_pages.py scripts/generate_prefecture_pages.py scripts/generate_program_pages.py scripts/regen_llms_full.py scripts/regen_llms_full_en.py scripts/etl/generate_program_rss_feeds.py`
 - `.venv/bin/pytest` passes (full suite, including integration)
 - `mypy src/` passes (best effort — treat new errors as red)
-- OpenAPI spec regenerated: `.venv/bin/python scripts/export_openapi.py > docs/openapi/v1.json`
+- OpenAPI spec regenerated: `.venv/bin/python scripts/export_openapi.py --out docs/openapi/v1.json`
 - Static site builds cleanly: `mkdocs build --strict`
 
 Pre-commit hooks are configured in `.pre-commit-config.yaml` — do not bypass with `--no-verify`.

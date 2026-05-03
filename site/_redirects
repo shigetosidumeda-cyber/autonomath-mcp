@@ -18,13 +18,12 @@
 # Machine-readable API discovery. Keep common guessed static paths alive for
 # LLM crawlers, Custom GPT importers, and SDK generators; the canonical OpenAPI
 # contract is also served by the API process at https://api.jpcite.com/v1/openapi.json.
-# The jpcite.com aliases rewrite to the checked-in static snapshot so AI importers
+# The jpcite.com aliases rewrite to the static OpenAPI copy so AI importers
 # can still discover the contract if the API process is temporarily unavailable.
 /openapi/v1.json  /docs/openapi/v1.json  200
 /openapi/agent.json  /docs/openapi/agent.json  200
 /v1/openapi.json  /docs/openapi/v1.json  200
 /v1/openapi.agent.json  /docs/openapi/agent.json  200
-/server.json  /mcp-server.json  302
 
 # Legacy /getting-started.html → mkdocs Material doc.
 # Real onboarding lives at /docs/getting-started/. Internal links across

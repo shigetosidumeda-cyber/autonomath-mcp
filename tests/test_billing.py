@@ -340,6 +340,24 @@ def test_portal_rejects_offsite_return_url(client, stripe_env, paid_key, monkeyp
     assert called == []
 
 
+def test_service_checkout_redirect_validator_rejects_offsite_urls():
+    from fastapi import HTTPException
+
+    from jpintel_mcp.api.billing import validate_jpcite_service_redirect_url
+
+    with pytest.raises(HTTPException):
+        validate_jpcite_service_redirect_url(
+            "https://example.test/alerts.html", kind="success"
+        )
+
+    assert (
+        validate_jpcite_service_redirect_url(
+            "https://jpcite.com/alerts.html?status=ok", kind="success"
+        )
+        == "https://jpcite.com/alerts.html?status=ok"
+    )
+
+
 def test_portal_rejects_child_api_key(
     client, stripe_env, paid_key, monkeypatch, seeded_db: Path
 ):

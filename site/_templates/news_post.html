@@ -142,7 +142,7 @@
  <p>同じ差分を機械可読 (JSON) で取得するには <code>get_amendment_diff</code> を呼び出してください。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.{{ DOMAIN }}/v1/am/amendments?entity_id={{ entity_id }}&since={{ since_iso }}"</code></pre>
- <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_provenance(entity_id="{{ entity_id }}")</code> 経由で同じ差分ログにアクセスできます。</p>
+ <p>MCP クライアント (Claude Desktop / Cursor / Cline など) では <code>get_provenance(entity_id="{{ entity_id }}")</code>、ChatGPT Custom GPT では OpenAPI Actions 経由で同じ差分ログにアクセスできます。</p>
  <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
  </section>
 

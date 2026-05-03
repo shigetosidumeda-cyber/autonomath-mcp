@@ -22,3 +22,11 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
     operation = body["paths"]["/v1/evidence/packets/query"]["post"]
     assert operation["x-jpcite-agent-safe"] is True
     assert operation["security"] == [{"ApiKeyAuth": []}, {}]
+    assert body["paths"]["/v1/intelligence/precomputed/query"]["get"][
+        "x-jpcite-agent-priority"
+    ] == 1
+    assert operation["x-jpcite-agent-priority"] == 2
+    component_names = set(body.get("components", {}).get("schemas", {}))
+    assert "AuthorizeRequest" not in component_names
+    assert "BillingHistoryResponse" not in component_names
+    assert "BillingPortalResponse" not in component_names

@@ -14,7 +14,7 @@ Usage::
 Designed for the daily 15-min 朝 / 夕 routine in
 ``docs/operator_daily.md`` §1 / §3.  Output is one screen tall:
 
-    === 税務会計AI ops quick stats (2026-05-06) ===
+    === jpcite ops quick stats (2026-05-06) ===
     MAU: 234 (anon 198 + paid 36)
     MRR (current month): ¥47,250
     MRR WoW Δ: +¥3,210 (+7.3%)
@@ -588,7 +588,7 @@ def collect_payload(conn: sqlite3.Connection) -> dict:
 
 def render_text(payload: dict) -> str:
     lines: list[str] = []
-    lines.append(f"=== 税務会計AI ops quick stats ({payload['date_jst']}) ===")
+    lines.append(f"=== jpcite ops quick stats ({payload['date_jst']}) ===")
     lines.append(
         f"MAU: {payload['mau_total']} "
         f"(anon {payload['mau_anon']} + paid {payload['mau_paid']})"

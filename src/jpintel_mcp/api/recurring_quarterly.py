@@ -33,8 +33,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr, Field
 
 from jpintel_mcp.api.deps import (
-    ApiContextDep,
-    DbDep,
+    ApiContextDep,  # noqa: TC001 (FastAPI dependency alias)
+    DbDep,  # noqa: TC001 (FastAPI dependency alias)
 )
 
 logger = logging.getLogger("jpintel.recurring")
@@ -468,14 +468,7 @@ def start_email_course(
     ctx: ApiContextDep,
     conn: DbDep,
 ) -> dict[str, Any]:
-    """Spec-named alias for the canonical `/v1/me/courses` create.
-
-    Forwards verbatim to courses.subscribe_course so the existing endpoint
-    stays canonical (single billing path, single CRUD surface). The spec
-    document calls this endpoint `email_course/start`, so we expose it
-    under that name AND keep the engineering-canonical `/v1/me/courses`
-    path live.
-    """
+    """Starts the recurring email course for the authenticated account."""
     from jpintel_mcp.api.courses import (
         SubscribeCourseRequest,
         subscribe_course,

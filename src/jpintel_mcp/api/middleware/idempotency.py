@@ -31,8 +31,9 @@ Scope
 -----
 Only allowlisted data-query POST requests are eligible. GET / DELETE /
 OPTIONS, credential issuance, billing, login, webhooks, and admin paths pass
-through. POST requests without `Idempotency-Key` pass through (the header is
-opt-in).
+through. Low-cost POST requests without `Idempotency-Key` pass through. High
+fan-out / bundle POST routes require the header and fail closed if the
+middleware cannot hash and cache the request body.
 
 ¥0 metering
 -----------
@@ -81,8 +82,8 @@ _HEADER_REPLAYED = "X-Idempotency-Replayed"
 # Hard cap on the request body size we will hash + cache. A 10MB POST is not
 # a realistic shape for any AutonoMath endpoint (the largest is
 # batch_get_programs with 50 ulids ≈ a few KB). Anything above the cap is
-# bypassed (cache miss falls back to live execution; safer than caching
-# arbitrarily large payloads).
+# bypassed for low-cost routes. High fan-out paid routes fail closed so an
+# oversized retry cannot escape idempotent billing.
 _MAX_BODY_BYTES = 1 * 1024 * 1024  # 1 MB
 
 # Hop-by-hop / non-cacheable response headers we strip before serialisation.
@@ -119,6 +120,16 @@ _CACHEABLE_EXACT: frozenset[str] = frozenset(
         "/v1/court-decisions/by-statute",
         "/v1/evidence/packets/query",
         "/v1/am/validate",
+        "/v1/audit/batch_evaluate",
+        "/v1/audit/workpaper",
+        "/v1/am/dd_batch",
+        "/v1/am/dd_export",
+    }
+)
+
+_REQUIRE_IDEMPOTENCY_EXACT: frozenset[str] = frozenset(
+    {
+        "/v1/programs/batch",
         "/v1/audit/batch_evaluate",
         "/v1/audit/workpaper",
         "/v1/am/dd_batch",
@@ -609,15 +620,35 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         path = request.url.path
         if _is_bypass_path(path):
             return await call_next(request)
+        idempotency_required = path in _REQUIRE_IDEMPOTENCY_EXACT
+        if idempotency_required and not _raw_api_key_present(request):
+            return await call_next(request)
 
         idempotency_key = request.headers.get(_HEADER_KEY) or request.headers.get(
             _HEADER_KEY.replace("-", "_")
         )
         if not idempotency_key:
-            # Header opt-in only — pass through unchanged.
+            if idempotency_required:
+                return _idempotency_error_response(
+                    error="idempotency_key_required",
+                    detail=(
+                        "Idempotency-Key is required for this high fan-out "
+                        "paid endpoint so retries cannot double bill."
+                    ),
+                    status_code=428,
+                )
             return await call_next(request)
         idempotency_key = idempotency_key.strip()
         if not idempotency_key:
+            if idempotency_required:
+                return _idempotency_error_response(
+                    error="idempotency_key_required",
+                    detail=(
+                        "Idempotency-Key is required for this high fan-out "
+                        "paid endpoint so retries cannot double bill."
+                    ),
+                    status_code=428,
+                )
             return await call_next(request)
 
         # Anonymous callers are intentionally not replay-cached. Otherwise a
@@ -630,7 +661,15 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         # via `request._receive` so the downstream handler still sees it.
         body = await request.body()
         if len(body) > _MAX_BODY_BYTES:
-            # Refuse to cache arbitrarily large payloads — pass through.
+            if idempotency_required:
+                return _idempotency_error_response(
+                    error="idempotency_body_too_large",
+                    detail=(
+                        "Request body is too large for idempotent billing. "
+                        "Split the batch and retry with a fresh Idempotency-Key."
+                    ),
+                    status_code=413,
+                )
             return await call_next(request)
 
         # Re-inject the buffered body so call_next() sees it.

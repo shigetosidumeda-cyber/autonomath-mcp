@@ -59,9 +59,9 @@ flyctl ssh console -a autonomath-api -C \
 - [ ] `flyctl status --app autonomath-api` で staging machine 健全性確認
 - [ ] `sqlite3 data/jpintel.db "PRAGMA integrity_check;"` → "ok"
 - [ ] `sqlite3 autonomath.db "PRAGMA integrity_check;"` → "ok"
-- [ ] `.venv/bin/python scripts/export_openapi.py > docs/openapi/v1.json` で OpenAPI 再 export
+- [ ] `.venv/bin/python scripts/export_openapi.py --out docs/openapi/v1.json` で OpenAPI 再 export
 - [ ] `mkdocs build --strict` PASS
-- [ ] `ruff check src/ tests/ scripts/` PASS
+- [ ] `uv run ruff check scripts/generate_cross_hub_pages.py scripts/generate_geo_program_pages.py scripts/generate_industry_hub_pages.py scripts/generate_industry_program_pages.py scripts/generate_prefecture_pages.py scripts/generate_program_pages.py scripts/regen_llms_full.py scripts/regen_llms_full_en.py scripts/etl/generate_program_rss_feeds.py` PASS (CI lint target)
 - [ ] `.venv/bin/pytest -q` PASS (full suite)
 - [ ] T-7d までの残 blocker を本ファイル末尾「記録欄」に列挙
 

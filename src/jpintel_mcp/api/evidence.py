@@ -269,6 +269,15 @@ def _embedded_license_is_blocked(obj: Any) -> bool:
             for v in license_set
         ):
             return True
+        carries_source = any(k in obj for k in ("source_url", "evidence_url", "source_urls"))
+        if carries_source and not (
+            _license_is_redistributable(license_name)
+            or (
+                isinstance(license_set, list)
+                and any(_license_is_redistributable(v) for v in license_set)
+            )
+        ):
+            return True
         return any(_embedded_license_is_blocked(v) for v in obj.values())
     if isinstance(obj, list):
         return any(_embedded_license_is_blocked(v) for v in obj)
@@ -290,6 +299,24 @@ def _pdf_fact_ref_is_redistributable(ref: Any) -> bool:
 def _redistributable_pdf_fact_refs(rec: dict[str, Any]) -> list[dict[str, Any]]:
     refs = rec.get("pdf_fact_refs") or []
     return [dict(ref) for ref in refs if _pdf_fact_ref_is_redistributable(ref)]
+
+
+def _rule_is_redistributable(rule: Any) -> bool:
+    if not isinstance(rule, dict):
+        return False
+    if _embedded_license_is_blocked(rule):
+        return False
+    if _license_is_redistributable(rule.get("license")):
+        return True
+    license_set = rule.get("license_set")
+    return isinstance(license_set, list) and any(
+        _license_is_redistributable(v) for v in license_set
+    )
+
+
+def _redistributable_rules(rec: dict[str, Any]) -> list[dict[str, Any]]:
+    rules = rec.get("rules") or []
+    return [dict(rule) for rule in rules if _rule_is_redistributable(rule)]
 
 
 def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -317,9 +344,15 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
     records = envelope.get("records") or []
     # Build (proxy, original) pairs so we can map allow-list verdicts
     # back to the originals.
-    proxies = [_record_license_tuple(r) for r in records]
-    allowed_proxies, blocked_proxies = filter_redistributable(proxies)
-    allowed_ids = {p.get("entity_id") for p in allowed_proxies}
+    indexed_proxies = [
+        {**_record_license_tuple(r), "_record_index": i} for i, r in enumerate(records)
+    ]
+    allowed_proxies, blocked_proxies = filter_redistributable(indexed_proxies)
+    proxy_by_index = {
+        int(p["_record_index"]): p
+        for p in allowed_proxies
+        if isinstance(p.get("_record_index"), int)
+    }
 
     blocked_reasons: dict[str, int] = {}
     for p in blocked_proxies:
@@ -338,15 +371,11 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
     # Fact-level filtering is mandatory: one record can mix PDL/CC-BY
     # facts with unknown/proprietary facts. Export formats may keep the
     # record only if at least one redistributable fact remains.
-    # Lookup by entity_id; fall back to positional match for records
-    # missing entity_id (defensive — records always carry it in practice).
-    proxy_by_id = {p.get("entity_id"): p for p in proxies if p.get("entity_id")}
     new_records: list[dict[str, Any]] = []
-    for r in records:
-        eid = r.get("entity_id")
-        if eid not in allowed_ids:
+    for i, r in enumerate(records):
+        proxy = proxy_by_index.get(i)
+        if proxy is None:
             continue
-        proxy = proxy_by_id.get(eid) or {}
         ann = annotate_attribution(proxy)
         out = dict(r)
         record_had_blocked_payload = False
@@ -385,13 +414,23 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
             gate_summary["blocked_source_health_count"] = (
                 gate_summary.get("blocked_source_health_count", 0) + 1
             )
+        if "rules" in out:
+            original_rules = r.get("rules") or []
+            out["rules"] = _redistributable_rules(r)
+            blocked_rules = len(original_rules) - len(out["rules"])
+            if blocked_rules > 0:
+                gate_summary["blocked_rules_count"] = (
+                    gate_summary.get("blocked_rules_count", 0) + blocked_rules
+                )
+            if not out["rules"]:
+                out.pop("rules", None)
         derived_payload_blocked = (
             record_had_blocked_payload
             or _embedded_license_is_blocked(out.get("precomputed"))
             or _embedded_license_is_blocked(out.get("recent_changes"))
         )
         if derived_payload_blocked:
-            for key in ("precomputed", "short_summary", "recent_changes"):
+            for key in ("precomputed", "short_summary", "recent_changes", "rules"):
                 if key in out:
                     out.pop(key, None)
                     gate_summary[f"blocked_{key}_count"] = (
@@ -399,6 +438,16 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
                     )
         out["_attribution"] = ann.get("_attribution")
         out["license"] = proxy.get("license")
+        if proxy.get("source_url"):
+            out["source_url"] = proxy.get("source_url")
+        else:
+            out.pop("source_url", None)
+        if proxy.get("fetched_at"):
+            out["source_fetched_at"] = proxy.get("fetched_at")
+        else:
+            out.pop("source_fetched_at", None)
+        if proxy.get("publisher"):
+            out["publisher"] = proxy.get("publisher")
         new_records.append(out)
 
     gated_envelope = dict(envelope)
@@ -424,6 +473,15 @@ def _gate_evidence_envelope(envelope: dict[str, Any]) -> tuple[dict[str, Any], d
         gated["records"] = _allowed
         gate_summary["allowed_count"] = len(_allowed)
         gate_summary["blocked_count"] = gate_summary.get("blocked_count", 0) + len(_blocked)
+    quality = gated.get("quality")
+    if isinstance(quality, dict):
+        records = gated.get("records") or []
+        coverage_score = EvidencePacketComposer._coverage_score(records)
+        quality["coverage_score"] = coverage_score
+        quality["human_review_required"] = EvidencePacketComposer._human_review_required(
+            records,
+            coverage_score,
+        )
     EvidencePacketComposer._attach_agent_recommendation(gated)
     EvidencePacketComposer._attach_evidence_value(gated)
     return gated, gate_summary

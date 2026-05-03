@@ -118,7 +118,7 @@
  <p>同じ差分を機械可読 (JSON) で取得するには <code>get_amendment_diff</code> を呼び出してください。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.jpcite.com/v1/am/amendments?since=2026-04-22T00:00:00Z"</code></pre>
- <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>get_provenance(entity_id="...")</code> 経由で同じ差分ログにアクセスできます。</p>
+ <p>Claude Desktop / Cursor / Cline などの MCP クライアントでは <code>get_provenance(entity_id="...")</code> 経由で同じ差分ログにアクセスできます。ChatGPT Custom GPT では OpenAPI Actions 経由で同等の REST endpoint を使えます。</p>
  </section>
 
  <p class="disclaimer">本変更検出は制度改正履歴 追記専用ログから自動で行われており、 公式発表との差異がある場合は公式情報をご確認ください。 §52 税理士法に基づき、 個別の税務判断は税理士にご相談ください。 本ページは法的助言・税務助言・申請代行を構成するものではありません。</p>

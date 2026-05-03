@@ -817,6 +817,7 @@ async def bulk_evaluate_clients(
                 params={"program_filter": program_filter, "row_count": n},
                 quantity=n,
                 result_count=n,
+                strict_metering=True,
             )
         except Exception as exc:  # noqa: BLE001
             logger.warning("bulk_evaluate billing row failed", exc_info=True)

@@ -312,6 +312,12 @@ class ResponseSanitizerMiddleware(BaseHTTPMiddleware):
         ctype = response.headers.get("content-type", "")
         if "application/json" not in ctype.lower():
             return response
+        if request.url.path in {
+            "/openapi.json",
+            "/v1/openapi.json",
+            "/v1/openapi.agent.json",
+        }:
+            return response
 
         # APPI §31 / §33 intake responses must echo the operator contact
         # (`info@bookyou.net`) verbatim — that's the address the data

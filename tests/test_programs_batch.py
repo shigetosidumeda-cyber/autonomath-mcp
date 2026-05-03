@@ -46,6 +46,14 @@ _REST_ONLY_ROW_KEYS = {
 }
 
 
+def _paid_headers(paid_key: str, cap_yen: int, suffix: str) -> dict[str, str]:
+    return {
+        "X-API-Key": paid_key,
+        "X-Cost-Cap-JPY": str(cap_yen),
+        "Idempotency-Key": f"programs-batch-{suffix}",
+    }
+
+
 # ---------------------------------------------------------------------------
 # Happy path
 # ---------------------------------------------------------------------------
@@ -70,7 +78,7 @@ def test_batch_happy_path_preserves_order(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "12"},
+        headers=_paid_headers(paid_key, 12, "happy"),
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -104,7 +112,7 @@ def test_batch_mixed_valid_and_missing(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "15"},
+        headers=_paid_headers(paid_key, 15, "mixed"),
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -132,12 +140,12 @@ def test_batch_dedupes_input(client, paid_key):
                 "UNI-test-a-1",
             ]
         },
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
+        headers=_paid_headers(paid_key, 6, "dedupe-dup"),
     )
     r_clean = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-test-s-1", "UNI-test-a-1"]},
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
+        headers=_paid_headers(paid_key, 6, "dedupe-clean"),
     )
     assert r_dup.status_code == 200
     assert r_clean.status_code == 200
@@ -169,7 +177,7 @@ def test_batch_accepts_exactly_50_ids(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "150"},
+        headers=_paid_headers(paid_key, 150, "exact-50"),
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -182,7 +190,10 @@ def test_batch_requires_cost_cap(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-test-s-1"]},
-        headers={"X-API-Key": paid_key},
+        headers={
+            "X-API-Key": paid_key,
+            "Idempotency-Key": "programs-batch-cost-cap-required",
+        },
     )
     assert r.status_code == 400, r.text
     body = r.json()
@@ -195,7 +206,7 @@ def test_batch_low_cost_cap_rejects_before_billing(client, paid_key):
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-test-s-1", "UNI-test-a-1"]},
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "3"},
+        headers=_paid_headers(paid_key, 3, "low-cap"),
     )
     assert r.status_code == 402, r.text
     body = r.json()
@@ -215,6 +226,16 @@ def test_batch_rejects_empty_list(client):
     assert r.status_code == 422, r.text
 
 
+def test_paid_batch_requires_idempotency_key(client, paid_key):
+    r = client.post(
+        "/v1/programs/batch",
+        json={"unified_ids": ["UNI-test-s-1"]},
+        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "3"},
+    )
+    assert r.status_code == 428
+    assert r.json()["error"] == "idempotency_key_required"
+
+
 # ---------------------------------------------------------------------------
 # REST vs MCP shape parity — same dict shape per row in both transports.
 # ---------------------------------------------------------------------------
@@ -227,7 +248,7 @@ def test_batch_mcp_parity(client, paid_key):
     rest = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ids},
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
+        headers=_paid_headers(paid_key, 6, "mcp-parity"),
     ).json()
     mcp = mcp_batch(ids)
     # Parity is on the underlying tool envelope. MCP wraps with additive

@@ -31,6 +31,7 @@ Bundle assertions:
 from __future__ import annotations
 
 import io
+import itertools
 import json
 import sqlite3
 import zipfile
@@ -48,6 +49,16 @@ _FIVE_HOUJIN: tuple[str, ...] = (
     "4010001000004",
     "5010001000005",
 )
+_IDEM_COUNTER = itertools.count()
+
+
+def _idem_headers(api_key: str, **extra: str) -> dict[str, str]:
+    headers = {
+        "X-API-Key": api_key,
+        "Idempotency-Key": f"ma-pillar-{next(_IDEM_COUNTER)}",
+    }
+    headers.update(extra)
+    return headers
 
 
 @pytest.fixture()
@@ -182,7 +193,7 @@ def _check_disclaimer_envelope(body: dict) -> None:
 def test_dd_batch_5_houjin_summary(client, paid_key):
     r = client.post(
         "/v1/am/dd_batch",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "houjin_bangous": list(_FIVE_HOUJIN),
             "depth": "summary",
@@ -218,7 +229,7 @@ def test_dd_batch_5_houjin_summary(client, paid_key):
 def test_dd_batch_requires_paid_key(client, trial_key):
     r = client.post(
         "/v1/am/dd_batch",
-        headers={"X-API-Key": trial_key},
+        headers=_idem_headers(trial_key),
         json={"houjin_bangous": list(_FIVE_HOUJIN[:1])},
     )
     assert r.status_code == 402
@@ -236,7 +247,7 @@ def test_dd_batch_requires_auth(client):
 def test_dd_batch_invalid_houjin_returns_422(client, paid_key):
     r = client.post(
         "/v1/am/dd_batch",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "houjin_bangous": ["not-13-digits"],
         },
@@ -249,7 +260,7 @@ def test_dd_batch_cost_cap_blocks_overspend(client, paid_key):
     # 5 × ¥3 = ¥15 predicted; cap at ¥6 → 402.
     r = client.post(
         "/v1/am/dd_batch",
-        headers={"X-API-Key": paid_key, "X-Cost-Cap-JPY": "6"},
+        headers=_idem_headers(paid_key, **{"X-Cost-Cap-JPY": "6"}),
         json={"houjin_bangous": list(_FIVE_HOUJIN)},
     )
     assert r.status_code == 402
@@ -259,11 +270,22 @@ def test_dd_batch_cost_cap_blocks_overspend(client, paid_key):
 def test_dd_batch_requires_cost_cap(client, paid_key):
     r = client.post(
         "/v1/am/dd_batch",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={"houjin_bangous": list(_FIVE_HOUJIN[:1])},
     )
     assert r.status_code == 400
     assert r.json()["detail"]["code"] == "cost_cap_required"
+
+
+def test_dd_batch_requires_idempotency_for_paid_key(client, paid_key):
+    r = client.post(
+        "/v1/am/dd_batch",
+        headers={"X-API-Key": paid_key},
+        json={"houjin_bangous": list(_FIVE_HOUJIN[:1]), "max_cost_jpy": 3},
+    )
+
+    assert r.status_code == 428
+    assert r.json()["error"] == "idempotency_key_required"
 
 
 # ---------------------------------------------------------------------------
@@ -370,7 +392,7 @@ def test_audit_bundle_export_round_trip(client, paid_key, tmp_path):
     deal_id = "MA-E2E-DEAL-2026-04-29"
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": deal_id,
             "houjin_bangous": list(_FIVE_HOUJIN),
@@ -485,7 +507,7 @@ def test_audit_bundle_listing_summary(client, paid_key):
     deal_id = "MA-E2E-DEAL-LIST"
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": deal_id,
             "houjin_bangous": list(_FIVE_HOUJIN[:2]),
@@ -514,7 +536,7 @@ def test_dd_export_bundle_class_deal_charges_3000(client, paid_key):
     """
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": "MA-E2E-BUNDLE-DEAL",
             "houjin_bangous": list(_FIVE_HOUJIN),
@@ -540,7 +562,7 @@ def test_dd_export_bundle_class_case_charges_10000(client, paid_key):
     """`bundle_class='case'` consumes 3,333 billing units = ¥9,999 fee."""
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": "MA-E2E-BUNDLE-CASE",
             "houjin_bangous": list(_FIVE_HOUJIN),
@@ -563,7 +585,7 @@ def test_dd_export_bundle_class_standard_default(client, paid_key):
     """Omitting `bundle_class` defaults to 'standard' (333 units, ≈¥1,000)."""
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": "MA-E2E-BUNDLE-DEFAULT",
             "houjin_bangous": list(_FIVE_HOUJIN[:1]),
@@ -581,7 +603,7 @@ def test_dd_export_bundle_class_standard_default(client, paid_key):
 def test_dd_export_requires_paid_key(client, trial_key):
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": trial_key},
+        headers=_idem_headers(trial_key),
         json={
             "deal_id": "MA-E2E-TRIAL-BLOCKED",
             "houjin_bangous": list(_FIVE_HOUJIN[:1]),
@@ -594,7 +616,7 @@ def test_dd_export_requires_paid_key(client, trial_key):
 def test_dd_export_requires_cost_cap(client, paid_key):
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": "MA-E2E-CAP-REQUIRED",
             "houjin_bangous": list(_FIVE_HOUJIN[:1]),
@@ -608,7 +630,7 @@ def test_dd_export_bundle_class_invalid_returns_422(client, paid_key):
     """Unknown bundle_class is rejected by the pydantic Literal."""
     r = client.post(
         "/v1/am/dd_export",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "deal_id": "MA-E2E-BUNDLE-BAD",
             "houjin_bangous": list(_FIVE_HOUJIN[:1]),

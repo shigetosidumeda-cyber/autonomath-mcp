@@ -461,7 +461,7 @@ def _sanitize_openapi_public_text(text: str) -> str:
         flags=re.S,
     )
     text = re.sub(
-        r"\AConfirm the advisor's 法人番号 exists in invoice registrant records .*",
+        r"\AConfirm the advisor's 法人番号 exists in (?:invoice_registrants|invoice registrant records) .*",
         (
             "Confirm an advisor's 法人番号 against invoice registrant records "
             "and mark the advisor profile as verified when it matches."
@@ -514,6 +514,7 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"jpintel\.db", "indexed corpus"),
         (r"autonomath\.db", "extended corpus"),
         (r"\bBackgroundTasks\b", "background work"),
+        (r"DB unavailable / invalid input", "Data unavailable or invalid input"),
         (r"\bSQLite\b", "persistent storage"),
         (r"stripe_webhook_events", "billing event records"),
         (r"\bsecret_hmac\b", "signing secret"),
@@ -568,6 +569,20 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"\bbroken\b", "disabled"),
         (r"\bmigration\s+\d+", "schema update"),
         (r"\bcron\b", "scheduled job"),
+        (r"\binternal\b", "service"),
+        (r"\bV4\b", "current release"),
+        (r"\bP3-W\b", "budget control"),
+        (r"\brequire_key\b", "API-key authentication"),
+        (r"\bapi_keys row\b", "API key"),
+        (r"\bapi_keys\b", "API keys"),
+        (r"\braw key\b", "newly issued key"),
+        (r"\bin-process pickup\b", "one-time retrieval"),
+        (r"\bfull table\b", "complete dataset"),
+        (r"\bam_relation\b", "relationship graph"),
+        (r"\bStripe webhook\b", "billing event"),
+        (r"\bstripe webhook\b", "billing event"),
+        (r"\bsource records\b", "public records"),
+        (r"\bsource record\b", "public record"),
         (r"\bOperator\b", "Support team"),
         (r"\boperator\b", "support team"),
         (r"\binternal HTTP hop\b", "extra HTTP hop"),
@@ -584,9 +599,9 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"metadata\.autonomath_product", "metadata.product"),
         (r"autonomath\.intake_consistency_rules", "jpcite validation rules"),
         (r"autonomath\.intake\.", "jpcite.validation."),
+        (r"\bunified autonomath dataset\b", "unified jpcite dataset"),
         (r"\bAutonoMath\b", "jpcite"),
         (r"\bautonomath dataset\b", "jpcite dataset"),
-        (r"\bunified autonomath dataset\b", "unified jpcite dataset"),
         (r"\(autonomath\)", ""),
         (r"\(jpintel\)", ""),
         (r"\bjpintel\b", "jpcite"),
@@ -650,7 +665,7 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"am_entity_source", "entity-level source references"),
         (r"am_entity_annotation", "entity annotations"),
         (r"am_entity_facts", "fact records"),
-        (r"am_entities", "source records"),
+        (r"am_entities", "public records"),
         (r"am_source", "source catalog"),
         (r"am_amendment_diff", "public change log"),
         (r"am_amendment_snapshot", "historical snapshot"),
@@ -668,6 +683,7 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"\btables\b", "datasets"),
         (r"\bview\b", "dataset"),
         (r"\bviews\b", "datasets"),
+        (r"\bMigration\b", "Schema update"),
         (r"\bmig(?:ration)?\.?\s*\d+", "schema update"),
         (r"\.sql\b", ""),
         (r"\bwave\s*\d+\b", "current release"),
@@ -676,10 +692,35 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"\bgate(d)?\b", "controlled"),
         (r"not re-metered", "not billed again"),
         (r"read-from-disk", "read from packaged data"),
+        (r"\brows\b", "records"),
+        (r"\brow\b", "record"),
     ]
     for pattern, replacement in replacements:
         text = re.sub(pattern, replacement, text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+_PUBLIC_OPENAPI_HIDDEN_PATHS: frozenset[str] = frozenset(
+    {
+        "/v1/billing/webhook",
+        "/v1/compliance/stripe-webhook",
+        "/v1/email/webhook",
+        "/v1/integrations/email/inbound",
+        "/v1/integrations/google/callback",
+        "/v1/integrations/line/webhook",
+        "/v1/integrations/sheets",
+        "/v1/integrations/slack/webhook",
+        "/v1/widget/stripe-webhook",
+    }
+)
+
+
+def _prune_openapi_public_paths(schema: dict[str, Any]) -> None:
+    paths = schema.get("paths")
+    if not isinstance(paths, dict):
+        return
+    for path in _PUBLIC_OPENAPI_HIDDEN_PATHS:
+        paths.pop(path, None)
 
 
 def _sanitize_openapi_public_schema(node: Any) -> None:
@@ -726,12 +767,23 @@ def _sanitize_openapi_public_schema(node: Any) -> None:
         enum_values = node.get("enum")
         if isinstance(enum_values, list):
             node["enum"] = [item for item in enum_values if item != "internal"]
+        properties = node.get("properties")
+        if isinstance(properties, dict):
+            properties.pop("include_excluded", None)
+            required = node.get("required")
+            if isinstance(required, list):
+                node["required"] = [
+                    item for item in required if item != "include_excluded"
+                ]
         parameters = node.get("parameters")
         if isinstance(parameters, list):
             node["parameters"] = [
                 parameter
                 for parameter in parameters
-                if not (isinstance(parameter, dict) and parameter.get("name") == "include_internal")
+                if not (
+                    isinstance(parameter, dict)
+                    and parameter.get("name") in {"include_internal", "include_excluded"}
+                )
             ]
         for key, value in list(node.items()):
             if isinstance(value, str):
@@ -1712,6 +1764,7 @@ def create_app() -> FastAPI:
             "name": "Proprietary - see termsOfService",
         }
         _normalize_openapi_component_schema_names(schema)
+        _prune_openapi_public_paths(schema)
         _sanitize_openapi_public_schema(schema)
         app.openapi_schema = schema
         return schema

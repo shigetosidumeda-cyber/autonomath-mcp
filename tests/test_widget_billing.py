@@ -207,6 +207,36 @@ def test_widget_signup_plan_accepts_metered_and_legacy_alias():
     assert legacy.plan == PLAN_BUSINESS
 
 
+def test_widget_signup_rejects_offsite_stripe_redirects(
+    client, widget_stripe_env, monkeypatch
+):
+    import stripe
+
+    monkeypatch.setenv("STRIPE_PRICE_WIDGET_METERED", "price_widget_metered")
+    called: list[dict] = []
+
+    def _create(**kwargs):  # pragma: no cover - regression guard
+        called.append(kwargs)
+        raise AssertionError("Stripe checkout created with offsite redirect")
+
+    monkeypatch.setattr(stripe.checkout.Session, "create", _create)
+
+    response = client.post(
+        "/v1/widget/signup",
+        json={
+            "email": "owner@example.com",
+            "origins": ["https://example.com"],
+            "plan": "metered",
+            "success_url": "https://attacker.example/success",
+            "cancel_url": "https://jpcite.com/widget.html?cancelled=1",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "success_url" in response.json()["detail"]
+    assert called == []
+
+
 def _insert_widget_key(
     db_path: Path,
     *,

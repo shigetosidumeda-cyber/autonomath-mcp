@@ -8,8 +8,9 @@ a `paid` tier key spawns a daemon thread that:
      normal API subscription there is one metered item; widget subscriptions
      can also have a fixed monthly base item plus a metered overage item, so
      item selection must never assume `items[0]`.
-  2. POSTs quantity=1 to /v1/subscription_items/{si}/usage_records with
-     `action=increment` and `timestamp=now`.
+  2. POSTs the local usage_events `quantity` to
+     /v1/subscription_items/{si}/usage_records with `action=increment` and
+     `timestamp=now`.
 
 API-version pinning: legacy metered prices can only be read / written under
 `Stripe-Version: 2024-11-20.acacia`. Under `2025-03-31.basil`+ Stripe

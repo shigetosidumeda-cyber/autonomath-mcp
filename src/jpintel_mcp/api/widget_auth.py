@@ -62,6 +62,7 @@ from fastapi import (
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from jpintel_mcp.api.billing import validate_jpcite_service_redirect_url
 from jpintel_mcp.api.deps import DbDep
 from jpintel_mcp.api.vocab import (
     _JSIC_CATEGORIES,
@@ -537,9 +538,8 @@ def widget_search(
 ) -> JSONResponse:
     """Search programs restricted to the widget surface.
 
-    Proxies to the existing `/v1/programs/search` logic via direct function
-    import — there is no internal HTTP hop so the widget path stays under
-    the tight latency budget (TTFB matters on a 3rd-party's site).
+    Searches programs through the embeddable widget with the same filters as
+    program search.
     """
     wk, origin = _authorize(conn, request, key, x_widget_key)
 
@@ -768,11 +768,16 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
         "autonomath_label": payload.label or "",
     }
 
+    success_url = validate_jpcite_service_redirect_url(
+        payload.success_url, kind="success"
+    )
+    cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
+
     session = stripe.checkout.Session.create(
         mode="subscription",
         line_items=[{"price": price_id, "quantity": 1}],
-        success_url=payload.success_url,
-        cancel_url=payload.cancel_url,
+        success_url=success_url,
+        cancel_url=cancel_url,
         customer_email=str(payload.email),
         allow_promotion_codes=True,
         locale="ja",

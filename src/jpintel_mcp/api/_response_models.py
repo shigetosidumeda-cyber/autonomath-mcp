@@ -65,6 +65,9 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
             "primary_name": "Example public program",
             "record_kind": "program",
             "source_url": "https://example.go.jp/program",
+            "source_fetched_at": "2026-05-01T00:00:00+09:00",
+            "source_checksum": "sha256:example",
+            "license": "gov_standard_v2.0",
             "authority_name": "Example authority",
             "precomputed": {
                 "basis": "am_program_summary",
@@ -93,6 +96,21 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
         "estimate_scope": "input_context_only",
         "savings_claim": "estimate_not_guarantee",
         "provider_billing_not_guaranteed": True,
+        "cost_savings_estimate": {
+            "currency": "JPY",
+            "input_token_price_jpy_per_1m": 300,
+            "gross_input_savings_jpy": 4.0,
+            "jpcite_billable_units": 1,
+            "jpcite_cost_jpy_ex_tax": 3,
+            "net_savings_jpy_ex_tax": 1.0,
+            "break_even_avoided_tokens": 10000,
+            "break_even_source_tokens_estimate": 10566,
+            "break_even_met": True,
+            "input_context_only": True,
+            "price_input_source": "caller_supplied",
+            "billing_savings_claim": "estimate_not_guarantee",
+            "provider_billing_not_guaranteed": True,
+        },
     },
     "evidence_value": {
         "records_returned": 1,
@@ -305,7 +323,7 @@ class EvidencePacketRecord(BaseModel):
         default=None,
         description=(
             "Optional compact user-facing amendment changes for this record. "
-            "Internal diff/debug fields are not exposed."
+            "Implementation-only diff fields are not exposed."
         ),
     )
 
@@ -332,7 +350,7 @@ class EvidencePacketVerification(BaseModel):
 
 
 class EvidencePacketEvidenceValue(BaseModel):
-    """Plan §4-A `evidence_value` block — AI-readable evidence counters.
+    """`evidence_value` block — AI-readable evidence counters.
 
     Always populated. Values are pure record/quality counts; jpcite does not
     perform a request-time LLM call or a live web search to produce them.
@@ -391,8 +409,8 @@ class EvidencePacketEnvelope(BaseModel):
     evidence_value: EvidencePacketEvidenceValue | None = Field(
         default=None,
         description=(
-            "Plan §4-A AI-readable evidence value counters. Always populated "
-            "by the composer; null only on legacy fixtures."
+            "Evidence-value counters for source-linked records. Always populated "
+            "by the composer; null only on older fixtures."
         ),
     )
     agent_recommendation: dict[str, Any] | None = Field(
@@ -446,7 +464,7 @@ class PrecomputedAgentRecommendation(BaseModel):
     recommend_for_evidence: bool = Field(
         default=False,
         description=(
-            "Plan §4-A axis 1: true when at least one record is source-linked. "
+            "True when at least one record is source-linked. "
             "Independent of caller-supplied price baseline."
         ),
     )
@@ -457,7 +475,7 @@ class PrecomputedAgentRecommendation(BaseModel):
     ] = Field(
         default="no_records_returned",
         description=(
-            "Plan §4-A axis 1 reason: machine-readable basis for the "
+            "Machine-readable basis for the "
             "`recommend_for_evidence` boolean."
         ),
     )
@@ -490,7 +508,7 @@ class PrecomputedAgentRecommendation(BaseModel):
     value_reasons: list[str] = Field(
         default_factory=list,
         description=(
-            "Plan §4-A: positive signals an agent may quote when justifying "
+            "Positive signals an agent may quote when justifying "
             "a jpcite recommendation. Always derived from the same evidence "
             "as `reason_codes`."
         ),
@@ -532,40 +550,49 @@ PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
         "jpcite_requests": 1,
         "billing_units": 1,
     },
+    "compression": {
+        "packet_tokens_estimate": 566,
+        "source_tokens_basis": "unknown",
+        "estimate_scope": "input_context_only",
+        "savings_claim": "needs_caller_baseline",
+        "provider_billing_not_guaranteed": True,
+    },
     "agent_recommendation": {
         "recommendation": "use_jpcite_prefetch",
         "recommend_to_user": True,
         "recommend_for_evidence": True,
         "evidence_decision": "supported_by_source_linked_records",
-        "recommend_for_cost_savings": True,
-        "cost_savings_decision": "supported_by_caller_baseline",
-        "missing_for_cost_claim": [],
+        "recommend_for_cost_savings": False,
+        "cost_savings_decision": "needs_caller_baseline",
+        "missing_for_cost_claim": [
+            "source_tokens_basis",
+            "source_token_count_or_pdf_pages",
+            "input_token_price_jpy_per_1m",
+        ],
         "route": "/v1/intelligence/precomputed/query",
         "reason_codes": [
             "precomputed_summary_available",
             "source_linked_records_returned",
             "no_request_time_llm",
             "no_live_web_search",
-            "caller_baseline_break_even_met",
         ],
         "value_reasons": [
             "source_linked_records_returned",
             "precomputed_summary_available",
             "no_request_time_llm",
             "no_live_web_search",
-            "caller_baseline_break_even_met",
         ],
         "message": (
             "Use this bundle before sending long Japanese public-program "
             "sources to an LLM; it provides compact, source-linked context."
         ),
         "context_savings": {
-            "evaluated": True,
-            "break_even_met": True,
-            "break_even_source_tokens_estimate": 10566,
-            "source_tokens_basis": "pdf_pages",
-            "avoided_tokens_estimate": 13434,
-            "input_context_reduction_rate": 0.9596,
+            "evaluated": False,
+            "break_even_met": None,
+            "break_even_source_tokens_estimate": None,
+            "source_tokens_basis": "unknown",
+            "avoided_tokens_estimate": None,
+            "input_context_reduction_rate": None,
             "provider_billing_not_guaranteed": True,
             "savings_claim": "estimate_not_guarantee",
         },
@@ -621,7 +648,7 @@ class AMActiveAtResponse(SearchResponse[dict[str, Any]]):
 
 
 class AMByLawResponse(SearchResponse[dict[str, Any]]):
-    """``GET /v1/am/by_law`` — adds the alias-resolution debug field."""
+    """``GET /v1/am/by_law`` — returns law-linked records with alias metadata."""
 
     law_aliases_tried: list[str] = Field(
         default_factory=list,

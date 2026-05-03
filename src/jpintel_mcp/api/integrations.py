@@ -197,10 +197,7 @@ def _row_summary(row: dict[str, Any]) -> dict[str, str]:
     pref = row.get("prefecture") or "全国"
     authority = row.get("authority_name") or row.get("authority") or ""
     amount = row.get("amount_max_man_yen")
-    if amount:
-        amount_label = f"上限 {int(amount):,} 万円"
-    else:
-        amount_label = "金額: 公表値なし"
+    amount_label = f"上限 {int(amount):,} 万円" if amount else "金額: 公表値なし"
     url = row.get("official_url") or row.get("source_url") or ""
     return {
         "name": str(name),
@@ -441,8 +438,8 @@ class SheetsRequest(BaseModel):
     "/sheets",
     summary="Google Sheets Apps Script callback",
     description=(
-        "Apps Script template (`sdk/integrations/google-sheets/template.gs`) "
-        "POSTs JSON `{query, field}`. Returns `{value, footer, source_url}` "
+        "Google Sheets Apps Script template POSTs JSON `{query, field}`. "
+        "Returns `{value, footer, source_url}` "
         "as a tight scalar so a single sheet cell can render. The Apps "
         "Script wrapper caches 6h via `CacheService` to bound spend on "
         "Sheet-open recalc."
@@ -705,7 +702,7 @@ def _email_reply_bodies(
         "renders a single-line answer. `?field=` selects which scalar to "
         "return (title|url|prefecture|authority|amount|footer|count). "
         "§52 footer is also surfaced in the named cell `A1` of the "
-        "downloadable template (`sdk/integrations/excel/zeimu-kaikei-template.xlsx`)."
+        "downloadable Excel template."
     ),
     response_class=PlainTextResponse,
 )
@@ -768,12 +765,12 @@ class KintoneRequest(BaseModel):
     "/kintone",
     summary="kintone plugin button callback",
     description=(
-        "Pure client-side kintone plugin (`sdk/integrations/kintone/plugin.zip`) "
+        "jpcite kintone plugin "
         "fetches this endpoint when the user clicks the in-record button "
         '"jpcite で関連補助金検索". Returns a JSON envelope the plugin '
         "renders into a modal + writes top result into configured fields. "
         "Origins `*.cybozu.com` / `*.kintone.com` are CORS-allowlisted in "
-        "`config.py::cors_origins`."
+        "approved kintone domains."
     ),
 )
 async def kintone_callback(

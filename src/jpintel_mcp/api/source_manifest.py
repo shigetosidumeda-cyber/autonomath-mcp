@@ -45,6 +45,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._license_gate import REDISTRIBUTABLE_LICENSES
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 
 logger = logging.getLogger("jpintel.api.source_manifest")
@@ -62,6 +63,7 @@ router = APIRouter(prefix="/v1/source_manifest", tags=["source_manifest"])
 # cron lands. Truncation surfaces an explicit `_warning` so callers know
 # they are seeing a truncated view.
 _MAX_FACT_PROVENANCE = 500
+_ALLOWED_LICENSES_SQL = ",".join("?" for _ in sorted(REDISTRIBUTABLE_LICENSES))
 
 # Closed-vocab license enum (mirrors am_source.license trigger). The view
 # emits 'unknown_null' for NULL license rows so the API can distinguish
@@ -238,34 +240,68 @@ def _resolve_program(
 # ---------------------------------------------------------------------------
 
 
-def _primary_license_from_set(license_set_json: str | None) -> str:
-    """Pick a single representative license from the JSON-array string.
+def _friendly_license(raw_license: str | None) -> str:
+    return {
+        "gov_standard_v2.0": "gov_standard",
+        "gov_standard": "gov_standard",
+        "pdl_v1.0": "pdl_v1.0",
+        "cc_by_4.0": "cc_by_4.0",
+        "public_domain": "public_domain",
+        "proprietary": "proprietary",
+    }.get(raw_license or "unknown", "unknown")
 
-    Preference order (most-permissive → most-restrictive):
-        gov_standard_v2.0 → pdl_v1.0 → cc_by_4.0 → public_domain →
-        proprietary → unknown → unknown_null
 
-    The endpoint surfaces a human-friendly short form ('gov_standard'
-    instead of 'gov_standard_v2.0') for primary_license per the spec
-    response shape; the per-fact + summary blocks keep the raw enum.
-    """
-    if not license_set_json:
+def _raw_license_for_source_url(am_conn: sqlite3.Connection, source_url: str | None) -> str:
+    if not source_url:
         return "unknown"
-    try:
-        licenses: list[str] = json.loads(license_set_json) or []
-    except (TypeError, ValueError):
+    row = am_conn.execute(
+        """SELECT COALESCE(license, 'unknown_null') AS license
+             FROM am_source
+            WHERE source_url = ?
+            LIMIT 1""",
+        (source_url,),
+    ).fetchone()
+    if row is None:
         return "unknown"
-    rank: list[tuple[str, str]] = [
-        ("gov_standard_v2.0", "gov_standard"),
-        ("pdl_v1.0", "pdl_v1.0"),
-        ("cc_by_4.0", "cc_by_4.0"),
-        ("public_domain", "public_domain"),
-        ("proprietary", "proprietary"),
-    ]
-    for raw, friendly in rank:
-        if raw in licenses:
-            return friendly
-    return "unknown"
+    value = row["license"]
+    return value if isinstance(value, str) and value else "unknown"
+
+
+def _license_posture(licenses: list[str]) -> tuple[str, bool]:
+    if not licenses:
+        return "unknown", False
+    has_allowed = any(v in REDISTRIBUTABLE_LICENSES for v in licenses)
+    has_blocked = any(v not in REDISTRIBUTABLE_LICENSES for v in licenses)
+    if has_allowed and has_blocked:
+        return "mixed_restricted", False
+    if has_allowed:
+        return "redistributable", True
+    return "restricted", False
+
+
+def _manifest_licenses_with_primary(
+    licenses: list[str],
+    *,
+    primary_raw_license: str,
+    primary_source_url: str | None,
+) -> list[str]:
+    """Include the exact primary URL license in redistribution posture."""
+    out = [v for v in licenses if isinstance(v, str) and v]
+    if primary_source_url and primary_raw_license not in out:
+        out.append(primary_raw_license or "unknown")
+    return out
+
+
+def _redact_primary_source_if_restricted(out: dict[str, Any], raw_license: str) -> None:
+    if raw_license in REDISTRIBUTABLE_LICENSES:
+        return
+    if raw_license == "unknown":
+        out["primary_source_url_license_unverified"] = True
+        out["primary_source_license_note"] = "source URL is listed as metadata; redistribution license is unverified"
+        return
+    out.pop("primary_source_url", None)
+    out["primary_source_url_redacted"] = True
+    out["primary_source_redaction_reason"] = "license_not_redistributable_or_unknown"
 
 
 def _build_manifest(
@@ -282,6 +318,8 @@ def _build_manifest(
         "primary_name": base["primary_name"],
         "primary_source_url": base["primary_source_url"],
         "primary_license": "unknown",
+        "license_posture": "unknown",
+        "redistribution_allowed": False,
         "fact_provenance": [],
         "fact_provenance_coverage_pct": 0.0,
         "summary": {
@@ -305,10 +343,23 @@ def _build_manifest(
     if base.get("tier") is not None:
         out["tier"] = base["tier"]
 
+    primary_raw_license = _raw_license_for_source_url(am_conn, base.get("primary_source_url"))
+
     # No entity link → degrade gracefully. primary_source_url block + the
     # explicit empty arrays still tell the caller "I checked, nothing
     # else available".
     if not canonical_id:
+        out["primary_license"] = _friendly_license(primary_raw_license)
+        license_posture, redistribution_allowed = _license_posture(
+            _manifest_licenses_with_primary(
+                [],
+                primary_raw_license=primary_raw_license,
+                primary_source_url=base.get("primary_source_url"),
+            )
+        )
+        out["license_posture"] = license_posture
+        out["redistribution_allowed"] = redistribution_allowed
+        _redact_primary_source_if_restricted(out, primary_raw_license)
         return out
 
     # Pull the rollup row from the view. Row may be missing when the
@@ -346,15 +397,36 @@ def _build_manifest(
                 summary_row["unique_publishers"] or 0
             ),
         }
-        out["primary_license"] = _primary_license_from_set(
-            summary_row["license_set"]
+        out["primary_license"] = _friendly_license(primary_raw_license)
+        license_posture, redistribution_allowed = _license_posture(
+            _manifest_licenses_with_primary(
+                license_list,
+                primary_raw_license=primary_raw_license,
+                primary_source_url=base.get("primary_source_url"),
+            )
         )
+        out["license_posture"] = license_posture
+        out["redistribution_allowed"] = redistribution_allowed
+        _redact_primary_source_if_restricted(out, primary_raw_license)
+    else:
+        out["primary_license"] = _friendly_license(primary_raw_license)
+        license_posture, redistribution_allowed = _license_posture(
+            _manifest_licenses_with_primary(
+                [],
+                primary_raw_license=primary_raw_license,
+                primary_source_url=base.get("primary_source_url"),
+            )
+        )
+        out["license_posture"] = license_posture
+        out["redistribution_allowed"] = redistribution_allowed
+        _redact_primary_source_if_restricted(out, primary_raw_license)
 
     # Per-fact provenance — JOIN am_entity_facts × am_source where
-    # source_id is populated. This is the sparse signal; for programs it
-    # is empty today (0 program-facts have source_id set).
+    # source_id is populated and redistributable. Blocked/unknown-license
+    # rows are counted in license_gate but not surfaced with source_url.
+    allowed_licenses = sorted(REDISTRIBUTABLE_LICENSES)
     fact_rows = am_conn.execute(
-        """SELECT f.id            AS fact_id,
+        f"""SELECT f.id            AS fact_id,
                   f.field_name    AS field_name,
                   f.source_id     AS source_id,
                   s.source_url    AS source_url,
@@ -366,9 +438,21 @@ def _build_manifest(
              JOIN am_source s ON s.id = f.source_id
             WHERE f.entity_id = ?
               AND f.source_id IS NOT NULL
+              AND COALESCE(s.license, 'unknown_null') IN ({_ALLOWED_LICENSES_SQL})
             ORDER BY f.field_name ASC, f.id ASC
             LIMIT ?""",
-        (canonical_id, _MAX_FACT_PROVENANCE + 1),
+        (canonical_id, *allowed_licenses, _MAX_FACT_PROVENANCE + 1),
+    ).fetchall()
+    blocked_license_rows = am_conn.execute(
+        f"""SELECT COALESCE(s.license, 'unknown_null') AS license, COUNT(*) AS n
+              FROM am_entity_facts f
+              JOIN am_source s ON s.id = f.source_id
+             WHERE f.entity_id = ?
+               AND f.source_id IS NOT NULL
+               AND COALESCE(s.license, 'unknown_null') NOT IN ({_ALLOWED_LICENSES_SQL})
+             GROUP BY COALESCE(s.license, 'unknown_null')
+             ORDER BY n DESC, license ASC""",
+        (canonical_id, *allowed_licenses),
     ).fetchall()
 
     truncated = len(fact_rows) > _MAX_FACT_PROVENANCE
@@ -393,20 +477,58 @@ def _build_manifest(
     # field has many duplicate fact rows. `total_facts` carries the
     # context for the percentage so callers don't have to recompute.
     coverage_row = am_conn.execute(
-        """SELECT COUNT(*) AS total_facts,
-                  COUNT(source_id) AS facts_with_source
-             FROM am_entity_facts
-            WHERE entity_id = ?""",
-        (canonical_id,),
+        f"""SELECT COUNT(*) AS total_facts,
+                   COUNT(f.source_id) AS facts_with_source,
+                   SUM(
+                     CASE
+                       WHEN f.source_id IS NOT NULL
+                        AND COALESCE(s.license, 'unknown_null') IN ({_ALLOWED_LICENSES_SQL})
+                       THEN 1 ELSE 0
+                     END
+                   ) AS facts_with_redistributable_source
+              FROM am_entity_facts f
+              LEFT JOIN am_source s ON s.id = f.source_id
+             WHERE f.entity_id = ?""",
+        (*allowed_licenses, canonical_id),
     ).fetchone()
     total_facts = int(coverage_row["total_facts"] or 0)
     facts_with_source = int(coverage_row["facts_with_source"] or 0)
+    facts_with_redistributable_source = int(
+        coverage_row["facts_with_redistributable_source"] or 0
+    )
     coverage_pct = (
-        round(facts_with_source / total_facts, 4) if total_facts > 0 else 0.0
+        round(facts_with_redistributable_source / total_facts, 4)
+        if total_facts > 0
+        else 0.0
     )
     out["fact_provenance_coverage_pct"] = coverage_pct
     out["_total_facts"] = total_facts
     out["_facts_with_source_id"] = facts_with_source
+    out["_facts_with_redistributable_source_id"] = facts_with_redistributable_source
+    blocked_summary_licenses = [
+        v
+        for v in out.get("summary", {}).get("license_set", [])
+        if isinstance(v, str) and v not in REDISTRIBUTABLE_LICENSES
+    ]
+    if blocked_license_rows:
+        out["license_gate"] = {
+            "policy": "redistributable_sources_only",
+            "blocked_fact_provenance_count": sum(
+                int(r["n"] or 0) for r in blocked_license_rows
+            ),
+            "blocked_reasons": {
+                str(r["license"] or "unknown"): int(r["n"] or 0)
+                for r in blocked_license_rows
+            },
+            "redistributable_licenses": allowed_licenses,
+        }
+    elif blocked_summary_licenses:
+        out["license_gate"] = {
+            "policy": "redistributable_sources_only",
+            "blocked_fact_provenance_count": 0,
+            "blocked_entity_source_licenses": sorted(set(blocked_summary_licenses)),
+            "redistributable_licenses": allowed_licenses,
+        }
 
     if truncated:
         out["_warning"] = (
@@ -423,10 +545,11 @@ def _build_manifest(
 
 @router.get(
     "/{program_id}",
-    summary="Per-program source manifest (Evidence Graph)",
+    summary="Per-program source manifest (partial Evidence Graph)",
     description=(
-        "Surface the full provenance manifest for one program: fact-level "
-        "and entity-level source references in one response.\n\n"
+        "Surface the available provenance manifest for one program: "
+        "redistributable fact-level references plus an entity-level source "
+        "rollup in one response.\n\n"
         "**Pricing:** ¥3/call (1 unit). Anonymous callers share the 3/日 "
         "per-IP cap (JST 翌日 00:00 リセット).\n\n"
         "**program_id** accepts:\n"
@@ -442,7 +565,7 @@ def _build_manifest(
     responses={
         200: {
             "description": (
-                "Manifest envelope. `fact_provenance` is per-fact "
+                "Manifest envelope. `fact_provenance` is redistributable per-fact "
                 "(field_name, source_url, publisher, fetched_at, license, "
                 "checksum); `summary` is the entity-level rollup; "
                 "`primary_*` carries the program-row authoritative URL."

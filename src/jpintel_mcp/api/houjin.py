@@ -346,21 +346,15 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
     "/{bangou}",
     summary="Corporate 360 lookup by 法人番号",
     description=(
-        "Surface the gBizINFO + auxiliary corporate facts for a given "
-        "13-digit 法人番号. Joins `am_entities` (corporate_entity) + "
-        "`am_entity_facts` (21 corp.* fields per V4 absorption) + "
-        "`jpi_invoice_registrants` (適格請求書発行事業者) + "
-        "`jpi_adoption_records` (採択履歴) + "
-        "`am_enforcement_detail` (行政処分).\n\n"
+        "Returns corporate facts, adoption history, enforcement details, "
+        "and registration status from public datasets for a given 13-digit "
+        "法人番号.\n\n"
         "**Pricing:** ¥3/call (1 unit). Anonymous callers share the "
         "3/日 per-IP cap (JST 翌日 00:00 リセット).\n\n"
         "**§52 envelope:** every 2xx body carries `_disclaimer` "
         "(税理士法 §52 fence) + `_namayoke_caveat` (商号変更・合併 周辺の "
         "名寄せ caveat). LLM relays must surface both verbatim.\n\n"
-        "**Coverage:** 79,876 corporate_entity rows populated as of "
-        "the V4 absorption snapshot. Misses on this number space mean "
-        "the 法人番号 is real but our gBizINFO ingest hasn't reached "
-        "it — return 404 with a pointer to the gBizINFO official lookup."
+        "**Coverage:** unavailable records return official lookup guidance."
     ),
     responses={
         200: {
@@ -512,7 +506,9 @@ def get_houjin_360(
                     "publisher": "gBizINFO / jpcite mirror",
                     "title": "Corporate 360 public-source snapshot",
                     "fetched_at": provenance.get("fetched_at"),
-                    "verification_status": "verified",
+                    "verification_status": "unknown",
+                    "verification_basis": "local_catalog",
+                    "live_verified_at_request": False,
                 }
             )
         env = StandardResponse.sparse(

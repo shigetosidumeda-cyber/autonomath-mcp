@@ -245,7 +245,7 @@ def _build_agent_recommendation(
         ],
         "value_reasons": value_reasons,
         "message": (
-            "Recommend jpcite for source verification, but treat context "
+            "Recommend jpcite for source-linked evidence prefetch, but treat context "
             "savings as unproven until a comparable baseline is supplied."
         ),
         "context_savings": context_savings,

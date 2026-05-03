@@ -31,6 +31,15 @@ def test_openapi_export_matches_committed_spec(tmp_path: Path) -> None:
     ).read_text(encoding="utf-8")
 
 
+def test_served_openapi_json_matches_committed_spec(client) -> None:
+    response = client.get("/v1/openapi.json")
+    assert response.status_code == 200, response.text
+    committed = json.loads(
+        (REPO_ROOT / "docs" / "openapi" / "v1.json").read_text(encoding="utf-8")
+    )
+    assert response.json() == committed
+
+
 def test_openapi_version_matches_pyproject() -> None:
     pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     expected = pyproject["project"]["version"]

@@ -123,12 +123,18 @@ def _verify_citations_impl(
         body: str | None
         if isinstance(c.get("source_text"), str):
             body = c["source_text"]
+            verification_basis = "caller_supplied_source_text"
+            source_url_fetched = False
         elif isinstance(c.get("source_url"), str) and c["source_url"]:
             remaining = max(1, int(_TOTAL_TIMEOUT_SEC - elapsed))
             per_fetch = min(PER_FETCH_TIMEOUT_SEC, remaining)
             body = verifier.fetch_source(c["source_url"], timeout=per_fetch)
+            verification_basis = "live_fetch"
+            source_url_fetched = body is not None
         else:
             body = None
+            verification_basis = "none"
+            source_url_fetched = False
 
         if body is None:
             outputs.append({
@@ -137,6 +143,8 @@ def _verify_citations_impl(
                 "matched_form": None,
                 "source_checksum": None,
                 "normalized_source_length": 0,
+                "verification_basis": verification_basis,
+                "source_url_fetched": source_url_fetched,
                 "error": "source_unreachable",
             })
             continue
@@ -154,12 +162,20 @@ def _verify_citations_impl(
             "matched_form": verdict.get("matched_form"),
             "source_checksum": verdict.get("source_checksum"),
             "normalized_source_length": verdict.get("normalized_source_length", 0),
+            "verification_basis": verification_basis,
+            "source_url_fetched": source_url_fetched,
             "error": verdict.get("error"),
         })
 
     verified = sum(1 for o in outputs if o["verification_status"] == "verified")
     inferred = sum(1 for o in outputs if o["verification_status"] == "inferred")
     stale = sum(1 for o in outputs if o["verification_status"] == "stale")
+    caller_text_matched = sum(
+        1
+        for o in outputs
+        if o.get("verification_basis") == "caller_supplied_source_text"
+        and o["verification_status"] in {"verified", "inferred"}
+    )
     unknown = sum(1 for o in outputs if o["verification_status"] == "unknown")
 
     return {
@@ -167,6 +183,7 @@ def _verify_citations_impl(
         "verified_count": verified,
         "inferred_count": inferred,
         "stale_count": stale,
+        "caller_text_matched_count": caller_text_matched,
         "unknown_count": unknown,
     }
 

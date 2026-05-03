@@ -49,6 +49,8 @@ from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Literal
 
+from jpintel_mcp.api._license_gate import REDISTRIBUTABLE_LICENSES
+
 logger = logging.getLogger("jpintel.services.evidence_packet")
 
 
@@ -773,8 +775,10 @@ class EvidencePacketComposer:
         if "is_pdf" in row_keys and row["is_pdf"] is not None:
             health["is_pdf"] = bool(row["is_pdf"])
         health["verification_status"] = (
-            "verified" if health.get("last_verified") else "cataloged_unverified"
+            "catalog_last_verified" if health.get("last_verified") else "cataloged_unverified"
         )
+        health["verification_basis"] = "local_source_catalog"
+        health["live_verified_at_request"] = False
         return health
 
     @staticmethod
@@ -1000,26 +1004,85 @@ class EvidencePacketComposer:
                     break
                 # Map verdict → spec vocab.
                 verdict_label = self._map_verdict(verdict.verdict)
+                evidence_url, license_name, allowed_urls = self._rule_evidence_source(
+                    chain_entry
+                )
+                rule = {
+                    "rule_id": (
+                        chain_entry.get("rule_id")
+                        or f"compat:{canonical_id or primary_id}:{partner}"
+                    ),
+                    "verdict": verdict_label,
+                    "evidence_url": evidence_url,
+                    "note": chain_entry.get("rule_text", "")[:300],
+                    "_partner_program": partner,
+                    "_confidence": verdict.confidence,
+                }
+                if license_name:
+                    rule["license"] = license_name
+                if len(allowed_urls) > 1:
+                    rule["source_urls"] = allowed_urls
                 rules.append(
-                    {
-                        "rule_id": (
-                            chain_entry.get("rule_id")
-                            or f"compat:{canonical_id or primary_id}:{partner}"
-                        ),
-                        "verdict": verdict_label,
-                        "evidence_url": (
-                            chain_entry.get("source_url")
-                            or (chain_entry.get("source_urls") or [None])[0]
-                            or ""
-                        ),
-                        "note": chain_entry.get("rule_text", "")[:300],
-                        "_partner_program": partner,
-                        "_confidence": verdict.confidence,
-                    }
+                    rule
                 )
             if len(rules) >= cap:
                 break
         return rules, gaps
+
+    def _rule_evidence_source(
+        self,
+        chain_entry: dict[str, Any],
+    ) -> tuple[str, str | None, list[str]]:
+        raw_urls: list[Any] = [chain_entry.get("source_url")]
+        source_urls = chain_entry.get("source_urls")
+        if isinstance(source_urls, list):
+            raw_urls.extend(source_urls)
+        urls: list[str] = []
+        seen: set[str] = set()
+        for raw_url in raw_urls:
+            if not isinstance(raw_url, str):
+                continue
+            url = raw_url.strip()
+            if not url or url in seen:
+                continue
+            seen.add(url)
+            urls.append(url)
+        if not urls:
+            return "", None, []
+        licensed = [(url, self._source_license_for_url(url)) for url in urls]
+        allowed = [
+            (url, license_name)
+            for url, license_name in licensed
+            if license_name in REDISTRIBUTABLE_LICENSES
+        ]
+        if allowed:
+            return allowed[0][0], allowed[0][1], [url for url, _license in allowed]
+        first_url, first_license = licensed[0]
+        return first_url, first_license, []
+
+    def _source_license_for_url(self, source_url: str | None) -> str | None:
+        if not source_url:
+            return None
+        try:
+            conn = self._open_ro(self.autonomath_db)
+        except FileNotFoundError:
+            return None
+        try:
+            cols = self._table_columns(conn, "am_source")
+            if "source_url" not in cols or "license" not in cols:
+                return None
+            row = conn.execute(
+                "SELECT license FROM am_source WHERE source_url = ? LIMIT 1",
+                (source_url,),
+            ).fetchone()
+            if row is None:
+                return None
+            value = row["license"]
+            return value if isinstance(value, str) and value else None
+        except sqlite3.OperationalError:
+            return None
+        finally:
+            conn.close()
 
     @staticmethod
     def _map_verdict(verdict: str) -> str:
@@ -1353,7 +1416,7 @@ class EvidencePacketComposer:
             "reason_codes": reason_codes,
             "value_reasons": value_reasons,
             "message": (
-                "Recommend jpcite for source verification. Treat context "
+                "Recommend jpcite for source-linked evidence prefetch. Treat context "
                 "savings as unproven until a comparable baseline is supplied."
             ),
             "context_savings": context_savings,
@@ -2214,6 +2277,8 @@ class EvidencePacketComposer:
             "records": records,
             "quality": {
                 "freshness_bucket": self._freshness_bucket(snapshot_id),
+                "freshness_scope": "corpus_wide_max_not_record_level",
+                "freshness_basis": "corpus_snapshot_id",
                 "coverage_score": coverage_score,
                 "known_gaps": gaps,
                 "human_review_required": self._human_review_required(records, coverage_score),
@@ -2434,6 +2499,8 @@ class EvidencePacketComposer:
             "records": [record],
             "quality": {
                 "freshness_bucket": self._freshness_bucket(snapshot_id),
+                "freshness_scope": "corpus_wide_max_not_record_level",
+                "freshness_basis": "corpus_snapshot_id",
                 "coverage_score": coverage_score,
                 "known_gaps": gaps,
                 "human_review_required": self._human_review_required([record], coverage_score),

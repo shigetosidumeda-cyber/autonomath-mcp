@@ -60,7 +60,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, s
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr, Field
 
-from jpintel_mcp.api.deps import DbDep
+from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (FastAPI dependency alias)
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.signup")
@@ -217,13 +217,9 @@ class SignupRequest(BaseModel):
 
 
 class SignupResponse(BaseModel):
-    """202 Accepted body.
+    """Accepted response for trial signup.
 
-    We deliberately do NOT echo the email back — it's already in the
-    request. Returning a stable shape with a request_id-equivalent makes
-    it easy for the homepage form to confirm "we got it" without leaking
-    the dedup state (a 409 vs 202 distinction would let an attacker probe
-    for whether a given address has already used its trial).
+    The email address is not echoed in the response.
     """
 
     accepted: bool = True

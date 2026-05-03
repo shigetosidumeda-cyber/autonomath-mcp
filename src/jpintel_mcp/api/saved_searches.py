@@ -99,10 +99,11 @@ _ALLOWED_QUERY_KEYS: frozenset[str] = frozenset(
 class SavedSearchQuery(BaseModel):
     """The query criteria for a saved search.
 
-    Mirrors the params accepted by ``GET /v1/programs/search`` (api/programs.py)
-    so the cron can replay the saved search verbatim. All fields are
-    optional, BUT the create endpoint enforces "at least one filter" so a
-    customer cannot save the empty-corpus query (which would email them
+    Public criteria for a saved-search alert. These mirror public
+    ``GET /v1/programs/search`` filters, but intentionally exclude
+    non-public operator escape hatches. All fields
+    are optional, BUT the create endpoint enforces "at least one filter" so
+    a customer cannot save the empty-corpus query (which would email them
     every program every day).
     """
 
@@ -118,7 +119,6 @@ class SavedSearchQuery(BaseModel):
     amount_min: Annotated[float | None, Field(default=None, ge=0)] = None
     amount_max: Annotated[float | None, Field(default=None, ge=0)] = None
     tier: Annotated[list[str] | None, Field(default=None, max_length=4)] = None
-    include_excluded: bool = False
 
 
 # Slack-only webhook prefix for SSRF defense — see migration 099 docs.
@@ -557,7 +557,7 @@ def _run_saved_search_query(conn, query: dict[str, Any]) -> tuple[list[dict[str,
         ),
         amount_min=query.get("amount_min"),
         amount_max=query.get("amount_max"),
-        include_excluded=bool(query.get("include_excluded", False)),
+        include_excluded=False,
         limit=int(query.get("limit") or 100),
         offset=0,
         fields="default",

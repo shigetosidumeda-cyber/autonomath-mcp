@@ -529,16 +529,7 @@ def complete(
     conn: DbDep,
     origin: Annotated[str | None, Header(alias="origin")] = None,
 ) -> CompleteResponse:
-    """Called by /go after Stripe Checkout succeeds.
-
-    1. Verifies the Stripe session is complete, subscription-mode,
-       environment-matched, priced correctly, metadata-bound to this device
-       code, and paid (or metered — no_payment_required).
-    2. Marks device_code activated.
-    3. Issues an api_keys row prefixed 'am_device_' and links it.
-    4. Stashes the raw key in the in-process pickup map so the MCP's
-       next /token poll picks it up.
-    """
+    """Completes device activation after checkout and enables token polling."""
     # CSRF mitigation: Origin must match the configured site host. This
     # is belt-and-braces alongside the Stripe session verification; a
     # browser cross-origin fetch would be blocked anyway by our CORS

@@ -173,6 +173,27 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 "proprietary",
                 "sha256:p3ddd",
             ),
+            (
+                "https://aggregator.example/p4-primary.html",
+                "primary",
+                "aggregator.example",
+                "proprietary",
+                "sha256:p4eee",
+            ),
+            (
+                "https://www.meti.go.jp/policy/p4.pdf",
+                "reference",
+                "www.meti.go.jp",
+                "gov_standard_v2.0",
+                "sha256:p4fff",
+            ),
+            (
+                "https://aggregator.example/p5-primary.html",
+                "primary",
+                "aggregator.example",
+                "proprietary",
+                "sha256:p5ggg",
+            ),
         ]
         con.executemany(
             "INSERT INTO am_source(source_url, source_type, domain, license, "
@@ -213,6 +234,22 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 "2026-04-23T00:00:00",
                 1.0,
             ),
+            (
+                "program:test:p4",
+                "テスト P4 補助金",
+                "program",
+                "https://aggregator.example/p4-primary.html",
+                "2026-04-24T00:00:00",
+                1.0,
+            ),
+            (
+                "program:test:p5",
+                "テスト P5 補助金",
+                "program",
+                "https://aggregator.example/p5-primary.html",
+                "2026-04-26T00:00:00",
+                1.0,
+            ),
         ]
         con.executemany(
             "INSERT INTO am_entities("
@@ -248,6 +285,26 @@ def _build_fixture_autonomath_db(path: Path) -> None:
             ("program:test:p2", "deadline", "P2-loose", "text", None),
         )
 
+        # P4 — primary URL is proprietary, but another linked fact/source is
+        # redistributable. The manifest must redact the primary URL based on
+        # the exact primary-source license, not the entity-wide license set.
+        con.execute(
+            "INSERT INTO am_entity_facts("
+            "  entity_id, field_name, field_value_text, field_kind, source_id"
+            ") VALUES (?,?,?,?,?)",
+            ("program:test:p4", "amount_max_yen", "P4-pinned", "text", 6),
+        )
+
+        # P5 — primary URL is proprietary but is not present in the entity
+        # rollup. A separate redistributable fact source must not make the
+        # manifest claim the whole primary record is redistributable.
+        con.execute(
+            "INSERT INTO am_entity_facts("
+            "  entity_id, field_name, field_value_text, field_kind, source_id"
+            ") VALUES (?,?,?,?,?)",
+            ("program:test:p5", "amount_max_yen", "P5-pinned", "text", 6),
+        )
+
         # P3 — zero facts. Endpoint must degrade to primary_source_url
         # from jpi_programs. We do NOT add an am_entity_source row for
         # P3 either — the summary block stays at zero.
@@ -263,6 +320,9 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 ("program:test:p1", 1, "primary_source", "2026-04-20T00:00:00"),
                 ("program:test:p1", 2, "pdf_url", "2026-04-21T00:00:00"),
                 ("program:test:p2", 3, "primary_source", "2026-04-22T00:00:00"),
+                ("program:test:p2", 4, "reference", "2026-04-23T00:00:00"),
+                ("program:test:p4", 5, "primary_source", "2026-04-24T00:00:00"),
+                ("program:test:p4", 6, "reference", "2026-04-25T00:00:00"),
             ],
         )
 
@@ -303,6 +363,36 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                     "2026-04-23T00:00:00",
                     "2026-04-23T00:00:00",
                 ),
+                (
+                    "UNI-test-p4",
+                    "テスト P4 補助金",
+                    "経済産業省",
+                    "福岡県",
+                    "A",
+                    "https://aggregator.example/p4-primary.html",
+                    "2026-04-24T00:00:00",
+                    "2026-04-24T00:00:00",
+                ),
+                (
+                    "NO-LINK-P4",
+                    "テスト No Link 補助金",
+                    "経済産業省",
+                    "北海道",
+                    "C",
+                    "https://www.example.go.jp/no-link.html",
+                    "2026-04-25T00:00:00",
+                    "2026-04-25T00:00:00",
+                ),
+                (
+                    "UNI-test-p5",
+                    "テスト P5 補助金",
+                    "経済産業省",
+                    "愛知県",
+                    "A",
+                    "https://aggregator.example/p5-primary.html",
+                    "2026-04-26T00:00:00",
+                    "2026-04-26T00:00:00",
+                ),
             ],
         )
         con.executemany(
@@ -312,6 +402,8 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                 ("UNI-test-p1", "program:test:p1", "exact_name", 1.0),
                 ("UNI-test-p2", "program:test:p2", "exact_name", 1.0),
                 ("UNI-test-p3", "program:test:p3", "exact_name", 1.0),
+                ("UNI-test-p4", "program:test:p4", "exact_name", 1.0),
+                ("UNI-test-p5", "program:test:p5", "exact_name", 1.0),
             ],
         )
 
@@ -414,6 +506,8 @@ def test_get_source_manifest_full_provenance(client: TestClient) -> None:
 
     # Primary license short-form maps gov_standard_v2.0 → gov_standard.
     assert body["primary_license"] == "gov_standard"
+    assert body["license_posture"] == "redistributable"
+    assert body["redistribution_allowed"] is True
 
 
 # ---------------------------------------------------------------------------
@@ -423,8 +517,8 @@ def test_get_source_manifest_full_provenance(client: TestClient) -> None:
 
 def test_get_source_manifest_no_provenance_p3(client: TestClient) -> None:
     """P3 has zero facts. fact_provenance is empty, coverage_pct is 0.0,
-    primary_source_url is still surfaced from jpi_programs via the
-    UNI- resolution path.
+    and primary_source_url remains visible as metadata while redistribution
+    license is marked unverified.
     """
     r = client.get("/v1/source_manifest/UNI-test-p3")
     assert r.status_code == 200, r.text
@@ -433,6 +527,7 @@ def test_get_source_manifest_no_provenance_p3(client: TestClient) -> None:
     assert body["program_id"] == "UNI-test-p3"
     assert body["primary_name"] == "テスト P3 補助金"
     assert body["primary_source_url"] == "https://www.example.go.jp/p3.html"
+    assert body["primary_source_url_license_unverified"] is True
     assert body["fact_provenance"] == []
     assert body["fact_provenance_coverage_pct"] == 0.0
 
@@ -565,7 +660,7 @@ def test_mcp_tool_returns_same_envelope_as_rest(
 
 
 def test_p2_sparse_coverage(client: TestClient) -> None:
-    """P2 has 2 facts (1 with source_id, 1 without) → coverage 0.5.
+    """P2 has 2 facts and only redistributable fact provenance is surfaced.
 
     Not in the headline 6 tests but cheap to assert and pins a regression
     in the coverage_pct calculation.
@@ -575,3 +670,54 @@ def test_p2_sparse_coverage(client: TestClient) -> None:
     body = r.json()
     assert len(body["fact_provenance"]) == 1
     assert body["fact_provenance_coverage_pct"] == 0.5
+    assert body["primary_license"] == "pdl_v1.0"
+    assert body["license_posture"] == "mixed_restricted"
+    assert body["redistribution_allowed"] is False
+    assert body["primary_source_url"] == "https://www.jfc.go.jp/p2.html"
+    assert body["license_gate"]["blocked_entity_source_licenses"] == ["proprietary"]
+
+
+def test_primary_source_redaction_uses_exact_primary_license(client: TestClient) -> None:
+    """Entity-wide redistributable sources must not keep a proprietary primary URL."""
+    r = client.get("/v1/source_manifest/UNI-test-p4")
+    assert r.status_code == 200, r.text
+    body = r.json()
+
+    assert "primary_source_url" not in body
+    assert body["primary_source_url_redacted"] is True
+    assert body["primary_license"] == "proprietary"
+    assert body["license_posture"] == "mixed_restricted"
+    assert body["redistribution_allowed"] is False
+    assert len(body["fact_provenance"]) == 1
+    assert body["fact_provenance"][0]["source_url"] == "https://www.meti.go.jp/policy/p4.pdf"
+    assert body["license_gate"]["blocked_entity_source_licenses"] == ["proprietary"]
+
+
+def test_primary_source_license_affects_posture_when_missing_from_rollup(
+    client: TestClient,
+) -> None:
+    """A proprietary primary URL must not be masked by redistributable fact links."""
+    r = client.get("/v1/source_manifest/UNI-test-p5")
+    assert r.status_code == 200, r.text
+    body = r.json()
+
+    assert "primary_source_url" not in body
+    assert body["primary_source_url_redacted"] is True
+    assert body["primary_license"] == "proprietary"
+    assert body["license_posture"] == "mixed_restricted"
+    assert body["redistribution_allowed"] is False
+    assert body["summary"]["license_set"] == ["gov_standard_v2.0"]
+
+
+def test_no_entity_link_redacts_unknown_primary_source(client: TestClient) -> None:
+    """Metadata-only fallback keeps URL visible but marks license unverified."""
+    r = client.get("/v1/source_manifest/NO-LINK-P4")
+    assert r.status_code == 200, r.text
+    body = r.json()
+
+    assert body["program_id"] == "NO-LINK-P4"
+    assert body["primary_source_url"] == "https://www.example.go.jp/no-link.html"
+    assert body["primary_source_url_license_unverified"] is True
+    assert body["primary_license"] == "unknown"
+    assert body["fact_provenance"] == []
+    assert body["summary"]["source_count"] == 0

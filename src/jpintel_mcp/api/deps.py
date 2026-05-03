@@ -247,6 +247,30 @@ def _insert_usage_event(
     return cur.lastrowid, True
 
 
+def _existing_usage_event_for_billing_key(
+    conn: sqlite3.Connection,
+    *,
+    key_hash: str | None,
+    billing_idempotency_key: str | None,
+) -> int | None:
+    """Return an existing usage event for an idempotent retry, if any."""
+
+    if not key_hash or not billing_idempotency_key:
+        return None
+    try:
+        row = conn.execute(
+            "SELECT id FROM usage_events "
+            "WHERE key_hash = ? AND billing_idempotency_key = ? "
+            "ORDER BY id ASC LIMIT 1",
+            (key_hash, billing_idempotency_key),
+        ).fetchone()
+    except sqlite3.OperationalError as exc:
+        if "billing_idempotency_key" not in str(exc):
+            raise
+        return None
+    return int(row[0]) if row else None
+
+
 def _day_bucket(ts: datetime | None = None) -> str:
     ts = ts or datetime.now(UTC)
     return ts.strftime("%Y-%m-%d")
@@ -758,46 +782,52 @@ def _record_usage_async(
     if conn is not None:
         usage_txn_started = False
         try:
-            allowed, usage_txn_started = _metered_cap_final_check(
+            usage_event_id = _existing_usage_event_for_billing_key(
                 conn,
                 key_hash=key_hash,
-                metered=metered,
-                status_code=status_code,
-                quantity=quantity,
-            )
-            if not allowed:
-                return
-            usage_event_id, usage_event_inserted = _insert_usage_event(
-                conn,
-                key_hash=key_hash,
-                endpoint=endpoint,
-                status_code=status_code,
-                metered=metered,
-                digest=digest,
-                latency_ms=latency_ms,
-                result_count=result_count,
-                client_tag=client_tag,
-                quantity=quantity,
                 billing_idempotency_key=billing_idempotency_key,
             )
-            if usage_event_inserted:
-                conn.execute(
-                    "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
-                    (datetime.now(UTC).isoformat(), key_hash),
+            if usage_event_id is None:
+                allowed, usage_txn_started = _metered_cap_final_check(
+                    conn,
+                    key_hash=key_hash,
+                    metered=metered,
+                    status_code=status_code,
+                    quantity=quantity,
                 )
-            # Migration 089: persist audit_seal alongside usage_events for
-            # 7-year statutory retention (税理士事務所 bundle). Best-effort
-            # — a missing migration 089 is swallowed inside persist_seal.
-            if audit_seal is not None and usage_event_inserted:
-                try:
-                    from jpintel_mcp.api._audit_seal import persist_seal
+                if not allowed:
+                    return
+                usage_event_id, usage_event_inserted = _insert_usage_event(
+                    conn,
+                    key_hash=key_hash,
+                    endpoint=endpoint,
+                    status_code=status_code,
+                    metered=metered,
+                    digest=digest,
+                    latency_ms=latency_ms,
+                    result_count=result_count,
+                    client_tag=client_tag,
+                    quantity=quantity,
+                    billing_idempotency_key=billing_idempotency_key,
+                )
+                if usage_event_inserted:
+                    conn.execute(
+                        "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
+                        (datetime.now(UTC).isoformat(), key_hash),
+                    )
+                # Migration 089: persist audit_seal alongside usage_events for
+                # 7-year statutory retention (税理士事務所 bundle). Best-effort
+                # — a missing migration 089 is swallowed inside persist_seal.
+                if audit_seal is not None and usage_event_inserted:
+                    try:
+                        from jpintel_mcp.api._audit_seal import persist_seal
 
-                    persist_seal(conn, seal=audit_seal, api_key_hash=key_hash)
-                except Exception:  # noqa: BLE001
-                    pass
-            if usage_txn_started:
-                conn.execute("COMMIT")
-                usage_txn_started = False
+                        persist_seal(conn, seal=audit_seal, api_key_hash=key_hash)
+                    except Exception:  # noqa: BLE001
+                        pass
+                if usage_txn_started:
+                    conn.execute("COMMIT")
+                    usage_txn_started = False
         except Exception:  # noqa: BLE001
             if usage_txn_started:
                 with contextlib.suppress(Exception):
@@ -872,6 +902,7 @@ def log_usage(
     quantity: int = 1,
     response_body: Any = None,
     issue_audit_seal: bool = False,
+    strict_metering: bool = False,
 ) -> dict[str, Any] | None:
     """Insert one row into usage_events.
 
@@ -966,7 +997,7 @@ def log_usage(
         except Exception:  # noqa: BLE001
             audit_seal = None
 
-    if background_tasks is not None and billing_key is None:
+    if background_tasks is not None and billing_key is None and not strict_metering:
         # Hot path: defer all writes until after response flush. Requests
         # protected by HTTP Idempotency-Key write inline below so the usage row
         # is durable before the idempotency middleware caches a 2xx response.
@@ -989,51 +1020,88 @@ def log_usage(
         return audit_seal
 
     # Legacy / non-request path: inline writes on the supplied conn.
-    usage_txn_started = False
-    allowed, usage_txn_started = _metered_cap_final_check(
+    usage_event_id: int | None = None
+    usage_event_inserted = False
+    existing_usage_event_id = _existing_usage_event_for_billing_key(
         conn,
         key_hash=ctx.key_hash,
-        metered=ctx.metered,
-        status_code=status_code,
-        quantity=quantity,
+        billing_idempotency_key=billing_key,
     )
-    if not allowed:
-        return audit_seal
-    try:
-        usage_event_id, usage_event_inserted = _insert_usage_event(
+    if existing_usage_event_id is not None:
+        usage_event_id = existing_usage_event_id
+    else:
+        usage_txn_started = False
+        allowed, usage_txn_started = _metered_cap_final_check(
             conn,
             key_hash=ctx.key_hash,
-            endpoint=endpoint,
-            status_code=status_code,
             metered=ctx.metered,
-            digest=digest,
-            latency_ms=latency_ms,
-            result_count=result_count,
-            client_tag=client_tag,
+            status_code=status_code,
             quantity=quantity,
-            billing_idempotency_key=billing_key,
         )
-        if usage_event_inserted:
-            conn.execute(
-                "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
-                (datetime.now(UTC).isoformat(), ctx.key_hash),
+        if not allowed:
+            if strict_metering and ctx.metered and status_code < 400:
+                raise HTTPException(
+                    status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail={
+                        "code": "billing_cap_final_check_failed",
+                        "message": (
+                            "This paid response was not delivered because the "
+                            "final billing-cap check rejected the metered charge."
+                        ),
+                    },
+                )
+            return audit_seal
+        try:
+            usage_event_id, usage_event_inserted = _insert_usage_event(
+                conn,
+                key_hash=ctx.key_hash,
+                endpoint=endpoint,
+                status_code=status_code,
+                metered=ctx.metered,
+                digest=digest,
+                latency_ms=latency_ms,
+                result_count=result_count,
+                client_tag=client_tag,
+                quantity=quantity,
+                billing_idempotency_key=billing_key,
             )
-        # Migration 089: persist the seal alongside the inline usage_events row.
-        if audit_seal is not None and usage_event_inserted:
-            try:
-                from jpintel_mcp.api._audit_seal import persist_seal
+            if usage_event_inserted:
+                conn.execute(
+                    "UPDATE api_keys SET last_used_at = ? WHERE key_hash = ?",
+                    (datetime.now(UTC).isoformat(), ctx.key_hash),
+                )
+            # Migration 089: persist the seal alongside the inline usage_events row.
+            if audit_seal is not None and usage_event_inserted:
+                try:
+                    from jpintel_mcp.api._audit_seal import persist_seal
 
-                persist_seal(conn, seal=audit_seal, api_key_hash=ctx.key_hash)
-            except Exception:  # noqa: BLE001
-                pass
-        if usage_txn_started:
-            conn.execute("COMMIT")
-            usage_txn_started = False
-    except Exception:
-        if usage_txn_started:
-            with contextlib.suppress(Exception):
-                conn.execute("ROLLBACK")
-        raise
+                    persist_seal(conn, seal=audit_seal, api_key_hash=ctx.key_hash)
+                except Exception:  # noqa: BLE001
+                    pass
+            if usage_txn_started:
+                conn.execute("COMMIT")
+                usage_txn_started = False
+        except Exception:
+            if usage_txn_started:
+                with contextlib.suppress(Exception):
+                    conn.execute("ROLLBACK")
+            raise
+    if (
+        strict_metering
+        and ctx.metered
+        and status_code < 400
+        and usage_event_id is None
+    ):
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "code": "billing_audit_row_unavailable",
+                "message": (
+                    "This paid response was not delivered because the billing "
+                    "audit row could not be confirmed."
+                ),
+            },
+        )
     # Fire-and-forget Stripe usage_records report for metered ("paid") tier.
     # 4xx/5xx are not billed. Local import prevents a hard dep on stripe
     # during tests that construct ApiContext directly without Stripe env.

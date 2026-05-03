@@ -267,9 +267,9 @@ def _count_or_error(db_file_path, table: str) -> tuple[int | None, str | None]:
 
 @router.get("/v1/health/data", response_model=DataHealthResponse)
 def data_health() -> JSONResponse:
-    """Row-count probe for the 5 canonical tables.
+    """Public data health summary for core datasets.
 
-    Returns one entry per (table, db) pair. status:
+    Returns one entry per core dataset. status:
     - "ok" — row count meets `expected_min_rows`
     - "below_threshold" — rows present but under the floor
     - "empty" — table reachable, 0 rows
@@ -280,8 +280,8 @@ def data_health() -> JSONResponse:
     - "degraded" if any check is "below_threshold"
     - "ok" otherwise
 
-    Unbilled / unlogged / no anonymous quota — heartbeat surface for uptime
-    monitors. 30-second response cache.
+    This health endpoint is suitable for uptime monitors and uses a
+    30-second response cache.
     """
     now_mono = time.monotonic()
     cached_doc = _DATA_HEALTH_CACHE.get("doc")

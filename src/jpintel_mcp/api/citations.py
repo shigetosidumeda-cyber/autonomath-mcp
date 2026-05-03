@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 from pydantic import BaseModel, Field, ValidationError
@@ -151,6 +151,8 @@ class VerificationOutput(BaseModel):
     matched_form: str | None = None
     source_checksum: str | None = None
     normalized_source_length: int = 0
+    verification_basis: Literal["live_fetch", "caller_supplied_source_text", "none"] = "none"
+    source_url_fetched: bool = False
     error: str | None = None
 
 
@@ -159,6 +161,7 @@ class VerifyResponse(BaseModel):
     verified_count: int
     inferred_count: int
     stale_count: int = 0
+    caller_text_matched_count: int = 0
     unknown_count: int
 
 
@@ -191,7 +194,7 @@ def verify_citations(
         verified/inferred/unknown only.)
 
     Errors:
-      * 401 if the API key header is missing.
+      * 401 if the API key header is missing or invalid.
       * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500
         chars. The validation message identifies the offending index so
         the developer can fix the call without binary-searching the batch.
@@ -255,6 +258,8 @@ def verify_citations(
                     matched_form=None,
                     source_checksum=None,
                     normalized_source_length=0,
+                    verification_basis="none",
+                    source_url_fetched=False,
                     error="overall_timeout",
                 )
             )
@@ -266,13 +271,19 @@ def verify_citations(
         body: str | None
         if c.source_text is not None:
             body = c.source_text
+            verification_basis = "caller_supplied_source_text"
+            source_url_fetched = False
         elif c.source_url:
             # Per-fetch timeout cap, capped further by remaining wall clock.
             remaining = max(1, int(TOTAL_TIMEOUT_SEC - elapsed))
             per_fetch = min(PER_FETCH_TIMEOUT_SEC, remaining)
             body = verifier.fetch_source(c.source_url, timeout=per_fetch)
+            verification_basis = "live_fetch"
+            source_url_fetched = body is not None
         else:
             body = None
+            verification_basis = "none"
+            source_url_fetched = False
 
         if body is None:
             outputs.append(
@@ -282,6 +293,8 @@ def verify_citations(
                     matched_form=None,
                     source_checksum=None,
                     normalized_source_length=0,
+                    verification_basis=verification_basis,
+                    source_url_fetched=source_url_fetched,
                     error="source_unreachable",
                 )
             )
@@ -301,6 +314,8 @@ def verify_citations(
                 matched_form=verdict.get("matched_form"),
                 source_checksum=verdict.get("source_checksum"),
                 normalized_source_length=verdict.get("normalized_source_length", 0),
+                verification_basis=verification_basis,
+                source_url_fetched=source_url_fetched,
                 error=verdict.get("error"),
             )
         )
@@ -308,6 +323,12 @@ def verify_citations(
     verified = sum(1 for o in outputs if o.verification_status == "verified")
     inferred = sum(1 for o in outputs if o.verification_status == "inferred")
     stale = sum(1 for o in outputs if o.verification_status == "stale")
+    caller_text_matched = sum(
+        1
+        for o in outputs
+        if o.verification_basis == "caller_supplied_source_text"
+        and o.verification_status in {"verified", "inferred"}
+    )
     unknown = sum(1 for o in outputs if o.verification_status == "unknown")
 
     # Bill ONE unit per call (the verifier work, not per citation). Mirrors
@@ -323,6 +344,7 @@ def verify_citations(
                 "citation_count": len(payload.citations),
                 "verified": verified,
                 "inferred": inferred,
+                "caller_text_matched": caller_text_matched,
                 "unknown": unknown,
             },
             quantity=1,
@@ -337,6 +359,7 @@ def verify_citations(
         verified_count=verified,
         inferred_count=inferred,
         stale_count=stale,
+        caller_text_matched_count=caller_text_matched,
         unknown_count=unknown,
     )
 

@@ -411,6 +411,18 @@ _PORTAL_RETURN_PATHS = frozenset({
     "/pricing.html",
     "/en/pricing.html",
 })
+_SERVICE_CHECKOUT_REDIRECT_PATHS = frozenset(
+    {
+        "/success.html",
+        "/en/success.html",
+        "/pricing.html",
+        "/en/pricing.html",
+        "/widget.html",
+        "/en/widget.html",
+        "/alerts.html",
+        "/en/alerts.html",
+    }
+)
 _CHECKOUT_GO_PREFIX = "/go/"
 _CHECKOUT_STATE_COOKIE = "jpcite_checkout_state"
 _CHECKOUT_STATE_MAX_AGE_SECONDS = 60 * 60
@@ -449,6 +461,20 @@ def _validate_portal_return_url(raw_url: str) -> str:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "invalid return_url")
     if parsed.path not in _PORTAL_RETURN_PATHS:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "invalid return_url")
+    return raw_url
+
+
+def validate_jpcite_service_redirect_url(raw_url: str, *, kind: str) -> str:
+    """Allow Stripe product redirects only to public jpcite-owned pages."""
+    parsed = urlparse(raw_url)
+    if parsed.scheme != "https" or parsed.username or parsed.password:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"invalid {kind}_url")
+    if parsed.hostname not in _CHECKOUT_ALLOWED_HOSTS or parsed.port not in (None, 443):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"invalid {kind}_url")
+    if parsed.path not in _SERVICE_CHECKOUT_REDIRECT_PATHS and not parsed.path.startswith(
+        _CHECKOUT_GO_PREFIX
+    ):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"invalid {kind}_url")
     return raw_url
 
 

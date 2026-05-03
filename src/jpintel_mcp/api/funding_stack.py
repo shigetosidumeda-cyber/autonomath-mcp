@@ -166,6 +166,7 @@ def check_funding_stack(
         },
         quantity=quantity,
         result_count=len(result.pairs),
+        strict_metering=True,
     )
     # §17.D audit seal on paid responses (no-op for anon).
     attach_seal_to_body(

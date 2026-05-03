@@ -12,7 +12,7 @@ GPT / Claude / Cursor に長い PDF や公式ページを直接渡す前に、Ev
 |---|---|
 | 5 分で API を試す | [Getting started](./getting-started.md) |
 | エンドポイント一覧を見る | [API reference](./api-reference.md) |
-| Claude / Cursor / ChatGPT などから使う | [MCP tools](./mcp-tools.md) |
+| Claude / Cursor などのMCPクライアント、ChatGPT Custom GPT から使う | [MCP tools](./mcp-tools.md) / [API reference](./api-reference.md) |
 | 調査コンテキストを小さくできる条件を見る | [MCP tools](./mcp-tools.md#evidence-packet) / [API reference](./api-reference.md) |
 | 返却形式とエラー処理を合わせる | [Response envelope](./api-reference/response_envelope.md) / [Error handling](./error_handling.md) |
 | 出典・根拠・除外ルールを確認する | [Exclusions](./exclusions.md) / [Honest capabilities](./honest_capabilities.md) |
@@ -22,7 +22,7 @@ GPT / Claude / Cursor に長い PDF や公式ページを直接渡す前に、Ev
 
 - **REST API**: `https://api.jpcite.com/v1/*`
 - **OpenAPI**: [openapi/v1.json](./openapi/v1.json)
-- **MCP server**: Claude Desktop / Cursor / ChatGPT / Gemini などのツール呼び出しで利用できます
+- **MCP server**: Claude Desktop / Cursor / Cline などの MCP クライアントで利用できます。ChatGPT Custom GPT では OpenAPI Actions 経由で同等の REST endpoint を呼び出します。
 - **配布 package**: 互換性のため package 名は `autonomath-mcp` を維持しています。表示名とサービス名は jpcite です。
 
 ## 代表的な使い方

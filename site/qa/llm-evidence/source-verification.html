@@ -195,10 +195,10 @@
         },
         {
           "@type": "Question",
-          "name": "APIコストの節約になりますか?",
+          "name": "入力文脈を小さくできる場合はありますか?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "条件付きでなります。長いPDFや複数省庁ページをLLMへ直接投入する前に、jpciteで候補・要約対象・出典URLを絞ると、不要な長文トークン投入を減らせます。ただし、キャッシュや無料検索付きLLMでは常に安くなるとは限りません。"
+            "text": "条件が合うと入力文脈を小さくできる場合があります。長いPDFや複数省庁ページをLLMへ直接投入する前に、jpciteで候補・要約対象・出典URLを絞ると、不要な長文入力を避けやすくなります。ただし、キャッシュや無料検索付きLLMでは請求額が下がるとは限りません。"
           }
         }
       ]
@@ -271,8 +271,8 @@
  <dd>制度名、所管、対象地域、対象者、補助上限、締切、併用可否、根拠URLを検証します。jpcite は検索結果に unified_id と source_url / fetched_at を返すため、AIの文章と証拠を分離できます。</dd> <dt>ワークフローはどう組みますか?</dt>
  <dd>1. LLMが利用者条件を構造化する。2. jpcite の検索 / prescreen / batch detail を呼ぶ。3. LLMが返却された一次資料URLだけを根拠に説明文を書く。4. 出典URLと取得時刻を回答末尾に残す、という順です。</dd> <dt>LLMの幻覚を完全に防げますか?</dt>
  <dd>完全には防げません。jpcite は候補データと根拠を機械可読に返し、LLMが参照すべき材料を狭めます。最終回答では source_url と fetched_at を表示し、専門判断が必要な箇所は士業確認へ渡す前提です。</dd> <dt>自前スクレイピングと何が違いますか?</dt>
- <dd>1,500以上の公的ソースを個別にクロールし、URL死亡・表記揺れ・制度ID・排他関係を維持する部分を外部化できます。自社実装は可能ですが、運用保守とURL livenessの継続監視が主コストになります。</dd> <dt>APIコストの節約になりますか?</dt>
- <dd>条件付きでなります。長いPDFや複数省庁ページをLLMへ直接投入する前に、jpciteで候補・要約対象・出典URLを絞ると、不要な長文トークン投入を減らせます。ただし、キャッシュや無料検索付きLLMでは常に安くなるとは限りません。</dd> </dl>
+ <dd>1,500以上の公的ソースを個別にクロールし、URL死亡・表記揺れ・制度ID・排他関係を維持する部分を外部化できます。自社実装は可能ですが、運用保守とURL livenessの継続監視が主コストになります。</dd> <dt>入力文脈を小さくできる場合はありますか?</dt>
+ <dd>条件が合うと入力文脈を小さくできる場合があります。長いPDFや複数省庁ページをLLMへ直接投入する前に、jpciteで候補・要約対象・出典URLを絞ると、不要な長文入力を避けやすくなります。ただし、キャッシュや無料検索付きLLMでは請求額が下がるとは限りません。</dd> </dl>
  </section> <section aria-labelledby="facts-title">
  <h2 id="facts-title">主要事実</h2>
  <dl class="program-meta"> <dt>検証対象</dt>
@@ -282,7 +282,7 @@
  </section>
  <section aria-labelledby="source-title">
  <h2 id="source-title">出典・一次資料</h2>
- <p>本ページの内容は以下の一次資料に基づきます。最新の制度内容は必ず公式ページをご確認ください。</p>
+ <p>参照した主な公開資料です。最新の制度内容は公式ページで確認してください。</p>
  <ul class="source-list"> <li>
  <a class="primary-link" rel="external nofollow noopener" href="https://jpcite.com/facts.html">jpcite fact sheet</a>
  <span class="muted"> (jpcite.com)</span>
@@ -301,10 +301,10 @@
  <p>このトピックに関連する制度・税務 ruleset・法令データは REST API および MCP で取得できます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.jpcite.com/v1/programs/search?q=AI%20%E5%9B%9E%E7%AD%94%20%E5%87%BA%E5%85%B8%E7%A2%BA%E8%AA%8D%20%E8%A3%9C%E5%8A%A9%E9%87%91"</code></pre>
- <p>MCP クライアント (Claude Desktop, Cursor, ChatGPT) からは <code>search_programs(q="AI 回答 出典確認 補助金")</code> で呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
+ <p>MCP クライアント (Claude Desktop / Cursor / Cline など) では <code>search_programs(q="AI 回答 出典確認 補助金")</code>、ChatGPT Custom GPT では OpenAPI Actions 経由で同等の REST endpoint を呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
  <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
  </section>
- <p class="disclaimer">本ページは自動生成された一次資料の要約であり、法的助言・税務助言・申請代行を構成するものではありません。本ページの内容は税理士法第52条が規定する税理士業務 (税務代理・税務書類の作成・税務相談) の提供ではなく、個別の税務判断が必要な場合は税理士・有資格専門家にご相談ください。制度の最新内容は所管官公庁の一次情報を必ず確認してください。</p>
+ <p class="disclaimer">本ページは公開資料をもとに整理した概要であり、法的助言・税務助言・申請代行を構成するものではありません。本ページの内容は税理士法第52条が規定する税理士業務 (税務代理・税務書類の作成・税務相談) の提供ではなく、個別の税務判断が必要な場合は税理士・有資格専門家にご相談ください。制度の最新内容は所管官公庁の公開情報で確認してください。</p>
  </article>
 
  </div>

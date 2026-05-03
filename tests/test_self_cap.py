@@ -215,7 +215,11 @@ def test_batch_projected_quantity_cannot_exceed_cap(
     r = client.post(
         "/v1/programs/batch",
         json={"unified_ids": ["UNI-deadbeef00", "UNI-deadbeef01"]},
-        headers={"X-API-Key": fresh_paid_key, "X-Cost-Cap-JPY": "6"},
+        headers={
+            "X-API-Key": fresh_paid_key,
+            "X-Cost-Cap-JPY": "6",
+            "Idempotency-Key": "self-cap-programs-batch",
+        },
     )
     assert r.status_code == 503, r.text
     err = r.json()["error"]

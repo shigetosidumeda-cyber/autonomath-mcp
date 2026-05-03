@@ -49,13 +49,13 @@ from fastapi import APIRouter, Header, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from jpintel_mcp.api.billing import validate_jpcite_service_redirect_url
+from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (runtime for FastAPI Depends resolution)
 from jpintel_mcp.config import settings
 from jpintel_mcp.email.compliance_templates import (
     AREAS_SUPPORTED,
     render_verification_email,
 )
-
-from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (runtime for FastAPI Depends resolution)
 
 logger = logging.getLogger("jpintel.api.compliance")
 
@@ -577,11 +577,16 @@ def stripe_checkout(payload: CheckoutRequest, conn: DbDep) -> CheckoutResponse:
         extra["tax_id_collection"] = {"enabled": True}
         extra["billing_address_collection"] = "required"
 
+    success_url = validate_jpcite_service_redirect_url(
+        payload.success_url, kind="success"
+    )
+    cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
+
     session = stripe.checkout.Session.create(
         mode="subscription",
         line_items=[{"price": price_id, "quantity": 1}],
-        success_url=payload.success_url,
-        cancel_url=payload.cancel_url,
+        success_url=success_url,
+        cancel_url=cancel_url,
         customer_email=row["email"],
         client_reference_id=str(int(row["id"])),
         allow_promotion_codes=True,

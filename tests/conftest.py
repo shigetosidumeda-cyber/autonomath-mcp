@@ -174,7 +174,7 @@ def seeded_db(tmp_db_path: Path) -> Path:
 def _reset_anon_rate_limit(seeded_db: Path):
     """Zero the anon_rate_limit table between tests.
 
-    The default anon quota is 50/month. Without this, the 38 /v1 tests that
+    The default anon quota is 3/day. Without this, the /v1 tests that
     share the TestClient IP exhaust the counter mid-suite and start getting
     429s for unrelated reasons. Scoped autouse so every test starts clean.
     Also clears the /v1/meta TTL cache so tests that mutate programs after
@@ -187,6 +187,17 @@ def _reset_anon_rate_limit(seeded_db: Path):
     is short-window and per-process, so a single autouse reset per test
     keeps each test's bucket fresh.
     """
+    # Some modules temporarily point settings.db_path / JPINTEL_DB_PATH at a
+    # specialized fixture DB. Reset both before every test so API auth,
+    # funnel, feedback, and anon quota checks all hit the seeded integration DB.
+    os.environ["JPINTEL_DB_PATH"] = str(seeded_db)
+    try:
+        from jpintel_mcp.config import settings
+
+        settings.db_path = seeded_db
+    except ImportError:
+        pass
+
     c = sqlite3.connect(seeded_db)
     try:
         c.execute("DELETE FROM anon_rate_limit")
@@ -249,11 +260,11 @@ def _sync_bg_task_queue(seeded_db: Path, monkeypatch):
     through a single mediator that returns the FIRST patched stub it
     finds. Test fakes pile up consistently.
     """
+    from jpintel_mcp import email as _email_pkg
     from jpintel_mcp.api import _bg_task_queue as _q
     from jpintel_mcp.api import _bg_task_worker as _w
     from jpintel_mcp.api import billing as _billing
     from jpintel_mcp.api import me as _me
-    from jpintel_mcp import email as _email_pkg
     from jpintel_mcp.email import postmark as _postmark
 
     _real_enqueue = _q.enqueue
@@ -292,7 +303,7 @@ def _sync_bg_task_queue(seeded_db: Path, monkeypatch):
     # the row but DON'T run the handler — tests that need the effect
     # must drain the queue manually after the request returns (the
     # billing-webhook tests do exactly this via claim_next + _dispatch_one).
-    _ASYNC_ONLY_KINDS = {"stripe_status_refresh"}
+    async_only_kinds = {"stripe_status_refresh"}
 
     def _sync_enqueue(
         conn,
@@ -313,7 +324,7 @@ def _sync_bg_task_queue(seeded_db: Path, monkeypatch):
         if row_id in _seen_ids:
             return row_id
         _seen_ids.add(row_id)
-        if kind in _ASYNC_ONLY_KINDS:
+        if kind in async_only_kinds:
             return row_id
         handler = _w._HANDLERS.get(kind)
         if handler is None:

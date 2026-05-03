@@ -515,8 +515,6 @@ def main() -> int:
 
     app = _build_app(include_preview=args.include_preview)
     schema = app.openapi()
-    _normalize_component_schema_names(schema)
-    _sanitize_public_schema(schema)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(

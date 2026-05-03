@@ -701,9 +701,8 @@ class DdBatchRequest(BaseModel):
     "/dd_batch",
     summary="Batch DD over up to 200 法人 (¥3 per id, NDJSON when N>50)",
     description=(
-        "Composes the existing dd_profile_am chain "
-        "(corporate_entity + adoptions + enforcement + invoice + bids + "
-        "amendment_recent) over a batch of 1..200 法人番号 in a single call.\n\n"
+        "Combines corporate, adoption, enforcement, invoice, bid, and "
+        "recent-amendment data over a batch of 1..200 法人番号 in a single call.\n\n"
         "**Pricing**: ¥3 per houjin_bangou (per-id, NOT 1 ¥3/call). Cap "
         "enforced via `X-Cost-Cap-JPY` header AND/OR `max_cost_jpy` body "
         "field — the lower binds.\n\n"
@@ -715,10 +714,7 @@ class DdBatchRequest(BaseModel):
         '"coverage_scope": ... }` envelope line.\n\n'
         "**§52 fence**: every response carries the 税理士法 §52 disclaimer "
         "and an explicit coverage_scope excluding 役員一覧 / 株主構成 / 経歴 / "
-        "反社 / 信用情報 (商業登記法 gray-zone; TDB primary). LLM agents "
-        "MUST relay both verbatim.\n\n"
-        "**Operator**: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708). "
-        "Brand: jpcite."
+        "反社 / 信用情報. LLM agents should surface both."
     ),
 )
 def post_dd_batch(
@@ -820,18 +816,24 @@ def post_dd_batch(
             with contextlib_suppress(sqlite3.Error):
                 am_conn.close()
 
-    # 5. Per-id metering. Each houjin = one billable event. Defer the write
-    #    until after the response is flushed so a render/transport failure
-    #    cannot leave the customer with partial billing and no packet.
-    for hj in normalized:
-        log_usage(
-            conn,
-            ctx,
-            endpoint="am.dd_batch.row",
-            params={"houjin_bangou": hj, "depth": payload.depth},
-            result_count=1,
-            background_tasks=background_tasks,
-        )
+    # 5. Meter the full batch as one audit row with quantity=N. This preserves
+    #    ¥3 per houjin while making the final cap/idempotency check atomic.
+    log_usage(
+        conn,
+        ctx,
+        endpoint="am.dd_batch",
+        params={
+            "batch_size": n_ids,
+            "depth": payload.depth,
+            "houjin_bangous_sha256": hashlib.sha256(
+                ",".join(normalized).encode("utf-8")
+            ).hexdigest(),
+        },
+        result_count=n_ids,
+        background_tasks=background_tasks,
+        quantity=n_ids,
+        strict_metering=True,
+    )
 
     # 6. NDJSON stream when batch is large. Each profile gets its own line +
     #    a final meta envelope. Customers running this through `jq -c` will
@@ -1114,10 +1116,8 @@ def cancel_watch(
     "/group_graph",
     summary="2-hop 法人↔法人 part_of traversal (no shareholder data)",
     description=(
-        "Walks `am_relation.part_of` edges where BOTH endpoints are "
-        "`am_entities.record_kind='corporate_entity'` (filter applied "
-        "in-query). Returns nodes + edges up to depth=2.\n\n"
-        "**Excluded by design** (商業登記法 gray-zone, TDB primary):\n"
+        "Returns corporate relationship nodes and edges up to depth=2.\n\n"
+        "**Excluded by design**:\n"
         "  - 役員一覧 / 株主構成 / 経歴 / 持株比率\n"
         "  - 反社チェック / 信用情報 / 帝国データバンク data\n\n"
         "**Pricing**: ¥3 per call (single houjin seed)."
@@ -1270,9 +1270,9 @@ def get_group_graph(
 # ---------------------------------------------------------------------------
 # PILLAR 4: dd_export (audit-bundle ZIP via signed R2 URL)
 #
-# The ONLY non-¥3 SKU in the system: ¥3 × N (per-id) + ¥30 fixed bundle fee.
-# Justified by R2 storage compute (zip + sha256 manifest + signed URL
-# lifecycle). Documented explicitly in docs/pricing.md.
+# Pure-meter export charge: ¥3 × N corporate numbers plus ¥3 × bundle_units.
+# bundle_units is selected by bundle_class and recorded as usage_events.quantity,
+# not as a separate Stripe Price or tier SKU.
 # ---------------------------------------------------------------------------
 
 
@@ -1736,35 +1736,26 @@ def post_dd_export(
         key=r2_key,
     )
 
-    # Bill: per-id (N rows of am.dd_export.row) + the bundle fee surfaced
-    # as a SINGLE usage_event with `quantity=bundle_units` so the Stripe
-    # usage_record posts ONE line for the bundle (not N parallel POSTs).
-    # Same ¥-total as the legacy loop (`bundle_units × ¥3`) but with one
-    # idempotency key per export → cleaner reconciliation surface. Writes are
-    # deferred until after the response is flushed to avoid partial billing on
-    # response construction failures.
-    for hj in normalized:
-        log_usage(
-            conn,
-            ctx,
-            endpoint="am.dd_export.row",
-            params={"houjin_bangou": hj, "deal_id": payload.deal_id},
-            result_count=1,
-            background_tasks=background_tasks,
-        )
-    # Bundle fee — single row, quantity = bundle_units.
+    # Bill the export as one audit row with quantity=(N houjin + bundle_units).
+    # This preserves the published ¥3/unit total while avoiding partial billing
+    # if the final cap/idempotency check rejects the high-value artifact.
     log_usage(
         conn,
         ctx,
-        endpoint="am.dd_export.bundle_fee",
+        endpoint="am.dd_export",
         params={
             "deal_id": payload.deal_id,
-            "bundle_sha256": zip_sha256,
             "bundle_class": payload.bundle_class,
+            "houjin_bangous_sha256": hashlib.sha256(
+                ",".join(normalized).encode("utf-8")
+            ).hexdigest(),
+            "batch_size": n_ids,
+            "bundle_units": bundle_units,
         },
-        quantity=bundle_units,
-        result_count=bundle_units,
+        quantity=n_ids + bundle_units,
+        result_count=n_ids,
         background_tasks=background_tasks,
+        strict_metering=True,
     )
 
     body = {

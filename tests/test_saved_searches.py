@@ -175,7 +175,6 @@ def test_results_xlsx_replays_saved_filters_before_billing(
                 "amount_min": 1000,
                 "amount_max": 2000,
                 "tier": ["A"],
-                "include_excluded": True,
             },
             "frequency": "daily",
             "notify_email": "test@example.com",
@@ -201,7 +200,7 @@ def test_results_xlsx_replays_saved_filters_before_billing(
     assert kwargs["funding_purpose"] == ["設備投資"]
     assert kwargs["amount_min"] == 1000
     assert kwargs["amount_max"] == 2000
-    assert kwargs["include_excluded"] is True
+    assert kwargs["include_excluded"] is False
     assert captured["rows"][0]["evidence_packet_endpoint"].endswith(
         "/v1/evidence/packets/program/UNI-saved-filter"
     )

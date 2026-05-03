@@ -65,6 +65,36 @@
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600
 
+/openapi/*.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
+/v1/openapi*.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
+/docs/openapi/*.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
+/server.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
+/mcp-server.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
+/bench/*.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
 /llms-full.txt
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600
@@ -84,8 +114,8 @@
   Cache-Control: public, max-age=0, s-maxage=60, must-revalidate
   X-Robots-Tag: index, follow
 
-# Trial-key reveal page — never cache.
-# /trial.html receives the raw API key in the URL fragment (#api_key=...)
+# Trial-key reveal page: no-store, noindex.
+# /trial.html receives the issued key in the URL fragment (#api_key=...)
 # from the magic-link verify redirect. Browsers do not send fragments to
 # the server, so the key never reaches the edge cache; but the SHELL of
 # the page (the JS that reads the fragment and renders it once) must

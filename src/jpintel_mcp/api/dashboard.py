@@ -109,8 +109,7 @@ class ToolUsageRow(BaseModel):
         default=None,
         description=(
             "Average request latency for this endpoint over the window, "
-            "if telemetry is recorded. Currently unused — usage_events does "
-            "not persist latency_ms — so the field is None today."
+            "when available; null when not available."
         ),
     )
 

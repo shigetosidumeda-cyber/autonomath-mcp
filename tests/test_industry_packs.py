@@ -100,6 +100,21 @@ def _restore_jpintel_db_path_after_module():
     except Exception:
         pass
 
+
+@pytest.fixture(autouse=True)
+def _use_production_jpintel_db_for_industry_packs(_reset_anon_rate_limit):
+    """Keep this module on the production corpus after global test resets."""
+
+    os.environ["JPINTEL_DB_PATH"] = str(_JPI_DB)
+    try:
+        from jpintel_mcp.config import settings as _live_settings
+
+        _live_settings.db_path = _JPI_DB
+    except Exception:
+        pass
+    yield
+
+
 # Import the server module first to break the circular import
 # autonomath_tools<->server (same convention as test_wave22_tools.py).
 from jpintel_mcp.mcp import server  # noqa: F401, E402

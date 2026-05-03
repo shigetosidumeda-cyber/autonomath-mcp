@@ -29,6 +29,7 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+from fastapi import HTTPException
 
 from jpintel_mcp.api.deps import hash_api_key
 from jpintel_mcp.billing.keys import issue_key
@@ -172,6 +173,14 @@ def _seed_tax_rulesets(seeded_db: Path):
 # ---------------------------------------------------------------------------
 
 
+def _idem_headers(api_key: str | None, suffix: str, **extra: str) -> dict[str, str]:
+    headers = {"Idempotency-Key": f"kaikei-{suffix}"}
+    if api_key is not None:
+        headers["X-API-Key"] = api_key
+    headers.update(extra)
+    return headers
+
+
 def test_audit_metered_routes_reject_anonymous(client):
     workpaper_payload = {
         "client_id": "client-anon-blocked",
@@ -180,7 +189,11 @@ def test_audit_metered_routes_reject_anonymous(client):
         "report_format": "pdf",
         "audit_period": "2026-Q1",
     }
-    r = client.post("/v1/audit/workpaper", json=workpaper_payload)
+    r = client.post(
+        "/v1/audit/workpaper",
+        headers=_idem_headers(None, "anon-workpaper"),
+        json=workpaper_payload,
+    )
     assert r.status_code == 401
 
     batch_payload = {
@@ -193,7 +206,11 @@ def test_audit_metered_routes_reject_anonymous(client):
         ],
         "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
     }
-    r = client.post("/v1/audit/batch_evaluate", json=batch_payload)
+    r = client.post(
+        "/v1/audit/batch_evaluate",
+        headers=_idem_headers(None, "anon-batch"),
+        json=batch_payload,
+    )
     assert r.status_code == 401
 
     r = client.get("/v1/audit/snapshot_attestation?year=2026")
@@ -203,10 +220,79 @@ def test_audit_metered_routes_reject_anonymous(client):
 def test_audit_metered_routes_reject_trial_key(client, kaikei_trial_key):
     r = client.get(
         "/v1/audit/snapshot_attestation?year=2026",
-        headers={"X-API-Key": kaikei_trial_key},
+        headers=_idem_headers(
+            kaikei_trial_key,
+            "trial-attestation",
+            **{"X-Cost-Cap-JPY": "30000"},
+        ),
     )
     assert r.status_code == 402
     assert r.json()["detail"]["required_tier"] == "paid"
+
+
+def test_snapshot_attestation_requires_idempotency_key(client, kaikei_key):
+    r = client.get(
+        "/v1/audit/snapshot_attestation?year=2026",
+        headers={"X-API-Key": kaikei_key, "X-Cost-Cap-JPY": "30000"},
+    )
+
+    assert r.status_code == 428
+    assert r.json()["detail"]["code"] == "idempotency_key_required"
+
+
+def test_snapshot_attestation_idempotency_dedupes_billing(
+    client, kaikei_key, seeded_db
+):
+    key_hash = hash_api_key(kaikei_key)
+    headers = _idem_headers(
+        kaikei_key,
+        "snapshot-dedupe",
+        **{"X-Cost-Cap-JPY": "30000"},
+    )
+
+    first = client.get("/v1/audit/snapshot_attestation?year=2026", headers=headers)
+    assert first.status_code == 200, first.text
+    second = client.get("/v1/audit/snapshot_attestation?year=2026", headers=headers)
+    assert second.status_code == 200, second.text
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'audit.snapshot_attestation'",
+            (key_hash,),
+        ).fetchall()
+    finally:
+        c.close()
+    assert rows == [(10_000,)]
+
+
+def test_snapshot_attestation_same_idempotency_key_rejects_changed_year(
+    client, kaikei_key, seeded_db
+):
+    key_hash = hash_api_key(kaikei_key)
+    headers = _idem_headers(
+        kaikei_key,
+        "snapshot-mismatch",
+        **{"X-Cost-Cap-JPY": "30000"},
+    )
+
+    first = client.get("/v1/audit/snapshot_attestation?year=2026", headers=headers)
+    assert first.status_code == 200, first.text
+    second = client.get("/v1/audit/snapshot_attestation?year=2027", headers=headers)
+    assert second.status_code == 409, second.text
+    assert second.json()["error"] == "idempotency_key_in_use"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        rows = c.execute(
+            "SELECT quantity FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'audit.snapshot_attestation'",
+            (key_hash,),
+        ).fetchall()
+    finally:
+        c.close()
+    assert rows == [(10_000,)]
 
 
 def test_workpaper_pdf_contains_47_2_wording(client, kaikei_key):
@@ -221,7 +307,7 @@ def test_workpaper_pdf_contains_47_2_wording(client, kaikei_key):
 
     r = client.post(
         "/v1/audit/workpaper",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "pdf-contains"),
         json={
             "client_id": "client-abc-001",
             "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
@@ -274,7 +360,7 @@ def test_workpaper_pdf_cache_hit_is_free(client, kaikei_key, tmp_path):
     try:
         first = client.post(
             "/v1/audit/workpaper",
-            headers={"X-API-Key": kaikei_key},
+            headers=_idem_headers(kaikei_key, "cache-first"),
             json={
                 "client_id": "client-cache-001",
                 "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
@@ -295,7 +381,7 @@ def test_workpaper_pdf_cache_hit_is_free(client, kaikei_key, tmp_path):
 
         second = client.post(
             "/v1/audit/workpaper",
-            headers={"X-API-Key": kaikei_key},
+            headers=_idem_headers(kaikei_key, "cache-second"),
             json={
                 "client_id": "client-cache-001",
                 "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
@@ -314,11 +400,49 @@ def test_workpaper_pdf_cache_hit_is_free(client, kaikei_key, tmp_path):
         _audit_mod._WORKPAPER_CACHE_DIR = orig
 
 
+def test_workpaper_billing_failure_does_not_publish_pdf_cache(
+    client, kaikei_key, tmp_path, monkeypatch
+):
+    cache_dir = tmp_path / "workpapers"
+
+    from jpintel_mcp.api import audit as _audit_mod
+
+    monkeypatch.setattr(_audit_mod, "_WORKPAPER_CACHE_DIR", cache_dir)
+
+    def _fake_weasyprint(*, out_path: Path, **_kwargs) -> bool:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_bytes(b"%PDF-1.4\n% rendered before billing\n")
+        return True
+
+    def _fail_billing(*_args, **_kwargs):
+        raise HTTPException(status_code=503, detail="billing unavailable")
+
+    monkeypatch.setattr(_audit_mod, "_render_pdf_weasyprint", _fake_weasyprint)
+    monkeypatch.setattr(_audit_mod, "log_usage", _fail_billing)
+
+    response = client.post(
+        "/v1/audit/workpaper",
+        headers=_idem_headers(kaikei_key, "cache-billing-failure"),
+        json={
+            "client_id": "client-cache-fail-001",
+            "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
+            "business_profile": {"annual_revenue_yen": 30_000_000},
+            "report_format": "pdf",
+            "audit_period": "2026-Q2",
+            "max_cost_jpy": 33,
+        },
+    )
+
+    assert response.status_code == 503, response.text
+    assert not list(cache_dir.glob("*.pdf"))
+    assert not list(cache_dir.glob("*.tmp"))
+
+
 def test_workpaper_unknown_ruleset_404(client, kaikei_key):
     """Unknown ruleset id → 404."""
     r = client.post(
         "/v1/audit/workpaper",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "unknown-ruleset"),
         json={
             "client_id": "client-unknown-1",
             "target_ruleset_ids": ["TAX-deadbeef00"],
@@ -335,7 +459,7 @@ def test_workpaper_records_full_quantity_in_usage_events(client, kaikei_key, see
     """Cold workpaper billing must be one usage_events row with quantity=N."""
     r = client.post(
         "/v1/audit/workpaper",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "quantity"),
         json={
             "client_id": "client-quantity-001",
             "target_ruleset_ids": ["TAX-aaaaaaaaaa", "TAX-bbbbbbbbbb"],
@@ -364,7 +488,7 @@ def test_workpaper_records_full_quantity_in_usage_events(client, kaikei_key, see
 def test_workpaper_requires_cost_cap(client, kaikei_key):
     r = client.post(
         "/v1/audit/workpaper",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "requires-cap"),
         json={
             "client_id": "client-requires-cap-001",
             "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
@@ -381,7 +505,7 @@ def test_workpaper_low_cost_cap_rejects_before_billing(client, kaikei_key, seede
     key_hash = hash_api_key(kaikei_key)
     r = client.post(
         "/v1/audit/workpaper",
-        headers={"X-API-Key": kaikei_key, "X-Cost-Cap-JPY": "3"},
+        headers=_idem_headers(kaikei_key, "low-cap", **{"X-Cost-Cap-JPY": "3"}),
         json={
             "client_id": "client-low-cap-001",
             "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
@@ -419,7 +543,7 @@ def test_workpaper_multi_unit_cap_rejects_before_billing(client, kaikei_key, see
 
     r = client.post(
         "/v1/audit/workpaper",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "multi-unit-cap"),
         json={
             "client_id": "client-cap-001",
             "target_ruleset_ids": ["TAX-aaaaaaaaaa"],
@@ -462,7 +586,7 @@ def test_batch_evaluate_5_clients_billing(client, kaikei_key):
     ]
     r = client.post(
         "/v1/audit/batch_evaluate",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "batch-5"),
         json={
             "audit_firm_id": "firm-test-1",
             "profiles": profiles,
@@ -508,7 +632,7 @@ def test_batch_evaluate_records_fanout_quantity(client, kaikei_key, seeded_db):
     ]
     r = client.post(
         "/v1/audit/batch_evaluate",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "batch-quantity"),
         json={
             "audit_firm_id": "firm-quantity-1",
             "profiles": profiles,
@@ -535,7 +659,7 @@ def test_batch_evaluate_records_fanout_quantity(client, kaikei_key, seeded_db):
 def test_batch_evaluate_requires_cost_cap(client, kaikei_key):
     r = client.post(
         "/v1/audit/batch_evaluate",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "batch-requires-cap"),
         json={
             "audit_firm_id": "firm-requires-cap-1",
             "profiles": [
@@ -555,7 +679,7 @@ def test_batch_evaluate_low_cost_cap_rejects_before_billing(client, kaikei_key, 
     key_hash = hash_api_key(kaikei_key)
     r = client.post(
         "/v1/audit/batch_evaluate",
-        headers={"X-API-Key": kaikei_key, "X-Cost-Cap-JPY": "0"},
+        headers=_idem_headers(kaikei_key, "batch-low-cap", **{"X-Cost-Cap-JPY": "0"}),
         json={
             "audit_firm_id": "firm-low-cap-1",
             "profiles": [
@@ -598,7 +722,7 @@ def test_batch_evaluate_anomaly_detection(client, kaikei_key):
     ]
     r = client.post(
         "/v1/audit/batch_evaluate",
-        headers={"X-API-Key": kaikei_key},
+        headers=_idem_headers(kaikei_key, "batch-anomaly"),
         json={
             "audit_firm_id": "firm-test-2",
             "profiles": profiles,

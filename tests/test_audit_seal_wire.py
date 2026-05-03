@@ -21,6 +21,7 @@ What we pin:
 from __future__ import annotations
 
 import contextlib
+import itertools
 import sqlite3
 from pathlib import Path
 
@@ -69,6 +70,14 @@ _FIVE_HOUJIN: tuple[str, ...] = (
     "4010001000004",
     "5010001000005",
 )
+_IDEM_COUNTER = itertools.count()
+
+
+def _idem_headers(api_key: str) -> dict[str, str]:
+    return {
+        "X-API-Key": api_key,
+        "Idempotency-Key": f"audit-seal-{next(_IDEM_COUNTER)}",
+    }
 
 
 def _seed_ma_pillar(seeded_db: Path) -> None:
@@ -92,7 +101,7 @@ def test_dd_batch_response_carries_audit_seal(client, paid_key, seeded_db):
     _seed_ma_pillar(seeded_db)
     r = client.post(
         "/v1/am/dd_batch",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "houjin_bangous": list(_FIVE_HOUJIN),
             "depth": "summary",
@@ -131,7 +140,7 @@ def test_verify_endpoint_200_for_existing_seal(client, paid_key, seeded_db):
     _seed_ma_pillar(seeded_db)
     r = client.post(
         "/v1/am/dd_batch",
-        headers={"X-API-Key": paid_key},
+        headers=_idem_headers(paid_key),
         json={
             "houjin_bangous": list(_FIVE_HOUJIN[:2]),
             "depth": "summary",

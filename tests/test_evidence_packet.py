@@ -170,6 +170,15 @@ def _build_fixture_autonomath_db(path: Path) -> None:
                     "2026-04-28T00:00:00",
                     "pdl_v1.0",
                 ),
+                (
+                    "https://example.go.jp/exclusion.html",
+                    "primary",
+                    "example.go.jp",
+                    "sha256:exclusion",
+                    "2026-04-26T00:00:00",
+                    "2026-04-28T00:00:00",
+                    "gov_standard_v2.0",
+                ),
             ],
         )
         # Programs.
@@ -656,7 +665,9 @@ def test_compose_includes_source_health_without_live_fetch(fixture_db: Path) -> 
         "checksum": "sha256:evp1aaaa",
         "last_verified": "2026-04-28T00:00:00",
         "license": "gov_standard_v2.0",
-        "verification_status": "verified",
+        "verification_status": "catalog_last_verified",
+        "verification_basis": "local_source_catalog",
+        "live_verified_at_request": False,
     }
 
 
@@ -1039,11 +1050,19 @@ def test_evidence_license_gate_filters_mixed_license_facts() -> None:
             {
                 "entity_id": "program:mixed",
                 "primary_name": "mixed license fixture",
+                "source_url": "https://example.com/private-top-level",
+                "source_fetched_at": "2026-05-03T00:00:00Z",
                 "total_facts": 2,
                 "precomputed": {"summaries": {"200": "derived from mixed facts"}},
                 "short_summary": {"text": "derived from mixed facts"},
                 "recent_changes": [
                     {"title": "derived change", "license": "proprietary"}
+                ],
+                "rules": [
+                    {
+                        "label": "unlicensed derived rule",
+                        "evidence_url": "https://example.com/private-rule",
+                    }
                 ],
                 "source_health": {
                     "license": "proprietary",
@@ -1086,9 +1105,57 @@ def test_evidence_license_gate_filters_mixed_license_facts() -> None:
     assert "precomputed" not in gated["records"][0]
     assert "short_summary" not in gated["records"][0]
     assert "recent_changes" not in gated["records"][0]
+    assert "rules" not in gated["records"][0]
     assert "source_health" not in gated["records"][0]
+    assert gated["records"][0]["source_url"] == "https://www.invoice-kohyo.nta.go.jp/"
+    assert gated["records"][0]["source_fetched_at"] == "2026-05-03T00:00:00Z"
     assert summary["blocked_facts_count"] == 1
     assert summary["blocked_precomputed_count"] == 1
+    assert summary["blocked_rules_count"] == 1
+
+
+def test_evidence_license_gate_blocks_duplicate_entity_id_by_position() -> None:
+    from jpintel_mcp.api.evidence import _apply_license_gate
+
+    envelope = {
+        "records": [
+            {
+                "entity_id": "program:duplicate",
+                "facts": [
+                    {
+                        "field": "public",
+                        "value": "ok",
+                        "source": {
+                            "license": "pdl_v1.0",
+                            "publisher": "nta.go.jp",
+                            "url": "https://www.invoice-kohyo.nta.go.jp/",
+                        },
+                    }
+                ],
+            },
+            {
+                "entity_id": "program:duplicate",
+                "facts": [
+                    {
+                        "field": "private",
+                        "value": "blocked",
+                        "source": {
+                            "license": "proprietary",
+                            "publisher": "example",
+                            "url": "https://example.com/private",
+                        },
+                    }
+                ],
+            },
+        ]
+    }
+
+    gated, summary = _apply_license_gate(envelope)
+
+    assert summary["allowed_count"] == 1
+    assert summary["blocked_count"] == 1
+    assert len(gated["records"]) == 1
+    assert gated["records"][0]["facts"][0]["field"] == "public"
 
 
 def test_evidence_license_gate_filters_proprietary_pdf_fact_refs() -> None:
@@ -1243,6 +1310,95 @@ def test_rest_json_license_gate_filters_mixed_license_facts(
         con.execute("DELETE FROM am_source WHERE source_url = ?", ("https://example.com/private-evidence",))
         con.commit()
         con.close()
+
+
+def test_evidence_license_gate_keeps_licensed_rules() -> None:
+    from jpintel_mcp.api.evidence import _apply_license_gate
+
+    envelope = {
+        "records": [
+            {
+                "entity_id": "program:rules",
+                "primary_name": "licensed rules fixture",
+                "facts": [
+                    {
+                        "field": "name",
+                        "value": "licensed rules fixture",
+                        "source": {
+                            "license": "gov_standard_v2.0",
+                            "url": "https://example.go.jp/program",
+                        },
+                    }
+                ],
+                "rules": [
+                    {
+                        "rule_id": "keep",
+                        "evidence_url": "https://example.go.jp/rule",
+                        "license": "gov_standard_v2.0",
+                    },
+                    {
+                        "rule_id": "drop",
+                        "evidence_url": "https://example.com/private-rule",
+                        "license": "proprietary",
+                    },
+                    {
+                        "rule_id": "drop-mixed",
+                        "evidence_url": "https://example.go.jp/mixed-rule",
+                        "source_urls": [
+                            "https://example.go.jp/mixed-rule",
+                            "https://example.com/private-rule",
+                        ],
+                        "license_set": ["gov_standard_v2.0", "proprietary"],
+                    },
+                ],
+            }
+        ]
+    }
+
+    gated, summary = _apply_license_gate(envelope)
+
+    assert gated["records"][0]["rules"] == [
+        {
+            "rule_id": "keep",
+            "evidence_url": "https://example.go.jp/rule",
+            "license": "gov_standard_v2.0",
+        }
+    ]
+    assert summary["blocked_rules_count"] == 2
+
+
+def test_rule_evidence_source_prefers_redistributable_url(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(
+        jpintel_db=tmp_path / "jpintel.db",
+        autonomath_db=tmp_path / "autonomath.db",
+    )
+    licenses = {
+        "https://example.com/private-rule": "proprietary",
+        "https://example.go.jp/public-rule": "gov_standard_v2.0",
+    }
+    monkeypatch.setattr(
+        composer,
+        "_source_license_for_url",
+        lambda url: licenses.get(url),
+    )
+
+    evidence_url, license_name, allowed_urls = composer._rule_evidence_source(
+        {
+            "source_urls": [
+                "https://example.com/private-rule",
+                "https://example.go.jp/public-rule",
+            ]
+        }
+    )
+
+    assert evidence_url == "https://example.go.jp/public-rule"
+    assert license_name == "gov_standard_v2.0"
+    assert allowed_urls == ["https://example.go.jp/public-rule"]
 
 
 def test_rest_get_evidence_packet_renderer_failure_does_not_bill(

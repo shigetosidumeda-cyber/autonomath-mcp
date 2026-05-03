@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>jpciteはChatGPT/Claudeの文脈トークンを減らせますか? | jpcite</title>
+<title>jpciteはどんな条件で入力文脈を小さくできますか? | jpcite</title>
 <meta name="description" content="jpciteのEvidence Packetが、長いPDFや検索結果をLLMへ渡す前の文脈量を小さくできる条件と限界を説明します。">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://jpcite.com/qa/llm-evidence/context-savings.html">
@@ -16,7 +16,7 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "jpciteはChatGPTやClaudeのトークンを必ず減らしますか?",
+      "name": "jpciteはChatGPTやClaudeの入力文脈を必ず小さくしますか?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "いいえ。短い質問をモデル知識だけで答える場合、jpciteは追加の入力になります。効果が出やすいのは、長いPDF、自治体ページ、複数の検索結果をLLMへ読ませる前に、出典付きの小さなEvidence Packetへ置き換える場合です。"
@@ -27,7 +27,7 @@
       "name": "どのくらい小さくなりますか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "2026-05-02のoffline probeでは、30件のbenchmark queryに対するEvidence Packetは推定338〜1,352 tokens、中央値566 tokensでした。これはpacketサイズの測定であり、LLM料金削減の保証ではありません。"
+        "text": "2026-05-02のオフライン測定では、30件の代表クエリに対するEvidence Packetは推定338〜1,352 tokens、中央値566 tokensでした。これはpacketサイズの測定であり、LLM料金削減の保証ではありません。"
       }
     },
     {
@@ -56,23 +56,24 @@
 </header>
 <main id="main" class="program-page">
   <div class="container">
-    <nav class="breadcrumb" aria-label="パンくず"><a href="/">ホーム</a> &rsaquo; <a href="/qa/">Q&amp;A</a> &rsaquo; <a href="/qa/llm-evidence/">LLM証拠レイヤー</a> &rsaquo; <span aria-current="page">文脈トークン削減</span></nav>
+    <nav class="breadcrumb" aria-label="パンくず"><a href="/">ホーム</a> &rsaquo; <a href="/qa/">Q&amp;A</a> &rsaquo; <a href="/qa/llm-evidence/">LLM証拠レイヤー</a> &rsaquo; <span aria-current="page">入力文脈の比較</span></nav>
     <article>
       <header class="program-header">
-        <h1>jpciteはChatGPT/Claudeの文脈トークンを減らせますか?</h1>
+        <h1>jpciteはどんな条件で入力文脈を小さくできますか?</h1>
         <p class="byline-note muted">最終確認日: 2026年5月2日</p>
       </header>
 
       <section>
         <h2>短い答え</h2>
-        <p>条件付きで減らせます。jpciteは回答文を生成するサービスではなく、AIが回答を書く前に、出典URL、取得時刻、content hash、provenance、既知の欠落を含むEvidence Packetを返すサービスです。</p>
+        <p>条件が合うと入力文脈を小さくできる場合があります。jpciteは回答文を生成するサービスではなく、AIが回答を書く前に、出典URL、取得時刻、content hash、provenance、既知の欠落を含むEvidence Packetを返すサービスです。</p>
         <p>長いPDFや検索結果をそのままLLMに渡す代わりに、Evidence Packetを渡す場合、入力文脈は小さくなりやすいです。一方、短い質問をGPT/Claudeがモデル知識だけで答える場合、jpciteを呼ぶと入力は増えます。</p>
       </section>
 
       <section>
         <h2>実測できていること</h2>
-        <p>2026-05-02のoffline probeでは、30件のbenchmark queryに対して、jpciteは全件で非空のpacketを返しました。packet token estimateは338〜1,352、中央値566でした。12/30 queryでは少なくとも1件のprecomputed recordを含みました。</p>
-        <p>これはpacketサイズとlookup coverageの測定です。LLMの最終料金、回答品質、検索回数削減を保証するものではありません。</p>
+        <p>2026-05-02に30件の代表クエリで実施したオフライン測定では、jpciteは全件で非空のpacketを返しました。外部LLM APIやWeb検索は使っていません。packet token estimateは338〜1,352、中央値566でした。12/30 queryでは少なくとも1件のprecomputed recordを含みました。</p>
+        <p>これは2026-05-02時点のpacketサイズとlookup coverageの測定です。現在のコードやデータで再実行すると値は変わります。LLMの最終料金、回答品質、検索回数削減を保証するものではありません。</p>
+        <p>同じ測定値は <a href="/bench/prefetch-probe-2026-05-02.json">機械可読JSON</a> でも公開しています。</p>
       </section>
 
       <section>

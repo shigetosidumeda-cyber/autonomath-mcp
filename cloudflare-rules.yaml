@@ -95,9 +95,9 @@ custom_rules:
   - name: tor_exit_passthrough
     description: |
       We DO NOT block Tor exit nodes. Tor users still pay ¥3/req when
-      authed, or burn anon quota at 50/month per /64 like everyone else.
+      authed, or burn anon quota at 3/day per /64 like everyone else.
       The throughput economics make Tor unattractive for scraping at our
-      volumes (Tor exits are slow, our anon cap is monthly), so blocking
+      volumes (Tor exits are slow, our anon cap is daily), so blocking
       them costs goodwill with researcher / journalist / activist users
       with no defensive benefit.
 

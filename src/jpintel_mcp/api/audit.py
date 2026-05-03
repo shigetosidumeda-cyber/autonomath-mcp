@@ -70,6 +70,7 @@ does not require a contract amendment.
 
 from __future__ import annotations
 
+import contextlib
 import csv
 import hashlib
 import io
@@ -105,6 +106,14 @@ from jpintel_mcp.api.deps import (
     DbDep,
     log_usage,
     require_metered_api_key,
+)
+from jpintel_mcp.api.idempotency_context import (
+    billing_event_index,
+    billing_idempotency_key,
+)
+from jpintel_mcp.api.middleware.idempotency import (
+    _check_or_record_body_fingerprint,
+    _compute_collision_key,
 )
 from jpintel_mcp.api.tax_rulesets import (
     _UNIFIED_ID_RE as _TAX_UNIFIED_ID_RE,
@@ -316,6 +325,79 @@ _WORKPAPER_EXPORT_UNITS = 10
 
 # Fixed snapshot attestation fee in ¥3 units. ¥30,000 = 10,000 units.
 _SNAPSHOT_ATTESTATION_UNITS = 10_000
+
+
+def _require_high_value_idempotency_key(raw: str | None) -> str:
+    if raw is None or not raw.strip():
+        raise HTTPException(
+            status.HTTP_428_PRECONDITION_REQUIRED,
+            detail={
+                "code": "idempotency_key_required",
+                "message": (
+                    "Idempotency-Key is required for this high-value paid "
+                    "artifact so retries cannot double bill."
+                ),
+            },
+        )
+    return raw.strip()
+
+
+def _snapshot_attestation_idempotency_response(
+    conn: sqlite3.Connection, ctx: ApiContext, idem_key: str, year: int
+) -> JSONResponse | None:
+    """Reject reused GET Idempotency-Key values with a different query."""
+
+    if not ctx.key_hash:
+        return JSONResponse(
+            content={
+                "error": "idempotency_cache_unavailable",
+                "detail": "retry later",
+            },
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            headers={"X-Metered": "false", "X-Cost-Yen": "0", "Retry-After": "1"},
+        )
+    fingerprint_payload = json.dumps(
+        {"year": year},
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    collision_key = _compute_collision_key(
+        ctx.key_hash,
+        "/v1/audit/snapshot_attestation",
+        idem_key,
+    )
+    state, _seen_fp = _check_or_record_body_fingerprint(
+        conn,
+        collision_key,
+        hashlib.sha256(fingerprint_payload).hexdigest(),
+    )
+    if state == "mismatch":
+        return JSONResponse(
+            content={
+                "error": "idempotency_key_in_use",
+                "detail": (
+                    "Idempotency-Key was previously seen with a different "
+                    "snapshot_attestation query. Use a fresh key for a new request."
+                ),
+            },
+            status_code=status.HTTP_409_CONFLICT,
+            headers={"X-Metered": "false", "X-Cost-Yen": "0"},
+        )
+    if state in {"busy", "unavailable"}:
+        return JSONResponse(
+            content={
+                "error": (
+                    "idempotency_cache_busy"
+                    if state == "busy"
+                    else "idempotency_cache_unavailable"
+                ),
+                "detail": "retry later",
+            },
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            headers={"X-Metered": "false", "X-Cost-Yen": "0", "Retry-After": "1"},
+        )
+    return None
 
 
 def _non_metered_context(ctx: ApiContext) -> ApiContext:
@@ -1666,31 +1748,42 @@ def render_workpaper(
         mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     else:  # pdf
         # Try WeasyPrint first (renders Japanese text correctly + uses the
-        # disk cache). Fall back to the hand-rolled PDF1.4 renderer when
-        # WeasyPrint is missing or the render fails — both paths produce a
-        # valid PDF the auditor can attach to the engagement file.
+        # disk cache after billing succeeds). Fall back to the hand-rolled
+        # PDF1.4 renderer when WeasyPrint is missing or the render fails.
         if pdf_cache_path is not None and pdf_cache_hit:
             body_bytes = pdf_cache_path.read_bytes()
         else:
-            out_path = pdf_cache_path or (_WORKPAPER_CACHE_DIR / f"{api_key_id}_{audit_period}.pdf")
-            ok = _render_pdf_weasyprint(
-                out_path=out_path,
-                client_id=payload.client_id,
-                snapshot_id=snapshot_id,
-                checksum=checksum,
-                rows=evaluated,
-                audit_period=audit_period,
-                api_key_id=api_key_id,
+            _WORKPAPER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            out_path = (
+                pdf_cache_path.with_name(
+                    f".{pdf_cache_path.name}.{time.time_ns()}.render.tmp"
+                )
+                if pdf_cache_path is not None
+                else _WORKPAPER_CACHE_DIR
+                / f".{api_key_id}_{audit_period}.{time.time_ns()}.render.tmp"
             )
-            if ok and out_path.exists():
-                body_bytes = out_path.read_bytes()
-            else:
-                body_bytes = _render_pdf(
+            try:
+                ok = _render_pdf_weasyprint(
+                    out_path=out_path,
                     client_id=payload.client_id,
                     snapshot_id=snapshot_id,
                     checksum=checksum,
                     rows=evaluated,
+                    audit_period=audit_period,
+                    api_key_id=api_key_id,
                 )
+                if ok and out_path.exists():
+                    body_bytes = out_path.read_bytes()
+                else:
+                    body_bytes = _render_pdf(
+                        client_id=payload.client_id,
+                        snapshot_id=snapshot_id,
+                        checksum=checksum,
+                        rows=evaluated,
+                    )
+            finally:
+                with contextlib.suppress(OSError):
+                    out_path.unlink()
         mime = "application/pdf"
 
     body_sha = hashlib.sha256(body_bytes).hexdigest()
@@ -1722,7 +1815,29 @@ def render_workpaper(
         result_count=len(evaluated),
         background_tasks=background_tasks,
         quantity=max(1, units),
+        strict_metering=units > 0,
     )
+
+    if (
+        payload.report_format == "pdf"
+        and pdf_cache_path is not None
+        and not pdf_cache_hit
+        and units > 0
+    ):
+        cache_tmp: Path | None = None
+        try:
+            pdf_cache_path.parent.mkdir(parents=True, exist_ok=True)
+            cache_tmp = pdf_cache_path.with_name(
+                f".{pdf_cache_path.name}.{token}.cache.tmp"
+            )
+            cache_tmp.write_bytes(body_bytes)
+            cache_tmp.replace(pdf_cache_path)
+        except OSError:
+            _log.warning("audit_workpaper_pdf_cache_publish_failed", exc_info=True)
+        finally:
+            if cache_tmp is not None:
+                with contextlib.suppress(OSError):
+                    cache_tmp.unlink()
 
     body: dict[str, Any] = {
         "client_id": payload.client_id,
@@ -1940,6 +2055,7 @@ def batch_evaluate(
         result_count=n_evals,
         background_tasks=background_tasks,
         quantity=units,
+        strict_metering=True,
     )
 
     body: dict[str, Any] = {
@@ -2089,8 +2205,8 @@ def cite_chain_resolve(
         "Year-end attestation PDF for the audit firm's working-paper "
         "retention obligation (公認会計士法 §47条の2). Covers every daily "
         "corpus_snapshot_id observed during the calendar year, plus the "
-        "matching checksum. Fixed price ¥30,000 (NOT a metered tier; "
-        "billed as 10,000 × ¥3 units)."
+        "matching checksum. Fixed price ¥30,000; requires an API key, "
+        "Idempotency-Key, and X-Cost-Cap-JPY."
     ),
     responses={**COMMON_ERROR_RESPONSES},
 )
@@ -2099,6 +2215,8 @@ def snapshot_attestation(
     conn: DbDep,
     ctx: ApiContextDep,
     background_tasks: BackgroundTasks,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
     year: Annotated[
         int,
         Query(
@@ -2111,6 +2229,15 @@ def snapshot_attestation(
     t0 = time.perf_counter()
     require_metered_api_key(ctx, "audit snapshot attestation")
     units = _SNAPSHOT_ATTESTATION_UNITS  # ¥30,000 == 10,000 × ¥3
+    idem_key = _require_high_value_idempotency_key(idempotency_key)
+    idem_response = _snapshot_attestation_idempotency_response(conn, ctx, idem_key, year)
+    if idem_response is not None:
+        return idem_response
+    require_cost_cap(
+        predicted_yen=units * 3,
+        header_value=x_cost_cap_jpy,
+        body_cap_yen=None,
+    )
     cap_response = _projected_cap_response(conn, ctx, units)
     if cap_response is not None:
         return cap_response
@@ -2185,16 +2312,22 @@ def snapshot_attestation(
 
     latency_ms = int((time.perf_counter() - t0) * 1000)
 
-    log_usage(
-        conn,
-        ctx,
-        "audit.snapshot_attestation",
-        params={"year": year, "units": units},
-        latency_ms=latency_ms,
-        result_count=len(daily_snapshots),
-        background_tasks=background_tasks,
-        quantity=units,
-    )
+    billing_key_token = billing_idempotency_key.set(idem_key)
+    billing_index_token = billing_event_index.set(0)
+    try:
+        log_usage(
+            conn,
+            ctx,
+            "audit.snapshot_attestation",
+            params={"year": year, "units": units},
+            latency_ms=latency_ms,
+            result_count=len(daily_snapshots),
+            quantity=units,
+            strict_metering=True,
+        )
+    finally:
+        billing_event_index.reset(billing_index_token)
+        billing_idempotency_key.reset(billing_key_token)
 
     body: dict[str, Any] = {
         "year": year,
@@ -2251,9 +2384,8 @@ def snapshot_attestation(
     description=(
         "Returns the persisted seal envelope so a customer can prove "
         "MONTHS later that a paid response carried a valid seal. The "
-        "endpoint is FREE — no X-API-Key required, no usage_events row, "
-        "no Stripe report — so customers always trust the verification "
-        "result. The seal row itself stores only hashes; the original "
+        "verification endpoint is free and does not require an API key. "
+        "The seal row itself stores only hashes; the original "
         "response body is the customer's responsibility to retain."
     ),
     responses={

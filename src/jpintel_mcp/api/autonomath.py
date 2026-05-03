@@ -999,7 +999,7 @@ def rest_search_gx_programs(
     response_model=AMLoanSearchResponse,
     summary="Search loan products (公庫 / 商工中金 / 自治体制度融資) with 3-axis risk filter",
     description=(
-        "Loan-product search backed by `am_loan_product` (autonomath.db) "
+        "Loan-product search backed by `am_loan_product` (extended corpus) "
         "covering 日本政策金融公庫 (JFC), 商工組合中央金庫, and 自治体制度融資 "
         "(prefecture / municipal credit guarantee programs). Filter "
         "independently along three risk axes:\n\n"
@@ -1011,7 +1011,7 @@ def rest_search_gx_programs(
         "`min_amount_yen` / `max_amount_yen` (in YEN, not 万円).\n\n"
         "**Note:** there is also `GET /v1/loan-programs/search` against "
         "the legacy `loan_programs` table (108 rows, jpintel.db). The "
-        "`/v1/am/loans` route returns the unified autonomath view with "
+        "`/v1/am/loans` route returns the unified jpcite view with "
         "richer entity provenance. Prefer this for new integrations."
     ),
     responses={

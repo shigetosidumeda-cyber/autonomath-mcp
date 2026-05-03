@@ -43,7 +43,7 @@
     },
     {
       "name": "bid_eligible_for_profile",
-      "description": "申請者プロフィール (等級・地域・業種・実績) から参加可能な入札案件をランク付きで返す一発判定。不足要件は hide せず caveat で surface"
+      "description": "申請者プロフィール (等級・地域・業種・実績) から参加可能な入札案件をランク付きで返す一発判定。不足要件も注意事項として明示します。"
     },
     {
       "name": "check_exclusions",
@@ -51,7 +51,7 @@
     },
     {
       "name": "combined_compliance_check",
-      "description": "事業プロフィール + 予定取引から関連する法令 / 判例傾向 / 税務要件 / 入札資格制限を横断評価。cross-dataset glue の最上位で、新規事業の制度・判例・税務・入札横断棚卸しを 1 コールで返す"
+      "description": "事業プロフィール + 予定取引から関連する法令 / 判例傾向 / 税務要件 / 入札資格制限を横断評価。複数データセットを横断して、新規事業の制度・判例・税務・入札横断棚卸しを 1 コールで返す"
     },
     {
       "name": "dd_profile_am",
@@ -115,7 +115,7 @@
     },
     {
       "name": "get_usage_status",
-      "description": "META: 現在のクォータ残量を確認する (probe current API quota state without consuming a slot)."
+      "description": "現在のクォータ残量を確認します。この確認自体はクォータを消費しません。"
     },
     {
       "name": "list_exclusion_rules",

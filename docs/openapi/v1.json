@@ -15,7 +15,7 @@
                 "type": "null"
               }
             ],
-            "description": "Set when the request cannot be completed. When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
+            "description": "Set when the tool failed (Data unavailable or invalid input). When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
             "title": "Error"
           },
           "limit": {
@@ -104,7 +104,7 @@
                 "type": "null"
               }
             ],
-            "description": "Set when the request cannot be completed. When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
+            "description": "Set when the tool failed (Data unavailable or invalid input). When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
             "title": "Error"
           },
           "filters": {
@@ -172,7 +172,7 @@
       },
       "AMByLawResponse": {
         "additionalProperties": true,
-        "description": "``GET /v1/am/by_law`` \u2014 adds the alias-resolution debug field.",
+        "description": "``GET /v1/am/by_law`` \u2014 returns law-linked records with alias metadata.",
         "properties": {
           "error": {
             "anyOf": [
@@ -184,7 +184,7 @@
                 "type": "null"
               }
             ],
-            "description": "Set when the request cannot be completed. When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
+            "description": "Set when the tool failed (Data unavailable or invalid input). When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
             "title": "Error"
           },
           "law_aliases_tried": {
@@ -591,7 +591,7 @@
                 "type": "null"
               }
             ],
-            "description": "Set when the request cannot be completed. When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
+            "description": "Set when the tool failed (Data unavailable or invalid input). When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
             "title": "Error"
           },
           "limit": {
@@ -677,7 +677,7 @@
                 "type": "null"
               }
             ],
-            "description": "Set when the request cannot be completed. When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
+            "description": "Set when the tool failed (Data unavailable or invalid input). When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
             "title": "Error"
           },
           "limit": {
@@ -838,7 +838,7 @@
                 "type": "null"
               }
             ],
-            "description": "Set when the request cannot be completed. When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
+            "description": "Set when the tool failed (Data unavailable or invalid input). When present, ``results`` is empty and the caller should surface the error message rather than render an empty list.",
             "title": "Error"
           },
           "limit": {
@@ -1169,7 +1169,7 @@
       },
       "AdvisorOut": {
         "additionalProperties": false,
-        "description": "Public-facing advisor record. Excludes non-public columns\n(stripe_connect_account_id, disabled_reason, raw success_count math).",
+        "description": "Public-facing advisor record. Excludes service-only columns\n(stripe_connect_account_id, disabled_reason, raw success_count math).",
         "properties": {
           "address": {
             "anyOf": [
@@ -1793,7 +1793,7 @@
         "type": "object"
       },
       "BatchGetProgramsRequest": {
-        "description": "Body for POST /v1/programs/batch.\n\n`unified_ids` is capped at 50 \u2014 the 50-cap IS the pagination. Callers\nwith more ids page the request themselves (request.py: chunk(ids, 50)).\nThe cap lives here (pydantic) AND is also enforced inside the API;\nexceeding it surfaces as HTTP 422 per the usual FastAPI validation path.",
+        "description": "Body for POST /v1/programs/batch.\n\n`unified_ids` is capped at 50. Submit up to 50 unified_ids per request;\nlarger lists should be split client-side. Exceeding the cap returns HTTP 422.",
         "properties": {
           "max_cost_jpy": {
             "anyOf": [
@@ -3483,7 +3483,7 @@
         "type": "object"
       },
       "CostPreviewCall": {
-        "description": "A single planned tool invocation inside a stack.\n\n`args` is opaque \u2014 we don't validate against the underlying tool schema\nhere because the preview is meant to be cheap (no DB read for shape).\nCost is determined by `tool` only; `args` is round-tripped into the\n`breakdown[]` for caller display only.",
+        "description": "A single planned tool invocation inside a stack.\n\nThe preview does not execute the target tool or read from the DB. For\nknown fan-out tools it reads only the list arguments needed to mirror the\nbilled `quantity`.",
         "properties": {
           "args": {
             "anyOf": [
@@ -3495,11 +3495,11 @@
                 "type": "null"
               }
             ],
-            "description": "Tool arguments. Opaque to the preview engine \u2014 passed through into the per-call breakdown so the caller can display the plan.",
+            "description": "Tool arguments. For fan-out tools, the preview reads only the ID list and bundle_class needed to calculate billed quantity.",
             "title": "Args"
           },
           "tool": {
-            "description": "Tool name as it appears in MCP / REST. Example: search_programs, batch_get_programs, evaluate_tax_ruleset. Unknown tools default to weight=1.0 (\u00a53) so the prediction is a conservative estimate.",
+            "description": "Tool name as it appears in MCP / REST. Example: search_programs, batch_get_programs, am.dd_export, evaluate_tax_ruleset. Known fan-out tools require their list args so preview can match the actual billed quantity.",
             "maxLength": 128,
             "minLength": 1,
             "title": "Tool",
@@ -5782,6 +5782,21 @@
           "compression": {
             "avoided_tokens_estimate": 13434,
             "compression_ratio": 0.0404,
+            "cost_savings_estimate": {
+              "billing_savings_claim": "estimate_not_guarantee",
+              "break_even_avoided_tokens": 10000,
+              "break_even_met": true,
+              "break_even_source_tokens_estimate": 10566,
+              "currency": "JPY",
+              "gross_input_savings_jpy": 4.0,
+              "input_context_only": true,
+              "input_token_price_jpy_per_1m": 300,
+              "jpcite_billable_units": 1,
+              "jpcite_cost_jpy_ex_tax": 3,
+              "net_savings_jpy_ex_tax": 1.0,
+              "price_input_source": "caller_supplied",
+              "provider_billing_not_guaranteed": true
+            },
             "estimate_scope": "input_context_only",
             "input_context_reduction_rate": 0.9596,
             "packet_tokens_estimate": 566,
@@ -5820,6 +5835,7 @@
             {
               "authority_name": "Example authority",
               "entity_id": "program:example",
+              "license": "gov_standard_v2.0",
               "precomputed": {
                 "basis": "am_program_summary",
                 "summaries": {
@@ -5828,6 +5844,8 @@
               },
               "primary_name": "Example public program",
               "record_kind": "program",
+              "source_checksum": "sha256:example",
+              "source_fetched_at": "2026-05-01T00:00:00+09:00",
               "source_url": "https://example.go.jp/program"
             }
           ],
@@ -5882,7 +5900,7 @@
                 "type": "null"
               }
             ],
-            "description": "Plan \u00a74-A AI-readable evidence value counters. Always populated by the composer; null only on legacy fixtures."
+            "description": "Evidence-value counters for source-linked records. Always populated by the composer; null only on older fixtures."
           },
           "generated_at": {
             "title": "Generated At",
@@ -5926,7 +5944,7 @@
       },
       "EvidencePacketEvidenceValue": {
         "additionalProperties": true,
-        "description": "Plan \u00a74-A `evidence_value` block \u2014 AI-readable evidence counters.\n\nAlways populated. Values are pure record/quality counts; jpcite does not\nperform a request-time LLM call or a live web search to produce them.",
+        "description": "`evidence_value` block \u2014 AI-readable evidence counters.\n\nAlways populated. Values are pure record/quality counts; jpcite does not\nperform a request-time LLM call or a live web search to produce them.",
         "properties": {
           "fact_provenance_coverage_pct_avg": {
             "anyOf": [
@@ -6276,7 +6294,7 @@
                 "type": "null"
               }
             ],
-            "description": "Optional compact user-facing amendment changes for this record. Internal diff/debug fields are not exposed.",
+            "description": "Optional compact user-facing amendment changes for this record. Implementation-only diff fields are not exposed.",
             "title": "Recent Changes"
           },
           "record_kind": {
@@ -8108,7 +8126,7 @@
           },
           "evidence_decision": {
             "default": "no_records_returned",
-            "description": "Plan \u00a74-A axis 1 reason: machine-readable basis for the `recommend_for_evidence` boolean.",
+            "description": "Machine-readable basis for the `recommend_for_evidence` boolean.",
             "enum": [
               "supported_by_source_linked_records",
               "no_records_returned",
@@ -8143,7 +8161,7 @@
           },
           "recommend_for_evidence": {
             "default": false,
-            "description": "Plan \u00a74-A axis 1: true when at least one record is source-linked. Independent of caller-supplied price baseline.",
+            "description": "True when at least one record is source-linked. Independent of caller-supplied price baseline.",
             "title": "Recommend For Evidence",
             "type": "boolean"
           },
@@ -8167,7 +8185,7 @@
             "type": "string"
           },
           "value_reasons": {
-            "description": "Plan \u00a74-A: positive signals an agent may quote when justifying a jpcite recommendation. Always derived from the same evidence as `reason_codes`.",
+            "description": "Positive signals an agent may quote when justifying a jpcite recommendation. Always derived from the same evidence as `reason_codes`.",
             "items": {
               "type": "string"
             },
@@ -8192,27 +8210,26 @@
         "example": {
           "agent_recommendation": {
             "context_savings": {
-              "avoided_tokens_estimate": 13434,
-              "break_even_met": true,
-              "break_even_source_tokens_estimate": 10566,
-              "evaluated": true,
-              "input_context_reduction_rate": 0.9596,
+              "evaluated": false,
               "provider_billing_not_guaranteed": true,
               "savings_claim": "estimate_not_guarantee",
-              "source_tokens_basis": "pdf_pages"
+              "source_tokens_basis": "unknown"
             },
-            "cost_savings_decision": "supported_by_caller_baseline",
+            "cost_savings_decision": "needs_caller_baseline",
             "evidence_decision": "supported_by_source_linked_records",
             "message": "Use this bundle before sending long Japanese public-program sources to an LLM; it provides compact, source-linked context.",
-            "missing_for_cost_claim": [],
+            "missing_for_cost_claim": [
+              "source_tokens_basis",
+              "source_token_count_or_pdf_pages",
+              "input_token_price_jpy_per_1m"
+            ],
             "reason_codes": [
               "precomputed_summary_available",
               "source_linked_records_returned",
               "no_request_time_llm",
-              "no_live_web_search",
-              "caller_baseline_break_even_met"
+              "no_live_web_search"
             ],
-            "recommend_for_cost_savings": true,
+            "recommend_for_cost_savings": false,
             "recommend_for_evidence": true,
             "recommend_to_user": true,
             "recommendation": "use_jpcite_prefetch",
@@ -8221,8 +8238,7 @@
               "source_linked_records_returned",
               "precomputed_summary_available",
               "no_request_time_llm",
-              "no_live_web_search",
-              "caller_baseline_break_even_met"
+              "no_live_web_search"
             ]
           },
           "answer_basis": "precomputed",
@@ -8231,16 +8247,11 @@
           "bundle_id": "pci_example",
           "bundle_kind": "precomputed_intelligence",
           "compression": {
-            "avoided_tokens_estimate": 13434,
-            "compression_ratio": 0.0404,
             "estimate_scope": "input_context_only",
-            "input_context_reduction_rate": 0.9596,
             "packet_tokens_estimate": 566,
             "provider_billing_not_guaranteed": true,
-            "savings_claim": "estimate_not_guarantee",
-            "source_pdf_pages": 20,
-            "source_tokens_basis": "pdf_pages",
-            "source_tokens_estimate": 14000
+            "savings_claim": "needs_caller_baseline",
+            "source_tokens_basis": "unknown"
           },
           "corpus_snapshot_id": "snap_20260502",
           "evidence_value": {
@@ -8280,6 +8291,7 @@
             {
               "authority_name": "Example authority",
               "entity_id": "program:example",
+              "license": "gov_standard_v2.0",
               "precomputed": {
                 "basis": "am_program_summary",
                 "summaries": {
@@ -8288,6 +8300,8 @@
               },
               "primary_name": "Example public program",
               "record_kind": "program",
+              "source_checksum": "sha256:example",
+              "source_fetched_at": "2026-05-01T00:00:00+09:00",
               "source_url": "https://example.go.jp/program"
             }
           ],
@@ -8352,7 +8366,7 @@
                 "type": "null"
               }
             ],
-            "description": "Plan \u00a74-A AI-readable evidence value counters. Always populated by the composer; null only on legacy fixtures."
+            "description": "Evidence-value counters for source-linked records. Always populated by the composer; null only on older fixtures."
           },
           "generated_at": {
             "title": "Generated At",
@@ -9733,7 +9747,7 @@
         "type": "object"
       },
       "SavedSearchQuery": {
-        "description": "The query criteria for a saved search.\n\nMirrors the params accepted by ``GET /v1/programs/search`` \nso the scheduled job can replay the saved search verbatim. All fields are\noptional, BUT the create endpoint enforces \"at least one filter\" so a\ncustomer cannot save the unbounded saved search (which would email them\nevery program every day).",
+        "description": "The query criteria for a saved search.\n\nPublic criteria for a saved-search alert. These mirror public\n``GET /v1/programs/search`` filters, but intentionally exclude\nnon-public support team escape hatches. All fields\nare optional, BUT the create endpoint enforces \"at least one filter\" so\na customer cannot save the unbounded saved search (which would email them\nevery program every day).",
         "properties": {
           "amount_max": {
             "anyOf": [
@@ -9785,11 +9799,6 @@
               }
             ],
             "title": "Funding Purpose"
-          },
-          "include_excluded": {
-            "default": false,
-            "title": "Include Excluded",
-            "type": "boolean"
           },
           "prefecture": {
             "anyOf": [
@@ -10931,7 +10940,7 @@
                 "type": "null"
               }
             ],
-            "description": "Average request latency for this endpoint over the window, if telemetry is recorded. Currently unused \u2014 usage records does not persist latency_ms \u2014 so the field is None today.",
+            "description": "Average request latency for this endpoint over the window, when available; null when not available.",
             "title": "Avg Latency Ms"
           },
           "calls": {
@@ -11023,7 +11032,7 @@
         "type": "object"
       },
       "TrialSignupResponse": {
-        "description": "202 Accepted body.\n\nWe deliberately do NOT echo the email back \u2014 it's already in the\nrequest. Returning a stable shape with a request_id-equivalent makes\nit easy for the homepage form to confirm \"we got it\" without leaking\nthe dedup state (a 409 vs 202 distinction would let an attacker probe\nfor whether a given address has already used its trial).",
+        "description": "Accepted response for trial signup.\n\nThe email address is not echoed in the response.",
         "properties": {
           "accepted": {
             "default": true,
@@ -11325,6 +11334,21 @@
             ],
             "title": "Source Checksum"
           },
+          "source_url_fetched": {
+            "default": false,
+            "title": "Source Url Fetched",
+            "type": "boolean"
+          },
+          "verification_basis": {
+            "default": "none",
+            "enum": [
+              "live_fetch",
+              "caller_supplied_source_text",
+              "none"
+            ],
+            "title": "Verification Basis",
+            "type": "string"
+          },
           "verification_status": {
             "title": "Verification Status",
             "type": "string"
@@ -11357,6 +11381,11 @@
       },
       "VerifyResponse": {
         "properties": {
+          "caller_text_matched_count": {
+            "default": 0,
+            "title": "Caller Text Matched Count",
+            "type": "integer"
+          },
           "inferred_count": {
             "title": "Inferred Count",
             "type": "integer"
@@ -11649,7 +11678,7 @@
             "type": "object"
           },
           "client_id": {
-            "description": "Audit firm's client-defined identifier. Echoed back in the work-paper header. NEVER \u6cd5\u4eba\u756a\u53f7 or other PII \u2014 the auditor controls the namespace. ASCII only, \u2264128 chars.",
+            "description": "Audit firm's service client identifier. Echoed back in the work-paper header. NEVER \u6cd5\u4eba\u756a\u53f7 or other PII \u2014 the auditor controls the namespace. ASCII only, \u2264128 chars.",
             "maxLength": 128,
             "minLength": 1,
             "title": "Client Id",
@@ -13146,7 +13175,7 @@
     },
     "/v1/am/dd_batch": {
       "post": {
-        "description": "Composes the existing dd_profile_am chain (corporate_entity + adoptions + enforcement + invoice + bids + amendment_recent) over a batch of 1..200 \u6cd5\u4eba\u756a\u53f7 in a single call.\n\n**Pricing**: \u00a53 per houjin_bangou (per-id, NOT 1 \u00a53/call). Cap enforced via `X-Cost-Cap-JPY` header AND/OR `max_cost_jpy` body field \u2014 the lower binds.\n\n**Response shape**:\n  - len \u2264 50 \u2192 application/json `{batch_size, profiles: [...], metered_yen, corpus_snapshot_id, _disclaimer, coverage_scope}`\n  - len > 50 \u2192 application/x-ndjson stream, one profile per line, terminated by a `{ \"_meta\": {...}, \"_disclaimer\": ..., \"coverage_scope\": ... }` envelope line.\n\n**\u00a752 fence**: every response carries the \u7a0e\u7406\u58eb\u6cd5 \u00a752 disclaimer and an explicit coverage_scope excluding \u5f79\u54e1\u4e00\u89a7 / \u682a\u4e3b\u69cb\u6210 / \u7d4c\u6b74 / \u53cd\u793e / \u4fe1\u7528\u60c5\u5831 (\u5546\u696d\u767b\u8a18\u6cd5 gray-zone; TDB primary). LLM agents MUST relay both verbatim.",
+        "description": "Combines corporate, adoption, enforcement, invoice, bid, and recent-amendment data over a batch of 1..200 \u6cd5\u4eba\u756a\u53f7 in a single call.\n\n**Pricing**: \u00a53 per houjin_bangou (per-id, NOT 1 \u00a53/call). Cap enforced via `X-Cost-Cap-JPY` header AND/OR `max_cost_jpy` body field \u2014 the lower binds.\n\n**Response shape**:\n  - len \u2264 50 \u2192 application/json `{batch_size, profiles: [...], metered_yen, corpus_snapshot_id, _disclaimer, coverage_scope}`\n  - len > 50 \u2192 application/x-ndjson stream, one profile per line, terminated by a `{ \"_meta\": {...}, \"_disclaimer\": ..., \"coverage_scope\": ... }` envelope line.\n\n**\u00a752 fence**: every response carries the \u7a0e\u7406\u58eb\u6cd5 \u00a752 disclaimer and an explicit coverage_scope excluding \u5f79\u54e1\u4e00\u89a7 / \u682a\u4e3b\u69cb\u6210 / \u7d4c\u6b74 / \u53cd\u793e / \u4fe1\u7528\u60c5\u5831. LLM agents should surface both.",
         "operationId": "post_dd_batch_v1_am_dd_batch_post",
         "parameters": [
           {
@@ -13689,7 +13718,7 @@
     },
     "/v1/am/group_graph": {
       "get": {
-        "description": "Walks `relationship graph.part_of` edges where BOTH endpoints are `public records.record_kind='corporate_entity'` (filter applied in-query). Returns nodes + edges up to depth=2.\n\n**Excluded by design** (\u5546\u696d\u767b\u8a18\u6cd5 gray-zone, TDB primary):\n  - \u5f79\u54e1\u4e00\u89a7 / \u682a\u4e3b\u69cb\u6210 / \u7d4c\u6b74 / \u6301\u682a\u6bd4\u7387\n  - \u53cd\u793e\u30c1\u30a7\u30c3\u30af / \u4fe1\u7528\u60c5\u5831 / \u5e1d\u56fd\u30c7\u30fc\u30bf\u30d0\u30f3\u30af data\n\n**Pricing**: \u00a53 per call (single houjin seed).",
+        "description": "Returns corporate relationship nodes and edges up to depth=2.\n\n**Excluded by design**:\n  - \u5f79\u54e1\u4e00\u89a7 / \u682a\u4e3b\u69cb\u6210 / \u7d4c\u6b74 / \u6301\u682a\u6bd4\u7387\n  - \u53cd\u793e\u30c1\u30a7\u30c3\u30af / \u4fe1\u7528\u60c5\u5831 / \u5e1d\u56fd\u30c7\u30fc\u30bf\u30d0\u30f3\u30af data\n\n**Pricing**: \u00a53 per call (single houjin seed).",
         "operationId": "get_group_graph_v1_am_group_graph_get",
         "parameters": [
           {
@@ -13912,7 +13941,7 @@
     },
     "/v1/am/health/deep": {
       "get": {
-        "description": "10-check aggregate health (db + freshness + license + provenance + bundle + WAL).\n\nUnbilled, unlogged, no anonymous-IP rate limit \u2014 heartbeat surface for\nuptime monitors. Returns ``status`` \u2208 {ok, degraded, unhealthy}.\n\nResponses are temporarily reused for 30 seconds; pass ``?force=true`` to bypass for\nfresh status checks. Monitors that only understand HTTP\nstatus can pass ``?fail_on_unhealthy=true`` to receive 503 for an\nunhealthy aggregate.",
+        "description": "10-check aggregate health (db + freshness + license + provenance + bundle + WAL).\n\nUnbilled, unlogged, no anonymous-IP rate limit \u2014 heartbeat surface for\nuptime monitors. Returns ``status`` \u2208 {ok, degraded, unhealthy}.\n\nResponses are temporarily reused for 30 seconds; pass ``?force=true`` to bypass for\nfresh status checks. Monitors that only understand HTTP\nstatus can pass ``?fail_on_unhealthy=true`` to receive 503 for an\nunhealthy aggregate, or ``?fail_on_degraded=true`` to require exact\n``status=ok``.",
         "operationId": "rest_deep_health_v1_am_health_deep_get",
         "parameters": [
           {
@@ -13932,6 +13961,16 @@
             "schema": {
               "default": false,
               "title": "Fail On Unhealthy",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fail_on_degraded",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Fail On Degraded",
               "type": "boolean"
             }
           }
@@ -16328,7 +16367,7 @@
     },
     "/v1/audit/seals/{seal_id}": {
       "get": {
-        "description": "Returns the persisted seal envelope so a customer can prove MONTHS later that a paid response carried a valid seal. The endpoint is no request charge \u2014 no X-API-Key required, no usage records record, no Stripe report \u2014 so customers always trust the verification result. The seal record itself stores only hashes; the original response body is the customer's responsibility to retain.",
+        "description": "Returns the persisted seal envelope so a customer can prove MONTHS later that a paid response carried a valid seal. The verification endpoint is free and does not require an API key. The seal record itself stores only hashes; the original response body is the customer's responsibility to retain.",
         "operationId": "verify_audit_seal_v1_audit_seals__seal_id__get",
         "parameters": [
           {
@@ -16376,7 +16415,7 @@
     },
     "/v1/audit/snapshot_attestation": {
       "get": {
-        "description": "Year-end attestation PDF for the audit firm's working-paper retention obligation (\u516c\u8a8d\u4f1a\u8a08\u58eb\u6cd5 \u00a747\u6761\u306e2). Covers every daily corpus_snapshot_id observed during the calendar year, plus the matching checksum. Fixed price \u00a530,000 (NOT a metered tier; billed as 10,000 \u00d7 \u00a53 units).",
+        "description": "Year-end attestation PDF for the audit firm's working-paper retention obligation (\u516c\u8a8d\u4f1a\u8a08\u58eb\u6cd5 \u00a747\u6761\u306e2). Covers every daily corpus_snapshot_id observed during the calendar year, plus the matching checksum. Fixed price \u00a530,000; requires an API key, Idempotency-Key, and X-Cost-Cap-JPY.",
         "operationId": "snapshot_attestation_v1_audit_snapshot_attestation_get",
         "parameters": [
           {
@@ -16391,6 +16430,38 @@
               "minimum": 2024,
               "title": "Year",
               "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Cost-Cap-JPY",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Cost-Cap-Jpy"
             }
           },
           {
@@ -17325,60 +17396,6 @@
         ]
       }
     },
-    "/v1/billing/webhook": {
-      "post": {
-        "description": "Billing event endpoint.",
-        "operationId": "webhook_v1_billing_webhook_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "stripe-signature",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Stripe-Signature"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Webhook V1 Billing Webhook Post",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Webhook",
-        "tags": [
-          "billing"
-        ]
-      }
-    },
     "/v1/calendar/deadlines": {
       "get": {
         "description": "List upcoming submission deadlines.\n\nAnswers \"what's due in the next 30 days for \u6771\u4eac SMBs?\" in one call so\ncallers don't stitch together N search_programs requests. Programs\nwithout a structured end_date are silently excluded \u2014 they are not\n\"no deadline\", they are \"we couldn't extract one\" and need case-by-case\nlookup via get_program.",
@@ -18170,7 +18187,7 @@
     },
     "/v1/citations/verify": {
       "post": {
-        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection \u2014 current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
+        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection \u2014 current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
         "operationId": "verify_citations_v1_citations_verify_post",
         "parameters": [
           {
@@ -18281,60 +18298,6 @@
           }
         },
         "summary": "Stripe Checkout",
-        "tags": [
-          "compliance"
-        ]
-      }
-    },
-    "/v1/compliance/stripe-webhook": {
-      "post": {
-        "description": "Handle customer.subscription.created/.deleted for the alert product.\n\nOn `created` we persist stripe_customer_id / stripe_subscription_id +\nflip plan to 'paid' if it wasn't already.\nOn `deleted` we mark canceled_at (same effect as a customer clicking\nthe unsubscribe link \u2014 Stripe Customer Portal cancel path).",
-        "operationId": "stripe_webhook_v1_compliance_stripe_webhook_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "stripe-signature",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Stripe-Signature"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Stripe Webhook V1 Compliance Stripe Webhook Post",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Stripe Webhook",
         "tags": [
           "compliance"
         ]
@@ -18591,7 +18554,7 @@
     },
     "/v1/cost/preview": {
       "post": {
-        "description": "Returns a deterministic \u00a5-cost prediction for a planned sequence of tool calls without executing them. Anti-runaway \u4e09\u70b9\u30bb\u30c3\u30c8 A.\n\n**Pricing**: \u00a53/req metered (\u7a0e\u5225; \u7a0e\u8fbc \u00a53.30). The preview itself is no request charge \u2014 no `usage records` record, no Stripe usage_record. Rate-limited 50/min per IP/key.\n\n**\u00a752 fence**: when the stack touches tax-relevant tools (`evaluate_tax_ruleset`, `search_tax_incentives`, etc.) the response carries a `disclaimer` field. LLM agents MUST relay it.",
+        "description": "Returns a no-charge cost estimate for planned jpcite tool calls without executing them.\n\n**Pricing**: metered calls are \u00a53/req (\u7a0e\u5225; \u7a0e\u8fbc \u00a53.30). The preview itself is not metered and is rate-limited 50/min per IP/key.\n\n**Tax-related previews**: when the stack touches tax-relevant tools (`evaluate_tax_ruleset`, `search_tax_incentives`, etc.) the response includes a disclaimer for downstream display.",
         "operationId": "post_cost_preview_v1_cost_preview_post",
         "requestBody": {
           "content": {
@@ -19199,7 +19162,7 @@
     },
     "/v1/device/complete": {
       "post": {
-        "description": "Called by /go after Stripe Checkout succeeds.\n\n1. Verifies the Stripe session is complete, subscription-mode,\n   environment-matched, priced correctly, metadata-bound to this device\n   code, and paid (or metered \u2014 no_payment_required).\n2. Marks device_code activated.\n3. Issues an API key prefixed 'am_device_' and links it.\n4. Stashes the newly issued key in the one-time retrieval map so the MCP's\n   next /token poll picks it up.",
+        "description": "Completes device activation after checkout and enables token polling.",
         "operationId": "complete_v1_device_complete_post",
         "parameters": [
           {
@@ -19355,7 +19318,7 @@
         ]
       },
       "post": {
-        "description": "Idempotent self-serve master-list opt-out.\n\nOn invalid token we DO NOT raise 401 \u2014 that would let an attacker\nenumerate which addresses are valid. We return the success shape\nwith a fixed timestamp instead. The write is silently\nskipped.",
+        "description": "Idempotent self-serve master-list opt-out.\n\nOn invalid token we DO NOT raise 401 \u2014 that would let an attacker\nenumerate which addresses are valid. We return the success shape\nwith a fixed timestamp instead. The service write is silently\nskipped.",
         "operationId": "unsubscribe_post_v1_email_unsubscribe_post",
         "parameters": [
           {
@@ -19421,59 +19384,6 @@
           }
         },
         "summary": "Unsubscribe Post",
-        "tags": [
-          "email"
-        ]
-      }
-    },
-    "/v1/email/webhook": {
-      "post": {
-        "operationId": "postmark_webhook_v1_email_webhook_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-Postmark-Signature",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Postmark-Signature"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Postmark Webhook V1 Email Webhook Post",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Postmark Webhook",
         "tags": [
           "email"
         ]
@@ -20434,6 +20344,21 @@
                   "compression": {
                     "avoided_tokens_estimate": 13434,
                     "compression_ratio": 0.0404,
+                    "cost_savings_estimate": {
+                      "billing_savings_claim": "estimate_not_guarantee",
+                      "break_even_avoided_tokens": 10000,
+                      "break_even_met": true,
+                      "break_even_source_tokens_estimate": 10566,
+                      "currency": "JPY",
+                      "gross_input_savings_jpy": 4.0,
+                      "input_context_only": true,
+                      "input_token_price_jpy_per_1m": 300,
+                      "jpcite_billable_units": 1,
+                      "jpcite_cost_jpy_ex_tax": 3,
+                      "net_savings_jpy_ex_tax": 1.0,
+                      "price_input_source": "caller_supplied",
+                      "provider_billing_not_guaranteed": true
+                    },
                     "estimate_scope": "input_context_only",
                     "input_context_reduction_rate": 0.9596,
                     "packet_tokens_estimate": 566,
@@ -20472,6 +20397,7 @@
                     {
                       "authority_name": "Example authority",
                       "entity_id": "program:example",
+                      "license": "gov_standard_v2.0",
                       "precomputed": {
                         "basis": "am_program_summary",
                         "summaries": {
@@ -20480,6 +20406,8 @@
                       },
                       "primary_name": "Example public program",
                       "record_kind": "program",
+                      "source_checksum": "sha256:example",
+                      "source_fetched_at": "2026-05-01T00:00:00+09:00",
                       "source_url": "https://example.go.jp/program"
                     }
                   ],
@@ -20728,6 +20656,21 @@
                   "compression": {
                     "avoided_tokens_estimate": 13434,
                     "compression_ratio": 0.0404,
+                    "cost_savings_estimate": {
+                      "billing_savings_claim": "estimate_not_guarantee",
+                      "break_even_avoided_tokens": 10000,
+                      "break_even_met": true,
+                      "break_even_source_tokens_estimate": 10566,
+                      "currency": "JPY",
+                      "gross_input_savings_jpy": 4.0,
+                      "input_context_only": true,
+                      "input_token_price_jpy_per_1m": 300,
+                      "jpcite_billable_units": 1,
+                      "jpcite_cost_jpy_ex_tax": 3,
+                      "net_savings_jpy_ex_tax": 1.0,
+                      "price_input_source": "caller_supplied",
+                      "provider_billing_not_guaranteed": true
+                    },
                     "estimate_scope": "input_context_only",
                     "input_context_reduction_rate": 0.9596,
                     "packet_tokens_estimate": 566,
@@ -20766,6 +20709,7 @@
                     {
                       "authority_name": "Example authority",
                       "entity_id": "program:example",
+                      "license": "gov_standard_v2.0",
                       "precomputed": {
                         "basis": "am_program_summary",
                         "summaries": {
@@ -20774,6 +20718,8 @@
                       },
                       "primary_name": "Example public program",
                       "record_kind": "program",
+                      "source_checksum": "sha256:example",
+                      "source_fetched_at": "2026-05-01T00:00:00+09:00",
                       "source_url": "https://example.go.jp/program"
                     }
                   ],
@@ -21132,7 +21078,7 @@
     },
     "/v1/health/data": {
       "get": {
-        "description": "Row-count probe for the 5 canonical datasets.\n\nReturns one entry per (dataset, db) pair. status:\n- \"ok\" \u2014 record count meets `expected_min_rows`\n- \"below_threshold\" \u2014 records present but under the floor\n- \"empty\" \u2014 dataset reachable, 0 records\n- \"missing\" \u2014 dataset or DB file unreachable\n\nAggregate `status` rolls up:\n- \"unhealthy\" if any check is \"missing\" OR \"empty\" with floor > 0\n- \"degraded\" if any check is \"below_threshold\"\n- \"ok\" otherwise\n\nUnbilled / unlogged / no anonymous quota \u2014 heartbeat surface for uptime\nmonitors. 30-second response short-lived response reuse.",
+        "description": "Public data health summary for core datasets.\n\nReturns one entry per core dataset. status:\n- \"ok\" \u2014 record count meets `expected_min_rows`\n- \"below_threshold\" \u2014 records present but under the floor\n- \"empty\" \u2014 dataset reachable, 0 records\n- \"missing\" \u2014 dataset or DB file unreachable\n\nAggregate `status` rolls up:\n- \"unhealthy\" if any check is \"missing\" OR \"empty\" with floor > 0\n- \"degraded\" if any check is \"below_threshold\"\n- \"ok\" otherwise\n\nThis health endpoint is suitable for uptime monitors and uses a\n30-second response short-lived response reuse.",
         "operationId": "data_health_v1_health_data_get",
         "responses": {
           "200": {
@@ -21201,7 +21147,7 @@
     },
     "/v1/houjin/{bangou}": {
       "get": {
-        "description": "Surface the gBizINFO + auxiliary corporate facts for a given 13-digit \u6cd5\u4eba\u756a\u53f7. Joins `public records` (corporate_entity) + `fact records` (21 corp.* fields per current release absorption) + `public dataset` (\u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005) + `public dataset` (\u63a1\u629e\u5c65\u6b74) + `am_enforcement_detail` (\u884c\u653f\u51e6\u5206).\n\n**Pricing:** \u00a53/call (1 unit). Anonymous callers share the 3/\u65e5 per-IP cap (JST \u7fcc\u65e5 00:00 \u30ea\u30bb\u30c3\u30c8).\n\n**\u00a752 envelope:** every 2xx body carries `_disclaimer` (\u7a0e\u7406\u58eb\u6cd5 \u00a752 fence) + `_namayoke_caveat` (\u5546\u53f7\u5909\u66f4\u30fb\u5408\u4f75 \u5468\u8fba\u306e \u540d\u5bc4\u305b caveat). LLM relays must surface both verbatim.\n\n**Coverage:** 79,876 corporate_entity records populated as of the current release absorption snapshot. Misses on this number space mean the \u6cd5\u4eba\u756a\u53f7 is real but our gBizINFO ingest hasn't reached it \u2014 return 404 with a pointer to the gBizINFO official lookup.",
+        "description": "Returns corporate facts, adoption history, enforcement details, and registration status from public datasets for a given 13-digit \u6cd5\u4eba\u756a\u53f7.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous callers share the 3/\u65e5 per-IP cap (JST \u7fcc\u65e5 00:00 \u30ea\u30bb\u30c3\u30c8).\n\n**\u00a752 envelope:** every 2xx body carries `_disclaimer` (\u7a0e\u7406\u58eb\u6cd5 \u00a752 fence) + `_namayoke_caveat` (\u5546\u53f7\u5909\u66f4\u30fb\u5408\u4f75 \u5468\u8fba\u306e \u540d\u5bc4\u305b caveat). LLM relays must surface both verbatim.\n\n**Coverage:** unavailable records return official lookup guidance.",
         "operationId": "get_houjin_360_v1_houjin__bangou__get",
         "parameters": [
           {
@@ -21353,69 +21299,9 @@
         ]
       }
     },
-    "/v1/integrations/email/inbound": {
-      "post": {
-        "description": "Customers email `query+am_xxx@jpcite.com`. Postmark POSTs the parsed email JSON to this endpoint. The plus-address tail carries the API key (`am_xxx`); the subject carries the query string. We reply via Postmark's outbound API with HTML + plain body and \u00a752 footer. The `From:` address must be on the API key's whitelist (set once via `/v1/me/connectors/email`).",
-        "operationId": "email_inbound_v1_integrations_email_inbound_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-Postmark-Webhook-Token",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Postmark-Webhook-Token"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "additionalProperties": true,
-                "title": "Payload",
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Postmark inbound email webhook",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
     "/v1/integrations/excel": {
       "get": {
-        "description": "Excel's `WEBSERVICE` formula cannot send headers, so auth is via `?key=` query param. Response is `text/plain` so the cell renders a single-line answer. `?field=` selects which scalar to return (title|url|prefecture|authority|amount|footer|count). \u00a752 footer is also surfaced in the named cell `A1` of the downloadable template (`sdk/integrations/excel/zeimu-kaikei-template.xlsx`).",
+        "description": "Excel's `WEBSERVICE` formula cannot send headers, so auth is via `?key=` query param. Response is `text/plain` so the cell renders a single-line answer. `?field=` selects which scalar to return (title|url|prefecture|authority|amount|footer|count). \u00a752 footer is also surfaced in the named cell `A1` of the downloadable Excel template.",
         "operationId": "excel_webservice_v1_integrations_excel_get",
         "parameters": [
           {
@@ -21537,56 +21423,6 @@
           }
         },
         "summary": "Revoke the Google Sheets credential",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
-    "/v1/integrations/google/callback": {
-      "get": {
-        "description": "Google redirects here after user consent. Exchanges the code for a refresh+access token pair and stores it Fernet-encrypted under ``integration_accounts``. Redirects to the dashboard on success or returns a JSON error envelope on failure.",
-        "operationId": "google_oauth_callback_v1_integrations_google_callback_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "code",
-            "required": true,
-            "schema": {
-              "title": "Code",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "state",
-            "required": true,
-            "schema": {
-              "title": "State",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Google OAuth callback",
         "tags": [
           "integrations"
         ]
@@ -21721,7 +21557,7 @@
     },
     "/v1/integrations/kintone": {
       "post": {
-        "description": "Pure client-side kintone plugin (`sdk/integrations/kintone/plugin.zip`) fetches this endpoint when the user clicks the in-record button \"jpcite \u3067\u95a2\u9023\u88dc\u52a9\u91d1\u691c\u7d22\". Returns a JSON envelope the plugin renders into a modal + writes top result into configured fields. Origins `*.cybozu.com` / `*.kintone.com` are CORS-allowlisted in `config.py::cors_origins`.",
+        "description": "jpcite kintone plugin fetches this endpoint when the user clicks the in-record button \"jpcite \u3067\u95a2\u9023\u88dc\u52a9\u91d1\u691c\u7d22\". Returns a JSON envelope the plugin renders into a modal + writes top result into configured fields. Origins `*.cybozu.com` / `*.kintone.com` are CORS-allowlisted in approved kintone domains.",
         "operationId": "kintone_callback_v1_integrations_kintone_post",
         "parameters": [
           {
@@ -21924,118 +21760,6 @@
         ]
       }
     },
-    "/v1/integrations/line/webhook": {
-      "post": {
-        "description": "LINE delivers a JSON envelope `{destination, events: [...]}`. We verify `X-Line-Signature` HMAC-SHA256 against the raw body, then dispatch each event into the deterministic state machine (NO LLM call). Replies are sent via LINE Reply API; each round-trip bills \u00a53 against the user's parent API key OR is counted against the LINE user's 50-event/month free allowance.",
-        "operationId": "line_webhook_v1_integrations_line_webhook_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-Line-Signature",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Line-Signature"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Line Webhook V1 Integrations Line Webhook Post",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "LINE Messaging API webhook receiver",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
-    "/v1/integrations/sheets": {
-      "post": {
-        "description": "Apps Script template (`sdk/integrations/google-sheets/template.gs`) POSTs JSON `{query, field}`. Returns `{value, footer, source_url}` as a tight scalar so a single sheet cell can render. The Apps Script wrapper caches 6h via `CacheService` to bound spend on Sheet-open recalc.",
-        "operationId": "sheets_callback_v1_integrations_sheets_post",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "key",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SheetsRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Google Sheets Apps Script callback",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
     "/v1/integrations/slack": {
       "post": {
         "description": "Slack POSTs ``application/x-www-form-urlencoded`` from a workspace slash command (e.g. ``/zeimukaikei DX \u88fd\u9020\u696d``). The request carries `text=` (the user's query) and integration auth via ``?key=am_...`` (since Slack cannot inject custom headers per call). Response shape is Slack's standard `{response_type, text, blocks}` with \u00a752 footer in the last block.",
@@ -22088,66 +21812,6 @@
           }
         },
         "summary": "Slack slash command",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
-    "/v1/integrations/slack/webhook": {
-      "post": {
-        "description": "Drop-in shape for Slack-compatible relays (Discord/Teams in their Slack-compat mode, Mattermost). Accepts JSON ``{text}`` or ``{query}`` and returns Slack's `{response_type, text, blocks}` envelope \u2014 same body as ``/slack`` above.",
-        "operationId": "slack_incoming_webhook_v1_integrations_slack_webhook_post",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "key",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "additionalProperties": true,
-                "title": "Payload",
-                "type": "object"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Slack incoming webhook drop-in",
         "tags": [
           "integrations"
         ]
@@ -22373,27 +22037,26 @@
                 "example": {
                   "agent_recommendation": {
                     "context_savings": {
-                      "avoided_tokens_estimate": 13434,
-                      "break_even_met": true,
-                      "break_even_source_tokens_estimate": 10566,
-                      "evaluated": true,
-                      "input_context_reduction_rate": 0.9596,
+                      "evaluated": false,
                       "provider_billing_not_guaranteed": true,
                       "savings_claim": "estimate_not_guarantee",
-                      "source_tokens_basis": "pdf_pages"
+                      "source_tokens_basis": "unknown"
                     },
-                    "cost_savings_decision": "supported_by_caller_baseline",
+                    "cost_savings_decision": "needs_caller_baseline",
                     "evidence_decision": "supported_by_source_linked_records",
                     "message": "Use this bundle before sending long Japanese public-program sources to an LLM; it provides compact, source-linked context.",
-                    "missing_for_cost_claim": [],
+                    "missing_for_cost_claim": [
+                      "source_tokens_basis",
+                      "source_token_count_or_pdf_pages",
+                      "input_token_price_jpy_per_1m"
+                    ],
                     "reason_codes": [
                       "precomputed_summary_available",
                       "source_linked_records_returned",
                       "no_request_time_llm",
-                      "no_live_web_search",
-                      "caller_baseline_break_even_met"
+                      "no_live_web_search"
                     ],
-                    "recommend_for_cost_savings": true,
+                    "recommend_for_cost_savings": false,
                     "recommend_for_evidence": true,
                     "recommend_to_user": true,
                     "recommendation": "use_jpcite_prefetch",
@@ -22402,8 +22065,7 @@
                       "source_linked_records_returned",
                       "precomputed_summary_available",
                       "no_request_time_llm",
-                      "no_live_web_search",
-                      "caller_baseline_break_even_met"
+                      "no_live_web_search"
                     ]
                   },
                   "answer_basis": "precomputed",
@@ -22412,16 +22074,11 @@
                   "bundle_id": "pci_example",
                   "bundle_kind": "precomputed_intelligence",
                   "compression": {
-                    "avoided_tokens_estimate": 13434,
-                    "compression_ratio": 0.0404,
                     "estimate_scope": "input_context_only",
-                    "input_context_reduction_rate": 0.9596,
                     "packet_tokens_estimate": 566,
                     "provider_billing_not_guaranteed": true,
-                    "savings_claim": "estimate_not_guarantee",
-                    "source_pdf_pages": 20,
-                    "source_tokens_basis": "pdf_pages",
-                    "source_tokens_estimate": 14000
+                    "savings_claim": "needs_caller_baseline",
+                    "source_tokens_basis": "unknown"
                   },
                   "corpus_snapshot_id": "snap_20260502",
                   "evidence_value": {
@@ -22461,6 +22118,7 @@
                     {
                       "authority_name": "Example authority",
                       "entity_id": "program:example",
+                      "license": "gov_standard_v2.0",
                       "precomputed": {
                         "basis": "am_program_summary",
                         "summaries": {
@@ -22469,6 +22127,8 @@
                       },
                       "primary_name": "Example public program",
                       "record_kind": "program",
+                      "source_checksum": "sha256:example",
+                      "source_fetched_at": "2026-05-01T00:00:00+09:00",
                       "source_url": "https://example.go.jp/program"
                     }
                   ],
@@ -25140,7 +24800,7 @@
     },
     "/v1/me/recurring/email_course/start": {
       "post": {
-        "description": "Spec-named alias for the canonical `/v1/me/courses` create.\n\nForwards verbatim to courses.subscribe_course so the existing endpoint\nstays canonical (single billing path, single CRUD surface). The spec\ndocument calls this endpoint `email_course/start`, so we expose it\nunder that name AND keep the engineering-canonical `/v1/me/courses`\npath live.",
+        "description": "Starts the recurring email course for the authenticated account.",
         "operationId": "start_email_course_v1_me_recurring_email_course_start_post",
         "parameters": [
           {
@@ -26312,7 +25972,7 @@
     },
     "/v1/me/usage.csv": {
       "get": {
-        "description": "CSV export of per-tag aggregate (schema update).\n\nCurrently only ``group_by=client_tag`` is supported. The format is\na stable header + one record per tag, NULL tags rendered as empty.\nDesigned for Excel / Google Sheets ingestion by \u7a0e\u7406\u58eb offices that\nneed to forward per-\u9867\u554f\u5148 line items into their billing.",
+        "description": "CSV export of per-tag aggregate (schema update).\n\nCurrently only ``group_by=client_tag`` is supported. The format is\na stable header + one record per tag, NULL tags rendered as empty.\nDesigned for Excel / Google Sheets ingestion by \u7a0e\u7406\u58eb offices that\nneed to forward per-\u9867\u554f\u5148 line items into their service billing.",
         "operationId": "get_me_usage_csv_v1_me_usage_csv_get",
         "parameters": [
           {
@@ -27877,16 +27537,6 @@
           },
           {
             "in": "query",
-            "name": "include_excluded",
-            "required": false,
-            "schema": {
-              "default": false,
-              "title": "Include Excluded",
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
@@ -28531,7 +28181,7 @@
     },
     "/v1/source_manifest/{program_id}": {
       "get": {
-        "description": "Surface the full provenance manifest for one program: fact-level and entity-level source references in one response.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous callers share the 3/\u65e5 per-IP cap (JST \u7fcc\u65e5 00:00 \u30ea\u30bb\u30c3\u30c8).\n\n**program_id** accepts:\n* a unified_id (`UNI-...`);\n* a stable program identifier (`program:...`).\n\n**Sparse-data honesty:** the per-fact provenance signal is currently partial for some program cohorts. The endpoint returns `fact_provenance=[]` and `fact_provenance_coverage_pct=0.0` rather than fabricating a richer dataset. The `_disclaimer` field is required reading for any downstream LLM relay.",
+        "description": "Surface the available provenance manifest for one program: redistributable fact-level references plus an entity-level source rollup in one response.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous callers share the 3/\u65e5 per-IP cap (JST \u7fcc\u65e5 00:00 \u30ea\u30bb\u30c3\u30c8).\n\n**program_id** accepts:\n* a unified_id (`UNI-...`);\n* a stable program identifier (`program:...`).\n\n**Sparse-data honesty:** the per-fact provenance signal is currently partial for some program cohorts. The endpoint returns `fact_provenance=[]` and `fact_provenance_coverage_pct=0.0` rather than fabricating a richer dataset. The `_disclaimer` field is required reading for any downstream LLM relay.",
         "operationId": "get_source_manifest_v1_source_manifest__program_id__get",
         "parameters": [
           {
@@ -28590,7 +28240,7 @@
                 "schema": {}
               }
             },
-            "description": "Manifest envelope. `fact_provenance` is per-fact (field_name, source_url, publisher, fetched_at, license, checksum); `summary` is the entity-level rollup; `primary_*` carries the program-record authoritative URL."
+            "description": "Manifest envelope. `fact_provenance` is redistributable per-fact (field_name, source_url, publisher, fetched_at, license, checksum); `summary` is the entity-level rollup; `primary_*` carries the program-record authoritative URL."
           },
           "404": {
             "description": "Unknown program_id in the current public corpus."
@@ -28609,7 +28259,7 @@
             "description": "Source manifest data is temporarily unavailable."
           }
         },
-        "summary": "Per-program source manifest (Evidence Graph)",
+        "summary": "Per-program source manifest (partial Evidence Graph)",
         "tags": [
           "source_manifest"
         ]
@@ -29515,7 +29165,7 @@
     },
     "/v1/widget/search": {
       "get": {
-        "description": "Search programs restricted to the widget surface.\n\nProxies to the existing `/v1/programs/search` logic via direct function\nimport \u2014 there is no extra HTTP hop so the widget path stays under\nthe tight latency budget (TTFB matters on a 3rd-party's site).",
+        "description": "Search programs restricted to the widget surface.\n\nSearches programs through the embeddable widget with the same filters as\nprogram search.",
         "operationId": "widget_search_v1_widget_search_get",
         "parameters": [
           {
@@ -29737,60 +29387,6 @@
           }
         },
         "summary": "Widget Signup",
-        "tags": [
-          "widget"
-        ]
-      }
-    },
-    "/v1/widget/stripe-webhook": {
-      "post": {
-        "description": "Process widget billing events.\n\nCheckout completion provisions a widget key. Subscription cancellation\nor payment failure disables widget access until billing is resolved.",
-        "operationId": "widget_stripe_webhook_v1_widget_stripe_webhook_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "stripe-signature",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Stripe-Signature"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Widget Stripe Webhook V1 Widget Stripe Webhook Post",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Widget Stripe Webhook",
         "tags": [
           "widget"
         ]

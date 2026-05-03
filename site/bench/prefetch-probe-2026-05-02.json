@@ -1,0 +1,71 @@
+{
+  "schema_version": "jpcite_prefetch_probe_summary_v1",
+  "probe_id": "prefetch-probe-2026-05-02",
+  "probe_date": "2026-05-02",
+  "claim_scope": "historical_offline_probe",
+  "is_current_live_recomputation": false,
+  "recommended_agent_route": "/v1/intelligence/precomputed/query",
+  "recommended_params": {
+    "include_facts": false,
+    "include_compression": true
+  },
+  "methodology": {
+    "query_set": "30 representative public-program queries",
+    "result_source": "offline benchmark summary",
+    "method": "offline packet-size measurement; no external LLM or web-search calls",
+    "engine": "offline jpcite evidence-packet generation",
+    "llm_api_calls": 0,
+    "live_web_search_calls": 0,
+    "limit": 5,
+    "include_facts": false,
+    "token_estimate_method": "jpcite_char_weighted_v1",
+    "token_estimate_accuracy_note": "heuristic; not equivalent to provider tokenizer"
+  },
+  "query_count": 30,
+  "records_returned_total": 142,
+  "precomputed_records_total": 37,
+  "queries_with_precomputed_records": 12,
+  "precomputed_query_rate": 0.4,
+  "zero_result_queries": 0,
+  "zero_result_rate": 0.0,
+  "packet_tokens_estimate": {
+    "min": 338,
+    "p25_nearest_rank": 532,
+    "median": 566,
+    "p75_nearest_rank": 1163,
+    "max": 1352,
+    "percentile_method": "nearest_rank"
+  },
+  "source_baseline": {
+    "rows_with_source_token_baseline": 0,
+    "context_reduction_measured_in_probe": false
+  },
+  "example_context_comparison": {
+    "example_only": true,
+    "input_context_only": true,
+    "not_measured_in_probe": true,
+    "provider_billing_not_guaranteed": true,
+    "source_tokens_basis": "pdf_pages",
+    "tokens_per_pdf_page": 700,
+    "source_pdf_pages": 30,
+    "source_tokens_estimate": 21000,
+    "packet_tokens_median": 566,
+    "avoided_input_tokens_estimate": 20434,
+    "context_reduction_estimate_pct": 97.3
+  },
+  "break_even_example": {
+    "example_only": true,
+    "input_token_price_jpy_per_1m": 300,
+    "jpcite_cost_jpy_ex_tax": 3,
+    "break_even_avoided_tokens": 10000,
+    "break_even_source_tokens_at_median_packet": 10566
+  },
+  "estimator_scope": "input_context_only",
+  "provider_billing_not_guaranteed": true,
+  "billing_savings_claim": "estimate_not_guarantee",
+  "agent_interpretation": {
+    "may_claim": "Evidence Packets were small in this historical offline probe, and large source contexts can show large input-context reduction when replaced by a packet.",
+    "limitations": "Does not prove provider billing savings, total-cost savings, answer-quality improvement, or universal token savings.",
+    "cost_savings_rule": "Only describe cost savings when caller-supplied source baseline and input-token price make break_even_met true; still phrase it as an input-context estimate."
+  }
+}
