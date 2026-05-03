@@ -16,9 +16,9 @@ Cache key
 ``sha256(api_key_hash + ':' + endpoint_path + ':' + body + ':' + key)``
 
 Including the api_key_hash prevents two distinct customers from colliding on
-the same arbitrary key. Including the body means an accidentally reused key
-with a different payload is treated as a separate live request instead of
-replaying the wrong response.
+the same arbitrary key. Including the body prevents replaying the wrong
+response; a second collision sentinel rejects the same key with a different
+payload before it can run as a separate metered request.
 
 Storage
 -------
@@ -282,6 +282,28 @@ def _auth_failed_response() -> Response:
     )
 
 
+def _idempotency_error_response(
+    *,
+    error: str,
+    detail: str,
+    status_code: int,
+    retry_after: str | None = None,
+) -> Response:
+    headers = {"X-Metered": "false", "X-Cost-Yen": "0"}
+    if retry_after is not None:
+        headers["Retry-After"] = retry_after
+    return Response(
+        content=json.dumps(
+            {"error": error, "detail": detail},
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ),
+        status_code=status_code,
+        media_type="application/json",
+        headers=headers,
+    )
+
+
 def _compute_cache_key(
     api_key_hash: str, endpoint: str, body: bytes, key: str
 ) -> str:
@@ -294,6 +316,100 @@ def _compute_cache_key(
     h.update(b":")
     h.update(key.encode("utf-8"))
     return h.hexdigest()
+
+
+def _compute_collision_key(
+    api_key_hash: str, endpoint: str, key: str
+) -> str:
+    """Cache slot keyed only on (api_key_hash, endpoint, idempotency-key).
+
+    The full cache_key is keyed on the BODY too (so a buggy retry with a
+    different payload doesn't replay the wrong response). The collision key
+    omits the body and stores a sha256(body) fingerprint so that on the next
+    request we can detect "same Idempotency-Key + DIFFERENT body" and return
+    409 instead of silently treating it as an unrelated request.
+    """
+    h = hashlib.sha256()
+    h.update(b"collision:")
+    h.update(api_key_hash.encode("utf-8"))
+    h.update(b":")
+    h.update(endpoint.encode("utf-8"))
+    h.update(b":")
+    h.update(key.encode("utf-8"))
+    return h.hexdigest()
+
+
+def _body_fingerprint(body: bytes) -> str:
+    return hashlib.sha256(body).hexdigest()
+
+
+def _check_or_record_body_fingerprint(
+    conn: sqlite3.Connection, collision_key: str, body_fp: str
+) -> tuple[str, str | None]:
+    """Return (state, seen_fp): ok, mismatch, busy, or unavailable.
+
+    Implementation note: we store the fingerprint in the same
+    ``am_idempotency_cache`` table by repurposing ``response_blob`` to
+    hold the literal string ``__bodyfp__:<sha256hex>`` and ``expires_at`` to
+    the same TTL. The blob format is mutually exclusive with the cached
+    response payloads (which are JSON) and the pending sentinel, so the
+    parsers in this module always know which slot they are looking at.
+    """
+    fp_blob = f"__bodyfp__:{body_fp}"
+    expires_at = (datetime.now(UTC) + timedelta(hours=_CACHE_TTL_HOURS)).isoformat()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute(
+            "SELECT response_blob, expires_at FROM am_idempotency_cache "
+            "WHERE cache_key = ?",
+            (collision_key,),
+        ).fetchone()
+        if row is not None:
+            try:
+                existing = row["response_blob"]
+                row_expires_at = row["expires_at"]
+            except (IndexError, KeyError, TypeError):
+                existing = row[0]
+                row_expires_at = row[1]
+            expired = False
+            try:
+                expired = (
+                    datetime.fromisoformat(str(row_expires_at).replace("Z", "+00:00"))
+                    <= datetime.now(UTC)
+                )
+            except ValueError:
+                expired = True
+            existing = str(existing or "")
+            if not expired and existing.startswith("__bodyfp__:"):
+                seen_fp = existing.split(":", 1)[1]
+                conn.execute("COMMIT")
+                if seen_fp != body_fp:
+                    return "mismatch", seen_fp
+                return "ok", None
+            conn.execute(
+                "DELETE FROM am_idempotency_cache WHERE cache_key = ?",
+                (collision_key,),
+            )
+        conn.execute(
+            "INSERT INTO am_idempotency_cache("
+            "    cache_key, response_blob, expires_at, created_at"
+            ") VALUES (?,?,?,?)",
+            (collision_key, fp_blob, expires_at, datetime.now(UTC).isoformat()),
+        )
+        conn.execute("COMMIT")
+        return "ok", None
+    except sqlite3.OperationalError as exc:
+        with contextlib.suppress(Exception):
+            conn.execute("ROLLBACK")
+        if _sqlite_busy(exc):
+            logger.warning("idempotency_collision_check_busy")
+            return "busy", None
+        logger.warning("idempotency_collision_check_unavailable")
+        return "unavailable", None
+    except Exception:
+        with contextlib.suppress(Exception):
+            conn.execute("ROLLBACK")
+        raise
 
 
 def _serialise_response(
@@ -387,7 +503,7 @@ def _write_cached(
 def _claim_or_read_cached(
     conn: sqlite3.Connection, cache_key: str
 ) -> tuple[str, str | None]:
-    """Return ('hit', blob), ('pending', None), ('busy', None), or ('owner', None).
+    """Return hit, pending, busy, unavailable, or owner.
 
     The pending sentinel closes the concurrent double-billing gap: one
     request owns the live execution; simultaneous replays with the same key
@@ -464,7 +580,8 @@ def _claim_or_read_cached(
         if _sqlite_busy(exc):
             logger.warning("idempotency_claim_busy")
             return "busy", None
-        return "owner", None
+        logger.warning("idempotency_claim_unavailable")
+        return "unavailable", None
     except Exception:
         with contextlib.suppress(Exception):
             conn.execute("ROLLBACK")
@@ -525,23 +642,80 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         cache_key = _compute_cache_key(
             api_key_hash, path, body, idempotency_key
         )
+        collision_key = _compute_collision_key(api_key_hash, path, idempotency_key)
         billing_key = "idem_" + hashlib.sha256(cache_key.encode("utf-8")).hexdigest()
 
-        # Connect on demand; fail-open on any DB error.
+        # Connect on demand. For idempotency-enabled paid POSTs, fail closed:
+        # dispatching live without the cache DB can create duplicate charges.
         try:
             from jpintel_mcp.db.session import connect
 
             conn = connect()
         except Exception:  # pragma: no cover — defensive
             logger.exception("idempotency_connect_failed")
-            return await call_next(request)
+            return _idempotency_error_response(
+                error="idempotency_cache_unavailable",
+                detail="retry later",
+                status_code=503,
+                retry_after="1",
+            )
+
+        # Collision detection: same Idempotency-Key with a DIFFERENT body is
+        # a client bug (the spec says a key uniquely names ONE request). We
+        # 409 instead of silently dispatching a separate metered call —
+        # matches Stripe's `idempotency_key_in_use` 409 contract.
+        try:
+            body_fp = _body_fingerprint(body)
+            collision_state, seen_fp = _check_or_record_body_fingerprint(
+                conn, collision_key, body_fp
+            )
+            if collision_state == "mismatch":
+                with contextlib.suppress(Exception):
+                    conn.close()
+                return _idempotency_error_response(
+                    error="idempotency_key_in_use",
+                    detail=(
+                        "Idempotency-Key was previously seen with a different "
+                        "request body. Use a fresh key for a new request."
+                    ),
+                    status_code=409,
+                )
+            if collision_state in {"busy", "unavailable"}:
+                with contextlib.suppress(Exception):
+                    conn.close()
+                return _idempotency_error_response(
+                    error=(
+                        "idempotency_cache_busy"
+                        if collision_state == "busy"
+                        else "idempotency_cache_unavailable"
+                    ),
+                    detail="retry later",
+                    status_code=503,
+                    retry_after="1",
+                )
+        except Exception:  # pragma: no cover — defensive
+            logger.exception("idempotency_collision_check_failed")
+            with contextlib.suppress(Exception):
+                conn.close()
+            return _idempotency_error_response(
+                error="idempotency_cache_unavailable",
+                detail="retry later",
+                status_code=503,
+                retry_after="1",
+            )
 
         try:
             cache_state, cached_blob = _claim_or_read_cached(conn, cache_key)
         except Exception:  # pragma: no cover — defensive
             logger.exception("idempotency_claim_failed")
-            cache_state = "owner"
-            cached_blob = None
+            with contextlib.suppress(Exception):
+                conn.close()
+            return _idempotency_error_response(
+                error="idempotency_cache_unavailable",
+                detail="retry later",
+                status_code=503,
+                retry_after="1",
+            )
 
         if cache_state == "hit" and cached_blob is not None:
             # Replay path — bypass the router entirely. ¥0 (no log_usage).
@@ -556,10 +730,13 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
             except Exception:  # pragma: no cover — defensive
                 logger.exception("idempotency_deserialise_failed")
                 with contextlib.suppress(Exception):
-                    _delete_cached(conn, cache_key)
-                with contextlib.suppress(Exception):
                     conn.close()
-                return await call_next(request)
+                return _idempotency_error_response(
+                    error="idempotency_cache_unavailable",
+                    detail="retry later",
+                    status_code=503,
+                    retry_after="1",
+                )
             with contextlib.suppress(Exception):
                 conn.close()
             hdrs[_HEADER_REPLAYED] = "true"
@@ -574,19 +751,21 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         if cache_state == "busy":
             with contextlib.suppress(Exception):
                 conn.close()
-            return Response(
-                content=json.dumps(
-                    {"error": "idempotency_cache_busy", "detail": "retry later"},
-                    ensure_ascii=False,
-                    separators=(",", ":"),
-                ),
+            return _idempotency_error_response(
+                error="idempotency_cache_busy",
+                detail="retry later",
                 status_code=503,
-                media_type="application/json",
-                headers={
-                    "Retry-After": "1",
-                    "X-Metered": "false",
-                    "X-Cost-Yen": "0",
-                },
+                retry_after="1",
+            )
+
+        if cache_state == "unavailable":
+            with contextlib.suppress(Exception):
+                conn.close()
+            return _idempotency_error_response(
+                error="idempotency_cache_unavailable",
+                detail="retry later",
+                status_code=503,
+                retry_after="1",
             )
 
         if cache_state == "pending":
@@ -614,10 +793,13 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                 except Exception:  # pragma: no cover — defensive
                     logger.exception("idempotency_pending_deserialise_failed")
                     with contextlib.suppress(Exception):
-                        _delete_cached(conn, cache_key)
-                    with contextlib.suppress(Exception):
                         conn.close()
-                    return await call_next(request)
+                    return _idempotency_error_response(
+                        error="idempotency_cache_unavailable",
+                        detail="retry later",
+                        status_code=503,
+                        retry_after="1",
+                    )
                 with contextlib.suppress(Exception):
                     conn.close()
                 hdrs[_HEADER_REPLAYED] = "true"

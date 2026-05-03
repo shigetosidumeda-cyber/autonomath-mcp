@@ -23,6 +23,7 @@ strictly better than 500s on every anon call.
 """
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import hmac
 import logging
@@ -291,7 +292,27 @@ def _normalize_ip_to_prefix(ip: str) -> str:
 # Keep this list short and stable — every entry is a logical user
 # population, not a UA string we want to enumerate.
 _UA_PATTERNS: tuple[tuple[str, str], ...] = (
-    # LLM clients (highest priority — explicit MCP / chat clients).
+    # Search-engine + AI crawlers (highest priority — these dominate raw
+    # Cloudflare PV and MUST be excluded from paid-conversion denominators).
+    # Order matters: specific bot UAs before the generic "bot"/"crawler"
+    # fallthrough so we don't mis-bucket Googlebot as bot:generic.
+    ("bot:googlebot", "googlebot"),
+    ("bot:bingbot", "bingbot"),
+    ("bot:gptbot", "gptbot"),
+    ("bot:claudebot", "claudebot"),
+    ("bot:perplexity", "perplexitybot"),
+    ("bot:facebook", "facebookexternalhit"),
+    ("bot:twitter", "twitterbot"),
+    ("bot:applebot", "applebot"),
+    ("bot:duckduck", "duckduckbot"),
+    ("bot:yandex", "yandexbot"),
+    ("bot:baidu", "baiduspider"),
+    ("bot:semrush", "semrushbot"),
+    ("bot:ahrefs", "ahrefsbot"),
+    ("bot:generic", "bot"),
+    ("bot:generic", "spider"),
+    ("bot:generic", "crawler"),
+    # LLM clients (explicit MCP / chat clients).
     ("claude-desktop", "claude desktop"),
     ("claude-code", "claude-code"),
     ("chatgpt", "chatgpt"),
@@ -433,10 +454,11 @@ def hash_ip(ip: str, request: Request | None = None) -> str:
     No migration needed.
     """
     normalized = _normalize_ip_to_prefix(ip)
-    if request is not None:
-        composed = f"{normalized}#{_fingerprint_string(request)}"
-    else:
-        composed = normalized
+    composed = (
+        f"{normalized}#{_fingerprint_string(request)}"
+        if request is not None
+        else normalized
+    )
     return hmac.new(
         settings.api_key_salt.encode("utf-8"),
         composed.encode("utf-8"),
@@ -515,14 +537,10 @@ async def enforce_anon_ip_limit(request: Request) -> None:
             ).fetchone()
         except sqlite3.Error:
             _log.exception("anon_rate_limit: key validation failed; failing open")
-            import contextlib
-
             with contextlib.suppress(Exception):
                 anon_conn.close()
             return
         if row is not None:
-            import contextlib
-
             with contextlib.suppress(Exception):
                 anon_conn.close()
             return
@@ -546,8 +564,6 @@ async def enforce_anon_ip_limit(request: Request) -> None:
             day_bucket,
         )
     finally:
-        import contextlib
-
         with contextlib.suppress(Exception):
             anon_conn.close()
 
@@ -562,14 +578,12 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         # (set inside _AnonRateLimitExceeded.headers) and any future
         # observer get the same remaining=0 view that the middleware
         # would have computed.
-        try:
+        with contextlib.suppress(Exception):
             request.state.anon_quota = {
                 "remaining": 0,
                 "limit": limit,
                 "reset_at_jst": resets_at,
             }
-        except Exception:  # pragma: no cover — request.state always present
-            pass
         raise _AnonRateLimitExceeded(
             body={
                 "detail": (
@@ -633,14 +647,12 @@ async def enforce_anon_ip_limit(request: Request) -> None:
     # remaining = limit - new_count. Clamp at 0 to avoid negative values
     # for the boundary call that crossed the threshold but still got a
     # 200 (limit exactly hit).
-    try:
+    with contextlib.suppress(Exception):
         request.state.anon_quota = {
             "remaining": max(0, limit - new_count),
             "limit": limit,
             "reset_at_jst": _jst_next_day_iso(),
         }
-    except Exception:  # pragma: no cover
-        pass
 
 
 # Router-level dep alias — callers wire this as:

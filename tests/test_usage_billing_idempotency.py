@@ -1,9 +1,27 @@
 from __future__ import annotations
 
+import contextlib
 import sqlite3
 from importlib import import_module
+from typing import TYPE_CHECKING
 
 from jpintel_mcp.api.deps import ApiContext, log_usage
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+
+def _create_idempotency_cache_table(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        """
+        CREATE TABLE am_idempotency_cache (
+            cache_key TEXT PRIMARY KEY,
+            response_blob TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+        """
+    )
 
 
 def test_request_idempotency_key_distinguishes_multiple_usage_events(
@@ -167,3 +185,174 @@ def test_duplicate_billing_idempotency_does_not_advance_cap_cache(
 
     assert row_count == 1
     assert noted == [("kh_paid", 7)]
+
+
+def test_body_fingerprint_collision_guard_rejects_different_payload(tmp_path) -> None:
+    from jpintel_mcp.api.middleware.idempotency import (
+        _check_or_record_body_fingerprint,
+    )
+
+    db_path = tmp_path / "idempotency_body_collision.db"
+    conn = sqlite3.connect(db_path, isolation_level=None)
+    try:
+        _create_idempotency_cache_table(conn)
+        assert _check_or_record_body_fingerprint(
+            conn, "collision:test", "body-a"
+        ) == ("ok", None)
+        assert _check_or_record_body_fingerprint(
+            conn, "collision:test", "body-a"
+        ) == ("ok", None)
+        assert _check_or_record_body_fingerprint(
+            conn, "collision:test", "body-b"
+        ) == ("mismatch", "body-a")
+    finally:
+        conn.close()
+
+
+def test_body_fingerprint_collision_guard_db_lock_fails_closed(tmp_path) -> None:
+    from jpintel_mcp.api.middleware.idempotency import (
+        _check_or_record_body_fingerprint,
+    )
+
+    db_path = tmp_path / "idempotency_body_collision_lock.db"
+    setup = sqlite3.connect(db_path, isolation_level=None)
+    try:
+        _create_idempotency_cache_table(setup)
+    finally:
+        setup.close()
+
+    locker = sqlite3.connect(db_path, timeout=0, isolation_level=None)
+    contender = sqlite3.connect(db_path, timeout=0, isolation_level=None)
+    try:
+        locker.execute("BEGIN IMMEDIATE")
+        assert _check_or_record_body_fingerprint(
+            contender, "collision:locked", "body-a"
+        ) == ("busy", None)
+    finally:
+        with contextlib.suppress(Exception):
+            locker.execute("ROLLBACK")
+        locker.close()
+        contender.close()
+
+
+def test_same_idempotency_key_different_body_is_unmetered_409(
+    client,
+    paid_key: str,
+    seeded_db: Path,
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+
+    headers = {
+        "X-API-Key": paid_key,
+        "Idempotency-Key": "idem-different-body-usage-billing",
+        "X-Cost-Cap-JPY": "6",
+    }
+    key_hash = hash_api_key(paid_key)
+    conn = sqlite3.connect(seeded_db)
+    try:
+        before = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    r1 = client.post(
+        "/v1/programs/batch",
+        headers=headers,
+        json={"unified_ids": ["UNI-test-s-1"]},
+    )
+    assert r1.status_code == 200, r1.text
+
+    r2 = client.post(
+        "/v1/programs/batch",
+        headers=headers,
+        json={"unified_ids": ["UNI-test-a-1"]},
+    )
+    assert r2.status_code == 409, r2.text
+    assert r2.headers.get("X-Metered") == "false"
+    assert r2.headers.get("X-Cost-Yen") == "0"
+    assert r2.json()["error"] == "idempotency_key_in_use"
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        after = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    assert after == before + 1
+
+
+def test_corrupt_idempotency_replay_fails_closed_without_second_usage(
+    client,
+    paid_key: str,
+    seeded_db: Path,
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+
+    headers = {
+        "X-API-Key": paid_key,
+        "Idempotency-Key": "idem-corrupt-replay-usage-billing",
+        "X-Cost-Cap-JPY": "6",
+    }
+    key_hash = hash_api_key(paid_key)
+    conn = sqlite3.connect(seeded_db)
+    try:
+        before = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    r1 = client.post(
+        "/v1/programs/batch",
+        headers=headers,
+        json={"unified_ids": ["UNI-test-s-1"]},
+    )
+    assert r1.status_code == 200, r1.text
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        updated = conn.execute(
+            "UPDATE am_idempotency_cache SET response_blob = ? "
+            "WHERE cache_key = ("
+            "  SELECT cache_key FROM am_idempotency_cache "
+            "  WHERE response_blob NOT LIKE '__bodyfp__:%' "
+            "    AND response_blob NOT LIKE '__pending__:%' "
+            "  ORDER BY created_at DESC LIMIT 1"
+            ")",
+            ("not-json",),
+        ).rowcount
+        conn.commit()
+    finally:
+        conn.close()
+    assert updated == 1
+
+    r2 = client.post(
+        "/v1/programs/batch",
+        headers=headers,
+        json={"unified_ids": ["UNI-test-s-1"]},
+    )
+    assert r2.status_code == 503, r2.text
+    assert r2.headers.get("X-Metered") == "false"
+    assert r2.headers.get("X-Cost-Yen") == "0"
+    assert r2.json()["error"] == "idempotency_cache_unavailable"
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        after = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    assert after == before + 1
