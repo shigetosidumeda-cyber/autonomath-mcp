@@ -515,12 +515,12 @@ def run(
         # DBs without the column fall back to NULL so the legacy single-
         # delivery path stays the default.
         has_profile_ids = "profile_ids_json" in cols
-        profile_ids_select = (
-            "profile_ids_json" if has_profile_ids else "NULL AS profile_ids_json"
-        )
+        profile_ids_select = "profile_ids_json" if has_profile_ids else "NULL AS profile_ids_json"
+        # `profile_ids_select` is a literal whitelist (one of two hardcoded
+        # strings); the f-string interpolation below is bandit-safe.
         if has_channel:
             sweep_sql = (
-                "SELECT id, api_key_hash, name, query_json, frequency, "
+                "SELECT id, api_key_hash, name, query_json, frequency, "  # nosec B608
                 "       notify_email, "
                 "       COALESCE(channel_format, 'email') AS channel_format, "
                 "       channel_url, "
@@ -530,7 +530,7 @@ def run(
             )
         else:
             sweep_sql = (
-                "SELECT id, api_key_hash, name, query_json, frequency, "
+                "SELECT id, api_key_hash, name, query_json, frequency, "  # nosec B608
                 "       notify_email, "
                 "       'email' AS channel_format, "
                 "       NULL   AS channel_url, "
