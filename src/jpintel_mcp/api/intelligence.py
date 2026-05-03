@@ -20,7 +20,20 @@ from jpintel_mcp.api._response_models import (
 )
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.api.evidence import _get_composer, _validate_compression_baseline
-from jpintel_mcp.services.evidence_packet import MAX_RECORDS_PER_PACKET
+from jpintel_mcp.services.evidence_packet import (
+    MAX_RECORDS_PER_PACKET,
+    EvidencePacketComposer,
+)
+
+
+def _build_evidence_value(envelope: dict[str, Any], records: list[Any]) -> dict[str, Any]:
+    """Plan §4-A `evidence_value` thin wrapper around the composer's helper.
+
+    Centralises the call so the precomputed bundle, the regular Evidence
+    Packet, and any future surface all return the same shape.
+    """
+    safe_records = [rec for rec in records if isinstance(rec, dict)]
+    return EvidencePacketComposer._build_evidence_value(envelope, safe_records)
 
 router = APIRouter(prefix="/v1/intelligence", tags=["intelligence"])
 
@@ -67,8 +80,32 @@ def _annotate_precomputed_bundle(envelope: dict[str, Any]) -> dict[str, Any]:
         records_returned=len(records),
         precomputed_count=precomputed_count,
         compression=envelope.get("compression"),
+        envelope=envelope,
     )
+    # Plan §4-A: surface AI-readable evidence_value counters even on the
+    # precomputed bundle path. The composer already attaches one; we
+    # recompute here so caller-visible counters stay in lock-step with
+    # the envelope's bundle_kind / records_returned.
+    envelope["evidence_value"] = _build_evidence_value(envelope, records)
     return envelope
+
+
+def _source_linked_count(envelope: dict[str, Any] | None) -> int:
+    """Count records that carry a source_url or a source-linked fact."""
+    if not isinstance(envelope, dict):
+        return 0
+    records = envelope.get("records") or []
+    count = 0
+    for rec in records:
+        if not isinstance(rec, dict):
+            continue
+        if rec.get("source_url"):
+            count += 1
+            continue
+        facts = rec.get("facts") or []
+        if any(isinstance(f, dict) and f.get("source") for f in facts):
+            count += 1
+    return count
 
 
 def _build_agent_recommendation(
@@ -76,26 +113,71 @@ def _build_agent_recommendation(
     records_returned: int,
     precomputed_count: int,
     compression: Any,
+    envelope: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return machine-readable guidance for LLM/tool agents.
 
     This does not claim guaranteed provider-cost savings. It makes the
     already-present evidence/compression signals easy for an agent to branch on.
+
+    Plan §4-A two-axis decision:
+        * recommend_for_evidence / evidence_decision (baseline-free)
+        * recommend_for_cost_savings / cost_savings_decision (caller baseline)
     """
     context_savings = _context_savings_summary(compression)
+    source_linked = _source_linked_count(envelope)
+    if records_returned <= 0:
+        evidence_decision = "no_records_returned"
+        recommend_for_evidence = False
+    elif source_linked <= 0:
+        evidence_decision = "records_returned_without_source_links"
+        recommend_for_evidence = False
+    else:
+        evidence_decision = "supported_by_source_linked_records"
+        recommend_for_evidence = True
+
+    quality = (envelope or {}).get("quality") if isinstance(envelope, dict) else None
+    gap_list = (
+        quality.get("known_gaps")
+        if isinstance(quality, dict) and isinstance(quality.get("known_gaps"), list)
+        else []
+    )
 
     if records_returned <= 0:
         return {
             "recommendation": "broaden_query_or_skip",
             "recommend_to_user": False,
+            "recommend_for_evidence": False,
+            "evidence_decision": evidence_decision,
             "route": "/v1/intelligence/precomputed/query",
             "reason_codes": [
                 "no_records_returned",
                 "query_needs_broader_terms_or_different_endpoint",
             ],
+            "value_reasons": [],
             "message": (
                 "Do not recommend jpcite for this exact query yet; broaden "
                 "the query or use a more specific endpoint."
+            ),
+            "context_savings": context_savings,
+            **_cost_savings_decision(context_savings),
+        }
+
+    if not recommend_for_evidence:
+        return {
+            "recommendation": "broaden_query_or_skip",
+            "recommend_to_user": False,
+            "recommend_for_evidence": False,
+            "evidence_decision": evidence_decision,
+            "route": "/v1/intelligence/precomputed/query",
+            "reason_codes": [
+                "records_returned_without_source_links",
+                "query_needs_broader_terms_or_different_endpoint",
+            ],
+            "value_reasons": [],
+            "message": (
+                "Do not recommend jpcite for this exact query yet; the "
+                "bundle lacks source-linked evidence."
             ),
             "context_savings": context_savings,
             **_cost_savings_decision(context_savings),
@@ -114,11 +196,22 @@ def _build_agent_recommendation(
             reason_codes.append("caller_baseline_evaluated")
         else:
             reason_codes.append("context_savings_baseline_needed")
+
+        value_reasons = ["source_linked_records_returned", "precomputed_summary_available"]
+        if gap_list:
+            value_reasons.append("known_gaps_exposed")
+        value_reasons.extend(["no_request_time_llm", "no_live_web_search"])
+        if context_savings and context_savings.get("break_even_met") is True:
+            value_reasons.append("caller_baseline_break_even_met")
+
         return {
             "recommendation": "use_jpcite_prefetch",
             "recommend_to_user": True,
+            "recommend_for_evidence": recommend_for_evidence,
+            "evidence_decision": evidence_decision,
             "route": "/v1/intelligence/precomputed/query",
             "reason_codes": reason_codes,
+            "value_reasons": value_reasons,
             "message": (
                 "Use jpcite before sending long Japanese public-program "
                 "sources to an LLM; this bundle provides compact, "
@@ -128,15 +221,25 @@ def _build_agent_recommendation(
             **_cost_savings_decision(context_savings),
         }
 
+    value_reasons = ["source_linked_records_returned"] if recommend_for_evidence else []
+    if gap_list:
+        value_reasons.append("known_gaps_exposed")
+    value_reasons.extend(["no_request_time_llm", "no_live_web_search"])
+    if context_savings and context_savings.get("break_even_met") is True:
+        value_reasons.append("caller_baseline_break_even_met")
+
     return {
         "recommendation": "use_evidence_packet",
         "recommend_to_user": True,
+        "recommend_for_evidence": recommend_for_evidence,
+        "evidence_decision": evidence_decision,
         "route": "/v1/evidence/packets/query",
         "reason_codes": [
             "source_linked_records_returned",
             "precomputed_summary_unavailable",
             "evidence_packet_available",
         ],
+        "value_reasons": value_reasons,
         "message": (
             "Recommend jpcite for source verification, but treat context "
             "savings as unproven until a comparable baseline is supplied."
@@ -159,6 +262,10 @@ def _context_savings_summary(compression: Any) -> dict[str, Any] | None:
         "source_tokens_estimate": compression.get("source_tokens_estimate"),
         "avoided_tokens_estimate": compression.get("avoided_tokens_estimate"),
         "compression_ratio": compression.get("compression_ratio"),
+        "input_context_reduction_rate": compression.get("input_context_reduction_rate"),
+        "provider_billing_not_guaranteed": compression.get(
+            "provider_billing_not_guaranteed", True
+        ),
         "savings_claim": compression.get("savings_claim"),
     }
     if isinstance(savings, dict):
@@ -166,6 +273,9 @@ def _context_savings_summary(compression: Any) -> dict[str, Any] | None:
             {
                 "input_token_price_jpy_per_1m": savings.get("input_token_price_jpy_per_1m"),
                 "break_even_avoided_tokens": savings.get("break_even_avoided_tokens"),
+                "break_even_source_tokens_estimate": savings.get(
+                    "break_even_source_tokens_estimate"
+                ),
                 "break_even_met": savings.get("break_even_met"),
                 "net_savings_jpy_ex_tax": savings.get("net_savings_jpy_ex_tax"),
                 "billing_savings_claim": savings.get("billing_savings_claim"),

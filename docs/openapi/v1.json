@@ -5635,7 +5635,7 @@
                 "type": "null"
               }
             ],
-            "description": "Optional caller-price comparison, including break_even_met when the caller supplied an input token price.",
+            "description": "Optional caller-price comparison, including break_even_met and break_even_source_tokens_estimate when the caller supplied an input token price.",
             "title": "Cost Savings Estimate"
           },
           "estimate_disclaimer": {
@@ -5667,10 +5667,28 @@
             "title": "Estimate Scope",
             "type": "string"
           },
+          "input_context_reduction_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "max(0, source - packet) / source. Caller-supplied input-context estimate only; not a provider-billing guarantee.",
+            "title": "Input Context Reduction Rate"
+          },
           "packet_tokens_estimate": {
             "description": "Estimated tokens in the returned Evidence Packet.",
             "title": "Packet Tokens Estimate",
             "type": "integer"
+          },
+          "provider_billing_not_guaranteed": {
+            "default": true,
+            "description": "Always true. Output / reasoning / short-lived response reuse / provider tool tokens are NOT measured by the compression block.",
+            "title": "Provider Billing Not Guaranteed",
+            "type": "boolean"
           },
           "savings_claim": {
             "default": "estimate_not_guarantee",
@@ -5747,14 +5765,28 @@
           "answer_not_included": true,
           "api_version": "v1",
           "compression": {
+            "avoided_tokens_estimate": 13434,
+            "compression_ratio": 0.0404,
             "estimate_scope": "input_context_only",
+            "input_context_reduction_rate": 0.9596,
             "packet_tokens_estimate": 566,
+            "provider_billing_not_guaranteed": true,
             "savings_claim": "estimate_not_guarantee",
             "source_pdf_pages": 20,
             "source_tokens_basis": "pdf_pages",
             "source_tokens_estimate": 14000
           },
           "corpus_snapshot_id": "snap_20260502",
+          "evidence_value": {
+            "fact_provenance_coverage_pct_avg": 0.86,
+            "known_gap_count": 0,
+            "pdf_fact_refs": 0,
+            "precomputed_records": 1,
+            "records_returned": 1,
+            "request_time_llm_call_performed": false,
+            "source_linked_records": 1,
+            "web_search_performed_by_jpcite": false
+          },
           "generated_at": "2026-05-02T12:00:00+09:00",
           "packet_id": "evp_example",
           "quality": {
@@ -5826,6 +5858,17 @@
             "title": "Corpus Snapshot Id",
             "type": "string"
           },
+          "evidence_value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidencePacketEvidenceValue"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Plan \u00a74-A AI-readable evidence value counters. Always populated by the composer; null only on legacy fixtures."
+          },
           "generated_at": {
             "title": "Generated At",
             "type": "string"
@@ -5864,6 +5907,70 @@
           "verification"
         ],
         "title": "EvidencePacketEnvelope",
+        "type": "object"
+      },
+      "EvidencePacketEvidenceValue": {
+        "additionalProperties": true,
+        "description": "Plan \u00a74-A `evidence_value` block \u2014 AI-readable evidence counters.\n\nAlways populated. Values are pure record/quality counts; jpcite does not\nperform a request-time LLM call or a live web search to produce them.",
+        "properties": {
+          "fact_provenance_coverage_pct_avg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Mean per-record fact_provenance_coverage_pct; null when no record carries a coverage figure.",
+            "title": "Fact Provenance Coverage Pct Avg"
+          },
+          "known_gap_count": {
+            "description": "Length of quality.known_gaps for this packet.",
+            "title": "Known Gap Count",
+            "type": "integer"
+          },
+          "pdf_fact_refs": {
+            "description": "Sum of pdf_fact_refs[] entries across records.",
+            "title": "Pdf Fact Refs",
+            "type": "integer"
+          },
+          "precomputed_records": {
+            "description": "Records carrying a deterministic precomputed summary.",
+            "title": "Precomputed Records",
+            "type": "integer"
+          },
+          "records_returned": {
+            "description": "Total records[] entries.",
+            "title": "Records Returned",
+            "type": "integer"
+          },
+          "request_time_llm_call_performed": {
+            "default": false,
+            "description": "Always false. The composer never calls an LLM at request time.",
+            "title": "Request Time Llm Call Performed",
+            "type": "boolean"
+          },
+          "source_linked_records": {
+            "description": "Records whose source_url is non-empty (or whose facts cite a source).",
+            "title": "Source Linked Records",
+            "type": "integer"
+          },
+          "web_search_performed_by_jpcite": {
+            "default": false,
+            "description": "Always false. The composer is read-only against local persistent storage.",
+            "title": "Web Search Performed By Jpcite",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "records_returned",
+          "source_linked_records",
+          "precomputed_records",
+          "pdf_fact_refs",
+          "known_gap_count"
+        ],
+        "title": "EvidencePacketEvidenceValue",
         "type": "object"
       },
       "EvidencePacketQuality": {
@@ -7970,7 +8077,7 @@
                 "type": "null"
               }
             ],
-            "description": "Break-even and avoided-token estimate when the caller supplied a comparable source-token baseline.",
+            "description": "Break-even and avoided-token estimate when the caller supplied a comparable source-token baseline. Includes `break_even_source_tokens_estimate` (packet + break-even avoided) and `provider_billing_not_guaranteed=true`.",
             "title": "Context Savings"
           },
           "cost_savings_decision": {
@@ -7982,6 +8089,17 @@
               "not_supported_by_caller_baseline"
             ],
             "title": "Cost Savings Decision",
+            "type": "string"
+          },
+          "evidence_decision": {
+            "default": "no_records_returned",
+            "description": "Plan \u00a74-A axis 1 reason: machine-readable basis for the `recommend_for_evidence` boolean.",
+            "enum": [
+              "supported_by_source_linked_records",
+              "no_records_returned",
+              "records_returned_without_source_links"
+            ],
+            "title": "Evidence Decision",
             "type": "string"
           },
           "message": {
@@ -8008,6 +8126,12 @@
             "title": "Recommend For Cost Savings",
             "type": "boolean"
           },
+          "recommend_for_evidence": {
+            "default": false,
+            "description": "Plan \u00a74-A axis 1: true when at least one record is source-linked. Independent of caller-supplied price baseline.",
+            "title": "Recommend For Evidence",
+            "type": "boolean"
+          },
           "recommend_to_user": {
             "description": "True when the response contains enough source-linked value for an agent to recommend jpcite in this turn.",
             "title": "Recommend To User",
@@ -8026,6 +8150,14 @@
             "description": "Best next jpcite API route for the agent to call.",
             "title": "Route",
             "type": "string"
+          },
+          "value_reasons": {
+            "description": "Plan \u00a74-A: positive signals an agent may quote when justifying a jpcite recommendation. Always derived from the same evidence as `reason_codes`.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Value Reasons",
+            "type": "array"
           }
         },
         "required": [
@@ -8047,23 +8179,36 @@
             "context_savings": {
               "avoided_tokens_estimate": 13434,
               "break_even_met": true,
+              "break_even_source_tokens_estimate": 10566,
               "evaluated": true,
+              "input_context_reduction_rate": 0.9596,
+              "provider_billing_not_guaranteed": true,
               "savings_claim": "estimate_not_guarantee",
               "source_tokens_basis": "pdf_pages"
             },
             "cost_savings_decision": "supported_by_caller_baseline",
+            "evidence_decision": "supported_by_source_linked_records",
             "message": "Use this bundle before sending long Japanese public-program sources to an LLM; it provides compact, source-linked context.",
             "missing_for_cost_claim": [],
             "reason_codes": [
               "precomputed_summary_available",
               "source_linked_records_returned",
               "no_request_time_llm",
-              "no_live_web_search"
+              "no_live_web_search",
+              "caller_baseline_break_even_met"
             ],
             "recommend_for_cost_savings": true,
+            "recommend_for_evidence": true,
             "recommend_to_user": true,
             "recommendation": "use_jpcite_prefetch",
-            "route": "/v1/intelligence/precomputed/query"
+            "route": "/v1/intelligence/precomputed/query",
+            "value_reasons": [
+              "source_linked_records_returned",
+              "precomputed_summary_available",
+              "no_request_time_llm",
+              "no_live_web_search",
+              "caller_baseline_break_even_met"
+            ]
           },
           "answer_basis": "precomputed",
           "answer_not_included": true,
@@ -8071,14 +8216,28 @@
           "bundle_id": "pci_example",
           "bundle_kind": "precomputed_intelligence",
           "compression": {
+            "avoided_tokens_estimate": 13434,
+            "compression_ratio": 0.0404,
             "estimate_scope": "input_context_only",
+            "input_context_reduction_rate": 0.9596,
             "packet_tokens_estimate": 566,
+            "provider_billing_not_guaranteed": true,
             "savings_claim": "estimate_not_guarantee",
             "source_pdf_pages": 20,
             "source_tokens_basis": "pdf_pages",
             "source_tokens_estimate": 14000
           },
           "corpus_snapshot_id": "snap_20260502",
+          "evidence_value": {
+            "fact_provenance_coverage_pct_avg": 0.86,
+            "known_gap_count": 0,
+            "pdf_fact_refs": 0,
+            "precomputed_records": 1,
+            "records_returned": 1,
+            "request_time_llm_call_performed": false,
+            "source_linked_records": 1,
+            "web_search_performed_by_jpcite": false
+          },
           "generated_at": "2026-05-02T12:00:00+09:00",
           "packet_id": "evp_example",
           "precomputed": {
@@ -8168,6 +8327,17 @@
           "corpus_snapshot_id": {
             "title": "Corpus Snapshot Id",
             "type": "string"
+          },
+          "evidence_value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvidencePacketEvidenceValue"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Plan \u00a74-A AI-readable evidence value counters. Always populated by the composer; null only on legacy fixtures."
           },
           "generated_at": {
             "title": "Generated At",
@@ -20247,14 +20417,28 @@
                   "answer_not_included": true,
                   "api_version": "v1",
                   "compression": {
+                    "avoided_tokens_estimate": 13434,
+                    "compression_ratio": 0.0404,
                     "estimate_scope": "input_context_only",
+                    "input_context_reduction_rate": 0.9596,
                     "packet_tokens_estimate": 566,
+                    "provider_billing_not_guaranteed": true,
                     "savings_claim": "estimate_not_guarantee",
                     "source_pdf_pages": 20,
                     "source_tokens_basis": "pdf_pages",
                     "source_tokens_estimate": 14000
                   },
                   "corpus_snapshot_id": "snap_20260502",
+                  "evidence_value": {
+                    "fact_provenance_coverage_pct_avg": 0.86,
+                    "known_gap_count": 0,
+                    "pdf_fact_refs": 0,
+                    "precomputed_records": 1,
+                    "records_returned": 1,
+                    "request_time_llm_call_performed": false,
+                    "source_linked_records": 1,
+                    "web_search_performed_by_jpcite": false
+                  },
                   "generated_at": "2026-05-02T12:00:00+09:00",
                   "packet_id": "evp_example",
                   "quality": {
@@ -20527,14 +20711,28 @@
                   "answer_not_included": true,
                   "api_version": "v1",
                   "compression": {
+                    "avoided_tokens_estimate": 13434,
+                    "compression_ratio": 0.0404,
                     "estimate_scope": "input_context_only",
+                    "input_context_reduction_rate": 0.9596,
                     "packet_tokens_estimate": 566,
+                    "provider_billing_not_guaranteed": true,
                     "savings_claim": "estimate_not_guarantee",
                     "source_pdf_pages": 20,
                     "source_tokens_basis": "pdf_pages",
                     "source_tokens_estimate": 14000
                   },
                   "corpus_snapshot_id": "snap_20260502",
+                  "evidence_value": {
+                    "fact_provenance_coverage_pct_avg": 0.86,
+                    "known_gap_count": 0,
+                    "pdf_fact_refs": 0,
+                    "precomputed_records": 1,
+                    "records_returned": 1,
+                    "request_time_llm_call_performed": false,
+                    "source_linked_records": 1,
+                    "web_search_performed_by_jpcite": false
+                  },
                   "generated_at": "2026-05-02T12:00:00+09:00",
                   "packet_id": "evp_example",
                   "quality": {
@@ -22162,23 +22360,36 @@
                     "context_savings": {
                       "avoided_tokens_estimate": 13434,
                       "break_even_met": true,
+                      "break_even_source_tokens_estimate": 10566,
                       "evaluated": true,
+                      "input_context_reduction_rate": 0.9596,
+                      "provider_billing_not_guaranteed": true,
                       "savings_claim": "estimate_not_guarantee",
                       "source_tokens_basis": "pdf_pages"
                     },
                     "cost_savings_decision": "supported_by_caller_baseline",
+                    "evidence_decision": "supported_by_source_linked_records",
                     "message": "Use this bundle before sending long Japanese public-program sources to an LLM; it provides compact, source-linked context.",
                     "missing_for_cost_claim": [],
                     "reason_codes": [
                       "precomputed_summary_available",
                       "source_linked_records_returned",
                       "no_request_time_llm",
-                      "no_live_web_search"
+                      "no_live_web_search",
+                      "caller_baseline_break_even_met"
                     ],
                     "recommend_for_cost_savings": true,
+                    "recommend_for_evidence": true,
                     "recommend_to_user": true,
                     "recommendation": "use_jpcite_prefetch",
-                    "route": "/v1/intelligence/precomputed/query"
+                    "route": "/v1/intelligence/precomputed/query",
+                    "value_reasons": [
+                      "source_linked_records_returned",
+                      "precomputed_summary_available",
+                      "no_request_time_llm",
+                      "no_live_web_search",
+                      "caller_baseline_break_even_met"
+                    ]
                   },
                   "answer_basis": "precomputed",
                   "answer_not_included": true,
@@ -22186,14 +22397,28 @@
                   "bundle_id": "pci_example",
                   "bundle_kind": "precomputed_intelligence",
                   "compression": {
+                    "avoided_tokens_estimate": 13434,
+                    "compression_ratio": 0.0404,
                     "estimate_scope": "input_context_only",
+                    "input_context_reduction_rate": 0.9596,
                     "packet_tokens_estimate": 566,
+                    "provider_billing_not_guaranteed": true,
                     "savings_claim": "estimate_not_guarantee",
                     "source_pdf_pages": 20,
                     "source_tokens_basis": "pdf_pages",
                     "source_tokens_estimate": 14000
                   },
                   "corpus_snapshot_id": "snap_20260502",
+                  "evidence_value": {
+                    "fact_provenance_coverage_pct_avg": 0.86,
+                    "known_gap_count": 0,
+                    "pdf_fact_refs": 0,
+                    "precomputed_records": 1,
+                    "records_returned": 1,
+                    "request_time_llm_call_performed": false,
+                    "source_linked_records": 1,
+                    "web_search_performed_by_jpcite": false
+                  },
                   "generated_at": "2026-05-02T12:00:00+09:00",
                   "packet_id": "evp_example",
                   "precomputed": {

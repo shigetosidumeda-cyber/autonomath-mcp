@@ -315,3 +315,96 @@ def test_precomputed_intelligence_route_is_mounted(
     assert body["agent_recommendation"]["recommend_to_user"] is False
     assert body["agent_recommendation"]["recommend_for_cost_savings"] is False
     assert body["agent_recommendation"]["cost_savings_decision"] == "needs_caller_baseline"
+
+
+# ---------------------------------------------------------------------------
+# Plan §4-A — API value signal acceptance tests (2026-05-03)
+# ---------------------------------------------------------------------------
+
+
+def test_evidence_value_block_present_on_precomputed_bundle(
+    intelligence_client: TestClient,
+) -> None:
+    """plan §4-A: evidence_value block ships on the precomputed bundle path."""
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={"q": "省力化", "limit": 1},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    ev = body["evidence_value"]
+    assert ev["records_returned"] == 1
+    assert ev["source_linked_records"] >= 1
+    assert ev["precomputed_records"] == 1
+    assert ev["web_search_performed_by_jpcite"] is False
+    assert ev["request_time_llm_call_performed"] is False
+
+
+def test_pdf_pages_baseline_returns_break_even_and_reduction(
+    intelligence_client: TestClient,
+) -> None:
+    """plan §4-A: pdf_pages baseline → input_context_reduction_rate +
+    break_even_source_tokens_estimate + provider_billing_not_guaranteed."""
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={
+            "q": "省力化",
+            "limit": 1,
+            "source_tokens_basis": "pdf_pages",
+            "source_pdf_pages": 30,
+            "input_token_price_jpy_per_1m": 300,
+        },
+    )
+    assert response.status_code == 200
+    compression = response.json()["compression"]
+    assert isinstance(compression["input_context_reduction_rate"], float)
+    assert compression["provider_billing_not_guaranteed"] is True
+    cost_savings = compression["cost_savings_estimate"]
+    assert isinstance(cost_savings["break_even_source_tokens_estimate"], int)
+    assert cost_savings["provider_billing_not_guaranteed"] is True
+
+
+def test_no_records_zero_recommendations(intelligence_client: TestClient) -> None:
+    """plan §4-A: records_returned=0 disables every recommendation switch."""
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={"q": "does-not-match", "limit": 1},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["evidence_value"]["records_returned"] == 0
+    rec = body["agent_recommendation"]
+    assert rec["recommend_to_user"] is False
+    assert rec["recommend_for_evidence"] is False
+    assert rec["evidence_decision"] == "no_records_returned"
+    assert rec["recommend_for_cost_savings"] is False
+
+
+def test_records_without_source_links_do_not_recommend() -> None:
+    """Source-link absence must suppress user recommendation and reason claims."""
+    from jpintel_mcp.api.intelligence import _build_agent_recommendation
+
+    envelope = {
+        "records": [
+            {
+                "entity_id": "program:no-source",
+                "precomputed": {"summaries": {"200": "summary without source"}},
+            }
+        ],
+        "quality": {"known_gaps": []},
+    }
+    rec = _build_agent_recommendation(
+        records_returned=1,
+        precomputed_count=1,
+        compression=None,
+        envelope=envelope,
+    )
+
+    assert rec["recommendation"] == "broaden_query_or_skip"
+    assert rec["recommend_to_user"] is False
+    assert rec["recommend_for_evidence"] is False
+    assert rec["evidence_decision"] == "records_returned_without_source_links"
+    assert rec["recommend_for_cost_savings"] is False
+    assert rec["cost_savings_decision"] == "needs_caller_baseline"
+    assert "source_linked_records_returned" not in rec["reason_codes"]
+    assert "source_linked_records_returned" not in rec["value_reasons"]

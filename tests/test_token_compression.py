@@ -181,6 +181,10 @@ def test_compose_full_inputs_produces_full_block() -> None:
     assert result["avoided_tokens_estimate"] >= 0
     assert isinstance(result["compression_ratio"], float)
     assert 0 < result["compression_ratio"] <= 1
+    assert result["input_context_reduction_rate"] == round(
+        result["avoided_tokens_estimate"] / result["source_tokens_estimate"], 4
+    )
+    assert result["provider_billing_not_guaranteed"] is True
 
     savings = result["cost_savings_estimate"]
     assert savings["currency"] == "JPY"
@@ -188,7 +192,12 @@ def test_compose_full_inputs_produces_full_block() -> None:
     assert savings["jpcite_billable_units"] == 1
     assert savings["jpcite_cost_jpy_ex_tax"] == 3
     assert savings["break_even_avoided_tokens"] == 10000
+    assert savings["break_even_source_tokens_estimate"] == (
+        result["packet_tokens_estimate"] + savings["break_even_avoided_tokens"]
+    )
     assert savings["break_even_met"] is True
+    assert savings["input_context_only"] is True
+    assert savings["provider_billing_not_guaranteed"] is True
     assert savings["price_input_source"] == "caller_supplied"
     assert savings["billing_savings_claim"] == "estimate_not_guarantee"
     assert isinstance(savings["gross_input_savings_jpy"], float)
@@ -212,6 +221,8 @@ def test_compose_no_price_omits_cost_savings() -> None:
     # Other fields still present.
     assert result["estimate_method"] == ESTIMATE_METHOD
     assert result["source_tokens_estimate"] == 7000
+    assert result["input_context_reduction_rate"] is not None
+    assert result["provider_billing_not_guaranteed"] is True
 
 
 def test_compose_token_count_baseline_returns_exact_context_estimate() -> None:
@@ -239,6 +250,16 @@ def test_compose_token_count_baseline_returns_exact_context_estimate() -> None:
     )
     assert result["estimate_scope"] == "input_context_only"
     assert result["savings_claim"] == "estimate_not_guarantee"
+    assert result["input_context_reduction_rate"] == round(
+        result["avoided_tokens_estimate"] / result["source_tokens_estimate"], 4
+    )
+    assert result["provider_billing_not_guaranteed"] is True
+    savings = result["cost_savings_estimate"]
+    assert savings["break_even_source_tokens_estimate"] == (
+        result["packet_tokens_estimate"] + savings["break_even_avoided_tokens"]
+    )
+    assert savings["input_context_only"] is True
+    assert savings["provider_billing_not_guaranteed"] is True
 
 
 def test_compose_unknown_source_emits_null_ratio() -> None:
@@ -253,6 +274,8 @@ def test_compose_unknown_source_emits_null_ratio() -> None:
     assert result["source_tokens_estimate"] is None
     assert result["compression_ratio"] is None
     assert result["avoided_tokens_estimate"] is None
+    assert result["input_context_reduction_rate"] is None
+    assert result["provider_billing_not_guaranteed"] is True
     assert "cost_savings_estimate" not in result
 
 
@@ -327,7 +350,10 @@ def test_savings_math_matches_plan_formula() -> None:
     assert savings["jpcite_cost_jpy_ex_tax"] == 3
     assert savings["jpcite_billable_units"] == 1
     assert savings["break_even_avoided_tokens"] == 10000
+    assert savings["break_even_source_tokens_estimate"] == 10820
     assert savings["break_even_met"] is True
+    assert savings["input_context_only"] is True
+    assert savings["provider_billing_not_guaranteed"] is True
 
 
 def test_savings_break_even_false_when_context_too_small() -> None:

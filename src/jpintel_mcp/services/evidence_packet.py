@@ -1085,6 +1085,10 @@ class EvidencePacketComposer:
             "source_tokens_estimate": compression.get("source_tokens_estimate"),
             "avoided_tokens_estimate": compression.get("avoided_tokens_estimate"),
             "compression_ratio": compression.get("compression_ratio"),
+            "input_context_reduction_rate": compression.get("input_context_reduction_rate"),
+            "provider_billing_not_guaranteed": compression.get(
+                "provider_billing_not_guaranteed", True
+            ),
             "savings_claim": compression.get("savings_claim"),
         }
         if isinstance(savings, dict):
@@ -1092,6 +1096,9 @@ class EvidencePacketComposer:
                 {
                     "input_token_price_jpy_per_1m": savings.get("input_token_price_jpy_per_1m"),
                     "break_even_avoided_tokens": savings.get("break_even_avoided_tokens"),
+                    "break_even_source_tokens_estimate": savings.get(
+                        "break_even_source_tokens_estimate"
+                    ),
                     "break_even_met": savings.get("break_even_met"),
                     "net_savings_jpy_ex_tax": savings.get("net_savings_jpy_ex_tax"),
                     "billing_savings_claim": savings.get("billing_savings_claim"),
@@ -1145,6 +1152,62 @@ class EvidencePacketComposer:
                 count += 1
         return count
 
+    @staticmethod
+    def _build_evidence_value(
+        envelope: dict[str, Any], records: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Plan §4-A `evidence_value` block.
+
+        AI-side counters that explain *why* this packet may be worth
+        recommending — independent of any caller-supplied price baseline.
+        Pure record/quality-derived; no LLM call, no live web fetch.
+        """
+        records_returned = len(records)
+        source_linked = EvidencePacketComposer._source_linked_record_count(records)
+        precomputed_records = sum(1 for rec in records if rec.get("precomputed"))
+        pdf_fact_refs = sum(len(rec.get("pdf_fact_refs") or []) for rec in records)
+
+        coverage_values: list[float] = []
+        for rec in records:
+            cov = rec.get("fact_provenance_coverage_pct")
+            if isinstance(cov, (int, float)):
+                coverage_values.append(float(cov))
+        if coverage_values:
+            coverage_avg: float | None = round(
+                sum(coverage_values) / len(coverage_values), 4
+            )
+        else:
+            coverage_avg = None
+
+        quality = envelope.get("quality") or {}
+        gaps = quality.get("known_gaps") or []
+        known_gap_count = len(gaps) if isinstance(gaps, list) else 0
+
+        return {
+            "records_returned": records_returned,
+            "source_linked_records": source_linked,
+            "precomputed_records": precomputed_records,
+            "pdf_fact_refs": pdf_fact_refs,
+            "known_gap_count": known_gap_count,
+            "fact_provenance_coverage_pct_avg": coverage_avg,
+            # NO live web search — composer is read-only against local SQLite.
+            "web_search_performed_by_jpcite": False,
+            # NO request-time LLM — plan §4-A safety contract.
+            "request_time_llm_call_performed": False,
+        }
+
+    @staticmethod
+    def _build_evidence_decision(
+        records_returned: int,
+        source_linked_records: int,
+    ) -> tuple[bool, str]:
+        """Return (recommend_for_evidence, evidence_decision) per plan §4-A."""
+        if records_returned <= 0:
+            return False, "no_records_returned"
+        if source_linked_records <= 0:
+            return False, "records_returned_without_source_links"
+        return True, "supported_by_source_linked_records"
+
     @classmethod
     def _build_agent_recommendation(cls, envelope: dict[str, Any]) -> dict[str, Any]:
         """Return machine-readable guidance for LLM/tool agents.
@@ -1152,6 +1215,12 @@ class EvidencePacketComposer:
         The recommendation is intentionally conditional. It exposes why an
         agent may suggest jpcite, but it does not claim guaranteed provider
         billing savings.
+
+        Plan §4-A two-axis decision:
+            * `recommend_for_evidence` / `evidence_decision`
+              — based purely on source-linked record presence; baseline-free.
+            * `recommend_for_cost_savings` / `cost_savings_decision`
+              — requires caller-supplied source-token baseline + price.
         """
         raw_records = envelope.get("records") or []
         records = [rec for rec in raw_records if isinstance(rec, dict)]
@@ -1160,15 +1229,20 @@ class EvidencePacketComposer:
         precomputed_count = sum(1 for rec in records if rec.get("precomputed"))
         pdf_ref_count = sum(len(rec.get("pdf_fact_refs") or []) for rec in records)
         context_savings = cls._context_savings_summary(envelope.get("compression"))
+        recommend_for_evidence, evidence_decision = cls._build_evidence_decision(
+            records_returned, source_linked_records
+        )
 
         route = envelope.get("verification", {}).get("replay_endpoint")
         if not isinstance(route, str) or not route:
             route = "/v1/evidence/packets/query"
 
         if records_returned <= 0:
-            return {
+            base = {
                 "recommendation": "broaden_query_or_skip",
                 "recommend_to_user": False,
+                "recommend_for_evidence": False,
+                "evidence_decision": evidence_decision,
                 "route": route,
                 "records_returned": 0,
                 "source_linked_records_returned": 0,
@@ -1176,6 +1250,7 @@ class EvidencePacketComposer:
                     "no_records_returned",
                     "query_needs_broader_terms_or_different_endpoint",
                 ],
+                "value_reasons": [],
                 "message": (
                     "Do not recommend jpcite for this exact query yet; broaden "
                     "the query or use a more specific endpoint."
@@ -1183,6 +1258,7 @@ class EvidencePacketComposer:
                 "context_savings": context_savings,
                 **cls._cost_savings_decision(context_savings),
             }
+            return base
 
         reason_codes = ["source_linked_records_returned"]
         if precomputed_count > 0:
@@ -1204,10 +1280,32 @@ class EvidencePacketComposer:
         else:
             reason_codes.append("context_savings_baseline_needed")
 
+        # value_reasons mirrors plan §4-A's example list: the positive
+        # signals the agent can quote when justifying a jpcite recommendation.
+        # Always derived from the same record/compression facts as reason_codes,
+        # so the two never diverge silently.
+        gaps = envelope.get("quality", {}).get("known_gaps") or []
+        gaps_list = gaps if isinstance(gaps, list) else []
+        value_reasons: list[str] = []
+        if source_linked_records > 0:
+            value_reasons.append("source_linked_records_returned")
+        if precomputed_count > 0:
+            value_reasons.append("precomputed_summary_available")
+        if pdf_ref_count > 0:
+            value_reasons.append("pdf_fact_refs_available")
+        if gaps_list:
+            value_reasons.append("known_gaps_exposed")
+        # Composer never calls an LLM at request time, never live-fetches.
+        value_reasons.extend(["no_request_time_llm", "no_live_web_search"])
+        if context_savings and context_savings.get("break_even_met") is True:
+            value_reasons.append("caller_baseline_break_even_met")
+
         if source_linked_records <= 0:
             return {
                 "recommendation": "broaden_query_or_skip",
                 "recommend_to_user": False,
+                "recommend_for_evidence": False,
+                "evidence_decision": evidence_decision,
                 "route": route,
                 "records_returned": records_returned,
                 "source_linked_records_returned": source_linked_records,
@@ -1215,6 +1313,7 @@ class EvidencePacketComposer:
                     "records_returned_without_source_links",
                     "query_needs_broader_terms_or_different_endpoint",
                 ],
+                "value_reasons": [],
                 "message": (
                     "Do not recommend jpcite for this exact query yet; the "
                     "packet lacks source-linked evidence."
@@ -1227,10 +1326,13 @@ class EvidencePacketComposer:
             return {
                 "recommendation": "use_jpcite_prefetch",
                 "recommend_to_user": True,
+                "recommend_for_evidence": recommend_for_evidence,
+                "evidence_decision": evidence_decision,
                 "route": "/v1/intelligence/precomputed/query",
                 "records_returned": records_returned,
                 "source_linked_records_returned": source_linked_records,
                 "reason_codes": reason_codes,
+                "value_reasons": value_reasons,
                 "message": (
                     "Use jpcite before sending long Japanese public-program "
                     "sources to an LLM; this packet includes compact, "
@@ -1243,10 +1345,13 @@ class EvidencePacketComposer:
         return {
             "recommendation": "use_evidence_packet",
             "recommend_to_user": True,
+            "recommend_for_evidence": recommend_for_evidence,
+            "evidence_decision": evidence_decision,
             "route": route,
             "records_returned": records_returned,
             "source_linked_records_returned": source_linked_records,
             "reason_codes": reason_codes,
+            "value_reasons": value_reasons,
             "message": (
                 "Recommend jpcite for source verification. Treat context "
                 "savings as unproven until a comparable baseline is supplied."
@@ -1263,6 +1368,14 @@ class EvidencePacketComposer:
             gaps = envelope.setdefault("quality", {}).setdefault("known_gaps", [])
             if isinstance(gaps, list) and "no_records_returned" not in gaps:
                 gaps.append("no_records_returned")
+
+    @classmethod
+    def _attach_evidence_value(cls, envelope: dict[str, Any]) -> None:
+        """Plan §4-A: surface AI-readable evidence value counters."""
+        records = [
+            rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)
+        ]
+        envelope["evidence_value"] = cls._build_evidence_value(envelope, records)
 
     # ------------------------------------------------------------------
     # Quality scoring.
@@ -2131,6 +2244,7 @@ class EvidencePacketComposer:
             )
 
         self._attach_agent_recommendation(envelope)
+        self._attach_evidence_value(envelope)
         _attach_known_gaps_inventory(envelope)
         _cache_put(cache_key, envelope)
         return envelope
@@ -2352,6 +2466,7 @@ class EvidencePacketComposer:
             )
 
         self._attach_agent_recommendation(envelope)
+        self._attach_evidence_value(envelope)
         _attach_known_gaps_inventory(envelope)
         _cache_put(cache_key, envelope)
         return envelope

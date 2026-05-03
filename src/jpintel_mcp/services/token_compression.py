@@ -216,6 +216,11 @@ class TokenCompressionEstimator:
             jpcite_cost_jpy / (input_price_jpy_per_1m / 1_000_000)
         )
 
+        # plan §5: break_even_source_tokens_estimate = packet_tokens + break_even_avoided
+        # i.e. how big does the source need to be before jpcite's ¥3 is recovered
+        # solely from input-context substitution at the caller-supplied price.
+        break_even_source_tokens_estimate = int(packet_tokens) + int(break_even_tokens)
+
         return {
             "currency": "JPY",
             "input_token_price_jpy_per_1m": input_price_jpy_per_1m,
@@ -224,9 +229,14 @@ class TokenCompressionEstimator:
             "jpcite_cost_jpy_ex_tax": jpcite_cost_jpy,
             "net_savings_jpy_ex_tax": round(net_savings_jpy_ex_tax, 1),
             "break_even_avoided_tokens": break_even_tokens,
+            "break_even_source_tokens_estimate": break_even_source_tokens_estimate,
             "break_even_met": avoided_tokens >= break_even_tokens,
+            "input_context_only": True,
             "price_input_source": "caller_supplied",
             "billing_savings_claim": "estimate_not_guarantee",
+            # Plan §4-A: same fence as compression-level field; AI agents may read
+            # either one.
+            "provider_billing_not_guaranteed": True,
         }
 
     def compose(
@@ -276,15 +286,23 @@ class TokenCompressionEstimator:
             ratio: float | None = (
                 round(packet_tokens / source_tokens, 4) if source_tokens > 0 else None
             )
+            # plan §5 / §4-A: input_context_reduction_rate
+            #   = max(0, source - packet) / source
+            # This is *input context only*, never a guarantee of provider billing.
+            reduction_rate: float | None = (
+                round(avoided_tokens / source_tokens, 4) if source_tokens > 0 else None
+            )
         else:
             avoided_tokens = None
             ratio = None
+            reduction_rate = None
 
         result: dict[str, Any] = {
             "packet_tokens_estimate": packet_tokens,
             "source_tokens_estimate": source_tokens,
             "avoided_tokens_estimate": avoided_tokens,
             "compression_ratio": ratio,
+            "input_context_reduction_rate": reduction_rate,
             "estimate_method": ESTIMATE_METHOD,
             "estimate_disclaimer": ESTIMATE_DISCLAIMER,
             "source_tokens_basis": basis,
@@ -308,6 +326,12 @@ class TokenCompressionEstimator:
             ),
             "estimate_scope": "input_context_only",
             "savings_claim": "estimate_not_guarantee",
+            # Plan §4-A: top-level fence so any AI agent reading the
+            # compression block sees this without descending into
+            # cost_savings_estimate. True for *every* compression block:
+            # provider billing involves output / reasoning / cache /
+            # tool-use tokens we don't measure.
+            "provider_billing_not_guaranteed": True,
         }
 
         savings = self.compute_savings(

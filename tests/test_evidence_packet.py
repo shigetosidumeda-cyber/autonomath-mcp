@@ -1157,6 +1157,108 @@ def test_mcp_and_rest_emit_identical_envelopes(fixture_db: Path, client: TestCli
 
 
 # ---------------------------------------------------------------------------
+# Plan §4-A — API value signal acceptance tests (2026-05-03)
+# ---------------------------------------------------------------------------
+
+
+def test_evidence_value_block_present_and_shape(fixture_db: Path) -> None:
+    """compose_for_program emits the plan §4-A `evidence_value` block."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_program("UNI-evp-p1")
+    assert env is not None
+    ev = env.get("evidence_value")
+    assert isinstance(ev, dict), "evidence_value block missing"
+    for key in (
+        "records_returned",
+        "source_linked_records",
+        "precomputed_records",
+        "pdf_fact_refs",
+        "known_gap_count",
+        "fact_provenance_coverage_pct_avg",
+        "web_search_performed_by_jpcite",
+        "request_time_llm_call_performed",
+    ):
+        assert key in ev, f"evidence_value missing field: {key}"
+    assert ev["records_returned"] == 1
+    assert ev["source_linked_records"] == 1
+    assert ev["precomputed_records"] >= 1
+    assert ev["web_search_performed_by_jpcite"] is False
+    assert ev["request_time_llm_call_performed"] is False
+
+
+def test_pdf_pages_baseline_exposes_break_even_and_reduction_rate(fixture_db: Path) -> None:
+    """pdf_pages baseline returns input_context_reduction_rate +
+    break_even_source_tokens_estimate + provider_billing_not_guaranteed."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_program(
+        "UNI-evp-p1",
+        include_compression=True,
+        input_token_price_jpy_per_1m=300.0,
+        source_tokens_basis="pdf_pages",
+        source_pdf_pages=10,
+    )
+    assert env is not None
+    compression = env["compression"]
+    assert compression["provider_billing_not_guaranteed"] is True
+    rate = compression["input_context_reduction_rate"]
+    assert isinstance(rate, float) and 0.0 <= rate <= 1.0
+    cost_savings = compression["cost_savings_estimate"]
+    assert "break_even_source_tokens_estimate" in cost_savings
+    assert isinstance(cost_savings["break_even_source_tokens_estimate"], int)
+    assert (
+        cost_savings["break_even_source_tokens_estimate"]
+        == compression["packet_tokens_estimate"]
+        + cost_savings["break_even_avoided_tokens"]
+    )
+    assert cost_savings["provider_billing_not_guaranteed"] is True
+    assert cost_savings["jpcite_cost_jpy_ex_tax"] == 3
+
+
+def test_no_baseline_recommends_evidence_but_not_cost(fixture_db: Path) -> None:
+    """Plan §4-A acceptance: no baseline → recommend_for_evidence may be true,
+    recommend_for_cost_savings=false, decision=needs_caller_baseline."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_program("UNI-evp-p1")
+    assert env is not None
+    rec = env["agent_recommendation"]
+    assert rec["recommend_for_evidence"] is True
+    assert rec["evidence_decision"] == "supported_by_source_linked_records"
+    assert rec["recommend_for_cost_savings"] is False
+    assert rec["cost_savings_decision"] == "needs_caller_baseline"
+    assert isinstance(rec["value_reasons"], list)
+    assert "source_linked_records_returned" in rec["value_reasons"]
+
+
+def test_zero_records_disables_all_recommendations(fixture_db: Path) -> None:
+    """records_returned=0 → recommend_to_user, recommend_for_evidence,
+    recommend_for_cost_savings all false."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_query("zz-no-program-match", limit=10)
+    assert env["records"] == []
+    rec = env["agent_recommendation"]
+    assert rec["recommend_to_user"] is False
+    assert rec["recommend_for_evidence"] is False
+    assert rec["evidence_decision"] == "no_records_returned"
+    assert rec["recommend_for_cost_savings"] is False
+    assert rec["value_reasons"] == []
+    ev = env["evidence_value"]
+    assert ev["records_returned"] == 0
+    assert ev["source_linked_records"] == 0
+
+
+# ---------------------------------------------------------------------------
 # 0 LLM imports guard
 # ---------------------------------------------------------------------------
 

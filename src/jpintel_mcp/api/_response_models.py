@@ -85,10 +85,24 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
     "compression": {
         "packet_tokens_estimate": 566,
         "source_tokens_estimate": 14000,
+        "avoided_tokens_estimate": 13434,
+        "compression_ratio": 0.0404,
+        "input_context_reduction_rate": 0.9596,
         "source_tokens_basis": "pdf_pages",
         "source_pdf_pages": 20,
         "estimate_scope": "input_context_only",
         "savings_claim": "estimate_not_guarantee",
+        "provider_billing_not_guaranteed": True,
+    },
+    "evidence_value": {
+        "records_returned": 1,
+        "source_linked_records": 1,
+        "precomputed_records": 1,
+        "pdf_fact_refs": 0,
+        "known_gap_count": 0,
+        "fact_provenance_coverage_pct_avg": 0.86,
+        "web_search_performed_by_jpcite": False,
+        "request_time_llm_call_performed": False,
     },
 }
 
@@ -189,6 +203,13 @@ class EvidencePacketCompression(BaseModel):
         default=None,
         description="packet_tokens_estimate / source_tokens_estimate when known.",
     )
+    input_context_reduction_rate: float | None = Field(
+        default=None,
+        description=(
+            "max(0, source - packet) / source. Caller-supplied input-context "
+            "estimate only; not a provider-billing guarantee."
+        ),
+    )
     estimate_method: str | None = None
     estimate_disclaimer: str | None = Field(
         default=None,
@@ -209,11 +230,19 @@ class EvidencePacketCompression(BaseModel):
         default="estimate_not_guarantee",
         description="Machine-readable reminder that savings are estimates.",
     )
+    provider_billing_not_guaranteed: bool = Field(
+        default=True,
+        description=(
+            "Always true. Output / reasoning / cache / provider tool tokens "
+            "are NOT measured by the compression block."
+        ),
+    )
     cost_savings_estimate: dict[str, Any] | None = Field(
         default=None,
         description=(
-            "Optional caller-price comparison, including break_even_met when "
-            "the caller supplied an input token price."
+            "Optional caller-price comparison, including break_even_met and "
+            "break_even_source_tokens_estimate when the caller supplied an "
+            "input token price."
         ),
     )
 
@@ -302,6 +331,45 @@ class EvidencePacketVerification(BaseModel):
     freshness_endpoint: str | None = None
 
 
+class EvidencePacketEvidenceValue(BaseModel):
+    """Plan §4-A `evidence_value` block — AI-readable evidence counters.
+
+    Always populated. Values are pure record/quality counts; jpcite does not
+    perform a request-time LLM call or a live web search to produce them.
+    """
+
+    model_config = _ALLOW_EXTRA
+
+    records_returned: int = Field(..., description="Total records[] entries.")
+    source_linked_records: int = Field(
+        ..., description="Records whose source_url is non-empty (or whose facts cite a source)."
+    )
+    precomputed_records: int = Field(
+        ..., description="Records carrying a deterministic precomputed summary."
+    )
+    pdf_fact_refs: int = Field(
+        ..., description="Sum of pdf_fact_refs[] entries across records."
+    )
+    known_gap_count: int = Field(
+        ..., description="Length of quality.known_gaps for this packet."
+    )
+    fact_provenance_coverage_pct_avg: float | None = Field(
+        default=None,
+        description=(
+            "Mean per-record fact_provenance_coverage_pct; null when no record "
+            "carries a coverage figure."
+        ),
+    )
+    web_search_performed_by_jpcite: bool = Field(
+        default=False,
+        description="Always false. The composer is read-only against local SQLite.",
+    )
+    request_time_llm_call_performed: bool = Field(
+        default=False,
+        description="Always false. The composer never calls an LLM at request time.",
+    )
+
+
 class EvidencePacketEnvelope(BaseModel):
     """Compact source-linked packet for LLM evidence prefetch."""
 
@@ -320,6 +388,13 @@ class EvidencePacketEnvelope(BaseModel):
     quality: EvidencePacketQuality
     verification: EvidencePacketVerification
     compression: EvidencePacketCompression | None = None
+    evidence_value: EvidencePacketEvidenceValue | None = Field(
+        default=None,
+        description=(
+            "Plan §4-A AI-readable evidence value counters. Always populated "
+            "by the composer; null only on legacy fixtures."
+        ),
+    )
     agent_recommendation: dict[str, Any] | None = Field(
         default=None,
         description=(
@@ -368,6 +443,24 @@ class PrecomputedAgentRecommendation(BaseModel):
             "an agent to recommend jpcite in this turn."
         ),
     )
+    recommend_for_evidence: bool = Field(
+        default=False,
+        description=(
+            "Plan §4-A axis 1: true when at least one record is source-linked. "
+            "Independent of caller-supplied price baseline."
+        ),
+    )
+    evidence_decision: Literal[
+        "supported_by_source_linked_records",
+        "no_records_returned",
+        "records_returned_without_source_links",
+    ] = Field(
+        default="no_records_returned",
+        description=(
+            "Plan §4-A axis 1 reason: machine-readable basis for the "
+            "`recommend_for_evidence` boolean."
+        ),
+    )
     recommend_for_cost_savings: bool = Field(
         ...,
         description=(
@@ -394,6 +487,14 @@ class PrecomputedAgentRecommendation(BaseModel):
         description="Best next jpcite API route for the agent to call.",
     )
     reason_codes: list[str] = Field(default_factory=list)
+    value_reasons: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Plan §4-A: positive signals an agent may quote when justifying "
+            "a jpcite recommendation. Always derived from the same evidence "
+            "as `reason_codes`."
+        ),
+    )
     message: str = Field(
         ...,
         description="Short human-readable explanation for the recommendation.",
@@ -402,7 +503,9 @@ class PrecomputedAgentRecommendation(BaseModel):
         default=None,
         description=(
             "Break-even and avoided-token estimate when the caller supplied "
-            "a comparable source-token baseline."
+            "a comparable source-token baseline. Includes "
+            "`break_even_source_tokens_estimate` (packet + break-even avoided) "
+            "and `provider_billing_not_guaranteed=true`."
         ),
     )
 
@@ -432,6 +535,8 @@ PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
     "agent_recommendation": {
         "recommendation": "use_jpcite_prefetch",
         "recommend_to_user": True,
+        "recommend_for_evidence": True,
+        "evidence_decision": "supported_by_source_linked_records",
         "recommend_for_cost_savings": True,
         "cost_savings_decision": "supported_by_caller_baseline",
         "missing_for_cost_claim": [],
@@ -441,6 +546,14 @@ PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
             "source_linked_records_returned",
             "no_request_time_llm",
             "no_live_web_search",
+            "caller_baseline_break_even_met",
+        ],
+        "value_reasons": [
+            "source_linked_records_returned",
+            "precomputed_summary_available",
+            "no_request_time_llm",
+            "no_live_web_search",
+            "caller_baseline_break_even_met",
         ],
         "message": (
             "Use this bundle before sending long Japanese public-program "
@@ -449,8 +562,11 @@ PRECOMPUTED_INTELLIGENCE_EXAMPLE: dict[str, Any] = {
         "context_savings": {
             "evaluated": True,
             "break_even_met": True,
+            "break_even_source_tokens_estimate": 10566,
             "source_tokens_basis": "pdf_pages",
             "avoided_tokens_estimate": 13434,
+            "input_context_reduction_rate": 0.9596,
+            "provider_billing_not_guaranteed": True,
             "savings_claim": "estimate_not_guarantee",
         },
     },
