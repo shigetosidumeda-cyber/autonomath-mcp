@@ -228,6 +228,15 @@
 <main id="main" class="go-page">
  <div class="container">
 
+ <!-- §4.1 first-use clarification: this page is *only* for MCP client device-flow. -->
+ <!-- Normal API keys (curl / Cursor / ChatGPT Actions) come from /pricing.html#api-paid. -->
+ <div role="note" aria-label="このページの用途"
+ style="max-width:520px;margin:0 auto 18px;padding:12px 16px;border:1px solid var(--border);background:var(--bg-alt);border-radius:8px;font-size:13px;line-height:1.65;color:var(--text);">
+ <strong>MCP 自動認証専用ページです。</strong>
+ 通常の API キー (curl / Cursor / ChatGPT Custom GPT) を取得したい場合は <a href="pricing.html#api-paid">Pricing で発行 (¥3.30/req)</a> または <a href="trial.html">メールでトライアル</a> をご利用ください。
+ このページは Claude Desktop など MCP クライアントが提示する確認コード (例 <code>ABCD-1234</code>) を Stripe Checkout に紐付けて自動でキーを配るための専用フローです。
+ </div>
+
  <div id="state-form" class="go-card" tabindex="-1">
  <h1>MCP を有効化</h1>
  <p class="lead">
@@ -324,7 +333,7 @@
  <a href="trust.html">信頼</a>
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
- <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="tokushoho.html">特商法</a><a href="support.html">サポート</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
  </nav>
  <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>

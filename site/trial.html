@@ -241,11 +241,41 @@
  <div class="trial-head">
  <div class="trial-err" aria-hidden="true">&times;</div>
  <h1>マジックリンクが無効です</h1>
- <p class="sub">URL が破損しているか、改ざんされている可能性があります。もう一度トップページからトライアル登録をお試しください。</p>
+ <p class="sub">URL が破損しているか、改ざんされている可能性があります。下のフォームから再度トライアル登録できます。</p>
  </div>
  <div class="btn-row">
- <a class="btn btn-primary" href="/?from=trial-invalid#trial">トップページに戻る</a>
- <a class="btn-ghost" href="mailto:info@bookyou.net?subject=jpcite%20-%20トライアル%20magic-link%20問題" style="text-decoration:none;">サポートに連絡</a>
+ <a class="btn-ghost" href="support.html" style="text-decoration:none;">サポート</a>
+ </div>
+ </div>
+
+ <!-- Fallback signup form: lets a fresh visitor (or recovery from invalid/expired/error) -->
+ <!-- start a trial directly from this page without bouncing back to top page first. -->
+ <div id="state-signup" tabindex="-1" hidden>
+ <div class="trial-head">
+ <h1>メールでトライアル鍵を発行</h1>
+ <p class="sub">メールアドレスのみで 14 日 / 200 リクエストのトライアル API キーが届きます。クレジットカード登録は不要です。</p>
+ </div>
+ <div class="state-card">
+ <p class="label">トライアル登録</p>
+ <form id="trial-signup-form" data-api-base="https://api.jpcite.com" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;margin:0 0 8px;">
+ <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+ <label for="trial-signup-company-url">Company URL (leave blank)</label>
+ <input id="trial-signup-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off">
+ </div>
+ <label for="trial-signup-email" class="visually-hidden">メールアドレス</label>
+ <input id="trial-signup-email" type="email" name="email" required aria-required="true" placeholder="you@example.com"
+ style="flex:1 1 220px;min-width:220px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;background:var(--bg);color:var(--text);">
+ <button type="submit" class="btn btn-primary">マジックリンクを送る</button>
+ </form>
+ <p id="trial-signup-status" role="status" aria-live="polite" style="margin:6px 0 0;font-size:13px;color:var(--text-muted);line-height:1.5;min-height:1.4em;"></p>
+ <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">
+ 1 メール 1 トライアル (LIFETIME) · IP 単位 24 時間に 1 件まで · マジックリンクは 24 時間有効。
+ 既に有料プランをご利用の方は <a href="pricing.html#api-paid">Pricing</a> または <a href="dashboard.html">ダッシュボード</a> へ。
+ </p>
+ </div>
+ <div class="disclaimer-52" role="note">
+ <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
+ jpcite は日本の制度情報の検索インデックス API です。 詳細は <a href="tos.html">利用規約</a>。
  </div>
  </div>
 
@@ -277,7 +307,7 @@
  <a href="trust.html">信頼</a>
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
- <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="tokushoho.html">特商法</a><a href="support.html">サポート</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
  </nav>
  <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
@@ -297,7 +327,7 @@
     function showOnly(id) {
       var ids = [
         'state-loading', 'state-success', 'state-already',
-        'state-expired', 'state-invalid', 'state-error'
+        'state-expired', 'state-invalid', 'state-error', 'state-signup'
       ];
       for (var i = 0; i < ids.length; i++) {
         var el = $(ids[i]);
@@ -307,6 +337,53 @@
       }
       var t = $(id);
       if (t && t.focus) { try { t.focus({preventScroll:false}); } catch(_e) {} }
+    }
+
+    function wireSignupForm() {
+      var form = $('trial-signup-form');
+      if (!form) return;
+      var status = $('trial-signup-status');
+      var emailInput = $('trial-signup-email');
+      var honeypot = $('trial-signup-company-url');
+      var btn = form.querySelector('button[type="submit"]');
+      var apiBase = form.getAttribute('data-api-base') || 'https://api.jpcite.com';
+      form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        if (honeypot && honeypot.value) { return; }
+        var email = (emailInput && emailInput.value || '').trim();
+        if (!/.+@.+\..+/.test(email)) {
+          if (status) status.textContent = '有効なメールアドレスを入力してください。';
+          return;
+        }
+        if (btn) btn.disabled = true;
+        if (status) status.textContent = '送信中…';
+        fetch(apiBase.replace(/\/$/, '') + '/v1/signup', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+          body: JSON.stringify({email: email})
+        }).then(function (r) {
+          return r.text().then(function (t) {
+            var body = null;
+            try { body = t ? JSON.parse(t) : null; } catch (_e) { body = {detail: t}; }
+            return {ok: r.ok, status: r.status, body: body};
+          });
+        }).then(function (resp) {
+          if (resp.ok || resp.status === 202) {
+            if (status) status.textContent = 'メールを確認してください。マジックリンクから鍵を受け取れます (24 時間有効)。';
+            if (emailInput) emailInput.value = '';
+          } else if (resp.status === 429) {
+            var retry = resp.body && resp.body.detail && resp.body.detail.message;
+            if (status) status.textContent = retry || '同一 IP からのトライアル登録は 24 時間に 1 件までです。';
+          } else {
+            var detail = (resp.body && (resp.body.detail || resp.body.message)) || ('HTTP ' + resp.status);
+            if (status) status.textContent = '送信に失敗しました: ' + (typeof detail === 'string' ? detail : JSON.stringify(detail));
+          }
+        }).catch(function (err) {
+          if (status) status.textContent = '通信エラー: ' + (err && err.message || err);
+        }).then(function () {
+          if (btn) btn.disabled = false;
+        });
+      });
     }
 
     function readQuery(name) {
@@ -354,7 +431,12 @@
     }
 
     function init() {
-      var status = readQuery('status') || 'invalid';
+      wireSignupForm();
+      // No status param + no fragment → fresh visitor wants to sign up.
+      var rawStatus = readQuery('status');
+      var hasFragment = (window.location.hash || '').length > 1;
+      if (!rawStatus && !hasFragment) return showOnly('state-signup');
+      var status = rawStatus || 'invalid';
       if (status === 'already') return showOnly('state-already');
       if (status === 'expired') return showOnly('state-expired');
       if (status === 'invalid') return showOnly('state-invalid');

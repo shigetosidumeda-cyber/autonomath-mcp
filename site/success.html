@@ -299,19 +299,65 @@
  </div>
 
  <div class="state-card">
- <p class="label">5 秒で叩く (curl)</p>
+ <p class="label">curl で 5 秒検証</p>
  <pre id="curl-block" class="code-block" aria-label="curl sample">curl …</pre>
  <div class="btn-row">
  <button id="copy-curl-btn" class="btn-ghost" type="button">&#128203; curl をコピー</button>
  </div>
  </div>
 
+ <!-- Claude Desktop config (MCP). User pastes the entire block; jpcite key is substituted. -->
+ <div class="state-card">
+ <p class="label">Claude Desktop (MCP) — claude_desktop_config.json に追記</p>
+ <pre id="claude-block" class="code-block" aria-label="Claude Desktop MCP config">{...}</pre>
+ <div class="btn-row">
+ <button id="copy-claude-btn" class="btn-ghost" type="button">&#128203; Claude config をコピー</button>
+ </div>
+ <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
+ 事前に <code>pip install autonomath-mcp</code> または <code>uv tool install autonomath-mcp</code>。
+ 設定ファイル: macOS = <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>。
+ 詳細 → <a href="/integrations/claude-desktop.html">Claude Desktop 統合ガイド</a>
+ </p>
+ </div>
+
+ <!-- Cursor / Cline (MCP) — same shape as Claude, single config block. -->
+ <div class="state-card">
+ <p class="label">Cursor / Cline (MCP) — Settings → MCP に貼り付け</p>
+ <pre id="cursor-block" class="code-block" aria-label="Cursor / Cline MCP config">{...}</pre>
+ <div class="btn-row">
+ <button id="copy-cursor-btn" class="btn-ghost" type="button">&#128203; Cursor / Cline config をコピー</button>
+ </div>
+ <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
+ 詳細 → <a href="/integrations/cursor.html">Cursor 統合</a> · <a href="/integrations/cline.html">Cline 統合</a>
+ </p>
+ </div>
+
+ <!-- ChatGPT Actions / OpenAPI — copy-paste setup. -->
+ <div class="state-card">
+ <p class="label">ChatGPT Custom GPT (OpenAPI Actions)</p>
+ <pre id="chatgpt-block" class="code-block" aria-label="ChatGPT Actions / OpenAPI"># OpenAPI URL
+https://api.jpcite.com/v1/openapi.agent.json
+
+# Authentication
+Type: API Key
+Header name: X-API-Key
+Auth value: …</pre>
+ <div class="btn-row">
+ <button id="copy-chatgpt-btn" class="btn-ghost" type="button">&#128203; ChatGPT 設定をコピー</button>
+ </div>
+ <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
+ ChatGPT Plus / Team で My GPTs → Configure → Actions → Import OpenAPI で上記 URL を貼り付け、 Authentication に API キーを設定。
+ 詳細 → <a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT 統合ガイド</a>
+ </p>
+ </div>
+
  <div class="next-steps">
  <h2>次のステップ</h2>
  <ol>
- <li><a href="/docs/getting-started">Getting Started</a> &mdash; Python / Node の最小例、認証、rate limit</li>
- <li><a href="dashboard.html">Dashboard</a> &mdash; 利用量、key rotate、billing portal</li>
- <li><a href="/docs/getting-started/#6-mcp-claude-desktop">Claude Desktop (MCP) 設定</a> &mdash; stdio で 93 tools : 認定支援機関データセット + メタデータ tools + 静的データセット tools + lifecycle/abstract/prerequisite/graph/rule_engine/related_programs) をエージェントから直呼び</li>
+ <li><a href="/docs/getting-started">Getting Started</a> &mdash; Python / Node の最小例、 認証、 rate limit</li>
+ <li><a href="dashboard.html">既存 API キーを管理 (ダッシュボード)</a> &mdash; 利用量、 キー再発行、 Stripe ポータル、 解約</li>
+ <li><a href="/docs/cookbook/">Cookbook (12 レシピ)</a> &mdash; 税理士 daily / Claude Desktop install / 法人 360 / pref heatmap / 採択事例 / 行政処分 watch ほか</li>
+ <li><a href="support.html">サポート</a> &mdash; FAQ / Status / Issue tracker / メール窓口</li>
  </ol>
  </div>
 
@@ -391,7 +437,7 @@
  <a href="trust.html">信頼</a>
  <a href="tos.html">利用規約</a>
  <a href="privacy.html">プライバシー</a>
- <a href="tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ <a href="tokushoho.html">特商法</a><a href="support.html">サポート</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
  </nav>
  <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
@@ -467,6 +513,40 @@
              '  "https://api.jpcite.com/v1/programs/search?q=%E8%BE%B2%E6%A5%AD&limit=5"';
     }
 
+    function buildClaudeConfig(apiKey) {
+      return '{\n' +
+        '  "mcpServers": {\n' +
+        '    "jpcite": {\n' +
+        '      "command": "uvx",\n' +
+        '      "args": ["autonomath-mcp"],\n' +
+        '      "env": {"JPCITE_API_KEY": "' + apiKey + '"}\n' +
+        '    }\n' +
+        '  }\n' +
+        '}';
+    }
+
+    function buildCursorConfig(apiKey) {
+      // Cursor / Cline use the same shape; one block covers both.
+      return '{\n' +
+        '  "mcpServers": {\n' +
+        '    "jpcite": {\n' +
+        '      "command": "uvx",\n' +
+        '      "args": ["autonomath-mcp"],\n' +
+        '      "env": {"JPCITE_API_KEY": "' + apiKey + '"}\n' +
+        '    }\n' +
+        '  }\n' +
+        '}';
+    }
+
+    function buildChatGPT(apiKey) {
+      return '# OpenAPI URL\n' +
+        'https://api.jpcite.com/v1/openapi.agent.json\n\n' +
+        '# Authentication\n' +
+        'Type: API Key\n' +
+        'Header name: X-API-Key\n' +
+        'Auth value: ' + apiKey;
+    }
+
     async function copyText(text, btn, labelCopied, labelOrig) {
       try {
         if (navigator.clipboard && window.isSecureContext) {
@@ -520,21 +600,29 @@
       var curl = buildCurl(rawKey);
       if (curlEl) curlEl.textContent = curl;
 
-      var copyKeyBtn = $('copy-key-btn');
-      if (copyKeyBtn) {
-        var labelKey = copyKeyBtn.textContent;
-        copyKeyBtn.onclick = function() {
-          copyText(rawKey, copyKeyBtn, 'コピーしました', labelKey);
-        };
-      }
+      var claudeEl = $('claude-block');
+      var claudeCfg = buildClaudeConfig(rawKey);
+      if (claudeEl) claudeEl.textContent = claudeCfg;
 
-      var copyCurlBtn = $('copy-curl-btn');
-      if (copyCurlBtn) {
-        var labelCurl = copyCurlBtn.textContent;
-        copyCurlBtn.onclick = function() {
-          copyText(curl, copyCurlBtn, 'コピーしました', labelCurl);
-        };
+      var cursorEl = $('cursor-block');
+      var cursorCfg = buildCursorConfig(rawKey);
+      if (cursorEl) cursorEl.textContent = cursorCfg;
+
+      var chatgptEl = $('chatgpt-block');
+      var chatgptCfg = buildChatGPT(rawKey);
+      if (chatgptEl) chatgptEl.textContent = chatgptCfg;
+
+      function bindCopy(btnId, text) {
+        var b = $(btnId);
+        if (!b) return;
+        var label = b.textContent;
+        b.onclick = function() { copyText(text, b, 'コピーしました', label); };
       }
+      bindCopy('copy-key-btn', rawKey);
+      bindCopy('copy-curl-btn', curl);
+      bindCopy('copy-claude-btn', claudeCfg);
+      bindCopy('copy-cursor-btn', cursorCfg);
+      bindCopy('copy-chatgpt-btn', chatgptCfg);
 
       showOnly('state-success');
     }

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>サポート — jpcite</title>
+<meta name="description" content="jpcite サポート — FAQ、 連絡先、 稼働状況、 Issue tracker。 zero-touch self-serve、 1on1 onboarding 無し。">
+
+<meta property="og:title" content="サポート — jpcite">
+<meta property="og:description" content="FAQ / Contact / Status / Issue tracker。zero-touch self-serve。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/support.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="サポート — jpcite">
+<meta name="twitter:description" content="FAQ / Contact / Status / Issue tracker。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/support.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/support.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/support.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/support.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="styles.css?v=20260428a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://jpcite.com/#publisher",
+  "name": "Bookyou株式会社",
+  "alternateName": ["jpcite"],
+  "url": "https://jpcite.com/",
+  "logo": "https://jpcite.com/assets/logo-v2.svg",
+  "email": "info@bookyou.net",
+  "foundingDate": "2025-05-12",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressRegion": "東京都",
+    "addressLocality": "文京区"
+  },
+  "founder": {
+    "@type": "Person",
+    "name": "梅田茂利"
+  },
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "email": "info@bookyou.net",
+      "contactType": "customer support",
+      "availableLanguage": ["ja", "en"]
+    }
+  ],
+  "sameAs": [
+    "https://www.bookyou.net/",
+    "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "API キーはどこで発行できますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pricing ページの API キー発行ボタンから Stripe Checkout に進むと有料 API キー (¥3.30/req 完全従量) が即時発行されます。 メールでトライアル (14 日 / 200 req カード不要) は trial.html から、 登録不要の匿名 3 リクエスト/日/IP は curl / Playground から利用できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "解約方法は?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Stripe Customer Portal からサブスクリプションをキャンセルすると以後の課金は停止し、 匿名 3 リクエスト/日/IP の利用に戻ります。 解約違約金・最低利用期間はありません。 Customer Portal へは ダッシュボード から遷移できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "API キーをなくしました。 再発行できますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ダッシュボードの「キーを再発行」ボタンから rotate できます。 古いキーは即時無効化されるため、 クライアント側を更新してから実行してください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "請求書 (適格請求書) のダウンロード方法は?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Stripe Customer Portal から PDF ダウンロード可能です。 jpcite の適格請求書発行事業者番号は T8010001213708 (Bookyou株式会社) です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "稼働状況はどこで確認できますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "https://jpcite.com/status.html で公開しています。 障害発生時はそのページに更新が出ます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "バグ報告 / 機能要望はどこに送ればいいですか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GitHub Issues (https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues) もしくは info@bookyou.net まで。 セキュリティに関する報告のみ非公開でお願いします (詳細は SECURITY.md)。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "電話 / Slack Connect / Zoom サポートは利用できますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "提供していません。 jpcite は solo + zero-touch 運用です。 サポートはメール (info@bookyou.net) と GitHub Issues に限定しています。 1on1 onboarding コール、 専用 Slack チャネル、 DPA / MSA 個別交渉は提供していません — 法的姿勢は site/trust/purchasing.html · site/legal-fence.html で公開しています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "税理士法 §52 / 弁護士法 §72 該当の業務はおこないますか?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "おこないません。 jpcite は日本の制度情報の検索インデックス API です。 税務助言・法律相談・申請代行・社労士業務は対象外で、 出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。"
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  .support { padding: 48px 0 64px; }
+  .support h1 {
+    font-size: 32px;
+    margin: 0 0 6px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .support .lead {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0 0 28px;
+    line-height: 1.7;
+    max-width: 720px;
+  }
+  .support h2 {
+    font-size: 20px;
+    margin: 32px 0 12px;
+    font-weight: 700;
+  }
+  .support h3 {
+    font-size: 16px;
+    margin: 18px 0 6px;
+    font-weight: 600;
+  }
+  .support p, .support li {
+    line-height: 1.75;
+    font-size: 15px;
+  }
+  .support ul, .support ol { padding-left: 22px; }
+  .support .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 0 0 24px;
+  }
+  .support .card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: var(--bg);
+  }
+  .support .card h3 { margin-top: 0; }
+  .support .card p { font-size: 14px; margin: 0 0 8px; }
+  .support details {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 0 0 10px;
+    background: var(--bg);
+  }
+  .support details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    list-style: none;
+    padding-right: 24px;
+    position: relative;
+  }
+  .support details summary::after {
+    content: '+';
+    position: absolute;
+    right: 4px;
+    top: 0;
+    font-size: 18px;
+    color: var(--text-muted);
+  }
+  .support details[open] summary::after { content: '−'; }
+  .support details p { margin: 10px 0 0; font-size: 14px; line-height: 1.7; }
+  .support .disclaimer-52 {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 24px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  @media (max-width: 640px) {
+    .support { padding: 32px 0 48px; }
+    .support h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="pricing.html">料金</a>
+ <a href="audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="trust.html">信頼センター</a></li>
+ <li><a href="status.html">稼働状況</a></li>
+ <li><a href="data-freshness.html">データ鮮度</a></li>
+ <li><a href="transparency.html">透明性</a></li>
+ <li><a href="sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/support.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/support.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+ <section class="support">
+ <div class="container" style="max-width:880px;">
+
+ <h1>サポート</h1>
+ <p class="lead">
+ jpcite は <strong>solo + zero-touch self-serve</strong> 運用です。
+ サポートは下記 4 経路 (FAQ / メール / GitHub Issues / Status) に限定しています。
+ 1on1 onboarding コール、 Slack Connect、 専用 Zoom 通話、 個別 DPA / MSA 交渉は提供していません — 法的姿勢は <a href="trust/purchasing.html">trust/purchasing</a> · <a href="legal-fence.html">legal-fence</a> に公開しています。
+ </p>
+
+ <div class="grid">
+ <div class="card">
+ <h3>連絡先 (Contact)</h3>
+ <p>メール: <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p>初回返信は通常 1 営業日以内 (JST、 平日 9:00-18:00)。</p>
+ </div>
+ <div class="card">
+ <h3>稼働状況 (Status)</h3>
+ <p><a href="status.html">jpcite.com/status.html</a> で公開。</p>
+ <p>障害情報・メンテナンス予定はそのページに更新します。</p>
+ </div>
+ <div class="card">
+ <h3>Issue tracker</h3>
+ <p>バグ・機能要望: <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues" rel="noopener">GitHub Issues</a></p>
+ <p>セキュリティ報告のみ非公開で <a href="security/">security/</a> 経由でお願いします。</p>
+ </div>
+ <div class="card">
+ <h3>ドキュメント</h3>
+ <p><a href="/docs/getting-started/">5 分クイックスタート</a></p>
+ <p><a href="/docs/cookbook/">Cookbook (12 レシピ)</a></p>
+ <p><a href="/docs/api-reference/">API リファレンス</a></p>
+ </div>
+ </div>
+
+ <h2>よくある質問 (FAQ)</h2>
+
+ <details>
+ <summary>API キーはどこで発行できますか?</summary>
+ <p>
+ 3 経路あります:
+ 1) <a href="pricing.html#api-paid">Pricing で有料 API キーを発行</a> (Stripe Checkout、 ¥3.30/req 完全従量、 即時発行) /
+ 2) <a href="trial.html">メールでトライアル</a> (14 日 / 200 req、 マジックリンク認証、 カード不要) /
+ 3) 登録不要の匿名 3 リクエスト/日/IP (curl / Playground でその場で利用、 JST 翌日 00:00 リセット)。
+ </p>
+ </details>
+
+ <details>
+ <summary>解約方法は?</summary>
+ <p>
+ <a href="dashboard.html">ダッシュボード</a> から Stripe Customer Portal を開き、 サブスクリプションをキャンセルしてください。
+ 解約後も当月末までは API アクセス可能で、 当月分のみ ¥3/req 従量請求が発生します。
+ 解約違約金・最低利用期間はありません。
+ </p>
+ </details>
+
+ <details>
+ <summary>API キーをなくしました。 再発行できますか?</summary>
+ <p>
+ <a href="dashboard.html">ダッシュボード</a> の「キーを再発行」ボタンから rotate できます。
+ 古いキーは即時無効化されるため、 クライアント側を更新してから実行してください。
+ </p>
+ </details>
+
+ <details>
+ <summary>請求書 (適格請求書) のダウンロード方法は?</summary>
+ <p>
+ Stripe Customer Portal から PDF ダウンロード可能です。
+ jpcite の適格請求書発行事業者番号は <code>T8010001213708</code> (Bookyou株式会社) です。
+ </p>
+ </details>
+
+ <details>
+ <summary>API レートリミット / 利用上限の確認方法は?</summary>
+ <p>
+ 各レスポンスの <code>X-RateLimit-Remaining</code> ヘッダ、 もしくは <a href="dashboard.html">ダッシュボード</a> の使用量グラフで確認できます。
+ 月次予算 cap は ダッシュボードから任意で設定可能。 cap 超過時は HTTP 503 + <code>cap_reached:true</code> で停止します。
+ </p>
+ </details>
+
+ <details>
+ <summary>MCP の自動認証 (go.html) と通常の API キー発行は何が違いますか?</summary>
+ <p>
+ <a href="go.html">go.html</a> は Claude Desktop など MCP クライアントが提示する確認コード (例 <code>ABCD-1234</code>) を受け取って Stripe Checkout に紐付け、 自動でキーを MCP サーバーへ配るための専用フローです。
+ 通常の API キー (curl / Cursor / ChatGPT Custom GPT 等) を取得したい場合は <a href="pricing.html#api-paid">Pricing</a> を使ってください。
+ </p>
+ </details>
+
+ <details>
+ <summary>Claude Desktop / Cursor / Cline / ChatGPT Custom GPT への設定方法は?</summary>
+ <p>
+ 統合ガイドを各クライアント向けに用意しています:
+ <a href="/integrations/claude-desktop.html">Claude Desktop</a> ·
+ <a href="/integrations/cursor.html">Cursor</a> ·
+ <a href="/integrations/cline.html">Cline</a> ·
+ <a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT</a>。
+ 支払い完了後の <a href="success.html">success ページ</a> でも同じ設定ブロックをコピー&貼り付けできます。
+ </p>
+ </details>
+
+ <details>
+ <summary>電話 / Slack Connect / Zoom サポートは利用できますか?</summary>
+ <p>
+ 提供していません。 jpcite は <strong>solo + zero-touch</strong> 運用で、 サポートはメール (<a href="mailto:info@bookyou.net">info@bookyou.net</a>) と <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues" rel="noopener">GitHub Issues</a> に限定しています。
+ 1on1 onboarding コール、 専用 Slack チャネル、 個別 DPA / MSA 交渉は受け付けていません。
+ 法的姿勢は <a href="trust/purchasing.html">trust/purchasing</a> · <a href="legal-fence.html">legal-fence</a> をご覧ください。
+ </p>
+ </details>
+
+ <details>
+ <summary>税理士法 §52 / 弁護士法 §72 該当の業務はおこないますか?</summary>
+ <p>
+ おこないません。 jpcite は日本の制度情報の検索インデックス API です。
+ 税務助言・法律相談・申請代行・社労士業務は対象外で、 出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。
+ </p>
+ </details>
+
+ <details>
+ <summary>外部 LLM の請求額削減は保証されますか?</summary>
+ <p>
+ 保証しません。 jpcite は Evidence Packet (出典 URL + 取得時刻 + content_hash + known_gaps) を返す検索 API で、 入力文脈量の参考削減見込みは <code>compression.input_context_reduction_rate</code> として返しますが、 これは入力文脈量だけの参考推定で、 出力 tokens / reasoning tokens / cache / provider tool / search 料金 / 為替を含みません。
+ </p>
+ </details>
+
+ <details>
+ <summary>データ更新頻度は?</summary>
+ <p>
+ 主要公開行に <code>source_url</code> + <code>source_fetched_at</code> + <code>content_hash</code> を付与しています。
+ 優先度の高い出典の再取得中央値は約 7 日で、 鮮度の per-source 内訳は <a href="data-freshness.html">データ鮮度</a> ページで公開しています。
+ 法令改正の差分は日次走査、 出典 URL の死活監視は毎晩自動実行しています。
+ </p>
+ </details>
+
+ <details>
+ <summary>個人情報・データの取り扱い / GDPR / APPI 開示請求は?</summary>
+ <p>
+ <a href="privacy.html">プライバシーポリシー</a> をご覧ください。
+ APPI に基づく開示・削除請求は <a href="mailto:info@bookyou.net?subject=jpcite%20-%20APPI%20%E9%96%8B%E7%A4%BA%E8%AB%8B%E6%B1%82">info@bookyou.net</a> へメールでお願いします。
+ </p>
+ </details>
+
+ <h2>関連ページ</h2>
+ <ul>
+ <li><a href="trust.html">信頼センター</a> — 透明性・出典原則・データ鮮度の集約</li>
+ <li><a href="trust/purchasing.html">法人購買 (purchasing)</a> — 適格請求書、 法人カード対応、 与信</li>
+ <li><a href="security/">セキュリティ (security/)</a> — セキュリティ報告窓口、 脆弱性開示ポリシー</li>
+ <li><a href="legal-fence.html">法的姿勢 (legal-fence)</a> — 提供範囲、 個別交渉に応じない領域</li>
+ <li><a href="data-licensing.html">データソース (data-licensing)</a> — 出典別ライセンス・再配布条件</li>
+ <li><a href="tos.html">利用規約</a> · <a href="privacy.html">プライバシー</a> · <a href="tokushoho.html">特定商取引法</a></li>
+ </ul>
+
+ <div class="disclaimer-52" role="note">
+ <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
+ jpcite は日本の制度情報の検索インデックス API です。 税務助言・法律相談・申請代行・社労士業務は対象外で、 出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。 詳細は <a href="tos.html">利用規約</a> をご確認ください。
+ </div>
+
+ </div>
+ </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="about.html">運営について</a>
+ <a href="products.html">プロダクト</a>
+ <a href="pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="trust.html">信頼</a>
+ <a href="tos.html">利用規約</a>
+ <a href="privacy.html">プライバシー</a>
+ <a href="tokushoho.html">特商法</a><a href="support.html">サポート</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+</body>
+</html>

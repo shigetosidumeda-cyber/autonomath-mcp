@@ -287,6 +287,7 @@ nav:
       - Webhook: webhooks.md
       - SDK (TypeScript): sdks/typescript.md
       - ブックマークレット & Chrome 拡張: integrations/bookmarklet.md
+      - AI 推薦テンプレート: integrations/ai-recommendation-template.md
 
   - 信頼:
       - SLA: sla.md
