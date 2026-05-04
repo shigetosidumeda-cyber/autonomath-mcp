@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>信用金庫向け jpcite — 補助金検索 + Evidence Packet で 顧問先別 alert (¥3/req)</title>
+<meta name="description" content="全国 254 信用金庫 + 中央会 + 認定経営革新等支援機関 向け jpcite。 取引先 SMB の補助金候補 + マル経推薦 + 信用保証協会 連動を 1 リクエストで横断、 顧問先別 Evidence Packet を Slack / email に alert。 ¥3/req 完全従量、 1 担当者 月 100 lookup = 月 ¥330 (税込)。 LLM API 不使用、 一次資料 source_url 必須。">
+
+<meta property="og:title" content="信用金庫向け jpcite — 補助金検索 + Evidence Packet で 顧問先別 alert">
+<meta property="og:description" content="信金 254 行 + 中央会 + 認定支援機関 向け。 取引先 1 社の業種 × 都道府県 × 設備投資計画から補助金 / 融資 / 税制特例を 30 秒で抽出。 ¥3/req 純従量、 月額固定 0。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jpcite.com/audiences/shinkin.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="jpcite">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="信用金庫向け jpcite (信金 254 + 中央会 + 認定支援機関)">
+<meta name="twitter:description" content="取引先 SMB 補助金マッチング + マル経連動 + 47 信用保証協会 corpus + Evidence Packet。¥3/req 従量。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/audiences/shinkin.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/audiences/shinkin.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/audiences/shinkin.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
+
+<script defer src="../analytics.js?v=20260503a"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Audience 別", "item": "https://jpcite.com/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "信用金庫向け", "item": "https://jpcite.com/audiences/shinkin.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://jpcite.com/#publisher",
+  "name": "Bookyou株式会社",
+  "url": "https://jpcite.com/",
+  "email": "info@bookyou.net",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressRegion": "東京都",
+    "addressLocality": "文京区",
+    "streetAddress": "小日向2-22-1"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "信用金庫向け 取引先 補助金マッチング API + Evidence Packet",
+  "name": "jpcite for 信用金庫・信用組合",
+  "description": "全国 254 信用金庫 + 信金中央金庫 + 信用組合 + 認定経営革新等支援機関ロールの信金担当者向け。 取引先 SMB の業種 × 都道府県 × 設備投資計画から補助金 / 融資 / 税制特例 / マル経推薦 / 47 信用保証協会連動を 1 リクエストで抽出、 顧問先別 Evidence Packet を Slack / email に alert。 ¥3/リクエスト 完全従量。",
+  "provider": {
+    "@id": "https://jpcite.com/#publisher"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "信用金庫・信用組合 取引先担当 / 営業推進部 / 経営支援部 / 認定経営革新等支援機関"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP 従量",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "description": "1 リクエスト ¥3 (税別、税込 ¥3.30)。 月額固定 0、 最低利用なし。"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "信用金庫向け jpcite — 補助金検索 + Evidence Packet で 顧問先別 alert",
+  "description": "全国 254 信用金庫 + 中央会 + 認定経営革新等支援機関 向け jpcite 活用ガイド。 取引先 SMB の補助金候補 + マル経推薦 + 信用保証協会 連動を 1 リクエストで横断。",
+  "author": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "publisher": {
+    "@id": "https://jpcite.com/#publisher"
+  },
+  "datePublished": "2026-05-04",
+  "dateModified": "2026-05-04",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://jpcite.com/audiences/shinkin.html"
+  },
+  "image": "https://jpcite.com/assets/og.png",
+  "inLanguage": "ja",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "信用金庫・信用組合 取引先担当 / 営業推進部 / 経営支援部"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "取引先 1 社あたりのコスト感は?", "acceptedAnswer": {"@type": "Answer", "text": "1 担当者 月 100 取引先 lookup = ¥330/月 (税込) が目安。月額固定 0、最低利用なし。"}},
+    {"@type": "Question", "name": "守秘義務との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "検索クエリは学習データに使用しません。X-Client-Tag ヘッダで顧問先 attribution が可能です。 LLM 推論は呼び出し側に委ねるため、信金内部の与信判断データは jpcite サーバを経由しません。"}},
+    {"@type": "Question", "name": "信用保証協会データは含まれますか?", "acceptedAnswer": {"@type": "Answer", "text": "47 都道府県信用保証協会の directory + 関連保証制度を corpus 化済み。prefecture page から 1 タップで到達可能です。"}},
+    {"@type": "Question", "name": "信金中央金庫 SCBRI との関係は?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite は SCBRI とは独立した第三者サービスです。 SCBRI 公開調査資料は一次資料 URL として参照することがあります。"}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="../index.html" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../pricing.html">料金</a>
+ <a href="../audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="../status.html">稼働状況</a></li>
+ <li><a href="../data-freshness.html">データ鮮度</a></li>
+ <li><a href="../transparency.html">透明性</a></li>
+ <li><a href="../sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/audiences/shinkin.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/audiences/">利用者層</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">信用金庫向け</span>
+ </nav>
+ <h1 id="hero-title">信用金庫向け 補助金検索 — Evidence Packet で 顧問先別 alert</h1>
+ <p class="hero-sub">全国 <strong>254 信用金庫</strong> + 信金中央金庫 + 信用組合 + 認定経営革新等支援機関ロールの信金担当者向け。 取引先 SMB の業種 × 都道府県 × 設備投資計画から、 補助金 / 融資 / 税制特例 / 商工会議所マル経 / 47 信用保証協会連動を 1 リクエストで抽出。 顧問先別の Evidence Packet (一次資料 URL + 排他ルール根拠) を Slack / email に alert。 営業 cold call 一切なし、 ¥3/req 完全従量。</p>
+ </div>
+ </section>
+
+ <section class="features">
+ <div class="container">
+ <h2 class="section-title">対象</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>信用金庫 (全国 254 行) / 信用組合 取引先担当 / 営業推進部 / 経営支援部</strong> — 取引先 SMB の bank statement / 決算書 / 設備投資計画から補助金 / 融資の対象となりそうな案件を月次検出</li>
+ <li><strong>認定経営革新等支援機関ロールの信金</strong> — 経営革新計画 (中小企業等経営強化法) 認定や事業性評価の周辺制度を顧客に案内</li>
+ <li><strong>信金中央金庫 / 全国信用金庫協会 / 地域・中小企業研究所 (SCBRI) 関係者</strong> — 中央機関の調査資料・公開データの downstream 活用</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">主要価値</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>地域金融機関 推薦が要件の制度の横断検索</strong> — 信用金庫推薦・地域金融機関推薦が要件となる補助金 / 融資制度を <code>program_facts</code> から fact 単位で抽出</li>
+ <li><strong>商工会議所マル経推薦の連動</strong> — マル経融資 (経営改善資金、 商工会議所推薦が要件) の周辺制度を <code>check_exclusions</code> で他融資との併給判定</li>
+ <li><strong>47 信用保証協会 corpus</strong> — 全国 47 拠点の directory + 関連保証制度を収載、 prefecture page から 1 タップで到達</li>
+ <li><strong>3 軸 融資 enum との接続</strong> — <code>loan_collateral</code> / <code>loan_personal_guarantor</code> / <code>loan_third_party_guarantor</code> (担保 / 個人保証人 / 第三者保証人) は信金の稟議資料項目とそのまま一致</li>
+ <li><strong>Evidence Packet の Slack / email alert</strong> — 保存検索 + Webhook で 顧問先別 monthly screening を自動化、 各 alert に一次資料 URL + 排他ルール根拠を併記</li>
+ <li>1 リクエスト ¥3 (税込 ¥3.30) 完全従量、 3 リクエスト/日まで無料 (匿名 IP ベース、 JST 翌日 00:00 リセット)</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">経営支援部 担当者の典型 use case</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><strong>取引先審査・与信モニタリング</strong> — 取引先 1 社の業種 + 都道府県 + 設備投資計画から、 該当しそうな国 / 都道府県 / 市区町村 / 公庫 / 信用保証協会の制度を 30 秒で集約</li>
+ <li><strong>マッチング提案</strong> — マニュアル巡回 (中小企業庁 / 経産省 / 農水省 portal) を 1 リクエストに置換、 一次資料 URL 付きで顧客提案書に転記</li>
+ <li><strong>稟議資料の補強</strong> — 3 軸融資 enum で稟議書の担保 / 保証人 欄をそのまま埋められる、 該当制度の出典 URL を引用根拠として添付</li>
+ </ul>
+
+ <h2 class="section-title" style="margin-top:32px;">サンプル query (curl)</h2>
+ <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code># 大阪府 製造業 取引先 1 社向けに 信金推薦が要件の融資 + 補助金候補を集約
+curl "https://api.jpcite.com/v1/search?prefecture=大阪府&keyword=設備投資&loan_collateral=not_required" \
+  -H "X-API-Key: $JPCITE_API_KEY" \
+  -H "X-Client-Tag: client-osaka-mfg-001"</code></pre>
+
+ <h2 class="section-title" style="margin-top:32px;">install one-liner (MCP / Claude Desktop)</h2>
+ <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code># 信金担当者の手元 Claude Desktop / Cursor / Cline で MCP として呼ぶ
+uvx autonomath-mcp --src=audience_shinkin</code></pre>
+
+ <p style="font-size:14px;color:var(--text-muted);margin:8px 0 0;">
+ 詳細な設定例は <a href="/docs/integrations/claude-desktop.html">Claude Desktop integration guide</a> を参照。 stdio 経由で 93 tool が利用可能 (うち 39 が core program 検索、 50 が jpcite 拡張)。
+ </p>
+
+ <h2 class="section-title" style="margin-top:32px;">一次資料 (信金 / 中央会)</h2>
+ <ul class="card-list" style="font-size:16px;line-height:2;">
+ <li><a href="https://www.shinkin.org/" rel="external">全国信用金庫協会</a> — 254 信金 facing</li>
+ <li><a href="https://www.shinkin-central-bank.jp/" rel="external">信金中央金庫</a> — 中央機関 (中銀機能)</li>
+ <li><a href="https://www.scbri.jp/" rel="external">信金中央金庫 地域・中小企業研究所 (SCBRI)</a> — 中小企業向け公開調査資料の配布チャネル</li>
+ <li><a href="https://www.shinren.or.jp/" rel="external">全国信用組合中央協会</a> — 信用組合の上部団体</li>
+ <li><a href="https://www.chusho.meti.go.jp/keiei/kakushin/" rel="external">中小企業庁 経営革新等支援機関 認定制度</a> — 認定経営革新等支援機関のロール定義</li>
+ <li><a href="https://www.jfg.or.jp/" rel="external">全国信用保証協会連合会</a> — 47 信用保証協会の上部団体</li>
+ <li><a href="https://www.jfc.go.jp/n/finance/search/03_keieikaizenshikin_m.html" rel="external">日本政策金融公庫 マル経融資 案内</a> — 商工会議所推薦による経営改善資金</li>
+ </ul>
+
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0 0;">
+ corpus 開示: programs 11,684 件 (S/A/B/C tier) + 案件 採択事例 2,286 件 + 融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸) + 行政処分 1,185 件 + 法令 9,484 件 (うち全文 154 件) + 通達 / 裁決 (国税庁) corpus 連携。 jpcite は LLM API を呼び出さず、 SQLite + 一次資料 URL のみで構成 (信金内部の与信判断データは jpcite サーバを経由しません)。 本サービスは情報検索です。 個別具体的な税務 / 法律 / 与信判断は資格を有する専門家・所内稟議プロセスにご確認ください。
+ </p>
+
+ <h2 class="section-title" style="margin-top:32px;">次のステップ</h2>
+ <div class="cta-row" style="margin-top:16px;flex-wrap:wrap;gap:12px;">
+ <a class="btn btn-primary" href="../pricing.html">料金 (¥3/req 従量) &rarr;</a>
+ <a class="btn btn-secondary" href="../dashboard.html">API キー発行 (無料 trial 3 req/day)</a>
+ <a class="btn btn-secondary" href="/docs/integrations/claude-desktop.html">Claude Desktop / MCP 設定</a>
+ <a class="btn btn-secondary" href="../alerts.html">保存検索 + Slack/Email Webhook</a>
+ <a class="btn btn-secondary" href="/audiences/shokokai.html">商工会・商工会議所向け &rarr;</a>
+ </div>
+ </div>
+ </section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>
