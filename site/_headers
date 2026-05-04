@@ -92,11 +92,6 @@
   Cache-Control: public, max-age=3600
   Access-Control-Allow-Origin: *
 
-/structured/*.jsonld
-  Content-Type: application/ld+json; charset=utf-8
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
-  Access-Control-Allow-Origin: *
-
 /llms-full.txt
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600

@@ -66,9 +66,9 @@ DEFAULT_SITE_DIR = REPO_ROOT / "site"
 DEFAULT_ANALYTICS_DIR = REPO_ROOT / "analytics"
 DEFAULT_DOMAIN = "jpcite.com"
 
-# Sitemap shards we ping IndexNow for. We deliberately exclude
-# sitemap-structured.xml (10k+ JSON-LD shards that aren't user-facing
-# pages — IndexNow is for HTML).
+# Sitemap shards we ping IndexNow for. sitemap-structured.xml was retired
+# 2026-05-03 (JSON-LD now inlined in /programs/<slug>.html), so the shard
+# list below covers only user-facing HTML sitemaps as IndexNow expects.
 SHARD_BASENAMES = (
     "sitemap.xml",
     "sitemap-programs.xml",

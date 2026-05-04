@@ -2277,19 +2277,31 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument(
         "--structured-dir",
         type=Path,
-        default=DEFAULT_STRUCTURED_DIR,
-        help="directory for site/structured/<unified_id>.jsonld; empty string skips",
+        default=None,
+        help=(
+            "DEPRECATED 2026-05-03: directory for site/structured/<unified_id>.jsonld."
+            " JSON-LD is now inlined in /programs/<slug>.html (one"
+            " <script type='application/ld+json'> per page) so this opt-in surface"
+            " is no longer shipped to Cloudflare Pages. Pass an explicit path to"
+            " regenerate the local cache for inspection only."
+        ),
     )
     p.add_argument(
         "--sitemap-structured",
         type=Path,
-        default=DEFAULT_SITEMAP_STRUCTURED,
-        help="sitemap-structured.xml path; empty string skips",
+        default=None,
+        help=(
+            "DEPRECATED 2026-05-03: sitemap-structured.xml path. See --structured-dir."
+        ),
     )
     p.add_argument(
         "--no-structured",
         action="store_true",
-        help="skip writing site/structured/*.jsonld (and their sitemap)",
+        default=True,
+        help=(
+            "DEPRECATED 2026-05-03: now the default — site/structured/*.jsonld is"
+            " no longer emitted. Retained as a no-op for callers that still pass it."
+        ),
     )
     p.add_argument("--verbose", "-v", action="store_true")
     return p.parse_args()
@@ -2308,22 +2320,22 @@ def main() -> int:
     if sample_ids:
         sitemap_path = None  # sample mode doesn't touch sitemap
 
-    if args.no_structured:
-        structured_dir = None
-        sitemap_structured_path = None
-    else:
-        structured_dir = (
-            args.structured_dir
-            if (args.structured_dir and str(args.structured_dir) != "")
-            else None
-        )
-        sitemap_structured_path = (
-            args.sitemap_structured
-            if (args.sitemap_structured and str(args.sitemap_structured) != "")
-            else None
-        )
-        if sample_ids:
-            sitemap_structured_path = None  # sample mode skips sitemap
+    # 2026-05-03: structured/ shards retired by default — JSON-LD is now inlined
+    # in every /programs/<slug>.html page. The --structured-dir / --sitemap-structured
+    # flags are retained as opt-in escape hatches for local inspection only;
+    # passing an explicit path resurrects the legacy behavior for that one run.
+    structured_dir = (
+        args.structured_dir
+        if (args.structured_dir and str(args.structured_dir) != "")
+        else None
+    )
+    sitemap_structured_path = (
+        args.sitemap_structured
+        if (args.sitemap_structured and str(args.sitemap_structured) != "")
+        else None
+    )
+    if sample_ids:
+        sitemap_structured_path = None  # sample mode skips sitemap
 
     autonomath_db = (
         args.autonomath_db if (args.autonomath_db and str(args.autonomath_db) != "") else None

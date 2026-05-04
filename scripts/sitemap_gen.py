@@ -7,8 +7,12 @@ The site has multiple sitemaps:
 - sitemap-prefectures.xml / sitemap-cross.xml / sitemap-industries.xml (GEO pages)
 - sitemap-audiences.xml / sitemap-qa.xml / sitemap-pages.xml (content pages)
 - sitemap-enforcement.xml (administrative action detail pages)
-- sitemap-structured.xml (standalone JSON-LD records for AI / answer crawlers)
 - docs/sitemap.xml (MkDocs output)
+
+NOTE: sitemap-structured.xml + site/structured/*.jsonld shards were retired
+2026-05-03. JSON-LD is now inlined in every /programs/<slug>.html page (one
+<script type="application/ld+json"> per page), keeping the CF Pages deploy
+under the 20k-file limit.
 
 When sitemap-programs has > 50,000 URLs (sitemap.org spec) the program
 generator splits into shards `sitemap-programs-1.xml`, `sitemap-programs-2.xml`
@@ -54,7 +58,6 @@ KNOWN_BASENAMES = (
     "sitemap-pages.xml",
     "sitemap-qa.xml",
     "sitemap-enforcement.xml",
-    "sitemap-structured.xml",
     "docs/sitemap.xml",
 )
 

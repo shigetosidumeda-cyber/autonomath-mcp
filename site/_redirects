@@ -127,6 +127,14 @@
 # rejects unknown status codes. /404 itself is the existing /404.html page.
 /_templates/*  /404  404
 
+# Standalone JSON-LD shards retired 2026-05-03. JSON-LD is now inlined
+# in every /programs/<slug>.html page (one <script type="application/ld+json">
+# per page). The /structured/*.jsonld URLs were only an alt-format duplicate
+# of the HTML content, so the canonical page URL is the appropriate landing
+# spot for inbound LLM crawlers.
+/structured/*  /404  404
+/sitemap-structured.xml  /sitemap-index.xml  301
+
 # ─────────────────────────────────────────────────────────────────────────
 # Retired low-signal generated pages; redirect legacy inbound URLs to canonical hubs.
 # ─────────────────────────────────────────────────────────────────────────

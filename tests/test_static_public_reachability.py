@@ -106,19 +106,28 @@ def test_public_docs_do_not_regress_to_internal_or_legacy_copy() -> None:
     assert offenders == []
 
 
-def test_public_sitemap_controls_publish_structured_jsonld_shards() -> None:
-    """Structured JSON-LD shards are an intentional AI discovery surface."""
+def test_public_sitemap_controls_have_retired_standalone_jsonld_surface() -> None:
+    """Standalone /structured/*.jsonld shards retired 2026-05-03.
+
+    JSON-LD is now inlined in every /programs/<slug>.html page (one
+    <script type="application/ld+json"> per page), so the alt-format
+    /structured/ surface and its sitemap are no longer published. Inbound
+    crawler URLs are 404'd by site/_redirects.
+    """
     robots = (REPO_ROOT / "site" / "robots.txt").read_text(encoding="utf-8")
     sitemap_index = (REPO_ROOT / "site" / "sitemap-index.xml").read_text(
         encoding="utf-8"
     )
     headers = (REPO_ROOT / "site" / "_headers").read_text(encoding="utf-8")
+    redirects = (REPO_ROOT / "site" / "_redirects").read_text(encoding="utf-8")
 
-    assert "Allow: /structured/" in robots
-    assert "https://jpcite.com/sitemap-structured.xml" in robots
-    assert "https://jpcite.com/sitemap-structured.xml" in sitemap_index
-    assert "/structured/*.jsonld" in headers
-    assert "application/ld+json" in headers
+    assert "Allow: /structured/" not in robots
+    assert "sitemap-structured.xml" not in robots
+    assert "sitemap-structured.xml" not in sitemap_index
+    assert "/structured/*.jsonld" not in headers
+    # Inline JSON-LD still emits the application/ld+json mime via inline <script>
+    # tags, so Content-Type registration is no longer needed in _headers.
+    assert "/structured/*  /404  404" in redirects
 
 
 def test_key_ai_and_tool_surfaces_use_current_billing_and_evidence_copy() -> None:
@@ -151,19 +160,24 @@ def test_key_ai_and_tool_surfaces_use_current_billing_and_evidence_copy() -> Non
     assert offenders == []
 
 
-def test_pages_artifact_excludes_standalone_structured_shards() -> None:
-    missing: list[tuple[str, str]] = []
-    expected_snippets = [
+def test_pages_artifact_no_longer_carries_structured_exclude_workaround() -> None:
+    """The --exclude 'structured/' rsync workaround was retired 2026-05-03.
+
+    Standalone JSON-LD shards are no longer generated (see
+    scripts/generate_program_pages.py), so the Cloudflare Pages 20k-file
+    deploy limit is satisfied without a special-case exclusion.
+    """
+    leaked: list[tuple[str, str]] = []
+    forbidden_snippets = [
         "--exclude 'structured/'",
         "--exclude 'sitemap-structured.xml'",
         "cat > dist/site/sitemap-structured.xml",
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>',
     ]
     for workflow in PAGES_WORKFLOWS:
         text = workflow.read_text(encoding="utf-8")
         rel = workflow.relative_to(REPO_ROOT).as_posix()
-        for snippet in expected_snippets:
-            if snippet not in text:
-                missing.append((rel, snippet))
+        for snippet in forbidden_snippets:
+            if snippet in text:
+                leaked.append((rel, snippet))
 
-    assert missing == []
+    assert leaked == []

@@ -127,11 +127,12 @@ jobs:
         run: |
           rm -rf dist/site
           mkdir -p dist
+          # site/structured/ + sitemap-structured.xml retired 2026-05-03 (JSON-LD
+          # inlined in /programs/<slug>.html, see scripts/generate_program_pages.py).
+          # The CF Pages 20k-file limit no longer requires the --exclude trick.
           rsync -a --delete \
             --exclude '_templates/' \
             --exclude '_data/' \
-            --exclude 'structured/' \
-            --exclude 'sitemap-structured.xml' \
             --exclude '*.src.js' \
             --exclude '*.src.css' \
             --exclude '*.map' \
@@ -139,10 +140,6 @@ jobs:
             --include 'security/policy.md' \
             --exclude '*.md' \
             site/ dist/site/
-          cat > dist/site/sitemap-structured.xml <<'XML'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>
-          XML
 
       - name: Check Cloudflare Pages secrets
         id: cf-secrets

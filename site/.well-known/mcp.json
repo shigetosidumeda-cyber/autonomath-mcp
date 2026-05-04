@@ -79,7 +79,6 @@
     "data_freshness": "https://jpcite.com/data-freshness.html",
     "sources": "https://jpcite.com/sources.html",
     "bench_prefetch_probe": "https://jpcite.com/bench/prefetch-probe-2026-05-02.json",
-    "sitemap_index": "https://jpcite.com/sitemap-index.xml",
-    "structured_sitemap": "https://jpcite.com/sitemap-structured.xml"
+    "sitemap_index": "https://jpcite.com/sitemap-index.xml"
   }
 }
