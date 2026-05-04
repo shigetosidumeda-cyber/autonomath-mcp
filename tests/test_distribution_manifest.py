@@ -176,7 +176,7 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
         "server.json": json.dumps(
                 {
                     "name": "autonomath-mcp",
-                    "version": "0.3.2",
+                    "version": "0.3.3",
                     "websiteUrl": "https://jpcite.com",
                     "description": "93 MCP tools at default gates — autonomath-mcp",
                     "tool_count": 93,
@@ -187,7 +187,7 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
         "mcp-server.json": canonical_blob,
         "dxt/manifest.json": canonical_blob,
         "smithery.yaml": (
-            'version: "0.3.2"\nhomepage: "https://jpcite.com"\n'
+            'version: "0.3.3"\nhomepage: "https://jpcite.com"\n'
             'env: JPCITE_API_KEY="" JPCITE_API_BASE=""\n'
             "package: autonomath-mcp\n"
             "repo: https://github.com/shigetosidumeda-cyber/autonomath-mcp\n"
@@ -195,7 +195,7 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
         ),
         "scripts/mcp_registries_submission.json": canonical_blob,
         "pyproject.toml": (
-            'version = "0.3.2"\nname = "autonomath-mcp"\n'
+            'version = "0.3.3"\nname = "autonomath-mcp"\n'
             'description = "93 MCP tools — see https://jpcite.com"\n'
             'Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"\n'
         ),
